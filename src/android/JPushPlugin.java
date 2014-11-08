@@ -18,7 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.thi.pushtest.R;
+//import com.thi.pushtest.R;
 
 import cn.jpush.android.api.BasicPushNotificationBuilder;
 import cn.jpush.android.api.CustomPushNotificationBuilder;
@@ -319,7 +319,7 @@ public class JPushPlugin extends CordovaPlugin {
 		}
 		//callbackContext.success(obj);
 	}
-
+/*
 	void setCustomPushNotificationBuilder(JSONArray data,
 			CallbackContext callbackContext) {
 		CustomPushNotificationBuilder builder = new CustomPushNotificationBuilder(
@@ -336,7 +336,7 @@ public class JPushPlugin extends CordovaPlugin {
 		}
 		//callbackContext.success(obj);
 	}
-	
+*/	
 	void clearAllNotification(JSONArray data,
 			CallbackContext callbackContext){
 		JPushInterface.clearAllNotifications(this.cordova.getActivity());
