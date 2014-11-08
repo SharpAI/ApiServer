@@ -5,7 +5,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.json.JSONObject;
+
 import cn.jpush.android.api.JPushInterface;
+import cn.jpush.android.data.JPushLocalNotification;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +25,7 @@ public class MyReceiver extends BroadcastReceiver {
         }else if (JPushInterface.ACTION_UNREGISTER.equals(intent.getAction())){
         	
         } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
-        	handlingReceivedMessage(intent);
+		handlingReceivedMessage(context,intent);
         } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent.getAction())) {
         	
         } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
@@ -33,11 +37,22 @@ public class MyReceiver extends BroadcastReceiver {
         }
 	
 	}
-	private void handlingReceivedMessage(Intent intent) {
+	private void handlingReceivedMessage(Context context,Intent intent) {
 		String msg = intent.getStringExtra(JPushInterface.EXTRA_MESSAGE);
+		String msgId = intent.getStringExtra(JPushInterface.EXTRA_MSG_ID);
 		Map<String,Object> extras = getNotificationExtras(intent);
 		
 		JPushPlugin.transmitPush(msg, extras);
+
+		JPushLocalNotification ln = new JPushLocalNotification();
+		ln.setBuilderId(0);
+		ln.setContent(msg);
+		ln.setTitle("新通知");
+		ln.setNotificationId(Long.parseLong(msgId, 10)) ;
+		ln.setBroadcastTime(System.currentTimeMillis() + 1000);
+
+		ln.setExtras(extras.toString()) ;
+		JPushInterface.addLocalNotification(context, ln);
 	}
 	 private void handlingNotificationOpen(Context context,Intent intent){
 		 String alert = intent.getStringExtra(JPushInterface.EXTRA_ALERT);
