@@ -17,6 +17,8 @@ import android.util.Log;
 
 public class MyReceiver extends BroadcastReceiver {
 	private static String TAG = "Client Receiver";
+	private long savedNotificationID=0;
+	private JPushLocalNotification ln = new JPushLocalNotification();
 	@Override
 	public void onReceive(Context context, Intent intent) {
 
@@ -40,18 +42,22 @@ public class MyReceiver extends BroadcastReceiver {
 	private void handlingReceivedMessage(Context context,Intent intent) {
 		String msg = intent.getStringExtra(JPushInterface.EXTRA_MESSAGE);
 		String msgId = intent.getStringExtra(JPushInterface.EXTRA_MSG_ID);
+		String title = intent.getStringExtra(JPushInterface.EXTRA_TITLE);
+		Long messageID = Long.parseLong(msgId);
 		Map<String,Object> extras = getNotificationExtras(intent);
-		
-		JPushPlugin.transmitPush(msg, extras);
+		JSONObject json = new JSONObject(extras) ;
 
-		JPushLocalNotification ln = new JPushLocalNotification();
 		ln.setBuilderId(0);
 		ln.setContent(msg);
-		ln.setTitle("新通知");
-		ln.setNotificationId(Long.parseLong(msgId, 10)) ;
-		ln.setBroadcastTime(System.currentTimeMillis() + 1000);
-
-		ln.setExtras(extras.toString()) ;
+		ln.setTitle(title);
+		ln.setNotificationId(1200) ;
+		ln.setBroadcastTime(System.currentTimeMillis() + 1000 );
+		ln.setExtras(json.toString()) ;
+		
+		if(savedNotificationID != 0){
+			JPushInterface.removeLocalNotification(context, savedNotificationID);
+		}
+		savedNotificationID = messageID;
 		JPushInterface.addLocalNotification(context, ln);
 	}
 	 private void handlingNotificationOpen(Context context,Intent intent){
