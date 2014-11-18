@@ -2,9 +2,8 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:amazon="http://schemas.android.com/apk/lib/com.amazon.device.ads"
-    xmlns:rim="http://www.blackberry.com/ns/widgets"
     id="com.clone.phonegap.plugins.PushPlugin"
-    version="2.4.0">
+    version="2.4.1">
 
   <name>PushPlugin</name>
 	<author>Bob Easterday</author>
@@ -126,18 +125,6 @@
 		<header-file src="src/ios/PushPlugin.h" />
 
 	</platform>
-
-    <!-- blackberry10 -->
-    <platform name="blackberry10">
-        <dependency id="com.blackberry.push" />
-        <dependency id="com.blackberry.invoked" />
-        <config-file target="www/config.xml" parent="/widget">
-            <feature name="PushPlugin" value="PushPlugin" />
-        </config-file>
-        <js-module src="www/blackberry10/PushPluginProxy.js" name="PushPluginProxy" >
-            <runs />
-        </js-module>
-    </platform>
 
     <!-- wp8 -->
     <platform name="wp8">
