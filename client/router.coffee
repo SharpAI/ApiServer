@@ -12,3 +12,6 @@ if Meteor.isClient
     Router.route '/user',()->
       this.render 'user'
       Session.set 'channel','user'
+    Router.route '/posts/:_id', ()->
+      post = Posts.findOne({_id: this.params._id});
+      this.render 'showPosts', {data: post}

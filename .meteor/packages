@@ -12,3 +12,6 @@ coffeescript
 less
 fastclick
 mizzao:bootstrap-3
+accounts-password
+accounts-ui-unstyled
+accounts-ui
