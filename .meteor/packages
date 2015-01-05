@@ -7,3 +7,10 @@
 meteor-platform
 autopublish
 insecure
+linto:fontawesome
+nemo64:bootstrap
+rubaxa:sortable
+iron:router
+coffeescript
+less
+fastclick
