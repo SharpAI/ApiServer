@@ -5,7 +5,6 @@ if Meteor.isClient
       this.render 'home'
   Template.footer.helpers
     focus_style:(channelName)->
-      # console.log "channel is "+channelName
       channel = Session.get "channel"
       if channel is channelName
         return "focus"
