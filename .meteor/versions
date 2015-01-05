@@ -1,7 +1,9 @@
 accounts-base@1.1.3
+accounts-oauth@1.1.3
 accounts-password@1.0.5
 accounts-ui@1.1.4
 accounts-ui-unstyled@1.1.5
+accounts-weibo@1.0.3
 application-configuration@1.0.4
 autoupdate@1.1.4
 base64@1.0.2
@@ -48,6 +50,8 @@ mizzao:bootstrap-3@3.3.1_1
 mobile-status-bar@1.0.2
 mongo@1.0.11
 npm-bcrypt@0.7.7
+oauth@1.1.3
+oauth2@1.1.2
 observe-sequence@1.0.4
 ordered-dict@1.0.2
 random@1.0.2
@@ -70,3 +74,4 @@ underscore@1.0.2
 url@1.0.3
 webapp@1.1.5
 webapp-hashing@1.0.2
+weibo@1.1.2
