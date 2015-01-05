@@ -7,3 +7,7 @@ if Meteor.isClient
         return "focus"
       else
         return ""
+    icon_size:(channelName)->
+      channel = Session.get "channel"
+      if channel is channelName
+        return true
