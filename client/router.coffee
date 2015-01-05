@@ -1,0 +1,10 @@
+if Meteor.isClient
+  Meteor.startup ()->
+    Router.route '/',()->
+      this.render 'home'
+    Router.route '/search',()->
+      this.render 'search'
+    Router.route '/bell',()->
+      this.render 'bell'
+    Router.route '/user',()->
+      this.render 'user'

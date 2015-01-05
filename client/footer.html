@@ -2,39 +2,37 @@
     <div id="footer" class="container navbar navbar-default navbar-fixed-bottom">
         <div class="btn-group btn-group-justified">
             <div class="btn-group">
-                <button type="button" id="pub_board" class="foot-btn btn btn-default {{focus_style 'home'}}">
-                    <div>
-                        <i class="fa fa-home" style="font-size: 20px;"></i>
-                    </div>
+              <a href="/">
+                <button type="button" id="home" class="foot-btn btn btn-default {{focus_style 'home'}}">
+                  <i class="fa fa-home" style="font-size: 20px;"></i>
+                </button>
+              </a>
+            </div>
+            <div class="btn-group">
+              <a href='/search'>
+                <button type="button" id="search" class="foot-btn btn btn-default {{focus_style 'search'}}">
+                  <i class="fa fa-search" style="font-size: 16px;"></i>
+                </button>
+              </a>
+            </div>
+            <div class="btn-group">
+                <button type="button" id="add" class="foot-btn btn btn-default {{focus_style 'add'}}" style="background-color: #222;">
+                  <i class="fa fa-circle-o-notch" style="font-size: 35px; color:#FFF; padding: 5px;"></i>
                 </button>
             </div>
             <div class="btn-group">
-                <button type="button" id="partner" class="foot-btn btn btn-default {{focus_style 'partner'}}">
-                    <div>
-                        <i class="fa fa-search" style="font-size: 16px;"></i>
-                    </div>
+              <a href='/bell'>
+                <button type="button" id="bell" class="foot-btn btn btn-default {{focus_style 'bell'}}">
+                  <i class="fa fa-bell" style="font-size: 16px;"></i>
                 </button>
+              </a>
             </div>
             <div class="btn-group">
-                <button type="button" id="add_post" class="foot-btn btn btn-default" style="background-color: #222;">
-                    <div>
-                        <i class="fa fa-circle-o-notch" style="font-size: 35px; color:#FFF; padding: 5px;"></i>
-                    </div>
+              <a href='user'>
+                <button type="button" id="user" class="foot-btn btn btn-default {{focus_style 'user'}}">
+                  <i class="fa fa-user" style="font-size: 20px;"></i>
                 </button>
-            </div>
-            <div class="btn-group">
-                <button type="button" id="local_service" class="foot-btn btn btn-default {{focus_style 'local_service'}}">
-                    <div>
-                        <i class="fa fa-bell" style="font-size: 16px;"></i>
-                    </div>
-                </button>
-            </div>
-            <div class="btn-group">
-                <button type="button" id="dashboard" class="foot-btn btn btn-default {{focus_style 'dashboard'}}">
-                    <div>
-                        <i class="fa fa-user" style="font-size: 20px;"></i>
-                    </div>
-                </button>
+              </a>
             </div>
         </div>
     </div>
