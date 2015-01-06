@@ -3,6 +3,6 @@ if Meteor.isCordova
     console.log 'add Posts rendered'
     uploadFile (result)->
       console.log 'upload success: url is ' + result
-  Template.addPost.helps
+  Template.addPost.helpers
     items:()->
       Drafts.find()
