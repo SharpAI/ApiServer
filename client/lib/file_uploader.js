@@ -159,7 +159,8 @@ if (Meteor.isCordova){
               return;
             for (var i = 0; i < length; i++) {
               var timestamp = new Date().getTime();
-              var filename = Meteor.userId()+'_'+timestamp+'.jpg';
+              var originalFilename = results[i].replace(/^.*[\\\/]/, '');
+              var filename = Meteor.userId()+'_'+timestamp+ '_' + originalFilename;
               console.log('File name ' + filename);
               //uploadToS3(filename,results[i],callback);
               uploadToBCS(filename,results[i],callback);
@@ -170,7 +171,7 @@ if (Meteor.isCordova){
                   callback(null);
               }
           }, {
-            maximumImagesCount: 1,
+            maximumImagesCount: 6,
             width: 400,
             height: 400,
             quality: 60
