@@ -15,3 +15,7 @@ mizzao:bootstrap-3
 accounts-password
 accounts-ui-unstyled
 accounts-ui
+meteorhacks:npm@1.2.2
+
+
+npm-container
