@@ -179,27 +179,3 @@ if (Meteor.isCordova){
         }
         uploadFile = uploadFileInCordova;
     }
-    
-    if(Meteor.isClient){
-        Meteor.startup(function(){
-          Template.fileUpload.helpers({
-            files: function () {
-              return Session.get("upload_images");
-            }
-          });
-          Template.fileUpload.events({
-              'click #upload': function(event){
-              uploadFile(function(result){
-                  if(result){
-                      //小黑板上传图片;feiwu add.
-                      var upload_images = Session.get("upload_images");
-                      upload_images.push({url: result});
-                      Session.set("upload_images",upload_images);
-                      console.log('upload success: url is ' + result);
-                  }
-              });
-              return false;
-            }
-          });
-        });
-    }
