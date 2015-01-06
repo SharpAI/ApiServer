@@ -3,6 +3,7 @@ if Meteor.isClient
     console.log 'add Posts rendered'
     uploadFile (result)->
       console.log 'upload success: url is ' + result
+      Drafts.insert {owner: Meteor.userId(), imgUrl:result}
     $('#titlePic').css('width',$(window).width())
     $('#titlePic').css('height',$(window).height()*0.55)
 #        upload_images = Session.get "upload_images"
