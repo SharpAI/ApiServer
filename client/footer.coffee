@@ -11,3 +11,5 @@ if Meteor.isClient
       channel = Session.get "channel"
       if channel is channelName
         return true
+    display_footer:()->
+      Meteor.isCordova
