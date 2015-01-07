@@ -21,6 +21,8 @@ if Meteor.isClient
         false
       else
         pub=[]
+        title = $("#title").val()
+        addontitle = $("#addontitle").val()
 #        console.log "#####" + pub
         for i in [0..(Drafts.find().fetch().length-1)]
 #          console.log i
@@ -32,6 +34,8 @@ if Meteor.isClient
         Posts.insert {
           _id:Drafts.find().fetch()[0]._id
           pub:pub,
+          title:title,
+          addontitle:addontitle,
           owner:Meteor.userId(),
           createdAt: new Date()
         }
