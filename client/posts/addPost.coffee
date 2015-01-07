@@ -4,11 +4,8 @@ if Meteor.isClient
     uploadFile (result)->
       console.log 'upload success: url is ' + result
       Drafts.insert {owner: Meteor.userId(), imgUrl:result}
-    $('#titlePic').css('width',$(window).width())
-    $('#titlePic').css('height',$(window).height()*0.55)
-#        upload_images = Session.get "upload_images"
-#        upload_images.push({url: result})
-#        Session.set "upload_images",upload_images
+#    $('#titlePic').css('width',$(window).width())
+#    $('#titlePic').css('height',$(window).height()*0.55)
   Template.addPost.helpers
     items:()->
       Drafts.find()

@@ -1,14 +1,13 @@
 <template name="addPost">
-  <div class="addPost" style="color:#fff">
+  <div class="addPost">
     <div class="head">
       <div id="cancle" class="leftButton">取消</div>
       <div id="publish" class="rightButton">发表</div>
     </div>
-    <div class="theme" style="position:relative">
-      <input type="text" style="position:absolute;background:none;border:1px dotted #fff;left: 15px;right:15px;bottom:25%;font-size: 150%;font-weight:bold" placeholder="标题">
-      <input type="text" style="position:absolute;background:none;border:1px dotted #fff;left: 15px;right:15px;bottom:10%;" placeholder="副标题">
+    <div class="theme">
       {{#each items}}
-        <img id="{{_id}}" src="{{imgUrl}}"/>
+        <img class="img" id="{{_id}}" src="{{imgUrl}}"/>
+        <textarea name="textarea" class="textarea" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
       {{/each}}
     </div>
   </div>
