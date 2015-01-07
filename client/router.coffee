@@ -15,6 +15,10 @@ if Meteor.isClient
     Router.route '/add',()->
       this.render 'addPost'
       Session.set 'channel','addPost'
-    Router.route '/posts/:_id', ()->
-      post = Posts.findOne({_id: this.params._id})
-      this.render 'showPosts', {data: post}
+    Router.route '/posts/:_id', {
+        waitOn: ->
+          Meteor.subscribe("publicPosts",this.params._id);
+        action: ->
+          post = Posts.findOne({_id: this.params._id})
+          this.render 'showPosts', {data: post}
+      }
