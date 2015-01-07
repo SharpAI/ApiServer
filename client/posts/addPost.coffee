@@ -33,9 +33,16 @@ if Meteor.isClient
           }
 #        console.log "#####end" + pub
         Posts.insert {
+          _id:Drafts.find().fetch()[0]._id
           pub:pub,
           owner:Meteor.userId(),
           createdAt: new Date()
         }
+        Router.go('/posts/'+Drafts.find().fetch()[0]._id)
+        Drafts
+          .find {owner: Meteor.userId()}
+          .forEach (drafts)->
+            Drafts.remove drafts._id
+          return
     'click .remove':(event)->
       Drafts.remove this._id
