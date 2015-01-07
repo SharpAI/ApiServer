@@ -5,11 +5,13 @@
       <div id="publish" class="rightButton">发表</div>
     </div>
     <div class="theme">
+      <textarea id="title" name="textarea" class="title" placeholder="主标题"></textarea>
+      <textarea id="addictional_title" name="textarea" class="addontitle" placeholder="副标题"></textarea>
       {{#each items}}
       <div class="themeList">
         <img class="img" id="{{_id}}" src="{{imgUrl}}"/>
         <textarea id="{{_id}}text" name="textarea" class="textarea" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-        <i class="fa fa-times remove" id="{{_id}}"></i>
+        <!--<i class="fa fa-times remove" id="{{_id}}"></i>-->
       </div>
       {{/each}}
     </div>
