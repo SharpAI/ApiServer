@@ -8,7 +8,7 @@
       {{#each items}}
       <div class="themeList">
         <img class="img" id="{{_id}}" src="{{imgUrl}}"/>
-        <textarea id="{{_id}}" name="textarea" class="textarea" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
+        <textarea id="{{_id}}text" name="textarea" class="textarea" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
         <i class="fa fa-times remove" id="{{_id}}"></i>
       </div>
       {{/each}}

@@ -11,11 +11,31 @@ if Meteor.isClient
     items:()->
       Drafts.find()
   Template.addPost.events
-    'click .remove':(event)->
-      Drafts.remove this._id
     'click #cancle':->
+      Router.go('/')
       Drafts
         .find {owner: Meteor.userId()}
         .forEach (drafts)->
           Drafts.remove drafts._id
         return
+    'click #publish':->
+      if Meteor.user() is null
+        Router.go('/user')
+        false
+      else
+        pub=[]
+#        console.log "#####" + pub
+        for i in [0..(Drafts.find().fetch().length-1)]
+#          console.log i
+          pub.push {
+            imgUrl:Drafts.find().fetch()[i].imgUrl,
+            text: $("#"+Drafts.find().fetch()[i]._id+"text").val(),
+          }
+#        console.log "#####end" + pub
+        Posts.insert {
+          pub:pub,
+          owner:Meteor.userId(),
+          createdAt: new Date()
+        }
+    'click .remove':(event)->
+      Drafts.remove this._id
