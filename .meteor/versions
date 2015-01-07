@@ -37,7 +37,8 @@ iron:url@1.0.6
 jquery@1.0.2
 json@1.0.2
 launch-screen@1.0.1
-leonzhang1109:accounts-wechat@0.2.2
+leonzhang1109:accounts-qq@0.0.3
+leonzhang1109:accounts-wechat@0.2.3
 less@1.0.12
 linto:fontawesome@4.2.2
 livedata@1.0.12
