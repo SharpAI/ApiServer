@@ -40,7 +40,7 @@ if Meteor.isClient
 #          console.log i
           if i is 0
             mainImage = draftData[i].imgUrl
-            mainText = $("#"+draftData[i]._id+"text").val()
+#            mainText = $("#"+draftData[i]._id+"text").val()
           else
             pub.push {
               imgUrl:draftData[i].imgUrl,
@@ -53,7 +53,7 @@ if Meteor.isClient
           title:title,
           addontitle:addontitle,
           mainImage: mainImage,
-          mainText: mainText,
+#          mainText: mainText,
           owner:Meteor.userId(),
           createdAt: new Date()
         }

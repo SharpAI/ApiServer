@@ -5,18 +5,14 @@
      <div id="publish" class="rightButton">发表</div>
     </div>-->
     <div class="theme">
-      <div class="title">{{title}}</div>
-      <div class="addontitle">{{addontitle}}</div>
-
-      <div class="themeList">
-        <img class="img" src="{{mainImage}}"/>
-        <div class="text">{{mainText}}</div>
-      </div>
+      <div class="title" style="height: inherit;">{{title}}</div>
+      <div class="addontitle" style="height: inherit;">{{addontitle}}</div>
+      <div class="mainImage" id="{{_id}}" style="background-image:url({{mainImage}})"></div>
       {{#each pub}}
-      <div class="themeList">
-        <img class="img" id="{{_id}}" src="{{imgUrl}}"/>
-        <div class="text">{{text}}</div>
-      </div>
+        <div class="themeList">
+          <img class="img" id="{{_id}}" src="{{imgUrl}}"/>
+          <div class="text" style="height: inherit;">{{text}}</div>
+        </div>
       {{/each}}
     </div>
   </div>
