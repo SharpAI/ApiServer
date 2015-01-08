@@ -23,23 +23,31 @@ if Meteor.isClient
         pub=[]
         title = $("#title").val()
         addontitle = $("#addontitle").val()
+        draftData = Drafts.find().fetch()
+        postId = draftData[0]._id;
 #        console.log "#####" + pub
-        for i in [0..(Drafts.find().fetch().length-1)]
+        for i in [0..(draftData.length-1)]
 #          console.log i
-          pub.push {
-            imgUrl:Drafts.find().fetch()[i].imgUrl,
-            text: $("#"+Drafts.find().fetch()[i]._id+"text").val(),
-          }
+          if i is 0
+            mainImage = draftData[i].imgUrl
+            mainText = $("#"+draftData[i]._id+"text").val()
+          else
+            pub.push {
+              imgUrl:draftData[i].imgUrl,
+              text: $("#"+draftData[i]._id+"text").val(),
+            }
 #        console.log "#####end" + pub
         Posts.insert {
-          _id:Drafts.find().fetch()[0]._id
+          _id:postId,
           pub:pub,
           title:title,
           addontitle:addontitle,
+          mainImage: mainImage,
+          mainText: mainText,
           owner:Meteor.userId(),
           createdAt: new Date()
         }
-        Router.go('/posts/'+Drafts.find().fetch()[0]._id)
+        Router.go('/posts/'+postId)
         Drafts
           .find {owner: Meteor.userId()}
           .forEach (drafts)->
