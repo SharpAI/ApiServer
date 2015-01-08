@@ -10,7 +10,7 @@ App.info({
 
 App.setPreference('StatusBarOverlaysWebView', 'false');
 App.setPreference('orientation', 'portrait');
-/*
+
 App.icons({
   'iphone': 'resource/icon_57.png',
   'iphone_2x': 'resource/icon_120.png',
@@ -36,7 +36,7 @@ App.launchScreens({
   'android_hdpi_portrait': 'resource/splash.png',
   'android_xhdpi_portrait': 'resource/splash.png'
 });
-*/
+
 App.configurePlugin('nl.x-services.plugins.socialsharing', {
     APP_ID: 'wxd930ea5d5a258f4f'
 });
