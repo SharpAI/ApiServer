@@ -1,4 +1,9 @@
 if Meteor.isClient
+  Template.addPost.rendered=->
+    $('.img').css('max-width',$(window).width())
+    $('.mainImage').css('height',$(window).height()*0.55)
+    $('.title').css('top',$(window).height()*0.25)
+    $('.addontitle').css('top',$(window).height()*0.35)
   Template.addPost.helpers
     mainImage:->
       if Drafts.find().count() > 0
@@ -12,7 +17,6 @@ if Meteor.isClient
       uploadFile (result)->
         console.log 'upload success: url is ' + result
         Drafts.insert {owner: Meteor.userId(), imgUrl:result}
-        $('.img').css('max-width',$(window).width())
     'click #cancle':->
       #Demo socialshare window.plugins.socialsharing.share('Message, image and link', null, 'https://www.google.nl/images/srpr/logo4w.png', 'http://www.x-services.nl');
       #Router.go('/')
