@@ -8,12 +8,17 @@
       <div class="title" style="height: initial;">{{title}}</div>
       <div class="addontitle" style="height: initial;">{{addontitle}}</div>
       <div class="mainImage" id="{{_id}}" style="background-image:url({{mainImage}})"></div>
-      {{#each pub}}
-        <div class="themeList">
-          <img class="img" id="{{_id}}" src="{{imgUrl}}"/>
-          <div class="text" style="height: initial;">{{text}}</div>
-        </div>
-      {{/each}}
+      <div class="themeList">
+        {{#if mainText}}
+          <div class="text" style="height: initial;">{{mainText}}</div>
+        {{/if}}
+        {{#each pub}}
+            <img class="img" id="{{_id}}" src="{{imgUrl}}"/>
+            {{#if text}}
+              <div class="text" style="height: initial;">{{text}}</div>
+            {{/if}}
+        {{/each}}
+      </div>
     </div>
   </div>
   {{> footer}}

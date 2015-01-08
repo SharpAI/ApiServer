@@ -9,13 +9,14 @@
       <div class="mainImage" id="{{mainImage._id}}" style="background-image:url({{mainImage.imgUrl}})"></div>
       <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
       <textarea id="addontitle" name="textarea" class="addontitle" placeholder="副标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-      {{#each items}}
       <div class="themeList">
+        <textarea id="{{mainImage._id}}text" name="textarea" class="textarea" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
+      {{#each items}}
         <img class="img" id="{{_id}}" src="{{imgUrl}}"/>
         <textarea id="{{_id}}text" name="textarea" class="textarea" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
         <!--<i class="fa fa-times remove" id="{{_id}}"></i>-->
-      </div>
       {{/each}}
+      </div>
       <br><br><br><br>
       <i class="fa fa-plus-square-o" id="addmore"></i>
     </div>
