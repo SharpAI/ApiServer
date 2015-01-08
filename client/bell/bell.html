@@ -1,0 +1,9 @@
+<template name="bell">
+  <div>This is bell page</div>
+  {{#each eventFeeds}}
+    {{#if selfPosted eventType}}
+      <div>你发布了 {{postTitle}}</div>
+    {{/if}}
+  {{/each}}
+  {{> footer}}
+</template>
