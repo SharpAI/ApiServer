@@ -18,7 +18,6 @@ if Meteor.isClient
         console.log 'upload success: url is ' + result
         Drafts.insert {owner: Meteor.userId(), imgUrl:result}
     'click #cancle':->
-      #Demo socialshare window.plugins.socialsharing.share('Message, image and link', null, 'https://www.google.nl/images/srpr/logo4w.png', 'http://www.x-services.nl');
       #Router.go('/')
       Drafts
         .find {owner: Meteor.userId()}
