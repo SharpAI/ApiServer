@@ -1,22 +1,28 @@
 <template name="addPost">
   <div class="addPost">
     <div class="head">
-      <div id="cancle" class="leftButton">取消</div>
-      <div id="publish" class="rightButton">发表</div>
+      {{#if mainImage}}
+        <div id="cancle" class="leftButton">取消</div>
+        <div id="publish" class="rightButton">发表</div>
+      {{else}}
+        <div>请添加图文</div>
+      {{/if}}
     </div>
     <div class="theme">
 <!--      <img class="mainImage" id="{{mainImage._id}}" src="{{mainImage.imgUrl}}"/>-->
-      <div class="mainImage" id="{{mainImage._id}}" style="background-image:url({{mainImage.imgUrl}})"></div>
-      <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-      <textarea id="addontitle" name="textarea" class="addontitle" placeholder="副标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-      <div class="themeList">
-        <textarea id="{{mainImage._id}}text" name="textarea" class="textarea" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-      {{#each items}}
-        <img class="img" id="{{_id}}" src="{{imgUrl}}"/>
-        <textarea id="{{_id}}text" name="textarea" class="textarea" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-        <!--<i class="fa fa-times remove" id="{{_id}}"></i>-->
-      {{/each}}
-      </div>
+      {{#if mainImage}}
+        <div class="mainImage" id="{{mainImage._id}}" style="background-image:url({{mainImage.imgUrl}})"></div>
+        <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
+        <textarea id="addontitle" name="textarea" class="addontitle" placeholder="副标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
+        <div class="themeList">
+          <textarea id="{{mainImage._id}}text" name="textarea" class="textarea" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
+          {{#each items}}
+            <img class="img" id="{{_id}}" src="{{imgUrl}}"/>
+            <textarea id="{{_id}}text" name="textarea" class="textarea" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
+            <!--<i class="fa fa-times remove" id="{{_id}}"></i>-->
+          {{/each}}
+        </div>
+      {{/if}}
       <br><br><br><br>
       <i class="fa fa-plus-square-o" id="addmore"></i>
     </div>
