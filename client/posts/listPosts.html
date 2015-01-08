@@ -2,9 +2,10 @@
   <div id="wrapper">
     <div id="list">
       {{#each myPosts}}
-      <div class="item" id="{{_id}}">
-        <img class="scale" src="{{mainImage}}" draggable="false" >
-        <h3>{{title}}-- {{addontitle}}</h3> 
+      <div class="item mainImage" id="{{_id}}" style="background-image:url({{mainImage}})">
+<!--        <img class="scale" src="{{mainImage}}" draggable="false" >-->
+        <div class="title">{{title}}</div>
+        <div class="addontitle">{{addontitle}}</div>
       </div>
       {{else}}
       {{/each}}
