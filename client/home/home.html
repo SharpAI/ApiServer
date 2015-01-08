@@ -1,4 +1,5 @@
 <template name="home">
+{{#if currentUser}}
   <div class="home">
     <div class="head">
       <strong>Hot Share</strong>
@@ -8,4 +9,7 @@
   </div>
   {{> listPosts}}
   {{> footer}}
+{{else}}
+  {{> authOverlay}}
+{{/if}}
 </template>
