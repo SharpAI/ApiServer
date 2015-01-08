@@ -1,7 +1,9 @@
 if Meteor.isClient
   Template.addPost.helpers
     items:()->
-      Drafts.find()
+      if Drafts.find().count() > 1
+        for i in [1..(Drafts.find().count()-1)]
+          Drafts.find().fetch()[i]
   Template.addPost.events
     'click #addmore':->
       uploadFile (result)->
