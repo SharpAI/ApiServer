@@ -1,5 +1,8 @@
 if Meteor.isClient
   Template.addPost.helpers
+    mainImage:->
+      if Drafts.find().count() > 0
+        Drafts.find().fetch()[0]
     items:()->
       if Drafts.find().count() > 1
         for i in [1..(Drafts.find().count()-1)]

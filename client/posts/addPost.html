@@ -5,6 +5,7 @@
       <div id="publish" class="rightButton">发表</div>
     </div>
     <div class="theme">
+      <img class="mainImage" id="{{mainImage._id}}" src="{{mainImage.imgUrl}}"/>
       <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
       <textarea id="addontitle" name="textarea" class="addontitle" placeholder="副标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
       {{#each items}}
