@@ -1,0 +1,73 @@
+#list
+{
+    width: 100%;
+    overflow: hidden;
+}
+.item
+{
+    margin-bottom: 1.875em; /* 15px 30px */
+    -webkit-column-break-inside: avoid;
+    -moz-column-break-inside: avoid;
+    column-break-inside: avoid;
+    width: 100%;
+    overflow: hidden;
+}
+img.scale {
+  /* corrects small inline gap at bottom of containing div */
+	display: block; 
+  width: 100%; /* corrects obscure Firefox bug */
+	max-width: 100%;
+	/* just in case, to force correct aspect ratio */
+	height: auto !important;
+  display: block; /* corrects small inline gap at bottom of containing div */
+  width: 100% /* corrects obscure Firefox bug */
+  max-width: 100%;
+  /* just in case, to force correct aspect ratio */
+  height: auto !important;
+  /*width: auto\9; 
+  /* ie8+9 - use modernizr instead of this \9 hack */
+  /* lt ie8 */
+  -ms-interpolation-mode: bicubic;
+	/* optionally force a minimum size if img src size is known: */
+	/* min-height: 320px; /* max-height of .crop-height */
+	/* min-width: 480px; /* proportional to above */ }
+
+.flip {
+	-webkit-transform: rotate(180deg);
+	-moz-transform:    rotate(180deg);
+	-ms-transform:     rotate(180deg);
+	-o-transform:      rotate(180deg);
+	transform:         rotate(180deg);
+	/* needed? not sure */
+	zoom: 1; }
+
+img.flip {
+	/* actually, aligns left within .cropheight */
+  float: right;
+	/* clearfix after? */ }
+
+
+@media only screen and ( max-width: 640px )
+{
+    .item
+    {
+        margin-bottom: 15px;
+        height: 320px;
+    }
+}
+@media only screen and ( max-width: 320px )
+{
+    .item
+    {
+        margin-bottom: 5px;
+        height: 160px;
+    }
+}
+@media only screen and ( max-width: 240px )
+{
+    .item
+    {
+        margin-bottom: 5px;
+        height: 120px;
+    }
+}

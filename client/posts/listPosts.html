@@ -1,0 +1,13 @@
+<template name="listPosts">
+  <div id="wrapper">
+    <div id="list">
+      {{#each myPosts}}
+      <div class="item" id="{{_id}}">
+        <img class="scale" src="{{mainImage}}" draggable="false" >
+        <h3>{{title}}-- {{addontitle}}</h3> 
+      </div>
+      {{else}}
+      {{/each}}
+    </div>
+</div>
+</template>
