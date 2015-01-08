@@ -9,6 +9,7 @@ if Meteor.isClient
         Drafts.insert {owner: Meteor.userId(), imgUrl:result}
         $('.img').css('max-width',$(window).width())
     'click #cancle':->
+      #Demo socialshare window.plugins.socialsharing.share('Message, image and link', null, 'https://www.google.nl/images/srpr/logo4w.png', 'http://www.x-services.nl');
       #Router.go('/')
       Drafts
         .find {owner: Meteor.userId()}

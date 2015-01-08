@@ -1,8 +1,8 @@
 com.file-transfer.baidu.bcs@0.4.22
 com.synconset.imagepicker@1.0.4
-com.wordsbaking.cordova.wechat@https://github.com/solderzzc/cordova-plugin-wechat/tarball/811aa2390048aeb6a6210765817d50f1ad358c02
 nl.x-services.plugins.toast@2.0.2
 org.apache.cordova.device@0.2.12
 org.apache.cordova.device-motion@0.2.11
 org.apache.cordova.dialogs@0.2.10
 org.apache.cordova.file@1.3.1
+nl.x-services.plugins.socialsharing@https://github.com/yunhaia/SocialSharing-PhoneGap-Plugin/tarball/75d3661cc9bac4510b79a17b826981014c0bf96d

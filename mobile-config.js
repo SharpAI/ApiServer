@@ -37,6 +37,6 @@ App.launchScreens({
   'android_xhdpi_portrait': 'resource/splash.png'
 });
 */
-App.configurePlugin('com.wordsbaking.cordova.wechat', {
+App.configurePlugin('nl.x-services.plugins.socialsharing', {
     APP_ID: 'wxd930ea5d5a258f4f'
 });
