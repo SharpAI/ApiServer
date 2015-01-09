@@ -24,6 +24,9 @@ if Meteor.isClient
     Router.route '/registerFollow',()->
       this.render 'registerFollow'
       Session.set 'channel','registerFollow'
+    Router.route '/authOverlay',()->
+      this.render 'authOverlay'
+      Session.set 'channel','authOverlay'
     Router.route '/posts/:_id', {
         waitOn: ->
           Meteor.subscribe("publicPosts",this.params._id);

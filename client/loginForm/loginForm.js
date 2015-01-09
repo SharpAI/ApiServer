@@ -1,4 +1,7 @@
 Template.loginForm.events({
+    'click #btn_back': function () {
+      Router.go('/authOverlay');
+    },
 	'submit #login-form':function(e,t){
 		e.preventDefault();
 		var uname=t.find("#login-username").value;
