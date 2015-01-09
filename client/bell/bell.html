@@ -8,7 +8,11 @@
       {{#each eventFeeds}}
         {{#if selfPosted eventType}}
           <div class="contentList">
-            <img class="icon" src="{{currentUser.profile.icon}}" width='30' height='30'>
+            {{#if currentUser.profile.icon}}
+              <img class="icon" src="{{currentUser.profile.icon}}" width='30' height='30'>
+            {{else}}
+              <img class="noIcon" src="" width='30' height='30'>
+            {{/if}}
             <div id="{{postId}}" class="alarm">你发布了 {{postTitle}}</div>
             <div class="createAt">{{time_diff createdAt}}</div>
           </div>
