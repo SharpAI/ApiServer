@@ -174,9 +174,109 @@ if (Meteor.isCordova){
             maximumImagesCount: 6,
             width: 400,
             height: 400,
-            quality: 60
+            quality: 60,
+            storage: 'temporary'
           });
         }
         }
+
+    uploadFileWhenPublishInCordova = function(draftData){
+        var uploadedCount = 0;
+        //console.log("draftData="+JSON.stringify(draftData));
+        for (var i=0; i<draftData.length; i++) {
+            uploadToBCS(draftData[i].filename, draftData[i].URI, function(result){
+                uploadedCount++;
+                console.log("uploading("+uploadedCount+")...");
+                if (uploadedCount == draftData.length) {
+                    window.imagePicker.cleanupPersistentDirectory(function(result2){
+                        console.log('cleanupPersistentDirectory suc ');
+                    }, function (error){
+                        console.log('cleanupPersistentDirectory Error ' + error);
+                    });
+                }
+            });
+        }
+    }
+
+    selectMediaFromAblum = function(callback){
+      if(device.platform === 'Android' ){
+           pictureSource = navigator.camera.PictureSourceType;
+           destinationType = navigator.camera.DestinationType;
+//          var cameraOptions = {
+//            width: 400,
+//            height: 400,
+//            destinationType: destinationType.NATIVE_URI,
+//            sourceType: pictureSource.SAVEDPHOTOALBUM,
+//            quality: 60
+//          };
+          navigator.camera.getPicture(function(s){
+              console.info(s);
+              //判断是否图片
+              if(s.indexOf("file:///")==0){
+                  if(s.lastIndexOf('.')<=0){
+                      PUB.toast('您选取的文件不是图片！');
+                      return;
+                  }else{
+                      var ext = s.substring(s.lastIndexOf('.')).toUpperCase();
+                      if(!(ext.indexOf('.PNG')==0||ext.indexOf('.JPG')==0||ext.indexOf('.JPEG')==0||ext.indexOf('.GIF')==0)){
+                        PUB.toast('您选取的文件不是图片！');
+                        return;
+                      }
+                  }
+              }
+              var timestamp = new Date().getTime();
+              var filename = Meteor.userId()+'_'+timestamp+'.jpg';
+              console.log('File name ' + filename);
+              //uploadToS3(filename,results[i],callback);
+              uploadToBCS(filename,s,callback);
+          }, function(s){
+              console.info(s);
+          }, {
+            quality: 60,
+            targetWidth: 400,
+            targetHeight: 400,
+            destinationType: destinationType.NATIVE_URI,
+            sourceType: pictureSource.SAVEDPHOTOALBUM
+          });
+          
+      }else{
+        window.imagePicker.getPictures(
+          function(results) {
+            if(results == undefined)
+              return;
+            var length = 0;
+            try{
+              length=results.length;
+            }
+            catch (error){
+              length=results.length;
+            }
+            if (length == 0)
+              return;
+            for (var i = 0; i < length; i++) {
+              var timestamp = new Date().getTime();
+              var originalFilename = results[i].replace(/^.*[\\\/]/, '');
+              var filename = Meteor.userId()+'_'+timestamp+ '_' + originalFilename;
+              console.log('File name ' + filename);
+              //uploadToS3(filename,results[i],callback);
+              //uploadToBCS(filename,results[i],callback);
+              var params = {filename:filename, URI:results[i], smallImage:'cdvfile://localhost/persistent/drafts/' + originalFilename}
+              callback(params);
+            }
+          }, function (error){
+              console.log('Pick Image Error ' + error);
+              if(callback){
+                  callback(null);
+              }
+          }, {
+            maximumImagesCount: 6,
+            width: 400,
+            height: 400,
+            quality: 100,
+            storage: 'persistent'
+          });
+        }
+      }
+
         uploadFile = uploadFileInCordova;
     }

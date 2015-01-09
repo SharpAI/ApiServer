@@ -16,9 +16,12 @@ if Meteor.isClient
           Drafts.find().fetch()[i]
   Template.addPost.events
     'click #addmore':->
-      uploadFile (result)->
-        console.log 'upload success: url is ' + result
-        Drafts.insert {owner: Meteor.userId(), imgUrl:result}
+      #uploadFile (result)->
+      selectMediaFromAblum (result)->
+        #console.log 'upload success: url is ' + result
+        #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
+        console.log 'upload success: url is ' + result.smallImage
+        Drafts.insert {owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI}
     'click #cancle':->
       #Router.go('/')
       Drafts
@@ -37,6 +40,7 @@ if Meteor.isClient
         draftData = Drafts.find().fetch()
         postId = draftData[0]._id;
 #        console.log "#####" + pub
+        uploadFileWhenPublishInCordova(draftData)
         for i in [0..(draftData.length-1)]
 #          console.log i
           if i is 0
