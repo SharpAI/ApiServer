@@ -14,4 +14,4 @@ if Meteor.isClient
         url = "http://hotshare.meteor.com"+url;
 
 
-      window.plugins.socialsharing.share(this.title, null, this.mainImage, url);
+      window.plugins.socialsharing.share(this.title, null, null, url);
