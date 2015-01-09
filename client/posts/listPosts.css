@@ -79,5 +79,5 @@ img.flip {
     }
 }
 #wrapper .mainImage{margin-bottom: 20px;background-repeat: no-repeat;background-size: 100% auto;background-position: center center;}
-#wrapper .item .title{height: initial !important; word-break: break-all;white-space: pre-line;position: absolute;left: 5%;width: 90%;clear: both; display: block; margin:5% auto;font-size: 150%;font-weight:bold;background:none;}
-#wrapper .item .addontitle{height: initial !important;word-break: break-all;white-space: pre-line;position: absolute;left: 5%;width: 90%;clear: both; display: block; margin:5% auto;font-size: 150%;font-weight:bold;background:none;}
+#wrapper .item .title{height: initial !important; word-break: break-all;white-space: pre-line;position: absolute;left: 5%;width: 90%;clear: both; display: block; margin:5% auto;font-size: 60px;font-weight:bold;background:none;}
+#wrapper .item .addontitle{height: initial !important;word-break: break-all;white-space: pre-line;position: absolute;left: 5%;width: 90%;clear: both; display: block; margin:5% auto;font-size: 40px;font-weight:bold;background:none;}

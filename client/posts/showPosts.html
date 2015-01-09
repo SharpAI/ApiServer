@@ -4,9 +4,10 @@
         <div id="socialShare" class="rightButton">分享</div>
     </div>
     <div class="theme">
-      <div class="title" style="height: initial;">{{title}}</div>
-      <div class="addontitle" style="height: initial;">{{addontitle}}</div>
-      <div class="mainImage" id="{{_id}}" style="background-image:url({{mainImage}})"></div>
+      <div class="mainImage" id="{{_id}}" style="background-image:url({{mainImage}})">
+        <div class="title" style="height: initial;">{{title}}</div>
+        <div class="addontitle" style="height: initial;">{{addontitle}}</div>
+      </div>
       <div class="themeList">
         {{#if mainText}}
           <div class="text" style="height: initial;">{{mainText}}</div>
