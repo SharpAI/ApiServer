@@ -8,13 +8,13 @@
         <div>请添加图文</div>
       {{/if}}
     </div>
-    <div class="theme">
+    <div class="content">
 <!--      <img class="mainImage" id="{{mainImage._id}}" src="{{mainImage.imgUrl}}"/>-->
       {{#if mainImage}}
         <div class="mainImage" id="{{mainImage._id}}" style="background-image:url({{mainImage.imgUrl}})"></div>
         <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
         <textarea id="addontitle" name="textarea" class="addontitle" placeholder="副标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-        <div class="themeList">
+        <div class="contentList">
           <textarea id="{{mainImage._id}}text" name="textarea" class="textarea" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
           {{#each items}}
             <img class="img" id="{{_id}}" src="{{imgUrl}}"/>
