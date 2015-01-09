@@ -1,9 +1,19 @@
 <template name="bell">
-  <div>This is bell page</div>
-  {{#each eventFeeds}}
-    {{#if selfPosted eventType}}
-      <div>你发布了 {{postTitle}}</div>
-    {{/if}}
-  {{/each}}
+  <div class="bell">
+    <div class="head">
+      <strong>通知</strong>
+      <div id="follow" class="leftButton"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
+    </div>
+    <div class="content">
+      {{#each eventFeeds}}
+        {{#if selfPosted eventType}}
+          <div id="{{postId}}" class="alarm">你发布了 {{postTitle}}</div>
+          <div class="line">
+            <span></span>
+          </div>
+        {{/if}}
+      {{/each}}
+    </div>
+  </div>
   {{> footer}}
 </template>
