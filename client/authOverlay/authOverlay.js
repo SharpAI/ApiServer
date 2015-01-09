@@ -8,8 +8,8 @@ if (Meteor.isClient) {
     },
     'click #weibo': function () {
       Meteor.loginWithWeibo({
-        //loginStyle: 'popup'
-        loginStyle: 'redirect'
+        loginStyle: 'popup'
+        //loginStyle: 'redirect'
         //loginStyle: 'redirect'  you can use redirect for mobile web app
       }, function () {
         console.log('in call back', arguments);
@@ -17,8 +17,17 @@ if (Meteor.isClient) {
     },
     'click #wechat': function () {
       Meteor.loginWithWechat({
-        //loginStyle: 'popup'
-        loginStyle: 'redirect'
+        loginStyle: 'popup'
+        //loginStyle: 'redirect'
+        //loginStyle: 'redirect'  you can use redirect for mobile web app
+      }, function () {
+        console.log('in call back', arguments);
+      });
+    },
+    'click #qq': function () {
+      Meteor.loginWithQQ({
+        loginStyle: 'popup'
+        //loginStyle: 'redirect'
         //loginStyle: 'redirect'  you can use redirect for mobile web app
       }, function () {
         console.log('in call back', arguments);
