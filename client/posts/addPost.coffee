@@ -44,11 +44,11 @@ if Meteor.isClient
         for i in [0..(draftData.length-1)]
 #          console.log i
           if i is 0
-            mainImage = draftData[i].imgUrl
+            mainImage = 'http://bcs.duapp.com/travelers-km/'+draftData[i].filename
             mainText = $("#"+draftData[i]._id+"text").val()
           else
             pub.push {
-              imgUrl:draftData[i].imgUrl,
+              imgUrl:'http://bcs.duapp.com/travelers-km/'+draftData[i].filename,
               text: $("#"+draftData[i]._id+"text").val(),
             }
 #        console.log "#####end" + pub
