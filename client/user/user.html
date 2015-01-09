@@ -1,0 +1,28 @@
+<template name="user">
+  <div class="user">
+    <div class="head">
+      <div>个人资料</div>
+      <div class="leftButton">{{> loginButtons }} </div>
+    </div>
+    <div class="top">
+      <div>
+        <img src="{{currentUser.profile.picture}}" width='60' height='60'/>
+      </div>
+      <span class="userName">{{currentUser.profile.fullname}}</span>
+    </div>
+    <div class="line">
+      <span></span>
+    </div>
+    <div class="follow">
+      <div class="follower">名关注者</div>
+      <div class="vertical">
+        <span></span>
+      </div>
+      <div class="following">正在关注人</div>
+    </div>
+    <div class="line">
+      <span></span>
+    </div>
+  </div>
+  {{> footer}}
+</template>
