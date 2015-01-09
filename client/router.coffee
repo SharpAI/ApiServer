@@ -32,5 +32,6 @@ if Meteor.isClient
           Meteor.subscribe("publicPosts",this.params._id);
         action: ->
           post = Posts.findOne({_id: this.params._id})
+          Session.set('postContent',post);
           this.render 'showPosts', {data: post}
       }
