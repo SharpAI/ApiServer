@@ -15,3 +15,12 @@ if Meteor.isClient
 
 
       window.plugins.socialsharing.share(this.title, null, null, url);
+    'click .img': (e)->
+      images = []
+      swipedata = []
+      for image in Session.get('postContent').pub
+        if image.imgUrl
+          swipedata.push
+            href: image.imgUrl
+            title: image.text
+      $.swipebox swipedata
