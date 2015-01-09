@@ -14,7 +14,7 @@
 				}
                 else
                 {
-                    Router.go('/');
+                    Router.go('/registerFollow');
                 }
 			});
 		}

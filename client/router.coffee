@@ -21,6 +21,9 @@ if Meteor.isClient
     Router.route '/signupForm',()->
       this.render 'signupForm'
       Session.set 'channel','signupForm'
+    Router.route '/registerFollow',()->
+      this.render 'registerFollow'
+      Session.set 'channel','registerFollow'
     Router.route '/posts/:_id', {
         waitOn: ->
           Meteor.subscribe("publicPosts",this.params._id);
