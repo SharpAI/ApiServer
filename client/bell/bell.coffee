@@ -4,3 +4,5 @@ if Meteor.isClient
       Feeds.find({owner:Meteor.userId()})
     selfPosted:(eventType)->
       eventType is 'SelfPosted'
+    time_diff: (created)->
+      GetTime0(new Date() - created)
