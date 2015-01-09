@@ -1,7 +1,6 @@
 if Meteor.isClient
   Template.bell.helpers
     eventFeeds:->
-      [{eventType:'SelfPost',postId:'ShwaHK5SdE85g9SKS',postTitle:'Hi'}
-      {eventType:'SelfPost',postId:'ShwaHK5SdE85g9SKS',postTitle:'Hi'}]
+      Feeds.find({owner:Meteor.userId()})
     selfPosted:(eventType)->
-      eventType is 'SelfPost'
+      eventType is 'SelfPosted'
