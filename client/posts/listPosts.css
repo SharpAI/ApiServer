@@ -1,7 +1,7 @@
 #wrapper
 {
-    margin-top: 45px;
-    margin-bottom: 50px;
+    margin-top: 15px;
+    margin-bottom: 20px;
 }
 #list
 {
@@ -19,41 +19,6 @@
     width: 100%;
     overflow: hidden;
 }
-img.scale {
-  /* corrects small inline gap at bottom of containing div */
-	display: block; 
-  width: 100%; /* corrects obscure Firefox bug */
-	max-width: 100%;
-	/* just in case, to force correct aspect ratio */
-	height: auto !important;
-  display: block; /* corrects small inline gap at bottom of containing div */
-  width: 100% /* corrects obscure Firefox bug */
-  max-width: 100%;
-  /* just in case, to force correct aspect ratio */
-  height: auto !important;
-  /*width: auto\9; 
-  /* ie8+9 - use modernizr instead of this \9 hack */
-  /* lt ie8 */
-  -ms-interpolation-mode: bicubic;
-	/* optionally force a minimum size if img src size is known: */
-	/* min-height: 320px; /* max-height of .crop-height */
-	/* min-width: 480px; /* proportional to above */ }
-
-.flip {
-	-webkit-transform: rotate(180deg);
-	-moz-transform:    rotate(180deg);
-	-ms-transform:     rotate(180deg);
-	-o-transform:      rotate(180deg);
-	transform:         rotate(180deg);
-	/* needed? not sure */
-	zoom: 1; }
-
-img.flip {
-	/* actually, aligns left within .cropheight */
-  float: right;
-	/* clearfix after? */ }
-
-
 @media only screen and ( max-width: 640px )
 {
     .item
@@ -81,14 +46,20 @@ img.flip {
 #wrapper .mainImage{margin-bottom: 20px;background-repeat: no-repeat;background-size: 100% auto;background-position: center center;}
 #wrapper .item > header{
   position: absolute;
-  bottom: 0;
+  bottom: 2;
   left: 0;
   width: 100%;
-  padding: 20px 10px;
+  padding: 2% 1%;
 }
 #wrapper .item > header > h1{
+  margin: 0;
+  text-shadow: 0 1px 0 black;
+  color: white;
   font-weight:bold
 }
 #wrapper .item > header > h3{
+  margin: 0;
+  text-shadow: 0 1px 0 black;
+  color: white;
   font-weight:bold
 }
