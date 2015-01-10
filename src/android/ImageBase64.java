@@ -98,39 +98,14 @@ public class ImageBase64 extends CordovaPlugin {
     return null;
   }
   
-  	/**
-	 * bitmap转为base64
-	 * @param bitmap
-	 * @return
-	 */
-	private String bitmapToBase64(Bitmap bitmap) {
-      String result = null;
-      ByteArrayOutputStream baos = null;
-      try {
-        if (bitmap != null) {
-          baos = new ByteArrayOutputStream();
-          bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-
-          baos.flush();
-          baos.close();
-
-          byte[] bitmapBytes = baos.toByteArray();
-          result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
-        }
-      } catch (IOException e) {
-        e.printStackTrace();
-      } finally {
-        try {
-          if (baos != null) {
-            baos.flush();
-            baos.close();
-          }
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-      return result;
-	}
+  private String bitmapToBase64(Bitmap bitmap) {
+  	String string = null;  
+        ByteArrayOutputStream bStream = new ByteArrayOutputStream();  
+        bitmap.compress(CompressFormat.PNG, 100, bStream);  
+        byte[] bytes = bStream.toByteArray();  
+        string = Base64.encodeToString(bytes, Base64.DEFAULT);  
+        return string;  
+  }
 
   /**
    * Figure out what ratio we can load our image into memory at while still being bigger than
