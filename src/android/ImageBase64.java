@@ -1,4 +1,4 @@
-package info.protonet.imageresizer;
+package com.moya.imagebase64;
 
 import java.io.FileNotFoundException;
 import java.io.BufferedInputStream;
