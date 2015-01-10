@@ -6,6 +6,9 @@ if Meteor.isClient
     $('.addontitle').css('top',$(window).height()*0.35)
   Template.addPost.helpers
     mainImage:->
+      Meteor.setTimeout ->
+        $('.mainImage').css('height',$(window).height()*0.55)
+        0
       if Drafts.find().count() > 0
         Drafts.find().fetch()[0]
       else
