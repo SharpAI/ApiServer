@@ -2,6 +2,7 @@ package info.protonet.imageresizer;
 
 import java.io.FileNotFoundException;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.FileOutputStream;
