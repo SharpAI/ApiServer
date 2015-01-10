@@ -3,6 +3,34 @@
 <br>
 <center><h6>及时了解对方的动态</h6></center>
 <hr>
+{{> follow_user}}
 <hr>
+<div class="container navbar navbar-default navbar-fixed-bottom">
 <center><button id="continue" class="btn btn-primary">继续</button></center>
+</div>
+</template>
+<!--用户列表-->
+<template name="follow_user">
+  <div class="follow_user">
+    <div id="new_follow">
+        <div id="user">
+            {{#each users}}
+                {{> follow_user_list}}
+            {{/each}}
+        </div>
+    </div>
+  </div>
+</template>
+<template name="follow_user_list">
+    <div class="layer" id="{{_id}}">
+        <div class="user_head">
+            {{#if is_undefined profile.picture}}
+                <img class="user_pic" src="/userPicture.png" />
+            {{else}}
+                <img class="user_pic" src="{{profile.picture}}" />
+            {{/if}}
+            <span class="name">{{show_username this}}&nbsp;<i class="fa fa-plus-circle"></i></span>
+            <span>{{profile.signature}}</span>
+        </div>
+    </div>
 </template>

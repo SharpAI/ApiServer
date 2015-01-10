@@ -26,6 +26,8 @@ if (Meteor.isServer) {
       appId: '123490452',
       secret: 'f69795795d96fe8518a4f0bc14d8bf3b'
     });
-
+    Meteor.publish('allUsers', function() {
+      return Meteor.users.find();
+    });
   });
 }
