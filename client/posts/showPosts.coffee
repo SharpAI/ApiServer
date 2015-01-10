@@ -12,15 +12,24 @@ if Meteor.isClient
         url = url.replace("meteor.local", "hotshare.meteor.com");
       else
         url = "http://hotshare.meteor.com"+url;
-
-
       window.plugins.socialsharing.share(this.title, null, null, url);
     'click .img': (e)->
       images = []
       swipedata = []
+      i = 0
+      selected = 0
       for image in Session.get('postContent').pub
+        if image.imgUrl is this.imgUrl
+          selected = i
         if image.imgUrl
           swipedata.push
             href: image.imgUrl
             title: image.text
-      $.swipebox swipedata
+        i++
+      $.swipebox swipedata,{
+        initialIndexOnArray: selected
+        hideCloseButtonOnMobile : true
+      }
+      $(document.body).on('click','#swipebox-slider .current', ->
+        $('#swipebox-close').trigger('click')
+      )
