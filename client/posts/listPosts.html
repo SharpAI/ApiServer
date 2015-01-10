@@ -4,8 +4,14 @@
       {{#each myPosts}}
       <div class="item mainImage" id="{{_id}}" style="background-image:url({{mainImage}})">
 <!--        <img class="scale" src="{{mainImage}}" draggable="false" >-->
-        <div class="title">{{title}}</div>
-        <div class="addontitle">{{addontitle}}</div>
+        <header>
+          <h1>
+            {{title}}
+          </h1>
+          <h3>
+            {{addontitle}}
+          </h3>
+        </header>
       </div>
       {{else}}
       {{/each}}
