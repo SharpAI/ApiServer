@@ -1,14 +1,29 @@
 if Meteor.isClient
   Template.addPost.rendered=->
-    $('.img').css('max-width',$(window).width())
+    #$('.img').css('max-width',$(window).width())
     $('.mainImage').css('height',$(window).height()*0.55)
     $('.title').css('top',$(window).height()*0.25)
     $('.addontitle').css('top',$(window).height()*0.35)
+    setTimeout ->
+        $container = $('.contentList').packery({
+          itemSelector: '.resortitem'
+        })
+        #$container.packery('reloadItems')
+        #init
+        $container.find('.resortitem').each( ( i, itemElem )->
+          # make element draggable with Draggabilly
+          draggie = new Draggabilly( itemElem );
+          # bind Draggabilly events to Packery
+          $container.packery( 'bindDraggabillyEvents', draggie );
+        );
+        $container.packery('bindUIDraggableEvents',draggie);
+        alert 'Render callback called.'
+      ,500
   Template.addPost.helpers
     mainImage:->
-      Meteor.setTimeout ->
-        $('.mainImage').css('height',$(window).height()*0.55)
-        0
+      #Meteor.setTimeout ->
+      #  $('.mainImage').css('height',$(window).height()*0.55)
+      #  0
       if Drafts.find().count() > 0
         Drafts.find().fetch()[0]
       else

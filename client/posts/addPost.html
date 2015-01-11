@@ -15,10 +15,12 @@
         <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
         <textarea id="addontitle" name="textarea" class="addontitle" placeholder="副标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
         <div class="contentList">
-          <textarea id="{{mainImage._id}}text" name="textarea" class="textarea" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
+          <textarea id="{{mainImage._id}}text" name="textarea" class="textarea resortitem" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
           {{#each items}}
-            <img class="img" id="{{_id}}" src="{{imgUrl}}"/>
-            <textarea id="{{_id}}text" name="textarea" class="textarea" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
+            <div class='resortitem' style='width:200px;height:240px'>
+              <img class="img" id="{{_id}}" src="{{imgUrl}}" style='width:200px;max-height:240px'/>
+            </div>
+            <textarea id="{{_id}}text" name="textarea" class="textarea resortitem"></textarea>
             <!--<i class="fa fa-times remove" id="{{_id}}"></i>-->
           {{/each}}
         </div>
