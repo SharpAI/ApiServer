@@ -18,38 +18,32 @@ if Meteor.isClient
 
     test = $("#display");
     `gridster = test.gridster({serialize_params: function ($w, wgd) {
-return {
-id: wgd.el[0].id,
-col: wgd.col,
-row: wgd.row,
-size_x: wgd.size_x,
-size_y: wgd.size_y
-};
-},
-draggable: {
-stop: function () {
-  var json = JSON.stringify(gridster.serialize());
-  console.log("draggable draftLayout "+ json);
-  //Session.set("draftLayout", json);
-  var drafts = Drafts.find({owner: Meteor.userId()}).fetch();
-  for (var i = 0; i < drafts.length; i++){
-      Drafts.update({_id: drafts[i]._id}, {$set: {layout: json}});
-  }
-
-
-}
-}, widget_base_dimensions: [150, 150],widget_margins: [5, 5], min_cols: 2, resize: {enabled: true, stop: function () {
-  var json = JSON.stringify(gridster.serialize());
-  console.log("resize draftLayout "+ json);
-  //Session.set("draftLayout", json);
-  var drafts = Drafts.find({owner: Meteor.userId()}).fetch();
-  for (var i = 0; i < drafts.length; i++){
-      Drafts.update({_id: drafts[i]._id}, {$set: {layout: json}});
-  }
-}
-}}).data('gridster');`
+      return {
+        id: wgd.el[0].id,
+        col: wgd.col,
+        row: wgd.row,
+        size_x: wgd.size_x,
+        size_y: wgd.size_y
+      };
+    },
+    draggable: {
+      stop: function () {
+        var json = JSON.stringify(gridster.serialize());
+        console.log("draggable draftLayout "+ json);
+        var drafts = Drafts.find({owner: Meteor.userId()}).fetch();
+        for (var i = 0; i < drafts.length; i++){
+          Drafts.update({_id: drafts[i]._id}, {$set: {layout: json}});
+        }
+      }
+    }, widget_base_dimensions: [120, 40],widget_margins: [5, 5], min_cols: 2, resize: {enabled: true, stop: function () {
+        var json = JSON.stringify(gridster.serialize());
+        console.log("resize draftLayout "+ json);
+        var drafts = Drafts.find({owner: Meteor.userId()}).fetch();
+        for (var i = 0; i < drafts.length; i++){
+          Drafts.update({_id: drafts[i]._id}, {$set: {layout: json}});
+        }
+    }}}).data('gridster');`
     return
-
 
   Template.addPost.helpers
     mainImage:->
