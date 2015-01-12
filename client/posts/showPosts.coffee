@@ -4,6 +4,7 @@ if Meteor.isClient
     $('.mainImage').css('height',$(window).height()*0.55)
     $('.title').css('top',$(window).height()*0.25)
     $('.addontitle').css('top',$(window).height()*0.35)
+    window.title = this.title + ':' + this.addontitle
   Template.showPosts.events
     'click #socialShare': (event)->
       current = Router.current();
