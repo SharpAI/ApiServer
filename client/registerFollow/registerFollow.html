@@ -14,7 +14,7 @@
   <div class="follow_user">
     <div id="new_follow">
         <div id="user">
-            {{#each users}}
+            {{#each follows}}
                 {{> follow_user_list}}
             {{/each}}
         </div>
@@ -24,13 +24,16 @@
 <template name="follow_user_list">
     <div class="layer" id="{{_id}}">
         <div class="user_head">
-            {{#if is_undefined profile.picture}}
-                <img class="user_pic" src="/userPicture.png" />
-            {{else}}
-                <img class="user_pic" src="{{profile.picture}}" />
-            {{/if}}
-            <span class="name">{{show_username this}}&nbsp;<i class="fa fa-plus-circle"></i></span>
-            <span>{{profile.signature}}</span>
+            <img class="user_pic" src="/follows/{{icon}}" width="100" />
+            <span class="name">{{username}}&nbsp;
+            <i id="add" class="rightButton fa fa-plus-circle"></i></span>
+        </div>
+        <div><span>{{desc}}</span></div>
+        <div  align="center">
+            <img src="/follows/{{share1}}" width="32%" />
+            <img src="/follows/{{share2}}" width="32%" />
+            <img src="/follows/{{share3}}" width="32%" />
         </div>
     </div>
+    <hr>
 </template>
