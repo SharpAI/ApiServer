@@ -58,7 +58,7 @@ public class ImageBase64 extends CordovaPlugin {
         Bitmap bitmap = loadScaledBitmapFromUri(uri, width, height);
         String imageBase64 = bitmapToBase64(bitmap);
 
-        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, imageBase64));
+        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, uri, imageBase64));
         return true;
       } else {
         callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR));
