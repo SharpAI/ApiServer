@@ -12,7 +12,7 @@ if Meteor.isClient
         url = url.replace("meteor.local", "hotshare.meteor.com");
       else
         url = "http://hotshare.meteor.com"+url;
-      window.plugins.socialsharing.share(this.title, null, null, url);
+      window.plugins.socialsharing.share(this.title+':'+this.addontitle+'(来自 故事贴)', null, null, url);
     'click .img': (e)->
       images = []
       swipedata = []
