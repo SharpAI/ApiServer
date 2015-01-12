@@ -13,3 +13,4 @@ if Meteor.isClient
         return true
     display_footer:()->
       Meteor.isCordova
+

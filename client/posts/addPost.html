@@ -8,8 +8,8 @@
         <div>请添加图文</div>
       {{/if}}
     </div>
-    <div class="content">
-<!--      <img class="mainImage" id="{{mainImage._id}}" src="{{mainImage.imgUrl}}"/>-->
+
+      <!--    <div class="content">
       {{#if mainImage}}
         <div class="mainImage" id="{{mainImage._id}}" style="background-image:url({{mainImage.imgUrl}})"></div>
         <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
@@ -21,13 +21,40 @@
               <img class="img" id="{{_id}}" src="{{imgUrl}}" style='width:200px;max-height:240px'/>
             </div>
             <textarea id="{{_id}}text" name="textarea" class="textarea resortitem"></textarea>
-            <!--<i class="fa fa-times remove" id="{{_id}}"></i>-->
           {{/each}}
-        </div>
       {{/if}}
       <br><br><br><br>
       <i class="fa fa-plus-square-o" id="addmore"></i>
+      </div>
+{{/each}}  -->
+
+
+      <div class="content">
+          <!--      <img class="mainImage" id="{{mainImage._id}}" src="{{mainImage.imgUrl}}"/>-->
+          {{#if mainImage}}
+          <div class="mainImage" id="{{mainImage._id}}" style="background-image:url({{mainImage.imgUrl}})"></div>
+          <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
+          <textarea id="addontitle" name="textarea" class="addontitle" placeholder="副标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
+          {{/if}}
+          <br><br><br><br>
+          <i class="fa fa-plus-square-o" id="addmore"></i>
+      </div>
+
+    <div class="contentALT">
+        <div class="gridster">
+            <ul id="display">
+                {{#each items}}
+                <li id="{{_id}}" data-row="1" data-col="2" data-sizex="2" data-sizey="2">
+                    <div style="background-image: url({{imgUrl}}); background-repeat: no-repeat;background-size: cover; background-position: center; height: 100%;">
+                    </div>
+                </li>
+                {{/each}}
+            </ul>
+
+        </div>
+        <br><br><br><br>
     </div>
+
   </div>
   {{> footer}}
 </template>
