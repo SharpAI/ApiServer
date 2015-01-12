@@ -72,7 +72,7 @@ stop: function () {
         #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
         console.log 'upload success: url is ' + result.smallImage
         Drafts.insert {owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
-        Blaze.render Template.addPost
+
       return
 
     'click #cancle':->
@@ -88,7 +88,7 @@ stop: function () {
         false
       else
         #Session.set("draftLayout", '');
-        #layout = JSON.stringify(gridster.serialize())
+        layout = JSON.stringify(gridster.serialize())
         #console.log("layout serialize "+ layout)
         pub=[]
         title = $("#title").val()

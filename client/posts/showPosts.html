@@ -12,14 +12,21 @@
         {{#if mainText}}
           <div class="text" style="height: initial;">{{mainText}}</div>
         {{/if}}
-        {{#each pub}}
-            <img class="img" id="{{_id}}" src="{{imgUrl}}"/>
-            {{#if text}}
-              <div class="text" style="height: initial;">{{text}}</div>
-            {{/if}}
-        {{/each}}
       </div>
     </div>
+
+      <div class="gridster">
+          <ul id="test">
+              {{#each pub}}
+              <li id="{{_id}}" data-row="1" data-col="2" data-sizex="2" data-sizey="1">
+                  <div style="background-image: url({{imgUrl}}); background-repeat: no-repeat;background-size: cover; background-position: center; height: 100%;">
+                  </div>
+              </li>
+              {{/each}}
+          </ul>
+      </div>
+
+
   </div>
   {{> footer}}
 </template>
