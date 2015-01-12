@@ -9,6 +9,11 @@
           <i class="fa fa-search"></i>
           <label><input type="text" placeholder="搜索人和#话题"></label>
       </form>
+      <div id="themeList">
+      {{#each theme}}
+        <div class="theme" id="{{_id}}" style="background-image:url({{imgUrl}})"><h3>{{title}}</h3></div>
+      {{/each}}
+      </div>
     </div>
   </div>
   {{> footer}}
