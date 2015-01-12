@@ -1,8 +1,8 @@
 var ImageBase64 = function() {};
 
 ImageBase64.prototype.base64 = function(options, success, fail) {
-  cordova.exec(function(uri, base64) {
-    success(uri, base64);
+  cordova.exec(function(result) {
+    success(result);
   }, function() {
     fail();
   }, "ImageBase64", "base64", [options]);
