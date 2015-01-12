@@ -53,12 +53,16 @@ public class ImageBase64 extends CordovaPlugin {
         quality = jsonObject.getInt("quality");
         width = jsonObject.getInt("width");
         height = jsonObject.getInt("height");
-
+        
         // load the image from uri
         Bitmap bitmap = loadScaledBitmapFromUri(uri, width, height);
         String imageBase64 = bitmapToBase64(bitmap);
+        
+        JSONObject result = new JSONObject();
+        result.put("imageURI", uri);
+        result.put("base64", imageBase64);
 
-        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, uri, imageBase64));
+        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result));
         return true;
       } else {
         callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR));
