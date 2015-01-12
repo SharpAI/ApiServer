@@ -10,10 +10,16 @@
           <label><input type="text" placeholder="搜索人和#话题"></label>
       </form>
       <div id="themeList">
-      {{#each theme}}
+        {{#each theme}}
         <div class="theme" id="{{_id}}" style="background-image:url({{imgUrl}})"><h3>{{title}}</h3></div>
-      {{/each}}
+        {{/each}}
       </div>
+      <div id="topic">流行话题</div>
+      <ul id="topicList">
+        {{#each topic}}
+        <li class="topic" id="{{_id}}">#{{text}}</li>
+        {{/each}}
+      </ul>
     </div>
   </div>
   {{> footer}}
