@@ -9,26 +9,6 @@
       {{/if}}
     </div>
 
-      <!--    <div class="content">
-      {{#if mainImage}}
-        <div class="mainImage" id="{{mainImage._id}}" style="background-image:url({{mainImage.imgUrl}})"></div>
-        <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-        <textarea id="addontitle" name="textarea" class="addontitle" placeholder="副标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-        <div class="contentList">
-          <textarea id="{{mainImage._id}}text" name="textarea" class="textarea resortitem" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-          {{#each items}}
-            <div class='resortitem' style='width:200px;height:240px'>
-              <img class="img" id="{{_id}}" src="{{imgUrl}}" style='width:200px;max-height:240px'/>
-            </div>
-            <textarea id="{{_id}}text" name="textarea" class="textarea resortitem"></textarea>
-          {{/each}}
-      {{/if}}
-      <br><br><br><br>
-      <i class="fa fa-plus-square-o" id="addmore"></i>
-      </div>
-{{/each}}  -->
-
-
       <div class="content">
         {{#if mainImage}}
           <div class="item mainImage" id="{{mainImage._id}}" style="background-image:url({{mainImage.imgUrl}})">
@@ -41,8 +21,16 @@
         <div class="gridster">
             <ul id="display">
                 {{#each items}}
-                <li id="{{_id}}" data-row="1" data-col="2" data-sizex="2" data-sizey="3">
+                <li id="{{_id}}" data-row="1" data-col="3" data-sizex="3" data-sizey="3">
                     <div style="background-image: url({{imgUrl}}); background-repeat: no-repeat;background-size: cover; background-position: center; height: 100%;">
+                    </div>
+                </li>
+                {{/each}}
+
+                {{#each texts}}
+                <li id="{{_id}}TextLi" data-row="1" data-col="3" data-sizex="3" data-sizey="1">
+                    <div class="textdiv">
+                        <textarea name="textarea">{{text}}</textarea>
                     </div>
                 </li>
                 {{/each}}
@@ -50,6 +38,9 @@
         </div>
         <br><br><br><br>
         <i class="fa fa-plus-square-o" id="addmore"></i>
+        {{#if mainImage}}
+            <i class="fa fa-pencil-square-o" id="addText"></i>
+        {{/if}}
       </div>
   </div>
   {{> footer}}

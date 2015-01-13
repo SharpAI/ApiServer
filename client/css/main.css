@@ -11,13 +11,6 @@ ul {
 /* demo
 /*/
 
-body {
-    font-size: 16px;
-    font-family: 'Garamond';
-    color: 'black';
-    /*margin: 30px 40px;*/
-}
-
 .controls {
     margin-bottom: 20px;
 }
@@ -50,7 +43,7 @@ body {
 }
 
 .gridster .gs-w {
-    background: #DDD;
+    background: #black;
     cursor: pointer;
 }
 

@@ -26,8 +26,8 @@ if Meteor.isClient
           console.log 'Added node id is ' + node.id
     }
     #draftLayout = Session.get("draftLayout")
-    if Drafts.find().count() >= 1
-      draftData = Drafts.find().fetch()
+    if Drafts.find({type:'image'}).count() >= 1
+      draftData = Drafts.find({type:'image'}).fetch()
       draftLayout = draftData[0].layout;
       if draftLayout != '' and draftLayout != undefined
         json = jQuery.parseJSON(draftLayout);
@@ -48,15 +48,15 @@ if Meteor.isClient
       stop: function () {
         var json = JSON.stringify(gridster.serialize());
         console.log("draggable draftLayout "+ json);
-        var drafts = Drafts.find({owner: Meteor.userId()}).fetch();
+        var drafts = Drafts.find({type:'image', owner: Meteor.userId()}).fetch();
         for (var i = 0; i < drafts.length; i++){
           Drafts.update({_id: drafts[i]._id}, {$set: {layout: json}});
         }
       }
-    }, widget_base_dimensions: [120, 40],widget_margins: [5, 5], min_cols: 2, resize: {enabled: true, stop: function () {
+    }, widget_base_dimensions: [40, 40],widget_margins: [5, 5], min_cols: 3, resize: {enabled: true, stop: function () {
         var json = JSON.stringify(gridster.serialize());
         console.log("resize draftLayout "+ json);
-        var drafts = Drafts.find({owner: Meteor.userId()}).fetch();
+        var drafts = Drafts.find({type:'image', owner: Meteor.userId()}).fetch();
         for (var i = 0; i < drafts.length; i++){
           Drafts.update({_id: drafts[i]._id}, {$set: {layout: json}});
         }
@@ -68,14 +68,19 @@ if Meteor.isClient
       #Meteor.setTimeout ->
       #  $('.mainImage').css('height',$(window).height()*0.55)
       #  0
-      if Drafts.find().count() > 0
-        Drafts.find().fetch()[0]
+      if Drafts.find({type:'image'}).count() > 0
+        Drafts.find({type:'image'}).fetch()[0]
       else
         null
     items:()->
-      if Drafts.find().count() > 1
-        for i in [1..(Drafts.find().count()-1)]
-          Drafts.find().fetch()[i]
+      if Drafts.find({type:'image'}).count() > 1
+        for i in [1..(Drafts.find({type:'image'}).count()-1)]
+          Drafts.find({type:'image'}).fetch()[i]
+    texts:()->
+      if Drafts.find({type:'text'}).count() > 1
+        for i in [1..(Drafts.find({type:'text'}).count()-1)]
+          Drafts.find({type:'text'}).fetch()[i]
+
   Template.addPost.events
     'click #addmore':->
       #uploadFile (result)->
@@ -83,10 +88,11 @@ if Meteor.isClient
         #console.log 'upload success: url is ' + result
         #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
         console.log 'upload success: url is ' + result.smallImage
-        Drafts.insert {owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
-
+        Drafts.insert {type:'image', owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
       return
-
+    'click #addText':->
+      Drafts.insert {type:'text', owner: Meteor.userId(), text:''}
+      return
     'click #cancle':->
       #Router.go('/')
       Drafts
@@ -105,7 +111,7 @@ if Meteor.isClient
         pub=[]
         title = $("#title").val()
         addontitle = $("#addontitle").val()
-        draftData = Drafts.find().fetch()
+        draftData = Drafts.find({type:'image'}).fetch()
         postId = draftData[0]._id;
 #        console.log "#####" + pub
         uploadFileWhenPublishInCordova(draftData)
