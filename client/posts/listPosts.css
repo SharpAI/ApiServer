@@ -55,11 +55,15 @@
   margin: 0;
   text-shadow: 0 1px 0 black;
   color: white;
-  font-weight:bold
+  font-weight:bold;
+  white-space: pre-line;
+  word-wrap: break-word;
 }
 #wrapper .item > header > h3{
   margin: 0;
   text-shadow: 0 1px 0 black;
   color: white;
-  font-weight:bold
+  white-space: pre-line;
+  word-wrap: break-word;
+/*  font-weight:bold*/
 }

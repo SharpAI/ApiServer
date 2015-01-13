@@ -3,7 +3,7 @@ if Meteor.isClient
 
   Template.addPost.rendered=->
     $('.img').css('max-width',$(window).width())
-    $('.mainImage').css('height',$(window).height()*0.8)
+    $('.mainImage').css('height',$(window).height()*0.4)
     $('.title').css('top',$(window).height()*0.25)
     $('.addontitle').css('top',$(window).height()*0.35)
 
@@ -13,7 +13,7 @@ if Meteor.isClient
         console.log('Inserted node id is ' + node.id);
         $(node)
           .insertBefore(next)
-        $('.mainImage').css('height',$(window).height()*0.8)
+        $('.mainImage').css('height',$(window).height()*0.4)
         $('.title').css('top',$(window).height()*0.25)
         $('.addontitle').css('top',$(window).height()*0.35)
     }

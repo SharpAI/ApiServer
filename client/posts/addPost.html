@@ -31,9 +31,12 @@
 
       <div class="content">
         {{#if mainImage}}
-          <div class="mainImage" id="{{mainImage._id}}" style="background-image:url({{mainImage.imgUrl}})"></div>
-          <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-          <textarea id="addontitle" name="textarea" class="addontitle" placeholder="副标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
+          <div class="item mainImage" id="{{mainImage._id}}" style="background-image:url({{mainImage.imgUrl}})">
+            <header>
+              <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
+              <textarea id="addontitle" name="textarea" class="addontitle" placeholder="副标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
+            </header>
+          </div>
         {{/if}}
         <div class="gridster">
             <ul id="display">
