@@ -1,7 +1,7 @@
 #space 2
 if Meteor.isClient
   Template.dashboard.rendered=->
-    $('.dashboard').css 'height',($(window).height()-40)
+    $('.dashboard').css 'height',($(window).height()-50)
     return
   Template.dashboard.helpers
     userEmail :->
