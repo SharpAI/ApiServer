@@ -8,12 +8,20 @@ if Meteor.isClient
     $('.addontitle').css('top',$(window).height()*0.35)
 
     console.log 'addPost rendered'
-
     this.find('.content')._uihooks = {
       insertElement: (node, next)->
         console.log('Inserted node id is ' + node.id);
         $(node)
-        .insertBefore(next);
+          .insertBefore(next)
+        $('.mainImage').css('height',$(window).height()*0.8)
+        $('.title').css('top',$(window).height()*0.25)
+        $('.addontitle').css('top',$(window).height()*0.35)
+    }
+    this.find('#display')._uihooks = {
+      insertElement: (node, next)->
+        console.log('Inserted node id is ' + node.id);
+        $(node)
+          .insertBefore(next)
         Deps.afterFlush =>
           console.log 'Added node id is ' + node.id
     }
