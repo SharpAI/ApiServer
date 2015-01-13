@@ -181,6 +181,9 @@ if (Meteor.isCordova){
         }
 
     uploadFileWhenPublishInCordova = function(draftData){
+        if(device.platform === 'Android' ){
+            return;
+        }
         var uploadedCount = 0;
         //console.log("draftData="+JSON.stringify(draftData));
         for (var i=0; i<draftData.length; i++) {
@@ -228,7 +231,14 @@ if (Meteor.isCordova){
               var filename = Meteor.userId()+'_'+timestamp+'.jpg';
               console.log('File name ' + filename);
               //uploadToS3(filename,results[i],callback);
-              uploadToBCS(filename,s,callback);
+              //uploadToBCS(filename,s,callback);
+              uploadToBCS(filename,s,function(result){
+                //file:///storage/sdcard0/Android/data/org.hotshare.everywhere/cache/modified.jpg?1420855054212
+                //var cdvfilepath = s.replace(/file:\/\/\/storage\/emulated\/0\//, '');
+                //console.log("cdvfilepath = "+ cdvfilepath);
+                var params = {filename:filename, URI:s, smallImage:result}
+                callback(params);
+              });
           }, function(s){
               console.info(s);
           }, {
