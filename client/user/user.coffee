@@ -1,5 +1,8 @@
 #space 2
 if Meteor.isClient
+  Template.user.helpers
+    followers:->
+      Follows.find().count()
   Template.user.events
     'click .icon':(e)->
       val = e.currentTarget.innerHTML
@@ -15,6 +18,8 @@ if Meteor.isClient
       return
     'click #setting' :->
       Router.go '/dashboard'
+    'click .follower' :->
+      Router.go '/followers'
 #    'click #login-name-link' :->
 #      document.getElementById('login-buttons-open-change-password').innerHTML = '修改密码'
 #      document.getElementById('login-buttons-logout').innerHTML = '退出'

@@ -14,6 +14,8 @@ if Meteor.isClient
       Session.set 'channel','user'
     Router.route '/dashboard',()->
       this.render 'dashboard'
+    Router.route '/followers',()->
+      this.render 'followers'
     Router.route '/add',()->
       this.render 'addPost'
       Session.set 'channel','addPost'
