@@ -20,6 +20,7 @@ if Meteor.isClient
     #$container.packery('reloadItems')
     #init
     Meteor.defer ->
+      ###
       $container = $('.contentList').packery({
         itemSelector: '.resortitem'
       })
@@ -29,6 +30,7 @@ if Meteor.isClient
         # bind Draggabilly events to Packery
         $container.packery( 'bindDraggabillyEvents', draggie );
       );
+      ###
     this.find('.content')._uihooks = {
       insertElement: (node, next)->
         console.log('Inserted node id is ' + node.id);
@@ -38,20 +40,28 @@ if Meteor.isClient
         $('.title').css('top',$(window).height()*0.25)
         $('.addontitle').css('top',$(window).height()*0.35)
     }
-    this.find('.contentList')._uihooks = {
+    this.find('#display')._uihooks = {
       insertElement: (node, next)->
         console.log('Inserted node id is ' + node.id);
-        $(node)
-          .insertBefore(next)
+        $(node).insertBefore(next)
+        type = node.$blaze_range.view.dataVar.curValue.type
+        if gridster != undefined
+          if type == "text"
+            gridster.add_widget(node, 4, 1)
+          else if type == "image"
+            gridster.add_widget(node, 3, 3)
+
         Deps.afterFlush =>
           console.log 'Added node id is ' + node.id
+          ###
           # bind Draggabilly events to Packery
           $('.contentList').packery('appended', node )
           $(node).longpress (e)=>
             draggie = new Draggabilly( node );
             $('.contentList').packery( 'bindDraggabillyEvents', draggie );
+          ###
     }
-  gridsterInit = ->
+
     #draftLayout = Session.get("draftLayout")
     if Drafts.find({type:'image'}).count() >= 1
       draftData = Drafts.find({type:'image'}).fetch()
@@ -88,6 +98,7 @@ if Meteor.isClient
           Drafts.update({_id: drafts[i]._id}, {$set: {layout: json}});
         }
     }}}).data('gridster');`
+
     return
 
   Template.addPost.helpers
