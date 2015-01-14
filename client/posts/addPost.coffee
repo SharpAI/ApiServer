@@ -8,6 +8,18 @@ if Meteor.isClient
     $('.addontitle').css('top',$(window).height()*0.35)
 
     console.log 'addPost rendered'
+    #$container.packery('reloadItems')
+    #init
+    Meteor.defer ->
+      $container = $('.contentList').packery({
+        itemSelector: '.resortitem'
+      })
+      $container.find('.resortitem').each( ( i, itemElem )->
+        # make element draggable with Draggabilly
+        draggie = new Draggabilly( itemElem );
+        # bind Draggabilly events to Packery
+        $container.packery( 'bindDraggabillyEvents', draggie );
+      );
     this.find('.content')._uihooks = {
       insertElement: (node, next)->
         console.log('Inserted node id is ' + node.id);
@@ -17,14 +29,19 @@ if Meteor.isClient
         $('.title').css('top',$(window).height()*0.25)
         $('.addontitle').css('top',$(window).height()*0.35)
     }
-    this.find('#display')._uihooks = {
+    this.find('.contentList')._uihooks = {
       insertElement: (node, next)->
         console.log('Inserted node id is ' + node.id);
         $(node)
           .insertBefore(next)
         Deps.afterFlush =>
           console.log 'Added node id is ' + node.id
+          draggie = new Draggabilly( node );
+          # bind Draggabilly events to Packery
+          $('.contentList').packery('appended', node )
+          $('.contentList').packery( 'bindDraggabillyEvents', draggie );
     }
+  gridsterInit = ->
     #draftLayout = Session.get("draftLayout")
     if Drafts.find({type:'image'}).count() >= 1
       draftData = Drafts.find({type:'image'}).fetch()
