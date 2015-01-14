@@ -25,7 +25,7 @@ if (Meteor.isCordova) {
     function exitApp() {
         navigator.app.exitApp();
     }
-    Router.current().route.getName();
+    //Router.current().route.getName();
   });
 }
 
