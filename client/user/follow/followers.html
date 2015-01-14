@@ -5,14 +5,13 @@
       <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
     </div>
     <div class="content">
-<!--      <a href="/posts/{{postId}}" class="contentList">-->
       {{#each followers}}
-      <div href="" id="{{_id}}" class="contentList">
+      <a href="" id="{{_id}}" class="contentList">
         <img class="icon" src="/follows/{{icon}}" width='30' height='30'>
         <div class="userName">{{username}}</div>
         <div class="follow"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
         <div class="desc">{{desc}}</div>
-      </div>
+      </a>
       <div class="line">
         <span></span>
       </div>
