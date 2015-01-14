@@ -36,10 +36,11 @@ if Meteor.isClient
           .insertBefore(next)
         Deps.afterFlush =>
           console.log 'Added node id is ' + node.id
-          draggie = new Draggabilly( node );
           # bind Draggabilly events to Packery
           $('.contentList').packery('appended', node )
-          $('.contentList').packery( 'bindDraggabillyEvents', draggie );
+          $(node).longpress (e)=>
+            draggie = new Draggabilly( node );
+            $('.contentList').packery( 'bindDraggabillyEvents', draggie );
     }
   gridsterInit = ->
     #draftLayout = Session.get("draftLayout")
