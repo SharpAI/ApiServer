@@ -5,6 +5,11 @@ if Meteor.isClient
       Follows.find().count()
     draftsCount:->
       SavedDrafts.find().count()
+    compareDraftsCount:(value)->
+      if (SavedDrafts.find().count() > value)
+        true
+      else
+        false
     items:()->
       value = 0
       if SavedDrafts.find().count() >=2
