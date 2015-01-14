@@ -17,20 +17,8 @@ if Meteor.isClient
     else
       Session.set 'isReviewMode','false'
     console.log 'addPost rendered'
-    #$container.packery('reloadItems')
     #init
     Meteor.defer ->
-      ###
-      $container = $('.contentList').packery({
-        itemSelector: '.resortitem'
-      })
-      $container.find('.resortitem').each( ( i, itemElem )->
-        # make element draggable with Draggabilly
-        draggie = new Draggabilly( itemElem );
-        # bind Draggabilly events to Packery
-        $container.packery( 'bindDraggabillyEvents', draggie );
-      );
-      ###
     this.find('.content')._uihooks = {
       insertElement: (node, next)->
         console.log('Inserted node id is ' + node.id);
@@ -44,22 +32,15 @@ if Meteor.isClient
       insertElement: (node, next)->
         console.log('Inserted node id is ' + node.id);
         $(node).insertBefore(next)
-        type = node.$blaze_range.view.dataVar.curValue.type
-        if gridster != undefined
-          if type == "text"
-            gridster.add_widget(node, 4, 1)
-          else if type == "image"
-            gridster.add_widget(node, 3, 3)
 
         Deps.afterFlush =>
           console.log 'Added node id is ' + node.id
-          ###
-          # bind Draggabilly events to Packery
-          $('.contentList').packery('appended', node )
-          $(node).longpress (e)=>
-            draggie = new Draggabilly( node );
-            $('.contentList').packery( 'bindDraggabillyEvents', draggie );
-          ###
+          type = node.$blaze_range.view.dataVar.curValue.type
+          if gridster != undefined
+            if type == "text"
+              gridster.add_widget(node, 4, 1)
+            else if type == "image"
+              gridster.add_widget(node, 3, 3)
     }
 
     #draftLayout = Session.get("draftLayout")
