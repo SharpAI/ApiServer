@@ -18,13 +18,16 @@ if Meteor.isClient
       Session.set 'isReviewMode','false'
     console.log 'addPost rendered'
     #init
-    Meteor.defer ->
     this.find('.content')._uihooks = {
       insertElement: (node, next)->
         console.log('Inserted node id is ' + node.id);
         $(node)
           .insertBefore(next)
         $('.mainImage').css('height',$(window).height()*0.4)
+        $('.mainImage').toolbar
+          content: '#image-toolbar-options'
+          position: 'bottom'
+          hideOnClick: true
         $('.title').css('top',$(window).height()*0.25)
         $('.addontitle').css('top',$(window).height()*0.35)
     }
@@ -39,8 +42,16 @@ if Meteor.isClient
           if gridster != undefined
             if type == "text"
               gridster.add_widget(node, 4, 1)
+              $(node).toolbar
+                content: '#text-toolbar-options'
+                position: 'top'
+                hideOnClick: true
             else if type == "image"
               gridster.add_widget(node, 3, 3)
+              $(node).toolbar
+                content: '#image-toolbar-options'
+                position: 'top'
+                hideOnClick: true
     }
 
     #draftLayout = Session.get("draftLayout")
