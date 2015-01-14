@@ -1,0 +1,21 @@
+<template name="allDrafts">
+    <div class="allDrafts">
+        <div class="head">
+          <div>草稿</div>
+          <div id="back" class="leftButton">返回</div>
+          <div id="clearSavedDrafs" class="rightButton">清空草稿箱</div>
+        </div>
+        <div class="allDraftsImages">
+            <ul>
+                {{#each items}}
+                    <li>
+                        <div>
+                            <img id="{{_id}}" src="{{mainImage}}"/>
+                        </div>
+                    </li>
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+    {{> footer}}
+</template>

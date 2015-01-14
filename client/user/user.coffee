@@ -3,6 +3,16 @@ if Meteor.isClient
   Template.user.helpers
     followers:->
       Follows.find().count()
+    draftsCount:->
+      SavedDrafts.find().count()
+    items:()->
+      value = 0
+      if SavedDrafts.find().count() >=2
+        value = 1
+      else
+        value = SavedDrafts.find().count()-1
+      for i in [0..value]
+        SavedDrafts.find().fetch()[i]
   Template.user.events
     'click .icon':(e)->
       val = e.currentTarget.innerHTML
@@ -32,3 +42,19 @@ if Meteor.isClient
 #        document.getElementById('login-buttons-do-change-password').innerHTML = '修改密码'
 #        0
 #      return
+    'click li':(e)->
+      #Clear draft first
+      Drafts
+        .find {owner: Meteor.userId()}
+        .forEach (drafts)->
+          Drafts.remove drafts._id
+      #Prepare data
+      savedDraftData = SavedDrafts.find({_id: e.currentTarget.id}).fetch()[0]
+      pub = savedDraftData.pub;
+      for i in [0..(pub.length-1)]
+          Drafts.insert(pub[i])
+      Session.set 'isReviewMode','true'
+      PUB.page('/add')
+    'click .draftRight':(e)->
+      PUB.page('/allDrafts')
+

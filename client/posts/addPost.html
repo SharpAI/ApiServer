@@ -2,8 +2,15 @@
   <div class="addPost">
     <div class="head">
       {{#if mainImage}}
+        {{#if isReviewMode}}
+            <div id="back" class="leftButton">返回</div>
+            <div id="edit" class="secondRightButton">编辑</div>
+            <div id="delete" class="rightButton">删除</div>
+        {{else}}
         <div id="cancle" class="leftButton">取消</div>
+            <div id="saveDraft" class="secondRightButton">存储草稿</div>
         <div id="publish" class="rightButton">发表</div>
+        {{/if}}
       {{else}}
         <div>请添加图文</div>
       {{/if}}
@@ -13,9 +20,18 @@
 <!--      <img class="mainImage" id="{{mainImage._id}}" src="{{mainImage.imgUrl}}"/>-->
       {{#if mainImage}}
         <div class="mainImage" id="{{mainImage._id}}" style="background-image:url({{mainImage.imgUrl}})"></div>
-        <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-        <textarea id="addontitle" name="textarea" class="addontitle" placeholder="副标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-      {{/if}}
+            {{#if isReviewMode}}
+                <header>
+                  <textarea id="title" name="textarea" class="title" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';">{{mainImage.title}}</textarea>
+                  <textarea id="addontitle" name="textarea" class="addontitle" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';">{{mainImage.addontitle}}</textarea>
+                </header>
+            {{else}}
+                <header>
+                  <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
+                  <textarea id="addontitle" name="textarea" class="addontitle" placeholder="副标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
+                </header>
+            {{/if}}
+        {{/if}}
       <div class="contentList">
         {{#each items}}
           <div class='resortitem' id="{{_id}}" style='width:200px;height:240px'>
@@ -25,11 +41,14 @@
           <textarea id="{{_id}}text" name="textarea" class="textarea resortitem" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
         {{/each}}
       </div>
-      <br><br><br><br>
-      <i class="fa fa-plus-square-o" id="addmore"></i>
-      {{#if mainImage}}
-        <i class="fa fa-pencil-square-o" id="addText"></i>
-      {{/if}}
+        {{#if isReviewMode}}
+        {{else}}
+            <br><br><br><br>
+            <i class="fa fa-plus-square-o" id="addmore"></i>
+            {{#if mainImage}}
+                <i class="fa fa-pencil-square-o" id="addText"></i>
+            {{/if}}
+        {{/if}}
     </div>
 
       <!--
@@ -68,5 +87,8 @@
       </div>
       -->
   </div>
-  {{> footer}}
+  {{#if mainImage}}
+  {{else}}
+      {{> footer}}
+  {{/if}}
 </template>

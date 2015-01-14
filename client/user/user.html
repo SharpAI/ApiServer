@@ -41,7 +41,17 @@
       <div class="dot">&#8226;</div>
       <div class="forward">0 次转发</div>
     </div>
-    <div class="draft">0 份草稿</div>
+    <div class="draft">
+      <div class="draftLeft">{{draftsCount}} 份草稿</div>
+      <div class="draftRight">查看全部 ></div>
+    </div>
+    <div class="draftImages">
+        <ul>
+            {{#each items}}
+            <li id="{{_id}}" style="background-image:url({{mainImage}})">{{title}}</li>
+            {{/each}}
+        </ul>
+    </div>
   </div>
   {{> footer}}
 </template>

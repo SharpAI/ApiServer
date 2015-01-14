@@ -191,11 +191,11 @@ if (Meteor.isCordova){
                 uploadedCount++;
                 console.log("uploading("+uploadedCount+")...");
                 if (uploadedCount == draftData.length) {
-                    window.imagePicker.cleanupPersistentDirectory(function(result2){
+                    /*window.imagePicker.cleanupPersistentDirectory(function(result2){
                         console.log('cleanupPersistentDirectory suc ');
                     }, function (error){
                         console.log('cleanupPersistentDirectory Error ' + error);
-                    });
+                    });*/
                 }
             });
         }

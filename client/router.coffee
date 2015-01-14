@@ -40,3 +40,6 @@ if Meteor.isClient
           Session.set("DocumentTitle",post.title + ':' + post.addontitle);
           this.render 'showPosts', {data: post}
       }
+    Router.route '/allDrafts',()->
+      this.render 'allDrafts'
+      Session.set 'channel','allDrafts'
