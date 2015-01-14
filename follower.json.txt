@@ -1,0 +1,12 @@
+//需要新的字段请在这里添加更新并说明
+follower{
+  userId:      //被关注用户id
+  userName:    //被关注用户name
+  userIcon:    //被关注用户头像
+  userDesc:    //被关注用户个人介绍
+  followerId:  //关注用户id
+  followerName://关注用户name
+  followerIcon://关注用户头像
+  followerDesc://关注用户个人介绍
+  createAt:    //创建时间
+}
