@@ -2,7 +2,9 @@
 if Meteor.isClient
   Template.user.helpers
     followers:->
-      Follows.find().count()
+      #Follower存放用户间关注记录， Follows是推荐偶像列表
+      #followerId是偶像userId, userId是粉丝userId
+      Follower.find({"followerId":Meteor.userId()}).count()
     draftsCount:->
       SavedDrafts.find().count()
     compareDraftsCount:(value)->
@@ -18,6 +20,8 @@ if Meteor.isClient
         value = SavedDrafts.find().count()-1
       for i in [0..value]
         SavedDrafts.find().fetch()[i]
+    followCount:->
+      Follower.find({"userId":Meteor.userId()}).count()
   Template.user.events
     'click .icon':(e)->
       val = e.currentTarget.innerHTML
