@@ -14,6 +14,19 @@ if Meteor.isClient
     test = $("#test");
     `gridster = test.gridster({widget_base_dimensions: [120, 40],widget_margins: [5, 5], resize: {enabled: false }}).data('gridster');`
     gridster.disable()
+    window.lastScroll = 0;
+    $(window).scroll (event)->
+      #Sets the current scroll position
+      st = $(window).scrollTop();
+      #Determines up-or-down scrolling
+      if st > window.lastScroll
+         #Replace this with your function call for downward-scrolling
+         console.log "scroll down"
+      else
+         #Replace this with your function call for upward-scrolling
+         console.log "scroll up"
+      #Updates scroll position
+      window.lastScroll = st
 
   Template.showPosts.helpers
     time_diff: (created)->
