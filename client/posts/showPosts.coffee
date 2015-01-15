@@ -2,6 +2,7 @@ if Meteor.isClient
   Template.showPosts.rendered=->
     $('.img').css('max-width',$(window).width())
     $('.mainImage').css('height',$(window).height()*0.55)
+    $('.showPosts').css('min-height',$(window).height())
     $('.title').css('top',$(window).height()*0.25)
     $('.addontitle').css('top',$(window).height()*0.35)
     window.title = this.title + ':' + this.addontitle

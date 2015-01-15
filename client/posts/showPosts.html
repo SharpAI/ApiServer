@@ -20,18 +20,31 @@
         {{/if}}
       </div>
     </div>
-
-      <div class="gridster">
-          <ul id="test">
-              {{#each pub}}
-              <li id="{{_id}}" data-row="1" data-col="2" data-sizex="2" data-sizey="3">
-                  <div style="background-image: url({{imgUrl}}); background-repeat: no-repeat;background-size: cover; background-position: center; height: 100%;">
-                  </div>
-              </li>
-              {{/each}}
-          </ul>
-      </div>
-      <br><br><br><br>
+    <div class="gridster">
+        <ul id="test">
+            {{#each pub}}
+            <li id="{{_id}}" data-row="1" data-col="2" data-sizex="2" data-sizey="3">
+                <div style="background-image: url({{imgUrl}}); background-repeat: no-repeat;background-size: cover; background-position: center; height: 100%;">
+                </div>
+            </li>
+            {{/each}}
+        </ul>
+    </div>
+    <br><br><br><br>
   </div>
-  {{> footer}}
+  {{> postFooter}}
+</template>
+<template name="postFooter">
+  <div id="postFooter">
+    <div class="commentList">
+      <span class="minHeart"><i class="fa fa-heart"></i></span>
+      <span class="minRetweet"><i class="fa fa-retweet"></i></span>
+      <span class="minComment">0条评论</span>
+    </div>
+    <div class="buttons">
+      <span class="heart"><i class="fa fa-heart"></i></span>
+      <span class="retweet"><i class="fa fa-retweet"></i></span>
+      <span class="comment"><i class="fa fa-comment"></i></span>
+    </div>
+  </div>
 </template>
