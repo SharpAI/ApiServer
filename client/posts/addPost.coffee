@@ -52,7 +52,12 @@ if Meteor.isClient
                 if buttonClicked.id == "modify"
                   textdiv = $(event.target).children('.textdiv')
                   textarea = textdiv.children('textarea')
-                  $(textarea).removeAttr("readOnly")
+                  $(textarea).removeAttr("disabled")
+                  $(textarea).first().focus()
+
+                  $(textarea).focusout(()->
+                    $(this).attr("disabled", "true")
+                  )
                 return
               )
 
