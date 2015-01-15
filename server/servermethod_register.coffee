@@ -21,7 +21,3 @@ if Meteor.isServer
           orignalURI: URI
         }
         policy
-      "removeFollower":(id)->
-        Follower.remove {_id: id}
-        true
-

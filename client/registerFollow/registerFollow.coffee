@@ -45,5 +45,4 @@ Template.registerFollow.events
                      userId: Meteor.userId()
                      followerId: Follows.findOne({_id:followsId}).userId
                  })._id
-
-    Meteor.call "removeFollower", followerId, ()->
+    Follower.remove(followerId)
