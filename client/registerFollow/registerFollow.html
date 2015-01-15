@@ -29,7 +29,7 @@
 <template name="follow_user_list">
     <div class="layer" id="{{_id}}">
         <div class="user_head">
-            <img class="user_pic" src="/follows/{{icon}}" width="100" />
+            <img class="user_pic" src="{{icon}}" width="100" />
             <span class="name">{{fullname}}&nbsp;
             {{#if isFollowed this}}
                 <i id="{{_id}}" class="rightButton del fa fa-check-circle-o"></i>
@@ -40,9 +40,9 @@
         </div>
         <div><span>{{desc}}</span></div>
         <div  align="center">
-            <img src="/follows/{{share1}}" width="32%" />
-            <img src="/follows/{{share2}}" width="32%" />
-            <img src="/follows/{{share3}}" width="32%" />
+            <img src="{{share1}}" width="32%" />
+            <img src="{{share2}}" width="32%" />
+            <img src="{{share3}}" width="32%" />
         </div>
     </div>
     <hr>

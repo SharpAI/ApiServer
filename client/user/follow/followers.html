@@ -6,12 +6,23 @@
     </div>
     <div class="content">
       {{#each followers}}
-      <a href="" id="{{_id}}" class="contentList">
-        <img class="icon" src="/follows/{{icon}}" width='30' height='30'>
-        <div class="userName">{{username}}</div>
-        <div class="follow"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
-        <div class="desc">{{desc}}</div>
-      </a>
+        {{#if isFollowers}}
+            <a href="" id="{{followerId}}" class="contentList">
+            <!--列出偶像-->
+            <img class="icon" src="{{followerIcon}}" width='30' height='30'>
+            <div class="userName">{{followerName}}</div>
+            <div class="follow"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
+            <div class="desc">{{followerDesc}}</div>
+            </a>
+        {{else}}
+            <a href="" id="{{userId}}" class="contentList">
+            <!--列出粉丝-->
+            <img class="icon" src="{{userIcon}}" width='30' height='30'>
+            <div class="userName">{{userName}}</div>
+            <div class="follow"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
+            <div class="desc">{{userDesc}}</div>
+            </a>
+        {{/if}}
       <div class="line">
         <span></span>
       </div>
