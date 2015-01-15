@@ -2,10 +2,10 @@ if Meteor.isClient
   # the only document I found here https://github.com/percolatestudio/transition-helper/blob/master/transition-helper.js#L4
 
   Template.addPost.rendered=->
-    $('.img').css('max-width',$(window).width())
-    $('.mainImage').css('height',$(window).height()*0.4)
-    $('.title').css('top',$(window).height()*0.25)
-    $('.addontitle').css('top',$(window).height()*0.35)
+#    $('.img').css('max-width',$(window).width())
+#    $('.mainImage').css('height',$(window).height()*0.4)
+#    $('.title').css('top',$(window).height()*0.25)
+#    $('.addontitle').css('top',$(window).height()*0.35)
 
     draftData = Drafts.find().fetch()
     if draftData and draftData.length>0
@@ -23,13 +23,13 @@ if Meteor.isClient
         console.log('Inserted node id is ' + node.id);
         $(node)
           .insertBefore(next)
-        $('.mainImage').css('height',$(window).height()*0.4)
+#        $('.mainImage').css('height',$(window).height()*0.4)
         $('.mainImage').toolbar
           content: '#image-toolbar-options'
           position: 'bottom'
           hideOnClick: true
-        $('.title').css('top',$(window).height()*0.25)
-        $('.addontitle').css('top',$(window).height()*0.35)
+#        $('.title').css('top',$(window).height()*0.25)
+#        $('.addontitle').css('top',$(window).height()*0.35)
     }
 
 
@@ -120,7 +120,6 @@ if Meteor.isClient
           Drafts.update({_id: drafts[i]._id}, {$set: {layout: json}});
         }
     }}}).data('gridster');`
-
     return
 
   Template.addPost.helpers
@@ -130,9 +129,9 @@ if Meteor.isClient
       else
         null
     mainImage:->
-      Meteor.setTimeout ->
-        $('.mainImage').css('height',$(window).height()*0.55)
-        0
+#      Meteor.setTimeout ->
+#        $('.mainImage').css('height',$(window).height()*0.55)
+#        0
       if Drafts.find({type:'image'}).count() > 0
         Drafts.find({type:'image'}).fetch()[0]
       else

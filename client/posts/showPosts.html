@@ -10,10 +10,21 @@
       <div id="socialShare" class="rightButton">分享</div>
     </div>
     <div class="content">
+      <div id="wrapper">
+        <div class="mainImage" id="{{_id}}">
+          <img class="scale item" src="{{mainImage}}" draggable="false" >
+          <header>
+            <h1 class="title" style="height: initial;">{{title}}</h1>
+            <h3 class="addontitle" style="height: initial;">{{addontitle}}</h3>
+          </header>
+        </div>
+      </div>
+<!--
       <div class="mainImage" id="{{_id}}" style="background-image:url({{mainImage}})">
         <div class="title" style="height: initial;">{{title}}</div>
         <div class="addontitle" style="height: initial;">{{addontitle}}</div>
       </div>
+-->
       <div class="contentList">
         {{#if mainText}}
           <div class="text" style="height: initial;">{{mainText}}</div>

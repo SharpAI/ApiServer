@@ -6,5 +6,5 @@ if Meteor.isClient
     myPosts:()->
       Posts.find({owner:Meteor.userId()}, {sort: {createdAt: -1}})
   Template.listPosts.events
-    'click .title': (event)->
+    'click .mainImage': (event)->
       Router.go '/posts/'+this._id

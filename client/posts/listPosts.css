@@ -73,14 +73,14 @@ img.flip {
     }
 }
 /*#wrapper .mainImage{margin-bottom: 20px;background-repeat: no-repeat;background-size: 100% auto;background-position: center center;}*/
-#wrapper .title > header{
+#wrapper .mainImage > header{
   position: absolute;
   bottom: 2px;
   left: 0;
   width: 100%;
   padding: 2% 1%;
 }
-#wrapper .title > header > h1{
+#wrapper .mainImage > header > .title{
   margin: 0;
   text-shadow: 0 1px 0 black;
   color: white;
@@ -88,7 +88,7 @@ img.flip {
   white-space: pre-line;
   word-wrap: break-word;
 }
-#wrapper .title > header > h3{
+#wrapper .mainImage > header > .addontitle{
   margin: 0;
   text-shadow: 0 1px 0 black;
   color: white;
@@ -97,7 +97,7 @@ img.flip {
 /*  font-weight:bold*/
 }
 
-.home .content #list .title{position: relative;max-height: 300px;overflow-y: hidden;margin-bottom: 5px;}
+.home .content #list .mainImage{position: relative;max-height: 300px;overflow-y: hidden;margin-bottom: 5px;}
 .home .content #list .footer{position: relative;min-height: 30px;line-height: 30px;margin-bottom: 30px;}
 .home .content #list .footer .icon{border: none;border-radius:50%;margin-bottom: 2.5px;}
 .home .content #list .footer .right{float: right;color: gray;}

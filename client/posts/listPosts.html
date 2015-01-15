@@ -2,14 +2,14 @@
   <div id="wrapper">
     <div id="list">
       {{#each myPosts}}
-      <div  id="{{_id}}" class="title">
-<!--      <div class="item mainImage" id="{{_id}}" style="background-image:url({{mainImage}})">-->
-        <img class="scale item mainImage" src="{{mainImage}}" draggable="false" >
+      <div  id="{{_id}}" class="mainImage">
+<!--      <div class="item" id="{{_id}}" style="background-image:url({{mainImage}})">-->
+        <img class="scale item" src="{{mainImage}}" draggable="false" >
         <header>
-          <h1>
+          <h1 class="title">
             {{title}}
           </h1>
-          <h3>
+          <h3 class="addontitle">
             {{addontitle}}
           </h3>
         </header>
