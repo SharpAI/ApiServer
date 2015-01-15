@@ -31,45 +31,58 @@ if Meteor.isClient
         $('.title').css('top',$(window).height()*0.25)
         $('.addontitle').css('top',$(window).height()*0.35)
     }
+
+
+    initToolBar = (node, gridster)->
+      console.log 'Added node id is ' + node.id
+      type = node.$blaze_range.view.dataVar.curValue.type
+      if type == "text"
+          if gridster != undefined
+            gridster.add_widget(node, 4, 1)
+          $(node).toolbar
+            content: '#text-toolbar-options'
+            position: 'top'
+            hideOnClick: true
+
+          $(node).on('toolbarItemClick', (event, buttonClicked)->
+            console.log("toolbarItemClick" + buttonClicked.id)
+            if buttonClicked.id == "modify"
+              textdiv = $(event.target).children('.textdiv')
+              textarea = textdiv.children('textarea')
+              $(textarea).removeAttr("disabled")
+              $(textarea).first().focus()
+
+              $(textarea).focusout(()->
+                $(this).attr("disabled", "true")
+              )
+            return
+          )
+
+        else if type == "image"
+          if gridster != undefined
+            gridster.add_widget(node, 3, 3)
+          $(node).toolbar
+            content: '#image-toolbar-options'
+            position: 'top'
+            hideOnClick: true
+          $(node).on 'toolbarItemClick',(e,element)=>
+            console.log $(element).attr('id') + ' event on nodeid ' + node.id
+      return
+
+
     this.find('#display')._uihooks = {
       insertElement: (node, next)->
         console.log('Inserted node id is ' + node.id);
         $(node).insertBefore(next)
 
         Deps.afterFlush =>
-          console.log 'Added node id is ' + node.id
-          type = node.$blaze_range.view.dataVar.curValue.type
-          if gridster != undefined
-            if type == "text"
-              gridster.add_widget(node, 4, 1)
-              $(node).toolbar
-                content: '#text-toolbar-options'
-                position: 'top'
-                hideOnClick: true
+          initToolBar(node, gridster)
 
-              $(node).on('toolbarItemClick', (event, buttonClicked)->
-                console.log("toolbarItemClick" + buttonClicked.id)
-                if buttonClicked.id == "modify"
-                  textdiv = $(event.target).children('.textdiv')
-                  textarea = textdiv.children('textarea')
-                  $(textarea).removeAttr("disabled")
-                  $(textarea).first().focus()
-
-                  $(textarea).focusout(()->
-                    $(this).attr("disabled", "true")
-                  )
-                return
-              )
-
-            else if type == "image"
-              gridster.add_widget(node, 3, 3)
-              $(node).toolbar
-                content: '#image-toolbar-options'
-                position: 'top'
-                hideOnClick: true
-              $(node).on 'toolbarItemClick',(e,element)=>
-                console.log $(element).attr('id') + ' event on nodeid ' + node.id
     }
+
+    $("#display").find('.resortitem').each( ( i, itemElem )->
+      initToolBar(itemElem, undefined)
+    )
 
     #draftLayout = Session.get("draftLayout")
     if Drafts.find({type:'image'}).count() >= 1
