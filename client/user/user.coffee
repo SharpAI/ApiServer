@@ -38,6 +38,12 @@ if Meteor.isClient
     'click #setting' :->
       Router.go '/dashboard'
     'click .follower' :->
+      #true 列出偶像列表，false 列出粉丝列表
+      Session.set 'followers_tag', false
+      Router.go '/followers'
+    'click .following' :->
+      #true 列出偶像列表，false 列出粉丝列表
+      Session.set 'followers_tag', true
       Router.go '/followers'
 #    'click #login-name-link' :->
 #      document.getElementById('login-buttons-open-change-password').innerHTML = '修改密码'
