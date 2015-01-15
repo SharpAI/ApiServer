@@ -6,7 +6,11 @@
   {{> follow_user}}
   <hr>
   <div class="container navbar navbar-default navbar-fixed-bottom">
-  <center><button id="continue" class="btn btn-primary">继续</button></center>
+  {{#if larger followCount 3}}
+    <center><button id="continue" class="btn btn-primary">继续</button></center>
+  {{else}}
+    <center><h6>至少再关注{{NeedMoreCount}}个才可以继续</h6></center>
+  {{/if}}
   </div>
 </div>
 </template>
@@ -26,8 +30,13 @@
     <div class="layer" id="{{_id}}">
         <div class="user_head">
             <img class="user_pic" src="/follows/{{icon}}" width="100" />
-            <span class="name">{{username}}&nbsp;
-            <i id="{{_id}}" class="rightButton add fa fa-plus-circle"></i></span>
+            <span class="name">{{fullname}}&nbsp;
+            {{#if isFollowed this}}
+                <i id="{{_id}}" class="rightButton del fa fa-check-circle-o"></i>
+            {{else}}
+                <i id="{{_id}}" class="rightButton add fa fa-plus-circle"></i>
+            {{/if}}
+            </span>
         </div>
         <div><span>{{desc}}</span></div>
         <div  align="center">
