@@ -11,6 +11,11 @@ if Meteor.isClient
       else
           #偶像id是自己的； false 列出粉丝
           Follower.find({"followerId":Meteor.userId()}, {sort: {createdAt: -1}})
+    isFollowers:
+      if Session.get('followers_tag')
+         true
+      else
+         false
     page_title:->
       #true 列出偶像列表，false 列出粉丝列表
       if Session.get('followers_tag')
