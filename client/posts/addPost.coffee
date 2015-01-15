@@ -260,6 +260,10 @@ if Meteor.isClient
         pub=[]
         title = $("#title").val()
         addontitle = $("#addontitle").val()
+        try
+          ownerIcon = Meteor.user().profile.icon
+        catch
+          ownerIcon = 'userPicture.png'
         draftData = Drafts.find({type:'image'}).fetch()
         postId = draftData[0]._id;
 #        console.log "#####" + pub
@@ -284,6 +288,8 @@ if Meteor.isClient
           mainImage: mainImage,
           mainText: mainText,
           owner:Meteor.userId(),
+          ownerName:Meteor.user().username,
+          ownerIcon:ownerIcon,
           createdAt: new Date(),
           layout: layout
         }
