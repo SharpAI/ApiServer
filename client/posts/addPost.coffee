@@ -263,7 +263,7 @@ if Meteor.isClient
         try
           ownerIcon = Meteor.user().profile.icon
         catch
-          ownerIcon = 'userPicture.png'
+          ownerIcon = 'http://bcs.duapp.com/travelers-km/S6zs7oYvfw2SHQ76m_1421318419747.jpg'
         draftData = Drafts.find({type:'image'}).fetch()
         postId = draftData[0]._id;
 #        console.log "#####" + pub

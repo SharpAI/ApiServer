@@ -7,18 +7,52 @@
 .item
 {
     position: relative;
-    margin-bottom: 1.875em; /* 15px 30px */
+/*    margin-bottom: 1.875em;  15px 30px */
     -webkit-column-break-inside: avoid;
     -moz-column-break-inside: avoid;
     column-break-inside: avoid;
     width: 100%;
     overflow: hidden;
 }
+
+img.scale {
+    /* corrects small inline gap at bottom of containing div */
+    display: block;
+    width: 100%; /* corrects obscure Firefox bug */
+    max-width: 100%;
+    /* just in case, to force correct aspect ratio */
+    height: auto !important;
+    display: block; /* corrects small inline gap at bottom of containing div */
+    width: 100% /* corrects obscure Firefox bug */
+    /*width: auto\9;
+    /* ie8+9 - use modernizr instead of this \9 hack */
+    /* lt ie8 */
+    -ms-interpolation-mode: bicubic;
+    /* optionally force a minimum size if img src size is known: */
+    /* min-height: 320px; /* max-height of .crop-height */
+    /* min-width: 480px; /* proportional to above */
+}
+
+.flip {
+    -webkit-transform: rotate(180deg);
+    -moz-transform:    rotate(180deg);
+    -ms-transform:     rotate(180deg);
+    -o-transform:      rotate(180deg);
+    transform:         rotate(180deg);
+    /* needed? not sure */
+    zoom: 1;
+}
+
+img.flip {
+     /* actually, aligns left within .cropheight */
+  float: right;
+     /* clearfix after? */ }
+
 @media only screen and ( max-width: 640px )
 {
     .item
     {
-        margin-bottom: 15px;
+/*        margin-bottom: 15px;*/
         height: 320px;
     }
 }
@@ -26,7 +60,7 @@
 {
     .item
     {
-        margin-bottom: 5px;
+/*        margin-bottom: 5px;*/
         height: 160px;
     }
 }
@@ -34,19 +68,19 @@
 {
     .item
     {
-        margin-bottom: 5px;
+/*        margin-bottom: 5px;*/
         height: 120px;
     }
 }
-#wrapper .mainImage{margin-bottom: 20px;background-repeat: no-repeat;background-size: 100% auto;background-position: center center;}
-#wrapper .item > header{
+/*#wrapper .mainImage{margin-bottom: 20px;background-repeat: no-repeat;background-size: 100% auto;background-position: center center;}*/
+#wrapper .title > header{
   position: absolute;
-  bottom: 2;
+  bottom: 2px;
   left: 0;
   width: 100%;
   padding: 2% 1%;
 }
-#wrapper .item > header > h1{
+#wrapper .title > header > h1{
   margin: 0;
   text-shadow: 0 1px 0 black;
   color: white;
@@ -54,7 +88,7 @@
   white-space: pre-line;
   word-wrap: break-word;
 }
-#wrapper .item > header > h3{
+#wrapper .title > header > h3{
   margin: 0;
   text-shadow: 0 1px 0 black;
   color: white;
@@ -63,6 +97,7 @@
 /*  font-weight:bold*/
 }
 
-.home .content #list .footer{position: relative;min-height: 30px;line-height: 30px}
+.home .content #list .title{position: relative;max-height: 300px;overflow-y: hidden;margin-bottom: 5px;}
+.home .content #list .footer{position: relative;min-height: 30px;line-height: 30px;margin-bottom: 30px;}
 .home .content #list .footer .icon{border: none;border-radius:50%;margin-bottom: 2.5px;}
 .home .content #list .footer .right{float: right;color: gray;}

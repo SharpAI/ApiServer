@@ -2,8 +2,9 @@
   <div id="wrapper">
     <div id="list">
       {{#each myPosts}}
-      <div class="item mainImage" id="{{_id}}" style="background-image:url({{mainImage}})">
-<!--        <img class="scale" src="{{mainImage}}" draggable="false" >-->
+      <div  id="{{_id}}" class="title">
+<!--      <div class="item mainImage" id="{{_id}}" style="background-image:url({{mainImage}})">-->
+        <img class="scale item mainImage" src="{{mainImage}}" draggable="false" >
         <header>
           <h1>
             {{title}}
@@ -21,6 +22,7 @@
           <i class="fa fa-comment"></i>
         </span>
       </div>
+<!--      </div>-->
       {{else}}
       {{/each}}
     </div>
