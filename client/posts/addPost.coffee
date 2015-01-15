@@ -46,12 +46,16 @@ if Meteor.isClient
                 content: '#text-toolbar-options'
                 position: 'top'
                 hideOnClick: true
+              $(node).on 'toolbarItemClick',(e,element)=>
+                console.log $(element).attr('id') + ' event on nodeid ' + node.id
             else if type == "image"
               gridster.add_widget(node, 3, 3)
               $(node).toolbar
                 content: '#image-toolbar-options'
                 position: 'top'
                 hideOnClick: true
+              $(node).on 'toolbarItemClick',(e,element)=>
+                console.log $(element).attr('id') + ' event on nodeid ' + node.id
     }
 
     #draftLayout = Session.get("draftLayout")
