@@ -15,7 +15,12 @@ if Meteor.isClient
     `gridster = test.gridster({widget_base_dimensions: [120, 40],widget_margins: [5, 5], resize: {enabled: false }}).data('gridster');`
     gridster.disable()
 
+  Template.showPosts.helpers
+    time_diff: (created)->
+      GetTime0(new Date() - created)
   Template.showPosts.events
+    'click .back' :->
+      Router.go '/'
     'click #socialShare': (event)->
       current = Router.current();
       url = current.url;
