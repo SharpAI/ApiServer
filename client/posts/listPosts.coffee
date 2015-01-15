@@ -7,4 +7,4 @@ if Meteor.isClient
       Posts.find({owner:Meteor.userId()}, {sort: {createdAt: -1}})
   Template.listPosts.events
     'click .item': (event)->
-      Router.go('/posts/'+this._id);
+      Router.go '/posts/'+this._id

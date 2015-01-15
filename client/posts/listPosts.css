@@ -1,8 +1,3 @@
-#wrapper
-{
-    margin-top: 15px;
-    margin-bottom: 20px;
-}
 #list
 {
     width: 90%;
@@ -67,3 +62,7 @@
   word-wrap: break-word;
 /*  font-weight:bold*/
 }
+
+.home .content #list .footer{position: relative;min-height: 30px;line-height: 30px}
+.home .content #list .footer .icon{border: none;border-radius:50%;}
+.home .content #list .footer .right{float: right}
