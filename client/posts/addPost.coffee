@@ -46,8 +46,16 @@ if Meteor.isClient
                 content: '#text-toolbar-options'
                 position: 'top'
                 hideOnClick: true
-              $(node).on 'toolbarItemClick',(e,element)=>
-                console.log $(element).attr('id') + ' event on nodeid ' + node.id
+
+              $(node).on('toolbarItemClick', (event, buttonClicked)->
+                console.log("toolbarItemClick" + buttonClicked.id)
+                if buttonClicked.id == "modify"
+                  textdiv = $(event.target).children('.textdiv')
+                  textarea = textdiv.children('textarea')
+                  $(textarea).removeAttr("readOnly")
+                return
+              )
+
             else if type == "image"
               gridster.add_widget(node, 3, 3)
               $(node).toolbar
