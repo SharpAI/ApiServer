@@ -240,6 +240,7 @@ if Meteor.isClient
           .find {owner: Meteor.userId()}
           .forEach (drafts)->
             Drafts.remove drafts._id
+      history.back()
       return
     'click #saveDraft':->
         layout = {}     #JSON.stringify(gridster.serialize())
