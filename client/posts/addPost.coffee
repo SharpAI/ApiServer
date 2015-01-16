@@ -306,7 +306,7 @@ if Meteor.isClient
           ownerIcon = Meteor.user().profile.icon
         catch
           ownerIcon = 'http://bcs.duapp.com/travelers-km/S6zs7oYvfw2SHQ76m_1421318419747.jpg'
-        draftData = Drafts.find({type:'image'}).fetch()
+        draftData = Drafts.find().fetch()
         postId = draftData[0]._id;
 #        console.log "#####" + pub
         uploadFileWhenPublishInCordova(draftData)
