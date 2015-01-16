@@ -9,7 +9,7 @@ if (Meteor.isCordova) {
 
     function eventBackButton(){
       var currentRoute = Router.current().route.getName();
-      if (currentRoute == undefined || "search" || "add" || "bell" || "user") {
+      if (currentRoute == undefined || currentRoute =="search" || currentRoute =="add" || currentRoute =="bell" || currentRoute =="user") {
         window.plugins.toast.showShortBottom('再点击一次退出!');
         document.removeEventListener("backbutton", eventBackButton, false); // 注销返回键
         document.addEventListener("backbutton", exitApp, false);// 绑定退出事件
@@ -19,13 +19,14 @@ if (Meteor.isCordova) {
             document.removeEventListener("backbutton", exitApp, false); // 注销返回键
             document.addEventListener("backbutton", eventBackButton, false); // 返回键
         }, 3000);
+      }else{
+        history.back();
       }
     }
 
     function exitApp() {
         navigator.app.exitApp();
     }
-    //Router.current().route.getName();
   });
 }
 
