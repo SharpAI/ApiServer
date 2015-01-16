@@ -152,16 +152,18 @@ if Meteor.isClient
   Template.addPost.helpers
     isReviewMode:->
       if Session.get('isReviewMode') is 'true'
-        console.log "gridster.disable "
-        gridster.disable()
-        gridster.disable_resize()
+        if gridster?
+          console.log "gridster.disable "
+          gridster.disable()
+          gridster.disable_resize()
         $("#title").attr("disabled", "disabled")
         $("#addontitle").attr("disabled", "disabled")
         'true'
       else
         console.log "gridster.enable "
-        gridster.enable()
-        gridster.enable_resize()
+        if gridster?
+          gridster.enable()
+          gridster.enable_resize()
         $("#title").attr("disabled", false)
         $("#addontitle").attr('disabled',false)
         null
