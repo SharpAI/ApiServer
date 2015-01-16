@@ -69,9 +69,15 @@ if Meteor.isClient
       Session.get("postContent").retweet.length
     comment:->
       Session.get("postContent").comment.length
-    redHeart:->
+    blueHeart:->
       heart = Session.get("postContent").heart
       if JSON.stringify(heart).indexOf(Meteor.userId()) is -1
+        return false
+      else
+        return true
+    blueRetweet:->
+      retweet = Session.get("postContent").retweet
+      if JSON.stringify(retweet).indexOf(Meteor.userId()) is -1
         return false
       else
         return true
@@ -80,16 +86,29 @@ if Meteor.isClient
     'click .heart':->
       if Meteor.user()
         postId = Session.get("postContent")._id
+        FollowPostsId = Session.get("FollowPostsId")
         heart = Session.get("postContent").heart
         if JSON.stringify(heart).indexOf(Meteor.userId()) is -1
           heart.sort()
           heart.push {userId: Meteor.userId(),createdAt: new Date()}
           Posts.update {_id: postId},{$set: {heart: heart}}
-        else
-          window.plugins.toast.showLongBottom('您已经加入过了！')
-    'click .redHeart':->
+          FollowPosts.update {_id: FollowPostsId},{$inc: {heart: 1}}
+          return
+    'click .retweet':->
       if Meteor.user()
         postId = Session.get("postContent")._id
+        FollowPostsId = Session.get("FollowPostsId")
+        retweet = Session.get("postContent").retweet
+        if JSON.stringify(retweet).indexOf(Meteor.userId()) is -1
+          retweet.sort()
+          retweet.push {userId: Meteor.userId(),createdAt: new Date()}
+          Posts.update {_id: postId},{$set: {retweet: retweet}}
+          FollowPosts.update {_id: FollowPostsId},{$inc: {retweet: 1}}
+          return
+    'click .blueHeart':->
+      if Meteor.user()
+        postId = Session.get("postContent")._id
+        FollowPostsId = Session.get("FollowPostsId")
         heart = Session.get("postContent").heart
         if JSON.stringify(heart).indexOf(Meteor.userId()) isnt -1
           arr = []
@@ -97,3 +116,18 @@ if Meteor.isClient
             if item.userId isnt Meteor.userId()
               arr push {userId:item.userId,createdAt:item.createdAt}
           Posts.update {_id: postId},{$set: {heart: arr}}
+          FollowPosts.update {_id: FollowPostsId},{$inc: {heart: -1}}
+          return
+    'click .blueRetweet':->
+      if Meteor.user()
+        postId = Session.get("postContent")._id
+        FollowPostsId = Session.get("FollowPostsId")
+        retweet = Session.get("postContent").retweet
+        if JSON.stringify(retweet).indexOf(Meteor.userId()) isnt -1
+          arr = []
+          for item in retweet
+            if item.userId isnt Meteor.userId()
+              arr push {userId:item.userId,createdAt:item.createdAt}
+          Posts.update {_id: postId},{$set: {retweet: arr}}
+          FollowPosts.update {_id: FollowPostsId},{$inc: {retweet: -1}}
+          return

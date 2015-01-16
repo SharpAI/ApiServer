@@ -8,3 +8,6 @@ if Meteor.isClient
   Template.listPosts.events
     'click .mainImage': (event)->
       Router.go '/posts/'+this.postId
+      console.log this.postId
+      Session.set 'FollowPostsId',this._id
+      console.log this._id
