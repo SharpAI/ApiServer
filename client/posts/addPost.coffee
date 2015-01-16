@@ -39,7 +39,8 @@ if Meteor.isClient
             if buttonClicked.id == "modify"
               textdiv = $(event.target).children('.textdiv')
               textarea = textdiv.children('textarea')
-              $(textarea).removeAttr("disabled")
+              #$(textarea).removeAttr("disabled")
+              $(textarea).attr('disabled',false)
               $(textarea).first().focus()
 
               $(textarea).focusout(()->
@@ -131,18 +132,21 @@ if Meteor.isClient
       if SavedDrafts.find({_id:draftId}).count() > 0
         Session.set 'isReviewMode','true'
         gridster.disable()
+        gridster.disable_resize()
         $("#title").attr("disabled", "disabled")
         $("#addontitle").attr("disabled", "disabled")
       else
         Session.set 'isReviewMode','false'
         gridster.enable()
+        gridster.enable_resize()
         $("#title").attr("disabled", false)
-        $("#addontitle").attr('disabled',false)
+        $("#addontitle").attr("disabled", false)
     else
       Session.set 'isReviewMode','false'
       gridster.enable()
+      gridster.enable_resize()
       $("#title").attr("disabled", false)
-      $("#addontitle").attr('disabled',false)
+      $("#addontitle").attr("disabled", false)
     return
 
   Template.addPost.helpers
@@ -150,12 +154,14 @@ if Meteor.isClient
       if Session.get('isReviewMode') is 'true'
         console.log "gridster.disable "
         gridster.disable()
+        gridster.disable_resize()
         $("#title").attr("disabled", "disabled")
         $("#addontitle").attr("disabled", "disabled")
         'true'
       else
         console.log "gridster.enable "
         gridster.enable()
+        gridster.enable_resize()
         $("#title").attr("disabled", false)
         $("#addontitle").attr('disabled',false)
         null

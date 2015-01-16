@@ -30,8 +30,8 @@
           <div class="text" style="height: initial;">{{mainText}}</div>
         {{/if}}
       </div>
-    </div>
-    <div class="gridster">
+
+      <div class="gridster">
         <ul id="test">
             {{#each pub}}
                 {{#if isImage}}
@@ -42,12 +42,13 @@
                 {{else}}
                     <li class='resortitem' id="{{_id}}" data-row="1" data-col="3" data-sizex="3" data-sizey="1">
                         <div class="textdiv">
-                            <textarea text={{_id}} name="textarea" disabled="disabled" >{{text}}</textarea>
+                            <textarea text={{_id}} name="textarea" readOnly="true" >{{text}}</textarea>
                         </div>
                     </li>
                 {{/if}}
             {{/each}}
         </ul>
+      </div>
     </div>
     <br><br><br><br>
   </div>
