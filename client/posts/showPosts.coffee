@@ -83,6 +83,10 @@ if Meteor.isClient
         return true
       
   Template.postFooter.events
+    'click .commentList':->
+      $('#showComment').css('display',"block")
+    'click .comment':->
+      $('#showComment').css('display',"block")
     'click .heart':->
       if Meteor.user()
         postId = Session.get("postContent")._id
