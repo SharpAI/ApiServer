@@ -201,9 +201,9 @@ if (Meteor.isCordova){
         }
         for (var i=0; i<uploadingFilesInfo.files.length; i++) {
             percent += uploadingFilesInfo.files[i].percent;
-            console.log("uploadingFilesInfo.files["+i+"].percent = "+uploadingFilesInfo.files[i].percent);
+            //console.log("uploadingFilesInfo.files["+i+"].percent = "+uploadingFilesInfo.files[i].percent);
         }
-        console.log("progressBarWidth="+parseInt(percent/uploadingFilesInfo.filesCount)+",percent="+percent+", filesCount="+uploadingFilesInfo.filesCount);
+        //console.log("progressBarWidth="+parseInt(percent/uploadingFilesInfo.filesCount)+",percent="+percent+", filesCount="+uploadingFilesInfo.filesCount);
         Session.set('progressBarWidth', parseInt(percent/uploadingFilesInfo.filesCount));
     }
 
@@ -231,7 +231,7 @@ if (Meteor.isCordova){
                     });*/
                     Session.set('progressBarWidth', 100);
                     console.log("Jump to post page...");
-                    PUB.page('/posts/'+postId);
+                    Router.go('/posts/'+postId);
                 }
             });
         }

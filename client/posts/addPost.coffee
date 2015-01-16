@@ -208,7 +208,7 @@ if Meteor.isClient
     'click #addText':->
       Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:''}
       return
-    'click #back':(event)->
+    'click .back':(event)->
       Drafts
         .find {owner: Meteor.userId()}
         .forEach (drafts)->

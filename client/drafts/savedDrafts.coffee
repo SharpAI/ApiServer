@@ -4,7 +4,7 @@ if Meteor.isClient
       for i in [0..SavedDrafts.find().count()-1]
         SavedDrafts.find().fetch()[i]
   Template.allDrafts.events
-    'click .leftButton':(event)->
+    'click .back':(event)->
         PUB.back()
     'click .rightButton':(event)->
         SavedDrafts

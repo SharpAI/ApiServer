@@ -21,20 +21,21 @@ if Meteor.isClient
       for i in [0..value]
         SavedDrafts.find().fetch()[i]
     postsCount:->
-      Posts.find().count()
+      Posts.find({owner: Meteor.userId()}).count()
     comparePostsCount:(value)->
-      if (Posts.find().count() > value)
+      if (Posts.find({owner: Meteor.userId()}).count() > value)
         true
       else
         false
-    postitems:()->
+    postItems:()->
       value = 0
-      if Posts.find().count() >=4
-        value = 1
+      count = Posts.find({owner: Meteor.userId()}).count()
+      if count >= 4
+        value = 3
       else
-        value = Posts.find().count()-1
+        value = count-1
       for i in [0..value]
-        Posts.find().fetch()[i]
+        Posts.find({owner: Meteor.userId()}).fetch()[i]
     followCount:->
       Follower.find({"userId":Meteor.userId()}).count()
   Template.user.events
@@ -60,7 +61,7 @@ if Meteor.isClient
       #true 列出偶像列表，false 列出粉丝列表
       Session.set 'followers_tag', true
       Router.go '/followers'
-    'click .draftImage':(e)->
+    'click .draftImages ul li':(e)->
       #Clear draft first
       Drafts
         .find {owner: Meteor.userId()}
@@ -75,6 +76,8 @@ if Meteor.isClient
       PUB.page('/add')
     'click .draftRight':(e)->
       PUB.page('/allDrafts')
-    'click .postImage': (e)->
-      Router.go '/posts/'+this._id
+    'click .postImages ul li':(e)->
+      PUB.page('/posts/'+e.currentTarget.id)
+    'click .postRight':(e)->
+      PUB.page('/myPosts')
 
