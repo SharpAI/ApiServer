@@ -33,7 +33,7 @@ if Meteor.isClient
       GetTime0(new Date() - created)
   Template.showPosts.events
     'click .back' :->
-      Router.go '/'
+      history.back()
     'click #socialShare': (event)->
       current = Router.current();
       url = current.url;
@@ -62,3 +62,21 @@ if Meteor.isClient
       $(document.body).on('click','#swipebox-slider .current', ->
         $('#swipebox-close').trigger('click')
       )
+  Template.postFooter.helpers
+    heart:->
+      Session.get("postContent").heart.length
+    retweet:->
+      Session.get("postContent").retweet.length
+    comment:->
+      Session.get("postContent").comment.length
+  Template.postFooter.events
+    'click .heart':->
+      if Meteor.user()
+        postId = Session.get("postContent")._id
+        heart = Session.get("postContent").heart
+        if JSON.stringify(heart).indexOf(Meteor.userId()) is -1
+          heart.sort()
+          heart.push {userId: Meteor.userId(),createdAt: new Date()}
+          Posts.update {_id: postId},{$set: {heart: heart}}
+        else
+          window.plugins.toast.showLongBottom('您已经加入过了！')

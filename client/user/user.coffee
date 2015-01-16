@@ -45,18 +45,6 @@ if Meteor.isClient
       #true 列出偶像列表，false 列出粉丝列表
       Session.set 'followers_tag', true
       Router.go '/followers'
-#    'click #login-name-link' :->
-#      document.getElementById('login-buttons-open-change-password').innerHTML = '修改密码'
-#      document.getElementById('login-buttons-logout').innerHTML = '退出'
-#      $("#login-dropdown-list .login-close-text").html "关闭"
-#      return
-#    'click #login-buttons-open-change-password':-> 
-#      Meteor.setTimeout ->
-#        document.getElementById('login-old-password-label').innerHTML = '当前密码'
-#        document.getElementById('login-password-label').innerHTML = '更改密码'
-#        document.getElementById('login-buttons-do-change-password').innerHTML = '修改密码'
-#        0
-#      return
     'click li':(e)->
       #Clear draft first
       Drafts
