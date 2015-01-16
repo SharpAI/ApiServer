@@ -61,7 +61,11 @@
       <span class="minComment">{{comment}}条评论</span>
     </div>
     <div class="buttons">
+      {{#if redHeart}}
+      <span class="redHeart"><i class="fa fa-heart" style="color:red;"></i></span>
+      {{else}}
       <span class="heart"><i class="fa fa-heart"></i></span>
+      {{/if}}
       <span class="retweet"><i class="fa fa-retweet"></i></span>
       <span class="comment"><i class="fa fa-comment"></i></span>
     </div>

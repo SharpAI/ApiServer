@@ -69,6 +69,13 @@ if Meteor.isClient
       Session.get("postContent").retweet.length
     comment:->
       Session.get("postContent").comment.length
+    redHeart:->
+      heart = Session.get("postContent").heart
+      if JSON.stringify(heart).indexOf(Meteor.userId()) is -1
+        return false
+      else
+        return true
+      
   Template.postFooter.events
     'click .heart':->
       if Meteor.user()
@@ -80,3 +87,13 @@ if Meteor.isClient
           Posts.update {_id: postId},{$set: {heart: heart}}
         else
           window.plugins.toast.showLongBottom('您已经加入过了！')
+    'click .redHeart':->
+      if Meteor.user()
+        postId = Session.get("postContent")._id
+        heart = Session.get("postContent").heart
+        if JSON.stringify(heart).indexOf(Meteor.userId()) isnt -1
+          arr = []
+          for item in heart
+            if item.userId isnt Meteor.userId()
+              arr push {userId:item.userId,createdAt:item.createdAt}
+          Posts.update {_id: postId},{$set: {heart: arr}}
