@@ -23,12 +23,12 @@ if Meteor.isClient
     }
 
 
-    initToolBar = (node, gridster)->
+    initToolBar = (node, grid)->
       console.log 'Added node id is ' + node.id
       type = node.$blaze_range.view.parentView.dataVar.curValue.type
       if type == "text"
-          if gridster != undefined
-            gridster.add_widget(node, 4, 1)
+          if grid != undefined
+            grid.add_widget(node, 4, 1)
           $(node).toolbar
             content: '#text-toolbar-options'
             position: 'top'
@@ -51,15 +51,15 @@ if Meteor.isClient
               )
             if buttonClicked.id == "del"
               console.log("del "+ node.id)
-              if gridster != undefined
+              if gridster?
                 gridster.remove_widget2(node, true)
               Drafts.remove node.id
             return
           )
 
         else if type == "image"
-          if gridster != undefined
-            gridster.add_widget(node, 3, 3)
+          if grid != undefined
+            grid.add_widget(node, 3, 3)
           $(node).toolbar
             content: '#image-toolbar-options'
             position: 'top'
@@ -69,7 +69,7 @@ if Meteor.isClient
             if buttonClicked.id == "del"
               console.log("del "+ node.id)
 
-              if gridster != undefined
+              if gridster?
                 gridster.remove_widget2(node, true)
               Drafts.remove node.id
             return
