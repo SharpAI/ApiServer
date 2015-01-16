@@ -15,54 +15,8 @@
         <div>请添加图文</div>
       {{/if}}
     </div>
-
-      <!--
-    <div class="content">
-
-      {{#if mainImage}}
-        <div class="mainImage" id="{{mainImage._id}}" style="background-image:url({{mainImage.imgUrl}})"></div>
-            {{#if isReviewMode}}
-                <header>
-                  <textarea id="title" name="textarea" class="title" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';">{{mainImage.title}}</textarea>
-                  <textarea id="addontitle" name="textarea" class="addontitle" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';">{{mainImage.addontitle}}</textarea>
-                </header>
-            {{else}}
-                <header>
-                  <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-                  <textarea id="addontitle" name="textarea" class="addontitle" placeholder="副标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-                </header>
-            {{/if}}
-        {{/if}}
-      <div class="contentList">
-        {{#each items}}
-          <div class='resortitem' id="{{_id}}" style='width:200px;height:240px'>
-            <img class="img" src="{{imgUrl}}" style='width:200px;max-height:240px'/>
-          </div>
-        
-          <textarea id="{{_id}}text" name="textarea" class="textarea resortitem" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-        {{/each}}
-      </div>
-        {{#if isReviewMode}}
-        {{else}}
-            <br><br><br><br>
-            <i class="fa fa-plus-square-o" id="addmore"></i>
-            {{#if mainImage}}
-                <i class="fa fa-pencil-square-o" id="addText"></i>
-            {{/if}}
-        {{/if}}
-    </div>
-      -->
-
         <div class="content">
         {{#if mainImage}}
-<!--
-          <div class="item mainImage" id="{{mainImage._id}}" style="background-image:url({{mainImage.imgUrl}})">
-            <header>
-              <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-              <textarea id="addontitle" name="textarea" class="addontitle" placeholder="副标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-            </header>
-          </div>
--->
           <div id="wrapper">
             <div class="mainImage" id="{{mainImage._id}}">
               <img class="scale item" src="{{mainImage.imgUrl}}" draggable="false" >
@@ -83,29 +37,13 @@
                             </div>
                         </li>
                     {{else}}
-                        <li class='resortitem' id="{{_id}}TextLi" data-row="1" data-col="3" data-sizex="3" data-sizey="1">
+                        <li class='resortitem' id="{{_id}}" data-row="1" data-col="3" data-sizex="3" data-sizey="1">
                             <div class="textdiv">
-                                <textarea id={{_id}} name="textarea" disabled="disabled" >{{text}}</textarea>
+                                <textarea text={{_id}} name="textarea" disabled="disabled" >{{text}}</textarea>
                             </div>
                         </li>
                     {{/if}}
                 {{/each}}
-                <!--
-                {{#each items}}
-                <li class='resortitem' id="{{_id}}" data-row="1" data-col="3" data-sizex="3" data-sizey="3">
-                    <div style="background-image: url({{imgUrl}}); background-repeat: no-repeat;background-size: cover; background-position: center; height: 100%;">
-                    </div>
-                </li>
-                {{/each}}
-
-                {{#each texts}}
-                <li class='resortitem' id="{{_id}}TextLi" data-row="1" data-col="3" data-sizex="3" data-sizey="1">
-                    <div class="textdiv">
-                        <textarea id="{{_id}} name="textarea" disabled="disabled" >{{text}}</textarea>
-                    </div>
-                </li>
-                {{/each}}
-                -->
             </ul>
         </div>
         {{#if isReviewMode}}

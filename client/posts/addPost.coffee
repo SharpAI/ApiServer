@@ -44,10 +44,15 @@ if Meteor.isClient
 
               $(textarea).focusout(()->
                 $(this).attr("disabled", "true")
-                id = $(this).attr("id")
+                id = $(this).attr("text")
                 text = $(this).val()
                 Drafts.update({_id: id}, {$set: {text: text}});
               )
+            if buttonClicked.id == "del"
+              console.log("del "+ node.id)
+              if gridster != undefined
+                gridster.remove_widget2(node, true)
+              Drafts.remove node.id
             return
           )
 
@@ -58,8 +63,15 @@ if Meteor.isClient
             content: '#image-toolbar-options'
             position: 'top'
             hideOnClick: true
-          $(node).on 'toolbarItemClick',(e,element)=>
-            console.log $(element).attr('id') + ' event on nodeid ' + node.id
+          $(node).on 'toolbarItemClick',(event,buttonClicked)=>
+            console.log $(buttonClicked).attr('id') + ' event on nodeid ' + node.id
+            if buttonClicked.id == "del"
+              console.log("del "+ node.id)
+
+              if gridster != undefined
+                gridster.remove_widget2(node, true)
+              Drafts.remove node.id
+            return
       return
 
 
@@ -70,7 +82,6 @@ if Meteor.isClient
 
         Deps.afterFlush =>
           initToolBar(node, gridster)
-
     }
 
     $("#display").find('.resortitem').each( ( i, itemElem )->

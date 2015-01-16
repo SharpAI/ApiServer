@@ -1444,6 +1444,42 @@
     };
 
 
+    fn.remove_widget2 = function(el, silent, callback) {
+        var $el = el instanceof $ ? el : $(el);
+        var wgd = $el.coords().grid;
+
+        // if silent is a function assume it's a callback
+        if ($.isFunction(silent)) {
+            callback = silent;
+            silent = false;
+        }
+
+        this.cells_occupied_by_placeholder = {};
+        this.$widgets = this.$widgets.not($el);
+
+        var $nexts = this.widgets_below($el);
+
+        this.remove_from_gridmap(wgd);
+
+        $el.fadeOut($.proxy(function() {
+            //$el.remove();
+
+            if (!silent) {
+                $nexts.each($.proxy(function(i, widget) {
+                    this.move_widget_up( $(widget), wgd.size_y );
+                }, this));
+            }
+
+            this.set_dom_grid_height();
+
+            if (callback) {
+                callback.call(this, el);
+            }
+        }, this));
+
+        return this;
+    };
+
     /**
     * Remove all widgets from the grid.
     *
