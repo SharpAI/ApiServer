@@ -6,15 +6,15 @@
         <div id="finish" class="rightButton">完成</div>
       </header>
       <div class="box">
-        <div class='email bottomBorder boxTitle'>0个人点赞<span><i class="fa fa-angle-right fa-fw"></i></span></div>
-        <div class='changePasswd bottomBorder boxTitle'>0个人转发<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+        <div class='email bottomBorder boxTitle'>{{heart.length}}个人点赞<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+        <div class='changePasswd bottomBorder boxTitle'>{{retweet.length}}个人转发<span><i class="fa fa-angle-right fa-fw"></i></span></div>
         
         <div class="bottomBorder">
           <div class="eachComment">
-            <img class="icon" src="http://bcs.duapp.com/travelers-km/S6zs7oYvfw2SHQ76m_1421318419747.jpg" width='30' height='30'>
-            <div id="" class="userName">hehe</div>
-            <div id="" class="commentDetail">sdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf</div>
-            <span class="createAt">5天</span>
+            <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+            <div id="" class="userName">{{ownerName}}</div>
+            <div id="" class="commentDetail"></div>
+            <span class="createAt">{{time_diff createdAt}}</span>
           </div>
         </div>
         
