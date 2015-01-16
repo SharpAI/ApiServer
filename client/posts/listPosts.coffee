@@ -4,7 +4,7 @@ if Meteor.isClient
 #    $('.addontitle').css('top',$(window).height()*0.25)
   Template.listPosts.helpers
     myPosts:()->
-      Posts.find({owner:Meteor.userId()}, {sort: {createdAt: -1}})
+      FollowPosts.find({followby:Meteor.userId()}, {sort: {createdAt: -1}})
   Template.listPosts.events
     'click .mainImage': (event)->
-      Router.go '/posts/'+this._id
+      Router.go '/posts/'+this.postId
