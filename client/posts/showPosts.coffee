@@ -1,4 +1,11 @@
 if Meteor.isClient
+  window.getDocHeight = ->
+    D = document
+    Math.max(
+      Math.max(D.body.scrollHeight, D.documentElement.scrollHeight)
+      Math.max(D.body.offsetHeight, D.documentElement.offsetHeight)
+      Math.max(D.body.clientHeight, D.documentElement.clientHeight)
+    )
   Template.showPosts.rendered=->
 #    $('.mainImage').css('height',$(window).height()*0.55)
     $('.showPosts').css('min-height',$(window).height())
@@ -15,16 +22,31 @@ if Meteor.isClient
     `gridster = test.gridster({widget_base_dimensions: [40, 40],widget_margins: [5, 5], resize: {enabled: false }}).data('gridster');`
     gridster.disable()
     window.lastScroll = 0;
+
     $(window).scroll (event)->
       #Sets the current scroll position
       st = $(window).scrollTop();
+
+      if(st + $(window).height() is window.getDocHeight())
+        console.log 'At the bottom'
+        $('.head').fadeIn 300
+        $('#postFooter').fadeIn 300
+        window.lastScroll = st
+        return
+      # Changed is too small
+      if Math.abs(window.lastScroll - st) < 10
+        return
       #Determines up-or-down scrolling
       if st > window.lastScroll
-         #Replace this with your function call for downward-scrolling
-         console.log "scroll down"
+        #Replace this with your function call for downward-scrolling
+        $('.head').fadeOut 300
+        $('#postFooter').fadeOut 300
+        console.log "scroll down"
       else
-         #Replace this with your function call for upward-scrolling
-         console.log "scroll up"
+        $('.head').fadeIn 300
+        $('#postFooter').fadeIn 300
+        #Replace this with your function call for upward-scrolling
+        console.log "scroll up"
       #Updates scroll position
       window.lastScroll = st
 
