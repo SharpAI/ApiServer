@@ -46,14 +46,6 @@
                 {{/each}}
             </ul>
         </div>
-        {{#if isReviewMode}}
-        {{else}}
-            <br><br><br><br>
-            <i class="fa fa-plus-square-o" id="addmore"></i>
-            {{#if mainImage}}
-                <i class="fa fa-pencil-square-o" id="addText"></i>
-            {{/if}}
-        {{/if}}
       </div>
       <div id="image-toolbar-options" style='visibility: hidden;'>
         <a href="#" id='crop'><i class="fa fa-crop"></i></a>
@@ -66,8 +58,17 @@
         <a href="#" id='del'><i class="fa fa-trash"></i></a>
       </div>
   </div>
-  {{#if mainImage}}
-  {{else}}
-      {{> footer}}
-  {{/if}}
+  <div id="postFooter" class="container navbar navbar-default navbar-fixed-bottom">
+    <div class="btn-group btn-group-justified">
+      <div id="addmore" class="foot-btn btn btn-default">
+        <i class="fa fa-area-chart" style="font-size: 32px; color:#A9A9A9;border-color:#A9A9A9;"></i>
+      </div>
+      <div id="takephoto" class="foot-btn btn btn-default">
+        <i class="fa fa-camera-retro" style="font-size: 32px; color:#A9A9A9;"></i>
+      </div>
+      <div id="addText" class="foot-btn btn btn-default">
+        <i class="fa fa-pencil-square-o" style="font-size: 32px; color:#A9A9A9;"></i>
+      </div>
+    </div>
+  </div>
 </template>
