@@ -20,6 +20,21 @@ if Meteor.isClient
         value = SavedDrafts.find().count()-1
       for i in [0..value]
         SavedDrafts.find().fetch()[i]
+    postsCount:->
+      Posts.find().count()
+    comparePostsCount:(value)->
+      if (Posts.find().count() > value)
+        true
+      else
+        false
+    postitems:()->
+      value = 0
+      if Posts.find().count() >=4
+        value = 1
+      else
+        value = Posts.find().count()-1
+      for i in [0..value]
+        Posts.find().fetch()[i]
     followCount:->
       Follower.find({"userId":Meteor.userId()}).count()
   Template.user.events
@@ -45,7 +60,7 @@ if Meteor.isClient
       #true 列出偶像列表，false 列出粉丝列表
       Session.set 'followers_tag', true
       Router.go '/followers'
-    'click li':(e)->
+    'click .draftImage':(e)->
       #Clear draft first
       Drafts
         .find {owner: Meteor.userId()}
@@ -60,4 +75,6 @@ if Meteor.isClient
       PUB.page('/add')
     'click .draftRight':(e)->
       PUB.page('/allDrafts')
+    'click .postImage': (e)->
+      Router.go '/posts/'+this._id
 

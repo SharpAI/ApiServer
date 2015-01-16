@@ -52,7 +52,22 @@
     <div class="draftImages">
         <ul>
             {{#each items}}
-            <li id="{{_id}}" style="background-image:url({{mainImage}})">{{title}}</li>
+            <li id="{{_id}}" class="draftImage" style="background-image:url({{mainImage}})">{{title}}</li>
+            {{/each}}
+        </ul>
+    </div>
+    <div class="post">
+      {{#if comparePostsCount 0}}
+        <div class="postLeft">{{postsCount}} 个故事</div>
+      {{/if}}
+      {{#if comparePostsCount 4}}
+        <div class="postRight">查看全部 ></div>
+      {{/if}}
+    </div>
+    <div class="postImages">
+        <ul>
+            {{#each postitems}}
+            <li id="{{_id}}" class="postImage" style="background-image:url({{mainImage}})">{{title}}</li>
             {{/each}}
         </ul>
     </div>
