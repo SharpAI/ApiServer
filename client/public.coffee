@@ -48,9 +48,13 @@
                 page =  history.pop()
                 Session.set "document_body_scrollTop", page.scrollTop
                 Session.set "history_view", history
-                
                 #Session.set "view", page.view
-                Router.go(page.view)
+                if page.view is 'addPost'
+                    Router.go('/add')
+                else if page.view is 'home'
+                    Router.go('/')
+                else
+                    Router.go(page.view)
         #nowPage = Session.get('view')
         #Session.set 'view',Session.get('referrer')
         #if nowPage isnt 'partner_detail' and nowPage isnt 'add_partner'

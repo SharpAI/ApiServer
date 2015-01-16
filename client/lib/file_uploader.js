@@ -1,5 +1,7 @@
 
 if (Meteor.isCordova){
+    uploadingFilesInfo = {filesCount:0, files:[]};
+
     var uploadToS3 = function(filename,URI,callback){
       Meteor.call('getS3WritePolicy',filename,URI,function(error,result){
         if(error) {
@@ -78,6 +80,7 @@ if (Meteor.isCordova){
         var ft = new FileTransferBCS();
         ft.onprogress = function(progressEvent) {
           if (progressEvent.lengthComputable) {
+            computeProgressBar(filename, 100*(progressEvent.loaded/progressEvent.total));
             console.log('Uploaded Progress ' + 100* (progressEvent.loaded / progressEvent.total ) + '%');
           } else {
             console.log('Upload ++');
@@ -180,12 +183,42 @@ if (Meteor.isCordova){
         }
         }
 
-    uploadFileWhenPublishInCordova = function(draftData){
+    /*filesCount, [{percent:?}]*/
+    computeProgressBar = function(fileName, curPercent) {
+        var percent = 0;
+        var isFind = false;
+        var computePercent = curPercent>=100 ? 99 : curPercent;
+        for (var i=0; i<uploadingFilesInfo.files.length; i++) {
+            if (uploadingFilesInfo.files[i].fileName == fileName) {
+                uploadingFilesInfo.files[i].percent = computePercent;
+                isFind = true;
+                break;
+            }
+        }
+        if (!isFind) {
+            var fileInfo = {fileName:fileName, percent:computePercent};
+            uploadingFilesInfo.files.push(fileInfo);
+        }
+        for (var i=0; i<uploadingFilesInfo.files.length; i++) {
+            percent += uploadingFilesInfo.files[i].percent;
+            console.log("uploadingFilesInfo.files["+i+"].percent = "+uploadingFilesInfo.files[i].percent);
+        }
+        console.log("progressBarWidth="+parseInt(percent/uploadingFilesInfo.filesCount)+",percent="+percent+", filesCount="+uploadingFilesInfo.filesCount);
+        Session.set('progressBarWidth', parseInt(percent/uploadingFilesInfo.filesCount));
+    }
+
+    uploadFileWhenPublishInCordova = function(draftData, postId){
         if(device.platform === 'Android' ){
             return;
         }
         var uploadedCount = 0;
         //console.log("draftData="+JSON.stringify(draftData));
+        if (draftData.length > 0) {
+            Session.set('isDelayPublish', false);
+            PUB.page('/progressBar');
+        }
+        uploadingFilesInfo.filesCount = draftData.length;
+        uploadingFilesInfo.files = [];
         for (var i=0; i<draftData.length; i++) {
             uploadToBCS(draftData[i].filename, draftData[i].URI, function(result){
                 uploadedCount++;
@@ -196,6 +229,9 @@ if (Meteor.isCordova){
                     }, function (error){
                         console.log('cleanupPersistentDirectory Error ' + error);
                     });*/
+                    Session.set('progressBarWidth', 100);
+                    console.log("Jump to post page...");
+                    PUB.page('/posts/'+postId);
                 }
             });
         }

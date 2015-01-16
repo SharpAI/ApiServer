@@ -309,7 +309,7 @@ if Meteor.isClient
         draftData = Drafts.find().fetch()
         postId = draftData[0]._id;
 #        console.log "#####" + pub
-        uploadFileWhenPublishInCordova(draftData)
+        uploadFileWhenPublishInCordova(draftData, postId)
         for i in [0..(draftData.length-1)]
 #          console.log i
           if i is 0
@@ -335,7 +335,11 @@ if Meteor.isClient
           createdAt: new Date(),
           layout: layout
         }
-        Router.go('/posts/'+postId)
+        #Router.go('/posts/'+postId)
+        #Delete from SavedDrafts if it is a saved draft.
+        if SavedDrafts.find({_id:postId}).count() > 0
+            SavedDrafts.remove postId
+        #Delete the Drafts
         Drafts
           .find {owner: Meteor.userId()}
           .forEach (drafts)->
