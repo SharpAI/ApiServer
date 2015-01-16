@@ -67,8 +67,8 @@
             <div class="mainImage" id="{{mainImage._id}}">
               <img class="scale item" src="{{mainImage.imgUrl}}" draggable="false" >
               <header>
-                <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
-                <textarea id="addontitle" name="textarea" class="addontitle" placeholder="副标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';"></textarea>
+                <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';">{{draftTitles.title}}</textarea>
+                <textarea id="addontitle" name="textarea" class="addontitle" placeholder="副标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';">{{draftTitles.addontitle}}</textarea>
               </header>
             </div>
           </div>
@@ -108,10 +108,13 @@
                 -->
             </ul>
         </div>
-        <br><br><br><br>
-        <i class="fa fa-plus-square-o" id="addmore"></i>
-        {{#if mainImage}}
-            <i class="fa fa-pencil-square-o" id="addText"></i>
+        {{#if isReviewMode}}
+        {{else}}
+            <br><br><br><br>
+            <i class="fa fa-plus-square-o" id="addmore"></i>
+            {{#if mainImage}}
+                <i class="fa fa-pencil-square-o" id="addText"></i>
+            {{/if}}
         {{/if}}
       </div>
       <div id="image-toolbar-options" style='visibility: hidden;'>

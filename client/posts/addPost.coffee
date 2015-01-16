@@ -6,16 +6,6 @@ if Meteor.isClient
 #    $('.mainImage').css('height',$(window).height()*0.4)
 #    $('.title').css('top',$(window).height()*0.25)
 #    $('.addontitle').css('top',$(window).height()*0.35)
-
-    draftData = Drafts.find().fetch()
-    if draftData and draftData.length>0
-      draftId = draftData[0]._id
-      if SavedDrafts.find({_id:draftId}).count() > 0
-        Session.set 'isReviewMode','true'
-      else
-        Session.set 'isReviewMode','false'
-    else
-      Session.set 'isReviewMode','false'
     console.log 'addPost rendered'
     #init
     this.find('.content')._uihooks = {
@@ -123,14 +113,47 @@ if Meteor.isClient
           Drafts.update({_id: drafts[i]._id}, {$set: {layout: json}});
         }
     }}}).data('gridster');`
+    #Set is isReviewMode
+    draftData = Drafts.find().fetch()
+    if draftData and draftData.length>0
+      draftId = draftData[0]._id
+      if SavedDrafts.find({_id:draftId}).count() > 0
+        Session.set 'isReviewMode','true'
+        gridster.disable()
+        $("#title").attr("disabled", "disabled")
+        $("#addontitle").attr("disabled", "disabled")
+      else
+        Session.set 'isReviewMode','false'
+        gridster.enable()
+        $("#title").attr("disabled", false)
+        $("#addontitle").attr('disabled',false)
+    else
+      Session.set 'isReviewMode','false'
+      gridster.enable()
+      $("#title").attr("disabled", false)
+      $("#addontitle").attr('disabled',false)
     return
 
   Template.addPost.helpers
     isReviewMode:->
       if Session.get('isReviewMode') is 'true'
-         'true'
+        console.log "gridster.disable "
+        gridster.disable()
+        $("#title").attr("disabled", "disabled")
+        $("#addontitle").attr("disabled", "disabled")
+        'true'
       else
+        console.log "gridster.enable "
+        gridster.enable()
+        $("#title").attr("disabled", false)
+        $("#addontitle").attr('disabled',false)
         null
+    draftTitles:->
+      draftData = Drafts.find().fetch()
+      draftId = draftData[0]._id;
+      SavedDrafts.find({_id:draftId}).fetch()[0]
+#      if findResult.count() > 0
+#        findResult.fetch()[0]
     mainImage:->
 #      Meteor.setTimeout ->
 #        $('.mainImage').css('height',$(window).height()*0.55)
