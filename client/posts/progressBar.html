@@ -1,0 +1,14 @@
+<template name="progressBar">
+    <div class="progressBar">
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{progressBarWidth}}%">
+                {{progressBarWidth}}%
+            </div>
+        </div>
+        {{#if isDelayPublish}}
+            <div class="btnDelayPublish">
+                <center><button id="delayPublish" class="btn btn-primary">稍后发表</button></center>
+            </div>
+        {{/if}}
+    </div>
+</template>
