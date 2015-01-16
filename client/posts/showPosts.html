@@ -34,10 +34,18 @@
     <div class="gridster">
         <ul id="test">
             {{#each pub}}
-            <li id="{{_id}}" data-row="1" data-col="2" data-sizex="2" data-sizey="3">
-                <div style="background-image: url({{imgUrl}}); background-repeat: no-repeat;background-size: cover; background-position: center; height: 100%;">
-                </div>
-            </li>
+                {{#if isImage}}
+                    <li class='resortitem' id="{{_id}}" data-row="1" data-col="3" data-sizex="3" data-sizey="3">
+                        <div style="background-image: url({{imgUrl}}); background-repeat: no-repeat;background-size: cover; background-position: center; height: 100%;">
+                        </div>
+                    </li>
+                {{else}}
+                    <li class='resortitem' id="{{_id}}TextLi" data-row="1" data-col="3" data-sizex="3" data-sizey="1">
+                        <div class="textdiv">
+                            <textarea id={{_id}} name="textarea" disabled="disabled" >{{text}}</textarea>
+                        </div>
+                    </li>
+                {{/if}}
             {{/each}}
         </ul>
     </div>

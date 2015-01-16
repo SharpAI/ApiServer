@@ -35,7 +35,7 @@ if Meteor.isClient
 
     initToolBar = (node, gridster)->
       console.log 'Added node id is ' + node.id
-      type = node.$blaze_range.view.dataVar.curValue.type
+      type = node.$blaze_range.view.parentView.dataVar.curValue.type
       if type == "text"
           if gridster != undefined
             gridster.add_widget(node, 4, 1)
@@ -54,6 +54,9 @@ if Meteor.isClient
 
               $(textarea).focusout(()->
                 $(this).attr("disabled", "true")
+                id = $(this).attr("id")
+                text = $(this).val()
+                Drafts.update({_id: id}, {$set: {text: text}});
               )
             return
           )
@@ -136,6 +139,12 @@ if Meteor.isClient
         Drafts.find({type:'image'}).fetch()[0]
       else
         null
+
+    pub:()->
+      if Drafts.find().count() > 1
+        for i in [1..(Drafts.find().count()-1)]
+          Drafts.find().fetch()[i]
+
     items:()->
       if Drafts.find({type:'image'}).count() > 1
         for i in [1..(Drafts.find({type:'image'}).count()-1)]
@@ -152,10 +161,10 @@ if Meteor.isClient
         #console.log 'upload success: url is ' + result
         #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
         console.log 'upload success: url is ' + result.smallImage
-        Drafts.insert {type:'image', owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
+        Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
       return
     'click #addText':->
-      Drafts.insert {type:'text', owner: Meteor.userId(), text:''}
+      Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:''}
       return
     'click #back':(event)->
       Drafts
@@ -273,11 +282,8 @@ if Meteor.isClient
             mainImage = 'http://bcs.duapp.com/travelers-km/'+draftData[i].filename
             mainText = $("#"+draftData[i]._id+"text").val()
           else
-            pub.push {
-              _id: draftData[i]._id,
-              imgUrl:'http://bcs.duapp.com/travelers-km/'+draftData[i].filename,
-              text: $("#"+draftData[i]._id+"text").val(),
-            }
+            pub.push(draftData[i])
+
 #        console.log "#####end" + pub
         Posts.insert {
           _id:postId,
