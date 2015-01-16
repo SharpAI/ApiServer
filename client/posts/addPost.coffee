@@ -168,11 +168,10 @@ if Meteor.isClient
         $("#addontitle").attr('disabled',false)
         null
     draftTitles:->
-      draftData = Drafts.find().fetch()
-      draftId = draftData[0]._id;
-      SavedDrafts.find({_id:draftId}).fetch()[0]
-#      if findResult.count() > 0
-#        findResult.fetch()[0]
+      if Drafts.find().count() > 0
+        draftData = Drafts.find().fetch()
+        draftId = draftData[0]._id;
+        SavedDrafts.find({_id:draftId}).fetch()[0]
     mainImage:->
 #      Meteor.setTimeout ->
 #        $('.mainImage').css('height',$(window).height()*0.55)
