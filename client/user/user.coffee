@@ -14,10 +14,11 @@ if Meteor.isClient
         false
     items:()->
       value = 0
-      if SavedDrafts.find().count() >=2
+      count = SavedDrafts.find().count()
+      if count >=2
         value = 1
       else
-        value = SavedDrafts.find().count()-1
+        value = count-1
       for i in [0..value]
         SavedDrafts.find().fetch()[i]
     postsCount:->
@@ -76,8 +77,8 @@ if Meteor.isClient
       PUB.page('/add')
     'click .draftRight':(e)->
       PUB.page('/allDrafts')
-    'click .postImages ul li':(e)->
-      PUB.page('/posts/'+e.currentTarget.id)
+    'click .postImage': (e)->
+      Router.go '/posts/'+this._id
     'click .postRight':(e)->
-      PUB.page('/myPosts')
+      PUB.page('/allPosts')
 
