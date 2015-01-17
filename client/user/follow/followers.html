@@ -11,7 +11,11 @@
             <!--列出偶像-->
             <img class="icon" src="{{followerIcon}}" width='30' height='30'>
             <div class="userName">{{followerName}}</div>
-            <div class="follow"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
+            {{#if isFollowed this}}
+              <div id="{{followerId}}" class="follow del"><span class="fa fa-check"></span><i class="fa fa-user"></i></div>
+            {{else}}
+              <div id="{{followerId}}" class="follow add"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
+            {{/if}}
             <div class="desc">{{followerDesc}}</div>
             </a>
         {{else}}
@@ -19,7 +23,11 @@
             <!--列出粉丝-->
             <img class="icon" src="{{userIcon}}" width='30' height='30'>
             <div class="userName">{{userName}}</div>
-            <div class="follow"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
+            {{#if isFollowed this}}
+              <div id="{{userId}}" class="follow del"><span class="fa fa-check"></span><i class="fa fa-user"></i></div>
+            {{else}}
+              <div id="{{userId}}" class="follow add"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
+            {{/if}}
             <div class="desc">{{userDesc}}</div>
             </a>
         {{/if}}
