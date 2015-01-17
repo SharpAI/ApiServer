@@ -47,8 +47,9 @@ if Meteor.isClient
                 $(this).attr("disabled", "true")
                 id = $(this).attr("text")
                 text = $(this).val()
-                Drafts.update({_id: id}, {$set: {text: text}});
+                #Drafts.update({_id: id}, {$set: {text: text}});
               )
+
             if buttonClicked.id == "del"
               console.log("del "+ node.id)
               if gridster?
@@ -158,6 +159,7 @@ if Meteor.isClient
           gridster.disable_resize()
         $("#title").attr("disabled", "disabled")
         $("#addontitle").attr("disabled", "disabled")
+        `global_toolbar_hidden = true`
         'true'
       else
         console.log "gridster.enable "
@@ -166,6 +168,7 @@ if Meteor.isClient
           gridster.enable_resize()
         $("#title").attr("disabled", false)
         $("#addontitle").attr('disabled',false)
+        `global_toolbar_hidden = false`
         null
     draftTitles:->
       if Drafts.find().count() > 0
@@ -196,6 +199,10 @@ if Meteor.isClient
           Drafts.find({type:'text'}).fetch()[i]
 
   Template.addPost.events
+    'change [name=textarea]' : (e,cxt)->
+      console.log("textarea change "+ e.currentTarget.value)
+      Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
+
     'click #addmore':->
       #uploadFile (result)->
       selectMediaFromAblum (result)->

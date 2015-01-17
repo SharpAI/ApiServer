@@ -53,6 +53,12 @@ if ( typeof Object.create !== 'function' ) {
             var self = this;
 
             self.$elem.on('click', function(event) {
+                if (typeof global_toolbar_hidden !== "undefined" && global_toolbar_hidden !== null) {
+                    if (global_toolbar_hidden) {
+                        return;
+                    }
+
+                }
                 event.preventDefault();
                 if(self.$elem.hasClass('pressed')) {
                     self.hide();
