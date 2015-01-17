@@ -7,6 +7,8 @@ if Meteor.isClient
 #    $('.title').css('top',$(window).height()*0.25)
 #    $('.addontitle').css('top',$(window).height()*0.35)
     console.log 'addPost rendered'
+    #testMenu will be main/font/align. It's for controlling the icon on text menu
+    Session.set('textMenu','main')
     #init
     this.find('.content')._uihooks = {
       insertElement: (node, next)->
@@ -22,6 +24,58 @@ if Meteor.isClient
 #        $('.addontitle').css('top',$(window).height()*0.35)
     }
 
+    toolbarHiddenHandle = (event,node)->
+      if Session.get('textMenu') isnt 'main'
+        setTimeout ()->
+            Session.set 'textMenu','main'
+            $(node).data('toolbarObj').options.content= '#text-toolbar-options'
+            $(node).data('toolbarObj').reInitializeToolbar()
+          ,500
+    toolbarMainMenuClickHandle = (event, buttonClicked,node,grid)->
+      $(node).data('toolbarObj').hide()
+      if buttonClicked.id == "modify"
+        textdiv = $(event.target).children('.textdiv')
+        textarea = textdiv.children('textarea')
+        #$(textarea).removeAttr("disabled")
+        $(textarea).attr('disabled',false)
+        $(textarea).first().focus()
+
+        $(textarea).focusout(()->
+          $(this).attr("disabled", "true")
+          id = $(this).attr("text")
+          text = $(this).val()
+          #Drafts.update({_id: id}, {$set: {text: text}});
+        )
+      if buttonClicked.id == "del"
+        console.log("del "+ node.id)
+        if gridster?
+          gridster.remove_widget2(node, true)
+        Drafts.remove node.id
+      else if buttonClicked.id is "font"
+        setTimeout ()->
+            Session.set 'textMenu','font'
+            $(node).data('toolbarObj').options.content= '#text-font-toolbar-options'
+            $(node).data('toolbarObj').reInitializeToolbar()
+            $(node).data('toolbarObj').show()
+          ,500
+      else if buttonClicked.id is "align"
+        setTimeout ()->
+            Session.set 'textMenu','align'
+            $(node).data('toolbarObj').options.content= '#text-align-toolbar-options'
+            $(node).data('toolbarObj').reInitializeToolbar()
+            $(node).data('toolbarObj').show()
+          ,500
+      else if buttonClicked.id is "aligntoleft"
+        console.log 'Need aligntoleft'
+      else if buttonClicked.id is "aligntocenter"
+        console.log 'Need aligntocenter'
+      else if buttonClicked.id is "aligntoright"
+        console.log 'Need aligntoright'
+      else if buttonClicked.id is "font-normal"
+        console.log 'Need font-normal'
+      else if buttonClicked.id is "font-quato"
+        console.log 'Need font-quato'
+      return
 
     initToolBar = (node, grid)->
       console.log 'Added node id is ' + node.id
@@ -33,31 +87,12 @@ if Meteor.isClient
             content: '#text-toolbar-options'
             position: 'top'
             hideOnClick: true
-
-          $(node).on('toolbarItemClick', (event, buttonClicked)->
-            console.log("toolbarItemClick" + buttonClicked.id)
-            if buttonClicked.id == "modify"
-              textdiv = $(event.target).children('.textdiv')
-              textarea = textdiv.children('textarea')
-              #$(textarea).removeAttr("disabled")
-              $(textarea).attr('disabled',false)
-              $(textarea).first().focus()
-
-              $(textarea).focusout(()->
-                $(this).attr("disabled", "true")
-                id = $(this).attr("text")
-                text = $(this).val()
-                #Drafts.update({_id: id}, {$set: {text: text}});
-              )
-
-            if buttonClicked.id == "del"
-              console.log("del "+ node.id)
-              if gridster?
-                gridster.remove_widget2(node, true)
-              Drafts.remove node.id
-            return
-          )
-
+          $(node)
+            .on 'toolbarItemClick', (event, buttonClicked)=>
+              console.log("toolbarItemClick on " + buttonClicked.id)
+              toolbarMainMenuClickHandle(event, buttonClicked,node,grid)
+            .on 'toolbarHidden', (event)=>
+              toolbarHiddenHandle(event,node)
         else if type == "image"
           if grid != undefined
             grid.add_widget(node, 3, 3)
