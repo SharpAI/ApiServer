@@ -14,6 +14,11 @@ if Meteor.isClient
     display_footer:()->
       Meteor.isCordova
   Template.footer.events
+    'click .btn':(e)->
+      page = '/' + e.currentTarget.id;
+      if e.currentTarget.id is 'home'
+        page = '/'
+      PUB.page(page)
     'click #add':(e)->
       console.log 'Clicked on ADD'
       selectMediaFromAblum (result)->
