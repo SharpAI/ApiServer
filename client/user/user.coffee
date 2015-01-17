@@ -77,8 +77,8 @@ if Meteor.isClient
       PUB.page('/add')
     'click .draftRight':(e)->
       PUB.page('/allDrafts')
-    'click .postImage': (e)->
-      Router.go '/posts/'+this._id
+    'click .postImages ul li':(e)->
+      Router.go '/posts/'+e.currentTarget.id
     'click .postRight':(e)->
-      PUB.page('/allPosts')
+      PUB.page('/myPosts')
 

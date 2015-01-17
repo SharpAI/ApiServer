@@ -43,9 +43,6 @@ if Meteor.isClient
     Router.route '/allDrafts',()->
       this.render 'allDrafts'
       Session.set 'channel','allDrafts'
-    Router.route '/allPosts',()->
-      this.render 'allPosts'
-      Session.set 'channel','allPosts'
     Router.route '/progressBar',()->
       this.render 'progressBar'
       Session.set 'channel','progressBar'
