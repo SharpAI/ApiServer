@@ -49,6 +49,13 @@ if ( typeof Object.create !== 'function' ) {
             self.toolbarWidth = self.toolbar.width();
         },
 
+        reInitializeToolbar: function() {
+            var self = this;
+            self.reinitContent();
+            //self.setTrigger();
+            self.toolbarWidth = self.toolbar.width();
+        },
+
         setTrigger: function() {
             var self = this;
 
@@ -133,7 +140,16 @@ if ( typeof Object.create !== 'function' ) {
                 self.hide();
             });
         },
-
+        reinitContent: function() {
+            var self = this;
+            var location = self.toolbar.find('.tool-items');
+            var content = $(self.options.content).clone( true ).find('a').addClass('tool-item gradient');
+            location.html(content);
+            location.find('.tool-item').on('click', function(event) {
+                event.preventDefault();
+                self.$elem.trigger('toolbarItemClick', this);
+            });
+        },
         calculatePosition: function() {
             var self = this;
                 self.arrowCss = {};
