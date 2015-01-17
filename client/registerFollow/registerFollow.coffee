@@ -24,14 +24,13 @@ Template.registerFollow.events
     Router.go('/')
   'click .add':(e)->
     followsId = e.currentTarget.id
-    
     Follower.insert {
       userId: Meteor.userId()
       #用户更新fullname后，这里存放fullname
       userName: Meteor.user().username
       #刚注册，用户还没有设置头像和个性签名
-      #userIcon: Meteor.user().profile.icon
-      #userDesc: Meteor.user().profile.desc
+      userIcon: Meteor.user().profile.icon
+      userDesc: Meteor.user().profile.desc
       followerId: Follows.findOne({_id:followsId}).userId
       #这里存放fullname
       followerName: Follows.findOne({_id:followsId}).fullname

@@ -2,13 +2,18 @@ Template.signupForm.events({
     'click #btn_back': function () {
       Router.go('/authOverlay');
     },
-	'submit #signup-form':function(e,t){
-		e.preventDefault();
-		Accounts.createUser({
+    'submit #signup-form':function(e,t){
+      e.preventDefault();
+      Accounts.createUser({
           username:t.find('#signup-username').value,
           password:t.find('#signup-password').value,
-          email:t.find('#signup-email').value
-		},function(err){
+          email:t.find('#signup-email').value,
+          profile:{
+            fullname: '',
+            icon: '/userPicture.png',
+            desc: ''
+          }
+        },function(err){
           if(err){
             alert("Account is not created");
           }
@@ -16,6 +21,6 @@ Template.signupForm.events({
           {
             Router.go('/registerFollow');
           }
-		});
-	}
+      });
+    }
 });

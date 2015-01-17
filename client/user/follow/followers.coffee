@@ -22,6 +22,28 @@ if Meteor.isClient
          '正在关注'
       else
          '关注者'
+    isFollowed:(follow)->
+      if Session.get('followers_tag')
+         #follow.userId是自己
+         #follow.followerId是偶像
+         #这个页面可以取消关注，所以要重新检查是否还有关注
+         fcount = Follower.find({"userId":Meteor.userId(),"followerId":follow.followerId}).count()
+      else
+         #follow.userId是粉丝
+         #找followerId是follow.userId，是否互粉
+         fcount = Follower.find({"userId":Meteor.userId(),"followerId":follow.userId}).count()
+      if fcount > 0
+         true
+      else
+         false
+
   Template.followers.events
     'click .back' :->
       Router.go '/user'
+    'click .del':(e)->
+      followerId = e.currentTarget.id
+      FollowerId = Follower.findOne({
+                     userId: Meteor.userId()
+                     followerId: followerId
+                 })._id
+      Follower.remove(FollowerId)
