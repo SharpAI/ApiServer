@@ -222,7 +222,7 @@ if (Meteor.isCordova){
         for (var i=0; i<draftData.length; i++) {
             uploadToBCS(draftData[i].filename, draftData[i].URI, function(result){
                 uploadedCount++;
-                console.log("uploading("+uploadedCount+")...");
+                console.log("uploading("+uploadedCount+"/"+draftData.length+")...");
                 if (uploadedCount == draftData.length) {
                     /*window.imagePicker.cleanupPersistentDirectory(function(result2){
                         console.log('cleanupPersistentDirectory suc ');
@@ -297,8 +297,10 @@ if (Meteor.isCordova){
             catch (error){
               length=results.length;
             }
-            if (length == 0)
+            if (length == 0) {
+              PUB.back();
               return;
+            }
             for (var i = 0; i < length; i++) {
               var timestamp = new Date().getTime();
               var originalFilename = results[i].replace(/^.*[\\\/]/, '');
