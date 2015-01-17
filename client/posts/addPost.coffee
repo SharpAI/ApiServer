@@ -331,6 +331,8 @@ if Meteor.isClient
             mainImage = 'http://bcs.duapp.com/travelers-km/'+draftData[i].filename
             mainText = $("#"+draftData[i]._id+"text").val()
           else
+            if draftData[i].isImage
+              draftData[i].imgUrl = 'http://bcs.duapp.com/travelers-km/'+draftData[i].filename
             pub.push(draftData[i])
 
 #        console.log "#####end" + pub
