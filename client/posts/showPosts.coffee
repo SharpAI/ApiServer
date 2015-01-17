@@ -55,9 +55,9 @@ if Meteor.isClient
       current = Router.current();
       url = current.url;
       if url.indexOf("http") > 0
-        url = url.replace("meteor.local", "hotshare.meteor.com");
+        url = url.replace("meteor.local", "54.149.51.44");
       else
-        url = "http://hotshare.meteor.com"+url;
+        url = "http://54.149.51.44"+url;
       window.plugins.socialsharing.share(this.title+':'+this.addontitle+'(来自 故事贴)', null, null, url);
     'click .img': (e)->
       images = []
