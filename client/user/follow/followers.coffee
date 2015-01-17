@@ -47,3 +47,28 @@ if Meteor.isClient
                      followerId: followerId
                  })._id
       Follower.remove(FollowerId)
+    'click .add':(e)->
+      followerId = e.currentTarget.id
+      Meteor.subscribe "userinfo", followerId, ()->
+      follower = Meteor.users.findOne {_id: followerId}
+      if follower.profile.fullname
+         followername = follower.profile.fullname
+      else
+         followername = follower.username
+      if Meteor.user().profile.fullname
+         username = Meteor.user().profile.fullname
+      else
+         username = Meteor.user().username
+      Follower.insert {
+        userId: Meteor.userId()
+        #这里存放fullname
+        userName: username
+        userIcon: Meteor.user().profile.icon
+        userDesc: Meteor.user().profile.desc
+        followerId: followerId
+        #这里存放fullname
+        followerName: followername
+        followerIcon: follower.profile.icon
+        followerDesc: follower.profile.desc
+        createAt: new Date()
+    }

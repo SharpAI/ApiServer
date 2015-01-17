@@ -29,6 +29,7 @@ Template.registerFollow.events
       #用户更新fullname后，这里存放fullname
       userName: Meteor.user().username
       #刚注册，用户还没有设置头像和个性签名
+      #注册时，头像用默认头像，desc用''
       userIcon: Meteor.user().profile.icon
       userDesc: Meteor.user().profile.desc
       followerId: Follows.findOne({_id:followsId}).userId
