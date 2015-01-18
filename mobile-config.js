@@ -1,7 +1,7 @@
 App.info({
   id: 'org.hotshare.everywhere',
   version: '0.1.0',
-  name: '故事贴',
+  name: 'hotShare',
   description: 'Share everything with everyone',
   author: 'hotShare Design Team',
   email: '',
