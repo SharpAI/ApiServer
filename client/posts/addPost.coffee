@@ -6,7 +6,8 @@ if Meteor.isClient
 #    $('.mainImage').css('height',$(window).height()*0.4)
 #    $('.title').css('top',$(window).height()*0.25)
 #    $('.addontitle').css('top',$(window).height()*0.35)
-    console.log 'addPost rendered'
+
+    console.log 'addPost rendered rev=7'
     #testMenu will be main/font/align. It's for controlling the icon on text menu
     Session.set('textMenu','main')
     #init
@@ -33,19 +34,16 @@ if Meteor.isClient
           ,500
     toolbarMainMenuClickHandle = (event, buttonClicked,node,grid)->
       $(node).data('toolbarObj').hide()
+      textdiv = $(event.target).children('.textdiv')
+      textarea = textdiv.children('textarea')
+      doc_id =  $(textarea).attr("text")
       if buttonClicked.id == "modify"
-        textdiv = $(event.target).children('.textdiv')
-        textarea = textdiv.children('textarea')
-        #$(textarea).removeAttr("disabled")
         $(textarea).attr('disabled',false)
         $(textarea).first().focus()
-
         $(textarea).focusout(()->
-          $(this).attr("disabled", "true")
-          id = $(this).attr("text")
-          text = $(this).val()
-          #Drafts.update({_id: id}, {$set: {text: text}});
+                    $(this).attr("disabled", "true")
         )
+
       if buttonClicked.id == "del"
         console.log("del "+ node.id)
         if gridster?
@@ -67,14 +65,24 @@ if Meteor.isClient
           ,500
       else if buttonClicked.id is "aligntoleft"
         console.log 'Need aligntoleft'
+        style = "font-family:" + textarea.css("font-family") + ';font-size:' + textarea.css("font-size") + ';text-align:left;'
+        Drafts.update({_id: doc_id}, {$set: {style: style}});
       else if buttonClicked.id is "aligntocenter"
         console.log 'Need aligntocenter'
+        style = "font-family:" + textarea.css("font-family") + ';font-size:' + textarea.css("font-size") + ';text-align:center;'
+        Drafts.update({_id: doc_id}, {$set: {style: style}});
       else if buttonClicked.id is "aligntoright"
         console.log 'Need aligntoright'
+        style = "font-family:" + textarea.css("font-family") + ';font-size:' + textarea.css("font-size") + ';text-align:right;'
+        Drafts.update({_id: doc_id}, {$set: {style: style}});
       else if buttonClicked.id is "font-normal"
         console.log 'Need font-normal'
+        style = 'font-family:;font-size:medium' + ';text-align:' + textarea.css('text-align')+';'
+        Drafts.update({_id: doc_id}, {$set: {style: style}});
       else if buttonClicked.id is "font-quato"
         console.log 'Need font-quato'
+        style = "font-family:Times New Roman, Times, serif" + ';font-size:xx-large' + ';text-align:' + textarea.css('text-align')+';'
+        Drafts.update({_id: doc_id}, {$set: {style: style}});
       return
 
     initToolBar = (node, grid)->
@@ -247,7 +255,7 @@ if Meteor.isClient
         Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
       return
     'click #addText':->
-      Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:''}
+      Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:'', style:''}
       return
     'click .back':(event)->
       Drafts
