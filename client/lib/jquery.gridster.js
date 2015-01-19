@@ -1647,7 +1647,7 @@
             offset_top: this.options.widget_margins[1],
             container_width: this.cols * this.min_widget_width,
             limit: true,
-            ignore_dragging: ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON',
+            ignore_dragging: ['INPUT', 'SELECT', 'BUTTON',
                 '.' + this.options.resize.handle_class],
             start: function(event, ui) {
                 self.$widgets.filter('.player-revert')
