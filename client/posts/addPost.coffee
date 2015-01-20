@@ -86,7 +86,7 @@ if Meteor.isClient
       return
 
     initToolBar = (node, grid)->
-      console.log 'Added node id is ' + node.id
+      #console.log 'Added node id is ' + node.id
       type = node.$blaze_range.view.parentView.dataVar.curValue.type
       if type == "text"
           if grid != undefined
@@ -97,7 +97,7 @@ if Meteor.isClient
             hideOnClick: true
           $(node)
             .on 'toolbarItemClick', (event, buttonClicked)=>
-              console.log("toolbarItemClick on " + buttonClicked.id)
+              #console.log("toolbarItemClick on " + buttonClicked.id)
               toolbarMainMenuClickHandle(event, buttonClicked,node,grid)
             .on 'toolbarHidden', (event)=>
               toolbarHiddenHandle(event,node)
@@ -136,7 +136,7 @@ if Meteor.isClient
 
     this.find('#display')._uihooks = {
       insertElement: (node, next)->
-        console.log('Inserted node id is ' + node.id);
+        #console.log('Inserted node id is ' + node.id);
         $(node).insertBefore(next)
 
         Deps.afterFlush =>
