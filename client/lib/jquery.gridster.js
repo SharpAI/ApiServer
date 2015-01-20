@@ -517,6 +517,11 @@
         if(this.options.from_resiable){
             this.$container.on(pointer_events.start, this.options.items,
                 $.proxy(this.drag_handler, this));
+        } else {
+            $(this.options.items).each($.proxy(function(index,element){
+                var $el = $(element);
+                this.added_widget($el);
+            },this));
         }
 
         this.$body.on(pointer_events.end, $.proxy(function(e) {
