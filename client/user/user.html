@@ -5,12 +5,10 @@
           <span class="fa fa-plus"></span><i class="fa fa-user"></i>
       </div>
       <div>个人资料</div>
-<!--      <div class="rightButton">{{> loginButtons align="right"}} </div>-->
       <div id="setting" class="rightButton"><i class="fa fa-cog"></i></div>
     </div>
     <div class="top">
       <div class="icon">
-<!--        <img src="{{currentUser.profile.icon}}" width='60' height='60'/>-->
         {{#if currentUser.profile.icon}}
           <img src="{{currentUser.profile.icon}}" width='60' height='60'>
         {{else}}

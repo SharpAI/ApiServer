@@ -3,7 +3,7 @@ if Meteor.isClient
 
   Template.addPost.rendered=->
 #    $('.img').css('max-width',$(window).width())
-#    $('.mainImage').css('height',$(window).height()*0.4)
+    $('.addPost').css('min-height',$(window).height())
 #    $('.title').css('top',$(window).height()*0.25)
 #    $('.addontitle').css('top',$(window).height()*0.35)
 
@@ -277,19 +277,22 @@ if Meteor.isClient
           Drafts.remove drafts._id
       PUB.back()
       return
-    'click #cancle':->
-      draftData = Drafts.find().fetch()
-      draftId = draftData[0]._id;
-      if SavedDrafts.find({_id:draftId}).count() > 0
-        Session.set 'isReviewMode','true'
-      else
-        #Router.go('/')
-        Drafts
-          .find {owner: Meteor.userId()}
-          .forEach (drafts)->
-            Drafts.remove drafts._id
-      history.back()
-      return
+    'click .cancle':->
+      try 
+        draftData = Drafts.find().fetch()
+        draftId = draftData[0]._id
+        if SavedDrafts.find({_id:draftId}).count() > 0
+          Session.set 'isReviewMode','true'
+        else
+          #Router.go('/')
+          Drafts
+            .find {owner: Meteor.userId()}
+            .forEach (drafts)->
+              Drafts.remove drafts._id
+        history.back()
+        return
+      catch
+        history.back()
     'click #saveDraft':->
         layout = JSON.stringify(gridster.serialize())
         pub=[]
