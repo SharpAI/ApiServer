@@ -498,9 +498,12 @@
         this.$container.on('selectstart.gridster-draggable',
             $.proxy(this.on_select_start, this));
 
-        // Do not trigger by click event, but long press on each elements since the jquery plugin is not register as 'touchmove' event.
-        //this.$container.on(pointer_events.start, this.options.items,
-        //  $.proxy(this.drag_handler, this));
+        // Do not trigger by click event, but long press on each elements since the jquery plugin is not register as 'touchmove' event. But for resizable, we need enable this event.
+
+        if(this.options.from_resiable){
+            this.$container.on(pointer_events.start, this.options.items,
+                $.proxy(this.drag_handler, this));
+        }
 
         this.$body.on(pointer_events.end, $.proxy(function(e) {
             this.is_dragging = false;
@@ -1694,6 +1697,7 @@
     */
     fn.resizable = function() {
         this.resize_api = this.$el.drag({
+            from_resiable: true,
             items: '.' + this.options.resize.handle_class,
             offset_left: this.options.widget_margins[0],
             container_width: this.container_width,
