@@ -491,17 +491,21 @@
         this.$container.on('selectstart.gridster-draggable',
             $.proxy(this.on_select_start, this));
 
-        this.$container.on(pointer_events.start, this.options.items,
-            $.proxy(this.drag_handler, this));
-
-        this.$body.on(pointer_events.end, $.proxy(function(e) {
-            this.is_dragging = false;
-            if (this.disabled) { return; }
-            this.$body.off(pointer_events.move);
-            if (this.drag_start) {
-                this.on_dragstop(e);
-            }
-        }, this));
+        this.$container.longpress($.proxy(function(e){
+            this.$container.on(pointer_events.start, this.options.items,
+                $.proxy(this.drag_handler, this));
+            //console.log('longpress on item ' + e.target.id);
+            //this.drag_handler(e);
+            this.$body.on(pointer_events.end, $.proxy(function(e) {
+                this.is_dragging = false;
+                if (this.disabled) { return; }
+                this.$body.off(pointer_events.move);
+                if (this.drag_start) {
+                    this.on_dragstop(e);
+                }
+            }, this));
+          },this)
+        );
     };
 
     fn.get_actual_pos = function($el) {
