@@ -490,6 +490,20 @@
     //Added added_widget hook, to process added longpress event.
     fn.added_widget = function($el){
         $el.longpress($.proxy(function(e){
+            $el.animate({
+                'marginLeft' : "+=5px", //moves Right
+                'marginTop' : "-=5px"
+            },{
+                duration : 200,
+                complete : function(){
+                  $el.animate({
+                      'marginLeft' : "-=5px", //moves Left
+                      'marginTop' : "+=5px"
+                  },{
+                      duration:200
+                  });
+                }
+            });
             this.drag_handler(e);
           },this));
     };
