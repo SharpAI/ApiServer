@@ -487,25 +487,29 @@
             throttle($.proxy(this.calculate_dimensions, this), 200));
     };
 
+    //Added added_widget hook, to process added longpress event.
+    fn.added_widget = function($el){
+        $el.longpress($.proxy(function(e){
+            this.drag_handler(e);
+          },this));
+    };
+
     fn.events = function() {
         this.$container.on('selectstart.gridster-draggable',
             $.proxy(this.on_select_start, this));
 
-        this.$container.longpress($.proxy(function(e){
-            this.$container.on(pointer_events.start, this.options.items,
-                $.proxy(this.drag_handler, this));
-            //console.log('longpress on item ' + e.target.id);
-            //this.drag_handler(e);
-            this.$body.on(pointer_events.end, $.proxy(function(e) {
-                this.is_dragging = false;
-                if (this.disabled) { return; }
-                this.$body.off(pointer_events.move);
-                if (this.drag_start) {
-                    this.on_dragstop(e);
-                }
-            }, this));
-          },this)
-        );
+        // Do not trigger by click event, but long press on each elements since the jquery plugin is not register as 'touchmove' event.
+        //this.$container.on(pointer_events.start, this.options.items,
+        //  $.proxy(this.drag_handler, this));
+
+        this.$body.on(pointer_events.end, $.proxy(function(e) {
+            this.is_dragging = false;
+            if (this.disabled) { return; }
+            this.$body.off(pointer_events.move);
+            if (this.drag_start) {
+                this.on_dragstop(e);
+            }
+        }, this));
     };
 
     fn.get_actual_pos = function($el) {
@@ -1576,6 +1580,8 @@
         this.add_to_gridmap(wgd, $el);
 
         this.options.resize.enabled && this.add_resize_handle($el);
+
+        this.drag_api && this.drag_api.added_widget($el);
 
         return this;
     };
