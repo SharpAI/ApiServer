@@ -2,10 +2,7 @@ if Meteor.isClient
   # the only document I found here https://github.com/percolatestudio/transition-helper/blob/master/transition-helper.js#L4
 
   Template.addPost.rendered=->
-#    $('.img').css('max-width',$(window).width())
     $('.addPost').css('min-height',$(window).height())
-#    $('.title').css('top',$(window).height()*0.25)
-#    $('.addontitle').css('top',$(window).height()*0.35)
 
     console.log 'addPost rendered rev=21'
     #testMenu will be main/font/align. It's for controlling the icon on text menu
@@ -13,16 +10,12 @@ if Meteor.isClient
     #init
     this.find('.content')._uihooks = {
       insertElement: (node, next)->
-        console.log('Inserted node id is ' + node.id);
         $(node)
           .insertBefore(next)
-#        $('.mainImage').css('height',$(window).height()*0.4)
         $('.mainImage').toolbar
           content: '#image-toolbar-options'
           position: 'bottom'
           hideOnClick: true
-#        $('.title').css('top',$(window).height()*0.25)
-#        $('.addontitle').css('top',$(window).height()*0.35)
     }
 
     toolbarHiddenHandle = (event,node)->
@@ -242,6 +235,13 @@ if Meteor.isClient
     'change [name=textarea]' : (e,cxt)->
       console.log("textarea change "+ e.currentTarget.value)
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
+
+    'click #takephoto': ()->
+      if window.takePhoto
+        window.takePhoto (url)->
+          console.log 'image url is ' + url
+          if url
+            Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:url, filename:'testfilename.jpg', URI:url, layout:''}
 
     'click #addmore':->
       #uploadFile (result)->
