@@ -7,7 +7,7 @@ if Meteor.isClient
 #    $('.title').css('top',$(window).height()*0.25)
 #    $('.addontitle').css('top',$(window).height()*0.35)
 
-    console.log 'addPost rendered rev=7'
+    console.log 'addPost rendered rev=21'
     #testMenu will be main/font/align. It's for controlling the icon on text menu
     Session.set('textMenu','main')
     #init
@@ -101,7 +101,21 @@ if Meteor.isClient
               toolbarMainMenuClickHandle(event, buttonClicked,node,grid)
             .on 'toolbarHidden', (event)=>
               toolbarHiddenHandle(event,node)
-        else if type == "image"
+
+
+          $('#'+node.id+'TextArea').bind('propertychange input',(e)->
+            e.preventDefault()
+            id = this.id.replace("TextArea", "")
+            sizey = Math.round this.scrollHeight/40
+            if gridster?
+              resizeItem = $('#'+id)
+              resizeItem.css("height", this.scrollHeight)
+              sizex = parseInt(resizeItem.attr("data-sizex"))
+              gridster.resize_widget(resizeItem, sizex,sizey)
+              #console.log('propertychange sizey:'+ sizey + ' scrollHeight:'+this.scrollHeight)
+          )
+
+      else if type == "image"
           if grid != undefined
             grid.add_widget(node, 3, 3)
           $(node).toolbar
@@ -151,24 +165,7 @@ if Meteor.isClient
         size_x: wgd.size_x,
         size_y: wgd.size_y
       };
-    },
-    draggable: {
-      stop: function () {
-        var json = JSON.stringify(gridster.serialize());
-        console.log("draggable draftLayout "+ json);
-        var drafts = Drafts.find({type:'image', owner: Meteor.userId()}).fetch();
-        for (var i = 0; i < drafts.length; i++){
-          Drafts.update({_id: drafts[i]._id}, {$set: {layout: json}});
-        }
-      }
-    }, widget_base_dimensions: [40, 40],widget_margins: [5, 5], min_cols: 3, resize: {enabled: true, stop: function () {
-        var json = JSON.stringify(gridster.serialize());
-        console.log("resize draftLayout "+ json);
-        var drafts = Drafts.find({type:'image', owner: Meteor.userId()}).fetch();
-        for (var i = 0; i < drafts.length; i++){
-          Drafts.update({_id: drafts[i]._id}, {$set: {layout: json}});
-        }
-    }}}).data('gridster');`
+    }, widget_base_dimensions: [40, 40],widget_margins: [5, 5], min_cols: 3, resize: {enabled: true}}).data('gridster');`
     #Set is isReviewMode
     draftData = Drafts.find().fetch()
     if draftData and draftData.length>0
@@ -294,7 +291,7 @@ if Meteor.isClient
       history.back()
       return
     'click #saveDraft':->
-        layout = {}     #JSON.stringify(gridster.serialize())
+        layout = JSON.stringify(gridster.serialize())
         pub=[]
         title = $("#title").val()
         console.log "title = " + title
@@ -308,6 +305,9 @@ if Meteor.isClient
           if i is 0
             mainImage = draftData[i].imgUrl
             mainText = $("#"+draftData[i]._id+"text").val()
+
+          if draftData[i].isImage
+            draftData[i].layout = layout
           pub.push(draftData[i])
           #pub.push {
           #  _id: draftData[i]._id,
@@ -328,7 +328,6 @@ if Meteor.isClient
               mainText: mainText,
               owner:Meteor.userId(),
               createdAt: new Date(),
-              layout: layout
               }}
             )
         else
@@ -341,7 +340,6 @@ if Meteor.isClient
               mainText: mainText,
               owner:Meteor.userId(),
               createdAt: new Date(),
-              layout: layout
             }
         Drafts
           .find {owner: Meteor.userId()}
