@@ -3,8 +3,11 @@ Template.signupForm.events
       Router.go '/authOverlay'
     'submit #signup-form':(e,t)->
       e.preventDefault()
+      if Meteor.status().connected isnt true
+          PUB.toast '当前为离线状态,请检查网络连接'
+          return
       names = t.find('#signup-username').value
-      email = t.find('#signup-email').value
+      email = t.find('#signup-email').value.toLowerCase()
       Session.set 'userName',names
       pass1 = t.find('#signup-password').value
       myRegExp = /[a-z0-9-]{1,30}@[a-z0-9-]{1,65}.[a-z]{2,6}/ ;
