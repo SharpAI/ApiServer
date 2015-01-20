@@ -209,6 +209,7 @@ if (Meteor.isCordova){
 
     uploadFileWhenPublishInCordova = function(draftData, postId){
         if(device.platform === 'Android' ){
+            Router.go('/posts/'+postId);
             return;
         }
         var uploadedCount = 0;
