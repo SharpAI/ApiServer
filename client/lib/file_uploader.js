@@ -215,7 +215,8 @@ if (Meteor.isCordova){
         //console.log("draftData="+JSON.stringify(draftData));
         if (draftData.length > 0) {
             Session.set('isDelayPublish', false);
-            PUB.page('/progressBar');
+//            PUB.page('/progressBar');
+          $('.progressBar').css('display',"block");
         }
         uploadingFilesInfo.filesCount = draftData.length;
         uploadingFilesInfo.files = [];
@@ -231,6 +232,7 @@ if (Meteor.isCordova){
                     });*/
                     Session.set('progressBarWidth', 100);
                     console.log("Jump to post page...");
+                    $('.progressBar').css('display',"none");
                     Router.go('/posts/'+postId);
                 }
             });
