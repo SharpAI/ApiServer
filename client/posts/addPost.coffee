@@ -4,7 +4,7 @@ if Meteor.isClient
   Template.addPost.rendered=->
     $('.addPost').css('min-height',$(window).height())
 
-    console.log 'addPost rendered rev=28'
+    console.log 'addPost rendered rev=30'
     #testMenu will be main/font/align. It's for controlling the icon on text menu
     Session.set('textMenu','main')
     #init
@@ -123,7 +123,24 @@ if Meteor.isClient
 
       else if type == "image"
           if grid != undefined
-            grid.add_widget(node, 3, 3)
+            if Session.get('NewImgAdd') is 'true'
+              grid.add_widget(node, 3, 3)
+            else
+              max_row = 1
+              $('.resortitem:near-viewport(-150)').each( ( i, itemElem )->
+                if i == 0
+                  max_row = parseInt($(itemElem).attr("data-row"))
+                cur_row = parseInt($(itemElem).attr("data-row"))
+                console.log("near-viewport id:"+ itemElem.id + " data-row:"+ cur_row)
+
+                if max_row < cur_row
+                  max_row = cur_row
+              )
+              console.log("max_row " + max_row)
+              size_y = size_x = Math.floor((Math.random() * 3) + 1);
+              col = Math.floor((Math.random() * 6) + 1)
+              grid.add_widget(node, 3, 3, col, max_row)
+
           $(node).toolbar
             content: '#image-toolbar-options'
             position: 'top'
@@ -259,6 +276,7 @@ if Meteor.isClient
 
     'click #addmore':->
       #uploadFile (result)->
+      Session.set('NewImgAdd','false')
       selectMediaFromAblum (result)->
         if result
           #console.log 'upload success: url is ' + result
