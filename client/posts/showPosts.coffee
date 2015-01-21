@@ -13,11 +13,6 @@ if Meteor.isClient
 #    $('.addontitle').css('top',$(window).height()*0.35)
     window.title = this.title + ':' + this.addontitle
 
-    if this.data.layout != ''
-      json = jQuery.parseJSON(this.data.layout);
-      for item in json
-        $('#' + item.id).attr('data-row', item.row).attr('data-col', item.col).attr('data-sizex', item.size_x).attr('data-sizey', item.size_y)
-
     test = $("#test");
     `gridster = test.gridster({widget_base_dimensions: [40, 40],widget_margins: [5, 5], resize: {enabled: false }}).data('gridster');`
     gridster.disable()

@@ -4,7 +4,7 @@ if Meteor.isClient
   Template.addPost.rendered=->
     $('.addPost').css('min-height',$(window).height())
 
-    console.log 'addPost rendered rev=33'
+    console.log 'addPost rendered rev=34'
     #testMenu will be main/font/align. It's for controlling the icon on text menu
     Session.set('textMenu','main')
     #init
@@ -384,9 +384,6 @@ if Meteor.isClient
         Router.go('/user')
         false
       else
-        #Session.set("draftLayout", '');
-        layout = JSON.stringify(gridster.serialize())
-        #console.log("layout serialize "+ layout)
         pub=[]
         title = $("#title").val()
         addontitle = $("#addontitle").val()
@@ -424,7 +421,6 @@ if Meteor.isClient
           ownerName:Meteor.user().username,
           ownerIcon:ownerIcon,
           createdAt: new Date(),
-          layout: layout
         }
         #Router.go('/posts/'+postId)
         #Delete from SavedDrafts if it is a saved draft.
