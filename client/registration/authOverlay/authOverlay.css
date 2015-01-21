@@ -3,3 +3,4 @@
 .authOverlay #register{position: absolute;bottom: 20%;left: 5%;right: 5%;width: 90%;text-align: center;border: thin solid;border-radius: 50px;padding: 5px;background-color: #00c4ff}
 .authOverlay #weibo{position: absolute;bottom: 12%;left: 5%;right: 5%;width: 90%;text-align: center;border: thin solid;border-radius: 50px;padding: 5px}
 .authOverlay #login{position: absolute;bottom: 5%;left: 30%;right: 30%;text-align: center;}
+.register{position: absolute;top:0px}

@@ -4,7 +4,9 @@ if (Meteor.isClient) {
     };
   Template.authOverlay.events({
     'click #register': function () {
-      Router.go('/signupForm');
+//      Router.go('/signupForm');
+      $('.register').css('display',"block")
+      $('.authOverlay').css('-webkit-filter',"blur(10px)")
     },
     'click #login': function () {
       Router.go('/loginForm');
