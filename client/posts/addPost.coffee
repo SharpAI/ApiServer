@@ -4,7 +4,7 @@ if Meteor.isClient
   Template.addPost.rendered=->
     $('.addPost').css('min-height',$(window).height())
 
-    console.log 'addPost rendered rev=30'
+    console.log 'addPost rendered rev=33'
     #testMenu will be main/font/align. It's for controlling the icon on text menu
     Session.set('textMenu','main')
     #init
@@ -170,15 +170,6 @@ if Meteor.isClient
       initToolBar(itemElem, undefined)
     )
 
-    #draftLayout = Session.get("draftLayout")
-    if Drafts.find({type:'image'}).count() >= 1
-      draftData = Drafts.find({type:'image'}).fetch()
-      draftLayout = draftData[0].layout;
-      if draftLayout != '' and draftLayout != undefined
-        json = jQuery.parseJSON(draftLayout);
-        for item in json
-          $('#' + item.id).attr('data-row', item.row).attr('data-col', item.col).attr('data-sizex', item.size_x).attr('data-sizey', item.size_y)
-
     test = $("#display");
     `gridster = test.gridster({serialize_params: function ($w, wgd) {
       return {
@@ -281,10 +272,10 @@ if Meteor.isClient
           #console.log 'upload success: url is ' + result
           #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
           console.log 'image url is ' + result.smallImage
-          Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
+          Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
       return
     'click #addText':->
-      Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:'', style:''}
+      Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:'', style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
       return
     'click .back':(event)->
       Drafts
@@ -341,8 +332,14 @@ if Meteor.isClient
             mainImage = draftData[i].imgUrl
             mainText = $("#"+draftData[i]._id+"text").val()
 
-          if draftData[i].isImage
-            draftData[i].layout = layout
+          json = jQuery.parseJSON(layout);
+          for item in json
+            if item.id is draftData[i]._id
+              draftData[i].data_row = item.row
+              draftData[i].data_col = item.col
+              draftData[i].data_sizex = item.size_x
+              draftData[i].data_sizey = item.size_y
+
           pub.push(draftData[i])
           #pub.push {
           #  _id: draftData[i]._id,
