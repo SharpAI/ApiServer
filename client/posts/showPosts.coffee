@@ -12,9 +12,10 @@ if Meteor.isClient
 #    $('.title').css('top',$(window).height()*0.25)
 #    $('.addontitle').css('top',$(window).height()*0.35)
     window.title = this.title + ':' + this.addontitle
-
+    console.log("show post rev 2")
+    base_size=($( window ).width()/6 - 10);
     test = $("#test");
-    `gridster = test.gridster({widget_base_dimensions: [40, 40],widget_margins: [5, 5], resize: {enabled: false }}).data('gridster');`
+    `gridster = test.gridster({widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], resize: {enabled: false }}).data('gridster');`
     gridster.disable()
     window.lastScroll = 0;
 
