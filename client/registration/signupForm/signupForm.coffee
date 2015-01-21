@@ -1,6 +1,7 @@
 Template.signupForm.events
     'click #btn_back' :->
-      Router.go '/authOverlay'
+      $('.register').css('display',"none")
+      $('.authOverlay').css('-webkit-filter',"none")
     'submit #signup-form':(e,t)->
       e.preventDefault()
       if Meteor.status().connected isnt true
