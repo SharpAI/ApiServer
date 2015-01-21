@@ -239,17 +239,19 @@ if Meteor.isClient
     'click #takephoto': ()->
       if window.takePhoto
         window.takePhoto (url)->
-          console.log 'image url is ' + url
+          console.log 'url from camera is ' + url
           if url
-            Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:url, filename:'testfilename.jpg', URI:url, layout:''}
+            originalFilename = url.replace(/^.*[\\\/]/, '');
+            Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:url, filename:originalFilename, URI:url, layout:''}
 
     'click #addmore':->
       #uploadFile (result)->
       selectMediaFromAblum (result)->
-        #console.log 'upload success: url is ' + result
-        #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
-        console.log 'upload success: url is ' + result.smallImage
-        Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
+        if result
+          #console.log 'upload success: url is ' + result
+          #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
+          console.log 'image url is ' + result.smallImage
+          Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
       return
     'click #addText':->
       Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:'', style:''}

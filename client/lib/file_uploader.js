@@ -279,7 +279,9 @@ if (Meteor.isCordova){
                 callback(params);
               });
           }, function(s){
-              console.info(s);
+              if(callback){
+                  callback(null);
+              }
           }, {
             quality: 60,
             targetWidth: 400,
