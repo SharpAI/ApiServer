@@ -268,11 +268,10 @@ if Meteor.isClient
 
     'click #takephoto': ()->
       if window.takePhoto
-        window.takePhoto (url)->
-          console.log 'url from camera is ' + url
-          if url
-            originalFilename = url.replace(/^.*[\\\/]/, '');
-            Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:url, filename:originalFilename, URI:url, layout:''}
+        window.takePhoto (result)->
+          console.log 'result from camera is ' + JSON.stringify(result)
+          if result
+            Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
 
     'click #addmore':->
       #uploadFile (result)->
