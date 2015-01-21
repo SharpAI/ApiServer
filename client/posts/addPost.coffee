@@ -4,7 +4,7 @@ if Meteor.isClient
   Template.addPost.rendered=->
     $('.addPost').css('min-height',$(window).height())
 
-    console.log 'addPost rendered rev=21'
+    console.log 'addPost rendered rev=28'
     #testMenu will be main/font/align. It's for controlling the icon on text menu
     Session.set('textMenu','main')
     #init
@@ -40,7 +40,7 @@ if Meteor.isClient
       if buttonClicked.id == "del"
         console.log("del "+ node.id)
         if gridster?
-          gridster.remove_widget2(node, true)
+          gridster.remove_widget2(node, false)
         Drafts.remove node.id
       else if buttonClicked.id is "font"
         setTimeout ()->
@@ -83,7 +83,20 @@ if Meteor.isClient
       type = node.$blaze_range.view.parentView.dataVar.curValue.type
       if type == "text"
           if grid != undefined
-            grid.add_widget(node, 4, 1)
+            max_row = 1
+            $('.resortitem:near-viewport(-150)').each( ( i, itemElem )->
+              if i == 0
+                max_row = parseInt($(itemElem).attr("data-row"))
+              cur_row = parseInt($(itemElem).attr("data-row"))
+              console.log("near-viewport id:"+ itemElem.id + " data-row:"+ cur_row)
+
+              if max_row < cur_row
+                max_row = cur_row
+            )
+            console.log("max_row " + max_row)
+            grid.add_widget(node, 6, 1, 1, max_row)
+            #grid.manage_movements($(node), 1, max_row)
+            #gridster.mutate_widget_in_gridmap($(node), { col: 1, row: parseInt($(node).attr("data-row")), size_x: 6, size_y: 1 }, { col: 1, row: max_row, size_x: 6, size_y: 1 })
           $(node).toolbar
             content: '#text-toolbar-options'
             position: 'top'
@@ -121,7 +134,7 @@ if Meteor.isClient
               console.log("del "+ node.id)
 
               if gridster?
-                gridster.remove_widget2(node, true)
+                gridster.remove_widget2(node, false)
               Drafts.remove node.id
             return
       return
