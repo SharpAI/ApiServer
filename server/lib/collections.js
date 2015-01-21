@@ -26,12 +26,12 @@ Meteor.startup(function(){
        });
 //加偶像的3个Post
        Posts.insert({
-          pub: [{isImage:true,imgUrl:'/follows/112.jpg'},{isImage:false,text:'秋水共长天一色'},
-                {isImage:true,imgUrl:'/follows/113.jpg'},{isImage:false,text:'夕阳无限好'},
-                {isImage:true,imgUrl:'/follows/114.jpg'},{isImage:false,text:'只是近黄昏'}],
+          pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/112.jpg'},{isImage:false,text:'秋水共长天一色'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/113.jpg'},{isImage:false,text:'夕阳无限好'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/114.jpg'},{isImage:false,text:'只是近黄昏'}],
           title:'落霞与孤鹜齐飞',
           addontitle:'秋水共长天一色',
-          mainImage: '/follows/111.jpg',
+          mainImage: 'http://www.ss750.cn/follows/111.jpg',
           heart:[],  
           retweet:[],
           comment:[],
@@ -42,11 +42,11 @@ Meteor.startup(function(){
           layout: '[]'
        });
        Posts.insert({
-          pub: [{isImage:true,imgUrl:'/follows/122.jpg'},{isImage:false,text:'心里开出一朵花'},
-                {isImage:true,imgUrl:'/follows/123.jpg'},{isImage:false,text:'爱让我们相恋'}],
+          pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/122.jpg'},{isImage:false,text:'心里开出一朵花'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/123.jpg'},{isImage:false,text:'爱让我们相恋'}],
           title:'因为爱情',
           addontitle:'义无反顾',
-          mainImage: '/follows/121.jpg',
+          mainImage: 'http://www.ss750.cn/follows/121.jpg',
           heart:[],  
           retweet:[],
           comment:[],
@@ -57,12 +57,12 @@ Meteor.startup(function(){
           layout: '[]'
        });
        Posts.insert({
-          pub: [{isImage:true,imgUrl:'/follows/132.jpg'},{isImage:false,text:'曾经我们手牵着手'},
-                {isImage:true,imgUrl:'/follows/133.jpg'},{isImage:false,text:'你说要我等你回来'},
-                {isImage:true,imgUrl:'/follows/134.jpg'},{isImage:false,text:'亲爱的，你在哪里'}],
+          pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/132.jpg'},{isImage:false,text:'曾经我们手牵着手'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/133.jpg'},{isImage:false,text:'你说要我等你回来'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/134.jpg'},{isImage:false,text:'亲爱的，你在哪里'}],
           title:'十年',
           addontitle:'我等得花儿都谢了',
-          mainImage: '/follows/131.jpg',
+          mainImage: 'http://www.ss750.cn/follows/131.jpg',
           heart:[],  
           retweet:[],
           comment:[],
@@ -93,11 +93,11 @@ Meteor.startup(function(){
            share3:'/follows/23.jpg'
        });
        Posts.insert({
-          pub: [{isImage:true,imgUrl:'/follows/212.jpg'},{isImage:false,text:'冬日原野'},
-                {isImage:true,imgUrl:'/follows/213.jpg'},{isImage:false,text:'星星之火'}],
+          pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/212.jpg'},{isImage:false,text:'冬日原野'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/213.jpg'},{isImage:false,text:'星星之火'}],
           title:'冬季',
           addontitle:'我想大约会是在冬季',
-          mainImage: '/follows/211.jpg',
+          mainImage: 'http://www.ss750.cn/follows/211.jpg',
           heart:[],  
           retweet:[],
           comment:[],
@@ -108,11 +108,11 @@ Meteor.startup(function(){
           layout: '[]'
        });
        Posts.insert({
-          pub: [{isImage:true,imgUrl:'/follows/222.jpg'},{isImage:false,text:'katharine ross there the list'},
-                {isImage:true,imgUrl:'/follows/223.jpg'},{isImage:false,text:'Butch cassidy and the sundance kid'}],
+          pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/222.jpg'},{isImage:false,text:'katharine ross there the list'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/223.jpg'},{isImage:false,text:'Butch cassidy and the sundance kid'}],
           title:'Raindrops Keep Falling On My Head',
           addontitle:'Butch cassidy and the sundance kid',
-          mainImage: '/follows/221.jpg',
+          mainImage: 'http://www.ss750.cn/follows/221.jpg',
           heart:[],  
           retweet:[],
           comment:[],
@@ -123,11 +123,11 @@ Meteor.startup(function(){
           layout: '[]'
        });
        Posts.insert({
-          pub: [{isImage:true,imgUrl:'/follows/232.jpg'},{isImage:false,text:'无论在冰天雪地'},
-                {isImage:true,imgUrl:'/follows/233.jpg'},{isImage:false,text:'还是明朗天空'}],
+          pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/232.jpg'},{isImage:false,text:'无论在冰天雪地'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/233.jpg'},{isImage:false,text:'还是明朗天空'}],
           title:'我一直在等待',
           addontitle:'一个女孩',
-          mainImage: '/follows/231.jpg',
+          mainImage: 'http://www.ss750.cn/follows/231.jpg',
           heart:[],  
           retweet:[],
           comment:[],
@@ -158,11 +158,11 @@ Meteor.startup(function(){
            share3:'/follows/33.jpg'
        });
        Posts.insert({
-          pub: [{isImage:true,imgUrl:'/follows/312.jpg'},{isImage:false,text:"Don't be sad"},
-                {isImage:true,imgUrl:'/follows/313.jpg'},{isImage:false,text:'You should smile like a flower'}],
+          pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/312.jpg'},{isImage:false,text:"Don't be sad"},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/313.jpg'},{isImage:false,text:'You should smile like a flower'}],
           title:'And I love you so',
           addontitle:'girl',
-          mainImage: '/follows/311.jpg',
+          mainImage: 'http://www.ss750.cn/follows/311.jpg',
           heart:[],  
           retweet:[],
           comment:[],
@@ -173,11 +173,11 @@ Meteor.startup(function(){
           layout: '[]'
        });
        Posts.insert({
-          pub: [{isImage:true,imgUrl:'/follows/322.jpg'},{isImage:false,text:'Life goes easy on me'},
-                {isImage:true,imgUrl:'/follows/323.jpg'},{isImage:false,text:'Cannot take my eyes off you'}],
+          pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/322.jpg'},{isImage:false,text:'Life goes easy on me'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/323.jpg'},{isImage:false,text:'Cannot take my eyes off you'}],
           title:'A Whiter Shade Of Pale',
           addontitle:'Just like you said it should be',
-          mainImage: '/follows/321.jpg',
+          mainImage: 'http://www.ss750.cn/follows/321.jpg',
           heart:[],  
           retweet:[],
           comment:[],
@@ -188,11 +188,11 @@ Meteor.startup(function(){
           layout: '[]'
        });
        Posts.insert({
-          pub: [{isImage:true,imgUrl:'/follows/332.jpg'},{isImage:false,text:'怎么可能喜欢孤独，不过是不乱交朋友罢了'},
-                {isImage:true,imgUrl:'/follows/333.jpg'},{isImage:false,text:'一个人也很好'}],
+          pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/332.jpg'},{isImage:false,text:'怎么可能喜欢孤独，不过是不乱交朋友罢了'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/333.jpg'},{isImage:false,text:'一个人也很好'}],
           title:'孤独的人',
           addontitle:'是可耻的',
-          mainImage: '/follows/331.jpg',
+          mainImage: 'http://www.ss750.cn/follows/331.jpg',
           heart:[],  
           retweet:[],
           comment:[],
@@ -223,11 +223,11 @@ Meteor.startup(function(){
            share3:'/follows/43.jpg'
        });
        Posts.insert({
-          pub: [{isImage:true,imgUrl:'/follows/412.jpg'},{isImage:false,text:"Don't be panic"},
-                {isImage:true,imgUrl:'/follows/413.jpg'},{isImage:false,text:'After storm it is beautiful'}],
+          pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/412.jpg'},{isImage:false,text:"Don't be panic"},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/413.jpg'},{isImage:false,text:'After storm it is beautiful'}],
           title:'I am Sailing',
           addontitle:'Just need a Sailboat',
-          mainImage: '/follows/411.jpg',
+          mainImage: 'http://www.ss750.cn/follows/411.jpg',
           heart:[],  
           retweet:[],
           comment:[],
@@ -238,11 +238,11 @@ Meteor.startup(function(){
           layout: '[]'
        });
        Posts.insert({
-          pub: [{isImage:true,imgUrl:'/follows/422.jpg'},{isImage:false,text:'有纯真的时光'},
-                {isImage:true,imgUrl:'/follows/423.jpg'},{isImage:false,text:'像个秘密藏在我的心上'}],
+          pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/422.jpg'},{isImage:false,text:'有纯真的时光'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/423.jpg'},{isImage:false,text:'像个秘密藏在我的心上'}],
           title:'有一个地方',
           addontitle:'只有我知道',
-          mainImage: '/follows/421.jpg',
+          mainImage: 'http://www.ss750.cn/follows/421.jpg',
           heart:[],  
           retweet:[],
           comment:[],
@@ -253,11 +253,11 @@ Meteor.startup(function(){
           layout: '[]'
        });
        Posts.insert({
-          pub: [{isImage:true,imgUrl:'/follows/432.jpg'},{isImage:false,text:'Wonderful woman'},
-                {isImage:true,imgUrl:'/follows/433.jpg'},{isImage:false,text:'Wonderful world'}],
+          pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/432.jpg'},{isImage:false,text:'Wonderful woman'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/433.jpg'},{isImage:false,text:'Wonderful world'}],
           title:'Wonderful Night',
           addontitle:'Wonderful World',
-          mainImage: '/follows/431.jpg',
+          mainImage: 'http://www.ss750.cn/follows/431.jpg',
           heart:[],  
           retweet:[],
           comment:[],
@@ -288,11 +288,11 @@ Meteor.startup(function(){
            share3:'/follows/53.jpg'
        });
        Posts.insert({
-          pub: [{isImage:true,imgUrl:'/follows/512.jpg'},{isImage:false,text:'是森林深处满目的萤火虫'},
-                {isImage:true,imgUrl:'/follows/513.jpg'},{isImage:false,text:'还是天涯海角的云雾缭绕'}],
+          pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/512.jpg'},{isImage:false,text:'是森林深处满目的萤火虫'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/513.jpg'},{isImage:false,text:'还是天涯海角的云雾缭绕'}],
           title:'天堂',
           addontitle:'在哪里',
-          mainImage: '/follows/511.jpg',
+          mainImage: 'http://www.ss750.cn/follows/511.jpg',
           heart:[],  
           retweet:[],
           comment:[],
@@ -303,11 +303,11 @@ Meteor.startup(function(){
           layout: '[]'
        });
        Posts.insert({
-          pub: [{isImage:true,imgUrl:'/follows/522.jpg'},{isImage:false,text:'是含笑遮面'},
-                {isImage:true,imgUrl:'/follows/523.jpg'},{isImage:false,text:'还是直直地看着我'}],
+          pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/522.jpg'},{isImage:false,text:'是含笑遮面'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/523.jpg'},{isImage:false,text:'还是直直地看着我'}],
           title:'天使',
           addontitle:'你的样子',
-          mainImage: '/follows/521.jpg',
+          mainImage: 'http://www.ss750.cn/follows/521.jpg',
           heart:[],  
           retweet:[],
           comment:[],
@@ -318,11 +318,11 @@ Meteor.startup(function(){
           layout: '[]'
        });
        Posts.insert({
-          pub: [{isImage:true,imgUrl:'/follows/532.jpg'},{isImage:false,text:'I miss you'},
-                {isImage:true,imgUrl:'/follows/533.jpg'},{isImage:false,text:'I want you'}],
+          pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/532.jpg'},{isImage:false,text:'I miss you'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/533.jpg'},{isImage:false,text:'I want you'}],
           title:'How Deep Is Your Love',
           addontitle:'The Note Book',
-          mainImage: '/follows/531.jpg',
+          mainImage: 'http://www.ss750.cn/follows/531.jpg',
           heart:[],  
           retweet:[],
           comment:[],
@@ -353,11 +353,11 @@ Meteor.startup(function(){
            share3:'/follows/63.jpg'
        });
        Posts.insert({
-          pub: [{isImage:true,imgUrl:'/follows/612.jpg'},{isImage:false,text:'一瞬间'},
-                {isImage:true,imgUrl:'/follows/613.jpg'},{isImage:false,text:'有没有'}],
+          pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/612.jpg'},{isImage:false,text:'一瞬间'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/613.jpg'},{isImage:false,text:'有没有'}],
           title:'怦然',
           addontitle:'心动',
-          mainImage: '/follows/611.jpg',
+          mainImage: 'http://www.ss750.cn/follows/611.jpg',
           heart:[],  
           retweet:[],
           comment:[],
@@ -368,12 +368,12 @@ Meteor.startup(function(){
           layout: '[]'
        });
        Posts.insert({
-          pub: [{isImage:true,imgUrl:'/follows/622.jpg'},{isImage:false,text:'Minerva这个名字来自罗马的知识，魔法，医药，商业和防御女神'},
-                {isImage:true,imgUrl:'/follows/623.jpg'},{isImage:false,text:'三个女神发现了这个苹果，让特洛伊王子Paris选择谁是最美的'},
-                {isImage:true,imgUrl:'/follows/624.jpg'},{isImage:false,text:'Phrygia人的帽子'}],
+          pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/622.jpg'},{isImage:false,text:'Minerva这个名字来自罗马的知识，魔法，医药，商业和防御女神'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/623.jpg'},{isImage:false,text:'三个女神发现了这个苹果，让特洛伊王子Paris选择谁是最美的'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/624.jpg'},{isImage:false,text:'Phrygia人的帽子'}],
           title:'辛黛瑞拉',
           addontitle:'希腊神话与艺术作品',
-          mainImage: '/follows/621.jpg',
+          mainImage: 'http://www.ss750.cn/follows/621.jpg',
           heart:[],  
           retweet:[],
           comment:[],
@@ -384,11 +384,11 @@ Meteor.startup(function(){
           layout: '[]'
        });
        Posts.insert({
-          pub: [{isImage:true,imgUrl:'/follows/632.jpg'},{isImage:false,text:'Jacques Louis David Oath of the Horatii'},
-                {isImage:true,imgUrl:'/follows/633.jpg'},{isImage:false,text:'Septimius severus busto Musei Capitolini'}],
+          pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/632.jpg'},{isImage:false,text:'Jacques Louis David Oath of the Horatii'},
+                {isImage:true,imgUrl:'http://www.ss750.cn/follows/633.jpg'},{isImage:false,text:'Septimius severus busto Musei Capitolini'}],
           title:'Aeneas',
           addontitle:'关于特洛伊的画和雕塑',
-          mainImage: '/follows/631.jpg',
+          mainImage: 'http://www.ss750.cn/follows/631.jpg',
           heart:[],  
           retweet:[],
           comment:[],
