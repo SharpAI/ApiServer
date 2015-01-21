@@ -4,7 +4,7 @@ if Meteor.isClient
   Template.addPost.rendered=->
     $('.addPost').css('min-height',$(window).height())
 
-    console.log 'addPost rendered rev=34'
+    console.log 'addPost rendered rev=35'
     #testMenu will be main/font/align. It's for controlling the icon on text menu
     Session.set('textMenu','main')
     #init
@@ -34,7 +34,7 @@ if Meteor.isClient
         $(textarea).attr('disabled',false)
         $(textarea).first().focus()
         $(textarea).focusout(()->
-                    $(this).attr("disabled", "true")
+          $(this).attr("disabled", "true")
         )
 
       if buttonClicked.id == "del"
@@ -170,6 +170,7 @@ if Meteor.isClient
       initToolBar(itemElem, undefined)
     )
 
+    base_size=($( window ).width()/6 - 10);
     test = $("#display");
     `gridster = test.gridster({serialize_params: function ($w, wgd) {
       return {
@@ -179,7 +180,7 @@ if Meteor.isClient
         size_x: wgd.size_x,
         size_y: wgd.size_y
       };
-    }, widget_base_dimensions: [40, 40],widget_margins: [5, 5], min_cols: 3, resize: {enabled: true}}).data('gridster');`
+    }, widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], min_cols: 3, max_cols:6, resize: {enabled: true}}).data('gridster');`
     #Set is isReviewMode
     draftData = Drafts.find().fetch()
     if draftData and draftData.length>0
@@ -384,6 +385,7 @@ if Meteor.isClient
         Router.go('/user')
         false
       else
+        layout = JSON.stringify(gridster.serialize())
         pub=[]
         title = $("#title").val()
         addontitle = $("#addontitle").val()
@@ -404,7 +406,17 @@ if Meteor.isClient
           else
             if draftData[i].isImage
               draftData[i].imgUrl = 'http://bcs.duapp.com/travelers-km/'+draftData[i].filename
-            pub.push(draftData[i])
+
+          #for some case user did not save the draft, directly published, the layout does not stored.
+          json = jQuery.parseJSON(layout);
+          for item in json
+            if item.id is draftData[i]._id
+              draftData[i].data_row = item.row
+              draftData[i].data_col = item.col
+              draftData[i].data_sizex = item.size_x
+              draftData[i].data_sizey = item.size_y
+
+          pub.push(draftData[i])
 
 #        console.log "#####end" + pub
         Posts.insert {

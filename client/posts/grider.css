@@ -24,10 +24,11 @@ ul {
 }
 
 .gridster li {
-    font-size: 2em;
+   /* font-size: 2em;
     font-weight: bold;
     text-align: center;
     line-height: 50%;
+    */
 }
 
 .gridster {
