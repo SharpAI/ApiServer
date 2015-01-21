@@ -1,6 +1,8 @@
 Template.loginForm.events
     'click #btn_back' :->
-      Router.go '/authOverlay'
+#      Router.go '/authOverlay'
+      $('.login').css('display',"none")
+      $('.authOverlay').css('-webkit-filter',"none")
     'submit #login-form':(e,t)->
       e.preventDefault()
       if Meteor.status().connected isnt true

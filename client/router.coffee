@@ -19,9 +19,6 @@ if Meteor.isClient
     Router.route '/add',()->
       this.render 'addPost'
       Session.set 'channel','addPost'
-    Router.route '/loginForm',()->
-      this.render 'loginForm'
-      Session.set 'channel','loginForm'
     Router.route '/registerFollow',()->
       this.render 'registerFollow'
       Session.set 'channel','registerFollow'

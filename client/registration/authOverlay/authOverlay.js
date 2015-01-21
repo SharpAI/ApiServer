@@ -9,7 +9,9 @@ if (Meteor.isClient) {
       $('.authOverlay').css('-webkit-filter',"blur(10px)")
     },
     'click #login': function () {
-      Router.go('/loginForm');
+//      Router.go('/loginForm');
+      $('.login').css('display',"block")
+      $('.authOverlay').css('-webkit-filter',"blur(10px)")
     },
     'click #weibo': function () {
       Meteor.loginWithWeibo({
