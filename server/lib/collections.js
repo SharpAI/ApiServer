@@ -10,7 +10,7 @@ Meteor.startup(function(){
            email:'ChaseJarvis@ggmail.com',
            profile:{
                icon:'/follows/icon1.png',
-               fullname:'Chase Jarvis'
+               fullname:'伊人'
            }
        });
 //加入偶像推荐列表
@@ -18,48 +18,56 @@ Meteor.startup(function(){
            icon:'/follows/icon1.png',
            userId:followerId,
            username:'Chase',
-           fullname:'Chase Jarvis',
-           desc:"I'm a photographer and an enterpreneur. I love to create stuff + connect with amazing people.",
+           fullname:'伊人',
+           desc:"留下美好的瞬间！就看我的！",
            share1:'/follows/11.jpg',
            share2:'/follows/12.jpg',
            share3:'/follows/13.jpg'
        });
 //加偶像的3个Post
        Posts.insert({
-          title:'漫步厦门',
-          addontitle:'寻找文艺小清新',
-          mainImage: '/follows/11.jpg',
+          pub: [{isImage:true,imgUrl:'/follows/112.jpg'},{isImage:false,text:'秋水共长天一色'},
+                {isImage:true,imgUrl:'/follows/113.jpg'},{isImage:false,text:'夕阳无限好'},
+                {isImage:true,imgUrl:'/follows/114.jpg'},{isImage:false,text:'只是近黄昏'}],
+          title:'落霞与孤鹜齐飞',
+          addontitle:'秋水共长天一色',
+          mainImage: '/follows/111.jpg',
           heart:[],  
           retweet:[],
           comment:[],
           owner:followerId,
-          ownerName:'Chase Jarvis',
+          ownerName:'伊人',
           ownerIcon:'/follows/icon1.png',
           createdAt: new Date(),
           layout: '[]'
        });
        Posts.insert({
-          title:'三峡大坝',
-          addontitle:'盛世峡江壮美大坝',
-          mainImage: '/follows/12.jpg',
+          pub: [{isImage:true,imgUrl:'/follows/122.jpg'},{isImage:false,text:'心里开出一朵花'},
+                {isImage:true,imgUrl:'/follows/123.jpg'},{isImage:false,text:'爱让我们相恋'}],
+          title:'因为爱情',
+          addontitle:'义无反顾',
+          mainImage: '/follows/121.jpg',
           heart:[],  
           retweet:[],
           comment:[],
           owner:followerId,
-          ownerName:'Chase Jarvis',
+          ownerName:'伊人',
           ownerIcon:'/follows/icon1.png',
           createdAt: new Date(),
           layout: '[]'
        });
        Posts.insert({
-          title:'斯坦福大学',
-          addontitle:'巍巍珞珈百年名校',
-          mainImage: '/follows/13.jpg',
+          pub: [{isImage:true,imgUrl:'/follows/132.jpg'},{isImage:false,text:'曾经我们手牵着手'},
+                {isImage:true,imgUrl:'/follows/133.jpg'},{isImage:false,text:'你说要我等你回来'},
+                {isImage:true,imgUrl:'/follows/134.jpg'},{isImage:false,text:'亲爱的，你在哪里'}],
+          title:'十年',
+          addontitle:'我等得花儿都谢了',
+          mainImage: '/follows/131.jpg',
           heart:[],  
           retweet:[],
           comment:[],
           owner:followerId,
-          ownerName:'Chase Jarvis',
+          ownerName:'伊人',
           ownerIcon:'/follows/icon1.png',
           createdAt: new Date(),
           layout: '[]'
@@ -71,54 +79,60 @@ Meteor.startup(function(){
            email:'RoccoDispirito@ggmail.com',
            profile:{
                icon:'/follows/icon2.png',
-               fullname:'Rocco Dispirito'
+               fullname:'文亭'
            }
        });
        Follows.insert({
            icon:'/follows/icon2.png',
            userId:followerId,
            username:'Rocco',
-           fullname:'Rocco Dispirito',
-           desc:"I am a chef and life-long student of cuisine, #1 best-selling author of The Pound A Day Diet & the Now Eat This! series.",
+           fullname:'文亭',
+           desc:"喜欢上了摄影，于是改变了自己的生活。",
            share1:'/follows/21.jpg',
            share2:'/follows/22.jpg',
            share3:'/follows/23.jpg'
        });
        Posts.insert({
-          title:'古城泡温泉',
-          addontitle:'徜徉古街泡温泉 古城中的别样假日',
-          mainImage: '/follows/21.jpg',
+          pub: [{isImage:true,imgUrl:'/follows/212.jpg'},{isImage:false,text:'冬日原野'},
+                {isImage:true,imgUrl:'/follows/213.jpg'},{isImage:false,text:'星星之火'}],
+          title:'冬季',
+          addontitle:'我想大约会是在冬季',
+          mainImage: '/follows/211.jpg',
           heart:[],  
           retweet:[],
           comment:[],
           owner:followerId,
-          ownerName:'Rocco Dispirito',
+          ownerName:'文亭',
           ownerIcon:'/follows/icon2.png',
           createdAt: new Date(),
           layout: '[]'
        });
        Posts.insert({
-          title:'浪漫巴黎',
-          addontitle:'时尚碰撞古老',
-          mainImage: '/follows/22.jpg',
+          pub: [{isImage:true,imgUrl:'/follows/222.jpg'},{isImage:false,text:'katharine ross there the list'},
+                {isImage:true,imgUrl:'/follows/223.jpg'},{isImage:false,text:'Butch cassidy and the sundance kid'}],
+          title:'Raindrops Keep Falling On My Head',
+          addontitle:'Butch cassidy and the sundance kid',
+          mainImage: '/follows/221.jpg',
           heart:[],  
           retweet:[],
           comment:[],
           owner:followerId,
-          ownerName:'Rocco Dispirito',
+          ownerName:'文亭',
           ownerIcon:'/follows/icon2.png',
           createdAt: new Date(),
           layout: '[]'
        });
        Posts.insert({
-          title:'宫阙志',
-          addontitle:'首尔历史体验一日游',
-          mainImage: '/follows/23.jpg',
+          pub: [{isImage:true,imgUrl:'/follows/232.jpg'},{isImage:false,text:'无论在冰天雪地'},
+                {isImage:true,imgUrl:'/follows/233.jpg'},{isImage:false,text:'还是明朗天空'}],
+          title:'我一直在等待',
+          addontitle:'一个女孩',
+          mainImage: '/follows/231.jpg',
           heart:[],  
           retweet:[],
           comment:[],
           owner:followerId,
-          ownerName:'Rocco Dispirito',
+          ownerName:'文亭',
           ownerIcon:'/follows/icon2.png',
           createdAt: new Date(),
           layout: '[]'
@@ -130,54 +144,60 @@ Meteor.startup(function(){
            email:'MattCrump@ggmail.com',
            profile:{
                icon:'/follows/icon3.png',
-               fullname:'Matt Crump'
+               fullname:'秋雨梧桐'
            }
        });
        Follows.insert({
            icon:'/follows/icon3.png',
            userId:followerId,
            username:'Matt',
-           fullname:'Matt Crump',
-           desc:"the candy-colored minimalist photographer",
+           fullname:'秋雨梧桐',
+           desc:"在感受中－－拍摄； 在拍摄中----感悟------",
            share1:'/follows/31.jpg',
            share2:'/follows/32.jpg',
            share3:'/follows/33.jpg'
        });
        Posts.insert({
-          title:'奥兰多',
-          addontitle:'童话编织的梦幻城市',
-          mainImage: '/follows/31.jpg',
+          pub: [{isImage:true,imgUrl:'/follows/312.jpg'},{isImage:false,text:"Don't be sad"},
+                {isImage:true,imgUrl:'/follows/313.jpg'},{isImage:false,text:'You should smile like a flower'}],
+          title:'And I love you so',
+          addontitle:'girl',
+          mainImage: '/follows/311.jpg',
           heart:[],  
           retweet:[],
           comment:[],
           owner:followerId,
-          ownerName:'Matt Crump',
+          ownerName:'秋雨梧桐',
           ownerIcon:'/follows/icon3.png',
           createdAt: new Date(),
           layout: '[]'
        });
        Posts.insert({
-          title:'山水清音',
-          addontitle:'庞泉沟漂流清凉一夏',
-          mainImage: '/follows/32.jpg',
+          pub: [{isImage:true,imgUrl:'/follows/322.jpg'},{isImage:false,text:'Life goes easy on me'},
+                {isImage:true,imgUrl:'/follows/323.jpg'},{isImage:false,text:'Cannot take my eyes off you'}],
+          title:'A Whiter Shade Of Pale',
+          addontitle:'Just like you said it should be',
+          mainImage: '/follows/321.jpg',
           heart:[],  
           retweet:[],
           comment:[],
           owner:followerId,
-          ownerName:'Matt Crump',
+          ownerName:'秋雨梧桐',
           ownerIcon:'/follows/icon3.png',
           createdAt: new Date(),
           layout: '[]'
        });
        Posts.insert({
-          title:'行走石台',
-          addontitle:'体验原生态山水之美',
-          mainImage: '/follows/33.jpg',
+          pub: [{isImage:true,imgUrl:'/follows/332.jpg'},{isImage:false,text:'怎么可能喜欢孤独，不过是不乱交朋友罢了'},
+                {isImage:true,imgUrl:'/follows/333.jpg'},{isImage:false,text:'一个人也很好'}],
+          title:'孤独的人',
+          addontitle:'是可耻的',
+          mainImage: '/follows/331.jpg',
           heart:[],  
           retweet:[],
           comment:[],
           owner:followerId,
-          ownerName:'Matt Crump',
+          ownerName:'秋雨梧桐',
           ownerIcon:'/follows/icon3.png',
           createdAt: new Date(),
           layout: '[]'
@@ -189,54 +209,60 @@ Meteor.startup(function(){
            email:'VeronicaBelmont@ggmail.com',
            profile:{
                icon:'/follows/icon4.png',
-               fullname:'Veronica Belmont'
+               fullname:'赋闲的快门'
            }
        });
        Follows.insert({
            icon:'/follows/icon4.png',
            userId:followerId,
            username:'Veronica',
-           fullname:'Veronica Belmont',
-           desc:"New media/ TV host and writer. Slayer of vampires.",
+           fullname:'赋闲的快门',
+           desc:"用第三只眼睛看这五彩的世界.",
            share1:'/follows/41.jpg',
            share2:'/follows/42.jpg',
            share3:'/follows/43.jpg'
        });
        Posts.insert({
-          title:'挪威的森林',
-          addontitle:'弗洛姆高山小火车之旅',
-          mainImage: '/follows/41.jpg',
+          pub: [{isImage:true,imgUrl:'/follows/412.jpg'},{isImage:false,text:"Don't be panic"},
+                {isImage:true,imgUrl:'/follows/413.jpg'},{isImage:false,text:'After storm it is beautiful'}],
+          title:'I am Sailing',
+          addontitle:'Just need a Sailboat',
+          mainImage: '/follows/411.jpg',
           heart:[],  
           retweet:[],
           comment:[],
           owner:followerId,
-          ownerName:'Veronica Belmont',
+          ownerName:'赋闲的快门',
           ownerIcon:'/follows/icon4.png',
           createdAt: new Date(),
           layout: '[]'
        });
        Posts.insert({
-          title:'玩转世外桃源',
-          addontitle:'不一样的大溪地',
-          mainImage: '/follows/42.jpg',
+          pub: [{isImage:true,imgUrl:'/follows/422.jpg'},{isImage:false,text:'有纯真的时光'},
+                {isImage:true,imgUrl:'/follows/423.jpg'},{isImage:false,text:'像个秘密藏在我的心上'}],
+          title:'有一个地方',
+          addontitle:'只有我知道',
+          mainImage: '/follows/421.jpg',
           heart:[],  
           retweet:[],
           comment:[],
           owner:followerId,
-          ownerName:'Veronica Belmont',
+          ownerName:'赋闲的快门',
           ownerIcon:'/follows/icon4.png',
           createdAt: new Date(),
           layout: '[]'
        });
        Posts.insert({
-          title:'歌乐山一日行',
-          addontitle:'感受山城红色记忆',
-          mainImage: '/follows/43.jpg',
+          pub: [{isImage:true,imgUrl:'/follows/432.jpg'},{isImage:false,text:'Wonderful woman'},
+                {isImage:true,imgUrl:'/follows/433.jpg'},{isImage:false,text:'Wonderful world'}],
+          title:'Wonderful Night',
+          addontitle:'Wonderful World',
+          mainImage: '/follows/431.jpg',
           heart:[],  
           retweet:[],
           comment:[],
           owner:followerId,
-          ownerName:'Veronica Belmont',
+          ownerName:'赋闲的快门',
           ownerIcon:'/follows/icon4.png',
           createdAt: new Date(),
           layout: '[]'
@@ -248,54 +274,60 @@ Meteor.startup(function(){
            email:'PhilipBloom@ggmail.com',
            profile:{
                icon:'/follows/icon5.png',
-               fullname:'Philip Bloom'
+               fullname:'银羽飞舞'
            }
        });
        Follows.insert({
            icon:'/follows/icon5.png',
            userId:followerId,
            username:'Philip',
-           fullname:'Philip Bloom',
-           desc:"Just a filmmaker & a website. Trying to shoot & help as much as I can whilst trying to find my place in the world. Sharing my photos and video snippets here",
+           fullname:'银羽飞舞',
+           desc:"用心灵感受，用镜头记忆！",
            share1:'/follows/51.jpg',
            share2:'/follows/52.jpg',
            share3:'/follows/53.jpg'
        });
        Posts.insert({
-          title:'乐享梯',
-          addontitle:'全球最美梯田 遂川高山如画',
-          mainImage: '/follows/51.jpg',
+          pub: [{isImage:true,imgUrl:'/follows/512.jpg'},{isImage:false,text:'是森林深处满目的萤火虫'},
+                {isImage:true,imgUrl:'/follows/513.jpg'},{isImage:false,text:'还是天涯海角的云雾缭绕'}],
+          title:'天堂',
+          addontitle:'在哪里',
+          mainImage: '/follows/511.jpg',
           heart:[],  
           retweet:[],
           comment:[],
           owner:followerId,
-          ownerName:'Philip Bloom',
+          ownerName:'银羽飞舞',
           ownerIcon:'/follows/icon5.png',
           createdAt: new Date(),
           layout: '[]'
        });
        Posts.insert({
-          title:'首尔弘大',
-          addontitle:'粉色童话之旅',
-          mainImage: '/follows/52.jpg',
+          pub: [{isImage:true,imgUrl:'/follows/522.jpg'},{isImage:false,text:'是含笑遮面'},
+                {isImage:true,imgUrl:'/follows/523.jpg'},{isImage:false,text:'还是直直地看着我'}],
+          title:'天使',
+          addontitle:'你的样子',
+          mainImage: '/follows/521.jpg',
           heart:[],  
           retweet:[],
           comment:[],
           owner:followerId,
-          ownerName:'Philip Bloom',
+          ownerName:'银羽飞舞',
           ownerIcon:'/follows/icon5.png',
           createdAt: new Date(),
           layout: '[]'
        });
        Posts.insert({
-          title:'波士顿龙虾湾',
-          addontitle:'悠游明媚东海岸',
-          mainImage: '/follows/53.jpg',
+          pub: [{isImage:true,imgUrl:'/follows/532.jpg'},{isImage:false,text:'I miss you'},
+                {isImage:true,imgUrl:'/follows/533.jpg'},{isImage:false,text:'I want you'}],
+          title:'How Deep Is Your Love',
+          addontitle:'The Note Book',
+          mainImage: '/follows/531.jpg',
           heart:[],  
           retweet:[],
           comment:[],
           owner:followerId,
-          ownerName:'Philip Bloom',
+          ownerName:'银羽飞舞',
           ownerIcon:'/follows/icon5.png',
           createdAt: new Date(),
           layout: '[]'
@@ -307,54 +339,61 @@ Meteor.startup(function(){
            email:'DougMenuez@ggmail.com',
            profile:{
                icon:'/follows/icon6.png',
-               fullname:'Doug Menuez'
+               fullname:'天高神远'
            }
        });
        Follows.insert({
            icon:'/follows/icon6.png',
            userId:followerId,
            username:'Doug',
-           fullname:'Doug Menuez',
-           desc:"Documentary photographer and filmmaker",
+           fullname:'天高神远',
+           desc:"光影魅力无限 实话实说是我的个性 不断追求突破自我就是进步！",
            share1:'/follows/61.jpg',
            share2:'/follows/62.jpg',
            share3:'/follows/63.jpg'
        });
        Posts.insert({
-          title:'吃虾子的季节',
-          addontitle:'去万松园看繁华市井',
-          mainImage: '/follows/61.jpg',
+          pub: [{isImage:true,imgUrl:'/follows/612.jpg'},{isImage:false,text:'一瞬间'},
+                {isImage:true,imgUrl:'/follows/613.jpg'},{isImage:false,text:'有没有'}],
+          title:'怦然',
+          addontitle:'心动',
+          mainImage: '/follows/611.jpg',
           heart:[],  
           retweet:[],
           comment:[],
           owner:followerId,
-          ownerName:'Doug Menuez',
+          ownerName:'天高神远',
           ownerIcon:'/follows/icon6.png',
           createdAt: new Date(),
           layout: '[]'
        });
        Posts.insert({
-          title:'悉尼',
-          addontitle:'澳大利亚最大城市',
-          mainImage: '/follows/62.jpg',
+          pub: [{isImage:true,imgUrl:'/follows/622.jpg'},{isImage:false,text:'Minerva这个名字来自罗马的知识，魔法，医药，商业和防御女神'},
+                {isImage:true,imgUrl:'/follows/623.jpg'},{isImage:false,text:'三个女神发现了这个苹果，让特洛伊王子Paris选择谁是最美的'},
+                {isImage:true,imgUrl:'/follows/624.jpg'},{isImage:false,text:'Phrygia人的帽子'}],
+          title:'辛黛瑞拉',
+          addontitle:'希腊神话与艺术作品',
+          mainImage: '/follows/621.jpg',
           heart:[],  
           retweet:[],
           comment:[],
           owner:followerId,
-          ownerName:'Doug Menuez',
+          ownerName:'天高神远',
           ownerIcon:'/follows/icon6.png',
           createdAt: new Date(),
           layout: '[]'
        });
        Posts.insert({
-          title:'赫尔辛基',
-          addontitle:'芬兰首都,波罗的海的明珠',
-          mainImage: '/follows/63.jpg',
+          pub: [{isImage:true,imgUrl:'/follows/632.jpg'},{isImage:false,text:'Jacques Louis David Oath of the Horatii'},
+                {isImage:true,imgUrl:'/follows/633.jpg'},{isImage:false,text:'Septimius severus busto Musei Capitolini'}],
+          title:'Aeneas',
+          addontitle:'关于特洛伊的画和雕塑',
+          mainImage: '/follows/631.jpg',
           heart:[],  
           retweet:[],
           comment:[],
           owner:followerId,
-          ownerName:'Doug Menuez',
+          ownerName:'天高神远',
           ownerIcon:'/follows/icon6.png',
           createdAt: new Date(),
           layout: '[]'
