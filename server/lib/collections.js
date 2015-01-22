@@ -123,6 +123,20 @@ Meteor.startup(function(){
           ownerIcon:'/follows/icon1.png',
           createdAt: new Date(),
        });
+       TopicPosts.insert({
+          postId:postId,
+          title:'落霞与孤鹜齐飞',
+          addontitle:'秋水共长天一色',
+          mainImage: 'http://www.ss750.cn/follows/111.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'伊人',
+          ownerIcon:'/follows/icon1.png',
+          createdAt: new Date(),
+          topicId: TopicsId[0]
+       });
        postId = Posts.insert({
           pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/122.jpg',data_row:1,data_col:1,data_sizex:6,data_sizey:4},
                 {isImage:false,text:'心里开出一朵花',data_row:5,data_col:1,data_sizex:6,data_sizey:1},
