@@ -3,12 +3,12 @@ Template.follow_user.helpers
   follows: ->
     Follows.find()
 Template.follow_user_list.helpers
-   isFollowed:(follow)->
-       fcount = Follower.find({"userId":Meteor.userId(),"followerId":follow.userId}).count()
-       if fcount > 0
-           true
-       else
-           false
+  isFollowed:(follow)->
+    fcount = Follower.find({"userId":Meteor.userId(),"followerId":follow.userId}).count()
+    if fcount > 0
+      true
+    else
+      false
 Template.registerFollow.helpers
   followCount: ->
     Follower.find({"userId":Meteor.userId()}).count()
@@ -16,12 +16,12 @@ Template.registerFollow.helpers
     4 - Follower.find({"userId":Meteor.userId()}).count()
   larger:(a,b)->
     if a > b
-        true
+      true
     else
-        false
+      false
 Template.registerFollow.events
   'click #continue':->
-    Router.go('/')
+    Router.go('/') 
   'click .add':(e)->
     followsId = e.currentTarget.id
     Follower.insert {
