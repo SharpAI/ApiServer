@@ -4,7 +4,7 @@ if Meteor.isClient
   Template.addPost.rendered=->
     $('.addPost').css('min-height',$(window).height())
 
-    console.log 'addPost rendered rev=35'
+    console.log 'addPost rendered rev=37'
     #testMenu will be main/font/align. It's for controlling the icon on text menu
     Session.set('textMenu','main')
     #init
@@ -32,12 +32,21 @@ if Meteor.isClient
       doc_id =  $(textarea).attr("text")
       if buttonClicked.id == "modify"
         $(textarea).attr('disabled',false)
+        $(textarea).off('focus')
+        $(textarea).off('focusout')
+
+        $(textarea).first().focus(()->
+          console.log("focus get")
+        )
         $(textarea).first().focus()
-        $(textarea).focusout(()->
+        #$(textarea).blur().focus()
+
+        $(textarea).first().focusout(()->
+          console.log("focusout")
           $(this).attr("disabled", "true")
         )
 
-      if buttonClicked.id == "del"
+      else if buttonClicked.id == "del"
         console.log("del "+ node.id)
         if gridster?
           gridster.remove_widget2(node, false)
@@ -106,6 +115,7 @@ if Meteor.isClient
               #console.log("toolbarItemClick on " + buttonClicked.id)
               toolbarMainMenuClickHandle(event, buttonClicked,node,grid)
             .on 'toolbarHidden', (event)=>
+              console.log("toolbarHidden")
               toolbarHiddenHandle(event,node)
 
 
@@ -263,7 +273,7 @@ if Meteor.isClient
         window.takePhoto (result)->
           console.log 'result from camera is ' + JSON.stringify(result)
           if result
-            Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
+            Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
 
     'click #addmore':->
       #uploadFile (result)->
