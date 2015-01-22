@@ -17,7 +17,10 @@ if Meteor.isClient
       Router.go '/authOverlay'
   Template.my_email.events
     'click #btn_save' :->
-      Router.go '/my_email'
+      Users = Meteor.users
+      new_email = [{address: $('#my_edit_email').val(), verified: false}]
+      Users.update({_id: Meteor.user()._id}, {$set: {emails: new_email}})
+      Router.go '/dashboard'
     'click #btn_back' :->
       Router.go '/dashboard'
   Template.my_email.helpers
