@@ -81,7 +81,7 @@ if Meteor.isClient
     retweet:->
       Session.get("postContent").retweet.length
     comment:->
-      Session.get("postContent").comment.length
+      Comment.find({postId:Session.get("postContent")._id}).count()
     blueHeart:->
       heart = Session.get("postContent").heart
       if JSON.stringify(heart).indexOf(Meteor.userId()) is -1
@@ -98,8 +98,10 @@ if Meteor.isClient
   Template.postFooter.events
     'click .commentList':->
       $('#showComment').css('display',"block")
+      $('.showPosts').css('height',$(window).height())
     'click .comment':->
       $('#showComment').css('display',"block")
+      $('.showPosts').css('height',$(window).height())
     'click .heart':->
       if Meteor.user()
         postId = Session.get("postContent")._id
