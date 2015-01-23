@@ -12,7 +12,7 @@ if Meteor.isClient
       if channel is channelName
         return true
     display_footer:()->
-      Meteor.isCordova
+      Meteor.isClient
   Template.footer.events
     'click .btn':(e)->
       page = '/' + e.currentTarget.id;

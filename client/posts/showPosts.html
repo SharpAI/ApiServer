@@ -7,6 +7,9 @@
         <span class="name">{{ownerName}}</span>
         <span class="createAt">{{time_diff createdAt}}</span>
       </div>
+      {{#if isMyPost}}
+        <div id="edit" class="secondRightButton">编辑</div>
+      {{/if}}
       <div id="socialShare" class="rightButton">分享</div>
     </div>
     <div class="content">

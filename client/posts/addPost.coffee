@@ -209,19 +209,22 @@ if Meteor.isClient
     if draftData and draftData.length>0
       draftId = draftData[0]._id
       if SavedDrafts.find({_id:draftId}).count() > 0
-        Session.set 'isReviewMode','true'
+        Session.set 'isReviewMode','1'
         gridster.disable()
         gridster.disable_resize()
         $("#title").attr("disabled", "disabled")
         $("#addontitle").attr("disabled", "disabled")
       else
-        Session.set 'isReviewMode','false'
+        if Posts.find({_id:draftId}).count() > 0
+          Session.set 'isReviewMode','2'
+        else
+          Session.set 'isReviewMode','0'
         gridster.enable()
         gridster.enable_resize()
         $("#title").attr("disabled", false)
         $("#addontitle").attr("disabled", false)
     else
-      Session.set 'isReviewMode','false'
+      Session.set 'isReviewMode','0'
       gridster.enable()
       gridster.enable_resize()
       $("#title").attr("disabled", false)
@@ -229,30 +232,39 @@ if Meteor.isClient
     return
 
   Template.addPost.helpers
-    isReviewMode:->
-      if Session.get('isReviewMode') is 'true'
-        if gridster?
-          console.log "gridster.disable "
-          gridster.disable()
-          gridster.disable_resize()
-        $("#title").attr("disabled", "disabled")
-        $("#addontitle").attr("disabled", "disabled")
-        `global_toolbar_hidden = true`
-        'true'
+    isReviewMode:(value)->
+      console.log "value is "+value 
+      if Session.get('isReviewMode') is value
+        if value is '2'
+            true
+        else if value is '1'
+            if gridster?
+              console.log "gridster.disable "
+              gridster.disable()
+              gridster.disable_resize()
+            $("#title").attr("disabled", "disabled")
+            $("#addontitle").attr("disabled", "disabled")
+            `global_toolbar_hidden = true`
+            'true'
+        else
+            console.log "gridster.enable "
+            if gridster?
+              gridster.enable()
+              gridster.enable_resize()
+            $("#title").attr("disabled", false)
+            $("#addontitle").attr('disabled',false)
+            `global_toolbar_hidden = false`
+            false
       else
-        console.log "gridster.enable "
-        if gridster?
-          gridster.enable()
-          gridster.enable_resize()
-        $("#title").attr("disabled", false)
-        $("#addontitle").attr('disabled',false)
-        `global_toolbar_hidden = false`
-        null
+        false
     draftTitles:->
       if Drafts.find().count() > 0
         draftData = Drafts.find().fetch()
         draftId = draftData[0]._id;
-        SavedDrafts.find({_id:draftId}).fetch()[0]
+        if Session.get('isReviewMode') is '2'
+          Posts.find({_id:draftId}).fetch()[0]
+        else if Session.get('isReviewMode') is '1'
+          SavedDrafts.find({_id:draftId}).fetch()[0]
     mainImage:->
 #      Meteor.setTimeout ->
 #        $('.mainImage').css('height',$(window).height()*0.55)
@@ -309,10 +321,10 @@ if Meteor.isClient
       PUB.back()
       return
     'click #edit':(event)->
-      Session.set 'isReviewMode','false'
+      Session.set 'isReviewMode','0'
       return
     'click #delete':(event)->
-      Session.set 'isReviewMode','true'
+      Session.set 'isReviewMode','1'
       #Delete it from SavedDrafts
       draftData = Drafts.find().fetch()
       draftId = draftData[0]._id
@@ -329,7 +341,7 @@ if Meteor.isClient
         draftData = Drafts.find().fetch()
         draftId = draftData[0]._id
         if SavedDrafts.find({_id:draftId}).count() > 0
-          Session.set 'isReviewMode','true'
+          Session.set 'isReviewMode','1'
         else
           #Router.go('/')
           Drafts
@@ -418,9 +430,17 @@ if Meteor.isClient
           ownerIcon = 'http://bcs.duapp.com/travelers-km/S6zs7oYvfw2SHQ76m_1421318419747.jpg'
         draftData = Drafts.find().fetch()
         draftImageData = Drafts.find({type:'image'}).fetch()
+        draftToBeUploadedImageData = []
+        for i in [0..(draftImageData.length-1)]
+            if draftImageData[i].imgUrl.indexOf("http://")>= 0
+                continue
+            draftToBeUploadedImageData.push(draftImageData[i])
         postId = draftData[0]._id;
 #        console.log "#####" + pub
-        uploadFileWhenPublishInCordova(draftImageData, postId)
+        uploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId)
+        #Don't add addpost page into history
+        if draftToBeUploadedImageData.length is 0
+            Router.go('/posts/'+postId);
         for i in [0..(draftData.length-1)]
 #          console.log i
           if i is 0
@@ -442,26 +462,46 @@ if Meteor.isClient
           pub.push(draftData[i])
 
 #        console.log "#####end" + pub
-        Posts.insert {
-          _id:postId,
-          pub:pub,
-          title:title,
-          heart:[],  #点赞
-          retweet:[],#转发
-          comment:[], #评论
-          addontitle:addontitle,
-          mainImage: mainImage,
-          mainText: mainText,
-          owner:Meteor.userId(),
-          ownerName:Meteor.user().username,
-          ownerIcon:ownerIcon,
-          createdAt: new Date(),
-        }
-        #Router.go('/posts/'+postId)
-        #Delete from SavedDrafts if it is a saved draft.
-        if SavedDrafts.find({_id:postId}).count() > 0
-            SavedDrafts.remove postId
-        #Delete the Drafts
+        if Session.get('isReviewMode') is '2'
+            Posts.update(
+              {_id:postId},
+              {$set:{
+                  pub:pub,
+                  title:title,
+                  heart:[],  #点赞
+                  retweet:[],#转发
+                  comment:[], #评论
+                  addontitle:addontitle,
+                  mainImage: mainImage,
+                  mainText: mainText,
+                  owner:Meteor.userId(),
+                  ownerName:Meteor.user().username,
+                  ownerIcon:ownerIcon,
+                  createdAt: new Date(),
+                }
+              }
+            )
+        else
+            Posts.insert {
+              _id:postId,
+              pub:pub,
+              title:title,
+              heart:[],  #点赞
+              retweet:[],#转发
+              comment:[], #评论
+              addontitle:addontitle,
+              mainImage: mainImage,
+              mainText: mainText,
+              owner:Meteor.userId(),
+              ownerName:Meteor.user().username,
+              ownerIcon:ownerIcon,
+              createdAt: new Date(),
+            }
+            #Router.go('/posts/'+postId)
+            #Delete from SavedDrafts if it is a saved draft.
+            if SavedDrafts.find({_id:postId}).count() > 0
+                SavedDrafts.remove postId
+            #Delete the Drafts
         Drafts
           .find {owner: Meteor.userId()}
           .forEach (drafts)->

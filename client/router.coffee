@@ -57,6 +57,7 @@ if Meteor.isClient
           Session.set('postContent',post);
           Session.set("DocumentTitle",post.title + ':' + post.addontitle);
           this.render 'showPosts', {data: post}
+          Session.set 'channel','posts/'+this.params._id
       }
     Router.route '/allDrafts',()->
       if Meteor.isCordova is true

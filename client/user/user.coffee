@@ -73,7 +73,7 @@ if Meteor.isClient
       pub = savedDraftData.pub;
       for i in [0..(pub.length-1)]
           Drafts.insert(pub[i])
-      Session.set 'isReviewMode','true'
+      Session.set 'isReviewMode','1'
       PUB.page('/add')
     'click .draftRight':(e)->
       PUB.page('/allDrafts')

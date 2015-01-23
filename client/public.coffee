@@ -38,11 +38,16 @@
 #            document.body.scrollTop = 0
 #            350
 #        Session.set 'view',pageName
+        for tmpPage in history
+            console.log "Frank.PUB: page, tmpPage = "+JSON.stringify(tmpPage)
+        console.log "pageName is :"+pageName
         Router.go(pageName)
         return
     # 返回上一页
     'back':->
         history = Session.get("history_view")
+        for tmpPage in history
+            console.log "Frank.PUB: back, tmpPage = "+JSON.stringify(tmpPage)
         unless history is undefined or history is ""
             if history.length > 0
                 page =  history.pop()
@@ -54,7 +59,7 @@
                 else if page.view is 'home'
                     Router.go('/')
                 else
-                    Router.go(page.view)
+                    Router.go('/'+page.view)
         #nowPage = Session.get('view')
         #Session.set 'view',Session.get('referrer')
         #if nowPage isnt 'partner_detail' and nowPage isnt 'add_partner'

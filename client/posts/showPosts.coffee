@@ -44,9 +44,32 @@ if Meteor.isClient
   Template.showPosts.helpers
     time_diff: (created)->
       GetTime0(new Date() - created)
+    isMyPost:->
+      post = Posts.find({_id:this._id}).fetch()[0] 
+      if post.owner is Meteor.userId()
+        true
+      else
+        false
   Template.showPosts.events
     'click .back' :->
-      history.back()
+      #for tmpPage in history
+      #  console.log "showPosts, tmpPage = "+JSON.stringify(tmpPage)
+      #history.back()
+      PUB.back()
+    'click #edit': (event)->
+      #Clear draft first
+      Drafts
+        .find {owner: Meteor.userId()}
+        .forEach (drafts)->
+          Drafts.remove drafts._id
+      #Prepare data from post
+      pub = this.pub;
+      for i in [0..(pub.length-1)]
+        if i is 0
+          pub[0].imgUrl = this.mainImage
+        Drafts.insert(pub[i])
+      Session.set 'isReviewMode','2'
+      PUB.page('/add')
     'click #socialShare': (event)->
       current = Router.current();
       url = current.url;
