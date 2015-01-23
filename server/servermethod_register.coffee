@@ -21,3 +21,5 @@ if Meteor.isServer
           orignalURI: URI
         }
         policy
+      "changeMyPassword": (newPassword)->
+        Accounts.setPassword this.userId, newPassword
