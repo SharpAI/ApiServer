@@ -50,6 +50,8 @@ if Meteor.isClient
         true
       else
         false
+    isMobile:->
+      Meteor.isCordova
   Template.showPosts.events
     'click .back' :->
       #for tmpPage in history

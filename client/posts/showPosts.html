@@ -1,16 +1,20 @@
 <template name="showPosts">
   <div class="showPosts">
     <div class="head">
-      <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+      {{#if isMobile}}
+        <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+      {{/if}}
       <div class="user">
         <img class="icon" src="{{ownerIcon}}" width='25' height='25'>
         <span class="name">{{ownerName}}</span>
         <span class="createAt">{{time_diff createdAt}}</span>
       </div>
-      {{#if isMyPost}}
-        <div id="edit" class="secondRightButton">编辑</div>
+      {{#if isMobile}}
+        {{#if isMyPost}}
+          <div id="edit" class="secondRightButton">编辑</div>
+        {{/if}}
+        <div id="socialShare" class="rightButton">分享</div>
       {{/if}}
-      <div id="socialShare" class="rightButton">分享</div>
     </div>
     <div class="content">
       <div id="wrapper">
@@ -55,10 +59,12 @@
     </div>
     <br><br><br><br>
   </div>
-  {{> postFooter}}
-  <div id="showComment" style="display:none;">
-  {{> commentBar}}
-  </div>
+  {{#if isMobile}}
+    {{> postFooter}}
+      <div id="showComment" style="display:none;">
+    {{> commentBar}}
+    </div>
+  {{/if}}
 </template>
 <template name="postFooter">
   <div id="postFooter">
