@@ -163,6 +163,19 @@ if Meteor.isClient
               if gridster?
                 gridster.remove_widget2(node, false)
               Drafts.remove node.id
+
+            ###
+            else if buttonClicked.id == "crop"
+
+             imgWidth = $(node).width()
+             imgHeight = $(node).height()
+             $('#'+node.id+'Img').cropbox({
+               width: imgWidth,
+               height: imgHeight
+             }).on('cropbox', (e, data)->
+               console.log('crop window: ' + data)
+             )
+            ###
             return
       return
 
