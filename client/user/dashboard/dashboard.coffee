@@ -9,6 +9,8 @@ if Meteor.isClient
   Template.dashboard.events
     'click .email' :->
       Router.go '/my_email'
+    'click .changePasswd' :->
+      Router.go '/my_password'
     'click .back' :->
       Router.go '/user'
     'click .logout':->
@@ -26,3 +28,17 @@ if Meteor.isClient
   Template.my_email.helpers
     userEmail :->
       Meteor.user().emails[0].address
+  Template.my_password.events
+    'click #pass_btn_save' :->
+      new_pass = $("#my_edit_password").val()
+      if new_pass
+        Meteor.call "changeMyPassword", $("#my_edit_password").val(), (error, result) ->
+          if error
+            PUB.toast 'fail to change password!'
+          else
+            Router.go '/'
+          return
+      else
+        PUB.toast "password could not be empty!"
+    'click #pass_btn_back' :->
+      Router.go '/dashboard'

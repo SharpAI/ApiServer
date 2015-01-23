@@ -74,6 +74,11 @@ if Meteor.isClient
         this.render 'my_email'
         Session.set 'channel','my_email'
         return
+    Router.route '/my_password',()->
+      if Meteor.isCordova is true
+        this.render 'my_password'
+        Session.set 'channel','my_password'
+        return
     Router.route '/topicPosts',()->
       if Meteor.isCordova is true
         this.render 'topicPosts'
