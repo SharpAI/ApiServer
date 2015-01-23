@@ -7,9 +7,9 @@
   <hr>
   <div class="container navbar navbar-default navbar-fixed-bottom">
   {{#if larger followCount 3}}
-    <center><button id="continue" class="btn btn-primary">继续</button></center>
+    <input type="submit" value="继续" id="continue">
   {{else}}
-    <center><h6>至少再关注{{NeedMoreCount}}个才可以继续</h6></center>
+    <center><h4>至少再关注{{NeedMoreCount}}个才可以继续</h4></center>
   {{/if}}
   </div>
 </div>
@@ -29,7 +29,7 @@
 <template name="follow_user_list">
     <div class="layer" id="{{_id}}">
         <div class="user_head">
-            <img class="user_pic" src="{{icon}}" width="100" />
+            <img class="user_pic" src="{{icon}}" width="88" />
             <span class="name">{{fullname}}&nbsp;
             </span>
             {{#if isFollowed this}}
