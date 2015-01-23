@@ -1,0 +1,41 @@
+<template name="topicPosts">
+<div class="home">
+  <div class="head">
+    <div>{{TopicTitle}}</div>
+    <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+  </div>
+  <div class="content">
+
+  <div id="wrapper">
+    <div id="list">
+      {{#each Posts}}
+      <div  id="{{_id}}" class="mainImage">
+<!--      <div class="item" id="{{_id}}" style="background-image:url({{mainImage}})">-->
+        <img class="scale item" src="{{mainImage}}" draggable="false" >
+        <header>
+          <h1 class="title">
+            {{title}}
+          </h1>
+          <h3 class="addontitle">
+            {{addontitle}}
+          </h3>
+        </header>
+      </div>
+      <div class="footer">
+        <span><img class="icon" src="{{ownerIcon}}" width='25' height='25'></span>
+        <span class="name">{{ownerName}}</span>
+        <span class="right">
+          <i class="fa fa-heart"></i>{{heart}}
+          <!--<i class="fa fa-retweet"></i>{{retweet}}-->
+          <i class="fa fa-comment"></i>{{comment}}
+        </span>
+      </div>
+<!--      </div>-->
+      {{else}}
+      {{/each}}
+    </div>
+  </div>
+  </div>
+</div>
+{{> footer}}
+</template>

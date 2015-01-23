@@ -137,6 +137,48 @@ Meteor.startup(function(){
           createdAt: new Date(),
           topicId: TopicsId[0]
        });
+       TopicPosts.insert({
+          postId:postId,
+          title:'落霞与孤鹜齐飞',
+          addontitle:'秋水共长天一色',
+          mainImage: 'http://www.ss750.cn/follows/111.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'伊人',
+          ownerIcon:'/follows/icon1.png',
+          createdAt: new Date(),
+          topicId: TopicsId[1]
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'落霞与孤鹜齐飞',
+          addontitle:'秋水共长天一色',
+          mainImage: 'http://www.ss750.cn/follows/111.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'伊人',
+          ownerIcon:'/follows/icon1.png',
+          createdAt: new Date(),
+          topicId: TopicsId[7]
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'落霞与孤鹜齐飞',
+          addontitle:'秋水共长天一色',
+          mainImage: 'http://www.ss750.cn/follows/111.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'伊人',
+          ownerIcon:'/follows/icon1.png',
+          createdAt: new Date(),
+          topicId: TopicsId[9]
+       });
        postId = Posts.insert({
           pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/122.jpg',data_row:1,data_col:1,data_sizex:6,data_sizey:4},
                 {isImage:false,text:'心里开出一朵花',data_row:5,data_col:1,data_sizex:6,data_sizey:1},
@@ -152,6 +194,34 @@ Meteor.startup(function(){
           ownerName:'伊人',
           ownerIcon:'/follows/icon1.png',
           createdAt: new Date(),
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'因为爱情',
+          addontitle:'义无反顾',
+          mainImage: 'http://www.ss750.cn/follows/121.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'伊人',
+          ownerIcon:'/follows/icon1.png',
+          createdAt: new Date(),
+          topicId: TopicsId[2]
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'因为爱情',
+          addontitle:'义无反顾',
+          mainImage: 'http://www.ss750.cn/follows/121.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'伊人',
+          ownerIcon:'/follows/icon1.png',
+          createdAt: new Date(),
+          topicId: TopicsId[8]
        });
        postId = Posts.insert({
           pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/132.jpg',data_row:1,data_col:1,data_sizex:6,data_sizey:4},
@@ -170,6 +240,34 @@ Meteor.startup(function(){
           ownerName:'伊人',
           ownerIcon:'/follows/icon1.png',
           createdAt: new Date(),
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'十年',
+          addontitle:'我等得花儿都谢了',
+          mainImage: 'http://www.ss750.cn/follows/131.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'伊人',
+          ownerIcon:'/follows/icon1.png',
+          createdAt: new Date(),
+          topicId: TopicsId[2]
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'十年',
+          addontitle:'我等得花儿都谢了',
+          mainImage: 'http://www.ss750.cn/follows/131.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'伊人',
+          ownerIcon:'/follows/icon1.png',
+          createdAt: new Date(),
+          topicId: TopicsId[8]
        });
 //创建偶像用户2
        followerId = Accounts.createUser({
@@ -207,6 +305,34 @@ Meteor.startup(function(){
           ownerIcon:'/follows/icon2.png',
           createdAt: new Date(),
        });
+       TopicPosts.insert({
+          postId:postId,
+          title:'冬季',
+          addontitle:'我想大约会是在冬季',
+          mainImage: 'http://www.ss750.cn/follows/211.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'文亭',
+          ownerIcon:'/follows/icon2.png',
+          createdAt: new Date(),
+          topicId: TopicsId[3]
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'冬季',
+          addontitle:'我想大约会是在冬季',
+          mainImage: 'http://www.ss750.cn/follows/211.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'文亭',
+          ownerIcon:'/follows/icon2.png',
+          createdAt: new Date(),
+          topicId: TopicsId[7]
+       });
        postId = Posts.insert({
           pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/222.jpg',data_row:1,data_col:1,data_sizex:6,data_sizey:4},
                 {isImage:false,text:'卢浮魅影',data_row:5,data_col:1,data_sizex:6,data_sizey:1},
@@ -225,6 +351,48 @@ Meteor.startup(function(){
           ownerIcon:'/follows/icon2.png',
           createdAt: new Date(),
        });
+       TopicPosts.insert({
+          postId:postId,
+          title:'欧罗巴剪影',
+          addontitle:'阿尔卑斯山',
+          mainImage: 'http://www.ss750.cn/follows/221.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'文亭',
+          ownerIcon:'/follows/icon2.png',
+          createdAt: new Date(),
+          topicId: TopicsId[9]
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'欧罗巴剪影',
+          addontitle:'阿尔卑斯山',
+          mainImage: 'http://www.ss750.cn/follows/221.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'文亭',
+          ownerIcon:'/follows/icon2.png',
+          createdAt: new Date(),
+          topicId: TopicsId[12]
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'欧罗巴剪影',
+          addontitle:'阿尔卑斯山',
+          mainImage: 'http://www.ss750.cn/follows/221.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'文亭',
+          ownerIcon:'/follows/icon2.png',
+          createdAt: new Date(),
+          topicId: TopicsId[10]
+       });
        postId = Posts.insert({
           pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/232.jpg',data_row:1,data_col:1,data_sizex:6,data_sizey:4},
                 {isImage:false,text:'无论在冰天雪地',data_row:5,data_col:1,data_sizex:6,data_sizey:1},
@@ -240,6 +408,34 @@ Meteor.startup(function(){
           ownerName:'文亭',
           ownerIcon:'/follows/icon2.png',
           createdAt: new Date(),
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'我一直在等待',
+          addontitle:'一个女孩',
+          mainImage: 'http://www.ss750.cn/follows/231.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'文亭',
+          ownerIcon:'/follows/icon2.png',
+          createdAt: new Date(),
+          topicId: TopicsId[2]
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'我一直在等待',
+          addontitle:'一个女孩',
+          mainImage: 'http://www.ss750.cn/follows/231.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'文亭',
+          ownerIcon:'/follows/icon2.png',
+          createdAt: new Date(),
+          topicId: TopicsId[8]
        });
 //创建偶像用户3
        followerId = Accounts.createUser({
@@ -277,6 +473,34 @@ Meteor.startup(function(){
           ownerIcon:'/follows/icon3.png',
           createdAt: new Date(),
        });
+       TopicPosts.insert({
+          postId:postId,
+          title:'芝加哥游记',
+          addontitle:'从Willis塔俯瞰',
+          mainImage: 'http://www.ss750.cn/follows/311.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'秋雨梧桐',
+          ownerIcon:'/follows/icon3.png',
+          createdAt: new Date(),
+          topicId: TopicsId[3]
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'芝加哥游记',
+          addontitle:'从Willis塔俯瞰',
+          mainImage: 'http://www.ss750.cn/follows/311.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'秋雨梧桐',
+          ownerIcon:'/follows/icon3.png',
+          createdAt: new Date(),
+          topicId: TopicsId[9]
+       });
        postId = Posts.insert({
           pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/322.jpg',data_row:1,data_col:1,data_sizex:6,data_sizey:4},
                 {isImage:false,text:'街景',data_row:5,data_col:1,data_sizex:6,data_sizey:1},
@@ -295,6 +519,34 @@ Meteor.startup(function(){
           ownerIcon:'/follows/icon3.png',
           createdAt: new Date(),
        });
+       TopicPosts.insert({
+          postId:postId,
+          title:'三番——随走随拍',
+          addontitle:'酒庄',
+          mainImage: 'http://www.ss750.cn/follows/321.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'秋雨梧桐',
+          ownerIcon:'/follows/icon3.png',
+          createdAt: new Date(),
+          topicId: TopicsId[3]
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'三番——随走随拍',
+          addontitle:'酒庄',
+          mainImage: 'http://www.ss750.cn/follows/321.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'秋雨梧桐',
+          ownerIcon:'/follows/icon3.png',
+          createdAt: new Date(),
+          topicId: TopicsId[9]
+       });
        postId = Posts.insert({
           pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/332.jpg',data_row:1,data_col:1,data_sizex:6,data_sizey:4},
                 {isImage:false,text:'怎么可能喜欢孤独，不过是不乱交朋友罢了',data_row:5,data_col:1,data_sizex:6,data_sizey:1},
@@ -310,6 +562,34 @@ Meteor.startup(function(){
           ownerName:'秋雨梧桐',
           ownerIcon:'/follows/icon3.png',
           createdAt: new Date(),
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'孤独的人',
+          addontitle:'是可耻的',
+          mainImage: 'http://www.ss750.cn/follows/331.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'秋雨梧桐',
+          ownerIcon:'/follows/icon3.png',
+          createdAt: new Date(),
+          topicId: TopicsId[5]
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'孤独的人',
+          addontitle:'是可耻的',
+          mainImage: 'http://www.ss750.cn/follows/331.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'秋雨梧桐',
+          ownerIcon:'/follows/icon3.png',
+          createdAt: new Date(),
+          topicId: TopicsId[6]
        });
 //创建偶像用户4
        followerId = Accounts.createUser({
@@ -347,6 +627,34 @@ Meteor.startup(function(){
           ownerIcon:'/follows/icon4.png',
           createdAt: new Date(),
        });
+       TopicPosts.insert({
+          postId:postId,
+          title:'冲浪',
+          addontitle:'只需一个滑板',
+          mainImage: 'http://www.ss750.cn/follows/411.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'赋闲的快门',
+          ownerIcon:'/follows/icon4.png',
+          createdAt: new Date(),
+          topicId: TopicsId[11]
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'冲浪',
+          addontitle:'只需一个滑板',
+          mainImage: 'http://www.ss750.cn/follows/411.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'赋闲的快门',
+          ownerIcon:'/follows/icon4.png',
+          createdAt: new Date(),
+          topicId: TopicsId[13]
+       });
        postId = Posts.insert({
           pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/422.jpg',data_row:1,data_col:1,data_sizex:6,data_sizey:4},
                 {isImage:false,text:'有纯真的时光',data_row:5,data_col:1,data_sizex:6,data_sizey:1},
@@ -363,6 +671,34 @@ Meteor.startup(function(){
           ownerIcon:'/follows/icon4.png',
           createdAt: new Date(),
        });
+       TopicPosts.insert({
+          postId:postId,
+          title:'有一个地方',
+          addontitle:'只有我知道',
+          mainImage: 'http://www.ss750.cn/follows/421.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'赋闲的快门',
+          ownerIcon:'/follows/icon4.png',
+          createdAt: new Date(),
+          topicId: TopicsId[4]
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'有一个地方',
+          addontitle:'只有我知道',
+          mainImage: 'http://www.ss750.cn/follows/421.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'赋闲的快门',
+          ownerIcon:'/follows/icon4.png',
+          createdAt: new Date(),
+          topicId: TopicsId[14]
+       });
        postId = Posts.insert({
           pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/432.jpg',data_row:1,data_col:1,data_sizex:6,data_sizey:4},
                 {isImage:false,text:'华丽的女人',data_row:5,data_col:1,data_sizex:6,data_sizey:1},
@@ -378,6 +714,34 @@ Meteor.startup(function(){
           ownerName:'赋闲的快门',
           ownerIcon:'/follows/icon4.png',
           createdAt: new Date(),
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'美丽的夜晚',
+          addontitle:'美丽的世界',
+          mainImage: 'http://www.ss750.cn/follows/431.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'赋闲的快门',
+          ownerIcon:'/follows/icon4.png',
+          createdAt: new Date(),
+          topicId: TopicsId[0]
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'美丽的夜晚',
+          addontitle:'美丽的世界',
+          mainImage: 'http://www.ss750.cn/follows/431.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'赋闲的快门',
+          ownerIcon:'/follows/icon4.png',
+          createdAt: new Date(),
+          topicId: TopicsId[5]
        });
 //创建偶像用户5
        followerId = Accounts.createUser({
@@ -414,6 +778,34 @@ Meteor.startup(function(){
           ownerName:'银羽飞舞',
           ownerIcon:'/follows/icon5.png',
           createdAt: new Date(),
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'天堂',
+          addontitle:'在哪里',
+          mainImage: 'http://www.ss750.cn/follows/511.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'银羽飞舞',
+          ownerIcon:'/follows/icon5.png',
+          createdAt: new Date(),
+          topicId: TopicsId[1]
+       });
+       TopicPosts.insert({
+          postId:postId,
+          title:'天堂',
+          addontitle:'在哪里',
+          mainImage: 'http://www.ss750.cn/follows/511.jpg',
+          heart:0,
+          retweet:0,
+          comment:0,
+          owner:followerId,
+          ownerName:'银羽飞舞',
+          ownerIcon:'/follows/icon5.png',
+          createdAt: new Date(),
+          topicId: TopicsId[6]
        });
        postId = Posts.insert({
           pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/522.jpg',data_row:1,data_col:1,data_sizex:6,data_sizey:4},

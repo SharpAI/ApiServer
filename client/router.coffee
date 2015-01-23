@@ -44,3 +44,6 @@ if Meteor.isClient
     Router.route '/my_email',()->
       this.render 'my_email'
       Session.set 'channel','my_email'
+    Router.route '/topicPosts',()->
+      this.render 'topicPosts'
+      Session.set 'channel','topicPosts'
