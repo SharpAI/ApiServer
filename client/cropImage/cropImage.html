@@ -1,0 +1,53 @@
+<template name="cropImage">
+  <div class="crop">
+    <div class="default"></div>
+  </div>
+  <div class="pre"></div>
+  <script>
+  // you may do multiple instances of the cropper on a single page
+	// just be sure to give each a unique name
+	var foo = new CROP();
+ 
+	foo.init({
+ 
+		// element to load the cropper into
+		container: '.default',
+ 
+		// image to load, accepts base64 string
+		image: 'webbg.jpg',
+ 
+		// aspect ratio
+		width: 300,
+		height: 300,
+ 
+		// prevent image from leaking outside of container. boolean
+		mask: false,
+ 
+		// input[range] attributes
+		zoom: {
+ 
+			// slider step change
+			steps: 0.01,
+ 
+			// minimum and maximum zoom
+			min: 1,
+			max: 5
+ 
+		},
+ 
+		// optional preview. remove this array if you wish to hide it
+		preview: {
+ 
+			// element to load the preview into
+			container: '.pre',
+ 
+			// preview dimensions
+			width: 200,
+			height: 200
+ 
+		}
+ 
+	});
+  </script>
+
+</template>

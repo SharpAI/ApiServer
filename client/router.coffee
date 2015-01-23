@@ -9,6 +9,9 @@ if Meteor.isClient
         this.render 'search'
         Session.set 'channel','search'
       return
+    Router.route '/cropImage',()->
+      this.render 'cropImage'
+      return
     Router.route '/bell',()->
       if Meteor.isCordova is true
         this.render 'bell'
