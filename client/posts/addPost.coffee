@@ -12,10 +12,14 @@ if Meteor.isClient
       insertElement: (node, next)->
         $(node)
           .insertBefore(next)
+        ###
+        Don't add toolbar on mainImage for now.
+        MainImage need replace, we can do it later.
         $('.mainImage').toolbar
           content: '#image-toolbar-options'
           position: 'bottom'
           hideOnClick: true
+        ###
     }
 
     toolbarHiddenHandle = (event,node)->
