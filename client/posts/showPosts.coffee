@@ -78,7 +78,7 @@ if Meteor.isClient
       else
         url = "http://54.149.51.44"+url;
       window.plugins.socialsharing.share(this.title+':'+this.addontitle+'(来自 故事贴)', null, null, url);
-    'click .img': (e)->
+    'click .imgdiv': (e)->
       images = []
       swipedata = []
       i = 0
@@ -90,7 +90,7 @@ if Meteor.isClient
           swipedata.push
             href: image.imgUrl
             title: image.text
-        i++
+          i++
       $.swipebox swipedata,{
         initialIndexOnArray: selected
         hideCloseButtonOnMobile : true
