@@ -12,7 +12,11 @@
       </div>
       {{> footer}}
     {{else}}
-      {{> authOverlay}}
+      {{#if isCordova}}
+        {{> authOverlay}}
+      {{else}}
+        {{> webHome}}
+      {{/if}}
     {{/if}}
   </div>
 </template>
