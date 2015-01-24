@@ -7,7 +7,7 @@ if (Meteor.isCordova) {
     var destinationType = navigator.camera.DestinationType;
 
     navigator.camera.getPicture(function (imageURI) {
-      var returnURI = imageURI;
+      //var returnURI = imageURI;
       var timestamp = new Date().getTime();
       var retVal = {filename:'', URI:'', smallImage:''};
       retVal.filename = Meteor.userId()+'_'+timestamp+ '_'+imageURI.replace(/^.*[\\\/]/, '');
@@ -35,10 +35,12 @@ if (Meteor.isCordova) {
           });
         }
       } else if (device.platform === 'iOS') {
-        console.log('image uri is ' + returnURI);
-        //if(callback){
-        //  callback(returnURI);
-        //}
+        //"file:///var/mobile/Containers/Data/Application/748449D2-3F45-4057-9630-F12065B1C0C8/tmp/cdv_photo_002.jpg"
+        console.log('image uri is ' + imageURI);
+        retVal.smallImage = 'cdvfile://localhost/temporary/' + imageURI.replace(/^.*[\\\/]/, '');
+        if(callback){
+          callback(retVal);
+        }
       }
     }, function(){
       console.log('take photo failed');
