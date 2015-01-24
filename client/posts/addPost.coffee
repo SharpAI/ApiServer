@@ -453,17 +453,15 @@ if Meteor.isClient
           else
             if draftData[i].isImage
               draftData[i].imgUrl = 'http://bcs.duapp.com/travelers-km/'+draftData[i].filename
-
-          #for some case user did not save the draft, directly published, the layout does not stored.
-          json = jQuery.parseJSON(layout);
-          for item in json
-            if item.id is draftData[i]._id
-              draftData[i].data_row = item.row
-              draftData[i].data_col = item.col
-              draftData[i].data_sizex = item.size_x
-              draftData[i].data_sizey = item.size_y
-
-          pub.push(draftData[i])
+            #for some case user did not save the draft, directly published, the layout does not stored.
+            json = jQuery.parseJSON(layout);
+            for item in json
+              if item.id is draftData[i]._id
+                draftData[i].data_row = item.row
+                draftData[i].data_col = item.col
+                draftData[i].data_sizex = item.size_x
+                draftData[i].data_sizey = item.size_y
+            pub.push(draftData[i])
 
 #        console.log "#####end" + pub
         if Session.get('isReviewMode') is '2'

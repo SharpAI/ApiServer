@@ -65,10 +65,12 @@ if Meteor.isClient
         .forEach (drafts)->
           Drafts.remove drafts._id
       #Prepare data from post
+      draft0 = {_id:this._id, type:'image', isImage:true, owner: Meteor.userId(), imgUrl:this.mainImage, filename:this.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
+      Drafts.insert(draft0)
       pub = this.pub;
       for i in [0..(pub.length-1)]
-        if i is 0
-          pub[0].imgUrl = this.mainImage
+        #if i is 0
+        #  pub[0].imgUrl = this.mainImage
         Drafts.insert(pub[i])
       Session.set 'isReviewMode','2'
       PUB.page('/add')
