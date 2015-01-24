@@ -1010,7 +1010,9 @@
     */
     fn.disable_resize = function() {
         this.$el.addClass('gs-resize-disabled');
-        this.resize_api.disable();
+        if (this.resize_api){
+            this.resize_api.disable();
+        }
         return this;
     };
 
@@ -1023,7 +1025,9 @@
     */
     fn.enable_resize = function() {
         this.$el.removeClass('gs-resize-disabled');
-        this.resize_api.enable();
+        if (this.resize_api){
+            this.resize_api.enable();
+        }
         return this;
     };
 
