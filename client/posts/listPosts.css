@@ -70,7 +70,7 @@ img.flip {
   margin: 0;
   text-shadow: 0 1px 0 black;
   color: white;
-  font-weight:bold;
+  font-family:MFYanSong;
   white-space: pre-line;
   word-wrap: break-word;
 }
@@ -80,6 +80,7 @@ img.flip {
   color: white;
   white-space: pre-line;
   word-wrap: break-word;
+  margin-bottom: 18px;
 /*  font-weight:bold*/
 }
 

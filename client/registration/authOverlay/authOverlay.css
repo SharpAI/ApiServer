@@ -1,6 +1,7 @@
 /* CSS declarations go here */
 .authOverlay{background-image: url(loginbg.jpg);background-repeat: no-repeat;background-size: 100% auto; position: relative;}
 .webHome{background-image: url(webbg.jpg);background-repeat: no-repeat;background-size: cover; position: relative;}
+.authOverlay .title{font-family:MFYanSong;}
 .authOverlay #register,.webHome #register{position: absolute;bottom: 25%;left: 5%;right: 5%;width: 90%;text-align: center;border: none;border-radius: 50px;padding: 10px;background-color: #00c4ff;font-size: 16px;}
 .authOverlay #weibo,.webHome #weibo{position: absolute;bottom: 15%;left: 5%;right: 5%;width: 90%;text-align: center;border: thin solid;border-radius: 50px;padding: 10px;font-size: 16px;}
 .authOverlay #login,.webHome #login{position: absolute;bottom: 8%;left: 30%;right: 30%;text-align: center;font-size: 16px;}
