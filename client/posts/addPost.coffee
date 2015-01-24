@@ -283,8 +283,8 @@ if Meteor.isClient
 
     pub:()->
       if Drafts.find().count() > 1
-        for i in [1..(Drafts.find().count()-1)]
-          Drafts.find().fetch()[i]
+        for i in [1..(Drafts.find({}, {sort: {data_row:1}}).count()-1)]
+          Drafts.find({}, {sort: {data_row:1}}).fetch()[i]
 
     items:()->
       if Drafts.find({type:'image'}).count() > 1
@@ -430,6 +430,11 @@ if Meteor.isClient
         layout = JSON.stringify(gridster.serialize())
         pub=[]
         title = $("#title").val()
+
+        if title is ''
+          window.plugins.toast.showShortBottom('请为您的故事加个标题')
+          return
+
         addontitle = $("#addontitle").val()
         try
           ownerIcon = Meteor.user().profile.icon
@@ -465,6 +470,16 @@ if Meteor.isClient
                 draftData[i].data_sizex = item.size_x
                 draftData[i].data_sizey = item.size_y
             pub.push(draftData[i])
+
+        sortBy = (key, a, b, r) ->
+          r = if r then 1 else -1
+          return -1*r if a[key] > b[key]
+          return +1*r if a[key] < b[key]
+          return 0
+
+        sortedPub = pub.sort((a, b)->
+          sortBy('data_row', a, b)
+        )
 
 #        console.log "#####end" + pub
         if Session.get('isReviewMode') is '2'
