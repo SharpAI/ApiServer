@@ -209,30 +209,23 @@ if Meteor.isClient
       };
     }, widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], min_cols: 3, max_cols:6, resize: {enabled: true}}).data('gridster');`
     #Set is isReviewMode
-    draftData = Drafts.find().fetch()
-    if draftData and draftData.length>0
-      draftId = draftData[0]._id
-      if SavedDrafts.find({_id:draftId}).count() > 0
-        Session.set 'isReviewMode','1'
-        gridster.disable()
-        gridster.disable_resize()
+    console.log "rendered isReviewMode="+Session.get('isReviewMode')
+    if Session.get('isReviewMode') is '1'
+        if gridster?
+          console.log "rendered: gridster.disable 2"
+          gridster.disable()
+          gridster.disable_resize()
         $("#title").attr("disabled", "disabled")
         $("#addontitle").attr("disabled", "disabled")
-      else
-        if Posts.find({_id:draftId}).count() > 0
-          Session.set 'isReviewMode','2'
-        else
-          Session.set 'isReviewMode','0'
-        gridster.enable()
-        gridster.enable_resize()
+        `global_toolbar_hidden = true`
+    else if Session.get('isReviewMode') is '2' or Session.get('isReviewMode') is '0'
+        console.log "rendered: gridster.enable "
+        if gridster?
+          gridster.enable()
+          #gridster.enable_resize()
         $("#title").attr("disabled", false)
-        $("#addontitle").attr("disabled", false)
-    else
-      Session.set 'isReviewMode','0'
-      gridster.enable()
-      gridster.enable_resize()
-      $("#title").attr("disabled", false)
-      $("#addontitle").attr("disabled", false)
+        $("#addontitle").attr('disabled',false)
+        `global_toolbar_hidden = false`
     return
 
   Template.addPost.helpers

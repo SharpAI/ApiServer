@@ -22,6 +22,7 @@ if Meteor.isClient
     'click #add':(e)->
 
       #console.log 'Clicked on ADD'
+      Session.set 'isReviewMode','0'
       selectMediaFromAblum (result)->
         #console.log 'upload success: url is ' + result
         #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
