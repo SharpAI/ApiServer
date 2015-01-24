@@ -83,7 +83,7 @@ if Meteor.isClient
         Drafts.update({_id: doc_id}, {$set: {style: style}});
       else if buttonClicked.id is "font-normal"
         console.log 'Need font-normal'
-        style = 'font-family:;font-size:medium' + ';text-align:' + textarea.css('text-align')+';'
+        style = 'font-family:;font-size:large' + ';text-align:' + textarea.css('text-align')+';'
         Drafts.update({_id: doc_id}, {$set: {style: style}});
       else if buttonClicked.id is "font-quato"
         console.log 'Need font-quato'
