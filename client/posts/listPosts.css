@@ -25,6 +25,10 @@
     zoom: 1;
 }
 
+img.scale.item {
+    object-fit: cover;
+}
+
 img.flip {
      /* actually, aligns left within .cropheight */
   float: right;
