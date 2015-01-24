@@ -236,21 +236,24 @@ if Meteor.isClient
     return
 
   Template.addPost.helpers
+    showPostFooter:->
+      if Session.get('isReviewMode') is '2' or Session.get('isReviewMode') is '0'
+        true
+      else
+        false
     isReviewMode:(value)->
-      console.log "value is "+value 
+      console.log "value is "+value + ", isReviewMode = "+Session.get('isReviewMode')
       if Session.get('isReviewMode') is value
-        if value is '2'
-            true
-        else if value is '1'
+        if Session.get('isReviewMode') is '1'
             if gridster?
-              console.log "gridster.disable "
+              console.log "gridster.disable 2"
               gridster.disable()
               gridster.disable_resize()
             $("#title").attr("disabled", "disabled")
             $("#addontitle").attr("disabled", "disabled")
             `global_toolbar_hidden = true`
-            'true'
-        else
+            true
+        else if Session.get('isReviewMode') is '2' or Session.get('isReviewMode') is '0'
             console.log "gridster.enable "
             if gridster?
               gridster.enable()
@@ -258,7 +261,7 @@ if Meteor.isClient
             $("#title").attr("disabled", false)
             $("#addontitle").attr('disabled',false)
             `global_toolbar_hidden = false`
-            false
+            true
       else
         false
     draftTitles:->
@@ -267,7 +270,7 @@ if Meteor.isClient
         draftId = draftData[0]._id;
         if Session.get('isReviewMode') is '2'
           Posts.find({_id:draftId}).fetch()[0]
-        else if Session.get('isReviewMode') is '1'
+        else if Session.get('isReviewMode') is '1' or Session.get('isReviewMode') is '0'
           SavedDrafts.find({_id:draftId}).fetch()[0]
     mainImage:->
 #      Meteor.setTimeout ->
