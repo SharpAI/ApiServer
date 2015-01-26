@@ -38,16 +38,22 @@ if Meteor.isClient
         $(textarea).attr('disabled',false)
         $(textarea).off('focus')
         $(textarea).off('focusout')
+        $(textarea).off('blur')
 
-        $(textarea).first().focus(()->
+        $(textarea).focus(()->
           console.log("focus get")
         )
-        $(textarea).first().focus()
-        #$(textarea).blur().focus()
+        $(textarea).on('blur', 'input, textarea', ()->
+          setTimeout(()->
+            window.scrollTo(document.body.scrollLeft, document.body.scrollTop);
+          , 0)
+        )
+        $(textarea).focus()
 
-        $(textarea).first().focusout(()->
+        $(textarea).focusout(()->
           console.log("focusout")
           $(this).attr("disabled", "true")
+
         )
 
       else if buttonClicked.id == "del"
