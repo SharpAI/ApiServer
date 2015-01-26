@@ -65,9 +65,11 @@ img.flip {
   left: 0;
   width: 100%;
   padding: 2% 1%;
+  margin-bottom: 18px;
 }
 #wrapper .mainImage > header > .title{
   margin: 0;
+  padding-bottom: 12px;
   text-shadow: 0 1px 0 black;
   color: white;
   font-family:MFYanSong;
@@ -78,9 +80,8 @@ img.flip {
   margin: 0;
   text-shadow: 0 1px 0 black;
   color: white;
-  white-space: pre-line;
+  /*white-space: pre-line;*/
   word-wrap: break-word;
-  margin-bottom: 18px;
 /*  font-weight:bold*/
 }
 
