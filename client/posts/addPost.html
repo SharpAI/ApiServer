@@ -39,8 +39,15 @@
                 {{#each pub}}
                     {{#if isImage}}
                         <li class='resortitem' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
-                            <div style="background-image: url({{imgUrl}}); background-repeat: no-repeat;background-size: cover; background-position: center; height: 100%;">
-                            </div>
+                          <div style="background-image: url({{imgUrl}}); background-repeat: no-repeat;background-size: cover; background-position: center; height: 100%;"></div>
+<!--
+                          <div class="pre"></div>
+                          <div class="crop">
+                            <div class="default"></div>
+                          </div>
+                        
+                        {{crop imgUrl}}
+-->
                         </li>
                     {{else}}
                         <li class='resortitem' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
@@ -54,7 +61,7 @@
         </div>
       </div>
       <div id="image-toolbar-options" style='visibility: hidden;'>
-        <!--<a href="#" id='crop'><i class="fa fa-crop"></i></a>-->
+        <a href="#" id='crop'><i class="fa fa-crop"></i></a>
         <a href="#" id='del'><i class="fa fa-trash"></i></a>
       </div>
       <div id="text-toolbar-options" style='visibility: hidden;'>

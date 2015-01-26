@@ -1,7 +1,6 @@
 if Meteor.isClient
-  # the only document I found here https://github.com/percolatestudio/transition-helper/blob/master/transition-helper.js#L4
-
-  Template.addPost.rendered=->
+  # the only document I found here https://github.com/percolatestudio/transition-helper/blob/master/transition-helper.js#L4    
+  Template.addPost.rendered=->    
     $('.addPost').css('min-height',$(window).height())
 
     console.log 'addPost rendered rev=37'
@@ -173,7 +172,23 @@ if Meteor.isClient
               if gridster?
                 gridster.remove_widget2(node, false)
               Drafts.remove node.id
+            ###
+            else if buttonClicked.id == "crop"
+              console.log("crop "+ node.id)
 
+              image = Drafts.findOne({_id:node.id}).imgUrl
+              crop = new CROP()
+              crop.init {
+                container: '.default',
+                image: image,
+                width: 300,
+                height: 300,
+                mask: false,
+                zoom: {steps: 0.01,min: 1,max: 5},
+                preview: {container: '.pre',width: 200,height: 200}
+              }
+            ###
+              
             ###
             else if buttonClicked.id == "crop"
 
@@ -185,6 +200,8 @@ if Meteor.isClient
              }).on('cropbox', (e, data)->
                console.log('crop window: ' + data)
              )
+
+            
             ###
             return
       return
@@ -235,6 +252,17 @@ if Meteor.isClient
     return
 
   Template.addPost.helpers
+    crop: (imgUrl)->
+      crop = new CROP()
+      crop.init {
+        container: '.default',
+        image: imgUrl,
+        width: 300,
+        height: 300,
+        mask: false,
+        zoom: {steps: 0.01,min: 1,max: 5},
+        preview: {container: '.pre',width: 200,height: 200}
+      }
     showPostFooter:->
       if Session.get('isReviewMode') is '2' or Session.get('isReviewMode') is '0'
         true
