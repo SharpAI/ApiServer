@@ -490,6 +490,13 @@
     //Added added_widget hook, to process added longpress event.
     fn.added_widget = function($el){
         $el.longpress($.proxy(function(e){
+
+            if (typeof global_disable_longpress !== "undefined" && global_disable_longpress !== null) {
+                if (global_disable_longpress) {
+                    return;
+                }
+            }
+
             $el.animate({
                 'marginLeft' : "+=5px", //moves Right
                 'marginTop' : "-=5px"
@@ -504,6 +511,7 @@
                   });
                 }
             });
+
             this.drag_handler(e);
           },this));
     };

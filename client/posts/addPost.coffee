@@ -35,10 +35,11 @@ if Meteor.isClient
       textarea = textdiv.children('textarea')
       doc_id =  $(textarea).attr("text")
       if buttonClicked.id == "modify"
-        $(textarea).attr('disabled',false)
+        $(textarea).attr('readOnly',false)
         $(textarea).off('focus')
         $(textarea).off('focusout')
         $(textarea).off('blur')
+        `global_disable_longpress = true`
 
         $(textarea).focus(()->
           Session.set('textareaFocused', true)
@@ -53,9 +54,9 @@ if Meteor.isClient
 
         $(textarea).focusout(()->
           console.log("focusout")
-          $(this).attr("disabled", "true")
+          $(this).attr("readOnly", true)
+          `global_disable_longpress = false`
           Session.set('textareaFocused', false)
-
         )
 
       else if buttonClicked.id == "del"
