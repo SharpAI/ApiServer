@@ -93,14 +93,14 @@
 }
 
 .tool-container.tool-top .arrow, .tool-container.tool-center .arrow{
-	border-color: #e9e5e5 transparent transparent; 
+	border-color: #00c4ff transparent transparent; 
 	left: 50%;  
 	bottom: -14px;
 	margin-left: -7px;
 }
 
 .tool-container.tool-bottom .arrow {
-	border-color: transparent transparent #e9e5e5; 
+	border-color: transparent transparent #00c4ff; 
 	left: 50%;  
 	top: -14px;
 	margin-left: -7px;
