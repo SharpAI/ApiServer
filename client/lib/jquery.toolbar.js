@@ -40,6 +40,7 @@ if ( typeof Object.create !== 'function' ) {
                 .hide();
             self.toolbar_arrow = self.toolbar.find('.arrow');
             self.initializeToolbar();
+            self.scrollMontor = scrollMonitor.create(self.$elem);
         },
 
         initializeToolbar: function() {
@@ -225,7 +226,31 @@ if ( typeof Object.create !== 'function' ) {
         show: function() {
             var self = this;
             var animation = {'opacity': 1};
+            var watcher = self.scrollMontor;
+            var edgeOffset = 20;
+            var toTop = watcher.top - $(window).scrollTop()
+                - $('.head').height() - self.toolbar.height() - edgeOffset;
+            var toBottom = $(window).height()-(watcher.bottom - $(window).scrollTop()) -  $('#postFooter').height() - self.toolbar.height() - edgeOffset;
 
+            if( toTop >= 0 ) {
+                if(self.options.position !== 'top') {
+                    $(self.toolbar).removeClass('tool-'+self.options.position);
+                    self.options.position = 'top';
+                    $(self.toolbar).addClass('tool-top');
+                }
+            } else if ( toBottom >= 0 ) {
+                if(self.options.position !== 'bottom') {
+                    $(self.toolbar).removeClass('tool-'+self.options.position);
+                    self.options.position = 'bottom';
+                    $(self.toolbar).addClass('tool-bottom');
+                }
+            } else {
+                if(self.options.position !== 'center') {
+                    $(self.toolbar).removeClass('tool-'+self.options.position);
+                    self.options.position = 'center';
+                    $(self.toolbar).addClass('tool-center');
+                }
+            }
             self.$elem.addClass('pressed');
             self.calculatePosition();
 
