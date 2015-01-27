@@ -1,7 +1,51 @@
 
 if (Meteor.isCordova){
     uploadingFilesInfo = {filesCount:0, files:[]};
+    var uploadToAliyun = function(filename,URI,callback){
+      Meteor.call('getAliyunWritePolicy',filename,URI,function(error,result){
+        if(error) {
+          console.log('getAliyunWritePolicy error: ' + error);
+            if(callback){
+                callback(null);
+            }
+        }
+        console.log('File URI is ' + result.orignalURI);
+        var options = new FileUploadOptions();
+        options.mimeType ="image/jpeg";
+        options.chunkedMode = false;
+        options.httpMethod = "PUT";
+        options.fileName = filename;
 
+        var uri = encodeURI(result.acceccURI);
+
+        var headers = {
+          "Content-Type": "image/jpeg",
+          "Authorization": result.authheader,
+          "Date": result.date
+        };
+        options.headers = headers;
+
+        var ft = new FileTransferBCS();
+        ft.onprogress = function(progressEvent) {
+          if (progressEvent.lengthComputable) {
+            computeProgressBar(filename, 100*(progressEvent.loaded/progressEvent.total));
+            console.log('Uploaded Progress ' + 100* (progressEvent.loaded / progressEvent.total ) + '%');
+          } else {
+            console.log('Upload ++');
+          }
+        };
+        ft.upload(result.orignalURI, uri, function(e){
+            if(callback){
+                callback(result.acceccURI);
+            }
+        }, function(e){
+          console.log('upload error' + e.code )
+          if(callback){
+              callback(null);
+          }
+        }, options,true);
+      });
+    }
     var uploadToS3 = function(filename,URI,callback){
       Meteor.call('getS3WritePolicy',filename,URI,function(error,result){
         if(error) {
@@ -222,6 +266,7 @@ if (Meteor.isCordova){
         uploadingFilesInfo.filesCount = draftData.length;
         uploadingFilesInfo.files = [];
         for (var i=0; i<draftData.length; i++) {
+            //uploadToAliyun(draftData[i].filename, draftData[i].URI, function(result){
             uploadToBCS(draftData[i].filename, draftData[i].URI, function(result){
                 uploadedCount++;
                 console.log("uploading("+uploadedCount+"/"+draftData.length+")...");
