@@ -6,6 +6,7 @@ if Meteor.isClient
     console.log 'addPost rendered rev=37'
     #testMenu will be main/font/align. It's for controlling the icon on text menu
     Session.set('textMenu','main')
+    Session.set('textareaFocused', false)
     #init
     this.find('.content')._uihooks = {
       insertElement: (node, next)->
@@ -40,6 +41,7 @@ if Meteor.isClient
         $(textarea).off('blur')
 
         $(textarea).focus(()->
+          Session.set('textareaFocused', true)
           console.log("focus get")
         )
         $(textarea).on('blur', 'input, textarea', ()->
@@ -52,6 +54,7 @@ if Meteor.isClient
         $(textarea).focusout(()->
           console.log("focusout")
           $(this).attr("disabled", "true")
+          Session.set('textareaFocused', false)
 
         )
 
@@ -265,7 +268,10 @@ if Meteor.isClient
       }
     showPostFooter:->
       if Session.get('isReviewMode') is '2' or Session.get('isReviewMode') is '0'
-        true
+        if Session.get('textareaFocused') is false
+          true
+        else
+          false
       else
         false
     isReviewMode:(value)->
@@ -451,7 +457,8 @@ if Meteor.isClient
           .find {owner: Meteor.userId()}
           .forEach (drafts)->
             Drafts.remove drafts._id
-        PUB.back()
+        history.back()
+        #PUB.back()
         return
     'click #publish':->
       if Meteor.user() is null
