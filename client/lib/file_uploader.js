@@ -321,7 +321,7 @@ if (Meteor.isCordova){
                 //var cdvfilepath = s.replace(/file:\/\/\/storage\/emulated\/0\//, '');
                 //console.log("cdvfilepath = "+ cdvfilepath);
                 var params = {filename:filename, URI:s, smallImage:result}
-                callback(params);
+                callback(null, params);
               });
           }, function(s){
               if(callback){
@@ -348,7 +348,8 @@ if (Meteor.isCordova){
               length=results.length;
             }
             if (length == 0) {
-              PUB.back();
+              callback('cacel');
+              //PUB.back();
               return;
             }
             if(device.platform === 'Android' ){
@@ -370,7 +371,7 @@ if (Meteor.isCordova){
                           for (var item in retArray) {
                             if (retArray[item].originalFilename == localURL.replace(/^.*[\\\/]/, '')) {
                               retArray[item].smallImage = event.target.result;
-                              callback(retArray[item]);
+                              callback(null, retArray[item]);
                               retArray.slice(item, 1);
                               break;
                             }
@@ -394,7 +395,7 @@ if (Meteor.isCordova){
                   //uploadToS3(filename,results[i],callback);
                   //uploadToBCS(filename,results[i],callback);
                   var params = {filename:filename, URI:results[i], smallImage:'cdvfile://localhost/persistent/drafts/' + originalFilename}
-                  callback(params);
+                  callback(null, params);
                 }
             }
           }, function (error){

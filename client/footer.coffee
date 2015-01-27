@@ -23,9 +23,13 @@ if Meteor.isClient
 
       #console.log 'Clicked on ADD'
       Session.set 'isReviewMode','0'
-      selectMediaFromAblum (result)->
+      selectMediaFromAblum (cancel, result)->
         #console.log 'upload success: url is ' + result
         #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
+        if cancel
+          if Drafts.find().count is 0
+            PUB.back()
+          return
         if result
           Session.set 'NewImgAdd','true'
           console.log 'Local is ' + result.smallImage

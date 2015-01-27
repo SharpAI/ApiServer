@@ -337,7 +337,11 @@ if Meteor.isClient
     'click #addmore':->
       #uploadFile (result)->
       Session.set('NewImgAdd','false')
-      selectMediaFromAblum (result)->
+      selectMediaFromAblum (cancel, result)->
+        if cancel
+          if Drafts.find().count() is 0
+            PUB.back()
+          return
         if result
           #console.log 'upload success: url is ' + result
           #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
