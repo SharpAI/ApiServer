@@ -31,8 +31,12 @@ if Meteor.isClient
   Template.my_password.events
     'click #pass_btn_save' :->
       new_pass = $("#my_edit_password").val()
+      new_pass_confirm = $("#my_edit_password_confirm").val()
+      if new_pass != new_pass_confirm
+        PUB.toast "password mismatch!"
+        return
       if new_pass
-        Meteor.call "changeMyPassword", $("#my_edit_password").val(), (error, result) ->
+        Meteor.call "changeMyPassword", new_pass, (error, result) ->
           if error
             PUB.toast 'fail to change password!'
           else
