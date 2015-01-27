@@ -17,7 +17,7 @@
 (function($) {
     $.fn.longpress = function(longCallback, shortCallback, duration) {
         if (typeof duration === "undefined") {
-            duration = 500;
+            duration = 200;
         }
 
         return this.each(function() {
