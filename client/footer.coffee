@@ -23,11 +23,15 @@ if Meteor.isClient
 
       #console.log 'Clicked on ADD'
       Session.set 'isReviewMode','0'
+      Drafts
+        .find {owner: Meteor.userId()}
+        .forEach (drafts)->
+          Drafts.remove drafts._id
       selectMediaFromAblum (cancel, result)->
         #console.log 'upload success: url is ' + result
         #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
         if cancel
-          if Drafts.find().count is 0
+          if Drafts.find().count() is 0
             PUB.back()
           return
         if result
