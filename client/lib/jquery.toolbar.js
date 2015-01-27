@@ -194,13 +194,20 @@ if ( typeof Object.create !== 'function' ) {
                         top: self.coordinates.top+self.$elem.height()+adjustment,
                         right: 'auto'
                     };
+                case 'center':
+                    return {
+                        left: self.coordinates.left-(self.toolbar.width()/2)+(self.$elem.outerWidth()/2),
+                        top: $(window).height()/2 + $(window).scrollTop()-self.toolbar.height()-adjustment,
+                        right: 'auto'
+                    };
             }
         },
 
         collisionDetection: function() {
             var self = this;
             var edgeOffset = 20;
-            if(self.options.position == 'top' || self.options.position == 'bottom') {
+            if(self.options.position == 'top' || self.options.position == 'bottom'
+              || self.options.position == 'center') {
                 self.arrowCss = {left: '50%', right: '50%'};
                 if( self.toolbarCss.left < edgeOffset ) {
                     self.toolbarCss.left = edgeOffset;
@@ -235,6 +242,9 @@ if ( typeof Object.create !== 'function' ) {
                 case 'bottom':
                     animation.top = '+=20';
                     break;
+                case 'center':
+                    animation.top = '=0';
+                    break;
             }
 
             self.toolbar.show().animate(animation, 200 );
@@ -259,6 +269,9 @@ if ( typeof Object.create !== 'function' ) {
                     break;
                 case 'bottom':
                     animation.top = '-=20';
+                    break;
+                case 'center':
+                    animation.top = '=0';
                     break;
             }
 
