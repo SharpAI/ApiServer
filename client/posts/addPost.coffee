@@ -41,6 +41,7 @@ if Meteor.isClient
         $(textarea).off('blur')
         `global_disable_longpress = true`
 
+
         $(textarea).focus(()->
           Session.set('textareaFocused', true)
           console.log("focus get")
@@ -57,6 +58,7 @@ if Meteor.isClient
           $(this).attr("readOnly", true)
           `global_disable_longpress = false`
           Session.set('textareaFocused', false)
+
         )
 
       else if buttonClicked.id == "del"
@@ -131,17 +133,21 @@ if Meteor.isClient
               console.log("toolbarHidden")
               toolbarHiddenHandle(event,node)
 
-
           $('#'+node.id+'TextArea').bind('propertychange input',(e)->
             e.preventDefault()
             id = this.id.replace("TextArea", "")
-            sizey = Math.round this.scrollHeight/40
+            grid_size=($( window ).width()/6 - 10);
+
+            min_widget_height = (5 * 2) + grid_size;
+
+            sizey = Math.floor(this.scrollHeight/min_widget_height)+1
             if gridster?
               resizeItem = $('#'+id)
-              resizeItem.css("height", this.scrollHeight)
+              height = sizey*min_widget_height - 10
+              resizeItem.css("height", height)
               sizex = parseInt(resizeItem.attr("data-sizex"))
               gridster.resize_widget(resizeItem, sizex,sizey)
-              #console.log('propertychange sizey:'+ sizey + ' scrollHeight:'+this.scrollHeight)
+              console.log('propertychange sizey:'+ sizey + ' scrollHeight:'+this.scrollHeight)
           )
 
       else if type == "image"
