@@ -7,23 +7,17 @@ if Meteor.isClient
     #testMenu will be main/font/align. It's for controlling the icon on text menu
     Session.set('textMenu','main')
     Session.set('textareaFocused', false)
-    #init
-    this.find('.content')._uihooks = {
-      insertElement: (node, next)->
-        $(node)
-          .insertBefore(next)
-        ###
-        Don't add toolbar on mainImage for now.
-        MainImage need replace, we can do it later.
-        ###
-        $('.mainImage').toolbar
-          content: '#mainImage-toolbar-options'
-          position: 'bottom'
-          hideOnClick: true
+
+
+    initMainImageToolBar = ()->
+      $('.mainImage').toolbar
+        content: '#mainImage-toolbar-options'
+        position: 'bottom'
+        hideOnClick: true
         $('.mainImage').on 'toolbarItemClick',(event,buttonClicked)=>
-          console.log $(buttonClicked).attr('id') + ' event on nodeid ' + node.id
+          console.log $(buttonClicked).attr('id')
           if buttonClicked.id == "modify"
-            console.log("modify "+ node.id)
+            console.log("modify")
             selectMediaFromAblum 1,(cancel, result)->
               if cancel
                 if Drafts.find().count() is 0
@@ -34,7 +28,23 @@ if Meteor.isClient
                 if Drafts.find({type:'image'}).count() > 0
                   mainImageDoc = Drafts.find({type:'image'}).fetch()[0]
                   Drafts.update({_id: mainImageDoc._id}, {$set: {imgUrl:result.smallImage, filename:result.filename, URI:result.URI }});
+
+
+    #init
+    this.find('.content')._uihooks = {
+      insertElement: (node, next)->
+        $(node)
+          .insertBefore(next)
+
+        initMainImageToolBar()
+        ###
+        Don't add toolbar on mainImage for now.
+        MainImage need replace, we can do it later.
+        ###
     }
+
+    #when click to edit stored draft, the uihook will not be called again, so need reinitiate here.
+    initMainImageToolBar()
 
     toolbarHiddenHandle = (event,node)->
       if Session.get('textMenu') isnt 'main'
