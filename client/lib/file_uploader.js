@@ -285,7 +285,7 @@ if (Meteor.isCordova){
         }
     }
 
-    selectMediaFromAblum = function(callback){
+    selectMediaFromAblum = function(max_number, callback){
       if(device.platform === 'testAndroid' ){
            pictureSource = navigator.camera.PictureSourceType;
            destinationType = navigator.camera.DestinationType;
@@ -404,7 +404,7 @@ if (Meteor.isCordova){
                   callback(null);
               }
           }, {
-            maximumImagesCount: 20,
+            maximumImagesCount: max_number,
             width: 400,
             height: 400,
             quality: 100,

@@ -15,11 +15,26 @@ if Meteor.isClient
         ###
         Don't add toolbar on mainImage for now.
         MainImage need replace, we can do it later.
+        ###
         $('.mainImage').toolbar
-          content: '#image-toolbar-options'
+          content: '#mainImage-toolbar-options'
           position: 'bottom'
           hideOnClick: true
-        ###
+        $('.mainImage').on 'toolbarItemClick',(event,buttonClicked)=>
+          console.log $(buttonClicked).attr('id') + ' event on nodeid ' + node.id
+          if buttonClicked.id == "modify"
+            console.log("modify "+ node.id)
+            selectMediaFromAblum 1,(cancel, result)->
+              if cancel
+                if Drafts.find().count() is 0
+                  PUB.back()
+                return
+              if result
+                #console.log 'upload success: url is ' + result
+                #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
+                console.log 'image url is ' + result.smallImage
+                #Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
+
     }
 
     toolbarHiddenHandle = (event,node)->
@@ -350,7 +365,7 @@ if Meteor.isClient
     'click #addmore':->
       #uploadFile (result)->
       Session.set('NewImgAdd','false')
-      selectMediaFromAblum (cancel, result)->
+      selectMediaFromAblum(20, (cancel, result)->
         if cancel
           if Drafts.find().count() is 0
             PUB.back()
@@ -360,6 +375,7 @@ if Meteor.isClient
           #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
           console.log 'image url is ' + result.smallImage
           Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
+      )
       return
     'click #addText':->
       Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:'', style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}

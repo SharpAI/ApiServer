@@ -24,7 +24,7 @@ if Meteor.isClient
       #console.log 'Clicked on ADD'
       Session.set 'isReviewMode','0'
       Drafts.remove({})
-      selectMediaFromAblum (cancel, result)->
+      selectMediaFromAblum(20, (cancel, result)->
         #console.log 'upload success: url is ' + result
         #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
         if cancel
@@ -36,4 +36,4 @@ if Meteor.isClient
           console.log 'Local is ' + result.smallImage
           Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
           Router.go '/add'
-
+      )
