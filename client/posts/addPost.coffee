@@ -30,11 +30,10 @@ if Meteor.isClient
                   PUB.back()
                 return
               if result
-                #console.log 'upload success: url is ' + result
-                #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
                 console.log 'image url is ' + result.smallImage
-                #Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
-
+                if Drafts.find({type:'image'}).count() > 0
+                  mainImageDoc = Drafts.find({type:'image'}).fetch()[0]
+                  Drafts.update({_id: mainImageDoc._id}, {$set: {imgUrl:result.smallImage, filename:result.filename, URI:result.URI }});
     }
 
     toolbarHiddenHandle = (event,node)->
