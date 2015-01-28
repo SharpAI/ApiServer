@@ -5,8 +5,6 @@ if Meteor.isClient
     topic:()->
       Topics.find({type:"topic"}, {sort: {createdAt: -1}})
   Template.search.events
-    'click .back': (event)->
-       history.back()
     'click #follow': (event)->
        Router.go '/searchFollow'
     'click .theme': (event)->
@@ -17,6 +15,9 @@ if Meteor.isClient
        Session.set "topicId", @_id
        Session.set "topicTitle", "#"+ @text
        Router.go '/topicPosts'
+  Template.searchFollow.events
+    'click .back': (event)->
+       history.back()
   Template.searchFollow.helpers
     follows: ->
       Follows.find()
