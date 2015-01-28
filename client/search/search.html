@@ -33,9 +33,32 @@
     <div class="content">
       <form class="searchForm">
           <i class="fa fa-search"></i>
-          <label><input type="text" placeholder="搜索人"></label>
+          <label><input id="search-box" type="text" placeholder="搜索人"></label>
       </form>
       <div id="followList">
+      {{#if isSearching}}
+      {{#each getFollowUsers}}
+          <a href="" id="{{_id}}" class="contentList">
+          <img class="icon" src="{{profile.icon}}" width='30' height='30'>
+          {{#if profile.fullname}}
+          <div class="userName">{{profile.fullname}}</div>
+          {{else}}
+          <div class="userName">{{username}}</div>
+          {{/if}}
+          {{#if notSelf this}}
+          {{#if isFollowedUser this}}
+            <div id="{{_id}}" class="follow del"><span class="fa fa-check"></span><i class="fa fa-user"></i></div>
+          {{else}}
+            <div id="{{_id}}" class="follow add"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
+          {{/if}}
+          {{/if}}
+          <div class="desc">{{desc}}</div>
+          </a>
+          <div class="line">
+            <span></span>
+          </div>
+      {{/each}}
+      {{else}}
        <div class="stitle">建议用户</div>
       {{#each follows}}
           <a href="" id="{{_id}}" class="contentList">
@@ -52,6 +75,7 @@
             <span></span>
           </div>
       {{/each}}
+      {{/if}}
       </div>
     </div>
   </div>

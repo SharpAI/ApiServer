@@ -15,10 +15,17 @@ if Meteor.isClient
        Session.set "topicId", @_id
        Session.set "topicTitle", "#"+ @text
        Router.go '/topicPosts'
+  Template.searchFollow.rendered=->
+    Session.set('isSearching', false)
   Template.searchFollow.events
     'click .back': (event)->
        history.back()
   Template.searchFollow.helpers
+    isSearching:->
+      if Session.get('isSearching') is false
+         false
+      else
+         true
     follows: ->
       Follows.find()
     isFollowed:(follow)->
@@ -27,3 +34,15 @@ if Meteor.isClient
         true
       else
         false
+    isFollowedUser:(follow)->
+      fcount = Follower.find({"userId":Meteor.userId(),"followerId":follow._id}).count()
+      if fcount > 0
+        true
+      else
+        false
+    notSelf:(follow)->
+      fcount = Follower.find({"userId":Meteor.userId(),"followerId":follow.userId}).count()
+      if follow._id is Meteor.userId()
+        false
+      else
+        true
