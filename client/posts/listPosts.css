@@ -27,6 +27,8 @@
 
 img.scale.item {
     object-fit: cover;
+    margin-top: 40px;
+    height:260px;
 }
 
 img.flip {
