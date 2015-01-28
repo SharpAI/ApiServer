@@ -32,7 +32,6 @@ if Meteor.isServer
         Signture = encodeURIComponent hash.toString('base64')
         authheader = "OSS " + "Vh0snNA4Orv3emBj" + ":" + Signture
         policy = {
-          signture: "MBO:"+apiKey+":"+Signture
           orignalURI: URI
           date: date.toGMTString()
           auth: authheader
