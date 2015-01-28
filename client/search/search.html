@@ -24,3 +24,35 @@
   </div>
   {{> footer}}
 </template>
+<template name="searchFollow">
+  <div class="searchFollow">
+    <div class="head">
+      <strong>查找值得关注的人</strong>
+      <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+    </div>
+    <div class="content">
+      <form class="searchForm">
+          <i class="fa fa-search"></i>
+          <label><input type="text" placeholder="搜索人"></label>
+      </form>
+      <div id="followList">
+      {{#each follows}}
+          <a href="" id="{{_id}}" class="contentList">
+          <img class="icon" src="{{icon}}" width='30' height='30'>
+          <div class="userName">{{fullname}}</div>
+          {{#if isFollowed this}}
+            <div id="{{_id}}" class="follow del"><span class="fa fa-check"></span><i class="fa fa-user"></i></div>
+          {{else}}
+            <div id="{{_id}}" class="follow add"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
+          {{/if}}
+          <div class="desc">{{desc}}</div>
+          </a>
+          <div class="line">
+            <span></span>
+          </div>
+      {{/each}}
+      </div>
+    </div>
+  </div>
+  {{> footer}}
+</template>
