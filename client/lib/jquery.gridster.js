@@ -867,7 +867,7 @@
         },
         resize: {
             enabled: false,
-            axes: ['both'],
+            axes: ['x','y','both'],
             handle_append_to: '',
             handle_class: 'gs-resize-handle',
             max_size: [Infinity, Infinity],
