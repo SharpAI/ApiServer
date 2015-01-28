@@ -41,6 +41,7 @@ if ( typeof Object.create !== 'function' ) {
             self.toolbar_arrow = self.toolbar.find('.arrow');
             self.initializeToolbar();
             self.scrollMontor = scrollMonitor.create(self.$elem);
+            self.needRestart = false;
         },
 
         initializeToolbar: function() {
@@ -231,6 +232,7 @@ if ( typeof Object.create !== 'function' ) {
             var toTop = watcher.top - $(window).scrollTop()
                 - $('.head').height() - self.toolbar.height() - edgeOffset;
             var toBottom = $(window).height()-(watcher.bottom - $(window).scrollTop()) -  $('#postFooter').height() - self.toolbar.height() - edgeOffset;
+            self.needRestart = false;
 
             if( toTop >= 0 ) {
                 if(self.options.position !== 'top') {
@@ -274,6 +276,18 @@ if ( typeof Object.create !== 'function' ) {
 
             self.toolbar.show().animate(animation, 200 );
             self.$elem.trigger('toolbarShown');
+            $('body').one("touchmove", function() {
+                self.needRestart = true;
+                if ( self.toolbar.is(":visible") ) {
+                    self.toolbar.hide();
+                    $('body').one("touchend", function() {
+                        if( self.needRestart === true ) {
+                            self.needRestart = false;
+                            self.show();
+                        }
+                    })
+                }
+            })
         },
 
         hide: function() {
