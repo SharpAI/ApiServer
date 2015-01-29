@@ -27,15 +27,15 @@
   </div>
 </template>
 <template name="follow_user_list">
-    <div class="layer" id="{{_id}}">
+    <div class="layer" id="{{userId}}">
         <div class="user_head">
             <img class="user_pic" src="{{icon}}" width="88" />
             <span class="name">{{fullname}}&nbsp;
             </span>
             {{#if isFollowed this}}
-                <i id="{{_id}}" class="rightButton del fa fa-check-circle-o"></i>
+                <i id="{{userId}}" class="rightButton del fa fa-check-circle-o"></i>
             {{else}}
-                <i id="{{_id}}" class="rightButton add fa fa-plus-circle"></i>
+                <i id="{{userId}}" class="rightButton add fa fa-plus-circle"></i>
             {{/if}}
         </div>
         <div><span>{{desc}}</span></div>

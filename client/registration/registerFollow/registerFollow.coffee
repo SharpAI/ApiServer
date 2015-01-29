@@ -22,27 +22,27 @@ Template.registerFollow.helpers
 Template.registerFollow.events
   'click #continue':->
     Router.go('/') 
-  'click .add':(e)->
-    followsId = e.currentTarget.id
-    Follower.insert {
-      userId: Meteor.userId()
-      #用户更新fullname后，这里存放fullname
-      userName: Meteor.user().username
-      #刚注册，用户还没有设置头像和个性签名
-      #注册时，头像用默认头像，desc用''
-      userIcon: Meteor.user().profile.icon
-      userDesc: Meteor.user().profile.desc
-      followerId: Follows.findOne({_id:followsId}).userId
-      #这里存放fullname
-      followerName: Follows.findOne({_id:followsId}).fullname
-      followerIcon: Follows.findOne({_id:followsId}).icon
-      followerDesc: Follows.findOne({_id:followsId}).desc
-      createAt: new Date()
-    }
-  'click .del':(e)->
-    followsId = e.currentTarget.id
-    followerId = Follower.findOne({
+  'click .layer':(e)->
+    fcount = Follower.find({"userId":Meteor.userId(),"followerId":@userId}).count()
+    if fcount > 0
+      followerId = Follower.findOne({
                      userId: Meteor.userId()
-                     followerId: Follows.findOne({_id:followsId}).userId
+                     followerId: @userId
                  })._id
-    Follower.remove(followerId)
+      Follower.remove(followerId)
+    else
+      Follower.insert {
+        userId: Meteor.userId()
+        #用户更新fullname后，这里存放fullname
+        userName: Meteor.user().username
+        #刚注册，用户还没有设置头像和个性签名
+        #注册时，头像用默认头像，desc用''
+        userIcon: Meteor.user().profile.icon
+        userDesc: Meteor.user().profile.desc
+        followerId: @userId
+        #这里存放fullname
+        followerName: @fullname
+        followerIcon: @icon
+        followerDesc: @desc
+        createAt: new Date()
+      }
