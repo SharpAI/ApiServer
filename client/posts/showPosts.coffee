@@ -18,7 +18,7 @@ if Meteor.isClient
     `gridster = test.gridster({widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], resize: {enabled: false }}).data('gridster');`
     gridster.disable()
     window.lastScroll = 0;
-
+    $("img.lazy").lazyload();
     $(window).scroll (event)->
       #Sets the current scroll position
       st = $(window).scrollTop();
