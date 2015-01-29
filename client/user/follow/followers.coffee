@@ -48,13 +48,18 @@ if Meteor.isClient
                  })._id
       Follower.remove(FollowerId)
     'click .add':(e)->
-      followerId = e.currentTarget.id
-      Meteor.subscribe "userinfo", followerId, ()->
-      follower = Meteor.users.findOne {_id: followerId}
-      if follower.profile.fullname
-         followername = follower.profile.fullname
+      #true 列出偶像列表，false 列出粉丝列表
+      if Session.get('followers_tag')
+          followerId = @followerId
+          followerName = @followerName
+          followerIcon = @followerIcon
+          followerDesc = @followerDesc
       else
-         followername = follower.username
+          followerId = @userId
+          followerName = @userName
+          followerIcon = @userIcon
+          followerDesc = @userDesc
+
       if Meteor.user().profile.fullname
          username = Meteor.user().profile.fullname
       else
@@ -67,8 +72,8 @@ if Meteor.isClient
         userDesc: Meteor.user().profile.desc
         followerId: followerId
         #这里存放fullname
-        followerName: followername
-        followerIcon: follower.profile.icon
-        followerDesc: follower.profile.desc
+        followerName: followerName
+        followerIcon: followerIcon
+        followerDesc: followerDesc
         createAt: new Date()
     }
