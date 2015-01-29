@@ -28,7 +28,7 @@ if Meteor.isClient
       st = $(window).scrollTop();
 
       if(st + $(window).height() is window.getDocHeight())
-        $('.head').fadeIn 300
+        $('.showPosts .head').fadeIn 300
         $('#postFooter').fadeIn 300
         window.lastScroll = st
         return
@@ -37,10 +37,10 @@ if Meteor.isClient
         return
       #Determines up-or-down scrolling
       if st > window.lastScroll
-        $('.head').fadeOut 300
+        $('.showPosts .head').fadeOut 300
         $('#postFooter').fadeOut 300
       else
-        $('.head').fadeIn 300
+        $('.showPosts .head').fadeIn 300
         $('#postFooter').fadeIn 300
       #Updates scroll position
       window.lastScroll = st
