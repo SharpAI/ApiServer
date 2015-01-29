@@ -5,10 +5,10 @@
       <div id="follow" class="leftButton"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
     </div>
     <div class="content">
-      <form class="searchForm">
+      <div class="searchForm">
           <i class="fa fa-search"></i>
           <label><input type="text" placeholder="搜索人和#话题"></label>
-      </form>
+      </div>
       <div id="themeList">
         {{#each theme}}
         <div class="theme" id="{{_id}}" style="background-image:url({{imgUrl}})"><h3>{{text}}</h3></div>
@@ -31,10 +31,10 @@
       <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
     </div>
     <div class="content">
-      <form class="searchForm">
+      <div class="searchForm">
           <i class="fa fa-search"></i>
           <label><input id="search-box" type="text" placeholder="搜索人"></label>
-      </form>
+      </div>
       <div id="followList">
       {{#if isSearching}}
       {{#each getFollowUsers}}
