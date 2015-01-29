@@ -164,7 +164,7 @@ if Meteor.isClient
           arr = []
           for item in heart
             if item.userId isnt Meteor.userId()
-              arr push {userId:item.userId,createdAt:item.createdAt}
+              arr.push {userId:item.userId,createdAt:item.createdAt}
           Posts.update {_id: postId},{$set: {heart: arr}}
           FollowPosts.update {_id: FollowPostsId},{$inc: {heart: -1}}
           return
@@ -177,7 +177,7 @@ if Meteor.isClient
           arr = []
           for item in retweet
             if item.userId isnt Meteor.userId()
-              arr push {userId:item.userId,createdAt:item.createdAt}
+              arr.push {userId:item.userId,createdAt:item.createdAt}
           Posts.update {_id: postId},{$set: {retweet: arr}}
           FollowPosts.update {_id: FollowPostsId},{$inc: {retweet: -1}}
           return
