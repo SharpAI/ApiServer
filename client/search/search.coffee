@@ -17,6 +17,14 @@ if Meteor.isClient
        Router.go '/topicPosts'
   Template.searchFollow.rendered=->
     Session.set('isSearching', false)
+    $('#search-box').bind('propertychange input',(e)->
+       text = $(e.target).val().trim()
+       if text.length > 0
+         Session.set 'isSearching', true
+       else
+         Session.set 'isSearching', false
+       FollowUsersSearch.search text
+    )
   Template.searchFollow.events
     'click .back': (event)->
        history.back()
