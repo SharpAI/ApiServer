@@ -40,6 +40,8 @@ if Meteor.isClient
     followCount:->
       Follower.find({"userId":Meteor.userId()}).count()
   Template.user.events
+    'click #follow': (event)->
+       Router.go '/searchFollow'
     'click .icon':(e)->
       val = e.currentTarget.innerHTML
       uploadFile (result)->
