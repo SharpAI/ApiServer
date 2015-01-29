@@ -87,7 +87,7 @@ html.swipebox-html.swipebox-touch {
   left: 0;
 }
 #swipebox-slider .slide-loading {
-  background: url(../img/loader.gif) no-repeat center center;
+  background: url(/img/loader.gif) no-repeat center center;
 }
 
 #swipebox-bottom-bar,
