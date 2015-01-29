@@ -2,6 +2,8 @@ Template.loginForm.events
     'click #btn_back' :->
 #      Router.go '/authOverlay'
       $('.login').css('display',"none")
+      $('#register').css('display',"block")
+      $('#weibo').css('display',"block")
       $('.authOverlay').css('-webkit-filter',"none")
     'submit #login-form':(e,t)->
       e.preventDefault()

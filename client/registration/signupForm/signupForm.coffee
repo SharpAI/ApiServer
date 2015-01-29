@@ -1,6 +1,8 @@
 Template.signupForm.events
   'click #btn_back' :->
     $('.register').css('display',"none")
+    $('#login').css('display',"block")
+    $('#weibo').css('display',"block")
     $('.authOverlay').css('-webkit-filter',"none")
   'submit #signup-form':(e,t)->
     e.preventDefault()
