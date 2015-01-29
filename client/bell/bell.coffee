@@ -6,3 +6,6 @@ if Meteor.isClient
       eventType is 'SelfPosted'
     time_diff: (created)->
       GetTime0(new Date() - created)
+  Template.bell.events
+    'click #follow': (event)->
+       Router.go '/searchFollow'
