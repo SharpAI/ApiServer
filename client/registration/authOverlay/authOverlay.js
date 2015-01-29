@@ -6,6 +6,7 @@ if (Meteor.isClient) {
     'click #register': function () {
 //      Router.go('/signupForm');
       $('.register').css('display',"block")
+      $('#register').css('display',"none")
       $('#weibo').css('display',"none")
       $('#login').css('display',"none")
       $('.authOverlay').css('-webkit-filter',"blur(10px)")
@@ -15,6 +16,7 @@ if (Meteor.isClient) {
       $('.login').css('display',"block")
       $('#register').css('display',"none")
       $('#weibo').css('display',"none")
+      $('#login').css('display',"none")
       $('.authOverlay').css('-webkit-filter',"blur(10px)")
     },
     'click #weibo': function () {
