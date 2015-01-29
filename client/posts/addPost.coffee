@@ -1,6 +1,7 @@
 if Meteor.isClient
   # the only document I found here https://github.com/percolatestudio/transition-helper/blob/master/transition-helper.js#L4    
-  Template.addPost.rendered=->    
+  Template.addPost.rendered=->
+    `global_toolbar_hidden = false`
     $('.addPost').css('min-height',$(window).height())
 
     console.log 'addPost rendered rev=37'
