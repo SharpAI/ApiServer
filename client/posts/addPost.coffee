@@ -512,7 +512,7 @@ if Meteor.isClient
         try
           ownerIcon = Meteor.user().profile.icon
         catch
-          ownerIcon = 'http://bcs.duapp.com/travelers-km/S6zs7oYvfw2SHQ76m_1421318419747.jpg'
+          ownerIcon = '/userPicture.png'
         draftData = Drafts.find().fetch()
         draftImageData = Drafts.find({type:'image'}).fetch()
         draftToBeUploadedImageData = []
