@@ -9,7 +9,7 @@ if Meteor.isClient
        Router.go '/searchPeopleAndTopic'
     'click #follow': (event)->
        Router.go '/searchFollow'
-    'click .theme': (event)->
+    'click .themeBtn': (event)->
        Session.set "topicId", @_id
        Session.set "topicTitle", @text
        Router.go '/topicPosts'
