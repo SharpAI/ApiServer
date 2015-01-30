@@ -14,37 +14,41 @@
         <div class='accounts bottomBorder boxTitle'>已连接的账户<span><i class="fa fa-angle-right fa-fw"></i></span></div>
         <div class='boxTitle'>通知<span><i class="fa fa-angle-right fa-fw"></i></span></div>
       </div>
-      <div class="about box boxTitle"><div class='changePasswd'>关于故事贴<span><i class="fa fa-angle-right fa-fw"></i></span></div></div>
+      <div class="about box boxTitle"><div class='about'>关于故事贴<span><i class="fa fa-angle-right fa-fw"></i></span></div></div>
       <div class="clear box boxTitle boxCenter">清除缓存</div>
       <div class="logout box boxTitle boxCenter">注销</div>
     </div>
   </div>
-  {{> footer}}
 </template>
 <template name="my_email">
   <div class="dashboard">
     <div class="head">
-      <strong>电子邮件</strong>
-      <div id="btn_back" class="leftButton"><i class="fa fa-chevron-left"></i></div>
-      <div id="btn_save" class="rightButton btn btn-default">存储</div>
+      <div>电子邮件</div>
+      <div id="btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+      <div id="btn_save" class="rightButton">存储</div>
     </div>
-    <div class="my_edit">
-      <input type="text" id="my_edit_email" placeholder="输入电子邮件" value="{{userEmail}}" style="width:95%;border-top:0px;margin-left:5px;height:25px;"/>
-      <!--input type="password" id="my_edit_password" placeholder="输入密码" style="width:95%;border-top:0px;margin-left:5px;height:25px;"/-->
+    <div class="content">
+      <div class="box">
+        <div class='boxTitle'>电子邮件<span class="input"><input type="text" id="my_edit_email" placeholder="输入电子邮件" value="{{userEmail}}"/></span></div>
+        
+        <!--input type="password" id="my_edit_password" placeholder="输入密码" style="width:95%;border-top:0px;margin-left:5px;height:25px;"/-->
+      </div>
     </div>
   </div>
 </template>
 <template name="my_password">
   <div class="dashboard">
     <div class="head">
-      <strong>修改密码</strong>
-      <div id="pass_btn_back" class="leftButton"><i class="fa fa-chevron-left"></i></div>
-      <div id="pass_btn_save" class="rightButton btn btn-default">存储</div>
+      <div>修改密码</div>
+      <div id="pass_btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+      <div id="pass_btn_save" class="rightButton">存储</div>
     </div>
-    <div class="my_edit">
-      <input type="password" id="my_edit_password" placeholder="新密码" value="" style="width:95%;border-top:0px;margin:5px;height:25px;"/>
-      <input type="password" id="my_edit_password_confirm" placeholder="确认" value="" style="width:95%;border-top:0px;margin:5px;height:25px;"/>
+    <div class="content">
+      <div class="box">
+        <div class='boxTitle bottomBorder'>新密码<span class="input"><input autofocus="autofocus" type="password" id="my_edit_password" placeholder="新密码" value=""/></span></div>
+        <div class='boxTitle'>确认<span class="input"><input type="password" id="my_edit_password_confirm" placeholder="确认" value=""/></span></div>
       <!--input type="password" id="my_edit_password" placeholder="输入密码" style="width:95%;border-top:0px;margin-left:5px;height:25px;"/-->
+      </div>
     </div>
   </div>
 </template>

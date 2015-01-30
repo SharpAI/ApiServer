@@ -17,6 +17,12 @@ if Meteor.isClient
       Meteor.logout (msg)->
         console.log msg
       Router.go '/authOverlay'
+  Template.my_email.rendered=->
+    $('.dashboard').css 'min-height', $(window).height()
+    return
+  Template.my_email.helpers
+    userEmail :->
+      Meteor.user().emails[0].address
   Template.my_email.events
     'click #btn_save' :->
       Users = Meteor.users
@@ -25,9 +31,10 @@ if Meteor.isClient
       Router.go '/dashboard'
     'click #btn_back' :->
       Router.go '/dashboard'
-  Template.my_email.helpers
-    userEmail :->
-      Meteor.user().emails[0].address
+  
+  Template.my_password.rendered=->
+    $('.dashboard').css 'min-height', $(window).height()
+    return
   Template.my_password.events
     'click #pass_btn_save' :->
       new_pass = $("#my_edit_password").val()
