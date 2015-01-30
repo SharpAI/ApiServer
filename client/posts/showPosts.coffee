@@ -7,10 +7,7 @@ if Meteor.isClient
       Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     )
   Template.showPosts.rendered=->
-#    $('.mainImage').css('height',$(window).height()*0.55)
     $('.showPosts').css('min-height',$(window).height())
-#    $('.title').css('top',$(window).height()*0.25)
-#    $('.addontitle').css('top',$(window).height()*0.35)
     window.title = this.title + ':' + this.addontitle
     console.log("show post rev 2")
     base_size=($( window ).width()/6 - 10);

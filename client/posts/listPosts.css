@@ -6,7 +6,7 @@
 }
 .item
 {
-    position: relative;
+/*    position: relative;*/
 /*    margin-bottom: 1.875em;  15px 30px */
     -webkit-column-break-inside: avoid;
     -moz-column-break-inside: avoid;
