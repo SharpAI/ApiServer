@@ -7,7 +7,7 @@
     <div class="content">
       <div class="searchForm">
           <i class="fa fa-search"></i>
-          <label><input type="text" placeholder="搜索人和#话题"></label>
+          <label><input id="search-box" type="text" placeholder="搜索人和#话题"></label>
       </div>
       <div id="themeList">
         {{#each theme}}
@@ -21,6 +21,30 @@
         {{/each}}
       </ul>
     </div>
+  </div>
+  {{> footer}}
+</template>
+<template name="searchPeopleAndTopic">
+  <div class="searchPeopleAndTopic">
+    <div class="content">
+         <table>
+           <tr>
+             <td>
+               <div class="searchForm">
+                 <i class="fa fa-search"></i>
+                 <label><input id="search-box" type="text" placeholder="搜索人"></label>
+               </div>
+             </td>
+             <td style="width: 40px;text-align:center;">
+               <div class="back">取消</div>
+             </td>
+          </tr>
+        </table>
+      <div id="peopleList">
+      </div>
+      <div id="topicList">
+      </div>
+   </div>
   </div>
   {{> footer}}
 </template>

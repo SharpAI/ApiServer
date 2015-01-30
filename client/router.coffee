@@ -14,6 +14,11 @@ if Meteor.isClient
         this.render 'searchFollow'
         Session.set 'channel','searchFollow'
       return
+    Router.route '/searchPeopleAndTopic',()->
+      if Meteor.isCordova is true
+        this.render 'searchPeopleAndTopic'
+        Session.set 'channel','searchPeopleAndTopic'
+      return
     Router.route '/cropImage',()->
       this.render 'cropImage'
       return

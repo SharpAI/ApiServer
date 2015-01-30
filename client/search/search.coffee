@@ -5,6 +5,8 @@ if Meteor.isClient
     topic:()->
       Topics.find({type:"topic"}, {sort: {createdAt: -1}})
   Template.search.events
+    'focus #search-box': (event)->
+       Router.go '/searchPeopleAndTopic'
     'click #follow': (event)->
        Router.go '/searchFollow'
     'click .theme': (event)->
@@ -107,3 +109,8 @@ if Meteor.isClient
         false
       else
         true
+  Template.searchPeopleAndTopic.rendered=->
+    $('#search-box').trigger('focus')
+  Template.searchPeopleAndTopic.events
+    'click .back': (event)->
+       history.back()
