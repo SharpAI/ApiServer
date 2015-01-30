@@ -1957,7 +1957,12 @@
     * @param {Object} ui A prepared ui object with useful drag-related data
     */
     fn.on_start_resize = function(event, ui) {
+
         this.$resized_widget = ui.$player.closest('.gs-w');
+        if(this.$resized_widget.hasClass('pressed') == false) {
+            return;
+        }
+
         this.resize_coords = this.$resized_widget.coords();
         this.resize_wgd = this.resize_coords.grid;
         this.resize_initial_width = this.resize_coords.coords.width;
@@ -2022,6 +2027,9 @@
     * @param {Object} ui A prepared ui object with useful drag-related data
     */
     fn.on_stop_resize = function(event, ui) {
+        if(this.$resized_widget.hasClass('pressed') == false) {
+            return;
+        }
         this.$resized_widget
             .removeClass('resizing')
             .css({
@@ -2059,6 +2067,10 @@
     * @param {Object} ui A prepared ui object with useful drag-related data
     */
     fn.on_resize = function(event, ui) {
+        if(this.$resized_widget.hasClass('pressed') == false) {
+            return;
+        }
+
         var rel_x = (ui.pointer.diff_left);
         var rel_y = (ui.pointer.diff_top);
         var wbd_x = this.options.widget_base_dimensions[0];
