@@ -15,8 +15,14 @@
                 break
         #if pageName is one of footer pages, we will clear history and need to return back to the last position
         Session.set 'document_body_scrollTop', 0
+        if pageName is '/'
+            tmpPageName = 'home'
+        else if pageName is '/add'
+            tmpPageName = 'addPost'
+        else
+            tmpPageName = pageName.substr(1)
         for page in footerPages
-            if pageName is page
+            if tmpPageName is page
                 history = []
                 value = Session.get 'document_body_scrollTop_'+page
                 if value is undefined
@@ -65,11 +71,28 @@
         #if nowPage isnt 'partner_detail' and nowPage isnt 'add_partner'
         #    Session.set 'referrer',nowPage
         return
+    'pagepop':->
+        history = Session.get("history_view")
+        unless history is undefined or history is ""
+            if history.length > 0
+                page =  history.pop()
+                Session.set "history_view", history
     'toast':(msg)->
         try
             window.plugins.toast.showLongBottom(msg)
         catch error
             alert msg
+    "alert":(msg, callback)->
+        try
+            navigator.notification.alert(
+                msg
+                callback
+                '提示'
+                '确定'
+            )
+        catch error
+            if confirm(msg)
+                callback
     "confirm":(msg, callback)->
         try
             navigator.notification.confirm(

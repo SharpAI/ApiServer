@@ -12,6 +12,12 @@ if Meteor.isClient
       if channel is channelName
         return true
     display_footer:()->
+      console.log "document_body_scrollTop=" + Session.get("document_body_scrollTop")
+      Meteor.setTimeout(
+        ()->
+            document.body.scrollTop = Session.get("document_body_scrollTop")
+        0
+      )
       Meteor.isCordova
   Template.footer.events
     'click .btn':(e)->
