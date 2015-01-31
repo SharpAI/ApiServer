@@ -4,10 +4,7 @@
       {{#each myPosts}}
       <div  id="{{_id}}" class="mainImage">
 <!--      <div class="item" id="{{_id}}" style="background-image:url({{mainImage}})">-->
-        {{#if mainImage}}
-          {{>spinner}}
-        {{/if}}
-        <img class="scale item lazy" data-original="{{mainImage}}" draggable="false" >
+        <img class="scale item" src="{{mainImage}}" draggable="false" >
         <header>
           <h1 class="title">
             {{title}}
