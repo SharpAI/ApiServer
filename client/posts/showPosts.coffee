@@ -71,29 +71,31 @@ if Meteor.isClient
       Session.set 'isReviewMode','2'
       PUB.page('/add')
     'click #unpublish': (event)->
+      self = this
+      navigator.notification.confirm('你确定取消分享吗？', (r)->
+        if r is 2
+          return
+        PUB.page('/user')
 
-      r = confirm("你确定取消分享吗")
-      if r is false
+        draft0 = {_id:self._id, type:'image', isImage:true, owner: Meteor.userId(), imgUrl:self.mainImage, filename:self.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0}
+        self.pub.splice(0, 0, draft0);
+
+        Posts.remove {
+          _id:self._id
+        }
+
+        SavedDrafts.insert {
+          _id:self._id,
+          pub:self.pub,
+          title:self.title,
+          addontitle:self.addontitle,
+          mainImage: self.mainImage,
+          mainText: self.mainText,
+          owner:Meteor.userId(),
+          createdAt: new Date(),
+        }
         return
-      PUB.page('/user')
-
-      draft0 = {_id:this._id, type:'image', isImage:true, owner: Meteor.userId(), imgUrl:this.mainImage, filename:this.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0}
-      this.pub.splice(0, 0, draft0);
-
-      Posts.remove {
-        _id:this._id
-      }
-
-      SavedDrafts.insert {
-        _id:this._id,
-        pub:this.pub,
-        title:this.title,
-        addontitle:this.addontitle,
-        mainImage: this.mainImage,
-        mainText: this.mainText,
-        owner:Meteor.userId(),
-        createdAt: new Date(),
-      }
+      , '取消分享', ['确定','取消']);
 
 
     'click #socialShare': (event)->
