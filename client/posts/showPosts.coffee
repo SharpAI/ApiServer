@@ -41,11 +41,11 @@ if Meteor.isClient
     time_diff: (created)->
       GetTime0(new Date() - created)
     isMyPost:->
-      post = Posts.find({_id:this._id}).fetch()[0] 
-      if post.owner is Meteor.userId()
-        true
-      else
-        false
+      if Posts.find({_id:this._id}).count() > 0
+        post = Posts.find({_id:this._id}).fetch()[0]
+        if post.owner is Meteor.userId()
+          return true
+      return false
     isMobile:->
       Meteor.isCordova
   Template.showPosts.events
@@ -70,6 +70,32 @@ if Meteor.isClient
         Drafts.insert(pub[i])
       Session.set 'isReviewMode','2'
       PUB.page('/add')
+    'click #unpublish': (event)->
+
+      r = confirm("你确定取消分享吗")
+      if r is false
+        return
+      PUB.page('/user')
+
+      draft0 = {_id:this._id, type:'image', isImage:true, owner: Meteor.userId(), imgUrl:this.mainImage, filename:this.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0}
+      this.pub.splice(0, 0, draft0);
+
+      Posts.remove {
+        _id:this._id
+      }
+
+      SavedDrafts.insert {
+        _id:this._id,
+        pub:this.pub,
+        title:this.title,
+        addontitle:this.addontitle,
+        mainImage: this.mainImage,
+        mainText: this.mainText,
+        owner:Meteor.userId(),
+        createdAt: new Date(),
+      }
+
+
     'click #socialShare': (event)->
       current = Router.current();
       url = current.url;
