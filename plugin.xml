@@ -3,8 +3,8 @@
 <plugin
   xmlns="http://apache.org/cordova/ns/plugins/1.0"
   xmlns:android="http://schemas.android.com/apk/res/android"
-  id="com.wordsbaking.cordova.wechat"
-  version="0.3.0">
+  id="com.leon.cordova.wechat"
+  version="0.0.1">
   <name>WeChat</name>
   <description>Cordova WeChat Plugin</description>
   <author>VILIC VANE</author>
@@ -111,7 +111,7 @@ src/ios/libWeChatSDK.a 这个文件有两个版本, 一个是 iPhone Only 的, �
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
       <activity
           android:name=".wxapi.WXEntryActivity"
-          android:label="@string/launcher_name"
+          android:label="@string/app_name"
           android:exported="true">
         <intent-filter>
           <action android:name="android.intent.action.VIEW"/>
