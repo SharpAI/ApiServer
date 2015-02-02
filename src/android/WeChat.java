@@ -195,6 +195,7 @@ public class WeChat extends CordovaPlugin {
             }
 
             if (!messageOptions.isNull("thumbData")) {
+                String thumbData = messageOptions.getString("thumbData");
                 message.thumbData = getHtmlByteArray(thumbData);
             }
         } else if (text != null) {
