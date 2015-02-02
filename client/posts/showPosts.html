@@ -12,6 +12,21 @@
 
       {{#if isMobile}}
         {{#if isMyPost}}
+          <button class="rightButton btn btn-primary" data-toggle="modal" data-target="#menu-dialog">菜单</button>
+          <div id="menu-dialog" class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-body">
+                  <div class="list-group">
+                    <a href="#" class="list-group-item" id="unpublish">取消发布</a>
+                    <a href="#" class="list-group-item" id="edit">编辑</a>
+                    <a href="#" class="list-group-item" id="socialShare">分享</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      <!--
           <div class="rightDropMenu dropdown">
             <button class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">操作
                 <span class="caret"></span></button>
@@ -22,11 +37,10 @@
 
             </ul>
           </div>
-
+      -->
         {{else}}
           <div id="socialShare" class="rightButton">分享</div>
         {{/if}}
-
       {{/if}}
     </div>
     <div class="content">
