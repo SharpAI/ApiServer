@@ -7,9 +7,15 @@ if Meteor.isClient
       Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     )
   Template.showPosts.rendered=->
+    postContent = Session.get("postContent")
+    fetchResult = FollowPosts.find({postId: postContent._id}).fetch()[0]
+    if (fetchResult.browse != undefined)
+      FollowPosts.update({_id: fetchResult._id}, {$inc:{browse: 1}})
+    else
+      FollowPosts.update({_id: fetchResult._id},{$addToSet:{browse: 1}})
     $('.showPosts').css('min-height',$(window).height())
     window.title = this.title + ':' + this.addontitle
-    console.log("show post rev 2")
+    console.log("show post rev 2 "+window.title)
     base_size=($( window ).width()/6 - 10);
     test = $("#test");
     `gridster = test.gridster({widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], resize: {enabled: false }}).data('gridster');`

@@ -3,6 +3,11 @@ if Meteor.isClient
     $('.content').css 'min-height',$(window).height()
 #    $('.addontitle').css('top',$(window).height()*0.25)
   Template.listPosts.helpers
+    getBrowseCount:(browse)->
+      if (browse)
+        browse
+      else
+        0
     myPosts:()->
       FollowPosts.find({followby:Meteor.userId()}, {sort: {createdAt: -1}})
   Template.listPosts.events
