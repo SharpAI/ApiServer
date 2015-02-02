@@ -1,4 +1,4 @@
-package to.be.replaced.wxapi;
+package net.sourceforge.simcpux.wxapi;
 
 import com.tencent.mm.sdk.openapi.BaseReq;
 import com.tencent.mm.sdk.openapi.BaseResp;
