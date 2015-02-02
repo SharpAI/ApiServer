@@ -1,5 +1,13 @@
 package com.wordsbaking.cordova.wechat;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 
@@ -187,8 +195,7 @@ public class WeChat extends CordovaPlugin {
             }
 
             if (!messageOptions.isNull("thumbData")) {
-                String thumbData = messageOptions.getString("thumbData");
-                message.thumbData = Base64.decode(thumbData, Base64.DEFAULT);
+                message.thumbData = getHtmlByteArray(thumbData);
             }
         } else if (text != null) {
             WXTextObject textObject = new WXTextObject();
@@ -215,5 +222,43 @@ public class WeChat extends CordovaPlugin {
         }
 
         currentCallbackContext = callbackContext;
+    }
+
+    public static byte[] getHtmlByteArray(final String url) {
+        URL htmlUrl = null;
+        InputStream inStream = null;
+        try {
+                htmlUrl = new URL(url);
+                URLConnection connection = htmlUrl.openConnection();
+                HttpURLConnection httpConnection = (HttpURLConnection)connection;
+                int responseCode = httpConnection.getResponseCode();
+                if(responseCode == HttpURLConnection.HTTP_OK){
+                        inStream = httpConnection.getInputStream();
+                 }
+                } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                } catch (IOException e) {
+                       e.printStackTrace();
+         }
+       byte[] data = inputStreamToByte(inStream);
+
+       return data;
+    }
+
+    public static byte[] inputStreamToByte(InputStream is) {
+       try{
+               ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
+               int ch;
+               while ((ch = is.read()) != -1) {
+                       bytestream.write(ch);
+               }
+               byte imgdata[] = bytestream.toByteArray();
+               bytestream.close();
+               return imgdata;
+       }catch(Exception e){
+               e.printStackTrace();
+       }
+
+       return null;
     }
 }
