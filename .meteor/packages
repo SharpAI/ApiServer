@@ -11,7 +11,6 @@ iron:router
 coffeescript
 less
 fastclick
-mizzao:bootstrap-3
 accounts-password
 accounts-ui-unstyled
 accounts-ui
@@ -23,3 +22,4 @@ leonzhang1109:accounts-wechat
 leonzhang1109:accounts-qq
 jquery
 meteorhacks:search-source
+fezvrasta:bootstrap-material-design
