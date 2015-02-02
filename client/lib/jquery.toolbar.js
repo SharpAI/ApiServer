@@ -72,17 +72,27 @@ if ( typeof Object.create !== 'function' ) {
                 if(self.$elem.hasClass('pressed')) {
                     self.hide();
                 } else {
+                    //console.log("Show #1");
                     self.show();
                 }
             });
 
             if (self.options.hideOnClick) {
                 $('html').on("click.toolbar", function ( event ) {
+
                     if (event.target != self.elem &&
                         self.$elem.has(event.target).length === 0 &&
-                        self.toolbar.has(event.target).length === 0 &&
-                        self.toolbar.is(":visible")) {
-                        self.hide();
+                        self.toolbar.has(event.target).length === 0
+                        ) {
+
+                        if (self.toolbar.is(":visible")){
+                            //console.log("click toobar hidden :" + self.$elem.attr("id") + " visible:" + self.toolbar.is(":visible"));
+                            self.hide();
+                        } else {
+                            //console.log("click toobar No hidden :" + self.$elem.attr("id") + " visible:" + self.toolbar.is(":visible"));
+                        }
+
+
                     }
                 });
             }
@@ -105,6 +115,7 @@ if ( typeof Object.create !== 'function' ) {
                         if (self.$elem.hasClass('pressed')) {
                             clearTimeout(moveTime);
                         } else {
+                            //console.log("Show #2");
                             self.show();
                         }
                     }
@@ -254,6 +265,7 @@ if ( typeof Object.create !== 'function' ) {
                 }
             }
             self.$elem.addClass('pressed');
+            //console.log("click toobar pressed :" + self.$elem.attr("id") + " visible:" + self.toolbar.is(":visible"));
             self.calculatePosition();
 
             switch(self.options.position) {
@@ -276,6 +288,8 @@ if ( typeof Object.create !== 'function' ) {
 
             self.toolbar.show().animate(animation, 200 );
             self.$elem.trigger('toolbarShown');
+
+            /* touchmove event bind with toolbar's restart show() may cause two more active toolbar exist at same time issue.
             $('body').one("touchmove", function() {
                 self.needRestart = true;
                 if ( self.toolbar.is(":visible") ) {
@@ -283,11 +297,13 @@ if ( typeof Object.create !== 'function' ) {
                     $('body').one("touchend", function() {
                         if( self.needRestart === true ) {
                             self.needRestart = false;
+                            console.log("Show #4");
                             self.show();
                         }
                     })
                 }
             })
+            */
         },
 
         hide: function() {
@@ -295,6 +311,7 @@ if ( typeof Object.create !== 'function' ) {
             var animation = {'opacity': 0};
 
             self.$elem.removeClass('pressed');
+
 
             switch(self.options.position) {
                 case 'top':
