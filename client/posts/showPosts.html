@@ -12,8 +12,9 @@
 
       {{#if isMobile}}
         {{#if isMyPost}}
-          <button class="rightButton btn btn-primary" data-toggle="modal" data-target="#menu-dialog">菜单</button>
-          <div id="menu-dialog" class="modal fade" tabindex="-1">
+      <!--
+          <button class="rightButton btn btn-primary" data-toggle="modal" data-target="#menu-dialog" id="menu1">菜单</button>
+          <div id="menu-dialog" class="modal fade" tabindex="-1" aria-labelledby="menu1" aria-hidden="true" role="menu">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-body">
@@ -27,6 +28,16 @@
                 </div>
               </div>
             </div>
+          </div>
+      -->
+          <div class="rightDropMenu dropdown">
+            <button class="btn btn-default dropdown-toggle" id="menu1" data-toggle="dropdown">操作</button>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                <li role="presentation"><a id="unpublish" role="menuitem" tabindex="-1" >取消发布</a></li>
+                <li role="presentation"><a id="edit" role="menuitem" tabindex="-1" >编辑</a></li>
+                <li role="presentation"><a id="socialShare" role="menuitem" tabindex="-1" >分享</a></li>
+
+            </ul>
           </div>
         {{else}}
           <button class="rightButton btn btn-primary" data-toggle="modal" data-target="#menu-dialog">菜单</button>
