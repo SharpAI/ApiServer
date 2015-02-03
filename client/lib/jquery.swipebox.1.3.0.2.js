@@ -424,7 +424,12 @@
 							$this.clearTimeout();
 							$this.hideBars();
 						}
-					}
+                        slider.animate( { 'opacity': 0 },
+                            300,
+                            function () {
+                                $this.closeSlide();
+                            } );
+                        }
 
 					$( '#swipebox-slider' ).css( {
 						'-webkit-transform' : 'translate3d(' + currentX + '%, 0, 0)',
