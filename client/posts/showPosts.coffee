@@ -145,7 +145,7 @@ if Meteor.isClient
       $.swipebox swipedata,{
         initialIndexOnArray: selected
         hideCloseButtonOnMobile : true
-        loopAtEnd: true
+        loopAtEnd: false
       }
       $(document.body).on('click','#swipebox-slider .current', ->
         $('#swipebox-close').trigger('click')
