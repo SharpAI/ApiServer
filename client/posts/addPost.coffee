@@ -579,6 +579,7 @@ if Meteor.isClient
               _id:postId,
               pub:pub,
               title:title,
+              browse:0,
               heart:[],  #点赞
               retweet:[],#转发
               comment:[], #评论

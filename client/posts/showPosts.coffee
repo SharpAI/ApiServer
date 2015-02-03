@@ -8,11 +8,18 @@ if Meteor.isClient
     )
   Template.showPosts.rendered=->
     postContent = Session.get("postContent")
-    fetchResult = FollowPosts.find({postId: postContent._id}).fetch()[0]
-    if (fetchResult.browse != undefined)
-      FollowPosts.update({_id: fetchResult._id}, {$inc:{browse: 1}})
+    browseTimes = 0
+    if (postContent.browse != undefined)
+      browseTimes = postContent.browse + 1
     else
-      FollowPosts.update({_id: fetchResult._id},{$addToSet:{browse: 1}})
+      browseTimes = 1
+    Posts.update(
+      {_id:postContent._id},
+      {$set:{
+          browse:browseTimes,
+        }
+      }
+    )
     $('.showPosts').css('min-height',$(window).height())
     window.title = this.title + ':' + this.addontitle
     console.log("show post rev 2 "+window.title)
