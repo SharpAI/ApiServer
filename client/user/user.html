@@ -51,7 +51,14 @@
     <div class="draftImages">
         <ul>
             {{#each items}}
-                <li id="{{_id}}" style="background-image:url({{mainImage}})">{{title}}</li>
+                <li id="{{_id}}" style="background-image:url({{mainImage}})">
+                    <h4 class="title">
+                        {{title}}
+                    </h4>
+                    <h6 class="addontitle">
+                        {{addontitle}}
+                    </h6>
+                </li>
             {{/each}}
         </ul>
     </div>
@@ -68,7 +75,14 @@
     <div class="postImages">
         <ul>
                 {{#each postItems}}
-                <li id="{{_id}}" style="background-image:url({{mainImage}})">{{title}}</li>
+                <li id="{{_id}}" style="background-image:url({{mainImage}})">
+                    <h4 class="title">
+                        {{title}}
+                    </h4>
+                    <h6 class="addontitle">
+                        {{addontitle}}
+                    </h6>
+                </li>
             {{/each}}
         </ul>
     </div>
