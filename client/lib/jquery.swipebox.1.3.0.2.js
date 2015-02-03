@@ -417,19 +417,21 @@
 
 					} else { // Top and bottom bars have been removed on touchable devices
 						// tap
+                        if($( this ).hasClass( 'touching' )){
+                            slider.animate( { 'opacity': 0 },
+                                300,
+                                function () {
+                                    $this.closeSlide();
+                                } );
+                        }
 						if ( ! bars.hasClass( 'visible-bars' ) ) {
 							$this.showBars();
 							$this.setTimeout();
 						} else {
 							$this.clearTimeout();
 							$this.hideBars();
+                            }
 						}
-                        slider.animate( { 'opacity': 0 },
-                            300,
-                            function () {
-                                $this.closeSlide();
-                            } );
-                        }
 
 					$( '#swipebox-slider' ).css( {
 						'-webkit-transform' : 'translate3d(' + currentX + '%, 0, 0)',

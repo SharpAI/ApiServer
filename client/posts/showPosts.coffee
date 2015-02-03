@@ -147,9 +147,9 @@ if Meteor.isClient
         hideCloseButtonOnMobile : true
         loopAtEnd: false
       }
-      $(document.body).on('click','#swipebox-slider .current', ->
-        $('#swipebox-close').trigger('click')
-      )
+      #$(document.body).on('click','#swipebox-slider .current', ->
+      #  $('#swipebox-close').trigger('click')
+      #)
   Template.postFooter.helpers
     heart:->
       Session.get("postContent").heart.length
