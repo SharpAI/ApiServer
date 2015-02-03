@@ -21,13 +21,28 @@
                     <a  class="list-group-item" id="unpublish">取消发布</a>
                     <a  class="list-group-item" id="edit">编辑</a>
                     <a  class="list-group-item" id="socialShare">分享</a>
+                    <a  class="list-group-item" id="WXSessionShare">分享给微信好友</a>
+                    <a  class="list-group-item" id="WXTimelineShare">分享到微信朋友圈</a>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         {{else}}
-          <div id="socialShare" class="rightButton">分享</div>
+          <button class="rightButton btn btn-primary" data-toggle="modal" data-target="#menu-dialog">菜单</button>
+          <div id="menu-dialog" class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-body">
+                  <div class="list-group">
+                    <a  class="list-group-item" id="socialShare">分享</a>
+                    <a  class="list-group-item" id="WXSessionShare">分享给微信好友</a>
+                    <a  class="list-group-item" id="WXTimelineShare">分享到微信朋友圈</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         {{/if}}
       {{/if}}
     </div>

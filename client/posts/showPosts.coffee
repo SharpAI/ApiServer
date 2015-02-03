@@ -116,7 +116,7 @@ if Meteor.isClient
         url = url.replace("meteor.local", "120.24.244.253");
       else
         url = "http://120.24.244.253"+url;
-      window.plugins.socialsharing.share(this.title+':'+this.addontitle+'(来自 故事贴)', null, null, url);
+      window.plugins.socialsharing.share(this.title+':'+this.addontitle+'(来自 故事贴)', null, this.mainImage, url);
     'click .imgdiv': (e)->
       images = []
       swipedata = []

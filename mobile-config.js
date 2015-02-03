@@ -40,3 +40,7 @@ App.launchScreens({
 App.configurePlugin('nl.x-services.plugins.socialsharing', {
     APP_ID: 'wxd930ea5d5a258f4f'
 });
+
+App.configurePlugin('com.leon.cordova.wechat', {
+    APP_ID: 'wxd930ea5d5a258f4f'
+});
