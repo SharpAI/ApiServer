@@ -126,14 +126,15 @@ if Meteor.isClient
         url = "http://120.24.244.253"+url;
 
       window.plugins.socialsharing.share(this.title+':'+this.addontitle+'(来自 故事贴)', null, this.mainImage, url);
-    'click .mainImage, click .imgdiv': (e)->
+    'click .imgdiv': (e)->
       images = []
       swipedata = []
 
-      swipedata.push
-        href: Session.get('postContent').mainImage
-        title: Session.get('postContent').title
-      i = 1
+      #swipedata.push
+      #  href: Session.get('postContent').mainImage
+      #  title: Session.get('postContent').title
+      #i = 1
+      i = 0
       selected = 0
       for image in Session.get('postContent').pub
         if image.imgUrl
