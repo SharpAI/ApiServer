@@ -497,6 +497,7 @@ if Meteor.isClient
         return
     'click #publish':->
       if Meteor.user() is null
+        window.plugins.toast.showShortBottom('请登录后发表您的故事')
         Router.go('/user')
         false
       else
