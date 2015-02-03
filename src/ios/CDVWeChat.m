@@ -34,6 +34,46 @@ const int SCENE_TIMELINE = 2;
     [WXApi registerApp: appId];
 }
 
+- (void)setThumbImage:(SendMessageToWXReq *)req image:(UIImage *)image
+{
+    if (image) {
+        CGFloat width = 100.0f;
+        CGFloat height = image.size.height * 100.0f / image.size.width;
+        UIGraphicsBeginImageContext(CGSizeMake(width, height));
+        [image drawInRect:CGRectMake(0, 0, width, height)];
+        UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        [req.message setThumbImage:scaledImage];
+    }
+}
+
+-(UIImage*)getImage: (NSString *)imageName {
+    UIImage *image = nil;
+    if (imageName != (id)[NSNull null]) {
+        if ([imageName hasPrefix:@"http"]) {
+            image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imageName]]];
+        } else if ([imageName hasPrefix:@"www/"]) {
+            image = [UIImage imageNamed:imageName];
+        } else if ([imageName hasPrefix:@"file://"]) {
+            image = [UIImage imageWithData:[NSData dataWithContentsOfFile:[[NSURL URLWithString:imageName] path]]];
+        } else if ([imageName hasPrefix:@"data:"]) {
+            // using a base64 encoded string
+            NSURL *imageURL = [NSURL URLWithString:imageName];
+            NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+            image = [UIImage imageWithData:imageData];
+        } else if ([imageName hasPrefix:@"assets-library://"]) {
+            // use assets-library
+            NSURL *imageURL = [NSURL URLWithString:imageName];
+            NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+            image = [UIImage imageWithData:imageData];
+        } else {
+            // assume anywhere else, on the local filesystem
+            image = [UIImage imageWithData:[NSData dataWithContentsOfFile:imageName]];
+        }
+    }
+    return image;
+}
+
 - (void)share:(CDVInvokedUrlCommand*)command {
     CDVPluginResult* result = nil;
     
@@ -141,18 +181,11 @@ const int SCENE_TIMELINE = 2;
         
         message.title = [messageOptions objectForKey:@"title"];
         message.description = [messageOptions objectForKey:@"description"];
-        
-        NSString* thumbData = [messageOptions objectForKey:@"thumbData"];
-        
-        if ((id)thumbData == [NSNull null]) {
-            thumbData = nil;
-        }
-        
-        if (thumbData) {
-            message.thumbData = [self decodeBase64:thumbData];
-        }
-        
         request.message = message;
+        
+        UIImage* image = [self getImage:[messageOptions objectForKey:@"thumbData"]];
+        [self setThumbImage:request image:image];
+        
     } else if (text) {
         request.bText = YES;
         request.text = text;
