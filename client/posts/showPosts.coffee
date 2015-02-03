@@ -20,6 +20,12 @@ if Meteor.isClient
         }
       }
     )
+    $('p').linkify();
+    $("a[target='_blank']").click((e)->
+      e.preventDefault();
+      window.open($(e.currentTarget).attr('href'), '_system', '');
+    )
+
     $('.showPosts').css('min-height',$(window).height())
     window.title = this.title + ':' + this.addontitle
     console.log("show post rev 2 "+window.title)
