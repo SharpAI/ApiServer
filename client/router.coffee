@@ -1,5 +1,11 @@
 if Meteor.isClient
   Meteor.startup ()->
+    Session.set 'focusOn','home'
+    Tracker.autorun ()->
+      channel = Session.get 'channel'
+      Meteor.setTimeout ->
+          Session.set 'focusOn',channel
+        ,300
     Router.route '/',()->
       this.render 'home'
       Session.set 'channel','home'
