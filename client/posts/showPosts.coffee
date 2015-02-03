@@ -116,16 +116,21 @@ if Meteor.isClient
         url = url.replace("meteor.local", "120.24.244.253");
       else
         url = "http://120.24.244.253"+url;
+
       window.plugins.socialsharing.share(this.title+':'+this.addontitle+'(来自 故事贴)', null, this.mainImage, url);
-    'click .imgdiv': (e)->
+    'click .mainImage, click .imgdiv': (e)->
       images = []
       swipedata = []
-      i = 0
+
+      swipedata.push
+        href: Session.get('postContent').mainImage
+        title: Session.get('postContent').title
+      i = 1
       selected = 0
       for image in Session.get('postContent').pub
-        if image.imgUrl is this.imgUrl
-          selected = i
         if image.imgUrl
+          if image.imgUrl is this.imgUrl
+            selected = i
           swipedata.push
             href: image.imgUrl
             title: image.text
@@ -133,6 +138,7 @@ if Meteor.isClient
       $.swipebox swipedata,{
         initialIndexOnArray: selected
         hideCloseButtonOnMobile : true
+        loopAtEnd: true
       }
       $(document.body).on('click','#swipebox-slider .current', ->
         $('#swipebox-close').trigger('click')
