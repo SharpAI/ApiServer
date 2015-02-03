@@ -338,7 +338,12 @@ if Meteor.isClient
         if Session.get('isReviewMode') is '2'
           Posts.find({_id:draftId}).fetch()[0]
         else if Session.get('isReviewMode') is '1' or Session.get('isReviewMode') is '0'
-          SavedDrafts.find({_id:draftId}).fetch()[0]
+          draftTitles = SavedDrafts.find({_id:draftId}).fetch()[0]
+          if draftTitles == null
+            draftTitles = {}
+            draftTitles.title = Session.get 'draftTitle'
+            draftTitles.addontitle = Session.get 'draftAddontitle'
+          draftTitles 
     mainImage:->
 #      Meteor.setTimeout ->
 #        $('.mainImage').css('height',$(window).height()*0.55)
@@ -427,7 +432,7 @@ if Meteor.isClient
             .find {owner: Meteor.userId()}
             .forEach (drafts)->
               Drafts.remove drafts._id
-        history.back()
+        PUB.back()
         return
       catch
         history.back()
@@ -496,6 +501,118 @@ if Meteor.isClient
         #PUB.back()
         return
     'click #publish':->
+      if Meteor.user() is null
+        window.plugins.toast.showShortBottom('请登录后发表您的故事')
+        Router.go('/user')
+        false
+      else
+        layout = JSON.stringify(gridster.serialize())
+        pub=[]
+        title = $("#title").val()
+
+        if title is ''
+          window.plugins.toast.showShortBottom('请为您的故事加个标题')
+          return
+
+        addontitle = $("#addontitle").val()
+        try
+          ownerIcon = Meteor.user().profile.icon
+        catch
+          ownerIcon = '/userPicture.png'
+        draftData = Drafts.find().fetch()
+        postId = draftData[0]._id;
+
+        draftImageData = Drafts.find({type:'image'}).fetch()
+        draftToBeUploadedImageData = []
+        for i in [0..(draftImageData.length-1)]
+            if draftImageData[i].imgUrl.indexOf("http://")>= 0
+                continue
+            draftToBeUploadedImageData.push(draftImageData[i])
+#       console.log "#####" + pub
+        #uploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId)
+        #Don't add addpost page into history
+        multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId, (result)->
+            if result is null
+                #$("#title").val(title)
+                #$("#addontitle").val(addontitle)
+                Session.Set 'draftTitle',title
+                Session.Set 'draftAddontitle',addontitle
+                PUB.back();
+                return
+            for i in [0..(draftData.length-1)]
+              if i is 0
+                mainImage = 'http://bcs.duapp.com/travelers-km/'+draftData[i].filename
+                mainText = $("#"+draftData[i]._id+"text").val()
+              else
+                if draftData[i].isImage
+                  draftData[i].imgUrl = 'http://bcs.duapp.com/travelers-km/'+draftData[i].filename
+                #for some case user did not save the draft, directly published, the layout does not stored.
+                json = jQuery.parseJSON(layout);
+                for item in json
+                  if item.id is draftData[i]._id
+                    draftData[i].data_row = item.row
+                    draftData[i].data_col = item.col
+                    draftData[i].data_sizex = item.size_x
+                    draftData[i].data_sizey = item.size_y
+                pub.push(draftData[i])
+
+            sortBy = (key, a, b, r) ->
+              r = if r then 1 else -1
+              return -1*r if a[key] > b[key]
+              return +1*r if a[key] < b[key]
+              return 0
+
+            sortedPub = pub.sort((a, b)->
+              sortBy('data_row', a, b)
+            )
+
+#           console.log "#####end" + pub
+            if Session.get('isReviewMode') is '2'
+                Posts.update(
+                  {_id:postId},
+                  {$set:{
+                      pub:pub,
+                      title:title,
+                      heart:[],  #点赞
+                      retweet:[],#转发
+                      comment:[], #评论
+                      addontitle:addontitle,
+                      mainImage: mainImage,
+                      mainText: mainText,
+                      owner:Meteor.userId(),
+                      ownerName:Meteor.user().username,
+                      ownerIcon:ownerIcon,
+                      createdAt: new Date(),
+                    }
+                  }
+                )
+            else
+                Posts.insert {
+                  _id:postId,
+                  pub:pub,
+                  title:title,
+                  browse:0,
+                  heart:[],  #点赞
+                  retweet:[],#转发
+                  comment:[], #评论
+                  addontitle:addontitle,
+                  mainImage: mainImage,
+                  mainText: mainText,
+                  owner:Meteor.userId(),
+                  ownerName:Meteor.user().username,
+                  ownerIcon:ownerIcon,
+                  createdAt: new Date(),
+                }
+                #Router.go('/posts/'+postId)
+                #Delete from SavedDrafts if it is a saved draft.
+            if SavedDrafts.find({_id:postId}).count() > 0
+                SavedDrafts.remove postId
+                #Delete the Drafts
+            Drafts.remove({})
+            Router.go('/posts/'+postId)
+        )
+        return
+    'click #publishOld':->
       if Meteor.user() is null
         window.plugins.toast.showShortBottom('请登录后发表您的故事')
         Router.go('/user')

@@ -96,7 +96,7 @@ if (Meteor.isCordova){
         }, options,true);
       });
     }
-    var uploadToBCS = function(filename,URI,callback){
+    var uploadToBCS = function(filename,URI,callback,errCallback){
       Meteor.call('getBCSSigniture',filename,URI,function(error,result){
         if(error) {
             console.log('getBCSSigniture error: ' + error);
@@ -136,8 +136,12 @@ if (Meteor.isCordova){
             }
         }, function(e){
           console.log('upload error' + e.code )
-          if(callback){
+          if (errCallback) {
+            errCallback(filename);
+          } else {
+            if(callback){
               callback(null);
+            }
           }
         }, options,true);
       });
@@ -249,6 +253,150 @@ if (Meteor.isCordova){
         }
         //console.log("progressBarWidth="+parseInt(percent/uploadingFilesInfo.filesCount)+",percent="+percent+", filesCount="+uploadingFilesInfo.filesCount);
         Session.set('progressBarWidth', parseInt(percent/uploadingFilesInfo.filesCount));
+    }
+
+    var multiThreadsInfo = [];
+    var runningThreadCount = 0;
+    var multiThreadUploadFile = function(draftData, maxThreads, callback){
+        var count = draftData.length < maxThreads ? draftData.length : maxThreads;
+        runningThreadCount = 0;
+        multiThreadsInfo = [];
+        for (var i=0; i<count; i++) {
+            runningThreadCount++;
+            startThreadUploadFile(draftData, null, multiThreadsInfo, callback);
+        }
+    }
+
+    var startThreadUploadFile = function(draftData, fileInfo, info, callback){
+        var getFileInfo = function(filename) {
+            for (var i=0; i<info.length; i++) {
+                if (info[i].filename == filename) {
+                    return info[i];
+                }
+            }
+        }
+        var getUploadedCount = function() {
+            var count = 0;
+            for (var i=0; i<info.length; i++) {
+                if (info[i].status == 1) {
+                    count++;
+                }
+            }
+            return count;
+        }
+        var hasErrorUpload = function() {
+            for (var i=0; i<info.length; i++) {
+                if (info[i].status == -1) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        var hasActiveUpload = function() {
+            for (var i=0; i<info.length; i++) {
+                if (info[i].status == 0) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        var tmpFileInfo;
+        if (fileInfo) {
+            tmpFileInfo = fileInfo;
+        } else {
+            var index = info.length;
+            tmpFileInfo = {filename:draftData[index].filename, URI:draftData[index].URI, status:0, tryCount:0};
+            info.push(tmpFileInfo);
+        }
+        uploadToBCS(tmpFileInfo.filename, tmpFileInfo.URI, function(result){
+            var tmpFileInfo2 = getFileInfo(result.replace(/^.*[\\\/]/, ''));
+            tmpFileInfo2.status = 1;
+
+            console.log("uploaded("+getUploadedCount()+"/"+draftData.length+")..."+info.length);
+            if (getUploadedCount() == draftData.length) {
+                if (callback) {
+                    console.log("startThreadUploadFile: suc");
+                    callback('Suc');
+                }
+                return;
+            }
+
+            if (!hasErrorUpload()) {
+                if (info.length < draftData.length) {
+                    runningThreadCount++;
+                    startThreadUploadFile(draftData, null, info, callback);
+                }
+            } else {
+                runningThreadCount--;
+                if (!hasActiveUpload()) {
+                    console.log("startThreadUploadFile: failed, 1");
+                    callback(null);
+                }
+            }
+        }, function(filename) {
+            console.log("uploaded failed: filename="+filename);
+            var tmpFileInfo3 = getFileInfo(filename);
+            if (tmpFileInfo3.tryCount >= 1) {
+                console.log("!!Abort, "+ filename +", tried "+tmpFileInfo3.tryCount+" times.");
+                tmpFileInfo3.status = -1;
+                runningThreadCount--;
+                if (!hasActiveUpload()) {
+                    console.log("startThreadUploadFile: failed, 2");
+                    callback(null);
+                }
+                return;
+            }
+            if (!hasErrorUpload()) {
+                tmpFileInfo3.tryCount += 1;
+                console.log("uploaded("+getUploadedCount()+"/"+draftData.length+") failed, trying "+tmpFileInfo.tryCount+"...");
+                startThreadUploadFile(draftData, tmpFileInfo3, info, callback);
+            } else {
+                runningThreadCount--;
+                if (!hasActiveUpload()) {
+                    console.log("startThreadUploadFile: failed, 3.");
+                    callback(null);
+                }
+            }
+            return;
+        });
+    }
+
+    multiThreadUploadFileWhenPublishInCordova = function(draftData, postId, callback){
+        if(device.platform === 'testAndroid' ){
+            Router.go('/posts/'+postId);
+            return;
+        }
+        var uploadedCount = 0;
+        //console.log("draftData="+JSON.stringify(draftData));
+        if (draftData.length > 0) {
+            Session.set('isDelayPublish', false);
+            PUB.page('/progressBar');
+            //$('.addProgress').css('display',"block");
+        } else {
+            callback('suc');
+        }
+        uploadingFilesInfo.filesCount = draftData.length;
+        uploadingFilesInfo.files = [];
+        multiThreadUploadFile(draftData, 5, function(result){
+            if (result) {
+                Session.set('progressBarWidth', 100);
+                console.log("Jump to post page...");
+                $('.addProgress').css('display',"none");
+                PUB.pagepop();//Pop addPost page, it was added by PUB.page('/progressBar');
+                //Router.go('/posts/'+postId);
+                callback('suc');
+                //PUB.alert("上传图片失败。");
+                console.log("multiThreadUploadFile, suc");
+                //callback(null);
+            } else {
+                PUB.alert("上传图片失败。");
+                Session.set('isDelayPublish', true);
+                console.log("multiThreadUploadFile, failed");
+                callback(null);
+            }
+        });
+        return;
     }
 
     uploadFileWhenPublishInCordova = function(draftData, postId){

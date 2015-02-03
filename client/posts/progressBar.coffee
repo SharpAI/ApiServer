@@ -1,6 +1,6 @@
 if Meteor.isClient
     Template.progressBar.rendered=->
-        Session.set 'isDelayPublish',true
+        #Session.set 'isDelayPublish',true
         Session.set 'progressBarWidth',0
 
     Template.progressBar.helpers

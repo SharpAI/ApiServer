@@ -66,6 +66,11 @@ if Meteor.isClient
     Router.route '/webHome',()->
       this.render 'webHome'
       return
+    Router.route '/progressBar',()->
+      if Meteor.isCordova is true
+        this.render 'progressBar'
+        Session.set 'channel','progressBar'
+        return
     Router.route '/posts/:_id', {
         waitOn: ->
           Meteor.subscribe("publicPosts",this.params._id);
