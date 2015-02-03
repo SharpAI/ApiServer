@@ -1,6 +1,5 @@
 if Meteor.isClient
   Meteor.startup ()->
-    Session.set 'focusOn','home'
     Tracker.autorun ()->
       channel = Session.get 'channel'
       Meteor.setTimeout ->
