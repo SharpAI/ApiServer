@@ -11,6 +11,6 @@ if Meteor.isClient
         PUB.back()
         return
     'click img':(e)->
-        PUB.page('/posts/'+this.id);
+        PUB.page('/posts/'+this._id);
         Session.set 'FollowPostsId',this._id
         return
