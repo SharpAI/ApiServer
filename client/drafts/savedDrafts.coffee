@@ -19,7 +19,7 @@ if Meteor.isClient
         .forEach (drafts)->
           Drafts.remove drafts._id
       #Prepare data
-      savedDraftData = SavedDrafts.find({_id: e.currentTarget.id}).fetch()[0]
+      savedDraftData = SavedDrafts.find({_id: @_id}).fetch()[0]
       #console.log "savedDraftData ="+JSON.stringify(savedDraftData)
       pub = savedDraftData.pub;
       for i in [0..(pub.length-1)]
