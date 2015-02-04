@@ -132,6 +132,10 @@ if Meteor.isClient
       addontitle = this.addontitle;
       console.log "socialsharing: this.mainImage="+this.mainImage
       downloadFromBCS(this.mainImage, (result)->
+        if result is null
+          console.log("downloadFromBCS failed!")
+          PUB.alert("准备故事的主题图片失败，请重新尝试。");
+          return
         console.log("downloadFromBCS suc! Prepare socialsharing...")
         window.plugins.socialsharing.share(title+':'+addontitle+'(来自 故事贴)', null, result, url);
       )
