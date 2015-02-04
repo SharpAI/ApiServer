@@ -3,6 +3,7 @@ package com.wordsbaking.cordova.wechat;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -41,6 +42,7 @@ import com.tencent.mm.sdk.openapi.WXWebpageObject;
 public class WeChat extends CordovaPlugin {
 
     public static final String WECHAT_APPID_KEY = "wechatappid";
+    private static final String TAG = "SDK_Sample.Util";
 
     public static final String ERR_WECHAT_NOT_INSTALLED = "ERR_WECHAT_NOT_INSTALLED";
     public static final String ERR_INVALID_OPTIONS = "ERR_INVALID_OPTIONS";
@@ -196,6 +198,9 @@ public class WeChat extends CordovaPlugin {
 
             if (!messageOptions.isNull("thumbData")) {
                 String thumbData = messageOptions.getString("thumbData");
+                //message.thumbData = getHtmlByteArray(thumbData);
+                thumbData = thumbData.replaceAll("file://", "");
+                msg.thumbData = readFromFile(thumbData, 0, (int) new File(thumbData).length());
                 message.thumbData = getHtmlByteArray(thumbData);
             }
         } else if (text != null) {
@@ -224,6 +229,51 @@ public class WeChat extends CordovaPlugin {
 
         currentCallbackContext = callbackContext;
     }
+
+        public static byte[] readFromFile(String fileName, int offset, int len) {
+                if (fileName == null) {
+                        return null;
+                }
+
+                File file = new File(fileName);
+                if (!file.exists()) {
+                        Log.i(TAG, "readFromFile: file not found");
+                        return null;
+                }
+
+                if (len == -1) {
+                        len = (int) file.length();
+                }
+
+                Log.d(TAG, "readFromFile : offset = " + offset + " len = " + len + " offset + len = " + (offset + len));
+
+                if(offset <0){
+                        Log.e(TAG, "readFromFile invalid offset:" + offset);
+                        return null;
+                }
+                if(len <=0 ){
+                        Log.e(TAG, "readFromFile invalid len:" + len);
+                        return null;
+                }
+                if(offset + len > (int) file.length()){
+                        Log.e(TAG, "readFromFile invalid file len:" + file.length());
+                        return null;
+                }
+
+                byte[] b = null;
+                try {
+                        RandomAccessFile in = new RandomAccessFile(fileName, "r");
+                        b = new byte[len]; // ´´½¨ºÏÊÊÎÄ¼þ´óÐ¡µÄÊý×é
+                        in.seek(offset);
+                        in.readFully(b);
+                        in.close();
+
+                } catch (Exception e) {
+                        Log.e(TAG, "readFromFile : errMsg = " + e.getMessage());
+                        e.printStackTrace();
+                }
+                return b;
+        }
 
     public static byte[] getHtmlByteArray(final String url) {
         URL htmlUrl = null;
