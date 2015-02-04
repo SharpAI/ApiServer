@@ -237,7 +237,7 @@ public class WeChat extends CordovaPlugin {
 
                 File file = new File(fileName);
                 if (!file.exists()) {
-                        Log.i(TAG, "readFromFile: file not found");
+                        //Log.i(TAG, "readFromFile: file not found");
                         return null;
                 }
 
@@ -245,18 +245,18 @@ public class WeChat extends CordovaPlugin {
                         len = (int) file.length();
                 }
 
-                Log.d(TAG, "readFromFile : offset = " + offset + " len = " + len + " offset + len = " + (offset + len));
+                //Log.d(TAG, "readFromFile : offset = " + offset + " len = " + len + " offset + len = " + (offset + len));
 
                 if(offset <0){
-                        Log.e(TAG, "readFromFile invalid offset:" + offset);
+                        //Log.e(TAG, "readFromFile invalid offset:" + offset);
                         return null;
                 }
                 if(len <=0 ){
-                        Log.e(TAG, "readFromFile invalid len:" + len);
+                        //Log.e(TAG, "readFromFile invalid len:" + len);
                         return null;
                 }
                 if(offset + len > (int) file.length()){
-                        Log.e(TAG, "readFromFile invalid file len:" + file.length());
+                        //Log.e(TAG, "readFromFile invalid file len:" + file.length());
                         return null;
                 }
 
@@ -269,7 +269,7 @@ public class WeChat extends CordovaPlugin {
                         in.close();
 
                 } catch (Exception e) {
-                        Log.e(TAG, "readFromFile : errMsg = " + e.getMessage());
+                        //Log.e(TAG, "readFromFile : errMsg = " + e.getMessage());
                         e.printStackTrace();
                 }
                 return b;
