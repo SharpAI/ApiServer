@@ -1,7 +1,7 @@
 if Meteor.isClient
   Template.bell.helpers
     eventFeeds:->
-      Feeds.find({owner:Meteor.userId()}, {sort: {createdAt: -1}})
+      Feeds.find({}, {sort: {createdAt: -1}})
     selfPosted:(eventType)->
       eventType is 'SelfPosted'
     time_diff: (created)->

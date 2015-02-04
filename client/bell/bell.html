@@ -8,12 +8,8 @@
       {{#each eventFeeds}}
         {{#if selfPosted eventType}}
           <a href="/posts/{{postId}}" class="contentList">
-            {{#if currentUser.profile.icon}}
-              <img class="icon" src="{{currentUser.profile.icon}}" width='30' height='30'>
-            {{else}}
-              <img class="noIcon" src="userPicture.png" width='30' height='30'>
-            {{/if}}
-            <div id="{{postId}}" class="alarm">你发布了 {{postTitle}}</div>
+            <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+            <div id="{{postId}}" class="alarm">{{ownerName}} 发布了新故事 {{postTitle}}</div>
             <div class="createAt">{{time_diff createdAt}}</div>
           </a>
           <div class="line">
