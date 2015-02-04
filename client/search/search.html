@@ -30,12 +30,13 @@
 <template name="searchPeopleAndTopic">
   <div class="searchPeopleAndTopic">
     <div class="content">
+         {{#if is_people}}
          <table>
            <tr>
              <td>
                <div class="searchForm">
                  <i class="fa fa-search"></i>
-                 <label><input id="search-box" type="text" placeholder="搜索人"></label>
+                   <label><input id="search-box" type="text" placeholder="搜索人"></label>
                </div>
              </td>
              <td style="width: 40px;text-align:center;">
@@ -43,10 +44,54 @@
              </td>
           </tr>
         </table>
-      <div id="peopleList">
-      </div>
-      <div id="topicList">
-      </div>
+        <ul class="my_btns my_btn2">
+          <li id="search_people" class="on">人</li>
+          <li id="search_topic">#话题</li>
+        </ul>
+        <div id="peopleList">
+        {{#each getFollowUsers}}
+          <a href="" id="{{_id}}" class="contentList">
+          <img class="icon" src="{{profile.icon}}" width='30' height='30'>
+          {{#if profile.fullname}}
+          <div class="userName">{{profile.fullname}}</div>
+          {{else}}
+          <div class="userName">{{username}}</div>
+          {{/if}}
+          {{#if notSelf this}}
+          {{#if isFollowedUser this}}
+            <div id="{{_id}}" class="follow delFollow"><span class="fa fa-check"></span><i class="fa fa-user"></i></div>
+          {{else}}
+            <div id="{{_id}}" class="follow addFollow"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
+          {{/if}}
+          {{/if}}
+          <div class="desc">{{desc}}</div>
+          </a>
+          <div class="line">
+            <span></span>
+          </div>
+        {{/each}}
+        </div>
+        {{else}}
+         <table>
+           <tr>
+             <td>
+               <div class="searchForm">
+                 <i class="fa fa-search"></i>
+                   <label><input id="search-box" type="text" placeholder="搜索#话题"></label>
+               </div>
+             </td>
+             <td style="width: 40px;text-align:center;">
+               <div class="back">取消</div>
+             </td>
+          </tr>
+        </table>
+        <ul class="my_btns my_btn2">
+          <li id="search_people">人</li>
+          <li id="search_topic" class="on">#话题</li>
+        </ul>
+        <div id="topicList">
+        </div>
+        {{/if}}
    </div>
   </div>
   {{> footer}}
