@@ -7,7 +7,7 @@ if Meteor.isClient
       Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     )
   Template.showPosts.rendered=->
-    `global_disable_longpress = true`
+    #`global_disable_longpress = true`
     postContent = Session.get("postContent")
     browseTimes = 0
     if (postContent.browse != undefined)

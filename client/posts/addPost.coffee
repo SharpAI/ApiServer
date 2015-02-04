@@ -64,7 +64,7 @@ if Meteor.isClient
         $(textarea).off('focus')
         $(textarea).off('focusout')
         $(textarea).off('blur')
-        `global_disable_longpress = true`
+        #`global_disable_longpress = true`
 
 
         $(textarea).focus(()->
@@ -83,7 +83,7 @@ if Meteor.isClient
           console.log("focusout")
           `global_toolbar_hidden = false`
           $(this).attr("readOnly", true)
-          `global_disable_longpress = false`
+          #`global_disable_longpress = false`
           Session.set('textareaFocused', false)
 
         )
