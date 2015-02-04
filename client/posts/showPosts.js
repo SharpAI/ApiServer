@@ -3,9 +3,9 @@ Template.showPosts.events({
       current = Router.current();
       url = current.url;
       if(url.indexOf("http") > 0)
-        url = url.replace("meteor.local", "54.149.51.44");
+        url = url.replace("meteor.local", "120.24.244.253");
       else
-        url = "http://54.149.51.44"+url;
+        url = "http://120.24.244.253"+url;
       var title = this.title;
       var addontitle = this.addontitle;
       Session.set('isSharing',true);
@@ -37,9 +37,9 @@ Template.showPosts.events({
       current = Router.current();
       url = current.url;
       if(url.indexOf("http") > 0)
-        url = url.replace("meteor.local", "54.149.51.44");
+        url = url.replace("meteor.local", "120.24.244.253");
       else
-        url = "http://54.149.51.44"+url;
+        url = "http://120.24.244.253"+url;
       var title = this.title;
       var addontitle = this.addontitle;
       Session.set('isSharing',true);
