@@ -146,6 +146,55 @@ if (Meteor.isCordova){
         }, options,true);
       });
     }
+
+    var FileDownloadOptions = function(fileKey, fileName, mimeType, params, headers, httpMethod) {
+        this.headers = headers || null;
+    };
+    downloadFromBCS = function(source, callback){
+        function fail(error) {
+            console.log(error)
+        }
+        function onFileSystemSuccess(fileSystem) {
+            var filename = source.replace(/^.*[\\\/]/, '');
+            fileSystem.root.getFile(filename, {create: true, exclusive: false}, 
+                function(fileEntry){
+                    console.log("filename = "+filename+", fileEntry.toURL()="+fileEntry.toURL());
+                    //var target = "cdvfile://localhost/temporary/"+filename
+                    var target = fileEntry.toURL();
+                    console.log("target = "+target);
+
+                    var options = new FileDownloadOptions();
+                    var headers = {
+                      "x-bs-acl": "public-read",
+                      "Content-Type": "image/jpeg"
+                      //"Authorization": "Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA=="
+                    };
+                    options.headers = headers;
+                    var ft = new FileTransferBCS();
+                    ft.onprogress = function(progressEvent) {
+                      if (progressEvent.lengthComputable) {
+                        console.log('Download Progress ' + 100* (progressEvent.loaded / progressEvent.total ) + '%');
+                      } else {
+                        console.log('Download ++');
+                      }
+                    };
+                    ft.download(source, target, function(theFile){
+                        console.log('download suc, theFile.toURL='+theFile.toURL());
+                        if(callback){
+                            callback(theFile.toURL());
+                        }
+                    }, function(e){
+                        console.log('download error: ' + e.code)
+                        if(callback){
+                          callback(null, source);
+                        }
+                    }, true, options);
+
+                }, fail);
+        }
+        window.requestFileSystem(LocalFileSystem.TEMPORARY, 0, onFileSystemSuccess, fail);
+    }
+
     /**
     * upload file in cordova with plugin for select/resize file to S3
     *
