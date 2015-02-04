@@ -1,4 +1,7 @@
 <template name="showPosts">
+  {{#if isSharing}}
+    {{>loadingPost}}
+  {{else}}
   <div class="showPosts">
     <div class="head">
       {{#if isMobile}}
@@ -110,6 +113,7 @@
       <div id="showComment" style="display:none;">
     {{> commentBar}}
     </div>
+  {{/if}}
   {{/if}}
 </template>
 <template name="postFooter">
