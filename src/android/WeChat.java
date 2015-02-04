@@ -1,6 +1,7 @@
 package com.wordsbaking.cordova.wechat;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -200,8 +201,8 @@ public class WeChat extends CordovaPlugin {
                 String thumbData = messageOptions.getString("thumbData");
                 //message.thumbData = getHtmlByteArray(thumbData);
                 thumbData = thumbData.replaceAll("file://", "");
-                msg.thumbData = readFromFile(thumbData, 0, (int) new File(thumbData).length());
-                message.thumbData = getHtmlByteArray(thumbData);
+                message.thumbData = readFromFile(thumbData, 0, (int) new File(thumbData).length());
+                //message.thumbData = getHtmlByteArray(thumbData);
             }
         } else if (text != null) {
             WXTextObject textObject = new WXTextObject();
