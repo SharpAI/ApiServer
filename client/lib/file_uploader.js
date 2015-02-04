@@ -421,6 +421,7 @@ if (Meteor.isCordova){
         if (draftData.length > 0) {
             Session.set('isDelayPublish', false);
             PUB.page('/progressBar');
+            $('body').css('background-color',"white");
             //$('.addProgress').css('display',"block");
         } else {
             callback('suc');
@@ -432,6 +433,7 @@ if (Meteor.isCordova){
                 Session.set('progressBarWidth', 100);
                 console.log("Jump to post page...");
                 $('.addProgress').css('display',"none");
+                $('body').css('background-color',"#111");
                 PUB.pagepop();//Pop addPost page, it was added by PUB.page('/progressBar');
                 //Router.go('/posts/'+postId);
                 callback('suc');
@@ -475,6 +477,7 @@ if (Meteor.isCordova){
                     });*/
                     Session.set('progressBarWidth', 100);
                     console.log("Jump to post page...");
+                    $('body').css('background-color',"#111");
                     $('.addProgress').css('display',"none");
                     Router.go('/posts/'+postId);
                 }
