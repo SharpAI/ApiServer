@@ -110,7 +110,32 @@ if Meteor.isClient
       else
         true
   Template.searchPeopleAndTopic.rendered=->
+    Session.setDefault('is_people', true)
+    $('#search-box').bind('propertychange input',(e)->
+       text = $(e.target).val().trim()
+       if text.length > 0
+          FollowUsersSearch.search text
+    )
     $('#search-box').trigger('focus')
+  Template.searchPeopleAndTopic.helpers
+    is_people:->
+       Session.get('is_people')
+    isFollowedUser:(follow)->
+      fcount = Follower.find({"userId":Meteor.userId(),"followerId":follow._id}).count()
+      if fcount > 0
+        true
+      else
+        false
+    notSelf:(follow)->
+      fcount = Follower.find({"userId":Meteor.userId(),"followerId":follow.userId}).count()
+      if follow._id is Meteor.userId()
+        false
+      else
+        true
   Template.searchPeopleAndTopic.events
+    'click #search_people': (event)->
+        Session.set('is_people', true)
+    'click #search_topic': (event)->
+        Session.set('is_people', false)
     'click .back': (event)->
        history.back()
