@@ -1,5 +1,5 @@
 
-if(Meteor.isClient){
+if(Meteor.isCordova){
   if(Package.reload){
     Package.reload = null;
   }
