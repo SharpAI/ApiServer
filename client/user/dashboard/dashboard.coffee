@@ -11,6 +11,8 @@ if Meteor.isClient
       Router.go '/my_email'
     'click .changePasswd' :->
       Router.go '/my_password'
+    'click .about' :->
+      Router.go '/my_about'
     'click .back' :->
       Router.go '/user'
     'click .logout':->
@@ -52,4 +54,11 @@ if Meteor.isClient
       else
         PUB.toast "password could not be empty!"
     'click #pass_btn_back' :->
+      Router.go '/dashboard'
+
+  Template.my_about.rendered=->
+    $('.dashboard').css 'min-height', $(window).height()
+    return
+  Template.my_about.events
+    'click #about_btn_back' :->
       Router.go '/dashboard'
