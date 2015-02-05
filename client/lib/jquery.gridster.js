@@ -491,6 +491,11 @@
     fn.added_widget = function($el){
         $el.longpress($.proxy(function(e){
 
+            //force only pressed item can be draggable
+            if($(e.currentTarget).hasClass('pressed') == false) {
+                return false;
+            }
+
             if (typeof global_disable_longpress !== "undefined" && global_disable_longpress !== null) {
                 if (global_disable_longpress) {
                     return;
@@ -1775,6 +1780,8 @@
     * @param {Object} ui A prepared ui object with useful drag-related data
     */
     fn.on_start_drag = function(event, ui) {
+
+
         this.$helper.add(this.$player).add(this.$wrapper).addClass('dragging');
 
         this.highest_col = this.get_highest_occupied_cell().col;
@@ -1839,6 +1846,9 @@
             return false;
         }
 
+
+
+
         var abs_offset = {
             left: ui.position.left + this.baseX,
             top: ui.position.top + this.baseY
@@ -1889,6 +1899,7 @@
     * @param {Object} ui A prepared ui object with useful drag-related data
     */
     fn.on_stop_drag = function(event, ui) {
+
         this.$helper.add(this.$player).add(this.$wrapper)
             .removeClass('dragging');
 
