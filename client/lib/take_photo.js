@@ -14,8 +14,8 @@ if (Meteor.isCordova) {
       retVal.URI = imageURI;
       
       if (device.platform === 'Android'){
-        if(imageURI.indexOf('file:///storage/emulated/0')===0){
-          console.log('need replace');
+        //if(imageURI.indexOf('file:///storage/emulated/0')===0){
+          //console.log('need replace');
           //returnURI = replaceAll("file:///storage/emulated/0", 'cdvfile://localhost/persistent',imageURI);
           window.resolveLocalFileSystemURL(imageURI, function(fileEntry) {
             fileEntry.file(function(file) {
@@ -33,7 +33,7 @@ if (Meteor.isCordova) {
           }, function(e) {
             console.log('resolveLocalFileSystemURL Error = ' + e);
           });
-        }
+        //}
       } else if (device.platform === 'iOS') {
         //"file:///var/mobile/Containers/Data/Application/748449D2-3F45-4057-9630-F12065B1C0C8/tmp/cdv_photo_002.jpg"
         console.log('image uri is ' + imageURI);
