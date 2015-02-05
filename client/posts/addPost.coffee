@@ -160,21 +160,27 @@ if Meteor.isClient
               console.log("toolbarHidden")
               toolbarHiddenHandle(event,node)
 
-          $('#'+node.id+'TextArea').bind('propertychange input',(e)->
+          $('#'+node.id+'TextArea').on('keyup input',(e)->
             e.preventDefault()
             id = this.id.replace("TextArea", "")
             grid_size=($( window ).width()/6 - 10);
 
             min_widget_height = (5 * 2) + grid_size;
 
-            sizey = Math.floor(this.scrollHeight/min_widget_height)+1
+            #offset = this.offsetHeight - this.clientHeight;
+            $(this).css('height', 'auto').css('height', this.scrollHeight);
+
+            sizey = Math.floor((this.scrollHeight)/min_widget_height)+1
             if gridster?
               resizeItem = $('#'+id)
+
               height = sizey*min_widget_height - 10
               resizeItem.css("height", height)
+              $(this).css('height', "")
+
               sizex = parseInt(resizeItem.attr("data-sizex"))
               gridster.resize_widget(resizeItem, sizex,sizey)
-              console.log('propertychange sizey:'+ sizey + ' scrollHeight:'+this.scrollHeight)
+              console.log('propertychange sizey:'+ sizey + 'height:' +height + 'scrollHeight:'+this.scrollHeight)
           )
 
       else if type == "image"
