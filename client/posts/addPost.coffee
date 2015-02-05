@@ -70,7 +70,6 @@ if Meteor.isClient
         $(textarea).focus(()->
           Session.set('textareaFocused', true)
           console.log("focus get")
-          `global_toolbar_hidden = true`
         )
         $(textarea).on('blur', 'input, textarea', ()->
           setTimeout(()->
@@ -81,7 +80,6 @@ if Meteor.isClient
 
         $(textarea).focusout(()->
           console.log("focusout")
-          `global_toolbar_hidden = false`
           $(this).attr("readOnly", true)
           #`global_disable_longpress = false`
           Session.set('textareaFocused', false)
