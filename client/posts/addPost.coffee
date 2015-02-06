@@ -412,17 +412,19 @@ if Meteor.isClient
       Session.set 'isReviewMode','0'
       return
     'click #delete':(event)->
-      Session.set 'isReviewMode','1'
-      #Delete it from SavedDrafts
-      draftData = Drafts.find().fetch()
-      draftId = draftData[0]._id
-      SavedDrafts.remove draftId
-      #Clear Drafts
-      Drafts
-        .find {owner: Meteor.userId()}
-        .forEach (drafts)->
-          Drafts.remove drafts._id
-      PUB.back()
+      result=confirm("确认删除草稿吗？");
+      if result
+        Session.set 'isReviewMode','1'
+        #Delete it from SavedDrafts
+        draftData = Drafts.find().fetch()
+        draftId = draftData[0]._id
+        SavedDrafts.remove draftId
+        #Clear Drafts
+        Drafts
+          .find {owner: Meteor.userId()}
+          .forEach (drafts)->
+            Drafts.remove drafts._id
+        PUB.back()
       return
     'click .cancle':->
       try 
