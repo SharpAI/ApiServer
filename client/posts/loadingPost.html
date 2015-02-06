@@ -1,7 +1,9 @@
 <template name="loadingPost">
   <div class="showPosts">
     <div class="head">
-      <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+      {{#if isMobile}}
+        <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+      {{/if}}
     </div>
     <div class="content">
       <div class="loading">
