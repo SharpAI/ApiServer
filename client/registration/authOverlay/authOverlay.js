@@ -38,7 +38,7 @@ if (Meteor.isClient) {
       });
     },
     'click #qq': function () {
-      Meteor.loginWithQQ({
+      Meteor.loginWithQq({
         loginStyle: 'popup'
         //loginStyle: 'redirect'
         //loginStyle: 'redirect'  you can use redirect for mobile web app
