@@ -40,9 +40,39 @@ if Meteor.isClient
     window.title = this.title + ':' + this.addontitle
     console.log("show post rev 2 "+window.title)
     base_size=($( window ).width()/6 - 10);
+
     test = $("#test");
-    `gridster = test.gridster({widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], resize: {enabled: false }}).data('gridster');`
+    `gridster = test.gridster({widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], min_cols: 3, max_cols:6, resize: {enabled: false }}).data('gridster');`
     gridster.disable()
+
+
+    $("#test").find('.hastextarea').each( ( i, itemElem )->
+      textdiv = $(itemElem).children('.textdiv')
+      textarea = $(textdiv).children('p')
+
+      #offset = this.offsetHeight - this.clientHeight;
+      #height = $(textarea).height()
+      #width = $( window ).width()
+      #5*2 is gridster gap size, 4*2 is padding
+      #$(textarea).css('width', width - 10)
+      $(textarea).css('height', 'auto')
+      height = $(textarea).height()
+
+      min_widget_height = (5 * 2) + base_size;
+      sizey = Math.floor((height)/min_widget_height)+1
+
+      #$(textarea).css('width', '')
+      $(textarea).css('height', '')
+      sizex = $(itemElem).attr("data-sizex")
+      sizey_orig = parseInt($(itemElem).attr("data-sizey"))
+      if sizey isnt sizey_orig
+        $(itemElem).attr("data-sizey", sizey)
+        gridster.resize_widget($(itemElem), sizex,sizey)
+    )
+
+
+
+
     window.lastScroll = 0;
     $(window).scroll (event)->
       #Sets the current scroll position
