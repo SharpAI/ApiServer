@@ -24,10 +24,7 @@ Template.loginForm.events
           t.find('#sub-login').disabled = false
           t.find('#sub-login').value = '登 录'
         else
-          if Follower.find({"userId":Meteor.userId()}).count() > 3
-              Router.go '/'
-          else
-              Router.go '/registerFollow'
+          Router.go '/'
           return
       false 
 
