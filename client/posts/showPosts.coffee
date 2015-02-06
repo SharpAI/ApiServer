@@ -15,13 +15,21 @@ if Meteor.isClient
       browseTimes = postContent.browse + 1
     else
       browseTimes = 1
-    Posts.update(
-      {_id:postContent._id},
-      {$set:{
-          browse:browseTimes,
-        }
-      }
-    )
+    if not Meteor.isCordova
+      favicon = document.createElement('link');
+      favicon.id = 'icon';
+      favicon.rel = 'icon';
+      favicon.href = postContent.mainImage;
+      document.head.appendChild(favicon);
+    Meteor.setTimeout ()->
+        Posts.update(
+          {_id:postContent._id},
+          {$set:{
+              browse:browseTimes,
+            }
+          }
+        )
+      ,3000
     $('p').linkify();
     $("a[target='_blank']").click((e)->
       e.preventDefault();
