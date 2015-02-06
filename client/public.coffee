@@ -98,10 +98,10 @@
             navigator.notification.confirm(
                 msg
                 (index)->
-                    if index is 1
+                    if index is 2
                        callback
                 '提示'
-                ['确定','取消']
+                ['取消','确定']
             )
         catch error
             if confirm(msg)

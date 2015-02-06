@@ -134,7 +134,7 @@ if Meteor.isClient
     'click #unpublish': (event)->
       self = this
       navigator.notification.confirm('你确定取消分享吗？', (r)->
-        if r is 2
+        if r is 1
           return
         PUB.page('/user')
 
@@ -156,7 +156,7 @@ if Meteor.isClient
           createdAt: new Date(),
         }
         return
-      , '取消分享', ['确定','取消']);
+      , '取消分享', ['取消','确定']);
 
 
     'click #socialShare': (event)->
