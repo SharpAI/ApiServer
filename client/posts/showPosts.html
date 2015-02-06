@@ -72,6 +72,48 @@
         </div>
       </div>
       <br><br><br><br>
+      <script type="text/javascript">
+        current = Router.current();
+        url = current.url;
+        if(url.indexOf("http") > 0)
+          url = url.replace("meteor.local", "120.24.244.253");
+        else
+          url = "http://120.24.244.253"+url;
+        var tit = $('#wx-title').html(); //标题
+        var img = $('#wx-img').attr("src"); //图片
+        var con = $('#wx-con').html(); //简介
+        var link = url; //链接
+        document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+          // 发送给好友
+          WeixinJSBridge.on('menu:share:appmessage', function (argv) {
+            WeixinJSBridge.invoke('sendAppMessage', {
+              "appid": "123490452",
+              "img_url": img,
+              "img_width": "160",
+              "img_height": "160",
+              "link": link,
+              "desc": con,
+              "title": tit
+            }, function (res) {
+              console.log('send_msg error '+res.err_msg);
+            })
+          });
+
+          // 分享到朋友圈
+          WeixinJSBridge.on('menu:share:timeline', function (argv) {
+            WeixinJSBridge.invoke('shareTimeline', {
+              "img_url": img,
+              "img_width": "160",
+              "img_height": "160",
+              "link": link,
+              "desc": con,
+              "title": tit
+            }, function (res) {
+              console.log('timeline error '+res.err_msg);
+            });
+          });
+        }, false)
+      </script>
     </div>
     {{#if isMobile}}
       {{> postFooter}}
