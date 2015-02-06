@@ -412,8 +412,9 @@ if Meteor.isClient
       Session.set 'isReviewMode','0'
       return
     'click #delete':(event)->
-      result=confirm("确认删除草稿吗？");
-      if result
+      navigator.notification.confirm('您是否要删除草稿？', (r)->
+        if r is 1
+          return
         Session.set 'isReviewMode','1'
         #Delete it from SavedDrafts
         draftData = Drafts.find().fetch()
@@ -425,6 +426,9 @@ if Meteor.isClient
           .forEach (drafts)->
             Drafts.remove drafts._id
         PUB.back()
+        return
+      , '删除草稿', ['取消','确定']);
+
       return
     'click .cancle':->
       try 
