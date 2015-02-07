@@ -47,7 +47,7 @@ if (Meteor.isCordova) {
       if(callback){
         callback(null);
       }
-    }, { quality: 80,
+    }, { quality: 60,
     destinationType: destinationType.FILE_URI,
     sourceType: pictureSource.CAMERA,
     targetWidth: 400,
