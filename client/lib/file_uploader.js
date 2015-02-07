@@ -607,7 +607,7 @@ if (Meteor.isCordova){
             maximumImagesCount: max_number,
             width: 400,
             height: 400,
-            quality: 100,
+            quality: 60,
             storage: 'persistent'
           });
         }
