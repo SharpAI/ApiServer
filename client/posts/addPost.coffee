@@ -67,6 +67,11 @@ if Meteor.isClient
         `global_disable_longpress = true`
         `global_toolbar_hidden = true`
 
+        height = $('.addPost').height()
+        $(node).css('z-index', 20)
+        $('#blur_overlay').css('height',height)
+        $('#blur_overlay').css('z-index', 4)
+
         $(textarea).focus(()->
           Session.set('textareaFocused', true)
           console.log("focus get")
@@ -84,6 +89,9 @@ if Meteor.isClient
           `global_disable_longpress = false`
           `global_toolbar_hidden = false`
           Session.set('textareaFocused', false)
+
+          $('#blur_overlay').css('height','')
+          $(node).css('z-index', '')
         )
 
       else if buttonClicked.id == "del"
