@@ -493,7 +493,10 @@
 
             //force only pressed item can be draggable
             if($(e.currentTarget).hasClass('pressed') == false) {
-                return false;
+
+                $(e.currentTarget).trigger( "click" )
+
+                //return false;
             }
 
             if (typeof global_disable_longpress !== "undefined" && global_disable_longpress !== null) {
