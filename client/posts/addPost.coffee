@@ -73,6 +73,7 @@ if Meteor.isClient
         $('#blur_overlay').css('z-index', 4)
 
         $(textarea).focus(()->
+          $(".head").css 'position','absolute'
           Session.set('textareaFocused', true)
           console.log("focus get")
         )
@@ -84,6 +85,7 @@ if Meteor.isClient
         $(textarea).focus()
 
         $(textarea).focusout(()->
+          $(".head").css 'position','fixed'
           console.log("focusout")
           $(this).attr("readOnly", true)
           `global_disable_longpress = false`
