@@ -3,6 +3,11 @@
     <div id="blur_overlay" style="position: absolute; opacity: 0.6; z-index: 1; width:100%; background-color:white;"></div>
     <div class="head">
       {{#if mainImage}}
+        {{#if isReviewMode '3'}}
+            <div class="leftButton cancle" style="color: #00c4ff;margin-top:0px;">取消</div>
+            <div>缩放和裁剪</div>
+            <div id="cropDone" class="rightButton" style="color: #00c4ff;margin-top:0px;">完成</div>
+        {{/if}}
         {{#if isReviewMode '2'}}
             <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
             <div id="publish" class="rightButton">存储</div>
@@ -40,20 +45,19 @@
                 {{#each pub}}
                     {{#if isImage}}
                         <li class='resortitem' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
-                          <div class="isImage" style="width:100%; height:100%;">
-                            <img src="{{imgUrl}}" style="object-fit: cover; width:100%; height:100%;" >
+                          <div id="isImage{{_id}}" class="isImage" style="width:100%; height:100%;">
+                            <div class="imgContainer">
+                              <img src="{{imgUrl}}" style="object-fit: cover; width:100%; height:100%;position:absolute;{{style}}" >
+                            </div>
                             <i class="fa fa-circle" style="position: absolute;bottom: -12px;left: 50%;opacity: 0;"></i>
                             <i class="fa fa-circle" style="position: absolute;bottom: -10px;right: -10px;opacity: 0;"></i>
                             <i class="fa fa-circle" style="position: absolute;right: -11px;top: 50%;opacity: 0;"></i>
                           </div>
-<!--
-                          <div class="pre"></div>
-                          <div class="crop">
-                            <div class="default"></div>
+                          <div id="crop{{_id}}" class="crop" style="display:none">
+                            <div id="default{{_id}}" class="default"></div>
                           </div>
                         
-                        {{crop imgUrl}}
--->
+<!--                        {{crop imgUrl}}-->
                         </li>
                     {{else}}
                         <li class='resortitem hastextarea' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
@@ -68,11 +72,11 @@
       </div>
       <div id="mainImage-toolbar-options" style='visibility: hidden;'>
           <a href="#" id='modify'><i class="fa fa-pencil"></i></a>
-          <!--        <a href="#" id='crop'><i class="fa fa-crop"></i></a>-->
+<!--                  <a href="#" id='crop'><i class="fa fa-crop"></i></a>-->
 
       </div>
       <div id="image-toolbar-options" style='visibility: hidden;'>
-<!--        <a href="#" id='crop'><i class="fa fa-crop"></i></a>-->
+        <a href="#" id='crop'><i class="fa fa-crop"></i></a>
         <a href="#" id='del'><i class="fa fa-trash"></i></a>
       </div>
       <div id="text-toolbar-options" style='visibility: hidden;'>

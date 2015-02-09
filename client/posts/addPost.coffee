@@ -223,23 +223,35 @@ if Meteor.isClient
               if gridster?
                 gridster.remove_widget2(node, false)
               Drafts.remove node.id
-            ###
             else if buttonClicked.id == "crop"
               console.log("crop "+ node.id)
+              
+              Session.set 'isReviewMode','3'
+              Session.set 'cropDraftId',node.id
 
+              $('#isImage'+node.id).css('display',"none")
+              $('#crop'+node.id).css('display',"block")
+              $('#'+node.id).css('z-index',"12")
+#              if $("#default"+node.id+" .cropMain").length is 0
               image = Drafts.findOne({_id:node.id}).imgUrl
+              console.log "imgUrl is "+image
+              imgWidth = $(node).width()
+              imgHeight = $(node).height()
+              console.log "imgWidth is "+imgWidth
+              console.log "imgHeight is "+imgHeight
+              containerId= "#default"+node.id
+              console.log "containerId is "+containerId
               crop = new CROP()
               crop.init {
-                container: '.default',
+                container: containerId,
                 image: image,
-                width: 300,
-                height: 300,
+                width: imgWidth,
+                height: imgHeight,
                 mask: false,
                 zoom: {steps: 0.01,min: 1,max: 5},
-                preview: {container: '.pre',width: 200,height: 200}
               }
-            ###
-              
+#              else
+#                return
             ###
             else if buttonClicked.id == "crop"
 
@@ -303,17 +315,17 @@ if Meteor.isClient
     return
 
   Template.addPost.helpers
-    crop: (imgUrl)->
-      crop = new CROP()
-      crop.init {
-        container: '.default',
-        image: imgUrl,
-        width: 300,
-        height: 300,
-        mask: false,
-        zoom: {steps: 0.01,min: 1,max: 5},
-        preview: {container: '.pre',width: 200,height: 200}
-      }
+#    crop: (imgUrl)->
+#      crop = new CROP()
+#      crop.init {
+#        container: '.default',
+#        image: imgUrl,
+#        width: 300,
+#        height: 300,
+#        mask: false,
+#        zoom: {steps: 0.01,min: 1,max: 5},
+#        preview: {container: '.pre',width: 200,height: 200}
+#      }
     showPostFooter:->
       if Session.get('isReviewMode') is '2' or Session.get('isReviewMode') is '0'
         if Session.get('textareaFocused') is false
@@ -325,7 +337,7 @@ if Meteor.isClient
     isReviewMode:(value)->
       console.log "value is "+value + ", isReviewMode = "+Session.get('isReviewMode')
       if Session.get('isReviewMode') is value
-        if Session.get('isReviewMode') is '1'
+        if Session.get('isReviewMode') is '1' or Session.get('isReviewMode') is '3'
             if gridster?
               console.log "gridster.disable 2"
               gridster.disable()
@@ -456,6 +468,30 @@ if Meteor.isClient
         return
       catch
         history.back()
+    'click #cropDone':->
+      cropDraftId = Session.get('cropDraftId')
+      console.log cropDraftId
+      img_height = $("#default"+cropDraftId+" .crop-img").css('height')
+      img_width = $("#default"+cropDraftId+" .crop-img").css('width')
+      img_top = $("#default"+cropDraftId+" .crop-img").css('top')
+      img_left = $("#default"+cropDraftId+" .crop-img").css('left')
+      console.log "#default"+cropDraftId+" .crop-img"
+      console.log $("#default"+cropDraftId+" .crop-img").css('height')
+      console.log $("#default"+cropDraftId+" .crop-img").css('width')
+      console.log $("#default"+cropDraftId+" .crop-img").css('top')
+      console.log $("#default"+cropDraftId+" .crop-img").css('left')
+      
+      style = "height:" + img_height + ';width:' + img_width + ';top:' + img_top + ';left:' + img_left + ';'
+      console.log style
+      Drafts.update({_id: cropDraftId}, {$set: {style: style}});
+      $('#isImage'+cropDraftId).css('display',"block")
+      $('#crop'+cropDraftId).css('display',"none")
+      Meteor.setTimeout ()->
+        document.getElementById('default'+cropDraftId).innerHTML=""
+      ,120
+      $('#'+cropDraftId).css('z-index',"2")
+      Session.set 'isReviewMode','0'
+      
     'click #saveDraft':->
         layout = JSON.stringify(gridster.serialize())
         pub=[]
