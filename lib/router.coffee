@@ -81,7 +81,6 @@ if Meteor.isClient
           Session.set("DocumentTitle",post.title + ':' + post.addontitle);
           this.render 'showPosts', {data: post}
           Session.set 'channel','posts/'+this.params._id
-        fastRender: true
       }
     Router.route '/allDrafts',()->
       if Meteor.isCordova is true
@@ -113,10 +112,3 @@ if Meteor.isClient
         this.render 'topicPosts'
         Session.set 'channel','topicPosts'
         return
-if Meteor.isServer
-  Router.route '/posts/:_id', {
-    waitOn: ->
-      Meteor.subscribe("publicPosts",this.params._id);
-    loadingTemplate: 'loadingPost'
-    fastRender: true
-  }
