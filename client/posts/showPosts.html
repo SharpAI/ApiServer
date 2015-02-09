@@ -2,7 +2,7 @@
   {{#if isSharing}}
     {{>loadingPost}}
   {{else}}
-    <div class="showPosts">
+    <div class="showPosts" style="padding-bottom:42px;">
       <div class="head">
         {{#if isMobile}}
           <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
@@ -61,7 +61,7 @@
                           </div>
                       </li>
                   {{else}}
-                      <li class='resortitem hastextarea' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
+                      <li style="height:auto" class='resortitem hastextarea' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
                           <div class="textdiv">
                               <p text={{_id}} name="textarea" style="{{style}}">{{text}}</p>
                           </div>
@@ -71,7 +71,6 @@
           </ul>
         </div>
       </div>
-      <br><br><br><br>
     </div>
     {{#if isMobile}}
       {{> postFooter}}
