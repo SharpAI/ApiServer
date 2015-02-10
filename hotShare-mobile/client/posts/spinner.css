@@ -1,3 +1,6 @@
+.spinner-overlay{
+  min-height: 100%
+}
 .overlay {
   background: rgba(0, 0, 0, 0.9);
   position: absolute;
