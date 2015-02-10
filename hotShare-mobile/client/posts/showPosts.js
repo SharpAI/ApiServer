@@ -3,9 +3,9 @@ Template.showPosts.events({
       current = Router.current();
       url = current.url;
       if(url.indexOf("http") > 0)
-        url = url.replace("meteor.local", "120.24.244.253:443");
+        url = url.replace("meteor.local", "120.24.164.67");
       else
-        url = "http://120.24.244.253:443"+url;
+        url = "http://120.24.164.67"+url;
       var title = this.title;
       var addontitle = this.addontitle;
       window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等")
@@ -35,9 +35,9 @@ Template.showPosts.events({
       current = Router.current();
       url = current.url;
       if(url.indexOf("http") > 0)
-        url = url.replace("meteor.local", "120.24.244.253:443");
+        url = url.replace("meteor.local", "120.24.164.67");
       else
-        url = "http://120.24.244.253:443"+url;
+        url = "http://120.24.164.67"+url;
       var title = this.title;
       var addontitle = this.addontitle;
       window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等")
