@@ -124,7 +124,7 @@ src/ios/libWeChatSDK.a 这个文件有两个版本, 一个是 iPhone Only 的, �
     <source-file src="src/android/libammsdk.jar" target-dir="libs" />
 
     <source-file src="src/android/WeChat.java" target-dir="src/com/wordsbaking/cordova/wechat" />
-    <source-file src="src/android/WXEntryActivity.java" target-dir="src/net/sourceforge/simcpux/wxapi" />
+    <source-file src="src/android/WXEntryActivity.java" target-dir="src/org/hotshare/everywhere/wxapi" />
     <!--
         另外一个源文件 wxapi/WXEntryActivity.java 会被钩子 (hook) 脚本添加到你的项目 id 对应的文件夹中,
         除此之外脚本还会修改该文件中的包名, 以匹配应用 id.
