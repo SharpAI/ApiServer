@@ -1,0 +1,76 @@
+<template name="showPosts">
+  {{#if isSharing}}
+    {{>loadingPost}}
+  {{else}}
+    <div class="showPosts" style="padding-bottom:42px;">
+      <div class="head">
+        {{#if isMobile}}
+          <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+        {{/if}}
+        <div class="user">
+          <img class="icon" src="{{ownerIcon}}" width='25' height='25'>
+          <span class="name">{{ownerName}}</span>
+          <span class="createAt">{{time_diff createdAt}}</span>
+        </div>
+
+        {{#if isMobile}}
+          <div class="rightDropMenu dropdown">
+            {{#if isMyPost}}
+              <button class="dropdown-toggle btn btn-flat" id="menu1" data-toggle="dropdown" style="padding-right: 5px;">操作</button>
+            {{else}}
+              <button class="dropdown-toggle btn btn-flat" id="menu1" data-toggle="dropdown" style="padding-right: 5px;">分享</button>
+            {{/if}}
+            <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+              {{#if isMyPost}}
+                <li role="presentation"><a id="unpublish" role="menuitem" tabindex="-1" ><i class="fa fa-file-o"></i>&nbsp;取消发表</a></li>
+                <li role="presentation"><a id="edit" role="menuitem" tabindex="-1" ><i class="fa fa-pencil fa-fw"></i>编辑</a></li>
+                <li role="presentation" class="divider"></li>
+              {{/if}}
+              <li role="presentation"><a id="WXSessionShare" role="menuitem" tabindex="-1" ><i class="fa fa-weixin fa-fw"></i>分享给微信好友</a></li>
+              <li role="presentation"><a id="WXTimelineShare" role="menuitem" tabindex="-1" ><i class="fa fa-weixin fa-fw"></i>分享到微信朋友圈</a></li>
+              <li role="presentation"><a id="socialShare" role="menuitem" tabindex="-1" ><i class="fa fa-share-alt fa-fw"></i>系统分享</a></li>
+            </ul>
+          </div>
+        {{/if}}
+      </div>
+      <div class="content">
+        <div id="wrapper">
+          <div class="mainImage" id="{{_id}}">
+            {{>spinner}}
+            <img id="wx-img" class="scale item lazy" data-original="{{mainImage}}" draggable="false" >
+            <header>
+              <h1 id="wx-title" class="title">{{title}}</h1>
+              <h4 id="wx-con" class="addontitle">{{addontitle}}</h4>
+            </header>
+          </div>
+        </div>
+        <div class="contentList">
+          {{#if mainText}}
+            <div class="text" style="height: initial;">{{mainText}}</div>
+          {{/if}}
+        </div>
+
+        <div class="gridster">
+          <ul id="test">
+              {{#each pub}}
+                  {{#if isImage}}
+                      <li class='resortitem' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
+                          <div class="imgdiv">
+                              {{>spinner}}
+                              <img class="lazy" data-original="{{imgUrl}}" style="object-fit: cover; width:100%; height:100%;position:absolute;{{style}}" >
+                          </div>
+                      </li>
+                  {{else}}
+                      <li style="height:auto" class='resortitem hastextarea' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
+                          <div class="textdiv">
+                              <p text={{_id}} name="textarea" style="{{style}}">{{text}}</p>
+                          </div>
+                      </li>
+                  {{/if}}
+              {{/each}}
+          </ul>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+</template>
