@@ -3,6 +3,7 @@ if Meteor.isClient
   Template.addPost.rendered=->
     `global_toolbar_hidden = false`
     $('.addPost').css('min-height',$(window).height())
+    $('.mainImage').css('min-height',$(window).height()*0.55)
 
     console.log 'addPost rendered rev=37'
     #testMenu will be main/font/align. It's for controlling the icon on text menu
@@ -17,6 +18,7 @@ if Meteor.isClient
         hideOnClick: true
         $('.mainImage').on 'toolbarItemClick',(event,buttonClicked)=>
           console.log $(buttonClicked).attr('id')
+          console.log event.currentTarget.id
           if buttonClicked.id == "modify"
             console.log("modify")
             selectMediaFromAblum 1,(cancel, result)->
@@ -29,6 +31,35 @@ if Meteor.isClient
                 if Drafts.find({type:'image'}).count() > 0
                   mainImageDoc = Drafts.find({type:'image'}).fetch()[0]
                   Drafts.update({_id: mainImageDoc._id}, {$set: {imgUrl:result.smallImage, filename:result.filename, URI:result.URI }});
+          else if buttonClicked.id == "crop"
+            console.log("crop "+ event.currentTarget.id)
+
+            
+            Session.set 'isReviewMode','3'
+            Session.set 'cropDraftId',event.currentTarget.id
+
+            mainImageId = event.currentTarget.id
+            imgWidth = document.getElementById(mainImageId).offsetWidth
+            imgHeight = document.getElementById(mainImageId).offsetHeight
+            
+            $('#mainImage'+mainImageId).css('display',"none")
+            $('#crop'+mainImageId).css('display',"block")
+            $('#'+mainImageId).css('z-index',"12")
+            image = Drafts.findOne({_id:mainImageId}).imgUrl
+            console.log "imgUrl is "+image
+            console.log "imgWidth is "+imgWidth
+            console.log "imgHeight is "+imgHeight
+            containerId= "#default"+mainImageId
+            console.log "containerId is "+containerId
+            crop = new CROP()
+            crop.init {
+              container: containerId,
+              image: image,
+              width: imgWidth,
+              height: imgHeight,
+              mask: false,
+              zoom: {steps: 0.01,min: 1,max: 5},
+            }
 
 
     #init
@@ -315,17 +346,6 @@ if Meteor.isClient
     return
 
   Template.addPost.helpers
-#    crop: (imgUrl)->
-#      crop = new CROP()
-#      crop.init {
-#        container: '.default',
-#        image: imgUrl,
-#        width: 300,
-#        height: 300,
-#        mask: false,
-#        zoom: {steps: 0.01,min: 1,max: 5},
-#        preview: {container: '.pre',width: 200,height: 200}
-#      }
     showPostFooter:->
       if Session.get('isReviewMode') is '2' or Session.get('isReviewMode') is '0'
         if Session.get('textareaFocused') is false
@@ -371,9 +391,9 @@ if Meteor.isClient
             draftTitles.addontitle = Session.get 'draftAddontitle'
           draftTitles 
     mainImage:->
-#      Meteor.setTimeout ->
-#        $('.mainImage').css('height',$(window).height()*0.55)
-#        0
+      Meteor.setTimeout ->
+        $('.mainImage').css('height',$(window).height()*0.55)
+      ,0
       if Drafts.find({type:'image'}).count() > 0
         Drafts.find({type:'image'}).fetch()[0]
       else
@@ -477,8 +497,20 @@ if Meteor.isClient
     'click #cropDone':->
       cropDraftId = Session.get('cropDraftId')
       console.log cropDraftId
-      img_height = $("#default"+cropDraftId+" .crop-img").css('height')
-      img_width = $("#default"+cropDraftId+" .crop-img").css('width')
+      imgSize = 
+        w : $("#default"+cropDraftId+" .crop-img").width()
+        h : $("#default"+cropDraftId+" .crop-img").height()
+      holderRatio =
+        wh : $("#"+cropDraftId).width() / $("#"+cropDraftId).height()
+        hw : $("#"+cropDraftId).height() / $("#"+cropDraftId).width()
+      if imgSize.w * holderRatio.hw < imgSize.h * holderRatio.wh
+        img_width = '100%'
+        img_height = (imgSize.h / imgSize.w)*100 + '%'
+      else
+        img_height = '100%'
+        img_width = (imgSize.w / imgSize.h)*100 + '%'
+#      img_height = $("#default"+cropDraftId+" .crop-img").css('height')
+#      img_width = $("#default"+cropDraftId+" .crop-img").css('width')
       img_top = $("#default"+cropDraftId+" .crop-img").css('top')
       img_left = $("#default"+cropDraftId+" .crop-img").css('left')
       console.log "#default"+cropDraftId+" .crop-img"
@@ -491,6 +523,7 @@ if Meteor.isClient
       console.log style
       Drafts.update({_id: cropDraftId}, {$set: {style: style}});
       $('#isImage'+cropDraftId).css('display',"block")
+      $('#mainImage'+cropDraftId).css('display',"block")
       $('#crop'+cropDraftId).css('display',"none")
       Meteor.setTimeout ()->
         document.getElementById('default'+cropDraftId).innerHTML=""
