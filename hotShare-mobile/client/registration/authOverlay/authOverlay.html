@@ -9,6 +9,10 @@
     <br>
     <br>
     <br>
+    {{#if isLoggingIn}}
+      {{>spinner}}
+      <div id="loggingIn">很卖萌的登录中~~~</div>
+    {{else}}
     <div id="register"><i class="fa fa-envelope"></i>&nbsp;使用电子邮件注册</div>
     <!--
     <div id="weibo"><i class="fa fa-weibo"></i>&nbsp;使用新浪微博登录</div>
@@ -16,6 +20,7 @@
     <div id="qq"><i class="fa fa-qq"></i>&nbsp;使用QQ登录</div>
     -->
     <div id="login">已经有帐户？登录</div>
+    {{/if}}
     <div class="company">昆明讯动科技有限公司</div>
   </div>
   <div class="register" style="display:none">

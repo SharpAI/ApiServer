@@ -2,6 +2,11 @@ if (Meteor.isClient) {
   Template.authOverlay.rendered = function() {
       $('.authOverlay').css('height', $(window).height());
     };
+  Template.authOverlay.helpers({
+      isLoggingIn:function() {
+          return Meteor.loggingIn();
+      }
+  });
   Template.authOverlay.events({
     'click #register': function () {
 //      Router.go('/signupForm');

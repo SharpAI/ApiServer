@@ -1,6 +1,12 @@
 <template name="home">
   <div class="home">
-    {{#if currentUser}}
+  {{#unless currentUser}}
+      {{#if isCordova}}
+        {{> authOverlay}}
+      {{else}}
+        {{> webHome}}
+      {{/if}}
+  {{else}}
       <div class="head">
         <strong>故事贴</strong>
         <div id="follow" class="leftButton">
@@ -11,12 +17,6 @@
         {{> listPosts}}
       </div>
       {{> footer}}
-    {{else}}
-      {{#if isCordova}}
-        {{> authOverlay}}
-      {{else}}
-        {{> webHome}}
-      {{/if}}
-    {{/if}}
+  {{/unless}}
   </div>
 </template>
