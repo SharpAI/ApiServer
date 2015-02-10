@@ -7,6 +7,7 @@ if Meteor.isClient
       Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     )
   Template.showPosts.rendered=->
+    $('.mainImage').css('min-height',$(window).height()*0.55)
     Session.set 'isSharing',false
     #`global_disable_longpress = true`
     postContent = Session.get("postContent")
