@@ -14,5 +14,4 @@ if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->
         Meteor.subscribe("publicPosts",this.params._id);
-      loadingTemplate: 'loadingPost'
     }
