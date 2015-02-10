@@ -9,3 +9,4 @@ iron:router
 coffeescript
 jquery
 less
+meteorhacks:fast-render
