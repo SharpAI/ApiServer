@@ -15,12 +15,6 @@ if Meteor.isClient
       browseTimes = postContent.browse + 1
     else
       browseTimes = 1
-    if not Meteor.isCordova
-      favicon = document.createElement('link');
-      favicon.id = 'icon';
-      favicon.rel = 'icon';
-      favicon.href = postContent.mainImage;
-      document.head.appendChild(favicon);
     Meteor.setTimeout ()->
         Posts.update(
           {_id:postContent._id},
@@ -37,8 +31,7 @@ if Meteor.isClient
     )
 
     $('.showPosts').css('min-height',$(window).height())
-    window.title = this.title + ':' + this.addontitle
-    console.log("show post rev 2 "+window.title)
+    #document.title = this.title + ':' + this.addontitle
     base_size=($( window ).width()/6 - 10);
 
     test = $("#test");
@@ -98,13 +91,9 @@ if Meteor.isClient
     time_diff: (created)->
       GetTime0(new Date() - created)
     isMyPost:->
-      if Posts.find({_id:this._id}).count() > 0
-        post = Posts.find({_id:this._id}).fetch()[0]
-        if post.owner is Meteor.userId()
-          return true
-      return false
+      false
     isMobile:->
-      Meteor.isCordova
+      false
   Template.showPosts.events
 
     'click .imgdiv': (e)->
