@@ -173,13 +173,22 @@ if Meteor.isClient
 
       window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等")
 
+      height = $('.showPosts').height()
+      $('#blur_overlay').css('height',height)
+      $('#blur_overlay').css('z-index', 10000)
+
+
       downloadFromBCS(this.mainImage, (result)->
+        $('#blur_overlay').css('height','')
+        $('#blur_overlay').css('z-index', -1)
         if result is null
           console.log("downloadFromBCS failed!")
           PUB.toast("准备故事的主题图片失败，请稍后尝试。");
           return
         console.log("downloadFromBCS suc! Prepare socialsharing...")
         window.plugins.socialsharing.share(title+':'+addontitle+'(来自 故事贴)', null, result, url);
+
+
       )
     'click .imgdiv': (e)->
       images = []

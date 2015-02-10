@@ -3,6 +3,7 @@
     {{>loadingPost}}
   {{else}}
     <div class="showPosts" style="padding-bottom:42px;">
+      <div id="blur_overlay" style="position: absolute; opacity: 0.6; z-index: 1; width:100%; background-color:white;"></div>
       <div class="head">
         {{#if isMobile}}
           <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
