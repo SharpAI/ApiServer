@@ -139,3 +139,31 @@ if Meteor.isClient
         Session.set('is_people', false)
     'click .back': (event)->
        history.back()
+    'click .delFollow':(e)->
+      FollowerId = Follower.findOne({
+                     userId: Meteor.userId()
+                     followerId: @_id
+                 })._id
+      Follower.remove(FollowerId)
+    'click .addFollow':(e)->
+      if Meteor.user().profile.fullname
+         username = Meteor.user().profile.fullname
+      else
+         username = Meteor.user().username
+      if @profile.fullname
+         followername = @profile.fullname
+      else
+         followername = @username
+      Follower.insert {
+        userId: Meteor.userId()
+        #这里存放fullname
+        userName: username
+        userIcon: Meteor.user().profile.icon
+        userDesc: Meteor.user().profile.desc
+        followerId: @_id
+        #这里存放fullname
+        followerName: followername
+        followerIcon: @profile.icon
+        followerDesc: @desc
+        createAt: new Date()
+    }
