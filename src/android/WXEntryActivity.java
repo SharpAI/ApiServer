@@ -1,4 +1,4 @@
-package net.sourceforge.simcpux.wxapi;
+package org.hotshare.everywhere.wxapi;
 
 import com.tencent.mm.sdk.openapi.BaseReq;
 import com.tencent.mm.sdk.openapi.BaseResp;
