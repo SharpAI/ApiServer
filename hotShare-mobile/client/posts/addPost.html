@@ -31,7 +31,10 @@
         {{#if mainImage}}
           <div id="wrapper">
             <div class="mainImage" id="{{mainImage._id}}">
-              <img class="scale item" src="{{mainImage.imgUrl}}" draggable="false" >
+              <img id="mainImage{{mainImage._id}}" class="scale item" src="{{mainImage.imgUrl}}" draggable="false" style="position:absolute;{{mainImage.style}}" >
+              <div id="crop{{mainImage._id}}" class="crop" style="z-index: 1; display:none">
+                <div id="default{{mainImage._id}}" class="default"></div>
+              </div>
               <header>
                 <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';">{{draftTitles.title}}</textarea>
                 <textarea id="addontitle" name="textarea" class="addontitle" placeholder="副标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';">{{draftTitles.addontitle}}</textarea>
@@ -72,7 +75,7 @@
       </div>
       <div id="mainImage-toolbar-options" style='visibility: hidden;'>
           <a href="#" id='modify'><i class="fa fa-pencil"></i></a>
-<!--                  <a href="#" id='crop'><i class="fa fa-crop"></i></a>-->
+          <a href="#" id='crop'><i class="fa fa-crop"></i></a>
 
       </div>
       <div id="image-toolbar-options" style='visibility: hidden;'>
