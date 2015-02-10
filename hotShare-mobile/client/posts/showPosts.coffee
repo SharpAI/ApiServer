@@ -170,16 +170,16 @@ if Meteor.isClient
       title = this.title;
       addontitle = this.addontitle;
       console.log "socialsharing: this.mainImage="+this.mainImage
-      Session.set 'isSharing',true
+
+      window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等")
+
       downloadFromBCS(this.mainImage, (result)->
         if result is null
           console.log("downloadFromBCS failed!")
           PUB.toast("准备故事的主题图片失败，请稍后尝试。");
-          Session.set 'isSharing',false
           return
         console.log("downloadFromBCS suc! Prepare socialsharing...")
         window.plugins.socialsharing.share(title+':'+addontitle+'(来自 故事贴)', null, result, url);
-        Session.set 'isSharing',false
       )
     'click .imgdiv': (e)->
       images = []
