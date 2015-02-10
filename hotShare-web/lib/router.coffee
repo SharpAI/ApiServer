@@ -9,9 +9,11 @@ if Meteor.isClient
         Session.set("DocumentTitle",post.title + ':' + post.addontitle);
         this.render 'showPosts', {data: post}
         Session.set 'channel','posts/'+this.params._id
+      fastRender: true
     }
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->
         Meteor.subscribe("publicPosts",this.params._id);
+      fastRender: true
     }
