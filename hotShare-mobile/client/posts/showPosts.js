@@ -9,8 +9,16 @@ Template.showPosts.events({
       var title = this.title;
       var addontitle = this.addontitle;
       window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等")
+
+      height = $('.showPosts').height()
+      $('#blur_overlay').css('height',height)
+      $('#blur_overlay').css('z-index', 10000)
+
       downloadFromBCS(this.mainImage, function(result){
         console.log("url = "+url);
+        $('#blur_overlay').css('height','')
+        $('#blur_overlay').css('z-index', -1)
+
         if (result) {
             WeChat.share({
                 title: title,
@@ -24,7 +32,6 @@ Template.showPosts.events({
                 // 分享失败
                 console.log(reason);
                 PUB.toast("无法获取故事标题图片，请稍后重试！");
-
               });
         } else {
             PUB.toast("无法获取故事标题图片，请稍后重试！");
@@ -41,7 +48,14 @@ Template.showPosts.events({
       var title = this.title;
       var addontitle = this.addontitle;
       window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等")
+      height = $('.showPosts').height()
+      $('#blur_overlay').css('height',height)
+      $('#blur_overlay').css('z-index', 10000)
+
       downloadFromBCS(this.mainImage, function(result){
+
+        $('#blur_overlay').css('height','')
+        $('#blur_overlay').css('z-index', -1)
         if (result) {
           WeChat.share({
             title: title,
@@ -54,6 +68,7 @@ Template.showPosts.events({
             // 分享失败
             PUB.toast("无法获取故事标题图片，请稍后重试！");
             console.log(reason);
+
           });
         } else {
             PUB.toast("无法获取故事标题图片，请稍后重试！");
