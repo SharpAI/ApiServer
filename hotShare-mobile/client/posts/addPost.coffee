@@ -73,8 +73,8 @@ if Meteor.isClient
         $('#blur_overlay').css('z-index', 4)
 
         $(textarea).focus(()->
-          $(".head").css 'position','absolute'
-          Session.set('textareaFocused', true)
+          #$(".head").css 'position','absolute'
+          #Session.set('textareaFocused', true)
           console.log("focus get")
         )
         $(textarea).on('blur', 'input, textarea', ()->
@@ -85,12 +85,12 @@ if Meteor.isClient
         $(textarea).focus()
 
         $(textarea).focusout(()->
-          $(".head").css 'position','fixed'
+          #$(".head").css 'position','fixed'
           console.log("focusout")
           $(this).attr("readOnly", true)
           `global_disable_longpress = false`
           `global_toolbar_hidden = false`
-          Session.set('textareaFocused', false)
+          #Session.set('textareaFocused', false)
 
           $('#blur_overlay').css('height','')
           $(node).css('z-index', '')
@@ -394,6 +394,12 @@ if Meteor.isClient
           Drafts.find({type:'text'}).fetch()[i]
 
   Template.addPost.events
+    'focus [name=textarea]':->
+      Session.set('textareaFocused', true)
+      $(".head").css 'position','absolute'
+    'blur [name=textarea]':->
+      Session.set('textareaFocused', false)
+      $(".head").css 'position','fixed'
     'change [name=textarea]' : (e,cxt)->
       console.log("textarea change "+ e.currentTarget.value)
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
@@ -490,7 +496,10 @@ if Meteor.isClient
         document.getElementById('default'+cropDraftId).innerHTML=""
       ,120
       $('#'+cropDraftId).css('z-index',"2")
-      Session.set 'isReviewMode','0'
+      if Posts.find({_id:Drafts.find().fetch()[0]._id}).count() > 0
+        Session.set 'isReviewMode','2'
+      else
+        Session.set 'isReviewMode','0'
       
     'click #saveDraft':->
         layout = JSON.stringify(gridster.serialize())
