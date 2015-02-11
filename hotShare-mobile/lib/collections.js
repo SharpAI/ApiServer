@@ -294,26 +294,28 @@ if(Meteor.isServer){
 }
 
 if(Meteor.isClient){
-  Meteor.subscribe("topicposts");
-  Meteor.subscribe("topics");
-  Meteor.subscribe("posts");
-  /*Meteor.subscribe("drafts");*/
-  Meteor.subscribe("saveddrafts");
-  Meteor.subscribe("feeds");
-  Meteor.subscribe("follows");
-  Meteor.subscribe("follower");
+  Deps.autorun(function() {
+    if (Meteor.user()) {
+      Meteor.subscribe("topicposts");
+      Meteor.subscribe("topics");
+      Meteor.subscribe("posts");
+      /*Meteor.subscribe("drafts");*/
+      Meteor.subscribe("saveddrafts");
+      Meteor.subscribe("feeds");
+      Meteor.subscribe("follows");
+      Meteor.subscribe("follower");
+      var options = {
+        keepHistory: 1000 * 60 * 5,
+        localSearch: true
+      };
+      var fields = ['username', 'profile.fullname'];
+      FollowUsersSearch = new SearchSource('followusers', fields, options);
+    }
+  });
   Tracker.autorun(function () {
     if(Session.get("postContent"))
       Meteor.subscribe("comment",Session.get("postContent")._id);
   });
-
-  var options = {
-    keepHistory: 1000 * 60 * 5,
-    localSearch: true
-  };
-  var fields = ['username', 'profile.fullname'];
-  FollowUsersSearch = new SearchSource('followusers', fields, options);
-
   var FOLLOWPOSTS_ITEMS_INCREMENT = 10;
   Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
   Deps.autorun(function() {

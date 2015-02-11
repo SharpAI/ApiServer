@@ -192,14 +192,18 @@ if(Meteor.isServer){
 }
 
 if(Meteor.isClient){
-  Meteor.subscribe("topicposts");
-  Meteor.subscribe("topics");
   Meteor.subscribe("posts");
-  /*Meteor.subscribe("drafts");*/
-  Meteor.subscribe("saveddrafts");
-  Meteor.subscribe("feeds");
-  Meteor.subscribe("follows");
-  Meteor.subscribe("follower");
+  Deps.autorun(function() {
+    if (Meteor.user()) {
+      Meteor.subscribe("topicposts");
+      Meteor.subscribe("topics");
+      /*Meteor.subscribe("drafts");*/
+      Meteor.subscribe("saveddrafts");
+      Meteor.subscribe("feeds");
+      Meteor.subscribe("follows");
+      Meteor.subscribe("follower");
+    }
+  });
   Tracker.autorun(function () {
     if(Session.get("postContent"))
       Meteor.subscribe("comment",Session.get("postContent")._id);
