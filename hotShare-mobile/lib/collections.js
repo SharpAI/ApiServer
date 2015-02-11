@@ -35,7 +35,7 @@ if(Meteor.isServer){
         return Feeds.find({followby: this.userId});
   });
   Meteor.publish("follows", function() {
-        return Follows.find({});
+        return Follows.find({}, {sort: { index: 1 }} );
   });
   Meteor.publish("follower", function() {
         return Follower.find({$or:[{userId:this.userId},{followerId:this.userId}]});
