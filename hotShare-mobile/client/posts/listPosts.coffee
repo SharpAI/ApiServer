@@ -32,11 +32,11 @@ if Meteor.isClient
       !(FollowPosts.find().count() < Session.get("followpostsitemsLimit"))
   Template.listPosts.events
     'click .mainImage': (event)->
-      $('.home').addClass('animated fadeOutLeft');
+      $('.home').addClass('animated ' + animateOutLowerEffect);
       postId = this.postId
       Meteor.setTimeout ()->
         PUB.page '/posts/'+postId
-      ,900
+      ,animatePageTrasitionTimeout
       console.log this.postId
       Session.set 'FollowPostsId',this._id
       console.log this._id

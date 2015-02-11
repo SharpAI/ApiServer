@@ -41,10 +41,10 @@ if Meteor.isClient
       Follower.find({"userId":Meteor.userId()}).count()
   Template.user.events
     'click #follow': (event)->
-      $('.user').addClass('animated fadeOutLeft');
+      $('.user').addClass('animated ' + animateOutLowerEffect);
       Meteor.setTimeout ()->
         Router.go '/searchFollow'
-      ,900
+      ,animatePageTrasitionTimeout
     'click .icon':(e)->
       val = e.currentTarget.innerHTML
       uploadFile (result)->
@@ -58,24 +58,24 @@ if Meteor.isClient
         return
       return
     'click #setting' :->
-      $('.user').addClass('animated fadeOutLeft');
+      $('.user').addClass('animated ' + animateOutLowerEffect);
       Meteor.setTimeout ()->
         Router.go '/dashboard'
-      ,900
+      ,animatePageTrasitionTimeout
     'click .follower' :->
       #true 列出偶像列表，false 列出粉丝列表
       Session.set 'followers_tag', false
-      $('.user').addClass('animated fadeOutLeft');
+      $('.user').addClass('animated ' + animateOutLowerEffect);
       Meteor.setTimeout ()->
         Router.go '/followers'
-      ,900
+      ,animatePageTrasitionTimeout
     'click .following' :->
       #true 列出偶像列表，false 列出粉丝列表
       Session.set 'followers_tag', true
-      $('.user').addClass('animated fadeOutLeft');
+      $('.user').addClass('animated ' + animateOutLowerEffect);
       Meteor.setTimeout ()->
         Router.go '/followers'
-      ,900
+      ,animatePageTrasitionTimeout
     'click .draftImages ul li':(e)->
       #Clear draft first
       Drafts
@@ -88,24 +88,24 @@ if Meteor.isClient
       for i in [0..(pub.length-1)]
           Drafts.insert(pub[i])
       Session.set 'isReviewMode','1'
-      $('.user').addClass('animated fadeOutLeft');
+      $('.user').addClass('animated ' + animateOutLowerEffect);
       Meteor.setTimeout ()->
         PUB.page('/add')
-      ,900
+      ,animatePageTrasitionTimeout
       
     'click .draftRight':(e)->
-      $('.user').addClass('animated fadeOutLeft');
+      $('.user').addClass('animated ' + animateOutLowerEffect);
       Meteor.setTimeout ()->
         PUB.page('/allDrafts')
-      ,900
+      ,animatePageTrasitionTimeout
     'click .postImages ul li':(e)->
       postId = e.currentTarget.id
-      $('.user').addClass('animated fadeOutLeft');
+      $('.user').addClass('animated ' + animateOutLowerEffect);
       Meteor.setTimeout ()->
         Router.go '/posts/'+postId
-      ,900
+      ,animatePageTrasitionTimeout
     'click .postRight':(e)->
-      $('.user').addClass('animated fadeOutLeft');
+      $('.user').addClass('animated ' + animateOutLowerEffect);
       Meteor.setTimeout ()->
         PUB.page('/myPosts')
-      ,900
+      ,animatePageTrasitionTimeout

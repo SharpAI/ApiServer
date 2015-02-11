@@ -8,15 +8,15 @@ if Meteor.isClient
       #  Posts.find({owner:Meteor.userId()}, {sort: {createdAt: -1}}).fetch()[i]
   Template.myPosts.events
     'click .back':(event)->
-        $('.home').addClass('animated fadeOutRight');
+        $('.home').addClass('animated ' + animateOutUpperEffect);
         Meteor.setTimeout ()->
           PUB.back()
-        ,900
+        ,animatePageTrasitionTimeout
     'click img':(e)->
         postId = this._id
-        $('.home').addClass('animated fadeOutLeft');
+        $('.home').addClass('animated ' + animateOutUpperEffect);
         Meteor.setTimeout ()->
           PUB.page '/posts/'+postId
-        ,900
+        ,animatePageTrasitionTimeout
         Session.set 'FollowPostsId',this._id
         return

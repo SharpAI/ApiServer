@@ -438,10 +438,10 @@ if Meteor.isClient
         .find {owner: Meteor.userId()}
         .forEach (drafts)->
           Drafts.remove drafts._id
-      $('.addPost').addClass('animated fadeOutRight');
+      $('.addPost').addClass('animated ' + animateOutUpperEffect);
       Meteor.setTimeout ()->
         PUB.back()
-      ,900
+      ,animatePageTrasitionTimeout
       return
     'click #edit':(event)->
       Session.set 'isReviewMode','0'
@@ -460,10 +460,10 @@ if Meteor.isClient
           .find {owner: Meteor.userId()}
           .forEach (drafts)->
             Drafts.remove drafts._id
-        $('.addPost').addClass('animated fadeOutRight');
+        $('.addPost').addClass('animated ' + animateOutUpperEffect);
         Meteor.setTimeout ()->
           PUB.back()
-        ,900
+        ,animatePageTrasitionTimeout
         return
       , '删除草稿', ['取消','确定']);
 
@@ -480,10 +480,10 @@ if Meteor.isClient
             .find {owner: Meteor.userId()}
             .forEach (drafts)->
               Drafts.remove drafts._id
-        $('.addPost').addClass('animated fadeOutRight');
+        $('.addPost').addClass('animated ' + animateOutUpperEffect);
         Meteor.setTimeout ()->
           PUB.back()
-        ,900
+        ,animatePageTrasitionTimeout
         return
       catch
         history.back()

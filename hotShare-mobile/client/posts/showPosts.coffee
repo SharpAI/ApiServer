@@ -116,10 +116,10 @@ if Meteor.isClient
       #  console.log "showPosts, tmpPage = "+JSON.stringify(tmpPage)
       #history.back()
 #      $('.showPosts').fadeOut 300
-      $('.showPosts').addClass('animated fadeOutRight');
+      $('.showPosts').addClass('animated ' + animateOutUpperEffect);
       Meteor.setTimeout ()->
         PUB.back()
-      ,900
+      ,animatePageTrasitionTimeout
     'click #edit': (event)->
       #Clear draft first
       Drafts
