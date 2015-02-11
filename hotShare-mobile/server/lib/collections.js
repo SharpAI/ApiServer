@@ -102,7 +102,8 @@ Meteor.startup(function(){
            desc:"留下美好的瞬间！就看我的！",
            share1:'/follows/11.jpg',
            share2:'/follows/12.jpg',
-           share3:'/follows/13.jpg'
+           share3:'/follows/13.jpg',
+           index:1
        });
 //加偶像的3个Post
        postId = Posts.insert({
@@ -287,7 +288,8 @@ Meteor.startup(function(){
            desc:"喜欢上了摄影，于是改变了自己的生活。",
            share1:'/follows/21.jpg',
            share2:'/follows/22.jpg',
-           share3:'/follows/23.jpg'
+           share3:'/follows/23.jpg',
+           index:2
        });
        postId = Posts.insert({
           pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/212.jpg',data_row:1,data_col:1,data_sizex:6,data_sizey:4},
@@ -455,7 +457,8 @@ Meteor.startup(function(){
            desc:"在感受中－－拍摄； 在拍摄中----感悟------",
            share1:'/follows/31.jpg',
            share2:'/follows/32.jpg',
-           share3:'/follows/33.jpg'
+           share3:'/follows/33.jpg',
+           index:3
        });
        postId = Posts.insert({
           pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/312.jpg',data_row:1,data_col:1,data_sizex:6,data_sizey:4},
@@ -609,7 +612,8 @@ Meteor.startup(function(){
            desc:"用第三只眼睛看这五彩的世界.",
            share1:'/follows/41.jpg',
            share2:'/follows/42.jpg',
-           share3:'/follows/43.jpg'
+           share3:'/follows/43.jpg',
+           index:4
        });
        postId = Posts.insert({
           pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/412.jpg',data_row:1,data_col:1,data_sizex:6,data_sizey:4},
@@ -761,7 +765,8 @@ Meteor.startup(function(){
            desc:"用心灵感受，用镜头记忆！",
            share1:'/follows/51.jpg',
            share2:'/follows/52.jpg',
-           share3:'/follows/53.jpg'
+           share3:'/follows/53.jpg',
+           index:5
        });
        postId = Posts.insert({
           pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/512.jpg',data_row:1,data_col:1,data_sizex:6,data_sizey:4},
@@ -857,7 +862,8 @@ Meteor.startup(function(){
            desc:"光影魅力无限 实话实说是我的个性 不断追求突破自我就是进步！",
            share1:'/follows/61.jpg',
            share2:'/follows/62.jpg',
-           share3:'/follows/63.jpg'
+           share3:'/follows/63.jpg',
+           index:6
        });
        postId = Posts.insert({
           pub: [{isImage:true,imgUrl:'http://www.ss750.cn/follows/612.jpg',data_row:1,data_col:1,data_sizex:6,data_sizey:4},
