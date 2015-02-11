@@ -4,22 +4,7 @@
   {{else}}
     <div class="showPosts" style="padding-bottom:42px;">
       <div id="blur_overlay" style="position: absolute; opacity: 0.5; z-index: 1; width:100%; background-color:white;">
-          <div class='spinner-overlay'>
-              <div class='spinner center'>
-                  <div class='spinner-blade'></div>
-                  <div class='spinner-blade'></div>
-                  <div class='spinner-blade'></div>
-                  <div class='spinner-blade'></div>
-                  <div class='spinner-blade'></div>
-                  <div class='spinner-blade'></div>
-                  <div class='spinner-blade'></div>
-                  <div class='spinner-blade'></div>
-                  <div class='spinner-blade'></div>
-                  <div class='spinner-blade'></div>
-                  <div class='spinner-blade'></div>
-                  <div class='spinner-blade'></div>
-              </div>
-          </div>
+          {{> spinner}}
       </div>
       <div class="head">
         {{#if isMobile}}
