@@ -244,13 +244,15 @@ if Meteor.isClient
     'click .commentList':->
       $('.commentBar').fadeIn 300
       $('#showComment').css('display',"block")
-      
-      $('.showPosts').css('height',$(window).height())
+      Meteor.setTimeout ()->
+        $('.showPosts').css('height',$(window).height())
+      ,310
     'click .comment':->
       $('.commentBar').fadeIn 300
       $('#showComment').css('display',"block")
-      
-      $('.showPosts').css('height',$(window).height())
+      Meteor.setTimeout ()->
+        $('.showPosts').css('height',$(window).height())
+      ,310
     'click .heart':->
       if Meteor.user()
         postId = Session.get("postContent")._id
