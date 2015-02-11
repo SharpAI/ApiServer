@@ -41,7 +41,10 @@ if Meteor.isClient
       Follower.find({"userId":Meteor.userId()}).count()
   Template.user.events
     'click #follow': (event)->
-       Router.go '/searchFollow'
+      $('.user').addClass('animated fadeOutLeft');
+      Meteor.setTimeout ()->
+        Router.go '/searchFollow'
+      ,900
     'click .icon':(e)->
       val = e.currentTarget.innerHTML
       uploadFile (result)->
@@ -55,15 +58,24 @@ if Meteor.isClient
         return
       return
     'click #setting' :->
-      Router.go '/dashboard'
+      $('.user').addClass('animated fadeOutLeft');
+      Meteor.setTimeout ()->
+        Router.go '/dashboard'
+      ,900
     'click .follower' :->
       #true 列出偶像列表，false 列出粉丝列表
       Session.set 'followers_tag', false
-      Router.go '/followers'
+      $('.user').addClass('animated fadeOutLeft');
+      Meteor.setTimeout ()->
+        Router.go '/followers'
+      ,900
     'click .following' :->
       #true 列出偶像列表，false 列出粉丝列表
       Session.set 'followers_tag', true
-      Router.go '/followers'
+      $('.user').addClass('animated fadeOutLeft');
+      Meteor.setTimeout ()->
+        Router.go '/followers'
+      ,900
     'click .draftImages ul li':(e)->
       #Clear draft first
       Drafts
@@ -76,11 +88,24 @@ if Meteor.isClient
       for i in [0..(pub.length-1)]
           Drafts.insert(pub[i])
       Session.set 'isReviewMode','1'
-      PUB.page('/add')
+      $('.user').addClass('animated fadeOutLeft');
+      Meteor.setTimeout ()->
+        PUB.page('/add')
+      ,900
+      
     'click .draftRight':(e)->
-      PUB.page('/allDrafts')
+      $('.user').addClass('animated fadeOutLeft');
+      Meteor.setTimeout ()->
+        PUB.page('/allDrafts')
+      ,900
     'click .postImages ul li':(e)->
-      Router.go '/posts/'+e.currentTarget.id
+      postId = e.currentTarget.id
+      $('.user').addClass('animated fadeOutLeft');
+      Meteor.setTimeout ()->
+        Router.go '/posts/'+postId
+      ,900
     'click .postRight':(e)->
-      PUB.page('/myPosts')
-
+      $('.user').addClass('animated fadeOutLeft');
+      Meteor.setTimeout ()->
+        PUB.page('/myPosts')
+      ,900

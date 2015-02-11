@@ -264,7 +264,6 @@ if Meteor.isClient
               $('#isImage'+node.id).css('display',"none")
               $('#crop'+node.id).css('display',"block")
               $('#'+node.id).css('z-index',"12")
-#              if $("#default"+node.id+" .cropMain").length is 0
               image = Drafts.findOne({_id:node.id}).imgUrl
               console.log "imgUrl is "+image
               imgWidth = $(node).width()
@@ -282,22 +281,6 @@ if Meteor.isClient
                 mask: false,
                 zoom: {steps: 0.01,min: 1,max: 5},
               }
-#              else
-#                return
-            ###
-            else if buttonClicked.id == "crop"
-
-             imgWidth = $(node).width()
-             imgHeight = $(node).height()
-             $('#'+node.id+'Img').cropbox({
-               width: imgWidth,
-               height: imgHeight
-             }).on('cropbox', (e, data)->
-               console.log('crop window: ' + data)
-             )
-
-            
-            ###
             return
       return
 
@@ -455,7 +438,10 @@ if Meteor.isClient
         .find {owner: Meteor.userId()}
         .forEach (drafts)->
           Drafts.remove drafts._id
-      PUB.back()
+      $('.addPost').addClass('animated fadeOutRight');
+      Meteor.setTimeout ()->
+        PUB.back()
+      ,900
       return
     'click #edit':(event)->
       Session.set 'isReviewMode','0'
@@ -474,7 +460,10 @@ if Meteor.isClient
           .find {owner: Meteor.userId()}
           .forEach (drafts)->
             Drafts.remove drafts._id
-        PUB.back()
+        $('.addPost').addClass('animated fadeOutRight');
+        Meteor.setTimeout ()->
+          PUB.back()
+        ,900
         return
       , '删除草稿', ['取消','确定']);
 
@@ -491,7 +480,10 @@ if Meteor.isClient
             .find {owner: Meteor.userId()}
             .forEach (drafts)->
               Drafts.remove drafts._id
-        PUB.back()
+        $('.addPost').addClass('animated fadeOutRight');
+        Meteor.setTimeout ()->
+          PUB.back()
+        ,900
         return
       catch
         history.back()
