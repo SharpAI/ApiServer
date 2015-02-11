@@ -50,7 +50,7 @@ if Meteor.isClient
       uploadFile (result)->
         e.currentTarget.innerHTML = '<span class="fa fa-spinner fa-spin"></span>'
         if result
-          e.currentTarget.innerHTML = '<img src="'+result+'"  width="60" height="60">'
+          e.currentTarget.innerHTML = '<img src="'+result+'"  width="80" height="80">'
           Meteor.users.update Meteor.userId(),{$set:{'profile.icon':result}}
           console.log '头像上传成功：' + result
         else
