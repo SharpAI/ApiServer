@@ -8,7 +8,8 @@ if Meteor.isClient
       Comment.find({postId:Session.get("postContent")._id}, {sort: {createdAt: -1}})
   Template.commentBar.events
     'click #finish':->
-      $('#showComment').css('display',"none")
+#      $('#showComment').css('display',"none")
+      $('.commentBar').fadeOut 300
       $('.showPosts').css('height',"auto")
     "click .submit":->
       $("#new-reply").submit()

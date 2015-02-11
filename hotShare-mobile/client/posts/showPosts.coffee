@@ -115,7 +115,10 @@ if Meteor.isClient
       #for tmpPage in history
       #  console.log "showPosts, tmpPage = "+JSON.stringify(tmpPage)
       #history.back()
-      PUB.back()
+      $('.showPosts').fadeOut 400
+      Meteor.setTimeout ()->
+        PUB.back()
+      ,300
     'click #edit': (event)->
       #Clear draft first
       Drafts
@@ -238,10 +241,14 @@ if Meteor.isClient
       
   Template.postFooter.events
     'click .commentList':->
+      $('.commentBar').fadeIn 300
       $('#showComment').css('display',"block")
+      
       $('.showPosts').css('height',$(window).height())
     'click .comment':->
+      $('.commentBar').fadeIn 300
       $('#showComment').css('display',"block")
+      
       $('.showPosts').css('height',$(window).height())
     'click .heart':->
       if Meteor.user()
