@@ -130,10 +130,11 @@ if Meteor.isClient
       draft0 = {_id:this._id, type:'image', isImage:true, owner: Meteor.userId(), imgUrl:this.mainImage, filename:this.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0}
       Drafts.insert(draft0)
       pub = this.pub;
-      for i in [0..(pub.length-1)]
-        #if i is 0
-        #  pub[0].imgUrl = this.mainImage
-        Drafts.insert(pub[i])
+      if pub.length > 0
+        for i in [0..(pub.length-1)]
+          #if i is 0
+          #  pub[0].imgUrl = this.mainImage
+          Drafts.insert(pub[i])
       Session.set 'isReviewMode','2'
       PUB.page('/add')
     'click #unpublish': (event)->
