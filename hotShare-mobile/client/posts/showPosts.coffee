@@ -114,6 +114,7 @@ if Meteor.isClient
       #history.back()
 #      $('.showPosts').fadeOut 300
       $('.showPosts').addClass('animated ' + animateOutUpperEffect);
+      $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect);
       Meteor.setTimeout ()->
         PUB.back()
       ,animatePageTrasitionTimeout
