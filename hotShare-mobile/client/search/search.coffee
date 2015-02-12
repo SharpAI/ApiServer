@@ -103,8 +103,12 @@ if Meteor.isClient
         true
       else
         false
+    isSelf:(follow)->
+      if follow.userId is Meteor.userId()
+        true
+      else
+        false
     notSelf:(follow)->
-      fcount = Follower.find({"userId":Meteor.userId(),"followerId":follow.userId}).count()
       if follow._id is Meteor.userId()
         false
       else
@@ -127,7 +131,6 @@ if Meteor.isClient
       else
         false
     notSelf:(follow)->
-      fcount = Follower.find({"userId":Meteor.userId(),"followerId":follow.userId}).count()
       if follow._id is Meteor.userId()
         false
       else

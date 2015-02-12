@@ -136,11 +136,13 @@
           <a href="" id="{{userId}}" class="contentList">
           <img class="icon" src="{{icon}}" width='30' height='30'>
           <div class="userName">{{fullname}}</div>
+          {{#unless isSelf this}}
           {{#if isFollowed this}}
             <div id="{{userId}}" class="follow del"><span class="fa fa-check"></span><i class="fa fa-user"></i></div>
           {{else}}
             <div id="{{userId}}" class="follow add"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
           {{/if}}
+          {{/unless}}
           <div class="desc">{{desc}}</div>
           </a>
           <div class="line">
