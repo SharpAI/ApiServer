@@ -12,7 +12,7 @@ if Meteor.isClient
           .forEach (saveddrafts)->
             SavedDrafts.remove saveddrafts._id
         return
-    'click img':(e)->
+    'click .mainImage':(e)->
       #Clear draft first
       Drafts
         .find {owner: Meteor.userId()}

@@ -12,7 +12,7 @@ if Meteor.isClient
         Meteor.setTimeout ()->
           PUB.back()
         ,animatePageTrasitionTimeout
-    'click img':(e)->
+    'click .mainImage':(e)->
         postId = this._id
         $('.home').addClass('animated ' + animateOutUpperEffect);
         Meteor.setTimeout ()->
