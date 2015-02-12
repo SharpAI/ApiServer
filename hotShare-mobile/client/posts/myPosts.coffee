@@ -6,6 +6,11 @@ if Meteor.isClient
       Posts.find({owner:Meteor.userId()}, {sort: {createdAt: -1}})
       #for i in [0..Posts.find({owner:Meteor.userId()}, {sort: {createdAt: -1}}).count()-1]
       #  Posts.find({owner:Meteor.userId()}, {sort: {createdAt: -1}}).fetch()[i]
+    getBrowseCount:(browse)->
+      if (browse)
+        browse
+      else
+        0
   Template.myPosts.events
     'click .back':(event)->
         $('.home').addClass('animated ' + animateOutUpperEffect);
