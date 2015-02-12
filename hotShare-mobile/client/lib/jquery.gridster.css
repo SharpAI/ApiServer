@@ -71,7 +71,7 @@
     height: 40px;
     bottom: -8px;
     right: -8px;
-    background-image: url('/img/layer_resize.png');
+    /*background-image: url('/img/layer_resize.png'); */
     background-position: top left;
     background-repeat: no-repeat;
     cursor: se-resize;
