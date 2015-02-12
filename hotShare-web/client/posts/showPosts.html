@@ -7,7 +7,9 @@
         <div class="user">
           <img class="icon" src="{{ownerIcon}}" width='25' height='25'>
           <span class="name">{{ownerName}}</span>
-          <span class="createAt">{{time_diff createdAt}}</span>
+          <div class="createAtBox">
+            <div class="createAt">{{time_diff createdAt}}</div>
+          </div>
         </div>
 
         {{#if isMobile}}
@@ -34,7 +36,7 @@
         <div id="wrapper">
           <div class="mainImage" id="{{_id}}">
             {{>spinner}}
-            <img id="wx-img" class="scale item lazy" data-original="{{mainImage}}" draggable="false" >
+            <img id="wx-img" class="scale item lazy" data-original="{{mainImage}}" draggable="false" style="position:absolute;{{style}}" >
             <header>
               <h1 id="wx-title" class="title">{{title}}</h1>
               <h4 id="wx-con" class="addontitle">{{addontitle}}</h4>

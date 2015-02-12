@@ -7,6 +7,7 @@ if Meteor.isClient
       Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     )
   Template.showPosts.rendered=->
+    $('.mainImage').css('min-height',$(window).height()*0.55)
     #`global_disable_longpress = true`
     postContent = Session.get("postContent")
     browseTimes = 0
@@ -61,6 +62,10 @@ if Meteor.isClient
         $(itemElem).attr("data-sizey", sizey)
         gridster.resize_widget($(itemElem), sizex,sizey)
     )
+
+
+
+
     window.lastScroll = 0;
     $(window).scroll (event)->
       #Sets the current scroll position
