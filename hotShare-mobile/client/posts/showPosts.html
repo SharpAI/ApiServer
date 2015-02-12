@@ -1,7 +1,4 @@
 <template name="showPosts">
-  {{#if isSharing}}
-    {{>loadingPost}}
-  {{else}}
     <div class="showPosts" style="padding-bottom:42px;">
       <div id="blur_overlay" style="position: absolute; opacity: 0.5; z-index: 1; width:100%; background-color:white;">
           {{> spinner}}
@@ -83,7 +80,6 @@
       {{> commentBar}}
       </div>
     {{/if}}
-  {{/if}}
 </template>
 <template name="postFooter">
   <div id="postFooter" class="showPostsFooter">

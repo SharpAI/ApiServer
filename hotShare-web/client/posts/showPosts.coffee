@@ -7,7 +7,6 @@ if Meteor.isClient
       Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     )
   Template.showPosts.rendered=->
-    Session.set 'isSharing',false
     #`global_disable_longpress = true`
     postContent = Session.get("postContent")
     browseTimes = 0
@@ -86,8 +85,6 @@ if Meteor.isClient
       window.lastScroll = st
 
   Template.showPosts.helpers
-    isSharing: ()->
-      Session.get 'isSharing'
     time_diff: (created)->
       GetTime0(new Date() - created)
     isMyPost:->
