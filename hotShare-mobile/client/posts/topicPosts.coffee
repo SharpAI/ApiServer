@@ -5,6 +5,11 @@ if Meteor.isClient
   Template.topicPosts.helpers
     TopicTitle:()->
       Session.get('topicTitle')
+    getBrowseCount:(browse)->
+      if (browse)
+        browse
+      else
+        0
     Posts:()->
       TopicPosts.find({topicId:Session.get('topicId')}, {sort: {createdAt: -1}})
   Template.topicPosts.events
