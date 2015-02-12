@@ -133,7 +133,9 @@ if Meteor.isClient
           #  pub[0].imgUrl = this.mainImage
           Drafts.insert(pub[i])
       Session.set 'isReviewMode','2'
-      PUB.page('/add')
+      #Don't push showPost page into history. Because when save posted story, it will use Router.go to access published story directly. But in history, there is a duplicate record pointing to this published story.
+      #PUB.page('/add')
+      Router.go('/add')
     'click #unpublish': (event)->
       self = this
       navigator.notification.confirm('你确定取消分享吗？', (r)->
