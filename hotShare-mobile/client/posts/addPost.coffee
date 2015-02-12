@@ -60,7 +60,10 @@ if Meteor.isClient
               mask: false,
               zoom: {steps: 0.01,min: 1,max: 5},
             }
-
+            Meteor.setTimeout ->
+              Session.set 'imgSizeW',$("#default"+event.currentTarget.id+" .crop-img").width()
+              Session.set 'imgSizeH',$("#default"+event.currentTarget.id+" .crop-img").height()
+            ,200
 
     #init
     this.find('.content')._uihooks = {
@@ -257,7 +260,6 @@ if Meteor.isClient
               Drafts.remove node.id
             else if buttonClicked.id == "crop"
               console.log("crop "+ node.id)
-              
               Session.set 'isReviewMode','3'
               Session.set 'cropDraftId',node.id
 
@@ -281,6 +283,10 @@ if Meteor.isClient
                 mask: false,
                 zoom: {steps: 0.01,min: 1,max: 5},
               }
+              Meteor.setTimeout ->
+                Session.set 'imgSizeW',$("#default"+node.id+" .crop-img").width()
+                Session.set 'imgSizeH',$("#default"+node.id+" .crop-img").height()
+              ,200
             return
       return
 
@@ -489,28 +495,50 @@ if Meteor.isClient
         history.back()
     'click #cropDone':->
       cropDraftId = Session.get('cropDraftId')
+      
       console.log cropDraftId
-      imgSize = 
+      imgSize =
+        w : Session.get 'imgSizeW'
+        h : Session.get 'imgSizeH'
+      imgRatio =
+        wh : imgSize.w / imgSize.h
+        hw : imgSize.h / imgSize.w
+      imgZoomSize =
         w : $("#default"+cropDraftId+" .crop-img").width()
         h : $("#default"+cropDraftId+" .crop-img").height()
+      holderSize = 
+        w : $("#"+cropDraftId).width()
+        h : $("#"+cropDraftId).height()
       holderRatio =
         wh : $("#"+cropDraftId).width() / $("#"+cropDraftId).height()
         hw : $("#"+cropDraftId).height() / $("#"+cropDraftId).width()
-      if imgSize.w * holderRatio.hw < imgSize.h * holderRatio.wh
-        img_width = '100%'
-        img_height = (imgSize.h / imgSize.w)*100 + '%'
+      if imgZoomSize.w * holderRatio.hw * imgRatio.wh < imgZoomSize.h * holderRatio.wh * imgRatio.hw
+        img_width = (imgZoomSize.w / imgSize.w)*100 + '%'
+        img_height = (imgZoomSize.h / imgSize.h)*imgRatio.hw*holderRatio.wh*100 + '%'
       else
-        img_height = '100%'
-        img_width = (imgSize.w / imgSize.h)*100 + '%'
+        img_width = (imgZoomSize.w / imgSize.w)*imgRatio.wh*holderRatio.hw*100 + '%'
+        img_height = (imgZoomSize.h / imgSize.h)*100 + '%'
 #      img_height = $("#default"+cropDraftId+" .crop-img").css('height')
 #      img_width = $("#default"+cropDraftId+" .crop-img").css('width')
-      img_top = $("#default"+cropDraftId+" .crop-img").css('top')
-      img_left = $("#default"+cropDraftId+" .crop-img").css('left')
-      console.log "#default"+cropDraftId+" .crop-img"
-      console.log $("#default"+cropDraftId+" .crop-img").css('height')
-      console.log $("#default"+cropDraftId+" .crop-img").css('width')
-      console.log $("#default"+cropDraftId+" .crop-img").css('top')
-      console.log $("#default"+cropDraftId+" .crop-img").css('left')
+      imgMove = 
+        t : $("#default"+cropDraftId+" .crop-img").css('top')
+        l : $("#default"+cropDraftId+" .crop-img").css('left')
+      console.log "imgRatio is "
+      console.log imgRatio
+      console.log "holderRatio is "
+      console.log holderRatio
+      img_top = (parseFloat(imgMove.t) / holderSize.h)*100 + '%'
+      img_left = (parseFloat(imgMove.l) / holderSize.w)*100 + '%'
+      console.log "imgSize is "+imgSize
+      console.log imgSize
+      console.log "imgZoomSize is "
+      console.log imgZoomSize
+      console.log "holderSize is "
+      console.log holderSize
+      console.log "imgMove is "
+      console.log imgMove
+      console.log "img_top is "
+      console.log img_top
       
       style = "height:" + img_height + ';width:' + img_width + ';top:' + img_top + ';left:' + img_left + ';'
       console.log style
