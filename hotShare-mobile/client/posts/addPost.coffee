@@ -202,7 +202,7 @@ if Meteor.isClient
           $('#'+node.id+'TextArea').on('keyup input',(e)->
             e.preventDefault()
             id = this.id.replace("TextArea", "")
-            grid_size=($( window ).width()/6 - 10);
+            grid_size=($('#display').width()/6 - 10);
 
             min_widget_height = (5 * 2) + grid_size;
 
@@ -298,7 +298,7 @@ if Meteor.isClient
       initToolBar(itemElem, undefined)
     )
 
-    base_size=($( window ).width()/6 - 10);
+    base_size=($('#display').width()/6 - 10);
     test = $("#display");
     `gridster = test.gridster({serialize_params: function ($w, wgd) {
       return {

@@ -39,7 +39,7 @@ if Meteor.isClient
     $('.showPosts').css('min-height',$(window).height())
     window.title = this.title + ':' + this.addontitle
     console.log("show post rev 2 "+window.title)
-    base_size=($( window ).width()/6 - 10);
+    base_size=($('#test').width()/6 - 10);
 
     test = $("#test");
     `gridster = test.gridster({widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], min_cols: 3, max_cols:6, resize: {enabled: false }}).data('gridster');`
