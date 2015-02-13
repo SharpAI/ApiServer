@@ -550,7 +550,8 @@ if Meteor.isClient
       holderRatio =
         wh : $("#"+cropDraftId).width() / $("#"+cropDraftId).height()
         hw : $("#"+cropDraftId).height() / $("#"+cropDraftId).width()
-      if imgZoomSize.w * holderRatio.hw * imgRatio.wh < imgZoomSize.h * holderRatio.wh * imgRatio.hw
+#      if imgZoomSize.w * holderRatio.hw * imgRatio.wh < imgZoomSize.h * holderRatio.wh * imgRatio.hw
+      if holderSize.w >= holderSize.h
         img_width = (imgZoomSize.w / imgSize.w)*100 + '%'
         img_height = (imgZoomSize.h / imgSize.h)*imgRatio.hw*holderRatio.wh*100 + '%'
       else
