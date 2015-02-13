@@ -1,11 +1,16 @@
 <template name="showPosts">
     <div class="showPosts" style="padding-bottom:42px;">
+      <div id="blur_overlay" style="position: absolute; opacity: 0.5; z-index: 1; width:100%; background-color:white;">
+          {{> spinner}}
+      </div>
       <div class="head">
         {{#if isMobile}}
           <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
         {{/if}}
         <div class="user">
-          <!--<img class="icon" src="{{ownerIcon}}" width='25' height='25'>-->
+          {{#if isMobile}}
+            <img class="icon" src="{{ownerIcon}}" width='25' height='25'>
+          {{/if}}
           <span class="name">{{ownerName}}</span>
           <div class="createAtBox">
             <div class="createAt">{{time_diff createdAt}}</div>
@@ -71,4 +76,30 @@
         </div>
       </div>
     </div>
+    {{> postFooter}}
+    <div id="showComment" style="display:none;">
+      {{> commentBar}}
+    </div>
+</template>
+<template name="postFooter">
+  <div id="postFooter" class="showPostsFooter">
+    <div class="commentList">
+      <span class="minHeart"><i class="fa fa-heart"></i>{{heart}}</span>
+      <!--<span class="minRetweet"><i class="fa fa-retweet"></i>{{retweet}}</span>-->
+      <span class="minComment">{{comment}}条评论</span>
+    </div>
+    <div class="buttons">
+      {{#if blueHeart}}
+      <span class="blueHeart"><i class="fa fa-heart" style="color:#00c4ff;"></i></span>
+      {{else}}
+      <span class="heart"><i class="fa fa-heart"></i></span>
+      {{/if}}
+      {{#if blueRetweet}}
+      <!--<span class="blueRetweet"><i class="fa fa-retweet" style="color:#00c4ff;"></i></span>-->
+      {{else}}
+      <!--<span class="retweet"><i class="fa fa-retweet"></i></span>-->
+      {{/if}}
+      <span class="comment"><i class="fa fa-comment"></i></span>
+    </div>
+  </div>
 </template>
