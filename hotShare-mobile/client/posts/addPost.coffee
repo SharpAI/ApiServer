@@ -106,6 +106,13 @@ if Meteor.isClient
         $('#blur_overlay').css('height',height)
         $('#blur_overlay').css('z-index', 4)
 
+        $(textarea).click(()->
+            console.log("textarea click!")
+            #$(textarea).focus()
+            console.log("$(textarea).value="+JSON.stringify($(textarea).value));
+            console.log("$(textarea).selectionStart="+$(textarea).selectionStart);
+        )
+
         $(textarea).focus(()->
           #$(".head").css 'position','absolute'
           #Session.set('textareaFocused', true)
@@ -164,10 +171,41 @@ if Meteor.isClient
       else if buttonClicked.id is "font-normal"
         console.log 'Need font-normal'
         style = 'font-family:;font-size:large' + ';text-align:' + textarea.css('text-align')+';'
+        textarea.attr('style', style)
+        #Compute the new scrollHeight
+        grid_size=($('#display').width()/6 - 10);
+        min_widget_height = (5 * 2) + grid_size;
+        $(textarea).css('height', 'auto');
+        scrollHeight = document.getElementById(node.id+"TextArea").scrollHeight
+        $(textarea).css('height', scrollHeight);
+        sizey = Math.floor(scrollHeight/min_widget_height)+1
+        resizeItem = $('#'+node.id)
+        orig_sizey = parseInt(resizeItem.attr("data-sizey"))
+        if sizey isnt orig_sizey
+          height = sizey*min_widget_height - 10
+          resizeItem.css("height", height)
+          $(node).css('height', "")
+          sizex = parseInt(resizeItem.attr("data-sizex"))
+          gridster.resize_widget(resizeItem, sizex,sizey)
         Drafts.update({_id: doc_id}, {$set: {style: style}});
       else if buttonClicked.id is "font-quato"
         console.log 'Need font-quato'
         style = "font-family:Times New Roman, Times, serif" + ';font-size:xx-large' + ';text-align:' + textarea.css('text-align')+';'
+        textarea.attr('style', style)
+        #Compute the new scrollHeight
+        grid_size=($('#display').width()/6 - 10);
+        min_widget_height = (5 * 2) + grid_size;
+        scrollHeight = document.getElementById(node.id+"TextArea").scrollHeight
+        $(textarea).css('height', 'auto').css('height', scrollHeight);
+        sizey = Math.floor(scrollHeight/min_widget_height)+1
+        resizeItem = $('#'+node.id)
+        orig_sizey = parseInt(resizeItem.attr("data-sizey"))
+        if sizey isnt orig_sizey
+          height = sizey*min_widget_height - 10
+          resizeItem.css("height", height)
+          $(node).css('height', "")
+          sizex = parseInt(resizeItem.attr("data-sizex"))
+          gridster.resize_widget(resizeItem, sizex,sizey)
         Drafts.update({_id: doc_id}, {$set: {style: style}});
       return
 
