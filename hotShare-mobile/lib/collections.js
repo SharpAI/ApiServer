@@ -253,7 +253,7 @@ if(Meteor.isServer){
   });
   Comment.allow({
     insert: function (userId, doc) {
-      return doc.userId === userId;
+      return doc.username !== null;
     },
     remove: function (userId, doc) {
       return doc.userId === userId;

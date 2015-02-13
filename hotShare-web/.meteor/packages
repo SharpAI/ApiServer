@@ -10,3 +10,5 @@ coffeescript
 jquery
 less
 meteorhacks:fast-render
+fortawesome:fontawesome
+meteorhacks:search-source

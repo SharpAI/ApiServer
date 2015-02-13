@@ -7,6 +7,10 @@ if Meteor.isClient
       Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     )
   Template.showPosts.rendered=->
+    if window.localStorage
+      alert 'has local storage'
+    else
+      alert 'no local storage'
     $('.mainImage').css('height',$(window).height()*0.55)
     $('#wx-img').css('height',$(window).height()*0.55)
     #`global_disable_longpress = true`
@@ -101,10 +105,11 @@ if Meteor.isClient
     time_diff: (created)->
       GetTime0(new Date() - created)
     isMyPost:->
-      if Posts.find({_id:this._id}).count() > 0
-        post = Posts.find({_id:this._id}).fetch()[0]
-        if post.owner is Meteor.userId()
-          return true
+      if Meteor.user()
+        if Posts.find({_id:this._id}).count() > 0
+          post = Posts.find({_id:this._id}).fetch()[0]
+          if post.owner is Meteor.userId()
+            return true
       return false
     isMobile:->
       Meteor.isCordova
@@ -231,10 +236,13 @@ if Meteor.isClient
       Comment.find({postId:Session.get("postContent")._id}).count()
     blueHeart:->
       heart = Session.get("postContent").heart
-      if JSON.stringify(heart).indexOf(Meteor.userId()) is -1
-        return false
+      if Meteor.user()
+        if JSON.stringify(heart).indexOf(Meteor.userId()) is -1
+          return false
+        else
+          return true
       else
-        return true
+        return false
     blueRetweet:->
       retweet = Session.get("postContent").retweet
       if JSON.stringify(retweet).indexOf(Meteor.userId()) is -1
@@ -266,6 +274,12 @@ if Meteor.isClient
           Posts.update {_id: postId},{$set: {heart: heart}}
           FollowPosts.update {_id: FollowPostsId},{$inc: {heart: 1}}
           return
+      else
+        postId = Session.get("postContent")._id
+        heart = Session.get("postContent").heart
+        heart.sort()
+        heart.push {userId: 0,createdAt: new Date()}
+        Posts.update {_id: postId},{$set: {heart: heart}}
     'click .retweet':->
       if Meteor.user()
         postId = Session.get("postContent")._id

@@ -35,7 +35,7 @@ if(Meteor.isServer){
         return Feeds.find({followby: this.userId});
   });
   Meteor.publish("follows", function() {
-        return Follows.find({});
+        return Follows.find({}, {sort: { index: 1 }} );
   });
   Meteor.publish("follower", function() {
         return Follower.find({$or:[{userId:this.userId},{followerId:this.userId}]});
@@ -178,6 +178,17 @@ if(Meteor.isServer){
       return false;
     }
   });
+  Drafts.allow({
+    insert: function (userId, doc) {
+      return doc.owner === userId;
+    },
+    remove: function (userId, doc) {
+      return doc.owner === userId;
+    },
+    update: function (userId, doc) {
+      return doc.owner === userId;
+    }
+  });
   FollowPosts.allow({
     update: function (userId, doc, fieldNames, modifier) {
       if (fieldNames.toString() === 'browse' || fieldNames.toString() === 'heart' || fieldNames.toString() === 'retweet' || fieldNames.toString() === 'comment' && modifier.$inc !== void 0) {
@@ -189,24 +200,125 @@ if(Meteor.isServer){
       return false;
     }
   });
+  SavedDrafts.allow({
+    insert: function (userId, doc) {
+      return doc.owner === userId;
+    },
+    remove: function (userId, doc) {
+      return doc.owner === userId;
+    },
+    update: function (userId, doc) {
+      return doc.owner === userId;
+    }
+  });
+  Follower.allow({
+    insert: function (userId, doc) {
+      if(doc.userId === userId){
+        try{
+            var posts=Posts.find({owner: doc.followerId})
+            if(posts.count()>0){
+                posts.forEach(function(data){
+                    FollowPosts.insert({
+                        postId:data._id,
+                        title:data.title,
+                        addontitle:data.addontitle,
+                        mainImage: data.mainImage,
+                        owner:data.owner,
+                        ownerName:data.ownerName,
+                        ownerIcon:data.ownerIcon,
+                        createdAt: data.createdAt,
+                        followby: userId
+                    });
+                });
+            }
+          }
+          catch(error){};
+        return true;
+      }
+      return false;
+    },
+    remove: function (userId, doc) {
+      if(doc.userId === userId){
+        try{
+          FollowPosts.remove({owner:doc.followerId,followby:userId});
+        }
+        catch(error){};
+        return true;
+      }
+      return false;
+    },
+    update: function (userId, doc) {
+      return doc.userId === userId;
+    }
+  });
+  Comment.allow({
+    insert: function (userId, doc) {
+      return doc.username !== null;
+    },
+    remove: function (userId, doc) {
+      return doc.userId === userId;
+    },
+    update: function (userId, doc) {
+      return doc.userId === userId;
+    }
+  });
+  Meteor.users.allow({
+    update: function (userId, doc, fieldNames, modifier) {
+      if (doc._id === userId)
+        return true;
+      return false;
+    }
+  });
+
+  SearchSource.defineSource('followusers', function(searchText, options) {
+    var options = {sort: {createdAt: -1}, limit: 20};
+
+    if(searchText) {
+      var regExp = buildRegExp(searchText);
+      var selector = {$or: [
+        {'username': regExp},
+        {'profile.fullname': regExp}
+      ]};
+
+      return Meteor.users.find(selector, options).fetch();
+    } else {
+      return Meteor.users.find({}, options).fetch();
+    }
+  });
+
+  function buildRegExp(searchText) {
+    // this is a dumb implementation
+    var parts = searchText.trim().split(/[ \-\:]+/);
+    return new RegExp("(" + parts.join('|') + ")", "ig");
+  }
 }
 
 if(Meteor.isClient){
-  Meteor.subscribe("posts");
   Deps.autorun(function() {
     if (Meteor.user()) {
       Meteor.subscribe("topicposts");
       Meteor.subscribe("topics");
+      Meteor.subscribe("posts");
       /*Meteor.subscribe("drafts");*/
       Meteor.subscribe("saveddrafts");
       Meteor.subscribe("feeds");
       Meteor.subscribe("follows");
       Meteor.subscribe("follower");
+      var options = {
+        keepHistory: 1000 * 60 * 5,
+        localSearch: true
+      };
+      var fields = ['username', 'profile.fullname'];
+      FollowUsersSearch = new SearchSource('followusers', fields, options);
     }
   });
   Tracker.autorun(function () {
     if(Session.get("postContent"))
       Meteor.subscribe("comment",Session.get("postContent")._id);
   });
-
+  var FOLLOWPOSTS_ITEMS_INCREMENT = 10;
+  Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
+  Deps.autorun(function() {
+    Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'));
+  });
 }
