@@ -202,7 +202,7 @@ if (Meteor.isCordova){
     * @param {Function} callback
     * @return {Object} url in callback
     */
-    var uploadFileInCordova = function(callback){
+    var uploadFileInCordova = function(ImageWidth, ImageHeight, ImageQuality, callback){
       if(device.platform === 'Android' ){
            pictureSource = navigator.camera.PictureSourceType;
            destinationType = navigator.camera.DestinationType;
@@ -236,9 +236,9 @@ if (Meteor.isCordova){
           }, function(s){
               console.info(s);
           }, {
-            quality: 60,
-            targetWidth: 400,
-            targetHeight: 400,
+            quality: ImageQuality,
+            targetWidth: ImageWidth,
+            targetHeight: ImageHeight,
             destinationType: destinationType.NATIVE_URI,
             sourceType: pictureSource.SAVEDPHOTOALBUM
           });
@@ -272,9 +272,9 @@ if (Meteor.isCordova){
               }
           }, {
             maximumImagesCount: 6,
-            width: 400,
-            height: 400,
-            quality: 60,
+            width: ImageWidth,
+            height: ImageHeight,
+            quality: ImageQuality,
             storage: 'temporary'
           });
         }

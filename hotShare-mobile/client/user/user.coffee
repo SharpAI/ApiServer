@@ -47,7 +47,7 @@ if Meteor.isClient
       ,animatePageTrasitionTimeout
     'click .icon':(e)->
       val = e.currentTarget.innerHTML
-      uploadFile (result)->
+      uploadFile 160, 160, 60, (result)->
         e.currentTarget.innerHTML = '<span class="fa fa-spinner fa-spin"></span>'
         if result
           e.currentTarget.innerHTML = '<img src="'+result+'"  width="80" height="80">'
