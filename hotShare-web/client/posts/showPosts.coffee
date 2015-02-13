@@ -238,7 +238,7 @@ if Meteor.isClient
         else
           return true
       else
-        return false
+        return amplify.store( Session.get("postContent")._id)
     blueRetweet:->
       retweet = Session.get("postContent").retweet
       if JSON.stringify(retweet).indexOf(Meteor.userId()) is -1
@@ -276,6 +276,7 @@ if Meteor.isClient
         heart.sort()
         heart.push {userId: 0,createdAt: new Date()}
         Posts.update {_id: postId},{$set: {heart: heart}}
+        amplify.store(postId,true)
     'click .retweet':->
       if Meteor.user()
         postId = Session.get("postContent")._id
