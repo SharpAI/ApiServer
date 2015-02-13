@@ -245,38 +245,43 @@ if Meteor.isClient
         return false
       else
         return true
-      
-  Template.postFooter.events
-    'click .commentList':->
-      $('.commentBar').fadeIn 300
-      $('#showComment').css('display',"block")
-      Meteor.setTimeout ()->
-        $('.showPosts').css('height',$(window).height())
-      ,310
-    'click .comment':->
-      $('.commentBar').fadeIn 300
-      $('#showComment').css('display',"block")
-      Meteor.setTimeout ()->
-        $('.showPosts').css('height',$(window).height())
-      ,310
-    'click .heart':->
-      if Meteor.user()
-        postId = Session.get("postContent")._id
-        FollowPostsId = Session.get("FollowPostsId")
-        heart = Session.get("postContent").heart
-        if JSON.stringify(heart).indexOf(Meteor.userId()) is -1
-          heart.sort()
-          heart.push {userId: Meteor.userId(),createdAt: new Date()}
-          Posts.update {_id: postId},{$set: {heart: heart}}
-          FollowPosts.update {_id: FollowPostsId},{$inc: {heart: 1}}
-          return
-      else
-        postId = Session.get("postContent")._id
-        heart = Session.get("postContent").heart
+  heartOnePost = ->
+    if Meteor.user()
+      postId = Session.get("postContent")._id
+      FollowPostsId = Session.get("FollowPostsId")
+      heart = Session.get("postContent").heart
+      if JSON.stringify(heart).indexOf(Meteor.userId()) is -1
         heart.sort()
-        heart.push {userId: 0,createdAt: new Date()}
+        heart.push {userId: Meteor.userId(),createdAt: new Date()}
         Posts.update {_id: postId},{$set: {heart: heart}}
-        amplify.store(postId,true)
+        FollowPosts.update {_id: FollowPostsId},{$inc: {heart: 1}}
+        return
+    else
+      postId = Session.get("postContent")._id
+      heart = Session.get("postContent").heart
+      heart.sort()
+      heart.push {userId: 0,createdAt: new Date()}
+      Posts.update {_id: postId},{$set: {heart: heart}}
+      amplify.store(postId,true)
+  onCommentList = ->
+    $('.commentBar').fadeIn 300
+    $('#showComment').css('display',"block")
+    Meteor.setTimeout ()->
+      $('.showPosts').css('height',$(window).height())
+    ,310
+  onComment = ->
+    $('.commentBar').fadeIn 300
+    $('#showComment').css('display',"block")
+    Meteor.setTimeout ()->
+      $('.showPosts').css('height',$(window).height())
+    ,310
+  Template.postFooter.events
+    'click .commentList': onCommentList
+    'click .comment':onComment
+    'click .heart':heartOnePost
+    'touchstart .comment':onComment
+    'touchstart .commentList': onCommentList
+    'touchstart .heart':heartOnePost
     'click .retweet':->
       if Meteor.user()
         postId = Session.get("postContent")._id
