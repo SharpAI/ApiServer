@@ -767,6 +767,7 @@ if Meteor.isClient
                 SavedDrafts.remove postId
                 #Delete the Drafts
             Drafts.remove({})
+            #Router.go('addTopicComment')
             Router.go('/posts/'+postId)
         )
         return
