@@ -3,7 +3,9 @@ if Meteor.isClient
   Template.addPost.rendered=->
     `global_toolbar_hidden = false`
     $('.addPost').css('min-height',$(window).height())
-    $('.mainImage').css('min-height',$(window).height()*0.55)
+    $('.addPost').css('width',$(window).width())
+    $('.mainImage').css('height',$(window).height()*0.55)
+    $('#wrapper img').css('height',$(window).height()*0.55)
 
     console.log 'addPost rendered rev=37'
     #testMenu will be main/font/align. It's for controlling the icon on text menu
