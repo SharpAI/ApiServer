@@ -112,3 +112,7 @@ if Meteor.isClient
         this.render 'topicPosts'
         Session.set 'channel','topicPosts'
         return
+   Router.route '/addTopicComment',()->
+     this.render 'addTopicComment'
+     Session.set 'channel','addTopicComment'
+     return
