@@ -767,8 +767,11 @@ if Meteor.isClient
                 SavedDrafts.remove postId
                 #Delete the Drafts
             Drafts.remove({})
-            #Router.go('addTopicComment')
-            Router.go('/posts/'+postId)
+            if Session.get('isReviewMode') is '2'
+                Router.go('/posts/'+postId)
+            else
+                Session.set("TopicPostId", postId)
+                Router.go('addTopicComment')
         )
         return
     'click #publishOld':->
