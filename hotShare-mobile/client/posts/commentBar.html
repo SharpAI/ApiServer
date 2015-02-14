@@ -6,18 +6,18 @@
         <div id="finish" class="rightButton">完成</div>
       </header>
       <div class="box">
+        <!--
         <div class='email bottomBorder boxTitle'>{{heart.length}}个人点赞<span><i class="fa fa-angle-right fa-fw"></i></span></div>
-        <div class='changePasswd bottomBorder boxTitle'>{{retweet.length}}个人转发<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+        <div class='changePasswd bottomBorder boxTitle'>{{retweet.length}}个人转发<span><i class="fa fa-angle-right fa-fw"></i></span></div>-->
         
         {{#each comment}}
-        <div class="bottomBorder">
           <div class="eachComment">
-            <img class="icon" src="{{userIcon}}" width='30' height='30'>
-            <div id="" class="userName">{{username}}</div>
-            <div id="" class="commentDetail">{{content}}</div>
-            <span class="createAt">{{time_diff createdAt}}</span>
+            <div class="bubble">
+              <span class="personName">{{username}}:</span><br>
+              <span class="personSay">{{content}}</span>
+            </div>
+            <span class="time round">{{time_diff createdAt}}</span>
           </div>
-        </div>
         {{/each}}
         
       </div>
