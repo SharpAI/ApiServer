@@ -8,7 +8,7 @@
 .authOverlay #qq,.webHome #qq{position: absolute;bottom: 15%;left: 5%;right: 5%;width: 90%;text-align: center;border: thin solid;border-radius: 50px;padding: 10px;font-size: 16px;}
 .authOverlay #login,.webHome #login{position: absolute;bottom: 6%;left: 30%;right: 30%;text-align: center;font-size: 16px;}
 .authOverlay .company{position: absolute;bottom: 0;left: 30%;right: 30%;text-align: center;font-size: 12px;text-shadow: 0 1px 0 black}
-.webHome .webFooter{position: absolute;bottom: 30px;left: 42%;right: 42%;}
+.webHome .webFooter{position: absolute;bottom: 30px;}
 .webHome .downloadBtn{text-align: center;}
 .webHome .downloadBtn a{position: relative;padding-left: 45px;}
 .webHome .download{text-shadow: 0 1px 0 #ccc;color: #eee;background-color: #aebdc9;padding: 15px;border-radius: 10px;}
