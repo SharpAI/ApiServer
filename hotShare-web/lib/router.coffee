@@ -16,6 +16,9 @@ if Meteor.isClient
         Session.set 'channel','posts/'+this.params._id
       fastRender: true
     }
+  Router.route '/',()->
+    this.render 'webHome'
+    return
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->
