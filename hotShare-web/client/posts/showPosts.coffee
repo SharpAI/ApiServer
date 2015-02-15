@@ -8,7 +8,7 @@ if Meteor.isClient
     )
   Template.showPosts.rendered=->
     $('.mainImage').css('height',$(window).height()*0.55)
-    $('#wx-img').css('height',$(window).height()*0.55)
+#    $('#wx-img').css('height',$(window).height()*0.55)
     #`global_disable_longpress = true`
     postContent = Session.get("postContent")
     browseTimes = 0
