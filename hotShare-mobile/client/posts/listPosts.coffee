@@ -1,7 +1,7 @@
 if Meteor.isClient
   Template.listPosts.rendered=->
     $('.content').css 'min-height',$(window).height()
-#    $('.addontitle').css('top',$(window).height()*0.25)
+#    $('.mainImage').css('height',$(window).height()*0.55)
     $(window).scroll (event)->
         target = $("#showMoreResults");
         FOLLOWPOSTS_ITEMS_INCREMENT = 10;

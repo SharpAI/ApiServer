@@ -7,7 +7,7 @@
         {{#if mainImage}}
           {{>spinner}}
         {{/if}}
-        <img class="scale item lazy" data-original="{{mainImage}}" draggable="false" >
+        <img class="scale item lazy" data-original="{{mainImage}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImageStyle}}" >
         <header>
           <h1 class="title">
             {{title}}
