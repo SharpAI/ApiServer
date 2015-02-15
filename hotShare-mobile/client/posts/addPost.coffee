@@ -5,8 +5,9 @@ if Meteor.isClient
     $('.addPost').css('min-height',$(window).height())
     $('.addPost').css('width',$(window).width())
     $('.mainImage').css('height',$(window).height()*0.55)
-    $('#wrapper img').css('height',$(window).height()*0.55)
-
+#    Meteor.setTimeout ->
+#      $('#wrapper img').css('height',$(window).height()*0.55)
+#    ,200
     console.log 'addPost rendered rev=37'
     #testMenu will be main/font/align. It's for controlling the icon on text menu
     Session.set('textMenu','main')
@@ -702,6 +703,7 @@ if Meteor.isClient
             for i in [0..(draftData.length-1)]
               if i is 0
                 mainImage = 'http://bcs.duapp.com/travelers-km/'+draftData[i].filename
+                mainImageStyle = draftData[i].style
                 mainText = $("#"+draftData[i]._id+"text").val()
               else
                 if draftData[i].isImage
@@ -738,6 +740,7 @@ if Meteor.isClient
                       comment:[], #评论
                       addontitle:addontitle,
                       mainImage: mainImage,
+                      mainImageStyle:mainImageStyle,
                       mainText: mainText,
                       owner:Meteor.userId(),
                       ownerName:Meteor.user().username,
@@ -757,6 +760,7 @@ if Meteor.isClient
                   comment:[], #评论
                   addontitle:addontitle,
                   mainImage: mainImage,
+                  mainImageStyle:mainImageStyle,
                   mainText: mainText,
                   owner:Meteor.userId(),
                   ownerName:Meteor.user().username,
@@ -812,6 +816,7 @@ if Meteor.isClient
 #          console.log i
           if i is 0
             mainImage = 'http://bcs.duapp.com/travelers-km/'+draftData[i].filename
+            mainImageStyle = draftData[i].style
             mainText = $("#"+draftData[i]._id+"text").val()
           else
             if draftData[i].isImage
@@ -848,6 +853,7 @@ if Meteor.isClient
                   comment:[], #评论
                   addontitle:addontitle,
                   mainImage: mainImage,
+                  mainImageStyle: mainImageStyle,
                   mainText: mainText,
                   owner:Meteor.userId(),
                   ownerName:Meteor.user().username,
@@ -867,6 +873,7 @@ if Meteor.isClient
               comment:[], #评论
               addontitle:addontitle,
               mainImage: mainImage,
+              mainImageStyle:mainImageStyle,
               mainText: mainText,
               owner:Meteor.userId(),
               ownerName:Meteor.user().username,

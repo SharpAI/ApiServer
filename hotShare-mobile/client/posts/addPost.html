@@ -31,7 +31,7 @@
         {{#if mainImage}}
           <div id="wrapper">
             <div class="mainImage" id="{{mainImage._id}}">
-              <img id="mainImage{{mainImage._id}}" class="scale item" src="{{mainImage.imgUrl}}" draggable="false" style="position:absolute;{{mainImage.style}}" >
+              <img id="mainImage{{mainImage._id}}" class="scale item" src="{{mainImage.imgUrl}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImage.style}}" >
               <div id="crop{{mainImage._id}}" class="crop" style="z-index: 1; display:none">
                 <div id="default{{mainImage._id}}" class="default"></div>
               </div>
