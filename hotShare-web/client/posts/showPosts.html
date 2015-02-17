@@ -6,6 +6,8 @@
       <div class="head">
         {{#if isMobile}}
           <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+        {{else}}
+          <div class="rightButton" onclick="window.open('http://www.tiegushi.com', '_system');">下载应用</div>
         {{/if}}
         <div class="user">
           {{#if isMobile}}
