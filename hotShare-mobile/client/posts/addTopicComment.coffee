@@ -19,6 +19,12 @@ if Meteor.isClient
            console.log error
          ss = comment
          r=ss.replace /\#([^\#|.]+)/g,(word)->
+           topic = word.replace '#', ''
            console.log word
+           if topic.length > 0 && topic.charAt(0)!=' '
+             haveSpace = topic.indexOf ' ', 0
+             if haveSpace > 0
+                topic = topic[...haveSpace]
+             console.log topic
        Router.go('/posts/'+topicPostId)
        false
