@@ -17,5 +17,8 @@ if Meteor.isClient
            #FollowPosts.update {_id: FollowPostId},{$inc: {comment: 1}}
          catch error
            console.log error
+         ss = comment
+         r=ss.replace /\#([^\#|.]+)/g,(word)->
+           console.log word
        Router.go('/posts/'+topicPostId)
        false
