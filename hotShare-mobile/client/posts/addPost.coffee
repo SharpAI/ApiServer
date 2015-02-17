@@ -61,7 +61,7 @@ if Meteor.isClient
               width: imgWidth,
               height: imgHeight,
               mask: false,
-              zoom: {steps: 0.01,min: 1,max: 5},
+              zoom: {steps: 0.01,min: 1,max: 2},
             }
             Meteor.setTimeout ->
               Session.set 'imgSizeW',$("#default"+event.currentTarget.id+" .crop-img").width()
@@ -322,7 +322,7 @@ if Meteor.isClient
                 width: imgWidth,
                 height: imgHeight,
                 mask: false,
-                zoom: {steps: 0.01,min: 1,max: 5},
+                zoom: {steps: 0.01,min: 1,max: 2},
               }
               Meteor.setTimeout ->
                 Session.set 'imgSizeW',$("#default"+node.id+" .crop-img").width()
