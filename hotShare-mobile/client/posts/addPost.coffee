@@ -777,6 +777,9 @@ if Meteor.isClient
                 Router.go('/posts/'+postId)
             else
                 Session.set("TopicPostId", postId)
+                Session.set("TopicTitle", title)
+                Session.set("TopicAddonTitle", addontitle)
+                Session.set("TopicMainImage", mainImage)
                 Router.go('addTopicComment')
         )
         return

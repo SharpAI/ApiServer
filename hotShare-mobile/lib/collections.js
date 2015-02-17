@@ -182,6 +182,11 @@ if(Meteor.isServer){
       return false;
     }
   });
+  TopicPosts.allow({
+    insert: function (userId, doc) {
+      return doc.owner === userId;
+    }
+  });
   Drafts.allow({
     insert: function (userId, doc) {
       return doc.owner === userId;
