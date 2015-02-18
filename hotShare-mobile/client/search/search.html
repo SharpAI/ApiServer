@@ -91,8 +91,7 @@
         </ul>
         <div id="topicList">
         {{#each getTopics}}
-          <div>{{text}}</div>
-          <div>{{posts}}</div>
+          <div id="{{_id}}" class='topicTitle'>#{{text}}<span>{{posts}}个故事<i class="fa fa-angle-right fa-fw"></i></span></div>
           <div class="line">
             <span></span>
           </div>

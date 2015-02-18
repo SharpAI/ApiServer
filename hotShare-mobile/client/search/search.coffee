@@ -138,6 +138,10 @@ if Meteor.isClient
       else
         true
   Template.searchPeopleAndTopic.events
+    'click .topicTitle': (event)->
+       Session.set "topicId", @_id
+       Session.set "topicTitle", "#"+ @text
+       Router.go '/topicPosts'
     'click #search_people': (event)->
         Session.set('is_people', true)
     'click #search_topic': (event)->
