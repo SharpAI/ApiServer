@@ -40,8 +40,6 @@ if Meteor.isClient
     )
 
     $('.showPosts').css('min-height',$(window).height())
-    window.title = this.title + ':' + this.addontitle
-    console.log("show post rev 2 "+window.title)
     base_size=($('#test').width()/6 - 10);
 
     test = $("#test");
