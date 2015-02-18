@@ -292,6 +292,18 @@ if(Meteor.isServer){
     }
   });
 
+  SearchSource.defineSource('topics', function(searchText, options) {
+    var options = {sort: {createdAt: -1}, limit: 20};
+
+    if(searchText) {
+      var regExp = buildRegExp(searchText);
+      var selector = {'text': regExp};
+      return Topics.find(selector, options).fetch();
+    } else {
+      return Topics.find({}, options).fetch();
+    }
+  });
+
   SearchSource.defineSource('followusers', function(searchText, options) {
     var options = {sort: {createdAt: -1}, limit: 20};
 
@@ -301,7 +313,6 @@ if(Meteor.isServer){
         {'username': regExp},
         {'profile.fullname': regExp}
       ]};
-
       return Meteor.users.find(selector, options).fetch();
     } else {
       return Meteor.users.find({}, options).fetch();
@@ -332,6 +343,8 @@ if(Meteor.isClient){
       };
       var fields = ['username', 'profile.fullname'];
       FollowUsersSearch = new SearchSource('followusers', fields, options);
+      var topicsfields = ['text'];
+      TopicsSearch = new SearchSource('topics', topicsfields, options);
     }
   });
   Tracker.autorun(function () {
