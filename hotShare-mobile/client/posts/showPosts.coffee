@@ -6,6 +6,8 @@ if Meteor.isClient
       Math.max(D.body.offsetHeight, D.documentElement.offsetHeight)
       Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     )
+  Template.showPosts.destoryed=->
+    $(window).children().off();
   Template.showPosts.rendered=->
     $('.mainImage').css('height',$(window).height()*0.55)
 #    $('#wx-img').css('height',$(window).height()*0.55)

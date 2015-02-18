@@ -1,4 +1,7 @@
 if Meteor.isClient
+  Template.addPost.destroyed = ->
+    $('.tool-container').remove();
+    $(window).children().off();
   # the only document I found here https://github.com/percolatestudio/transition-helper/blob/master/transition-helper.js#L4    
   Template.addPost.rendered=->
     `global_toolbar_hidden = false`
