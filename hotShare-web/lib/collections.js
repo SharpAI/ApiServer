@@ -58,6 +58,7 @@ if(Meteor.isServer){
                         title:doc.title,
                         addontitle:doc.addontitle,
                         mainImage: doc.mainImage,
+                        mainImageStyle:doc.mainImageStyle,
                         heart:0,
                         retweet:0,
                         comment:0,
@@ -91,6 +92,7 @@ if(Meteor.isServer){
                 title:doc.title,
                 addontitle:doc.addontitle,
                 mainImage: doc.mainImage,
+                mainImageStyle:doc.mainImageStyle,
                 heart:0,
                 retweet:0,
                 comment:0,
@@ -157,6 +159,7 @@ if(Meteor.isServer){
                             title:modifier.$set.title,
                             addontitle:modifier.$set.addontitle,
                             mainImage: modifier.$set.mainImage,
+                            mainImageStyle:modifier.$set.mainImageStyle,
                           }
                         }
                     );
@@ -168,6 +171,7 @@ if(Meteor.isServer){
                     title:modifier.$set.title,
                     addontitle:modifier.$set.addontitle,
                     mainImage: modifier.$set.mainImage,
+                    mainImageStyle:modifier.$set.mainImageStyle,
                   }
                 }
             );
@@ -176,6 +180,11 @@ if(Meteor.isServer){
         return true;
       }
       return false;
+    }
+  });
+  TopicPosts.allow({
+    insert: function (userId, doc) {
+      return doc.owner === userId;
     }
   });
   Drafts.allow({
@@ -223,6 +232,7 @@ if(Meteor.isServer){
                         title:data.title,
                         addontitle:data.addontitle,
                         mainImage: data.mainImage,
+                        mainImageStyle:data.mainImageStyle,
                         owner:data.owner,
                         ownerName:data.ownerName,
                         ownerIcon:data.ownerIcon,
