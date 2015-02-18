@@ -171,9 +171,9 @@ if Meteor.isClient
       current = Router.current();
       url = current.url;
       if url.indexOf("http") > 0
-        url = url.replace("meteor.local", "120.24.164.67");
+        url = url.replace("meteor.local", server_domain_name);
       else
-        url = "http://120.24.164.67"+url;
+        url = "http://" + server_domain_name +url;
       title = this.title;
       addontitle = this.addontitle;
       console.log "socialsharing: this.mainImage="+this.mainImage
