@@ -120,6 +120,7 @@ if Meteor.isClient
           #$(".head").css 'position','absolute'
           #Session.set('textareaFocused', true)
           console.log("focus get")
+          $(node).addClass("edit");
         )
         $(textarea).on('blur', 'input, textarea', ()->
           setTimeout(()->
@@ -138,6 +139,7 @@ if Meteor.isClient
 
           $('#blur_overlay').css('height','')
           $(node).css('z-index', '')
+          $(node).removeClass("edit");
         )
 
       else if buttonClicked.id == "del"
