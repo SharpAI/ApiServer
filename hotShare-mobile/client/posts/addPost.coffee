@@ -22,7 +22,7 @@ if Meteor.isClient
         content: '#mainImage-toolbar-options'
         position: 'bottom'
         hideOnClick: true
-        $('.mainImage').on 'toolbarItemClick',(event,buttonClicked)=>
+        $('.mainImage').on 'toolbarItemClick',(event,buttonClicked)->
           console.log $(buttonClicked).attr('id')
           console.log event.currentTarget.id
           if buttonClicked.id == "modify"
