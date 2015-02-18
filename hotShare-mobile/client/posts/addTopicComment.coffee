@@ -24,12 +24,23 @@ if Meteor.isClient
          r=ss.replace /\#([^\#|.]+)\#/g,(word)->
            topic = word.replace '#', ''
            topic = topic.replace '#', ''
-           console.log word
+           #console.log word
            if topic.length > 0 && topic.charAt(0)!=' '
              haveSpace = topic.indexOf ' ', 0
              if haveSpace > 0
                 topic = topic[...haveSpace]
-             console.log topic
+             #console.log topic
+             if Topics.find({text:topic}).count() > 0
+                topicData = Topics.find({text:topic}).fetch()[0]
+                topicId = topicData._id
+                #console.log topicData._id
+             else
+                topicId = Topics.insert {
+                  type:"topic",
+                  text:topic,
+                  imgUrl: ""
+                }
+             #console.log "topicId:" + topicId
              TopicPosts.insert {
                postId:topicPostId,
                title:TopicTitle,
@@ -42,7 +53,7 @@ if Meteor.isClient
                ownerName:Meteor.user().username,
                ownerIcon:Meteor.user().profile.icon,
                createdAt: new Date(),
-               topic: topic
+               topicId: topicId
              }
        Router.go('/posts/'+topicPostId)
        false

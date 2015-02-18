@@ -184,9 +184,21 @@ if(Meteor.isServer){
   });
   TopicPosts.allow({
     insert: function (userId, doc) {
+      if(doc.owner === userId)
+      {
+        try{
+          Topics.update({_id: doc.topicId},{$inc: {posts: 1}});
+        }
+        catch(error){}
+      }
       return doc.owner === userId;
     }
   });
+  Topics.allow({
+    insert: function (userId, doc) {
+      return doc.text !== null && doc.type === "topic";
+    }
+  })
   Drafts.allow({
     insert: function (userId, doc) {
       return doc.owner === userId;
