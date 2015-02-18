@@ -117,8 +117,10 @@ if Meteor.isClient
     Session.setDefault('is_people', true)
     $('#search-box').bind('propertychange input',(e)->
        text = $(e.target).val().trim()
-       if text.length > 0
+       if Session.get('is_people')
           FollowUsersSearch.search text
+       else
+          TopicsSearch.search text
     )
     $('#search-box').trigger('focus')
   Template.searchPeopleAndTopic.helpers

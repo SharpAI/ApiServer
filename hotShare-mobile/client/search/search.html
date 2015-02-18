@@ -90,6 +90,13 @@
           <li id="search_topic" class="on">#话题</li>
         </ul>
         <div id="topicList">
+        {{#each getTopics}}
+          <div>{{text}}</div>
+          <div>{{posts}}</div>
+          <div class="line">
+            <span></span>
+          </div>
+        {{/each}}
         </div>
         {{/if}}
    </div>
