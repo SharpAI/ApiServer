@@ -16,7 +16,6 @@ if Meteor.isClient
     Session.set('textMenu','main')
     Session.set('textareaFocused', false)
 
-
     initMainImageToolBar = ()->
       $('.mainImage').toolbar
         content: '#mainImage-toolbar-options'
@@ -222,18 +221,24 @@ if Meteor.isClient
       type = node.$blaze_range.view.parentView.dataVar.curValue.type
       if type == "text"
           if grid != undefined
-            max_row = 1
-            $('.resortitem:near-viewport(-150)').each( ( i, itemElem )->
-              if i == 0
-                max_row = parseInt($(itemElem).attr("data-row"))
-              cur_row = parseInt($(itemElem).attr("data-row"))
-              console.log("near-viewport id:"+ itemElem.id + " data-row:"+ cur_row)
-
-              if max_row < cur_row
-                max_row = cur_row
-            )
-            console.log("max_row " + max_row)
-            grid.add_widget(node, 6, 1, 1, max_row)
+            if window.unSelectedElem
+              insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
+              console.log('Selected data-row is ' + insert_row)
+              grid.add_widget(node, 6, 1, 1, insert_row)
+            else
+              max_row = 1
+              middle = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)/2
+              middle = 150 if middle is 0
+              $('.resortitem:near-viewport(-'+ middle+')').each( ( i, itemElem )->
+                if i == 0
+                  max_row = parseInt($(itemElem).attr("data-row"))
+                cur_row = parseInt($(itemElem).attr("data-row"))
+                console.log("near-viewport id:"+ itemElem.id + " data-row:"+ cur_row)
+                if max_row < cur_row
+                  max_row = cur_row
+              )
+              console.log("max_row " + max_row)
+              grid.add_widget(node, 6, 1, 1, max_row)
             #grid.manage_movements($(node), 1, max_row)
             #gridster.mutate_widget_in_gridmap($(node), { col: 1, row: parseInt($(node).attr("data-row")), size_x: 6, size_y: 1 }, { col: 1, row: max_row, size_x: 6, size_y: 1 })
           $(node).toolbar
@@ -274,7 +279,6 @@ if Meteor.isClient
 
       else if type == "image"
           if grid != undefined
-            ###
             if Session.get('NewImgAdd') is 'true'
               grid.add_widget(node, 3, 3)
             else
@@ -289,10 +293,8 @@ if Meteor.isClient
                   max_row = cur_row
               )
               console.log("max_row " + max_row)
-              size_y = size_x = Math.floor((Math.random() * 3) + 1);
               col = Math.floor((Math.random() * 6) + 1)
-            ###
-            grid.add_widget(node, 3, 3)
+              grid.add_widget(node, 3, 3,col,max_row)
 
           $(node).toolbar
             content: '#image-toolbar-options'
@@ -452,6 +454,14 @@ if Meteor.isClient
           Drafts.find({type:'text'}).fetch()[i]
 
   Template.addPost.events
+    'beUnSelected .resortitem': (e)->
+      window.unSelectedElem = e.currentTarget;
+      console.log('.resortItem unseleted ' + $(unSelectedElem).attr('data-row'))
+      Meteor.setTimeout ()->
+          window.unSelectedElem = undefined
+        ,500
+    'beSelected .resortitem':->
+      console.log('.resortItem seleted')
     'focus [name=textarea]':->
       Session.set('textareaFocused', true)
       $(".head").css 'position','absolute'
