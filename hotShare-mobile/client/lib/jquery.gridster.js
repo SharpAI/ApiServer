@@ -419,6 +419,7 @@
         handle: null,
         container_width: 0,  // 0 == auto
         move_element: true,
+        long_press: true,
         helper: false  // or 'clone'
         // drag: function(e) {},
         // start : function(e, ui) {},
@@ -489,6 +490,9 @@
 
     //Added added_widget hook, to process added longpress event.
     fn.added_widget = function($el){
+        if(this.options.long_press === false) {
+            return;
+        }
         $el.longpress($.proxy(function(e){
 
             //force only pressed item can be draggable

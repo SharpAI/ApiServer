@@ -43,7 +43,7 @@ if Meteor.isClient
     base_size=($('#test').width()/6 - 10);
 
     test = $("#test");
-    `gridster = test.gridster({widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], min_cols: 3, max_cols:6, resize: {enabled: false }}).data('gridster');`
+    `gridster = test.gridster({widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], min_cols: 3, max_cols:6, resize: {enabled: false },draggable:{long_press:false}}).data('gridster');`
     gridster.disable()
 
 
