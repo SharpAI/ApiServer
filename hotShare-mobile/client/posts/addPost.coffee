@@ -274,6 +274,7 @@ if Meteor.isClient
 
       else if type == "image"
           if grid != undefined
+            ###
             if Session.get('NewImgAdd') is 'true'
               grid.add_widget(node, 3, 3)
             else
@@ -290,7 +291,8 @@ if Meteor.isClient
               console.log("max_row " + max_row)
               size_y = size_x = Math.floor((Math.random() * 3) + 1);
               col = Math.floor((Math.random() * 6) + 1)
-              grid.add_widget(node, 3, 3, col, max_row)
+            ###
+            grid.add_widget(node, 3, 3)
 
           $(node).toolbar
             content: '#image-toolbar-options'
