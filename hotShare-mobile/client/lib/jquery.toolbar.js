@@ -264,7 +264,7 @@ if ( typeof Object.create !== 'function' ) {
                     $(self.toolbar).addClass('tool-center');
                 }
             }
-            self.$elem.addClass('pressed');
+            self.$elem.addClass('pressed').trigger('beSelected');
             //console.log("click toobar pressed :" + self.$elem.attr("id") + " visible:" + self.toolbar.is(":visible"));
             self.calculatePosition();
 
@@ -310,7 +310,7 @@ if ( typeof Object.create !== 'function' ) {
             var self = this;
             var animation = {'opacity': 0};
 
-            self.$elem.removeClass('pressed');
+            self.$elem.removeClass('pressed').trigger('beUnSelected');;
 
 
             switch(self.options.position) {
