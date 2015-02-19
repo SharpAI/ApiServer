@@ -7,7 +7,7 @@
     <div class="content">
       <div class="searchForm">
           <i class="fa fa-search"></i>
-          <label><input id="search-box" type="text" placeholder="搜索人和#话题"></label>
+          <label><input id="search-box" type="text" placeholder="搜索人和#话题#"></label>
       </div>
       <div id="themeList">
         {{#each theme}}
@@ -20,7 +20,7 @@
       <div id="topic">流行话题</div>
       <ul id="topicList">
         {{#each topic}}
-        <li class="topic" id="{{_id}}">#{{text}}</li>
+        <li class="topic" id="{{_id}}">#{{text}}#</li>
         {{/each}}
       </ul>
     </div>
@@ -30,13 +30,12 @@
 <template name="searchPeopleAndTopic">
   <div class="searchPeopleAndTopic">
     <div class="content">
-         {{#if is_people}}
          <table>
            <tr>
              <td>
                <div class="searchForm">
                  <i class="fa fa-search"></i>
-                   <label><input id="search-box" type="text" placeholder="搜索人"></label>
+                   <label><input id="search-box" type="text" placeholder="{{placeHolder}}"></label>
                </div>
              </td>
              <td style="width: 40px;text-align:center;">
@@ -44,9 +43,10 @@
              </td>
           </tr>
         </table>
+        {{#if is_people}}
         <ul class="my_btns my_btn2">
           <li id="search_people" class="on">人</li>
-          <li id="search_topic">#话题</li>
+          <li id="search_topic">#话题#</li>
         </ul>
         <div id="peopleList">
         {{#each getFollowUsers}}
@@ -72,26 +72,13 @@
         {{/each}}
         </div>
         {{else}}
-         <table>
-           <tr>
-             <td>
-               <div class="searchForm">
-                 <i class="fa fa-search"></i>
-                   <label><input id="search-box" type="text" placeholder="搜索#话题"></label>
-               </div>
-             </td>
-             <td style="width: 40px;text-align:center;">
-               <div class="back">取消</div>
-             </td>
-          </tr>
-        </table>
         <ul class="my_btns my_btn2">
           <li id="search_people">人</li>
-          <li id="search_topic" class="on">#话题</li>
+          <li id="search_topic" class="on">#话题#</li>
         </ul>
         <div id="topicList">
         {{#each getTopics}}
-          <div id="{{_id}}" class='topicTitle'>#{{text}}<span>{{posts}}个故事<i class="fa fa-angle-right fa-fw"></i></span></div>
+          <div id="{{_id}}" class='topicTitle'>#{{text}}#<span>{{posts}}个故事<i class="fa fa-angle-right fa-fw"></i></span></div>
           <div class="line">
             <span></span>
           </div>

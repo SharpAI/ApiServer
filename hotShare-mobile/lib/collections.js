@@ -300,7 +300,8 @@ if(Meteor.isServer){
       var selector = {'text': regExp};
       return Topics.find(selector, options).fetch();
     } else {
-      return Topics.find({}, options).fetch();
+      return [];
+      //return Topics.find({}, options).fetch();
     }
   });
 
@@ -315,7 +316,8 @@ if(Meteor.isServer){
       ]};
       return Meteor.users.find(selector, options).fetch();
     } else {
-      return Meteor.users.find({}, options).fetch();
+      return [];
+      //return Meteor.users.find({}, options).fetch();
     }
   });
 

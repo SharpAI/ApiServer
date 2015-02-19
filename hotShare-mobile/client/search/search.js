@@ -38,15 +38,3 @@ Template.searchPeopleAndTopic.helpers({
     return FollowUsersSearch.getStatus().loading;
   }
 });
-Template.searchPeopleAndTopic.events({
-  "keyup #search-box": _.throttle(function(e) {
-    var text = $(e.target).val().trim();
-    if(text.length > 0)
-    {
-       if(Session.get('is_people'))
-         FollowUsersSearch.search(text);
-       else
-         TopicsSearch.search(text);
-    }
-  }, 200)
-});

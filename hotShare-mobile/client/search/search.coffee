@@ -15,7 +15,7 @@ if Meteor.isClient
        Router.go '/topicPosts'
     'click .topic': (event)->
        Session.set "topicId", @_id
-       Session.set "topicTitle", "#"+ @text
+       Session.set "topicTitle", "#"+ @text + "#"
        Router.go '/topicPosts'
   Template.searchFollow.rendered=->
     Session.set('isSearching', false)
@@ -126,6 +126,11 @@ if Meteor.isClient
   Template.searchPeopleAndTopic.helpers
     is_people:->
        Session.get('is_people')
+    placeHolder:->
+       if Session.get('is_people')
+          "搜索人"
+       else
+          "搜索话题"
     isFollowedUser:(follow)->
       fcount = Follower.find({"userId":Meteor.userId(),"followerId":follow._id}).count()
       if fcount > 0
