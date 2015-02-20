@@ -222,8 +222,8 @@ if Meteor.isClient
       if type == "text"
           if grid != undefined
             if window.unSelectedElem
-              window.unSelectedElem = undefined;
               insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
+              window.unSelectedElem = undefined
               console.log('Selected data-row is ' + insert_row)
               grid.add_widget(node, 6, 1, 1, insert_row)
             else
@@ -283,10 +283,9 @@ if Meteor.isClient
             if Session.get('NewImgAdd') is 'true'
               grid.add_widget(node, 3, 3)
             else if window.unSelectedElem
-              window.unSelectedElem = undefined;
               insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
               insert_col = parseInt($(window.unSelectedElem).attr('data-col'))
-              console.log('Selected data-row is ' + insert_row + ' data-col is ' + insert_col)
+              window.unSelectedElem = undefined
               grid.add_widget(node, 3, 3, insert_col, insert_row)
             else
               max_row = 1
@@ -470,8 +469,8 @@ if Meteor.isClient
       if window.footbarOppration
         window.unSelectedElem = e.currentTarget
         window.footbarOppration = false
-    'beSelected .resortitem':->
-      console.log('.resortItem seleted')
+    #'beSelected .resortitem':->
+    # console.log('.resortItem seleted')
     'focus [name=textarea]':->
       Session.set('textareaFocused', true)
       $(".head").css 'position','absolute'
@@ -483,7 +482,7 @@ if Meteor.isClient
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
 
     'click #takephoto': ()->
-      window.footbarOppration = true;
+      window.footbarOppration = true
       if window.takePhoto
         window.takePhoto (result)->
           console.log 'result from camera is ' + JSON.stringify(result)
@@ -491,7 +490,7 @@ if Meteor.isClient
             Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
 
     'click #addmore':->
-      window.footbarOppration = true;
+      window.footbarOppration = true
       #uploadFile (result)->
       Session.set('NewImgAdd','false')
       selectMediaFromAblum(20, (cancel, result)->
@@ -507,7 +506,7 @@ if Meteor.isClient
       )
       return
     'click #addText':->
-      window.footbarOppration = true;
+      window.footbarOppration = true
       Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:'', style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
       return
     'click .back':(event)->
