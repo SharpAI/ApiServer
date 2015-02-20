@@ -222,6 +222,7 @@ if Meteor.isClient
       if type == "text"
           if grid != undefined
             if window.unSelectedElem
+              window.unSelectedElem = undefined;
               insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
               console.log('Selected data-row is ' + insert_row)
               grid.add_widget(node, 6, 1, 1, insert_row)
@@ -282,6 +283,7 @@ if Meteor.isClient
             if Session.get('NewImgAdd') is 'true'
               grid.add_widget(node, 3, 3)
             else if window.unSelectedElem
+              window.unSelectedElem = undefined;
               insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
               insert_col = parseInt($(window.unSelectedElem).attr('data-col'))
               console.log('Selected data-row is ' + insert_row + ' data-col is ' + insert_col)
@@ -299,8 +301,12 @@ if Meteor.isClient
                   max_row = cur_row
               )
               console.log("max_row " + max_row)
-              col = Math.floor((Math.random() * 6) + 1)
-              grid.add_widget(node, 3, 3,col,max_row)
+              if window.add_image_to_right
+                window.add_image_to_right = false
+                grid.add_widget(node, 3, 3,4,max_row)
+              else
+                window.add_image_to_right = true
+                grid.add_widget(node, 3, 3,1,max_row)
 
           $(node).toolbar
             content: '#image-toolbar-options'
