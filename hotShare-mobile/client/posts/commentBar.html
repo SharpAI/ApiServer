@@ -3,11 +3,11 @@
     <div class="content">
       <header class="bottomBorder">
         {{#if currentUser}}
-          <div class="title">评论</div>
+          <div class="title">闲聊</div>
         {{else}}
-          <div class="title">匿名评论</div>
+          <div class="title">匿名闲聊</div>
         {{/if}}
-        <div id="finish" class="rightButton">完成</div>
+        <div id="finish" class="leftButton">返回</div>
       </header>
       <div class="box">
         <!--
@@ -27,11 +27,11 @@
       </div>
       <form id="new-reply" name="new-reply" class="topBorder new-reply">
         {{#if currentUser}}
-          <input name="comment" id="comment" placeholder="添加评论..." type="text" />
+          <input name="comment" id="comment" placeholder="说点什么..." type="text" />
         {{else}}
-          <input name="comment" id="comment" placeholder="添加匿名评论..." type="text" />
+          <input name="comment" id="comment" placeholder="说点什么..." type="text" />
         {{/if}}
-        <span class="submit">发布</span>
+        <span class="submit">发送</span>
       </form>
     </div>
     <div class="bottomdirection"></div>

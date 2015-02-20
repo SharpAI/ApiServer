@@ -82,6 +82,7 @@ if Meteor.isClient
       if(st + $(window).height() is window.getDocHeight())
         $('.showPosts .head').fadeIn 300
         $('.showPostsFooter').fadeIn 300
+        $('.comment').click()
         window.lastScroll = st
         return
       # Changed is too small
