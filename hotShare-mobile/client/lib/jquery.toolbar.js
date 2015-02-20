@@ -310,7 +310,7 @@ if ( typeof Object.create !== 'function' ) {
             var self = this;
             var animation = {'opacity': 0};
 
-            self.$elem.removeClass('pressed').trigger('beUnSelected');;
+            self.$elem.removeClass('pressed').trigger('beUnSelected');
 
 
             switch(self.options.position) {
