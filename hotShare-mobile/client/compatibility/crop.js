@@ -124,8 +124,8 @@ var CROP = (function () {
 
 				var o = $(this),
 					mousedown = {
-						x: (e.originalEvent.pageX || e.originalEvent.touches[0].pageX),
-						y: (e.originalEvent.pageY || e.originalEvent.touches[0].pageY)
+						x: (e.originalEvent.touches[0].pageX),
+						y: (e.originalEvent.touches[0].pageY)
 					},
 					elepos = {
 						x: o.parent().offset().left,
@@ -139,8 +139,8 @@ var CROP = (function () {
 
 
 					var mousepos = {
-						x: (e.originalEvent.pageX || e.originalEvent.changedTouches[0].pageX || mousedown.x),
-						y: (e.originalEvent.pageY || e.originalEvent.changedTouches[0].pageY || mousedown.y)
+						x: (e.originalEvent.changedTouches[0].pageX || mousedown.x),
+						y: (e.originalEvent.changedTouches[0].pageY || mousedown.y)
 					};
 
 
