@@ -281,14 +281,20 @@ if Meteor.isClient
           if grid != undefined
             if Session.get('NewImgAdd') is 'true'
               grid.add_widget(node, 3, 3)
+            else if window.unSelectedElem
+              insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
+              insert_col = parseInt($(window.unSelectedElem).attr('data-col'))
+              console.log('Selected data-row is ' + insert_row + ' data-col is ' + insert_col)
+              grid.add_widget(node, 3, 3, insert_col, insert_row)
             else
               max_row = 1
-              $('.resortitem:near-viewport(-150)').each( ( i, itemElem )->
+              middle = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)/2
+              middle = 150 if middle is 0
+              $('.resortitem:near-viewport(-'+ middle+')').each( ( i, itemElem )->
                 if i == 0
                   max_row = parseInt($(itemElem).attr("data-row"))
                 cur_row = parseInt($(itemElem).attr("data-row"))
                 console.log("near-viewport id:"+ itemElem.id + " data-row:"+ cur_row)
-
                 if max_row < cur_row
                   max_row = cur_row
               )
@@ -455,11 +461,9 @@ if Meteor.isClient
 
   Template.addPost.events
     'beUnSelected .resortitem': (e)->
-      window.unSelectedElem = e.currentTarget;
-      console.log('.resortItem unseleted ' + $(unSelectedElem).attr('data-row'))
-      Meteor.setTimeout ()->
-          window.unSelectedElem = undefined
-        ,500
+      if window.footbarOppration
+        window.unSelectedElem = e.currentTarget
+        window.footbarOppration = false
     'beSelected .resortitem':->
       console.log('.resortItem seleted')
     'focus [name=textarea]':->
@@ -473,6 +477,7 @@ if Meteor.isClient
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
 
     'click #takephoto': ()->
+      window.footbarOppration = true;
       if window.takePhoto
         window.takePhoto (result)->
           console.log 'result from camera is ' + JSON.stringify(result)
@@ -480,6 +485,7 @@ if Meteor.isClient
             Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
 
     'click #addmore':->
+      window.footbarOppration = true;
       #uploadFile (result)->
       Session.set('NewImgAdd','false')
       selectMediaFromAblum(20, (cancel, result)->
@@ -495,6 +501,7 @@ if Meteor.isClient
       )
       return
     'click #addText':->
+      window.footbarOppration = true;
       Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:'', style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
       return
     'click .back':(event)->
