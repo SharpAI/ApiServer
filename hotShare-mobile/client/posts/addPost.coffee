@@ -344,6 +344,32 @@ if Meteor.isClient
                 mask: false,
                 zoom: {steps: 0.01,min: 1,max: 2},
               }
+              cropimg = $(containerId).find('.crop-overlay')[0]
+              hammertime = new Hammer(cropimg)
+              pinch = new Hammer.Pinch();
+              rotate = new Hammer.Rotate();
+              pinch.recognizeWith(rotate);
+              hammertime.add([pinch, rotate]);
+              hammertime.on("pinch rotate", (e)->
+                e.preventDefault();
+                scale = e.scale;
+                console.log("hammer on pinch, scale="+scale);
+                if scale > 2
+                  scale = 2
+                else if scale < 1
+                  scale = 1
+                crop.slider(scale);
+                #apply background color to range progress
+                zoom = $(containerId).find('input')
+                zoom.val(scale)
+                val = scale
+                min = zoom.attr('min')
+                max = zoom.attr('max')
+                pos = Math.round(((val - min) / (max - min)) * 100)
+                style = "background: linear-gradient(to right, #fbc93d " + pos + "%, #eee " + (pos + 0.1) + "%);"
+                zoom.attr('style', style);
+              )
+
               Meteor.setTimeout ->
                 Session.set 'imgSizeW',$("#default"+node.id+" .crop-img").width()
                 Session.set 'imgSizeH',$("#default"+node.id+" .crop-img").height()
