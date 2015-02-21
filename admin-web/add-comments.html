@@ -1,0 +1,25 @@
+<head>
+<title>Comments List</title>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>Comments List</h1>
+<form class="new-comment">
+<input type="text" name="text" placeholder="Type to add new comment" />
+</form>
+</header>
+<ul>
+{{#each comments}}
+{{> comment}}
+{{/each}}
+</ul>
+</div>
+</body>
+<template name="comment">
+<li class="{{#if checked}}checked{{/if}}">
+<button class="delete">&times;</button>
+<input type="checkbox" checked="{{checked}}" class="toggle-checked" />
+<span class="text">{{text}}</span>
+</li>
+</template>
