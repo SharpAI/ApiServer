@@ -278,8 +278,10 @@ if Meteor.isClient
     ,310
   Template.postFooter.events
     'click .commentList': onCommentList
+    'click .refresh':onComment
     'click .comment':onComment
     'click .heart':heartOnePost
+    'touchstart .refresh':onComment
     'touchstart .comment':onComment
     'touchstart .commentList': onCommentList
     'touchstart .heart':heartOnePost
