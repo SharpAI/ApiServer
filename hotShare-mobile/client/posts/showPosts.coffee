@@ -224,7 +224,15 @@ if Meteor.isClient
       #$(document.body).on('click','#swipebox-slider .current', ->
       #  $('#swipebox-close').trigger('click')
       #)
+  Template.postFooter.rendered=->
+      Max = RefComments.find().count();
+      Rnd = Math.floor((Math.random() * Max));
+      refComment = RefComments.find().fetch()
+      console.log refComment[Rnd].text
+      Session.set("refComment",refComment[Rnd].text)
   Template.postFooter.helpers
+    refcomment:->
+      Session.get("refComment")
     heart:->
       Session.get("postContent").heart.length
     retweet:->

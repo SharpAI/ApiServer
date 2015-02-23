@@ -2,11 +2,19 @@ if Meteor.isClient
   Template.commentBar.rendered=->
     $('.commentBar').css('height',$(window).height())
   Template.commentBar.helpers
+    refcomment:->
+      Session.get("refComment")
     time_diff: (created)->
       GetTime0(new Date() - created)
     comment: ()->
       Comment.find({postId:Session.get("postContent")._id}, {sort: {createdAt: -1}})
   Template.commentBar.events
+    "click .change":->
+      Max = RefComments.find().count();
+      Rnd = Math.floor((Math.random() * Max));
+      refComment = RefComments.find().fetch()
+      console.log refComment[Rnd].text
+      Session.set("refComment",refComment[Rnd].text)
     'click #finish':->
 #      $('#showComment').css('display',"none")
       $('.commentBar').fadeOut 300

@@ -8,8 +8,12 @@ Follower = new Meteor.Collection('follower');
 Topics = new Meteor.Collection('topics');
 TopicPosts = new Meteor.Collection('topicposs');
 Comment = new Meteor.Collection('comment');
+RefComments = new Meteor.Collection("refcomments");
 
 if(Meteor.isServer){
+  Meteor.publish("refcomments", function() {
+        return RefComments.find({},{fields: {text:1}});
+  });
   Meteor.publish("topicposts", function() {
         return TopicPosts.find({});
   });
@@ -331,6 +335,7 @@ if(Meteor.isServer){
 if(Meteor.isClient){
   Deps.autorun(function() {
     if (Meteor.user()) {
+      Meteor.subscribe("refcomments");
       Meteor.subscribe("topicposts");
       Meteor.subscribe("topics");
       Meteor.subscribe("posts");
