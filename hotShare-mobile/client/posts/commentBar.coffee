@@ -29,10 +29,16 @@ if Meteor.isClient
   Template.commentBar.events
     'focus #comment':->
       console.log("#comment get focus");
-      #$("#new-reply").css 'position','absolute'
+      footer = $("#new-reply")
+
+      #footer.css({ "top": footer.position().top, "bottom": "auto"});
+      $("#new-reply").css 'position','absolute'
+      $.mobile.silentScroll($('input:focus').offset().top - 100)
     'blur #comment':->
       console.log("#comment lost focus");
-      #$("#new-reply").css 'position','fixed'
+      footer = $("#new-reply")
+      #footer.css({ "top": footer.position().top, "bottom": "auto"});
+      $("#new-reply").css 'position','fixed'
     "click .change":->
       RC = Session.get("RC")+1
       if RC>7
