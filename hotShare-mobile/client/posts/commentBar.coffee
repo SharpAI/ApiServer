@@ -42,12 +42,6 @@ if Meteor.isClient
 #      $('#showComment').css('display',"none")
       $('.commentBar').fadeOut 300
       $('.showPosts').css('height',"auto")
-      PUB.pagepop()
-      Meteor.setTimeout(
-        ()->
-            document.body.scrollTop = Session.get("document_body_scrollTop")
-        0
-      )
     "click .submit":->
       $("#new-reply").submit()
     "submit .new-reply": (event)->

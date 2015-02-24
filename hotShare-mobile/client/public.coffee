@@ -71,22 +71,11 @@
         #if nowPage isnt 'partner_detail' and nowPage isnt 'add_partner'
         #    Session.set 'referrer',nowPage
         return
-    'pagepush':->
-        history = Session.get("history_view")
-        view = Session.get("channel")
-        if history is undefined or history is ""
-            history = new Array()
-        history.push {
-            view: view
-            scrollTop: document.body.scrollTop
-        }
-        Session.set "history_view", history
     'pagepop':->
         history = Session.get("history_view")
         unless history is undefined or history is ""
             if history.length > 0
                 page =  history.pop()
-                Session.set "document_body_scrollTop", page.scrollTop
                 Session.set "history_view", history
     'toast':(msg)->
         try
