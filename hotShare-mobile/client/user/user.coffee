@@ -36,7 +36,7 @@ if Meteor.isClient
       else
         value = count-1
       for i in [0..value]
-        Posts.find({owner: Meteor.userId()}).fetch()[i]
+        Posts.find({owner: Meteor.userId()}, {sort: {createdAt: -1}}).fetch()[i]
     followCount:->
       Follower.find({"userId":Meteor.userId()}).count()
   Template.user.events
