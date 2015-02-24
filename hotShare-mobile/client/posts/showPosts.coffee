@@ -277,6 +277,7 @@ if Meteor.isClient
     $('#showComment').css('display',"block")
     Meteor.setTimeout ()->
       $('.showPosts').css('height',$(window).height())
+      PUB.pagepush()
     ,310
   onComment = ->
     $('.commentBar').fadeIn 300
