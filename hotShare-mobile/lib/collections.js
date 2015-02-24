@@ -11,8 +11,12 @@ Comment = new Meteor.Collection('comment');
 RefComments = new Meteor.Collection("refcomments");
 
 if(Meteor.isServer){
+  Rnd = 0;
   Meteor.publish("refcomments", function() {
-        return RefComments.find({},{fields: {text:1}});
+        Max = RefComments.find().count()-8;
+        Rnd = Rnd + 1;
+        if(Rnd>Max) Rnd = 0;
+        return RefComments.find({},{fields: {text:1},skip:Rnd,limit:8});
   });
   Meteor.publish("topicposts", function() {
         return TopicPosts.find({});

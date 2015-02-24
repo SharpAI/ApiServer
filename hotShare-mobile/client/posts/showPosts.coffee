@@ -225,14 +225,15 @@ if Meteor.isClient
       #  $('#swipebox-close').trigger('click')
       #)
   Template.postFooter.rendered=->
-      Max = RefComments.find().count();
-      Rnd = Math.floor((Math.random() * Max));
-      refComment = RefComments.find().fetch()
-      console.log refComment[Rnd].text
-      Session.set("refComment",refComment[Rnd].text)
+    Deps.autorun ->
+      refComment = RefComments.find()
+      if refComment.count() > 0
+        Session.set("refComment",refComment.fetch())
   Template.postFooter.helpers
     refcomment:->
-      Session.get("refComment")
+      RefC = Session.get "refComment"
+      if RefC
+        return RefC[0].text
     heart:->
       Session.get("postContent").heart.length
     retweet:->

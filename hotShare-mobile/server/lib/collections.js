@@ -20,6 +20,26 @@ Meteor.startup(function(){
         text: "地板",
         createdAt: new Date() // current time
       });
+      RefComments.insert({
+        text: "看贴回帖是一种美德!",
+        createdAt: new Date() // current time
+      });
+      RefComments.insert({
+        text: "好贴，要顶!",
+        createdAt: new Date() // current time
+      });
+      RefComments.insert({
+        text: "沙发~~",
+        createdAt: new Date() // current time
+      });
+      RefComments.insert({
+        text: "板凳~~",
+        createdAt: new Date() // current time
+      });
+      RefComments.insert({
+        text: "地板~~",
+        createdAt: new Date() // current time
+      });
     }
 //创建话题列表数据库
     var TopicsId = [];

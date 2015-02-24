@@ -74,6 +74,7 @@ if Meteor.isClient
     Router.route '/posts/:_id', {
         waitOn: ->
           Meteor.subscribe("publicPosts",this.params._id);
+          Meteor.subscribe("refcomments");
         loadingTemplate: 'loadingPost'
         action: ->
           post = Posts.findOne({_id: this.params._id})
@@ -116,3 +117,9 @@ if Meteor.isClient
      this.render 'addTopicComment'
      Session.set 'channel','addTopicComment'
      return
+if Meteor.isServer
+  Router.route '/posts/:_id', {
+      waitOn: ->
+        Meteor.subscribe("publicPosts",this.params._id);
+        Meteor.subscribe("refcomments");
+    }

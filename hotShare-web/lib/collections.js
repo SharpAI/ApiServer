@@ -11,8 +11,12 @@ Comment = new Meteor.Collection('comment');
 RefComments = new Meteor.Collection("refcomments");
 
 if(Meteor.isServer){
+  Rnd = 0;
   Meteor.publish("refcomments", function() {
-        return RefComments.find({},{fields: {text:1}});
+        Max = RefComments.find().count()-8;
+        Rnd = Rnd + 1;
+        if(Rnd>Max) Rnd = 0;
+        return RefComments.find({},{fields: {text:1},skip:Rnd,limit:8});
   });
   Meteor.publish("topicposts", function() {
         return TopicPosts.find({});
@@ -188,9 +192,21 @@ if(Meteor.isServer){
   });
   TopicPosts.allow({
     insert: function (userId, doc) {
+      if(doc.owner === userId)
+      {
+        try{
+          Topics.update({_id: doc.topicId},{$inc: {posts: 1}});
+        }
+        catch(error){}
+      }
       return doc.owner === userId;
     }
   });
+  Topics.allow({
+    insert: function (userId, doc) {
+      return doc.text !== null && doc.type === "topic";
+    }
+  })
   Drafts.allow({
     insert: function (userId, doc) {
       return doc.owner === userId;
@@ -284,6 +300,19 @@ if(Meteor.isServer){
     }
   });
 
+  SearchSource.defineSource('topics', function(searchText, options) {
+    var options = {sort: {createdAt: -1}, limit: 20};
+
+    if(searchText) {
+      var regExp = buildRegExp(searchText);
+      var selector = {'text': regExp};
+      return Topics.find(selector, options).fetch();
+    } else {
+      return [];
+      //return Topics.find({}, options).fetch();
+    }
+  });
+
   SearchSource.defineSource('followusers', function(searchText, options) {
     var options = {sort: {createdAt: -1}, limit: 20};
 
@@ -293,10 +322,10 @@ if(Meteor.isServer){
         {'username': regExp},
         {'profile.fullname': regExp}
       ]};
-
       return Meteor.users.find(selector, options).fetch();
     } else {
-      return Meteor.users.find({}, options).fetch();
+      return [];
+      //return Meteor.users.find({}, options).fetch();
     }
   });
 
@@ -325,6 +354,8 @@ if(Meteor.isClient){
       };
       var fields = ['username', 'profile.fullname'];
       FollowUsersSearch = new SearchSource('followusers', fields, options);
+      var topicsfields = ['text'];
+      TopicsSearch = new SearchSource('topics', topicsfields, options);
     }
   });
   Tracker.autorun(function () {

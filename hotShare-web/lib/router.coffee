@@ -23,5 +23,6 @@ if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->
         Meteor.subscribe("publicPosts",this.params._id);
+        Meteor.subscribe("refcomments");
       fastRender: true
     }
