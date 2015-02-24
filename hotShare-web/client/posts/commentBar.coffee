@@ -2,6 +2,19 @@ if Meteor.isClient
   Session.setDefault 'RC', 0
   Template.commentBar.rendered=->
     $('.commentBar').css('height',$(window).height())
+
+
+
+    $('#comment').on('keyup input',(e)->
+      e.preventDefault()
+      $(this).css('height', 'auto').css('height', this.scrollHeight)
+      height = this.scrollHeight + 10;
+      if $('#new-reply').css("height") != height
+        $('#new-reply').css("height", height)
+        console.log('comment propertychange sizey:'+ 'scrollHeight:'+this.scrollHeight)
+    )
+
+
   Template.commentBar.helpers
     refcomment:->
       RC = Session.get 'RC'
@@ -14,6 +27,12 @@ if Meteor.isClient
     comment: ()->
       Comment.find({postId:Session.get("postContent")._id}, {sort: {createdAt: -1}})
   Template.commentBar.events
+    'focus #comment':->
+      console.log("#comment get focus");
+      #$("#new-reply").css 'position','absolute'
+    'blur #comment':->
+      console.log("#comment lost focus");
+      #$("#new-reply").css 'position','fixed'
     "click .change":->
       RC = Session.get("RC")+1
       if RC>7
@@ -62,4 +81,8 @@ if Meteor.isClient
         console.log error
       event.target.comment.value = ""
       $("#comment").attr("placeholder", "说点什么")
+      $("#comment").css('height', 'auto')
+      scrollHeight = document.getElementById("comment").scrollHeight
+      height = scrollHeight + 10;
+      $('#new-reply').css("height", height)
       false
