@@ -278,16 +278,15 @@ if Meteor.isClient
   onCommentList = ->
     $('.commentBar').fadeIn 300
     $('#showComment').css('display',"block")
-    Meteor.setTimeout ()->
-      $('.showPosts').css('height',$(window).height())
-      PUB.pagepush()
-    ,310
+    #Meteor.setTimeout ()->
+    #  $('.showPosts').css('height',$(window).height())
+    #,310
   onComment = ->
     $('.commentBar').fadeIn 300
     $('#showComment').css('display',"block")
-    Meteor.setTimeout ()->
-      $('.showPosts').css('height',$(window).height())
-    ,310
+    #Meteor.setTimeout ()->
+    #  $('.showPosts').css('height',$(window).height())
+    #,310
   onRefresh = ->
     RC = Session.get("RC")+1
     if RC>7
