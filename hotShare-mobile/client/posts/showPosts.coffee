@@ -231,9 +231,11 @@ if Meteor.isClient
         Session.set("refComment",refComment.fetch())
   Template.postFooter.helpers
     refcomment:->
-      RefC = Session.get "refComment"
+      RC = Session.get 'RC'
+      #console.log "RC: " + RC
+      RefC = Session.get("refComment")
       if RefC
-        return RefC[0].text
+        return RefC[RC].text
     heart:->
       Session.get("postContent").heart.length
     retweet:->
@@ -286,15 +288,20 @@ if Meteor.isClient
     Meteor.setTimeout ()->
       $('.showPosts').css('height',$(window).height())
     ,310
+  onRefresh = ->
+    RC = Session.get("RC")+1
+    if RC>7
+       RC=0
+    Session.set("RC", RC)
   Template.postFooter.events
     'click .commentList': onCommentList
-    'click .refresh':onComment
+    'click .refresh':onRefresh
     'click .comment':onComment
     'click .heart':heartOnePost
-    'touchstart .refresh':onComment
-    'touchstart .comment':onComment
-    'touchstart .commentList': onCommentList
-    'touchstart .heart':heartOnePost
+    #'touchstart .refresh':onRefresh
+    #'touchstart .comment':onComment
+    #'touchstart .commentList': onCommentList
+    #'touchstart .heart':heartOnePost
     'click .retweet':->
       if Meteor.user()
         postId = Session.get("postContent")._id
