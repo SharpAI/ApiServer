@@ -118,6 +118,10 @@ var CROP = (function () {
 				Overlay Movement
 			*/
 			overlay.bind(((document.ontouchstart !== null) ? 'mousedown' : 'touchstart'), function (e) {
+                if (e.originalEvent.changedTouches.length >= 2) {
+                    //console.log("multiple touchs, mousedown, "+e.originalEvent.changedTouches.length);
+                    return;
+                }
 
 				// apply grab cursor
 				$('body').addClass('grabcursor');
@@ -137,7 +141,10 @@ var CROP = (function () {
 
 				$(document).bind(((document.ontouchmove !== null) ? 'mousemove' : 'touchmove'), function (e) {
 
-
+                    if (e.originalEvent.changedTouches.length >= 2) {
+                        //console.log("multiple touchs, touchmove, "+e.originalEvent.changedTouches.length);
+                        return;
+                    }
 					var mousepos = {
 						x: (e.originalEvent.changedTouches[0].pageX || mousedown.x),
 						y: (e.originalEvent.changedTouches[0].pageY || mousedown.y)
