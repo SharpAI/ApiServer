@@ -25,12 +25,17 @@ if Meteor.isClient
     time_diff: (created)->
       GetTime0(new Date() - created)
     comment: ()->
-      Comment.find({postId:Session.get("postContent")._id}, {sort: {createdAt: -1}})
+      Comment.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}})
   Template.commentBar.events
     'focus #comment':->
       console.log("#comment get focus");
       $("#new-reply").css 'position','absolute'
+      $("#new-reply").hide()
       #$.silentScroll($('input:focus').offset().top - 100)
+      Meteor.setTimeout ()->
+          $(document).scrollTop(document.body.scrollHeight)
+          $("#new-reply").fadeIn 300
+        ,300
     'blur #comment':->
       console.log("#comment lost focus");
       $("#new-reply").css 'position','fixed'
@@ -90,4 +95,7 @@ if Meteor.isClient
       scrollHeight = document.getElementById("comment").scrollHeight
       height = scrollHeight + 10;
       $('#new-reply').css("height", height)
+      Meteor.setTimeout ()->
+          $(document).scrollTop(document.body.scrollHeight)
+        ,0
       false
