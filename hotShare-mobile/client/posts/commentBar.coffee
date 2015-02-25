@@ -39,6 +39,9 @@ if Meteor.isClient
       if RC>7
          RC=0
       Session.set("RC", RC)
+      setTimeout(()->
+        $('#comment').trigger("keyup")
+      ,300)
     'click #finish':->
 #      $('#showComment').css('display',"none")
       $('.commentBar').fadeOut 300
