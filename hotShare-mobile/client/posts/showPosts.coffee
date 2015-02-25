@@ -71,9 +71,6 @@ if Meteor.isClient
         gridster.resize_widget($(itemElem), sizex,sizey)
     )
 
-
-
-
     window.lastScroll = 0;
     $(window).scroll (event)->
       #Sets the current scroll position
@@ -82,7 +79,8 @@ if Meteor.isClient
       if(st + $(window).height() is window.getDocHeight())
         $('.showPosts .head').fadeIn 300
         $('.showPostsFooter').fadeIn 300
-        #$('.comment').click()
+        unless Meteor.isCordova
+          $('.comment').click()
         window.lastScroll = st
         return
       # Changed is too small
