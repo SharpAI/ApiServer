@@ -385,6 +385,9 @@ if Meteor.isClient
 
         Deps.afterFlush =>
           initToolBar(node, gridster)
+          type = node.$blaze_range.view.parentView.dataVar.curValue.type
+          if type == "text"
+            $(node).trigger("toolbarItemClick", {id:"modify"})
     }
 
     $("#display").find('.resortitem').each( ( i, itemElem )->
