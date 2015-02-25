@@ -283,7 +283,9 @@ if Meteor.isClient
     #,310
   onComment = ->
     $('.commentBar').fadeIn 300
+    $('.showPosts').css('display',"none")
     $('#showComment').css('display',"block")
+    $("#comment").focus()
     #Meteor.setTimeout ()->
     #  $('.showPosts').css('height',$(window).height())
     #,310

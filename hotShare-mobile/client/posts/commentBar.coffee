@@ -29,10 +29,11 @@ if Meteor.isClient
   Template.commentBar.events
     'focus #comment':->
       console.log("#comment get focus");
-      #$("#new-reply").css 'position','absolute'
+      $("#new-reply").css 'position','absolute'
+      #$.silentScroll($('input:focus').offset().top - 100)
     'blur #comment':->
       console.log("#comment lost focus");
-      #$("#new-reply").css 'position','fixed'
+      $("#new-reply").css 'position','fixed'
     "click .change":->
       RC = Session.get("RC")+1
       if RC>7
@@ -42,6 +43,7 @@ if Meteor.isClient
 #      $('#showComment').css('display',"none")
       $('.commentBar').fadeOut 300
       $('.showPosts').css('height',"auto")
+      $('.showPosts').css('display',"")
     "click .submit":->
       $("#new-reply").submit()
     "submit .new-reply": (event)->
