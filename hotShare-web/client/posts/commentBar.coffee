@@ -28,17 +28,18 @@ if Meteor.isClient
       Comment.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}})
   Template.commentBar.events
     'focus #comment':->
+
       console.log("#comment get focus");
-      $("#new-reply").css 'position','absolute'
-      $("#new-reply").hide()
+      #$("#new-reply").css 'position','absolute'
+      #$("#new-reply").hide()
       #$.silentScroll($('input:focus').offset().top - 100)
-      Meteor.setTimeout ()->
-          $(document).scrollTop(document.body.scrollHeight)
-          $("#new-reply").fadeIn 300
-        ,300
+      #Meteor.setTimeout ()->
+      #    $(document).scrollTop(document.body.scrollHeight)
+      #    $("#new-reply").fadeIn 300
+      #  ,300
     'blur #comment':->
       console.log("#comment lost focus");
-      $("#new-reply").css 'position','fixed'
+      #$("#new-reply").css 'position','fixed'
     "click .change":->
       RC = Session.get("RC")+1
       if RC>7
