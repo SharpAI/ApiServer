@@ -73,7 +73,6 @@ if Meteor.isClient
 
     window.lastScroll = 0;
     $(window).scroll (event)->
-
       #Sets the current scroll position
       st = $(window).scrollTop();
 
@@ -96,7 +95,6 @@ if Meteor.isClient
         $('.showPostsFooter').fadeIn 300
       #Updates scroll position
       window.lastScroll = st
-
 
   Template.showPosts.helpers
     time_diff: (created)->
@@ -282,13 +280,9 @@ if Meteor.isClient
     #  $('.showPosts').css('height',$(window).height())
     #,310
   onComment = ->
-    $(document).scrollTop(0)
-
+    $('.commentBar').fadeIn 300
     $('.showPosts').css('display',"none")
-    #$('.commentBar').fadeIn 300
     $('#showComment').css('display',"block")
-    $('.commentBar').css('display',"block")
-
     $("#comment").focus()
     #Meteor.setTimeout ()->
     #  $('.showPosts').css('height',$(window).height())
