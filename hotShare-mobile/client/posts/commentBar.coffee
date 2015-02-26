@@ -30,11 +30,11 @@ if Meteor.isClient
     'focus #comment':->
       console.log("#comment get focus");
       $("#new-reply").css 'position','absolute'
-      $("#new-reply").hide()
+      #$("#new-reply").hide()
       #$.silentScroll($('input:focus').offset().top - 100)
       Meteor.setTimeout ()->
           $(document).scrollTop(document.body.scrollHeight)
-          $("#new-reply").fadeIn 300
+          #$("#new-reply").fadeIn 300
         ,300
     'blur #comment':->
       console.log("#comment lost focus");
