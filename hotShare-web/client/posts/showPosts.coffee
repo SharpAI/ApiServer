@@ -297,10 +297,10 @@ if Meteor.isClient
     'click .refresh':onRefresh
     'click .comment':onComment
     'click .heart':heartOnePost
-    #'touchstart .refresh':onRefresh
-    #'touchstart .comment':onComment
-    #'touchstart .commentList': onCommentList
-    #'touchstart .heart':heartOnePost
+    'touchstart .refresh':onRefresh
+    'touchstart .comment':onComment
+    'touchstart .commentList': onCommentList
+    'touchstart .heart':heartOnePost
     'click .retweet':->
       if Meteor.user()
         postId = Session.get("postContent")._id
