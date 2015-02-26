@@ -294,6 +294,7 @@ if Meteor.isClient
   onComment = ->
     $('.commentBar').fadeIn 300
     $('.showPosts').css('display',"none")
+    $('#showComment .content').css('min-height',$(window).height())
 #    fadeMax = $(".fadeList").length
     myFade($(".fadeList:first"))
 #    $('.fadeList').each (index)->
