@@ -15,7 +15,7 @@
         <div class='changePasswd bottomBorder boxTitle'>{{retweet.length}}个人转发<span><i class="fa fa-angle-right fa-fw"></i></span></div>-->
         
         {{#each comment}}
-          <div class="eachComment fadeList">
+          <div class="eachComment">
             <div class="bubble">
               <span class="personName">{{username}}:</span><br>
               <span class="personSay">{{content}}</span>
@@ -24,7 +24,7 @@
           </div>
         {{/each}}
       </div>
-      <form id="new-reply" name="new-reply" class="topBorder new-reply fadeList">
+      <form id="new-reply" name="new-reply" class="topBorder new-reply">
         {{#if currentUser}}
           <textarea name="comment" id="comment" placeholder="说点什么..." type="text" value="{{refcomment}}"></textarea>
         {{else}}

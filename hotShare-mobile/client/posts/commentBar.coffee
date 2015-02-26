@@ -1,7 +1,6 @@
 if Meteor.isClient
   Session.setDefault 'RC', 0
   Template.commentBar.rendered=->
-    $('.fadeList').css('display',"none")
     $('.commentBar').css('height',$(window).height())
 
 
@@ -31,7 +30,6 @@ if Meteor.isClient
     'focus #comment':->
       console.log("#comment get focus");
       $("#new-reply").css 'position','absolute'
-#      $('.fadeList').css('display',"block")
       #$("#new-reply").hide()
       #$.silentScroll($('input:focus').offset().top - 100)
       Meteor.setTimeout ()->
@@ -54,9 +52,6 @@ if Meteor.isClient
       $('.commentBar').fadeOut 300
       $('.showPosts').css('height',"auto")
       $('.showPosts').css('display',"")
-      setTimeout(()->
-        $('.fadeList').css('display',"none")
-      ,900)
     "click .submit":->
       $("#new-reply").submit()
     "submit .new-reply": (event)->
