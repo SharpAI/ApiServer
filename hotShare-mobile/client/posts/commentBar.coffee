@@ -52,6 +52,8 @@ if Meteor.isClient
       $('.commentBar').fadeOut 300
       $('.showPosts').css('height',"auto")
       $('.showPosts').css('display',"")
+      $('.showPosts .head').fadeIn 300
+      $('.showPostsFooter').fadeIn 300
     "click .submit":->
       $("#new-reply").submit()
     "submit .new-reply": (event)->

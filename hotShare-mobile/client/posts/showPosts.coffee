@@ -283,19 +283,6 @@ if Meteor.isClient
     $('.commentBar').fadeIn 300
     $('.showPosts').css('display',"none")
     $('#showComment .content').css('min-height',$(window).height())
-#    fadeMax = $(".fadeList").length
-#    myFade($(".fadeList:first"))
-#    $('.fadeList').each (index)->
-#      if index is (fadeMax-2)
-#        $(this).fadeIn 500
-#      else if index is (fadeMax-1)
-#        $(this).fadeIn 500
-#        return false
-#      else
-#        $(this).fadeIn 500,->
-#          nextOne = $(this).next('.fadeList')
-#          if (nextOne.length > 0)
-#            myFade (nextOne)
     $('#showComment').css('display',"block")
     $("#comment").focus()
     #Meteor.setTimeout ()->
