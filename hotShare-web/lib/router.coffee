@@ -5,7 +5,7 @@ if Meteor.isClient
       action: ->
         post = Posts.findOne({_id: this.params._id})
         Session.set('postContent',post);
-        Session.set("DocumentTitle",post.title + ':' + post.addontitle);
+        Session.set("DocumentTitle",post.title + '——' + post.addontitle);
         favicon = document.createElement('link');
         favicon.id = 'icon';
         favicon.rel = 'icon';
