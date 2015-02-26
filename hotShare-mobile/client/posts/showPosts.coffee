@@ -10,6 +10,7 @@ if Meteor.isClient
     $(window).children().off();
   Template.showPosts.rendered=->
     $('.mainImage').css('height',$(window).height()*0.55)
+    $('.fadeList').css('display',"none")
 #    $('#wx-img').css('height',$(window).height()*0.55)
     #`global_disable_longpress = true`
     postContent = Session.get("postContent")
@@ -78,7 +79,10 @@ if Meteor.isClient
 
       if(st + $(window).height() is window.getDocHeight())
         $('.showPosts .head').fadeIn 300
+#        $('.eachComment').fadeIn 300
         $('.showPostsFooter').fadeIn 300
+#        $('.fadeList').each (index)->
+#          $(this).delay(100*index).fadeIn 300
         unless Meteor.isCordova
           $('.comment').click()
         window.lastScroll = st
@@ -279,11 +283,33 @@ if Meteor.isClient
     #Meteor.setTimeout ()->
     #  $('.showPosts').css('height',$(window).height())
     #,310
+  myFade =(fadeOne) ->
+    fadeOne.fadeIn 300,->
+      nextOne = $(this).next('.fadeList')
+      if (nextOne.length > 0)
+        myFade(nextOne)
+      else
+        $('.fadeList').css('display',"block")
+    return
   onComment = ->
     $('.commentBar').fadeIn 300
     $('.showPosts').css('display',"none")
+#    fadeMax = $(".fadeList").length
+    myFade($(".fadeList:first"))
+#    $('.fadeList').each (index)->
+#      if index is (fadeMax-2)
+#        $(this).fadeIn 500
+#      else if index is (fadeMax-1)
+#        $(this).fadeIn 500
+#        return false
+#      else
+#        $(this).fadeIn 500,->
+#          nextOne = $(this).next('.fadeList')
+#          if (nextOne.length > 0)
+#            myFade (nextOne)
     $('#showComment').css('display',"block")
     $("#comment").focus()
+    return
     #Meteor.setTimeout ()->
     #  $('.showPosts').css('height',$(window).height())
     #,310
