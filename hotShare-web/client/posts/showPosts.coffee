@@ -1,4 +1,5 @@
 if Meteor.isClient
+  isIOS = ( navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false )
   window.getDocHeight = ->
     D = document
     Math.max(
@@ -72,6 +73,12 @@ if Meteor.isClient
     )
 
     window.lastScroll = 0;
+    $('.showPosts')
+      .enableTouch()
+      .on "swipeUp"
+        ,->
+          if (window.lastScroll + $(window).height()) is window.getDocHeight()
+            $('.comment').click()
     $(window).scroll (event)->
       #Sets the current scroll position
       st = $(window).scrollTop();
@@ -79,8 +86,6 @@ if Meteor.isClient
       if(st + $(window).height() is window.getDocHeight())
         $('.showPosts .head').fadeIn 300
         $('.showPostsFooter').fadeIn 300
-        unless Meteor.isCordova
-          $('.comment').click()
         window.lastScroll = st
         return
       # Changed is too small
@@ -275,6 +280,7 @@ if Meteor.isClient
       amplify.store(postId,true)
   onCommentList = ->
     $('.commentBar').fadeIn 300
+    $('.showPosts').css('display',"none")
     $('#showComment').css('display',"block")
     #Meteor.setTimeout ()->
     #  $('.showPosts').css('height',$(window).height())
@@ -282,26 +288,25 @@ if Meteor.isClient
   onComment = ->
     $('.commentBar').fadeIn 300
     $('.showPosts').css('display',"none")
-    $('#showComment .content').css('min-height',$(window).height())
     $('#showComment').css('display',"block")
-    $("#comment").focus()
-    #Meteor.setTimeout ()->
-    #  $('.showPosts').css('height',$(window).height())
-    #,310
+    #$("#comment").focus()
   onRefresh = ->
     RC = Session.get("RC")+1
     if RC>7
        RC=0
     Session.set("RC", RC)
+  unless Meteor.isCordova
+    if isIOS
+      Template.postFooter.events
+        'touchstart .refresh':onRefresh
+        'touchstart .comment':onComment
+        'touchstart .commentList': onCommentList
+        'touchstart .heart':heartOnePost
   Template.postFooter.events
-    'click .commentList': onCommentList
+    'click .commentList': onComment
     'click .refresh':onRefresh
     'click .comment':onComment
     'click .heart':heartOnePost
-    'touchstart .refresh':onRefresh
-    'touchstart .comment':onComment
-    'touchstart .commentList': onCommentList
-    'touchstart .heart':heartOnePost
     'click .retweet':->
       if Meteor.user()
         postId = Session.get("postContent")._id

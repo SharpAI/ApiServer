@@ -2,9 +2,6 @@ if Meteor.isClient
   Session.setDefault 'RC', 0
   Template.commentBar.rendered=->
     $('.commentBar').css('height',$(window).height())
-
-
-
     $('#comment').on('keyup input',(e)->
       e.preventDefault()
       $(this).css('height', 'auto').css('height', this.scrollHeight)
@@ -13,8 +10,6 @@ if Meteor.isClient
         $('#new-reply').css("height", height)
         console.log('comment propertychange sizey:'+ 'scrollHeight:'+this.scrollHeight)
     )
-
-
   Template.commentBar.helpers
     refcomment:->
       RC = Session.get 'RC'
