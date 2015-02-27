@@ -1,5 +1,6 @@
 com.file-transfer.baidu.bcs@0.4.22
 com.leon.cordova.wechat@https://github.com/leonzhang1109/wechat-cordova-plugin/tarball/754d371205a8948c9f178009e5cc01ba0dae49a9
+com.moya.imagebase64@https://github.com/shiliutanwei/cordova-plugin-image-base64/tarball/bccd195cbf52f43e53617bf9a6f2fac498603575
 com.synconset.imagepicker@https://github.com/FrankSunnyvale/cordova-imagePicker/tarball/5988a961a7bd7f192090afd82a395b5dcb35081f
 nl.x-services.plugins.socialsharing@https://github.com/yunhaia/SocialSharing-PhoneGap-Plugin/tarball/75d3661cc9bac4510b79a17b826981014c0bf96d
 nl.x-services.plugins.toast@2.0.2

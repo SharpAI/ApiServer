@@ -561,6 +561,22 @@ if (Meteor.isCordova){
                   console.log('File name ' + filename);
 
                   var params = {filename:filename, originalFilename:originalFilename, URI:results[i], smallImage:''};
+                  var fileExt = filename.split('.').pop();
+                  if(fileExt.toUpperCase()==='GIF'){
+                  ImageBase64.base64({
+                        uri: results[i],
+                        quality: 60,
+                        width: 400,
+                        height: 400
+                    },
+                    function(a) {
+                        params.smallImage = "data:image/jpg;base64,"+a.base64;
+                        callback(null, params);
+                    },
+                    function(e) {
+                        console.log("error" + e);
+                    });
+                  }else{
                   retArray.push(params);
                   window.resolveLocalFileSystemURL(results[i], function(fileEntry) {
                     fileEntry.file(function(file) {
@@ -585,6 +601,7 @@ if (Meteor.isCordova){
                   }, function(e) {
                     console.log('resolveLocalFileSystemURL Error = ' + e);
                   });
+                  }
                 }
             } else {
                 for (var i = 0; i < length; i++) {
