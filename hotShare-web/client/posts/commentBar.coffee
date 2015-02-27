@@ -24,15 +24,28 @@ if Meteor.isClient
   Template.commentBar.events
     'focus #comment':->
       console.log("#comment get focus");
-      $("#new-reply").css 'position','absolute'
+      #$("#new-reply").css 'position','absolute'
       #$("#new-reply").hide()
       #$.silentScroll($('input:focus').offset().top - 100)
+      
+      console.log 'Window height is ' + window.innerHeight
       Meteor.setTimeout ()->
-          $(document).scrollTop(document.body.scrollHeight)
+          $("html, body").animate({ scrollTop: $(document).height() }, "fast")
           #$("#new-reply").fadeIn 300
+          #console.log 'Window height is ' + window.innerHeight
+          #$(".commentBar").css('height',window.innerHeight-$(".new-reply").height())
+          #$(".new-reply").css('top',window.innerHeight-$(".new-reply").height())
+          #$('html, body').css {
+          #  'overflow': 'hidden'
+          #}
         ,300
     'blur #comment':->
       console.log("#comment lost focus");
+      Meteor.setTimeout ()->
+          $(document).scrollTop(document.body.scrollHeight)
+          #$("#new-reply").fadeIn 300
+          console.log 'Window height is ' + window.innerHeight
+        ,300
       $("#new-reply").css 'position','fixed'
     "click .change":->
       RC = Session.get("RC")+1
@@ -43,10 +56,11 @@ if Meteor.isClient
         $('#comment').trigger("keyup")
       ,300)
     'click #finish':->
-#      $('#showComment').css('display',"none")
-      $('.commentBar').fadeOut 300
-      $('.showPosts').css('height',"auto")
-      $('.showPosts').css('display',"")
+      $('#showComment').fadeOut 400
+      $('#comment').fadeOut 300
+      $('.showPosts').show 0,->
+          if window.showPostAt
+            $(window).scrollTop(window.showPostAt)
       $('.showPosts .head').fadeIn 300
       $('.showPostsFooter').fadeIn 300
     "click .submit":->
