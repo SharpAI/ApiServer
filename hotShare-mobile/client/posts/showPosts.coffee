@@ -73,12 +73,13 @@ if Meteor.isClient
     )
 
     window.lastScroll = 0;
-    $('.showPosts')
-      .enableTouch()
-      .on "swipeUp"
-        ,->
+    $('.showPosts').swipe {
+        swipeUp: ->
           if (window.lastScroll + $(window).height()) is window.getDocHeight()
             $('.comment').click()
+        allowPageScroll:"vertical"
+        threshold:10
+      }
     $(window).scroll (event)->
       #Sets the current scroll position
       st = $(window).scrollTop();
