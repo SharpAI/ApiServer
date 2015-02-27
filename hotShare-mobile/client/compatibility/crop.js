@@ -13,6 +13,7 @@ var CROP = (function () {
 
 		this.img = undefined;
 		this.imgInfo = {
+			style: '',
 			aw: 0,
 			ah: 0,
 			w: 0,
@@ -21,7 +22,8 @@ var CROP = (function () {
 			al: 0,
 			t: 0,
 			l: 0,
-			s: 1 // scale
+			s: 1, // scale
+			v: 1
 		};
 
 		this.init = function(ele) {
@@ -36,6 +38,12 @@ var CROP = (function () {
 
 			// set min zoom
 			this.imgInfo.s = ele.zoom.min;
+			if (ele.style) {
+				this.imgInfo.v = ele.zoom.value;
+			}
+			if (ele.style) {
+				this.imgInfo.style = ele.style;
+			}
 
 
 			/*
@@ -104,6 +112,10 @@ var CROP = (function () {
 
 			// load image
 			this.loadImg(ele.image);
+			if (this.imgInfo.style != '') {
+				zoom.val(this.imgInfo.v);
+				rangeColor(zoom);
+			}
 
 
 			/*
@@ -268,6 +280,11 @@ var CROP = (function () {
 			}
 
 			this.imgResize();
+			if (this.imgInfo.style != '') {
+				this.slider(this.imgInfo.v);
+				img.attr('style', this.imgInfo.style);
+			}
+
 		};
 
 

@@ -328,6 +328,12 @@ if Meteor.isClient
               $('#crop'+node.id).css('display',"block")
               $('#'+node.id).css('z-index',"12")
               image = Drafts.findOne({_id:node.id}).imgUrl
+              style = Drafts.findOne({_id:node.id}).style
+              if style is undefined
+                style = ''
+              scale = Drafts.findOne({_id:node.id}).scale
+              if scale is undefined
+                scale = 1
               console.log "imgUrl is "+image
               imgWidth = $(node).width()
               imgHeight = $(node).height()
@@ -339,10 +345,11 @@ if Meteor.isClient
               crop.init {
                 container: containerId,
                 image: image,
+                style: style,
                 width: imgWidth,
                 height: imgHeight,
                 mask: false,
-                zoom: {steps: 0.01,min: 1,max: 2},
+                zoom: {steps: 0.01,min: 1,max: 2,value: scale},
               }
               cropimg = $(containerId).find('.crop-overlay')[0]
               hammertime = new Hammer(cropimg)
@@ -371,9 +378,9 @@ if Meteor.isClient
               )
 
               Meteor.setTimeout ->
-                Session.set 'imgSizeW',$("#default"+node.id+" .crop-img").width()
-                Session.set 'imgSizeH',$("#default"+node.id+" .crop-img").height()
-              ,200
+                Session.set 'imgSizeW',$("#default"+node.id+" .crop-img").width()/scale
+                Session.set 'imgSizeH',$("#default"+node.id+" .crop-img").height()/scale
+              ,300
             return
       return
 
@@ -642,7 +649,8 @@ if Meteor.isClient
       
       style = "height:" + img_height + ';width:' + img_width + ';top:' + img_top + ';left:' + img_left + ';'
       console.log style
-      Drafts.update({_id: cropDraftId}, {$set: {style: style}});
+      zoom = $("#default"+cropDraftId).find('input')
+      Drafts.update({_id: cropDraftId}, {$set: {style: style, scale:zoom.val()}});
       $('#isImage'+cropDraftId).css('display',"block")
       $('#mainImage'+cropDraftId).css('display',"block")
       $('#crop'+cropDraftId).css('display',"none")
