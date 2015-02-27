@@ -279,18 +279,11 @@ if Meteor.isClient
       heart.push {userId: 0,createdAt: new Date()}
       Posts.update {_id: postId},{$set: {heart: heart}}
       amplify.store(postId,true)
-  onCommentList = ->
-    $('.commentBar').fadeIn 300
-    $('.showPosts').css('display',"none")
-    $('#showComment').css('display',"block")
-    #Meteor.setTimeout ()->
-    #  $('.showPosts').css('height',$(window).height())
-    #,310
   onComment = ->
-    $('.commentBar').fadeIn 300
-    $('.showPosts').css('display',"none")
-    $('#showComment').css('display',"block")
-    #$("#comment").focus()
+    window.showPostAt = $(window).scrollTop()
+    $('.showPosts').hide 0
+    $('#showComment').fadeIn 300
+    $("#comment").fadeIn 300
   onRefresh = ->
     RC = Session.get("RC")+1
     if RC>7
@@ -301,7 +294,7 @@ if Meteor.isClient
       Template.postFooter.events
         'touchstart .refresh':onRefresh
         'touchstart .comment':onComment
-        'touchstart .commentList': onCommentList
+        'touchstart .commentList': onComment
         'touchstart .heart':heartOnePost
   Template.postFooter.events
     'click .commentList': onComment
