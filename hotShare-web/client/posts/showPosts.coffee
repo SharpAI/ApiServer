@@ -73,18 +73,17 @@ if Meteor.isClient
     )
 
     window.lastScroll = 0;
-    $('.showPosts').swipe {
-        swipeUp: ->
-          if (window.lastScroll + $(window).height()) is window.getDocHeight()
-            $('.comment').click()
-        allowPageScroll:"vertical"
-        threshold:10
-      }
     $(window).scroll (event)->
       #Sets the current scroll position
       st = $(window).scrollTop();
 
       if(st + $(window).height() is window.getDocHeight())
+        # Popup chat box only on browser with 1s delay
+        # And back to the previous position when back from chat box to post
+        if Meteor.isCordova
+          Meteor.setTimeout ->
+              $('.comment').click()
+            ,1000
         $('.showPosts .head').fadeIn 300
         $('.showPostsFooter').fadeIn 300
         window.lastScroll = st
