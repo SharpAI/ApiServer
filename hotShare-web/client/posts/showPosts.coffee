@@ -81,7 +81,8 @@ if Meteor.isClient
         # Popup chat box only on browser with 1s delay
         # And back to the previous position when back from chat box to post
         unless Meteor.isCordova
-          unless window.lastScroll is st
+          unless window.popedup
+            window.popedup = true
             Meteor.setTimeout ->
                 $('.comment').click()
               ,1000
@@ -94,6 +95,7 @@ if Meteor.isClient
         return
       #Determines up-or-down scrolling
       if st > window.lastScroll
+        window.popedup = false
         $('.showPosts .head').fadeOut 300
         $('.showPostsFooter').fadeOut 300
       else
