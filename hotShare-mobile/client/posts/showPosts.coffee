@@ -292,8 +292,8 @@ if Meteor.isClient
             $('.commentBar').addClass('animated fadeInUp')
           ,50
 #        $('#showComment').fadeIn 0
-#        $("#comment").fadeIn 300
       ,300
+    $("#comment").fadeIn 300
   onRefresh = ->
     RC = Session.get("RC")+1
     if RC>7
