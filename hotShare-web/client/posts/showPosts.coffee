@@ -77,13 +77,14 @@ if Meteor.isClient
       #Sets the current scroll position
       st = $(window).scrollTop();
 
-      if(st + $(window).height() is window.getDocHeight())
+      if(st + $(window).height()) is window.getDocHeight()
         # Popup chat box only on browser with 1s delay
         # And back to the previous position when back from chat box to post
         unless Meteor.isCordova
-          Meteor.setTimeout ->
-              $('.comment').click()
-            ,1000
+          unless window.lastScroll is st
+            Meteor.setTimeout ->
+                $('.comment').click()
+              ,1000
         $('.showPosts .head').fadeIn 300
         $('.showPostsFooter').fadeIn 300
         window.lastScroll = st
