@@ -80,7 +80,7 @@ if Meteor.isClient
       if(st + $(window).height() is window.getDocHeight())
         # Popup chat box only on browser with 1s delay
         # And back to the previous position when back from chat box to post
-        if Meteor.isCordova
+        unless Meteor.isCordova
           Meteor.setTimeout ->
               $('.comment').click()
             ,1000
