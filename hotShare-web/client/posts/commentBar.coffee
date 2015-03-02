@@ -56,6 +56,9 @@ if Meteor.isClient
         $('#comment').trigger("keyup")
       ,300)
     'click #finish':->
+      $('body').css('background-color','#111')
+      $('.showPosts').removeClass('fade-up-out hidden')
+      $('.commentBar').removeClass('animated fadeInUp')
       $('#showComment').fadeOut 400
       $('#comment').fadeOut 300
       $('.showPosts').show 0,->
