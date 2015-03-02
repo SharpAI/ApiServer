@@ -2,7 +2,7 @@ if Meteor.isClient
   Template.allDrafts.helpers
     items:()->
       for i in [0..SavedDrafts.find().count()-1]
-        SavedDrafts.find().fetch()[i]
+        SavedDrafts.find({},{sort: {createdAt: -1}}).fetch()[i]
   Template.allDrafts.events
     'click .back':(event)->
         PUB.back()

@@ -20,7 +20,7 @@ if Meteor.isClient
       else
         value = count-1
       for i in [0..value]
-        SavedDrafts.find().fetch()[i]
+        SavedDrafts.find({},{sort: {createdAt: -1}}).fetch()[i]
     postsCount:->
       Posts.find({owner: Meteor.userId()}).count()
     comparePostsCount:(value)->
