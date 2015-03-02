@@ -563,6 +563,7 @@ if (Meteor.isCordova){
                   var params = {filename:filename, originalFilename:originalFilename, URI:results[i], smallImage:''};
                   var fileExt = filename.split('.').pop();
                   if(fileExt.toUpperCase()==='GIF'){
+                  retArray.push(params);
                   ImageBase64.base64({
                         uri: results[i],
                         quality: 60,
@@ -570,8 +571,13 @@ if (Meteor.isCordova){
                         height: 400
                     },
                     function(a) {
-                        params.smallImage = "data:image/jpg;base64,"+a.base64;
-                        callback(null, params);
+                        for (var item in retArray) {
+                          if (retArray[item].URI == a.imageURI) {
+                            retArray[item].smallImage = "data:image/jpg;base64,"+a.base64;
+                            callback(null, retArray[item]);
+                            retArray.slice(item, 1);
+                          }
+                        }
                     },
                     function(e) {
                         console.log("error" + e);
