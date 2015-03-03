@@ -286,7 +286,10 @@ if Meteor.isClient
     $('.showPosts').addClass('fade-up-out')
     Meteor.setTimeout ()->
         $('.showPosts').fadeOut 0
-        $('#showComment').fadeIn 0
+        Meteor.setTimeout ()->
+            $('#showComment').fadeIn 0
+            $('.commentBar').addClass('comFadeInUp')
+          ,50
       ,300
     $("#comment").fadeIn 300
   onRefresh = ->
