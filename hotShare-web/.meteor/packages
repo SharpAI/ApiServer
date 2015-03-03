@@ -12,4 +12,5 @@ less
 meteorhacks:fast-render
 fortawesome:fontawesome
 meteorhacks:search-source
-raix:push
+meteorhacks:npm
+meteor-phonegap-push
