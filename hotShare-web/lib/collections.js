@@ -140,6 +140,7 @@ if(Meteor.isServer){
         return true;
       }
       if (fieldNames.toString() === 'browse' && modifier.$set !== void 0) {
+      /*
         try{
             var followPosts=FollowPosts.find({postId:doc._id});
             followPosts.forEach(function(data){
@@ -153,6 +154,7 @@ if(Meteor.isServer){
             });
         }
         catch(error){}
+      */
         return true;
       }
 
