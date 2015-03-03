@@ -10,6 +10,19 @@ if Meteor.isClient
         $('#new-reply').css("height", height)
         console.log('comment propertychange sizey:'+ 'scrollHeight:'+this.scrollHeight)
     )
+
+    $('.box')
+    .pullToRefresh()
+    .on("start.pulltorefresh", ($e,y)->
+        window.pullstart = true
+    )
+    .on("move.pulltorefresh", (percent)->
+        if ($('.commentBar').scrollTop() is 0) && window.pullstart
+          Meteor.setTimeout ()->
+              $('#finish').click()
+            ,300
+        window.pullstart = false
+    )
   Template.commentBar.helpers
     refcomment:->
       RC = Session.get 'RC'
