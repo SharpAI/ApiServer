@@ -81,10 +81,11 @@ if (Meteor.isCordova) {
     }
 
   Meteor.startup(function(){
-    document.addEventListener("deviceready", onDeviceReady, false);
-    // PhoneGap加载完毕
-    function onDeviceReady() {
-        if(device.platform === 'Android' ){
+      if(device.platform === 'Android' ){
+        document.addEventListener("deviceready", onDeviceReady, false);
+        // PhoneGap加载完毕
+        function onDeviceReady() {
+          Session.set('uuid',device.uuid);
           window.plugins.jPushPlugin.receiveMessageInAndroidCallback = pushNotificationCallback;
           window.plugins.jPushPlugin.openNotificationInAndroidCallback = openNotificationInAndroidCallback;
           window.plugins.jPushPlugin.init();
@@ -92,34 +93,20 @@ if (Meteor.isCordova) {
               updateRegistrationID(function(got,registrationID){
               if(got===true){
                 console.log('Got registrationID ' + registrationID);
-                Session.set('registrationID',registrationID);
-                Session.set('registrationType','JPush');
-                window.clearInterval(registerInterval);
-                updatePushNotificationToken('JPush',registrationID);
+                var registerType = Session.get('registrationType');
+                if ( !registerType || registerType === 'JPush'){
+                  Session.set('registrationID',registrationID);
+                  Session.set('registrationType','JPush');
+                  window.clearInterval(registerInterval);
+                  window.updatePushNotificationToken('JPush',registrationID);
+                }
               } else {
                 console.log("Didn't get registrationID, need retry later");
               }
             })
           },20000 );
         }
-    }
-  });
-}
-
-if (Meteor.isClient) {
-    Meteor.startup(function () {
-      updatePushNotificationToken = function(type,token){
-        Deps.autorun(function(){
-          if(Meteor.user()){
-             if(token != Session.get("token"))
-             {
-               console.log("type:"+type+";token:"+token);
-               Meteor.users.update({_id: Meteor.user()._id}, {$set: {type: type, token: token}});
-               Session.set("token", token);
-             }
-          }
-        });
       }
-    });
+  });
 }
 

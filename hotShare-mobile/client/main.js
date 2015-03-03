@@ -1,4 +1,16 @@
 if (Meteor.isCordova) {
+    window.updatePushNotificationToken = function(type,token){
+        Deps.autorun(function(){
+            if(Meteor.user()){
+                if(token != Session.get("token"))
+                {
+                    console.log("type:"+type+";token:"+token);
+                    Meteor.users.update({_id: Meteor.user()._id}, {$set: {type: type, token: token}});
+                    Session.set("token", token);
+                }
+            }
+        });
+    }
   Meteor.startup(function(){
     document.addEventListener("deviceready", onDeviceReady, false);
     // PhoneGap加载完毕
