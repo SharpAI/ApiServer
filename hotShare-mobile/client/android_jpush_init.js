@@ -101,6 +101,10 @@ if (Meteor.isCordova) {
                   window.updatePushNotificationToken('JPush',registrationID);
                 }
               } else {
+                if(Session.get('registrationType') && Session.get('registrationID')){
+                    window.clearInterval(registerInterval);
+                    return;
+                }
                 console.log("Didn't get registrationID, need retry later");
               }
             })

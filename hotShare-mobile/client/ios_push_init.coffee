@@ -20,7 +20,6 @@ if Meteor.isCordova
             console.log('Got registrationID ' + result)
             Session.set('registrationID',result);
             Session.set('registrationType','iOS');
-            window.clearInterval(result);
             window.updatePushNotificationToken('iOS',result)
           ,(error)->
             console.log('No Push Notification support in this build error = ' + error)
