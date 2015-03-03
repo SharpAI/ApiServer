@@ -282,16 +282,11 @@ if Meteor.isClient
       Posts.update {_id: postId},{$set: {heart: heart}}
       amplify.store(postId,true)
   onComment = ->
-    $('body').css('background-color','#fff')
     window.showPostAt = $(window).scrollTop()
     $('.showPosts').addClass('fade-up-out')
     Meteor.setTimeout ()->
         $('.showPosts').addClass('hidden')
-        Meteor.setTimeout ()->
-            $('#showComment').css('display','')
-            $('.commentBar').addClass('animated fadeInUp')
-          ,50
-#        $('#showComment').fadeIn 0
+        $('#showComment').fadeIn 0
       ,300
     $("#comment").fadeIn 300
   onRefresh = ->
