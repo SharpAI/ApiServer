@@ -285,7 +285,7 @@ if Meteor.isClient
     window.showPostAt = $(window).scrollTop()
     $('.showPosts').addClass('fade-up-out')
     Meteor.setTimeout ()->
-        $('.showPosts').addClass('hidden')
+        $('.showPosts').fadeOut 0
         $('#showComment').fadeIn 0
       ,300
     $("#comment").fadeIn 300

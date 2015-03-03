@@ -56,7 +56,7 @@ if Meteor.isClient
         $('#comment').trigger("keyup")
       ,300)
     'click #finish':->
-      $('.showPosts').removeClass('fade-up-out hidden')
+      $('.showPosts').removeClass('fade-up-out')
       $('#showComment').fadeOut 400
       $('#comment').fadeOut 300
       $('.showPosts').show 0,->
