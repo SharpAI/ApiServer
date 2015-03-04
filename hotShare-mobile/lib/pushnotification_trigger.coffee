@@ -9,7 +9,7 @@ if Meteor.isServer
         #console.log "comment self post"
         return
       commentText = doc.content;
-      content = '您收到了新的回复:'+commentText
+      content = '您收到了新的回复:\n'+commentText
       extras = {
         type: "comment"
         postId: doc.postId
@@ -19,7 +19,7 @@ if Meteor.isServer
       if doc.owner == userId
         #console.log "read self post"
         return
-      content = '有人正在阅读您的故事:《' + doc.title + '》'
+      content = '有人正在阅读您的故事:\n《' + doc.title + '》'
       extras = {
         type: "read"
         postId: doc._id
@@ -47,8 +47,8 @@ if Meteor.isServer
       else if pushToken.type is 'iOS'
         console.log 'Server PN to iOS '
         token = pushToken.token
-        pushServer.sendIOS 'me', token , '您收到了新的回复', commentText, 1
+        pushServer.sendIOS 'me', token , '', content, 1
       else if pushToken.type is 'GCM'
         console.log 'Server PN to GCM '
         token = pushToken.token
-        pushServer.sendAndroid 'me', token , '您收到了新的回复',commentText, 1
+        pushServer.sendAndroid 'me', token , '',content, 1

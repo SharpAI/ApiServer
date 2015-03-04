@@ -14,9 +14,9 @@ if Meteor.isCordova
         if (e.foreground)
           console.log 'INLINE NOTIFICATION'
           #PUB.toast JSON.stringify(e.payload)
-          if e.payload.message and e.payload.title
-            #PUB.toast e.payload.title + ': ' + e.payload.message
-            window.plugin.notification.local.add {title: e.payload.title,message: e.payload.message}
+          if e.payload.message
+            PUB.toast e.payload.message
+            window.plugin.notification.local.add {title: '故事贴',message: e.payload.message}
           # on Android soundname is outside the payload.
           # On Amazon FireOS all custom attributes are contained within payload
           # soundfile = e.soundname || e.payload.sound;
