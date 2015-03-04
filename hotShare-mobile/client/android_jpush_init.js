@@ -99,6 +99,8 @@ if (Meteor.isCordova) {
                   Session.set('registrationType','JPush');
                   window.clearInterval(registerInterval);
                   window.updatePushNotificationToken('JPush',registrationID);
+                } else {
+                    window.clearInterval(registerInterval);
                 }
               } else {
                 if(Session.get('registrationType') && Session.get('registrationID')){
