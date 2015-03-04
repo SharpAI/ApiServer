@@ -285,6 +285,7 @@ if(Meteor.isServer){
   });
   Comment.allow({
     insert: function (userId, doc) {
+      pushnotification(doc);
       return doc.username !== null;
     },
     remove: function (userId, doc) {
