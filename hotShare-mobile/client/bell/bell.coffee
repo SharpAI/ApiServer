@@ -2,6 +2,8 @@ if Meteor.isClient
   Template.bell.helpers
     eventFeeds:->
       Feeds.find({}, {sort: {createdAt: -1}})
+    isComment:(eventType)->
+      eventType is 'comment'
     selfPosted:(eventType)->
       eventType is 'SelfPosted'
     time_diff: (created)->
