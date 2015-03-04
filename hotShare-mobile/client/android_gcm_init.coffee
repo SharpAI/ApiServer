@@ -12,26 +12,29 @@ if Meteor.isCordova
         # if this flag is set, this notification happened while we were in the foreground.
         # you might want to play a sound to get the user's attention, throw up a dialog, etc.
         if (e.foreground)
-          console.log 'INLINE NOTIFICATION '
-
+          console.log 'INLINE NOTIFICATION'
+          #PUB.toast JSON.stringify(e.payload)
+          if e.payload.message and e.payload.title
+            #PUB.toast e.payload.title + ': ' + e.payload.message
+            window.plugin.notification.local.add {title: e.payload.title,message: e.payload.message}
           # on Android soundname is outside the payload.
           # On Amazon FireOS all custom attributes are contained within payload
-          soundfile = e.soundname || e.payload.sound;
+          # soundfile = e.soundname || e.payload.sound;
           # if the notification contains a soundname, play it.
           # playing a sound also requires the org.apache.cordova.media plugin
-          my_media = new Media("/android_asset/www/"+ soundfile);
-          my_media.play();
+          # my_media = new Media("/android_asset/www/"+ soundfile);
+          # my_media.play();
         else
             # otherwise we were launched because the user touched a notification in the notification tray.
           if e.coldstart
             console.log 'COLDSTART NOTIFICATION'
           else
             console.log 'BACKGROUND NOTIFICATION'
-          console.log 'MSG: ' + e.payload.message
-          console.log 'MSGCNT: ' + e.payload.msgcnt
-          console.log 'TIMESTAMP: ' + e.payload.timeStamp
+        console.log 'MSG: ' + e.payload.message
+        console.log 'MSGCNT: ' + e.payload.msgcnt
+        console.log 'TIMESTAMP: ' + e.payload.timeStamp
 
-      window.onNotification = (e)->
+      @onNotification = (e)->
         console.log ('event is ' + e.event)
         switch e.event
           when 'registered' then registeredHandle e

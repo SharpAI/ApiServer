@@ -54,7 +54,7 @@ CordovaPush = function(androidServerKey, options) {
 
         var note = new apn.Notification();
 
-        note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.
+        note.expiry = Math.floor(Date.now() / 1000) + 3600*12; // Expires 1 hour from now.
         note.badge = count;
         //note.sound = ""; // XXX: Does this work?
         note.alert = text;
@@ -75,7 +75,7 @@ CordovaPush = function(androidServerKey, options) {
         var message = new gcm.Message({
             collapseKey: from,
             delayWhileIdle: true,
-            timeToLive: 4,
+            timeToLive: 3600*12,
         //    restricted_package_name: 'dk.gi2.driftsstatus'
             data: {
                 title: title,
@@ -102,7 +102,7 @@ CordovaPush = function(androidServerKey, options) {
 
         var userToken = (userTokens.length === 1)?userTokens[0]:null;
         
-        sender.send(message, userTokens, 5, function (err, result) {
+        sender.send(message, userTokens, 10, function (err, result) {
             if (err) {
                 //console.log('ANDROID ERROR: result of sender: ' + result);
             } else if (result){
