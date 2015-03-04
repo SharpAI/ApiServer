@@ -10,7 +10,7 @@ if Meteor.isCordova
             # notification again.
             return
           if event.alert
-            console.log 'alert is ' + event.alert
+            PUB.toast event.alert
           if event.sound
             snd = new Media(event.sound)
             snd.play()
