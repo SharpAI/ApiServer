@@ -6,7 +6,7 @@ if Meteor.isServer
     if type == "comment"
       post = Posts.findOne({_id: doc.postId});
       if post.owner == userId
-        console.log "comment self post"
+        #console.log "comment self post"
         return
       commentText = doc.content;
       content = '您收到了新的回复:'+commentText
@@ -17,7 +17,7 @@ if Meteor.isServer
       toUserToken = Meteor.users.findOne({_id: post.owner})
     else
       if doc.owner == userId
-        console.log "read self post"
+        #console.log "read self post"
         return
       content = '有人正在阅读您的故事:《' + doc.title + '》'
       extras = {

@@ -82,6 +82,14 @@ if (Meteor.isCordova) {
 
   Meteor.startup(function(){
       if(device.platform === 'Android' ){
+        document.addEventListener("pause", onPause, false);
+        document.addEventListener("resume", onResume, false);
+        function onPause(){
+          window.plugins.jPushPlugin.call_native("onPause", new Array(), null);
+        }
+        function onResume(){
+          window.plugins.jPushPlugin.call_native("onResume", null, null);
+        }
         document.addEventListener("deviceready", onDeviceReady, false);
         // PhoneGap加载完毕
         function onDeviceReady() {
