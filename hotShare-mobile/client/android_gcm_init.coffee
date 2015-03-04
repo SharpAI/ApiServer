@@ -22,14 +22,14 @@ if Meteor.isCordova
           my_media = new Media("/android_asset/www/"+ soundfile);
           my_media.play();
         else
-          # otherwise we were launched because the user touched a notification in the notification tray.
-        if e.coldstart
-          console.log 'COLDSTART NOTIFICATION'
-        else
-          console.log 'BACKGROUND NOTIFICATION'
-        console.log 'MSG: ' + e.payload.message
-        console.log 'MSGCNT: ' + e.payload.msgcnt
-        console.log 'TIMESTAMP: ' + e.payload.timeStamp
+            # otherwise we were launched because the user touched a notification in the notification tray.
+          if e.coldstart
+            console.log 'COLDSTART NOTIFICATION'
+          else
+            console.log 'BACKGROUND NOTIFICATION'
+          console.log 'MSG: ' + e.payload.message
+          console.log 'MSGCNT: ' + e.payload.msgcnt
+          console.log 'TIMESTAMP: ' + e.payload.timeStamp
 
       window.onNotification = (e)->
         console.log ('event is ' + e.event)

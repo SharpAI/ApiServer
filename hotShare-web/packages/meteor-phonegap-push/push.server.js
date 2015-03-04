@@ -74,8 +74,8 @@ CordovaPush = function(androidServerKey, options) {
         //var message = new gcm.Message();
         var message = new gcm.Message({
             collapseKey: from,
-        //    delayWhileIdle: true,
-        //    timeToLive: 4,
+            delayWhileIdle: true,
+            timeToLive: 4,
         //    restricted_package_name: 'dk.gi2.driftsstatus'
             data: {
                 title: title,
@@ -105,9 +105,9 @@ CordovaPush = function(androidServerKey, options) {
         sender.send(message, userTokens, 5, function (err, result) {
             if (err) {
                 //console.log('ANDROID ERROR: result of sender: ' + result);
-            } else {
+            } else if (result){
                 //console.log('ANDROID: Result of sender: ' + JSON.stringify(result));
-                if (result.canonical_ids === 1 && userToken) {
+                if (result.canonical_ids && result.canonical_ids === 1 && userToken) {
 
                     // This is an old device, token is replaced
                     Fiber(function(self) {
@@ -128,7 +128,7 @@ CordovaPush = function(androidServerKey, options) {
                 }
                 // We cant send to that token - might not be registred
                 // ask the user to remove the token from the list
-                if (result.failure !== 0 && userToken) {
+                if (result.failure && result.failure !== 0 && userToken) {
 
                     // This is an old device, token is replaced
                     Fiber(function(self) {

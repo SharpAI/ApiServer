@@ -47,7 +47,7 @@ localstorage@1.0.2
 logging@1.0.6
 mdg:camera@1.1.3
 meteor@1.1.4
-meteor-phonegap-push@0.0.0
+meteor-phonegap-push@0.0.1
 meteor-platform@1.2.1
 meteorhacks:async@1.0.0
 meteorhacks:npm@1.2.2

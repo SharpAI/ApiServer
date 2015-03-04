@@ -47,8 +47,8 @@ if Meteor.isServer
       else if pushToken.type is 'iOS'
         console.log 'Server PN to iOS '
         token = pushToken.token
-        pushServer.sendIOS 'me', token , '', '您收到了新的回复:'+commentText, 1
+        pushServer.sendIOS 'me', token , '您收到了新的回复', commentText, 1
       else if pushToken.type is 'GCM'
         console.log 'Server PN to GCM '
         token = pushToken.token
-        pushServer.sendAndroid 'me', token , '', '您收到了新的回复:'+commentText, 1
+        pushServer.sendAndroid 'me', token , '您收到了新的回复',commentText, 1
