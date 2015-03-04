@@ -39,13 +39,13 @@ if (Meteor.isCordova) {
          case "comment":
             if(Meteor.user()){
               var postId = extras["cn.jpush.android.EXTRA"]["postId"];
-              PUB.page('/posts/'+postId);
+              Router.go('/bell');
             }
             break;
           case "read":
             if(Meteor.user()){
               var postId = extras["cn.jpush.android.EXTRA"]["postId"];
-              PUB.page('/posts/'+postId);
+              //PUB.page('/posts/'+postId);
             }
             break;
         }
