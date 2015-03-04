@@ -19,7 +19,7 @@ if Meteor.isServer
       if doc.owner == userId
         console.log "read self post"
         return
-      content = '有人正在阅读您的故事:"' + doc.title + '"'
+      content = '有人正在阅读您的故事:《' + doc.title + '》'
       extras = {
         type: "read"
         postId: doc._id
