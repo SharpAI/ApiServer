@@ -33,8 +33,8 @@ var CROP = (function () {
 					'data-imgcrop': '',
 					'data-mask': ele.mask
 				})
-//                .append('<div class="cropMain"></div>');
-                .append('<input type="range" value="1" min="'+ele.zoom.min+'" max="'+ele.zoom.max+'" step="'+ele.zoom.steps+'"><div class="cropMain"></div>');
+                .append('<div class="cropMain"></div>');
+//                .append('<input type="range" value="1" min="'+ele.zoom.min+'" max="'+ele.zoom.max+'" step="'+ele.zoom.steps+'"><div class="cropMain"></div>');
 
 			// set min zoom
 			this.imgInfo.s = ele.zoom.min;
