@@ -12,7 +12,7 @@
       <div class="userinfo box">
         <div class='info bottomBorder boxTitle'>编辑个人资料<span><i class="fa fa-angle-right fa-fw"></i></span></div>
         <div class='accounts bottomBorder boxTitle'>已连接的账户<span><i class="fa fa-angle-right fa-fw"></i></span></div>
-        <div class='boxTitle'>通知<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+        <div class='notice boxTitle'>通知<span><i class="fa fa-angle-right fa-fw"></i></span></div>
       </div>
       <div class="about box boxTitle"><div class='about'>关于故事贴<span><i class="fa fa-angle-right fa-fw"></i></span></div></div>
       <div class="clear box boxTitle boxCenter">清除缓存</div>
@@ -49,6 +49,47 @@
         <div class='boxTitle'>确认<span class="input"><input type="password" id="my_edit_password_confirm" placeholder="确认" value=""/></span></div>
       <!--input type="password" id="my_edit_password" placeholder="输入密码" style="width:95%;border-top:0px;margin-left:5px;height:25px;"/-->
       </div>
+    </div>
+  </div>
+</template>
+<template name="my_notice">
+  <div class="dashboard">
+    <div class="head">
+      <div>通知</div>
+      <div id="about_btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+    </div>
+    <div class="content">
+      {{#if isIOS}}
+        <div class="box">
+          <div class='boxTitle'>接收新消息通知</div>
+        </div>
+        <div class="smallcontent">如果你要关闭或开启故事贴的新消息通知，请在Iphone的“设置”-“通知”功能中，找到应用程序“故事贴”更改。</div>
+        <div class="box">
+          <div class='boxTitle'>通知显示消息详情
+            <div class="switchkk">
+              <input type="checkbox" id="controlkk" class="controlkk">
+              <label for="controlkk" class="checkboxkk"></label>
+            </div>
+          </div>
+        </div>
+        <div class="smallcontent">若关闭，当收到故事贴消息时，通知提示将不显示发信人和内容摘要。</div>
+      {{else}}
+        <div class="box">
+          <div class='bottomBorder boxTitle'>接收新消息通知
+            <div class="switchkk">
+              <input type="checkbox" id="controlkk" class="controlkk">
+              <label for="controlkk" class="checkboxkk"></label>
+            </div>
+          </div>
+          <div class='boxTitle'>通知显示消息详情
+            <div class="switchkk">
+              <input type="checkbox" id="controlkk" class="controlkk">
+              <label for="controlkk" class="checkboxkk"></label>
+            </div>
+          </div>
+        </div>
+        <div class="smallcontent">若关闭，当收到故事贴消息时，通知提示将不显示发信人和内容摘要。</div>
+      {{/if}}
     </div>
   </div>
 </template>

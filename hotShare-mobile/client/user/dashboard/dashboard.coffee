@@ -11,6 +11,8 @@ if Meteor.isClient
       Router.go '/my_email'
     'click .changePasswd' :->
       Router.go '/my_password'
+    'click .notice' :->
+      Router.go '/my_notice'
     'click .about' :->
       Router.go '/my_about'
     'click .back' :->
@@ -56,6 +58,18 @@ if Meteor.isClient
     'click #pass_btn_back' :->
       Router.go '/dashboard'
 
+  Template.my_notice.rendered=->
+    $('.dashboard').css 'min-height', $(window).height()
+    return
+  Template.my_notice.helpers
+    isIOS :->
+      if device.platform is 'iOS'
+        true
+      else
+        false
+  Template.my_notice.events
+    'click #about_btn_back' :->
+      Router.go '/dashboard'
   Template.my_about.rendered=->
     $('.dashboard').css 'min-height', $(window).height()
     return

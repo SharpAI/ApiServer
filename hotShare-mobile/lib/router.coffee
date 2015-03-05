@@ -103,6 +103,11 @@ if Meteor.isClient
         this.render 'my_password'
         Session.set 'channel','my_password'
         return
+    Router.route '/my_notice',()->
+      if Meteor.isCordova is true
+        this.render 'my_notice'
+        Session.set 'channel','my_notice'
+        return
     Router.route '/my_about',()->
       if Meteor.isCordova is true
         this.render 'my_about'
