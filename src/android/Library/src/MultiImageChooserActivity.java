@@ -105,11 +105,12 @@ public class MultiImageChooserActivity extends Activity implements OnItemClickLi
     private static final int CURSORLOADER_REAL = 1;
 
     private Map<String, Integer> fileNames = new HashMap<String, Integer>();
-
+    ArrayList<ImageInfo> imageList = new ArrayList<ImageInfo>();
     private SparseBooleanArray checkStatus = new SparseBooleanArray();
 
     private int maxImages;
     private int maxImageCount;
+    private int imageOrder=0;
     
     private int desiredWidth;
     private int desiredHeight;
@@ -208,6 +209,12 @@ public class MultiImageChooserActivity extends Activity implements OnItemClickLi
         }
 
         if (isChecked) {
+        	ImageInfo imageInfo = new ImageInfo();
+        	imageInfo.setOrder(imageOrder);
+        	imageInfo.setRotation(rotation);
+        	imageInfo.setPath(name);
+        	imageList.add(imageInfo);
+        	imageOrder++;
             fileNames.put(name, new Integer(rotation));
             if (maxImageCount == 1) {
                 this.selectClicked(null);
@@ -222,6 +229,26 @@ public class MultiImageChooserActivity extends Activity implements OnItemClickLi
                 view.setBackgroundColor(selectedColor);
             }
         } else {
+        	ImageInfo imageInfo=null;
+        	for (int i=0; i<imageList.size();i++){
+        		Log.e("getPath","getPath:"+imageList.get(i).getPath());
+        		Log.e("name","name:"+name);
+        		if(imageInfo!=null)
+        		{
+        			imageList.get(i).setOrder(imageList.get(i).getOrder()-1);
+        		}
+        		if(imageList.get(i).getPath().equals(name))
+        		{
+        			Log.e("remove","remove");
+            		imageInfo = imageList.get(i);
+        			//imageList.remove(imageList.get(i));
+        		}
+        	}
+        	if(imageInfo!=null)
+        	{
+        		imageList.remove(imageInfo);
+        		imageOrder--;
+        	}
             fileNames.remove(name);
             maxImages++;
             ImageView imageView = (ImageView)view;
@@ -307,11 +334,15 @@ public class MultiImageChooserActivity extends Activity implements OnItemClickLi
         Intent data = new Intent();
         if (fileNames.isEmpty()) {
             this.setResult(RESULT_CANCELED);
-            progress.dismiss();
-            finish();
         } else {
-            new ResizeImagesTask().execute(fileNames.entrySet());
+            Bundle res = new Bundle();
+            res.putSerializable("imageList", imageList);
+            data.putExtras(res);
+            this.setResult(RESULT_OK, data);
+            //new ResizeImagesTask().execute(fileNames.entrySet());
         }
+        progress.dismiss();
+        finish();
     }
     
     
