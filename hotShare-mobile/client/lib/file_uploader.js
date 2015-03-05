@@ -554,6 +554,7 @@ if (Meteor.isCordova){
             }
             if(device.platform === 'Android' ){
                 var retArray = [];
+                var retCount = 0;
                 for (var i = 0; i < length; i++) {
                   var timestamp = new Date().getTime();
                   var originalFilename = results[i].replace(/^.*[\\\/]/, '');
@@ -562,8 +563,8 @@ if (Meteor.isCordova){
 
                   var params = {filename:filename, originalFilename:originalFilename, URI:results[i], smallImage:''};
                   var fileExt = filename.split('.').pop();
-                  if(fileExt.toUpperCase()==='GIF'){
                   retArray.push(params);
+                  if(fileExt.toUpperCase()==='GIF'){
                   ImageBase64.base64({
                         uri: results[i],
                         quality: 60,
@@ -573,9 +574,18 @@ if (Meteor.isCordova){
                     function(a) {
                         for (var item in retArray) {
                           if (retArray[item].URI == a.imageURI) {
+                            retCount++;
                             retArray[item].smallImage = "data:image/jpg;base64,"+a.base64;
-                            callback(null, retArray[item]);
-                            retArray.slice(item, 1);
+                            //callback(null, retArray[item]);
+                            //retArray.slice(item, 1);
+                            if(retCount===length)
+                            {
+                                for (var item in retArray) {
+                                    //console.log("retArray["+item+"].originalFilename="+retArray[item].originalFilename);
+                                    callback(null, retArray[item]);
+                                }
+                            }
+                            break;
                           }
                         }
                     },
@@ -583,7 +593,6 @@ if (Meteor.isCordova){
                         console.log("error" + e);
                     });
                   }else{
-                  retArray.push(params);
                   window.resolveLocalFileSystemURL(results[i], function(fileEntry) {
                     fileEntry.file(function(file) {
                       var reader = new FileReader();
@@ -592,9 +601,17 @@ if (Meteor.isCordova){
                           //console.log("event.target="+localURL.replace(/^.*[\\\/]/, ''));
                           for (var item in retArray) {
                             if (retArray[item].originalFilename == localURL.replace(/^.*[\\\/]/, '')) {
+                              retCount++;
                               retArray[item].smallImage = event.target.result;
-                              callback(null, retArray[item]);
-                              retArray.slice(item, 1);
+                              //callback(null, retArray[item]);
+                              //retArray.slice(item, 1);
+                              if(retCount===length)
+                              {
+                                  for (var item in retArray) {
+                                      //console.log("retArray["+item+"].originalFilename="+retArray[item].originalFilename);
+                                      callback(null, retArray[item]);
+                                  }
+                              }
                               break;
                             }
                           }
