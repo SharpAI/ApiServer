@@ -47,7 +47,8 @@ if Meteor.isClient
             imgWidth = document.getElementById(mainImageId).offsetWidth
             imgHeight = document.getElementById(mainImageId).offsetHeight
             
-            $('#mainImage'+mainImageId).css('display',"none")
+#            $('#mainImage'+mainImageId).css('display',"none")
+            $('#'+mainImageId).css('display',"none")
             $('#crop'+mainImageId).css('display',"block")
             $('#'+mainImageId).css('z-index',"12")
             image = Drafts.findOne({_id:mainImageId}).imgUrl
@@ -613,11 +614,11 @@ if Meteor.isClient
         w : $("#default"+cropDraftId+" .crop-img").width()
         h : $("#default"+cropDraftId+" .crop-img").height()
       holderSize = 
-        w : $("#"+cropDraftId).width()
-        h : $("#"+cropDraftId).height()
+        w : $("#default"+cropDraftId).width()
+        h : $("#default"+cropDraftId).height()
       holderRatio =
-        wh : $("#"+cropDraftId).width() / $("#"+cropDraftId).height()
-        hw : $("#"+cropDraftId).height() / $("#"+cropDraftId).width()
+        wh : $("#default"+cropDraftId).width() / $("#default"+cropDraftId).height()
+        hw : $("#default"+cropDraftId).height() / $("#default"+cropDraftId).width()
 #      if imgZoomSize.w * holderRatio.hw * imgRatio.wh < imgZoomSize.h * holderRatio.wh * imgRatio.hw
       if imgZoomSize.w * holderRatio.hw < imgZoomSize.h * holderRatio.wh
         img_width = (imgZoomSize.w / imgSize.w)*100 + '%'
@@ -652,7 +653,7 @@ if Meteor.isClient
       zoom = $("#default"+cropDraftId).find('input')
       Drafts.update({_id: cropDraftId}, {$set: {style: style, scale:zoom.val()}});
       $('#isImage'+cropDraftId).css('display',"block")
-      $('#mainImage'+cropDraftId).css('display',"block")
+      $('#'+cropDraftId).css('display',"block")
       $('#crop'+cropDraftId).css('display',"none")
       Meteor.setTimeout ()->
         document.getElementById('default'+cropDraftId).innerHTML=""

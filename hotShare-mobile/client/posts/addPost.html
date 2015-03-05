@@ -32,13 +32,13 @@
           <div id="wrapper">
             <div class="mainImage" id="{{mainImage._id}}">
               <img id="mainImage{{mainImage._id}}" class="scale item" src="{{mainImage.imgUrl}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImage.style}}" >
-              <div id="crop{{mainImage._id}}" class="crop" style="z-index: 1; display:none">
-                <div id="default{{mainImage._id}}" class="default"></div>
-              </div>
               <header>
                 <textarea id="title" name="textarea" class="title" placeholder="主标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';">{{draftTitles.title}}</textarea>
                 <textarea id="addontitle" name="textarea" class="addontitle" placeholder="副标题" onpropertychange="this.style.height = this.scrollHeight + 'px';" oninput="this.style.height = this.scrollHeight + 'px';">{{draftTitles.addontitle}}</textarea>
               </header>
+            </div>
+            <div id="crop{{mainImage._id}}" class="crop" style="z-index: 12; display:none">
+              <div id="default{{mainImage._id}}" class="default"></div>
             </div>
           </div>
         {{/if}}
