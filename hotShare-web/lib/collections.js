@@ -140,6 +140,7 @@ if(Meteor.isServer){
         return true;
       }
       if (fieldNames.toString() === 'browse' && modifier.$set !== void 0) {
+          pushnotification("read",doc,userId);
       /*
         try{
             var followPosts=FollowPosts.find({postId:doc._id});
@@ -285,6 +286,26 @@ if(Meteor.isServer){
   });
   Comment.allow({
     insert: function (userId, doc) {
+      post = Posts.findOne({_id: doc.postId});
+      if(post.owner != userId)
+      {
+        Feeds.insert({
+            owner:userId,
+            ownerName:doc.username,
+            ownerIcon:doc.userIcon,
+            eventType:'comment',
+            postId:doc.postId,
+            postTitle:post.title,
+            mainImage:post.mainImage,
+            createdAt:doc.createdAt,
+            heart:0,
+            retweet:0,
+            comment:0,
+            followby: post.owner
+        });
+
+        pushnotification("comment",doc,userId);
+      }
       return doc.username !== null;
     },
     remove: function (userId, doc) {
