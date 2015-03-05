@@ -56,6 +56,7 @@ CordovaPush = function(androidServerKey, options) {
 
         note.expiry = Math.floor(Date.now() / 1000) + 3600*12; // Expires 1 hour from now.
         note.badge = count;
+        note.sound = "ping.aiff";
         //note.sound = ""; // XXX: Does this work?
         note.alert = text;
         note.payload = {'messageFrom': from };
