@@ -18,7 +18,7 @@ if Meteor.isServer
         keyData: apnsProductionKey
         gateway: 'gateway.push.apple.com'
 
-    pushServer = new CordovaPush 'AIzaSyAeo0xEPBfrUJ5MztClvICNo-ZLIHcM8Zo', optionsDevelopment
+    pushServer = new CordovaPush 'AIzaSyAeo0xEPBfrUJ5MztClvICNo-ZLIHcM8Zo', optionsProduction
 
     pushServer.initFeedback()
     root.pushServer = pushServer
