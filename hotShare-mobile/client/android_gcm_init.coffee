@@ -1,4 +1,4 @@
-if Meteor.isCordova
+if 0 #Meteor.isCordova
   Meteor.startup ->
     if device.platform is 'android' || device.platform is 'Android' || device.platform is 'amazon-fireos'
 
