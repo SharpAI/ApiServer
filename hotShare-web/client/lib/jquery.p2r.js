@@ -262,9 +262,9 @@
         //if (this.$element[0].scrollTop > 0) {
         //    return true;
         //}
-        //if ( $('.commentBar').scrollTop() > 0){
-        //    return true;
-        //}
+        if ( $('.commentBar').scrollTop() > 0){
+            return true;
+        }
         // if not left click, cancel
         //if (!isTouchEvent && event.which !== 1) {
         //    return;
