@@ -89,7 +89,7 @@
 <template name="postFooter">
   <div id="postFooter" class="showPostsFooter">
     <div class="commentList">
-      <span class="minHeart"><i class="fa fa-heart"></i>{{heart}}</span>
+      <span class="minHeart"><i class="fa fa-thumbs-up"></i>{{heart}}</span>
       <!--<span class="minRetweet"><i class="fa fa-retweet"></i>{{retweet}}</span>-->
       <span class="minComment"><i class="fa fa-comment"></i>{{comment}}</span>
     </div>
@@ -97,9 +97,9 @@
     <div class="buttons">
       <span class="refresh">换</span>
       {{#if blueHeart}}
-        <span class="blueHeart"><i class="fa fa-heart" style="color:#00c4ff;"></i></span>
+        <span class="blueHeart"><i class="fa fa-thumbs-up" style="color:#00c4ff;"></i></span>
       {{else}}
-        <span class="heart"><i class="fa fa-heart-o" style="color:#00c4ff;"></i></span>
+        <span class="heart"><i class="fa fa-thumbs-o-up" style="color:#00c4ff;"></i></span>
       {{/if}}
       <!--
       {{#if blueRetweet}}
