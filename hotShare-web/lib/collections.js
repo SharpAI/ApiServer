@@ -9,6 +9,7 @@ Topics = new Meteor.Collection('topics');
 TopicPosts = new Meteor.Collection('topicposs');
 Comment = new Meteor.Collection('comment');
 RefComments = new Meteor.Collection("refcomments");
+ReComment = new Meteor.Collection('recomment');
 
 if(Meteor.isServer){
   Rnd = 0;
@@ -295,6 +296,12 @@ if(Meteor.isServer){
       post = Posts.findOne({_id: doc.postId});
       if(post.owner != userId)
       {
+        if(ReComment.find({"postId":doc.postId,"commentUserId":userId}).count() === 0){
+            ReComment.insert({
+                postId: doc.postId,
+                commentUserId: userId
+            });
+        }
         Feeds.insert({
             owner:userId,
             ownerName:doc.username,
@@ -310,8 +317,30 @@ if(Meteor.isServer){
             waitReadCount:1,
             followby: post.owner
         });
-
         pushnotification("comment",doc,userId);
+        recomments = ReComment.find({"postId": doc.postId}).fetch();
+        for(item in recomments)
+        {
+            if(recomments[item].commentUserId != userId && recomments[item].commentUserId != post.owner)
+            {
+                Feeds.insert({
+                    owner:userId,
+                    ownerName:doc.username,
+                    ownerIcon:doc.userIcon,
+                    eventType:'recomment',
+                    postId:doc.postId,
+                    postTitle:post.title,
+                    mainImage:post.mainImage,
+                    createdAt:doc.createdAt,
+                    heart:0,
+                    retweet:0,
+                    comment:0,
+                    waitReadCount:1,
+                    followby: recomments[item].commentUserId
+                });
+                pushnotification("recomment",doc,recomments[item].commentUserId);
+            }
+        }
       }
       return doc.username !== null;
     },
