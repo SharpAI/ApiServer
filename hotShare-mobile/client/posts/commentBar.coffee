@@ -55,11 +55,11 @@ if Meteor.isClient
     'blur #comment':->
       console.log("#comment lost focus");
       Meteor.setTimeout ()->
-          $(document).scrollTop(document.body.scrollHeight)
+          $(window).scrollTop($(document).height())
           #$("#new-reply").fadeIn 300
-          console.log 'Window height is ' + window.innerHeight
+       #   console.log 'Window height is ' + window.innerHeight
         ,300
-      $("#new-reply").css 'position','fixed'
+      #$("#new-reply").css 'position','fixed'
     "click .change":->
       RC = Session.get("RC")+1
       if RC>7
@@ -69,10 +69,10 @@ if Meteor.isClient
         $('#comment').trigger("keyup")
       ,300)
     'click #finish':->
-      $('.showPosts').removeClass('fade-up-out')
-      $('#showComment').fadeOut 400
+      #$('.showPosts').removeClass('fade-up-out')
+      $('#showComment').fadeOut 300
       $('#comment').fadeOut 300
-      $('.showPosts').show 0,->
+      $('.showPosts').show 300,->
           if window.showPostAt
             $(window).scrollTop(window.showPostAt)
       $('.showPosts .head').fadeIn 300
@@ -121,6 +121,6 @@ if Meteor.isClient
       height = scrollHeight + 10;
       $('#new-reply').css("height", height)
       Meteor.setTimeout ()->
-          $(document).scrollTop(document.body.scrollHeight)
+          $(window).scrollTop(document.body.scrollHeight)
         ,0
       false
