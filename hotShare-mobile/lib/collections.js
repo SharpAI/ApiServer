@@ -90,6 +90,7 @@ if(Meteor.isServer){
                         heart:0,
                         retweet:0,
                         comment:0,
+                        waitReadCount:1,
                         followby: data.userId
                     });
 
@@ -209,7 +210,12 @@ if(Meteor.isServer){
     insert: function (userId, doc) {
       return doc.text !== null && doc.type === "topic";
     }
-  })
+  });
+  Feeds.allow({
+    update: function (userId, doc) {
+      return doc.followby === userId;
+    }
+  });
   Drafts.allow({
     insert: function (userId, doc) {
       return doc.owner === userId;
@@ -301,6 +307,7 @@ if(Meteor.isServer){
             heart:0,
             retweet:0,
             comment:0,
+            waitReadCount:1,
             followby: post.owner
         });
 

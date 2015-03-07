@@ -1,6 +1,17 @@
 #space 2
 if Meteor.isClient
   Template.footer.helpers
+    is_wait_read_count: (count)->
+      count > 0
+    wait_read_count:->
+      if Meteor.user() is null
+        0
+      else
+        waitReadCount = 0
+        feeds = Feeds.find({followby: Meteor.userId(), waitReadCount: {$gt: 0}}).fetch()
+        for item in feeds
+          waitReadCount = waitReadCount + item.waitReadCount
+        waitReadCount
     focus_style:(channelName)->
       channel = Session.get "focusOn"
       if channel is channelName
@@ -24,6 +35,10 @@ if Meteor.isClient
       page = '/' + e.currentTarget.id;
       if e.currentTarget.id is 'home'
         page = '/'
+      if e.currentTarget.id is 'bell'
+        feeds = Feeds.find({followby: Meteor.userId(), waitReadCount: {$gt: 0}}).fetch()
+        for item in feeds
+          Feeds.update({_id: item._id}, {$set: {waitReadCount: 0}});
       PUB.page(page)
     'click #add':(e)->
       #console.log 'Clicked on ADD'
