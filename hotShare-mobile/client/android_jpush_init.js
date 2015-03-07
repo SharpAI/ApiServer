@@ -38,13 +38,16 @@ if (Meteor.isCordova) {
         switch(type){
          case "comment":
             if(Meteor.user()){
-              var postId = extras["cn.jpush.android.EXTRA"]["postId"];
+              //var postId = extras["cn.jpush.android.EXTRA"]["postId"];
+              feeds = Feeds.find({followby: Meteor.userId(), waitReadCount: {$gt: 0}}).fetch();
+              for(item in feeds)
+                Feeds.update({_id: item._id}, {$set: {waitReadCount: 0}});
               Router.go('/bell');
             }
             break;
           case "read":
             if(Meteor.user()){
-              var postId = extras["cn.jpush.android.EXTRA"]["postId"];
+              //var postId = extras["cn.jpush.android.EXTRA"]["postId"];
               //PUB.page('/posts/'+postId);
             }
             break;

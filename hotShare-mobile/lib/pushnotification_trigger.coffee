@@ -47,7 +47,11 @@ if Meteor.isServer
       else if pushToken.type is 'iOS'
         console.log 'Server PN to iOS '
         token = pushToken.token
-        pushServer.sendIOS 'me', token , '', content, 1
+        waitReadCount = 0
+        feeds = Feeds.find({followby: userId, waitReadCount: {$gt: 0}}).fetch()
+        for item in feeds
+          waitReadCount = waitReadCount + item.waitReadCount
+        pushServer.sendIOS 'me', token , '', content, waitReadCount
       else if pushToken.type is 'GCM'
         console.log 'Server PN to GCM '
         token = pushToken.token
