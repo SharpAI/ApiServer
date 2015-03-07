@@ -43,21 +43,14 @@ if Meteor.isClient
       
       console.log 'Window height is ' + window.innerHeight
       Meteor.setTimeout ()->
+          $('.commentBar').animate({ scrollTop: $('.commentBar .content').height() }, "fast")
           $("html, body").animate({ scrollTop: $(document).height() }, "fast")
-          #$("#new-reply").fadeIn 300
-          #console.log 'Window height is ' + window.innerHeight
-          #$(".commentBar").css('height',window.innerHeight-$(".new-reply").height())
-          #$(".new-reply").css('top',window.innerHeight-$(".new-reply").height())
-          #$('html, body').css {
-          #  'overflow': 'hidden'
-          #}
         ,300
     'blur #comment':->
       console.log("#comment lost focus");
       Meteor.setTimeout ()->
-          $(window).scrollTop($(document).height())
-          #$("#new-reply").fadeIn 300
-       #   console.log 'Window height is ' + window.innerHeight
+          $('.commentBar').animate({ scrollTop: $('.commentBar .content').height() }, "fast")
+          #console.log 'Window height is ' + window.innerHeight
         ,300
       #$("#new-reply").css 'position','fixed'
     "click .change":->
@@ -121,6 +114,6 @@ if Meteor.isClient
       height = scrollHeight + 10;
       $('#new-reply').css("height", height)
       Meteor.setTimeout ()->
-          $(window).scrollTop(document.body.scrollHeight)
+          $('.commentBar').animate({ scrollTop: $('.commentBar .content').height() }, "fast")
         ,0
       false
