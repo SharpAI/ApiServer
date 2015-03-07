@@ -283,17 +283,9 @@ if Meteor.isClient
       amplify.store(postId,true)
   onComment = ->
     window.showPostAt = $(window).scrollTop()
-    $('.showPosts').addClass('fade-up-out')
-    Meteor.setTimeout(
-      ()->
-        $('.showPosts').hide()
-      300
-    )
-    Meteor.setTimeout(
-      ()->
-        $('#showComment').fadeIn 0
-      350
-    )
+    #$('.showPosts').addClass('fade-up-out')
+    $('.showPosts').hide 300
+    $('#showComment').fadeIn 300
     $("#comment").fadeIn 300
   onRefresh = ->
     RC = Session.get("RC")+1
