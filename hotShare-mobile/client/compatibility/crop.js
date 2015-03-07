@@ -33,8 +33,8 @@ var CROP = (function () {
 					'data-imgcrop': '',
 					'data-mask': ele.mask
 				})
-                .append('<div class="cropMain"></div>');
-//                .append('<input type="range" value="1" min="'+ele.zoom.min+'" max="'+ele.zoom.max+'" step="'+ele.zoom.steps+'"><div class="cropMain"></div>');
+                //.append('<div class="cropMain"></div>');
+                .append('<input type="range" style="display:none" value="1" min="'+ele.zoom.min+'" max="'+ele.zoom.max+'" step="'+ele.zoom.steps+'"><div class="cropMain"></div>');
 
 			// set min zoom
 			this.imgInfo.s = ele.zoom.min;
@@ -130,7 +130,7 @@ var CROP = (function () {
 				Overlay Movement
 			*/
 			overlay.bind(((document.ontouchstart !== null) ? 'mousedown' : 'touchstart'), function (e) {
-                if (e.originalEvent.changedTouches.length >= 2) {
+                if (e.originalEvent.touches.length >= 2) {
                     //console.log("multiple touchs, mousedown, "+e.originalEvent.changedTouches.length);
                     return;
                 }
@@ -153,7 +153,7 @@ var CROP = (function () {
 
 				$(document).bind(((document.ontouchmove !== null) ? 'mousemove' : 'touchmove'), function (e) {
 
-                    if (e.originalEvent.changedTouches.length >= 2) {
+                    if (e.originalEvent.touches.length >= 2) {
                         //console.log("multiple touchs, touchmove, "+e.originalEvent.changedTouches.length);
                         return;
                     }
@@ -187,7 +187,10 @@ var CROP = (function () {
 				});
 
 				$(document).bind(((document.ontouchend !== null) ? 'mouseup' : 'touchend'), function (e) {
-
+                    if (e.originalEvent.touches.length >= 2) {
+                        //console.log("multiple touchs, touchmove, "+e.originalEvent.changedTouches.length);
+                        return;
+                    }
 					// remove grab cursor
 					$('body').removeClass('grabcursor');
 
@@ -232,7 +235,7 @@ var CROP = (function () {
 					min = self.attr('min'),
 					max = self.attr('max'),
 					pos = Math.round(((val - min) / (max - min)) * 100),
-					style = "background: linear-gradient(to right, #fbc93d " + pos + "%, #eee " + (pos + 0.1) + "%);";
+					style = "display:none; background: linear-gradient(to right, #fbc93d " + pos + "%, #eee " + (pos + 0.1) + "%);";
 
 				// apply background color to range progress
 				self.attr('style', style);
@@ -279,11 +282,20 @@ var CROP = (function () {
 				this.imgInfo.at = 0;
 			}
 
-			this.imgResize();
 			if (this.imgInfo.style != '') {
+                var styleArray = this.imgInfo.style.split(';');
+                var topArray = styleArray[2].split(':');
+                var topValue = parseFloat(topArray[1]);
+                var leftArray = styleArray[3].split(':');
+                var leftValue = parseFloat(leftArray[1]);
+                this.imgInfo.t = -this.imgInfo.h * topValue / 100;
+                this.imgInfo.l = -this.imgInfo.w * leftValue / 100;
+                this.imgInfo.s = this.imgInfo.v;
 				this.slider(this.imgInfo.v);
-				img.attr('style', this.imgInfo.style);
-			}
+				//img.attr('style', this.imgInfo.style);
+			} else {
+                this.imgResize();
+            }
 
 		};
 

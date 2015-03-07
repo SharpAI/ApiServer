@@ -350,7 +350,7 @@ if Meteor.isClient
                 width: imgWidth,
                 height: imgHeight,
                 mask: false,
-                zoom: {steps: 0.01,min: 1,max: 2,value: scale},
+                zoom: {steps: 0.01,min: 1,max: 3,value: scale},
               }
               cropimg = $(containerId).find('.crop-overlay')[0]
               hammertime = new Hammer(cropimg)
@@ -358,24 +358,36 @@ if Meteor.isClient
               rotate = new Hammer.Rotate();
               pinch.recognizeWith(rotate);
               hammertime.add([pinch, rotate]);
-              hammertime.on("pinch rotate", (e)->
+              initScale = 1
+              pinchStatus = 0;
+              hammertime.on("pinchstart pinchin pinchout pinchend", (e)->
                 e.preventDefault();
-                scale = e.scale;
-                console.log("hammer on pinch, scale="+scale);
-                if scale > 2
-                  scale = 2
-                else if scale < 1
-                  scale = 1
-                crop.slider(scale);
-                #apply background color to range progress
                 zoom = $(containerId).find('input')
-                zoom.val(scale)
-                val = scale
-                min = zoom.attr('min')
-                max = zoom.attr('max')
-                pos = Math.round(((val - min) / (max - min)) * 100)
-                style = "background: linear-gradient(to right, #fbc93d " + pos + "%, #eee " + (pos + 0.1) + "%);"
-                zoom.attr('style', style);
+                if e.type is 'pinchstart'
+                    initScale = zoom.val()
+                    pinchStatus = 1
+                else if e.type is 'pinchend'
+                    initScale = zoom.val()
+                    pinchStatus = 0
+                else if e.type is 'pinchin' or e.type is 'pinchout'
+                    if pinchStatus is 0
+                        return
+                    #scale = initScale * (1 + (e.scale-1.0)*0.1);
+                    scale = initScale * e.scale;
+                    #console.log("hammer on pinch, e.scale="+e.scale+", scale="+scale+", initScale="+initScale);
+                    if scale > 3
+                      scale = 3
+                    else if scale < 1
+                      scale = 1
+                    crop.slider(scale);
+                    #apply background color to range progress
+                    zoom.val(scale)
+                    #val = scale
+                    #min = zoom.attr('min')
+                    #max = zoom.attr('max')
+                    #pos = Math.round(((val - min) / (max - min)) * 100)
+                    #style = "background: linear-gradient(to right, #fbc93d " + pos + "%, #eee " + (pos + 0.1) + "%);"
+                    #zoom.attr('style', style);
               )
 
               Meteor.setTimeout ->
