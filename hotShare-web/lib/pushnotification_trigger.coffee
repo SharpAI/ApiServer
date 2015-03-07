@@ -15,7 +15,7 @@ if Meteor.isServer
         postId: doc.postId
       }
       toUserToken = Meteor.users.findOne({_id: post.owner})
-    else
+    else if type == "read"
       if doc.owner == userId
         #console.log "read self post"
         return
@@ -25,6 +25,15 @@ if Meteor.isServer
         postId: doc._id
       }
       toUserToken = Meteor.users.findOne({_id: doc.owner})
+    else
+      post = Posts.findOne({_id: doc.postId});
+      commentText = doc.content;
+      content = '您回复过的帖子有新的回复:\n'+commentText
+      extras = {
+        type: "recomment"
+        postId: doc.postId
+      }
+      toUserToken = Meteor.users.findOne({_id: userId})
 
 
     unless toUserToken is undefined or toUserToken.type is undefined or toUserToken.token is undefined
