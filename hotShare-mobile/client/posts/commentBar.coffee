@@ -34,6 +34,19 @@ if Meteor.isClient
       GetTime0(new Date() - created)
     comment: ()->
       Comment.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}})
+    
+  Template.commentContent.helpers
+    refcomment:->
+      RC = Session.get 'RC'
+      #console.log "RC: " + RC
+      RefC = Session.get("refComment")
+      if RefC
+        return RefC[RC].text
+    time_diff: (created)->
+      GetTime0(new Date() - created)
+    comment: ()->
+      Comment.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}})
+  
   Template.commentBar.events
     'focus #comment':->
       console.log("#comment get focus");

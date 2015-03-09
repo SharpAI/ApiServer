@@ -1,6 +1,6 @@
 <template name="showPosts">
   <div class="showBgColor" style="background-color:white;">
-    <div class="showPosts" style="padding-bottom:42px;">
+    <div class="showPosts">
       <div id="blur_overlay" style="position: absolute; opacity: 0.5; z-index: 1; width:100%; background-color:white;">
           {{> spinner}}
       </div>
@@ -81,6 +81,8 @@
     </div>
   </div>
     {{> postFooter}}
+  <div class="showPostsLine"></div>
+    {{> commentContent}}
     <div id="showComment" style="display:none;">
       {{> commentBar}}
       <div class="commentBarBackground"></div>
