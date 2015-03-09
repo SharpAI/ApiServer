@@ -56,10 +56,9 @@ if Meteor.isServer
       else if pushToken.type is 'iOS'
         console.log 'Server PN to iOS '
         token = pushToken.token
-        waitReadCount = 0
-        feeds = Feeds.find({followby: userId, waitReadCount: {$gt: 0}}).fetch()
-        for item in feeds
-          waitReadCount = waitReadCount + item.waitReadCount
+        waitReadCount = Meteor.users.findOne({_id:userId}).profile.waitReadCount
+        if waitReadCount is undefined or isNaN(waitReadCount)
+            waitReadCount = 0
         pushServer.sendIOS 'me', token , '', content, waitReadCount
       else if pushToken.type is 'GCM'
         console.log 'Server PN to GCM '

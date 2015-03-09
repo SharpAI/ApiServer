@@ -7,10 +7,12 @@ if Meteor.isClient
       if Meteor.user() is null
         0
       else
-        waitReadCount = 0
-        feeds = Feeds.find({followby: Meteor.userId(), waitReadCount: {$gt: 0}}).fetch()
-        for item in feeds
-          waitReadCount = waitReadCount + item.waitReadCount
+        waitReadCount = Meteor.user().profile.waitReadCount
+        if waitReadCount is undefined or isNaN(waitReadCount)
+          waitReadCount = 0
+        if Session.get('channel') is 'bell' and waitReadCount > 0
+          waitReadCount = 0
+          Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
         waitReadCount
     focus_style:(channelName)->
       channel = Session.get "focusOn"
@@ -36,9 +38,11 @@ if Meteor.isClient
       if e.currentTarget.id is 'home'
         page = '/'
       if e.currentTarget.id is 'bell'
-        feeds = Feeds.find({followby: Meteor.userId(), waitReadCount: {$gt: 0}}).fetch()
-        for item in feeds
-          Feeds.update({_id: item._id}, {$set: {waitReadCount: 0}});
+        waitReadCount = Meteor.user().profile.waitReadCount
+        if waitReadCount is undefined or isNaN(waitReadCount)
+          waitReadCount = 0
+        if waitReadCount > 0
+          Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
       PUB.page(page)
     'click #add':(e)->
       #console.log 'Clicked on ADD'
