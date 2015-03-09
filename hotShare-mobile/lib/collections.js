@@ -91,10 +91,14 @@ if(Meteor.isServer){
                         heart:0,
                         retweet:0,
                         comment:0,
-                        waitReadCount:1,
                         followby: data.userId
                     });
-
+                    waitReadCount = Meteor.users.findOne({_id:data.userId}).profile.waitReadCount;
+                    if(waitReadCount === undefined || isNaN(waitReadCount))
+                    {
+                        waitReadCount = 0;
+                    }
+                    Meteor.users.update({_id: data.userId}, {$set: {'profile.waitReadCount': waitReadCount+1}});
                 });
             }
             FollowPosts.insert({
@@ -212,11 +216,6 @@ if(Meteor.isServer){
       return doc.text !== null && doc.type === "topic";
     }
   });
-  Feeds.allow({
-    update: function (userId, doc) {
-      return doc.followby === userId;
-    }
-  });
   Drafts.allow({
     insert: function (userId, doc) {
       return doc.owner === userId;
@@ -314,9 +313,14 @@ if(Meteor.isServer){
             heart:0,
             retweet:0,
             comment:0,
-            waitReadCount:1,
             followby: post.owner
         });
+        waitReadCount = Meteor.users.findOne({_id:post.owner}).profile.waitReadCount;
+        if(waitReadCount === undefined || isNaN(waitReadCount))
+        {
+            waitReadCount = 0;
+        }
+        Meteor.users.update({_id: post.owner}, {$set: {'profile.waitReadCount': waitReadCount+1}});
         pushnotification("comment",doc,userId);
         recomments = ReComment.find({"postId": doc.postId}).fetch();
         for(item in recomments)
@@ -335,9 +339,14 @@ if(Meteor.isServer){
                     heart:0,
                     retweet:0,
                     comment:0,
-                    waitReadCount:1,
                     followby: recomments[item].commentUserId
                 });
+                waitReadCount = Meteor.users.findOne({_id:recomments[item].commentUserId}).profile.waitReadCount;
+                if(waitReadCount === undefined || isNaN(waitReadCount))
+                {
+                    waitReadCount = 0;
+                }
+                Meteor.users.update({_id: recomments[item].commentUserId}, {$set: {'profile.waitReadCount': waitReadCount+1}});
                 pushnotification("recomment",doc,recomments[item].commentUserId);
             }
         }
