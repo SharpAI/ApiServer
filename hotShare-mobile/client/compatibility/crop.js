@@ -288,8 +288,8 @@ var CROP = (function () {
                 var topValue = parseFloat(topArray[1]);
                 var leftArray = styleArray[3].split(':');
                 var leftValue = parseFloat(leftArray[1]);
-                this.imgInfo.t = -this.imgInfo.h * topValue / 100;
-                this.imgInfo.l = -this.imgInfo.w * leftValue / 100;
+                this.imgInfo.t = -c.height() * topValue / 100;
+                this.imgInfo.l = -c.width() * leftValue / 100;
                 this.imgInfo.s = this.imgInfo.v;
 				this.slider(this.imgInfo.v);
 				//img.attr('style', this.imgInfo.style);
