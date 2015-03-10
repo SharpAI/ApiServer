@@ -64,7 +64,7 @@
                       <li class='resortitem' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
                           <div class="imgdiv">
                               {{>spinner}}
-                              <img class="lazy" data-original="{{imgUrl}}" style="width:100%;height:100%;position:absolute;{{style}}" >
+                              <img class="lazy" data-original="{{imgUrl}}" style="object-fit:cover;width:100%;height:100%;position:absolute;{{style}}" >
                           </div>
                       </li>
                   {{else}}
@@ -79,16 +79,30 @@
         </div>
       </div>
     </div>
+    <div class="showPostsLine"></div>
+      {{> commentContent}}
   </div>
     {{> postFooter}}
-  <div class="showPostsLine"></div>
-    {{> commentContent}}
+<!--
     <div id="showComment" style="display:none;">
       {{> commentBar}}
-      <div class="commentBarBackground"></div>
-    </div>
+-->
+<!--      <div class="commentBarBackground"></div>-->
+<!--    </div>-->
   <div class="commentInputBox">
-    <textarea name="comment" class="commentArea" placeholder="说点什么..." type="text" value="{{refcomment}}"></textarea>
+    <header class="bottomBorder">
+      {{#if currentUser}}
+        <div class="title">闲聊</div>
+      {{else}}
+        <div class="title">匿名闲聊</div>
+      {{/if}}
+      <div id="finish" class="leftButton">取消</div>
+      <div id="submit" class="rightButton">发送</div>
+    </header>
+    <form id="new-reply" name="new-reply" class="new-reply">
+      <textarea name="comment" class="commentArea" placeholder="说点什么..." type="text" value="{{refcomment}}"></textarea>
+      <div class="footer"><span class="change">换</span></div>
+    </form>
   </div>
 </template>
 <template name="postFooter">
