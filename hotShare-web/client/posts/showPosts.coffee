@@ -41,7 +41,7 @@ if Meteor.isClient
       window.open($(e.currentTarget).attr('href'), '_system', '');
     )
 
-#    $('.showPosts').css('min-height',$(window).height())
+    $('.showBgColor').css('min-height',$(window).height())
     base_size=($('#test').width()/6 - 10);
 
     test = $("#test");
@@ -348,18 +348,19 @@ if Meteor.isClient
       Posts.update {_id: postId},{$set: {heart: heart}}
       amplify.store(postId,true)
   onComment = ->
-    #window.showPostAt = $(window).scrollTop()
-    #$('.showPosts').addClass('fade-up-out')
-    #$('.showPosts').hide 300
-    #$('#showComment').fadeIn 300
-    #$("#comment").fadeIn 300
+#    window.showPostAt = $(window).scrollTop()
+#    $('.showPosts').addClass('fade-up-out')
+#    $('.showBgColor').hide 300
+#    $('#showComment').fadeIn 300
+#    $("#comment").fadeIn 300
+#    $("#comment").focus()
     commentBox = $('.commentInputBox').bPopup position: [0, 0]
       ,onOpen: ->
         Meteor.setTimeout ->
             $('.commentArea').focus()
           ,300
         console.log 'Modal opened'
-
+        
   onRefresh = ->
     RC = Session.get("RC")+1
     if RC>7
