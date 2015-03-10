@@ -32,6 +32,10 @@ if Meteor.isClient
       !(FollowPosts.find().count() < Session.get("followpostsitemsLimit"))
   Template.listPosts.events
     'click .mainImage': (event)->
+      if isIOS
+        if (event.clientY + $('.home #footer').height()) >=  $(window).height()
+          console.log 'should be triggered in scrolling'
+          return false
       $('.home').addClass('animated ' + animateOutLowerEffect);
       postId = this.postId
       Meteor.setTimeout ()->
