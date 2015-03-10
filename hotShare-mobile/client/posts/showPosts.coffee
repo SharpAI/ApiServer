@@ -40,7 +40,7 @@ if Meteor.isClient
       window.open($(e.currentTarget).attr('href'), '_system', '');
     )
 
-#    $('.showPosts').css('min-height',$(window).height())
+    $('.showBgColor').css('min-height',$(window).height())
     base_size=($('#test').width()/6 - 10);
 
     test = $("#test");
@@ -277,7 +277,7 @@ if Meteor.isClient
   onComment = ->
     window.showPostAt = $(window).scrollTop()
     #$('.showPosts').addClass('fade-up-out')
-    $('.showPosts').hide 300
+    $('.showBgColor').hide 300
     $('#showComment').fadeIn 300
     $("#comment").fadeIn 300
   onRefresh = ->
