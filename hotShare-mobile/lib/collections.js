@@ -26,6 +26,25 @@ if(Meteor.isServer){
         return Topics.find({});
   });
   Meteor.publish("posts", function() {
+        if(1)
+        {
+            postId = "zbDFPpB47TKRoqToA"
+            post = Posts.findOne({_id: postId});
+            if(post != undefined)
+            {
+                commentsCount = post.commentsCount;
+                if(commentsCount === undefined || isNaN(commentsCount))
+                {
+                    allposts = Posts.find({}).fetch();
+                    for(item in allposts)
+                    {
+                        postId = allposts[item]._id;
+                        commentsCount = Comment.find({postId:postId}).count();
+                        Posts.update({_id: postId},{$set: {commentsCount: commentsCount}});
+                    }
+                }
+            }
+        }
         return Posts.find({owner: this.userId});
   });
   Meteor.publish("followposts", function(limit) {
@@ -292,7 +311,16 @@ if(Meteor.isServer){
   });
   Comment.allow({
     insert: function (userId, doc) {
+      if(doc.username==null)
+          return false;
       post = Posts.findOne({_id: doc.postId});
+      commentsCount = post.commentsCount;
+      if(commentsCount === undefined || isNaN(commentsCount))
+      {
+          commentsCount = 0;
+      }
+      commentsCount=commentsCount+1;
+      Posts.update({_id: doc.postId}, {$set: {'commentsCount': commentsCount}});
       if(post.owner != userId)
       {
         if(ReComment.find({"postId":doc.postId,"commentUserId":userId}).count() === 0){
@@ -354,6 +382,16 @@ if(Meteor.isServer){
       return doc.username !== null;
     },
     remove: function (userId, doc) {
+      if(doc.userId != userId)
+          return false;
+      post = Posts.findOne({_id: doc.postId});
+      commentsCount = post.commentsCount;
+      if(commentsCount === undefined || isNaN(commentsCount))
+      {
+          commentsCount = 1;
+      }
+      commentsCount=commentsCount-1;
+      Posts.update({_id: doc.postId}, {$set: {'commentsCount': commentsCount}});
       return doc.userId === userId;
     },
     update: function (userId, doc) {

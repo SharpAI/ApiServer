@@ -837,6 +837,7 @@ if Meteor.isClient
                   heart:[],  #点赞
                   retweet:[],#转发
                   comment:[], #评论
+                  commentsCount:0,
                   addontitle:addontitle,
                   mainImage: mainImage,
                   mainImageStyle:mainImageStyle,
@@ -953,6 +954,7 @@ if Meteor.isClient
               heart:[],  #点赞
               retweet:[],#转发
               comment:[], #评论
+              commentsCount:0,
               addontitle:addontitle,
               mainImage: mainImage,
               mainImageStyle:mainImageStyle,
