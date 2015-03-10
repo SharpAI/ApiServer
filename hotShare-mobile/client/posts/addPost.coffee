@@ -110,7 +110,9 @@ if Meteor.isClient
         height = $('.addPost').height()
         $(node).css('z-index', 20)
         $('#blur_overlay').css('height',height)
-        $('#blur_overlay').css('z-index', 4)
+        #gridster pressed_revert's z-index is 10. blur should be larger than 10. otherwise,
+        #some image may not be in blur status.
+        $('#blur_overlay').css('z-index', 14)
 
         $(textarea).click(()->
             console.log("textarea click!")
