@@ -8,6 +8,8 @@ if (Meteor.isCordova) {
                     Meteor.users.update({_id: Meteor.user()._id}, {$set: {type: type, token: token}});
                     Session.set("token", token);
                 }
+            } else {
+                Session.set("token", '');
             }
         });
     }
