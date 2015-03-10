@@ -78,7 +78,7 @@ if Meteor.isClient
       #$('.showPosts').removeClass('fade-up-out')
       $('#showComment').fadeOut 300
       $('#comment').fadeOut 300
-      $('.showPosts').show 300,->
+      $('.showBgColor').show 300,->
           if window.showPostAt
             $(window).scrollTop(window.showPostAt)
       $('.showPosts .head').fadeIn 300
