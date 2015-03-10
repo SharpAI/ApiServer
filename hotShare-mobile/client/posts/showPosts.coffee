@@ -168,8 +168,10 @@ if Meteor.isClient
       false
     'focus .commentArea':->
       console.log("#comment get focus");
+      cordova.plugins.Keyboard.disableScroll(true)
     'blur .commentArea':->
       console.log("#comment lost focus");
+      cordova.plugins.Keyboard.disableScroll(false)
     'click .back' :->
       $('.showPosts').addClass('animated ' + animateOutUpperEffect);
       $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect);
@@ -319,12 +321,14 @@ if Meteor.isClient
   onComment = ->
     $('.showBgColor').hide 0
     commentBox = $('.commentInputBox').bPopup
+      positionStyle: 'fixed'
       position: [0, 0]
       onClose: ->
         $('.showBgColor').show 0,->
           $(window).scrollTop(window.lastScroll)
       onOpen: ->
         Meteor.setTimeout ->
+
             $('.commentArea').focus()
           ,300
         console.log 'Modal opened'
