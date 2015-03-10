@@ -1,6 +1,6 @@
 <template name="showPosts">
-  <div class="showBgColor" style="background-color:white;">
-    <div class="showPosts" style="padding-bottom:42px;">
+  <div class="showBgColor">
+    <div class="showPosts">
       <div id="blur_overlay" style="position: absolute; opacity: 0.5; z-index: 1; width:100%; background-color:white;">
           {{> spinner}}
       </div>
@@ -81,10 +81,15 @@
     </div>
   </div>
     {{> postFooter}}
+  <div class="showPostsLine"></div>
+    {{> commentContent}}
     <div id="showComment" style="display:none;">
       {{> commentBar}}
       <div class="commentBarBackground"></div>
     </div>
+  <div class="commentInputBox">
+    <textarea name="comment" class="commentArea" placeholder="说点什么..." type="text" value="{{refcomment}}"></textarea>
+  </div>
 </template>
 <template name="postFooter">
   <div id="postFooter" class="showPostsFooter">

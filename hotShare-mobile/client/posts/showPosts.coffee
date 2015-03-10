@@ -109,6 +109,14 @@ if Meteor.isClient
     isMobile:->
       Meteor.isCordova
   Template.showPosts.events
+    'focus .commentArea':->
+      console.log("#comment get focus");
+      Meteor.setTimeout ->
+          console.log 'Window height is ' + window.innerHeight
+          $('.commentInputBox').css("height", window.innerHeight)
+        ,300
+    'blur .commentArea':->
+      console.log("#comment lost focus");
     'click .back' :->
       #for tmpPage in history
       #  console.log "showPosts, tmpPage = "+JSON.stringify(tmpPage)
@@ -275,11 +283,17 @@ if Meteor.isClient
       Posts.update {_id: postId},{$set: {heart: heart}}
       amplify.store(postId,true)
   onComment = ->
-    window.showPostAt = $(window).scrollTop()
+    #window.showPostAt = $(window).scrollTop()
     #$('.showPosts').addClass('fade-up-out')
-    $('.showBgColor').hide 300
-    $('#showComment').fadeIn 300
-    $("#comment").fadeIn 300
+    #$('.showPosts').hide 300
+    #$('#showComment').fadeIn 300
+    #$("#comment").fadeIn 300
+    $('.commentInputBox').bPopup position: [0, 0]
+      ,onOpen: ->
+        Meteor.setTimeout ->
+            $('.commentArea').focus()
+          ,300
+        console.log 'Modal opened'
   onRefresh = ->
     RC = Session.get("RC")+1
     if RC>7
