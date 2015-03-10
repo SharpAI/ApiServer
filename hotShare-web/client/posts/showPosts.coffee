@@ -1,5 +1,5 @@
 if Meteor.isClient
-  isIOS = ( navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false )
+  @isIOS = ( navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false )
   window.getDocHeight = ->
     D = document
     Math.max(
