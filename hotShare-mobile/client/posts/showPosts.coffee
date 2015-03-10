@@ -40,7 +40,7 @@ if Meteor.isClient
       window.open($(e.currentTarget).attr('href'), '_system', '');
     )
 
-    $('.showPosts').css('min-height',$(window).height())
+#    $('.showPosts').css('min-height',$(window).height())
     base_size=($('#test').width()/6 - 10);
 
     test = $("#test");
