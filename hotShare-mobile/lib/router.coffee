@@ -78,6 +78,9 @@ if Meteor.isClient
         loadingTemplate: 'loadingPost'
         action: ->
           post = Posts.findOne({_id: this.params._id})
+          refComment = RefComments.find()
+          if refComment.count() > 0
+            Session.set("refComment",refComment.fetch())
           Session.set('postContent',post);
           Session.set("DocumentTitle",post.title + '——' + post.addontitle);
           this.render 'showPosts', {data: post}

@@ -4,6 +4,9 @@ if Meteor.isClient
         Meteor.subscribe("publicPosts",this.params._id);
       action: ->
         post = Posts.findOne({_id: this.params._id})
+        refComment = RefComments.find()
+        if refComment.count() > 0
+          Session.set("refComment",refComment.fetch())
         Session.set('postContent',post);
         Session.set("DocumentTitle",post.title + '——' + post.addontitle);
         favicon = document.createElement('link');
