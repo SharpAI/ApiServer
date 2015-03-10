@@ -247,7 +247,8 @@ if Meteor.isClient
     retweet:->
       Session.get("postContent").retweet.length
     comment:->
-      Comment.find({postId:Session.get("postContent")._id}).count()
+      Session.get("postContent").commentsCount
+      #Comment.find({postId:Session.get("postContent")._id}).count()
     blueHeart:->
       heart = Session.get("postContent").heart
       if Meteor.user()
