@@ -283,17 +283,18 @@ if Meteor.isClient
       Posts.update {_id: postId},{$set: {heart: heart}}
       amplify.store(postId,true)
   onComment = ->
-    #window.showPostAt = $(window).scrollTop()
-    #$('.showPosts').addClass('fade-up-out')
-    #$('.showPosts').hide 300
-    #$('#showComment').fadeIn 300
-    #$("#comment").fadeIn 300
-    $('.commentInputBox').bPopup position: [0, 0]
-      ,onOpen: ->
-        Meteor.setTimeout ->
-            $('.commentArea').focus()
-          ,300
-        console.log 'Modal opened'
+    window.showPostAt = $(window).scrollTop()
+#    $('.showPosts').addClass('fade-up-out')
+    $('.showBgColor').hide 300
+    $('#showComment').fadeIn 300
+    $("#comment").fadeIn 300
+    $("#comment").focus()
+#    $('.commentInputBox').bPopup position: [0, 0]
+#      ,onOpen: ->
+#        Meteor.setTimeout ->
+#            $('.commentArea').focus()
+#          ,300
+#        console.log 'Modal opened'
   onRefresh = ->
     RC = Session.get("RC")+1
     if RC>7

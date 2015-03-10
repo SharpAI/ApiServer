@@ -1,14 +1,14 @@
 if Meteor.isClient
   Session.setDefault 'RC', 0
   Template.commentBar.rendered=->
-    $('.commentBar').css('height',$(window).height())
+#    $('.commentBar').css('height',$(window).height())
     $('#comment').on('keyup input',(e)->
       e.preventDefault()
       $(this).css('height', 'auto').css('height', this.scrollHeight)
-      height = this.scrollHeight + 10;
-      if $('#new-reply').css("height") != height
-        $('#new-reply').css("height", height)
-        console.log('comment propertychange sizey:'+ 'scrollHeight:'+this.scrollHeight)
+#      height = this.scrollHeight + 10;
+#      if $('#new-reply').css("height") != height
+#        $('#new-reply').css("height", height)
+#        console.log('comment propertychange sizey:'+ 'scrollHeight:'+this.scrollHeight)
     )
 
     $('.box')
@@ -83,8 +83,9 @@ if Meteor.isClient
             $(window).scrollTop(window.showPostAt)
       $('.showPosts .head').fadeIn 300
       $('.showPostsFooter').fadeIn 300
-    "click .submit":->
+    "click #submit":->
       $("#new-reply").submit()
+      $("#finish").click()
     "submit .new-reply": (event)->
       ###
       if Meteor.user() is null
@@ -123,9 +124,9 @@ if Meteor.isClient
       event.target.comment.value = ""
       $("#comment").attr("placeholder", "说点什么")
       $("#comment").css('height', 'auto')
-      scrollHeight = document.getElementById("comment").scrollHeight
-      height = scrollHeight + 10;
-      $('#new-reply').css("height", height)
+#      scrollHeight = document.getElementById("comment").scrollHeight
+#      height = scrollHeight + 10;
+#      $('#new-reply').css("height", height)
       Meteor.setTimeout ()->
           $('.commentBar').animate({ scrollTop: $('.commentBar .content').height() }, "fast")
         ,0
