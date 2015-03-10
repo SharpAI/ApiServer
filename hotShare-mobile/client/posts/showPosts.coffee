@@ -1,4 +1,5 @@
 if Meteor.isClient
+  commentBox = null
   @isIOS = ( navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false )
   window.getDocHeight = ->
     D = document
@@ -97,6 +98,12 @@ if Meteor.isClient
       window.lastScroll = st
 
   Template.showPosts.helpers
+    refcomment:->
+      RC = Session.get 'RC'
+      #console.log "RC: " + RC
+      RefC = Session.get("refComment")
+      if RefC
+        return RefC[RC].text
     time_diff: (created)->
       GetTime0(new Date() - created)
     isMyPost:->
@@ -109,6 +116,64 @@ if Meteor.isClient
     isMobile:->
       Meteor.isCordova
   Template.showPosts.events
+    "click .change":->
+      RC = Session.get("RC")+1
+      if RC>7
+         RC=0
+      Session.set("RC", RC)
+      setTimeout(()->
+        $('#comment').trigger("keyup")
+      ,300)
+    'click #finish':->
+      commentBox.close()
+    "click #submit":->
+      $("#new-reply").submit()
+      commentBox.close()
+    "submit .new-reply": (event)->
+      ###
+      if Meteor.user() is null
+        window.plugins.toast.showLongBottom '请登陆后操作!'
+        return
+      ###
+      # This function is called when the new task form is submitted
+      content = event.target.comment.value
+      console.log content
+      if content is ""
+        #window.plugins.toast.showLongBottom "内容不能为空"
+        return false
+
+      FollowPostsId = Session.get("FollowPostsId")
+      postId = Session.get("postContent")._id
+      if Meteor.user()
+        username = Meteor.user().username
+        userId = Meteor.user()._id
+        userIcon = Meteor.user().profile.icon
+      else
+        username = '匿名'
+        userId = 0
+        userIcon = ''
+      try
+        Comment.insert {
+          postId:postId
+          content:content
+          username:username
+          userId:userId
+          userIcon:userIcon
+          createdAt: new Date()
+        }
+        FollowPosts.update {_id: FollowPostsId},{$inc: {comment: 1}}
+      catch error
+        console.log error
+      event.target.comment.value = ""
+      $("#comment").attr("placeholder", "说点什么")
+      $("#comment").css('height', 'auto')
+#      scrollHeight = document.getElementById("comment").scrollHeight
+#      height = scrollHeight + 10;
+#      $('#new-reply').css("height", height)
+#      Meteor.setTimeout ()->
+#          $('.commentBar').animate({ scrollTop: $('.commentBar .content').height() }, "fast")
+#        ,0
+      false
     'focus .commentArea':->
       console.log("#comment get focus");
       Meteor.setTimeout ->
@@ -283,18 +348,19 @@ if Meteor.isClient
       Posts.update {_id: postId},{$set: {heart: heart}}
       amplify.store(postId,true)
   onComment = ->
-    window.showPostAt = $(window).scrollTop()
+#    window.showPostAt = $(window).scrollTop()
 #    $('.showPosts').addClass('fade-up-out')
-    $('.showBgColor').hide 300
-    $('#showComment').fadeIn 300
-    $("#comment").fadeIn 300
-    $("#comment").focus()
-#    $('.commentInputBox').bPopup position: [0, 0]
-#      ,onOpen: ->
-#        Meteor.setTimeout ->
-#            $('.commentArea').focus()
-#          ,300
-#        console.log 'Modal opened'
+#    $('.showBgColor').hide 300
+#    $('#showComment').fadeIn 300
+#    $("#comment").fadeIn 300
+#    $("#comment").focus()
+    commentBox = $('.commentInputBox').bPopup position: [0, 0]
+      ,onOpen: ->
+        Meteor.setTimeout ->
+            $('.commentArea').focus()
+          ,300
+        console.log 'Modal opened'
+        
   onRefresh = ->
     RC = Session.get("RC")+1
     if RC>7

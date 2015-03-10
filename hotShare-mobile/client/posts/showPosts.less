@@ -63,8 +63,14 @@
 .showPosts .content .gridster .textdiv p{padding-left:4px; padding-right:4px; font-size:large; color: black;white-space: pre-wrap;word-wrap: break-word;background :none; line-height: 30px; border:0px dotted #00c4ff;overflow-y: hidden; resize:vertical;height:100%;width:100%;box-sizing:border-box;}
 
 .showPosts .content .gridster {padding-left:5%; padding-right:5%;}
-.commentInputBox { display:none; min-width: 100%}
-.commentInputBox .commentArea{ width: 100%;height:80%;color:black}
+.commentInputBox { display:none; min-width: 100%;position: relative;}
+.commentInputBox header{color: #111;background-color: #fff;width: 100%;height: 40px;font-size: 16px;line-height: 40px;position: absolute;left: 0;top: 0;text-align: center;z-index: 999;}
+.commentInputBox header .rightButton{ position:absolute; right: 10px; top:0; cursor:pointer;text-align:right;color: #57cccc}
+.commentInputBox header .leftButton{ position:absolute; left: 10px; top:0; cursor:pointer;text-align:left;color: #57cccc}
+.commentInputBox #new-reply{ height: 100%}
+.commentInputBox form .footer{position: relative;height: 30px;width: 100%;top: -5%;background-color: #fff;}
+.commentInputBox form .change{position: absolute;right:10px; height: 28px;line-height: 28px; padding: 1px 5px;color: #fff;background-color: #0078e7;border-radius: 5px;}
+.commentInputBox .commentArea{ padding-top: 40px;border: none;width: 100%;height:80%;color:black}
 //.showPosts .content .title{position: absolute;word-break: break-all;white-space: pre-line;left: 5%;clear: both; display: block; margin:1% auto;font-size: xx-large;text-shadow: 0 1px 0 black;font-weight:bold;background:none;overflow-y: hidden;}
 //.showPosts .content .addontitle{position: absolute;word-break: break-all;white-space: pre-line;top: 10%;left: 5%;clear: both; display: block; margin:5% 0px;font-size: large;text-shadow: 0 1px 0 black;background:none;overflow-y: hidden;height:50px}
 //.showPosts .content .addontitle{min-height: 52px;line-height: 52px}

@@ -83,15 +83,27 @@
       {{> commentContent}}
   </div>
     {{> postFooter}}
+<!--
     <div id="showComment" style="display:none;">
       {{> commentBar}}
-<!--      <div class="commentBarBackground"></div>-->
-    </div>
-<!--
-  <div class="commentInputBox">
-    <textarea name="comment" class="commentArea" placeholder="说点什么..." type="text" value="{{refcomment}}"></textarea>
-  </div>
 -->
+<!--      <div class="commentBarBackground"></div>-->
+<!--    </div>-->
+  <div class="commentInputBox">
+    <header class="bottomBorder">
+      {{#if currentUser}}
+        <div class="title">闲聊</div>
+      {{else}}
+        <div class="title">匿名闲聊</div>
+      {{/if}}
+      <div id="finish" class="leftButton">取消</div>
+      <div id="submit" class="rightButton">发送</div>
+    </header>
+    <form id="new-reply" name="new-reply" class="new-reply">
+      <textarea name="comment" class="commentArea" placeholder="说点什么..." type="text" value="{{refcomment}}"></textarea>
+      <div class="footer"><span class="change">换</span></div>
+    </form>
+  </div>
 </template>
 <template name="postFooter">
   <div id="postFooter" class="showPostsFooter">
