@@ -81,20 +81,14 @@
     </div>
     <div class="showPostsLine"></div>
       {{> commentContent}}
-  </div>
+    </div>
     {{> postFooter}}
-<!--
-    <div id="showComment" style="display:none;">
-      {{> commentBar}}
--->
-<!--      <div class="commentBarBackground"></div>-->
-<!--    </div>-->
   <div class="commentInputBox">
     <header class="bottomBorder">
       {{#if currentUser}}
-        <div class="title">闲聊</div>
+        <div class="title">评论</div>
       {{else}}
-        <div class="title">匿名闲聊</div>
+        <div class="title">匿名评论</div>
       {{/if}}
       <div id="finish" class="leftButton">取消</div>
       <div id="submit" class="rightButton">发送</div>
@@ -109,7 +103,6 @@
   <div id="postFooter" class="showPostsFooter">
     <div class="commentList">
       <span class="minHeart"><i class="fa fa-thumbs-up"></i>{{heart}}</span>
-      <!--<span class="minRetweet"><i class="fa fa-retweet"></i>{{retweet}}</span>-->
       <span class="minComment"><i class="fa fa-comment"></i>{{comment}}</span>
     </div>
     <input readOnly name="comment" class="comment" placeholder="说点什么..." type="text" value="{{refcomment}}">
@@ -120,14 +113,6 @@
       {{else}}
         <span class="heart"><i class="fa fa-thumbs-o-up" style="color:#00c4ff;"></i></span>
       {{/if}}
-      <!--
-      {{#if blueRetweet}}
-      <span class="blueRetweet"><i class="fa fa-retweet" style="color:#00c4ff;"></i></span>
-      {{else}}
-      <span class="retweet"><i class="fa fa-retweet"></i></span>
-      {{/if}}
-      <span class="comment"><i class="fa fa-comment"></i></span>
-      -->
     </div>
   </div>
 </template>

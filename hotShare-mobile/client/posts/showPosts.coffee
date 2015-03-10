@@ -12,8 +12,6 @@ if Meteor.isClient
     $(window).children().off();
   Template.showPosts.rendered=->
     $('.mainImage').css('height',$(window).height()*0.55)
-#    $('#wx-img').css('height',$(window).height()*0.55)
-    #`global_disable_longpress = true`
     postContent = Session.get("postContent")
     browseTimes = 0
     if (postContent.browse != undefined)
@@ -34,7 +32,7 @@ if Meteor.isClient
             }
           }
         )
-      ,3000
+      ,1000
     $('p').linkify();
     $("a[target='_blank']").click((e)->
       e.preventDefault();
@@ -125,21 +123,21 @@ if Meteor.isClient
         $('#comment').trigger("keyup")
       ,300)
     'click #finish':->
-      commentBox.close()
+      if commentBox
+        commentBox.close()
+      else
+        $('.commentInputBox').hide 0
     "click #submit":->
       $("#new-reply").submit()
-      commentBox.close()
+      if commentBox
+        commentBox.close()
+      else
+        $('.commentInputBox').hide 0
     "submit .new-reply": (event)->
-      ###
-      if Meteor.user() is null
-        window.plugins.toast.showLongBottom '请登陆后操作!'
-        return
-      ###
       # This function is called when the new task form is submitted
       content = event.target.comment.value
       console.log content
       if content is ""
-        #window.plugins.toast.showLongBottom "内容不能为空"
         return false
 
       FollowPostsId = Session.get("FollowPostsId")
@@ -167,26 +165,12 @@ if Meteor.isClient
       event.target.comment.value = ""
       $("#comment").attr("placeholder", "说点什么")
       $("#comment").css('height', 'auto')
-#      scrollHeight = document.getElementById("comment").scrollHeight
-#      height = scrollHeight + 10;
-#      $('#new-reply').css("height", height)
-#      Meteor.setTimeout ()->
-#          $('.commentBar').animate({ scrollTop: $('.commentBar .content').height() }, "fast")
-#        ,0
       false
     'focus .commentArea':->
       console.log("#comment get focus");
-      Meteor.setTimeout ->
-          console.log 'Window height is ' + window.innerHeight
-          $('.commentInputBox').css("height", window.innerHeight)
-        ,300
     'blur .commentArea':->
       console.log("#comment lost focus");
     'click .back' :->
-      #for tmpPage in history
-      #  console.log "showPosts, tmpPage = "+JSON.stringify(tmpPage)
-      #history.back()
-#      $('.showPosts').fadeOut 300
       $('.showPosts').addClass('animated ' + animateOutUpperEffect);
       $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect);
       Meteor.setTimeout ()->
@@ -204,8 +188,6 @@ if Meteor.isClient
       pub = this.pub;
       if pub.length > 0
         for i in [0..(pub.length-1)]
-          #if i is 0
-          #  pub[0].imgUrl = this.mainImage
           Drafts.insert(pub[i])
       Session.set 'isReviewMode','2'
       #Don't push showPost page into history. Because when save posted story, it will use Router.go to access published story directly. But in history, there is a duplicate record pointing to this published story.
@@ -273,10 +255,6 @@ if Meteor.isClient
       images = []
       swipedata = []
 
-      #swipedata.push
-      #  href: Session.get('postContent').mainImage
-      #  title: Session.get('postContent').title
-      #i = 1
       i = 0
       selected = 0
       for image in Session.get('postContent').pub
@@ -292,18 +270,9 @@ if Meteor.isClient
         hideCloseButtonOnMobile : true
         loopAtEnd: false
       }
-      #$(document.body).on('click','#swipebox-slider .current', ->
-      #  $('#swipebox-close').trigger('click')
-      #)
-  Template.postFooter.rendered=->
-    Deps.autorun ->
-      refComment = RefComments.find()
-      if refComment.count() > 0
-        Session.set("refComment",refComment.fetch())
   Template.postFooter.helpers
     refcomment:->
       RC = Session.get 'RC'
-      #console.log "RC: " + RC
       RefC = Session.get("refComment")
       if RefC
         return RefC[RC].text
@@ -348,19 +317,17 @@ if Meteor.isClient
       Posts.update {_id: postId},{$set: {heart: heart}}
       amplify.store(postId,true)
   onComment = ->
-#    window.showPostAt = $(window).scrollTop()
-#    $('.showPosts').addClass('fade-up-out')
-#    $('.showBgColor').hide 300
-#    $('#showComment').fadeIn 300
-#    $("#comment").fadeIn 300
-#    $("#comment").focus()
-    commentBox = $('.commentInputBox').bPopup position: [0, 0]
-      ,onOpen: ->
+    $('.showBgColor').hide 0
+    commentBox = $('.commentInputBox').bPopup
+      position: [0, 0]
+      onClose: ->
+        $('.showBgColor').show 0,->
+          $(window).scrollTop(window.lastScroll)
+      onOpen: ->
         Meteor.setTimeout ->
             $('.commentArea').focus()
           ,300
         console.log 'Modal opened'
-        
   onRefresh = ->
     RC = Session.get("RC")+1
     if RC>7
@@ -371,10 +338,8 @@ if Meteor.isClient
       Template.postFooter.events
         'touchstart .refresh':onRefresh
         'touchstart .comment':onComment
-        #'touchstart .commentList': onComment
         'touchstart .heart':heartOnePost
   Template.postFooter.events
-    #'click .commentList': onComment
     'click .refresh':onRefresh
     'click .comment':onComment
     'click .heart':heartOnePost
