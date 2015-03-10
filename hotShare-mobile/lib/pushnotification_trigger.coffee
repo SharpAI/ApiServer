@@ -14,7 +14,7 @@ if Meteor.isServer
         type: "comment"
         postId: doc.postId
       }
-      toUserToken = Meteor.users.findOne({_id: post.owner})
+      toUserId = post.owner
     else if type == "read"
       if doc.owner == userId
         #console.log "read self post"
@@ -24,7 +24,7 @@ if Meteor.isServer
         type: "read"
         postId: doc._id
       }
-      toUserToken = Meteor.users.findOne({_id: doc.owner})
+      toUserId = doc.owner
     else
       post = Posts.findOne({_id: doc.postId});
       commentText = doc.content;
@@ -33,7 +33,8 @@ if Meteor.isServer
         type: "recomment"
         postId: doc.postId
       }
-      toUserToken = Meteor.users.findOne({_id: userId})
+      toUserId = userId
+    toUserToken = Meteor.users.findOne({_id: toUserId})
 
 
     unless toUserToken is undefined or toUserToken.type is undefined or toUserToken.token is undefined
@@ -56,7 +57,7 @@ if Meteor.isServer
       else if pushToken.type is 'iOS'
         console.log 'Server PN to iOS '
         token = pushToken.token
-        waitReadCount = Meteor.users.findOne({_id:userId}).profile.waitReadCount
+        waitReadCount = Meteor.users.findOne({_id:toUserId}).profile.waitReadCount
         if waitReadCount is undefined or isNaN(waitReadCount)
             waitReadCount = 0
         pushServer.sendIOS 'me', token , '', content, waitReadCount
