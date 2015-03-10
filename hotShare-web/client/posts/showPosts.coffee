@@ -78,14 +78,6 @@ if Meteor.isClient
       st = $(window).scrollTop();
 
       if(st + $(window).height()) is window.getDocHeight()
-        # Popup chat box only on browser with 1s delay
-        # And back to the previous position when back from chat box to post
-        unless Meteor.isCordova
-          unless window.popedup
-            window.popedup = true
-            Meteor.setTimeout ->
-                $('.comment').click()
-              ,1000
         $('.showPosts .head').fadeIn 300
         $('.showPostsFooter').fadeIn 300
         window.lastScroll = st
@@ -298,10 +290,10 @@ if Meteor.isClient
       Template.postFooter.events
         'touchstart .refresh':onRefresh
         'touchstart .comment':onComment
-        'touchstart .commentList': onComment
+        #'touchstart .commentList': onComment
         'touchstart .heart':heartOnePost
   Template.postFooter.events
-    'click .commentList': onComment
+    #'click .commentList': onComment
     'click .refresh':onRefresh
     'click .comment':onComment
     'click .heart':heartOnePost
