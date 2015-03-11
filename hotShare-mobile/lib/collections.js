@@ -26,25 +26,6 @@ if(Meteor.isServer){
         return Topics.find({});
   });
   Meteor.publish("posts", function() {
-        if(1)
-        {
-            postId = "zbDFPpB47TKRoqToA"
-            post = Posts.findOne({_id: postId});
-            if(post != undefined)
-            {
-                commentsCount = post.commentsCount;
-                if(commentsCount === undefined || isNaN(commentsCount))
-                {
-                    allposts = Posts.find({}).fetch();
-                    for(item in allposts)
-                    {
-                        postId = allposts[item]._id;
-                        commentsCount = Comment.find({postId:postId}).count();
-                        Posts.update({_id: postId},{$set: {commentsCount: commentsCount}});
-                    }
-                }
-            }
-        }
         return Posts.find({owner: this.userId});
   });
   Meteor.publish("followposts", function(limit) {
@@ -313,6 +294,7 @@ if(Meteor.isServer){
     insert: function (userId, doc) {
       if(doc.username==null)
           return false;
+      try{
       post = Posts.findOne({_id: doc.postId});
       commentsCount = post.commentsCount;
       if(commentsCount === undefined || isNaN(commentsCount))
@@ -353,7 +335,7 @@ if(Meteor.isServer){
         recomments = ReComment.find({"postId": doc.postId}).fetch();
         for(item in recomments)
         {
-            if(recomments[item].commentUserId != userId && recomments[item].commentUserId != post.owner)
+            if(recomments[item].commentUserId!=undefined && recomments[item].commentUserId != userId && recomments[item].commentUserId != post.owner)
             {
                 Feeds.insert({
                     owner:userId,
@@ -379,6 +361,8 @@ if(Meteor.isServer){
             }
         }
       }
+      }
+      catch(error){}
       return doc.username !== null;
     },
     remove: function (userId, doc) {

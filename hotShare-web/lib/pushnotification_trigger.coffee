@@ -33,6 +33,8 @@ if Meteor.isServer
         type: "recomment"
         postId: doc.postId
       }
+      if userId is null or userId is undefined
+         return;
       toUserId = userId
     toUserToken = Meteor.users.findOne({_id: toUserId})
 
