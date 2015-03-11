@@ -1,5 +1,5 @@
 /* CSS declarations go here */
-.authOverlay{background-image: url(loginbg.jpg);background-repeat: no-repeat;background-size: 100% auto; position: relative;}
+.authOverlay{background-image: url(loginbg1.jpg);background-repeat: no-repeat;background-size: 100% auto; position: relative;}
 .webHome{background-image: url(webbg.jpg);background-repeat: no-repeat;background-size: cover; position: relative;}
 .authOverlay .title{font-weight:bold;}
 .authOverlay #register,.webHome #register{position: absolute;bottom: 15%;left: 5%;right: 5%;width: 90%;text-align: center;border: none;border-radius: 50px;padding: 10px;background-color: #00c4ff;font-size: 16px;}

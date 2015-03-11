@@ -14,7 +14,7 @@ if (Meteor.isClient) {
       $('#register').css('display',"none")
       $('#weibo').css('display',"none")
       $('#login').css('display',"none")
-      $('.authOverlay').css('-webkit-filter',"blur(10px)")
+//      $('.authOverlay').css('-webkit-filter',"blur(10px)")
     },
     'click #login': function () {
 //      Router.go('/loginForm');
@@ -22,7 +22,7 @@ if (Meteor.isClient) {
       $('#register').css('display',"none")
       $('#weibo').css('display',"none")
       $('#login').css('display',"none")
-      $('.authOverlay').css('-webkit-filter',"blur(10px)")
+//      $('.authOverlay').css('-webkit-filter',"blur(10px)")
     },
     'click #weibo': function () {
       Meteor.loginWithWeibo({

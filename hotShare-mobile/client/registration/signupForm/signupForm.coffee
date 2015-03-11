@@ -4,7 +4,7 @@ Template.signupForm.events
     $('#login').css('display',"block")
     $('#weibo').css('display',"block")
     $('#register').css('display',"block")
-    $('.authOverlay').css('-webkit-filter',"none")
+#    $('.authOverlay').css('-webkit-filter',"none")
   'submit #signup-form':(e,t)->
     e.preventDefault()
     if Meteor.status().connected isnt true
