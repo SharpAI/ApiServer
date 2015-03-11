@@ -116,6 +116,11 @@ if Meteor.isClient
         this.render 'my_about'
         Session.set 'channel','my_about'
         return
+    Router.route '/deal_page',()->
+      if Meteor.isCordova is true
+        this.render 'deal_page'
+        Session.set 'channel','deal_page'
+        return
     Router.route '/topicPosts',()->
       if Meteor.isCordova is true
         this.render 'topicPosts'
