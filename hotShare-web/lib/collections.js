@@ -10,6 +10,7 @@ TopicPosts = new Meteor.Collection('topicposs');
 Comment = new Meteor.Collection('comment');
 RefComments = new Meteor.Collection("refcomments");
 ReComment = new Meteor.Collection('recomment');
+Reports = new Meteor.Collection('reports');
 
 if(Meteor.isServer){
   Rnd = 0;
@@ -54,6 +55,14 @@ if(Meteor.isServer){
   });
   Meteor.publish("comment", function(postId) {
         return Comment.find({postId: postId});
+  });
+  Meteor.publish("reports", function(postId) {
+        return Reports.find({postId: postId});
+  });
+  Reports.allow({
+    insert: function (userId, doc) {
+      return doc.username !== null;
+    }
   });
   Posts.allow({
     insert: function (userId, doc) {
