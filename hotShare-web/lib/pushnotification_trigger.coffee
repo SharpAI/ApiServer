@@ -9,7 +9,7 @@ if Meteor.isServer
         #console.log "comment self post"
         return
       commentText = doc.content;
-      content = '您收到了新的回复:\n'+commentText
+      content = '您收到了新回复:\n'+commentText
       extras = {
         type: "comment"
         postId: doc.postId
@@ -28,7 +28,7 @@ if Meteor.isServer
     else
       post = Posts.findOne({_id: doc.postId});
       commentText = doc.content;
-      content = '您回复过的帖子有新的回复:\n'+commentText
+      content = '您参与讨论的故事有新回复:\n'+commentText
       extras = {
         type: "recomment"
         postId: doc.postId
