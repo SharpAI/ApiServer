@@ -96,6 +96,8 @@ if Meteor.isClient
       window.lastScroll = st
 
   Template.showPosts.helpers
+    isCordova:()->
+      Meteor.isCordova
     refcomment:->
       RC = Session.get 'RC'
       #console.log "RC: " + RC
@@ -223,6 +225,8 @@ if Meteor.isClient
       , '取消分享', ['取消','确定']);
 
 
+    'click #report': (event)->
+      Router.go('reportPost')
     'click #socialShare': (event)->
       current = Router.current();
       url = current.url;

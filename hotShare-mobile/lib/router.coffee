@@ -131,6 +131,16 @@ if Meteor.isClient
         this.render 'addTopicComment'
         Session.set 'channel','addTopicComment'
         return
+   Router.route '/thanksReport',()->
+      if Meteor.isCordova is true
+        this.render 'thanksReport'
+        Session.set 'channel','thanksReport'
+        return
+   Router.route '/reportPost',()->
+      if Meteor.isCordova is true
+        this.render 'reportPost'
+        Session.set 'channel','reportPost'
+        return
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->
