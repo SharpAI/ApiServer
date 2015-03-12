@@ -9,12 +9,6 @@ if (Meteor.isClient) {
   });
   Template.authOverlay.events({
     'click #anonymous': function () {
-      $('.agreeDeal').css('display',"block")
-    },
-    'click #cancle': function () {
-      $('.agreeDeal').css('display',"none")
-    },
-    'click #agree': function () {
       console.log ('UUID is ' + device.uuid);
       if (device.uuid){
           Meteor.loginWithPassword(device.uuid,'123456',function(error){

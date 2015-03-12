@@ -1,13 +1,5 @@
 <template name="authOverlay">
   <div class="authOverlay">
-<!--    <div class="agreeDeal">-->
-  <div class="agreeDeal" style="display:none">
-    <span>是否同意</span>&nbsp;&nbsp;&nbsp;<a href="/deal_page">故事贴服务告知</a>&nbsp;&nbsp;&nbsp;?
-      <br>
-      <br>
-      <button id="cancle" style="border: 1px solid #e7e7e7;margin: 0 15px;" class="leftButton btn btn-default">取消</button>
-      <button id="agree" style="border: 1px solid #e7e7e7;margin: 0 15px;" class="leftButton btn btn-default">同意</button>
-    </div>
     {{#if isLoggingIn}}
       <div>{{>spinner}}</div>
       <div id="loggingIn">很卖萌的登录中~~~</div>
