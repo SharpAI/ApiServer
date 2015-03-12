@@ -37,6 +37,11 @@
           </div>
         {{/if}}
       {{/each}}
+      {{#if moreResults}}
+      <div id="showMoreFeedsResults" style="margin-left: 25px;">
+        <span class="loading">Loading...</span>
+      </div>
+      {{/if}}
     </div>
   </div>
   {{> footer}}

@@ -41,8 +41,8 @@ if(Meteor.isServer){
   Meteor.publish("saveddrafts", function() {
         return SavedDrafts.find({owner: this.userId});
   });
-  Meteor.publish("feeds", function() {
-        return Feeds.find({followby: this.userId});
+  Meteor.publish("feeds", function(limit) {
+        return Feeds.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
   });
   Meteor.publish("follows", function() {
         return Follows.find({}, {sort: { index: 1 }} );
@@ -444,7 +444,6 @@ if(Meteor.isClient){
       Meteor.subscribe("posts");
       /*Meteor.subscribe("drafts");*/
       Meteor.subscribe("saveddrafts");
-      Meteor.subscribe("feeds");
       Meteor.subscribe("follows");
       Meteor.subscribe("follower");
       var options = {
@@ -464,6 +463,15 @@ if(Meteor.isClient){
   var FOLLOWPOSTS_ITEMS_INCREMENT = 10;
   Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
   Deps.autorun(function() {
-    Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'));
+    if (Meteor.user()) {
+      Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'));
+    }
+  });
+  var FEEDS_ITEMS_INCREMENT = 20;
+  Session.setDefault('feedsitemsLimit', FEEDS_ITEMS_INCREMENT);
+  Deps.autorun(function() {
+    if (Meteor.user()) {
+      Meteor.subscribe('feeds', Session.get('feedsitemsLimit'));
+    }
   });
 }
