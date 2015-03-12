@@ -96,6 +96,8 @@ if Meteor.isClient
       window.lastScroll = st
 
   Template.showPosts.helpers
+    isCordova:()->
+      Meteor.isCordova
     refcomment:->
       RC = Session.get 'RC'
       #console.log "RC: " + RC
@@ -143,7 +145,10 @@ if Meteor.isClient
       FollowPostsId = Session.get("FollowPostsId")
       postId = Session.get("postContent")._id
       if Meteor.user()
-        username = Meteor.user().username
+        if Meteor.user().profile.fullname
+          username = Meteor.user().profile.fullname
+        else
+          username = Meteor.user().username
         userId = Meteor.user()._id
         userIcon = Meteor.user().profile.icon
       else
@@ -168,8 +173,10 @@ if Meteor.isClient
       false
     'focus .commentArea':->
       console.log("#comment get focus");
+      cordova.plugins.Keyboard.disableScroll(true)
     'blur .commentArea':->
       console.log("#comment lost focus");
+      cordova.plugins.Keyboard.disableScroll(false)
     'click .back' :->
       $('.showPosts').addClass('animated ' + animateOutUpperEffect);
       $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect);
@@ -221,6 +228,8 @@ if Meteor.isClient
       , '取消分享', ['取消','确定']);
 
 
+    'click #report': (event)->
+      Router.go('reportPost')
     'click #socialShare': (event)->
       current = Router.current();
       url = current.url;
@@ -319,12 +328,14 @@ if Meteor.isClient
   onComment = ->
     $('.showBgColor').hide 0
     commentBox = $('.commentInputBox').bPopup
+      positionStyle: 'fixed'
       position: [0, 0]
       onClose: ->
         $('.showBgColor').show 0,->
           $(window).scrollTop(window.lastScroll)
       onOpen: ->
         Meteor.setTimeout ->
+
             $('.commentArea').focus()
           ,300
         console.log 'Modal opened'
