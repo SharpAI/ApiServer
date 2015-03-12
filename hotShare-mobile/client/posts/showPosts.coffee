@@ -173,10 +173,12 @@ if Meteor.isClient
       false
     'focus .commentArea':->
       console.log("#comment get focus");
-      cordova.plugins.Keyboard.disableScroll(true)
+      if Meteor.isCordova and isIOS
+        cordova.plugins.Keyboard.disableScroll(true)
     'blur .commentArea':->
       console.log("#comment lost focus");
-      cordova.plugins.Keyboard.disableScroll(false)
+      if Meteor.isCordova and isIOS
+        cordova.plugins.Keyboard.disableScroll(false)
     'click .back' :->
       $('.showPosts').addClass('animated ' + animateOutUpperEffect);
       $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect);
