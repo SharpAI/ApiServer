@@ -121,9 +121,9 @@ if Meteor.isClient
       if RC>7
          RC=0
       Session.set("RC", RC)
-      setTimeout(()->
-        $('#comment').trigger("keyup")
-      ,300)
+      #setTimeout(()->
+      #  $('#comment').trigger("keyup")
+      #,300)
     'click #finish':->
       if commentBox
         commentBox.close()
@@ -337,7 +337,6 @@ if Meteor.isClient
           $(window).scrollTop(window.lastScroll)
       onOpen: ->
         Meteor.setTimeout ->
-
             $('.commentArea').focus()
           ,300
         console.log 'Modal opened'
