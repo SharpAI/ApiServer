@@ -810,6 +810,12 @@ if Meteor.isClient
             )
 
 #           console.log "#####end" + pub
+
+            console.log 'Full name is ' + Meteor.user().profile.fullname
+            if Meteor.user().profile.fullname && (Meteor.user().profile.fullname isnt '')
+              ownerName = Meteor.user().profile.fullname
+            else
+              ownerName = Meteor.user().username
             if Session.get('isReviewMode') is '2'
                 Posts.update(
                   {_id:postId},
@@ -824,7 +830,7 @@ if Meteor.isClient
                       mainImageStyle:mainImageStyle,
                       mainText: mainText,
                       owner:Meteor.userId(),
-                      ownerName:Meteor.user().username,
+                      ownerName:ownerName,
                       ownerIcon:ownerIcon,
                       createdAt: new Date(),
                     }
@@ -845,7 +851,7 @@ if Meteor.isClient
                   mainImageStyle:mainImageStyle,
                   mainText: mainText,
                   owner:Meteor.userId(),
-                  ownerName:Meteor.user().username,
+                  ownerName:ownerName,
                   ownerIcon:ownerIcon,
                   createdAt: new Date(),
                 }
@@ -925,7 +931,11 @@ if Meteor.isClient
         sortedPub = pub.sort((a, b)->
           sortBy('data_row', a, b)
         )
-
+        console.log 'Full name is ' + Meteor.user().profile.fullname
+        if Meteor.user().profile.fullname && (Meteor.user().profile.fullname isnt '')
+          ownerName = Meteor.user().profile.fullname
+        else
+          ownerName = Meteor.user().username
 #        console.log "#####end" + pub
         if Session.get('isReviewMode') is '2'
             Posts.update(
@@ -941,7 +951,7 @@ if Meteor.isClient
                   mainImageStyle: mainImageStyle,
                   mainText: mainText,
                   owner:Meteor.userId(),
-                  ownerName:Meteor.user().username,
+                  ownerName:ownerName,
                   ownerIcon:ownerIcon,
                   createdAt: new Date(),
                 }
@@ -962,7 +972,7 @@ if Meteor.isClient
               mainImageStyle:mainImageStyle,
               mainText: mainText,
               owner:Meteor.userId(),
-              ownerName:Meteor.user().username,
+              ownerName:ownerName,
               ownerIcon:ownerIcon,
               createdAt: new Date(),
             }

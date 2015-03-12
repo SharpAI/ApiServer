@@ -2,7 +2,8 @@
 .authOverlay{background-image: url(loginbg1.jpg);background-repeat: no-repeat;background-size: 100% auto; position: relative;}
 .webHome{background-image: url(webbg.jpg);background-repeat: no-repeat;background-size: cover; position: relative;}
 .authOverlay .title{font-weight:bold;}
-.authOverlay #register,.webHome #register{position: absolute;bottom: 15%;left: 5%;right: 5%;width: 90%;text-align: center;border: none;border-radius: 50px;padding: 10px;background-color: #00c4ff;font-size: 16px;}
+.authOverlay #register,.webHome #register{position: absolute;bottom: 25%;left: 5%;right: 5%;width: 90%;text-align: center;border: none;border-radius: 50px;padding: 10px;background-color: #00c4ff;font-size: 16px;}
+.authOverlay #anonymous{position: absolute;bottom: 15%;left: 5%;right: 5%;width: 90%;text-align: center;border: none;border-radius: 50px;padding: 10px;background-color: #00c4ff;font-size: 16px;}
 .authOverlay #wechat,.webHome #wechat{position: absolute;bottom: 35%;left: 5%;right: 5%;width: 90%;text-align: center;border: thin solid;border-radius: 50px;padding: 10px;font-size: 16px;}
 .authOverlay #weibo,.webHome #weibo{position: absolute;bottom: 25%;left: 5%;right: 5%;width: 90%;text-align: center;border: thin solid;border-radius: 50px;padding: 10px;font-size: 16px;}
 .authOverlay #qq,.webHome #qq{position: absolute;bottom: 15%;left: 5%;right: 5%;width: 90%;text-align: center;border: thin solid;border-radius: 50px;padding: 10px;font-size: 16px;}
