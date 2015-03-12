@@ -9,6 +9,13 @@ if (Meteor.isClient) {
   });
   Template.authOverlay.events({
     'click #anonymous': function () {
+      $('.agreeDeal').css('display',"block");
+      Session.set("dealBack","anonymous");
+    },
+    'click #cancle': function () {
+      $('.agreeDeal').css('display',"none");
+    },
+    'click #agree': function () {
       console.log ('UUID is ' + device.uuid);
       if (device.uuid){
           Meteor.loginWithPassword(device.uuid,'123456',function(error){
@@ -47,6 +54,8 @@ if (Meteor.isClient) {
       $('#register').css('display',"none")
       $('#weibo').css('display',"none")
       $('#login').css('display',"none")
+      $('.agreeDeal').css('display',"none");
+      Session.set("dealBack","register");
 //      $('.authOverlay').css('-webkit-filter',"blur(10px)")
     },
     'click #login': function () {
@@ -55,6 +64,7 @@ if (Meteor.isClient) {
       $('#register').css('display',"none")
       $('#weibo').css('display',"none")
       $('#login').css('display',"none")
+      $('.agreeDeal').css('display',"none");
 //      $('.authOverlay').css('-webkit-filter',"blur(10px)")
     },
     'click #weibo': function () {
