@@ -6,6 +6,8 @@ if Meteor.isClient
   Template.dashboard.helpers
     userEmail :->
       Meteor.user().emails[0].address
+    anonymous :->
+      Meteor.user().profile.anonymous
   Template.dashboard.events
     'click .email' :->
       Router.go '/my_email'
