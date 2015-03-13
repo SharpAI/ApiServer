@@ -1,6 +1,12 @@
 /*---------------------------------------------------------*/
 /*  cropper styling begins here...
 /*---------------------------------------------------------*/
+.crop {
+	display:block;
+	width:100%;
+	text-align:center;
+	position:relative;
+}
 
 div[data-imgcrop] {
 	position:relative;
