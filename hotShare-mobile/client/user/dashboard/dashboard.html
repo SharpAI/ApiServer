@@ -5,10 +5,12 @@
       <div class="rightButton back" style="margin-top:0px;">完成</div>
     </div>
     <div class="content">
-      <div class="emailPasswd box">
-        <div class='email bottomBorder boxTitle'>电子邮件<span>{{userEmail}}<i class="fa fa-angle-right fa-fw"></i></span></div>
-        <div class='changePasswd boxTitle'>修改密码<span><i class="fa fa-angle-right fa-fw"></i></span></div>
-      </div>
+      {{#unless anonymous}}
+          <div class="emailPasswd box">
+            <div class='email bottomBorder boxTitle'>电子邮件<span>{{userEmail}}<i class="fa fa-angle-right fa-fw"></i></span></div>
+            <div class='changePasswd boxTitle'>修改密码<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+          </div>
+      {{/unless}}
       <div class="userinfo box">
         <!--
         <div class='info bottomBorder boxTitle'>编辑个人资料<span><i class="fa fa-angle-right fa-fw"></i></span></div>
