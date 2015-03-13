@@ -985,6 +985,6 @@ if Meteor.isClient
           .find {owner: Meteor.userId()}
           .forEach (drafts)->
             Drafts.remove drafts._id
-          return
+        return
     'click .remove':(event)->
       Drafts.remove this._id

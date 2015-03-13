@@ -126,17 +126,17 @@ if Meteor.isClient
         this.render 'topicPosts'
         Session.set 'channel','topicPosts'
         return
-   Router.route '/addTopicComment',()->
+    Router.route '/addTopicComment',()->
       if Meteor.isCordova is true
         this.render 'addTopicComment'
         Session.set 'channel','addTopicComment'
         return
-   Router.route '/thanksReport',()->
+    Router.route '/thanksReport',()->
       if Meteor.isCordova is true
         this.render 'thanksReport'
         Session.set 'channel','thanksReport'
         return
-   Router.route '/reportPost',()->
+    Router.route '/reportPost',()->
       if Meteor.isCordova is true
         this.render 'reportPost'
         Session.set 'channel','reportPost'
