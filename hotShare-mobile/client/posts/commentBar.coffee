@@ -102,9 +102,7 @@ if Meteor.isClient
       FollowPostsId = Session.get("FollowPostsId")
       postId = Session.get("postContent")._id
       if Meteor.user()
-        if Meteor.user().profile.name
-          username = Meteor.user().profile.name
-        else if Meteor.user().profile.fullname
+        if Meteor.user().profile.fullname
           username = Meteor.user().profile.fullname
         else
           username = Meteor.user().username

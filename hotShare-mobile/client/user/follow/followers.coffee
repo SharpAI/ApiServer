@@ -60,9 +60,7 @@ if Meteor.isClient
           followerIcon = @userIcon
           followerDesc = @userDesc
 
-      if Meteor.user().profile.name
-         username = Meteor.user().profile.name
-      else if Meteor.user().profile.fullname
+      if Meteor.user().profile.fullname
          username = Meteor.user().profile.fullname
       else
          username = Meteor.user().username

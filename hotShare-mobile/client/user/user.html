@@ -15,15 +15,11 @@
           <i class="fa fa-camera"></i>上传头像
         {{/if}}
       </div>
-      {{#if currentUser.profile.name}}
-        <span class="userName">{{currentUser.profile.name}}</span>
-      {{else}}
         {{#if currentUser.profile.fullname}}
           <span class="userName">{{currentUser.profile.fullname}}</span>
         {{else}}
           <span class="userName">{{currentUser.username}}</span>
         {{/if}}
-      {{/if}}
     </div>
     <div class="line">
       <span></span>

@@ -37,15 +37,11 @@ if Meteor.isClient
                  })._id
       Follower.remove(FollowerId)
     'click .addFollow':(e)->
-      if Meteor.user().profile.name
-         username = Meteor.user().profile.name
-      else if Meteor.user().profile.fullname
+      if Meteor.user().profile.fullname
          username = Meteor.user().profile.fullname
       else
          username = Meteor.user().username
-      if @profile.name
-         followername = @profile.name
-      else if @profile.fullname
+      if @profile.fullname
          followername = @profile.fullname
       else
          followername = @username
@@ -70,9 +66,7 @@ if Meteor.isClient
                  })._id
       Follower.remove(FollowerId)
     'click .add':(e)->
-      if Meteor.user().profile.name
-         username = Meteor.user().profile.name
-      else if Meteor.user().profile.fullname
+      if Meteor.user().profile.fullname
          username = Meteor.user().profile.fullname
       else
          username = Meteor.user().username
@@ -166,15 +160,11 @@ if Meteor.isClient
                  })._id
       Follower.remove(FollowerId)
     'click .addFollow':(e)->
-      if Meteor.user().profile.name
-         username = Meteor.user().profile.name
-      else if Meteor.user().profile.fullname
+      if Meteor.user().profile.fullname
          username = Meteor.user().profile.fullname
       else
          username = Meteor.user().username
-      if @profile.name
-         followername = @profile.name
-      else if @profile.fullname
+      if @profile.fullname
          followername = @profile.fullname
       else
          followername = @username
