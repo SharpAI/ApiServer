@@ -18,8 +18,9 @@ if (Meteor.isServer) {
     });
     Accounts.loginServiceConfiguration.insert({
       service: 'qq',
-      clientId: '1104127289',
-      secret: 'qYLlb5MW8AlxvK3M'
+      clientId: '101199533',
+      scope:'get_user_info',
+      secret: '0049556bbaba965ffa97521cb6054009'
     });
     Accounts.loginServiceConfiguration.insert({
       service: 'wechat',
