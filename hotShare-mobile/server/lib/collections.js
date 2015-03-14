@@ -1,4 +1,14 @@
 Meteor.startup(function(){
+    Accounts.onCreateUser(function(options, user) {
+      if (options.profile)
+      {
+        user.profile = options.profile;
+        if(user.profile.name)
+          user.profile.fullname = user.profile.name;
+      }
+      return user;
+    });
+
     if(RefComments.find().count() === 0){
       RefComments.insert({
         text: "看贴回帖是一种美德",
