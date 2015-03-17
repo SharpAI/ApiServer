@@ -531,6 +531,23 @@ if Meteor.isClient
     'change [name=textarea]' : (e,cxt)->
       console.log("textarea change "+ e.currentTarget.value)
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
+    'click #addLink': ()->
+      console.log 'Add Link'
+      commentBox = $('.linkInputBox').bPopup
+        onClose: ->
+          console.log 'Link Input Modal Closed'
+        onOpen: ->
+          console.log 'Link Input Modal Opened'
+      $('.linkInputBox #pasteLink').off 'click'
+      $('.linkInputBox #insertLink').off 'click'
+
+      $('.linkInputBox #pasteLink').on 'click',()->
+        console.log $('.linkInputBox #linkToBeInserted').val()
+        cordova.plugins.clipboard.paste (text)->
+          $('.linkInputBox #linkToBeInserted').val(text)
+      $('.linkInputBox #insertLink').on 'click',()->
+          console.log $('.linkInputBox #linkToBeInserted').val()
+          commentBox.close()
 
     'click #takephoto': ()->
       window.footbarOppration = true
