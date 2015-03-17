@@ -503,8 +503,8 @@ if Meteor.isClient
 
     pub:()->
       if Drafts.find().count() > 1
-        for i in [1..(Drafts.find({}, {sort: {data_row:1}}).count()-1)]
-          Drafts.find({}, {sort: {data_row:1}}).fetch()[i]
+        for i in [1..(Drafts.find({}).count()-1)]
+          Drafts.find({}).fetch()[i]
 
     items:()->
       if Drafts.find({type:'image'}).count() > 1
