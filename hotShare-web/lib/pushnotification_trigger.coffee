@@ -25,6 +25,13 @@ if Meteor.isServer
         postId: doc._id
       }
       toUserId = doc.owner
+    else if type == "newpost"
+      content = doc.ownerName + '发布了新故事:\n《' + doc.title + '》'
+      extras = {
+        type: "newpost"
+        postId: doc._id
+      }
+      toUserId = userId
     else
       post = Posts.findOne({_id: doc.postId});
       commentText = doc.content;
