@@ -531,6 +531,30 @@ if Meteor.isClient
     'change [name=textarea]' : (e,cxt)->
       console.log("textarea change "+ e.currentTarget.value)
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
+    'click #addLink': ()->
+      console.log 'Add Link'
+      commentBox = $('.linkInputBox').bPopup
+        onClose: ->
+          console.log 'Link Input Modal Closed'
+        onOpen: ->
+          console.log 'Link Input Modal Opened'
+      $('.linkInputBox #pasteLink').off 'click'
+      $('.linkInputBox #insertLink').off 'click'
+
+      $('.linkInputBox #pasteLink').on 'click',()->
+        console.log $('.linkInputBox #linkToBeInserted').val()
+        cordova.plugins.clipboard.paste (text)->
+          $('.linkInputBox #linkToBeInserted').val(text)
+      $('.linkInputBox #insertLink').on 'click',()->
+        console.log $('.linkInputBox #linkToBeInserted').val()
+        if $('.linkInputBox #linkToBeInserted').val() && $('.linkInputBox #linkToBeInserted').val() isnt ''
+          analyseUrl $('.linkInputBox #linkToBeInserted').val(),(data)->
+            console.log 'Url Analyse result is ' + JSON.stringify(data)
+            if data[0].imageArray
+              console.log data[0].imageArray
+          commentBox.close()
+        else
+          PUB.toast('请粘贴需要引用的链接')
 
     'click #takephoto': ()->
       window.footbarOppration = true

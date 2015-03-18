@@ -73,10 +73,15 @@
             </ul>
         </div>
       </div>
+
+      <div class="linkInputBox">
+        <input type="text" class="form-control form-group-material-light-blue" id="linkToBeInserted">
+        <button class="btn btn-material-light-blue btn-lg" id="pasteLink">黏贴链接</button>
+        <button class="btn btn-material-light-blue btn-lg" id="insertLink">插入链接</button>
+      </div>
       <div id="mainImage-toolbar-options" style='visibility: hidden;'>
           <a href="#" id='modify'><i class="fa fa-pencil"></i></a>
           <a href="#" id='crop'><i class="fa fa-crop"></i></a>
-
       </div>
       <div id="image-toolbar-options" style='visibility: hidden;'>
         <a href="#" id='crop'><i class="fa fa-crop"></i></a>
@@ -107,6 +112,9 @@
           </div>
           <div id="addText">
             <i class="fa fa-pencil-square-o"></i>
+          </div>
+          <div id="addLink">
+            <i class="fa fa-link"></i>
           </div>
         </div>
         <div class="addProgress" style="display:none">
