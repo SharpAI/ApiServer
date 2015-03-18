@@ -102,6 +102,7 @@ if(Meteor.isServer){
                         comment:0,
                         followby: data.userId
                     });
+                    pushnotification("newpost",doc,data.userId);
                     waitReadCount = Meteor.users.findOne({_id:data.userId}).profile.waitReadCount;
                     if(waitReadCount === undefined || isNaN(waitReadCount))
                     {
