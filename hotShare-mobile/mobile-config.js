@@ -8,8 +8,9 @@ App.info({
   website: ''
 });
 
-App.setPreference('StatusBarOverlaysWebView', 'false');
+App.setPreference('StatusBarOverlaysWebView', false);
 App.setPreference('orientation', 'portrait');
+App.accessRule('*', {launchExternal:true});
 
 App.icons({
   'iphone': 'resource/icon_57.png',
