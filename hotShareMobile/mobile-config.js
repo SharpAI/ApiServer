@@ -11,7 +11,8 @@ App.info({
 App.setPreference('StatusBarOverlaysWebView', false);
 App.setPreference('orientation', 'portrait');
 App.setPreference('StatusBarBackgroundColor', '#000000');
-App.accessRule('*', {launchExternal:true});
+App.accessRule('http://*');
+App.accessRule('https://*');
 
 App.icons({
   'iphone': 'resource/icon_57.png',
