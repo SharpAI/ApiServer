@@ -550,8 +550,8 @@ if Meteor.isClient
         if $('.linkInputBox #linkToBeInserted').val() && $('.linkInputBox #linkToBeInserted').val() isnt ''
           analyseUrl $('.linkInputBox #linkToBeInserted').val(),(data)->
             console.log 'Url Analyse result is ' + JSON.stringify(data)
-            if data[0].imageArray
-              console.log data[0].imageArray
+            if data.imageArray
+              console.log data.imageArray
           commentBox.close()
         else
           PUB.toast('请粘贴需要引用的链接')
