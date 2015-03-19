@@ -547,11 +547,26 @@ if Meteor.isClient
           $('.linkInputBox #linkToBeInserted').val(text)
       $('.linkInputBox #insertLink').on 'click',()->
         console.log $('.linkInputBox #linkToBeInserted').val()
-        if $('.linkInputBox #linkToBeInserted').val() && $('.linkInputBox #linkToBeInserted').val() isnt ''
-          analyseUrl $('.linkInputBox #linkToBeInserted').val(),(data)->
-            console.log 'Url Analyse result is ' + JSON.stringify(data)
+        inputUrl = $('.linkInputBox #linkToBeInserted').val()
+        if inputUrl && inputUrl isnt ''
+          analyseUrl inputUrl,(data)->
+            imageArray = []
+            #console.log 'Url Analyse result is ' + JSON.stringify(data)
             if data.imageArray
-              console.log data.imageArray
+              for img in data.imageArray
+                if img and img.startsWith("http")
+                  imageArray.push img
+            if data.bgArray
+              for bgImg in data.bgArray
+                imageUrl = (bgImg.match( /url\([^\)]+\)/gi ) ||[""])[0].split(/[()'"]+/)[1]
+                if imageUrl and imageUrl.startsWith("http")
+                  imageArray.push imageUrl
+            if imageArray.length > 0
+              seekSuitableImageFromArray imageArray,(url,w,h)->
+                console.log 'Got suitable title image ' + url + ' width is ' + w + ' height is ' + h
+                #Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:url, filename:null, URI:url, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
+                #if data.title
+                  #Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:data.title, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
           commentBox.close()
         else
           PUB.toast('请粘贴需要引用的链接')
@@ -585,10 +600,7 @@ if Meteor.isClient
       Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:'', style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
       return
     'click .back':(event)->
-      Drafts
-        .find {owner: Meteor.userId()}
-        .forEach (drafts)->
-          Drafts.remove drafts._id
+      Drafts.remove {owner: Meteor.userId()}
       $('.addPost').addClass('animated ' + animateOutUpperEffect);
       Meteor.setTimeout ()->
         PUB.back()
@@ -607,10 +619,7 @@ if Meteor.isClient
         draftId = draftData[0]._id
         SavedDrafts.remove draftId
         #Clear Drafts
-        Drafts
-          .find {owner: Meteor.userId()}
-          .forEach (drafts)->
-            Drafts.remove drafts._id
+        Drafts.remove {owner: Meteor.userId()}
         $('.addPost').addClass('animated ' + animateOutUpperEffect);
         Meteor.setTimeout ()->
           PUB.back()
@@ -759,10 +768,7 @@ if Meteor.isClient
               owner:Meteor.userId(),
               createdAt: new Date(),
             }
-        Drafts
-          .find {owner: Meteor.userId()}
-          .forEach (drafts)->
-            Drafts.remove drafts._id
+        Drafts.remove {owner: Meteor.userId()}
         history.back()
         #PUB.back()
         return
@@ -881,8 +887,7 @@ if Meteor.isClient
                 }
                 #Router.go('/posts/'+postId)
                 #Delete from SavedDrafts if it is a saved draft.
-            if SavedDrafts.find({_id:postId}).count() > 0
-                SavedDrafts.remove postId
+            SavedDrafts.remove({_id:postId})
                 #Delete the Drafts
             Drafts.remove({})
             if Session.get('isReviewMode') is '2'
@@ -1002,13 +1007,9 @@ if Meteor.isClient
             }
             #Router.go('/posts/'+postId)
             #Delete from SavedDrafts if it is a saved draft.
-            if SavedDrafts.find({_id:postId}).count() > 0
-                SavedDrafts.remove postId
+            SavedDrafts.remove({_id:postId})
             #Delete the Drafts
-        Drafts
-          .find {owner: Meteor.userId()}
-          .forEach (drafts)->
-            Drafts.remove drafts._id
+        Drafts.remove {owner: Meteor.userId()}
         return
     'click .remove':(event)->
       Drafts.remove this._id
