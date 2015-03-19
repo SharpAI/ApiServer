@@ -1,5 +1,6 @@
 if Meteor.isClient
   commentBox = null
+  deviceHeight = $(window).height()
   @isIOS = ( navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false )
   window.getDocHeight = ->
     D = document
@@ -11,7 +12,7 @@ if Meteor.isClient
   Template.showPosts.destoryed=->
     $(window).children().off();
   Template.showPosts.rendered=->
-    $('.mainImage').css('height',$(window).height()*0.55)
+    $('.mainImage').css('height',deviceHeight*0.55)
     postContent = Session.get("postContent")
     browseTimes = 0
     if (postContent.browse != undefined)
@@ -39,7 +40,7 @@ if Meteor.isClient
       window.open($(e.currentTarget).attr('href'), '_system', '');
     )
 
-    $('.showBgColor').css('min-height',$(window).height())
+    $('.showBgColor').css('min-height',deviceHeight)
     base_size=($('#test').width()/6 - 10);
 
     test = $("#test");
@@ -76,9 +77,9 @@ if Meteor.isClient
       #Sets the current scroll position
       st = $(window).scrollTop();
 
-      if(st + $(window).height()) is window.getDocHeight()
+      if(st + deviceHeight) is window.getDocHeight()
         $('.showPosts .head').fadeIn 300
-        $('.showPostsFooter').fadeIn 300
+        $('.showPostsFooter').fadeOut 300
         window.lastScroll = st
         return
       # Changed is too small
