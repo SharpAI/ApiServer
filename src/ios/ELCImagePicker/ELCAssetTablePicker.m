@@ -114,13 +114,29 @@
 
 - (void)doneAction:(id)sender
 {	
+    NSMutableArray *unSortedSelectedAssetsImages = [[NSMutableArray alloc] init];
 	NSMutableArray *selectedAssetsImages = [[NSMutableArray alloc] init];
 	    
 	for (ELCAsset *elcAsset in self.elcAssets) {
 		if ([elcAsset selected]) {
-			[selectedAssetsImages addObject:[elcAsset asset]];
+			//[selectedAssetsImages addObject:[elcAsset asset]];
+            [unSortedSelectedAssetsImages addObject:elcAsset];
 		}
 	}
+    ELCAsset *tmpElcAsset = [[ELCAsset alloc] init];
+    for (int i=0; i<[unSortedSelectedAssetsImages count]; i++) {
+        for (int j=i+1; j<[unSortedSelectedAssetsImages count]; j++) {
+            if ([[unSortedSelectedAssetsImages objectAtIndex:i] time] 
+                > [[unSortedSelectedAssetsImages objectAtIndex:j] time]) {
+                tmpElcAsset = [unSortedSelectedAssetsImages objectAtIndex:i];
+                [unSortedSelectedAssetsImages replaceObjectAtIndex:i withObject:[unSortedSelectedAssetsImages objectAtIndex:j]];
+                [unSortedSelectedAssetsImages replaceObjectAtIndex:j withObject:tmpElcAsset];
+            }
+        }
+    }
+    for (ELCAsset *elcAsset in unSortedSelectedAssetsImages) {
+        [selectedAssetsImages addObject:[elcAsset asset]];
+    }
     [self.parent selectedAssets:selectedAssetsImages];
 }
 
