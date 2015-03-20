@@ -514,6 +514,23 @@ if Meteor.isClient
       if Drafts.find({type:'text'}).count() > 1
         for i in [1..(Drafts.find({type:'text'}).count()-1)]
           Drafts.find({type:'text'}).fetch()[i]
+  insertLink = (linkInfo,mainImageUrl)->
+    if mainImageUrl
+      Drafts.insert {
+        type:'image',
+        isImage:true,
+        siteTitle:linkInfo.title,
+        siteHost:linkInfo.host,
+        owner: Meteor.userId(),
+        imgUrl:mainImageUrl,
+        filename:null,
+        URI:mainImageUrl,
+        data_row:'1',
+        data_col:'3',
+        data_sizex:'6',
+        data_sizey:'5'}
+      #if data.title
+      #Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:data.title, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
 
   Template.addPost.events
     'beUnSelected .resortitem': (e)->
@@ -537,7 +554,7 @@ if Meteor.isClient
         onClose: ->
           console.log 'Link Input Modal Closed'
         onOpen: ->
-          console.log 'Link Input Modal Opened'
+          $('.linkInputBox #linkToBeInserted').val('')
       $('.linkInputBox #pasteLink').off 'click'
       $('.linkInputBox #insertLink').off 'click'
 
@@ -550,23 +567,16 @@ if Meteor.isClient
         inputUrl = $('.linkInputBox #linkToBeInserted').val()
         if inputUrl && inputUrl isnt ''
           analyseUrl inputUrl,(data)->
-            imageArray = []
-            #console.log 'Url Analyse result is ' + JSON.stringify(data)
-            if data.imageArray
-              for img in data.imageArray
-                if img and img.startsWith("http")
-                  imageArray.push img
-            if data.bgArray
-              for bgImg in data.bgArray
-                imageUrl = (bgImg.match( /url\([^\)]+\)/gi ) ||[""])[0].split(/[()'"]+/)[1]
-                if imageUrl and imageUrl.startsWith("http")
-                  imageArray.push imageUrl
-            if imageArray.length > 0
-              seekSuitableImageFromArray imageArray,(url,w,h)->
-                console.log 'Got suitable title image ' + url + ' width is ' + w + ' height is ' + h
-                #Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:url, filename:null, URI:url, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
-                #if data.title
-                  #Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:data.title, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+            processInAppInjectionData data,(url,w,h)->
+              if url
+                insertLink(data,url)
+              else
+                reAnalyseUrl inputUrl,(data)->
+                  processInAppInjectionData data,(url,w,h)->
+                    if url
+                      insertLink(data,url)
+                    else
+                      insertLink(data,null)
           commentBox.close()
         else
           PUB.toast('请粘贴需要引用的链接')

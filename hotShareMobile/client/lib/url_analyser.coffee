@@ -22,12 +22,37 @@ if Meteor.isClient
         callback null,0,0
     imageResolver.src = imageArray[imageCounter]
   @analyseUrl = (url,callback)->
-    iabRef = window.open(url, '_blank', 'hidden=no')
+    @iabRef = window.open(url, '_blank', 'hidden=yes')
     iabRef.addEventListener 'loadstop', ()->
       console.log 'load stop'
-      setTimeout ()->
-        getImagesListFromUrl(iabRef,url,callback)
-      ,2000
+      getImagesListFromUrl(iabRef,url,callback)
+  @reAnalyseUrl = (url,callback)->
+    unless iabRef
+      callback(null,0,0)
+      return
+    getImagesListFromUrl(iabRef,url,callback)
+  @clearLastUrlAnalyser = ()->
+    if iabRef
+      iabRef.close()
+      iabRef = undefined
+  @processInAppInjectionData = (data,callback)->
+    imageArray = []
+    #console.log 'Url Analyse result is ' + JSON.stringify(data)
+    if data.imageArray
+      for img in data.imageArray
+        if img and img.startsWith("http")
+          imageArray.push img
+    if data.bgArray
+      for bgImg in data.bgArray
+        imageUrl = (bgImg.match( /url\([^\)]+\)/gi ) ||[""])[0].split(/[()'"]+/)[1]
+        if imageUrl and imageUrl.startsWith("http")
+          imageArray.push imageUrl
+    if imageArray.length > 0
+      seekSuitableImageFromArray imageArray,(url,w,h)->
+        if url
+          callback(url,w,h)
+        else
+          callback(null,0,0)
   getImagesListFromUrl = (inappBrowser,url,callback)->
     inappBrowser.executeScript {code: '
       var bgImages = [];
