@@ -48,18 +48,6 @@ if Meteor.isClient
     comment: ()->
       Comment.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}})
   
-  Template.commentContent.events
-    'click .chatBtn':->
-      $('.viewerList').fadeOut 300
-      $('.viewerListBtn').removeClass "focusColor"
-      $('.chatContent').fadeIn 300
-      $('.chatBtn').addClass "focusColor"
-    'click .viewerListBtn':->
-      $('.chatContent').fadeOut 300
-      $('.chatBtn').removeClass "focusColor"
-      $('.viewerList').fadeIn 300
-      $('.viewerListBtn').addClass "focusColor"
-      
   Template.commentBar.events
     'focus #comment':->
       console.log("#comment get focus");
