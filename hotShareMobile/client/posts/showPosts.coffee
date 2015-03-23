@@ -21,10 +21,14 @@ if Meteor.isClient
       browseTimes = 1
     Meteor.setTimeout ()->
         if Viewers.find({userId:Meteor.user()._id}).count() is 0
+          if Meteor.user().profile.fullname is "匿名"
+            username = Meteor.user().profile.fullname
+          else
+            username = Meteor.user().username
           try
             Viewers.insert {
               postId:postContent._id
-              username:Meteor.user().username
+              username:username
               userId:Meteor.user()._id
               userIcon:Meteor.user().profile.icon
               createdAt: new Date()
