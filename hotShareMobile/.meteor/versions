@@ -19,6 +19,7 @@ deps@1.0.7
 ejson@1.0.6
 email@1.0.6
 fastclick@1.0.3
+fortawesome:fontawesome@4.2.0_2
 geojson-utils@1.0.3
 html-tools@1.0.4
 htmljs@1.0.4
@@ -39,7 +40,6 @@ leonzhang1109:accounts-qq@0.0.7
 leonzhang1109:accounts-wechat@0.2.6
 leonzhang1109:bootstrap-material-design-noicons@0.2.0
 less@1.0.13
-linto:fontawesome@4.2.6
 livedata@1.0.13
 localstorage@1.0.3
 logging@1.0.7
