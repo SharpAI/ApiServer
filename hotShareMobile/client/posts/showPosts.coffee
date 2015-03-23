@@ -19,6 +19,19 @@ if Meteor.isClient
       browseTimes = postContent.browse + 1
     else
       browseTimes = 1
+    Meteor.setTimeout ()->
+        if Viewers.find({userId:Meteor.user()._id}).count() is 0
+          try
+            Viewers.insert {
+              postId:postContent._id
+              username:Meteor.user().username
+              userId:Meteor.user()._id
+              userIcon:Meteor.user().profile.icon
+              createdAt: new Date()
+            }
+          catch error
+            console.log error
+      ,1000
     if not Meteor.isCordova
       favicon = document.createElement('link');
       favicon.id = 'icon';
