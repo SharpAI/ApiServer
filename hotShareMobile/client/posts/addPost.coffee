@@ -823,12 +823,12 @@ if Meteor.isClient
                 return
             for i in [0..(draftData.length-1)]
               if i is 0
-                mainImage = 'http://bcs.duapp.com/travelers-km/'+draftData[i].filename
+                mainImage = 'http://data.tiegushi.com/'+draftData[i].filename
                 mainImageStyle = draftData[i].style
                 mainText = $("#"+draftData[i]._id+"text").val()
               else
                 if draftData[i].isImage
-                  draftData[i].imgUrl = 'http://bcs.duapp.com/travelers-km/'+draftData[i].filename
+                  draftData[i].imgUrl = 'http://data.tiegushi.com/'+draftData[i].filename
                 #for some case user did not save the draft, directly published, the layout does not stored.
                 json = jQuery.parseJSON(layout);
                 for item in json
@@ -909,117 +909,6 @@ if Meteor.isClient
                 Session.set("TopicMainImage", mainImage)
                 Router.go('addTopicComment')
         )
-        return
-    'click #publishOld':->
-      if Meteor.user() is null
-        window.plugins.toast.showShortBottom('请登录后发表您的故事')
-        Router.go('/user')
-        false
-      else
-        layout = JSON.stringify(gridster.serialize())
-        pub=[]
-        title = $("#title").val()
-
-        if title is ''
-          window.plugins.toast.showShortBottom('请为您的故事加个标题')
-          return
-
-        addontitle = $("#addontitle").val()
-        try
-          ownerIcon = Meteor.user().profile.icon
-        catch
-          ownerIcon = '/userPicture.png'
-        draftData = Drafts.find().fetch()
-        draftImageData = Drafts.find({type:'image'}).fetch()
-        draftToBeUploadedImageData = []
-        for i in [0..(draftImageData.length-1)]
-            if draftImageData[i].imgUrl.indexOf("http://")>= 0
-                continue
-            draftToBeUploadedImageData.push(draftImageData[i])
-        postId = draftData[0]._id;
-#        console.log "#####" + pub
-        uploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId)
-        #Don't add addpost page into history
-        if draftToBeUploadedImageData.length is 0
-            Router.go('/posts/'+postId);
-        for i in [0..(draftData.length-1)]
-#          console.log i
-          if i is 0
-            mainImage = 'http://bcs.duapp.com/travelers-km/'+draftData[i].filename
-            mainImageStyle = draftData[i].style
-            mainText = $("#"+draftData[i]._id+"text").val()
-          else
-            if draftData[i].isImage
-              draftData[i].imgUrl = 'http://bcs.duapp.com/travelers-km/'+draftData[i].filename
-            #for some case user did not save the draft, directly published, the layout does not stored.
-            json = jQuery.parseJSON(layout);
-            for item in json
-              if item.id is draftData[i]._id
-                draftData[i].data_row = item.row
-                draftData[i].data_col = item.col
-                draftData[i].data_sizex = item.size_x
-                draftData[i].data_sizey = item.size_y
-            pub.push(draftData[i])
-
-        sortBy = (key, a, b, r) ->
-          r = if r then 1 else -1
-          return -1*r if a[key] > b[key]
-          return +1*r if a[key] < b[key]
-          return 0
-
-        sortedPub = pub.sort((a, b)->
-          sortBy('data_row', a, b)
-        )
-        console.log 'Full name is ' + Meteor.user().profile.fullname
-        if Meteor.user().profile.fullname && (Meteor.user().profile.fullname isnt '')
-          ownerName = Meteor.user().profile.fullname
-        else
-          ownerName = Meteor.user().username
-#        console.log "#####end" + pub
-        if Session.get('isReviewMode') is '2'
-            Posts.update(
-              {_id:postId},
-              {$set:{
-                  pub:pub,
-                  title:title,
-                  heart:[],  #点赞
-                  retweet:[],#转发
-                  comment:[], #评论
-                  addontitle:addontitle,
-                  mainImage: mainImage,
-                  mainImageStyle: mainImageStyle,
-                  mainText: mainText,
-                  owner:Meteor.userId(),
-                  ownerName:ownerName,
-                  ownerIcon:ownerIcon,
-                  createdAt: new Date(),
-                }
-              }
-            )
-        else
-            Posts.insert {
-              _id:postId,
-              pub:pub,
-              title:title,
-              browse:0,
-              heart:[],  #点赞
-              retweet:[],#转发
-              comment:[], #评论
-              commentsCount:0,
-              addontitle:addontitle,
-              mainImage: mainImage,
-              mainImageStyle:mainImageStyle,
-              mainText: mainText,
-              owner:Meteor.userId(),
-              ownerName:ownerName,
-              ownerIcon:ownerIcon,
-              createdAt: new Date(),
-            }
-            #Router.go('/posts/'+postId)
-            #Delete from SavedDrafts if it is a saved draft.
-            SavedDrafts.remove({_id:postId})
-            #Delete the Drafts
-        Drafts.remove {owner: Meteor.userId()}
         return
     'click .remove':(event)->
       Drafts.remove this._id

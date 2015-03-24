@@ -27,14 +27,15 @@ if Meteor.isServer
         apiKey = 'Vh0snNA4Orv3emBj'
         SecrectKey = 'd7p2eNO8GuMl1GtIZ0at4wPDyED4Nz'
         date = new Date()
-        content = 'POST\n\nimage/jpeg\n' + date.toGMTString() + '\n' + '\n' + '/tiegushi/'+filename
+        content = 'PUT\n\nimage/jpeg\n' + date.toGMTString() + '\n' + '/tiegushi/'+filename
         hash = myCrypto.createHmac('sha1', SecrectKey).update(content).digest()
-        Signture = encodeURIComponent hash.toString('base64')
-        authheader = "OSS " + "Vh0snNA4Orv3emBj" + ":" + Signture
+        Signture = unescape(encodeURIComponent hash.toString('base64'))
+        console.log 'Content is ' + content + ' Signture ' + Signture
+        authheader = "OSS " + apiKey + ":" + Signture
         policy = {
           orignalURI: URI
           date: date.toGMTString()
           auth: authheader
-          acceccURI: 'http://data.tiegushi.com/'+filename
+          acceccURI: 'http://tiegushi.oss-cn-shenzhen.aliyuncs.com/'+filename
         }
         policy

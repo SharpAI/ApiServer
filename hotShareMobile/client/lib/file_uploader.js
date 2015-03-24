@@ -20,12 +20,13 @@ if (Meteor.isCordova){
 
         var headers = {
           "Content-Type": "image/jpeg",
-          "Authorization": result.authheader,
+          "Content-Md5":"",
+          "Authorization": result.auth,
           "Date": result.date
         };
         options.headers = headers;
 
-        var ft = new FileTransfer();
+        var ft = new FileTransferBCS();
         ft.onprogress = function(progressEvent) {
           if (progressEvent.lengthComputable) {
             computeProgressBar(filename, 100*(progressEvent.loaded/progressEvent.total));
@@ -528,9 +529,9 @@ if (Meteor.isCordova){
                   callback(null);
               }
           }, {
-            quality: 60,
-            targetWidth: 400,
-            targetHeight: 400,
+            quality: 90,
+            targetWidth: 600,
+            targetHeight: 600,
             destinationType: destinationType.NATIVE_URI,
             sourceType: pictureSource.SAVEDPHOTOALBUM
           });
@@ -567,9 +568,9 @@ if (Meteor.isCordova){
                   if(fileExt.toUpperCase()==='GIF'){
                   ImageBase64.base64({
                         uri: results[i],
-                        quality: 60,
-                        width: 400,
-                        height: 400
+                        quality: 90,
+                        width: 600,
+                        height: 600
                     },
                     function(a) {
                         for (var item in retArray) {
@@ -645,9 +646,9 @@ if (Meteor.isCordova){
               }
           }, {
             maximumImagesCount: max_number,
-            width: 400,
-            height: 400,
-            quality: 60,
+            width: 600,
+            height: 600,
+            quality: 90,
             storage: 'persistent'
           });
         }
