@@ -308,6 +308,8 @@ if(Meteor.isServer){
     insert: function (userId, doc) {
       if(doc.username==null)
         return false;
+      if( Viewers.findOne({postId:doc.postId,userId:doc.userId}))
+        return false;
       return doc.username !== null;
     },
     remove: function (userId, doc) {

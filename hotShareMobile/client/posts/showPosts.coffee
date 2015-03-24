@@ -9,6 +9,23 @@ if Meteor.isClient
       Math.max(D.body.offsetHeight, D.documentElement.offsetHeight)
       Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     )
+  Meteor.startup ()->
+    Deps.autorun ()->
+      if Meteor.user() and (postContent=Session.get("postContent"))
+        if Meteor.user().profile.fullname and (Meteor.user().profile.fullname isnt '')
+          username = Meteor.user().profile.fullname
+        else
+          username = Meteor.user().username
+        try
+          Viewers.insert {
+            postId:postContent._id
+            username:username
+            userId:Meteor.user()._id
+            userIcon:Meteor.user().profile.icon
+            createdAt: new Date()
+          }
+        catch error
+          console.log error
   Template.showPosts.destoryed=->
     $(window).children().off();
   Template.showPosts.rendered=->
@@ -19,23 +36,6 @@ if Meteor.isClient
       browseTimes = postContent.browse + 1
     else
       browseTimes = 1
-    Meteor.setTimeout ()->
-        if Viewers.find({userId:Meteor.user()._id}).count() is 0
-          if Meteor.user().profile.fullname is "匿名"
-            username = Meteor.user().profile.fullname
-          else
-            username = Meteor.user().username
-          try
-            Viewers.insert {
-              postId:postContent._id
-              username:username
-              userId:Meteor.user()._id
-              userIcon:Meteor.user().profile.icon
-              createdAt: new Date()
-            }
-          catch error
-            console.log error
-      ,1000
     if not Meteor.isCordova
       favicon = document.createElement('link');
       favicon.id = 'icon';
