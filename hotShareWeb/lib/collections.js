@@ -8,6 +8,7 @@ Follower = new Meteor.Collection('follower');
 Topics = new Meteor.Collection('topics');
 TopicPosts = new Meteor.Collection('topicposs');
 Comment = new Meteor.Collection('comment');
+Viewers = new Meteor.Collection('viewers');
 RefComments = new Meteor.Collection("refcomments");
 ReComment = new Meteor.Collection('recomment');
 Reports = new Meteor.Collection('reports');
@@ -55,6 +56,9 @@ if(Meteor.isServer){
   });
   Meteor.publish("comment", function(postId) {
         return Comment.find({postId: postId});
+  });
+  Meteor.publish("viewers", function(postId) {
+        return Viewers.find({postId: postId});
   });
   Meteor.publish("reports", function(postId) {
         return Reports.find({postId: postId});
@@ -300,77 +304,92 @@ if(Meteor.isServer){
       return doc.userId === userId;
     }
   });
+  Viewers.allow({
+    insert: function (userId, doc) {
+      if(doc.username==null)
+        return false;
+      if( Viewers.findOne({postId:doc.postId,userId:doc.userId}))
+        return false;
+      return doc.username !== null;
+    },
+    remove: function (userId, doc) {
+      return doc.userId === userId;
+    },
+    update: function (userId, doc) {
+      return doc.userId === userId;
+    }
+  });
   Comment.allow({
     insert: function (userId, doc) {
       if(doc.username==null)
           return false;
       try{
-      post = Posts.findOne({_id: doc.postId});
-      commentsCount = post.commentsCount;
-      if(commentsCount === undefined || isNaN(commentsCount))
-      {
-          commentsCount = 0;
-      }
-      commentsCount=commentsCount+1;
-      Posts.update({_id: doc.postId}, {$set: {'commentsCount': commentsCount}});
-      if(post.owner != userId)
-      {
-        if(ReComment.find({"postId":doc.postId,"commentUserId":userId}).count() === 0){
-            ReComment.insert({
-                postId: doc.postId,
-                commentUserId: userId
-            });
-        }
-        Feeds.insert({
-            owner:userId,
-            ownerName:doc.username,
-            ownerIcon:doc.userIcon,
-            eventType:'comment',
-            postId:doc.postId,
-            postTitle:post.title,
-            mainImage:post.mainImage,
-            createdAt:doc.createdAt,
-            heart:0,
-            retweet:0,
-            comment:0,
-            followby: post.owner
-        });
-        waitReadCount = Meteor.users.findOne({_id:post.owner}).profile.waitReadCount;
-        if(waitReadCount === undefined || isNaN(waitReadCount))
+        post = Posts.findOne({_id: doc.postId});
+        commentsCount = post.commentsCount;
+        if(commentsCount === undefined || isNaN(commentsCount))
         {
-            waitReadCount = 0;
+            commentsCount = 0;
         }
-        Meteor.users.update({_id: post.owner}, {$set: {'profile.waitReadCount': waitReadCount+1}});
-        pushnotification("comment",doc,userId);
-        recomments = ReComment.find({"postId": doc.postId}).fetch();
-        for(item in recomments)
+        commentsCount=commentsCount+1;
+        Posts.update({_id: doc.postId}, {$set: {'commentsCount': commentsCount}});
+        if(post.owner != userId)
         {
-            if(recomments[item].commentUserId!=undefined && recomments[item].commentUserId != userId && recomments[item].commentUserId != post.owner)
-            {
-                Feeds.insert({
-                    owner:userId,
-                    ownerName:doc.username,
-                    ownerIcon:doc.userIcon,
-                    eventType:'recomment',
-                    postId:doc.postId,
-                    postTitle:post.title,
-                    mainImage:post.mainImage,
-                    createdAt:doc.createdAt,
-                    heart:0,
-                    retweet:0,
-                    comment:0,
-                    followby: recomments[item].commentUserId
-                });
-                waitReadCount = Meteor.users.findOne({_id:recomments[item].commentUserId}).profile.waitReadCount;
-                if(waitReadCount === undefined || isNaN(waitReadCount))
-                {
-                    waitReadCount = 0;
-                }
-                Meteor.users.update({_id: recomments[item].commentUserId}, {$set: {'profile.waitReadCount': waitReadCount+1}});
-                pushnotification("recomment",doc,recomments[item].commentUserId);
-            }
+          if(ReComment.find({"postId":doc.postId,"commentUserId":userId}).count() === 0){
+              ReComment.insert({
+                  postId: doc.postId,
+                  commentUserId: userId
+              });
+          }
+          Feeds.insert({
+              owner:userId,
+              ownerName:doc.username,
+              ownerIcon:doc.userIcon,
+              eventType:'comment',
+              postId:doc.postId,
+              postTitle:post.title,
+              mainImage:post.mainImage,
+              createdAt:doc.createdAt,
+              heart:0,
+              retweet:0,
+              comment:0,
+              followby: post.owner
+          });
+          waitReadCount = Meteor.users.findOne({_id:post.owner}).profile.waitReadCount;
+          if(waitReadCount === undefined || isNaN(waitReadCount))
+          {
+              waitReadCount = 0;
+          }
+          Meteor.users.update({_id: post.owner}, {$set: {'profile.waitReadCount': waitReadCount+1}});
+          pushnotification("comment",doc,userId);
+          recomments = ReComment.find({"postId": doc.postId}).fetch();
+          for(item in recomments)
+          {
+              if(recomments[item].commentUserId!=undefined && recomments[item].commentUserId != userId && recomments[item].commentUserId != post.owner)
+              {
+                  Feeds.insert({
+                      owner:userId,
+                      ownerName:doc.username,
+                      ownerIcon:doc.userIcon,
+                      eventType:'recomment',
+                      postId:doc.postId,
+                      postTitle:post.title,
+                      mainImage:post.mainImage,
+                      createdAt:doc.createdAt,
+                      heart:0,
+                      retweet:0,
+                      comment:0,
+                      followby: recomments[item].commentUserId
+                  });
+                  waitReadCount = Meteor.users.findOne({_id:recomments[item].commentUserId}).profile.waitReadCount;
+                  if(waitReadCount === undefined || isNaN(waitReadCount))
+                  {
+                      waitReadCount = 0;
+                  }
+                  Meteor.users.update({_id: recomments[item].commentUserId}, {$set: {'profile.waitReadCount': waitReadCount+1}});
+                  pushnotification("recomment",doc,recomments[item].commentUserId);
+              }
+          }
         }
-      }
       }
       catch(error){}
       return doc.username !== null;
@@ -458,8 +477,10 @@ if(Meteor.isClient){
     }
   });
   Tracker.autorun(function () {
-    if(Session.get("postContent"))
+    if(Session.get("postContent")){
       Meteor.subscribe("comment",Session.get("postContent")._id);
+      Meteor.subscribe("viewers",Session.get("postContent")._id);
+    }
   });
   var FOLLOWPOSTS_ITEMS_INCREMENT = 10;
   Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
