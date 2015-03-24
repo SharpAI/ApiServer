@@ -35,6 +35,6 @@ if Meteor.isServer
           orignalURI: URI
           date: date.toGMTString()
           auth: authheader
-          acceccURI: 'http://tiegushi.oss-cn-shenzhen.aliyuncs.com/'+filename
+          acceccURI: 'http://data.tiegushi.com/'+filename
         }
         policy

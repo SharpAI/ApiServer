@@ -25,7 +25,7 @@ if (Meteor.isCordova){
         };
         options.headers = headers;
 
-        var ft = new FileTransferBCS();
+        var ft = new FileTransfer();
         ft.onprogress = function(progressEvent) {
           if (progressEvent.lengthComputable) {
             computeProgressBar(filename, 100*(progressEvent.loaded/progressEvent.total));
@@ -358,7 +358,7 @@ if (Meteor.isCordova){
             tmpFileInfo = {filename:draftData[index].filename, URI:draftData[index].URI, status:0, tryCount:0};
             info.push(tmpFileInfo);
         }
-        uploadToBCS(tmpFileInfo.filename, tmpFileInfo.URI, function(result){
+        uploadToAliyun(tmpFileInfo.filename, tmpFileInfo.URI, function(result){
             var tmpFileInfo2 = getFileInfo(result.replace(/^.*[\\\/]/, ''));
             tmpFileInfo2.status = 1;
 
@@ -465,8 +465,8 @@ if (Meteor.isCordova){
         uploadingFilesInfo.filesCount = draftData.length;
         uploadingFilesInfo.files = [];
         for (var i=0; i<draftData.length; i++) {
-            //uploadToAliyun(draftData[i].filename, draftData[i].URI, function(result){
-            uploadToBCS(draftData[i].filename, draftData[i].URI, function(result){
+            uploadToAliyun(draftData[i].filename, draftData[i].URI, function(result){
+            //uploadToBCS(draftData[i].filename, draftData[i].URI, function(result){
                 uploadedCount++;
                 console.log("uploading("+uploadedCount+"/"+draftData.length+")...");
                 if (uploadedCount == draftData.length) {
