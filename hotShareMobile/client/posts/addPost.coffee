@@ -4,6 +4,8 @@ if Meteor.isClient
     $(window).children().off();
   # the only document I found here https://github.com/percolatestudio/transition-helper/blob/master/transition-helper.js#L4    
   Template.addPost.rendered=->
+    window.imageCounter = 0
+    window.insertRow = 1
     `global_toolbar_hidden = false`
     $('.addPost').css('min-height',$(window).height())
     $('.addPost').css('width',$(window).width())
@@ -39,14 +41,14 @@ if Meteor.isClient
           else if buttonClicked.id == "crop"
             console.log("crop "+ event.currentTarget.id)
 
-            
+
             Session.set 'isReviewMode','3'
             Session.set 'cropDraftId',event.currentTarget.id
 
             mainImageId = event.currentTarget.id
             imgWidth = document.getElementById(mainImageId).offsetWidth
             imgHeight = document.getElementById(mainImageId).offsetHeight
-            
+
 #            $('#mainImage'+mainImageId).css('display',"none")
             $('#'+mainImageId).css('display',"none")
             $('#crop'+mainImageId).css('display',"block")
@@ -76,8 +78,8 @@ if Meteor.isClient
       insertElement: (node, next)->
         $(node)
           .insertBefore(next)
-
-        initMainImageToolBar()
+        Deps.afterFlush ->
+          initMainImageToolBar()
         ###
         Don't add toolbar on mainImage for now.
         MainImage need replace, we can do it later.
@@ -284,7 +286,14 @@ if Meteor.isClient
       else if type == "image"
           if grid != undefined
             if Session.get('NewImgAdd') is 'true'
-              grid.add_widget(node, 3, 3)
+              if (window.imageCounter % 3) is 0
+                grid.add_widget(node, 6, 3,1,window.insertRow)
+              else if (window.imageCounter % 3) is 1
+                grid.add_widget(node, 3, 3,1,window.insertRow)
+              else
+                grid.add_widget(node, 3, 3,4,window.insertRow)
+              window.insertRow +=3
+              window.imageCounter++
             else if window.unSelectedElem
               insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
               insert_col = parseInt($(window.unSelectedElem).attr('data-col'))
@@ -309,7 +318,6 @@ if Meteor.isClient
               else
                 window.add_image_to_right = true
                 grid.add_widget(node, 3, 3,1,max_row)
-
           $(node).toolbar
             content: '#image-toolbar-options'
             position: 'top'
@@ -405,7 +413,7 @@ if Meteor.isClient
         #console.log('Inserted node id is ' + node.id);
         $(node).insertBefore(next)
 
-        Deps.afterFlush =>
+        Deps.afterFlush ->
           initToolBar(node, gridster)
           type = node.$blaze_range.view.parentView.dataVar.curValue.type
           if type == "text"
