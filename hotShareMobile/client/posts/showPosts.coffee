@@ -112,6 +112,8 @@ if Meteor.isClient
         $('.showPostsFooter').fadeIn 300
       #Updates scroll position
       window.lastScroll = st
+    if !$('body').isSupportObjectFit()
+      PUB.toast("您的手机版本过低，部分图片可能产生变形。");
 
   Template.showPosts.helpers
     isCordova:()->
