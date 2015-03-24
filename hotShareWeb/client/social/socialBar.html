@@ -1,0 +1,64 @@
+<template name="socialContent">
+  <div class="socialContent">
+    <div class="content">
+      <div class="chatBox">
+        <div class="chatBoxContent">
+          <div class="chatContent">
+          </div>
+          <div class="contactsList" style="display:none">
+              <div id="" class="eachViewer">
+                <img class="icon" src="/userPlus.png" width="30" height="30">
+                <span class="userName">新的朋友</span>
+              </div>
+              <div class="chatContentLine"></div>
+              <div id="" class="eachViewer">
+                <img class="icon" src="/usersChat.jpg" width="30" height="30">
+                <span class="userName">群聊</span>
+              </div>
+<!--
+              <div class="chatContentLine"></div>
+              <div id="" class="eachViewer">
+                <img class="icon" src="/tagChat.jpg" width="30" height="30">
+                <span class="userName">标签</span>
+              </div>
+              <div class="chatContentLine"></div>
+              <div id="" class="eachViewer">
+                <img class="icon" src="/officialChat.jpg" width="30" height="30">
+                <span class="userName">公众号</span>
+              </div>
+-->
+              <div class="showPostsLine"></div>
+            {{#each viewer}}
+              {{#unless isMyself}}
+                <div id="{{userId}}" class="eachViewer">
+                  <!--列出浏览人-->
+                  <img class="icon" src="{{userIcon}}" width="30" height="30">
+                  <span class="userName">{{username}}</span>
+                </div>
+                <div class="chatContentLine"></div>
+              {{/unless}}
+            {{/each}}
+          </div>
+        </div>
+        <div class="chatFooter">
+          <div class="chatBtn focusColor">
+            <i class="fa fa-comment"></i>
+            <div>聊天</div>
+          </div>
+          <div class="contactsBtn">
+            <i class="fa fa-list"></i>
+            <div>联系人</div>
+          </div>
+          <div class="discoverBtn">
+            <i class="fa fa-compass"></i>
+            <div>发现</div>
+          </div>
+          <div class="meBtn">
+            <i class="fa fa-user"></i>
+            <div>我</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

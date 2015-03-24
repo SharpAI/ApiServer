@@ -82,8 +82,14 @@
         </div>
       </div>
     </div>
+    {{#if isCordova}}
+    {{#unless isMyPost}}
+    <div id="report">举报</div>
+    {{/unless}}
+    {{/if}}
     <div class="showPostsLine"></div>
       {{> commentContent}}
+      {{> socialContent}}
     </div>
     {{> postFooter}}
   <div class="commentInputBox">
