@@ -30,7 +30,7 @@ if Meteor.isServer
         content = 'PUT\n\nimage/jpeg\n' + date.toGMTString() + '\n' + '/tiegushi/'+filename
         hash = myCrypto.createHmac('sha1', SecrectKey).update(content).digest()
         Signture = unescape(encodeURIComponent hash.toString('base64'))
-        console.log 'Content is ' + content + ' Signture ' + Signture
+        #console.log 'Content is ' + content + ' Signture ' + Signture
         authheader = "OSS " + apiKey + ":" + Signture
         policy = {
           orignalURI: URI
