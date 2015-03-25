@@ -11,7 +11,7 @@ if Meteor.isClient
     )
   Meteor.startup ()->
     Deps.autorun ()->
-      if Meteor.user() and (postContent=Session.get("postContent"))
+      if Meteor.user() and (postContent=Session.get("postContent")) and (Viewers.find({userId:Meteor.userId()}).count() is 0)
         if Meteor.user().profile.fullname and (Meteor.user().profile.fullname isnt '')
           username = Meteor.user().profile.fullname
         else
