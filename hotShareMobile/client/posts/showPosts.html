@@ -86,7 +86,9 @@
     {{/if}}
     <div class="showPostsLine"></div>
       {{> commentContent}}
-      {{> socialContent}}
+      {{#if withSocialBar}}
+        {{> socialContent}}
+      {{/if}}
     </div>
     {{> postFooter}}
   <div class="commentInputBox">

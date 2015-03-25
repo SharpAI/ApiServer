@@ -94,9 +94,12 @@ if Meteor.isClient
       #Sets the current scroll position
       st = $(window).scrollTop();
 
-      if(st + deviceHeight) is window.getDocHeight()
+      if(st + $(window).height()) is window.getDocHeight()
         $('.showPosts .head').fadeIn 300
-        $('.showPostsFooter').fadeOut 300
+        if withSocialBar
+          $('.showPostsFooter').fadeOut 300
+        else
+          $('.showPostsFooter').fadeIn 300
         window.lastScroll = st
         return
       # Changed is too small
@@ -112,14 +115,12 @@ if Meteor.isClient
         $('.showPostsFooter').fadeIn 300
       #Updates scroll position
       window.lastScroll = st
+    if !$('body').isSupportObjectFit()
+      PUB.toast("您的手机版本过低，部分图片可能产生变形。");
 
   Template.showPosts.helpers
-    isLowVersionPhone:()->
-      if !$('body').isSupportObjectFit()
-        $('.showPosts .head').css('top', 40)
-        true
-      else
-        false
+    withSocialBar: ()->
+      withSocialBar
     isCordova:()->
       Meteor.isCordova
     refcomment:->

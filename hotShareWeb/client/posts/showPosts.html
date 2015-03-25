@@ -4,9 +4,6 @@
       <div id="blur_overlay" style="position: absolute; opacity: 0.5; z-index: 1; width:100%; background-color:white;">
           {{> spinner}}
       </div>
-      {{#if isLowVersionPhone}}
-        <div class="headHint">您的手机版本过低，部分图片可能产生变形。</div>
-      {{/if}}
       <div class="head">
         {{#if isMobile}}
           <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
@@ -89,7 +86,9 @@
     {{/if}}
     <div class="showPostsLine"></div>
       {{> commentContent}}
-      {{> socialContent}}
+      {{#if withSocialBar}}
+        {{> socialContent}}
+      {{/if}}
     </div>
     {{> postFooter}}
   <div class="commentInputBox">
