@@ -1,17 +1,19 @@
 if Meteor.isClient
-  Template.socialContent.helpers
-    viewer:()->
-      Viewers.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}})
-    isMyself:()->
-      this.userId is Meteor.userId()
+  Session.setDefault("Social.LevelOne.Menu",'contactsList')
   Template.socialContent.events
     'click .chatBtn':->
-      $('.contactsList').fadeOut 300
-      $('.contactsBtn').removeClass "focusColor"
-      $('.chatContent').fadeIn 300
-      $('.chatBtn').addClass "focusColor"
+      Session.set("Social.LevelOne.Menu",'chatContent')
     'click .contactsBtn':->
-      $('.chatContent').fadeOut 300
-      $('.chatBtn').removeClass "focusColor"
-      $('.contactsList').fadeIn 300
-      $('.contactsBtn').addClass "focusColor"
+      Session.set("Social.LevelOne.Menu",'contactsList')
+    'click .discoverBtn':->
+      Session.set("Social.LevelOne.Menu",'discover')
+    'click .meBtn':->
+      Session.set("Social.LevelOne.Menu",'me')
+  Template.socialContent.helpers
+    whichOne : ->
+      Session.get('Social.LevelOne.Menu')
+    isFocus : (view) ->
+      if Session.equals("Social.LevelOne.Menu",view)
+        "focusColor"
+      else
+        ""
