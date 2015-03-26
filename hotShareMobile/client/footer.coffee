@@ -47,6 +47,8 @@ if Meteor.isClient
     'click #add':(e)->
       #console.log 'Clicked on ADD'
       Session.set 'isReviewMode','0'
+      Session.set('draftTitle', '');
+      Session.set('draftAddontitle', '');
       Drafts.remove({})
       Meteor.setTimeout(
         ()->

@@ -434,7 +434,14 @@ if Meteor.isClient
         size_x: wgd.size_x,
         size_y: wgd.size_y
       };
-    }, widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], min_cols: 3, max_cols:6, resize: {enabled: true}}).data('gridster');`
+    }, widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], min_cols: 3, max_cols:6, resize: {enabled: true, start: function(e, ui, $widget) {
+
+      }, stop: function(e, ui, $widget) {
+        #$widget.actImageFitCover(e, ui, $widget);
+      }, resize: function(e, ui, $widget) {
+        #$widget.actImageFitCover(e, ui, $widget);
+    }
+    }}).data('gridster');`
     #Set is isReviewMode
     console.log "rendered isReviewMode="+Session.get('isReviewMode')
     if Session.get('isReviewMode') is '1'
@@ -495,7 +502,7 @@ if Meteor.isClient
           Posts.find({_id:draftId}).fetch()[0]
         else if Session.get('isReviewMode') is '1' or Session.get('isReviewMode') is '0'
           draftTitles = SavedDrafts.find({_id:draftId}).fetch()[0]
-          if draftTitles == null
+          if !draftTitles?
             draftTitles = {}
             draftTitles.title = Session.get 'draftTitle'
             draftTitles.addontitle = Session.get 'draftAddontitle'
@@ -600,6 +607,8 @@ if Meteor.isClient
     'click #addmore':->
       window.footbarOppration = true
       #uploadFile (result)->
+      Session.set 'draftTitle',''
+      Session.set 'draftAddontitle',''
       Session.set('NewImgAdd','false')
       selectMediaFromAblum(20, (cancel, result)->
         if cancel
@@ -713,10 +722,19 @@ if Meteor.isClient
       console.log "img_top is "
       console.log img_top
       
+      w1 = $("#default"+cropDraftId+" .crop-img").css('width')
+      h1 = $("#default"+cropDraftId+" .crop-img").css('height')
+      l1 = $("#default"+cropDraftId+" .crop-img").css('left')
+      t1 = $("#default"+cropDraftId+" .crop-img").css('top')
+      cw = $("#default"+cropDraftId).width()
+      ch = $("#default"+cropDraftId).height()
+
+      style2 = "height:" + h1 + ';width:' + w1 + ';top:' + t1 + ';left:' + l1 + ';h_width:' + cw + ';h_height:' + ch + ';'
+
       style = "height:" + img_height + ';width:' + img_width + ';top:' + img_top + ';left:' + img_left + ';'
       console.log style
       zoom = $("#default"+cropDraftId).find('input')
-      Drafts.update({_id: cropDraftId}, {$set: {style: style, scale:zoom.val()}});
+      Drafts.update({_id: cropDraftId}, {$set: {style: style, scale:zoom.val(), style2:style2}});
       $('#isImage'+cropDraftId).css('display',"block")
       $('#'+cropDraftId).css('display',"block")
       $('#crop'+cropDraftId).css('display',"none")
@@ -812,6 +830,35 @@ if Meteor.isClient
         draftData = Drafts.find().fetch()
         postId = draftData[0]._id;
 
+        #Save gridster layout first. If publish failed, we can recover the drafts
+        for i in [0..(draftData.length-1)]
+          if i is 0
+            mainImage = 'http://data.tiegushi.com/'+draftData[i].filename
+            mainImageStyle = draftData[i].style
+            mainText = $("#"+draftData[i]._id+"text").val()
+          else
+            if draftData[i].isImage
+              draftData[i].imgUrl = 'http://data.tiegushi.com/'+draftData[i].filename
+            #for some case user did not save the draft, directly published, the layout does not stored.
+            json = jQuery.parseJSON(layout);
+            for item in json
+              if item.id is draftData[i]._id
+                draftData[i].data_row = item.row
+                draftData[i].data_col = item.col
+                draftData[i].data_sizex = item.size_x
+                draftData[i].data_sizey = item.size_y
+            pub.push(draftData[i])
+        sortBy = (key, a, b, r) ->
+          r = if r then 1 else -1
+          return -1*r if a[key] > b[key]
+          return +1*r if a[key] < b[key]
+          return 0
+        sortedPub = pub.sort((a, b)->
+          sortBy('data_row', a, b)
+        )
+#       console.log "#####end" + pub
+
+        #get the images to be uploaded
         draftImageData = Drafts.find({type:'image'}).fetch()
         draftToBeUploadedImageData = []
         for i in [0..(draftImageData.length-1)]
@@ -825,40 +872,20 @@ if Meteor.isClient
             if result is null
                 #$("#title").val(title)
                 #$("#addontitle").val(addontitle)
-                Session.Set 'draftTitle',title
-                Session.Set 'draftAddontitle',addontitle
-                PUB.back();
+                Session.set 'draftTitle',title
+                if addontitle?
+                  console.log("addontitle is not null")
+                else
+                  console.log("addontitle is null")
+                Session.set 'draftAddontitle',addontitle
+                #Update the gridster layout first
+                for i in [1..(draftData.length-1)]
+                  #Drafts.update({_id: draftData[i]._id}, {$set: draftData[i]});
+                  Drafts.update({_id: draftData[i]._id}, {$set: {data_row:draftData[i].data_row, data_col:draftData[i].data_col, data_sizex:draftData[i].data_sizex, data_sizey:draftData[i].data_sizey}});
+                #PUB.back();
                 return
-            for i in [0..(draftData.length-1)]
-              if i is 0
-                mainImage = 'http://data.tiegushi.com/'+draftData[i].filename
-                mainImageStyle = draftData[i].style
-                mainText = $("#"+draftData[i]._id+"text").val()
-              else
-                if draftData[i].isImage
-                  draftData[i].imgUrl = 'http://data.tiegushi.com/'+draftData[i].filename
-                #for some case user did not save the draft, directly published, the layout does not stored.
-                json = jQuery.parseJSON(layout);
-                for item in json
-                  if item.id is draftData[i]._id
-                    draftData[i].data_row = item.row
-                    draftData[i].data_col = item.col
-                    draftData[i].data_sizex = item.size_x
-                    draftData[i].data_sizey = item.size_y
-                pub.push(draftData[i])
-
-            sortBy = (key, a, b, r) ->
-              r = if r then 1 else -1
-              return -1*r if a[key] > b[key]
-              return +1*r if a[key] < b[key]
-              return 0
-
-            sortedPub = pub.sort((a, b)->
-              sortBy('data_row', a, b)
-            )
-
-#           console.log "#####end" + pub
-
+            Session.set 'draftTitle',''
+            Session.set 'draftAddontitle',''
             console.log 'Full name is ' + Meteor.user().profile.fullname
             if Meteor.user().profile.fullname && (Meteor.user().profile.fullname isnt '')
               ownerName = Meteor.user().profile.fullname

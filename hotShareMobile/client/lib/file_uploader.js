@@ -1,7 +1,7 @@
 
 if (Meteor.isCordova){
     uploadingFilesInfo = {filesCount:0, files:[]};
-    var uploadToAliyun = function(filename,URI,callback){
+    var uploadToAliyun = function(filename,URI, callback, errCallback){
       Meteor.call('getAliyunWritePolicy',filename,URI,function(error,result){
         if(error) {
           console.log('getAliyunWritePolicy error: ' + error);
@@ -41,8 +41,12 @@ if (Meteor.isCordova){
             }
         }, function(e){
           console.log('upload error' + e.code )
-          if(callback){
+          if (errCallback) {
+            errCallback(filename);
+          } else {
+            if(callback){
               callback(null);
+            }
           }
         }, options,true);
       });
@@ -281,6 +285,10 @@ if (Meteor.isCordova){
         }
         }
 
+    var multiThreadsInfo = [];
+    var runningThreadCount = 0;
+    var multiThreadsTimeout = 15;//Seconds
+    var multiThreadsIntervalHandle;
     /*filesCount, [{percent:?}]*/
     computeProgressBar = function(fileName, curPercent) {
         var percent = 0;
@@ -303,10 +311,17 @@ if (Meteor.isCordova){
         }
         //console.log("progressBarWidth="+parseInt(percent/uploadingFilesInfo.filesCount)+",percent="+percent+", filesCount="+uploadingFilesInfo.filesCount);
         Session.set('progressBarWidth', parseInt(percent/uploadingFilesInfo.filesCount));
+
+        //Clear timeout timer of this file
+        for (var i=0; i<multiThreadsInfo.length; i++) {
+            if (multiThreadsInfo[i].filename == fileName) {
+                console.log("computeProgressBar: reset timeout counter for: "+fileName);
+                multiThreadsInfo[i].time = 0;
+                break;
+            }
+        }
     }
 
-    var multiThreadsInfo = [];
-    var runningThreadCount = 0;
     var multiThreadUploadFile = function(draftData, maxThreads, callback){
         var count = draftData.length < maxThreads ? draftData.length : maxThreads;
         runningThreadCount = 0;
@@ -315,36 +330,52 @@ if (Meteor.isCordova){
             runningThreadCount++;
             startThreadUploadFile(draftData, null, multiThreadsInfo, callback);
         }
+        multiThreadsIntervalHandle = setInterval(function(){
+            for (var i=0; i<multiThreadsInfo.length; i++) {
+                if (multiThreadsInfo[i].status == 0) {
+                    multiThreadsInfo[i].time++;
+                    //console.log("multiThreadUploadFile: multiThreadsInfo["+i+"].time="+multiThreadsInfo[i].time);
+                    if (multiThreadsInfo[i].time > multiThreadsTimeout) {
+                        clearInterval(multiThreadsIntervalHandle);
+                        console.log("multiThreadUploadFile: timeout!!! file info is: "+JSON.stringify(multiThreadsInfo[i]));
+                        multiThreadsInfo = [];
+                        callback(null);
+                        return;
+                    }
+                }
+            }
+        }, 1000);
     }
 
     var startThreadUploadFile = function(draftData, fileInfo, info, callback){
         var getFileInfo = function(filename) {
-            for (var i=0; i<info.length; i++) {
-                if (info[i].filename == filename) {
-                    return info[i];
+            for (var i=0; i<multiThreadsInfo.length; i++) {
+                if (multiThreadsInfo[i].filename == filename) {
+                    return multiThreadsInfo[i];
                 }
             }
+            return null;
         }
         var getUploadedCount = function() {
             var count = 0;
-            for (var i=0; i<info.length; i++) {
-                if (info[i].status == 1) {
+            for (var i=0; i<multiThreadsInfo.length; i++) {
+                if (multiThreadsInfo[i].status == 1) {
                     count++;
                 }
             }
             return count;
         }
         var hasErrorUpload = function() {
-            for (var i=0; i<info.length; i++) {
-                if (info[i].status == -1) {
+            for (var i=0; i<multiThreadsInfo.length; i++) {
+                if (multiThreadsInfo[i].status == -1) {
                     return true;
                 }
             }
             return false;
         }
         var hasActiveUpload = function() {
-            for (var i=0; i<info.length; i++) {
-                if (info[i].status == 0) {
+            for (var i=0; i<multiThreadsInfo.length; i++) {
+                if (multiThreadsInfo[i].status == 0) {
                     return true;
                 }
             }
@@ -355,44 +386,55 @@ if (Meteor.isCordova){
         if (fileInfo) {
             tmpFileInfo = fileInfo;
         } else {
-            var index = info.length;
-            tmpFileInfo = {filename:draftData[index].filename, URI:draftData[index].URI, status:0, tryCount:0};
-            info.push(tmpFileInfo);
+            var index = multiThreadsInfo.length;
+            tmpFileInfo = {filename:draftData[index].filename, URI:draftData[index].URI, status:0, tryCount:0, time:0};
+            multiThreadsInfo.push(tmpFileInfo);
         }
         uploadToAliyun(tmpFileInfo.filename, tmpFileInfo.URI, function(result){
             var tmpFileInfo2 = getFileInfo(result.replace(/^.*[\\\/]/, ''));
+            if (tmpFileInfo2 == null) {
+                console.log("startThreadUploadFile: invalid file info! result="+result);
+                return;
+            }
             tmpFileInfo2.status = 1;
 
-            console.log("uploaded("+getUploadedCount()+"/"+draftData.length+")..."+info.length);
+            console.log("uploaded("+getUploadedCount()+"/"+draftData.length+")..."+multiThreadsInfo.length);
             if (getUploadedCount() == draftData.length) {
                 if (callback) {
                     console.log("startThreadUploadFile: suc");
+                    clearInterval(multiThreadsIntervalHandle);
                     callback('Suc');
                 }
                 return;
             }
 
             if (!hasErrorUpload()) {
-                if (info.length < draftData.length) {
+                if (multiThreadsInfo.length < draftData.length) {
                     runningThreadCount++;
-                    startThreadUploadFile(draftData, null, info, callback);
+                    startThreadUploadFile(draftData, null, multiThreadsInfo, callback);
                 }
             } else {
                 runningThreadCount--;
                 if (!hasActiveUpload()) {
                     console.log("startThreadUploadFile: failed, 1");
+                    clearInterval(multiThreadsIntervalHandle);
                     callback(null);
                 }
             }
         }, function(filename) {
             console.log("uploaded failed: filename="+filename);
             var tmpFileInfo3 = getFileInfo(filename);
+            if (tmpFileInfo3 == null) {
+                console.log("startThreadUploadFile: invalid file info! filename="+filename);
+                return;
+            }
             if (tmpFileInfo3.tryCount >= 1) {
                 console.log("!!Abort, "+ filename +", tried "+tmpFileInfo3.tryCount+" times.");
                 tmpFileInfo3.status = -1;
                 runningThreadCount--;
                 if (!hasActiveUpload()) {
                     console.log("startThreadUploadFile: failed, 2");
+                    clearInterval(multiThreadsIntervalHandle);
                     callback(null);
                 }
                 return;
@@ -405,6 +447,7 @@ if (Meteor.isCordova){
                 runningThreadCount--;
                 if (!hasActiveUpload()) {
                     console.log("startThreadUploadFile: failed, 3.");
+                    clearInterval(multiThreadsIntervalHandle);
                     callback(null);
                 }
             }
