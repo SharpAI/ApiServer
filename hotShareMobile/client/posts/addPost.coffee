@@ -778,7 +778,7 @@ if Meteor.isClient
           return -1*r if a[key] > b[key]
           return +1*r if a[key] < b[key]
           return 0
-        sortedPub = pub.sort((a, b)->
+        pub.sort((a, b)->
           sortBy('data_row', a, b)
         )
           #pub.push {
@@ -862,7 +862,7 @@ if Meteor.isClient
           return -1*r if a[key] > b[key]
           return +1*r if a[key] < b[key]
           return 0
-        sortedPub = pub.sort((a, b)->
+        pub.sort((a, b)->
           sortBy('data_row', a, b)
         )
 #       console.log "#####end" + pub
