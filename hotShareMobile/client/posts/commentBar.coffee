@@ -34,8 +34,6 @@ if Meteor.isClient
       GetTime0(new Date() - created)
     comment: ()->
       Comment.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}})
-  Template.commentContent.rendered=->
-    $('.chatBoxContent').css('min-height',$(window).height()-90)
   Template.commentContent.helpers
     refcomment:->
       RC = Session.get 'RC'
