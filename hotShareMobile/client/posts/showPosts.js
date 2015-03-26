@@ -8,6 +8,9 @@ Template.showPosts.events({
         url = "http://" + server_domain_name +url;
       var title = this.title;
       var addontitle = this.addontitle;
+      if (this.addontitle && (this.addontitle !=='')){
+        title = title + '：' + this.addontitle;
+      }
       window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等")
 
       height = $('.showPosts').height()

@@ -73,16 +73,20 @@ if Meteor.isClient
         return
     Router.route '/posts/:_id', {
         waitOn: ->
-          Meteor.subscribe("publicPosts",this.params._id);
-          Meteor.subscribe("refcomments");
+          Meteor.subscribe("publicPosts",this.params._id)
+          Meteor.subscribe("refcomments")
         loadingTemplate: 'loadingPost'
         action: ->
           post = Posts.findOne({_id: this.params._id})
           refComment = RefComments.find()
           if refComment.count() > 0
             Session.set("refComment",refComment.fetch())
-          Session.set('postContent',post);
-          Session.set("DocumentTitle",post.title + '——' + post.addontitle);
+          Session.set('postContent',post)
+          if post.addontitle and (post.addontitle isnt '')
+            documentTitle = post.title + "：" + post.addontitle
+          else
+            documentTitle = post.title
+          Session.set("DocumentTitle",documentTitle)
           this.render 'showPosts', {data: post}
           Session.set 'channel','posts/'+this.params._id
       }
@@ -144,6 +148,6 @@ if Meteor.isClient
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->
-        Meteor.subscribe("publicPosts",this.params._id);
-        Meteor.subscribe("refcomments");
+        Meteor.subscribe("publicPosts",this.params._id)
+        Meteor.subscribe("refcomments")
     }
