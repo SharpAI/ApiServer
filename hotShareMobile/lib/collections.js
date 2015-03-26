@@ -473,44 +473,42 @@ if(Meteor.isServer){
 }
 
 if(Meteor.isClient){
-  Deps.autorun(function() {
-    if (Meteor.user()) {
-      Meteor.subscribe("refcomments");
-      Meteor.subscribe("topicposts");
-      Meteor.subscribe("topics");
-      Meteor.subscribe("posts");
-      /*Meteor.subscribe("drafts");*/
-      Meteor.subscribe("saveddrafts");
-      Meteor.subscribe("follows");
-      Meteor.subscribe("follower");
-      var options = {
-        keepHistory: 1000 * 60 * 5,
-        localSearch: true
-      };
-      var fields = ['username', 'profile.fullname'];
-      FollowUsersSearch = new SearchSource('followusers', fields, options);
-      var topicsfields = ['text'];
-      TopicsSearch = new SearchSource('topics', topicsfields, options);
-    }
-  });
   Tracker.autorun(function () {
     if(Session.get("postContent")){
       Meteor.subscribe("comment",Session.get("postContent")._id);
       Meteor.subscribe("viewers",Session.get("postContent")._id);
     }
   });
-  var FOLLOWPOSTS_ITEMS_INCREMENT = 10;
-  Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
-  Deps.autorun(function() {
-    if (Meteor.user()) {
-      Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'));
-    }
-  });
-  var FEEDS_ITEMS_INCREMENT = 20;
-  Session.setDefault('feedsitemsLimit', FEEDS_ITEMS_INCREMENT);
-  Deps.autorun(function() {
-    if (Meteor.user()) {
-      Meteor.subscribe('feeds', Session.get('feedsitemsLimit'));
-    }
-  });
+  if(Meteor.isCordova){
+      var FOLLOWPOSTS_ITEMS_INCREMENT = 10;
+      var FEEDS_ITEMS_INCREMENT = 20;
+      Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
+      Session.setDefault('feedsitemsLimit', FEEDS_ITEMS_INCREMENT);
+      Deps.autorun(function() {
+        if (Meteor.user()) {
+          Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'));
+        }
+      });
+      Deps.autorun(function() {
+        if (Meteor.user()) {
+            Meteor.setTimeout( function() {
+                Meteor.subscribe('feeds', Session.get('feedsitemsLimit'));
+                Meteor.subscribe("posts");
+                Meteor.subscribe("saveddrafts");
+                Meteor.subscribe("topicposts");
+                Meteor.subscribe("topics");
+                Meteor.subscribe("follows");
+                Meteor.subscribe("follower");
+            },3000);
+            var options = {
+                keepHistory: 1000 * 60 * 5,
+                localSearch: true
+            };
+            var fields = ['username', 'profile.fullname'];
+            FollowUsersSearch = new SearchSource('followusers', fields, options);
+            var topicsfields = ['text'];
+            TopicsSearch = new SearchSource('topics', topicsfields, options);
+        }
+      });
+  }
 }
