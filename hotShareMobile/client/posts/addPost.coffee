@@ -842,12 +842,15 @@ if Meteor.isClient
         #Save gridster layout first. If publish failed, we can recover the drafts
         for i in [0..(draftData.length-1)]
           if i is 0
-            mainImage = 'http://data.tiegushi.com/'+draftData[i].filename
+            if draftData[i].imgUrl.indexOf("http://") == -1
+              mainImage = 'http://data.tiegushi.com/'+draftData[i].filename
+            else
+              mainImage = draftData[i].imgUrl
             mainImageStyle = draftData[i].style
             mainText = $("#"+draftData[i]._id+"text").val()
           else
-            if draftData[i].isImage
-              draftData[i].imgUrl = 'http://data.tiegushi.com/'+draftData[i].filename
+            if draftData[i].isImage and draftData[i].imgUrl.indexOf("http://") == -1
+                draftData[i].imgUrl = 'http://data.tiegushi.com/'+draftData[i].filename
             #for some case user did not save the draft, directly published, the layout does not stored.
             json = jQuery.parseJSON(layout);
             for item in json
