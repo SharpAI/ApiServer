@@ -772,6 +772,15 @@ if Meteor.isClient
               draftData[i].data_sizey = item.size_y
 
           pub.push(draftData[i])
+
+        sortBy = (key, a, b, r) ->
+          r = if r then 1 else -1
+          return -1*r if a[key] > b[key]
+          return +1*r if a[key] < b[key]
+          return 0
+        sortedPub = pub.sort((a, b)->
+          sortBy('data_row', a, b)
+        )
           #pub.push {
           #  _id: draftData[i]._id,
           #  type: draftData[i].type,
