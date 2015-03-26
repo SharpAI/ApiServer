@@ -89,46 +89,6 @@ Meteor.startup(function(){
             text:'奇闻',
             imgUrl:''
         });
-
-    }
-//创建话题列表数据库
-    var TopicsId = [];
-    if(Topics.find().count() === 0){
-        TopicsId[0] = Topics.insert({
-            type:'theme',
-            text:'精选',
-            imgUrl:'/theme/theme1.jpg'
-        });
-        TopicsId[1] = Topics.insert({
-            type:'theme',
-            text:'大图片',
-            imgUrl:'/theme/theme2.jpg'
-        });
-        TopicsId[2] = Topics.insert({
-            type:'theme',
-            text:'小故事',
-            imgUrl:'/theme/theme3.jpg'
-        });
-        TopicsId[3] = Topics.insert({
-            type:'theme',
-            text:'去的地方',
-            imgUrl:'/theme/theme4.jpg'
-        });
-        TopicsId[4] = Topics.insert({
-            type:'theme',
-            text:'了解最新信息',
-            imgUrl:'/theme/theme5.jpg'
-        });
-        TopicsId[5] = Topics.insert({
-            type:'topic',
-            text:'人物',
-            imgUrl:''
-        });
-        TopicsId[6] = Topics.insert({
-            type:'topic',
-            text:'奇闻',
-            imgUrl:''
-        });
         TopicsId[7] = Topics.insert({
             type:'topic',
             text:'自然',
