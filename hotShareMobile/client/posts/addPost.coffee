@@ -437,9 +437,9 @@ if Meteor.isClient
     }, widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], min_cols: 3, max_cols:6, resize: {enabled: true, start: function(e, ui, $widget) {
 
       }, stop: function(e, ui, $widget) {
-        #$widget.actImageFitCover(e, ui, $widget);
+        $widget.actImageFitCover(e, ui, $widget);
       }, resize: function(e, ui, $widget) {
-        #$widget.actImageFitCover(e, ui, $widget);
+        $widget.actImageFitCover(e, ui, $widget);
     }
     }}).data('gridster');`
     #Set is isReviewMode

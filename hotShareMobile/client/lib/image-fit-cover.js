@@ -108,6 +108,130 @@
         var check = document.createElement('div');
         objectFitSupported = !!(0 + check.style['object-fit']);
         return objectFitSupported;
+    },
+
+    $.fn.actImageFitCover = function(e, ui, $widget) {
+        function getPorp(styleStr, propertyName) {
+            if ((styleStr == null) || (styleStr == '')) {
+                return '';
+            }
+            var styleAttrs = styleStr.split(';');
+            for (i = 0, len = styleAttrs.length; i < len; i++) {
+                var item = styleAttrs[i];
+                var styleValue = item.split(':');
+                if (styleValue[0].trim() === propertyName) {
+                    //if (styleValue[1].indexOf('%') >= 0) {
+                        return styleValue[1].trim();
+                    //}
+                }
+            }
+            return '';
+        }
+
+        if ($widget.isSupportObjectFit()) {
+            return ;
+        }
+
+        var imgs = $widget.find('img'),w=0, h=0,i=0, fw=0, fh=0, par,tar;
+        var attrs={width:'auto',height:'auto', left:0,top:0};
+
+        if (imgs.length>0) {
+            var padding = 0;
+            var img = $(imgs[0]);
+            var styleStr=img.attr('style');
+            fw = $widget.width() - padding*2;
+            fh = $widget.height() - padding*2;
+            tar = fw / fh;
+            if (img[0].naturalWidth) {
+                w = img[0].naturalWidth;
+                h = img[0].naturalHeight;
+            } else {
+                // Old IE < 9
+                w = img[0].width;
+                h = img[0].height;
+            }
+            par = w / h;
+
+            var styleStr=img.attr('cropStyle');
+            var crop_width = getPorp(styleStr, "width");
+            var crop_height = getPorp(styleStr, "height");
+            var crop_left = getPorp(styleStr, "left");
+            var crop_top = getPorp(styleStr, "top");
+            var holder_width = getPorp(styleStr, "h_width");
+            var holder_height = getPorp(styleStr, "h_height");
+
+            var rel_height = crop_height.replace('px','');
+            var num_height = parseFloat(rel_height);
+
+            var rel_width = crop_width.replace('px','');
+            var num_width = parseFloat(rel_width);
+
+            var rel_left = crop_left.replace('px','');
+            var num_left = parseFloat(rel_left);
+
+            var rel_top = crop_top.replace('px','');
+            var num_top = parseFloat(rel_top);
+
+
+            var rel_h_height = holder_height.replace('px','');
+            var num_h_height = parseFloat(rel_h_height);
+
+            var rel_h_width = holder_width.replace('px','');
+            var num_h_width = parseFloat(rel_h_width);
+
+            var w1 = fw/num_h_width;
+            var h1 = fh/num_h_height;
+
+            if (h > 0 && w > 0) {
+                if ((crop_top != "") && (crop_left != "")) {
+                    if (w1 >= h1) {
+                        var width = fw /(num_h_width/num_width);
+                        var height = width/par;
+                        var left = num_left/num_width*width;
+                        var top = num_top/num_height*height;
+
+                        var ratio = Math.abs(num_h_width/num_h_height);
+
+                        attrs.width = width+'px';
+                        attrs.height = height+'px';
+                        attrs.left = left+'px';
+
+                        attrs.top = top-Math.abs((fh-fw/ratio)/2) + 'px';
+                        console.log("fw:"+fw);
+                        console.log("###1 width:"+width+" height:"+height+ " left:"+left +" top:"+attrs.top);
+
+                        // window.style_width_changed = 1;
+                    } else {
+                        var height = fh /(num_h_height/num_height);
+                        var width = height*par;
+                        var left = num_left/num_width*width;
+                        var top = num_top/num_height*height;
+
+                        var ratio = Math.abs(num_h_width/num_h_height);
+                        attrs.width = width+'px';
+                        attrs.height = height+'px';
+
+                        attrs.top = top+'px';
+
+                        attrs.left = left-Math.abs((fw-fh*ratio)/2) + 'px';
+                        console.log("###2 width:"+width+" height:"+height+ " left:"+attrs.left +" top:"+top);
+                    }
+                } else {
+                    if (tar > par) {
+                        attrs.width = '100%';
+                        attrs.top = 0-Math.abs((fh-(fw/par))/2) + 'px';
+                    } else {
+                        attrs.height = '100%';
+                        attrs.left = 0-Math.abs((fw-(fh*par))/2) + 'px';
+                    }
+                }
+                var addRelative = false;
+                if (addRelative) {
+                    attrs.position = 'relative';
+                }
+                img.css(attrs);
+            }
+        }
     }
 	
 })(jQuery);
