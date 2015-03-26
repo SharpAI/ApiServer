@@ -144,13 +144,30 @@ if(Meteor.isServer){
                   FollowPosts.remove({
                       postId:doc._id
                   });
+                  Feeds.remove({
+                      owner:userId,
+                      eventType:'SelfPosted',
+                      postId:doc._id
+                  });
+                  var TPs=TopicPosts.find({postId:doc._id})
+                  if(TPs.count()>0){
+                      TPs.forEach(function(data){
+                          PostsCount = Topics.findOne({_id:data.topicId}).posts;
+                          if(PostsCount === 1)
+                          {
+                              Topics.remove({_id:data.topicId});
+                          }
+                          else if(PostsCount > 1)
+                          {
+                              Topics.update({_id: data.topicId}, {$set: {'posts': PostsCount-1}});
+                          }
+                      });
+                  }
+                  TopicPosts.remove({
+                      postId:doc._id
+                  });
               }
               catch(error){}
-              Feeds.remove({
-                  owner:userId,
-                  eventType:'SelfPosted',
-                  postId:doc._id
-              });
               return true;
           }
           return false;
