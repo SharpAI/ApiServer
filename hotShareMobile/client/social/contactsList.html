@@ -1,6 +1,6 @@
 <template name="contactsList">
   <div class="contactsList">
-    <div id="" class="eachViewer">
+    <div id="addNewFriends" class="eachViewer">
       <img class="icon" src="/userPlus.png" width="30" height="30">
       <span class="userName">新的朋友</span>
     </div>
@@ -22,15 +22,33 @@
       </div>
     -->
     <div class="showPostsLine"></div>
-    {{#each viewer}}
-      {{#unless isMyself}}
-        <div id="{{userId}}" class="eachViewer">
+    {{#each follower}}
+        <div id="{{followerId}}" class="eachViewer">
           <!--列出浏览人-->
-          <img class="icon" src="{{userIcon}}" width="30" height="30">
-          <span class="userName">{{username}}</span>
+          <img class="icon" src="{{followerIcon}}" width="30" height="30">
+          <span class="userName">{{followerName}}</span>
         </div>
         <div class="chatContentLine"></div>
-      {{/unless}}
     {{/each}}
+  </div>
+</template>
+
+<template name="addNewFriends">
+  <div class="addNewFriends">
+  {{#each viewer}}
+    {{#unless isMyself}}
+      <div id="{{userId}}" class="eachViewer">
+        <!--列出浏览人-->
+        <img class="icon" src="{{userIcon}}" width="30" height="30">
+        <span class="userName">{{username}}</span>
+          {{#if isFollowed this}}
+            <div id="{{userId}}" class="follow delFollow"><span class="fa fa-check"></span><i class="fa fa-user"></i></div>
+          {{else}}
+            <div id="{{userId}}" class="follow addFollow"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
+          {{/if}}
+      </div>
+      <div class="chatContentLine"></div>
+    {{/unless}}
+  {{/each}}
   </div>
 </template>
