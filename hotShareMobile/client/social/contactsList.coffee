@@ -15,8 +15,8 @@ if Meteor.isClient
         true
       else
         false
-    isFollowed:(follow)->
-      fcount = Follower.find({"userId":Meteor.userId(),"followerId":follow.userId}).count()
+    isFollowed:()->
+      fcount = Follower.find({"userId":Meteor.userId(),"followerId":this.userId}).count()
       if fcount > 0
         true
       else

@@ -1,1 +1,1 @@
-@withSocialBar =  false
+@withSocialBar = false
