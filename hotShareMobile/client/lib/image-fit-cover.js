@@ -110,7 +110,28 @@
         return objectFitSupported;
     },
 
-    $.fn.actImageFitCover = function(e, ui, $widget) {
+    $.fn.getStyleProp = function(){
+        var container = this;
+        var padding = 0,
+            fw = container.width() - padding*2,
+            fh = container.height() - padding*2,
+            imgs = container.find('img');
+            if (!imgs)
+                return '';
+        var img = $(imgs[0]);
+            if (!img)
+                return '';
+        //console.log("FrankAA: width="+img.css('width')+", height="+img.css('height')+", top="+img.css('top')+", left="+img.css('left'));
+        //console.log("FrankAA: img attr style = "+img.attr('style'));
+        var w1 = parseFloat(img.css('width').replace('px',''))*100/fw + '%',
+            h1 = parseFloat(img.css('height').replace('px',''))*100/fh + '%',
+            l1 = parseFloat(img.css('left').replace('px',''))*100/fw + '%',
+            t1 = parseFloat(img.css('top').replace('px',''))*100/fh + '%',
+            style = "height:" + h1 + ';width:' + w1 + ';top:' + t1 + ';left:' + l1 + ';';
+        return img.attr('style');
+    },
+
+    $.fn.actImageResize = function(e, ui, $widget) {
         function getPorp(styleStr, propertyName) {
             if ((styleStr == null) || (styleStr == '')) {
                 return '';
@@ -129,7 +150,7 @@
         }
 
         if ($widget.isSupportObjectFit()) {
-            return ;
+            //return ;
         }
 
         var imgs = $widget.find('img'),w=0, h=0,i=0, fw=0, fh=0, par,tar;
@@ -232,6 +253,164 @@
                 img.css(attrs);
             }
         }
+    },
+
+    $.fn.actImageFitCover = function(styleAttrName) { //No style2, should be compatiable with the older version
+        function getPorp(styleStr, propertyName) {
+            if ((styleStr == null) || (styleStr == '')) {
+                return '';
+            }
+            var styleAttrs = styleStr.split(';');
+            for (i = 0, len = styleAttrs.length; i < len; i++) {
+                var item = styleAttrs[i];
+                var styleValue = item.split(':');
+                if (styleValue[0].trim() === propertyName) {
+                    //if (styleValue[1].indexOf('%') >= 0) {
+                        return styleValue[1].trim();
+                    //}
+                }
+            }
+            return '';
+        }
+
+        var container = this;
+        var scale = 1;
+        var imgs = container.find('img'),w=0, h=0,i=0, fw=0, fh=0, par,tar;
+        var attrs={width:'auto',height:'auto', left:0,top:0};
+
+        if (imgs.length>0) {
+            var padding = 0;
+            var img = $(imgs[0]);
+            var styleStr=img.attr(styleAttrName);
+            fw = container.width() - padding*2;
+            fh = container.height() - padding*2;
+            tar = fw / fh;
+            if (img[0].naturalWidth) {
+                w = img[0].naturalWidth;
+                h = img[0].naturalHeight;
+            } else {
+                // Old IE < 9
+                w = img[0].width;
+                h = img[0].height;
+            }
+            par = w / h;
+
+            //var cssStyleStr=img.attr('style');
+            var crop_width = getPorp(styleStr, "width");
+            var crop_height = getPorp(styleStr, "height");
+            var crop_left = getPorp(styleStr, "left");
+            var crop_top = getPorp(styleStr, "top");
+
+            var num_height = parseFloat(crop_height);
+            var num_width = parseFloat(crop_width);
+            var num_left = parseFloat(crop_left);
+            var num_top = parseFloat(crop_top);
+
+            /*if (container.isSupportObjectFit()) {
+                if (tar >= par) {
+                    scale = img.width()/fw;
+                } else {
+                    scale = img.height()/fh;
+                }
+                return scale;
+            }*/
+
+            if (h > 0 && w > 0) {
+                if ((crop_top != '') && (crop_left != '')) {
+                    var sar = num_width*fw/(num_height*fh);
+                    if (sar >= par) {
+                        var width = num_width;
+                        var height = width*tar/par;
+                        var left = num_left;
+                        var top = num_top*height/num_height;
+                        var ratioH = Math.abs(height/num_height);
+
+                        attrs.width = width+'%';
+                        attrs.height = height+'%';
+                        attrs.left = left+'%';
+                        //attrs.top = top+'%';
+                        //attrs.top = top-Math.abs((fh-fw/ratio)/2) + '%';
+                        attrs.top = top-(100*(ratioH-1)/2) + '%';
+                        console.log("###1 width:"+width+" height:"+height+ " left:"+left +" top:"+attrs.top);
+                    } else {
+                        /*
+                        var height = num_height;
+                        var width = height*par/tar;
+                        var left = num_left*width/num_width;
+                        var top = num_top;
+                        var ratio = Math.abs(width/num_width);
+
+                        attrs.width = width+'%';
+                        attrs.height = height+'%';
+                        attrs.top = top+'%';
+                        //attrs.left = left+'%';
+                        attrs.left = left-(100*(ratio-1)/2) + '%';
+                        console.log("###2 width:"+width+" height:"+height+ " left:"+attrs.left +" top:"+top);
+                        */
+                        if (tar > par) {
+                            var width = num_width;
+                            var height = width*tar/par;
+                            var left = num_left;
+                            var top = num_top*height/num_height;
+                            var ratioH = Math.abs(height/num_height);
+
+                            top = top-(100*(ratioH-1)/2);
+                            if (Math.abs(top) + 100 > height) {
+                                top = top + (Math.abs(top)+100-height);
+                            }
+
+                            attrs.width = width+'%';
+                            attrs.height = height+'%';
+                            attrs.left = left+'%';
+                            //attrs.top = top+'%';
+                            //attrs.top = top-Math.abs((fh-fw/ratio)/2) + '%';
+                            attrs.top = top + '%';
+
+                            console.log("###2-1 width:"+width+" height:"+height+ " left:"+left +" top:"+attrs.top);
+                        } else {//Pull height larger and larger
+                            var height = num_width;
+                            var width = height*par/tar;
+                            var left = num_left*width/num_width;
+                            var top = num_top*height/num_height;
+                            var ratioW = Math.abs(width/num_width);
+                            var ratioH = Math.abs(height/num_height);
+
+                            top = top-(100*(ratioH-1)/2);
+                            if (Math.abs(top) + 100 > height) {
+                                top = top + (Math.abs(top)+100-height);
+                            }
+
+                            attrs.width = width+'%';
+                            attrs.height = height+'%';
+                            attrs.top = top+'%';
+                            //attrs.left = left+'%';
+                            attrs.left = left-(100*(ratioW-1)/2) + '%';
+                            console.log("###2-2 width:"+width+" height:"+height+ " left:"+attrs.left +" top:"+top);
+                        }
+                    }
+                } else {
+                    if (tar > par) {
+                        attrs.width = '100%';
+                        attrs.top = 0-Math.abs((fh-(fw/par))/2) + 'px';
+                    } else {
+                        attrs.height = '100%';
+                        attrs.left = 0-Math.abs((fw-(fh*par))/2) + 'px';
+                    }
+                }
+                var addRelative = false;
+                if (addRelative) {
+                    attrs.position = 'relative';
+                }
+                img.css(attrs);
+
+                if (tar >= par) {
+                    scale = parseFloat(attrs.width)/100;
+                } else {
+                    scale = parseFloat(attrs.height)/100;
+                }
+            }
+        }
+        return scale;
     }
 	
 })(jQuery);

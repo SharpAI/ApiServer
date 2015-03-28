@@ -283,11 +283,25 @@ var CROP = (function () {
 			}
 
 			if (this.imgInfo.style != '') {
+                var getPorp = function(styleStr, propertyName) {
+                    if ((styleStr == null) || (styleStr == '')) {
+                        return '';
+                    }
+                    var styleAttrs = styleStr.split(';');
+                    for (i = 0, len = styleAttrs.length; i < len; i++) {
+                        var item = styleAttrs[i];
+                        var styleValue = item.split(':');
+                        if (styleValue[0].trim() === propertyName) {
+                            //if (styleValue[1].indexOf('%') >= 0) {
+                                return styleValue[1].trim();
+                            //}
+                        }
+                    }
+                    return '';
+                }
                 var styleArray = this.imgInfo.style.split(';');
-                var topArray = styleArray[2].split(':');
-                var topValue = parseFloat(topArray[1]);
-                var leftArray = styleArray[3].split(':');
-                var leftValue = parseFloat(leftArray[1]);
+                var topValue = parseFloat(getPorp(this.imgInfo.style, 'top'));
+                var leftValue = parseFloat(getPorp(this.imgInfo.style, 'left'));
                 this.imgInfo.t = -c.height() * topValue / 100;
                 this.imgInfo.l = -c.width() * leftValue / 100;
                 this.imgInfo.s = this.imgInfo.v;

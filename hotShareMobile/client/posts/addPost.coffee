@@ -339,7 +339,8 @@ if Meteor.isClient
               $('#crop'+node.id).css('display',"block")
               $('#'+node.id).css('z-index',"12")
               image = Drafts.findOne({_id:node.id}).imgUrl
-              style = Drafts.findOne({_id:node.id}).style
+              #style = Drafts.findOne({_id:node.id}).style
+              style = $('#'+node.id).getStyleProp();
               if style is undefined
                 style = ''
               scale = Drafts.findOne({_id:node.id}).scale
@@ -401,6 +402,8 @@ if Meteor.isClient
               )
 
               Meteor.setTimeout ->
+                console.log("crop-img width="+$("#default"+node.id+" .crop-img").width()+", scale="+scale)
+                console.log("crop-img width="+$("#default"+node.id+" .crop-img").height())
                 Session.set 'imgSizeW',$("#default"+node.id+" .crop-img").width()/scale
                 Session.set 'imgSizeH',$("#default"+node.id+" .crop-img").height()/scale
               ,300
@@ -434,12 +437,16 @@ if Meteor.isClient
         size_x: wgd.size_x,
         size_y: wgd.size_y
       };
-    }, widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], min_cols: 3, max_cols:6, resize: {enabled: true, start: function(e, ui, $widget) {
+    }, widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], min_cols: 3, max_cols:6, resize: {enabled: true, max_size: [9,9], min_size: [2, 2], start: function(e, ui, $widget) {
 
       }, stop: function(e, ui, $widget) {
-        $widget.actImageFitCover(e, ui, $widget);
+        //$widget.actImageFitCover(e, ui, $widget);
+        var scale = $widget.actImageFitCover('cropStyle');
+        Drafts.update({_id: $widget.attr('id')}, {$set: {scale:scale}});
+        return;
       }, resize: function(e, ui, $widget) {
-        $widget.actImageFitCover(e, ui, $widget);
+        //$widget.actImageFitCover(e, ui, $widget);
+        $widget.actImageFitCover('cropStyle');
     }
     }}).data('gridster');`
     #Set is isReviewMode
@@ -735,6 +742,10 @@ if Meteor.isClient
       console.log style
       zoom = $("#default"+cropDraftId).find('input')
       Drafts.update({_id: cropDraftId}, {$set: {style: style, scale:zoom.val(), style2:style2}});
+      #update the style to the other image, or else there is a photo move after crop done.
+      imgs = $('#isImage'+cropDraftId).find('img')
+      img = $(imgs[0])
+      img.attr('style', 'width:100%; height:100%;position:absolute;'+style);
       $('#isImage'+cropDraftId).css('display',"block")
       $('#'+cropDraftId).css('display',"block")
       $('#crop'+cropDraftId).css('display',"none")

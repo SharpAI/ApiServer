@@ -6,7 +6,9 @@ if Meteor.isClient
       threshold: 800
       load:->
         $(this).parent().find('.spinner-overlay').remove()
-        #console.log "Frank: style =  "+$(this).attr('style')
+        console.log "Frank: style =  "+$(this).attr('style')
+        $(this).parent().actImageFitCover('style');
+        return
         styleStr = $(this).attr('style')
         hasWidth = 0
         hasHeight = 0
