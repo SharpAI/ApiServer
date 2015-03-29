@@ -6,4 +6,5 @@ if Meteor.isClient
       threshold: 800
       load:->
         $(this).parent().find('.spinner-overlay').remove()
+        $(this).parent().actImageFitCover('style');
       }
