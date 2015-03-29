@@ -279,7 +279,7 @@
         var attrs={width:'auto',height:'auto', left:0,top:0};
 
         if (imgs.length>0) {
-            var padding = 0;
+            var padding = 6;
             var img = $(imgs[0]);
             var styleStr=img.attr(styleAttrName);
             fw = container.width() - padding*2;
@@ -318,19 +318,24 @@
             if (h > 0 && w > 0) {
                 if ((crop_top != '') && (crop_left != '')) {
                     var sar = num_width*fw/(num_height*fh);
-                    if (sar >= par) {
+                    //if (sar >= par) {
+                    var oldtar = num_height*par/num_width;
+                    if (tar >= oldtar) {
                         var width = num_width;
                         var height = width*tar/par;
                         var left = num_left;
                         var top = num_top*height/num_height;
-                        var ratioH = Math.abs(height/num_height);
+                        var ratio = Math.abs(num_height * par / num_width);
+
+                        top = top+100*(1-tar/ratio)/2;
+                        top = top>0?0:top;
 
                         attrs.width = width+'%';
                         attrs.height = height+'%';
                         attrs.left = left+'%';
                         //attrs.top = top+'%';
                         //attrs.top = top-Math.abs((fh-fw/ratio)/2) + '%';
-                        attrs.top = top-(100*(ratioH-1)/2) + '%';
+                        attrs.top = top+'%';
                         console.log("###1 width:"+width+" height:"+height+ " left:"+left +" top:"+attrs.top);
                     } else {
                         /*
@@ -347,17 +352,27 @@
                         attrs.left = left-(100*(ratio-1)/2) + '%';
                         console.log("###2 width:"+width+" height:"+height+ " left:"+attrs.left +" top:"+top);
                         */
-                        if (tar > par) {
+                        var height = num_height;
+                        var width = height*par/tar;
+                        var left = num_left*width/num_width;
+                        var top = num_top;
+                        var ratio = Math.abs(num_height * par / num_width);
+
+                        left = left+100*(1-ratio/tar)/2;
+                        attrs.width = width+'%';
+                        attrs.height = height+'%';
+                        attrs.top = top+'%';
+                        attrs.left = left+'%';
+                        console.log("###2 width:"+width+" height:"+height+ " left:"+attrs.left +" top:"+top);
+                        /*if (tar > par) {
                             var width = num_width;
                             var height = width*tar/par;
                             var left = num_left;
                             var top = num_top*height/num_height;
-                            var ratioH = Math.abs(height/num_height);
+                            var ratio = Math.abs(num_height * par / num_width);
 
-                            top = top-(100*(ratioH-1)/2);
-                            if (Math.abs(top) + 100 > height) {
-                                top = top + (Math.abs(top)+100-height);
-                            }
+                            top = top+100*(1-tar/ratio)/2;
+                            top = top>0?0:top;
 
                             attrs.width = width+'%';
                             attrs.height = height+'%';
@@ -372,21 +387,21 @@
                             var width = height*par/tar;
                             var left = num_left*width/num_width;
                             var top = num_top*height/num_height;
-                            var ratioW = Math.abs(width/num_width);
-                            var ratioH = Math.abs(height/num_height);
+                            var ratio = Math.abs(num_height * par / num_width);
 
-                            top = top-(100*(ratioH-1)/2);
-                            if (Math.abs(top) + 100 > height) {
-                                top = top + (Math.abs(top)+100-height);
-                            }
+                            //attrs.top = top-Math.abs((fh-fw/par)/2) + 'px';
+                            top = top+100*(1-tar/par)/2
+                            left = left+100*(1-par/tar)/2;
+                            top = top>0?0:top;
+                            left = left>0?0:left;
+                            //attrs.left = left-Math.abs((fw-fh*par)/2) + 'px';
 
                             attrs.width = width+'%';
                             attrs.height = height+'%';
                             attrs.top = top+'%';
-                            //attrs.left = left+'%';
-                            attrs.left = left-(100*(ratioW-1)/2) + '%';
+                            attrs.left = left+'%';
                             console.log("###2-2 width:"+width+" height:"+height+ " left:"+attrs.left +" top:"+top);
-                        }
+                        }*/
                     }
                 } else {
                     if (tar > par) {
