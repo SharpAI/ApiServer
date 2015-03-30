@@ -145,6 +145,11 @@ if Meteor.isClient
         this.render 'reportPost'
         Session.set 'channel','reportPost'
         return
+    Router.route '/userProfile',()->
+      if Meteor.isCordova is true
+        this.render 'userProfile'
+        Session.set 'channel','userProfile'
+        return
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->
