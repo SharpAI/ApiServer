@@ -142,6 +142,7 @@ Meteor.startup(function(){
            email:'ChaseJarvis@ggmail.com',
            profile:{
                icon:'/follows/icon1.png',
+               desc:"留下美好的瞬间！就看我的！",
                fullname:'伊人'
            }
        });
@@ -329,6 +330,7 @@ Meteor.startup(function(){
            email:'RoccoDispirito@ggmail.com',
            profile:{
                icon:'/follows/icon2.png',
+               desc:"喜欢上了摄影，于是改变了自己的生活。",
                fullname:'文亭'
            }
        });
@@ -498,6 +500,7 @@ Meteor.startup(function(){
            email:'MattCrump@ggmail.com',
            profile:{
                icon:'/follows/icon3.png',
+               desc:"在感受中－－拍摄； 在拍摄中----感悟------",
                fullname:'秋雨梧桐'
            }
        });
@@ -653,6 +656,7 @@ Meteor.startup(function(){
            email:'VeronicaBelmont@ggmail.com',
            profile:{
                icon:'/follows/icon4.png',
+               desc:"用第三只眼睛看这五彩的世界.",
                fullname:'赋闲的快门'
            }
        });
@@ -806,6 +810,7 @@ Meteor.startup(function(){
            email:'PhilipBloom@ggmail.com',
            profile:{
                icon:'/follows/icon5.png',
+               desc:"用心灵感受，用镜头记忆！",
                fullname:'银羽飞舞'
            }
        });
@@ -903,6 +908,7 @@ Meteor.startup(function(){
            email:'DougMenuez@ggmail.com',
            profile:{
                icon:'/follows/icon6.png',
+               desc:"光影魅力无限 实话实说是我的个性 不断追求突破自我就是进步！",
                fullname:'天高神远'
            }
        });

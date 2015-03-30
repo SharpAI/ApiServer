@@ -6,8 +6,9 @@ if Meteor.isClient
     "click #addNewFriends":()->
       Session.set("Social.LevelOne.Menu",'addNewFriends')
     "click .userProfile":(e)->
-      Session.set('userProfileID',this.followerId)
-      Session.set("Social.LevelOne.Menu",'userProfile')
+      Session.set("ProfileUserId", @followerId)
+      Meteor.subscribe("userinfo",@followerId);
+      Session.set("Social.LevelOne.Menu", 'userProfile')
   Template.addNewFriends.helpers
     viewer:()->
       Viewers.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}})
@@ -27,10 +28,6 @@ if Meteor.isClient
   Template.addNewFriends.events
     "click #addNewFriends":()->
       Session.set("Social.LevelOne.Menu",'addNewFriends')
-    'click .eachViewer':(e)->
-      Session.set("ProfileForUserId", @userId)
-      Session.set("Social.LevelOne.Menu",'profileContent')
-      console.log "click on" + @userId
     'click .delFollow':(e)->
       FollowerId = Follower.findOne({
                      userId: Meteor.userId()

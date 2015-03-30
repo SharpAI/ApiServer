@@ -58,7 +58,7 @@ if(Meteor.isServer){
         return Follower.find({$or:[{userId:this.userId},{followerId:this.userId}]});
   });
   Meteor.publish("userinfo", function(id) {
-        return Meteor.users.find({_id: id},{fields: {'username':1,'email':1,'profile.fullname':1,'profile.icon':1, 'profile.dec':1}});
+        return Meteor.users.find({_id: id},{fields: {'username':1,'email':1,'profile.fullname':1,'profile.icon':1, 'profile.desc':1}});
   });
   Meteor.publish("comment", function(postId) {
         return Comment.find({postId: postId});
