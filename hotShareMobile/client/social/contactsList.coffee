@@ -6,7 +6,8 @@ if Meteor.isClient
     "click #addNewFriends":()->
       Session.set("Social.LevelOne.Menu",'addNewFriends')
     "click .userProfile":(e)->
-      Router.go('/userProfile')
+      Session.set('userProfileID',this.followerId)
+      Session.set("Social.LevelOne.Menu",'userProfile')
   Template.addNewFriends.helpers
     viewer:()->
       Viewers.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}})
