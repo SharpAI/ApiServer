@@ -3,18 +3,18 @@ if Meteor.isCordova
     if device.platform is 'iOS'
       console.log 'on IOS'
       @onNotificationAPN = (event)->
-        Meteor.subscribe('waitreadcount')
-        Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'))
-        Meteor.subscribe('feeds', Session.get('feedsitemsLimit'))
         if event.foreground is '0'
           # This push notification was received on background
           # When application open, there's need trigger local
           # notification again.
+          console.log ('Push notification when background');
+          window.refreshMainDataSource()
           return
         if event.alert
           PUB.toast event.alert
           window.plugin.notification.local.cancelAll()
           window.plugin.notification.local.add {message : event.alert}
+          window.refreshMainDataSource()
         #if event.sound
         #  snd = new Media(event.sound)
         #  snd.play()
