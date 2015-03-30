@@ -490,11 +490,28 @@ if(Meteor.isClient){
       var FEEDS_ITEMS_INCREMENT = 20;
       Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
       Session.setDefault('feedsitemsLimit', FEEDS_ITEMS_INCREMENT);
+      Session.set('followPostsCollection','');
+      Session.set('feedsCollection','');
+      window.refreshMainDataSource = function(){
+          Meteor.subscribe('waitreadcount');
+          Session.set('followPostsCollection','loading');
+          Session.set('feedsCollection','loading');
+          Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'),{onStop:function(error){
+                Session.set('followPostsCollection','error');
+              },onReady:function(){
+                console.log('Got followPosts collection data');
+                Session.set('followPostsCollection','loaded');
+          }});
+          Meteor.subscribe('feeds', Session.get('feedsitemsLimit'),{onStop:function(error){
+              Session.set('feedsCollection','error');
+          },onReady:function(){
+              console.log('Got feeds collection data');
+              Session.set('feedsCollection','loaded');
+          }});
+      }
       Deps.autorun(function() {
         if (Meteor.user()) {
-          Meteor.subscribe('waitreadcount');
-          Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'));
-          Meteor.subscribe('feeds', Session.get('feedsitemsLimit'));
+            window.refreshMainDataSource();
         }
       });
       Deps.autorun(function() {

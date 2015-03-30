@@ -29,6 +29,10 @@ if Meteor.isClient
       GetTime0(new Date() - created)
     moreResults:->
       !(Feeds.find().count() < Session.get("feedsitemsLimit"))
+    loading:->
+      Session.equals('feedsCollection','loading')
+    loadError:->
+      Session.equals('feedsCollection','error')
   Template.bell.events
     'click #follow': (event)->
        Router.go '/searchFollow'

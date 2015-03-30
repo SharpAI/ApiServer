@@ -30,6 +30,10 @@ if Meteor.isClient
       FollowPosts.find({followby:Meteor.userId()}, {sort: {createdAt: -1}})
     moreResults:->
       !(FollowPosts.find().count() < Session.get("followpostsitemsLimit"))
+    loading:->
+      Session.equals('followPostsCollection','loading')
+    loadError:->
+      Session.equals('followPostsCollection','error')
   Template.listPosts.events
     'click .mainImage': (event)->
       if isIOS
