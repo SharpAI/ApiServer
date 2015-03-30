@@ -15,6 +15,12 @@ Reports = new Meteor.Collection('reports');
 
 if(Meteor.isServer){
   Rnd = 0;
+  Meteor.publish('waitreadcount', function() {
+        return Meteor.users.find(
+            { _id : this.userId },
+            { field: {'profile.waitReadCount':1}}
+        );
+  });
   Meteor.publish("refcomments", function() {
         Max = RefComments.find().count()-8;
         Rnd = Rnd + 1;
@@ -486,13 +492,14 @@ if(Meteor.isClient){
       Session.setDefault('feedsitemsLimit', FEEDS_ITEMS_INCREMENT);
       Deps.autorun(function() {
         if (Meteor.user()) {
+          Meteor.subscribe('waitreadcount');
           Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'));
+          Meteor.subscribe('feeds', Session.get('feedsitemsLimit'));
         }
       });
       Deps.autorun(function() {
         if (Meteor.user()) {
             Meteor.setTimeout( function() {
-                Meteor.subscribe('feeds', Session.get('feedsitemsLimit'));
                 Meteor.subscribe("posts");
                 Meteor.subscribe("saveddrafts");
                 Meteor.subscribe("topicposts");

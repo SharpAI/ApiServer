@@ -27,6 +27,10 @@ if Meteor.isClient
   Template.addNewFriends.events
     "click #addNewFriends":()->
       Session.set("Social.LevelOne.Menu",'addNewFriends')
+    'click .eachViewer':(e)->
+      Session.set("ProfileForUserId", @userId)
+      Session.set("Social.LevelOne.Menu",'profileContent')
+      console.log "click on" + @userId
     'click .delFollow':(e)->
       FollowerId = Follower.findOne({
                      userId: Meteor.userId()
