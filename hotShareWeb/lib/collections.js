@@ -12,6 +12,7 @@ Viewers = new Meteor.Collection('viewers');
 RefComments = new Meteor.Collection("refcomments");
 ReComment = new Meteor.Collection('recomment');
 Reports = new Meteor.Collection('reports');
+Messages = new Meteor.Collection('messages');
 
 if(Meteor.isServer){
   Rnd = 0;
@@ -68,6 +69,9 @@ if(Meteor.isServer){
   });
   Meteor.publish("reports", function(postId) {
         return Reports.find({postId: postId});
+  });
+  Meteor.publish("messages", function(toUserId){
+        return Messages.find({userId: this.userId, toUserId: toUserId}, {sort: {createdAt: 1}});
   });
   Reports.allow({
     insert: function (userId, doc) {
@@ -213,7 +217,7 @@ if(Meteor.isServer){
                             title:modifier.$set.title,
                             addontitle:modifier.$set.addontitle,
                             mainImage: modifier.$set.mainImage,
-                            mainImageStyle:modifier.$set.mainImageStyle,
+                            mainImageStyle:modifier.$set.mainImageStyle
                           }
                         }
                     );
@@ -225,7 +229,7 @@ if(Meteor.isServer){
                     title:modifier.$set.title,
                     addontitle:modifier.$set.addontitle,
                     mainImage: modifier.$set.mainImage,
-                    mainImageStyle:modifier.$set.mainImageStyle,
+                    mainImageStyle:modifier.$set.mainImageStyle
                   }
                 }
             );
@@ -439,6 +443,11 @@ if(Meteor.isServer){
       if (doc._id === userId)
         return true;
       return false;
+    }
+  });
+  Messages.allow({
+    insert: function (userId, doc) {
+      return userId === doc.userId;
     }
   });
 

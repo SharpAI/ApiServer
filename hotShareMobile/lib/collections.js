@@ -494,7 +494,7 @@ if(Meteor.isClient){
       Meteor.subscribe("viewers",Session.get("postContent")._id);
     }
   });
-//  if(Meteor.isCordova){
+  if(Meteor.isCordova){
       var FOLLOWPOSTS_ITEMS_INCREMENT = 10;
       var FEEDS_ITEMS_INCREMENT = 20;
       Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
@@ -550,5 +550,5 @@ if(Meteor.isClient){
             TopicsSearch = new SearchSource('topics', topicsfields, options);
         }
       });
-//  }
+  }
 }
