@@ -5,6 +5,10 @@ if Meteor.isClient
   Template.contactsList.events
     "click #addNewFriends":()->
       Session.set("Social.LevelOne.Menu",'addNewFriends')
+    "click .userProfile":(e)->
+      Session.set("ProfileUserId", @followerId)
+      Meteor.subscribe("userinfo",@followerId);
+      Session.set("Social.LevelOne.Menu", 'userProfile')
   Template.addNewFriends.helpers
     viewer:()->
       Viewers.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}})
