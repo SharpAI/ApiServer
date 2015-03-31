@@ -3,6 +3,7 @@ if Meteor.isCordova
     if device.platform is 'iOS'
       console.log 'on IOS'
       @onNotificationAPN = (event)->
+        console.log('Got message');
         if event.foreground is '0'
           # This push notification was received on background
           # When application open, there's need trigger local
