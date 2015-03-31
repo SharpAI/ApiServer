@@ -1,42 +1,43 @@
 <template name="messageDialog">
   <div class="messageDialog">
     <div class="message">
-      <div class="time"><span>28天前</span></div>
-      <div class="left">
-        <div class="avatar"><img src="/webbg.jpg" /></div>
-        <div class="text">聊天内容...</div>
-        <div class="clear"></div>
-      </div>
-      <div class="right">
-        <div class="avatar"><img src="/userPicture.png" /></div>
-        <div class="text">聊天内容...</div>
-        <div class="clear"></div>
-      </div>
-      <div class="left">
-        <div class="avatar"><img src="/webbg.jpg" /></div>
-        <div class="text">腾讯副总裁程武：移动互联网打破艺术创作壁垒</div>
-        <div class="clear"></div>
-      </div>
-      <div class="left">
-        <div class="avatar"><img src="/webbg.jpg" /></div>
-        <div class="text"><img src="http://images.cnitblog.com/news/66372/201503/301437588429710.jpg" /></div>
-        <div class="clear"></div>
-      </div>
-      <div class="time"><span>1天前</span></div>
-      <div class="right">
-        <div class="avatar"><img src="/userPicture.png" /></div>
-        <div class="text">3 月 30 日，腾讯集团副总裁程武在 UP2015 腾讯互动娱乐年度发布会上发表致辞。程武表示，随着移动互联网的普及，人们参与创作的障碍将彻底消失，所有前沿的科技与前卫的艺术，都将走下精英阶层，不断降低身段，直到编织进日常生活的细节中，每个人都有机会将自己的所思、所想、所感、所悟，以最生动的方式分享给其他人。</div>
-        <div class="clear"></div>
-      </div>
+      {{#each messages}}
+        {{#if is_show_time createTime}}
+          <div class="time"><span>{{time_diff createTime}}</span></div>
+        {{/if}}
+        {{#if isMe this}}
+          <div class="right">
+            <div class="avatar"><img src="{{userIcon}}" /></div>
+            {{#if isImage this}}
+              <div class="text"><img src="{{image.smallImage}}" /></div>
+            {{/if}}
+            {{#if isText this}}
+              <div class="text">{{text}}</div>
+            {{/if}}
+            <div class="clear"></div>
+          </div>
+        {{else}}
+          <div class="left">
+            <div class="avatar"><img src="{{toUserIcon}}" /></div>
+            {{#if isImage this}}
+              <div class="text"><img src="{{image.smallImage}}" /></div>
+            {{/if}}
+            {{#if isText this}}
+              <div class="text">{{text}}</div>
+            {{/if}}
+            <div class="clear"></div>
+          </div>
+        {{/if}}
+      {{/each}}
     </div>
     {{> messageDialogInput}}
   </div>
 </template>
 <template name="messageDialogInput">
   <div class="messageDialogInput">
-    <form>
-      <div class="img"><i class="fa fa-picture-o"></i></div>
-      <div class="input"><input type="text" class="form-control" placeholder="说点什么..."></div>
+    <form class="message-dialog-input-form">
+      <div class="img"><i class="fa fa-picture-o image"></i></div>
+      <div class="input"><input id="text" name="text" type="text" class="form-control" placeholder="说点什么..."></div>
       <div class="send"><div class="submit">发送</div></div>
     </form>
   </div>

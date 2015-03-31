@@ -6,6 +6,5 @@ Template.userProfile.helpers
     Meteor.users.findOne {_id: Session.get("ProfileUserId")}
 Template.userProfile.events
   'click #sendChatMessage': ()->
-    Session.set("ProfileUserId", @followerId)
-    Meteor.subscribe("userinfo",@followerId);
+    Meteor.subscribe("userinfo",Session.get("ProfileUserId"));
     Session.set("Social.LevelOne.Menu", 'messageDialog')

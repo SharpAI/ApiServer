@@ -12,6 +12,7 @@ Viewers = new Meteor.Collection('viewers');
 RefComments = new Meteor.Collection("refcomments");
 ReComment = new Meteor.Collection('recomment');
 Reports = new Meteor.Collection('reports');
+Messages = new Meteor.Collection('messages');
 
 if(Meteor.isServer){
   Rnd = 0;
@@ -68,6 +69,9 @@ if(Meteor.isServer){
   });
   Meteor.publish("reports", function(postId) {
         return Reports.find({postId: postId});
+  });
+  Meteor.publish("messages", function(toUserId){
+        return Messages.find({userId: this.userId, toUserId: toUserId}, {sort: {createdAt: 1}});
   });
   Reports.allow({
     insert: function (userId, doc) {
@@ -441,6 +445,11 @@ if(Meteor.isServer){
       return false;
     }
   });
+  Messages.allow({
+    insert: function (userId, doc) {
+      return userId === doc.userId;
+    }
+  });
 
   SearchSource.defineSource('topics', function(searchText, options) {
     var options = {sort: {createdAt: -1}, limit: 20};
@@ -485,7 +494,7 @@ if(Meteor.isClient){
       Meteor.subscribe("viewers",Session.get("postContent")._id);
     }
   });
-  if(Meteor.isCordova){
+//  if(Meteor.isCordova){
       var FOLLOWPOSTS_ITEMS_INCREMENT = 10;
       var FEEDS_ITEMS_INCREMENT = 20;
       Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
@@ -541,5 +550,5 @@ if(Meteor.isClient){
             TopicsSearch = new SearchSource('topics', topicsfields, options);
         }
       });
-  }
+//  }
 }

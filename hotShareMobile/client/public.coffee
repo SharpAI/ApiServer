@@ -99,13 +99,13 @@
                 msg
                 (index)->
                     if index is 2
-                       callback
+                       callback()
                 '提示'
                 ['取消','确定']
             )
         catch error
             if confirm(msg)
-                callback
+                callback()
                 
 #       可以浏览图片，放大，缩小，下一张
 #        items 格式
