@@ -9,11 +9,13 @@
     <div class="chatContentLine"></div>
 <!--
     {{#each viewer}}
-        <div id="{{userId}}" class="eachViewer">
-          <img class="icon" src="{{userIcon}}" width="30" height="30">
-          <span class="userName">{{username}}</span>
-        </div>
-        <div class="chatContentLine"></div>
+      <div id="{{userId}}" class="eachChat">
+        <img class="icon" src="{{userIcon}}" width="40" height="40">
+        <span class="userName">{{username}}</span>
+        <span class="recentRecoveryTime">{{diff time}}</span>
+        <span class="chatPreview">{{chatContent}}</span>
+      </div>
+      <div class="chatContentLine"></div>
     {{/each}}
 -->
   </div>
