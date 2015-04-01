@@ -4,6 +4,12 @@ Template.userProfile.rendered=->
 Template.userProfile.helpers
   profile:->
     Meteor.users.findOne {_id: Session.get("ProfileUserId")}
+  isFollowed:()->
+    fcount = Follower.find({"followerId":Session.get("ProfileUserId")}).count()
+    if fcount > 0
+      true
+    else
+      false
 Template.userProfile.events
   'click #sendChatMessage': ()->
     Meteor.subscribe("userinfo",Session.get("ProfileUserId"));
