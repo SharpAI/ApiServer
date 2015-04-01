@@ -28,12 +28,25 @@
     -->
     <div class="showPostsLine"></div>
     {{#each follower}}
+      {{#if isViewer}}
         <div id="{{followerId}}" class="eachViewer userProfile">
           <!--列出浏览人-->
           <img class="icon" src="{{followerIcon}}" width="30" height="30">
           <span class="userName">{{followerName}}</span>
         </div>
         <div class="chatContentLine"></div>
+      {{/if}}
+    {{/each}}
+    <div class="showPostsLine"></div>
+    {{#each follower}}
+      {{#unless isViewer}}
+        <div id="{{followerId}}" class="eachViewer userProfile">
+          <!--列出浏览人-->
+          <img class="icon" src="{{followerIcon}}" width="30" height="30">
+          <span class="userName">{{followerName}}</span>
+        </div>
+        <div class="chatContentLine"></div>
+      {{/unless}}
     {{/each}}
   </div>
 </template>
@@ -41,6 +54,7 @@
 <template name="addNewFriends">
   <div class="addNewFriends">
   {{#each viewer}}
+    {{#unless isFollowed}}
     {{#unless isMyself}}
       <div id="{{userId}}" class="eachViewer userProfile">
         <!--列出浏览人-->
@@ -53,6 +67,7 @@
           {{/if}}
       </div>
       <div class="chatContentLine"></div>
+    {{/unless}}
     {{/unless}}
   {{/each}}
   </div>
