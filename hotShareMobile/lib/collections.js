@@ -64,8 +64,11 @@ if(Meteor.isServer){
   Meteor.publish("comment", function(postId) {
         return Comment.find({postId: postId});
   });
+  Meteor.publish("userViewers", function(userId) {
+        return Viewers.find({userId: userId});
+  });
   Meteor.publish("viewers", function(postId) {
-        return Viewers.find({postId: postId});
+        return Viewers.find({postId: postId}, {sort: {createdAt: -1}, limit:2});
   });
   Meteor.publish("reports", function(postId) {
         return Reports.find({postId: postId});

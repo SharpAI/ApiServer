@@ -6,8 +6,9 @@ if Meteor.isClient
     "click #addNewFriends":()->
       Session.set("Social.LevelOne.Menu",'addNewFriends')
     "click .userProfile":(e)->
-      Session.set("ProfileUserId", @followerId)
-      Meteor.subscribe("userinfo",@followerId);
+      Session.set("ProfileUserId", this.followerId)
+      Meteor.subscribe("userinfo", this.followerId)
+      Meteor.subscribe("userViewers", this.followerId)
       Session.set("Social.LevelOne.Menu", 'userProfile')
   Template.addNewFriends.helpers
     viewer:()->
