@@ -8,6 +8,7 @@ var CROP = (function () {
 			container: undefined,
 			img: undefined,
 			overlay: undefined,
+			shadow: undefined,
 			preview: undefined,
             callback: undefined
 		};
@@ -61,6 +62,7 @@ var CROP = (function () {
 				img,
 				container,
 				overlay,
+                shadow,
 				that = this;
 
 
@@ -102,16 +104,29 @@ var CROP = (function () {
 				zIndex: 6000
 			});
 
+            /*
+				Crop shadow
+			*/
+			shadow = $('<div />')
+				.attr({
+				class: 'crop-shadow'
+			})
+				.css({
+                top:0,
+                left:0
+			});
 
 			// Add Elements
 			container.append(overlay);
 			container.append(img);
+			container.append(shadow);
 			cropMain.append(container);
 
 			this.eles.ele = cropMain;
 			this.eles.container = container;
 			this.eles.img = img;
 			this.eles.overlay = overlay;
+			this.eles.shadow = shadow;
 			this.eles.preview = cropPreview;
 
 			// load image

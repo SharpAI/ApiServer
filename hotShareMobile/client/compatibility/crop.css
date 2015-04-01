@@ -40,6 +40,13 @@ div[data-mask='true'] .crop-container {
 .cropMain .crop-container {
 	overflow:hidden
 }
+.cropMain .crop-shadow {
+    position:absolute;
+    width:100%;
+    height:100%;
+    box-shadow:0 0 0 2000px rgba(255, 255, 255, .85);
+}
+/*
 .cropMain .crop-container:after {
 	content:"";
 	position:absolute;
@@ -49,9 +56,10 @@ div[data-mask='true'] .crop-container {
 	height:100%;
 	z-index:5999;
 
-	/* this box shadow is the mask effect */
+	 this box shadow is the mask effect 
 	box-shadow:0 0 0 2000px rgba(255, 255, 255, .85);
 }
+*/
 
 
 /*---------------------------------------------------------*/
