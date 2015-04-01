@@ -27,5 +27,4 @@ Template.userProfile.events
     Session.set("Social.LevelOne.Menu", 'messageDialog')
   'click .postImages ul li':(e)->
     postId = e.currentTarget.id
-    $(window).scrollTop(0)
-    Router.go '/posts/'+postId
+    Router.go '/redirect/'+postId
