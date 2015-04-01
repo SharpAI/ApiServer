@@ -4,5 +4,5 @@
 .registerFollow .user_head i{font-size: 38px; position: absolute;top: 30px;right: 20px;}
 .registerFollow .follow_user{font-size: 19px;}
 .registerFollow .container{border:none}
-.registerFollow .container #continue{width: 100%;text-align: center;border: none;border-radius: 50px;padding: 5px;background-color: #00c4ff;font-size: 18px;}
+.registerFollow .container #continue{width: 100%;text-align: center;border: none;border-radius: 8px;padding: 5px;background-color: #00c4ff;font-size: 18px;}
 .registerFollow #continue{margin-top: 8px;}
