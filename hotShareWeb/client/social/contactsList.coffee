@@ -2,6 +2,12 @@ if Meteor.isClient
   Template.contactsList.helpers
     follower:()->
       Follower.find({"userId":Meteor.userId()},{sort: {createdAt: -1}})
+    isViewer:()->
+      Meteor.subscribe("userViewers", this.followerId)
+      if Viewers.find("userId":this.followerId).count()>0
+        true
+      else
+        false
   Template.contactsList.events
     "click #addNewFriends":()->
       Session.set("Social.LevelOne.Menu",'addNewFriends')
