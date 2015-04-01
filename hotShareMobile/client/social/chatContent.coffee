@@ -10,6 +10,8 @@ if Meteor.isClient
       MsgSession.find({userId: Meteor.userId()}, {sort: {updateTime: -1}})
     isShowWaitRead: (waitRead)->
       waitRead > 0
+    withChat: ()->
+      withChat
   Template.chatContent.events
     'click .eachChat': (e)->
       Meteor.subscribe("userinfo",Session.get("ProfileUserId"));

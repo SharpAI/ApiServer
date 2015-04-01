@@ -2,6 +2,8 @@ Template.userProfile.rendered=->
   $('.userProfile').css('min-height',$(window).height()-90)
   $('.viewPostImages ul li').css('height',$(window).width()*0.168)
 Template.userProfile.helpers
+  withChat:->
+    withChat
   profile:->
     Meteor.users.findOne {_id: Session.get("ProfileUserId")}
   isFollowed:()->
@@ -33,4 +35,5 @@ Template.userProfile.events
     Session.set("Social.LevelOne.Menu", 'messageDialog')
   'click .postImages ul li':(e)->
     postId = e.currentTarget.id
+    Session.set("Social.LevelOne.Menu",'contactsList')
     Router.go '/redirect/'+postId
