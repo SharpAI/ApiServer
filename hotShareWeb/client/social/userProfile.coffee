@@ -21,6 +21,11 @@ Template.userProfile.helpers
         vDoc = Viewers.find({userId:Session.get("ProfileUserId")},{sort: {createdAt: -1}}).fetch()[i]
         Meteor.subscribe("publicPosts",vDoc.postId)
         Posts.find({_id:vDoc.postId}).fetch()[0]
+    compareViewsCount:(value)->
+      if (Viewers.find({userId:Session.get("ProfileUserId")}).count() > value)
+        true
+      else
+        false
 Template.userProfile.events
   'click #sendChatMessage': ()->
     Meteor.subscribe("userinfo",Session.get("ProfileUserId"));

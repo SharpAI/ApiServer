@@ -12,7 +12,7 @@
         <img class="icon" src="{{profile.profile.icon}}" width='70' height='70'>
         {{#if profile.profile.fullname}}
           <span class="userName">{{profile.profile.fullname}}
-            <img src="/female.png" width='20' height='20'>
+            <!--<img src="/female.png" width='20' height='20'>-->
           </span>
         {{else}}
           <span class="userName">{{profile.username}}
@@ -26,6 +26,7 @@
       <span class="postLeft">最近浏览的故事</span>
       <span class="postRight">更多</span>
     </div>
+    {{#if compareViewsCount 0}}
     <div class="postImages">
       <ul>
         {{#each viewItems}}
@@ -45,6 +46,7 @@
       {{/each}}
       </ul>
     </div>
+    {{/if}}
     <div class="showPostsLine"></div>
 <!--
     <div class="post">
