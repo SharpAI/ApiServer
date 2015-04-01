@@ -67,11 +67,14 @@ if Meteor.isClient
               height: imgHeight,
               mask: false,
               zoom: {steps: 0.01,min: 1,max: 2},
+              callback: ()->
+                Session.set 'imgSizeW',$("#default"+event.currentTarget.id+" .crop-img").width()
+                Session.set 'imgSizeH',$("#default"+event.currentTarget.id+" .crop-img").height()
             }
-            Meteor.setTimeout ->
-              Session.set 'imgSizeW',$("#default"+event.currentTarget.id+" .crop-img").width()
-              Session.set 'imgSizeH',$("#default"+event.currentTarget.id+" .crop-img").height()
-            ,200
+            #Meteor.setTimeout ->
+            #  Session.set 'imgSizeW',$("#default"+event.currentTarget.id+" .crop-img").width()
+            #  Session.set 'imgSizeH',$("#default"+event.currentTarget.id+" .crop-img").height()
+            #,200
 
     #init
     this.find('.content')._uihooks = {
@@ -362,6 +365,11 @@ if Meteor.isClient
                 height: imgHeight,
                 mask: false,
                 zoom: {steps: 0.01,min: 1,max: 3,value: scale},
+                callback: ()->
+                  console.log("crop-img width="+$("#default"+node.id+" .crop-img").width()+", scale="+scale)
+                  console.log("crop-img width="+$("#default"+node.id+" .crop-img").height())
+                  Session.set 'imgSizeW',$("#default"+node.id+" .crop-img").width()/scale
+                  Session.set 'imgSizeH',$("#default"+node.id+" .crop-img").height()/scale
               }
               cropimg = $(containerId).find('.crop-overlay')[0]
               hammertime = new Hammer(cropimg)
@@ -401,12 +409,12 @@ if Meteor.isClient
                     #zoom.attr('style', style);
               )
 
-              Meteor.setTimeout ->
-                console.log("crop-img width="+$("#default"+node.id+" .crop-img").width()+", scale="+scale)
-                console.log("crop-img width="+$("#default"+node.id+" .crop-img").height())
-                Session.set 'imgSizeW',$("#default"+node.id+" .crop-img").width()/scale
-                Session.set 'imgSizeH',$("#default"+node.id+" .crop-img").height()/scale
-              ,300
+              #Meteor.setTimeout ->
+              #  console.log("crop-img width="+$("#default"+node.id+" .crop-img").width()+", scale="+scale)
+              #  console.log("crop-img width="+$("#default"+node.id+" .crop-img").height())
+              #  Session.set 'imgSizeW',$("#default"+node.id+" .crop-img").width()/scale
+              #  Session.set 'imgSizeH',$("#default"+node.id+" .crop-img").height()/scale
+              #,300
             return
       return
 

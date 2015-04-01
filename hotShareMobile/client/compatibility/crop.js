@@ -8,7 +8,8 @@ var CROP = (function () {
 			container: undefined,
 			img: undefined,
 			overlay: undefined,
-			preview: undefined
+			preview: undefined,
+            callback: undefined
 		};
 
 		this.img = undefined;
@@ -44,6 +45,9 @@ var CROP = (function () {
 			if (ele.style) {
 				this.imgInfo.style = ele.style;
 			}
+            if (ele.callback) {
+                this.eles.callback = ele.callback;
+            }
 
 
 			/*
@@ -250,6 +254,9 @@ var CROP = (function () {
 			this.eles.img.removeAttr('style').attr('src', url)
 				.load(function () {
 				that.imgSize();
+                if (that.eles.callback) {
+                    that.eles.callback();
+                }
 			});
 		};
 
