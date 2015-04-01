@@ -26,7 +26,7 @@
         <span class="userName">公众号</span>
       </div>
     -->
-    <div class="showPostsLine"></div>
+    <div class="showPostsLine">看过本文的朋友</div>
     {{#each follower}}
       {{#if isViewer}}
         <div id="{{followerId}}" class="eachViewer userProfile">
@@ -37,7 +37,7 @@
         <div class="chatContentLine"></div>
       {{/if}}
     {{/each}}
-    <div class="showPostsLine"></div>
+    <div class="showPostsLine">朋友列表</div>
     {{#each follower}}
       {{#unless isViewer}}
         <div id="{{followerId}}" class="eachViewer userProfile">
