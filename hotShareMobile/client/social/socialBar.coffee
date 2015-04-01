@@ -22,3 +22,5 @@ if Meteor.isClient
         "focusColor"
       else
         ""
+    isWaitRead: ()->
+      MsgSession.find({userId: Meteor.userId(), waitRead: {$gt: 0}}).count() > 0

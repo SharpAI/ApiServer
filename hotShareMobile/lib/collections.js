@@ -13,6 +13,8 @@ RefComments = new Meteor.Collection("refcomments");
 ReComment = new Meteor.Collection('recomment');
 Reports = new Meteor.Collection('reports');
 Messages = new Meteor.Collection('messages');
+MsgSession = new Meteor.Collection('msgsession');
+MsgGroup = new Meteor.Collection('msggroup');
 
 if(Meteor.isServer){
   Rnd = 0;
@@ -74,7 +76,22 @@ if(Meteor.isServer){
         return Reports.find({postId: postId});
   });
   Meteor.publish("messages", function(toUserId){
-        return Messages.find({userId: this.userId, toUserId: toUserId}, {sort: {createdAt: 1}});
+        return Messages.find(
+          {
+            $or: [
+              // 我发给ta的
+              {userId: this.userId, toUserId: toUserId}, 
+              {userId: this.userId, "toUsers.userId": toUserId}, 
+              // ta发给我的
+              {userId: toUserId, toUserId: this.userId},
+              {userId: toUserId, "toUsers.userId": this.userId}
+            ]
+          }, 
+          {sort: {createTime: 1}}
+        );
+  });
+  Meteor.publish("msgSession", function(){
+        return MsgSession.find({userId: this.userId}, {sort: {updateTime: -1}});
   });
   Reports.allow({
     insert: function (userId, doc) {
@@ -450,6 +467,117 @@ if(Meteor.isServer){
   });
   Messages.allow({
     insert: function (userId, doc) {
+      // 处理群消息的接收对象
+      if(userId === doc.userId){
+        if(doc.sesType === 'groupChat' || doc.sesType === 'chatNotify'){
+          var group = MsgGroup.findOne(doc.toGroupId);
+          doc.toUsers = [];
+          for(var item in group.users){
+            doc.toUsers.push(
+              {
+                userId: item.userId,
+                userName: item.userName,
+                userIcon: item.userIcon
+              }
+            );
+          }
+        }
+      }
+      
+      // 处理会话
+      if(userId === doc.userId){
+        var toUser = {};
+        
+        // 群消息或群通知
+        if(doc.sesType === 'groupChat' || doc.sesType === 'chatNotify'){
+          var group = MsgGroup.findOne(doc.toGroupId);
+          toUser = {
+            userId: group._id,
+            userName: group.name,
+            userIcon: '/usersChat.jpg'
+          };
+        }else{
+          var user = Meteor.users.findOne(doc.toUserId); 
+          toUser = {
+            userId: user._id,
+            userName: user.profile.fullname || user.username,
+            userIcon: user.profile.icon || '/userPicture.png'
+          };
+        }
+        
+        //sep1:我的会话
+        MsgSession.upsert(
+          {userId: userId, toUserId: toUser.userId},
+          {
+            $set: {
+              userId: userId,
+              userName: doc.userName,
+              userIcon: doc.userIcon,
+              toUserId: toUser.userId,
+              toUserName: toUser.userName,
+              toUserIcon: toUser.userIcon,
+              text: doc.text || '[图片]',
+              isRead: true,
+              readTime: new Date(),
+              waitRead: 0,
+              msgType: doc.msgType,
+              sesType: doc.sesType,
+              updateTime: new Date()
+            }
+          }
+        );
+        
+        //sep2:ta的会话
+        // 群消息或群通知
+        if(doc.sesType === 'groupChat' || doc.sesType === 'chatNotify'){
+          for(var item in doc.toUsers){
+            MsgSession.upsert(
+              {userId: item.userId, toUserId: userId},
+              {
+                $set: {
+                  userId: item.userId,
+                  userName: item.userName,
+                  userIcon: item.userIcon,
+                  toUserId: userId,
+                  toUserName: doc.userName,
+                  toUserIcon: doc.userIcon,
+                  text: doc.text || '[图片]',
+                  isRead: false,
+                  msgType: doc.msgType,
+                  sesType: doc.sesType,
+                  updateTime: new Date()
+                },
+                $inc: {
+                  waitRead: 1
+                }
+              }
+            );
+          }
+        }else{
+          MsgSession.upsert(
+            {userId: doc.toUserId, toUserId: userId},
+            {
+              $set: {
+                userId: toUser.userId,
+                userName: toUser.userName,
+                userIcon: toUser.userIcon,
+                toUserId: userId,
+                toUserName: doc.userName,
+                toUserIcon: doc.userIcon,
+                text: doc.text || '[图片]',
+                isRead: false,
+                msgType: doc.msgType,
+                sesType: doc.sesType,
+                updateTime: new Date()
+              },
+              $inc: {
+                waitRead: 1
+              }
+            }
+          );
+        }
+      }
+
       return userId === doc.userId;
     }
   });
@@ -551,6 +679,9 @@ if(Meteor.isClient){
             FollowUsersSearch = new SearchSource('followusers', fields, options);
             var topicsfields = ['text'];
             TopicsSearch = new SearchSource('topics', topicsfields, options);
+          
+          // 消息会话、最近联系人
+          Meteor.subscribe("msgSession");
         }
       });
   }

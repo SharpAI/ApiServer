@@ -39,3 +39,19 @@ if Meteor.isServer
           acceccURI: 'http://oss.tiegushi.com/'+filename
         }
         policy
+  
+      'readMessage': (toUserId)->
+        MsgSession.update({userId: this.userId, toUserId: toUserId}, {$set: {isRead: true, readTime: new Date(), waitRead: 0}})
+        Messages.update(
+          {
+            userId: toUserId
+            toUserId: this.userId,
+            $or: [{toUserId: toUserId}, {toGroupId: toUserId}]
+          }
+          {
+            $set: {
+              isRead: true
+              readTime: new Date()
+            }
+          }
+        )

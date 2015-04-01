@@ -1,12 +1,17 @@
 <template name="chatContent">
   <div class="chatContent">
-    <div id="" class="eachChat">
-      <img class="icon" src="/follows/icon2.png" width="40" height="40">
-      <span class="userName">凉风</span>
-      <span class="recentRecoveryTime">11:01</span>
-      <span class="chatPreview">尊敬的申请人，近期有部分申请人在预约取证时</span>
-    </div>
-    <div class="chatContentLine"></div>
+    {{#each msgSession}}
+      <div id="{{toUserId}}" class="eachChat">
+        <img class="icon" src="{{toUserIcon}}" width="40" height="40">
+        <span class="userName">{{toUserName}}</span>
+        <span class="recentRecoveryTime">{{time_diff updateTime}}</span>
+        <span class="chatPreview">{{text}}</span>
+        {{#if isShowWaitRead waitRead}}
+          <span class="waitRead">{{waitRead}}</span>
+        {{/if}}
+      </div>
+      <div class="chatContentLine"></div>
+    {{/each}}
 <!--
     {{#each viewer}}
       <div id="{{userId}}" class="eachChat">

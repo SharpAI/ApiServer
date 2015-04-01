@@ -29,6 +29,7 @@ Template.userProfile.helpers
 Template.userProfile.events
   'click #sendChatMessage': ()->
     Meteor.subscribe("userinfo",Session.get("ProfileUserId"));
+    Session.set("messageDialog_to_userId", Session.get("ProfileUserId"))
     Session.set("Social.LevelOne.Menu", 'messageDialog')
   'click .postImages ul li':(e)->
     postId = e.currentTarget.id

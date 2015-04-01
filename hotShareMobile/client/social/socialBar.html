@@ -9,6 +9,9 @@
           <div class="chatBtn {{isFocus 'chatContent'}}">
             <i class="fa fa-comment"></i>
             <div>聊天</div>
+            {{#if isWaitRead}}
+              <div class="wait_read"></div>
+            {{/if}}
           </div>
           <div class="contactsBtn {{isFocus 'contactsList'}}">
             <i class="fa fa-list"></i>
