@@ -403,6 +403,7 @@ if (Meteor.isCordova){
                 if (callback) {
                     console.log("startThreadUploadFile: suc");
                     clearInterval(multiThreadsIntervalHandle);
+                    multiThreadsInfo = [];
                     callback('Suc');
                 }
                 return;
