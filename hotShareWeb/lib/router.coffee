@@ -1,4 +1,8 @@
 if Meteor.isClient
+  Router.route '/redirect/:_id',()->
+    Session.set('nextPostID',this.params._id)
+    this.render 'redirect'
+    return
   Router.route '/posts/:_id', {
       waitOn: ->
         Meteor.subscribe("publicPosts",this.params._id)

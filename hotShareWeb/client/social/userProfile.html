@@ -23,54 +23,50 @@
     </div>
     <div class="showPostsLine"></div>
     <div class="post">
-      <span class="postLeft"> 个故事</span>
+      <span class="postLeft">最近浏览的故事</span>
       <span class="postRight">更多</span>
     </div>
     <div class="postImages">
       <ul>
-    <!--          {{#each postItems}}-->
-        <li id="">
-          <div class="postMainImage" style="background-image:url(/webbg.jpg)"></div>
+        {{#each viewItems}}
+        <li id="{{_id}}">
+          <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
           <h4 class="title">
-              罗浮宫游记
+             {{title}} 
           </h4>
+<!--
           <h6 class="addontitle">
               罗浮宫游记
           </h6>
           <span class="postInfo"><i class="fa fa-eye"></i> 55</span>
           <span class="postInfo"><i class="fa fa-comment"></i> 55</span>
+-->
         </li>
-        <li id="">
-          <div class="postMainImage" style="background-image:url(/webbg.jpg)"></div>
-          <h4 class="title">
-              吃的哲学
-          </h4>
-          <h6 class="addontitle">
-            &nbsp;
-          </h6>
-          <span class="postInfo"><i class="fa fa-eye"></i> 55</span>
-          <span class="postInfo"><i class="fa fa-comment"></i> 55</span>
-        </li>
-    <!--          {{/each}}-->
+      {{/each}}
       </ul>
     </div>
     <div class="showPostsLine"></div>
+<!--
     <div class="post">
       <span class="postLeft">最近浏览的故事</span>
       <span class="postRight">更多</span>
     </div>
     <div class="viewPostImages">
       <ul>
+-->
     <!--          {{#each postItems}}-->
+<!--
         <li id="" style="background-image:url(/webbg.jpg)"></li>
         <li id="" style="background-image:url(/webbg.jpg)"></li>
         <li id="" style="background-image:url(/webbg.jpg)"></li>
         <li id="" style="background-image:url(/webbg.jpg)"></li>
         <li id="" style="background-image:url(/webbg.jpg)"></li>
+-->
     <!--          {{/each}}-->
+<!--
       </ul>
     </div>
-
+-->
     {{#if  isFollowed}}
       <div id="sendChatMessage">发消息</div>
     {{else}}
