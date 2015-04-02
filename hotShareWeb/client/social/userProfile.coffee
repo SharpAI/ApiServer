@@ -28,6 +28,12 @@ Template.userProfile.helpers
       true
     else
       false
+  isSuggested:()->
+    Meteor.subscribe("userFeeds", Session.get("ProfileUserId"),Session.get("postContent")._id)
+    if Feeds.find({followby: Session.get("ProfileUserId"),postId: Session.get("postContent")._id}).count()>0
+      true
+    else
+      false
 Template.userProfile.events
   'click #suggestCurrentPost': ()->
     username = Meteor.user().username
@@ -50,7 +56,7 @@ Template.userProfile.events
     }
   'click #sendChatMessage': ()->
     Meteor.subscribe("userinfo",Session.get("ProfileUserId"));
-    Session.set("messageDialog_to_userId", Session.get("ProfileUserId"))
+    Session.set("messageDialog_to", {id: Session.get("ProfileUserId"), type: 'user'})
     Session.set("Social.LevelOne.Menu", 'messageDialog')
   'click .postImages ul li':(e)->
     postId = e.currentTarget.id

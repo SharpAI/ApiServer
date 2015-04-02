@@ -71,17 +71,16 @@
       </ul>
     </div>
 -->
-    <div id="suggestCurrentPost">推荐本文</div>
-    {{#if  isFollowed}}
-<<<<<<< HEAD
+    {{#if isSuggested}}
+      <div id="suggestedCurrentPost">已推荐</div>
+    {{else}}
       <div id="suggestCurrentPost">推荐本文</div>
-=======
->>>>>>> 增加推荐帖子功能
+    {{/if}}
+    {{#if isFollowed}}
       {{#if withChat}}
         <div id="sendChatMessage">发消息</div>
       {{/if}}
     {{else}}
-      <div id="suggestCurrentPost">推荐本文</div>
       <div id="addToContactList">添加</div>
     {{/if}}
   </div>

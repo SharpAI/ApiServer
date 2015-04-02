@@ -11,9 +11,6 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu",'me')
   Template.socialContent.rendered=->
     $('.chatBoxContent').css('min-height',$(window).height()-90)
-    
-    if Session.get('Social.LevelOne.Menu') is 'messageDialog'
-      Session.set("Social.LevelOne.Menu", 'chatContent')
   Template.socialContent.helpers
     whichOne : ->
       Session.get('Social.LevelOne.Menu')
