@@ -3,7 +3,7 @@ if Meteor.isClient
     follower:()->
       Follower.find({"userId":Meteor.userId()},{sort: {createdAt: -1}})
     isViewer:()->
-      Meteor.subscribe("userViewers", this.followerId)
+      Meteor.subscribe("userViewers", Session.get("postContent")._id,this.followerId)
       if Viewers.find("userId":this.followerId).count()>0
         true
       else
@@ -33,12 +33,12 @@ if Meteor.isClient
       else
         false
   Template.addNewFriends.events
-    "click .userProfile":(e)->
-      Session.set("ProfileUserId", @followerId)
-      Meteor.subscribe("userinfo",@followerId);
-      Session.set("Social.LevelOne.Menu", 'userProfile')
-    "click #addNewFriends":()->
-      Session.set("Social.LevelOne.Menu",'addNewFriends')
+#    "click .userProfile":(e)->
+#      Session.set("ProfileUserId", @followerId)
+#      Meteor.subscribe("userinfo",@followerId);
+#      Session.set("Social.LevelOne.Menu", 'userProfile')
+#    "click #addNewFriends":()->
+#      Session.set("Social.LevelOne.Menu",'addNewFriends')
     'click .delFollow':(e)->
       FollowerId = Follower.findOne({
                      userId: Meteor.userId()
