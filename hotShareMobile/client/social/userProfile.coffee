@@ -22,7 +22,7 @@ Template.userProfile.helpers
     for i in [0..value]
       vDoc = Viewers.find({userId:Session.get("ProfileUserId")},{sort: {createdAt: -1}}).fetch()[i]
       Meteor.subscribe("publicPosts",vDoc.postId)
-      Posts.find({_id:vDoc.postId}).fetch()[0]
+      Posts.findOne({_id:vDoc.postId})
   compareViewsCount:(value)->
     if (Viewers.find({userId:Session.get("ProfileUserId")}).count() > value)
       true

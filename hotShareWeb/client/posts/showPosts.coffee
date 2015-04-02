@@ -122,6 +122,8 @@ if Meteor.isClient
     #  PUB.toast("您的手机版本过低，部分图片可能产生变形。");
 
   Template.showPosts.helpers
+    withAfterPostIntroduce: ()->
+      withAfterPostIntroduce
     withSocialBar: ()->
       withSocialBar
     isCordova:()->
