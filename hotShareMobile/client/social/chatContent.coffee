@@ -2,6 +2,8 @@ if Meteor.isClient
   Template.chatContent.rendered=->
     #Meteor.subscribe("msgSession")
   Template.chatContent.helpers
+    withChat: ()->
+      withChat
     time_diff: (time)->
       now = new Date()
       showTime = GetTime0(now - time)

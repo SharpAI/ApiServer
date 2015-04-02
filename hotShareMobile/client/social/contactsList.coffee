@@ -35,16 +35,16 @@ if Meteor.isClient
       else
         false
   Template.addNewFriends.events
-#    "click .userProfile":(e)->
-#      Session.set("ProfileUserId", @followerId)
-#      Meteor.subscribe("userinfo",@followerId);
-#      Session.set("Social.LevelOne.Menu", 'userProfile')
-#    "click #addNewFriends":()->
-#      Session.set("Social.LevelOne.Menu",'addNewFriends')
+    "click .userProfile":(e)->
+      Session.set("ProfileUserId", this.followerId)
+      Meteor.subscribe("userinfo",this.followerId);
+      Session.set("Social.LevelOne.Menu", 'userProfile')
+    "click #addNewFriends":()->
+      Session.set("Social.LevelOne.Menu",'addNewFriends')
     'click .delFollow':(e)->
       FollowerId = Follower.findOne({
                      userId: Meteor.userId()
-                     followerId: @userId
+                     followerId: this.userId
                  })._id
       Follower.remove(FollowerId)
     'click .addFollow':(e)->
@@ -58,9 +58,9 @@ if Meteor.isClient
         userName: username
         userIcon: Meteor.user().profile.icon
         userDesc: Meteor.user().profile.desc
-        followerId: @userId
+        followerId: this.userId
         #这里存放fullname
-        followerName: @username
-        followerIcon: @userIcon
+        followerName: this.username
+        followerIcon: this.userIcon
         createAt: new Date()
     }
