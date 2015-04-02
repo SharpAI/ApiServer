@@ -31,6 +31,7 @@ if Meteor.isClient
     $('.mainImage').css('height',$(window).height()*0.55)
     postContent = Session.get("postContent")
     browseTimes = 0
+    Session.set("Social.LevelOne.Menu",'contactsList')
     if (postContent.browse != undefined)
       browseTimes = postContent.browse + 1
     else

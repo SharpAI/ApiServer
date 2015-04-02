@@ -60,5 +60,4 @@ Template.userProfile.events
     Session.set("Social.LevelOne.Menu", 'messageDialog')
   'click .postImages ul li':(e)->
     postId = e.currentTarget.id
-    Session.set("Social.LevelOne.Menu",'contactsList')
     Router.go '/redirect/'+postId
