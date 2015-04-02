@@ -72,6 +72,9 @@ if(Meteor.isServer){
   Meteor.publish("userViewers", function(postId,userId) {
         return Viewers.find({postId: postId,userId: userId}, {sort: {createdAt: -1}, limit:2});
   });
+  Meteor.publish("recentPostsViewByUser", function(userId) {
+        return Viewers.find({userId: userId}, {sort: {createdAt: -1}, limit:3});
+  });
   Meteor.publish("viewers", function(postId) {
         return Viewers.find({postId: postId}, {sort: {createdAt: -1}});
   });

@@ -14,9 +14,9 @@ Template.userProfile.helpers
       false
   viewItems:()->
     value = 0
-    count = Viewers.find({userId:Session.get("ProfileUserId")}).count()
-    if count >=2
-      value = 1
+    count = Viewers.find({userId:Session.get("ProfileUserId")},{sort: {createdAt: -1}, limit:3}).count()
+    if count >=3
+      value = 2
     else
       value = count-1
     for i in [0..value]
@@ -24,7 +24,7 @@ Template.userProfile.helpers
       Meteor.subscribe("publicPosts",vDoc.postId)
       Posts.findOne({_id:vDoc.postId})
   compareViewsCount:(value)->
-    if (Viewers.find({userId:Session.get("ProfileUserId")}).count() > value)
+    if (Viewers.find({userId:Session.get("ProfileUserId")}, {sort: {createdAt: -1}, limit:3}).count() > value)
       true
     else
       false

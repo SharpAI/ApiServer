@@ -14,7 +14,7 @@ if Meteor.isClient
     "click .userProfile":(e)->
       Session.set("ProfileUserId", this.followerId)
       Meteor.subscribe("userinfo", this.followerId)
-      Meteor.subscribe("userViewers", this.followerId)
+      Meteor.subscribe("recentPostsViewByUser", this.followerId)
       Session.set("Social.LevelOne.Menu", 'userProfile')
     'click .messageGroup': ()->
       Session.set("Social.LevelOne.Menu", 'messageGroup')      
