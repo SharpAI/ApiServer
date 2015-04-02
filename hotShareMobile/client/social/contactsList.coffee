@@ -37,7 +37,8 @@ if Meteor.isClient
   Template.addNewFriends.events
     "click .userProfile":(e)->
       Session.set("ProfileUserId", this.followerId)
-      Meteor.subscribe("userinfo",this.followerId);
+      Meteor.subscribe("userinfo",this.followerId)
+      Meteor.subscribe("recentPostsViewByUser",this.followerId)
       Session.set("Social.LevelOne.Menu", 'userProfile')
     "click #addNewFriends":()->
       Session.set("Social.LevelOne.Menu",'addNewFriends')
