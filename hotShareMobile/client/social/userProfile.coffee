@@ -29,6 +29,25 @@ Template.userProfile.helpers
     else
       false
 Template.userProfile.events
+  'click #suggestCurrentPost': ()->
+    username = Meteor.user().username
+    if Meteor.user().profile.fullname
+      username = Meteor.user().profile.fullname
+    Feeds.insert {
+      owner:Session.get("postContent").owner
+      ownerName:Session.get("postContent").ownerName
+      ownerIcon:Session.get("postContent").ownerIcon
+      eventType:'recommand'
+      postId:Session.get("postContent")._id
+      postTitle:Session.get("postContent").title
+      mainImage:Session.get("postContent").mainImage
+      createdAt:new Date()
+      heart:Session.get("postContent").heart
+      retweet:Session.get("postContent").retweet
+      comment:Session.get("postContent").comment
+      followby: Session.get("ProfileUserId")
+      recommander:username
+    }
   'click #sendChatMessage': ()->
     Meteor.subscribe("userinfo",Session.get("ProfileUserId"));
     Session.set("messageDialog_to_userId", Session.get("ProfileUserId"))

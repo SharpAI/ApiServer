@@ -15,7 +15,7 @@
         {{#if isReComment eventType}}
           <a href="/posts/{{postId}}" class="contentList">
             <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
-            <div id="{{postId}}" class="alarm">{{ownerName}} 回复了您参与讨论的故事 {{postTitle}}</div>
+            <div id="{{postId}}" class="alarm">{{ownerName}} 回复了您参与讨论的故事 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
           </a>
           <div class="line">
@@ -25,7 +25,7 @@
         {{#if isComment eventType}}
           <a href="/posts/{{postId}}" class="contentList">
             <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
-            <div id="{{postId}}" class="alarm">{{ownerName}} 回复了您的故事 {{postTitle}}</div>
+            <div id="{{postId}}" class="alarm">{{ownerName}} 回复了您的故事 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
           </a>
           <div class="line">
@@ -35,7 +35,17 @@
         {{#if selfPosted eventType}}
           <a href="/posts/{{postId}}" class="contentList">
             <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
-            <div id="{{postId}}" class="alarm">{{ownerName}} 发布了新故事 {{postTitle}}</div>
+            <div id="{{postId}}" class="alarm">{{ownerName}} 发布了新故事 《{{postTitle}}》</div>
+            <div class="createAt">{{time_diff createdAt}}</div>
+          </a>
+          <div class="line">
+            <span></span>
+          </div>
+        {{/if}}
+        {{#if isRecommand eventType}}
+          <a href="/posts/{{postId}}" class="contentList">
+            <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+            <div id="{{postId}}" class="alarm">{{recommander}} 推荐您一个新故事 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
           </a>
           <div class="line">

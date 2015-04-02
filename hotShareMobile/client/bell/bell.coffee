@@ -19,6 +19,8 @@ if Meteor.isClient
   Template.bell.helpers
     eventFeeds:->
       Feeds.find({}, {sort: {createdAt: -1}})
+    isRecommand:(eventType)->
+      eventType is 'recommand'
     isReComment:(eventType)->
       eventType is 'recomment'
     isComment:(eventType)->

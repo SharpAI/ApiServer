@@ -351,6 +351,25 @@ if(Meteor.isServer){
       return doc.userId === userId;
     }
   });
+  Feeds.allow({
+    insert: function (userId, doc) {
+      userData = Meteor.users.findOne({_id:userId})
+      userName = userData.username;
+      if(userData.profile.fullname !== null && userData.profile.fullname !== '')
+        userName = userData.profile.fullname;
+      if(Feeds.findOne({recommander:userName,postId:doc.postId,followby:doc.followby}))
+      {
+        return false;
+      }
+      if(userName !== doc.recommander)
+      {
+        return false;
+      }
+      if(doc.postId !== null && doc.followby !== null && doc.recommander !== null)
+        pushnotification("recommand",doc,doc.followby);
+      return (doc.postId !== null && doc.followby !== null && doc.recommander !== null)
+    }
+  });
   Viewers.allow({
     insert: function (userId, doc) {
       if(doc.username==null)

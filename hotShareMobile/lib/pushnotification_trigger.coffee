@@ -25,6 +25,13 @@ if Meteor.isServer
         postId: doc._id
       }
       toUserId = doc.owner
+    else if type == "recommand"
+      content = doc.recommander + '推荐您阅读' + doc.ownerName + '的故事\n《' + doc.postTitle + '》'
+      extras = {
+        type: "recommand"
+        postId: doc.postId
+      }
+      toUserId = doc.followby
     else if type == "newpost"
       content = doc.ownerName + '发布了新故事:\n《' + doc.title + '》'
       extras = {
