@@ -78,23 +78,65 @@ if(Meteor.isServer){
   Meteor.publish("reports", function(postId) {
         return Reports.find({postId: postId});
   });
-  Meteor.publish("messages", function(toUserId){
-        return Messages.find(
-          {
-            $or: [
-              // 我发给ta的
-              {userId: this.userId, toUserId: toUserId}, 
-              {userId: this.userId, "toUsers.userId": toUserId}, 
-              // ta发给我的
-              {userId: toUserId, toUserId: this.userId},
-              {userId: toUserId, "toUsers.userId": this.userId}
-            ]
-          }, 
-          {sort: {createTime: 1}}
-        );
+  Meteor.publish("messages", function(to){
+        var filter = {};
+        to = to || {};
+        
+        switch(to.type){
+          case "user":
+            filter = {
+              $or: [
+                // 我发给ta的
+                {userId: this.userId, toUserId: to.id}, 
+                // ta发给我的
+                {userId: to.id, toUserId: this.userId}
+              ]
+            };
+            break;
+          case "group":
+            var group = MsgGroup.findOne(to.id);
+            filter = {
+              $or: [
+                // 我发的群消息
+                {userId: this.userId, toGroupId: group._id}, 
+                // 给我的群消息
+                {'toUsers.userId': this.userId, toGroupId: group._id}
+              ]
+            };
+            break;
+          case "session":
+            var session = MsgSession.findOne(to.id);
+            if(session.sesType === 'singleChat'){
+              filter = {
+                $or: [
+                  // 我发给ta的
+                  {userId: this.userId, toUserId: session.toUserId}, 
+                  // ta发给我的
+                  {userId: session.toUserId, toUserId: this.userId}
+                ]
+              };
+            }else{
+              filter = {
+                $or: [
+                  // 我发的群消息
+                  {userId: this.userId, toGroupId: session.toGroupId}, 
+                  // 给我的群消息
+                  {'toUsers.userId': this.userId, toGroupId: session.toGroupId}
+                ]
+              };
+            }
+            break;
+          default:
+            return [];
+        }
+    
+        return Messages.find(filter, {sort: {createTime: 1}});
   });
   Meteor.publish("msgSession", function(){
         return MsgSession.find({userId: this.userId}, {sort: {updateTime: -1}});
+  });
+  Meteor.publish("msgGroup", function(){
+        return MsgGroup.find({"users.userId": this.userId});
   });
   Reports.allow({
     insert: function (userId, doc) {
@@ -494,12 +536,12 @@ if(Meteor.isServer){
         if(doc.sesType === 'groupChat' || doc.sesType === 'chatNotify'){
           var group = MsgGroup.findOne(doc.toGroupId);
           doc.toUsers = [];
-          for(var item in group.users){
+          for(var i=0;i<group.users.length;i++){
             doc.toUsers.push(
               {
-                userId: item.userId,
-                userName: item.userName,
-                userIcon: item.userIcon
+                userId: group.users[i].userId,
+                userName: group.users[i].userName,
+                userIcon: group.users[i].userIcon
               }
             );
           }
@@ -514,9 +556,9 @@ if(Meteor.isServer){
         if(doc.sesType === 'groupChat' || doc.sesType === 'chatNotify'){
           var group = MsgGroup.findOne(doc.toGroupId);
           toUser = {
-            userId: group._id,
-            userName: group.name,
-            userIcon: '/usersChat.jpg'
+            groupId: group._id,
+            groupName: group.name,
+            groupIcon: '/usersChat.jpg'
           };
         }else{
           var user = Meteor.users.findOne(doc.toUserId); 
@@ -528,52 +570,78 @@ if(Meteor.isServer){
         }
         
         //sep1:我的会话
-        MsgSession.upsert(
-          {userId: userId, toUserId: toUser.userId},
-          {
-            $set: {
-              userId: userId,
-              userName: doc.userName,
-              userIcon: doc.userIcon,
-              toUserId: toUser.userId,
-              toUserName: toUser.userName,
-              toUserIcon: toUser.userIcon,
-              text: doc.text || '[图片]',
-              isRead: true,
-              readTime: new Date(),
-              waitRead: 0,
-              msgType: doc.msgType,
-              sesType: doc.sesType,
-              updateTime: new Date()
+        // 群消息或群通知
+        if(doc.sesType === 'groupChat' || doc.sesType === 'chatNotify'){
+          MsgSession.upsert(
+            {userId: userId, toGroupId: toUser.groupId},
+            {
+              $set: {
+                userId: userId,
+                userName: doc.userName,
+                userIcon: doc.userIcon,
+                toGroupId: toUser.groupId,
+                toGroupName: toUser.groupName,
+                toGroupIcon: toUser.groupIcon,
+                text: doc.text || '[图片]',
+                isRead: true,
+                readTime: new Date(),
+                waitRead: 0,
+                msgType: doc.msgType,
+                sesType: doc.sesType,
+                updateTime: new Date()
+              }
             }
-          }
-        );
+          );       
+        }else{
+          MsgSession.upsert(
+            {userId: userId, toUserId: toUser.userId},
+            {
+              $set: {
+                userId: userId,
+                userName: doc.userName,
+                userIcon: doc.userIcon,
+                toUserId: toUser.userId,
+                toUserName: toUser.userName,
+                toUserIcon: toUser.userIcon,
+                text: doc.text || '[图片]',
+                isRead: true,
+                readTime: new Date(),
+                waitRead: 0,
+                msgType: doc.msgType,
+                sesType: doc.sesType,
+                updateTime: new Date()
+              }
+            }
+          );
+        }
         
         //sep2:ta的会话
         // 群消息或群通知
         if(doc.sesType === 'groupChat' || doc.sesType === 'chatNotify'){
-          for(var item in doc.toUsers){
-            MsgSession.upsert(
-              {userId: item.userId, toUserId: userId},
-              {
-                $set: {
-                  userId: item.userId,
-                  userName: item.userName,
-                  userIcon: item.userIcon,
-                  toUserId: userId,
-                  toUserName: doc.userName,
-                  toUserIcon: doc.userIcon,
-                  text: doc.text || '[图片]',
-                  isRead: false,
-                  msgType: doc.msgType,
-                  sesType: doc.sesType,
-                  updateTime: new Date()
-                },
-                $inc: {
-                  waitRead: 1
+          for(var i=0;i<doc.toUsers.length;i++){
+            if(doc.toUsers[i].userId != userId){
+              MsgSession.upsert(
+                {userId: doc.toUsers[i].userId, toGroupId: toUser.groupId},
+                {
+                  $set: {
+                    userId: doc.toUsers[i].userId,
+                    userName: doc.toUsers[i].userName,
+                    userIcon: doc.toUsers[i].userIcon,
+                    toGroupId: toUser.groupId,
+                    toGroupName: toUser.groupName,
+                    toGroupIcon: toUser.groupIcon,
+                    text: doc.text || '[图片]',
+                    isRead: false,
+                    msgType: doc.msgType,
+                    sesType: doc.sesType,
+                    updateTime: new Date()
+                  },
+                  $inc: {
+                    waitRead: 1
+                  }
                 }
-              }
-            );
+              );
+            }
           }
         }else{
           MsgSession.upsert(
@@ -601,6 +669,11 @@ if(Meteor.isServer){
       }
 
       return userId === doc.userId;
+    }
+  });
+  MsgGroup.allow({
+    insert: function (userId, doc) {
+      return doc.create.userId === userId;
     }
   });
 
@@ -704,6 +777,8 @@ if(Meteor.isClient){
           
           // 消息会话、最近联系人
           Meteor.subscribe("msgSession");
+          //群信息
+          Meteor.subscribe("msgGroup");
         }
       });
   }

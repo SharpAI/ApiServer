@@ -1,0 +1,66 @@
+<template name="messageGroup">
+  <div class="chatContent">    
+    <div id="addNewFriends" class="eachViewer create">
+      <img class="icon" src="/usersChat.jpg" width="30" height="30">
+      <span class="userName">发起群聊</span>
+    </div>
+    
+<!--
+    <div class="showPostsLine"></div>
+    <div id="" class="eachViewer userProfile">
+      <img class="icon" src="/userPlus.png" width="30" height="30">
+      <span class="userName">群名称</span>
+    </div>
+    <div class="chatContentLine"></div>
+-->
+  </div>
+</template>
+
+<template name="messageGroupCreate">
+  <div class="contactsList">
+    <div class="head" style="display:block;">
+      <div class="socialTitle">
+        <div class="left-btn">取消</div>
+        <span class="Contacts">选择好友</span>
+        {{#if exist}}
+        <div class="right-btn">确定</div>
+        {{else}}
+        <div class="right-btn disable">确定</div>
+        {{/if}}
+      </div>
+    </div>
+    
+    {{#each follower}}
+      <div id="{{followerId}}" class="eachViewer userProfile">
+        <img class="icon" src="{{followerIcon}}" width="30" height="30">
+        <span class="userName">{{followerName}}</span>
+        <span class="choose">
+          {{#if isSelected followerId}}
+          <i class="fa fa-dot-circle-o" style="color:#A2E65B;"></i>
+          {{else}}
+          <i class="fa fa-circle-o"></i>
+          {{/if}}
+        </span>
+      </div>
+      <div class="chatContentLine"></div>
+    {{/each}}
+  </div>
+</template>
+
+<template name="messageGroupCreateName">
+  <div class="contactsList">
+    <div class="head" style="display:block;">
+      <div class="socialTitle">
+        <div class="left-btn">&lt;联系人</div>
+        <span class="Contacts">群名称</span>
+        <div class="right-btn">确定</div>
+      </div>
+    </div>
+    
+    <div class="messageGroupCreateName">
+      <form class="message-group-create-name-form">
+        <input id="text" name="text" type="text" class="form-control" placeholder="群的名称，15个字符以内.">
+      </form>
+    </div>
+  </div>
+</template>

@@ -35,9 +35,17 @@ msgsession = {
   userId: <String>
   userName: <String>
   userIcon: <String>
+  
+  // 一对一聊天
   toUserId: <String>
   toUserName: <String>
   toUserIcon: <String>
+  
+  // 群聊天
+  toGroupId: <String>
+  toGroupName: <String>
+  toGroupIcon: <String>
+  
   text: <String>
   isRead: <Boolean>
   readTime: [Date]

@@ -1,4 +1,11 @@
 <template name="messageDialog">
+  <div class="contactsList"><div class="head" style="display:block;">
+    <div class="socialTitle">
+      <div class="left-btn">&lt;聊天</div>
+      <span class="Contacts">@test</span>
+    </div>
+  </div></div>
+  
   <div class="messageDialog">
     <div class="message">
       {{#each messages}}
@@ -17,16 +24,24 @@
             <div class="clear"></div>
           </div>
         {{else}}
-          <div class="left">
-            <div class="avatar"><img src="{{toUserIcon}}" /></div>
-            {{#if isImage this}}
-              <div class="text"><img src="{{image.smallImage}}" /></div>
-            {{/if}}
-            {{#if isText this}}
-              <div class="text">{{text}}</div>
-            {{/if}}
-            <div class="clear"></div>
-          </div>
+          {{#if is_chatNotify sesType}}
+            <div class="time"><span>{{text}}</span></div>
+          {{else}}
+            <div class="left">
+              {{#if is_groupChat sesType}}
+                <div class="avatar"><img src="{{userIcon}}" /></div>
+              {{else}}
+                <div class="avatar"><img src="{{toUserIcon}}" /></div>
+              {{/if}}
+              {{#if isImage this}}
+                <div class="text"><img src="{{image.smallImage}}" /></div>
+              {{/if}}
+              {{#if isText this}}
+                <div class="text">{{text}}</div>
+              {{/if}}
+              <div class="clear"></div>
+            </div>
+          {{/if}}
         {{/if}}
       {{/each}}
     </div>

@@ -16,6 +16,8 @@ if Meteor.isClient
       Meteor.subscribe("userinfo", this.followerId)
       Meteor.subscribe("userViewers", this.followerId)
       Session.set("Social.LevelOne.Menu", 'userProfile')
+    'click .messageGroup': ()->
+      Session.set("Social.LevelOne.Menu", 'messageGroup')      
   Template.addNewFriends.helpers
     viewer:()->
       Viewers.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}})

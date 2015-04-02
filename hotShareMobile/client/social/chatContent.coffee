@@ -10,10 +10,10 @@ if Meteor.isClient
       MsgSession.find({userId: Meteor.userId()}, {sort: {updateTime: -1}})
     isShowWaitRead: (waitRead)->
       waitRead > 0
-    withChat: ()->
-      withChat
+    isGroup: (sesType)->
+      sesType is 'groupChat' or sesType is 'chatNotify'
   Template.chatContent.events
     'click .eachChat': (e)->
       Meteor.subscribe("userinfo",Session.get("ProfileUserId"));
-      Session.set("messageDialog_to_userId", e.currentTarget.id)
+      Session.set("messageDialog_to", {id: e.currentTarget.id, type: 'session'})
       Session.set("Social.LevelOne.Menu", 'messageDialog')

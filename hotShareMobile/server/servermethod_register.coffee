@@ -40,13 +40,18 @@ if Meteor.isServer
         }
         policy
   
-      'readMessage': (toUserId)->
-        MsgSession.update({userId: this.userId, toUserId: toUserId}, {$set: {isRead: true, readTime: new Date(), waitRead: 0}})
+      'readMessage': (sessionId)->
+        session = MsgSession.findOne(sessionId)
+        MsgSession.update({_id: sessionId}, {$set: {isRead: true, readTime: new Date(), waitRead: 0}})
         Messages.update(
           {
-            userId: toUserId
-            toUserId: this.userId,
-            $or: [{toUserId: toUserId}, {toGroupId: toUserId}]
+            $or: [
+              # 发给我的一对一消息
+              {userId: session.userId, toUserId: this.userId}
+            
+              # 发给我的群消息
+              {toGroupId: session.toGroupId, 'toUsers.userId': this.userId}
+            ]
           }
           {
             $set: {
