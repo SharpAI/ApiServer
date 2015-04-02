@@ -96,10 +96,12 @@ if Meteor.isClient
       if(st + $(window).height()) is window.getDocHeight()
         $('.showPosts .head').fadeIn 300
         if withSocialBar
-          $('.contactsList .head').css('display', 'block')
+          $('.contactsList .head').fadeIn 300
+          $('.userProfile .head').fadeIn 300
           $('.showPostsFooter').fadeOut 300
         else
-          $('.contactsList .head').css('display', 'none')
+          $('.contactsList .head').fadeOut 300
+          $('.userProfile .head').fadeOut 300
           $('.showPostsFooter').fadeIn 300
         window.lastScroll = st
         return
@@ -109,11 +111,13 @@ if Meteor.isClient
       #Determines up-or-down scrolling
       if st > window.lastScroll
         window.popedup = false
-        $('.contactsList .head').css('display', 'block')
+        $('.contactsList .head').fadeIn 300
+        $('.userProfile .head').fadeIn 300
         $('.showPosts .head').fadeOut 300
         $('.showPostsFooter').fadeOut 300
       else
-        $('.contactsList .head').css('display', 'none')
+        $('.contactsList .head').fadeOut 300
+        $('.userProfile .head').fadeOut 300
         $('.showPosts .head').fadeIn 300
         $('.showPostsFooter').fadeIn 300
       #Updates scroll position
