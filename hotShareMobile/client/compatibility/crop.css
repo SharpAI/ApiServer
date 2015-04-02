@@ -45,6 +45,8 @@ div[data-mask='true'] .crop-container {
     width:100%;
     height:100%;
     box-shadow:0 0 0 2000px rgba(255, 255, 255, .85);
+    -moz-box-shadow:0 0 0 2000px rgba(255, 255, 255, .85);
+    -webkit-box-shadow:0 0 0 2000px rgba(255, 255, 255, .85);
 }
 /*
 .cropMain .crop-container:after {
