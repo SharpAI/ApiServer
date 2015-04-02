@@ -28,6 +28,12 @@ Template.userProfile.helpers
       true
     else
       false
+  isSuggested:()->
+    Meteor.subscribe("userFeeds", Session.get("ProfileUserId"),Session.get("postContent")._id)
+    if Feeds.find({followby: Session.get("ProfileUserId"),postId: Session.get("postContent")._id}).count()>0
+      true
+    else
+      false
 Template.userProfile.events
   'click #suggestCurrentPost': ()->
     username = Meteor.user().username

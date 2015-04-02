@@ -54,6 +54,9 @@ if(Meteor.isServer){
   Meteor.publish("feeds", function(limit) {
         return Feeds.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
   });
+  Meteor.publish("userFeeds", function(followId,postId) {
+        return Feeds.find({followby: followId,postId: postId,eventType:'recommand'}, {sort: {createdAt: -1}, limit:2});
+  });
   Meteor.publish("follows", function() {
         return Follows.find({}, {sort: { index: 1 }} );
   });
