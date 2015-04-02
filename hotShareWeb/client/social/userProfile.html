@@ -26,27 +26,29 @@
       <span class="postLeft">最近浏览的故事</span>
       <!--<span class="postRight">更多</span>-->
     </div>
-      <div class="postImages">
-        <ul>
-          {{#each viewItems}}
-            {{#if _id}}
-              <li id="{{_id}}">
-                <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
-                <h4 class="title">
-                   {{title}}
-                </h4>
-      <!--
-                <h6 class="addontitle">
-                    罗浮宫游记
-                </h6>
-                <span class="postInfo"><i class="fa fa-eye"></i> 55</span>
-                <span class="postInfo"><i class="fa fa-comment"></i> 55</span>
-      -->
-              </li>
-            {{/if}}
-        {{/each}}
-        </ul>
-      </div>
+      {{#if compareViewsCount 0}}
+        <div class="postImages">
+          <ul>
+            {{#each viewItems}}
+              {{#if _id}}
+                <li id="{{_id}}">
+                  <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
+                  <h4 class="title">
+                     {{title}}
+                  </h4>
+        <!--
+                  <h6 class="addontitle">
+                      罗浮宫游记
+                  </h6>
+                  <span class="postInfo"><i class="fa fa-eye"></i> 55</span>
+                  <span class="postInfo"><i class="fa fa-comment"></i> 55</span>
+        -->
+                </li>
+              {{/if}}
+          {{/each}}
+          </ul>
+        </div>
+      {{/if}}
     <div class="showPostsLine"></div>
 <!--
     <div class="post">
