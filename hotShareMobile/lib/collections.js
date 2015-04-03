@@ -15,6 +15,7 @@ Reports = new Meteor.Collection('reports');
 Messages = new Meteor.Collection('messages');
 MsgSession = new Meteor.Collection('msgsession');
 MsgGroup = new Meteor.Collection('msggroup');
+Meets = new Meteor.Collection('meets');
 
 if(Meteor.isServer){
   Rnd = 0;
@@ -421,6 +422,44 @@ if(Meteor.isServer){
         return false;
       if( Viewers.findOne({postId:doc.postId,userId:doc.userId}))
         return false;
+      if(doc.username !== null) {
+        try{
+          var views=Viewers.find({postId:doc.postId});
+          if(views.count()>0){
+            views.forEach(function(data){
+              var meetItemOne = Meets.findOne({me:doc.userId,ta:data.userId});
+              if(meetItemOne){
+                var meetCount = meetItemOne.count;
+                if(meetCount === undefined || isNaN(meetCount))
+                  meetCount = 0;
+                Meets.update({me:doc.userId,ta:data.userId},{$set:{count:meetCount+1}});
+              }else{
+                Meets.insert({
+                  me:doc.userId,
+                  ta:data.userId,
+                  count:1
+                });
+              }
+
+              var meetItemTwo = Meets.findOne({me:data.userId,ta:doc.userId});
+              if(meetItemTwo){
+                var meetCount = meetItemTwo.count;
+                if(meetCount === undefined || isNaN(meetCount))
+                  meetCount = 0;
+                Meets.update({me:data.userId,ta:doc.userId},{$set:{count:meetCount+1}});
+              }else{
+                Meets.insert({
+                  me:data.userId,
+                  ta:doc.userId,
+                  count:1
+                });
+              }
+
+            });
+          }
+        }
+        catch(error){}
+      }
       return doc.username !== null;
     },
     remove: function (userId, doc) {
