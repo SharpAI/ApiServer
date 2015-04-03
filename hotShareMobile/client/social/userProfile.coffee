@@ -30,7 +30,7 @@ Template.userProfile.helpers
       false
   isSuggested:()->
     Meteor.subscribe("userFeeds", Session.get("ProfileUserId"),Session.get("postContent")._id)
-    if Feeds.find({followby: Session.get("ProfileUserId"),postId: Session.get("postContent")._id}).count()>0
+    if Feeds.find({followby: Session.get("ProfileUserId"),postId: Session.get("postContent")._id},recommanderId:Meteor.userId()).count()>0
       true
     else
       false
@@ -53,6 +53,7 @@ Template.userProfile.events
       comment:Session.get("postContent").comment
       followby: Session.get("ProfileUserId")
       recommander:username
+      recommanderId:Meteor.userId()
     }
   'click #sendChatMessage': ()->
     Meteor.subscribe("userinfo",Session.get("ProfileUserId"));

@@ -59,7 +59,7 @@ if(Meteor.isServer){
         return Feeds.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
   });
   Meteor.publish("userFeeds", function(followId,postId) {
-        return Feeds.find({followby: followId,postId: postId,eventType:'recommand'}, {sort: {createdAt: -1}, limit:2});
+        return Feeds.find({followby: followId,postId: postId,eventType:'recommand',recommanderId:this.userId}, {sort: {createdAt: -1}, limit:2});
   });
   Meteor.publish("follows", function() {
         return Follows.find({}, {sort: { index: 1 }} );
@@ -409,7 +409,7 @@ if(Meteor.isServer){
       userName = userData.username;
       if(userData.profile.fullname !== null && userData.profile.fullname !== '')
         userName = userData.profile.fullname;
-      if(Feeds.findOne({recommander:userName,postId:doc.postId,followby:doc.followby}))
+      if(Feeds.findOne({recommanderId:userId,recommander:userName,postId:doc.postId,followby:doc.followby}))
       {
         return false;
       }
