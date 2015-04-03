@@ -63,7 +63,14 @@
           {{#if isFollowed}}
             <div id="{{userId}}" class="follow delFollow"><span class="fa fa-check"></span><i class="fa fa-user"></i></div>
           {{else}}
-            <div id="{{userId}}" class="follow addFollow"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
+            <div id="{{userId}}" class="follow addFollow">
+              <span class="fa fa-plus">
+                {{#if is_meet_count meet_count}}
+                <div class="meet_count">{{meet_count}}</div>
+                {{/if}}
+              </span>
+              <i class="fa fa-user"></i>
+            </div>
           {{/if}}
       </div>
       <div class="chatContentLine"></div>
