@@ -143,6 +143,12 @@ if Meteor.isClient
       else
         true
   Template.searchPeopleAndTopic.events
+    'focus #search-box':->
+      console.log("#search get focus");
+      $('#footer').css('display',"none")
+    'blur #search-box':->
+      console.log("#search lost focus");
+      $('#footer').css('display',"")
     'click .topicTitle': (event)->
        Session.set "topicId", @_id
        Session.set "topicTitle", "#"+ @text
