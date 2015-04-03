@@ -28,6 +28,12 @@ if Meteor.isClient
        FollowUsersSearch.search text
     )
   Template.searchFollow.events
+    'focus #search-box':->
+      console.log("#search get focus");
+      $('#footer').css('display',"none")
+    'blur #search-box':->
+      console.log("#search lost focus");
+      $('#footer').css('display',"")
     'click .back': (event)->
        history.back()
     'click .delFollow':(e)->
