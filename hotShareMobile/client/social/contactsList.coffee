@@ -29,7 +29,7 @@ if Meteor.isClient
         meetCount = 0
       meetCount
     viewer:()->
-      Viewers.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}})
+      Viewers.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}, limit:21})
     isMyself:()->
       this.userId is Meteor.userId()
     isSelf:(follow)->
