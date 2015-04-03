@@ -44,7 +44,7 @@ if Meteor.isClient
       else
         false
   Template.addNewFriends.events
-    "click .userProfile":(e)->
+    "click .newUserProfile":(e)->
       Session.set("ProfileUserId", this.userId)
       Meteor.subscribe("userinfo",this.userId)
       Meteor.subscribe("recentPostsViewByUser",this.userId)
