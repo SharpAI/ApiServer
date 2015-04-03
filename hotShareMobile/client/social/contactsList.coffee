@@ -4,7 +4,7 @@ if Meteor.isClient
       Follower.find({"userId":Meteor.userId()},{sort: {createdAt: -1}})
     isViewer:()->
       Meteor.subscribe("userViewers", Session.get("postContent")._id,this.followerId)
-      if Viewers.find("userId":this.followerId).count()>0
+      if Viewers.find({"userId":this.followerId,postId:Session.get("postContent")._id}).count()>0
         true
       else
         false
