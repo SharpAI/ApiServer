@@ -4,6 +4,14 @@ _dep = new Tracker.Dependency
 Template.messageGroup.events
   'click .create': ()->
     Session.set("Social.LevelOne.Menu", 'messageGroupCreate')
+  'click .group': (e)->
+    Session.set("messageDialog_to", {id: e.currentTarget.id, type: 'group'})
+    Session.set("Social.LevelOne.Menu", 'messageDialog')
+  'click .left-btn': ()->
+    Session.set("Social.LevelOne.Menu", 'contactsList')
+Template.messageGroup.helpers
+  groups: ()->
+    MsgGroup.find({"users.userId": Meteor.userId()})
     
 Template.messageGroupCreate.created=->
   _selectedFollower = []

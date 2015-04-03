@@ -1,18 +1,25 @@
 <template name="messageGroup">
+  <div class="contactsList"><div class="head" style="display:block;">
+    <div class="socialTitle">
+      <div class="left-btn">&lt;联系人</div>
+      <span class="Contacts">群聊</span>
+    </div>
+    </div></div>
+  
   <div class="chatContent">    
     <div id="addNewFriends" class="eachViewer create">
-      <img class="icon" src="/usersChat.jpg" width="30" height="30">
+      <img class="icon" src="/userPlus.png" width="30" height="30">
       <span class="userName">发起群聊</span>
     </div>
-    
-<!--
     <div class="showPostsLine"></div>
-    <div id="" class="eachViewer userProfile">
-      <img class="icon" src="/userPlus.png" width="30" height="30">
-      <span class="userName">群名称</span>
-    </div>
-    <div class="chatContentLine"></div>
--->
+    
+    {{#each groups}}
+      <div id="{{_id}}" class="eachViewer group">
+        <img class="icon" src="/usersChat.jpg" width="30" height="30">
+        <span class="userName">{{name}}</span>
+      </div>
+      <div class="chatContentLine"></div>
+    {{/each}}
   </div>
 </template>
 

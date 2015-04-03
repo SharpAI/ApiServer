@@ -21,6 +21,23 @@ Template.messageDialog.rendered=->
   )
   
 Template.messageDialog.helpers
+  title: ()->
+    to = Session.get("messageDialog_to") || {}
+    switch to.type
+      when "user"
+        user = Meteor.users.findOne(to.id)
+        return "@" + (user.profile.fullname || user.username)
+      when "group"
+        group = MsgGroup.findOne(to.id)
+        return "@" + group.name
+      when "session"
+        session = MsgSession.findOne(to.id)
+        if session.sesType is 'singleChat'
+          return "@" + session.toUserName
+        else
+          return "@" + session.toGroupName
+      else
+        '正在聊天'
   isMe: (obj)->
     obj.userId is Meteor.userId() and obj.sesType isnt 'chatNotify'
     
@@ -32,8 +49,8 @@ Template.messageDialog.helpers
     
   messages: ()->
     to = Session.get("messageDialog_to") || {}
-    if to.type is 'session'
-      Meteor.call('readMessage', to.id)
+#    if to.type is 'session'
+#      Meteor.call('readMessage', to.id)
       
     filter = {}
     switch to.type
@@ -100,6 +117,8 @@ Template.messageDialog.helpers
     
 Template.messageDialog.events
   'click .left-btn': ()->
+    to = Session.get("messageDialog_to") || {}
+    Meteor.call('readMessage', to)
     Session.set("Social.LevelOne.Menu", 'chatContent')
 
 Template.messageDialogInput.events
@@ -178,8 +197,7 @@ Template.messageDialogInput.events
               else
                 e.target.text.value = ''
                 document.body.scrollTop = document.body.scrollHeight
-                if to.type is 'session'
-                  Meteor.call('readMessage', to.id)
+                Meteor.call('readMessage', to)
           )
     )
     
@@ -260,8 +278,7 @@ Template.messageDialogInput.events
         else
           e.target.text.value = ''
           document.body.scrollTop = document.body.scrollHeight
-          if to.type is 'session'
-            Meteor.call('readMessage', to.id)
+          Meteor.call('readMessage', to)
     )
     
     false

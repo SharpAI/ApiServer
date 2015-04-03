@@ -40,23 +40,19 @@ if Meteor.isServer
         }
         policy
   
-      'readMessage': (sessionId)->
-        session = MsgSession.findOne(sessionId)
-        MsgSession.update({_id: sessionId}, {$set: {isRead: true, readTime: new Date(), waitRead: 0}})
-        Messages.update(
-          {
-            $or: [
-              # 发给我的一对一消息
-              {userId: session.userId, toUserId: this.userId}
-            
-              # 发给我的群消息
-              {toGroupId: session.toGroupId, 'toUsers.userId': this.userId}
-            ]
-          }
-          {
-            $set: {
-              isRead: true
-              readTime: new Date()
-            }
-          }
-        )
+      'readMessage': (to)->
+        switch to.type
+          when "user"
+            MsgSession.update({userId: this.userId, toUserId: to.id}, {$set: {isRead: true, readTime: new Date(), waitRead: 0}})
+            Messages.update({userId: to.id, toUserId: this.userId},$set: {isRead: true, readTime: new Date()})
+          when "group"
+            MsgSession.update({userId: this.userId, toGroupId: to.id}, {$set: {isRead: true, readTime: new Date(), waitRead: 0}})
+            Messages.update({'toUsers.userId': this.userId, toGroupId: to.id},$set: {isRead: true, readTime: new Date()})
+          when "session"
+            session = MsgSession.findOne(to.id)
+            if session.sesType is 'singleChat'
+              MsgSession.update({userId: this.userId, toUserId: session.toUserId}, {$set: {isRead: true, readTime: new Date(), waitRead: 0}})
+              Messages.update({userId: session.toUserId, toUserId: this.userId},$set: {isRead: true, readTime: new Date()})
+            else
+              MsgSession.update({userId: this.userId, toGroupId: session.toGroupId}, {$set: {isRead: true, readTime: new Date(), waitRead: 0}})
+              Messages.update({'toUsers.userId': this.userId, toGroupId: session.toGroupId},$set: {isRead: true, readTime: new Date()})
