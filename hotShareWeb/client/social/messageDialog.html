@@ -2,7 +2,7 @@
   <div class="contactsList"><div class="head" style="display:block;">
     <div class="socialTitle">
       <div class="left-btn">&lt;聊天</div>
-      <span class="Contacts">@test</span>
+      <span class="Contacts">{{title}}</span>
     </div>
   </div></div>
   
@@ -30,14 +30,21 @@
             <div class="left">
               {{#if is_groupChat sesType}}
                 <div class="avatar"><img src="{{userIcon}}" /></div>
+                <div class="name">{{userName}}</div>
+                {{#if isImage this}}
+                  <div class="text group"><img src="{{image.smallImage}}" /></div>
+                {{/if}}
+                {{#if isText this}}
+                  <div class="text group">{{text}}</div>
+                {{/if}}
               {{else}}
                 <div class="avatar"><img src="{{toUserIcon}}" /></div>
-              {{/if}}
-              {{#if isImage this}}
-                <div class="text"><img src="{{image.smallImage}}" /></div>
-              {{/if}}
-              {{#if isText this}}
-                <div class="text">{{text}}</div>
+                {{#if isImage this}}
+                  <div class="text"><img src="{{image.smallImage}}" /></div>
+                {{/if}}
+                {{#if isText this}}
+                  <div class="text">{{text}}</div>
+                {{/if}}
               {{/if}}
               <div class="clear"></div>
             </div>

@@ -4,7 +4,7 @@
     background-color: #EBEBEB;
     .time{
       text-align: center; margin: 0 auto;
-      span{background-color: #CECECE; color: #fff; padding: 3px 5px;border-radius: 5px;}
+      span{width: auto;display:inline-block; margin: 0 auto; background-color: #CECECE; color: #fff; padding: 3px 5px;border-radius: 5px;}
     }
     > div{
       position: relative; padding: 10px 10px;
@@ -16,7 +16,10 @@
     }
     > div.left{
       padding-left: 80px;
+      .name{padding-bottom: 5px; margin-top: -5px; color: #737373;}
       .text:after{width: 16px; height: 25px;position: absolute; left: 65px; top: 22px; background-image: url(/chat_left.png); content:"\00a0";}
+      .text.group{min-height: 30px;}
+      .text.group:after{top: 37px;}
     }
     > div.right{
       padding-right: 80px;
@@ -26,7 +29,7 @@
     }
   }
   .messageDialogInput{
-    width: 100%; height: 51px; line-height: 51px;background-color: #fff;
+    width: 100%; height: 52px; line-height: 52px;background-color: #fff;
     position: fixed;left: 0;bottom: 0;border-top: 1px solid #C4C4C6;z-index: 9999999999999;
     padding-left: 50px; padding-right: 60px;
     .img{
