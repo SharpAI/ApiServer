@@ -19,6 +19,15 @@ if Meteor.isClient
     'click .messageGroup': ()->
       Session.set("Social.LevelOne.Menu", 'messageGroup')      
   Template.addNewFriends.helpers
+    is_meet_count: (count)->
+      count > 0
+    meet_count:->
+      meetItem = Meets.findOne({me:Meteor.userId(),ta:this.userId})
+      if meetItem
+        meetCount = meetItem.count
+      else
+        meetCount = 0
+      meetCount
     viewer:()->
       Viewers.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}})
     isMyself:()->
