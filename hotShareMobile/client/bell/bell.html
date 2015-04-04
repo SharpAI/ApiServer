@@ -44,10 +44,40 @@
         {{/if}}
         {{#if isRecommand eventType}}
           <a href="/posts/{{postId}}" class="contentList">
-            <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+            <img class="icon" src="{{recommanderIcon}}" width='30' height='30'>
             <div id="{{postId}}" class="alarm">{{recommander}} 推荐您一个新故事 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
           </a>
+          <div class="line">
+            <span></span>
+          </div>
+        {{/if}}
+        {{#if isGetRequest eventType}}
+          <div id="{{requesterId}}" class="contentList">
+            <img class="icon" src="{{requesterIcon}}" width='30' height='30'>
+            <div id="{{requesterId}}" class="alarm">{{requester}}邀请您加为好友!</div>
+            <div class="createAt">{{time_diff createdAt}}</div>
+            {{#if isFriend requesterId}}
+            <div class='button'>已添加</div>
+            {{else}}
+            <div class='button acceptrequest'>接受邀请</div>
+            {{/if}}
+          </div>
+          <div class="line">
+            <span></span>
+          </div>
+        {{/if}}
+        {{#if isSendRequest eventType}}
+          <div id="{{requesteeId}}" class="contentList">
+            <img class="icon" src="{{requesteeIcon}}" width='30' height='30'>
+            <div id="{{requesteeId}}" class="alarm">{{requestee}}</div>
+            <div class="createAt">{{time_diff createdAt}}</div>
+            {{#if isFriend requesteeId}}
+            <div class='button'>已添加</div>
+            {{else}}
+            <div class='button'>已发送邀请</div>
+            {{/if}}
+          </div>
           <div class="line">
             <span></span>
           </div>

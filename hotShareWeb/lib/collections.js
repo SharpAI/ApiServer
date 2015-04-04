@@ -59,7 +59,7 @@ if(Meteor.isServer){
         return Feeds.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
   });
   Meteor.publish("userFeeds", function(followId,postId) {
-        return Feeds.find({followby: followId,postId: postId,eventType:'recommand'}, {sort: {createdAt: -1}, limit:2});
+        return Feeds.find({followby: followId,postId: postId,eventType:'recommand',recommanderId:this.userId}, {sort: {createdAt: -1}, limit:2});
   });
   Meteor.publish("follows", function() {
         return Follows.find({}, {sort: { index: 1 }} );
@@ -364,7 +364,11 @@ if(Meteor.isServer){
   });
   Follower.allow({
     insert: function (userId, doc) {
-      if(doc.userId === userId){
+      if(Follower.findOne({userId:doc.userId,followerId:doc.followerId}))
+      {
+        return false;
+      }
+      if(doc.userId === userId || doc.followerId === userId){
         try{
             var posts=Posts.find({owner: doc.followerId})
             if(posts.count()>0){
@@ -379,7 +383,7 @@ if(Meteor.isServer){
                         ownerName:data.ownerName,
                         ownerIcon:data.ownerIcon,
                         createdAt: data.createdAt,
-                        followby: userId
+                        followby: doc.userId
                     });
                 });
             }
@@ -409,17 +413,28 @@ if(Meteor.isServer){
       userName = userData.username;
       if(userData.profile.fullname !== null && userData.profile.fullname !== '')
         userName = userData.profile.fullname;
-      if(Feeds.findOne({recommander:userName,postId:doc.postId,followby:doc.followby}))
+      if(doc.eventType==='recommand')
       {
-        return false;
+        if(Feeds.findOne({recommanderId:userId,recommander:userName,postId:doc.postId,followby:doc.followby}))
+        {
+          return false;
+        }
+        if(userName !== doc.recommander)
+        {
+          return false;
+        }
+        if(doc.postId !== null && doc.followby !== null && doc.recommander !== null)
+          pushnotification("recommand",doc,doc.followby);
+        return (doc.postId !== null && doc.followby !== null && doc.recommander !== null)
+      }else{  /*eventType === 'sendrequest' || eventType === 'getrequest'*/
+        if(doc. requesterId !== userId)
+          return false;
+        if(Feeds.findOne({requesteeId:doc.requesteeId,requesterId:doc.requesterId,followby:doc.followby}))
+        {
+          return false;
+        }
+        return true;
       }
-      if(userName !== doc.recommander)
-      {
-        return false;
-      }
-      if(doc.postId !== null && doc.followby !== null && doc.recommander !== null)
-        pushnotification("recommand",doc,doc.followby);
-      return (doc.postId !== null && doc.followby !== null && doc.recommander !== null)
     }
   });
   Viewers.allow({
