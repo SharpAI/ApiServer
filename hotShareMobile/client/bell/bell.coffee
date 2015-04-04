@@ -17,8 +17,17 @@ if Meteor.isClient
             if (target.data("visible"))
                 target.data("visible", false);
   Template.bell.helpers
+    isFriend:(userId)->
+      if Follower.findOne({"userId":Meteor.userId(),"followerId":userId})
+        true
+      else
+        false
     eventFeeds:->
       Feeds.find({}, {sort: {createdAt: -1}})
+    isGetRequest:(eventType)->
+      eventType is 'getrequest'
+    isSendRequest:(eventType)->
+      eventType is 'sendrequest'
     isRecommand:(eventType)->
       eventType is 'recommand'
     isReComment:(eventType)->
@@ -36,5 +45,28 @@ if Meteor.isClient
     loadError:->
       Session.equals('feedsCollection','error')
   Template.bell.events
+    'click .acceptrequest': (event)->
+       Follower.insert {
+         userId: this.requesteeId
+         userName: this.requestee
+         userIcon: this.requesteeIcon
+         userDesc: ''
+         followerId: this.requesterId
+         followerName: this.requester
+         followerIcon: this.requesterIcon
+         followerDesc: ''
+         createAt: new Date()
+       }
+       Follower.insert {
+         userId: this.requesterId
+         userName: this.requester
+         userIcon: this.requesterIcon
+         userDesc: ''
+         followerId: this.requesteeId
+         followerName: this.requestee
+         followerIcon: this.requesteeIcon
+         followerDesc: ''
+         createAt: new Date()
+       }
     'click #follow': (event)->
        Router.go '/searchFollow'
