@@ -1,4 +1,4 @@
 
-@withSocialBar = false
+@withSocialBar = true
 @withAfterPostIntroduce = false
 @withChat = false

@@ -1,1 +1,1 @@
-server_domain_name = "www.tiegushi.com";
+server_domain_name = "www.tiegushi.com:443";
