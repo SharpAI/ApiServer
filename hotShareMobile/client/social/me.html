@@ -1,6 +1,16 @@
 <template name="me">
   <div class="me">
-    <h2>敬请期待</h2>
-    <h1>Coming Soon</h1>
+    {{> Template.dynamic template=whichOne}}
+  </div>
+</template>
+<template name="information">
+  <div class="head">
+    <div>个人信息</div>
+  </div>
+  <div class="content">
+    <div class="information box">
+        <div class='nickname boxTitle'>昵称<span>{{nickname}}<i class="fa fa-angle-right fa-fw"></i></span></div>
+        <div class='sex boxTitle'>性别<span>{{sex}}<i class="fa fa-angle-right fa-fw"></i></span></div>
+    </div>
   </div>
 </template>
