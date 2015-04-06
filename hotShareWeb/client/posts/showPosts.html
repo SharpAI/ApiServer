@@ -105,6 +105,11 @@
         <p>本文由史上最好用的图文排版APP<span>故事贴</span>支持创作</p>
       </div>
     {{/if}}
+    {{#unless isMyPost}}
+      <div class="showPostsFollowMe">
+        <p>更多精彩内容,请搜索关注<span>故事贴</span>微信公众号</p>
+      </div>
+    {{/unless}}
     {{#if isCordova}}
     {{#unless isMyPost}}
     <div id="report">举报</div>
@@ -112,6 +117,10 @@
     {{/if}}
     <div class="showPostsLine"></div>
       {{> commentContent}}
+      <div class="superChatIntroduce">
+          <p>故事贴无法获得微信信息，请放心使用</p>
+      </div>
+      <div class="showPostsLine"></div>
       {{#if withSocialBar}}
         {{> socialContent}}
       {{/if}}
