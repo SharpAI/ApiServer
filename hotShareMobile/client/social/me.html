@@ -4,13 +4,22 @@
   </div>
 </template>
 <template name="information">
-  <div class="head">
-    <div>个人信息</div>
-  </div>
   <div class="content">
-    <div class="information box">
+    <div class="head">
+        <div>个人信息</div>
+    </div>
+    <div class="infor box">
         <div class='nickname boxTitle'>昵称<span>{{nickname}}<i class="fa fa-angle-right fa-fw"></i></span></div>
         <div class='sex boxTitle'>性别<span>{{sex}}<i class="fa fa-angle-right fa-fw"></i></span></div>
     </div>
   </div>
+</template>
+<template name="setNickname">
+    <div class="content">
+      <div class="box">
+        <div class='boxTitle'>昵称<span class="input"><input type="text" id="my_edit_nickname" placeholder="输入新昵称" value="{{nickname}}"/></span></div>
+        <button class="cancle">取消</button>
+        <button class="confirm">确认</button>
+      </div>
+    </div>
 </template>
