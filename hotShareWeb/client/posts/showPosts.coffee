@@ -151,6 +151,13 @@ if Meteor.isClient
     isMobile:->
       Meteor.isCordova
   Template.showPosts.events
+    "click .showPostsFollowMe a":->
+      if isIOS
+        if (typeof WeixinJSBridge != "undefined" && WeixinJSBridge.invoke)
+          WeixinJSBridge.invoke('profile',{
+            'username':'gh_5204adca97a2',
+            'scene':'57'
+            });
     "click .change":->
       RC = Session.get("RC")+1
       if RC>7
