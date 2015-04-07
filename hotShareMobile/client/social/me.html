@@ -4,34 +4,54 @@
   </div>
 </template>
 <template name="information">
-  <div class="content">
-    <div class="head">
-        <div>个人信息</div>
+  <div class="contactsList"><div class="head" style="display:block;">
+    <div class="socialTitle">
+      <span class="Contacts">我</span>
     </div>
-    <div class="infor box">
-        <div class='nickname boxTitle'>昵称<span>{{nickname}}<i class="fa fa-angle-right fa-fw"></i></span></div>
-        <div class='sex boxTitle'>性别<span>{{sex}}<i class="fa fa-angle-right fa-fw"></i></span></div>
-    </div>
-  </div>
+  </div></div>
+  
+  <ul class="set-up">
+    <li class="nickname">
+      <label>昵称</label>
+      <div class="value">{{nickname}}<i class="fa fa-angle-right"></i></div>
+    </li>
+    <li class="sex">
+      <label>性别</label>
+      <div class="value">{{sex}}<i class="fa fa-angle-right"></i></div>
+    </li>
+  </ul>
 </template>
 <template name="setNickname">
-  <div class="content">
-    <div class="box">
-      <div class='boxTitle'>昵称<span class="input"><input type="text" id="my_edit_nickname" placeholder="输入新昵称" value="{{nickname}}"/></span></div>
-      <button class="cancle">取消</button>
-      <button class="confirm">确认</button>
+  <div class="contactsList"><div class="head" style="display:block;">
+    <div class="socialTitle">
+      <div class="left-btn">取消</div>
+      <span class="Contacts">昵称</span>
+      <div class="right-btn">保存</div>
     </div>
-  </div>
+  </div></div>
+  
+  <ul class="set-up">
+    <li>
+      <div class="input"><form class="setNickname-form"><input type="text" id="text" placeholder="输入新昵称" value="{{nickname}}"/></form></div>
+    </li>
+  </ul>
 </template>
 <template name="setSex">
-  <div class="content">
-    <div class="head">
-      <div>性别</div>
+  <div class="contactsList"><div class="head" style="display:block;">
+    <div class="socialTitle">
+      <div class="left-btn">取消</div>
+      <span class="Contacts">性别</span>
     </div>
-    <div class="box">
-      <div class='setMale boxTitle'>男<span>{{#if isMale}}<i class="fa fa-check"></i>{{/if}}</span></div>
-      <div class='setFemale boxTitle'>女<span>{{#if isFemale}}<i class="fa fa-check"></i>{{/if}}</span></div>
-    </div>
-    <button class="confirm">确认</button>
-  </div>
+  </div></div>
+  
+  <ul class="set-up">
+    <li class="nickname setMale">
+      <label>男</label>
+      <div class="value select">{{#if isMale}}<i class="fa fa-check"></i>{{/if}}</div>
+    </li>
+    <li class="sex setFemale">
+      <label>女</label>
+      <div class="value select">{{#if isFemale}}<i class="fa fa-check"></i>{{/if}}</div>
+    </li>
+  </ul>
 </template>
