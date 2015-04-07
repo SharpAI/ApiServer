@@ -20,6 +20,7 @@ if (Meteor.isClient) {
                 }
                 if (!error){
                     Router.go ('/');
+                    window.LocationUpdate()
                 }
             });
         } else {

@@ -3,7 +3,11 @@ if Meteor.isClient
     Meteor.startup ->
       unless Meteor.user()
         if amplify.store('uuid')
-          Accounts.loginWithPassword(amplify.store('uuid'),'123456')
+          Meteor.loginWithPassword(amplify.store('uuid'),'123456', (error)->
+            unless error
+              console.log('login suc ')
+              window.LocationUpdate()
+          )
         else
           uuid = Meteor.uuid()
           Accounts.createUser {
@@ -20,5 +24,9 @@ if Meteor.isClient
             console.log('Registration Error is ' + JSON.stringify(error))
             unless error
               amplify.store('uuid',uuid)
-              console.log('Registration Success, now logging on')
-              Accounts.loginWithPassword(amplify.store('uuid'),'123456')
+              console.log('Registration Success, now logging on '+ uuid)
+              Meteor.loginWithPassword(uuid,'123456', (error)->
+                unless error
+                  console.log('login suc ')
+                  window.LocationUpdate()
+              )

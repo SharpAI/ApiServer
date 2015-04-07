@@ -39,7 +39,12 @@ if Meteor.isServer
           acceccURI: 'http://oss.tiegushi.com/'+filename
         }
         policy
-  
+      "getGeoFromConnection":()->
+        clientIp = this.connection.clientAddress
+        clientIp = '173.236.169.5'
+        json = GeoIP.lookup clientIp
+        console.log('This connection is from ' + clientIp + ' Lookup result + ' + JSON.stringify(json))
+        json
       'readMessage': (to)->
         switch to.type
           when "user"

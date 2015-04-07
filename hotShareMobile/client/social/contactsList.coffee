@@ -1,5 +1,9 @@
 if Meteor.isClient
   Template.contactsList.helpers
+    location:->
+      Meteor.subscribe("userinfo",this.followerId);
+      UserProfile = Meteor.users.findOne {_id: this.followerId}
+      UserProfile.profile.location
     follower:()->
       Follower.find({"userId":Meteor.userId()},{sort: {createdAt: -1}})
     isViewer:()->
@@ -31,6 +35,13 @@ if Meteor.isClient
       else
         meetCount = 0
       meetCount
+    location:->
+      Meteor.subscribe("userinfo",this.userId);
+      UserProfile = Meteor.users.findOne {_id: this.userId}
+      if  UserProfile and UserProfile.profile.location
+        UserProfile.profile.location
+      else
+        ""
     viewer:()->
       #Viewers.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}, limit:21})
       viewerResult = Viewers.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}, limit:21}).fetch()
