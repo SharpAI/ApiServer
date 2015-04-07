@@ -21,6 +21,7 @@ if Meteor.isClient
             username:username
             userId:Meteor.user()._id
             userIcon:Meteor.user().profile.icon
+            anonymous: Meteor.user().profile.anonymous
             createdAt: new Date()
           }
         catch error

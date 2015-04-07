@@ -19,6 +19,9 @@ if Meteor.isClient
     'click .messageGroup': ()->
       Session.set("Social.LevelOne.Menu", 'messageGroup')      
   Template.addNewFriends.helpers
+    anonymous: (obj)->
+      obj.anonymous is true
+      
     is_meet_count: (count)->
       count > 0
     meet_count:->

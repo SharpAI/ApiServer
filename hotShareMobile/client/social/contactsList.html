@@ -59,7 +59,11 @@
     {{#unless isMyself}}
       <div id="{{userId}}" class="eachViewer newUserProfile">
         <!--列出浏览人-->
+        {{#if anonymous this}}
+        <img class="icon" src="/userPicture_social.png" width="30" height="30">
+        {{else}}
         <img class="icon" src="{{userIcon}}" width="30" height="30">
+        {{/if}}
         <span class="userName">{{username}}</span>
           {{#if isFollowed}}
             <div id="{{userId}}" class="follow delFollow"><span class="fa fa-check"></span><i class="fa fa-user"></i></div>
