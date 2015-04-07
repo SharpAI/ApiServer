@@ -59,11 +59,7 @@
     {{#unless isMyself}}
       <div id="{{userId}}" class="eachViewer newUserProfile">
         <!--列出浏览人-->
-        {{#if anonymous this}}
-        <img class="icon" src="/userPicture_social.png" width="30" height="30">
-        {{else}}
         <img class="icon" src="{{userIcon}}" width="30" height="30">
-        {{/if}}
         <span class="userName">{{username}}</span>
         {{#if compareMeetsCount meet_count}}
         <div class="meet_count">你们相遇了{{meet_count}}次</div>
