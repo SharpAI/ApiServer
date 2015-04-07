@@ -1,5 +1,6 @@
 if Meteor.isClient
   commentBox = null
+  @isIOS = (navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false)
   @isWeiXinFunc = ()->
     ua = window.navigator.userAgent.toLowerCase()
     M = ua.match(/MicroMessenger/i)
@@ -18,7 +19,6 @@ if Meteor.isClient
       Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     )
   Meteor.startup ()->
-    @isIOS = (navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false)
     Deps.autorun ()->
       if Meteor.user() and (postContent=Session.get("postContent")) and (Viewers.find({userId:Meteor.userId()}).count() is 0)
         if Meteor.user().profile.fullname and (Meteor.user().profile.fullname isnt '')
