@@ -15,11 +15,23 @@
   </div>
 </template>
 <template name="setNickname">
-    <div class="content">
-      <div class="box">
-        <div class='boxTitle'>昵称<span class="input"><input type="text" id="my_edit_nickname" placeholder="输入新昵称" value="{{nickname}}"/></span></div>
-        <button class="cancle">取消</button>
-        <button class="confirm">确认</button>
-      </div>
+  <div class="content">
+    <div class="box">
+      <div class='boxTitle'>昵称<span class="input"><input type="text" id="my_edit_nickname" placeholder="输入新昵称" value="{{nickname}}"/></span></div>
+      <button class="cancle">取消</button>
+      <button class="confirm">确认</button>
     </div>
+  </div>
+</template>
+<template name="setSex">
+  <div class="content">
+    <div class="head">
+      <div>性别</div>
+    </div>
+    <div class="box">
+      <div class='setMale boxTitle'>男<span>{{#if isMale}}<i class="fa fa-check"></i>{{/if}}</span></div>
+      <div class='setFemale boxTitle'>女<span>{{#if isFemale}}<i class="fa fa-check"></i>{{/if}}</span></div>
+    </div>
+    <button class="confirm">确认</button>
+  </div>
 </template>
