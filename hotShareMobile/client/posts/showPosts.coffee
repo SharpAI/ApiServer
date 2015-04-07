@@ -1,6 +1,15 @@
 if Meteor.isClient
   commentBox = null
-  @isIOS = ( navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false )
+  @isWeiXinFunc = ()->
+    ua = window.navigator.userAgent.toLowerCase()
+    M = ua.match(/MicroMessenger/i)
+    if M and M[0] is 'micromessenger'
+      true
+    else
+      false
+  @isAndroidFunc = ()->
+    userAgent = navigator.userAgent.toLowerCase()
+    return (userAgent.indexOf('android') > -1) or (userAgent.indexOf('linux') > -1)
   window.getDocHeight = ->
     D = document
     Math.max(
@@ -9,6 +18,7 @@ if Meteor.isClient
       Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     )
   Meteor.startup ()->
+    @isIOS = (navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false)
     Deps.autorun ()->
       if Meteor.user() and (postContent=Session.get("postContent")) and (Viewers.find({userId:Meteor.userId()}).count() is 0)
         if Meteor.user().profile.fullname and (Meteor.user().profile.fullname isnt '')
@@ -128,6 +138,8 @@ if Meteor.isClient
     #  PUB.toast("您的手机版本过低，部分图片可能产生变形。");
 
   Template.showPosts.helpers
+    inWeiXin: ()->
+      isWeiXinFunc()
     withAfterPostIntroduce: ()->
       withAfterPostIntroduce
     withSocialBar: ()->
@@ -153,11 +165,14 @@ if Meteor.isClient
       Meteor.isCordova
   Template.showPosts.events
     "click .showPostsFollowMe span a":->
-      userAgent = navigator.userAgent.toLowerCase()
-      if userAgent.indexOf('android') > -1 and userAgent.indexOf('linux') > -1
-        window.location.href="weixin://profile/gh_5204adca97a2"
-      else
+      if Meteor.isCordova
+        cordova.plugins.clipboard.copy('故事贴')
+        PUB.toast('请在微信中搜索关注公众号“故事贴”(已复制到粘贴板)')
+        return
+      if isIOS
         window.location.href="http://mp.weixin.qq.com/s?__biz=MzAwMjMwODA5Mw==&mid=209526606&idx=1&sn=e8053772c8123501d47da0d136481583#rd"
+      if isAndroidFunc()
+        window.location.href="weixin://profile/gh_5204adca97a2"
     "click .change":->
       RC = Session.get("RC")+1
       if RC>7
