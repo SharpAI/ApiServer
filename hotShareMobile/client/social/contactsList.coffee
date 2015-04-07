@@ -25,8 +25,6 @@ if Meteor.isClient
   Template.addNewFriends.helpers
     is_meet_count: (count)->
       count > 0
-    compareMeetsCount: (count)->
-      count > 1
     meet_count:->
       meetItem = Meets.findOne({me:Meteor.userId(),ta:this.userId})
       if meetItem
