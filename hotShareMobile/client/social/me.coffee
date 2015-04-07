@@ -11,17 +11,19 @@ if Meteor.isClient
   ###
     Information View
   ###
+  Template.information.rendered=->
+    document.body.scrollTop = document.body.scrollHeight
   Template.information.helpers
     nickname:()->
       if Meteor.user()
-        Meteor.user().profile.fullname
+        Meteor.user().profile.fullname || '[无]'
     sex:()->
       if Meteor.user() and Meteor.user().profile.sex
         if Meteor.user().profile.sex is 'male'
           return '男'
         else if Meteor.user().profile.sex is 'female'
           return '女'
-      return ''
+      return '[未知]'
   Template.information.events
     'click .nickname':(e)->
       Session.set("Social.LevelTwo.Me.Menu","setNickname")
@@ -34,18 +36,26 @@ if Meteor.isClient
     nickname:()->
       if Meteor.user()
         Meteor.user().profile.fullname
+  Template.setNickname.rendered=->
+    document.body.scrollTop = document.body.scrollHeight
   Template.setNickname.events
-    'click .cancle':(e)->
+    'click .left-btn':(e)->
       Session.set("Social.LevelTwo.Me.Menu","information")
-    'click .confirm':(e)->
+    'click .right-btn':(e)->
+      $('.setNickname-form').submit()
+    'submit .setNickname-form': (e)->
       if Meteor.user()
-        if $('#my_edit_nickname').val()
+        if e.target.text.value isnt ''
           console.log 'Change Nick Name to ' + $('#my_edit_nickname').val()
-          Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.fullname': $('#my_edit_nickname').val()}})
-      Session.set("Social.LevelTwo.Me.Menu","information")
+          Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.fullname': e.target.text.value}})
+          Session.set("Social.LevelTwo.Me.Menu","information")
+          
+      false
   ###
     Set Sex View
   ###
+  Template.setSex.rendered=->
+    document.body.scrollTop = document.body.scrollHeight
   Template.setSex.helpers
     isMale:()->
       if Meteor.user()
@@ -59,8 +69,10 @@ if Meteor.isClient
     'click .setMale':(e)->
       if Meteor.user()
         Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.sex': 'male'}})
+        Session.set("Social.LevelTwo.Me.Menu","information")
     'click .setFemale':(e)->
       if Meteor.user()
         Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.sex': 'female'}})
-    'click .confirm': (e)->
+        Session.set("Social.LevelTwo.Me.Menu","information")
+    'click .left-btn': (e)->
       Session.set("Social.LevelTwo.Me.Menu","information")
