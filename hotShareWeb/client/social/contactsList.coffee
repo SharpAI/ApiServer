@@ -42,7 +42,7 @@ if Meteor.isClient
     viewer:()->
       #Viewers.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}, limit:21})
       viewerResult = Viewers.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}, limit:21}).fetch()
-      if viewerResult.length > 1
+      if viewerResult and (viewerResult.length > 1)
         for i in [0..(viewerResult.length-1)]
           meetItem = Meets.findOne({me:Meteor.userId(),ta:viewerResult[i].userId})
           if meetItem
@@ -59,7 +59,6 @@ if Meteor.isClient
           sortBy('meetCount', a, b, 1)
         )
         return viewerResult
-      null
     isMyself:()->
       this.userId is Meteor.userId()
     isSelf:(follow)->
