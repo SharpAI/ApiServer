@@ -155,10 +155,8 @@ if Meteor.isClient
       userAgent = navigator.userAgent.toLowerCase()
       if userAgent.indexOf('android') > -1 and userAgent.indexOf('linux') > -1
         window.location.href="weixin://profile/gh_5204adca97a2"
-      else if isIOS
-        window.location.href="http://mp.weixin.qq.com/s?__biz=MzAwMjMwODA5Mw==&mid=209526606&idx=1&sn=e8053772c8123501d47da0d136481583#rd"
       else
-        return
+        window.location.href="http://mp.weixin.qq.com/s?__biz=MzAwMjMwODA5Mw==&mid=209526606&idx=1&sn=e8053772c8123501d47da0d136481583#rd"
     "click .change":->
       RC = Session.get("RC")+1
       if RC>7
