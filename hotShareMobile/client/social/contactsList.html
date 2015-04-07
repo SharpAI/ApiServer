@@ -65,18 +65,11 @@
         <img class="icon" src="{{userIcon}}" width="30" height="30">
         {{/if}}
         <span class="userName">{{username}}</span>
-          {{#if isFollowed}}
-            <div id="{{userId}}" class="follow delFollow"><span class="fa fa-check"></span><i class="fa fa-user"></i></div>
-          {{else}}
-            <div id="{{userId}}" class="follow addFollow">
-              <span class="fa fa-plus">
-                {{#if is_meet_count meet_count}}
-                <div class="meet_count">缘分啊，我们已偶遇{{meet_count}}次了!</div>
-                {{/if}}
-              </span>
-              <i class="fa fa-user"></i>
-            </div>
-          {{/if}}
+        {{#if compareMeetsCount meet_count}}
+        <div class="meet_count">你们相遇了{{meet_count}}次</div>
+        {{else}}
+        <div class="meet_count">你们初次相遇</div>
+        {{/if}}
       </div>
       <div class="chatContentLine"></div>
     {{/unless}}
