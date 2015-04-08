@@ -25,8 +25,23 @@ if Meteor.isClient
   Template.addNewFriends.helpers
     is_meet_count: (count)->
       count > 0
+    username:->
+      Meteor.subscribe("userinfo",this.ta)
+      taUser = Meteor.users.findOne {_id: this.ta}
+      if taUser is undefined
+        return ''
+      UserName = taUser.username
+      if taUser.profile.fullname
+        UserName = taUser.profile.fullname
+      UserName
+    userIcon:->
+      Meteor.subscribe("userinfo",this.ta)
+      taUser = Meteor.users.findOne {_id: this.ta}
+      if taUser is undefined
+        return ''
+      taUser.profile.icon
     meet_count:->
-      meetItem = Meets.findOne({me:Meteor.userId(),ta:this.userId})
+      meetItem = Meets.findOne({me:Meteor.userId(),ta:this.ta})
       if meetItem
         meetCount = meetItem.count
       else
@@ -59,6 +74,9 @@ if Meteor.isClient
           sortBy('meetCount', a, b, 1)
         )
         return viewerResult
+    meeter:()->
+      meeterResult = Meets.find({me:Meteor.userId()}, {sort: {count: -1}, limit:20}).fetch()
+      return meeterResult
     isMyself:()->
       this.userId is Meteor.userId()
     isSelf:(follow)->
