@@ -1,7 +1,5 @@
-
 window.LocationUpdate =()->
-  console.log("locationUpdate called");
-
+  console.log("locationUpdate called")
   getLocation = ()->
     geoc = new BMap.Geocoder();
     point = new BMap.Point(Session.get('location').longitude,Session.get('location').latitude);
@@ -24,11 +22,15 @@ window.LocationUpdate =()->
                 console.log("#google location city is " + Session.get("userAddress"))
                 #alert(Session.get("userAddress"));
                 Meteor.users.update Meteor.userId(),{$set:{'profile.location':Session.get("userAddress")}}
-
-
       else
         console.log("getLocation rs is null")
-
+  Meteor.call('getGeoFromConnection',(err,response )->
+    if response and response.ll
+      Session.set('location',{latitude:response.ll[0],longitude:response.ll[1],type:'ip'})
+      getLocation()
+  )
+  ###
+  Popup information is not good currently. Let's hide it for now.
   onSuccess = (position) ->
     console.log('\nLatitude: '          + position.coords.latitude          + '\n' +
     'Longitude: '         + position.coords.longitude         + '\n' +
@@ -47,9 +49,13 @@ window.LocationUpdate =()->
     )
 
   window.navigator.geolocation.getCurrentPosition(onSuccess, onError, { maximumAge: 600000, timeout:60000,enableHighAccuracy :false});
-
+  ###
 
 Accounts.onLogin(()->
-  console.log("Accounts.onLogin");
-  window.LocationUpdate()
+  console.log("Accounts.onLogin")
+  window.BMap_loadScriptTime = (new Date).getTime()
+  url = "http://api.map.baidu.com/getscript?v=2.0&ak=Wg2XtQkIKg1YwWzGguTw9lTj&services=&t=20150330161927"
+  $.getScript url, (data, textStatus, jqxhr)->
+    console.log 'status is ' + textStatus
+    window.LocationUpdate()
 )
