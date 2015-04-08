@@ -3,7 +3,7 @@ window.LocationUpdate =()->
   getLocation = ()->
     geoc = new BMap.Geocoder();
     point = new BMap.Point(Session.get('location').longitude,Session.get('location').latitude);
-    #point = new BMap.Point(116.404, 39.915);
+
     geoc.getLocation point,(rs)->
       if rs and rs.addressComponents
         addComp = rs.addressComponents
@@ -17,8 +17,15 @@ window.LocationUpdate =()->
           Meteor.http.call "GET",requestUrl,(error,result)->
             if result.statusCode is 200
               results = result.data.results
-              if results.length > 1
-                Session.set("userAddress",JSON.stringify(results[1].formatted_address))
+              if results.length > 2
+                address_components = results[2].address_components
+                address_components.reverse()
+                address_array = [];
+                for i in [0..(address_components.length)-1]
+                  address_array.push(address_components[i].long_name)
+                reverse_address = address_array.join(',');
+
+                Session.set("userAddress",reverse_address)
                 console.log("#google location city is " + Session.get("userAddress"))
                 #alert(Session.get("userAddress"));
                 Meteor.users.update Meteor.userId(),{$set:{'profile.location':Session.get("userAddress")}}
@@ -27,6 +34,8 @@ window.LocationUpdate =()->
   Meteor.call('getGeoFromConnection',(err,response )->
     if response and response.ll
       Session.set('location',{latitude:response.ll[0],longitude:response.ll[1],type:'ip'})
+      #Session.set('location',{latitude:39.915,longitude:116.404,type:'ip'})
+      #Session.set('location',{latitude:37.394,longitude:-122.031,type:'ip'})
       getLocation()
   )
   ###
