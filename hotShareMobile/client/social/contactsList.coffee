@@ -32,13 +32,7 @@ if Meteor.isClient
       else
         meetCount = 0
       meetCount
-    location:->
-      Meteor.subscribe("userinfo",this.userId);
-      UserProfile = Meteor.users.findOne {_id: this.userId}
-      if  UserProfile and UserProfile.profile.location
-        UserProfile.profile.location
-      else
-        ""
+
     viewer:()->
       #Viewers.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}, limit:21})
       viewerResult = Viewers.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}, limit:21}).fetch()
