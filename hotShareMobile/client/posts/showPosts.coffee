@@ -38,7 +38,7 @@ if Meteor.isClient
           console.log error
   Template.showPosts.destoryed=->
     $(window).children().off();
-  Template.showPosts.rendered=->
+  Template.showPosts.rendered=->  
     $('.mainImage').css('height',$(window).height()*0.55)
     postContent = Session.get("postContent")
     browseTimes = 0

@@ -41,13 +41,23 @@
       <div id="{{followerId}}" class="eachViewer userProfile">
         <img class="icon" src="{{followerIcon}}" width="30" height="30">
         <span class="userName">{{followerName}}</span>
-        <span class="choose">
-          {{#if isSelected followerId}}
-          <i class="fa fa-dot-circle-o" style="color:#A2E65B;"></i>
-          {{else}}
-          <i class="fa fa-circle-o"></i>
-          {{/if}}
-        </span>
+        {{#if isManager followerId}}
+          <span class="choose">
+            {{#if isSelected followerId}}
+            <i class="fa fa-dot-circle-o" style="color:#A2E65B;"></i>
+            {{else}}
+            <i class="fa fa-circle-o"></i>
+            {{/if}}
+          </span>
+        {{else}}
+          <span class="choose">
+            {{#if isSelected followerId}}
+            <i class="fa fa-dot-circle-o"></i>
+            {{else}}
+            <i class="fa fa-circle-o"></i>
+            {{/if}}
+          </span>
+        {{/if}}
       </div>
       <div class="chatContentLine"></div>
     {{/each}}
@@ -58,7 +68,7 @@
   <div class="contactsList">
     <div class="head" style="display:block;">
       <div class="socialTitle">
-        <div class="left-btn">&lt;联系人</div>
+        <div class="left-btn">&lt;取消</div>
         <span class="Contacts">群名称</span>
         <div class="right-btn">确定</div>
       </div>
@@ -66,7 +76,7 @@
     
     <div class="messageGroupCreateName">
       <form class="message-group-create-name-form">
-        <input id="text" name="text" type="text" class="form-control" placeholder="群的名称，15个字符以内.">
+        <input id="text" name="text" type="text" class="form-control" placeholder="群的名称，15个字符以内." value="{{name}}">
       </form>
     </div>
   </div>

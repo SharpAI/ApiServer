@@ -113,13 +113,25 @@ Template.messageDialog.helpers
   is_chatNotify: (sesType)->
     sesType is 'chatNotify'
   is_groupChat: (sesType)->
-    sesType is 'groupChat'
+    if sesType
+      sesType is 'groupChat'
+    else
+      to = Session.get("messageDialog_to") || {}
+      if to.type is 'group'
+        true
+      else if to.type is 'session'
+        session = MsgSession.findOne(to.id)
+        session.sesType is 'groupChat' or session.sesType is 'chatNotify'
+      else
+        false
     
 Template.messageDialog.events
   'click .left-btn': ()->
     to = Session.get("messageDialog_to") || {}
     Meteor.call('readMessage', to)
     Session.set("Social.LevelOne.Menu", 'chatContent')
+  'click .right-btn': ()->
+    Session.set("Social.LevelOne.Menu", 'messageDialogInfo')
 
 Template.messageDialogInput.events
   'click .submit': ()->

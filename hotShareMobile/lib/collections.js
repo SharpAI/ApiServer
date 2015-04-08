@@ -735,6 +735,23 @@ if(Meteor.isServer){
   MsgGroup.allow({
     insert: function (userId, doc) {
       return doc.create.userId === userId;
+    },
+    update: function (userId, doc) {
+      // 根据 ID update
+      if(doc._id){
+        var group = MsgGroup.findOne(doc._id)
+        
+        // 创建者
+        if(userId === group.create.userId)
+          return true;
+        
+        // 群成员
+        for(var i=0;i<group.users.lenght;i++)
+          if(group.users[i].userId === userId)
+            return true;
+      }
+      
+      return false;
     }
   });
 
