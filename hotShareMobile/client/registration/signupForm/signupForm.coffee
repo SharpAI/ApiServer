@@ -42,7 +42,6 @@ Template.signupForm.events
             t.find('#sub-registered').value = '创建帐户'
           else
             Router.go '/registerFollow'
-            window.LocationUpdate()
             return
     false
 
