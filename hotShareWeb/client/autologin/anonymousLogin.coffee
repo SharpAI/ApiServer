@@ -20,5 +20,5 @@ if Meteor.isClient
             console.log('Registration Error is ' + JSON.stringify(error))
             unless error
               amplify.store('uuid',uuid)
-              console.log('Registration Success, now logging on')
-              Meteor.loginWithPassword(amplify.store('uuid'),'123456')
+              console.log('Registration Success, now logging on '+ uuid)
+              Meteor.loginWithPassword(uuid,'123456')

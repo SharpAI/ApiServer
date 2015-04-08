@@ -18,3 +18,4 @@ meteor-phonegap-push
 
 npm-container
 accounts-password
+servicelocale:geoip
