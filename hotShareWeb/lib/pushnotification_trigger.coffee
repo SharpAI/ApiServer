@@ -55,29 +55,29 @@ if Meteor.isServer
 
     unless toUserToken is undefined or toUserToken.type is undefined or toUserToken.token is undefined
       pushToken = {type: toUserToken.type, token: toUserToken.token}
-      console.log "toUserToken.type:"+toUserToken.type+";toUserToken.token:"+toUserToken.token
+      #console.log "toUserToken.type:"+toUserToken.type+";toUserToken.token:"+toUserToken.token
       if pushToken.type is 'JPush'
         token = pushToken.token
-        console.log 'JPUSH to ' + pushToken.token
+        #console.log 'JPUSH to ' + pushToken.token
         client.push().setPlatform 'ios', 'android'
           .setAudience JPush.registration_id(token)
           .setNotification '回复通知',JPush.ios(content,null,null,null,extras),JPush.android(content, null, 1,extras)
           #.setMessage(commentText)
           .setOptions null, 60
           .send (err, res)->
-            if err
-              console.log err.message
-            else
-              console.log 'Sendno: ' + res.sendno
-              console.log 'Msg_id: ' + res.msg_id
+            #if err
+            #  console.log err.message
+            #else
+            #  console.log 'Sendno: ' + res.sendno
+            #  console.log 'Msg_id: ' + res.msg_id
       else if pushToken.type is 'iOS'
-        console.log 'Server PN to iOS '
+        #console.log 'Server PN to iOS '
         token = pushToken.token
         waitReadCount = Meteor.users.findOne({_id:toUserId}).profile.waitReadCount
         if waitReadCount is undefined or isNaN(waitReadCount)
             waitReadCount = 0
         pushServer.sendIOS 'me', token , '', content, waitReadCount
       else if pushToken.type is 'GCM'
-        console.log 'Server PN to GCM '
+        #console.log 'Server PN to GCM '
         token = pushToken.token
         pushServer.sendAndroid 'me', token , '',content, 1
