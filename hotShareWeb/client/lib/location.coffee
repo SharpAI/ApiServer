@@ -8,7 +8,7 @@ window.LocationUpdate =()->
       if rs and rs.addressComponents
         addComp = rs.addressComponents
         address = ''
-        if addComp.province and addComp.province isnt ''
+        if addComp.province and (addComp.province isnt '') and (addComp.province isnt addComp.city)
           address += addComp.province + ' '
         if addComp.city and addComp.city isnt ''
           address += addComp.city
