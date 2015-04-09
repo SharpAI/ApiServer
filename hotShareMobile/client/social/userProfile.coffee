@@ -2,6 +2,7 @@ if Meteor.isClient
   Template.userProfile.rendered=->
     $('.userProfile').css('min-height',$(window).height()-90)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
+    document.body.scrollTop = document.body.scrollHeight
   Template.userProfile.helpers
     isMale:(sex)->
       sex is 'male'
