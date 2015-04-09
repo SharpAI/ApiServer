@@ -159,5 +159,4 @@ if Meteor.isServer
       waitOn: ->
         Meteor.subscribe("publicPosts",this.params._id)
         Meteor.subscribe("refcomments")
-      fastRender: true
     }
