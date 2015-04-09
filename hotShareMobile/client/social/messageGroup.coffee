@@ -23,7 +23,26 @@ Template.messageGroupCreate.rendered=->
   _dep.changed()
 Template.messageGroupCreate.helpers
   follower:()->
-    Follower.find({"userId":Meteor.userId()},{sort: {createdAt: -1}})
+    if Session.get('messageGroupCreateType') is 'edit'
+      group = MsgGroup.findOne(Session.get("messageGroupCreateGroupId"))
+      follwer = []
+      
+      for item in group.users
+        if item.userId isnt Meteor.userId()
+          follwer.push({followerId: item.userId, followerName: item.userName, followerIcon: item.userIcon})
+      for item in Follower.find({"userId":Meteor.userId()},{sort: {createdAt: -1}}).fetch()
+        exist = false
+        for foll in follwer
+          if foll.followerId is item.followerId
+            exist = true
+            break
+        
+        if !exist
+          follwer.push(item)
+        
+      follwer
+    else
+      Follower.find({"userId":Meteor.userId()},{sort: {createdAt: -1}})
   isManager:(id)->
     if Session.get('messageGroupCreateType') is 'edit'
       if MsgGroup.findOne(Session.get("messageGroupCreateGroupId")).create.userId is Meteor.userId()
@@ -56,9 +75,12 @@ Template.messageGroupCreate.events
     if Session.get('messageGroupCreateType') is 'edit'
       if _selectedFollower.length > 0
         group = MsgGroup.findOne(Session.get("messageGroupCreateGroupId"))
-        users = group.users
+        users = []      
         removeName = ''
         addName = ''
+        
+        for item in group.users
+          users.push(item)
         
         # 移除的人
         for i in [0..group.users.length-1]
@@ -68,12 +90,17 @@ Template.messageGroupCreate.events
               exist = true
               break
               
-          if !exist
-            users.splice(i, 1)
-            
+          if !exist and group.users[i].isManager isnt true
             if removeName.length > 0
               removeName += ','
+              
             removeName += group.users[i].userName
+            
+            if users.length > 0
+              for ii in [0..users.length-1]
+                if users[ii].userId is group.users[i].userId
+                  users.splice(ii, 1)
+                  break
         
         # 邀请的人
         for selected in _selectedFollower
@@ -135,6 +162,8 @@ Template.messageGroupCreate.events
                 
                 Session.set("Social.LevelOne.Menu", 'messageDialog')
           )
+        else
+          Session.set("Social.LevelOne.Menu", 'messageDialog')
               
     else if _selectedFollower.length > 0
       Session.set("messageGroupCreateName_follower", _selectedFollower)

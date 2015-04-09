@@ -1,5 +1,6 @@
 Template.messageDialogGroupInfo.rendered=->
   $('.messageDialogInfo').css('min-height',$(window).height()-90)
+  document.body.scrollTop = document.body.scrollHeight
   
 Template.messageDialogGroupInfo.helpers
   group:()->
@@ -21,8 +22,61 @@ Template.messageDialogGroupInfo.helpers
     
   count:(group)->
     group.users.length
+  isManager:()->
+    group = Template.messageDialogGroupInfo.__helpers.get('group')()
+    group.create.userId is Meteor.userId()
     
 Template.messageDialogGroupInfo.events
+  'click .btn-danger': ()->
+    isManager = Template.messageDialogGroupInfo.__helpers.get('isManager')()
+    PUB.confirm(
+      "您确定要#{if isManager then '解散群' else '退出群'}吗？"
+      ()->
+        if isManager
+          MsgGroup.remove(
+            {_id: Template.messageDialogGroupInfo.__helpers.get('group')()._id}
+            (err)->
+              if err
+                PUB.toast('失败，请重试！')
+              else
+                Session.set("Social.LevelOne.Menu", 'chatContent')
+          )
+        else
+          group = Template.messageDialogGroupInfo.__helpers.get('group')()
+          user = {}
+          
+          for item in group.users
+            if item.userId is Meteor.userId()
+              user = item
+              break
+          
+          MsgGroup.update(
+            {_id: group._id}
+            {
+              $pull: {
+                users: user
+              }
+            }
+            (err, number)->
+              if err or number <= 0
+                PUB.toast('失败，请重试！'+err)
+              else
+                Messages.insert(
+                  {
+                    userId: group.create.userId
+                    userName: group.create.userName
+                    userIcon: group.create.userIcon
+                    toGroupId: group._id
+                    text: "#{Meteor.user().profile.fullname || Meteor.user().username}退出了群"
+                    isRead: false
+                    msgType: 'text'
+                    sesType: 'chatNotify'
+                    createTime: new Date()
+                  }
+                )
+                Session.set("Social.LevelOne.Menu", 'chatContent')
+          )
+    )
   'click .left-btn': ()->
     Session.set("Social.LevelOne.Menu", 'messageDialog')
   'click .j-bao': ()->
