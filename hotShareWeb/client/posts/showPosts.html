@@ -1,5 +1,6 @@
 <template name="showPosts">
   <div class="showBgColor">
+    <div class="showPostsBox">
     <div class="showPosts">
       <div id="blur_overlay" style="position: absolute; opacity: 0.5; z-index: 1; width:100%; background-color:white;">
           {{> spinner}}
@@ -33,7 +34,7 @@
               {{/if}}
               <li role="presentation"><a id="WXSessionShare" role="menuitem" tabindex="-1" ><i class="fa fa-weixin fa-fw"></i>分享给微信好友</a></li>
               <li role="presentation"><a id="WXTimelineShare" role="menuitem" tabindex="-1" ><i class="fa fa-weixin fa-fw"></i>分享到微信朋友圈</a></li>
-              <li role="presentation"><a id="socialShare" role="menuitem" tabindex="-1" ><i class="fa fa-share-alt fa-fw"></i>系统分享</a></li>
+              <li role="presentation"><a id="socialShare" role="menuitem" tabindex="-1" ><i class="fa fa-share-alt fa-fw"></i>分享到更多应用</a></li>
             </ul>
           </div>
         {{/if}}
@@ -125,6 +126,7 @@
           <p>故事贴无法获得微信信息，请放心使用</p>
       </div>
       <div class="showPostsLine"></div>
+      </div>
       {{#if withSocialBar}}
         {{> socialContent}}
       {{/if}}
