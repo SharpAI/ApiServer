@@ -38,7 +38,7 @@ if Meteor.isClient
           console.log error
   Template.showPosts.destoryed=->
     $(window).children().off();
-  Template.showPosts.rendered=->  
+  Template.showPosts.rendered=->
     $('.mainImage').css('height',$(window).height()*0.55)
     postContent = Session.get("postContent")
     browseTimes = 0
@@ -164,6 +164,11 @@ if Meteor.isClient
     isMobile:->
       Meteor.isCordova
   Template.showPosts.events
+    'click .user':->
+      Session.set("ProfileUserId", this.owner)
+      Meteor.subscribe("userinfo", this.owner)
+      Meteor.subscribe("recentPostsViewByUser", this.owner)
+      Session.set("Social.LevelOne.Menu", 'userProfile')
     "click .showPostsFollowMe span a":->
       if Meteor.isCordova
         cordova.plugins.clipboard.copy('故事贴')
