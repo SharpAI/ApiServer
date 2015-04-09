@@ -22,19 +22,21 @@
   </ul>
 </template>
 <template name="setNickname">
-  <div class="contactsList"><div class="head" style="display:block;">
-    <div class="socialTitle">
-      <div class="left-btn">取消</div>
-      <span class="Contacts">昵称</span>
-      <div class="right-btn">保存</div>
+  <div class="setNickname">
+    <div class="head">
+      <div class="socialTitle">
+        <div class="left-btn">取消</div>
+        <span class="Contacts">昵称</span>
+        <div class="right-btn">保存</div>
+      </div>
     </div>
-  </div></div>
-  
-  <ul class="set-up">
-    <li>
-      <div class="input"><form class="setNickname-form"><input type="text" id="text" placeholder="输入新昵称" value="{{nickname}}"/></form></div>
-    </li>
-  </ul>
+
+    <ul class="set-up">
+      <li>
+        <div class="input"><form class="setNickname-form"><input class="text" type="text" id="text" placeholder="输入新昵称" value="{{nickname}}"/></form></div>
+      </li>
+    </ul>
+  </div>
 </template>
 <template name="setSex">
   <div class="contactsList"><div class="head" style="display:block;">

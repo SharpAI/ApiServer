@@ -1,5 +1,6 @@
 <template name="showPosts">
   <div class="showBgColor">
+    <div class="showPostsBox">
     <div class="showPosts">
       <div id="blur_overlay" style="position: absolute; opacity: 0.5; z-index: 1; width:100%; background-color:white;">
           {{> spinner}}
@@ -125,6 +126,7 @@
           <p>故事贴无法获得微信信息，请放心使用</p>
       </div>
       <div class="showPostsLine"></div>
+      </div>
       {{#if withSocialBar}}
         {{> socialContent}}
       {{/if}}

@@ -159,6 +159,20 @@ Template.messageGroupCreate.events
       
     _dep.changed()
     
+Template.messageGroupCreateName.rendered=->
+  $('.showPostsBox').css('display', 'none')
+  $('.chatFooter').css('display', 'none')
+  $('#postFooter').css('display', 'none')
+  $('.chatBoxContent').css('min-height', '0px')
+  $('.showBgColor').css('min-height','0px')
+  $('body').css('background-color' ,'#fff')
+  $('.text').focus()
+Template.messageGroupCreateName.destroyed=->
+  $('.showPostsBox').css('display', 'block')
+  $('.chatFooter').css('display', 'block')
+  $('.chatBoxContent').css('min-height',$(window).height()-90)
+  $('.showBgColor').css('min-height',$(window).height())
+  $('body').css('background-color' ,'#000')
 Template.messageGroupCreateName.helpers
   name:()->
     if Session.get('messageGroupCreateType') is 'edit'

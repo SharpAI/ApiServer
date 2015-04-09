@@ -65,19 +65,15 @@
 </template>
 
 <template name="messageGroupCreateName">
-  <div class="contactsList">
-    <div class="head" style="display:block;">
-      <div class="socialTitle">
-        <div class="left-btn">&lt;取消</div>
-        <span class="Contacts">群名称</span>
-        <div class="right-btn">确定</div>
-      </div>
+  <div class="messageGroupCreateName">
+    <div class="head">
+      <div class="left-btn">&lt;取消</div>
+      群名称
+      <div class="right-btn">确定</div>
     </div>
-    
-    <div class="messageGroupCreateName">
-      <form class="message-group-create-name-form">
-        <input id="text" name="text" type="text" class="form-control" placeholder="群的名称，15个字符以内." value="{{name}}">
-      </form>
-    </div>
+
+    <form class="message-group-create-name-form">
+      <input id="text" name="text" type="text" class="form-control" placeholder="群的名称，15个字符以内." value="{{name}}">
+    </form>
   </div>
 </template>
