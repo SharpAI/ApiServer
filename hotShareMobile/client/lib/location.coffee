@@ -7,30 +7,29 @@ window.LocationUpdate =()->
     geoc.getLocation point,(rs)->
       if rs and rs.addressComponents
         addComp = rs.addressComponents
+        address = ''
+        if addComp.province and addComp.province isnt ''
+          address += addComp.province + ' '
         if addComp.city and addComp.city isnt ''
-          Session.set("userAddress",addComp.city+' '+addComp.district)
-          console.log("#baidu location city is " + Session.get("userAddress"))
-          #alert(Session.get("userAddress"));
-          Meteor.users.update Meteor.userId(),{$set:{'profile.location':Session.get("userAddress")}}
-        else
-          requestUrl = "http://maps.googleapis.com/maps/api/geocode/json?latlng="+Session.get('location').latitude+','+Session.get('location').longitude+'&sensor=false'
-          Meteor.http.call "GET",requestUrl,(error,result)->
-            if result.statusCode is 200
-              results = result.data.results
-              if results.length > 2
-                address_components = results[2].address_components
-                address_components.reverse()
-                address_array = [];
-                for i in [0..(address_components.length)-1]
-                  address_array.push(address_components[i].long_name)
-                reverse_address = address_array.join(',');
-
-                Session.set("userAddress",reverse_address)
-                console.log("#google location city is " + Session.get("userAddress"))
-                #alert(Session.get("userAddress"));
-                Meteor.users.update Meteor.userId(),{$set:{'profile.location':Session.get("userAddress")}}
+          address += addComp.city
+        if address isnt ''
+          Meteor.users.update Meteor.userId(),{$set:{'profile.location':address}}
+          return
       else
         console.log("getLocation rs is null")
+
+      requestUrl = "http://maps.googleapis.com/maps/api/geocode/json?latlng="+Session.get('location').latitude+','+Session.get('location').longitude+'&sensor=false'
+      Meteor.http.call "GET",requestUrl,(error,result)->
+        if result.statusCode is 200
+          results = result.data.results
+          if results.length > 2
+            address_components = results[2].address_components
+            address_components.reverse()
+            address_array = [];
+            for i in [0..(address_components.length)-1]
+              address_array.push(address_components[i].long_name)
+            reverse_address = address_array.join(',');
+            Meteor.users.update Meteor.userId(),{$set:{'profile.location':reverse_address}}
   Meteor.call('getGeoFromConnection',(err,response )->
     if response and response.ll
       Session.set('location',{latitude:response.ll[0],longitude:response.ll[1],type:'ip'})
