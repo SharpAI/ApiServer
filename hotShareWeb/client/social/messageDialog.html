@@ -3,6 +3,11 @@
     <div class="socialTitle">
       <div class="left-btn">&lt;聊天</div>
       <span class="Contacts">{{title}}</span>
+<!--
+      {{#if is_groupChat}}
+      <div class="right-btn"><i class="fa fa-users"></i></div>
+      {{/if}}
+-->
     </div>
   </div></div>
   
@@ -59,8 +64,22 @@
   <div class="messageDialogInput">
     <form class="message-dialog-input-form">
       <div class="img"><i class="fa fa-picture-o image"></i></div>
-      <div class="input"><input id="text" name="text" type="text" class="form-control" placeholder="说点什么..."></div>
-      <div class="send"><div class="submit">发送</div></div>
+      <div class="input">说点什么...</div>
     </form>
+  </div>
+</template>
+<template name="messageDialogInputForm">
+  <div class="messageDialog">
+    <div class="messageDialogInputForm">
+      <div class="head">
+        <div class="left-btn">取消</div>
+        聊天
+        <div class="right-btn">发送</div>
+      </div>
+      
+      <form class="message-dialog-input-form">
+        <textarea id="text" name="text" class="text" placeholder="说点什么..."></textarea>
+      </form>
+    </div>
   </div>
 </template>

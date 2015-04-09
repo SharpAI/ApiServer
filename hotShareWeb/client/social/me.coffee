@@ -4,7 +4,7 @@ if Meteor.isClient
     me views
   ###
   Template.me.rendered=->
-    $('.me').css('min-height',$(window).height()-90)
+    #$('.me').css('min-height',$(window).height()-90)
   Template.me.helpers
     whichOne:()->
       Session.get("Social.LevelTwo.Me.Menu")
@@ -37,8 +37,30 @@ if Meteor.isClient
       if Meteor.user()
         Meteor.user().profile.fullname
   Template.setNickname.rendered=->
-    document.body.scrollTop = document.body.scrollHeight
+    $('.showPostsBox').css('display', 'none')
+    $('.chatFooter').css('display', 'none')
+    $('#postFooter').css('display', 'none')
+    $('.chatBoxContent').css('min-height', '0px')
+    $('.showBgColor').css('min-height','0px')
+    $('body').css('background-color' ,'#EFEFF4')
+    $('.text').focus()
+  Template.setNickname.destroyed=->
+    $('.showPostsBox').css('display', 'block')
+    $('.chatFooter').css('display', 'block')
+    $('.chatBoxContent').css('min-height',$(window).height()-90)
+    $('.showBgColor').css('min-height',$(window).height())
+    $('body').css('background-color' ,'#000')
   Template.setNickname.events
+    'focus .text':->
+      console.log("#comment get focus");
+      $('.contactsList .head').css('display' ,'block')
+      if Meteor.isCordova and isIOS
+        cordova.plugins.Keyboard.disableScroll(true)
+    'blur .text':->
+      console.log("#comment lost focus");
+      $('.contactsList .head').css('display' ,'block')
+      if Meteor.isCordova and isIOS
+        cordova.plugins.Keyboard.disableScroll(false)
     'click .left-btn':(e)->
       Session.set("Social.LevelTwo.Me.Menu","information")
     'click .right-btn':(e)->

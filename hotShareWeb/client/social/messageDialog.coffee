@@ -8,6 +8,7 @@ Template.messageDialog.created=->
 Template.messageDialog.rendered=->
   this.$('.message').css('min-height',$(window).height()-90)
   to = Session.get("messageDialog_to") || {}
+  Meteor.call('readMessage', to)
   
   if to.type is 'user'
     Meteor.subscribe("userinfo", to.id)
@@ -113,17 +114,32 @@ Template.messageDialog.helpers
   is_chatNotify: (sesType)->
     sesType is 'chatNotify'
   is_groupChat: (sesType)->
-    sesType is 'groupChat'
+    if sesType
+      sesType is 'groupChat'
+    else
+      to = Session.get("messageDialog_to") || {}
+      if to.type is 'group'
+        true
+      else if to.type is 'session'
+        session = MsgSession.findOne(to.id)
+        session.sesType is 'groupChat' or session.sesType is 'chatNotify'
+      else
+        false
     
 Template.messageDialog.events
   'click .left-btn': ()->
     to = Session.get("messageDialog_to") || {}
     Meteor.call('readMessage', to)
     Session.set("Social.LevelOne.Menu", 'chatContent')
+  'click .right-btn': ()->
+    Session.set("Social.LevelOne.Menu", 'messageDialogInfo')
 
 Template.messageDialogInput.events
   'click .submit': ()->
     $('.message-dialog-input-form').submit()
+    
+  'click .input': ()->
+    Session.set("Social.LevelOne.Menu", 'messageDialogInputForm')
     
   'click .image': ()->
     selectMediaFromAblum(
@@ -200,7 +216,36 @@ Template.messageDialogInput.events
                 Meteor.call('readMessage', to)
           )
     )
-    
+
+Template.messageDialogInputForm.rendered=->
+  $('.showPostsBox').css('display', 'none')
+  $('.chatFooter').css('display', 'none')
+  $('#postFooter').css('display', 'none')
+  $('.chatBoxContent').css('min-height', '0px')
+  $('.showBgColor').css('min-height','0px')
+  $('body').css('background-color' ,'#fff')
+  $('.text').focus()
+Template.messageDialogInputForm.destroyed=->
+  $('.showPostsBox').css('display', 'block')
+  $('.chatFooter').css('display', 'block')
+  $('.chatBoxContent').css('min-height',$(window).height()-90)
+  $('.showBgColor').css('min-height',$(window).height())
+  $('body').css('background-color' ,'#000')
+Template.messageDialogInputForm.events
+  'click .left-btn':->
+    Session.set("Social.LevelOne.Menu", 'messageDialog')
+  'focus .text':->
+    console.log("#comment get focus");
+    $('.contactsList .head').css('display' ,'block')
+    if Meteor.isCordova and isIOS
+      cordova.plugins.Keyboard.disableScroll(true)
+  'blur .text':->
+    console.log("#comment lost focus");
+    $('.contactsList .head').css('display' ,'block')
+    if Meteor.isCordova and isIOS
+      cordova.plugins.Keyboard.disableScroll(false)
+  'click .right-btn': ()->
+    $(".message-dialog-input-form").submit()
   'submit .message-dialog-input-form': (e)->
     if e.target.text.value is ''
       PUB.toast('你不想说点什么.^_^.')
@@ -276,9 +321,7 @@ Template.messageDialogInput.events
         if err
           PUB.toast('发送失败，请重试.^_^.')
         else
-          e.target.text.value = ''
-          document.body.scrollTop = document.body.scrollHeight
-          Meteor.call('readMessage', to)
+          Session.set("Social.LevelOne.Menu", 'messageDialog')
     )
     
     false
