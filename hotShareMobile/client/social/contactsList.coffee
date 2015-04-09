@@ -75,7 +75,7 @@ if Meteor.isClient
         )
         return viewerResult
     meeter:()->
-      meeterResult = Meets.find({me:Meteor.userId()}, {sort: {count: -1}, limit:20}).fetch()
+      meeterResult = Meets.find({me:Meteor.userId()}, {sort: {count: -1}}).fetch()
       return meeterResult
     isMyself:()->
       this.ta is Meteor.userId()
