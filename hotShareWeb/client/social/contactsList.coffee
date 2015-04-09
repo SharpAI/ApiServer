@@ -78,15 +78,21 @@ if Meteor.isClient
       meeterResult = Meets.find({me:Meteor.userId()}, {sort: {count: -1}, limit:20}).fetch()
       return meeterResult
     isMyself:()->
-      this.userId is Meteor.userId()
+      this.ta is Meteor.userId()
     isSelf:(follow)->
       if follow.userId is Meteor.userId()
         true
       else
         false
     isFollowed:()->
-      fcount = Follower.find({"followerId":this.userId}).count()
+      fcount = Follower.find({"followerId":this.ta}).count()
       if fcount > 0
+        true
+      else
+        false
+    isViewer:()->
+      vcount = Viewers.find({postId:Session.get("postContent")._id, userId:this.ta}).count()
+      if vcount > 0
         true
       else
         false
