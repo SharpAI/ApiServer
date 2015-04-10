@@ -742,9 +742,11 @@ if(Meteor.isServer){
         return true;
 
       // 群成员
-      for(var i=0;i<doc.users.lenght;i++)
-        if(doc.users[i].userId === userId)
+      for(var i=0;i<doc.users.length;i++){
+        if(doc.users[i].userId === userId){
           return true;
+        }
+      }
       
       return false;
     },
@@ -756,6 +758,12 @@ if(Meteor.isServer){
       }
       
       return false;
+    }
+  });
+  MsgSession.allow({
+    remove: function (userId, doc) {
+      console.log(userId === doc.userId);
+      return userId === doc.userId; 
     }
   });
 
