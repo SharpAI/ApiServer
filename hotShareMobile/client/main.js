@@ -23,16 +23,20 @@ if (Meteor.isCordova) {
     }
     
     function eventPause(){
-      if(location.pathname === '/add'){
-        Template.addPost.__helpers.get('saveDraft')()
+      if(withAutoSavedOnPaused) {
+          if (location.pathname === '/add') {
+              Template.addPost.__helpers.get('saveDraft')()
+          }
       }
     }
 
     function eventBackButton(){
       // 编辑post时回退
-      if(location.pathname === '/add'){
-        Template.addPost.__helpers.get('saveDraft')()
-      }
+        if(withAutoSavedOnPaused) {
+            if (location.pathname === '/add') {
+                Template.addPost.__helpers.get('saveDraft')()
+            }
+        }
       
       var currentRoute = Router.current().route.getName();
       if (currentRoute == undefined || currentRoute =="search" || currentRoute =="add" || currentRoute =="bell" || currentRoute =="user" || currentRoute == "authOverlay") {
