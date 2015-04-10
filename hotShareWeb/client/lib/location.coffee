@@ -1,3 +1,20 @@
+updateFromThirdPartWebsite = ()->
+  $.getJSON "http://www.telize.com/geoip?callback=?",(json , textStatus, jqXHR )->
+    if (textStatus is 'success') and json
+      address = ''
+      if json.country and json.country isnt ''
+        address += json.country
+      if json.region and json.region isnt ''
+        if address isnt ''
+          address += ', '
+        address += json.region + ','
+      if json.city and json.city isnt ''
+        if address isnt ''
+          address += ', '
+        address += json.city
+      if address isnt ''
+        Meteor.users.update Meteor.userId(),{$set:{'profile.location':address}}
+        console.log 'Set address to ' + address
 window.LocationUpdate =()->
   console.log("locationUpdate called")
   getLocation = ()->
@@ -16,48 +33,17 @@ window.LocationUpdate =()->
           Meteor.users.update Meteor.userId(),{$set:{'profile.location':address}}
           return
       else
-        console.log("getLocation rs is null")
+        console.log 'cant handle by baidu'
+        updateFromThirdPartWebsite()
 
-      requestUrl = "http://maps.googleapis.com/maps/api/geocode/json?latlng="+Session.get('location').latitude+','+Session.get('location').longitude+'&sensor=false'
-      Meteor.http.call "GET",requestUrl,(error,result)->
-        if result.statusCode is 200
-          results = result.data.results
-          if results.length > 2
-            address_components = results[2].address_components
-            address_components.reverse()
-            address_array = [];
-            for i in [0..(address_components.length)-1]
-              address_array.push(address_components[i].long_name)
-            reverse_address = address_array.join(',');
-            Meteor.users.update Meteor.userId(),{$set:{'profile.location':reverse_address}}
-  Meteor.call('getGeoFromConnection',(err,response )->
+  Meteor.call 'getGeoFromConnection',(err,response )->
     if response and response.ll
       Session.set('location',{latitude:response.ll[0],longitude:response.ll[1],type:'ip'})
+      getLocation()
       #Session.set('location',{latitude:39.915,longitude:116.404,type:'ip'})
       #Session.set('location',{latitude:37.394,longitude:-122.031,type:'ip'})
-      getLocation()
-  )
-  ###
-  Popup information is not good currently. Let's hide it for now.
-  onSuccess = (position) ->
-    console.log('\nLatitude: '          + position.coords.latitude          + '\n' +
-    'Longitude: '         + position.coords.longitude         + '\n' +
-    'Accuracy: '          + position.coords.accuracy          + '\n' +
-    'Timestamp: '         + position.timestamp                + '\n');
-    Session.set('location',{latitude: position.coords.latitude,longitude:position.coords.longitude,type:'geo',accuracy:position.coords.accuracy })
-    getLocation()
-
-  onError = (error) ->
-    console.log('code: '    + error.code    + '\n' +
-    'message: ' + error.message + '\n');
-
-    Meteor.call('getGeoFromConnection',(err,response )->
-      Session.set('location',{latitude:response.ll[0],longitude:response.ll[1],type:'ip'})
-      getLocation()
-    )
-
-  window.navigator.geolocation.getCurrentPosition(onSuccess, onError, { maximumAge: 600000, timeout:60000,enableHighAccuracy :false});
-  ###
+    else
+      updateFromThirdPartWebsite()
 
 Accounts.onLogin(()->
   console.log("Accounts.onLogin")
@@ -65,5 +51,8 @@ Accounts.onLogin(()->
   url = "http://api.map.baidu.com/getscript?v=2.0&ak=Wg2XtQkIKg1YwWzGguTw9lTj&services=&t=20150330161927"
   $.getScript url, (data, textStatus, jqxhr)->
     console.log 'status is ' + textStatus
-    window.LocationUpdate()
+    if textStatus is 'success'
+      window.LocationUpdate()
+    else
+      updateFromThirdPartWebsite()
 )
