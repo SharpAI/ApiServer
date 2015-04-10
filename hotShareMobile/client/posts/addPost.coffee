@@ -478,6 +478,78 @@ if Meteor.isClient
     return
 
   Template.addPost.helpers
+    saveDraft:->
+        layout = JSON.stringify(gridster.serialize())
+        pub=[]
+        title = $("#title").val()
+        console.log "title = " + title
+        if title is ''
+          title = '[空标题]'
+#        if title is ''
+#          window.plugins.toast.showShortBottom('请为您的故事加个标题')
+#          return
+        addontitle = $("#addontitle").val()
+        draftData = Drafts.find().fetch()
+        draftId = draftData[0]._id;
+        for i in [0..(draftData.length-1)]
+          if i is 0
+            mainImage = draftData[i].imgUrl
+            mainText = $("#"+draftData[i]._id+"text").val()
+
+          json = jQuery.parseJSON(layout);
+          for item in json
+            if item.id is draftData[i]._id
+              draftData[i].data_row = item.row
+              draftData[i].data_col = item.col
+              draftData[i].data_sizex = item.size_x
+              draftData[i].data_sizey = item.size_y
+
+          pub.push(draftData[i])
+
+        sortBy = (key, a, b, r) ->
+          r = if r then 1 else -1
+          return -1*r if a[key] > b[key]
+          return +1*r if a[key] < b[key]
+          return 0
+        pub.sort((a, b)->
+          sortBy('data_row', a, b)
+        )
+          #pub.push {
+          #  _id: draftData[i]._id,
+          #  type: draftData[i].type,
+          #  imgUrl:draftData[i].imgUrl,
+          #  filename: draftData[i].filename,
+          #  URI: draftData[i].URI,
+          #  layout: draftData[i].layout
+          #}
+        if SavedDrafts.find({_id:draftId}).count() > 0
+            SavedDrafts.update(
+              {_id:draftId},
+              {$set:{
+              pub:pub,
+              title:title,
+              addontitle:addontitle,
+              mainImage: mainImage,
+              mainText: mainText,
+              owner:Meteor.userId(),
+              createdAt: new Date(),
+              }}
+            )
+        else
+            SavedDrafts.insert {
+              _id:draftId,
+              pub:pub,
+              title:title,
+              addontitle:addontitle,
+              mainImage: mainImage,
+              mainText: mainText,
+              owner:Meteor.userId(),
+              createdAt: new Date(),
+            }
+        Drafts.remove {owner: Meteor.userId()}
+        history.back()
+        #PUB.back()
+        return
     showPostFooter:->
       if Session.get('isReviewMode') is '2' or Session.get('isReviewMode') is '0'
         if Session.get('textareaFocused') is false
@@ -765,77 +837,10 @@ if Meteor.isClient
         Session.set 'isReviewMode','2'
       else
         Session.set 'isReviewMode','0'
-      
+    
     'click #saveDraft':->
-        layout = JSON.stringify(gridster.serialize())
-        pub=[]
-        title = $("#title").val()
-        console.log "title = " + title
-        if title is ''
-          window.plugins.toast.showShortBottom('请为您的故事加个标题')
-          return
-        addontitle = $("#addontitle").val()
-        draftData = Drafts.find().fetch()
-        draftId = draftData[0]._id;
-        for i in [0..(draftData.length-1)]
-          if i is 0
-            mainImage = draftData[i].imgUrl
-            mainText = $("#"+draftData[i]._id+"text").val()
-
-          json = jQuery.parseJSON(layout);
-          for item in json
-            if item.id is draftData[i]._id
-              draftData[i].data_row = item.row
-              draftData[i].data_col = item.col
-              draftData[i].data_sizex = item.size_x
-              draftData[i].data_sizey = item.size_y
-
-          pub.push(draftData[i])
-
-        sortBy = (key, a, b, r) ->
-          r = if r then 1 else -1
-          return -1*r if a[key] > b[key]
-          return +1*r if a[key] < b[key]
-          return 0
-        pub.sort((a, b)->
-          sortBy('data_row', a, b)
-        )
-          #pub.push {
-          #  _id: draftData[i]._id,
-          #  type: draftData[i].type,
-          #  imgUrl:draftData[i].imgUrl,
-          #  filename: draftData[i].filename,
-          #  URI: draftData[i].URI,
-          #  layout: draftData[i].layout
-          #}
-        if SavedDrafts.find({_id:draftId}).count() > 0
-            SavedDrafts.update(
-              {_id:draftId},
-              {$set:{
-              pub:pub,
-              title:title,
-              addontitle:addontitle,
-              mainImage: mainImage,
-              mainText: mainText,
-              owner:Meteor.userId(),
-              createdAt: new Date(),
-              }}
-            )
-        else
-            SavedDrafts.insert {
-              _id:draftId,
-              pub:pub,
-              title:title,
-              addontitle:addontitle,
-              mainImage: mainImage,
-              mainText: mainText,
-              owner:Meteor.userId(),
-              createdAt: new Date(),
-            }
-        Drafts.remove {owner: Meteor.userId()}
-        history.back()
-        #PUB.back()
-        return
+      Template.addPost.__helpers.get('saveDraft')()
+      
     'click #publish':->
       if Meteor.user() is null
         window.plugins.toast.showShortBottom('请登录后发表您的故事')

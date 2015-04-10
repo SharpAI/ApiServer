@@ -19,9 +19,21 @@ if (Meteor.isCordova) {
     function onDeviceReady() {
         // 按钮事件
         document.addEventListener("backbutton", eventBackButton, false); // 返回键
+        document.addEventListener("pause", eventPause, false);//挂起
+    }
+    
+    function eventPause(){
+      if(location.pathname === '/add'){
+        Template.addPost.__helpers.get('saveDraft')()
+      }
     }
 
     function eventBackButton(){
+      // 编辑post时回退
+      if(location.pathname === '/add'){
+        Template.addPost.__helpers.get('saveDraft')()
+      }
+      
       var currentRoute = Router.current().route.getName();
       if (currentRoute == undefined || currentRoute =="search" || currentRoute =="add" || currentRoute =="bell" || currentRoute =="user" || currentRoute == "authOverlay") {
         window.plugins.toast.showShortBottom('再点击一次退出!');
