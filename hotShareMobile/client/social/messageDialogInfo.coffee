@@ -59,7 +59,7 @@ Template.messageDialogGroupInfo.events
             }
             (err, number)->
               if err or number <= 0
-                PUB.toast('失败，请重试！'+err)
+                PUB.toast('失败，请重试！')
               else
                 Messages.insert(
                   {
@@ -74,6 +74,7 @@ Template.messageDialogGroupInfo.events
                     createTime: new Date()
                   }
                 )
+                MsgSession.remove({toGroupId: group._id, userId: Meteor.userId()})
                 Session.set("Social.LevelOne.Menu", 'chatContent')
           )
     )
