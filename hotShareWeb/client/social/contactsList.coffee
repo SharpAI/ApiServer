@@ -22,8 +22,6 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu", 'userProfile')
     'click .messageGroup': ()->
       Session.set("Social.LevelOne.Menu", 'messageGroup')      
-  Template.addNewFriends.rendered=->
-    Session.set('mrLimit', 0)
   Template.addNewFriends.helpers
     is_meet_count: (count)->
       count > 0
@@ -78,31 +76,6 @@ if Meteor.isClient
         return viewerResult
     meeter:()->
       meeterResult = Meets.find({me:Meteor.userId()}, {sort: {count: -1}}).fetch()
-      mrLength = meeterResult.length
-      for i in [0..(meeterResult.length-1)]
-        if meeterResult[i] isnt undefined
-          taId = meeterResult[i].ta
-          if taId is Meteor.userId()
-            meeterResult.splice(i,1)
-          else
-            fcount = Follower.find({"followerId":taId}).count()
-            if fcount > 0
-              meeterResult.splice(i,1)
-            else
-              vcount = Viewers.find({postId:Session.get("postContent")._id, userId:taId}).count()
-              if vcount is 0
-                meeterResult.splice(i,1)
-      if meeterResult.length < 20
-        smrLength = Session.get("mrLimit")
-        if mrLength is smrLength
-          if smrLength is 0
-            smrLength = 20
-          else
-            smrLength = smrLength * 2
-          Session.set('mrLimit',smrLength)
-          Meteor.setTimeout ()->
-            Meteor.subscribe("meetscountwithlimit", smrLength)
-          , 3000
       return meeterResult
     isMyself:()->
       this.ta is Meteor.userId()

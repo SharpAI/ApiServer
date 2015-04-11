@@ -55,6 +55,9 @@
 <template name="addNewFriends">
   <div class="addNewFriends">
   {{#each meeter}}
+    {{#unless isFollowed}}
+    {{#unless isMyself}}
+    {{#if isViewer}}
       <div id="{{ta}}" class="eachViewer newUserProfile">
         <!--列出浏览人-->
         <img class="icon" src="{{userIcon}}" width="30" height="30">
@@ -62,6 +65,9 @@
         <div class="meet_count">缘分啊，我们已偶遇{{meet_count}}次了!</div>
       </div>
       <div class="chatContentLine"></div>
+    {{/if}}
+    {{/unless}}
+    {{/unless}}
   {{/each}}
   </div>
 </template>

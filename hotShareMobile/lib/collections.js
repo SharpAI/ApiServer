@@ -19,9 +19,6 @@ Meets = new Meteor.Collection('meets');
 
 if(Meteor.isServer){
   Rnd = 0;
-  Meteor.publish('meetscountwithlimit', function(limit) {
-     return Meets.find({me:this.userId},{sort:{count:-1},limit:limit});
-  });
   Meteor.publish('meetscount', function() {
      return Meets.find({me:this.userId});
   });
@@ -872,6 +869,7 @@ if(Meteor.isClient){
           Meteor.subscribe("msgSession");
           //群信息
           Meteor.subscribe("msgGroup");
+          Meteor.subscribe("meetscount");
         }
       });
   }
