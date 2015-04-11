@@ -804,12 +804,6 @@ if(Meteor.isServer){
 }
 
 if(Meteor.isClient){
-  Tracker.autorun(function () {
-    if(Session.get("postContent")){
-      Meteor.subscribe("comment",Session.get("postContent")._id);
-      Meteor.subscribe("viewers",Session.get("postContent")._id);
-    }
-  });
   if(Meteor.isClient){
       var FOLLOWPOSTS_ITEMS_INCREMENT = 10;
       var FEEDS_ITEMS_INCREMENT = 20;

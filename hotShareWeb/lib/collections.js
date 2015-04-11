@@ -742,9 +742,11 @@ if(Meteor.isServer){
         return true;
 
       // 群成员
-      for(var i=0;i<doc.users.lenght;i++)
-        if(doc.users[i].userId === userId)
+      for(var i=0;i<doc.users.length;i++){
+        if(doc.users[i].userId === userId){
           return true;
+        }
+      }
       
       return false;
     },
@@ -756,6 +758,12 @@ if(Meteor.isServer){
       }
       
       return false;
+    }
+  });
+  MsgSession.allow({
+    remove: function (userId, doc) {
+      console.log(userId === doc.userId);
+      return userId === doc.userId; 
     }
   });
 
@@ -796,12 +804,6 @@ if(Meteor.isServer){
 }
 
 if(Meteor.isClient){
-  Tracker.autorun(function () {
-    if(Session.get("postContent")){
-      Meteor.subscribe("comment",Session.get("postContent")._id);
-      Meteor.subscribe("viewers",Session.get("postContent")._id);
-    }
-  });
   if(Meteor.isClient){
       var FOLLOWPOSTS_ITEMS_INCREMENT = 10;
       var FEEDS_ITEMS_INCREMENT = 20;

@@ -5,7 +5,8 @@ if Meteor.isClient
     return
   Router.route '/posts/:_id', {
       waitOn: ->
-        Meteor.subscribe("publicPosts",this.params._id)
+        [Meteor.subscribe("publicPosts",this.params._id)
+        Meteor.subscribe("refcomments")]
       action: ->
         post = Posts.findOne({_id: this.params._id})
         refComment = RefComments.find()
@@ -33,7 +34,7 @@ if Meteor.isClient
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->
-        Meteor.subscribe("publicPosts",this.params._id)
-        Meteor.subscribe("refcomments")
+        [Meteor.subscribe("publicPosts",this.params._id)
+        Meteor.subscribe("refcomments")]
       fastRender: true
     }
