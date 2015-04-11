@@ -4,6 +4,8 @@ if Meteor.isClient
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
     document.body.scrollTop = document.body.scrollHeight
   Template.userProfile.helpers
+    showPostSuggestionToUser: ()->
+      withPostSuggestionToUser
     isMale:(sex)->
       sex is 'male'
     isFemale:(sex)->

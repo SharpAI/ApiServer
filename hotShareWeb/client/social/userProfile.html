@@ -76,10 +76,12 @@
       </ul>
     </div>
 -->
-    {{#if isSuggested}}
-      <div id="suggestedCurrentPost">已推荐</div>
-    {{else}}
-      <div id="suggestCurrentPost">推荐本文</div>
+    {{#if showPostSuggestionToUser}}
+      {{#if isSuggested}}
+        <div id="suggestedCurrentPost">已推荐</div>
+      {{else}}
+        <div id="suggestCurrentPost">推荐本文</div>
+      {{/if}}
     {{/if}}
     {{#if isFollowed}}
       {{#if withChat}}
