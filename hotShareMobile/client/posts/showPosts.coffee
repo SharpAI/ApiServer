@@ -38,7 +38,7 @@ if Meteor.isClient
                 createdAt: new Date()
               }
           ,2000
-      ,3000
+      ,500
   Template.showPosts.destoryed=->
     $(window).children().off();
   Template.showPosts.rendered=->
