@@ -92,6 +92,9 @@ if Meteor.isClient
               vcount = Viewers.find({postId:Session.get("postContent")._id, userId:taId}).count()
               if vcount is 0
                 meeterResult.splice(i,1)
+      if meeterResult.length > 20
+        for i in [(meeterResult.length-1)..20]
+          meeterResult.splice(i,1)
       if meeterResult.length < 20
         smrLength = Session.get("mrLimit")
         if mrLength is smrLength
