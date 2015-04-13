@@ -223,8 +223,8 @@
 				}
 
 				sliderCss = {
-					width : width,
-					height : height
+					width : (width + 5),
+					height : (height + 5)
 				};
 
 				$( '#swipebox-overlay' ).css( sliderCss );
