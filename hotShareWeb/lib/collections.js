@@ -19,6 +19,9 @@ Meets = new Meteor.Collection('meets');
 
 if(Meteor.isServer){
   Rnd = 0;
+  Meteor.publish('meetscountwithlimit', function(limit) {
+     return Meets.find({me:this.userId},{sort:{count:-1},limit:limit});
+  });
   Meteor.publish('meetscount', function() {
      return Meets.find({me:this.userId});
   });
@@ -742,9 +745,11 @@ if(Meteor.isServer){
         return true;
 
       // 群成员
-      for(var i=0;i<doc.users.lenght;i++)
-        if(doc.users[i].userId === userId)
+      for(var i=0;i<doc.users.length;i++){
+        if(doc.users[i].userId === userId){
           return true;
+        }
+      }
       
       return false;
     },
@@ -756,6 +761,12 @@ if(Meteor.isServer){
       }
       
       return false;
+    }
+  });
+  MsgSession.allow({
+    remove: function (userId, doc) {
+      console.log(userId === doc.userId);
+      return userId === doc.userId; 
     }
   });
 
@@ -855,7 +866,6 @@ if(Meteor.isClient){
           Meteor.subscribe("msgSession");
           //群信息
           Meteor.subscribe("msgGroup");
-          Meteor.subscribe("meetscount");
         }
       });
   }
