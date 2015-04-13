@@ -293,10 +293,12 @@ if (Meteor.isCordova){
     computeProgressBar = function(fileName, curPercent) {
         var percent = 0;
         var isFind = false;
-        var computePercent = curPercent>=100 ? 99 : curPercent;
+        var computePercent = curPercent>100 ? 100 : curPercent;
+        computePercent = computePercent < 0 ? 0 : computePercent
+        
         for (var i=0; i<uploadingFilesInfo.files.length; i++) {
             if (uploadingFilesInfo.files[i].fileName == fileName) {
-                uploadingFilesInfo.files[i].percent = computePercent;
+                uploadingFilesInfo.files[i].percent = computePercent;//当前文件已上传的百分比
                 isFind = true;
                 break;
             }
@@ -306,11 +308,11 @@ if (Meteor.isCordova){
             uploadingFilesInfo.files.push(fileInfo);
         }
         for (var i=0; i<uploadingFilesInfo.files.length; i++) {
-            percent += uploadingFilesInfo.files[i].percent;
+            percent += uploadingFilesInfo.files[i].percent;//所有文件上传的百分比
             //console.log("uploadingFilesInfo.files["+i+"].percent = "+uploadingFilesInfo.files[i].percent);
         }
         //console.log("progressBarWidth="+parseInt(percent/uploadingFilesInfo.filesCount)+",percent="+percent+", filesCount="+uploadingFilesInfo.filesCount);
-        Session.set('progressBarWidth', parseInt(percent/uploadingFilesInfo.filesCount));
+        Session.set('progressBarWidth', parseInt(percent/uploadingFilesInfo.files.length));
 
         //Clear timeout timer of this file
         for (var i=0; i<multiThreadsInfo.length; i++) {
