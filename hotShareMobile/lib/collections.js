@@ -73,6 +73,42 @@ if(Meteor.isServer){
             }
         } catch (error){
         }
+        try{
+          var userId = this.userId;
+          var views=Viewers.find({postId:postId});
+          if(views.count()>0){
+            views.forEach(function(data){
+              var meetItemOne = Meets.findOne({me:userId,ta:data.userId});
+              if(meetItemOne){
+                var meetCount = meetItemOne.count;
+                if(meetCount === undefined || isNaN(meetCount))
+                  meetCount = 0;
+                Meets.update({me:userId,ta:data.userId},{$set:{count:meetCount+1}});
+              }else{
+                Meets.insert({
+                  me:userId,
+                  ta:data.userId,
+                  count:1
+                });
+              }
+
+              var meetItemTwo = Meets.findOne({me:data.userId,ta:userId});
+              if(meetItemTwo){
+                var meetCount = meetItemTwo.count;
+                if(meetCount === undefined || isNaN(meetCount))
+                  meetCount = 0;
+                Meets.update({me:data.userId,ta:userId},{$set:{count:meetCount+1}});
+              }else{
+                Meets.insert({
+                  me:data.userId,
+                  ta:userId,
+                  count:1
+                });
+              }
+            });
+          }
+        }
+        catch(error){}
         return Posts.find({_id: postId});
   });
   /*Meteor.publish("drafts", function() {
