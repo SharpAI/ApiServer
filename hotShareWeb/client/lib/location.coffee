@@ -46,13 +46,15 @@ window.LocationUpdate =()->
       updateFromThirdPartWebsite()
 
 Accounts.onLogin(()->
-  console.log("Accounts.onLogin")
-  window.BMap_loadScriptTime = (new Date).getTime()
-  url = "http://api.map.baidu.com/getscript?v=2.0&ak=Wg2XtQkIKg1YwWzGguTw9lTj&services=&t=20150330161927"
-  $.getScript url, (data, textStatus, jqxhr)->
-    console.log 'status is ' + textStatus
-    if textStatus is 'success'
-      window.LocationUpdate()
-    else
-      updateFromThirdPartWebsite()
+  Meteor.setTimeout ()->
+    console.log("Accounts.onLogin")
+    window.BMap_loadScriptTime = (new Date).getTime()
+    url = "http://api.map.baidu.com/getscript?v=2.0&ak=Wg2XtQkIKg1YwWzGguTw9lTj&services=&t=20150330161927"
+    $.getScript url, (data, textStatus, jqxhr)->
+      console.log 'status is ' + textStatus
+      if textStatus is 'success'
+        window.LocationUpdate()
+      else
+        updateFromThirdPartWebsite()
+
 )
