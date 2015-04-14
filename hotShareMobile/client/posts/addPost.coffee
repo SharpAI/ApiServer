@@ -792,8 +792,22 @@ if Meteor.isClient
       imgMove = 
         t : $("#default"+cropDraftId+" .crop-img").css('top')
         l : $("#default"+cropDraftId+" .crop-img").css('left')
+      console.log "imgRatio is "
+      console.log imgRatio
+      console.log "holderRatio is "
+      console.log holderRatio
       img_top = (parseFloat(imgMove.t) / holderSize.h)*100 + '%'
       img_left = (parseFloat(imgMove.l) / holderSize.w)*100 + '%'
+      console.log "imgSize is "+imgSize
+      console.log imgSize
+      console.log "imgZoomSize is "
+      console.log imgZoomSize
+      console.log "holderSize is "
+      console.log holderSize
+      console.log "imgMove is "
+      console.log imgMove
+      console.log "img_top is "
+      console.log img_top
       
       w1 = $("#default"+cropDraftId+" .crop-img").css('width')
       h1 = $("#default"+cropDraftId+" .crop-img").css('height')
