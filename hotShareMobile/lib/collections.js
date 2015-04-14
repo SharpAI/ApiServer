@@ -51,7 +51,6 @@ if(Meteor.isServer){
   });
   Meteor.publish("publicPosts", function(postId) {
         try {
-            console.log ('in publicPosts this.userId is ' + this.userId + ' postId is ' + postId );
             if(this.userId && postId ){
                 if( Viewers.find({userId:this.userId,postId:postId}).count() === 0 ){
                     userinfo = Meteor.users.findOne({_id: this.userId },{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
@@ -68,7 +67,6 @@ if(Meteor.isServer){
                 } else {
                     userinfo = Meteor.users.findOne({_id: this.userId},{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
                     if(userinfo) {
-                        console.log ('update createdAt');
                         Viewers.update({userId: this.userId, postId: postId}, {$set: {createdAt: new Date()}});
                     }
                 }
