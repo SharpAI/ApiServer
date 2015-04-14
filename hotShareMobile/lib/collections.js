@@ -920,11 +920,12 @@ if(Meteor.isClient){
             FollowUsersSearch = new SearchSource('followusers', fields, options);
             var topicsfields = ['text'];
             TopicsSearch = new SearchSource('topics', topicsfields, options);
-          
-          // 消息会话、最近联系人
-          Meteor.subscribe("msgSession");
-          //群信息
-          Meteor.subscribe("msgGroup");
+          if(withChat) {
+              // 消息会话、最近联系人
+              Meteor.subscribe("msgSession");
+              //群信息
+              Meteor.subscribe("msgGroup");
+          }
         }
       });
   }
