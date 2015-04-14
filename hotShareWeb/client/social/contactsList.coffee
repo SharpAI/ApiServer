@@ -7,7 +7,8 @@ if Meteor.isClient
     follower:()->
       Follower.find({"userId":Meteor.userId()},{sort: {createdAt: -1}})
     isViewer:()->
-      Meteor.subscribe("userViewers", Session.get("postContent")._id,this.followerId)
+#      Meteor.subscribe("userViewers", Session.get("postContent")._id,this.followerId)
+      Meteor.subscribe "viewers",Session.get("postContent")._id
       if Viewers.find({"userId":this.followerId,postId:Session.get("postContent")._id}).count()>0
         true
       else
@@ -58,6 +59,7 @@ if Meteor.isClient
         ""
     viewer:()->
       #Viewers.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}, limit:21})
+      Meteor.subscribe "viewers",Session.get("postContent")._id
       viewerResult = Viewers.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}, limit:21}).fetch()
       if viewerResult and (viewerResult.length > 1)
         for i in [0..(viewerResult.length-1)]
@@ -77,6 +79,7 @@ if Meteor.isClient
         )
         return viewerResult
     meeter:()->
+      Meteor.subscribe "viewers",Session.get("postContent")._id
       meeterResult = Meets.find({me:Meteor.userId()}, {sort: {count: -1}}).fetch()
       mrLength = meeterResult.length
       for i in [(meeterResult.length-1)..0]
@@ -121,6 +124,7 @@ if Meteor.isClient
       else
         false
     isViewer:()->
+      Meteor.subscribe "viewers",Session.get("postContent")._id
       vcount = Viewers.find({postId:Session.get("postContent")._id, userId:this.ta}).count()
       if vcount > 0
         true
