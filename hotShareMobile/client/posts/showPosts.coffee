@@ -18,33 +18,18 @@ if Meteor.isClient
       Math.max(D.body.offsetHeight, D.documentElement.offsetHeight)
       Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     )
-  updatePostRelatedInformation = ()->
+  subscribeCommentAndViewers = ()->
     if Session.get("postContent")
       Meteor.setTimeout ()->
         Meteor.subscribe "comment",Session.get("postContent")._id
-        Meteor.subscribe "viewers",Session.get("postContent")._id,()->
-          Meteor.setTimeout ()->
-            if Meteor.user() and (postContent=Session.get("postContent")) and (Viewers.find({userId:Meteor.userId()}).count() is 0)
-              if Meteor.user().profile.fullname and (Meteor.user().profile.fullname isnt '')
-                username = Meteor.user().profile.fullname
-              else
-                username = Meteor.user().username
-              Viewers.insert {
-                postId:postContent._id
-                username:username
-                userId:Meteor.user()._id
-                userIcon:Meteor.user().profile.icon
-                anonymous: Meteor.user().profile.anonymous
-                createdAt: new Date()
-              }
-          ,2000
+        Meteor.subscribe "viewers",Session.get("postContent")._id
       ,500
   Template.showPosts.destoryed=->
     $(window).children().off();
   Template.showPosts.rendered=->
     $('.mainImage').css('height',$(window).height()*0.55)
     postContent = Session.get("postContent")
-    updatePostRelatedInformation()
+    subscribeCommentAndViewers()
     browseTimes = 0
     Session.set("Social.LevelOne.Menu",'contactsList')
     if (postContent.browse != undefined)

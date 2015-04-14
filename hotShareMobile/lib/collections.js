@@ -50,6 +50,31 @@ if(Meteor.isServer){
         return FollowPosts.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
   });
   Meteor.publish("publicPosts", function(postId) {
+        try {
+            console.log ('in publicPosts this.userId is ' + this.userId + ' postId is ' + postId );
+            if(this.userId && postId ){
+                if( Viewers.find({userId:this.userId,postId:postId}).count() === 0 ){
+                    userinfo = Meteor.users.findOne({_id: this.userId },{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
+                    if(userinfo){
+                        Viewers.insert({
+                            postId:postId,
+                            username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
+                            userId:this.userId,
+                            userIcon: userinfo.profile.icon,
+                            anonymous: userinfo.profile.anonymous,
+                            createdAt: new Date()
+                        });
+                    }
+                } else {
+                    userinfo = Meteor.users.findOne({_id: this.userId},{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
+                    if(userinfo) {
+                        console.log ('update createdAt');
+                        Viewers.update({userId: this.userId, postId: postId}, {$set: {createdAt: new Date()}});
+                    }
+                }
+            }
+        } catch (error){
+        }
         return Posts.find({_id: postId});
   });
   /*Meteor.publish("drafts", function() {
