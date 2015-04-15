@@ -605,7 +605,7 @@ if (Meteor.isCordova){
                 for (var i = 0; i < length; i++) {
                   var timestamp = new Date().getTime();
                   var originalFilename = results[i].replace(/^.*[\\\/]/, '');
-                  var filename = Meteor.userId()+'_'+timestamp+ '_' + originalFilename;
+                  var filename = Meteor.userId()+'_'+timestamp+ '_' + originalFilename.replace(/%/g, '');
                   console.log('File name ' + filename);
 
                   var params = {filename:filename, originalFilename:originalFilename, URI:results[i], smallImage:''};
