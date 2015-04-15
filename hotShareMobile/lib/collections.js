@@ -23,10 +23,9 @@ if(Meteor.isClient){
 if(Meteor.isServer){
   Rnd = 0;
   Meteor.publish("newfriends", function (userId,postId) {
-    var self = this;
-    console.log ('in Publish newfriends with ID ' + postId + ' UserID ' + userId);
     check(postId, String);
     check(userId, String);
+    var self = this;
     var count = 0;
     var handle = Meets.find({me: userId},{sort:{count:-1}}).observeChanges({
       added: function (id,fields) {
@@ -39,7 +38,6 @@ if(Meteor.isServer){
             if(fcount === 0)
             {
                 count++;
-                console.log("count: " + count);
                 self.added("newfriends", id, fields);
             }
           }
@@ -60,7 +58,6 @@ if(Meteor.isServer){
 
     self.onStop(function () {
       handle.stop();
-      console.log('onStop of newfirends publish');
     });
   });
 
@@ -144,7 +141,8 @@ if(Meteor.isServer){
                 Meets.insert({
                   me:userId,
                   ta:data.userId,
-                  count:1
+                  count:1,
+                  meetOnPostId:postId
                 });
               }
 
