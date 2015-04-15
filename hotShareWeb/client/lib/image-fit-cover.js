@@ -111,6 +111,31 @@
     },
 
     $.fn.getStyleProp = function(){
+        function isCropped(styleStr) {
+            if ((styleStr == null) || (styleStr == '')) {
+                return '';
+            }
+            var hasTop = 0, hasLeft = 0;
+            var styleAttrs = styleStr.split(';');
+            for (i = 0, len = styleAttrs.length; i < len; i++) {
+                var item = styleAttrs[i];
+                var styleValue = item.split(':');
+                if (styleValue[0].trim() === 'top') {
+                    if (styleValue[1].indexOf('%') >= 0) {
+                        hasTop = 1;
+                    }
+                } else if (styleValue[0].trim() === 'left') {
+                    if (styleValue[1].indexOf('%') >= 0) {
+                        hasLeft = 1;
+                    }
+                }
+            }
+            if (hasTop && hasLeft)
+                return true;
+            else
+                return false;
+        }
+
         var container = this;
         var padding = 0,
             fw = container.width() - padding*2,
@@ -128,7 +153,12 @@
             l1 = parseFloat(img.css('left').replace('px',''))*100/fw + '%',
             t1 = parseFloat(img.css('top').replace('px',''))*100/fh + '%',
             style = "height:" + h1 + ';width:' + w1 + ';top:' + t1 + ';left:' + l1 + ';';
-        return img.attr('style');
+
+        if (isCropped(img.attr('style'))) {
+            return img.attr('style');
+        } else {
+            return undefined;
+        }
     },
 
     $.fn.actImageResize = function(e, ui, $widget) {
@@ -416,7 +446,14 @@
                 if (addRelative) {
                     attrs.position = 'relative';
                 }
-                img.css(attrs);
+                //img.css(attrs);
+
+                var objectFitSupported = false;
+                var check = document.createElement('div');
+                objectFitSupported = !!(0 + check.style['object-fit']);
+                if (!objectFitSupported) {
+                    img.css(attrs);
+                }
 
                 if (tar >= par) {
                     scale = parseFloat(attrs.width)/100;
