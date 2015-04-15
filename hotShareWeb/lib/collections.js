@@ -34,7 +34,7 @@ if(Meteor.isServer){
           var taId = fields.ta;
           if(taId !== userId && postId === fields.meetOnPostId)
           {
-            var fcount = Follower.find({"followerId":taId}).count();
+            var fcount = Follower.find({"userId":userId,"followerId":taId}).count();
             if(fcount === 0)
             {
                 count++;
