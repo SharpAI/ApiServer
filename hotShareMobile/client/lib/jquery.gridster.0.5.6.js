@@ -2308,6 +2308,28 @@
                 'height': ''
             });
 
+        var x = parseInt(this.$resized_widget.attr('data-sizex'),10)
+        var width = (x * this.options.widget_base_dimensions[0] +
+            (x - 1) * (this.options.widget_margins[0] * 2));
+
+        var y = parseInt(this.$resized_widget.attr('data-sizey'),10)
+        var height = (y * this.options.widget_base_dimensions[1] +
+            (y - 1) * (this.options.widget_margins[1] * 2));
+
+        //console.log("#10 resized_widget.width: width:"+ this.$resized_widget.width())
+        this.$resized_widget
+            .css({
+                'min-width': width,
+                'min-height': height
+            });
+        //console.log("#11 resized_widget.width: width:"+ this.$resized_widget.width())
+
+        if (this.options.resize.resize) {
+            this.options.resize.resize.call(this, event, ui, this.$resized_widget);
+        }
+
+        //console.log("#12 resized_widget.width: width:"+ this.$resized_widget.width())
+
         delay($.proxy(function() {
             this.$resize_preview_holder
                 .remove()
@@ -2316,6 +2338,13 @@
                     'min-height': ''
                 });
 
+            this.$resized_widget
+                .css({
+                    'min-width': '',
+                    'min-height': ''
+                });
+
+            //console.log("#13 resized_widget.width: width:"+ this.$resized_widget.width())
             if (this.options.resize.stop) {
                 this.options.resize.stop.call(this, event, ui, this.$resized_widget);
             }
