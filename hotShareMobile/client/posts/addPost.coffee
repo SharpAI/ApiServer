@@ -188,7 +188,7 @@ if Meteor.isClient
         style = 'font-family:;font-size:large' + ';text-align:' + textarea.css('text-align')+';'
         textarea.attr('style', style)
         #Compute the new scrollHeight
-        grid_size=($('#display').width()/6 - 10);
+        grid_size=Math.floor($('#display').width()/6 - 10);
         min_widget_height = (5 * 2) + grid_size;
         $(textarea).css('height', 'auto');
         scrollHeight = document.getElementById(node.id+"TextArea").scrollHeight
@@ -202,13 +202,13 @@ if Meteor.isClient
           $(node).css('height', "")
           sizex = parseInt(resizeItem.attr("data-sizex"))
           gridster.resize_widget(resizeItem, sizex,sizey)
-        Drafts.update({_id: doc_id}, {$set: {style: style}});
+        Drafts.update({_id: doc_id}, {$set: {style: style}})
       else if buttonClicked.id is "font-quato"
         console.log 'Need font-quato'
         style = "font-family:Times New Roman, Times, serif" + ';font-size:xx-large' + ';text-align:' + textarea.css('text-align')+';'
         textarea.attr('style', style)
         #Compute the new scrollHeight
-        grid_size=($('#display').width()/6 - 10);
+        grid_size=Math.floor($('#display').width()/6 - 10);
         min_widget_height = (5 * 2) + grid_size;
         scrollHeight = document.getElementById(node.id+"TextArea").scrollHeight
         $(textarea).css('height', 'auto').css('height', scrollHeight);
@@ -265,7 +265,7 @@ if Meteor.isClient
           $('#'+node.id+'TextArea').on('keyup input',(e)->
             e.preventDefault()
             id = this.id.replace("TextArea", "")
-            grid_size=($('#display').width()/6 - 10);
+            grid_size=Math.floor($('#display').width()/6 - 10);
 
             min_widget_height = (5 * 2) + grid_size;
 
@@ -435,7 +435,7 @@ if Meteor.isClient
       initToolBar(itemElem, undefined)
     )
 
-    base_size=($('#display').width()/6 - 10);
+    base_size=Math.floor($('#display').width()/6 - 10);
     test = $("#display");
     `gridster = test.gridster({serialize_params: function ($w, wgd) {
       return {
@@ -449,11 +449,13 @@ if Meteor.isClient
 
       }, stop: function(e, ui, $widget) {
         //$widget.actImageFitCover(e, ui, $widget);
+        //console.log("stop width:"+ $widget.width())
         var scale = $widget.actImageFitCover('cropStyle');
         Drafts.update({_id: $widget.attr('id')}, {$set: {scale:scale}});
         return;
       }, resize: function(e, ui, $widget) {
         //$widget.actImageFitCover(e, ui, $widget);
+        //console.log("resize width:"+ $widget.width())
         $widget.actImageFitCover('cropStyle');
     }
     }}).data('gridster');`
