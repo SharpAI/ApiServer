@@ -17,21 +17,23 @@ MsgSession = new Meteor.Collection('msgsession');
 MsgGroup = new Meteor.Collection('msggroup');
 Meets = new Meteor.Collection('meets');
 if(Meteor.isClient){
-  Newfriends = new Mongo.Collection("newfriends");
+  Newfriends = new Meteor.Collection("newfriends");
 }
 
 if(Meteor.isServer){
   Rnd = 0;
-  Meteor.publish("newfriends", function (postId) {
+  Meteor.publish("newfriends", function (userId,postId) {
     var self = this;
+    console.log ('in Publish newfriends with ID ' + postId + ' UserID ' + userId);
     check(postId, String);
+    check(userId, String);
     var count = 0;
-    var handle = Meets.find({me: self.userId},{sort:{count:-1}}).observeChanges({
+    var handle = Meets.find({me: userId},{sort:{count:-1}}).observeChanges({
       added: function (id,fields) {
         if (count<20)
         {
           var taId = fields.ta;
-          if(taId !== self.userId && postId === fields.meetOnPostId)
+          if(taId !== userId && postId === fields.meetOnPostId)
           {
             var fcount = Follower.find({"followerId":taId}).count();
             if(fcount === 0)
@@ -58,42 +60,52 @@ if(Meteor.isServer){
 
     self.onStop(function () {
       handle.stop();
+      console.log('onStop of newfirends publish');
     });
   });
 
 
 
   Meteor.publish('meetscountwithlimit', function(limit) {
-     return Meets.find({me:this.userId},{sort:{count:-1},limit:limit});
+    check(this.userId,String);
+    check(limit,Number);
+    return Meets.find({me:this.userId},{sort:{count:-1},limit:limit});
   });
   Meteor.publish('meetscount', function() {
-     return Meets.find({me:this.userId});
+    check(this.userId,String);
+    return Meets.find({me:this.userId});
   });
   Meteor.publish('waitreadcount', function() {
-        return Meteor.users.find(
-            { _id : this.userId },
-            { field: {'profile.waitReadCount':1}}
-        );
+    check(this.userId,String);
+    return Meteor.users.find(
+        { _id : this.userId },
+        { field: {'profile.waitReadCount':1}}
+    );
   });
   Meteor.publish("refcomments", function() {
-        Max = RefComments.find().count()-8;
-        Rnd = Rnd + 1;
-        if(Rnd>Max) Rnd = 0;
-        return RefComments.find({},{fields: {text:1},skip:Rnd,limit:8});
+    Max = RefComments.find().count()-8;
+    Rnd = Rnd + 1;
+    if(Rnd>Max) Rnd = 0;
+    return RefComments.find({},{fields: {text:1},skip:Rnd,limit:8});
   });
   Meteor.publish("topicposts", function() {
-        return TopicPosts.find({});
+    return TopicPosts.find({});
   });
   Meteor.publish("topics", function() {
-        return Topics.find({});
+    return Topics.find({});
   });
   Meteor.publish("posts", function() {
-        return Posts.find({owner: this.userId});
+    check(this.userId,String);
+    return Posts.find({owner: this.userId});
   });
   Meteor.publish("followposts", function(limit) {
-        return FollowPosts.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
+    check(this.userId,String);
+    check(limit,Number);
+    return FollowPosts.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
   });
   Meteor.publish("publicPosts", function(postId) {
+      check(this.userId,String);
+      check(postId,String);
         try {
             if(this.userId && postId ){
                 if( Viewers.find({userId:this.userId,postId:postId}).count() === 0 ){
@@ -159,38 +171,52 @@ if(Meteor.isServer){
         return Drafts.find({owner: this.userId});
   });*/
   Meteor.publish("saveddrafts", function() {
-        return SavedDrafts.find({owner: this.userId});
+    check(this.userId,String);
+    return SavedDrafts.find({owner: this.userId});
   });
   Meteor.publish("feeds", function(limit) {
-        return Feeds.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
+    check(this.userId,String);
+    check(limit,Number);
+    return Feeds.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
   });
   Meteor.publish("userFeeds", function(followId,postId) {
-        return Feeds.find({followby: followId,postId: postId,eventType:'recommand',recommanderId:this.userId}, {sort: {createdAt: -1}, limit:2});
+    check(this.userId,String);
+    check(followId,String);
+    check(postId,String);
+    return Feeds.find({followby: followId,postId: postId,eventType:'recommand',recommanderId:this.userId}, {sort: {createdAt: -1}, limit:2});
   });
   Meteor.publish("follows", function() {
-        return Follows.find({}, {sort: { index: 1 }} );
+    return Follows.find({}, {sort: { index: 1 }} );
   });
   Meteor.publish("follower", function() {
-        return Follower.find({$or:[{userId:this.userId},{followerId:this.userId}]});
+    check(this.userId,String);
+    return Follower.find({$or:[{userId:this.userId},{followerId:this.userId}]});
   });
   Meteor.publish("userinfo", function(id) {
-        userinfo = Meteor.users.find({_id: id},{fields: {'username':1,'email':1,'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1}});
-        return userinfo;
+    check(id,String);
+    userinfo = Meteor.users.find({_id: id},{fields: {'username':1,'email':1,'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1}});
+    return userinfo;
   });
   Meteor.publish("comment", function(postId) {
-        return Comment.find({postId: postId});
+    check(postId,String);
+    return Comment.find({postId: postId});
   });
   Meteor.publish("userViewers", function(postId,userId) {
-        return Viewers.find({postId: postId,userId: userId}, {sort: {createdAt: -1}, limit:2});
+    check(postId,String);
+    check(userId,String);
+    return Viewers.find({postId: postId,userId: userId}, {sort: {createdAt: -1}, limit:2});
   });
   Meteor.publish("recentPostsViewByUser", function(userId) {
-        return Viewers.find({userId: userId}, {sort: {createdAt: -1}, limit:3});
+    check(userId,String);
+    return Viewers.find({userId: userId}, {sort: {createdAt: -1}, limit:3});
   });
   Meteor.publish("viewers", function(postId) {
-        return Viewers.find({postId: postId}, {sort: {createdAt: -1}});
+    check(postId,String);
+    return Viewers.find({postId: postId}, {sort: {createdAt: -1}});
   });
   Meteor.publish("reports", function(postId) {
-        return Reports.find({postId: postId});
+    check(postId,String);
+    return Reports.find({postId: postId});
   });
   Meteor.publish("messages", function(to){
         var filter = {};
@@ -247,10 +273,12 @@ if(Meteor.isServer){
         return Messages.find(filter, {sort: {createTime: 1}});
   });
   Meteor.publish("msgSession", function(){
-        return MsgSession.find({userId: this.userId}, {sort: {updateTime: -1}});
+    check(this.userId,String);
+    return MsgSession.find({userId: this.userId}, {sort: {updateTime: -1}});
   });
   Meteor.publish("msgGroup", function(){
-        return MsgGroup.find({"users.userId": this.userId});
+    check(this.userId,String);
+    return MsgGroup.find({"users.userId": this.userId});
   });
   Reports.allow({
     insert: function (userId, doc) {

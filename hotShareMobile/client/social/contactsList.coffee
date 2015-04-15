@@ -2,10 +2,9 @@ if Meteor.isClient
   Meteor.startup ()->
     Session.setDefault 'newfriends_data',[]
     Deps.autorun ()->
-      if Session.get("postContent")
-        meetResult=Newfriends.find({meetOnPostId:Session.get("postContent")._id},{sort:{count:-1}}).fetch()
-        console.log "meetResult.length: " + meetResult.length
-        Session.set 'newfriends_data', meetResult
+      console.log('In newfriends ' + Meteor.userId())
+      if Session.get("postContent") and  Meteor.userId()
+        Meteor.subscribe "newfriends", Meteor.userId(),Session.get("postContent")._id
   Template.contactsList.helpers
     location:->
       Meteor.subscribe("userinfo",this.followerId);
@@ -31,13 +30,6 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu", 'messageGroup')      
   Template.addNewFriends.rendered=->
     Session.set('mrLimit', 0)
-    if Session.get("postContent")
-      Meteor.subscribe "newfriends", Session.get("postContent")._id
-      Meteor.setTimeout ()->
-        meetResult=Newfriends.find({meetOnPostId:Session.get("postContent")._id},{sort:{count:-1}}).fetch()
-        console.log "meetResult.length: " + meetResult.length
-        Session.set 'newfriends_data', meetResult
-      , 3000
   Template.addNewFriends.helpers
     is_meet_count: (count)->
       count > 0
@@ -91,7 +83,7 @@ if Meteor.isClient
         )
         return viewerResult
     meeter:()->
-      Session.get('newfriends_data')
+      Newfriends.find({meetOnPostId:Session.get("postContent")._id},{sort:{count:-1}})
     isMyself:()->
       this.ta is Meteor.userId()
     isSelf:(follow)->
