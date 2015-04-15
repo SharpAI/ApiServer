@@ -287,7 +287,7 @@ if (Meteor.isCordova){
 
     var multiThreadsInfo = [];
     var runningThreadCount = 0;
-    var multiThreadsTimeout = 15;//Seconds
+    var multiThreadsTimeout = 90;//Seconds
     var multiThreadsIntervalHandle;
     /*filesCount, [{percent:?}]*/
     computeProgressBar = function(fileName, curPercent) {
@@ -475,7 +475,7 @@ if (Meteor.isCordova){
         }
         uploadingFilesInfo.filesCount = draftData.length;
         uploadingFilesInfo.files = [];
-        multiThreadUploadFile(draftData, 5, function(result){
+        multiThreadUploadFile(draftData, 2, function(result){
             if (result) {
                 Session.set('progressBarWidth', 100);
                 console.log("Jump to post page...");
