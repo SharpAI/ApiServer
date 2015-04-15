@@ -16,9 +16,53 @@ Messages = new Meteor.Collection('messages');
 MsgSession = new Meteor.Collection('msgsession');
 MsgGroup = new Meteor.Collection('msggroup');
 Meets = new Meteor.Collection('meets');
+if(Meteor.isClient){
+  Newfriends = new Mongo.Collection("newfriends");
+}
 
 if(Meteor.isServer){
   Rnd = 0;
+  Meteor.publish("newfriends", function (postId) {
+    var self = this;
+    check(postId, String);
+    var count = 0;
+    var handle = Meets.find({me: self.userId},{sort:{count:-1}}).observeChanges({
+      added: function (id,fields) {
+        if (count<20)
+        {
+          var taId = fields.ta;
+          if(taId !== self.userId && postId === fields.meetOnPostId)
+          {
+            var fcount = Follower.find({"followerId":taId}).count();
+            if(fcount === 0)
+            {
+                count++;
+                console.log("count: " + count);
+                self.added("newfriends", id, fields);
+            }
+          }
+        }
+      },
+      changed: function (id,fields) {
+         try{
+           self.changed("newfriends", id, fields);
+         }catch(error){
+         };
+      },
+      removed: function (id) {
+         self.removed("newfriends", id);
+      }
+    });
+
+    self.ready();
+
+    self.onStop(function () {
+      handle.stop();
+    });
+  });
+
+
+
   Meteor.publish('meetscountwithlimit', function(limit) {
      return Meets.find({me:this.userId},{sort:{count:-1},limit:limit});
   });
@@ -83,7 +127,7 @@ if(Meteor.isServer){
                 var meetCount = meetItemOne.count;
                 if(meetCount === undefined || isNaN(meetCount))
                   meetCount = 0;
-                Meets.update({me:userId,ta:data.userId},{$set:{count:meetCount+1}});
+                Meets.update({me:userId,ta:data.userId},{$set:{count:meetCount+1,meetOnPostId:postId}});
               }else{
                 Meets.insert({
                   me:userId,
