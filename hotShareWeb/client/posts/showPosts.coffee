@@ -78,7 +78,7 @@ if Meteor.isClient
       height = $(textarea).height()
 
       min_widget_height = (5 * 2) + base_size;
-      sizey = Math.floor((height)/min_widget_height)+1
+      sizey = Math.ceil((this.scrollHeight+10)/min_widget_height)
 
       #$(textarea).css('width', '')
       $(textarea).css('height', '')
