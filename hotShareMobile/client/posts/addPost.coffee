@@ -504,7 +504,7 @@ if Meteor.isClient
               draftData[i].data_col = item.col
               draftData[i].data_sizex = item.size_x
               draftData[i].data_sizey = item.size_y
-
+          draftData[i].imgUrl = draftData[i].URI;
           pub.push(draftData[i])
 
         sortBy = (key, a, b, r) ->

@@ -3,9 +3,9 @@
  */
 if(Meteor.isCordova){
     window.getBase64OfImage = function(filename,originalFilename,URI,callback){
-        var params = {filename:filename, originalFilename:originalFilename, URI:URI, smallImage:''};
+        //var params = {filename:filename, originalFilename:originalFilename, URI:URI, smallImage:''};
         var fileExt = filename.split('.').pop();
-        retArray.push(params);
+        //retArray.push(params);
         if(fileExt.toUpperCase()==='GIF'){
             ImageBase64.base64({
                     uri: URI,
@@ -31,7 +31,7 @@ if(Meteor.isCordova){
                     var reader = new FileReader();
                     reader.onloadend = function(event) {
                         var localURL = event.target._localURL;
-                        retCount++;
+                        //retCount++;
                         smallImage = event.target.result;
                         if (callback){
                             callback(URI,smallImage);
