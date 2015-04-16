@@ -651,6 +651,9 @@ if (Meteor.isCordova){
                   console.log('File name ' + filename);
 
                   var params = {filename:filename, originalFilename:originalFilename, URI:results[i], smallImage:''};
+                  callback(null, params);
+                  //You mustnt saved all data to server
+                  /*
                   var fileExt = filename.split('.').pop();
                   retArray.push(params);
                   if(fileExt.toUpperCase()==='GIF'){
@@ -713,7 +716,7 @@ if (Meteor.isCordova){
                   }, function(e) {
                     console.log('resolveLocalFileSystemURL Error = ' + e);
                   });
-                  }
+                  }*/
                 }
             } else {
                 for (var i = 0; i < length; i++) {
