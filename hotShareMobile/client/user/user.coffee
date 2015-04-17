@@ -39,6 +39,19 @@ if Meteor.isClient
         Posts.find({owner: Meteor.userId()}, {sort: {createdAt: -1}}).fetch()[i]
     followCount:->
       Follower.find({"userId":Meteor.userId()}).count()
+    getmainImage:()->
+      mImg = this.mainImage
+      if (mImg.indexOf('file:///') >= 0) and device.platform is 'Android'
+        if Session.get(mImg) is undefined
+          ProcessImage = (URI,smallImage)->
+            if smallImage
+              Session.set(mImg, smallImage)
+            else
+              Session.set(mImg, undefined)
+          getBase64OfImage('','',mImg,ProcessImage)
+        Session.get(mImg)
+      else
+        this.mainImage
   Template.user.events
     'click #follow': (event)->
       $('.user').addClass('animated ' + animateOutLowerEffect);

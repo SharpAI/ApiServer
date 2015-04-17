@@ -3,6 +3,19 @@ if Meteor.isClient
     items:()->
       for i in [0..SavedDrafts.find().count()-1]
         SavedDrafts.find({},{sort: {createdAt: -1}}).fetch()[i]
+    getmainImage:()->
+      mImg = this.mainImage
+      if (mImg.indexOf('file:///') >= 0) and device.platform is 'Android'
+        if Session.get(mImg) is undefined
+          ProcessImage = (URI,smallImage)->
+            if smallImage
+              Session.set(mImg, smallImage)
+            else
+              Session.set(mImg, undefined)
+          getBase64OfImage('','',mImg,ProcessImage)
+        Session.get(mImg)
+      else
+        this.mainImage
   Template.allDrafts.events
     'click .back':(event)->
         PUB.back()
