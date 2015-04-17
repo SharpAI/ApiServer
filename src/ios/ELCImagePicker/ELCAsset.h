@@ -23,6 +23,7 @@
 @property (nonatomic, strong) ALAsset *asset;
 @property (nonatomic, weak) id<ELCAssetDelegate> parent;
 @property (nonatomic, assign) BOOL selected;
+@property (nonatomic, assign) long int time;
 
 - (id)initWithAsset:(ALAsset *)asset;
 

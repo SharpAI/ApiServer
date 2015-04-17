@@ -7,6 +7,7 @@
 
 #import "ELCAssetCell.h"
 #import "ELCAsset.h"
+#include <sys/time.h>
 
 @interface ELCAssetCell ()
 
@@ -85,6 +86,12 @@
         if (CGRectContainsPoint(frame, point)) {
             ELCAsset *asset = [_rowAssets objectAtIndex:i];
             asset.selected = !asset.selected;
+            if (asset.selected) {              
+                struct timeval time;
+                gettimeofday(&time, NULL);
+                asset.time = (time.tv_sec * 1000) + (time.tv_usec / 1000);
+                NSLog(@"asset.time = %ld", asset.time);
+            }
             UIImageView *overlayView = [_overlayViewArray objectAtIndex:i];
             overlayView.hidden = !asset.selected;
             break;
