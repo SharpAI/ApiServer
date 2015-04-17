@@ -9,12 +9,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.photoselector.model.PhotoModel;
+import com.photoselector.ui.PhotoSelectorActivity;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 
@@ -40,12 +44,18 @@ public class ImagePicker extends CordovaPlugin {
 		 this.callbackContext = callbackContext;
 		 this.params = args.getJSONObject(0);
 		if (action.equals("getPictures")) {
-			Intent intent = new Intent(cordova.getActivity(), MultiImageChooserActivity.class);
+			Intent intent = new Intent(cordova.getActivity(), PhotoSelectorActivity.class);
 			int max = 20;
 
 			if (this.params.has("maximumImagesCount")) {
 				max = this.params.getInt("maximumImagesCount");
 			}
+			intent.putExtra(PhotoSelectorActivity.KEY_MAX, max);
+		    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+			if (this.cordova != null) {
+				this.cordova.startActivityForResult((CordovaPlugin) this, intent, 0);
+			}
+			/*
 			if (this.params.has("width")) {
 				desiredWidth = this.params.getInt("width");
 			}
@@ -61,7 +71,7 @@ public class ImagePicker extends CordovaPlugin {
 			intent.putExtra("QUALITY", quality);
 			if (this.cordova != null) {
 				this.cordova.startActivityForResult((CordovaPlugin) this, intent, 0);
-			}
+			}*/
 		}
 		return true;
 	}
@@ -264,7 +274,21 @@ public class ImagePicker extends CordovaPlugin {
     	}
     	return al;
     }
-
+    @Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (resultCode != Activity.RESULT_OK)
+        return;
+    //if (requestCode == Activity.SELECT_IMAGE_CODE) {// selected image
+        if (data != null && data.getExtras() != null) {
+            @SuppressWarnings("unchecked")
+            List<PhotoModel> photos = (List<PhotoModel>) data.getExtras().getSerializable("photos");
+            if (photos == null || photos.isEmpty()) {
+            } else {
+            }
+        }
+    //}
+    }
+    /*
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == Activity.RESULT_OK && data != null) {
 			ArrayList<String> fileNames = data.getStringArrayListExtra("MULTIPLEFILENAMES");
@@ -288,6 +312,6 @@ public class ImagePicker extends CordovaPlugin {
 		} else {
 			this.callbackContext.error("No images selected");
 		}
-	}
+	}*/
 
 }
