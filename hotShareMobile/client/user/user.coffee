@@ -84,28 +84,51 @@ if Meteor.isClient
           Drafts.remove drafts._id
       #Prepare data
       savedDraftData = SavedDrafts.find({_id: e.currentTarget.id}).fetch()[0]
-      pub = savedDraftData.pub;
+      pub = savedDraftData.pub
       if device.platform is 'Android'
-          for i in [0..(pub.length-1)]
-            #Drafts.insert(pub[i])
-            if (pub[i].URI.indexOf('file:///') >= 0)
-              window.getBase64OfImage(pub[i].filename, pub[i].URI.replace(/^.*[\\\/]/, ''), pub[i].URI, (URI,smallImage)->
-                for j in [0..(pub.length-1)]
-                  if (pub[j].URI == URI)
-                    pub[j].imgUrl = smallImage
-                    Drafts.insert(pub[j])
-              )
-            else
-              Drafts.insert(pub[i])
+        pub.index = -1
+
+        FinalProcess = () ->
+          Session.set 'isReviewMode','1'
+          $('.user').addClass('animated ' + animateOutLowerEffect);
+          Meteor.setTimeout ()->
+            PUB.page('/add')
+          ,animatePageTrasitionTimeout
+
+        Dispatch = ()->
+          if ++pub.index >= pub.length
+            return FinalProcess()
+          if pub[pub.index].type is 'image' && (pub[pub.index].URI.indexOf('file:///') >= 0)
+            filename = pub[pub.index].filename
+            URI = pub[pub.index].URI
+            getBase64OfImage(filename,'',URI,ProcessImage)
+          else
+            ProcessText()
+
+        ProcessText = ()->
+          # must text
+          Drafts.insert(pub[pub.index])
+          Dispatch()
+
+        ProcessImage = (URI,smallImage)->
+          if smallImage
+            console.log "pub index: " + pub.index
+            pub[pub.index].imgUrl = smallImage
+            Drafts.insert(pub[pub.index])
+          else
+            console.log ">>>>can't get base64"
+            pub[pub.index].imgUrl = '/userIOS.png'
+            Drafts.insert(pub[pub.index])
+            #it was deleted
+          Dispatch()
+
+        Dispatch()
       else
-          for i in [0..(pub.length-1)]
-            Drafts.insert(pub[i])
-      Session.set 'isReviewMode','1'
-      $('.user').addClass('animated ' + animateOutLowerEffect);
-      Meteor.setTimeout ()->
+        for i in [0..(pub.length-1)]
+          Drafts.insert(pub[i])
+        Session.set 'isReviewMode','1'
         PUB.page('/add')
-      ,animatePageTrasitionTimeout
-      
+
     'click .draftRight':(e)->
       $('.user').addClass('animated ' + animateOutLowerEffect);
       Meteor.setTimeout ()->

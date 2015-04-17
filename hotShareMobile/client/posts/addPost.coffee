@@ -494,7 +494,10 @@ if Meteor.isClient
         draftId = draftData[0]._id;
         for i in [0..(draftData.length-1)]
           if i is 0
-            mainImage = draftData[i].imgUrl
+            if draftData[i].URI isnt '' and device.platform is 'Android'
+              mainImage = draftData[i].URI
+            else
+              mainImage = draftData[i].imgUrl
             mainText = $("#"+draftData[i]._id+"text").val()
 
           json = jQuery.parseJSON(layout);
@@ -503,9 +506,9 @@ if Meteor.isClient
               draftData[i].data_row = item.row
               draftData[i].data_col = item.col
               draftData[i].data_sizex = item.size_x
-              draftData[i].data_sizey = item.size
-          if device.platform is 'Android'
-            draftData[i].imgUrl = draftData[i].URI;
+              draftData[i].data_sizey = item.size_y
+          if draftData[i].URI isnt '' and device.platform is 'Android'
+            draftData[i].imgUrl = draftData[i].URI
           pub.push(draftData[i])
 
         sortBy = (key, a, b, r) ->
