@@ -536,8 +536,10 @@ if Meteor.isClient
 
         sortBy = (key, a, b, r) ->
           r = if r then 1 else -1
-          return -1*r if a[key] > b[key]
-          return +1*r if a[key] < b[key]
+          return -1*r if a[key] and b[key] and a[key] > b[key]
+          return +1*r if a[key] and b[key] and a[key] < b[key]
+          return +1*r if a[key] is undefined and b[key]
+          return -1*r if a[key] and b[key] is undefined
           return 0
         pub.sort((a, b)->
           sortBy('data_row', a, b)
@@ -919,8 +921,10 @@ if Meteor.isClient
             pub.push(draftData[i])
         sortBy = (key, a, b, r) ->
           r = if r then 1 else -1
-          return -1*r if a[key] > b[key]
-          return +1*r if a[key] < b[key]
+          return -1*r if a[key] and b[key] and a[key] > b[key]
+          return +1*r if a[key] and b[key] and a[key] < b[key]
+          return +1*r if a[key] is undefined and b[key]
+          return -1*r if a[key] and b[key] is undefined
           return 0
         pub.sort((a, b)->
           sortBy('data_row', a, b)
