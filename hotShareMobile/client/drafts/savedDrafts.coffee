@@ -22,16 +22,20 @@ if Meteor.isClient
       savedDraftData = SavedDrafts.find({_id: @_id}).fetch()[0]
       #console.log "savedDraftData ="+JSON.stringify(savedDraftData)
       pub = savedDraftData.pub;
-      for i in [0..(pub.length-1)]
-        if (pub[i].URI.indexOf('file:///') >= 0)
-          window.getBase64OfImage(pub[i].filename, pub[i].URI.replace(/^.*[\\\/]/, ''), pub[i].URI, (URI,smallImage)->
-            for j in [0..(pub.length-1)]
-              if (pub[j].URI == URI)
-                pub[j].imgUrl = smallImage
-                Drafts.insert(pub[j])
-          )
-        else
-          Drafts.insert(pub[i])
+      if device.platform is 'Android'
+          for i in [0..(pub.length-1)]
+            if (pub[i].URI.indexOf('file:///') >= 0)
+              window.getBase64OfImage(pub[i].filename, pub[i].URI.replace(/^.*[\\\/]/, ''), pub[i].URI, (URI,smallImage)->
+                for j in [0..(pub.length-1)]
+                  if (pub[j].URI == URI)
+                    pub[j].imgUrl = smallImage
+                    Drafts.insert(pub[j])
+              )
+            else
+              Drafts.insert(pub[i])
+      else
+          for i in [0..(pub.length-1)]
+            Drafts.insert(pub[i])
       Session.set 'isReviewMode','1'
       PUB.page('/add')
       return
