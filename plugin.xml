@@ -68,11 +68,26 @@
 		    <activity android:label="@string/multi_app_name" android:name="com.synconset.MultiImageChooserActivity" android:theme="@android:style/Theme.Holo.Light">
                 <intent-filter />
             </activity>
+       	<activity
+            android:name="com.photoselector.ui.PhotoSelectorActivity"
+            android:label="图片选择" >
+        </activity>
+        <activity
+            android:name="com.photoselector.ui.PhotoPreviewActivity"
+            android:label="图片预览" >
+        </activity>
+        <activity
+            android:name="com.photoselector.ui.PhotoSelectorPreview"
+            android:label="点击图片" >
+        </activity>
 		</config-file>
 		
 		<config-file target="AndroidManifest.xml" parent="/manifest">
 		    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 		</config-file>
+
+		<framework src="src/android/Library/Android-Ultra-Photo-Selector" custom="true"/>
+		
 
 		<source-file src="src/android/com/synconset/ImagePicker/ImagePicker.java" target-dir="src/com/synconset" />
 		<source-file src="src/android/com/synconset/ImagePicker/FakeR.java" target-dir="src/com/synconset" />
