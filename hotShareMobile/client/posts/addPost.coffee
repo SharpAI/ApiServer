@@ -370,6 +370,29 @@ if Meteor.isClient
                   Session.set 'imgSizeW',$("#default"+node.id+" .crop-img").width()/scale
                   Session.set 'imgSizeH',$("#default"+node.id+" .crop-img").height()/scale
               }
+              if window.device.model is "iPhone7,1"
+                top = $('#'+node.id).offset().top
+                $('#blur_overlay').css('height',top)
+                $('#blur_overlay').css('z-index', 14)
+                height = $('#'+node.id).height()
+                bottomTop = top + height
+                $('#blur_bottom').css('top',bottomTop)
+                docHeight = window.getDocHeight()
+                bottomHeight = docHeight - bottomTop
+                $('#blur_bottom').css('height',bottomHeight)
+                
+                $('#blur_left').css('top',top)
+                $('#blur_right').css('top',top)
+                $('#blur_left').css('height',height)
+                $('#blur_right').css('height',height)
+                
+                left = $('#'+node.id).offset().left
+                $('#blur_left').css('width',left)
+                screenWidth = window.screen.width
+                width = $('#'+node.id).width()
+                right = screenWidth - left - width
+                $('#blur_right').css('width',right)
+                
               cropimg = $(containerId).find('.crop-overlay')[0]
               hammertime = new Hammer(cropimg)
               pinch = new Hammer.Pinch();
@@ -767,6 +790,10 @@ if Meteor.isClient
       catch
         history.back()
     'click #cropDone':->
+      $('#blur_overlay').css('height','')
+      $('#blur_bottom').css('height','')
+      $('#blur_left').css('height','')
+      $('#blur_right').css('height','')
       cropDraftId = Session.get('cropDraftId')
       
       console.log cropDraftId

@@ -1,6 +1,9 @@
 <template name="addPost">
   <div class="addPost">
-    <div id="blur_overlay" style="position: absolute; opacity: 0.6; z-index: 1; width:100%; background-color:white;"></div>
+    <div id="blur_overlay" style="position: absolute; opacity: 0.8; z-index: 1; width:100%; background-color:white;"></div>
+    <div id="blur_bottom" style="position: absolute; opacity: 0.8; z-index: 14; width:100%; background-color:white;"></div>
+    <div id="blur_left" style="position: absolute; opacity: 0.8; z-index: 14;left:0; background-color:white;"></div>
+    <div id="blur_right" style="position: absolute; opacity: 0.8; z-index: 14;right:0; background-color:white;"></div>
     <div class="head">
       {{#if mainImage}}
         {{#if isReviewMode '3'}}
