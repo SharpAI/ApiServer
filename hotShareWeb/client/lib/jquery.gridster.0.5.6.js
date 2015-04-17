@@ -598,7 +598,7 @@
 
                 // set a timeout to call the longpress callback when time elapses
                 timeout = setTimeout(function() {
-                    console.log("taphold called");
+                    //console.log("taphold called");
 
                     if($(e.currentTarget).hasClass('pressed') == false) {
                         $(e.currentTarget).trigger( "click" )
@@ -2091,6 +2091,7 @@
               }
         }).appendTo(this.$el);
 
+
         if (this.options.draggable.start) {
           this.options.draggable.start.call(this, event, ui);
         }
@@ -2230,7 +2231,9 @@
     fn.on_start_resize = function(event, ui) {
         this.$resized_widget = ui.$player.closest('.gs-w');
 
-        if(this.$resized_widget.hasClass('pressed') == false) {
+        if(this.$resized_widget.hasClass('pressed') == false
+           || this.$resized_widget.hasClass('resizing') == true
+            ) {
             return;
         }
 
@@ -2270,6 +2273,7 @@
         });
 
         var nodeName = this.$resized_widget.get(0).tagName;
+
         this.$resize_preview_holder = $('<' + nodeName + ' />', {
               'class': 'preview-holder resize-preview-holder',
               'data-row': this.$resized_widget.attr('data-row'),
@@ -2279,7 +2283,7 @@
                   'height': this.resize_initial_height
               }
         }).appendTo(this.$el);
-
+        //console.log("add resize_preview_holder");
         this.$resized_widget.addClass('resizing');
 
 		if (this.options.resize.start) {
@@ -2302,11 +2306,33 @@
             return;
         }
         this.$resized_widget
-            .removeClass('resizing')
             .css({
                 'width': '',
                 'height': ''
             });
+        if (device.platform == 'Android'){
+            var x = parseInt(this.$resized_widget.attr('data-sizex'),10)
+            var width = (x * this.options.widget_base_dimensions[0] +
+                (x - 1) * (this.options.widget_margins[0] * 2));
+
+            var y = parseInt(this.$resized_widget.attr('data-sizey'),10)
+            var height = (y * this.options.widget_base_dimensions[1] +
+                (y - 1) * (this.options.widget_margins[1] * 2));
+
+            //console.log("#10 resized_widget.width: width:"+ this.$resized_widget.width())
+            this.$resized_widget
+                .css({
+                    'min-width': width,
+                    'min-height': height
+                });
+            //console.log("#11 resized_widget.width: width:"+ this.$resized_widget.width())
+
+            if (this.options.resize.resize) {
+                this.options.resize.resize.call(this, event, ui, this.$resized_widget);
+            }
+            //console.log("#12 resized_widget.width: width:"+ this.$resized_widget.width())
+        }
+
 
         delay($.proxy(function() {
             this.$resize_preview_holder
@@ -2315,12 +2341,22 @@
                     'min-width': '',
                     'min-height': ''
                 });
+            //console.log("remove resize_preview_holder");
+            if (device.platform == 'Android'){
+                this.$resized_widget
+                    .css({
+                        'min-width': '',
+                        'min-height': ''
+                    });
+                //console.log("#13 resized_widget.width: width:"+ this.$resized_widget.width())
+            }
 
             if (this.options.resize.stop) {
                 this.options.resize.stop.call(this, event, ui, this.$resized_widget);
             }
 
             this.$el.trigger('gridster:resizestop');
+            this.$resized_widget.removeClass('resizing')
         }, this), 300);
 
         this.set_dom_grid_width();
