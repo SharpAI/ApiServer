@@ -6,8 +6,8 @@
         view = Session.get("channel")
         if history is undefined or history is ""
             history = new Array()
-        #footerPages = ['/home', '/search', '/add', '/bell', '/user']
-        footerPages = ['home', 'search', 'bell', 'user']
+        #footerPages = ['/home', '/search', '/addPost', '/bell', '/user']
+        footerPages = ['home', 'search', 'addPost', 'bell', 'user']
         #if current view is one of footer pages, and record the position of these pages
         for page in footerPages
             if view is page
@@ -66,6 +66,8 @@
                     Router.go('/')
                 else
                     Router.go('/'+page.view)
+            else
+                Router.go('/')
         #nowPage = Session.get('view')
         #Session.set 'view',Session.get('referrer')
         #if nowPage isnt 'partner_detail' and nowPage isnt 'add_partner'

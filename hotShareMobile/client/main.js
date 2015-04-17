@@ -50,7 +50,8 @@ if (Meteor.isCordova) {
             document.addEventListener("backbutton", eventBackButton, false); // 返回键
         }, 3000);
       }else{
-        history.back();
+        //history.back();
+        PUB.back();
       }
     }
 

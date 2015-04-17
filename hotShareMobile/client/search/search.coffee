@@ -6,17 +6,17 @@ if Meteor.isClient
       Topics.find({type:"topic"}, {sort: {createdAt: -1}})
   Template.search.events
     'focus #search-box': (event)->
-       Router.go '/searchPeopleAndTopic'
+       PUB.page '/searchPeopleAndTopic'
     'click #follow': (event)->
-       Router.go '/searchFollow'
+       PUB.page '/searchFollow'
     'click .themeBtn': (event)->
        Session.set "topicId", @_id
        Session.set "topicTitle", @text
-       Router.go '/topicPosts'
+       PUB.page '/topicPosts'
     'click .topic': (event)->
        Session.set "topicId", @_id
        Session.set "topicTitle", "#"+ @text + "#"
-       Router.go '/topicPosts'
+       PUB.page '/topicPosts'
   Template.searchFollow.rendered=->
     Session.set('isSearching', false)
     $('#search-box').bind('propertychange input',(e)->
