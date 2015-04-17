@@ -853,7 +853,8 @@ if Meteor.isClient
         pub=[]
         title = $("#title").val()
 
-        if title is ''
+        if title is '' or title is '[空标题]'
+          $("#title").val('')
           window.plugins.toast.showShortBottom('请为您的故事加个标题')
           return
 
