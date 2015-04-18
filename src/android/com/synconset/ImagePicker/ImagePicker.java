@@ -180,7 +180,7 @@ public class ImagePicker extends CordovaPlugin {
         return file;
     }
 
-    private ArrayList<String> ResizeImages(ArrayList<ImageInfo> fileNames) throws IOException
+    private ArrayList<String> ResizeImages(ArrayList<PhotoModel> fileNames) throws IOException
     {
     	ArrayList<String> al = new ArrayList<String>();
     	Bitmap bmp = null;
@@ -189,13 +189,14 @@ public class ImagePicker extends CordovaPlugin {
 
     	for(int i=0; i<fileNames.size();i++)
     	{
+    		
     		if(i!=fileNames.get(i).getOrder())
     		{
     			for(int j=0; j<fileNames.size();j++)
     			{
     				if(i==fileNames.get(j).getOrder())
     				{
-      	    	        filename=fileNames.get(j).getPath();
+      	    	        filename=fileNames.get(j).getOriginalPath();
     		            rotate = fileNames.get(j).getRotation();
     					break;
     				}
@@ -203,9 +204,11 @@ public class ImagePicker extends CordovaPlugin {
     		}
     		else
     		{
-    		  filename=fileNames.get(i).getPath();
+    		  filename=fileNames.get(i).getOriginalPath();
     		  rotate = fileNames.get(i).getRotation();
     		}
+    		
+    		//filename=fileNames.get(i).getOriginalPath();
             int index = filename.lastIndexOf('.');
             String ext = filename.substring(index);
             if (ext.compareToIgnoreCase(".gif") != 0) {
@@ -274,6 +277,7 @@ public class ImagePicker extends CordovaPlugin {
     	}
     	return al;
     }
+    /*
     @Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (resultCode != Activity.RESULT_OK)
@@ -288,11 +292,13 @@ public class ImagePicker extends CordovaPlugin {
         }
     //}
     }
-    /*
+    */
+    @Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == Activity.RESULT_OK && data != null) {
-			ArrayList<String> fileNames = data.getStringArrayListExtra("MULTIPLEFILENAMES");
-			ArrayList<ImageInfo> imageList = (ArrayList<ImageInfo>) data.getSerializableExtra("imageList");
+			//ArrayList<String> fileNames = data.getStringArrayListExtra("MULTIPLEFILENAMES");
+			//ArrayList<ImageInfo> imageList = (ArrayList<ImageInfo>) data.getSerializableExtra("imageList");
+			ArrayList<PhotoModel> imageList = (ArrayList<PhotoModel>) data.getSerializableExtra("photos");
 			ArrayList<String> newfiles=null;
 			try {
 				//newfiles=ResizeImages(fileNames);
@@ -312,6 +318,6 @@ public class ImagePicker extends CordovaPlugin {
 		} else {
 			this.callbackContext.error("No images selected");
 		}
-	}*/
+	}
 
 }

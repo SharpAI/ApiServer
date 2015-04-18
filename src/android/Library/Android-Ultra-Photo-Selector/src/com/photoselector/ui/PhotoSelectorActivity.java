@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -71,6 +73,7 @@ public class PhotoSelectorActivity extends Activity implements
 	private RelativeLayout layoutAlbum;
 	private ArrayList<PhotoModel> selected;
 	private TextView tvNumber;
+	private int imageOrder=0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -277,10 +280,30 @@ public class PhotoSelectorActivity extends Activity implements
 			CompoundButton buttonView, boolean isChecked) {
 		if (isChecked) {
 			if (!selected.contains(photoModel))
-				selected.add(photoModel);
+		    {
+		    	photoModel.setOrder(imageOrder);
+		    	selected.add(photoModel);
+				imageOrder++;
+		    }
 			tvPreview.setEnabled(true);
 		} else {
-			selected.remove(photoModel);
+			PhotoModel photomodel=null;
+        	for (int i=0; i<selected.size();i++){
+        		if(photomodel!=null)
+        		{
+        			selected.get(i).setOrder(selected.get(i).getOrder()-1);
+        		}
+        		if(selected.get(i).equals(photoModel))
+        		{
+        			photomodel = selected.get(i);
+        		}
+        	}
+        	if(photomodel!=null)
+        	{
+        		selected.remove(photomodel);
+        		imageOrder--;
+        	}
+			//selected.remove(photoModel);
 		}
 		tvNumber.setText("(" + selected.size() + ")");
 
@@ -306,7 +329,23 @@ public class PhotoSelectorActivity extends Activity implements
 		for (int i = 0; i < parent.getCount(); i++) {
 			AlbumModel album = (AlbumModel) parent.getItemAtPosition(i);
 			if (i == position)
-				album.setCheck(true);
+			{
+			    if(imageOrder>MAX_IMAGE-1)
+			    {
+		            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		            builder.setTitle("Maximum " + MAX_IMAGE + " Photos");
+		            builder.setMessage("You can only select " + MAX_IMAGE + " photos at a time.");
+		            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+		                public void onClick(DialogInterface dialog, int which) { 
+		                    dialog.cancel();
+		                }
+		            });
+		            AlertDialog alert = builder.create();
+		            alert.show();
+			    }
+			    else
+			    	album.setCheck(true);
+			}
 			else
 				album.setCheck(false);
 		}

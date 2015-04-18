@@ -14,7 +14,26 @@ public class PhotoModel implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String originalPath;
+	private Integer order=0;
+	private Integer rotation=0;
 	private boolean isChecked;
+
+	public void setOrder(Integer order)
+	{
+		this.order=order;
+	}
+	public void setRotation(Integer rotation)
+	{
+		this.rotation=rotation;
+	}
+	public Integer getOrder()
+	{
+		return order;
+	}
+	public Integer getRotation()
+	{
+		return rotation;
+	}
 
 	public PhotoModel(String originalPath, boolean isChecked) {
 		super();
