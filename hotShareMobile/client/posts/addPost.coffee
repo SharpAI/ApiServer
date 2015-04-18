@@ -71,10 +71,13 @@ if Meteor.isClient
                 Session.set 'imgSizeW',$("#default"+event.currentTarget.id+" .crop-img").width()
                 Session.set 'imgSizeH',$("#default"+event.currentTarget.id+" .crop-img").height()
             }
-            #Meteor.setTimeout ->
-            #  Session.set 'imgSizeW',$("#default"+event.currentTarget.id+" .crop-img").width()
-            #  Session.set 'imgSizeH',$("#default"+event.currentTarget.id+" .crop-img").height()
-            #,200
+            if window.device.model is "iPhone7,1"
+                height = $('#'+mainImageId).height()
+                bottomTop = height
+                $('#blur_bottom').css('top',bottomTop)
+                docHeight = window.getDocHeight()
+                bottomHeight = docHeight - bottomTop
+                $('#blur_bottom').css('height',bottomHeight)
 
     #init
     this.find('.content')._uihooks = {
