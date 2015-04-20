@@ -32,9 +32,10 @@ if Meteor.isClient
         value = 2
       else
         value = count-1
+      VFetch = Viewers.find({userId:Session.get("ProfileUserId")},{sort: {createdAt: -1}, limit:count}).fetch()
       for i in [0..value]
-        vDoc = Viewers.find({userId:Session.get("ProfileUserId")},{sort: {createdAt: -1}}).fetch()[i]
-        Meteor.subscribe("publicPosts",vDoc.postId)
+        vDoc = VFetch[i]
+        Meteor.subscribe("ViewPostsList",vDoc.postId)
         Posts.findOne({_id:vDoc.postId})
     compareViewsCount:(value)->
       if (Viewers.find({userId:Session.get("ProfileUserId")}, {sort: {createdAt: -1}, limit:3}).count() > value)

@@ -100,6 +100,11 @@ if(Meteor.isServer){
     check(limit,Number);
     return FollowPosts.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
   });
+  Meteor.publish("ViewPostsList", function(postId) {
+      check(this.userId,String);
+      check(postId,String);
+      return Posts.find({_id: postId});
+  });
   Meteor.publish("publicPosts", function(postId) {
       check(this.userId,String);
       check(postId,String);
@@ -131,7 +136,6 @@ if(Meteor.isServer){
         } catch (error){
         }
         try{
-          if ( needUpdateMeetCount ){
               var userId = self.userId;
               var views=Viewers.find({postId:postId});
               if(views.count()>0){
@@ -141,7 +145,10 @@ if(Meteor.isServer){
                     var meetCount = meetItemOne.count;
                     if(meetCount === undefined || isNaN(meetCount))
                       meetCount = 0;
-                    Meets.update({me:userId,ta:data.userId},{$set:{count:meetCount+1,meetOnPostId:postId}});
+                    if ( needUpdateMeetCount ){
+                      meetCount = meetCount+1;
+                    }
+                    Meets.update({me:userId,ta:data.userId},{$set:{count:meetCount,meetOnPostId:postId}});
                   }else{
                     Meets.insert({
                       me:userId,
@@ -156,7 +163,10 @@ if(Meteor.isServer){
                     var meetCount = meetItemTwo.count;
                     if(meetCount === undefined || isNaN(meetCount))
                       meetCount = 0;
-                    Meets.update({me:data.userId,ta:userId},{$set:{count:meetCount+1}});
+                    if ( needUpdateMeetCount ){
+                      meetCount = meetCount+1;
+                      Meets.update({me:data.userId,ta:userId},{$set:{count:meetCount}});
+                    }
                   }else{
                     Meets.insert({
                       me:data.userId,
@@ -166,7 +176,6 @@ if(Meteor.isServer){
                   }
                 });
               }
-          }
         }
         catch(error){}
       });
