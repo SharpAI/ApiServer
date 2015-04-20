@@ -31,18 +31,20 @@ if (Meteor.isCordova){
         var ft = new FileTransferBCS();
         ft.onprogress = function(progressEvent) {
           if (progressEvent.lengthComputable) {
-            computeProgressBar(filename, 100*(progressEvent.loaded/progressEvent.total));
-            console.log('Uploaded Progress ' + 100* (progressEvent.loaded / progressEvent.total ) + '%');
+            console.log('Loaded ' + progressEvent.loaded + ' Total ' + progressEvent.total);
+            computeProgressBar(filename, 60*(progressEvent.loaded/progressEvent.total));
+            console.log('Uploaded Progress ' + 60* (progressEvent.loaded / progressEvent.total ) + '%');
           } else {
             console.log('Upload ++');
           }
         };
         ft.upload(result.orignalURI, uri, function(e){
             if(callback){
+                computeProgressBar(filename, 100);
                 callback(result.acceccURI);
             }
         }, function(e){
-          console.log('upload error' + e.code )
+          console.log('upload error' + e.code );
           if (errCallback) {
             errCallback(filename);
           } else {
@@ -526,7 +528,7 @@ if (Meteor.isCordova){
                 if(index === 1){
                   uploadingFilesInfo.filesCount = draftData.length;
                   uploadingFilesInfo.files = [];
-                  multiThreadUploadFile(draftData, 5, multiThreadUploadFileCallback);
+                  multiThreadUploadFile(draftData, 2, multiThreadUploadFileCallback);
                 }else{
                   Template.progressBar.__helpers.get('close')();
                 }
@@ -536,7 +538,7 @@ if (Meteor.isCordova){
       
         uploadingFilesInfo.filesCount = draftData.length;
         uploadingFilesInfo.files = [];
-        multiThreadUploadFile(draftData, 5, multiThreadUploadFileCallback);
+        multiThreadUploadFile(draftData, 2, multiThreadUploadFileCallback);
         return;
     }
 
