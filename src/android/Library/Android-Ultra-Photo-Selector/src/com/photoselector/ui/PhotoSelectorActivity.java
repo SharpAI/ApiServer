@@ -279,13 +279,30 @@ public class PhotoSelectorActivity extends Activity implements
 	public void onCheckedChanged(PhotoModel photoModel,
 			CompoundButton buttonView, boolean isChecked) {
 		if (isChecked) {
-			if (!selected.contains(photoModel))
+		    if(imageOrder>MAX_IMAGE-1)
 		    {
-		    	photoModel.setOrder(imageOrder);
-		    	selected.add(photoModel);
-				imageOrder++;
+	            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	            builder.setTitle("Maximum " + MAX_IMAGE + " Photos");
+	            builder.setMessage("You can only select " + MAX_IMAGE + " photos at a time.");
+	            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+	                public void onClick(DialogInterface dialog, int which) { 
+	                    dialog.cancel();
+	                }
+	            });
+	            AlertDialog alert = builder.create();
+	            alert.show();
+	            buttonView.toggle();
 		    }
-			tvPreview.setEnabled(true);
+		    else
+		    {
+				if (!selected.contains(photoModel))
+			    {
+			    	photoModel.setOrder(imageOrder);
+			    	selected.add(photoModel);
+					imageOrder++;
+			    }
+				tvPreview.setEnabled(true);
+		    }
 		} else {
 			PhotoModel photomodel=null;
         	for (int i=0; i<selected.size();i++){
@@ -306,7 +323,6 @@ public class PhotoSelectorActivity extends Activity implements
 			//selected.remove(photoModel);
 		}
 		tvNumber.setText("(" + selected.size() + ")");
-
 		if (selected.isEmpty()) {
 			tvPreview.setEnabled(false);
 			tvPreview.setText(getString(R.string.preview));
@@ -330,21 +346,7 @@ public class PhotoSelectorActivity extends Activity implements
 			AlbumModel album = (AlbumModel) parent.getItemAtPosition(i);
 			if (i == position)
 			{
-			    if(imageOrder>MAX_IMAGE-1)
-			    {
-		            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		            builder.setTitle("Maximum " + MAX_IMAGE + " Photos");
-		            builder.setMessage("You can only select " + MAX_IMAGE + " photos at a time.");
-		            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-		                public void onClick(DialogInterface dialog, int which) { 
-		                    dialog.cancel();
-		                }
-		            });
-		            AlertDialog alert = builder.create();
-		            alert.show();
-			    }
-			    else
-			    	album.setCheck(true);
+		    	album.setCheck(true);
 			}
 			else
 				album.setCheck(false);
