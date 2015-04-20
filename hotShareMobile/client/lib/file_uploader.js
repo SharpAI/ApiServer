@@ -406,6 +406,7 @@ if (Meteor.isCordova){
               multiThreadsInfo[i].fileTransfer.abort();
             }
           }
+          multiThreadsInfo = [];
         }
         
         abortuploader = stopUploader;
