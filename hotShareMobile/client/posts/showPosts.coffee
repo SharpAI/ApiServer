@@ -221,6 +221,7 @@ if Meteor.isClient
       event.target.comment.value = ""
       $("#comment").attr("placeholder", "说点什么")
       $("#comment").css('height', 'auto')
+      $('.contactsList .head').fadeOut 300
       false
     'focus .commentArea':->
       console.log("#comment get focus");
