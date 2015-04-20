@@ -47,7 +47,7 @@ if Meteor.isClient
             if smallImage
               Session.set(mImg, smallImage)
             else
-              Session.set(mImg, '/noimage.jpg')
+              Session.set(mImg, '/noimage.png')
           getBase64OfImage('','',mImg,ProcessImage)
         Session.get(mImg)
       else
@@ -125,12 +125,10 @@ if Meteor.isClient
 
         ProcessImage = (URI,smallImage)->
           if smallImage
-            console.log "pub index: " + pub.index
             pub[pub.index].imgUrl = smallImage
             Drafts.insert(pub[pub.index])
           else
-            console.log ">>>>can't get base64"
-            pub[pub.index].imgUrl = '/noimage.jpg'
+            pub[pub.index].imgUrl = '/noimage.png'
             Drafts.insert(pub[pub.index])
             #it was deleted
           Dispatch()
