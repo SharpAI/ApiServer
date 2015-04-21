@@ -293,7 +293,7 @@ if (Meteor.isCordova){
 
     var multiThreadsInfo = [];
     var runningThreadCount = 0;
-    var multiThreadsTimeout = 30; // 0.5分钟（单位秒）
+    var multiThreadsTimeout = 45; // 单位秒
     var multiThreadsIntervalHandle;
     var multiThreadsRunning = 0;
     /*filesCount, [{percent:?}]*/
