@@ -1019,8 +1019,6 @@ if(Meteor.isClient){
                 Meteor.subscribe("saveddrafts");
                 Meteor.subscribe("topicposts");
                 Meteor.subscribe("topics");
-                
-                // 数据量小保留
                 Meteor.subscribe("follows");
                 Meteor.subscribe("follower");
             },3000);
