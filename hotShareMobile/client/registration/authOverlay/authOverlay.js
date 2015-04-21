@@ -1,40 +1,10 @@
 if (Meteor.isClient) {
   Template.authOverlay.rendered = function() {
       $('.authOverlay').css('height', $(window).height());
-    
-      if(Meteor.loggingIn() && !Meteor.status().connected){
-        
-        // 由于meteor的重连时间是成倍累加的，所以增加手动处理。
-        var autoReconnect = Meteor.setInterval(function(){
-          if(Meteor.status().connected)
-            Meteor.clearTimeout(autoReconnect);
-          else
-            Meteor.reconnect();
-        }, 500);
-        
-//        var handReconnect = function(){
-//          if(Meteor.isCordova){
-//            navigator.notification.confirm('当前为离线状态,请检查网络连接！', function(index){
-//              if(index === 1)
-//                Meteor.reconnect();
-//                Meteor.setTimeout(function(){if(!Meteor.status().connected){handReconnect();}}, 500);
-//            }, '提示', ['重试', '知道了']);
-//          }else{
-//            if(confirm('当前为离线状态,按[确定]尝试重新连接？')){
-//              Meteor.reconnect();
-//              Meteor.setTimeout(function(){if(!Meteor.status().connected){handReconnect();}}, 500);
-//            }
-//          }
-//        }
-//        handReconnect();
-      }
-  };
+    };
   Template.authOverlay.helpers({
       isLoggingIn:function() {
           return Meteor.loggingIn();
-      },
-      isConnected: function(){
-        return Meteor.status().connected;
       }
   });
   Template.authOverlay.events({
