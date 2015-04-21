@@ -944,8 +944,8 @@ if Meteor.isClient
 #       console.log "#####" + pub
         #uploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId)
         #Don't add addpost page into history
-        multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId, (result)->
-            if result is null
+        multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId, (result, multiThreadsInfo)->
+            if result is 'revoke code'
                 #$("#title").val(title)
                 #$("#addontitle").val(addontitle)
                 Session.set 'draftTitle',title
@@ -959,6 +959,17 @@ if Meteor.isClient
                   #Drafts.update({_id: draftData[i]._id}, {$set: draftData[i]});
                   Drafts.update({_id: draftData[i]._id}, {$set: {data_row:draftData[i].data_row, data_col:draftData[i].data_col, data_sizex:draftData[i].data_sizex, data_sizey:draftData[i].data_sizey}});
                 #PUB.back();
+                return
+            if result is null
+                for i in [0..(draftData.length-1)]
+                  uploadResult = false
+                  for j in [0..(multiThreadsInfo.length-1)]
+                    if draftData[i].filename is multiThreadsInfo[j].filename
+                      if multiThreadsInfo[j].status is 1
+                        uploadResult = true
+                        break
+                  if uploadResult
+                    Drafts.update({_id: draftData[i]._id}, {$set: {imgUrl:draftData[i].imgUrl}});
                 return
             Session.set 'draftTitle',''
             Session.set 'draftAddontitle',''

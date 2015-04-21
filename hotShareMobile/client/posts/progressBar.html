@@ -6,9 +6,11 @@
           {{progressBarWidth}}%
         </div>
       </div>
-      <div class="btnDelayPublish">
-        <center><button id="delayPublish" class="btn btn-primary">稍后发表</button></center>
-      </div>
+      {{#if isDelayPublish}}
+          <div class="btnDelayPublish">
+            <center><button id="delayPublish" class="btn btn-primary">稍后发表</button></center>
+          </div>
+      {{/if}}
     </div>
   </div>
 </template>

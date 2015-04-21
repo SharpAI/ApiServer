@@ -293,15 +293,19 @@ if (Meteor.isCordova){
 
     var multiThreadsInfo = [];
     var runningThreadCount = 0;
-    var multiThreadsTimeout = 180; // 3分钟（单位秒）
+    var multiThreadsTimeout = 30; // 0.5分钟（单位秒）
     var multiThreadsIntervalHandle;
+    var multiThreadsRunning = 0;
     /*filesCount, [{percent:?}]*/
     computeProgressBar = function(fileName, curPercent) {
         var percent = 0;
         var isFind = false;
         var computePercent = curPercent>=100 ? 99 : curPercent;
-        computePercent = computePercent < 0 ? 0 : computePercent
+        computePercent = computePercent < 0 ? 0 : computePercent;
         
+        if (multiThreadsRunning == 0) {
+            return ;
+        }
         for (var i=0; i<uploadingFilesInfo.files.length; i++) {
             if (uploadingFilesInfo.files[i].fileName == fileName) {
                 uploadingFilesInfo.files[i].percent = computePercent;//当前文件已上传的百分比
@@ -334,6 +338,7 @@ if (Meteor.isCordova){
         var count = draftData.length < maxThreads ? draftData.length : maxThreads;
         runningThreadCount = 0;
         multiThreadsInfo = [];
+        multiThreadsRunning = 1;
         for (var i=0; i<count; i++) {
             runningThreadCount++;
             startThreadUploadFile(draftData, null, multiThreadsInfo, callback);
@@ -346,7 +351,7 @@ if (Meteor.isCordova){
                     if (multiThreadsInfo[i].time > multiThreadsTimeout) {
                         clearInterval(multiThreadsIntervalHandle);
                         console.log("multiThreadUploadFile: timeout!!! file info is: "+JSON.stringify(multiThreadsInfo[i]));
-                        multiThreadsInfo = [];
+                        //multiThreadsInfo = [];
                         callback(null);
                         return;
                     }
@@ -401,7 +406,7 @@ if (Meteor.isCordova){
         }
         
         var stopUploader = function(){
-          console.log('stop uploader...');
+          console.log('stop uploader...('+multiThreadsInfo.length+')');
           clearInterval(multiThreadsIntervalHandle);
           for (var i=0; i<multiThreadsInfo.length; i++) {
             if (multiThreadsInfo[i].status == 0 && multiThreadsInfo[i].fileTransfer){
@@ -411,7 +416,7 @@ if (Meteor.isCordova){
           multiThreadsInfo = [];
         }
         
-        abortuploader = stopUploader;
+        abortuploader = function(){callback(null); stopUploader();};
 
         var tmpFileInfo;
         if (fileInfo) {
@@ -433,8 +438,8 @@ if (Meteor.isCordova){
             if (getUploadedCount() == draftData.length) {
                 if (callback) {
                     console.log("startThreadUploadFile: suc");
-                    stopUploader();
-                    multiThreadsInfo = [];
+                    //stopUploader();
+                    //multiThreadsInfo = [];
                     callback('Suc');
                 }
                 return;
@@ -449,13 +454,13 @@ if (Meteor.isCordova){
                 runningThreadCount--;
                 if (!hasActiveUpload()) {
                     console.log("startThreadUploadFile: failed, 1");
-                    stopUploader();
                     callback(null);
+                    stopUploader();
                 }
             }
         }, function(filename) {
             console.log("uploaded failed: filename="+filename);
-            stopUploader();
+            //stopUploader();
           
             var tmpFileInfo3 = getFileInfo(filename);
             if (tmpFileInfo3 == null) {
@@ -501,8 +506,8 @@ if (Meteor.isCordova){
         var uploadedCount = 0;
         //console.log("draftData="+JSON.stringify(draftData));
         if (draftData.length > 0) {
+            Session.set('isDelayPublish', false);
             Template.progressBar.__helpers.get('show')();
-            //Session.set('isDelayPublish', false);
             //PUB.page('/progressBar');
 //            $('body').css('background-color',"white");
             //$('.addProgress').css('display',"block");
@@ -511,6 +516,10 @@ if (Meteor.isCordova){
         }
       
         var multiThreadUploadFileCallback = function(result){
+          if (multiThreadsRunning == 0) {
+            callback(null, multiThreadsInfo);
+            return;
+          }
           if (result) {
               Template.progressBar.__helpers.get('close')()
               //Session.set('progressBarWidth', 100);
@@ -524,16 +533,21 @@ if (Meteor.isCordova){
               console.log("multiThreadUploadFile, suc");
               //callback(null);
           } else {
-              navigator.notification.confirm('上传图片失败，需要重新上传吗？',function(index){
+              /*navigator.notification.confirm('上传图片失败，需要重新上传吗？',function(index){
                 if(index === 1){
                   uploadingFilesInfo.filesCount = draftData.length;
                   uploadingFilesInfo.files = [];
                   multiThreadUploadFile(draftData, 2, multiThreadUploadFileCallback);
                 }else{
+                  callback(null, multiThreadsInfo);
+                  multiThreadsInfo = [];
                   Template.progressBar.__helpers.get('close')();
                 }
-              }, '提示', ['重新','稍后上传']);
+              }, '提示', ['重新','稍后上传']);*/
+              callback(null, multiThreadsInfo);
+              Session.set('isDelayPublish', true);
           }
+          multiThreadsRunning = 0;
         }
       
         uploadingFilesInfo.filesCount = draftData.length;
