@@ -776,7 +776,7 @@ if Meteor.isClient
 
       return
     'click .cancle':->
-      navigator.notification.confirm('选择删除后将无法恢复您的创作', (r)->
+      navigator.notification.confirm('选择删除后将无法恢复您的草稿', (r)->
         console.log('r is ' + r)
         if r is 2
           return
@@ -792,7 +792,7 @@ if Meteor.isClient
           Router.go('/')
         ,animatePageTrasitionTimeout
         return
-      , '您确定要删除未保存的创作吗？', ['删除故事','继续创作']);
+      , '您确定要删除未保存的草稿吗？', ['删除故事','继续创作']);
     'click #cropDone':->
       $('#blur_overlay').css('height','')
       $('#blur_bottom').css('height','')
