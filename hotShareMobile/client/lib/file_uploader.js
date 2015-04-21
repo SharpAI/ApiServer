@@ -322,7 +322,9 @@ if (Meteor.isCordova){
             //console.log("uploadingFilesInfo.files["+i+"].percent = "+uploadingFilesInfo.files[i].percent);
         }
         //console.log("progressBarWidth="+parseInt(percent/uploadingFilesInfo.filesCount)+",percent="+percent+", filesCount="+uploadingFilesInfo.filesCount);
-        Session.set('progressBarWidth', parseInt(percent/uploadingFilesInfo.files.length));
+        if (parseInt(percent/uploadingFilesInfo.files.length) > Session.get('progressBarWidth')) {
+            Session.set('progressBarWidth', parseInt(percent/uploadingFilesInfo.files.length));
+        }
 
         //Clear timeout timer of this file
         for (var i=0; i<multiThreadsInfo.length; i++) {
