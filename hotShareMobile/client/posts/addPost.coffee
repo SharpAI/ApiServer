@@ -776,7 +776,10 @@ if Meteor.isClient
 
       return
     'click .cancle':->
-      try 
+      try
+        if confirm('是否取消')
+        else
+          return;
         draftData = Drafts.find().fetch()
         draftId = draftData[0]._id
         if SavedDrafts.find({_id:draftId}).count() > 0
