@@ -5,20 +5,40 @@ if Meteor.isClient
       Meteor.setTimeout ->
           Session.set 'focusOn',channel
         ,300
-    Router.route '/',()->
-      this.render 'home'
-      Session.set 'channel','home'
-      return
-    Router.route '/search',()->
-      if Meteor.isCordova is true
-        this.render 'search'
-        Session.set 'channel','search'
-      return
-    Router.route '/searchFollow',()->
-      if Meteor.isCordova is true
-        this.render 'searchFollow'
-        Session.set 'channel','searchFollow'
-      return
+    Router.route(
+      '/'
+      {
+        template: 'home'
+        subscriptions: ()->
+          this.subscribe("posts").wait()
+        action: ()->
+          this.render()
+          Session.set('channel', 'home')
+      }
+    )
+    Router.route(
+      '/search'
+      {
+        template: 'search'
+        subscriptions: ()->
+          this.subscribe("topics").wait()
+        action: ()->
+          this.render()
+          Session.set('channel', 'search')
+      }
+    )
+    Router.route(
+      '/searchFollow'
+      {
+        template: 'searchFollow'
+        subscriptions: ()->
+          this.subscribe("follows").wait()
+          this.subscribe("follower").wait()
+        action: ()->
+          this.render()
+          Session.set('channel', 'searchFollow')
+      }
+    )
     Router.route '/searchPeopleAndTopic',()->
       if Meteor.isCordova is true
         this.render 'searchPeopleAndTopic'
@@ -32,11 +52,19 @@ if Meteor.isClient
         this.render 'bell'
         Session.set 'channel','bell'
       return
-    Router.route '/user',()->
-      if Meteor.isCordova is true
-        this.render 'user'
-        Session.set 'channel','user'
-        return
+    Router.route(
+      '/user'
+      {
+        template: 'user'
+        subscriptions: ()->
+          this.subscribe("saveddrafts").wait()
+          this.subscribe("posts").wait()
+        action: ()->
+          if Meteor.isCordova is true
+            this.render()
+            Session.set('channel', 'user')
+      }
+    )
     Router.route '/dashboard',()->
       if Meteor.isCordova is true
         this.render 'dashboard'
@@ -97,16 +125,30 @@ if Meteor.isClient
           this.render 'showPosts', {data: post}
           Session.set 'channel','posts/'+this.params._id
       }
-    Router.route '/allDrafts',()->
-      if Meteor.isCordova is true
-        this.render 'allDrafts'
-        Session.set 'channel','allDrafts'
-        return
-    Router.route '/myPosts',()->
-      if Meteor.isCordova is true
-        this.render 'myPosts'
-        Session.set 'channel','myPosts'
-        return
+    Router.route(
+      '/allDrafts'
+      {
+        template: 'allDrafts'
+        subscriptions: ()->
+          this.subscribe("saveddrafts").wait()
+        action: ()->
+          if Meteor.isCordova is true
+            this.render()
+            Session.set('channel', 'allDrafts')
+      }
+    )
+    Router.route(
+      '/myPosts'
+      {
+        template: 'myPosts'
+        subscriptions: ()->
+          this.subscribe("posts").wait()
+        action: ()->
+          if Meteor.isCordova is true
+            this.render()
+            Session.set('channel', 'myPosts')
+      }
+    )
     Router.route '/my_email',()->
       if Meteor.isCordova is true
         this.render 'my_email'
