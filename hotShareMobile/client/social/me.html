@@ -1,16 +1,16 @@
 <template name="me">
-  <div class="me comFadeIn">
+  <div class="me">
     {{> Template.dynamic template=whichOne}}
   </div>
 </template>
 <template name="information">
-  <div class="contactsList"><div class="head" style="display:block;">
+  <div class="contactsList comFadeIn"><div class="head" style="display:block;">
     <div class="socialTitle">
       <span class="Contacts">我</span>
     </div>
   </div></div>
   
-  <ul class="set-up">
+  <ul class="set-up comFadeIn">
     <li class="nickname">
       <label>昵称</label>
       <div class="value">{{nickname}}<i class="fa fa-angle-right"></i></div>
@@ -22,7 +22,7 @@
   </ul>
 </template>
 <template name="setNickname">
-  <div class="setNickname">
+  <div class="setNickname comFadeIn">
     <div class="head">
       <div class="socialTitle">
         <div class="left-btn">取消</div>
@@ -39,14 +39,14 @@
   </div>
 </template>
 <template name="setSex">
-  <div class="contactsList"><div class="head" style="display:block;">
+  <div class="contactsList comFadeIn"><div class="head" style="display:block;">
     <div class="socialTitle">
       <div class="left-btn">取消</div>
       <span class="Contacts">性别</span>
     </div>
   </div></div>
   
-  <ul class="set-up">
+  <ul class="set-up comFadeIn">
     <li class="nickname setMale">
       <label>男</label>
       <div class="value select">{{#if isMale}}<i class="fa fa-check"></i>{{/if}}</div>
