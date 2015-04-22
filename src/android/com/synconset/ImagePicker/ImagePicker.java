@@ -30,7 +30,6 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 
 public class ImagePicker extends CordovaPlugin {
 	public static String TAG = "ImagePicker";
@@ -45,17 +44,19 @@ public class ImagePicker extends CordovaPlugin {
 		 this.params = args.getJSONObject(0);
 		if (action.equals("getPictures")) {
 			Intent intent = new Intent(cordova.getActivity(), PhotoSelectorActivity.class);
+			//Intent intent = new Intent(cordova.getActivity(), MultiImageChooserActivity.class);
 			int max = 20;
 
 			if (this.params.has("maximumImagesCount")) {
 				max = this.params.getInt("maximumImagesCount");
 			}
+
 			intent.putExtra(PhotoSelectorActivity.KEY_MAX, max);
 		    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 			if (this.cordova != null) {
 				this.cordova.startActivityForResult((CordovaPlugin) this, intent, 0);
 			}
-			/*
+
 			if (this.params.has("width")) {
 				desiredWidth = this.params.getInt("width");
 			}
@@ -65,13 +66,15 @@ public class ImagePicker extends CordovaPlugin {
 			if (this.params.has("quality")) {
 				quality = this.params.getInt("quality");
 			}
+			/*
 			intent.putExtra("MAX_IMAGES", max);
 			intent.putExtra("WIDTH", desiredWidth);
 			intent.putExtra("HEIGHT", desiredHeight);
 			intent.putExtra("QUALITY", quality);
 			if (this.cordova != null) {
 				this.cordova.startActivityForResult((CordovaPlugin) this, intent, 0);
-			}*/
+			}
+			*/
 		}
 		return true;
 	}
@@ -207,8 +210,7 @@ public class ImagePicker extends CordovaPlugin {
     		  filename=fileNames.get(i).getOriginalPath();
     		  rotate = fileNames.get(i).getRotation();
     		}
-    		
-    		//filename=fileNames.get(i).getOriginalPath();
+
             int index = filename.lastIndexOf('.');
             String ext = filename.substring(index);
             if (ext.compareToIgnoreCase(".gif") != 0) {
