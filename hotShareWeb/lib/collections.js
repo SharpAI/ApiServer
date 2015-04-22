@@ -44,10 +44,25 @@ if(Meteor.isServer){
         }
       },
       changed: function (id,fields) {
-         try{
-           self.changed("newfriends", id, fields);
-         }catch(error){
-         };
+         if(postId === fields.meetOnPostId)
+         {
+           try{
+             self.changed("newfriends", id, fields);
+           }catch(error){
+             if(count<20)
+             {
+               var meetItem = Meets.findOne({_id:id});
+               if(meetItem.me === userId && meetItem.ta !== userId)
+               {
+                 fields.me = meetItem.me;
+                 fields.ta = meetItem.ta;
+                 fields.count = meetItem.count;
+                 count++;
+                 self.added("newfriends", id, fields);
+               }
+             }
+           };
+         }
       },
       removed: function (id) {
          self.removed("newfriends", id);
@@ -165,13 +180,14 @@ if(Meteor.isServer){
                       meetCount = 0;
                     if ( needUpdateMeetCount ){
                       meetCount = meetCount+1;
-                      Meets.update({me:data.userId,ta:userId},{$set:{count:meetCount}});
+                      Meets.update({me:data.userId,ta:userId},{$set:{count:meetCount,meetOnPostId:postId}});
                     }
                   }else{
                     Meets.insert({
                       me:data.userId,
                       ta:userId,
-                      count:1
+                      count:1,
+                      meetOnPostId:postId
                     });
                   }
                 });
