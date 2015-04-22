@@ -53,8 +53,6 @@ if Meteor.isClient
                   Drafts.update({_id: mainImageDoc._id}, {$set: {imgUrl:result.smallImage, filename:result.filename, URI:result.URI }});
           else if buttonClicked.id == "crop"
             console.log("crop "+ event.currentTarget.id)
-
-
             Session.set 'isReviewMode','3'
             Session.set 'cropDraftId',event.currentTarget.id
 
@@ -67,6 +65,13 @@ if Meteor.isClient
             $('#crop'+mainImageId).css('display',"block")
             $('#'+mainImageId).css('z-index',"12")
             image = Drafts.findOne({_id:mainImageId}).imgUrl
+            #style = Drafts.findOne({_id:mainImageId}).style
+            style = $('#'+mainImageId).getStyleProp();
+            if style is undefined
+              style = ''
+            scale = Drafts.findOne({_id:mainImageId}).scale
+            if scale is undefined
+              scale = 1
             console.log "imgUrl is "+image
             console.log "imgWidth is "+imgWidth
             console.log "imgHeight is "+imgHeight
@@ -76,13 +81,14 @@ if Meteor.isClient
             crop.init {
               container: containerId,
               image: image,
+              style: style,
               width: imgWidth,
               height: imgHeight,
               mask: false,
-              zoom: {steps: 0.01,min: 1,max: 2},
+              zoom: {steps: 0.01,min: 1,max: 3,value: scale},
               callback: ()->
-                Session.set 'imgSizeW',$("#default"+event.currentTarget.id+" .crop-img").width()
-                Session.set 'imgSizeH',$("#default"+event.currentTarget.id+" .crop-img").height()
+                Session.set 'imgSizeW',$("#default"+event.currentTarget.id+" .crop-img").width()/scale
+                Session.set 'imgSizeH',$("#default"+event.currentTarget.id+" .crop-img").height()/scale
             }
             if window.device.model is "iPhone7,1"
                 height = $('#'+mainImageId).height()
@@ -91,6 +97,53 @@ if Meteor.isClient
                 docHeight = window.getDocHeight()
                 bottomHeight = docHeight - bottomTop
                 $('#blur_bottom').css('height',bottomHeight)
+                
+            cropimg = $(containerId).find('.crop-overlay')[0]
+            hammertime = new Hammer(cropimg)
+            pinch = new Hammer.Pinch();
+            rotate = new Hammer.Rotate();
+            pinch.recognizeWith(rotate);
+            hammertime.add([pinch, rotate]);
+            initScale = 1
+            pinchStatus = 0;
+            hammertime.on("pinchstart pinchin pinchout pinchend", (e)->
+              e.preventDefault();
+              zoom = $(containerId).find('input')
+              if e.type is 'pinchstart'
+                  initScale = zoom.val()
+                  pinchStatus = 1
+              else if e.type is 'pinchend'
+                  initScale = zoom.val()
+                  pinchStatus = 0
+              else if e.type is 'pinchin' or e.type is 'pinchout'
+                  if pinchStatus is 0
+                      return
+                  #scale = initScale * (1 + (e.scale-1.0)*0.1);
+                  scale = initScale * e.scale;
+                  #console.log("hammer on pinch, e.scale="+e.scale+", scale="+scale+", initScale="+initScale);
+                  if scale > 3
+                    scale = 3
+                  else if scale < 1
+                    scale = 1
+                  crop.slider(scale);
+                  #apply background color to range progress
+                  zoom.val(scale)
+                  #val = scale
+                  #min = zoom.attr('min')
+                  #max = zoom.attr('max')
+                  #pos = Math.round(((val - min) / (max - min)) * 100)
+                  #style = "background: linear-gradient(to right, #fbc93d " + pos + "%, #eee " + (pos + 0.1) + "%);"
+                  #zoom.attr('style', style);
+            )
+
+            #Meteor.setTimeout ->
+            #  console.log("crop-img width="+$("#default"+node.id+" .crop-img").width()+", scale="+scale)
+            #  console.log("crop-img width="+$("#default"+node.id+" .crop-img").height())
+            #  Session.set 'imgSizeW',$("#default"+node.id+" .crop-img").width()/scale
+            #  Session.set 'imgSizeH',$("#default"+node.id+" .crop-img").height()/scale
+            #,300
+          return
+      return
 
     #init
     this.find('.content')._uihooks = {
