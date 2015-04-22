@@ -10,6 +10,19 @@ if Meteor.isClient
     $('.addPost').css('min-height',$(window).height())
     $('.addPost').css('width',$(window).width())
     $('.mainImage').css('height',$(window).height()*0.55)
+
+    title = document.getElementById("title")
+    if title?
+      $('#title').css("height", "auto");
+      scrollHeight = title.scrollHeight;
+      $('#title').css('height', scrollHeight)
+
+    addontitle = document.getElementById("addontitle")
+    if addontitle?
+      $('#addontitle').css("height", "auto");
+      scrollHeight = addontitle.scrollHeight
+      $('#addontitle').css('height', scrollHeight);
+
 #    Meteor.setTimeout ->
 #      $('#wrapper img').css('height',$(window).height()*0.55)
 #    ,200
