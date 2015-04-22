@@ -1023,18 +1023,15 @@ if(Meteor.isClient){
           }
       };
       Deps.autorun(function() {
-        if (Meteor.userId()) {
-            console.log('Refresh Main Data Source when logon');
-            window.refreshMainDataSource();
-        }
-      });
-      Deps.autorun(function() {
         if (Meteor.user()) {
+            //console.log('Refresh Main Data Source when logon');
+            //window.refreshMainDataSource();
+          
             Meteor.setTimeout( function() {
-                Meteor.subscribe("posts");
-                Meteor.subscribe("saveddrafts");
-                Meteor.subscribe("topicposts");
-                Meteor.subscribe("topics");
+                //Meteor.subscribe("posts");
+                //Meteor.subscribe("saveddrafts");
+                //Meteor.subscribe("topicposts");
+                //Meteor.subscribe("topics");
                 Meteor.subscribe("follows");
                 Meteor.subscribe("follower");
             },3000);
