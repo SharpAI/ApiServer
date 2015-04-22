@@ -3,6 +3,6 @@
 @withAfterPostIntroduce = false
 @withChat = false
 @withDiscover = false
-@withAutoSavedOnPaused = false
+@withAutoSavedOnPaused = true
 @withPostSuggestionToUser = false
 
