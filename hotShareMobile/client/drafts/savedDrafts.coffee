@@ -1,4 +1,6 @@
 if Meteor.isClient
+  Template.allDrafts.onCreated ()->
+    Meteor.subscribe("saveddrafts")
   Template.allDrafts.helpers
     items:()->
       for i in [0..SavedDrafts.find().count()-1]

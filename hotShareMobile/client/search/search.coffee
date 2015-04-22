@@ -1,4 +1,7 @@
 if Meteor.isClient
+  Template.search.onCreated ()->
+    Meteor.subscribe("topicposts")
+    Meteor.subscribe("topics")
   Template.search.helpers
     theme:()->
       Topics.find({type:"theme"}, {sort: {createdAt: -1}})
@@ -119,6 +122,9 @@ if Meteor.isClient
         false
       else
         true
+  Template.searchPeopleAndTopic.onCreated ()->
+    Meteor.subscribe("topicposts")
+    Meteor.subscribe("topics")
   Template.searchPeopleAndTopic.rendered=->
     Session.setDefault('is_people', true)
     $('#search-box').bind('propertychange input',(e)->

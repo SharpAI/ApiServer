@@ -9,6 +9,9 @@ Template.follow_user_list.helpers
       true
     else
       false
+Template.registerFollow.onCreated ()->
+  Meteor.subscribe("follows")
+  Meteor.subscribe("follower")
 Template.registerFollow.helpers
   followCount: ->
     Follower.find({"userId":Meteor.userId()}).count()

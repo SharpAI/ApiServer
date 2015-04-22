@@ -1,4 +1,6 @@
 if Meteor.isClient
+  Template.myPosts.onCreated ()->
+    Meteor.subscribe("posts")
   Template.myPosts.rendered=->
     $('.content').css 'min-height',$(window).height()
   Template.myPosts.helpers

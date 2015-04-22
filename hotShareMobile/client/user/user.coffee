@@ -1,5 +1,8 @@
 #space 2
 if Meteor.isClient
+  Template.user.onCreated ()->
+    Meteor.subscribe("posts")
+    Meteor.subscribe("saveddrafts")
   Template.user.helpers
     followers:->
       #Follower存放用户间关注记录， Follows是推荐偶像列表
