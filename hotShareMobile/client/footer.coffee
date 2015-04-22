@@ -60,6 +60,9 @@ if Meteor.isClient
                 PUB.back()
               return
             if result
+              Meteor.setTimeout(()->
+                  Template.addPost.__helpers.get('saveDraft')()
+                12000)
               Session.set 'NewImgAdd','true'
               console.log 'Local is ' + result.smallImage
               Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}

@@ -47,6 +47,9 @@ if Meteor.isClient
                   PUB.back()
                 return
               if result
+                Meteor.setTimeout(()->
+                    Template.addPost.__helpers.get('saveDraft')()
+                  12000)
                 console.log 'image url is ' + result.smallImage
                 if Drafts.find({type:'image'}).count() > 0
                   mainImageDoc = Drafts.find({type:'image'}).fetch()[0]
@@ -219,6 +222,7 @@ if Meteor.isClient
           $('#blur_overlay').css('height','')
           $(node).css('z-index', '')
           $(node).removeClass("edit");
+          Template.addPost.__helpers.get('saveDraft')()
         )
 
       else if buttonClicked.id == "del"
@@ -389,6 +393,7 @@ if Meteor.isClient
               else
                 window.add_image_to_right = true
                 grid.add_widget(node, 3, 3,1,max_row)
+            #Template.addPost.__helpers.get('saveDraft')()
           $(node).toolbar
             content: '#image-toolbar-options'
             position: 'top'
@@ -645,8 +650,8 @@ if Meteor.isClient
               owner:Meteor.userId(),
               createdAt: new Date(),
             }
-        Drafts.remove {owner: Meteor.userId()}
-        history.back()
+        #Drafts.remove {owner: Meteor.userId()}
+        #history.back()
         #PUB.back()
         return
     showPostFooter:->
@@ -802,6 +807,9 @@ if Meteor.isClient
             PUB.back()
           return
         if result
+          Meteor.setTimeout(()->
+              Template.addPost.__helpers.get('saveDraft')()
+            12000)
           #console.log 'upload success: url is ' + result
           #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
           console.log 'image url is ' + result.smallImage
@@ -849,8 +857,9 @@ if Meteor.isClient
         Session.set 'isReviewMode','1'
         #Delete it from SavedDrafts
         draftData = Drafts.find().fetch()
-        draftId = draftData[0]._id
-        SavedDrafts.remove draftId
+        if draftData.length>0
+          draftId = draftData[0]._id
+          SavedDrafts.remove draftId
         #Clear Drafts
         Drafts.remove {owner: Meteor.userId()}
         $('.addPost').addClass('animated ' + animateOutUpperEffect);
@@ -960,6 +969,10 @@ if Meteor.isClient
     
     'click #saveDraft':->
       Template.addPost.__helpers.get('saveDraft')()
+      Drafts.remove {owner: Meteor.userId()}
+      history.back()
+      #PUB.back()
+
       
     'click #publish':->
       if Meteor.user() is null
@@ -1061,7 +1074,7 @@ if Meteor.isClient
               ownerName = Meteor.user().profile.fullname
             else
               ownerName = Meteor.user().username
-            if Session.get('isReviewMode') is '2'
+            if Session.get('isReviewMode') is '2' or Posts.find({_id:postId}).count()>0
                 Posts.update(
                   {_id:postId},
                   {$set:{
