@@ -859,6 +859,24 @@ if Meteor.isClient
         ,animatePageTrasitionTimeout
         return
       , '您确定要删除未保存的草稿吗？', ['删除故事','继续创作']);
+    'click .cancleCrop':->
+      $('#blur_overlay').css('height','')
+      $('#blur_bottom').css('height','')
+      $('#blur_left').css('height','')
+      $('#blur_right').css('height','')
+      cropDraftId = Session.get('cropDraftId')
+      
+      $('#isImage'+cropDraftId).css('display',"block")
+      $('#'+cropDraftId).css('display',"block")
+      $('#crop'+cropDraftId).css('display',"none")
+      Meteor.setTimeout ()->
+        document.getElementById('default'+cropDraftId).innerHTML=""
+      ,120
+      $('#'+cropDraftId).css('z-index',"2")
+      if Posts.find({_id:Drafts.find().fetch()[0]._id}).count() > 0
+        Session.set 'isReviewMode','2'
+      else
+        Session.set 'isReviewMode','0'
     'click #cropDone':->
       $('#blur_overlay').css('height','')
       $('#blur_bottom').css('height','')
