@@ -88,41 +88,63 @@ if Meteor.isClient
         $(itemElem).attr("data-sizey", sizey)
         gridster.resize_widget($(itemElem), sizex,sizey)
     )
+    hidePostBar = ()->
+      $('.showPostsFooter').fadeOut 300
+      $('.showPosts .head').fadeOut 300
+    showPostBar = ()->
+      $('.showPostsFooter').fadeIn 300
+      $('.showPosts .head').fadeIn 300
 
-    window.lastScroll = 0;
-    $(window).scroll (event)->
+    showSocialBar = ()->
+      $('.contactsList .head').fadeIn 300
+      $('.userProfile .head').fadeIn 300
+      $('.socialContent .chatFooter').fadeIn 300
+    hideSocialBar = ()->
+      $('.contactsList .head').fadeOut 300
+      $('.userProfile .head').fadeOut 300
+      $('.socialContent .chatFooter').fadeOut 300
+    scrollEventCallback = ()->
       #Sets the current scroll position
-      st = $(window).scrollTop();
+      st = $(window).scrollTop()
+      if st is 0
+        hideSocialBar()
+        showPostBar()
+        window.lastScroll = st
+        return
 
       if(st + $(window).height()) is window.getDocHeight()
         $('.showPosts .head').fadeIn 300
-        if withSocialBar
-          $('.contactsList .head').fadeIn 300
-          $('.userProfile .head').fadeIn 300
-          $('.showPostsFooter').fadeOut 300
-        else
-          $('.contactsList .head').fadeOut 300
-          $('.userProfile .head').fadeOut 300
-          $('.showPostsFooter').fadeIn 300
+        hidePostBar()
+        showSocialBar()
         window.lastScroll = st
         return
       # Changed is too small
       if Math.abs(window.lastScroll - st) < 10
         return
       #Determines up-or-down scrolling
+      displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
       if st > window.lastScroll
-        window.popedup = false
-        $('.contactsList .head').fadeIn 300
-        $('.userProfile .head').fadeIn 300
-        $('.showPosts .head').fadeOut 300
-        $('.showPostsFooter').fadeOut 300
+        if displaySocialBar
+          showSocialBar()
+          hidePostBar()
+        else
+          showPostBar()
+          hideSocialBar()
       else
-        $('.contactsList .head').fadeOut 300
-        $('.userProfile .head').fadeOut 300
-        $('.showPosts .head').fadeIn 300
-        $('.showPostsFooter').fadeIn 300
+        if displaySocialBar
+          showSocialBar()
+          hidePostBar()
+        else
+          hideSocialBar()
+          showPostBar()
       #Updates scroll position
       window.lastScroll = st
+    window.lastScroll = 0;
+    hideSocialBar()
+    showPostBar()
+
+    if withSocialBar
+      $(window).scroll(scrollEventCallback)
     #if !$('body').isSupportObjectFit()
     #  PUB.toast("您的手机版本过低，部分图片可能产生变形。");
 
