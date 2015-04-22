@@ -262,7 +262,7 @@ if Meteor.isClient
         $(textarea).css('height', 'auto');
         scrollHeight = document.getElementById(node.id+"TextArea").scrollHeight
         $(textarea).css('height', scrollHeight);
-        sizey = Math.ceil((this.scrollHeight+10)/min_widget_height)
+        sizey = Math.ceil((scrollHeight+10)/min_widget_height)
         resizeItem = $('#'+node.id)
         orig_sizey = parseInt(resizeItem.attr("data-sizey"))
         if sizey isnt orig_sizey
@@ -281,7 +281,7 @@ if Meteor.isClient
         min_widget_height = (5 * 2) + grid_size;
         scrollHeight = document.getElementById(node.id+"TextArea").scrollHeight
         $(textarea).css('height', 'auto').css('height', scrollHeight);
-        sizey = Math.ceil((this.scrollHeight+10)/min_widget_height)
+        sizey = Math.ceil((scrollHeight+10)/min_widget_height)
         resizeItem = $('#'+node.id)
         orig_sizey = parseInt(resizeItem.attr("data-sizey"))
         if sizey isnt orig_sizey
