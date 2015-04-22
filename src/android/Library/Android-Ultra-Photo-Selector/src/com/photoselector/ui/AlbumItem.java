@@ -57,7 +57,7 @@ public class AlbumItem extends LinearLayout {
 	}
 
 	public void setCount(int count) {
-		tvCount.setHint(count + "ÕÅ");
+		tvCount.setHint(""+count);
 	}
 
 	public void isCheck(boolean isCheck) {

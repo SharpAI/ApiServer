@@ -11,18 +11,21 @@ import android.database.Cursor;
 import android.provider.MediaStore.Images.ImageColumns;
 import android.provider.MediaStore.Images.Media;
 
+import com.photoselector.R;
 import com.photoselector.model.AlbumModel;
 import com.photoselector.model.PhotoModel;
 
 public class AlbumController {
 
 	private ContentResolver resolver;
+	public static String RECCENT_PHOTO = null;
 
 	public AlbumController(Context context) {
 		resolver = context.getContentResolver();
+		RECCENT_PHOTO = context.getResources().getString(R.string.recent_photos);
 	}
 
-	/** »ñÈ¡×î½üÕÕÆ¬ÁĞ±í */
+	/** è·å–æœ€è¿‘ç…§ç‰‡åˆ—è¡¨ */
 	public List<PhotoModel> getCurrent() {
 		Cursor cursor = resolver.query(Media.EXTERNAL_CONTENT_URI, new String[] { ImageColumns.DATA,
 				ImageColumns.DATE_ADDED, ImageColumns.SIZE }, null, null, ImageColumns.DATE_ADDED);
@@ -40,7 +43,7 @@ public class AlbumController {
 		return photos;
 	}
 
-	/** »ñÈ¡ËùÓĞÏà²áÁĞ±í */
+	/** è·å–æ‰€æœ‰ç›¸å†Œåˆ—è¡¨ */
 	public List<AlbumModel> getAlbums() {
 		List<AlbumModel> albums = new ArrayList<AlbumModel>();
 		Map<String, AlbumModel> map = new HashMap<String, AlbumModel>();
@@ -49,7 +52,7 @@ public class AlbumController {
 		if (cursor == null || !cursor.moveToNext())
 			return new ArrayList<AlbumModel>();
 		cursor.moveToLast();
-		AlbumModel current = new AlbumModel("×î½üÕÕÆ¬", 0, cursor.getString(cursor.getColumnIndex(ImageColumns.DATA)), true); // "×î½üÕÕÆ¬"Ïà²á
+		AlbumModel current = new AlbumModel(RECCENT_PHOTO, 0, cursor.getString(cursor.getColumnIndex(ImageColumns.DATA)), true); // "æœ€è¿‘ç…§ç‰‡"ç›¸å†Œ
 		albums.add(current);
 		do {
 			if (cursor.getInt(cursor.getColumnIndex(ImageColumns.SIZE)) < 1024 * 10)
@@ -68,7 +71,7 @@ public class AlbumController {
 		return albums;
 	}
 
-	/** »ñÈ¡¶ÔÓ¦Ïà²áÏÂµÄÕÕÆ¬ */
+	/** è·å–å¯¹åº”ç›¸å†Œä¸‹çš„ç…§ç‰‡ */
 	public List<PhotoModel> getAlbum(String name) {
 		Cursor cursor = resolver.query(Media.EXTERNAL_CONTENT_URI, new String[] { ImageColumns.BUCKET_DISPLAY_NAME,
 				ImageColumns.DATA, ImageColumns.DATE_ADDED, ImageColumns.SIZE }, "bucket_display_name = ?",
