@@ -7,10 +7,8 @@ if Meteor.isServer
       try
         randomNumber = rng()
         skipNumber = parseInt(rng()*name_numbers)
-        console.log 'Random Number. ' + randomNumber + 'Skip number ' + skipNumber
         anonymousName = RefNames.findOne({},{fields: {text:1},skip:skipNumber}).text;
         if anonymousName and anonymousName isnt ''
-          console.log 'Got anonymouse name  ' + anonymousName
           return anonymousName
       catch
         return null
