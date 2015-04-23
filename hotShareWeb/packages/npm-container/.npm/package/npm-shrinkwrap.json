@@ -86,9 +86,6 @@
           "version": "0.0.2"
         }
       }
-    },
-    "seedrandom": {
-      "version": "2.3.11"
     }
   }
 }

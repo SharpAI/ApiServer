@@ -19,6 +19,9 @@ Meets = new Meteor.Collection('meets');
 if(Meteor.isClient){
   Newfriends = new Meteor.Collection("newfriends");
 }
+if(Meteor.isServer){
+  RefNames = new Mongo.Collection("refnames");
+}
 
 if(Meteor.isServer){
   Rnd = 0;

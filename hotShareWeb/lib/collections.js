@@ -21,6 +21,10 @@ if(Meteor.isClient){
 }
 
 if(Meteor.isServer){
+  RefNames = new Mongo.Collection("refnames");
+}
+
+if(Meteor.isServer){
   Rnd = 0;
   Meteor.publish("newfriends", function (userId,postId) {
     if(this.userId === null || !Match.test(postId, String))
@@ -134,80 +138,81 @@ if(Meteor.isServer){
   Meteor.publish("publicPosts", function(postId) {
       if(this.userId === null || !Match.test(postId, String))
         return [];
-    
-      var self = this;
-      Meteor.defer(function(){
-        var needUpdateMeetCount = false;
-        try {
-            if(self.userId && postId ){
-                if( Viewers.find({userId:self.userId,postId:postId}).count() === 0 ){
-                    needUpdateMeetCount = true;
-                    userinfo = Meteor.users.findOne({_id: self.userId },{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
-                    if(userinfo){
-                        Viewers.insert({
-                            postId:postId,
-                            username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
-                            userId:self.userId,
-                            userIcon: userinfo.profile.icon,
-                            anonymous: userinfo.profile.anonymous,
-                            createdAt: new Date()
-                        });
-                    }
-                } else {
-                    userinfo = Meteor.users.findOne({_id: self.userId},{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
-                    if(userinfo) {
-                        Viewers.update({userId: self.userId, postId: postId}, {$set: {createdAt: new Date()}});
-                    }
-                }
-            }
-        } catch (error){
-        }
-        try{
-              var userId = self.userId;
-              var views=Viewers.find({postId:postId});
-              if(views.count()>0){
-                views.forEach(function(data){
-                  var meetItemOne = Meets.findOne({me:userId,ta:data.userId});
-                  if(meetItemOne){
-                    var meetCount = meetItemOne.count;
-                    if(meetCount === undefined || isNaN(meetCount))
-                      meetCount = 0;
-                    if ( needUpdateMeetCount ){
-                      meetCount = meetCount+1;
-                    }
-                    Meets.update({me:userId,ta:data.userId},{$set:{count:meetCount,meetOnPostId:postId}});
-                  }else{
-                    Meets.insert({
-                      me:userId,
-                      ta:data.userId,
-                      count:1,
-                      meetOnPostId:postId
-                    });
+      else{
+        var self = this;
+        Meteor.defer(function(){
+          var needUpdateMeetCount = false;
+          try {
+              if(self.userId && postId ){
+                  if( Viewers.find({userId:self.userId,postId:postId}).count() === 0 ){
+                      needUpdateMeetCount = true;
+                      userinfo = Meteor.users.findOne({_id: self.userId },{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
+                      if(userinfo){
+                          Viewers.insert({
+                              postId:postId,
+                              username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
+                              userId:self.userId,
+                              userIcon: userinfo.profile.icon,
+                              anonymous: userinfo.profile.anonymous,
+                              createdAt: new Date()
+                          });
+                      }
+                  } else {
+                      userinfo = Meteor.users.findOne({_id: self.userId},{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
+                      if(userinfo) {
+                          Viewers.update({userId: self.userId, postId: postId}, {$set: {createdAt: new Date()}});
+                      }
                   }
-
-                  var meetItemTwo = Meets.findOne({me:data.userId,ta:userId});
-                  if(meetItemTwo){
-                    var meetCount = meetItemTwo.count;
-                    if(meetCount === undefined || isNaN(meetCount))
-                      meetCount = 0;
-                    if ( needUpdateMeetCount ){
-                      meetCount = meetCount+1;
-                      Meets.update({me:data.userId,ta:userId},{$set:{count:meetCount,meetOnPostId:postId}});
-                    }
-                  }else{
-                    Meets.insert({
-                      me:data.userId,
-                      ta:userId,
-                      count:1,
-                      meetOnPostId:postId
-                    });
-                  }
-                });
               }
-        }
-        catch(error){}
-      });
-      return Posts.find({_id: postId});
+          } catch (error){
+          }
+          try{
+                var userId = self.userId;
+                var views=Viewers.find({postId:postId});
+                if(views.count()>0){
+                  views.forEach(function(data){
+                    var meetItemOne = Meets.findOne({me:userId,ta:data.userId});
+                    if(meetItemOne){
+                      var meetCount = meetItemOne.count;
+                      if(meetCount === undefined || isNaN(meetCount))
+                        meetCount = 0;
+                      if ( needUpdateMeetCount ){
+                        meetCount = meetCount+1;
+                      }
+                      Meets.update({me:userId,ta:data.userId},{$set:{count:meetCount,meetOnPostId:postId}});
+                    }else{
+                      Meets.insert({
+                        me:userId,
+                        ta:data.userId,
+                        count:1,
+                        meetOnPostId:postId
+                      });
+                    }
+
+                    var meetItemTwo = Meets.findOne({me:data.userId,ta:userId});
+                    if(meetItemTwo){
+                      var meetCount = meetItemTwo.count;
+                      if(meetCount === undefined || isNaN(meetCount))
+                        meetCount = 0;
+                      if ( needUpdateMeetCount ){
+                        meetCount = meetCount+1;
+                        Meets.update({me:data.userId,ta:userId},{$set:{count:meetCount,meetOnPostId:postId}});
+                      }
+                    }else{
+                      Meets.insert({
+                        me:data.userId,
+                        ta:userId,
+                        count:1,
+                        meetOnPostId:postId
+                      });
+                    }
+                  });
+                }
+          }
+          catch(error){}
+        });
+        return Posts.find({_id: postId});
+      }
   });
   /*Meteor.publish("drafts", function() {
         return Drafts.find({owner: this.userId});

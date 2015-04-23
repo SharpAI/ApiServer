@@ -1,3 +1,4 @@
 {
-  "jpush-sdk" : "3.1.0"
+  "jpush-sdk" : "3.1.0",
+  "seedrandom" : "2.3.11"
 }
