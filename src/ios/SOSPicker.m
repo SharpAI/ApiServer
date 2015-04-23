@@ -10,6 +10,7 @@
 #import "ELCAlbumPickerController.h"
 #import "ELCImagePickerController.h"
 #import "ELCAssetTablePicker.h"
+#import "DNImagePickerController.h"
 
 #define CDV_PHOTO_PREFIX @"cdv_photo_"
 
@@ -25,7 +26,7 @@
 	self.height = [[options objectForKey:@"height"] integerValue];
 	self.quality = [[options objectForKey:@"quality"] integerValue];
     self.storage = [options objectForKey:@"storage"];   //persistent, temporary
-
+/*
 	// Create the an album controller and image picker
 	ELCAlbumPickerController *albumController = [[ELCAlbumPickerController alloc] init];
 	
@@ -48,7 +49,31 @@
 	[self.viewController presentViewController:imagePicker
 	                       animated:YES
 	                     completion:nil];
+ */
+    DNImagePickerController *imagePicker = [[DNImagePickerController alloc] init];
+    imagePicker.imagePickerDelegate = self;
+    [self.viewController presentViewController:imagePicker animated:YES completion:nil];
 }
+
+
+
+#pragma mark - DNImagePickerControllerDelegate
+
+- (void)dnImagePickerController:(DNImagePickerController *)imagePickerController sendImages:(NSArray *)imageAssets isFullImage:(BOOL)fullImage
+{
+    NSArray *assetsArray = [NSMutableArray arrayWithArray:imageAssets];
+}
+
+- (void)dnImagePickerControllerDidCancel:(DNImagePickerController *)imagePicker
+{
+    [imagePicker dismissViewControllerAnimated:YES completion:^{
+        
+    }];
+}
+
+
+
+
 
 - (BOOL)checkIfGif:(ALAsset *)asset{
     NSArray *strArray = [[NSString stringWithFormat:@"%@", [[asset defaultRepresentation] url]] componentsSeparatedByString:@"="];
