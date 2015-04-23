@@ -23,76 +23,83 @@ if(Meteor.isClient){
 if(Meteor.isServer){
   Rnd = 0;
   Meteor.publish("newfriends", function (userId,postId) {
-    check(postId, String);
-    check(userId, String);
-    var self = this;
-    var count = 0;
-    var handle = Meets.find({me: userId},{sort:{count:-1}}).observeChanges({
-      added: function (id,fields) {
-        if (count<20)
-        {
-          var taId = fields.ta;
-          if(taId !== userId && postId === fields.meetOnPostId)
+    if(this.userId === null || !Match.test(postId, String))
+      return [];
+    else{
+      var self = this;
+      var count = 0;
+      var handle = Meets.find({me: userId},{sort:{count:-1}}).observeChanges({
+        added: function (id,fields) {
+          if (count<20)
           {
-            var fcount = Follower.find({"userId":userId,"followerId":taId}).count();
-            if(fcount === 0)
+            var taId = fields.ta;
+            if(taId !== userId && postId === fields.meetOnPostId)
             {
-                count++;
-                self.added("newfriends", id, fields);
+              var fcount = Follower.find({"userId":userId,"followerId":taId}).count();
+              if(fcount === 0)
+              {
+                  count++;
+                  self.added("newfriends", id, fields);
+              }
             }
           }
-        }
-      },
-      changed: function (id,fields) {
-         if(postId === fields.meetOnPostId)
-         {
-           try{
-             self.changed("newfriends", id, fields);
-           }catch(error){
-             if(count<20)
-             {
-               var meetItem = Meets.findOne({_id:id});
-               if(meetItem.me === userId && meetItem.ta !== userId)
+        },
+        changed: function (id,fields) {
+           if(postId === fields.meetOnPostId)
+           {
+             try{
+               self.changed("newfriends", id, fields);
+             }catch(error){
+               if(count<20)
                {
-                 fields.me = meetItem.me;
-                 fields.ta = meetItem.ta;
-                 fields.count = meetItem.count;
-                 count++;
-                 self.added("newfriends", id, fields);
+                 var meetItem = Meets.findOne({_id:id});
+                 if(meetItem.me === userId && meetItem.ta !== userId)
+                 {
+                   fields.me = meetItem.me;
+                   fields.ta = meetItem.ta;
+                   fields.count = meetItem.count;
+                   count++;
+                   self.added("newfriends", id, fields);
+                 }
                }
-             }
-           };
-         }
-      },
-      removed: function (id) {
-         self.removed("newfriends", id);
-      }
-    });
+             };
+           }
+        },
+        removed: function (id) {
+           self.removed("newfriends", id);
+        }
+      });
 
-    self.ready();
+      self.ready();
 
-    self.onStop(function () {
-      handle.stop();
-    });
+      self.onStop(function () {
+        handle.stop();
+      });
+    }
   });
 
 
 
   Meteor.publish('meetscountwithlimit', function(limit) {
-    check(this.userId,String);
-    check(limit,Number);
-    return Meets.find({me:this.userId},{sort:{count:-1},limit:limit});
+    if(this.userId === null || !Match.test(limit, Number))
+      return [];
+    else
+      return Meets.find({me:this.userId},{sort:{count:-1},limit:limit});
   });
   Meteor.publish('meetscount', function() {
-    check(this.userId,String);
-    return Meets.find({me:this.userId});
+    if(this.userId === null)
+      return [];
+    else
+      return Meets.find({me:this.userId});
   });
   Meteor.publish('waitreadcount', function() {
-    check(this.userId,String);
-    return Meteor.users.find(
-        { _id : this.userId },
-        { field: {'profile.waitReadCount':1}}
-    );
+    if(this.userId === null)
+      return [];
+    else
+      return Meteor.users.find(
+          { _id : this.userId },
+          { field: {'profile.waitReadCount':1}}
+      );
   });
   Meteor.publish("refcomments", function() {
     Max = RefComments.find().count()-8;
@@ -107,208 +114,236 @@ if(Meteor.isServer){
     return Topics.find({});
   });
   Meteor.publish("posts", function() {
-    check(this.userId,String);
-    return Posts.find({owner: this.userId});
+    if(this.userId === null)
+      return [];
+    else
+      return Posts.find({owner: this.userId});
   });
   Meteor.publish("followposts", function(limit) {
-    check(this.userId,String);
-    check(limit,Number);
-    return FollowPosts.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
+    if(this.userId === null || !Match.test(limit, Number))
+      return [];
+    else
+      return FollowPosts.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
   });
   Meteor.publish("ViewPostsList", function(postId) {
-      check(this.userId,String);
-      check(postId,String);
-      return Posts.find({_id: postId});
+      if(this.userId === null || !Match.test(postId, String))
+        return [];
+      else
+        return Posts.find({_id: postId});
   });
   Meteor.publish("publicPosts", function(postId) {
-      check(this.userId,String);
-      check(postId,String);
-      var self = this;
-      Meteor.defer(function(){
-        var needUpdateMeetCount = false;
-        try {
-            if(self.userId && postId ){
-                if( Viewers.find({userId:self.userId,postId:postId}).count() === 0 ){
-                    needUpdateMeetCount = true;
-                    userinfo = Meteor.users.findOne({_id: self.userId },{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
-                    if(userinfo){
-                        Viewers.insert({
-                            postId:postId,
-                            username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
-                            userId:self.userId,
-                            userIcon: userinfo.profile.icon,
-                            anonymous: userinfo.profile.anonymous,
-                            createdAt: new Date()
-                        });
-                    }
-                } else {
-                    userinfo = Meteor.users.findOne({_id: self.userId},{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
-                    if(userinfo) {
-                        Viewers.update({userId: self.userId, postId: postId}, {$set: {createdAt: new Date()}});
-                    }
-                }
-            }
-        } catch (error){
-        }
-        try{
-              var userId = self.userId;
-              var views=Viewers.find({postId:postId});
-              if(views.count()>0){
-                views.forEach(function(data){
-                  var meetItemOne = Meets.findOne({me:userId,ta:data.userId});
-                  if(meetItemOne){
-                    var meetCount = meetItemOne.count;
-                    if(meetCount === undefined || isNaN(meetCount))
-                      meetCount = 0;
-                    if ( needUpdateMeetCount ){
-                      meetCount = meetCount+1;
-                    }
-                    Meets.update({me:userId,ta:data.userId},{$set:{count:meetCount,meetOnPostId:postId}});
-                  }else{
-                    Meets.insert({
-                      me:userId,
-                      ta:data.userId,
-                      count:1,
-                      meetOnPostId:postId
-                    });
+      if(this.userId === null || !Match.test(postId, String))
+        return [];
+      else{
+        var self = this;
+        Meteor.defer(function(){
+          var needUpdateMeetCount = false;
+          try {
+              if(self.userId && postId ){
+                  if( Viewers.find({userId:self.userId,postId:postId}).count() === 0 ){
+                      needUpdateMeetCount = true;
+                      userinfo = Meteor.users.findOne({_id: self.userId },{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
+                      if(userinfo){
+                          Viewers.insert({
+                              postId:postId,
+                              username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
+                              userId:self.userId,
+                              userIcon: userinfo.profile.icon,
+                              anonymous: userinfo.profile.anonymous,
+                              createdAt: new Date()
+                          });
+                      }
+                  } else {
+                      userinfo = Meteor.users.findOne({_id: self.userId},{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
+                      if(userinfo) {
+                          Viewers.update({userId: self.userId, postId: postId}, {$set: {createdAt: new Date()}});
+                      }
                   }
-
-                  var meetItemTwo = Meets.findOne({me:data.userId,ta:userId});
-                  if(meetItemTwo){
-                    var meetCount = meetItemTwo.count;
-                    if(meetCount === undefined || isNaN(meetCount))
-                      meetCount = 0;
-                    if ( needUpdateMeetCount ){
-                      meetCount = meetCount+1;
-                      Meets.update({me:data.userId,ta:userId},{$set:{count:meetCount,meetOnPostId:postId}});
-                    }
-                  }else{
-                    Meets.insert({
-                      me:data.userId,
-                      ta:userId,
-                      count:1,
-                      meetOnPostId:postId
-                    });
-                  }
-                });
               }
-        }
-        catch(error){}
-      });
-      return Posts.find({_id: postId});
+          } catch (error){
+          }
+          try{
+                var userId = self.userId;
+                var views=Viewers.find({postId:postId});
+                if(views.count()>0){
+                  views.forEach(function(data){
+                    var meetItemOne = Meets.findOne({me:userId,ta:data.userId});
+                    if(meetItemOne){
+                      var meetCount = meetItemOne.count;
+                      if(meetCount === undefined || isNaN(meetCount))
+                        meetCount = 0;
+                      if ( needUpdateMeetCount ){
+                        meetCount = meetCount+1;
+                      }
+                      Meets.update({me:userId,ta:data.userId},{$set:{count:meetCount,meetOnPostId:postId}});
+                    }else{
+                      Meets.insert({
+                        me:userId,
+                        ta:data.userId,
+                        count:1,
+                        meetOnPostId:postId
+                      });
+                    }
+
+                    var meetItemTwo = Meets.findOne({me:data.userId,ta:userId});
+                    if(meetItemTwo){
+                      var meetCount = meetItemTwo.count;
+                      if(meetCount === undefined || isNaN(meetCount))
+                        meetCount = 0;
+                      if ( needUpdateMeetCount ){
+                        meetCount = meetCount+1;
+                        Meets.update({me:data.userId,ta:userId},{$set:{count:meetCount,meetOnPostId:postId}});
+                      }
+                    }else{
+                      Meets.insert({
+                        me:data.userId,
+                        ta:userId,
+                        count:1,
+                        meetOnPostId:postId
+                      });
+                    }
+                  });
+                }
+          }
+          catch(error){}
+        });
+        return Posts.find({_id: postId});
+      }
   });
   /*Meteor.publish("drafts", function() {
         return Drafts.find({owner: this.userId});
   });*/
   Meteor.publish("saveddrafts", function() {
-    check(this.userId,String);
-    return SavedDrafts.find({owner: this.userId});
+    if(this.userId === null)
+      return [];
+    else
+      return SavedDrafts.find({owner: this.userId});
   });
   Meteor.publish("feeds", function(limit) {
-    check(this.userId,String);
-    check(limit,Number);
-    return Feeds.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
+    if(this.userId === null || !Match.test(limit, Number))
+      return []
+    else
+      return Feeds.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
   });
   Meteor.publish("userFeeds", function(followId,postId) {
-    check(this.userId,String);
-    check(followId,String);
-    check(postId,String);
-    return Feeds.find({followby: followId,postId: postId,eventType:'recommand',recommanderId:this.userId}, {sort: {createdAt: -1}, limit:2});
+    if(this.userId === null || !Match.test(followId, String) || !Match.test(postId, String))
+      return []
+    else
+      return Feeds.find({followby: followId,postId: postId,eventType:'recommand',recommanderId:this.userId}, {sort: {createdAt: -1}, limit:2});
   });
   Meteor.publish("follows", function() {
     return Follows.find({}, {sort: { index: 1 }} );
   });
   Meteor.publish("follower", function() {
-    check(this.userId,String);
-    return Follower.find({$or:[{userId:this.userId},{followerId:this.userId}]});
+    if(this.userId === null)
+      return [];
+    else
+      return Follower.find({$or:[{userId:this.userId},{followerId:this.userId}]});
   });
   Meteor.publish("userinfo", function(id) {
-    check(id,String);
-    userinfo = Meteor.users.find({_id: id},{fields: {'username':1,'email':1,'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1}});
-    return userinfo;
+    if(!Match.test(id, String))
+      return [];
+    else
+      return Meteor.users.find({_id: id},{fields: {'username':1,'email':1,'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1}});
   });
   Meteor.publish("comment", function(postId) {
-    check(postId,String);
-    return Comment.find({postId: postId});
+    if(!Match.test(postId, String))
+      return [];
+    else
+      return Comment.find({postId: postId});
   });
   Meteor.publish("userViewers", function(postId,userId) {
-    check(postId,String);
-    check(userId,String);
-    return Viewers.find({postId: postId,userId: userId}, {sort: {createdAt: -1}, limit:2});
+    if(!Match.test(postId, String) || !Match.test(userId, String))
+      return [];
+    else
+      return Viewers.find({postId: postId,userId: userId}, {sort: {createdAt: -1}, limit:2});
   });
   Meteor.publish("recentPostsViewByUser", function(userId) {
-    check(userId,String);
-    return Viewers.find({userId: userId}, {sort: {createdAt: -1}, limit:3});
+    if(!Match.test(userId, String))
+      return [];
+    else
+      return Viewers.find({userId: userId}, {sort: {createdAt: -1}, limit:3});
   });
   Meteor.publish("viewers", function(postId) {
-    check(postId,String);
-    return Viewers.find({postId: postId}, {sort: {createdAt: -1}});
+    if(!Match.test(postId, String))
+      return [];
+    else
+      return Viewers.find({postId: postId}, {sort: {createdAt: -1}});
   });
   Meteor.publish("reports", function(postId) {
-    check(postId,String);
-    return Reports.find({postId: postId});
+    if(!Match.test(postId, String))
+      return [];
+    else
+      return Reports.find({postId: postId});
   });
   Meteor.publish("messages", function(to){
-        var filter = {};
-        to = to || {};
-        
-        switch(to.type){
-          case "user":
-            filter = {
-              $or: [
-                // 我发给ta的
-                {userId: this.userId, toUserId: to.id}, 
-                // ta发给我的
-                {userId: to.id, toUserId: this.userId}
-              ]
-            };
-            break;
-          case "group":
-            var group = MsgGroup.findOne(to.id);
-            filter = {
-              $or: [
-                // 我发的群消息
-                {userId: this.userId, toGroupId: group._id}, 
-                // 给我的群消息
-                {'toUsers.userId': this.userId, toGroupId: group._id}
-              ]
-            };
-            break;
-          case "session":
-            var session = MsgSession.findOne(to.id);
-            if(session.sesType === 'singleChat'){
-              filter = {
-                $or: [
-                  // 我发给ta的
-                  {userId: this.userId, toUserId: session.toUserId}, 
-                  // ta发给我的
-                  {userId: session.toUserId, toUserId: this.userId}
-                ]
-              };
-            }else{
-              filter = {
-                $or: [
-                  // 我发的群消息
-                  {userId: this.userId, toGroupId: session.toGroupId}, 
-                  // 给我的群消息
-                  {'toUsers.userId': this.userId, toGroupId: session.toGroupId}
-                ]
-              };
-            }
-            break;
-          default:
-            return [];
-        }
+    if(this.userId === null || to === null || to === undefined)
+      return [];
     
-        return Messages.find(filter, {sort: {createTime: 1}});
+    var filter = {};
+    to = to || {};
+
+    switch(to.type){
+      case "user":
+        filter = {
+          $or: [
+            // 我发给ta的
+            {userId: this.userId, toUserId: to.id}, 
+            // ta发给我的
+            {userId: to.id, toUserId: this.userId}
+          ]
+        };
+        break;
+      case "group":
+        var group = MsgGroup.findOne(to.id);
+        filter = {
+          $or: [
+            // 我发的群消息
+            {userId: this.userId, toGroupId: group._id}, 
+            // 给我的群消息
+            {'toUsers.userId': this.userId, toGroupId: group._id}
+          ]
+        };
+        break;
+      case "session":
+        var session = MsgSession.findOne(to.id);
+        if(session.sesType === 'singleChat'){
+          filter = {
+            $or: [
+              // 我发给ta的
+              {userId: this.userId, toUserId: session.toUserId}, 
+              // ta发给我的
+              {userId: session.toUserId, toUserId: this.userId}
+            ]
+          };
+        }else{
+          filter = {
+            $or: [
+              // 我发的群消息
+              {userId: this.userId, toGroupId: session.toGroupId}, 
+              // 给我的群消息
+              {'toUsers.userId': this.userId, toGroupId: session.toGroupId}
+            ]
+          };
+        }
+        break;
+      default:
+        return [];
+    }
+
+    return Messages.find(filter, {sort: {createTime: 1}});
   });
   Meteor.publish("msgSession", function(){
-    check(this.userId,String);
-    return MsgSession.find({userId: this.userId}, {sort: {updateTime: -1}});
+    if(this.userId === null)
+      return [];
+    else
+      return MsgSession.find({userId: this.userId}, {sort: {updateTime: -1}});
   });
   Meteor.publish("msgGroup", function(){
-    check(this.userId,String);
-    return MsgGroup.find({"users.userId": this.userId});
+    if(this.userId === null)
+      return [];
+    else
+      return MsgGroup.find({"users.userId": this.userId});
   });
   Reports.allow({
     insert: function (userId, doc) {
@@ -1022,6 +1057,7 @@ if(Meteor.isClient){
               });
           }
       };
+      // ==============不需要和web同步================
       Deps.autorun(function() {
         if (Meteor.user()) {
             //console.log('Refresh Main Data Source when logon');
@@ -1051,5 +1087,6 @@ if(Meteor.isClient){
           }
         }
       });
+    // ================================================
   }
 }
