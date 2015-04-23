@@ -1,4 +1,3 @@
-RefNames = new Mongo.Collection("refnames");
 if (Meteor.isClient) {
   Template.body.helpers({
     comments: function () {
@@ -11,10 +10,14 @@ if (Meteor.isClient) {
   Template.body.events({
   "submit .new-comment": function (event) {
     var text = event.target.text.value;
-      RefNames.insert({
-      text: text,
-      createdAt: new Date()
-    });
+      if (RefNames.find({text:text}).count() === 0){
+        RefNames.insert({
+          text: text,
+          createdAt: new Date()
+        });
+      } else {
+        toastr.error('该名字已存在');
+      }
     event.target.text.value = "";
     return false;
   }
