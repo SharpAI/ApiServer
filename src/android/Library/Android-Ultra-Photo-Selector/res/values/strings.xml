@@ -10,5 +10,7 @@
     <string name="back">Back</string>
     <string name="taking_pictures">Taking Pictures</string>
     <string name="max_img_limit_reached">Cannot select more than %d images</string>
-
+    <string name="alert_limit_title">Maximum %1$d Photos</string>
+	<string name="alert_limit_message">You can only select %1$d photos at a time.</string>
+	<string name="ok">OK</string>
 </resources>

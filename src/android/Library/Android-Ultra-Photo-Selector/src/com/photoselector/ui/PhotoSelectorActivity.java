@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -282,9 +283,12 @@ public class PhotoSelectorActivity extends Activity implements
 		    if(imageOrder>MAX_IMAGE-1)
 		    {
 	            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	            builder.setTitle("Maximum " + MAX_IMAGE + " Photos");
-	            builder.setMessage("You can only select " + MAX_IMAGE + " photos at a time.");
-	            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+	            Resources res = getResources();
+	            String title = String.format(res.getString(R.string.alert_limit_title), MAX_IMAGE);
+	            String message = String.format(res.getString(R.string.alert_limit_message), MAX_IMAGE);
+	            builder.setTitle(title);
+	            builder.setMessage(message);
+	            builder.setPositiveButton(res.getString(R.string.ok), new DialogInterface.OnClickListener() {
 	                public void onClick(DialogInterface dialog, int which) { 
 	                    dialog.cancel();
 	                }
