@@ -1,6 +1,10 @@
 package com.photoselector.model;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+
+import android.media.ExifInterface;
 
 /**
  * 
@@ -54,6 +58,27 @@ public class PhotoModel implements Serializable {
 
 	public void setOriginalPath(String originalPath) {
 		this.originalPath = originalPath;
+
+		File imageFile = new File(originalPath);
+		ExifInterface exif = null;
+		try {
+		    exif = new ExifInterface(imageFile.getAbsolutePath());
+		    int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+
+		    switch (orientation) {
+		    case ExifInterface.ORIENTATION_ROTATE_270:
+		        this.rotation = 270;
+		        break;
+		    case ExifInterface.ORIENTATION_ROTATE_180:
+		        this.rotation = 180;
+		        break;
+		    case ExifInterface.ORIENTATION_ROTATE_90:
+		        this.rotation = 90;
+		        break;
+		    }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public boolean isChecked() {

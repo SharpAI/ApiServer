@@ -78,7 +78,7 @@ public class PhotoItem extends LinearLayout implements OnCheckedChangeListener,
 		 * "file://" + photo.getOriginalPath(), ivPhoto); } }, new
 		 * Random().nextInt(10));
 		 */
-
+		ivPhoto.setRotation(photo.getRotation());
 		ImageLoader.getInstance().displayImage(
 				"file://" + photo.getOriginalPath(), ivPhoto);
 	}
