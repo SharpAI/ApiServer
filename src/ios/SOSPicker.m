@@ -69,7 +69,7 @@
 }
 
 
-
+/*
 
 - (BOOL)checkIfGif:(ALAsset *)asset{
     NSArray *strArray = [[NSString stringWithFormat:@"%@", [[asset defaultRepresentation] url]] componentsSeparatedByString:@"="];
@@ -82,7 +82,7 @@
 }
 
 
-/*
+
 - (void)elcImagePickerController:(ELCImagePickerController *)picker didFinishPickingMediaWithInfo:(NSArray *)info {
 	CDVPluginResult* result = nil;
 	NSMutableArray *resultStrings = [[NSMutableArray alloc] init];
