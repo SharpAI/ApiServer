@@ -29,15 +29,22 @@ if (Meteor.isServer){
                 var app_users = Users.find({'profile.browser':{$ne:true}}).count();
                 var named_users = Users.find({'profile.anonymous':{$ne:true}}).count();
                 var total_views = Viewers.find().count();
+                var total_comments = Comment.find().count();
+                var total_saved_draft = SavedDrafts.find().count();
+                var suggest_read = Feeds.find({'eventType':'recommand'}).count();
+                var friends_request = Feeds.find({'eventType':'sendrequest'}).count();
                 return {
-                    total:1000,
                     total_posts:total_posts,
                     total_users:total_users,
                     browser_users:browser_users,
                     app_users:app_users,
                     named_users:named_users,
                     total_views:total_views,
-                    total_meets:total_meets
+                    total_meets:total_meets,
+                    total_comments:total_comments,
+                    total_saved_draft:total_saved_draft,
+                    suggest_read:suggest_read,
+                    friends_request:friends_request
                 };
             }
         }

@@ -31,27 +31,49 @@ if (Meteor.isClient) {
     total_meets:function(){
       return Session.get('statics_data').total_meets;
     },
+    total_comments:function(){
+      return Session.get('statics_data').total_comments;
+    },
+    total_saved_draft:function(){
+      return Session.get('statics_data').total_saved_draft;
+    },
+    friends_request:function(){
+      return Session.get('statics_data').friends_request;
+    },
+    suggest_read:function(){
+      return Session.get('statics_data').suggest_read;
+    },
     comments: function () {
       return RefNames.find({}, {sort: {createdAt: -1}});
+    },
+    changeName: function(){
+      return Session.get('changeName');
     },
     count: function () {
       return RefNames.find({}).count();
     }
   });
   Template.body.events({
-  "submit .new-comment": function (event) {
-    var text = event.target.text.value;
-      if (RefNames.find({text:text}).count() === 0){
-        RefNames.insert({
-          text: text,
-          createdAt: new Date()
-        });
+    "submit .new-comment": function (event) {
+      var text = event.target.text.value;
+        if (RefNames.find({text:text}).count() === 0){
+          RefNames.insert({
+            text: text,
+            createdAt: new Date()
+          });
+        } else {
+          toastr.error('该名字已存在');
+        }
+      event.target.text.value = "";
+      return false;
+    },
+    "click #changeName": function(event){
+      if(Session.get('changeName')){
+        Session.set('changeName',false)
       } else {
-        toastr.error('该名字已存在');
+        Session.set('changeName',true)
       }
-    event.target.text.value = "";
-    return false;
-  }
+    }
   });
   Template.comment.events({
     "click .toggle-checked": function () {

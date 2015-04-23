@@ -4,23 +4,34 @@
 <body>
   <div class="container">
   <header>
-    <h1>名字列表 ({{count}})</h1>
     <h3>总帖子数     : {{total_posts}}</h3>
     <h3>总浏览数     : {{total_views}}</h3>
+    <h3>总评论数     : {{total_comments}}</h3>
+    <h3>总已存草稿数  : {{total_saved_draft}}</h3>
     <h3>总相遇数     : {{total_meets}}</h3>
     <h3>总用户数     : {{total_users}}</h3>
     <h3>浏览器用户数  : {{browser_users}}</h3>
     <h3>应用注册用户数 : {{app_users}}</h3>
     <h3>有名用户数   : {{named_users}}</h3>
-    <form class="new-comment">
-    <input type="text" name="text" placeholder="请输入新名字" />
-    </form>
+    <h3>好友请求数   : {{friends_request}}</h3>
+    <h3>推荐阅读数   : {{suggest_read}}</h3>
+
+    <input type="checkbox" checked="{{changeName}}" class="toggle-checked" id="changeName"/>
+    <span class="text">改名字</span>
+    {{#if changeName}}
+      <h1>名字列表 ({{count}})</h1>
+      <form class="new-comment">
+        <input type="text" name="text" placeholder="请输入新名字" />
+      </form>
+    {{/if}}
   </header>
-  <ul>
-    {{#each comments}}
-      {{> comment}}
-    {{/each}}
-  </ul>
+  {{#if changeName}}
+    <ul>
+      {{#each comments}}
+        {{> comment}}
+      {{/each}}
+    </ul>
+  {{/if}}
   </div>
 </body>
 
