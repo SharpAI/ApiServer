@@ -7,9 +7,6 @@
 //
 
 #import "SOSPicker.h"
-#import "ELCAlbumPickerController.h"
-#import "ELCImagePickerController.h"
-#import "ELCAssetTablePicker.h"
 #import "DNImagePickerController.h"
 
 #define CDV_PHOTO_PREFIX @"cdv_photo_"
@@ -74,7 +71,6 @@
 
 
 
-
 - (BOOL)checkIfGif:(ALAsset *)asset{
     NSArray *strArray = [[NSString stringWithFormat:@"%@", [[asset defaultRepresentation] url]] componentsSeparatedByString:@"="];
     NSString *ext = [strArray objectAtIndex:([strArray count]-1)];
@@ -85,6 +81,8 @@
     }
 }
 
+
+/*
 - (void)elcImagePickerController:(ELCImagePickerController *)picker didFinishPickingMediaWithInfo:(NSArray *)info {
 	CDVPluginResult* result = nil;
 	NSMutableArray *resultStrings = [[NSMutableArray alloc] init];
@@ -156,6 +154,7 @@
 	pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:emptyArray];
 	[self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
 }
+*/
 
 - (UIImage*)imageByScalingNotCroppingForSize:(UIImage*)anImage toSize:(CGSize)frameSize
 {
