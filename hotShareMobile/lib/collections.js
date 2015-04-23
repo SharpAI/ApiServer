@@ -1034,28 +1034,90 @@ if(Meteor.isClient){
       Session.setDefault('feedsitemsLimit', FEEDS_ITEMS_INCREMENT);
       Session.setDefault('followPostsCollection','');
       Session.setDefault('feedsCollection','');
+    
+      var refreshMainDataSource = function(){
+        var def = $.Deferred();
+        var result = [];
+        var stop = function(name, err){
+          console.log('refreshMainDataSource error:' + err);
+          
+          if(result.length <= 0)
+            result.push({name: name, status: 'failure', error: err});
+          else{
+            var exist = false;
+            for(var i=0;i<result.length;i++){
+              if(result[i].name === name){
+                exist = true;
+                break;
+              }
+            }
+            
+            if(!exist)
+              result.push({name: name, status: 'failure', error: err});
+          }
+          
+          updateStatus();
+        };
+        var ready = function(name){
+          if(result.length <= 0)
+            result.push({name: name, status: 'success'});
+          else{
+            var exist = false;
+            for(var i=0;i<result.length;i++){
+              if(result[i].name === name){
+                exist = true;
+                break;
+              }
+            }
+            
+            if(!exist)
+              result.push({name: name, status: 'success'});
+          }
+          
+          updateStatus();
+        };
+        
+        var updateStatus = function(){
+          if(result.length >= 3){
+            var hasError = false;
+            for(var i=0;i<result.length;i++){
+              if(result[i].status != 'success'){
+                hasError = true;
+                break;
+              } 
+            }
+            
+            if(hasError)
+              def.reject();
+            else
+              def.resolve();
+          }
+        }
+        
+        Meteor.subscribe('waitreadcount', {onStop: function(err){stop('waitreadcount', err);}, onReady: function(){ready('waitreadcount');}});
+        Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'), {onStop: function(err){stop('followposts', err);}, onReady: function(){ready('followposts');}});
+        Meteor.subscribe('feeds', Session.get('feedsitemsLimit'), {onStop: function(err){stop('feeds', err);}, onReady: function(){ready('feeds');}});
+        
+        // 超时处理（30秒）
+        Meteor.setTimeout(function(){
+          console.log('refreshMainDataSource error: timeout');
+          Session.set('followPostsCollection','loaded');
+          Session.set('feedsCollection','loaded');
+        },30000);
+        
+        return def.promise();
+      }
+    
       window.refreshMainDataSource = function(){
-          Meteor.subscribe('waitreadcount');
-          if(!Session.equals('followPostsCollection'),'loading'){
-              Session.set('followPostsCollection','loading');
-              Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'),{onStop:function(error){
-                    Session.set('followPostsCollection','error');
-                  },onReady:function(){
-                    console.log('Got followPosts collection data');
-                    Session.set('followPostsCollection','loaded');
-              }});
-          }
-          if(!Session.equals('feedsCollection'),'loading') {
-              Session.set('feedsCollection', 'loading');
-              Meteor.subscribe('feeds', Session.get('feedsitemsLimit'), {
-                  onStop: function (error) {
-                      Session.set('feedsCollection', 'error');
-                  }, onReady: function () {
-                      console.log('Got feeds collection data');
-                      Session.set('feedsCollection', 'loaded');
-                  }
-              });
-          }
+        Session.set('feedsCollection', 'loading');
+        Session.set('feedsCollection', 'loading');
+        refreshMainDataSource().done(function(){
+          Session.set('followPostsCollection','loaded');
+          Session.set('feedsCollection','loaded');
+        }).fail(function(){
+          Session.set('followPostsCollection','error');
+          Session.set('feedsCollection','error');
+        });
       };
       // ==============不需要和web同步================
       Deps.autorun(function() {
