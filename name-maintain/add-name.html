@@ -1,0 +1,26 @@
+<head>
+  <title>名字列表</title>
+</head>
+<body>
+  <div class="container">
+  <header>
+    <h1>名字列表 ({{count}})</h1>
+    <form class="new-comment">
+    <input type="text" name="text" placeholder="请输入新名字" />
+    </form>
+  </header>
+  <ul>
+    {{#each comments}}
+      {{> comment}}
+    {{/each}}
+  </ul>
+  </div>
+</body>
+
+<template name="comment">
+  <li class="{{#if checked}}checked{{/if}}">
+    <button class="delete">&times;</button>
+    <input type="checkbox" checked="{{checked}}" class="toggle-checked" />
+    <span class="text">{{text}}</span>
+  </li>
+</template>
