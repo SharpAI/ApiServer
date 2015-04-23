@@ -1,4 +1,17 @@
 if (Meteor.isClient) {
+  Session.set('statics_data',{
+    total_posts:0,
+    total_users:0,
+    browser_users:0,
+    app_users:0,
+    named_users:0,
+    total_views:0,
+    total_meets:0,
+    total_comments:0,
+    total_saved_draft:0,
+    suggest_read:0,
+    friends_request:0
+  });
   Template.body.rendered = function(){
     Meteor.call('getStatics',function(error,data){
       if (error){
