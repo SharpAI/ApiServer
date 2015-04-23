@@ -1025,8 +1025,9 @@ if(Meteor.isClient){
       Deps.autorun(function() {
         if (Meteor.user()) {
             //console.log('Refresh Main Data Source when logon');
-            //window.refreshMainDataSource();
-          
+            if (Meteor.isCordova){
+                window.refreshMainDataSource();
+            }
             Meteor.setTimeout( function() {
                 //Meteor.subscribe("posts");
                 //Meteor.subscribe("saveddrafts");
