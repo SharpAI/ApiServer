@@ -1,6 +1,6 @@
 #space 2
 if Meteor.isClient
-  Template.home.onCreated ()->
+  Meteor.startup ()->
     Deps.autorun ()->
       if Meteor.user()
         window.refreshMainDataSource()
