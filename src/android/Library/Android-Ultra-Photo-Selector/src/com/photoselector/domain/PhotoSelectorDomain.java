@@ -38,7 +38,7 @@ public class PhotoSelectorDomain {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				List<PhotoModel> photos = albumController.getCurrentNew(handler);
+				albumController.getCurrentNew(handler);
 			}
 		}).start();
 	}
@@ -69,16 +69,18 @@ public class PhotoSelectorDomain {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void handleMessage(Message msg) {
-				listener.onPhotoLoaded((List<PhotoModel>) msg.obj);
+				if (msg.arg1 == 0){
+					listener.onPhotoLoaded((List<PhotoModel>) msg.obj);
+				}
+				else{
+					listener.onPhotoAdded((List<PhotoModel>) msg.obj);
+				}
 			}
 		};
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				List<PhotoModel> photos = albumController.getAlbumNew(name);
-				Message msg = new Message();
-				msg.obj = photos;
-				handler.sendMessage(msg);
+				albumController.getAlbumNew(name,handler);
 			}
 		}).start();
 	}

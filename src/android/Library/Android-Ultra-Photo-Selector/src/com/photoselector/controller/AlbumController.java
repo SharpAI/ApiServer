@@ -70,7 +70,7 @@ public class AlbumController {
 				j++;
 				sent = true;
 			}
-		} while (cursor.moveToPrevious());				
+		} while (cursor.moveToPrevious());
 		Message msg = new Message();
 		msg.obj = photos;
 		msg.arg1 = j;
@@ -125,7 +125,7 @@ public class AlbumController {
 		} while (cursor.moveToPrevious());
 		return photos;
 	}
-	public List<PhotoModel> getAlbumNew(String name) {
+	public List<PhotoModel> getAlbumNew(String name, Handler handler) {
 		Cursor cursor = resolver.query(Media.EXTERNAL_CONTENT_URI, new String[] { ImageColumns.BUCKET_DISPLAY_NAME,
 				ImageColumns.DATA, ImageColumns.DATE_ADDED, ImageColumns.SIZE }, "bucket_display_name = ?",
 				new String[] { name }, ImageColumns.DATE_ADDED);
@@ -134,16 +134,30 @@ public class AlbumController {
 		List<PhotoModel> photos = new ArrayList<PhotoModel>();
 		cursor.moveToLast();
 		int i = 0;
+		int j = 0;
+		boolean sent = false;
 		do {
 			if (cursor.getLong(cursor.getColumnIndex(ImageColumns.SIZE)) > 1024 * 10) {
 				PhotoModel photoModel = new PhotoModel();
 				photoModel.setOriginalPath(cursor.getString(cursor.getColumnIndex(ImageColumns.DATA)));
 				photos.add(photoModel);
 			}
-			if (++i >= 300){
-				break;
+			if (++i > 300 && !sent){
+				i = 0;
+				Message msg = new Message();
+				msg.obj = photos;
+				msg.arg1 = j;
+				handler.sendMessage(msg);
+				photos = new ArrayList<PhotoModel>();
+				j++;
+				sent = true;
 			}
 		} while (cursor.moveToPrevious());
+		Message msg = new Message();
+		msg.obj = photos;
+		msg.arg1 = j;
+		handler.sendMessage(msg);
+		photos = new ArrayList<PhotoModel>();
 		return photos;
 	}
 }
