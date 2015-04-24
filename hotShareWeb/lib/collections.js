@@ -19,7 +19,6 @@ Meets = new Meteor.Collection('meets');
 if(Meteor.isClient){
   Newfriends = new Meteor.Collection("newfriends");
 }
-
 if(Meteor.isServer){
   RefNames = new Mongo.Collection("refnames");
 }
@@ -1038,103 +1037,36 @@ if(Meteor.isClient){
       Session.setDefault('feedsitemsLimit', FEEDS_ITEMS_INCREMENT);
       Session.setDefault('followPostsCollection','');
       Session.setDefault('feedsCollection','');
-    
-      var refreshMainDataSource = function(){
-        var def = $.Deferred();
-        var result = [];
-        var stop = function(name, err){
-          console.log('refreshMainDataSource error:' + err);
-          
-          if(result.length <= 0)
-            result.push({name: name, status: 'failure', error: err});
-          else{
-            var exist = false;
-            for(var i=0;i<result.length;i++){
-              if(result[i].name === name){
-                exist = true;
-                break;
-              }
-            }
-            
-            if(!exist)
-              result.push({name: name, status: 'failure', error: err});
-          }
-          
-          updateStatus();
-        };
-        var ready = function(name){
-          if(result.length <= 0)
-            result.push({name: name, status: 'success'});
-          else{
-            var exist = false;
-            for(var i=0;i<result.length;i++){
-              if(result[i].name === name){
-                exist = true;
-                break;
-              }
-            }
-            
-            if(!exist)
-              result.push({name: name, status: 'success'});
-          }
-          
-          updateStatus();
-        };
-        
-        var updateStatus = function(){
-          if(result.length >= 3){
-            var hasError = false;
-            for(var i=0;i<result.length;i++){
-              if(result[i].status != 'success'){
-                hasError = true;
-                break;
-              } 
-            }
-            
-            if(hasError)
-              def.reject();
-            else
-              def.resolve();
-          }
-        }
-        
-        Meteor.subscribe('waitreadcount', {onStop: function(err){stop('waitreadcount', err);}, onReady: function(){ready('waitreadcount');}});
-        Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'), {onStop: function(err){stop('followposts', err);}, onReady: function(){ready('followposts');}});
-        Meteor.subscribe('feeds', Session.get('feedsitemsLimit'), {onStop: function(err){stop('feeds', err);}, onReady: function(){ready('feeds');}});
-        
-        // 超时处理（30秒）
-        Meteor.setTimeout(function(){
-          console.log('refreshMainDataSource error: timeout');
-          Session.set('followPostsCollection','loaded');
-          Session.set('feedsCollection','loaded');
-        },30000);
-        
-        return def.promise();
-      }
-      
+
       window.refreshMainDataSource = function(){
-        Session.set('feedsCollection', 'loading');
-        Session.set('feedsCollection', 'loading');
-        refreshMainDataSource().done(function(){
-          Session.set('followPostsCollection','loaded');
-          Session.set('feedsCollection','loaded');
-        }).fail(function(){
-          Session.set('followPostsCollection','error');
-          Session.set('feedsCollection','error');
+        Meteor.subscribe('waitreadcount');
+        Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'), {
+            onStop: function(err){
+                console.log('followPostsCollection ' + err);
+                Session.set('followPostsCollection','error');
+            },
+            onReady: function(){
+                console.log('followPostsCollection loaded');
+                Session.set('followPostsCollection','loaded');
+            }
+        });
+        Meteor.subscribe('feeds', Session.get('feedsitemsLimit'), {
+            onStop: function(err){
+                console.log('feedsCollection ' + err);
+                Session.set('feedsCollection','error');
+            }, onReady: function(){
+                console.log('feedsCollection loaded');
+                Session.set('feedsCollection', 'loaded');
+            }
         });
       };
-    
-      // ========不需要和mobile同步（）====================
       Deps.autorun(function() {
         if (Meteor.user()) {
-            //console.log('Refresh Main Data Source when logon');
-            //window.refreshMainDataSource();
-          
+            console.log('Refresh Main Data Source when logon');
+            if (Meteor.isCordova){
+                window.refreshMainDataSource();
+            }
             Meteor.setTimeout( function() {
-                //Meteor.subscribe("posts");
-                //Meteor.subscribe("saveddrafts");
-                //Meteor.subscribe("topicposts");
-                //Meteor.subscribe("topics");
                 Meteor.subscribe("follows");
                 Meteor.subscribe("follower");
             },3000);
@@ -1154,6 +1086,5 @@ if(Meteor.isClient){
           }
         }
       });
-      // ===============================================
   }
 }

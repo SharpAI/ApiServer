@@ -20,8 +20,16 @@ if (Meteor.isCordova) {
         // 按钮事件
         document.addEventListener("backbutton", eventBackButton, false); // 返回键
         document.addEventListener("pause", eventPause, false);//挂起
+        document.addEventListener("resume", eventResume, false);
     }
-    
+    function eventResume(){
+        if (Meteor.user()) {
+            console.log('Refresh Main Data Source when resume');
+            if (Meteor.isCordova) {
+                window.refreshMainDataSource();
+            }
+        }
+    }
     function eventPause(){
       if(withAutoSavedOnPaused) {
           if (location.pathname === '/add') {
