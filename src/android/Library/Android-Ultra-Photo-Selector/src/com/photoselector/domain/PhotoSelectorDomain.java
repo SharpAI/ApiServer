@@ -43,7 +43,7 @@ public class PhotoSelectorDomain {
 		}).start();
 	}
 
-	/** ������������ */
+	/** 获取相册列表 */
 	public void updateAlbum(final OnLocalAlbumListener listener) {
 		final Handler handler = new Handler() {
 			@SuppressWarnings("unchecked")
@@ -63,7 +63,7 @@ public class PhotoSelectorDomain {
 		}).start();
 	}
 
-	/** ���������������������������� */
+	/** 获取单个相册下的所有照片信息 */
 	public void getAlbum(final String name, final OnLocalReccentListener listener) {
 		final Handler handler = new Handler() {
 			@SuppressWarnings("unchecked")

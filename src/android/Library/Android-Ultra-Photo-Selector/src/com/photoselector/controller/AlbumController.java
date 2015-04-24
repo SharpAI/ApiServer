@@ -27,7 +27,7 @@ public class AlbumController {
 		RECCENT_PHOTO = context.getResources().getString(R.string.recent_photos);
 	}
 
-	/** ������������������������ */
+	/** 获取最近照片列表 */
 	public List<PhotoModel> getCurrent() {
 		Cursor cursor = resolver.query(Media.EXTERNAL_CONTENT_URI, new String[] { ImageColumns.DATA,
 				ImageColumns.DATE_ADDED, ImageColumns.SIZE }, null, null, ImageColumns.DATE_ADDED);
@@ -79,7 +79,7 @@ public class AlbumController {
 		return photos;
 	}
 
-	/** ������������������������ */
+	/** 获取所有相册列表 */
 	public List<AlbumModel> getAlbums() {
 		List<AlbumModel> albums = new ArrayList<AlbumModel>();
 		Map<String, AlbumModel> map = new HashMap<String, AlbumModel>();
@@ -88,7 +88,7 @@ public class AlbumController {
 		if (cursor == null || !cursor.moveToNext())
 			return new ArrayList<AlbumModel>();
 		cursor.moveToLast();
-		AlbumModel current = new AlbumModel(RECCENT_PHOTO, 0, cursor.getString(cursor.getColumnIndex(ImageColumns.DATA)), true); // "������������"������
+		AlbumModel current = new AlbumModel(RECCENT_PHOTO, 0, cursor.getString(cursor.getColumnIndex(ImageColumns.DATA)), true); // "最近照片"相册
 		albums.add(current);
 		do {
 			if (cursor.getInt(cursor.getColumnIndex(ImageColumns.SIZE)) < 1024 * 10)
@@ -107,7 +107,7 @@ public class AlbumController {
 		return albums;
 	}
 
-	/** ������������������������������ */
+	/** 获取对应相册下的照片 */
 	public List<PhotoModel> getAlbum(String name) {
 		Cursor cursor = resolver.query(Media.EXTERNAL_CONTENT_URI, new String[] { ImageColumns.BUCKET_DISPLAY_NAME,
 				ImageColumns.DATA, ImageColumns.DATE_ADDED, ImageColumns.SIZE }, "bucket_display_name = ?",

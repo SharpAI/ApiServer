@@ -51,7 +51,7 @@ public class MBaseAdapter<T> extends BaseAdapter {
 		return null;
 	}
 
-	/** �������� */
+	/** 更新数据 */
 	public void update(List<T> models) {
 		if (models == null)
 			return;
