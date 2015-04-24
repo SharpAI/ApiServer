@@ -8,6 +8,7 @@
 
 #import "SOSPicker.h"
 #import "DNImagePickerController.h"
+#import <AssetsLibrary/AssetsLibrary.h>
 
 extern NSUInteger kDNImageFlowMaxSeletedNumber;
 #define CDV_PHOTO_PREFIX @"cdv_photo_"
@@ -38,7 +39,68 @@ extern NSUInteger kDNImageFlowMaxSeletedNumber;
 
 - (void)dnImagePickerController:(DNImagePickerController *)imagePickerController sendImages:(NSArray *)imageAssets isFullImage:(BOOL)fullImage
 {
-    NSArray *assetsArray = [NSMutableArray arrayWithArray:imageAssets];
+    //NSArray *assetsArray = [NSMutableArray arrayWithArray:imageAssets];
+    NSArray *info = [NSMutableArray arrayWithArray:imageAssets];
+
+    CDVPluginResult* result = nil;
+    NSMutableArray *resultStrings = [[NSMutableArray alloc] init];
+    NSData* data = nil;
+    NSString* docsPath = [self getDraftsDirectory];
+    NSError* err = nil;
+    NSFileManager* fileMgr = [[NSFileManager alloc] init];
+    NSString* filePath;
+    ALAsset* asset = nil;
+    UIImageOrientation orientation = UIImageOrientationUp;;
+    CGSize targetSize = CGSizeMake(self.width, self.height);
+
+    for (NSObject *dict in info) {
+        asset = [dict valueForKey:@"ALAsset"];
+        // From ELCImagePickerController.m
+        
+        int i = 1;
+        do {
+            filePath = [NSString stringWithFormat:@"%@/%@%03d.%@", docsPath, CDV_PHOTO_PREFIX, i++, @"jpg"];
+        } while ([fileMgr fileExistsAtPath:filePath]);
+        
+        @autoreleasepool {
+            ALAssetRepresentation *assetRep = [asset defaultRepresentation];
+            CGImageRef imgRef = NULL;
+            
+            //defaultRepresentation returns image as it appears in photo picker, rotated and sized,
+            //so use UIImageOrientationUp when creating our image below.
+            if (fullImage) {
+                imgRef = [assetRep fullResolutionImage];
+                orientation = [assetRep orientation];
+            } else {
+                imgRef = [assetRep fullScreenImage];
+            }
+            
+            UIImage* image = [UIImage imageWithCGImage:imgRef scale:1.0f orientation:orientation];
+            if ([self checkIfGif:asset]) {
+                data = UIImageJPEGRepresentation(image, 1.0f);
+            } else if (self.width == 0 && self.height == 0) {
+                data = UIImageJPEGRepresentation(image, self.quality/100.0f);
+            } else {
+                UIImage* scaledImage = [self imageByScalingNotCroppingForSize:image toSize:targetSize];
+                data = UIImageJPEGRepresentation(scaledImage, self.quality/100.0f);
+            }
+            
+            if (![data writeToFile:filePath options:NSAtomicWrite error:&err]) {
+                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
+                break;
+            } else {
+                [resultStrings addObject:[[NSURL fileURLWithPath:filePath] absoluteString]];
+            }
+        }
+        
+    }
+    
+    if (nil == result) {
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:resultStrings];
+    }
+    
+    [self.viewController dismissViewControllerAnimated:YES completion:nil];
+    [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
 }
 
 - (void)dnImagePickerControllerDidCancel:(DNImagePickerController *)imagePicker
@@ -48,6 +110,15 @@ extern NSUInteger kDNImageFlowMaxSeletedNumber;
     }];
 }
 
+- (BOOL)checkIfGif:(ALAsset *)asset{
+    NSArray *strArray = [[NSString stringWithFormat:@"%@", [[asset defaultRepresentation] url]] componentsSeparatedByString:@"="];
+    NSString *ext = [strArray objectAtIndex:([strArray count]-1)];
+    if ([[ext lowercaseString] isEqualToString:@"gif"]) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
 
 - (UIImage*)imageByScalingNotCroppingForSize:(UIImage*)anImage toSize:(CGSize)frameSize
 {

@@ -8,9 +8,11 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
+#import <AssetsLibrary/AssetsLibrary.h>
 
 @interface DNAsset : NSObject
 
+@property (nonatomic, strong) ALAsset *ALAsset;
 @property (nonatomic, strong) NSURL *url;  //ALAsset url
 
 - (BOOL)isEqualToAsset:(DNAsset *)asset;

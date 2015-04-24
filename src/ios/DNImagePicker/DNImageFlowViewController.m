@@ -181,6 +181,7 @@ static NSString* const dnAssetsViewCellReuseIdentifier = @"DNAssetsViewCell";
 - (DNAsset *)dnassetFromALAsset:(ALAsset *)ALAsset
 {
     DNAsset *asset = [[DNAsset alloc] init];
+    asset.ALAsset = ALAsset;
     asset.url = [ALAsset valueForProperty:ALAssetPropertyAssetURL];
     return asset;
 }
