@@ -108,6 +108,11 @@ extern NSUInteger kDNImageFlowMaxSeletedNumber;
 
 - (void)dnImagePickerControllerDidCancel:(DNImagePickerController *)imagePicker
 {
+    CDVPluginResult* pluginResult = nil;
+    NSArray* emptyArray = [NSArray array];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:emptyArray];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+
     [imagePicker dismissViewControllerAnimated:YES completion:^{
         
     }];
