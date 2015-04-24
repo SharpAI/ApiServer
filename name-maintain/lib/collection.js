@@ -66,7 +66,34 @@ if (Meteor.isServer){
                 };
             }
         }
-    )
-
+    );
+    /*
+    Meteor.startup(function(){
+        var getRandomAnonymousName = function() {
+            try{
+                var name_numbers = RefNames.find().count();
+                var skipNumber = parseInt(Math.random() * name_numbers);
+                var anonymousName = RefNames.findOne({}, {fields: {text: 1}, skip: skipNumber}).text;
+                if( anonymousName &&  anonymousName !== ''){
+                    return anonymousName;
+                }
+            } catch(error) {
+                return null;
+            }
+        };
+        var anonymousUsers = Users.find({'profile.anonymous':true,'profile.fullname':'匿名'});
+        anonymousUsers.forEach(function(data){
+            var toNewName = getRandomAnonymousName();
+            console.log('User ID ' + data._id + 'User Name ' + data.profile.fullname + ' to New Name ' + toNewName);
+            Users.update({_id:data._id},{$set:{'profile.fullname':toNewName}});
+        });
+        anonymousUsers = Users.find({'profile.anonymous':true,'profile.icon':'/userPicture.png'});
+        anonymousUsers.forEach(function(data){
+            var randomI = parseInt(Math.random()*33+1);
+            var icon = 'http://data.tiegushi.com/anonymousIcon/anonymous_' + randomI + '.png';
+            console.log('User ID ' + data._id + 'User ICON ' + data.profile.icon + ' to New Name ' + icon);
+            Users.update({_id:data._id},{$set:{'profile.icon':icon}});
+        });
+    });*/
 }
 
