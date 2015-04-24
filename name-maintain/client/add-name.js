@@ -84,6 +84,7 @@ if (Meteor.isClient) {
       if(Session.get('changeName')){
         Session.set('changeName',false)
       } else {
+        Meteor.subscribe('refnames');
         Session.set('changeName',true)
       }
     }

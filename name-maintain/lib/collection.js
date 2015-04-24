@@ -20,6 +20,24 @@ if (Meteor.isServer){
     MsgGroup = new Meteor.Collection('msggroup');
     Meets = new Meteor.Collection('meets');
     Users = new Meteor.Collection ('users');
+    Meteor.publish('refnames',function(){
+        return RefNames.find({})
+    });
+    RefNames.allow({
+        insert: function (userId, doc) {
+            check(doc.text,String);
+            if(RefNames.find({text:doc.text}).count() > 0){
+                return false;
+            }
+            return true;
+        },
+        update: function (userId, doc) {
+            return true;
+        },
+        remove: function (userId, doc) {
+            return true;
+        }
+    });
     Meteor.methods({
             'getStatics':function(){
                 var total_posts = Posts.find().count();
