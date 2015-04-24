@@ -610,7 +610,7 @@ public class PhotoSelectorActivity extends Activity implements
         */
         private File storeImage(Bitmap bmp, String fileName) throws IOException {
             int index = fileName.lastIndexOf('.');
-            String name = "Temp_" + fileName.substring(0, index).replaceAll("%", "");
+            String name = "Temp_" + fileName.substring(0, index).replaceAll("([^a-zA-Z0-9])", "");
             String ext = fileName.substring(index);
             File file = File.createTempFile(name, ext);
             OutputStream outStream = new FileOutputStream(file);
