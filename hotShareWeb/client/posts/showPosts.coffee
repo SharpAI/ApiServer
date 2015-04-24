@@ -24,8 +24,6 @@ if Meteor.isClient
         Meteor.subscribe "comment",Session.get("postContent")._id
         Meteor.subscribe "viewers",Session.get("postContent")._id
       ,500
-  Template.showPosts.destoryed=->
-    $(window).children().off();
   Template.showPosts.rendered=->
     $('.mainImage').css('height',$(window).height()*0.55)
     postContent = Session.get("postContent")
@@ -256,13 +254,15 @@ if Meteor.isClient
       if Meteor.isCordova and isIOS
         cordova.plugins.Keyboard.disableScroll(false)
     'click .back' :->
-      if Session.get("Social.LevelOne.Menu") is 'userProfile'
-        Session.set("Social.LevelOne.Menu",'contactsList')
-        return
-      $('.showPosts').addClass('animated ' + animateOutUpperEffect);
-      $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect);
+      $(window).children().off()
+      $(window).unbind('scroll')
+      $('.showPosts').addClass('animated ' + animateOutUpperEffect)
+      $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect)
       Meteor.setTimeout ()->
         PUB.back()
+        if Session.get("Social.LevelOne.Menu") is 'userProfile'
+          Session.set("Social.LevelOne.Menu",'contactsList')
+          return
       ,animatePageTrasitionTimeout
     'click #edit': (event)->
       #Clear draft first

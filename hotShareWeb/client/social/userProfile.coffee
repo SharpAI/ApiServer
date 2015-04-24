@@ -76,7 +76,16 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
       postId = e.currentTarget.id
-      Router.go '/redirect/'+postId
+
+      $(window).children().off()
+      $(window).unbind('scroll')
+      $('.showPosts').addClass('animated ' + animateOutUpperEffect)
+      $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect)
+      $('.socialContent').addClass('animated ' + animateOutUpperEffect)
+      Meteor.setTimeout ()->
+        Session.set("Social.LevelOne.Menu",'contactsList')
+        Router.go '/redirect/'+postId
+      ,animatePageTrasitionTimeout
     'click #addToContactList': ()->
       username = Meteor.user().username
       if Meteor.user().profile.fullname
