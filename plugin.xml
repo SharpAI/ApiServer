@@ -107,8 +107,8 @@
         <resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/picker_button_orange_highlighted.imageset/picker_button_orange_highlighted@2x.png" />
         <resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/picker_image_placeholder.imageset/picker_image_placeholder@2x.png" />
         <resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/picker_photo_filter_checked.imageset/picker_photo_filter_checked@2x.png" />
-        <resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/back_normal.imageset/back_normal.pdf" />
-        <resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/back_highlight.imageset/back_highlight.pdf" />
+        <resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/back_normal.imageset/back_normal.png" />
+        <resource-file src="src/ios/DNImagePicker/ImagesPicker.xcassets/images/back_highlight.imageset/back_highlight.png" />
 	</platform>
 
 	<!-- android -->
