@@ -7,13 +7,24 @@ if Meteor.isClient
        TopicMainImage = Session.get("TopicMainImage")
        comment = $('#comment').val()
        if comment != ''
+         if Meteor.user()
+           if Meteor.user().profile.fullname
+             username = Meteor.user().profile.fullname
+           else
+             username = Meteor.user().username
+           userId = Meteor.user()._id
+           userIcon = Meteor.user().profile.icon
+         else
+           username = '匿名'
+           userId = 0
+           userIcon = ''
          try
            Comment.insert {
              postId:topicPostId
              content:comment
-             username:Meteor.user().username
-             userId:Meteor.user()._id
-             userIcon:Meteor.user().profile.icon
+             username:username
+             userId:userId
+             userIcon:userIcon
              createdAt: new Date()
            }
            #下面这行语句有问题，先注释掉，以后修改
@@ -41,6 +52,17 @@ if Meteor.isClient
                   imgUrl: ""
                 }
              #console.log "topicId:" + topicId
+             if Meteor.user()
+               if Meteor.user().profile.fullname
+                 username = Meteor.user().profile.fullname
+               else
+                 username = Meteor.user().username
+               userId = Meteor.user()._id
+               userIcon = Meteor.user().profile.icon
+             else
+               username = '匿名'
+               userId = 0
+               userIcon = ''
              TopicPosts.insert {
                postId:topicPostId,
                title:TopicTitle,
@@ -49,9 +71,9 @@ if Meteor.isClient
                heart:0,
                retweet:0,
                comment:1,
-               owner:Meteor.user()._id,
-               ownerName:Meteor.user().username,
-               ownerIcon:Meteor.user().profile.icon,
+               owner:userId,
+               ownerName:username,
+               ownerIcon:userIcon,
                createdAt: new Date(),
                topicId: topicId
              }
