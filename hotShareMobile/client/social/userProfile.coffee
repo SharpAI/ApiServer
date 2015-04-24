@@ -49,6 +49,8 @@ if Meteor.isClient
       else
         false
   Template.userProfile.events
+    'click .userProfile .back':()->
+      Session.set("Social.LevelOne.Menu",'contactsList')
     'click #suggestCurrentPost': ()->
       username = Meteor.user().username
       if Meteor.user().profile.fullname

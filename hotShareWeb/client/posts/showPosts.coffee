@@ -253,7 +253,7 @@ if Meteor.isClient
       console.log("#comment lost focus");
       if Meteor.isCordova and isIOS
         cordova.plugins.Keyboard.disableScroll(false)
-    'click .back' :->
+    'click .showPosts .back' :->
       $(window).children().off()
       $(window).unbind('scroll')
       $('.showPosts').addClass('animated ' + animateOutUpperEffect)
