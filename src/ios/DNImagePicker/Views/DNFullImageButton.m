@@ -56,6 +56,7 @@ static NSInteger const buttonImageWidth = 16;
 
 - (UIButton *)fullImageButton
 {
+    return nil;
     if (nil == _fullImageButton) {
         _fullImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
         _fullImageButton.width = [self fullImageButtonWidth];
