@@ -89,20 +89,30 @@ if Meteor.isClient
         gridster.resize_widget($(itemElem), sizex,sizey)
     )
     hidePostBar = ()->
-      $('.showPostsFooter').fadeOut 300
-      $('.showPosts .head').fadeOut 300
+      if $('.showPostsFooter').is(':visible')
+        $('.showPostsFooter').fadeOut 300
+      if $('.showPosts .head').is(':visible')
+        $('.showPosts .head').fadeOut 300
     showPostBar = ()->
-      $('.showPostsFooter').fadeIn 300
-      $('.showPosts .head').fadeIn 300
+      unless $('.showPostsFooter').is(':visible')
+        $('.showPostsFooter').fadeIn 300
+      unless $('.showPosts .head').is(':visible')
+        $('.showPosts .head').fadeIn 300
 
     showSocialBar = ()->
-      $('.contactsList .head').fadeIn 300
-      $('.userProfile .head').fadeIn 300
-      $('.socialContent .chatFooter').fadeIn 300
+      unless $('.contactsList .head').is(':visible')
+        $('.contactsList .head').fadeIn 300
+      unless $('.userProfile .head').is(':visible')
+        $('.userProfile .head').fadeIn 300
+      unless $('.socialContent .chatFooter').is(':visible')
+        $('.socialContent .chatFooter').fadeIn 300
     hideSocialBar = ()->
-      $('.contactsList .head').fadeOut 300
-      $('.userProfile .head').fadeOut 300
-      $('.socialContent .chatFooter').fadeOut 300
+      if $('.contactsList .head').is(':visible')
+        $('.contactsList .head').fadeOut 300
+      if $('.userProfile .head').is(':visible')
+        $('.userProfile .head').fadeOut 300
+      if $('.socialContent .chatFooter').is(':visible')
+        $('.socialContent .chatFooter').fadeOut 300
     scrollEventCallback = ()->
       #Sets the current scroll position
       st = $(window).scrollTop()
@@ -123,20 +133,12 @@ if Meteor.isClient
         return
       #Determines up-or-down scrolling
       displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
-      if st > window.lastScroll
-        if displaySocialBar
-          showSocialBar()
-          hidePostBar()
-        else
-          showPostBar()
-          hideSocialBar()
+      if displaySocialBar
+        showSocialBar()
+        hidePostBar()
       else
-        if displaySocialBar
-          showSocialBar()
-          hidePostBar()
-        else
-          hideSocialBar()
-          showPostBar()
+        hideSocialBar()
+        showPostBar()
       #Updates scroll position
       window.lastScroll = st
     window.lastScroll = 0;
