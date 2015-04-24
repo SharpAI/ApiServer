@@ -5,7 +5,6 @@ if Meteor.isServer
     name_numbers = RefNames.find({}).count()
     @getRandomAnonymousName = ()->
       try
-        randomNumber = rng()
         skipNumber = parseInt(rng()*name_numbers)
         anonymousName = RefNames.findOne({},{fields: {text:1},skip:skipNumber}).text;
         if anonymousName and anonymousName isnt ''
