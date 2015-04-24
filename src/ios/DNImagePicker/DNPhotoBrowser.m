@@ -118,8 +118,7 @@
     [self toolbar];
     [self setupBarButtonItems];
     [self createBarButtonItemAtPosition:DNImagePickerNavigationBarPositionLeft
-                      statusNormalImage:[UIImage imageNamed:@"back_normal"]
-                   statusHighlightImage:[UIImage imageNamed:@"back_highlight"]
+                      text:NSLocalizedStringFromTable(@"back", @"DNImagePicker", @"返回")
                                  action:@selector(backButtonAction)];
     UIBarButtonItem *rightButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.checkButton];
     self.navigationItem.rightBarButtonItem = rightButtonItem;

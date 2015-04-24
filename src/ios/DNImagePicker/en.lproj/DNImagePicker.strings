@@ -6,6 +6,7 @@
   Copyright (c) 2015年 Dennis. All rights reserved.
 */
 "albumTitle" = "Photos";
+“back” = "Back";
 "cancel" = "Cancel";
 "send" = "send";
 "preview" = "preview";
