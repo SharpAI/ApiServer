@@ -13,4 +13,6 @@
     <string name="alert_limit_title">Maximum %1$d Photos</string>
 	<string name="alert_limit_message">You can only select %1$d photos at a time.</string>
 	<string name="ok">OK</string>
+    <string name="progress_title">Processing Images</string>
+	<string name="progress_message">This may take a few moments.</string>
 </resources>

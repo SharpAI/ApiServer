@@ -13,4 +13,6 @@
     <string name="alert_limit_title">最多%1$d张照片</string>
 	<string name="alert_limit_message">你每次最多只能选择%1$d张照片。</string>
 	<string name="ok">确定</string>
+    <string name="progress_title">图片导入中...</string>
+	<string name="progress_message">稍候片刻，马上就好。</string>
 </resources>
