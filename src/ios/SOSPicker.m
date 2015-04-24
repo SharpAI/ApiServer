@@ -69,23 +69,25 @@ extern NSUInteger kDNImageFlowMaxSeletedNumber;
             
             //defaultRepresentation returns image as it appears in photo picker, rotated and sized,
             //so use UIImageOrientationUp when creating our image below.
-            if (fullImage) {
-                imgRef = [assetRep fullResolutionImage];
-                orientation = [assetRep orientation];
+	    if (fullImage) {
+                //imgRef = [assetRep fullResolutionImage];
+                //orientation = [assetRep orientation];
+                Byte *buffer = (Byte*)malloc(assetRep.size);
+                NSUInteger buffered = [assetRep getBytes:buffer fromOffset:0.0 length:assetRep.size error:nil];
+                data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
             } else {
                 imgRef = [assetRep fullScreenImage];
+                UIImage* image = [UIImage imageWithCGImage:imgRef scale:1.0f orientation:orientation];
+                if ([self checkIfGif:asset]) {
+                    data = UIImageJPEGRepresentation(image, 1.0f);
+                } else if (self.width == 0 && self.height == 0) {
+                    data = UIImageJPEGRepresentation(image, self.quality/100.0f);
+                } else {
+                    UIImage* scaledImage = [self imageByScalingNotCroppingForSize:image toSize:targetSize];
+                    data = UIImageJPEGRepresentation(scaledImage, self.quality/100.0f);
+                }
             }
-            
-            UIImage* image = [UIImage imageWithCGImage:imgRef scale:1.0f orientation:orientation];
-            if ([self checkIfGif:asset]) {
-                data = UIImageJPEGRepresentation(image, 1.0f);
-            } else if (self.width == 0 && self.height == 0) {
-                data = UIImageJPEGRepresentation(image, self.quality/100.0f);
-            } else {
-                UIImage* scaledImage = [self imageByScalingNotCroppingForSize:image toSize:targetSize];
-                data = UIImageJPEGRepresentation(scaledImage, self.quality/100.0f);
-            }
-            
+
             if (![data writeToFile:filePath options:NSAtomicWrite error:&err]) {
                 result = [CDVPluginResult resultWithStatus:CDVCommandStatus_IO_EXCEPTION messageAsString:[err localizedDescription]];
                 break;
