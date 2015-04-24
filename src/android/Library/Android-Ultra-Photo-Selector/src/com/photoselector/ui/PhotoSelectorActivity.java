@@ -98,7 +98,7 @@ public class PhotoSelectorActivity extends Activity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		RECCENT_PHOTO = getResources().getString(R.string.recent_photos);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);// 去掉标题栏
+		requestWindowFeature(Window.FEATURE_NO_TITLE);// ���������������
 		setContentView(R.layout.activity_photoselector);
 
 		if (getIntent().getExtras() != null) {
@@ -137,10 +137,10 @@ public class PhotoSelectorActivity extends Activity implements
 		lvAblum.setAdapter(albumAdapter);
 		lvAblum.setOnItemClickListener(this);
 
-		findViewById(R.id.bv_back_lh).setOnClickListener(this); // 返回
+		findViewById(R.id.bv_back_lh).setOnClickListener(this); // ������
 
-		photoSelectorDomain.getReccent(reccentListener); // 更新最近照片
-		photoSelectorDomain.updateAlbum(albumListener); // 跟新相册信息
+		photoSelectorDomain.getReccent(reccentListener); // ������������������
+		photoSelectorDomain.updateAlbum(albumListener); // ������������������
         progress = new ProgressDialog(this);
         progress.setTitle(R.string.progress_title);
         progress.setMessage(getString(R.string.progress_message));
@@ -191,7 +191,7 @@ public class PhotoSelectorActivity extends Activity implements
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.btn_right_lh)
-			ok(); // 选完照片
+			ok(); // ������������
 		else if (v.getId() == R.id.tv_album_ar)
 			album();
 		else if (v.getId() == R.id.tv_preview_ar)
@@ -202,7 +202,7 @@ public class PhotoSelectorActivity extends Activity implements
 			finish();
 	}
 
-	/** 拍照 */
+	/** ������ */
 	private void catchPicture() {
 		CommonUtils.launchActivityForResult(this, new Intent(
 				MediaStore.ACTION_IMAGE_CAPTURE), REQUEST_CAMERA);
@@ -237,7 +237,7 @@ public class PhotoSelectorActivity extends Activity implements
 		}
 	}
 
-	/** 完成 */
+	/** ������ */
 	private void ok() {
 		progress.show();
 		if (selected.isEmpty()) {
@@ -254,7 +254,7 @@ public class PhotoSelectorActivity extends Activity implements
 		}
 	}
 
-	/** 预览照片 */
+	/** ������������ */
 	private void priview() {
 		Bundle bundle = new Bundle();
 		bundle.putSerializable("photos", selected);
@@ -269,21 +269,21 @@ public class PhotoSelectorActivity extends Activity implements
 		}
 	}
 
-	/** 弹出相册列表 */
+	/** ������������������ */
 	private void popAlbum() {
 		layoutAlbum.setVisibility(View.VISIBLE);
 		new AnimationUtil(getApplicationContext(), R.anim.translate_up_current)
 				.setLinearInterpolator().startAnimation(layoutAlbum);
 	}
 
-	/** 隐藏相册列表 */
+	/** ������������������ */
 	private void hideAlbum() {
 		new AnimationUtil(getApplicationContext(), R.anim.translate_down)
 				.setLinearInterpolator().startAnimation(layoutAlbum);
 		layoutAlbum.setVisibility(View.GONE);
 	}
 
-	/** 清空选中的图片 */
+	/** ��������������������� */
 	private void reset() {
 		selected.clear();
 		tvNumber.setText("(0)");
@@ -291,7 +291,7 @@ public class PhotoSelectorActivity extends Activity implements
 	}
 
 	@Override
-	/** 点击查看照片 */
+	/** ������������������ */
 	public void onItemClick(int position) {
 		Bundle bundle = new Bundle();
 		if (tvAlbum.getText().toString().equals(RECCENT_PHOTO))
@@ -303,7 +303,7 @@ public class PhotoSelectorActivity extends Activity implements
 	}
 
 	@Override
-	/** 照片选中状态改变之后 */
+	/** ������������������������������ */
 	public void onCheckedChanged(PhotoModel photoModel,
 			CompoundButton buttonView, boolean isChecked) {
 		if (isChecked) {
@@ -369,7 +369,7 @@ public class PhotoSelectorActivity extends Activity implements
 	}
 
 	@Override
-	/** 相册列表点击事件 */
+	/** ������������������������ */
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		AlbumModel current = (AlbumModel) parent.getItemAtPosition(position);
@@ -387,19 +387,20 @@ public class PhotoSelectorActivity extends Activity implements
 		tvAlbum.setText(current.getName());
 		// tvTitle.setText(current.getName());
 
-		// 更新照片列表
+		// ������������������
 		if (current.getName().equals(RECCENT_PHOTO))
 			photoSelectorDomain.getReccent(reccentListener);
 		else
-			photoSelectorDomain.getAlbum(current.getName(), reccentListener); // 获取选中相册的照片
+			photoSelectorDomain.getAlbum(current.getName(), reccentListener); // ���������������������������
 	}
 
-	/** 获取本地图库照片回调 */
+	/** ������������������������������ */
 	public interface OnLocalReccentListener {
 		public void onPhotoLoaded(List<PhotoModel> photos);
+		public void onPhotoAdded(List<PhotoModel> photos);
 	}
 
-	/** 获取本地相册信息回调 */
+	/** ������������������������������ */
 	public interface OnLocalAlbumListener {
 		public void onAlbumLoaded(List<AlbumModel> albums);
 	}
@@ -420,7 +421,19 @@ public class PhotoSelectorActivity extends Activity implements
 				}
 			}
 			photoAdapter.update(photos);
-			gvPhotos.smoothScrollToPosition(0); // 滚动到顶端
+			gvPhotos.smoothScrollToPosition(0); // ���������������
+			// reset(); //--keep selected photos
+
+		}
+		@Override
+		public void onPhotoAdded(List<PhotoModel> photos) {
+			for (PhotoModel model : photos) {
+				if (selected.contains(model)) {
+					model.setChecked(true);
+				}
+			}
+			photoAdapter.add(photos);
+			//gvPhotos.smoothScrollToPosition(0); // ���������������
 			// reset(); //--keep selected photos
 
 		}
