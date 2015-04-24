@@ -30,6 +30,7 @@ extern NSUInteger kDNImageFlowMaxSeletedNumber;
 
     DNImagePickerController *imagePicker = [[DNImagePickerController alloc] init];
     imagePicker.imagePickerDelegate = self;
+    self.callbackId = command.callbackId;
     [self.viewController presentViewController:imagePicker animated:YES completion:nil];
 }
 
