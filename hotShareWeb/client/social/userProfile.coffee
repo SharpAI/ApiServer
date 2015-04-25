@@ -81,13 +81,13 @@ if Meteor.isClient
 
       $(window).children().off()
       $(window).unbind('scroll')
-      $('.showPosts').addClass('animated ' + animateOutUpperEffect)
-      $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect)
-      $('.socialContent').addClass('animated ' + animateOutUpperEffect)
+      $('.showPosts').fadeOut 300
+      $('.showPostsFooter').fadeOut 300
+      $('.socialContent').fadeOut 300
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/redirect/'+postId
-      ,animatePageTrasitionTimeout
+      ,300
     'click #addToContactList': ()->
       username = Meteor.user().username
       if Meteor.user().profile.fullname
