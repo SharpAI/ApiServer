@@ -4,6 +4,7 @@ if Meteor.isClient
     $(window).children().off();
   # the only document I found here https://github.com/percolatestudio/transition-helper/blob/master/transition-helper.js#L4    
   Template.addPost.rendered=->
+    Meteor.subscribe("saveddrafts");
     window.imageCounter = 0
     window.insertRow = 1
     `global_toolbar_hidden = false`
