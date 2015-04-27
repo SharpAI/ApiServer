@@ -807,9 +807,6 @@ if Meteor.isClient
             PUB.back()
           return
         if result
-          Meteor.setTimeout(()->
-              Template.addPost.__helpers.get('saveDraft')()
-            12000)
           #console.log 'upload success: url is ' + result
           #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
           console.log 'Current Count is ' + currentCount + ' Total is ' + totalCount
