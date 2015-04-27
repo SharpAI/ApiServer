@@ -41,14 +41,41 @@ if(Meteor.isServer){
               var fcount = Follower.find({"userId":userId,"followerId":taId}).count();
               if(fcount === 0)
               {
-                  count++;
                   self.added("newfriends", id, fields);
+                  count++;
               }
             }
           }
         },
         changed: function (id,fields) {
-           if(postId === fields.meetOnPostId)
+           if(fields.isFriend === true)
+           {
+             try{
+               self.removed("newfriends", id);
+               count--;
+             }catch(error){
+             }
+           }
+           if(fields.isFriend === false)
+           {
+             try{
+               if(count<20)
+               {
+                 var meetItem = Meets.findOne({_id:id});
+                 if(meetItem.me === userId && meetItem.ta !== userId && postId === meetItem.meetOnPostId)
+                 {
+                   fields.me = meetItem.me;
+                   fields.ta = meetItem.ta;
+                   fields.count = meetItem.count;
+                   fields.meetOnPostId = meetItem.meetOnPostId;
+                   self.added("newfriends", id, fields);
+                   count++;
+                 }
+               }
+             }catch(error){
+             }
+           }
+           if(fields.meetOnPostId && postId === fields.meetOnPostId)
            {
              try{
                self.changed("newfriends", id, fields);
@@ -61,8 +88,8 @@ if(Meteor.isServer){
                    fields.me = meetItem.me;
                    fields.ta = meetItem.ta;
                    fields.count = meetItem.count;
-                   count++;
                    self.added("newfriends", id, fields);
+                   count++;
                  }
                }
              };
@@ -583,6 +610,10 @@ if(Meteor.isServer){
       if(doc.userId === userId || doc.followerId === userId){
         Meteor.defer(function(){
             try{
+              Meets.update({me:doc.userId,ta:doc.followerId},{$set:{isFriend:true}});
+            }
+            catch(error){};
+            try{
                 var posts=Posts.find({owner: doc.followerId})
                 if(posts.count()>0){
                     posts.forEach(function(data){
@@ -610,6 +641,10 @@ if(Meteor.isServer){
     remove: function (userId, doc) {
       if(doc.userId === userId){
         Meteor.defer(function(){
+            try{
+              Meets.update({me:doc.userId,ta:doc.followerId},{$set:{isFriend:false}});
+            }
+            catch(error){};
             try{
               FollowPosts.remove({owner:doc.followerId,followby:userId});
             }
