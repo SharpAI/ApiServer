@@ -334,7 +334,7 @@ if (Meteor.isCordova){
                 break;
             }
         }
-    }
+    };
 
     var multiThreadUploadFile = function(draftData, maxThreads, callback){
         var count = draftData.length < maxThreads ? draftData.length : maxThreads;
@@ -360,7 +360,7 @@ if (Meteor.isCordova){
                 }
             }
         }, 1000);
-    }
+    };
 
     var startThreadUploadFile = function(draftData, fileInfo, info, callback){
         var getFileInfo = function(filename) {
@@ -370,7 +370,7 @@ if (Meteor.isCordova){
                 }
             }
             return null;
-        }
+        };
         var getUploadedCount = function() {
             var count = 0;
             for (var i=0; i<multiThreadsInfo.length; i++) {
@@ -379,7 +379,7 @@ if (Meteor.isCordova){
                 }
             }
             return count;
-        }
+        };
         var hasErrorUpload = function() {
             for (var i=0; i<multiThreadsInfo.length; i++) {
                 if (multiThreadsInfo[i].status == -1) {
@@ -395,7 +395,7 @@ if (Meteor.isCordova){
                 }
             }
             return false;
-        }
+        };
         var setFileTransfer = function(filename, fileTransfer){
            for (var i=0; i<multiThreadsInfo.length; i++) {
               if(multiThreadsInfo[i].filename === filename){
@@ -405,7 +405,7 @@ if (Meteor.isCordova){
            }
           
            return false;
-        }
+        };
         
         var stopUploader = function(){
           console.log('stop uploader...('+multiThreadsInfo.length+')');
@@ -416,7 +416,7 @@ if (Meteor.isCordova){
             }
           }
           multiThreadsInfo = [];
-        }
+        };
         
         abortuploader = function(){callback(null); stopUploader();};
 
@@ -498,7 +498,7 @@ if (Meteor.isCordova){
         });
         
         setFileTransfer(tmpFileInfo.filename, ft);
-    }
+    };
 
     multiThreadUploadFileWhenPublishInCordova = function(draftData, postId, callback){
         if(device.platform === 'testAndroid' ){
@@ -523,7 +523,7 @@ if (Meteor.isCordova){
             return;
           }
           if (result) {
-              Template.progressBar.__helpers.get('close')()
+              Template.progressBar.__helpers.get('close')();
               //Session.set('progressBarWidth', 100);
               console.log("Jump to post page...");
               //$('.addProgress').css('display',"none");
@@ -550,13 +550,13 @@ if (Meteor.isCordova){
               Session.set('isDelayPublish', true);
           }
           multiThreadsRunning = 0;
-        }
+        };
       
         uploadingFilesInfo.filesCount = draftData.length;
         uploadingFilesInfo.files = [];
         multiThreadUploadFile(draftData, 2, multiThreadUploadFileCallback);
         return;
-    }
+    };
 
     uploadFileWhenPublishInCordova = function(draftData, postId){
         if(device.platform === 'testAndroid' ){
@@ -591,62 +591,56 @@ if (Meteor.isCordova){
                 }
             });
         }
-    }
+    };
 
+    var processImageInAndroid = function(i,results,callback){
+        var length = results.length;
+        var timestamp = new Date().getTime();
+        var originalFilename = results[i].replace(/^.*[\\\/]/, '');
+        var filename = Meteor.userId()+'_'+timestamp+ '_' + originalFilename.replace(/%/g, '');
+        var toProcessURI = results[i];
+        console.log('File name ' + filename);
+
+        var params = {filename:filename, originalFilename:originalFilename, URI:toProcessURI, smallImage:''};
+        var fileExt = filename.split('.').pop();
+        if(fileExt.toUpperCase()==='GIF'){
+            ImageBase64.base64({
+                    uri: results[i],
+                    quality: 90,
+                    width: 600,
+                    height: 600
+                },
+                function(a) {
+                    params.smallImage = "data:image/jpg;base64,"+a.base64;
+                    callback(null, params,i+1,length);
+                },
+                function(e) {
+                    console.log("error" + e);
+                    callback('error');
+                });
+        }else{
+            window.resolveLocalFileSystemURL(results[i], function(fileEntry) {
+                fileEntry.file(function(file) {
+                    var reader = new FileReader();
+                    reader.onloadend = function(event) {
+                        params.smallImage = event.target.result;
+                        callback(null, params,(i+1),length);
+                    };
+                    reader.readAsDataURL(file);
+                }, function(e) {
+                    console.log('fileEntry.file Error = ' + e);
+                    callback('error');
+                });
+            }, function(e) {
+                console.log('resolveLocalFileSystemURL Error = ' + e);
+                callback('error');
+            });
+        }
+    };
     selectMediaFromAblum = function(max_number, callback){
-      if(device.platform === 'testAndroid' ){
-           pictureSource = navigator.camera.PictureSourceType;
-           destinationType = navigator.camera.DestinationType;
-//          var cameraOptions = {
-//            width: 400,
-//            height: 400,
-//            destinationType: destinationType.NATIVE_URI,
-//            sourceType: pictureSource.SAVEDPHOTOALBUM,
-//            quality: 60
-//          };
-          navigator.camera.getPicture(function(s){
-              console.info(s);
-              //判断是否图片
-              if(s.indexOf("file:///")==0){
-                  if(s.lastIndexOf('.')<=0){
-                      PUB.toast('您选取的文件不是图片！');
-                      return;
-                  }else{
-                      var ext = s.substring(s.lastIndexOf('.')).toUpperCase();
-                      if(!(ext.indexOf('.PNG')==0||ext.indexOf('.JPG')==0||ext.indexOf('.JPEG')==0||ext.indexOf('.GIF')==0)){
-                        PUB.toast('您选取的文件不是图片！');
-                        return;
-                      }
-                  }
-              }
-              var timestamp = new Date().getTime();
-              var filename = Meteor.userId()+'_'+timestamp+'.jpg';
-              console.log('File name ' + filename);
-              //uploadToS3(filename,results[i],callback);
-              //uploadToBCS(filename,s,callback);
-              uploadToBCS(filename,s,function(result){
-                //file:///storage/sdcard0/Android/data/org.hotshare.everywhere/cache/modified.jpg?1420855054212
-                //var cdvfilepath = s.replace(/file:\/\/\/storage\/emulated\/0\//, '');
-                //console.log("cdvfilepath = "+ cdvfilepath);
-                var params = {filename:filename, URI:s, smallImage:result}
-                callback(null, params);
-              });
-          }, function(s){
-              if(callback){
-                  callback(null);
-              }
-          }, {
-            quality: 90,
-            targetWidth: 600,
-            targetHeight: 600,
-            destinationType: destinationType.NATIVE_URI,
-            sourceType: pictureSource.SAVEDPHOTOALBUM
-          });
-          
-      }else{
         window.imagePicker.getPictures(
           function(results) {
-            if(results == undefined)
+            if(results === undefined)
               return;
             var length = 0;
             try{
@@ -655,95 +649,32 @@ if (Meteor.isCordova){
             catch (error){
               length=results.length;
             }
-            if (length == 0) {
+            if (length === 0) {
               callback('cacel');
-              //PUB.back();
               return;
             }
             if(device.platform === 'Android' ){
-                var retArray = [];
-                var retCount = 0;
-                for (var i = 0; i < length; i++) {
-                  var timestamp = new Date().getTime();
-                  var originalFilename = results[i].replace(/^.*[\\\/]/, '');
-                  var filename = Meteor.userId()+'_'+timestamp+ '_' + originalFilename.replace(/%/g, '');
-                  console.log('File name ' + filename);
-
-                  var params = {filename:filename, originalFilename:originalFilename, URI:results[i], smallImage:''};
-                  //callback(null, params);
-                  //You mustnt saved all data to server
-                  var fileExt = filename.split('.').pop();
-                  retArray.push(params);
-                  if(fileExt.toUpperCase()==='GIF'){
-                  ImageBase64.base64({
-                        uri: results[i],
-                        quality: 90,
-                        width: 600,
-                        height: 600
-                    },
-                    function(a) {
-                        for (var item in retArray) {
-                          if (retArray[item].URI == a.imageURI) {
-                            retCount++;
-                            retArray[item].smallImage = "data:image/jpg;base64,"+a.base64;
-                            //callback(null, retArray[item]);
-                            //retArray.slice(item, 1);
-                            if(retCount===length)
-                            {
-                                for (var item in retArray) {
-                                    //console.log("retArray["+item+"].originalFilename="+retArray[item].originalFilename);
-                                    callback(null, retArray[item]);
-                                }
-                            }
-                            break;
-                          }
-                        }
-                    },
-                    function(e) {
-                        console.log("error" + e);
-                    });
-                  }else{
-                  window.resolveLocalFileSystemURL(results[i], function(fileEntry) {
-                    fileEntry.file(function(file) {
-                      var reader = new FileReader();
-                      reader.onloadend = function(event) {
-                          var localURL = event.target._localURL;
-                          //console.log("event.target="+localURL.replace(/^.*[\\\/]/, ''));
-                          for (var item in retArray) {
-                            if (retArray[item].originalFilename == localURL.replace(/^.*[\\\/]/, '')) {
-                              retCount++;
-                              retArray[item].smallImage = event.target.result;
-                              //callback(null, retArray[item]);
-                              //retArray.slice(item, 1);
-                              if(retCount===length)
-                              {
-                                  for (var item in retArray) {
-                                      //console.log("retArray["+item+"].originalFilename="+retArray[item].originalFilename);
-                                      callback(null, retArray[item],(item+1),length);
-                                  }
-                              }
-                              break;
-                            }
-                          }
-                      };
-                      reader.readAsDataURL(file);
-                    }, function(e) {
-                        console.log('fileEntry.file Error = ' + e);
-                    });
-
-                  }, function(e) {
-                    console.log('resolveLocalFileSystemURL Error = ' + e);
-                  });
-                  }
-                }
+                var obj = {};
+                obj.currentCount = 0;
+                obj.totalCount = length;
+                var processImageInAndroidCallback = function(error, data,currentCount,totalCount){
+                    if (error){
+                        console.log('Got error');
+                    }
+                    if (callback){
+                        callback(null,data,currentCount,totalCount);
+                    }
+                    if (++obj.currentCount < obj.totalCount){
+                        processImageInAndroid(obj.currentCount,results,processImageInAndroidCallback);
+                    }
+                };
+                processImageInAndroid(obj.currentCount,results,processImageInAndroidCallback);
             } else {
                 for (var i = 0; i < length; i++) {
                   var timestamp = new Date().getTime();
                   var originalFilename = results[i].replace(/^.*[\\\/]/, '');
                   var filename = Meteor.userId()+'_'+timestamp+ '_' + originalFilename;
                   console.log('File name ' + filename);
-                  //uploadToS3(filename,results[i],callback);
-                  //uploadToBCS(filename,results[i],callback);
                   var params = {filename:filename, URI:results[i], smallImage:'cdvfile://localhost/persistent/drafts/' + originalFilename}
                   callback(null, params,(i+1),length);
                 }
@@ -760,8 +691,6 @@ if (Meteor.isCordova){
             quality: 90,
             storage: 'persistent'
           });
-        }
-      }
-
+        };
         uploadFile = uploadFileInCordova;
     }
