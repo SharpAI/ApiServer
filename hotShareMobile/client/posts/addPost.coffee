@@ -654,7 +654,8 @@ if Meteor.isClient
           #  URI: draftData[i].URI,
           #  layout: draftData[i].layout
           #}
-        if SavedDrafts.find({_id:draftId}).count() > 0
+        try
+          if SavedDrafts.find({_id:draftId}).count() > 0
             SavedDrafts.update(
               {_id:draftId},
               {$set:{
@@ -667,7 +668,7 @@ if Meteor.isClient
               createdAt: new Date(),
               }}
             )
-        else
+          else
             SavedDrafts.insert {
               _id:draftId,
               pub:pub,
@@ -678,6 +679,20 @@ if Meteor.isClient
               owner:Meteor.userId(),
               createdAt: new Date(),
             }
+        catch error
+          console.log("Insert SavedDrafts error! Try update it...");
+          SavedDrafts.update(
+              {_id:draftId},
+              {$set:{
+              pub:pub,
+              title:title,
+              addontitle:addontitle,
+              mainImage: mainImage,
+              mainText: mainText,
+              owner:Meteor.userId(),
+              createdAt: new Date(),
+              }}
+            )
         #Drafts.remove {owner: Meteor.userId()}
         #history.back()
         #PUB.back()
