@@ -719,7 +719,7 @@ if (Meteor.isCordova){
                               {
                                   for (var item in retArray) {
                                       //console.log("retArray["+item+"].originalFilename="+retArray[item].originalFilename);
-                                      callback(null, retArray[item]);
+                                      callback(null, retArray[item],(item+1),length);
                                   }
                               }
                               break;
@@ -745,7 +745,7 @@ if (Meteor.isCordova){
                   //uploadToS3(filename,results[i],callback);
                   //uploadToBCS(filename,results[i],callback);
                   var params = {filename:filename, URI:results[i], smallImage:'cdvfile://localhost/persistent/drafts/' + originalFilename}
-                  callback(null, params);
+                  callback(null, params,(i+1),length);
                 }
             }
           }, function (error){

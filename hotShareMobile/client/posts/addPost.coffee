@@ -801,7 +801,7 @@ if Meteor.isClient
       Session.set 'draftTitle',''
       Session.set 'draftAddontitle',''
       Session.set('NewImgAdd','false')
-      selectMediaFromAblum(20, (cancel, result)->
+      selectMediaFromAblum(20, (cancel, result,currentCount,totalCount)->
         if cancel
           if Drafts.find().count() is 0
             PUB.back()
@@ -812,8 +812,13 @@ if Meteor.isClient
             12000)
           #console.log 'upload success: url is ' + result
           #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
+          console.log 'Current Count is ' + currentCount + ' Total is ' + totalCount
           console.log 'image url is ' + result.smallImage
-          Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
+          Drafts.insert {type:'image', currentCount:currentCount, totalCount:totalCount,isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
+          if (currentCount >= totalCount)
+            Meteor.setTimeout ()->
+              Template.addPost.__helpers.get('saveDraft')()
+            ,100
       )
       return
     'click #addText':->

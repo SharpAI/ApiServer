@@ -52,7 +52,7 @@ if Meteor.isClient
       Drafts.remove({})
       Meteor.setTimeout(
         ()->
-          selectMediaFromAblum(20, (cancel, result)->
+          selectMediaFromAblum(20, (cancel, result,currentCount,totalCount)->
             #console.log 'upload success: url is ' + result
             #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
             if cancel
@@ -60,13 +60,14 @@ if Meteor.isClient
                 PUB.back()
               return
             if result
-              Meteor.setTimeout(()->
-                  Template.addPost.__helpers.get('saveDraft')()
-                12000)
               Session.set 'NewImgAdd','true'
               console.log 'Local is ' + result.smallImage
               Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
               Router.go '/add'
+              if currentCount >= totalCount
+                Meteor.setTimeout(()->
+                  Template.addPost.__helpers.get('saveDraft')()
+                ,100)
           )
         0
       )
