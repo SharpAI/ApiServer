@@ -370,10 +370,36 @@ if Meteor.isClient
               window.insertRow +=3
               window.imageCounter++
             else if window.unSelectedElem
-              insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
-              insert_col = parseInt($(window.unSelectedElem).attr('data-col'))
-              window.unSelectedElem = undefined
-              grid.add_widget(node, 3, 3, insert_col, insert_row)
+              currentCount = node.$blaze_range.view.parentView.dataVar.curValue.currentCount
+              totalCount = node.$blaze_range.view.parentView.dataVar.curValue.totalCount
+              console.log("Now painting currentCount is " + currentCount + " totalCount is " + totalCount)
+              if currentCount is 1
+                insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
+                insert_col = parseInt($(window.unSelectedElem).attr('data-col'))
+                insert_sizex = parseInt($(window.unSelectedElem).attr('data-sizex'))
+                insert_sizey = parseInt($(window.unSelectedElem).attr('data-sizey'))
+                if insert_col is 1
+                  window.nextCol = 4
+                  insert_sizex = 3
+                  insert_sizey = 3
+                  window.nextRow = insert_row
+                else
+                  window.nextCol = 1
+                  insert_sizey = 3
+                  window.nextRow = insert_row + 3
+              else
+                insert_sizex = 3
+                insert_sizey = 3
+                insert_col = window.nextCol
+                insert_row = window.nextRow
+                if insert_col is 1
+                  window.nextCol = 4
+                else
+                  window.nextCol = 1
+                  window.nextRow = insert_row + 3
+              if currentCount >= totalCount
+                window.unSelectedElem = undefined
+              grid.add_widget(node, insert_sizex, insert_sizey, insert_col, insert_row)
             else
               max_row = 1
               middle = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)/2
@@ -793,7 +819,7 @@ if Meteor.isClient
         window.takePhoto (result)->
           console.log 'result from camera is ' + JSON.stringify(result)
           if result
-            Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
+            Drafts.insert {type:'image', currentCount:1, totalCount:1,isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
 
     'click #addmore':->
       window.footbarOppration = true
