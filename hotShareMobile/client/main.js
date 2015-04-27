@@ -74,4 +74,5 @@ if (Meteor.isClient) {
   Deps.autorun(function(){
     document.title = Session.get("DocumentTitle");
   });
+  Meteor.subscribe("saveddrafts");
 }
