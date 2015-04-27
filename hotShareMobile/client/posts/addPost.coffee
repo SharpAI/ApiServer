@@ -347,10 +347,11 @@ if Meteor.isClient
             sizey = Math.ceil((this.scrollHeight+10)/min_widget_height)
 
             resizeItem = $('#'+id)
+            resizeItem.css("height", this.scrollHeight)
             orig_sizey = parseInt(resizeItem.attr("data-sizey"))
             if gridster? and sizey isnt orig_sizey
               height = sizey*min_widget_height - 10
-              resizeItem.css("height", height)
+              #resizeItem.css("height", height)
               $(this).css('height', "")
 
               sizex = parseInt(resizeItem.attr("data-sizex"))
