@@ -44,7 +44,7 @@
 }
 
 .gridster .player-revert {
-    z-index: 10!important;
+    z-index: 10;
     -webkit-transition: left .3s, top .3s!important;
     -moz-transition: left .3s, top .3s!important;
     -o-transition: left .3s, top .3s!important;
