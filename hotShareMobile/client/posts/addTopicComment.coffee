@@ -1,4 +1,6 @@
 if Meteor.isClient
+  Template.addTopicComment.rendered=->
+    Meteor.subscribe "topics"
   Template.addTopicComment.events
     "click #save":(event)->
        topicPostId = Session.get("TopicPostId")
