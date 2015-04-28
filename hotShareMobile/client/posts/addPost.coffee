@@ -733,7 +733,13 @@ if Meteor.isClient
         draftData = Drafts.find().fetch()
         draftId = draftData[0]._id;
         if Session.get('isReviewMode') is '2'
-          Posts.find({_id:draftId}).fetch()[0]
+          #Posts.find({_id:draftId}).fetch()[0]
+          post = Session.get("postContent")
+          draftTitles = {}
+          if post?
+            draftTitles.title = post.title
+            draftTitles.addontitle = post.addontitle
+          draftTitles
         else if Session.get('isReviewMode') is '1' or Session.get('isReviewMode') is '0' or Session.get('isReviewMode') is '3'
           draftTitles = SavedDrafts.find({_id:draftId}).fetch()[0]
           if !draftTitles?
