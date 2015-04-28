@@ -831,12 +831,13 @@ if Meteor.isClient
           PUB.toast('请粘贴需要引用的链接')
 
     'click #takephoto': ()->
-      window.footbarOppration = true
-      if window.takePhoto
-        window.takePhoto (result)->
-          console.log 'result from camera is ' + JSON.stringify(result)
-          if result
-            Drafts.insert {type:'image', currentCount:1, totalCount:1,isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
+      if Drafts.find().count() > 0
+        window.footbarOppration = true
+        if window.takePhoto
+          window.takePhoto (result)->
+            console.log 'result from camera is ' + JSON.stringify(result)
+            if result
+              Drafts.insert {type:'image', currentCount:1, totalCount:1,isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
 
     'click #addmore':->
       window.footbarOppration = true
