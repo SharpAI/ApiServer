@@ -1065,83 +1065,81 @@ if(Meteor.isServer){
 }
 
 if(Meteor.isClient){
-  if(Meteor.isClient){
-      var FOLLOWPOSTS_ITEMS_INCREMENT = 10;
-      var FEEDS_ITEMS_INCREMENT = 20;
-      Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
-      Session.setDefault('feedsitemsLimit', FEEDS_ITEMS_INCREMENT);
-      Session.setDefault('followPostsCollection','');
-      Session.setDefault('feedsCollection','');
-      var subscribeFollowPostsOnStop = function(err){
-          console.log('followPostsCollection ' + err);
-          Session.set('followPostsCollection','error');
-          Meteor.setTimeout(function(){
-              Session.set('followPostsCollection','loading');
-              Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'), {
-                  onStop: subscribeFollowPostsOnStop,
-                  onReady: function(){
-                      console.log('followPostsCollection loaded');
-                      Session.set('followPostsCollection','loaded');
-                  }
-              });
-          },2000);
-      };
-      var subscribeFeedsOnStop = function(err){
-          console.log('feedsCollection ' + err);
-          Session.set('feedsCollection','error');
-          Meteor.setTimeout(function(){
-              Session.set('feedsCollection','loading');
-              Meteor.subscribe('feeds', Session.get('feedsitemsLimit'), {
-                  onStop: subscribeFeedsOnStop,
-                  onReady: function(){
-                      console.log('feedsCollection loaded');
-                      Session.set('feedsCollection','loaded');
-                  }
-              });
-          },2000);
-      };
-      window.refreshMainDataSource = function(){
-        Meteor.subscribe('waitreadcount');
-        Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'), {
-            onStop: subscribeFollowPostsOnStop,
-            onReady: function(){
-                console.log('followPostsCollection loaded');
-                Session.set('followPostsCollection','loaded');
-            }
-        });
-        Meteor.subscribe('feeds', Session.get('feedsitemsLimit'), {
-            onStop: subscribeFeedsOnStop,
-            onReady: function(){
-                console.log('feedsCollection loaded');
-                Session.set('feedsCollection', 'loaded');
-            }
-        });
-      };
-      Deps.autorun(function() {
-        if (Meteor.user()) {
+  var FOLLOWPOSTS_ITEMS_INCREMENT = 10;
+  var FEEDS_ITEMS_INCREMENT = 20;
+  Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
+  Session.setDefault('feedsitemsLimit', FEEDS_ITEMS_INCREMENT);
+  Session.set('followPostsCollection','loading');
+  Session.set('feedsCollection','loading');
+  var subscribeFollowPostsOnStop = function(err){
+      console.log('followPostsCollection ' + err);
+      Session.set('followPostsCollection','error');
+      Meteor.setTimeout(function(){
+          Session.set('followPostsCollection','loading');
+          Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'), {
+              onStop: subscribeFollowPostsOnStop,
+              onReady: function(){
+                  console.log('followPostsCollection loaded');
+                  Session.set('followPostsCollection','loaded');
+              }
+          });
+      },2000);
+  };
+  var subscribeFeedsOnStop = function(err){
+      console.log('feedsCollection ' + err);
+      Session.set('feedsCollection','error');
+      Meteor.setTimeout(function(){
+          Session.set('feedsCollection','loading');
+          Meteor.subscribe('feeds', Session.get('feedsitemsLimit'), {
+              onStop: subscribeFeedsOnStop,
+              onReady: function(){
+                  console.log('feedsCollection loaded');
+                  Session.set('feedsCollection','loaded');
+              }
+          });
+      },2000);
+  };
+  window.refreshMainDataSource = function(){
+    Meteor.subscribe('waitreadcount');
+    Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'), {
+        onStop: subscribeFollowPostsOnStop,
+        onReady: function(){
+            console.log('followPostsCollection loaded');
+            Session.set('followPostsCollection','loaded');
+        }
+    });
+    Meteor.subscribe('feeds', Session.get('feedsitemsLimit'), {
+        onStop: subscribeFeedsOnStop,
+        onReady: function(){
+            console.log('feedsCollection loaded');
+            Session.set('feedsCollection', 'loaded');
+        }
+    });
+  };
+  Deps.autorun(function() {
+    if (Meteor.user()) {
+        if (Meteor.isCordova){
             console.log('Refresh Main Data Source when logon');
-            if (Meteor.isCordova){
-                window.refreshMainDataSource();
-            }
+            window.refreshMainDataSource();
             Meteor.setTimeout( function() {
                 Meteor.subscribe("follows");
                 Meteor.subscribe("follower");
             },3000);
-            var options = {
-                keepHistory: 1000 * 60 * 5,
-                localSearch: true
-            };
-            var fields = ['username', 'profile.fullname'];
-            FollowUsersSearch = new SearchSource('followusers', fields, options);
-            var topicsfields = ['text'];
-            TopicsSearch = new SearchSource('topics', topicsfields, options);
-          if(withChat) {
-              // 消息会话、最近联系人
-              Meteor.subscribe("msgSession");
-              //群信息
-              Meteor.subscribe("msgGroup");
-          }
         }
-      });
-  }
+        var options = {
+            keepHistory: 1000 * 60 * 5,
+            localSearch: true
+        };
+        var fields = ['username', 'profile.fullname'];
+        FollowUsersSearch = new SearchSource('followusers', fields, options);
+        var topicsfields = ['text'];
+        TopicsSearch = new SearchSource('topics', topicsfields, options);
+      if(withChat) {
+          // 消息会话、最近联系人
+          Meteor.subscribe("msgSession");
+          //群信息
+          Meteor.subscribe("msgGroup");
+      }
+    }
+  });
 }
