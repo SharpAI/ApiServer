@@ -20,7 +20,7 @@ if(Meteor.isClient){
   Newfriends = new Meteor.Collection("newfriends");
 }
 if(Meteor.isServer){
-  RefNames = new Mongo.Collection("refnames");
+  RefNames = new Meteor.Collection("refnames");
 }
 
 if(Meteor.isServer){
@@ -147,7 +147,7 @@ if(Meteor.isServer){
     if(this.userId === null)
       return [];
     else
-      return Posts.find({owner: this.userId});
+      return Posts.find({owner: this.userId},{sort: {createdAt: -1}});
   });
   Meteor.publish("followposts", function(limit) {
     if(this.userId === null || !Match.test(limit, Number))
@@ -247,7 +247,7 @@ if(Meteor.isServer){
     if(this.userId === null)
       return [];
     else
-      return SavedDrafts.find({owner: this.userId});
+      return SavedDrafts.find({owner: this.userId},{sort: {createdAt: -1}});
   });
   Meteor.publish("feeds", function(limit) {
     if(this.userId === null || !Match.test(limit, Number))
@@ -794,7 +794,7 @@ if(Meteor.isServer){
               recomments = ReComment.find({"postId": doc.postId}).fetch();
               for(item in recomments)
               {
-                  if(recomments[item].commentUserId!=undefined && recomments[item].commentUserId != userId && recomments[item].commentUserId != post.owner)
+                  if(recomments[item].commentUserId!==undefined && recomments[item].commentUserId !== userId && recomments[item].commentUserId !== post.owner)
                   {
                       Feeds.insert({
                           owner:userId,

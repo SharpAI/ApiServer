@@ -16,14 +16,7 @@ if Meteor.isClient
       else
         false
     items:()->
-      value = 0
-      count = SavedDrafts.find().count()
-      if count >=2
-        value = 1
-      else
-        value = count-1
-      for i in [0..value]
-        SavedDrafts.find({},{sort: {createdAt: -1}}).fetch()[i]
+      SavedDrafts.find({},{sort: {createdAt: -1},limit:2})
     postsCount:->
       Posts.find({owner: Meteor.userId()}).count()
     comparePostsCount:(value)->
@@ -32,14 +25,7 @@ if Meteor.isClient
       else
         false
     postItems:()->
-      value = 0
-      count = Posts.find({owner: Meteor.userId()}).count()
-      if count >= 4
-        value = 3
-      else
-        value = count-1
-      for i in [0..value]
-        Posts.find({owner: Meteor.userId()}, {sort: {createdAt: -1}}).fetch()[i]
+      Posts.find({owner: Meteor.userId()}, {sort: {createdAt: -1},limit:4})
     followCount:->
       Follower.find({"userId":Meteor.userId()}).count()
     getmainImage:()->
