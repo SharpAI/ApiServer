@@ -609,8 +609,8 @@ if Meteor.isClient
         pub=[]
         title = $("#title").val()
         console.log "title = " + title
-        if title is ''
-          title = '[空标题]'
+        #if title is ''
+        #  title = '[空标题]'
 #        if title is ''
 #          window.plugins.toast.showShortBottom('请为您的故事加个标题')
 #          return
@@ -738,8 +738,11 @@ if Meteor.isClient
           draftTitles = SavedDrafts.find({_id:draftId}).fetch()[0]
           if !draftTitles?
             draftTitles = {}
-            draftTitles.title = Session.get 'draftTitle'
-            draftTitles.addontitle = Session.get 'draftAddontitle'
+            #draftTitles.title = Session.get 'draftTitle'
+            #draftTitles.addontitle = Session.get 'draftAddontitle'
+            draftTitles.title = $("#title").val()
+            draftTitles.addontitle = $("#addontitle").val()
+            console.log("draftTitles.title="+draftTitles.title+", draftTitles.addontitle="+draftTitles.addontitle);
           draftTitles 
     mainImage:->
       Meteor.setTimeout ->
