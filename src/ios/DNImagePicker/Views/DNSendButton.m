@@ -10,7 +10,7 @@
 #import "UIView+DNImagePicker.h"
 #import "UIColor+Hex.h"
 #define kSendButtonFont  [UIFont systemFontOfSize:15]
-static NSString *const dnSendButtonTintNormalColor = @"#1FB823";
+static NSString *const dnSendButtonTintNormalColor = @"#00BFFF";
 //static NSString *const dnSendButtonTintAbnormalColor = @"#C9DCCA";
 static NSString *const dnSendButtonTintAbnormalColor = @"#C9EFCA";
 

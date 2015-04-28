@@ -111,7 +111,7 @@
     
     [self addConstraints:@[checkConstraitRight,checkConstraitTop,chekBtViewConsraintWidth,chekBtViewConsraintHeight]];
     
-    NSDictionary *checkImageViewMetric = @{@"sideLength":@25};
+    NSDictionary *checkImageViewMetric = @{@"sideLength":@32};
     NSString *checkImageViewVFLH = @"H:[_checkImageView(sideLength)]-3-|";
     NSString *checkImageVIewVFLV = @"V:|-3-[_checkImageView(sideLength)]";
     NSArray *checkImageConstraintsH = [NSLayoutConstraint constraintsWithVisualFormat:checkImageViewVFLH options:0 metrics:checkImageViewMetric views:NSDictionaryOfVariableBindings(_checkImageView)];
