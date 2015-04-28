@@ -238,10 +238,10 @@ public class PhotoSelectorActivity extends Activity implements
 
 	/** 完成 */
 	private void ok() {
-		progress.show();
 		if (selected.isEmpty()) {
 			setResult(RESULT_CANCELED);
 		} else {
+			progress.show();
 			new ResizeImagesTask().execute(selected);
 			/*
 			Intent data = new Intent();
