@@ -282,7 +282,7 @@ if (Meteor.isCordova){
                   callback(null);
               }
           }, {
-            maximumImagesCount: 6,
+            maximumImagesCount: 1,
             width: ImageWidth,
             height: ImageHeight,
             quality: ImageQuality,
