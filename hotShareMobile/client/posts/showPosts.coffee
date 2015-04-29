@@ -271,7 +271,7 @@ if Meteor.isClient
         .forEach (drafts)->
           Drafts.remove drafts._id
       #Prepare data from post
-      draft0 = {_id:this._id, type:'image', isImage:true, owner: Meteor.userId(), imgUrl:this.mainImage, filename:this.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0}
+      draft0 = {_id:this._id, type:'image', isImage:true, owner: Meteor.userId(), imgUrl:this.mainImage, filename:this.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0,style:this.mainImageStyle}
       Drafts.insert(draft0)
       pub = this.pub;
       if pub.length > 0
