@@ -5,6 +5,8 @@ if Meteor.isClient
     postTitle:->
       Session.get("postContent").title
   Template.reportPost.events
+    'click .back': (event)->
+       history.back()
     "click #save":(event)->
        reportPostId = Session.get("postContent")._id
        reportPostOwner = Session.get("postContent").ownerName
