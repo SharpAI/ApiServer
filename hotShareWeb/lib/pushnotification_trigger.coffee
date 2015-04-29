@@ -32,6 +32,13 @@ if Meteor.isServer
         postId: doc.postId
       }
       toUserId = doc.followby
+    else if type == "getrequest"
+      content = doc.requester + '邀请您加为好友!'
+      extras = {
+        type: "getrequest"
+        requesterId: doc.requesterId
+      }
+      toUserId = doc.followby
     else if type == "newpost"
       content = doc.ownerName + '发布了新故事:\n《' + doc.title + '》'
       extras = {

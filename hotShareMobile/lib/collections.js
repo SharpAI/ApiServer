@@ -689,6 +689,12 @@ if(Meteor.isServer){
         if(Feeds.findOne({requesteeId:doc.requesteeId,requesterId:doc.requesterId,followby:doc.followby})){
             return false;
         }
+        if(doc.eventType === 'getrequest')
+        {
+            Meteor.defer(function(){
+                pushnotification("getrequest",doc,doc.followby);
+            });
+        }
         return true;
       }
     }
