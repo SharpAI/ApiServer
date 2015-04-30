@@ -34,9 +34,9 @@
       {{#if compareViewsCount 0}}
         <div class="postImages">
           <ul>
-            {{#each viewItems}}
-              {{#if _id}}
-                <li id="{{_id}}">
+            {{#each viewLists}}
+              {{#if postId}}
+                <li id="{{postId}}">
                   <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
                   <h4 class="title">
                      {{title}}

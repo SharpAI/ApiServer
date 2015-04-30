@@ -18,6 +18,7 @@ MsgGroup = new Meteor.Collection('msggroup');
 Meets = new Meteor.Collection('meets');
 if(Meteor.isClient){
   Newfriends = new Meteor.Collection("newfriends");
+  ViewLists = new Meteor.Collection("viewlists");
 }
 if(Meteor.isServer){
   RefNames = new Meteor.Collection("refnames");
@@ -25,6 +26,51 @@ if(Meteor.isServer){
 
 if(Meteor.isServer){
   Rnd = 0;
+  Meteor.publish("viewlists", function (userId, viewerId) {
+    if(this.userId === null || !Match.test(viewerId, String))
+      return [];
+    else{
+      var self = this;
+      var count = 0;
+      var handle = Viewers.find({userId: viewerId},{sort:{createdAt: -1}}).observeChanges({
+        added: function (id,fields) {
+          if (count<3)
+          {
+            var viewItem = Posts.findOne({"_id":fields.postId});
+            if(viewItem)
+            {
+              fields.mainImage = viewItem.mainImage;
+              fields.title = viewItem.title;
+              try{
+                self.added("viewlists", id, fields);
+                count++;
+              }catch(error){
+              }
+            }
+          }
+        },
+        changed: function (id,fields) {
+          try{
+            self.changed("viewlists", id, fields);
+          }catch(error){
+          }
+        },
+        removed: function (id) {
+          try{
+            self.removed("viewlists", id);
+            count--;
+          }catch(error){
+          }
+        }
+      });
+
+      self.ready();
+
+      self.onStop(function () {
+        handle.stop();
+      });
+    }
+  });
   Meteor.publish("newfriends", function (userId,postId) {
     if(this.userId === null || !Match.test(postId, String))
       return [];

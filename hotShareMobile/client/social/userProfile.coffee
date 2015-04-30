@@ -1,5 +1,6 @@
 if Meteor.isClient
   Template.userProfile.rendered=->
+    Meteor.subscribe "viewlists", Meteor.userId(),Session.get("ProfileUserId")
     $('.userProfile').css('min-height',$(window).height()-90)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
     document.body.scrollTop = document.body.scrollHeight
@@ -25,6 +26,8 @@ if Meteor.isClient
         true
       else
         false
+    viewLists:()->
+      ViewLists.find({userId:Session.get("ProfileUserId")},{sort: {createdAt: -1}, limit:3})
     viewItems:()->
       value = 0
       count = Viewers.find({userId:Session.get("ProfileUserId")},{sort: {createdAt: -1}, limit:3}).count()
