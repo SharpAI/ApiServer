@@ -243,7 +243,7 @@ if (Meteor.isCordova){
               var filename = Meteor.userId()+'_'+timestamp+'.jpg';
               console.log('File name ' + filename);
               //uploadToS3(filename,results[i],callback);
-              uploadToBCS(filename,s,callback);
+              uploadToAliyun(filename,s,callback);
           }, function(s){
               console.info(s);
           }, {
@@ -274,7 +274,7 @@ if (Meteor.isCordova){
               var filename = Meteor.userId()+'_'+timestamp+ '_' + originalFilename;
               console.log('File name ' + filename);
               //uploadToS3(filename,results[i],callback);
-              uploadToBCS(filename,results[i],callback);
+              uploadToAliyun(filename,results[i],callback);
             }
           }, function (error){
               console.log('Pick Image Error ' + error);
