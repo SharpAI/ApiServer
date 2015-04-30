@@ -20,7 +20,7 @@ Accounts.onLogin(()->
   Meteor.setTimeout ()->
     console.log("Accounts.onLogin")
     window.BMap_loadScriptTime = (new Date).getTime()
-    url = "http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js&ip=115.239.210.27"
+    url = "http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js"
     $.getScript url, (data, textStatus, jqxhr)->
       console.log 'status is ' + textStatus
       address = ''
