@@ -300,7 +300,8 @@ if Meteor.isClient
 
     initToolBar = (node, grid)->
       #console.log 'Added node id is ' + node.id
-      type = node.$blaze_range.view.parentView.dataVar.curValue.type
+      insertedObj = node.$blaze_range.view.parentView.dataVar.curValue
+      type = insertedObj.type
       if type == "text"
           if grid != undefined
             if window.unSelectedElem
@@ -308,6 +309,8 @@ if Meteor.isClient
               window.unSelectedElem = undefined
               console.log('Selected data-row is ' + insert_row)
               grid.add_widget(node, 6, 1, 1, insert_row)
+            else if insertedObj.toTheEnd
+              grid.add_widget(node, 6, 1, 1)
             else
               max_row = 1
               middle = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)/2
@@ -359,7 +362,9 @@ if Meteor.isClient
               gridster.resize_widget(resizeItem, sizex,sizey)
               console.log('propertychange sizey:'+ sizey + 'height:' +height + 'scrollHeight:'+this.scrollHeight)
           )
-
+          text = insertedObj.text
+          if text and text isnt ''
+            $('#'+node.id+'TextArea').trigger('keyup')
       else if type == "image"
           if grid != undefined
             if Session.get('NewImgAdd') is 'true'
@@ -402,6 +407,8 @@ if Meteor.isClient
               if currentCount >= totalCount
                 window.unSelectedElem = undefined
               grid.add_widget(node, insert_sizex, insert_sizey, insert_col, insert_row)
+            else if insertedObj.toTheEnd
+              grid.add_widget(node, 3, 3)
             else
               max_row = 1
               middle = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)/2
@@ -783,6 +790,7 @@ if Meteor.isClient
         imgUrl:mainImageUrl,
         filename:null,
         URI:mainImageUrl,
+        toTheEnd: true,
         data_row:'1',
         data_col:'3',
         data_sizex:'6',
@@ -834,7 +842,16 @@ if Meteor.isClient
                     if url
                       insertLink(data,url)
                     else
-                      insertLink(data,null)
+                      uri = encodeURIComponent(inputUrl)
+                      console.log('INPUT URL is ' + uri)
+                      $.getJSON('http://api.diffbot.com/v3/article?token=e7a1a3da726c7283979912330cfbc39a&url='+uri,(data)->
+                        if data and data.title
+                          $("#title").val(data.title)
+                        if data and data.objects and data.objects[0]
+                          text = data.objects[0].text
+                          if text isnt ''
+                            Drafts.insert {type:'text', toTheEnd:true ,isImage:false, owner: Meteor.userId(), text:text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+                      )
           commentBox.close()
         else
           PUB.toast('请粘贴需要引用的链接')
