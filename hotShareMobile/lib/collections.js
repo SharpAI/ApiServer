@@ -131,11 +131,15 @@ if(Meteor.isServer){
                  var meetItem = Meets.findOne({_id:id});
                  if(meetItem.me === userId && meetItem.ta !== userId)
                  {
-                   fields.me = meetItem.me;
-                   fields.ta = meetItem.ta;
-                   fields.count = meetItem.count;
-                   self.added("newfriends", id, fields);
-                   count++;
+                   var fcount = Follower.find({"userId":meetItem.me,"followerId":meetItem.ta}).count();
+                   if(fcount === 0)
+                   {
+                     fields.me = meetItem.me;
+                     fields.ta = meetItem.ta;
+                     fields.count = meetItem.count;
+                     self.added("newfriends", id, fields);
+                     count++;
+                   }
                  }
                }
              };
