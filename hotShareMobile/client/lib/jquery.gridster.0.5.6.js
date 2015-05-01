@@ -570,7 +570,7 @@
         this.pointer_events = {
             start: this.nsEvent('touchstart') + ' ' + this.nsEvent('mousedown'),
             move: this.nsEvent('touchmove') + ' ' + this.nsEvent('mousemove'),
-            end: this.nsEvent('touchend') + ' ' + this.nsEvent('mouseup'),
+            end: this.nsEvent('touchend') + ' ' + this.nsEvent('mouseup') + ' ' + this.nsEvent('touchcancel')
         };
 
         this.$container.on(this.nsEvent('selectstart'),
@@ -2303,7 +2303,7 @@
     */
     fn.on_stop_resize = function(event, ui) {
         if(this.$resized_widget.hasClass('pressed') == false) {
-            return;
+            //return;
         }
         this.$resized_widget
             .css({
