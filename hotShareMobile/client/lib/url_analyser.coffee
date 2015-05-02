@@ -10,7 +10,7 @@ if Meteor.isClient
       if height >= 200 and width >= 200
         console.log 'This image can be used ' + imageArray[imageCounter] + ' width is ' + width + ' height is ' + height
         callback imageArray[imageCounter],width,height
-      else if ++imageCounter < imageArray.length
+      if ++imageCounter < imageArray.length
         imageResolver.src = imageArray[imageCounter]
       else
         callback null,0,0
