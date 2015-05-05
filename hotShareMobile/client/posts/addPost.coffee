@@ -364,7 +364,9 @@ if Meteor.isClient
           )
           text = insertedObj.text
           if text and text isnt ''
-            $('#'+node.id+'TextArea').trigger('keyup')
+            Meteor.setTimeout ()->
+              $('#'+node.id+'TextArea').trigger('keyup')
+            ,1000
       else if type == "image"
           if grid != undefined
             if Session.get('NewImgAdd') is 'true'
