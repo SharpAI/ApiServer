@@ -1,6 +1,7 @@
 if Meteor.isClient
   @seekSuitableImageFromArray = (imageArray,callback)->
     @imageCounter = 0
+    @foundImages = 0
     unless @imageResolver
       @imageResolver = new Image()
     imageResolver.onload = ->
@@ -9,23 +10,27 @@ if Meteor.isClient
       console.log imageArray[imageCounter] + ' width is ' + width + ' height is ' + height
       if height >= 200 and width >= 200
         console.log 'This image can be used ' + imageArray[imageCounter] + ' width is ' + width + ' height is ' + height
-        callback imageArray[imageCounter],width,height
+        callback imageArray[imageCounter],width,height, ++foundImages,imageCounter,imageArray.length
       if ++imageCounter < imageArray.length
         imageResolver.src = imageArray[imageCounter]
       else
-        callback null,0,0
+        callback null,0,0,foundImages,imageCounter,imageArray.length
     imageResolver.onerror = ->
       console.log 'image resolve url got error'
       if ++imageCounter < imageArray.length
         imageResolver.src = imageArray[imageCounter]
       else
-        callback null,0,0
+        callback null,0,0,foundImages,imageCounter,imageArray.length
     imageResolver.src = imageArray[imageCounter]
   @analyseUrl = (url,callback)->
     @iabRef = window.open(url, '_blank', 'hidden=yes')
     iabRef.addEventListener 'loadstop', ()->
       console.log 'load stop'
       getImagesListFromUrl(iabRef,url,callback)
+    iabRef.addEventListener 'loaderror', ()->
+      console.log 'load error'
+      if callback
+        callback(null,0,0)
   @reAnalyseUrl = (url,callback)->
     unless iabRef
       callback(null,0,0)
@@ -48,11 +53,11 @@ if Meteor.isClient
         if imageUrl and imageUrl.startsWith("http")
           imageArray.push imageUrl
     if imageArray.length > 0
-      seekSuitableImageFromArray imageArray,(url,w,h)->
+      seekSuitableImageFromArray imageArray,(url,w,h,found,index,length)->
         if url
-          callback(url,w,h)
+          callback(url,w,h,found,index,length)
         else
-          callback(null,0,0)
+          callback(null,0,0,found,index,length)
   getImagesListFromUrl = (inappBrowser,url,callback)->
     inappBrowser.executeScript {code: '
       var bgImages = [];
@@ -89,7 +94,11 @@ if Meteor.isClient
       if(location.host){
         returnJson["host"] = location.host;
       }
+      if(document.body){
+        returnJson["body"] = document.body.innerHTML;
+        returnJson["bodyLength"] = document.body.innerHTML;
+      }
       returnJson;'}
     ,(data)->
-      console.log 'return Image Src is ' + JSON.stringify(data)
+      console.log 'return Image Src is ' + JSON.stringify(data[0].imageArray)
       callback(data[0])

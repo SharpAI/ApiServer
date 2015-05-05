@@ -779,24 +779,28 @@ if Meteor.isClient
       if Drafts.find({type:'text'}).count() > 1
         for i in [1..(Drafts.find({type:'text'}).count()-1)]
           Drafts.find({type:'text'}).fetch()[i]
-  insertLink = (linkInfo,mainImageUrl)->
+  insertLink = (linkInfo,mainImageUrl,found)->
     if mainImageUrl
-      Drafts.insert {
-        type:'image',
-        isImage:true,
-        siteTitle:linkInfo.title,
-        siteHost:linkInfo.host,
-        owner: Meteor.userId(),
-        imgUrl:mainImageUrl,
-        filename:null,
-        URI:mainImageUrl,
-        toTheEnd: true,
-        data_row:'1',
-        data_col:'3',
-        data_sizex:'6',
-        data_sizey:'5'}
-      #if data.title
-      #Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:data.title, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+      if Drafts.find({type:'image'}).count() > 0 and found is 1
+        mainImageDoc = Drafts.find({type:'image'}).fetch()[0]
+        Drafts.update({_id: mainImageDoc._id}, {$set: {imgUrl:mainImageUrl, filename:'', URI:mainImageUrl }});
+      else
+        Drafts.insert {
+          type:'image',
+          isImage:true,
+          siteTitle:linkInfo.title,
+          siteHost:linkInfo.host,
+          owner: Meteor.userId(),
+          imgUrl:mainImageUrl,
+          filename:null,
+          URI:mainImageUrl,
+          toTheEnd: true,
+          data_row:'1',
+          data_col:'3',
+          data_sizex:'6',
+          data_sizey:'5'}
+        #if data.title
+        #Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:data.title, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
 
   Template.addPost.events
     'beUnSelected .resortitem': (e)->
@@ -831,27 +835,57 @@ if Meteor.isClient
       $('.linkInputBox #insertLink').on 'click',()->
         console.log $('.linkInputBox #linkToBeInserted').val()
         inputUrl = $('.linkInputBox #linkToBeInserted').val()
+        processReadableText=(data)->
+          documentBody = $.parseHTML( data.body )
+          documentBody.innerHTML = data.body
+          documentBody.innerHTML.length = data.bodyLength
+          extracted = extract(documentBody)
+          fullText = $(extracted).text()
+          toDisplay = fullText.substring(0, 200)
+          console.log 'Extracted is ' + toDisplay
+          if toDisplay and toDisplay isnt ''
+            toDisplay += '...'
+            Drafts.insert {type:'text', toTheEnd:true ,isImage:false, owner: Meteor.userId(), text:toDisplay, fullText:fullText,style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+          if data.title
+            console.log 'Title is ' + data.title
+            Meteor.setTimeout ()->
+              $('#title').val(data.title)
+            ,3000
+        # the logic is not straight forward here.
+        # AnalyseUrl return the possible image array from inAppBrowser, but there's chance the loading is not complete
+        # so we need reAnalyseUrl which will not load inAppBrowser again but just reAnalyse the URI.
         if inputUrl && inputUrl isnt ''
           analyseUrl inputUrl,(data)->
-            processInAppInjectionData data,(url,w,h)->
+            if data is null
+              console.log('AnalyseUrl error, need add error notification')
+              return
+            processInAppInjectionData data,(url,w,h,found,index,total)->
+              console.log 'found ' + found + ' index ' + index + ' total ' + total + ' url ' + url
               if url
-                insertLink(data,url)
-              else
-                reAnalyseUrl inputUrl,(data)->
-                  processInAppInjectionData data,(url,w,h)->
-                    if url
-                      insertLink(data,url)
-                    else
-                      uri = encodeURIComponent(inputUrl)
-                      console.log('INPUT URL is ' + uri)
-                      $.getJSON('http://api.diffbot.com/v3/article?token=e7a1a3da726c7283979912330cfbc39a&url='+uri,(data)->
-                        if data and data.title
-                          $("#title").val(data.title)
-                        if data and data.objects and data.objects[0]
-                          text = data.objects[0].text
-                          if text isnt ''
-                            Drafts.insert {type:'text', toTheEnd:true ,isImage:false, owner: Meteor.userId(), text:text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
-                      )
+                insertLink(data,url,found)
+              else if index is total
+                if found is 0
+                  reAnalyseUrl inputUrl,(data)->
+                    processInAppInjectionData data,(url,w,h,found,index,total)->
+                      console.log 'found ' + found + ' index ' + index + ' total ' + total + ' url ' + url
+                      if url
+                        insertLink(data,url,found)
+                      else
+                        processReadableText(data)
+                else
+                  processReadableText(data)
+          ###
+          uri = encodeURIComponent(inputUrl)
+          console.log('INPUT URL is ' + uri)
+          $.getJSON('http://api.diffbot.com/v3/article?token=e7a1a3da726c7283979912330cfbc39a&url='+uri,(data)->
+            if data and data.title
+              $("#title").val(data.title)
+            if data and data.objects and data.objects[0]
+              text = data.objects[0].text
+              if text isnt ''
+                Drafts.insert {type:'text', toTheEnd:true ,isImage:false, owner: Meteor.userId(), text:text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+          )
+          ###
           commentBox.close()
         else
           PUB.toast('请粘贴需要引用的链接')
