@@ -174,7 +174,15 @@ if Meteor.isClient
       return false
     isMobile:->
       Meteor.isCordova
+    haveUrl:->
+      if Session.get("postContent").fromUrl is undefined  or Session.get("postContent").fromUrl is ''
+        false
+      else
+        true
   Template.showPosts.events
+    'click #ViewOnWeb' :->
+      if Session.get("postContent").fromUrl
+        window.open(Session.get("postContent").fromUrl, '_system', '');
     'click .user':->
       Session.set("ProfileUserId", this.owner)
       Meteor.subscribe("userinfo", this.owner)
@@ -271,7 +279,7 @@ if Meteor.isClient
         .forEach (drafts)->
           Drafts.remove drafts._id
       #Prepare data from post
-      draft0 = {_id:this._id, type:'image', isImage:true, owner: Meteor.userId(), imgUrl:this.mainImage, filename:this.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0}
+      draft0 = {_id:this._id, type:'image', isImage:true, owner: Meteor.userId(), imgUrl:this.mainImage, filename:this.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0,style:this.mainImageStyle}
       Drafts.insert(draft0)
       pub = this.pub;
       if pub.length > 0

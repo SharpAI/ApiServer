@@ -779,11 +779,11 @@ if Meteor.isClient
       if Drafts.find({type:'text'}).count() > 1
         for i in [1..(Drafts.find({type:'text'}).count()-1)]
           Drafts.find({type:'text'}).fetch()[i]
-  insertLink = (linkInfo,mainImageUrl,found)->
+  insertLink = (linkInfo,mainImageUrl,found,inputUrl)->
     if mainImageUrl
       if Drafts.find({type:'image'}).count() > 0 and found is 1
         mainImageDoc = Drafts.find({type:'image'}).fetch()[0]
-        Drafts.update({_id: mainImageDoc._id}, {$set: {imgUrl:mainImageUrl, filename:'', URI:mainImageUrl }});
+        Drafts.update({_id: mainImageDoc._id}, {$set: {imgUrl:mainImageUrl, filename:'', URI:mainImageUrl,url:inputUrl }});
       else
         Drafts.insert {
           type:'image',
@@ -794,6 +794,7 @@ if Meteor.isClient
           imgUrl:mainImageUrl,
           filename:null,
           URI:mainImageUrl,
+          url:inputUrl
           toTheEnd: true,
           data_row:'1',
           data_col:'3',
@@ -862,14 +863,14 @@ if Meteor.isClient
             processInAppInjectionData data,(url,w,h,found,index,total)->
               console.log 'found ' + found + ' index ' + index + ' total ' + total + ' url ' + url
               if url
-                insertLink(data,url,found)
+                insertLink(data,url,found,inputUrl)
               else if index is total
                 if found is 0
                   reAnalyseUrl inputUrl,(data)->
                     processInAppInjectionData data,(url,w,h,found,index,total)->
                       console.log 'found ' + found + ' index ' + index + ' total ' + total + ' url ' + url
                       if url
-                        insertLink(data,url,found)
+                        insertLink(data,url,found,inputUrl)
                       else
                         processReadableText(data)
                 else
@@ -1102,6 +1103,7 @@ if Meteor.isClient
           ownerIcon = '/userPicture.png'
         draftData = Drafts.find().fetch()
         postId = draftData[0]._id;
+        fromUrl = draftData[0].url;
 
         #Save gridster layout first. If publish failed, we can recover the drafts
         for i in [0..(draftData.length-1)]
@@ -1193,6 +1195,7 @@ if Meteor.isClient
                       mainImage: mainImage,
                       mainImageStyle:mainImageStyle,
                       mainText: mainText,
+                      fromUrl: fromUrl,
                       owner:Meteor.userId(),
                       ownerName:ownerName,
                       ownerIcon:ownerIcon,
@@ -1214,6 +1217,7 @@ if Meteor.isClient
                   mainImage: mainImage,
                   mainImageStyle:mainImageStyle,
                   mainText: mainText,
+                  fromUrl: fromUrl,
                   owner:Meteor.userId(),
                   ownerName:ownerName,
                   ownerIcon:ownerIcon,
