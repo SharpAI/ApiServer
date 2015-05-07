@@ -839,21 +839,26 @@ if Meteor.isClient
         console.log $('.linkInputBox #linkToBeInserted').val()
         inputUrl = $('.linkInputBox #linkToBeInserted').val()
         processReadableText=(data)->
-          documentBody = $.parseHTML( data.body )
-          documentBody.innerHTML = data.body
-          documentBody.innerHTML.length = data.bodyLength
-          extracted = extract(documentBody)
-          fullText = $(extracted).text()
-          toDisplay = fullText.substring(0, 200)
-          console.log 'Extracted is ' + toDisplay
-          if toDisplay and toDisplay isnt ''
-            toDisplay += '...'
-            Drafts.insert {type:'text', toTheEnd:true ,isImage:false, owner: Meteor.userId(), text:toDisplay, fullText:fullText,style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+          fullText = ''
+          if data.fullText
+            fullText = data.fullText
+          else
+            documentBody = $.parseHTML( data.body )
+            documentBody.innerHTML = data.body
+            documentBody.innerHTML.length = data.bodyLength
+            extracted = extract(documentBody)
+            fullText = $(extracted).text()
+            console.log 'Extracted is ' + toDisplay
+          if fullText and fullText isnt ''
+            toDisplay = fullText.substring(0, 200)
+            toDisplay += ' ...'
+            Drafts.insert {type:'text', toTheEnd:true ,isImage:false, owner: Meteor.userId(), text:toDisplay, fullText:fullText, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
           if data.title
             console.log 'Title is ' + data.title
             Meteor.setTimeout ()->
               $('#title').val(data.title)
-            ,3000
+              $('#addontitle').val(data.host)
+            ,2000
         # the logic is not straight forward here.
         # AnalyseUrl return the possible image array from inAppBrowser, but there's chance the loading is not complete
         # so we need reAnalyseUrl which will not load inAppBrowser again but just reAnalyse the URI.

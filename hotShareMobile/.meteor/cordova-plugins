@@ -13,4 +13,4 @@ org.apache.cordova.device@0.2.12
 org.apache.cordova.device-motion@0.2.11
 org.apache.cordova.dialogs@0.2.10
 org.apache.cordova.file@1.3.1
-org.apache.cordova.inappbrowser@0.5.4
+org.apache.cordova.inappbrowser@https://github.com/solderzzc/cordova-plugin-inappbrowser/tarball/8073560f0954cf9dcb2dc31d5ed1b95af3376295
