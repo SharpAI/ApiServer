@@ -8,6 +8,7 @@ App.info({
   website: ''
 });
 
+App.setPreference('KeyboardDisplayRequiresUserAction', false);
 App.setPreference('StatusBarOverlaysWebView', false);
 App.setPreference('orientation', 'portrait');
 App.setPreference('StatusBarBackgroundColor', '#000000');
