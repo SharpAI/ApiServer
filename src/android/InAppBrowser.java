@@ -69,6 +69,7 @@ public class InAppBrowser extends CordovaPlugin {
     private static final String SELF = "_self";
     private static final String SYSTEM = "_system";
     // private static final String BLANK = "_blank";
+    private static final String IMPORT_EVENT = "import";
     private static final String EXIT_EVENT = "exit";
     private static final String LOCATION = "location";
     private static final String HIDDEN = "hidden";
@@ -157,7 +158,7 @@ public class InAppBrowser extends CordovaPlugin {
             });
         }
         else if (action.equals("close")) {
-            closeDialog("");
+            closeDialog();
         }
         else if (action.equals("injectScriptCode")) {
             String jsWrapper = null;
@@ -215,7 +216,7 @@ public class InAppBrowser extends CordovaPlugin {
      */
     @Override
     public void onReset() {
-        closeDialog("");        
+        closeDialog();        
     }
     
     /**
@@ -223,7 +224,7 @@ public class InAppBrowser extends CordovaPlugin {
      * Stop listener.
      */
     public void onDestroy() {
-        closeDialog("");
+        closeDialog();
     }
     
     /**
@@ -323,7 +324,7 @@ public class InAppBrowser extends CordovaPlugin {
     /**
      * Closes the dialog
      */
-    public void closeDialog(String importUrl) {
+    public void closeDialog() {
         final WebView childView = this.inAppWebView;
         // The JS protects against multiple calls, so this should happen only when
         // closeDialog() is called by other native code.
@@ -351,13 +352,26 @@ public class InAppBrowser extends CordovaPlugin {
         try {
             JSONObject obj = new JSONObject();
             obj.put("type", EXIT_EVENT);
-            obj.put("url", importUrl);
             sendUpdate(obj, false);
         } catch (JSONException ex) {
             Log.d(LOG_TAG, "Should never happen");
         }
     }
 
+    private void importUrl() {
+    	String url = edittext.getText().toString();
+    	if(url.length()==0)
+    		return;
+    	dialog.hide();
+        try {
+            JSONObject obj = new JSONObject();
+            obj.put("type", IMPORT_EVENT);
+            obj.put("url", url);
+            sendUpdate(obj, false);
+        } catch (JSONException ex) {
+            Log.d(LOG_TAG, "Should never happen");
+        }
+    }
     /**
      * Checks to see if it is possible to go back one page in history, then does so.
      */
@@ -589,7 +603,8 @@ public class InAppBrowser extends CordovaPlugin {
                 }
                 close.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
-                        closeDialog(edittext.getText().toString());
+                    	dialog.hide();
+                        //closeDialog();
                     }
                 });
 
@@ -603,7 +618,7 @@ public class InAppBrowser extends CordovaPlugin {
                 importBtn.setText("导入");
                 importBtn.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
-                    	closeDialog("");
+                    	importUrl();
                     }
                 });
 
