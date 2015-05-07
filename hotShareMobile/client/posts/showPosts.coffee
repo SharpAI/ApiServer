@@ -174,7 +174,15 @@ if Meteor.isClient
       return false
     isMobile:->
       Meteor.isCordova
+    haveUrl:->
+      if Session.get("postContent").fromUrl is undefined  or Session.get("postContent").fromUrl is ''
+        false
+      else
+        true
   Template.showPosts.events
+    'click #ViewOnWeb' :->
+      if Session.get("postContent").fromUrl
+        window.open(Session.get("postContent").fromUrl, '_blank', '');
     'click .user':->
       Session.set("ProfileUserId", this.owner)
       Meteor.subscribe("userinfo", this.owner)
