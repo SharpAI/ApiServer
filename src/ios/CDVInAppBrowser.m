@@ -281,14 +281,36 @@
 
 - (void)injectScriptCode:(CDVInvokedUrlCommand*)command
 {
+    CDVPluginResult* pluginResult = nil;
+    if ((command.callbackId != nil) && ![command.callbackId isEqualToString:@"INVALID"]) {
+        NSString* innerHTML = [self.inAppBrowserViewController.webView stringByEvaluatingJavaScriptFromString:@"document.body.innerHTML"];
+        NSString* title = [self.inAppBrowserViewController.webView stringByEvaluatingJavaScriptFromString:@"document.title"];
+        NSString* host = [self.inAppBrowserViewController.webView stringByEvaluatingJavaScriptFromString:@"location.host"];
+        if (innerHTML == nil) {
+            innerHTML = @"";
+        }
+        if (title == nil) {
+            title = @"";
+        }
+        if (host == nil) {
+            host = @"";
+        }
+        NSLog(@"returnJSON is %@",innerHTML);
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"body":innerHTML,@"title":title,@"host":host}];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId ];
+    }
+}
+ /*
+- (void)injectScriptCode:(CDVInvokedUrlCommand*)command
+{
     NSString* jsWrapper = nil;
 
     if ((command.callbackId != nil) && ![command.callbackId isEqualToString:@"INVALID"]) {
         jsWrapper = [NSString stringWithFormat:@"_cdvIframeBridge.src='gap-iab://%@/'+encodeURIComponent(JSON.stringify([eval(%%@)]));", command.callbackId];
     }
     [self injectDeferredObject:[command argumentAtIndex:0] withWrapper:jsWrapper];
-}
-
+ }
+ */
 - (void)injectScriptFile:(CDVInvokedUrlCommand*)command
 {
     NSString* jsWrapper;
