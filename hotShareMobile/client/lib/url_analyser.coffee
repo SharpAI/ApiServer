@@ -63,65 +63,8 @@ if Meteor.isClient
           callback(null,0,0,found,index,length)
   getImagesListFromUrl = (inappBrowser,url,callback)->
     inappBrowser.executeScript {
-        code: 'document.body.innerHTML'}
-    ,(data)->
-      data.bgArray = []
-      data.imageArray = []
-      documentBody = $.parseHTML( data.body )
-      documentBody.innerHTML = data.body
-      extracted = extract(documentBody)
-      data.fullText = $(extracted).text()
-      #toDisplay = fullText.substring(0, 200)
-      console.log 'FullText is ' + data.fullText
-      $(documentBody).find('img').each ()->
-        console.log 'this ' + $(this).attr('src')
-        data.imageArray.push $(this).attr('src')
-      $(documentBody).find('div').each ()->
-        bg_url = $(this).css('background-image')
-        # ^ Either "none" or url("...urlhere..")
-        if bg_url and bg_url isnt ''
-          bg_url = /^url\((['"]?)(.*)\1\)$/.exec(bg_url)
-          # If matched, retrieve url, otherwise ""
-          if bg_url
-            bg_url =  bg_url[2]
-            console.log 'got url ' + bg_url
-            data.bgArray.push bg_url
-      console.log 'title is ' + data.title + ' host is ' + data.host
-      callback data
-
-  #callback(data[0])
-  getImagesListFromUrlOld = (inappBrowser,url,callback)->
-    inappBrowser.executeScript {
-      code: '
-        function toBeRun(){
-          var bgImages = [];
-          var elements = document.getElementsByTagName("div");
-          var bgIm;
-          var images = document.getElementsByTagName("img");
-          var imgSrc = [];
+        code: '
           var returnJson = {};
-          function getStyle(x, styleProp) {
-            if (x.currentStyle) var y = x.currentStyle[styleProp];
-            else if (window.getComputedStyle) var y = document.defaultView.getComputedStyle(x, null).getPropertyValue(styleProp);
-            return y;
-          }
-          for (var i = 0;i<elements.length;i++) {
-            bgIm = getStyle(elements[i], "background-image");
-            if (bgIm && bgIm !== "none") {
-              bgImages.push(bgIm);
-            }
-          }
-          if(bgImages.length>0){
-            returnJson["bgArray"] = bgImages;
-          }
-          for (var i = 0; i < images.length; i++) {
-            if(images[i].src && images[i].src !==""){
-              imgSrc.push(images[i].src);
-            }
-          }
-          if(imgSrc.length > 0){
-            returnJson["imageArray"] = imgSrc;
-          }
           if(document.title){
             returnJson["title"] = document.title;
           }
@@ -132,10 +75,31 @@ if Meteor.isClient
             returnJson["body"] = document.body.innerHTML;
             returnJson["bodyLength"] = document.body.innerHTML.length;
           }
-          return returnJson;
-        }
-        toBeRun();
+          returnJson;
       '}
     ,(data)->
-      console.log 'return Image Src is ' + JSON.stringify(data)
-      callback(data[0])
+      if data[0]
+        console.log 'data0 is ' + JSON.stringify(data[0])
+        data = data[0]
+      data.bgArray = []
+      data.imageArray = []
+      documentBody = $.parseHTML( data.body )
+      documentBody.innerHTML = data.body
+      extracted = extract(documentBody)
+      data.fullText = $(extracted).text()
+      console.log 'FullText is ' + data.fullText
+      $(documentBody).find('img').each ()->
+        console.log 'Image Src: ' + $(this).attr('src')
+        data.imageArray.push $(this).attr('src')
+      $(documentBody).find('div').each ()->
+        bg_url = $(this).css('background-image')
+        # ^ Either "none" or url("...urlhere..")
+        if bg_url and bg_url isnt ''
+          bg_url = /^url\((['"]?)(.*)\1\)$/.exec(bg_url)
+          # If matched, retrieve url, otherwise ""
+          if bg_url
+            bg_url =  bg_url[2]
+            console.log 'Background Image: ' + bg_url
+            data.bgArray.push bg_url
+      console.log 'title is ' + data.title + ' host is ' + data.host
+      callback data
