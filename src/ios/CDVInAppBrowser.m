@@ -295,7 +295,6 @@
         if (host == nil) {
             host = @"";
         }
-        NSLog(@"returnJSON is %@",innerHTML);
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"body":innerHTML,@"title":title,@"host":host}];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId ];
     }
