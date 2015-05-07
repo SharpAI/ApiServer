@@ -364,7 +364,9 @@ if Meteor.isClient
           )
           text = insertedObj.text
           if text and text isnt ''
-            $('#'+node.id+'TextArea').trigger('keyup')
+            Meteor.setTimeout ()->
+              $('#'+node.id+'TextArea').trigger('keyup')
+            ,1000
       else if type == "image"
           if grid != undefined
             if Session.get('NewImgAdd') is 'true'
@@ -779,11 +781,11 @@ if Meteor.isClient
       if Drafts.find({type:'text'}).count() > 1
         for i in [1..(Drafts.find({type:'text'}).count()-1)]
           Drafts.find({type:'text'}).fetch()[i]
-  insertLink = (linkInfo,mainImageUrl,found)->
+  insertLink = (linkInfo,mainImageUrl,found,inputUrl)->
     if mainImageUrl
       if Drafts.find({type:'image'}).count() > 0 and found is 1
         mainImageDoc = Drafts.find({type:'image'}).fetch()[0]
-        Drafts.update({_id: mainImageDoc._id}, {$set: {imgUrl:mainImageUrl, filename:'', URI:mainImageUrl }});
+        Drafts.update({_id: mainImageDoc._id}, {$set: {imgUrl:mainImageUrl, filename:'', URI:mainImageUrl,url:inputUrl }});
       else
         Drafts.insert {
           type:'image',
@@ -794,6 +796,7 @@ if Meteor.isClient
           imgUrl:mainImageUrl,
           filename:null,
           URI:mainImageUrl,
+          url:inputUrl
           toTheEnd: true,
           data_row:'1',
           data_col:'3',
@@ -836,21 +839,26 @@ if Meteor.isClient
         console.log $('.linkInputBox #linkToBeInserted').val()
         inputUrl = $('.linkInputBox #linkToBeInserted').val()
         processReadableText=(data)->
-          documentBody = $.parseHTML( data.body )
-          documentBody.innerHTML = data.body
-          documentBody.innerHTML.length = data.bodyLength
-          extracted = extract(documentBody)
-          fullText = $(extracted).text()
-          toDisplay = fullText.substring(0, 200)
-          console.log 'Extracted is ' + toDisplay
-          if toDisplay and toDisplay isnt ''
-            toDisplay += '...'
-            Drafts.insert {type:'text', toTheEnd:true ,isImage:false, owner: Meteor.userId(), text:toDisplay, fullText:fullText,style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+          fullText = ''
+          if data.fullText
+            fullText = data.fullText
+          else
+            documentBody = $.parseHTML( data.body )
+            documentBody.innerHTML = data.body
+            documentBody.innerHTML.length = data.bodyLength
+            extracted = extract(documentBody)
+            fullText = $(extracted).text()
+            console.log 'Extracted is ' + toDisplay
+          if fullText and fullText isnt ''
+            toDisplay = fullText.substring(0, 200)
+            toDisplay += ' ...'
+            Drafts.insert {type:'text', toTheEnd:true ,isImage:false, owner: Meteor.userId(), text:toDisplay, fullText:fullText, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
           if data.title
             console.log 'Title is ' + data.title
             Meteor.setTimeout ()->
               $('#title').val(data.title)
-            ,3000
+              $('#addontitle').val(data.host)
+            ,2000
         # the logic is not straight forward here.
         # AnalyseUrl return the possible image array from inAppBrowser, but there's chance the loading is not complete
         # so we need reAnalyseUrl which will not load inAppBrowser again but just reAnalyse the URI.
@@ -862,14 +870,14 @@ if Meteor.isClient
             processInAppInjectionData data,(url,w,h,found,index,total)->
               console.log 'found ' + found + ' index ' + index + ' total ' + total + ' url ' + url
               if url
-                insertLink(data,url,found)
+                insertLink(data,url,found,inputUrl)
               else if index is total
                 if found is 0
                   reAnalyseUrl inputUrl,(data)->
                     processInAppInjectionData data,(url,w,h,found,index,total)->
                       console.log 'found ' + found + ' index ' + index + ' total ' + total + ' url ' + url
                       if url
-                        insertLink(data,url,found)
+                        insertLink(data,url,found,inputUrl)
                       else
                         processReadableText(data)
                 else
@@ -1102,6 +1110,7 @@ if Meteor.isClient
           ownerIcon = '/userPicture.png'
         draftData = Drafts.find().fetch()
         postId = draftData[0]._id;
+        fromUrl = draftData[0].url;
 
         #Save gridster layout first. If publish failed, we can recover the drafts
         for i in [0..(draftData.length-1)]
@@ -1193,6 +1202,7 @@ if Meteor.isClient
                       mainImage: mainImage,
                       mainImageStyle:mainImageStyle,
                       mainText: mainText,
+                      fromUrl: fromUrl,
                       owner:Meteor.userId(),
                       ownerName:ownerName,
                       ownerIcon:ownerIcon,
@@ -1214,6 +1224,7 @@ if Meteor.isClient
                   mainImage: mainImage,
                   mainImageStyle:mainImageStyle,
                   mainText: mainText,
+                  fromUrl: fromUrl,
                   owner:Meteor.userId(),
                   ownerName:ownerName,
                   ownerIcon:ownerIcon,
