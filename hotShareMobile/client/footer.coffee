@@ -68,6 +68,14 @@ if Meteor.isClient
                 ,100)
           )
     'click #web-import':(e)->
+      PUB.page '/add'
+      if iabHandle
+        iabHandle.show()
+      else
+        @iabHandle = window.open('', '_blank', 'hidden=no,toolbarposition=top')
+        iabHandle.addEventListener('import',getURL)
+        iabHandle.addEventListener 'exit',()->
+          @iabHandle = null
     'click #photo-select':(e)->
       #console.log 'Clicked on take photo'
       Session.set 'isReviewMode','0'
