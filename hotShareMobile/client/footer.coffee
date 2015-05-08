@@ -73,8 +73,9 @@ if Meteor.isClient
         iabHandle.show()
       else
         @iabHandle = window.open('', '_blank', 'hidden=no,toolbarposition=top')
-        iabHandle.addEventListener('import',getURL)
-        iabHandle.addEventListener 'exit',()->
+        @iabHandle.addEventListener 'import',(e)->
+          getURL(e)
+        @iabHandle.addEventListener 'exit',()->
           @iabHandle = null
     'click #photo-select':(e)->
       #console.log 'Clicked on take photo'

@@ -61,7 +61,7 @@ if Meteor.isClient
           callback(null,0,0,found,index,length)
     else
       callback(null,0,0,0,0,0)
-  getImagesListFromUrl = (inappBrowser,url,callback)->
+  @getImagesListFromUrl = (inappBrowser,url,callback)->
     inappBrowser.executeScript {
         code: '
           var returnJson = {};
