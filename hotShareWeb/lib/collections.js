@@ -77,7 +77,7 @@ if(Meteor.isServer){
     else{
       var self = this;
       var count = 0;
-      var handle = Meets.find({me: userId},{sort:{count:-1}}).observeChanges({
+      var handle = Meets.find({me: userId},{sort:{count:-1,createdAt:-1}}).observeChanges({
         added: function (id,fields) {
           if (count<20)
           {
@@ -261,7 +261,8 @@ if(Meteor.isServer){
                         me:userId,
                         ta:data.userId,
                         count:1,
-                        meetOnPostId:postId
+                        meetOnPostId:postId,
+                        createdAt: new Date()
                       });
                     }
 
@@ -272,14 +273,15 @@ if(Meteor.isServer){
                         meetCount = 0;
                       if ( needUpdateMeetCount ){
                         meetCount = meetCount+1;
-                        Meets.update({me:data.userId,ta:userId},{$set:{count:meetCount,meetOnPostId:postId}});
+                        Meets.update({me:data.userId,ta:userId},{$set:{count:meetCount,meetOnPostId:postId,createdAt: new Date()}});
                       }
                     }else{
                       Meets.insert({
                         me:data.userId,
                         ta:userId,
                         count:1,
-                        meetOnPostId:postId
+                        meetOnPostId:postId,
+                        createdAt: new Date()
                       });
                     }
                   });
