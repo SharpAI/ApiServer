@@ -75,6 +75,9 @@ if Meteor.isClient
             returnJson["body"] = document.body.innerHTML;
             returnJson["bodyLength"] = document.body.innerHTML.length;
           }
+          if(window.location.protocol){
+            returnJson["protocol"] = window.location.protocol;
+          }
           returnJson;
       '}
     ,(data)->
@@ -87,11 +90,14 @@ if Meteor.isClient
       documentBody.innerHTML = data.body
       extracted = extract(documentBody)
       data.fullText = $(extracted).text()
-      console.log 'FullText is ' + data.fullText
+      console.log 'Title is ' + data.title +'FullText is ' + data.fullText + ' from ' + data.protocol + '//' + data.host
       $(documentBody).find('img').each ()->
-        if $(this).attr('src') and $(this).attr('src') isnt ''
-          console.log 'Image Src: ' + $(this).attr('src')
-          data.imageArray.push $(this).attr('src')
+        src = $(this).attr('src')
+        if src and src isnt ''
+          unless src.startsWith('http')
+            src = data.protocol + '//' + data.host + '/' + src
+          console.log 'Image Src: ' + src
+          data.imageArray.push src
       $(documentBody).find('div').each ()->
         bg_url = $(this).css('background-image')
         # ^ Either "none" or url("...urlhere..")
@@ -101,7 +107,8 @@ if Meteor.isClient
           if bg_url
             bg_url =  bg_url[2]
             if bg_url and bg_url isnt ''
+              unless bg_url.startsWith('http')
+                bg_url = data.protocol + '//' + data.host + '/' + bg_url
               console.log 'Background Image: ' + bg_url
               data.bgArray.push bg_url
-      console.log 'title is ' + data.title + ' host is ' + data.host
       callback data
