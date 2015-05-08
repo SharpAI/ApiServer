@@ -33,41 +33,46 @@ if Meteor.isClient
       )
       Meteor.isCordova
   Template.footer.events
-    'click .btn':(e)->
-      page = '/' + e.currentTarget.id;
-      if e.currentTarget.id is 'home'
-        page = '/'
-      if e.currentTarget.id is 'bell'
-        waitReadCount = Meteor.user().profile.waitReadCount
-        if waitReadCount is undefined or isNaN(waitReadCount)
-          waitReadCount = 0
-        if waitReadCount > 0
-          Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
-      PUB.page(page)
-    'click #add':(e)->
+    'click #home':(e)->
+      PUB.page('/')
+    'click #search':(e)->
+      PUB.page('/search')
+    'click #bell':(e)->
+      waitReadCount = Meteor.user().profile.waitReadCount
+      if waitReadCount is undefined or isNaN(waitReadCount)
+        waitReadCount = 0
+      if waitReadCount > 0
+        Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
+      PUB.page('/bell')
+    'click #user':(e)->
+      PUB.page('/user')
+    'click #album-select':(e)->
       #console.log 'Clicked on ADD'
       Session.set 'isReviewMode','0'
       Session.set('draftTitle', '');
       Session.set('draftAddontitle', '');
       Drafts.remove({})
-      Meteor.setTimeout(
-        ()->
+      Router.go '/add'
+      Session.set 'NewImgAdd','true'
+      Meteor.defer ()->
           selectMediaFromAblum(20, (cancel, result,currentCount,totalCount)->
-            #console.log 'upload success: url is ' + result
-            #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
             if cancel
-              if Drafts.find().count() is 0
-                PUB.back()
+              PUB.back()
               return
             if result
-              Session.set 'NewImgAdd','true'
               console.log 'Local is ' + result.smallImage
               Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
-              Router.go '/add'
               if currentCount >= totalCount
                 Meteor.setTimeout(()->
                   Template.addPost.__helpers.get('saveDraft')()
                 ,100)
           )
-        0
-      )
+    'click #web-import':(e)->
+    'click #photo-select':(e)->
+    'click #add':(e)->
+      ###
+      $('#level2-popup-menu').bPopup {
+        easing: 'easeOutBack',
+        speed: 450,
+        transition: 'slideUp'}
+      ###
