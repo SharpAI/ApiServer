@@ -829,7 +829,7 @@ if Meteor.isClient
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
     'click #addLink': ()->
       console.log 'Add Link'
-      @getURL = (e) ->
+      getURL = (e) ->
         inputUrl = e.url
         console.log "input url: " + inputUrl
         processReadableText=(data)->
@@ -872,8 +872,9 @@ if Meteor.isClient
         iabHandle.show()
       else
         @iabHandle = window.open('', '_blank', 'hidden=no,toolbarposition=top')
-        iabHandle.addEventListener('import',getURL)
-        iabHandle.addEventListener 'exit',()->
+        @iabHandle.addEventListener 'import',(e)->
+          getURL(e)
+        @iabHandle.addEventListener 'exit',()->
           @iabHandle = null
     'click #takephoto': ()->
       if Drafts.find().count() > 0
