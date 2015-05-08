@@ -1,4 +1,5 @@
 if Meteor.isClient
+  @iabHandle = null
   Template.addPost.destroyed = ->
     $('.tool-container').remove();
     $(window).children().off();
@@ -828,7 +829,7 @@ if Meteor.isClient
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
     'click #addLink': ()->
       console.log 'Add Link'
-      getURL = (e) ->
+      @getURL = (e) ->
         inputUrl = e.url
         console.log "input url: " + inputUrl
         processReadableText=(data)->
@@ -852,11 +853,8 @@ if Meteor.isClient
               $('#title').val(data.title)
               $('#addontitle').val(data.host)
             ,2000
-        # the logic is not straight forward here.
-        # AnalyseUrl return the possible image array from inAppBrowser, but there's chance the loading is not complete
-        # so we need reAnalyseUrl which will not load inAppBrowser again but just reAnalyse the URI.
         if inputUrl && inputUrl isnt ''
-          analyseUrl inputUrl,(data)->
+          getImagesListFromUrl iabHandle,inputUrl,(data)->
             if data is null
               console.log('AnalyseUrl error, need add error notification')
               return
@@ -866,32 +864,17 @@ if Meteor.isClient
                 insertLink(data,url,found,inputUrl)
               else if index is total
                 if found is 0
-                  reAnalyseUrl inputUrl,(data)->
-                    processInAppInjectionData data,(url,w,h,found,index,total)->
-                      console.log 'found ' + found + ' index ' + index + ' total ' + total + ' url ' + url
-                      if url
-                        insertLink(data,url,found,inputUrl)
-                      else
-                        processReadableText(data)
-                else
-                  processReadableText(data)
-          ###
-          uri = encodeURIComponent(inputUrl)
-          console.log('INPUT URL is ' + uri)
-          $.getJSON('http://api.diffbot.com/v3/article?token=e7a1a3da726c7283979912330cfbc39a&url='+uri,(data)->
-            if data and data.title
-              $("#title").val(data.title)
-            if data and data.objects and data.objects[0]
-              text = data.objects[0].text
-              if text isnt ''
-                Drafts.insert {type:'text', toTheEnd:true ,isImage:false, owner: Meteor.userId(), text:text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
-          )
-          ###
-          commentBox.close()
+                  console.log 'No Image, need an alert'
+                processReadableText(data)
         else
           PUB.toast('请粘贴需要引用的链接')
-      ref = window.open('', '_blank', '')
-      ref.addEventListener('import',getURL)
+      if iabHandle
+        iabHandle.show()
+      else
+        @iabHandle = window.open('', '_blank', 'hidden=no,toolbarposition=top')
+        iabHandle.addEventListener('import',getURL)
+        iabHandle.addEventListener 'exit',()->
+          @iabHandle = null
     'click #takephoto': ()->
       if Drafts.find().count() > 0
         window.footbarOppration = true
