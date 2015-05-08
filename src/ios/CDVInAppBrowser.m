@@ -29,7 +29,13 @@
 #define    kInAppBrowserToolbarBarPositionTop @"top"
 
 #define    TOOLBAR_HEIGHT 44.0
+#ifndef ACT_INAPPBROWSER
 #define    LOCATIONBAR_HEIGHT 21.0
+#else
+#define    LOCATIONBAR_HEIGHT 35.0
+#define    LOCATIONBAR_CLOSE   35.0
+#define    LOCATIONBAR_IMPORT 90.0
+#endif
 #define    FOOTER_HEIGHT ((TOOLBAR_HEIGHT) + (LOCATIONBAR_HEIGHT))
 
 #pragma mark CDVInAppBrowser
@@ -295,6 +301,7 @@
         if (host == nil) {
             host = @"";
         }
+        NSLog(@"returnJSON is %@",innerHTML);
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"body":innerHTML,@"title":title,@"host":host}];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId ];
     }
@@ -471,6 +478,21 @@
     _previousStatusBarStyle = -1; // this value was reset before reapplying it. caused statusbar to stay black on ios7
 }
 
+#ifdef ACT_INAPPBROWSER
+- (void)importButtonCallback:(id)sender addressText:(NSString *)addressText
+{
+    NSLog(@"Send event:import to JS, url=%@", addressText);
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                                  messageAsDictionary:@{@"type":@"import", @"url":addressText}];
+    [pluginResult setKeepCallback:[NSNumber numberWithBool:YES]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+}
+
+- (void)goToUrl:(NSURL *)addressText
+{
+    [self.inAppBrowserViewController navigateTo:addressText];
+}
+#endif
 @end
 
 #pragma mark CDVInAppBrowserViewController
@@ -504,7 +526,11 @@
 
     CGRect webViewBounds = self.view.bounds;
     BOOL toolbarIsAtBottom = ![_browserOptions.toolbarposition isEqualToString:kInAppBrowserToolbarBarPositionTop];
+#ifndef ACT_INAPPBROWSER
     webViewBounds.size.height -= _browserOptions.location ? FOOTER_HEIGHT : TOOLBAR_HEIGHT;
+#else
+    webViewBounds.size.height -= _browserOptions.location ? TOOLBAR_HEIGHT : TOOLBAR_HEIGHT;
+#endif
     self.webView = [[UIWebView alloc] initWithFrame:webViewBounds];
 
     self.webView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
@@ -538,8 +564,13 @@
     self.spinner.userInteractionEnabled = NO;
     [self.spinner stopAnimating];
 
+#ifndef ACT_INAPPBROWSER
     self.closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(close)];
     self.closeButton.enabled = YES;
+#else
+    self.closeButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"camera_edit_cut_cancel_highlighted"] style:UIBarButtonItemStylePlain target:self action:@selector(close)];
+    self.closeButton.enabled = YES;
+#endif
 
     UIBarButtonItem* flexibleSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 
@@ -563,14 +594,22 @@
     self.toolbar.userInteractionEnabled = YES;
 
     CGFloat labelInset = 5.0;
+#ifdef ACT_INAPPBROWSER
     float locationBarY = toolbarIsAtBottom ? self.view.bounds.size.height - FOOTER_HEIGHT : self.view.bounds.size.height - LOCATIONBAR_HEIGHT;
+#else
+    float locationBarY = toolbarIsAtBottom ? self.view.bounds.size.height - FOOTER_HEIGHT : [self getStatusBarOffset];
+#endif
 
     self.addressLabel = [[UILabel alloc] initWithFrame:CGRectMake(labelInset, locationBarY, self.view.bounds.size.width - labelInset, LOCATIONBAR_HEIGHT)];
     self.addressLabel.adjustsFontSizeToFitWidth = NO;
     self.addressLabel.alpha = 1.000;
     self.addressLabel.autoresizesSubviews = YES;
     self.addressLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+#ifndef ACT_INAPPBROWSER
     self.addressLabel.backgroundColor = [UIColor clearColor];
+#else
+    self.addressLabel.backgroundColor = [UIColor darkGrayColor];
+#endif
     self.addressLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
     self.addressLabel.clearsContextBeforeDrawing = YES;
     self.addressLabel.clipsToBounds = YES;
@@ -594,6 +633,30 @@
     self.addressLabel.textColor = [UIColor colorWithWhite:1.000 alpha:1.000];
     self.addressLabel.userInteractionEnabled = NO;
 
+#ifdef ACT_INAPPBROWSER
+    //TextField
+    CGFloat textInset = 0.0;
+    float locationBarY2 = toolbarIsAtBottom ? self.view.bounds.size.height - FOOTER_HEIGHT : [self getStatusBarOffset];
+
+    self.addressText = [[UITextField alloc] initWithFrame:CGRectMake(textInset, locationBarY2, self.view.bounds.size.width - textInset - LOCATIONBAR_IMPORT - LOCATIONBAR_CLOSE, LOCATIONBAR_HEIGHT)];
+    self.addressText.adjustsFontSizeToFitWidth = NO;
+    self.addressText.alpha = 1.000;
+    self.addressText.autoresizesSubviews = YES;
+    self.addressText.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+    self.addressText.backgroundColor = [UIColor darkGrayColor];
+    self.addressText.text = NSLocalizedString(@"Loading...", nil);
+    self.addressText.textAlignment = NSTextAlignmentLeft;
+    self.addressText.textColor = [UIColor colorWithWhite:1.000 alpha:1.000];
+    self.addressText.delegate = self;
+    
+    //Import button
+    NSString* frontImportString = NSLocalizedString(@"Import", nil); // create arrow from Unicode char
+    self.importButton = [[UIBarButtonItem alloc] initWithTitle:frontImportString style:UIBarButtonItemStylePlain target:self action:@selector(importButtonOnClick:)];
+    self.importButton.enabled = YES;
+    //self.importButton.imageInsets = UIEdgeInsetsZero;
+    self.addressButton = [[UIBarButtonItem alloc] initWithCustomView:self.addressText];
+#endif
+
     NSString* frontArrowString = NSLocalizedString(@"►", nil); // create arrow from Unicode char
     self.forwardButton = [[UIBarButtonItem alloc] initWithTitle:frontArrowString style:UIBarButtonItemStylePlain target:self action:@selector(goForward:)];
     self.forwardButton.enabled = YES;
@@ -604,11 +667,19 @@
     self.backButton.enabled = YES;
     self.backButton.imageInsets = UIEdgeInsetsZero;
 
+#ifndef ACT_INAPPBROWSER
     [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.backButton, fixedSpaceButton, self.forwardButton]];
+#else
+    [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.addressButton, flexibleSpaceButton, self.importButton]];
+#endif
 
     self.view.backgroundColor = [UIColor grayColor];
     [self.view addSubview:self.toolbar];
+#ifndef ACT_INAPPBROWSER
     [self.view addSubview:self.addressLabel];
+#else
+    //[self.view addSubview:self.addressText];
+#endif
     [self.view addSubview:self.spinner];
 }
 
@@ -794,6 +865,11 @@
     }
 }
 
+- (void)importButtonOnClick:(id)sender
+{
+    [self.navigationDelegate importButtonCallback:sender addressText:self.addressText.text];
+}
+
 - (void)goBack:(id)sender
 {
     [self.webView goBack];
@@ -802,6 +878,25 @@
 - (void)goForward:(id)sender
 {
     [self.webView goForward];
+}
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    NSString *httpStr;
+    NSString *trimStr = [self.addressText.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if (![trimStr isEqualToString:@""] && trimStr.length > 0)
+    {
+        NSLog(@"Will access url: %@", trimStr);
+        if ([[trimStr lowercaseString] hasPrefix:@"http://"]) {
+            httpStr = trimStr;
+        } else {
+            httpStr = [NSString stringWithFormat:@"%@%@", @"http://", trimStr];
+            NSLog(@"Replace url to : %@", httpStr);
+        }
+        [self.navigationDelegate goToUrl:[NSURL URLWithString:httpStr]];
+    }
+    return YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -838,7 +933,11 @@
 {
     // loading url, start spinner, update back/forward
 
+#ifndef ACT_INAPPBROWSER
     self.addressLabel.text = NSLocalizedString(@"Loading...", nil);
+#else
+    self.addressText.text = [self.currentURL absoluteString];
+#endif
     self.backButton.enabled = theWebView.canGoBack;
     self.forwardButton.enabled = theWebView.canGoForward;
 
@@ -860,8 +959,11 @@
 - (void)webViewDidFinishLoad:(UIWebView*)theWebView
 {
     // update url, stop spinner, update back/forward
-
+#ifndef ACT_INAPPBROWSER
     self.addressLabel.text = [self.currentURL absoluteString];
+#else
+    self.addressText.text = [self.currentURL absoluteString];
+#endif
     self.backButton.enabled = theWebView.canGoBack;
     self.forwardButton.enabled = theWebView.canGoForward;
 
@@ -895,7 +997,11 @@
     self.forwardButton.enabled = theWebView.canGoForward;
     [self.spinner stopAnimating];
 
+#ifndef ACT_INAPPBROWSER
     self.addressLabel.text = NSLocalizedString(@"Load Error", nil);
+#else
+    self.addressText.text = NSLocalizedString(@"Load Error", nil);
+#endif
 
     [self.navigationDelegate webView:theWebView didFailLoadWithError:error];
 }

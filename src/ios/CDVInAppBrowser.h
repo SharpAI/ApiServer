@@ -26,6 +26,7 @@
 #else
     #import <Cordova/CDVWebViewDelegate.h>
 #endif
+#define ACT_INAPPBROWSER
 
 @class CDVInAppBrowserViewController;
 
@@ -68,7 +69,7 @@
 
 @end
 
-@interface CDVInAppBrowserViewController : UIViewController <UIWebViewDelegate, CDVScreenOrientationDelegate>{
+@interface CDVInAppBrowserViewController : UIViewController <UIWebViewDelegate, CDVScreenOrientationDelegate, UITextFieldDelegate>{
     @private
     NSString* _userAgent;
     NSString* _prevUserAgent;
@@ -85,7 +86,14 @@
 
 @property (nonatomic, strong) IBOutlet UIWebView* webView;
 @property (nonatomic, strong) IBOutlet UIBarButtonItem* closeButton;
+#ifdef ACT_INAPPBROWSER
+@property (nonatomic, strong) IBOutlet UITextField* addressText;
+#endif
 @property (nonatomic, strong) IBOutlet UILabel* addressLabel;
+#ifdef ACT_INAPPBROWSER
+@property (nonatomic, strong) IBOutlet UIBarButtonItem* addressButton;
+@property (nonatomic, strong) IBOutlet UIBarButtonItem* importButton;
+#endif
 @property (nonatomic, strong) IBOutlet UIBarButtonItem* backButton;
 @property (nonatomic, strong) IBOutlet UIBarButtonItem* forwardButton;
 @property (nonatomic, strong) IBOutlet UIActivityIndicatorView* spinner;
