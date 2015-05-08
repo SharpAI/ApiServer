@@ -52,7 +52,7 @@ if Meteor.isClient
       Session.set('draftTitle', '');
       Session.set('draftAddontitle', '');
       Drafts.remove({})
-      Router.go '/add'
+      PUB.page '/add'
       Session.set 'NewImgAdd','true'
       Meteor.defer ()->
           selectMediaFromAblum(20, (cancel, result,currentCount,totalCount)->
@@ -69,6 +69,24 @@ if Meteor.isClient
           )
     'click #web-import':(e)->
     'click #photo-select':(e)->
+      #console.log 'Clicked on take photo'
+      Session.set 'isReviewMode','0'
+      Session.set('draftTitle', '');
+      Session.set('draftAddontitle', '');
+      Drafts.remove({})
+      PUB.page '/add'
+      Session.set 'NewImgAdd','true'
+      Meteor.defer ()->
+        if window.takePhoto
+          window.takePhoto (result)->
+            console.log 'result from camera is ' + JSON.stringify(result)
+            if result
+              Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
+              Meteor.setTimeout(()->
+                Template.addPost.__helpers.get('saveDraft')()
+              ,100)
+            else
+              PUB.back()
     'click #add':(e)->
       ###
       $('#level2-popup-menu').bPopup {
