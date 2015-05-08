@@ -69,6 +69,7 @@ public class InAppBrowser extends CordovaPlugin {
     private static final String SELF = "_self";
     private static final String SYSTEM = "_system";
     // private static final String BLANK = "_blank";
+    private static final String HIDE_EVENT = "hide";
     private static final String IMPORT_EVENT = "import";
     private static final String EXIT_EVENT = "exit";
     private static final String LOCATION = "location";
@@ -358,6 +359,17 @@ public class InAppBrowser extends CordovaPlugin {
         }
     }
 
+    private void hideDialog() {
+    	dialog.hide();
+        try {
+            JSONObject obj = new JSONObject();
+            obj.put("type", HIDE_EVENT);
+            sendUpdate(obj, false);
+        } catch (JSONException ex) {
+            Log.d(LOG_TAG, "Should never happen");
+        }
+    }
+
     private void importUrl() {
     	String url = edittext.getText().toString();
     	if(url.length()==0)
@@ -603,7 +615,7 @@ public class InAppBrowser extends CordovaPlugin {
                 }
                 close.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
-                    	dialog.hide();
+                    	hideDialog();
                         //closeDialog();
                     }
                 });
