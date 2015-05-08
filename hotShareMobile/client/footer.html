@@ -15,7 +15,7 @@
               </a>
             </div>
             <div class="btn-group">
-                <div id="add" class="foot-btn btn btn-default {{focus_style 'add'}}">
+                <div id="add" data-toggle="modal" data-target="#level2-popup-menu" class="foot-btn btn btn-default {{focus_style 'add'}}">
                   <i class="fa fa-plus" style="font-size: 32px; color:#FFF;padding-top: 10px;"></i>
                 </div>
             </div>
@@ -33,6 +33,19 @@
                 <i class="fa fa-user" style="font-size: 24px;"></i>
                 <div class="footerName">我</div>
               </a>
+            </div>
+        </div>
+    </div>
+    <div id="level2-popup-menu" class="modal fade bottom" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!--
+                <div class="modal-header">
+                    <h4 class="modal-title">Dialog</h4>
+                </div>-->
+                <button type="button" id="album-select" class="btn btn-default">从相册选取</button>
+                <button type="button" id="web-import" class="btn btn-default">从网页导入</button>
+                <button type="button" id="photo-select" class="btn btn-default">拍照</button>
             </div>
         </div>
     </div>
