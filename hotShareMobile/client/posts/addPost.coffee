@@ -369,15 +369,18 @@ if Meteor.isClient
             ,1000
       else if type == "image"
           if grid != undefined
+            # Images loaded during rendering
             if Session.get('NewImgAdd') is 'true'
               if (window.imageCounter % 3) is 0
                 grid.add_widget(node, 6, 3,1,window.insertRow)
               else if (window.imageCounter % 3) is 1
                 grid.add_widget(node, 3, 3,1,window.insertRow)
+                window.insertRow +=3
               else
                 grid.add_widget(node, 3, 3,4,window.insertRow)
-              window.insertRow +=3
+                window.insertRow +=3
               window.imageCounter++
+            # Images to be inserted before the element
             else if window.unSelectedElem
               currentCount = node.$blaze_range.view.parentView.dataVar.curValue.currentCount
               totalCount = node.$blaze_range.view.parentView.dataVar.curValue.totalCount
@@ -409,8 +412,10 @@ if Meteor.isClient
               if currentCount >= totalCount
                 window.unSelectedElem = undefined
               grid.add_widget(node, insert_sizex, insert_sizey, insert_col, insert_row)
+            # To be inserted at the end of the screen.
             else if insertedObj.toTheEnd
               grid.add_widget(node, 3, 3)
+            # To be inserted on the middle of screen.
             else
               max_row = 1
               middle = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)/2
