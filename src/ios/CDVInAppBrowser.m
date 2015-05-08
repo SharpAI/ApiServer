@@ -292,6 +292,7 @@
         NSString* innerHTML = [self.inAppBrowserViewController.webView stringByEvaluatingJavaScriptFromString:@"document.body.innerHTML"];
         NSString* title = [self.inAppBrowserViewController.webView stringByEvaluatingJavaScriptFromString:@"document.title"];
         NSString* host = [self.inAppBrowserViewController.webView stringByEvaluatingJavaScriptFromString:@"location.host"];
+        NSString* protocol = [self.inAppBrowserViewController.webView stringByEvaluatingJavaScriptFromString:@"window.location.protocol"];
         if (innerHTML == nil) {
             innerHTML = @"";
         }
@@ -301,8 +302,10 @@
         if (host == nil) {
             host = @"";
         }
-        NSLog(@"returnJSON is %@",innerHTML);
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"body":innerHTML,@"title":title,@"host":host}];
+        if (protocol == nil) {
+            protocol = @"";
+        }
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"body":innerHTML,@"title":title,@"host":host,@"protocol":protocol}];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId ];
     }
 }
