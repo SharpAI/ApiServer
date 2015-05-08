@@ -59,6 +59,8 @@ if Meteor.isClient
           callback(url,w,h,found,index,length)
         else
           callback(null,0,0,found,index,length)
+    else
+      callback(null,0,0,0,0,0)
   getImagesListFromUrl = (inappBrowser,url,callback)->
     inappBrowser.executeScript {
         code: '
@@ -87,8 +89,9 @@ if Meteor.isClient
       data.fullText = $(extracted).text()
       console.log 'FullText is ' + data.fullText
       $(documentBody).find('img').each ()->
-        console.log 'Image Src: ' + $(this).attr('src')
-        data.imageArray.push $(this).attr('src')
+        if $(this).attr('src') and $(this).attr('src') isnt ''
+          console.log 'Image Src: ' + $(this).attr('src')
+          data.imageArray.push $(this).attr('src')
       $(documentBody).find('div').each ()->
         bg_url = $(this).css('background-image')
         # ^ Either "none" or url("...urlhere..")
@@ -97,7 +100,8 @@ if Meteor.isClient
           # If matched, retrieve url, otherwise ""
           if bg_url
             bg_url =  bg_url[2]
-            console.log 'Background Image: ' + bg_url
-            data.bgArray.push bg_url
+            if bg_url and bg_url isnt ''
+              console.log 'Background Image: ' + bg_url
+              data.bgArray.push bg_url
       console.log 'title is ' + data.title + ' host is ' + data.host
       callback data
