@@ -32,6 +32,12 @@ if Meteor.isClient
         0
       )
       Meteor.isCordova
+  prepareToEditorMode = ()->
+    Session.set 'isReviewMode','0'
+    Session.set('draftTitle', '');
+    Session.set('draftAddontitle', '');
+    Drafts.remove({})
+    Session.set 'NewImgAdd','true'
   Template.footer.events
     'click #home':(e)->
       PUB.page('/')
@@ -47,13 +53,8 @@ if Meteor.isClient
     'click #user':(e)->
       PUB.page('/user')
     'click #album-select':(e)->
-      #console.log 'Clicked on ADD'
-      Session.set 'isReviewMode','0'
-      Session.set('draftTitle', '');
-      Session.set('draftAddontitle', '');
-      Drafts.remove({})
+      prepareToEditorMode()
       PUB.page '/add'
-      Session.set 'NewImgAdd','true'
       Meteor.defer ()->
           selectMediaFromAblum(20, (cancel, result,currentCount,totalCount)->
             if cancel
@@ -68,23 +69,12 @@ if Meteor.isClient
                 ,100)
           )
     'click #web-import':(e)->
+      prepareToEditorMode()
       PUB.page '/add'
-      if iabHandle
-        iabHandle.show()
-      else
-        @iabHandle = window.open('', '_blank', 'hidden=no,toolbarposition=top')
-        @iabHandle.addEventListener 'import',(e)->
-          getURL(e)
-        @iabHandle.addEventListener 'exit',()->
-          @iabHandle = null
+      handleAddedLink()
     'click #photo-select':(e)->
-      #console.log 'Clicked on take photo'
-      Session.set 'isReviewMode','0'
-      Session.set('draftTitle', '');
-      Session.set('draftAddontitle', '');
-      Drafts.remove({})
+      prepareToEditorMode()
       PUB.page '/add'
-      Session.set 'NewImgAdd','true'
       Meteor.defer ()->
         if window.takePhoto
           window.takePhoto (result)->
