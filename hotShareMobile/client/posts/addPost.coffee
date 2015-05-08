@@ -828,21 +828,9 @@ if Meteor.isClient
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
     'click #addLink': ()->
       console.log 'Add Link'
-      commentBox = $('.linkInputBox').bPopup
-        onClose: ->
-          console.log 'Link Input Modal Closed'
-        onOpen: ->
-          $('.linkInputBox #linkToBeInserted').val('')
-      $('.linkInputBox #pasteLink').off 'click'
-      $('.linkInputBox #insertLink').off 'click'
-
-      $('.linkInputBox #pasteLink').on 'click',()->
-        console.log $('.linkInputBox #linkToBeInserted').val()
-        cordova.plugins.clipboard.paste (text)->
-          $('.linkInputBox #linkToBeInserted').val(text)
-      $('.linkInputBox #insertLink').on 'click',()->
-        console.log $('.linkInputBox #linkToBeInserted').val()
-        inputUrl = $('.linkInputBox #linkToBeInserted').val()
+      getURL = (e) ->
+        inputUrl = e.url
+        console.log "input url: " + inputUrl
         processReadableText=(data)->
           fullText = ''
           if data.fullText
@@ -902,7 +890,8 @@ if Meteor.isClient
           commentBox.close()
         else
           PUB.toast('请粘贴需要引用的链接')
-
+      ref = window.open('', '_blank', '')
+      ref.addEventListener('import',getURL)
     'click #takephoto': ()->
       if Drafts.find().count() > 0
         window.footbarOppration = true
