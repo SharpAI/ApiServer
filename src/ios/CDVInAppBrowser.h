@@ -49,6 +49,7 @@
 
 @property (nonatomic, assign) BOOL location;
 @property (nonatomic, assign) BOOL toolbar;
+@property (nonatomic, assign) BOOL browseMode;
 @property (nonatomic, copy) NSString* closebuttoncaption;
 @property (nonatomic, copy) NSString* toolbarposition;
 @property (nonatomic, assign) BOOL clearcache;
@@ -104,6 +105,7 @@
 @property (nonatomic) NSURL* currentURL;
 
 - (void)close;
+- (void)hide;
 - (void)navigateTo:(NSURL*)url;
 - (void)showLocationBar:(BOOL)show;
 - (void)showToolBar:(BOOL)show : (NSString *) toolbarPosition;

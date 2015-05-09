@@ -87,6 +87,11 @@
 
     self.callbackId = command.callbackId;
 
+    if (url == (id)[NSNull null] || url.length == 0) {
+        url = @"";
+    }
+    NSLog(@"url = %@", url);
+
     if (url != nil) {
 #ifdef __CORDOVA_4_0_0
         NSURL* baseUrl = [self.webViewEngine URL];
@@ -94,6 +99,10 @@
         NSURL* baseUrl = [self.webView.request URL];
 #endif
         NSURL* absoluteUrl = [[NSURL URLWithString:url relativeToURL:baseUrl] absoluteURL];
+
+        if ([url rangeOfString:@"http://meteor.local/"].location != NSNotFound) {
+            absoluteUrl = [NSURL URLWithString:@""];
+        }
 
         if ([self isSystemUrl:absoluteUrl]) {
             target = kInAppBrowserTargetSystem;
@@ -482,6 +491,34 @@
 }
 
 #ifdef ACT_INAPPBROWSER
+- (void)browserHide:(BOOL)sendEvent
+{
+    if (self.callbackId != nil) {
+        CDVPluginResult* pluginResult;
+        if (sendEvent) {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                                      messageAsDictionary:@{@"type":@"hide"}];
+            NSLog(@"Send hide event to JS.");
+        } else {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        }
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+        self.callbackId = nil;
+    }
+
+    //dispatch_async(dispatch_get_main_queue(), ^{
+    //    if (self.inAppBrowserViewController != nil) {
+    //        [self.viewController dismissViewControllerAnimated:YES completion:nil];
+    //    }
+    //});
+
+    if (IsAtLeastiOSVersion(@"7.0")) {
+        [[UIApplication sharedApplication] setStatusBarStyle:_previousStatusBarStyle];
+    }
+
+    _previousStatusBarStyle = -1; // this value was reset before reapplying it. caused statusbar to stay black on ios7
+}
+
 - (void)importButtonCallback:(id)sender addressText:(NSString *)addressText
 {
     NSLog(@"Send event:import to JS, url=%@", addressText);
@@ -571,7 +608,11 @@
     self.closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(close)];
     self.closeButton.enabled = YES;
 #else
-    self.closeButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"camera_edit_cut_cancel_highlighted"] style:UIBarButtonItemStylePlain target:self action:@selector(close)];
+    if (_browserOptions.browseMode) {
+        self.closeButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Back", nil) style:UIBarButtonItemStylePlain target:self action:@selector(close)];
+    } else {
+        self.closeButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"camera_edit_cut_cancel_highlighted"] style:UIBarButtonItemStyleBordered target:self action:@selector(close)];
+    }
     self.closeButton.enabled = YES;
 #endif
 
@@ -647,7 +688,8 @@
     self.addressText.autoresizesSubviews = YES;
     self.addressText.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
     self.addressText.backgroundColor = [UIColor darkGrayColor];
-    self.addressText.text = NSLocalizedString(@"Loading...", nil);
+    //self.addressText.text = NSLocalizedString(@"Loading...", nil);
+    self.addressText.text = NSLocalizedString(@"", nil);
     self.addressText.textAlignment = NSTextAlignmentLeft;
     self.addressText.textColor = [UIColor colorWithWhite:1.000 alpha:1.000];
     self.addressText.delegate = self;
@@ -658,6 +700,7 @@
     self.importButton.enabled = YES;
     //self.importButton.imageInsets = UIEdgeInsetsZero;
     self.addressButton = [[UIBarButtonItem alloc] initWithCustomView:self.addressText];
+    self.addressButton.enabled = YES;
 #endif
 
     NSString* frontArrowString = NSLocalizedString(@"►", nil); // create arrow from Unicode char
@@ -673,7 +716,11 @@
 #ifndef ACT_INAPPBROWSER
     [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.backButton, fixedSpaceButton, self.forwardButton]];
 #else
-    [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.addressButton, flexibleSpaceButton, self.importButton]];
+    if (_browserOptions.browseMode) {
+        [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton]];
+    } else {
+        [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.addressButton, flexibleSpaceButton, self.importButton]];
+    }
 #endif
 
     self.view.backgroundColor = [UIColor grayColor];
@@ -839,8 +886,35 @@
     [CDVUserAgentUtil releaseLock:&_userAgentLockToken];
     self.currentURL = nil;
 
+#ifndef ACT_INAPPBROWSER
     if ((self.navigationDelegate != nil) && [self.navigationDelegate respondsToSelector:@selector(browserExit)]) {
         [self.navigationDelegate browserExit];
+    }
+#else
+    self.addressText.text = NSLocalizedString(@"", nil);
+    if ((self.navigationDelegate != nil) && [self.navigationDelegate respondsToSelector:@selector(browserHide:)]) {
+        [self.navigationDelegate browserHide:YES];
+    }
+#endif
+
+    // Run later to avoid the "took a long time" log message.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([self respondsToSelector:@selector(presentingViewController)]) {
+            [[self presentingViewController] dismissViewControllerAnimated:YES completion:nil];
+        } else {
+            [[self parentViewController] dismissViewControllerAnimated:YES completion:nil];
+        }
+    });
+}
+
+- (void)hide:(BOOL)sendEvent
+{
+    [CDVUserAgentUtil releaseLock:&_userAgentLockToken];
+    self.currentURL = nil;
+    self.addressText.text = NSLocalizedString(@"", nil);
+
+    if ((self.navigationDelegate != nil) && [self.navigationDelegate respondsToSelector:@selector(browserHide:)]) {
+        [self.navigationDelegate browserHide:sendEvent];
     }
 
     // Run later to avoid the "took a long time" log message.
@@ -871,6 +945,7 @@
 - (void)importButtonOnClick:(id)sender
 {
     [self.navigationDelegate importButtonCallback:sender addressText:self.addressText.text];
+    [self hide:NO];
 }
 
 - (void)goBack:(id)sender
@@ -892,6 +967,8 @@
     {
         NSLog(@"Will access url: %@", trimStr);
         if ([[trimStr lowercaseString] hasPrefix:@"http://"]) {
+            httpStr = trimStr;
+        } else if ([[trimStr lowercaseString] hasPrefix:@"https://"]) {
             httpStr = trimStr;
         } else {
             httpStr = [NSString stringWithFormat:@"%@%@", @"http://", trimStr];
@@ -1003,7 +1080,7 @@
 #ifndef ACT_INAPPBROWSER
     self.addressLabel.text = NSLocalizedString(@"Load Error", nil);
 #else
-    self.addressText.text = NSLocalizedString(@"Load Error", nil);
+    //self.addressText.text = NSLocalizedString(@"Load Error", nil);
 #endif
 
     [self.navigationDelegate webView:theWebView didFailLoadWithError:error];
