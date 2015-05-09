@@ -788,28 +788,24 @@ if Meteor.isClient
         for i in [1..(Drafts.find({type:'text'}).count()-1)]
           Drafts.find({type:'text'}).fetch()[i]
   insertLink = (linkInfo,mainImageUrl,found,inputUrl)->
-    if mainImageUrl
-      if Drafts.find({type:'image'}).count() > 0 and found is 1
-        mainImageDoc = Drafts.find({type:'image'}).fetch()[0]
-        Drafts.update({_id: mainImageDoc._id}, {$set: {imgUrl:mainImageUrl, filename:'', URI:mainImageUrl,url:inputUrl }});
-      else
-        Drafts.insert {
-          type:'image',
-          isImage:true,
-          siteTitle:linkInfo.title,
-          siteHost:linkInfo.host,
-          owner: Meteor.userId(),
-          imgUrl:mainImageUrl,
-          filename:null,
-          URI:mainImageUrl,
-          url:inputUrl
-          toTheEnd: true,
-          data_row:'1',
-          data_col:'3',
-          data_sizex:'6',
-          data_sizey:'5'}
-        #if data.title
-        #Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:data.title, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+    if mainImageUrl and found is 1
+      Drafts.insert {
+        type:'image',
+        isImage:true,
+        siteTitle:linkInfo.title,
+        siteHost:linkInfo.host,
+        owner: Meteor.userId(),
+        imgUrl:mainImageUrl,
+        filename:null,
+        URI:mainImageUrl,
+        url:inputUrl
+        toTheEnd: true,
+        data_row:'1',
+        data_col:'3',
+        data_sizex:'6',
+        data_sizey:'5'}
+      #if data.title
+      #Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:data.title, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
 
   processReadableText=(data)->
     fullText = ''
