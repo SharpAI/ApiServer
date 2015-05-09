@@ -86,10 +86,3 @@ if Meteor.isClient
               ,100)
             else
               PUB.back()
-    'click #add':(e)->
-      ###
-      $('#level2-popup-menu').bPopup {
-        easing: 'easeOutBack',
-        speed: 450,
-        transition: 'slideUp'}
-      ###
