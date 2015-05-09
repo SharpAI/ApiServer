@@ -182,7 +182,7 @@ if Meteor.isClient
   Template.showPosts.events
     'click #ViewOnWeb' :->
       if Session.get("postContent").fromUrl
-        window.open(Session.get("postContent").fromUrl, '_blank', '');
+        handleAddedLink(Session.get("postContent").fromUrl)
     'click .user':->
       Session.set("ProfileUserId", this.owner)
       Meteor.subscribe("userinfo", this.owner)

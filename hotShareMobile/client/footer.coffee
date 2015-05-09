@@ -71,7 +71,7 @@ if Meteor.isClient
     'click #web-import':(e)->
       prepareToEditorMode()
       PUB.page '/add'
-      handleAddedLink()
+      handleAddedLink(null)
     'click #photo-select':(e)->
       prepareToEditorMode()
       PUB.page '/add'

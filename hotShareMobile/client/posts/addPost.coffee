@@ -850,8 +850,19 @@ if Meteor.isClient
             processReadableText(data)
     else
       PUB.toast('请粘贴需要引用的链接')
-  @handleAddedLink = ()->
-    if iabHandle
+  @handleAddedLink = (url)->
+    if url and url isnt ''
+      @iabHandle = window.open(url, '_blank', 'hidden=no,toolbarposition=top')
+      @iabHandle.addEventListener 'import',(e)->
+        if Session.get("channel") isnt 'addPost'
+          PUB.page '/add'
+        getURL(e)
+      @iabHandle.addEventListener 'exit',()->
+        @iabHandle = null
+      @iabHandle.addEventListener 'hide',()->
+        if Drafts.find().count() is 0
+          PUB.back()
+    else if iabHandle
       iabHandle.show()
     else
       @iabHandle = window.open('', '_blank', 'hidden=no,toolbarposition=top')
@@ -860,7 +871,7 @@ if Meteor.isClient
       @iabHandle.addEventListener 'exit',()->
         @iabHandle = null
       @iabHandle.addEventListener 'hide',()->
-        if Drafts.find().count() is 0
+        if Session.get("channel") is 'addPost' and Drafts.find().count() is 0
           PUB.back()
   Template.addPost.events
     'beUnSelected .resortitem': (e)->
@@ -880,7 +891,7 @@ if Meteor.isClient
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
     'click #addLink': ()->
       console.log 'Add Link'
-      handleAddedLink()
+      handleAddedLink(null)
     'click #takephoto': ()->
       if Drafts.find().count() > 0
         window.footbarOppration = true
