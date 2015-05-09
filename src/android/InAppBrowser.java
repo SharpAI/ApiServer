@@ -20,6 +20,7 @@ package org.apache.cordova.inappbrowser;
 
 import android.annotation.SuppressLint;
 import org.apache.cordova.inappbrowser.InAppBrowserDialog;
+import org.apache.cordova.inappbrowser.ClearableEditText;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -82,7 +83,7 @@ public class InAppBrowser extends CordovaPlugin {
 
     private InAppBrowserDialog dialog;
     private WebView inAppWebView;
-    private EditText edittext;
+    private ClearableEditText edittext;
     private CallbackContext callbackContext;
     private boolean showLocationBar = true;
     private boolean openWindowHidden = false;
@@ -574,7 +575,7 @@ public class InAppBrowser extends CordovaPlugin {
                 });
 
                 // Edit Text Box
-                edittext = new EditText(cordova.getActivity());
+                edittext = new ClearableEditText(cordova.getActivity());
                 RelativeLayout.LayoutParams textLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
                 textLayoutParams.addRule(RelativeLayout.RIGHT_OF, 5);
                 textLayoutParams.addRule(RelativeLayout.LEFT_OF, 9);
