@@ -832,16 +832,19 @@ if Meteor.isClient
         $('#title').val(data.title)
         $('#addontitle').val(data.host)
       ,2000
+
   @getURL = (e) ->
     inputUrl = e.url
     console.log "input url: " + inputUrl
     if inputUrl && inputUrl isnt ''
+      if Session.get("channel") isnt 'addPost'
+        PUB.page '/add'
       getImagesListFromUrl iabHandle,inputUrl,(data)->
         if data is null
           console.log('AnalyseUrl error, need add error notification')
           return
         processInAppInjectionData data,(url,w,h,found,index,total)->
-          console.log 'found ' + found + ' index ' + index + ' total ' + total + ' url ' + url
+          console.log('found ' + found + ' index ' + index + ' total ' + total + ' url ' + url)
           if url
             insertLink(data,url,found,inputUrl)
           else if index is total
@@ -851,28 +854,21 @@ if Meteor.isClient
     else
       PUB.toast('请粘贴需要引用的链接')
   @handleAddedLink = (url)->
+    importUrl = ''
     if url and url isnt ''
-      @iabHandle = window.open(url, '_blank', 'hidden=no,toolbarposition=top')
-      @iabHandle.addEventListener 'import',(e)->
-        if Session.get("channel") isnt 'addPost'
-          PUB.page '/add'
-        getURL(e)
-      @iabHandle.addEventListener 'exit',()->
-        @iabHandle = null
-      @iabHandle.addEventListener 'hide',()->
-        if Drafts.find().count() is 0
-          PUB.back()
+      importUrl = url
+    ###
     else if iabHandle
       iabHandle.show()
-    else
-      @iabHandle = window.open('', '_blank', 'hidden=no,toolbarposition=top')
-      @iabHandle.addEventListener 'import',(e)->
-        getURL(e)
-      @iabHandle.addEventListener 'exit',()->
-        @iabHandle = null
-      @iabHandle.addEventListener 'hide',()->
-        if Session.get("channel") is 'addPost' and Drafts.find().count() is 0
-          PUB.back()
+    ###
+    @iabHandle = window.open(importUrl, '_blank', 'hidden=no,toolbarposition=top')
+    @iabHandle.addEventListener 'import',(e)->
+      getURL(e)
+    @iabHandle.addEventListener 'exit',()->
+      @iabHandle = null
+    @iabHandle.addEventListener 'hide',()->
+      if Session.get("channel") is 'addPost' and Drafts.find().count() is 0
+        PUB.back()
   Template.addPost.events
     'beUnSelected .resortitem': (e)->
       if window.footbarOppration
