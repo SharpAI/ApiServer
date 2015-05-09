@@ -811,6 +811,57 @@ if Meteor.isClient
         #if data.title
         #Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:data.title, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
 
+  processReadableText=(data)->
+    fullText = ''
+    if data.fullText
+      fullText = data.fullText
+    else
+      documentBody = $.parseHTML( data.body )
+      documentBody.innerHTML = data.body
+      documentBody.innerHTML.length = data.bodyLength
+      extracted = extract(documentBody)
+      fullText = $(extracted).text()
+      console.log 'Extracted is ' + toDisplay
+    if fullText and fullText isnt ''
+      toDisplay = fullText.substring(0, 200)
+      toDisplay += ' ...'
+      Drafts.insert {type:'text', toTheEnd:true ,isImage:false, owner: Meteor.userId(), text:toDisplay, fullText:fullText, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+    if data.title
+      console.log 'Title is ' + data.title
+      Meteor.setTimeout ()->
+        $('#title').val(data.title)
+        $('#addontitle').val(data.host)
+      ,2000
+  @getURL = (e) ->
+    inputUrl = e.url
+    console.log "input url: " + inputUrl
+    if inputUrl && inputUrl isnt ''
+      getImagesListFromUrl iabHandle,inputUrl,(data)->
+        if data is null
+          console.log('AnalyseUrl error, need add error notification')
+          return
+        processInAppInjectionData data,(url,w,h,found,index,total)->
+          console.log 'found ' + found + ' index ' + index + ' total ' + total + ' url ' + url
+          if url
+            insertLink(data,url,found,inputUrl)
+          else if index is total
+            if found is 0
+              console.log 'No Image, need an alert'
+            processReadableText(data)
+    else
+      PUB.toast('请粘贴需要引用的链接')
+  @handleAddedLink = ()->
+    if iabHandle
+      iabHandle.show()
+    else
+      @iabHandle = window.open('', '_blank', 'hidden=no,toolbarposition=top')
+      @iabHandle.addEventListener 'import',(e)->
+        getURL(e)
+      @iabHandle.addEventListener 'exit',()->
+        @iabHandle = null
+      @iabHandle.addEventListener 'hide',()->
+        if Drafts.find().count() is 0
+          PUB.back()
   Template.addPost.events
     'beUnSelected .resortitem': (e)->
       if window.footbarOppration
@@ -829,53 +880,7 @@ if Meteor.isClient
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
     'click #addLink': ()->
       console.log 'Add Link'
-      @getURL = (e) ->
-        inputUrl = e.url
-        console.log "input url: " + inputUrl
-        processReadableText=(data)->
-          fullText = ''
-          if data.fullText
-            fullText = data.fullText
-          else
-            documentBody = $.parseHTML( data.body )
-            documentBody.innerHTML = data.body
-            documentBody.innerHTML.length = data.bodyLength
-            extracted = extract(documentBody)
-            fullText = $(extracted).text()
-            console.log 'Extracted is ' + toDisplay
-          if fullText and fullText isnt ''
-            toDisplay = fullText.substring(0, 200)
-            toDisplay += ' ...'
-            Drafts.insert {type:'text', toTheEnd:true ,isImage:false, owner: Meteor.userId(), text:toDisplay, fullText:fullText, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
-          if data.title
-            console.log 'Title is ' + data.title
-            Meteor.setTimeout ()->
-              $('#title').val(data.title)
-              $('#addontitle').val(data.host)
-            ,2000
-        if inputUrl && inputUrl isnt ''
-          getImagesListFromUrl iabHandle,inputUrl,(data)->
-            if data is null
-              console.log('AnalyseUrl error, need add error notification')
-              return
-            processInAppInjectionData data,(url,w,h,found,index,total)->
-              console.log 'found ' + found + ' index ' + index + ' total ' + total + ' url ' + url
-              if url
-                insertLink(data,url,found,inputUrl)
-              else if index is total
-                if found is 0
-                  console.log 'No Image, need an alert'
-                processReadableText(data)
-        else
-          PUB.toast('请粘贴需要引用的链接')
-      if iabHandle
-        iabHandle.show()
-      else
-        @iabHandle = window.open('', '_blank', 'hidden=no,toolbarposition=top')
-        @iabHandle.addEventListener 'import',(e)->
-          getURL(e)
-        @iabHandle.addEventListener 'exit',()->
-          @iabHandle = null
+      handleAddedLink()
     'click #takephoto': ()->
       if Drafts.find().count() > 0
         window.footbarOppration = true
