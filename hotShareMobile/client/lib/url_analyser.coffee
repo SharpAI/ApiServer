@@ -90,7 +90,7 @@ if Meteor.isClient
       documentBody.innerHTML = data.body
       extracted = extract(documentBody)
       data.fullText = $(extracted).text()
-      console.log 'Title is ' + data.title +'FullText is ' + data.fullText + ' from ' + data.protocol + '//' + data.host
+      console.log 'Title is '+data.title+'FullText is '+data.fullText+' from '+data.protocol+'//'+data.host
       $(documentBody).find('img').each ()->
         src = $(this).attr('src')
         if src and src isnt ''
