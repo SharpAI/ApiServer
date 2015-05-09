@@ -788,7 +788,7 @@ if Meteor.isClient
         for i in [1..(Drafts.find({type:'text'}).count()-1)]
           Drafts.find({type:'text'}).fetch()[i]
   insertLink = (linkInfo,mainImageUrl,found,inputUrl)->
-    if mainImageUrl and found is 1
+    if mainImageUrl
       Drafts.insert {
         type:'image',
         isImage:true,
