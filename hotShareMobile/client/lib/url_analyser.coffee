@@ -1,14 +1,18 @@
 if Meteor.isClient
-  @seekSuitableImageFromArray = (imageArray,callback)->
+  @seekSuitableImageFromArray = (imageArray,callback,minimal)->
     @imageCounter = 0
     @foundImages = 0
+    if minimal
+      minimalWidthAndHeight = minimal
+    else
+      minimalWidthAndHeight = 150
     unless @imageResolver
       @imageResolver = new Image()
     imageResolver.onload = ->
       height = imageResolver.height
       width = imageResolver.width
       console.log imageArray[imageCounter] + ' width is ' + width + ' height is ' + height
-      if height >= 150 and width >= 150
+      if height >= minimalWidthAndHeight and width >= minimalWidthAndHeight
         console.log 'This image can be used ' + imageArray[imageCounter] + ' width is ' + width + ' height is ' + height
         callback imageArray[imageCounter],width,height, ++foundImages,imageCounter,imageArray.length
       if ++imageCounter < imageArray.length
@@ -40,7 +44,7 @@ if Meteor.isClient
     if iabRef
       iabRef.close()
       iabRef = undefined
-  @processInAppInjectionData = (data,callback)->
+  @processInAppInjectionData = (data,callback,minimal)->
     imageArray = []
     #console.log 'Url Analyse result is ' + JSON.stringify(data)
     if data.imageArray
@@ -59,6 +63,7 @@ if Meteor.isClient
           callback(url,w,h,found,index,length)
         else
           callback(null,0,0,found,index,length)
+      ,minimal
     else
       callback(null,0,0,0,0,0)
   @getImagesListFromUrl = (inappBrowser,url,callback)->

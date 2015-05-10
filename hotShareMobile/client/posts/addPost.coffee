@@ -1,5 +1,6 @@
 if Meteor.isClient
   @iabHandle = null
+  Session.set('lastImportedUrl','')
   Template.addPost.destroyed = ->
     $('.tool-container').remove();
     $(window).children().off();
@@ -833,6 +834,7 @@ if Meteor.isClient
     inputUrl = e.url
     console.log "input url: " + inputUrl
     if inputUrl && inputUrl isnt ''
+      Session.set('lastImportedUrl',inputUrl)
       if Session.get("channel") isnt 'addPost'
         PUB.page '/add'
       getImagesListFromUrl iabHandle,inputUrl,(data)->
@@ -846,25 +848,36 @@ if Meteor.isClient
           else if index is total
             if found is 0
               console.log 'No Image, need an alert'
-            processReadableText(data)
+              processInAppInjectionData data,(url,w,h,found,index,total)->
+                console.log('found ' + found + ' index ' + index + ' total ' + total + ' url ' + url)
+                if url
+                  insertLink(data,url,found,inputUrl)
+                else if index is total
+                  if found is 0
+                    console.log 'No Image, need an alert'
+                  processReadableText(data)
+              ,20
+            else
+              processReadableText(data)
     else
       PUB.toast('请粘贴需要引用的链接')
+  @handleExitBrowser = ()->
+    @iabHandle = null
+  @handleHideBrowser = ()->
+    if Session.get("channel") is 'addPost' and Drafts.find().count() is 0
+      Router.go '/'
   @handleAddedLink = (url)->
-    importUrl = ''
+    if iabHandle
+      iabHandle.removeEventListener 'import',getURL
+      iabHandle.removeEventListener 'exit',handleExitBrowser
+      iabHandle.removeEventListener 'hide',handleHideBrowser
     if url and url isnt ''
-      importUrl = url
-    ###
-    else if iabHandle
-      iabHandle.show()
-    ###
-    @iabHandle = window.open(importUrl, '_blank', 'hidden=no,toolbarposition=top')
-    @iabHandle.addEventListener 'import',(e)->
-      getURL(e)
-    @iabHandle.addEventListener 'exit',()->
-      @iabHandle = null
-    @iabHandle.addEventListener 'hide',()->
-      if Session.get("channel") is 'addPost' and Drafts.find().count() is 0
-        PUB.back()
+      @iabHandle = window.open(url, '_blank', 'hidden=no,toolbarposition=top')
+    else
+      @iabHandle = window.open('', '_blank', 'hidden=no,toolbarposition=top')
+    iabHandle.addEventListener 'import',getURL
+    iabHandle.addEventListener 'exit',handleExitBrowser
+    iabHandle.addEventListener 'hide',handleHideBrowser
   Template.addPost.events
     'beUnSelected .resortitem': (e)->
       if window.footbarOppration
@@ -882,8 +895,8 @@ if Meteor.isClient
       console.log("textarea change "+ e.currentTarget.value)
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
     'click #addLink': ()->
-      console.log 'Add Link'
-      handleAddedLink(null)
+      console.log 'Add Link ' + Session.get('lastImportedUrl')
+      handleAddedLink(Session.get('lastImportedUrl'))
     'click #takephoto': ()->
       if Drafts.find().count() > 0
         window.footbarOppration = true
