@@ -104,6 +104,12 @@ if Meteor.isClient
           console.log 'Image Src: ' + src
           if (data.imageArray.indexOf src) <0
             data.imageArray.push src
+      $(documentBody).find('input').each ()->
+        src = $(this).attr('src')
+        if src and src isnt '' and src.startsWith('http')
+          if (data.imageArray.indexOf src) <0
+            console.log 'Got src is ' + src
+            data.imageArray.push src
       $(documentBody).find('div').each ()->
         bg_url = $(this).css('background-image')
         # ^ Either "none" or url("...urlhere..")
@@ -118,6 +124,7 @@ if Meteor.isClient
               console.log 'Background Image: ' + bg_url
               if (data.bgArray.indexOf bg_url) <0
                 data.bgArray.push bg_url
+
       pattern = /data-src=\"([\s\S]*?)(?=\")/g
       result = data.body.match(pattern)
       if result and result.length > 0
