@@ -845,20 +845,10 @@ if Meteor.isClient
           console.log('found ' + found + ' index ' + index + ' total ' + total + ' url ' + url)
           if url
             insertLink(data,url,found,inputUrl)
-          else if index is total
+          if index is total
             if found is 0
-              console.log 'No Image, need an alert'
-              processInAppInjectionData data,(url,w,h,found,index,total)->
-                console.log('found ' + found + ' index ' + index + ' total ' + total + ' url ' + url)
-                if url
-                  insertLink(data,url,found,inputUrl)
-                else if index is total
-                  if found is 0
-                    console.log 'No Image, need an alert'
-                  processReadableText(data)
-              ,20
-            else
-              processReadableText(data)
+              insertLink(data,'http:/data.tiegushi.com/res/defaultMainImage.jpg',found,inputUrl)
+            processReadableText(data)
     else
       PUB.toast('请粘贴需要引用的链接')
   @handleExitBrowser = ()->
