@@ -84,9 +84,10 @@ public class InAppBrowser extends CordovaPlugin {
     private InAppBrowserDialog dialog;
     private WebView inAppWebView;
     private ClearableEditText edittext;
-    private Button importBtn;
-    private String importUrl="";
     private CallbackContext callbackContext;
+    private boolean canImport = false; //import after click import button
+    private boolean needImport = false; //import after load finished
+    private String importUrl = "";
     private boolean showLocationBar = true;
     private boolean openWindowHidden = false;
     private boolean clearAllCache= false;
@@ -374,6 +375,8 @@ public class InAppBrowser extends CordovaPlugin {
     }
 
     private void importUrl() {
+		needImport = false;
+		canImport = false;
     	if(importUrl.length()==0)
     		return;
     	dialog.hide();
@@ -412,7 +415,7 @@ public class InAppBrowser extends CordovaPlugin {
     private void navigate(String url) {
         InputMethodManager imm = (InputMethodManager)this.cordova.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(edittext.getWindowToken(), 0);
-        importBtn.setEnabled(false);
+        canImport = false;
         if (!url.startsWith("http") && !url.startsWith("file:")) {
             this.inAppWebView.loadUrl("http://" + url);
         } else {
@@ -594,6 +597,7 @@ public class InAppBrowser extends CordovaPlugin {
                           navigate(edittext.getText().toString());
                           return true;
                         }
+                        canImport=false;
                         return false;
                     }
                 });
@@ -623,7 +627,7 @@ public class InAppBrowser extends CordovaPlugin {
                 });
 
                 // Import button
-                importBtn = new Button(cordova.getActivity());
+                Button importBtn = new Button(cordova.getActivity());
                 RelativeLayout.LayoutParams importLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
                 importLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                 importBtn.setLayoutParams(importLayoutParams);
@@ -632,10 +636,17 @@ public class InAppBrowser extends CordovaPlugin {
                 importBtn.setText("导入");
                 importBtn.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
-                    	importUrl();
+                    	if(canImport)
+                    	{
+                    		importUrl();
+                    	}
+                    	else
+                    	{
+                    		needImport=true;
+                    		navigate(edittext.getText().toString());
+                    	}
                     }
                 });
-                importBtn.setEnabled(false);
 
                 // WebView
                 inAppWebView = new WebView(cordova.getActivity());
@@ -768,7 +779,6 @@ public class InAppBrowser extends CordovaPlugin {
         public void onPageStarted(WebView view, String url,  Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
             String newloc = "";
-            importBtn.setEnabled(false);
             if (url.startsWith("http:") || url.startsWith("https:") || url.startsWith("file:")) {
                 newloc = url;
             } 
@@ -844,12 +854,7 @@ public class InAppBrowser extends CordovaPlugin {
         
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            
             try {
-            	if (url.startsWith("http:") || url.startsWith("https:") || url.startsWith("file:")) {
-                	importUrl = url;
-            		importBtn.setEnabled(true);
-            	}
                 JSONObject obj = new JSONObject();
                 obj.put("type", LOAD_STOP_EVENT);
                 obj.put("url", url);
@@ -857,6 +862,15 @@ public class InAppBrowser extends CordovaPlugin {
                 sendUpdate(obj, true);
             } catch (JSONException ex) {
                 Log.d(LOG_TAG, "Should never happen");
+            }
+            if (url.startsWith("http:") || url.startsWith("https:") || url.startsWith("file:")) {
+            	importUrl = url;
+            	if(needImport)
+            	{
+            		importUrl();
+            	}
+            	else
+                	canImport = true;
             }
         }
         
