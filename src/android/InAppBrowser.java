@@ -84,6 +84,8 @@ public class InAppBrowser extends CordovaPlugin {
     private InAppBrowserDialog dialog;
     private WebView inAppWebView;
     private ClearableEditText edittext;
+    private Button importBtn;
+    private String importUrl="";
     private CallbackContext callbackContext;
     private boolean showLocationBar = true;
     private boolean openWindowHidden = false;
@@ -101,7 +103,7 @@ public class InAppBrowser extends CordovaPlugin {
     public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
         if (action.equals("open")) {
             this.callbackContext = callbackContext;
-            final String url = args.getString(0).replaceAll("http://meteor.local/add", "");
+            final String url = args.getString(0).replaceAll("http://meteor.local/add", "").replace("http://meteor.local/", "");
             String t = args.optString(1);
             if (t == null || t.equals("") || t.equals(NULL)) {
                 t = SELF;
@@ -372,14 +374,13 @@ public class InAppBrowser extends CordovaPlugin {
     }
 
     private void importUrl() {
-    	String url = edittext.getText().toString();
-    	if(url.length()==0)
+    	if(importUrl.length()==0)
     		return;
     	dialog.hide();
         try {
             JSONObject obj = new JSONObject();
             obj.put("type", IMPORT_EVENT);
-            obj.put("url", url);
+            obj.put("url", importUrl);
             sendUpdate(obj, false);
         } catch (JSONException ex) {
             Log.d(LOG_TAG, "Should never happen");
@@ -411,7 +412,7 @@ public class InAppBrowser extends CordovaPlugin {
     private void navigate(String url) {
         InputMethodManager imm = (InputMethodManager)this.cordova.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(edittext.getWindowToken(), 0);
-
+        importBtn.setEnabled(false);
         if (!url.startsWith("http") && !url.startsWith("file:")) {
             this.inAppWebView.loadUrl("http://" + url);
         } else {
@@ -622,7 +623,7 @@ public class InAppBrowser extends CordovaPlugin {
                 });
 
                 // Import button
-                Button importBtn = new Button(cordova.getActivity());
+                importBtn = new Button(cordova.getActivity());
                 RelativeLayout.LayoutParams importLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
                 importLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                 importBtn.setLayoutParams(importLayoutParams);
@@ -634,6 +635,7 @@ public class InAppBrowser extends CordovaPlugin {
                     	importUrl();
                     }
                 });
+                importBtn.setEnabled(false);
 
                 // WebView
                 inAppWebView = new WebView(cordova.getActivity());
@@ -766,6 +768,7 @@ public class InAppBrowser extends CordovaPlugin {
         public void onPageStarted(WebView view, String url,  Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
             String newloc = "";
+            importBtn.setEnabled(false);
             if (url.startsWith("http:") || url.startsWith("https:") || url.startsWith("file:")) {
                 newloc = url;
             } 
@@ -843,6 +846,10 @@ public class InAppBrowser extends CordovaPlugin {
             super.onPageFinished(view, url);
             
             try {
+            	if (url.startsWith("http:") || url.startsWith("https:") || url.startsWith("file:")) {
+                	importUrl = url;
+            		importBtn.setEnabled(true);
+            	}
                 JSONObject obj = new JSONObject();
                 obj.put("type", LOAD_STOP_EVENT);
                 obj.put("url", url);
