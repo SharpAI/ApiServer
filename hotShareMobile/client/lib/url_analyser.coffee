@@ -95,14 +95,15 @@ if Meteor.isClient
       documentBody.innerHTML = data.body
       extracted = extract(documentBody)
       data.fullText = $(extracted).text()
-      console.log 'Title is '+data.title+'FullText is '+data.fullText+' from '+data.protocol+'//'+data.host
       $(documentBody).find('img').each ()->
         src = $(this).attr('src')
         if src and src isnt ''
           unless src.startsWith('http')
-            src = data.protocol + '//' + data.host + '/' + src
+            if src.startsWith('/')
+              src = data.protocol + '//' + data.host + '/' + src
           console.log 'Image Src: ' + src
-          data.imageArray.push src
+          if (data.imageArray.indexOf src) <0
+            data.imageArray.push src
       $(documentBody).find('div').each ()->
         bg_url = $(this).css('background-image')
         # ^ Either "none" or url("...urlhere..")
@@ -115,5 +116,24 @@ if Meteor.isClient
               unless bg_url.startsWith('http')
                 bg_url = data.protocol + '//' + data.host + '/' + bg_url
               console.log 'Background Image: ' + bg_url
-              data.bgArray.push bg_url
+              if (data.bgArray.indexOf bg_url) <0
+                data.bgArray.push bg_url
+      pattern = /data-src=\"([\s\S]*?)(?=\")/g
+      result = data.body.match(pattern)
+      if result and result.length > 0
+        console.log 'result ' + JSON.stringify(result)
+        for subString in result
+          dataSrc = subString.substring(10, subString.length)
+          if (data.imageArray.indexOf dataSrc) <0 and (data.bgArray.indexOf dataSrc) <0
+            data.imageArray.push(dataSrc)
+            console.log 'push dataSrc: ' + dataSrc
+      pattern = /data-src=\'([\s\S]*?)(?=\')/g
+      result = data.body.match(pattern)
+      if result and result.length > 0
+        console.log 'result ' + JSON.stringify(result)
+        for subString in result
+          dataSrc = subString.substring(10, subString.length)
+          if (data.imageArray.indexOf dataSrc) <0 and (data.bgArray.indexOf dataSrc) <0
+            data.imageArray.push(dataSrc)
+            console.log 'push dataSrc: ' + dataSrc
       callback data
