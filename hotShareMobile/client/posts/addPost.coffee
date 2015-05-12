@@ -194,24 +194,31 @@ if Meteor.isClient
         #some image may not be in blur status.
         $('#blur_overlay').css('z-index', 14)
 
+        ###
         $(textarea).click(()->
             console.log("textarea click!")
             #$(textarea).focus()
             console.log("$(textarea).value="+JSON.stringify($(textarea).value));
             console.log("$(textarea).selectionStart="+$(textarea).selectionStart);
         )
+        ###
 
         $(textarea).focus(()->
           #$(".head").css 'position','absolute'
-          #Session.set('textareaFocused', true)
-          console.log("focus get")
+          Session.set('textareaFocused', true)
+          console.log("textareaFocused true")
           $(node).addClass("edit");
+          $(textarea).off('focus')
         )
+
+        ###
         $(textarea).on('blur', 'input, textarea', ()->
           setTimeout(()->
             window.scrollTo(document.body.scrollLeft, document.body.scrollTop);
           , 0)
         )
+        ###
+
         $(textarea).focus()
 
         $(textarea).focusout(()->
@@ -220,12 +227,14 @@ if Meteor.isClient
           $(this).attr("readOnly", true)
           `global_disable_longpress = false`
           `global_toolbar_hidden = false`
-          #Session.set('textareaFocused', false)
-
+          Session.set('textareaFocused', false)
+          console.log("textareaFocused false")
           $('#blur_overlay').css('height','')
           $(node).css('z-index', '')
           $(node).removeClass("edit");
           Template.addPost.__helpers.get('saveDraft')()
+
+          $(textarea).off('focusout')
         )
 
       else if buttonClicked.id == "del"
@@ -716,10 +725,13 @@ if Meteor.isClient
     showPostFooter:->
       if Session.get('isReviewMode') is '2' or Session.get('isReviewMode') is '0'
         if Session.get('textareaFocused') is false
+          console.log("showPostFooter true")
           true
         else
+          console.log("showPostFooter false")
           false
       else
+        console.log("showPostFooter false")
         false
     isReviewMode:(value)->
       console.log "value is "+value + ", isReviewMode = "+Session.get('isReviewMode')
@@ -876,10 +888,10 @@ if Meteor.isClient
     #'beSelected .resortitem':->
     # console.log('.resortItem seleted')
     'focus [name=textarea]':->
-      Session.set('textareaFocused', true)
+      #Session.set('textareaFocused', true)
       $(".head").css 'position','absolute'
     'blur [name=textarea]':->
-      Session.set('textareaFocused', false)
+      #Session.set('textareaFocused', false)
       $(".head").css 'position','fixed'
     'change [name=textarea]' : (e,cxt)->
       console.log("textarea change "+ e.currentTarget.value)
