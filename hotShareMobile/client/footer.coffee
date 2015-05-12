@@ -33,6 +33,7 @@ if Meteor.isClient
       )
       Meteor.isCordova
   prepareToEditorMode = ()->
+    $('body').removeClass('modal-open')
     Session.set 'isReviewMode','0'
     Session.set('draftTitle', '');
     Session.set('draftAddontitle', '');
