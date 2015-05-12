@@ -34,7 +34,7 @@
         {{#if mainImage}}
           <div id="wrapper">
             <div class="mainImage" id="{{mainImage._id}}">
-              <img id="mainImage{{mainImage._id}}" class="scale item" src="{{mainImage.imgUrl}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImage.style}}" >
+              <img id="mainImage{{mainImage._id}}" class="scale item" src="{{mainImage.imgUrl}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImage.style}}" onload="$(this).parent().actImageFitCover('cropStyle');" >
               <header>
                 <textarea id="title" name="textarea" rows="1" class="title" placeholder="主标题"  oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'; ">{{draftTitles.title}}</textarea>
                 <textarea id="addontitle" name="textarea" rows="1" class="addontitle" placeholder="副标题" oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'; ">{{draftTitles.addontitle}}</textarea>
