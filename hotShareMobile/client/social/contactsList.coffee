@@ -23,9 +23,13 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu",'addNewFriends')
     "click .userProfile":(e)->
       Session.set("ProfileUserId", this.followerId)
+      Session.set("ProfileUserId1", this.followerId)
+      Session.set("ProfileUserId2", this.followerId)
+      Session.set("ProfileUserId3", this.followerId)
       Meteor.subscribe("userinfo", this.followerId)
       Meteor.subscribe("recentPostsViewByUser", this.followerId)
-      Session.set("Social.LevelOne.Menu", 'userProfile')
+      #click on current friends list
+      Router.go 'userProfilePage1'
     'click .messageGroup': ()->
       Session.set("Social.LevelOne.Menu", 'messageGroup')      
   Template.addNewFriends.rendered=->
@@ -106,9 +110,13 @@ if Meteor.isClient
   Template.addNewFriends.events
     "click .newUserProfile":(e)->
       Session.set("ProfileUserId", this.ta)
+      Session.set("ProfileUserId1", this.ta)
+      Session.set("ProfileUserId2", this.ta)
+      Session.set("ProfileUserId3", this.ta)
       Meteor.subscribe("userinfo",this.ta)
       Meteor.subscribe("recentPostsViewByUser",this.ta)
-      Session.set("Social.LevelOne.Menu", 'userProfile')
+      #click on suggest friends list
+      Router.go 'userProfilePage1'
     "click #addNewFriends":()->
       Session.set("Social.LevelOne.Menu",'addNewFriends')
     'click .delFollow':(e)->
