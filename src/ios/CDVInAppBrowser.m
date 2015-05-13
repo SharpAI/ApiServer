@@ -32,9 +32,10 @@
 #ifndef ACT_INAPPBROWSER
 #define    LOCATIONBAR_HEIGHT 21.0
 #else
+#define    FOOTERBAR_HEIGHT   44.0
 #define    LOCATIONBAR_HEIGHT 32.0
-#define    LOCATIONBAR_CLOSE  80.0
-#define    LOCATIONBAR_IMPORT 80.0
+#define    LOCATIONBAR_CLOSE  35.0
+#define    LOCATIONBAR_IMPORT 70.0
 #endif
 #define    FOOTER_HEIGHT ((TOOLBAR_HEIGHT) + (LOCATIONBAR_HEIGHT))
 
@@ -613,23 +614,18 @@
     self.closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(close)];
     self.closeButton.enabled = YES;
 #else
-    if (_browserOptions.browsemode) {
-        self.closeButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Back", nil) style:UIBarButtonItemStylePlain target:self action:@selector(close)];
-    } else {
-        UIButton *closeUIButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        closeUIButton.frame = CGRectMake(0, 0, 22, 22);
-        [closeUIButton setImage:[UIImage imageNamed:@"ic_action_remove"] forState:UIControlStateNormal];
-        [closeUIButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
-        self.closeButton = [[UIBarButtonItem alloc] initWithCustomView:closeUIButton];
-        //self.closeButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_action_remove"] style:UIBarButtonItemStyleBordered target:self action:@selector(close)];
-    }
+    UIButton *closeUIButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    closeUIButton.frame = CGRectMake(0, 0, 34, 34);
+    [closeUIButton setImage:[UIImage imageNamed:@"ic_action_remove"] forState:UIControlStateNormal];
+    [closeUIButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
+    self.closeButton = [[UIBarButtonItem alloc] initWithCustomView:closeUIButton];
     self.closeButton.enabled = YES;
 #endif
 
     UIBarButtonItem* flexibleSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 
     UIBarButtonItem* fixedSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    fixedSpaceButton.width = 5;
+    fixedSpaceButton.width = 20;
 
     float toolbarY = toolbarIsAtBottom ? self.view.bounds.size.height - TOOLBAR_HEIGHT : 0.0;
     CGRect toolbarFrame = CGRectMake(-10.0, toolbarY, self.view.bounds.size.width+10, TOOLBAR_HEIGHT);
@@ -646,6 +642,24 @@
     self.toolbar.multipleTouchEnabled = NO;
     self.toolbar.opaque = NO;
     self.toolbar.userInteractionEnabled = YES;
+
+#ifdef ACT_INAPPBROWSER
+    float footerbarY = self.view.bounds.size.height - FOOTERBAR_HEIGHT;
+    CGRect footerbarFrame = CGRectMake(0.0, footerbarY, self.view.bounds.size.width, FOOTERBAR_HEIGHT);
+
+    self.footerbar = [[UIToolbar alloc] initWithFrame:footerbarFrame];
+    self.footerbar.alpha = 1.000;
+    self.footerbar.autoresizesSubviews = YES;
+    self.footerbar.autoresizingMask = toolbarIsAtBottom ? (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin) : UIViewAutoresizingFlexibleWidth;
+    self.footerbar.barStyle = UIBarStyleDefault;//UIBarStyleBlackOpaque;
+    self.footerbar.clearsContextBeforeDrawing = NO;
+    self.footerbar.clipsToBounds = YES;
+    self.footerbar.contentMode = UIViewContentModeScaleToFill;
+    self.footerbar.hidden = NO;
+    self.footerbar.multipleTouchEnabled = NO;
+    self.footerbar.opaque = NO;
+    self.footerbar.userInteractionEnabled = YES;
+#endif
 
     CGFloat labelInset = 5.0;
 #ifdef ACT_INAPPBROWSER
@@ -692,8 +706,8 @@
     CGFloat textInset = 0.0;
     float locationBarY2 = toolbarIsAtBottom ? self.view.bounds.size.height - FOOTER_HEIGHT : [self getStatusBarOffset];
 
-    //self.addressText = [[UITextField alloc] initWithFrame:CGRectMake(textInset, locationBarY2, self.view.bounds.size.width - textInset - LOCATIONBAR_IMPORT - LOCATIONBAR_CLOSE, LOCATIONBAR_HEIGHT)];
-    self.addressText = [[UITextField alloc] initWithFrame:CGRectMake(textInset, locationBarY2, self.view.bounds.size.width - textInset - (self.view.bounds.size.width/3>140.0?self.view.bounds.size.width/3:140.0), LOCATIONBAR_HEIGHT)];
+    self.addressText = [[UITextField alloc] initWithFrame:CGRectMake(textInset, locationBarY2, self.view.bounds.size.width - textInset - LOCATIONBAR_IMPORT - LOCATIONBAR_CLOSE, LOCATIONBAR_HEIGHT)];
+    //self.addressText = [[UITextField alloc] initWithFrame:CGRectMake(textInset, locationBarY2, self.view.bounds.size.width - textInset - (self.view.bounds.size.width/3>140.0?self.view.bounds.size.width/3:140.0), LOCATIONBAR_HEIGHT)];
     self.addressText.adjustsFontSizeToFitWidth = NO;
     self.addressText.alpha = 1.000;
     self.addressText.autoresizesSubviews = YES;
@@ -727,7 +741,7 @@
     //NSString* frontArrowString = NSLocalizedString(@"►", nil); // create arrow from Unicode char
     //self.forwardButton = [[UIBarButtonItem alloc] initWithTitle:frontArrowString style:UIBarButtonItemStylePlain target:self action:@selector(goForward:)];
     UIButton *forwardUIButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    forwardUIButton.frame = CGRectMake(0, 0, 22, 22);
+    forwardUIButton.frame = CGRectMake(0, 0, 27, 27);
     [forwardUIButton setImage:[UIImage imageNamed:@"ic_action_next_item"] forState:UIControlStateNormal];
     [forwardUIButton addTarget:self action:@selector(goForward:) forControlEvents:UIControlEventTouchUpInside];
     self.forwardButton = [[UIBarButtonItem alloc] initWithCustomView:forwardUIButton];
@@ -738,7 +752,7 @@
     //NSString* backArrowString = NSLocalizedString(@"◄", nil); // create arrow from Unicode char
     //self.backButton = [[UIBarButtonItem alloc] initWithTitle:backArrowString style:UIBarButtonItemStylePlain target:self action:@selector(goBack:)];
     UIButton *backUIButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    backUIButton.frame = CGRectMake(0, 0, 22, 22);
+    backUIButton.frame = CGRectMake(0, 0, 27, 27);
     [backUIButton setImage:[UIImage imageNamed:@"ic_action_previous_item"] forState:UIControlStateNormal];
     [backUIButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
     self.backButton = [[UIBarButtonItem alloc] initWithCustomView:backUIButton];
@@ -752,8 +766,9 @@
     if (_browserOptions.browsemode) {
         [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton]];
     } else {
-        [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.backButton, flexibleSpaceButton, self.forwardButton, flexibleSpaceButton, self.addressButton, flexibleSpaceButton, self.importButton]];
+        [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.addressButton, flexibleSpaceButton, self.importButton]];
     }
+    [self.footerbar setItems:@[self.backButton, fixedSpaceButton, self.forwardButton]];
 #endif
 
     self.view.backgroundColor = [UIColor grayColor];
@@ -761,6 +776,10 @@
 #ifndef ACT_INAPPBROWSER
     [self.view addSubview:self.addressLabel];
 #else
+    [self.view addSubview:self.footerbar];
+    if (_browserOptions.browsemode) {
+        [self.view sendSubviewToBack:self.footerbar];
+    }
     //[self.view addSubview:self.addressText];
 #endif
     [self.view addSubview:self.spinner];
@@ -775,17 +794,19 @@
         UIBarButtonItem* fixedSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
         fixedSpaceButton.width = 20;
 
-        if (_browserOptions.browsemode) {
-            self.closeButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Back", nil) style:UIBarButtonItemStylePlain target:self action:@selector(close)];
-        } else {
-            self.closeButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_action_remove"] style:UIBarButtonItemStyleBordered target:self action:@selector(close)];
-        }
-        self.closeButton.enabled = YES;
+        /*UIButton *closeUIButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        closeUIButton.frame = CGRectMake(0, 0, 27, 27);
+        [closeUIButton setImage:[UIImage imageNamed:@"ic_action_remove"] forState:UIControlStateNormal];
+        [closeUIButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
+        self.closeButton = [[UIBarButtonItem alloc] initWithCustomView:closeUIButton];
+        self.closeButton.enabled = YES;*/
 
         if (_browserOptions.browsemode) {
             [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton]];
+            [self.view sendSubviewToBack:self.footerbar];
         } else {
             [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.addressButton, flexibleSpaceButton, self.importButton]];
+            [self.view bringSubviewToFront:self.footerbar];
         }
     }
 }
@@ -1003,6 +1024,7 @@
 - (void)clearButtonOnClick:(id)sender
 {
     self.addressText.text = @"";
+    self.addressText.rightViewMode = UITextFieldViewModeNever;
 }
 
 - (void)importButtonOnClick:(id)sender
@@ -1027,10 +1049,27 @@
 
 -(void)textFieldDidBeginEditing:(UITextField *)textField
 {
+    [textField setReturnKeyType:UIReturnKeyGo];
+    if (textField.text.length == 0) {
+        textField.rightViewMode = UITextFieldViewModeNever;
+    } else {
+        textField.rightViewMode = UITextFieldViewModeWhileEditing;
+    }
 }
 
 -(void)textFieldDidEndEditing:(UITextField *)textField
 {
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    NSString *newText = [textField.text stringByReplacingCharactersInRange:range withString:string];
+    if (newText.length == 0) {
+        textField.rightViewMode = UITextFieldViewModeNever;
+    } else {
+        textField.rightViewMode = UITextFieldViewModeWhileEditing;
+    }
+    return YES;
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField
@@ -1081,8 +1120,6 @@
         [self.toolbar setFrame:CGRectMake(self.toolbar.frame.origin.x, [self getStatusBarOffset], self.toolbar.frame.size.width, self.toolbar.frame.size.height)];
     }
 }
-
-#pragma mark UIWebViewDelegate
 
 - (void)webViewDidStartLoad:(UIWebView*)theWebView
 {
