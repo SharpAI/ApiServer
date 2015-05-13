@@ -345,9 +345,10 @@ if Meteor.isClient
           PUB.toast("准备故事的主题图片失败，请稍后尝试。");
           return
         console.log("downloadFromBCS suc! Prepare socialsharing...")
-        window.plugins.socialsharing.share(title+':'+addontitle+'(来自 故事贴)', null, result, url);
-
-
+        if addontitle and addontitle isnt ''
+          window.plugins.socialsharing.share("『故事贴』 "+title+'：'+addontitle, null, result, url)
+        else
+          window.plugins.socialsharing.share("『故事贴』 "+title, null, result, url)
       )
     'click .imgdiv': (e)->
       images = []

@@ -90,9 +90,9 @@ if Meteor.isClient
             ,2000
           Session.set('postContent',post)
           if post.addontitle and (post.addontitle isnt '')
-            documentTitle = post.title + "：" + post.addontitle
+            documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
           else
-            documentTitle = post.title
+            documentTitle = "『故事贴』" + post.title
           Session.set("DocumentTitle",documentTitle)
           this.render 'showPosts', {data: post}
           Session.set 'channel','posts/'+this.params._id

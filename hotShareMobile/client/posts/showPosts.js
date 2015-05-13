@@ -11,21 +11,21 @@ Template.showPosts.events({
       if (this.addontitle && (this.addontitle !=='')){
         title = title + '：' + this.addontitle;
       }
-      window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等")
+      window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等");
 
-      height = $('.showPosts').height()
-      $('#blur_overlay').css('height',height)
-      $('#blur_overlay').css('z-index', 10000)
+      height = $('.showPosts').height();
+      $('#blur_overlay').css('height',height);
+      $('#blur_overlay').css('z-index', 10000);
 
       downloadFromBCS(this.mainImage, function(result){
         console.log("url = "+url);
-        $('#blur_overlay').css('height','')
-        $('#blur_overlay').css('z-index', -1)
+        $('#blur_overlay').css('height','');
+        $('#blur_overlay').css('z-index', -1);
 
         if (result) {
             WeChat.share({
-                title: title,
-                description: addontitle+'(来自 故事贴)',
+                title: "故事贴",
+                description: "『故事贴』 "+ title + addontitle ? "："+addontitle :"",
                 thumbData: result,
                 url: url
               }, WeChat.Scene.timeline, function () {
@@ -50,19 +50,19 @@ Template.showPosts.events({
         url = "http://" + server_domain_name +url;
       var title = this.title;
       var addontitle = this.addontitle;
-      window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等")
-      height = $('.showPosts').height()
-      $('#blur_overlay').css('height',height)
-      $('#blur_overlay').css('z-index', 10000)
+      window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等");
+      height = $('.showPosts').height();
+      $('#blur_overlay').css('height',height);
+      $('#blur_overlay').css('z-index', 10000);
 
       downloadFromBCS(this.mainImage, function(result){
 
-        $('#blur_overlay').css('height','')
-        $('#blur_overlay').css('z-index', -1)
+        $('#blur_overlay').css('height','');
+        $('#blur_overlay').css('z-index', -1);
         if (result) {
           WeChat.share({
-            title: title,
-            description: addontitle+'(来自 故事贴)',
+            title: "故事贴",
+            description: "『故事贴』 "+ title + addontitle ? "："+addontitle :"",
             thumbData: result,
             url: url
           }, WeChat.Scene.session, function () {
