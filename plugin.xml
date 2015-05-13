@@ -128,8 +128,12 @@
         </config-file>
 
         <header-file src="src/ios/CDVInAppBrowser.h" />
-	    <source-file src="src/ios/CDVInAppBrowser.m" />
-	    
+	    <source-file src="src/ios/CDVInAppBrowser.m" />'
+
+	<resource-file src="src/ios/res/ic_action_remove.png" target="res/ic_action_remove.png" />
+        <resource-file src="src/ios/res/ic_action_previous_item.png" target="res/ic_action_previous_item.png" />
+        <resource-file src="src/ios/res/ic_action_next_item.png" target="res/ic_action_next_item.png" />   
+
 	    <framework src="CoreGraphics.framework" />
     </platform>
 

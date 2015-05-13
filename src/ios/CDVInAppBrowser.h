@@ -49,7 +49,7 @@
 
 @property (nonatomic, assign) BOOL location;
 @property (nonatomic, assign) BOOL toolbar;
-@property (nonatomic, assign) BOOL browseMode;
+@property (nonatomic, assign) BOOL browsemode;
 @property (nonatomic, copy) NSString* closebuttoncaption;
 @property (nonatomic, copy) NSString* toolbarposition;
 @property (nonatomic, assign) BOOL clearcache;
@@ -112,6 +112,7 @@
 - (void)setCloseButtonTitle:(NSString*)title;
 
 - (id)initWithUserAgent:(NSString*)userAgent prevUserAgent:(NSString*)prevUserAgent browserOptions: (CDVInAppBrowserOptions*) browserOptions;
+- (void)reInitializeToolbar:(CDVInAppBrowserOptions*)browserOptions;
 
 @end
 

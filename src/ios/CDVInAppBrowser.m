@@ -32,9 +32,9 @@
 #ifndef ACT_INAPPBROWSER
 #define    LOCATIONBAR_HEIGHT 21.0
 #else
-#define    LOCATIONBAR_HEIGHT 35.0
-#define    LOCATIONBAR_CLOSE   35.0
-#define    LOCATIONBAR_IMPORT 90.0
+#define    LOCATIONBAR_HEIGHT 32.0
+#define    LOCATIONBAR_CLOSE  80.0
+#define    LOCATIONBAR_IMPORT 80.0
 #endif
 #define    FOOTER_HEIGHT ((TOOLBAR_HEIGHT) + (LOCATIONBAR_HEIGHT))
 
@@ -159,6 +159,10 @@
         if ([self.viewController conformsToProtocol:@protocol(CDVScreenOrientationDelegate)]) {
             self.inAppBrowserViewController.orientationDelegate = (UIViewController <CDVScreenOrientationDelegate>*)self.viewController;
         }
+    } else {
+#ifdef ACT_INAPPBROWSER
+        [self.inAppBrowserViewController reInitializeToolbar:browserOptions];
+#endif
     }
 
     [self.inAppBrowserViewController showLocationBar:browserOptions.location];
@@ -455,6 +459,7 @@
 
         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
     }
+    NSLog(@"Load finished!");
 }
 
 - (void)webView:(UIWebView*)theWebView didFailLoadWithError:(NSError*)error
@@ -519,7 +524,7 @@
     _previousStatusBarStyle = -1; // this value was reset before reapplying it. caused statusbar to stay black on ios7
 }
 
-- (void)importButtonCallback:(id)sender addressText:(NSString *)addressText
+- (void)importButtonCallback:(NSString *)addressText
 {
     NSLog(@"Send event:import to JS, url=%@", addressText);
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
@@ -608,10 +613,15 @@
     self.closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(close)];
     self.closeButton.enabled = YES;
 #else
-    if (_browserOptions.browseMode) {
+    if (_browserOptions.browsemode) {
         self.closeButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Back", nil) style:UIBarButtonItemStylePlain target:self action:@selector(close)];
     } else {
-        self.closeButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"camera_edit_cut_cancel_highlighted"] style:UIBarButtonItemStyleBordered target:self action:@selector(close)];
+        UIButton *closeUIButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        closeUIButton.frame = CGRectMake(0, 0, 22, 22);
+        [closeUIButton setImage:[UIImage imageNamed:@"ic_action_remove"] forState:UIControlStateNormal];
+        [closeUIButton addTarget:self action:@selector(close) forControlEvents:UIControlEventTouchUpInside];
+        self.closeButton = [[UIBarButtonItem alloc] initWithCustomView:closeUIButton];
+        //self.closeButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_action_remove"] style:UIBarButtonItemStyleBordered target:self action:@selector(close)];
     }
     self.closeButton.enabled = YES;
 #endif
@@ -619,16 +629,16 @@
     UIBarButtonItem* flexibleSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 
     UIBarButtonItem* fixedSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    fixedSpaceButton.width = 20;
+    fixedSpaceButton.width = 5;
 
     float toolbarY = toolbarIsAtBottom ? self.view.bounds.size.height - TOOLBAR_HEIGHT : 0.0;
-    CGRect toolbarFrame = CGRectMake(0.0, toolbarY, self.view.bounds.size.width, TOOLBAR_HEIGHT);
+    CGRect toolbarFrame = CGRectMake(-10.0, toolbarY, self.view.bounds.size.width+10, TOOLBAR_HEIGHT);
 
     self.toolbar = [[UIToolbar alloc] initWithFrame:toolbarFrame];
     self.toolbar.alpha = 1.000;
     self.toolbar.autoresizesSubviews = YES;
     self.toolbar.autoresizingMask = toolbarIsAtBottom ? (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin) : UIViewAutoresizingFlexibleWidth;
-    self.toolbar.barStyle = UIBarStyleBlackOpaque;
+    self.toolbar.barStyle = UIBarStyleDefault;//UIBarStyleBlackOpaque;
     self.toolbar.clearsContextBeforeDrawing = NO;
     self.toolbar.clipsToBounds = NO;
     self.toolbar.contentMode = UIViewContentModeScaleToFill;
@@ -682,44 +692,67 @@
     CGFloat textInset = 0.0;
     float locationBarY2 = toolbarIsAtBottom ? self.view.bounds.size.height - FOOTER_HEIGHT : [self getStatusBarOffset];
 
-    self.addressText = [[UITextField alloc] initWithFrame:CGRectMake(textInset, locationBarY2, self.view.bounds.size.width - textInset - LOCATIONBAR_IMPORT - LOCATIONBAR_CLOSE, LOCATIONBAR_HEIGHT)];
+    //self.addressText = [[UITextField alloc] initWithFrame:CGRectMake(textInset, locationBarY2, self.view.bounds.size.width - textInset - LOCATIONBAR_IMPORT - LOCATIONBAR_CLOSE, LOCATIONBAR_HEIGHT)];
+    self.addressText = [[UITextField alloc] initWithFrame:CGRectMake(textInset, locationBarY2, self.view.bounds.size.width - textInset - (self.view.bounds.size.width/3>140.0?self.view.bounds.size.width/3:140.0), LOCATIONBAR_HEIGHT)];
     self.addressText.adjustsFontSizeToFitWidth = NO;
     self.addressText.alpha = 1.000;
     self.addressText.autoresizesSubviews = YES;
     self.addressText.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
-    self.addressText.backgroundColor = [UIColor darkGrayColor];
+    self.addressText.backgroundColor = [UIColor colorWithWhite: 0.850 alpha:1.000];;//[UIColor darkGrayColor];
     //self.addressText.text = NSLocalizedString(@"Loading...", nil);
     self.addressText.text = NSLocalizedString(@"", nil);
     self.addressText.textAlignment = NSTextAlignmentLeft;
-    self.addressText.textColor = [UIColor colorWithWhite:1.000 alpha:1.000];
+    self.addressText.textColor = [UIColor blackColor];//[UIColor colorWithWhite:1.000 alpha:1.000];
+    UIButton *clearButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    clearButton.frame = CGRectMake(0, 0, 20, 20);
+    [clearButton setImage:[UIImage imageNamed:@"ic_action_remove"] forState:UIControlStateNormal];
+    [clearButton addTarget:self action:@selector(clearButtonOnClick:) forControlEvents:UIControlEventTouchUpInside];
+    self.addressText.rightViewMode = UITextFieldViewModeWhileEditing;
+    self.addressText.rightView = clearButton;
     self.addressText.delegate = self;
     
     //Import button
     NSString* frontImportString = NSLocalizedString(@"Import", nil); // create arrow from Unicode char
     self.importButton = [[UIBarButtonItem alloc] initWithTitle:frontImportString style:UIBarButtonItemStylePlain target:self action:@selector(importButtonOnClick:)];
+    NSUInteger size = 14;
+    UIFont* font = [UIFont boldSystemFontOfSize:size];
+    NSDictionary* attributes = @{NSFontAttributeName: font};
+    [self.importButton setTitleTextAttributes:attributes forState:UIControlStateNormal];
     self.importButton.enabled = YES;
     //self.importButton.imageInsets = UIEdgeInsetsZero;
     self.addressButton = [[UIBarButtonItem alloc] initWithCustomView:self.addressText];
     self.addressButton.enabled = YES;
 #endif
 
-    NSString* frontArrowString = NSLocalizedString(@"►", nil); // create arrow from Unicode char
-    self.forwardButton = [[UIBarButtonItem alloc] initWithTitle:frontArrowString style:UIBarButtonItemStylePlain target:self action:@selector(goForward:)];
+    //NSString* frontArrowString = NSLocalizedString(@"►", nil); // create arrow from Unicode char
+    //self.forwardButton = [[UIBarButtonItem alloc] initWithTitle:frontArrowString style:UIBarButtonItemStylePlain target:self action:@selector(goForward:)];
+    UIButton *forwardUIButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    forwardUIButton.frame = CGRectMake(0, 0, 22, 22);
+    [forwardUIButton setImage:[UIImage imageNamed:@"ic_action_next_item"] forState:UIControlStateNormal];
+    [forwardUIButton addTarget:self action:@selector(goForward:) forControlEvents:UIControlEventTouchUpInside];
+    self.forwardButton = [[UIBarButtonItem alloc] initWithCustomView:forwardUIButton];
+    //self.forwardButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_action_next_item"] style:UIBarButtonItemStyleBordered target:self action:@selector(goForward:)];
     self.forwardButton.enabled = YES;
     self.forwardButton.imageInsets = UIEdgeInsetsZero;
 
-    NSString* backArrowString = NSLocalizedString(@"◄", nil); // create arrow from Unicode char
-    self.backButton = [[UIBarButtonItem alloc] initWithTitle:backArrowString style:UIBarButtonItemStylePlain target:self action:@selector(goBack:)];
+    //NSString* backArrowString = NSLocalizedString(@"◄", nil); // create arrow from Unicode char
+    //self.backButton = [[UIBarButtonItem alloc] initWithTitle:backArrowString style:UIBarButtonItemStylePlain target:self action:@selector(goBack:)];
+    UIButton *backUIButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    backUIButton.frame = CGRectMake(0, 0, 22, 22);
+    [backUIButton setImage:[UIImage imageNamed:@"ic_action_previous_item"] forState:UIControlStateNormal];
+    [backUIButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
+    self.backButton = [[UIBarButtonItem alloc] initWithCustomView:backUIButton];
+    //self.backButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_action_previous_item"] style:UIBarButtonItemStyleBordered target:self action:@selector(goBack:)];
     self.backButton.enabled = YES;
     self.backButton.imageInsets = UIEdgeInsetsZero;
 
 #ifndef ACT_INAPPBROWSER
     [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.backButton, fixedSpaceButton, self.forwardButton]];
 #else
-    if (_browserOptions.browseMode) {
+    if (_browserOptions.browsemode) {
         [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton]];
     } else {
-        [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.addressButton, flexibleSpaceButton, self.importButton]];
+        [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.backButton, flexibleSpaceButton, self.forwardButton, flexibleSpaceButton, self.addressButton, flexibleSpaceButton, self.importButton]];
     }
 #endif
 
@@ -732,6 +765,31 @@
 #endif
     [self.view addSubview:self.spinner];
 }
+#ifdef ACT_INAPPBROWSER
+- (void)reInitializeToolbar:(CDVInAppBrowserOptions*)browserOptions
+{
+    if (_browserOptions.browsemode != browserOptions.browsemode) {
+        _browserOptions = browserOptions;
+        UIBarButtonItem* flexibleSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+
+        UIBarButtonItem* fixedSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+        fixedSpaceButton.width = 20;
+
+        if (_browserOptions.browsemode) {
+            self.closeButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Back", nil) style:UIBarButtonItemStylePlain target:self action:@selector(close)];
+        } else {
+            self.closeButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_action_remove"] style:UIBarButtonItemStyleBordered target:self action:@selector(close)];
+        }
+        self.closeButton.enabled = YES;
+
+        if (_browserOptions.browsemode) {
+            [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton]];
+        } else {
+            [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.addressButton, flexibleSpaceButton, self.importButton]];
+        }
+    }
+}
+#endif
 
 - (void) setWebViewFrame : (CGRect) frame {
     NSLog(@"Setting the WebView's frame to %@", NSStringFromCGRect(frame));
@@ -942,9 +1000,14 @@
     }
 }
 
+- (void)clearButtonOnClick:(id)sender
+{
+    self.addressText.text = @"";
+}
+
 - (void)importButtonOnClick:(id)sender
 {
-    [self.navigationDelegate importButtonCallback:sender addressText:self.addressText.text];
+    [self.navigationDelegate importButtonCallback:self.addressText.text];
     [self hide:NO];
 }
 
@@ -956,6 +1019,18 @@
 - (void)goForward:(id)sender
 {
     [self.webView goForward];
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+}
+
+-(void)textFieldDidBeginEditing:(UITextField *)textField
+{
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField
+{
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField
@@ -1136,6 +1211,9 @@
         self.suppressesincrementalrendering = NO;
         self.hidden = NO;
         self.disallowoverscroll = NO;
+#ifdef ACT_INAPPBROWSER
+        self.browsemode = NO;
+#endif
     }
 
     return self;
