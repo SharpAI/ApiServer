@@ -108,8 +108,11 @@ if Meteor.isClient
     hideSocialBar = ()->
       if $('.contactsList .head').is(':visible')
         $('.contactsList .head').fadeOut 300
-      if $('.userProfile .head').is(':visible')
-        $('.userProfile .head').fadeOut 300
+      
+      # comment these two lines to show head on userProfile page
+      # if $('.userProfile .head').is(':visible')
+        # $('.userProfile .head').fadeOut 300
+        
       if $('.socialContent .chatFooter').is(':visible')
         $('.socialContent .chatFooter').fadeOut 300
     scrollEventCallback = ()->
