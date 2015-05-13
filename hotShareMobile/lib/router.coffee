@@ -157,6 +157,15 @@ if Meteor.isClient
         this.render 'userProfile'
         Session.set 'channel','userProfile'
         return
+    Router.route 'userProfilePage1',
+      template: 'userProfile'
+      path: '/userProfilePage1'
+    Router.route 'userProfilePage2',
+      template: 'userProfile'
+      path: '/userProfilePage2'
+    Router.route 'userProfilePage3',
+      template: 'userProfile'
+      path: '/userProfilePage3'
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->
