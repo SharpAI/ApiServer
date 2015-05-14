@@ -278,12 +278,12 @@ if Meteor.isClient
       ,animatePageTrasitionTimeout
     'click #edit': (event)->
       #Clear draft first
-      Drafts
-        .find {owner: Meteor.userId()}
-        .forEach (drafts)->
-          Drafts.remove drafts._id
+      Drafts.remove({})
       #Prepare data from post
-      draft0 = {_id:this._id, type:'image', isImage:true, owner: Meteor.userId(), imgUrl:this.mainImage, filename:this.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0,style:this.mainImageStyle}
+      fromUrl = ''
+      if this.fromUrl and this.fromUrl isnt ''
+        fromUrl = this.fromUrl
+      draft0 = {_id:this._id, type:'image', isImage:true, url: fromUrl, owner: Meteor.userId(), imgUrl:this.mainImage, filename:this.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0,style:this.mainImageStyle}
       Drafts.insert(draft0)
       pub = this.pub;
       if pub.length > 0
