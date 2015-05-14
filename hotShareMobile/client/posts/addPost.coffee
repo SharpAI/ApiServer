@@ -629,6 +629,9 @@ if Meteor.isClient
     return
 
   Template.addPost.helpers
+    linkUrl:->
+      if Drafts.find({type:'image'}).count() > 0
+        Drafts.find({type:'image'}).fetch()[0].url
     saveDraft:->
         layout = JSON.stringify(gridster.serialize())
         pub=[]
@@ -802,7 +805,9 @@ if Meteor.isClient
           Drafts.find({type:'text'}).fetch()[i]
   insertLink = (linkInfo,mainImageUrl,found,inputUrl)->
     if mainImageUrl
-      timestamp = new Date().getTime();
+      timestamp = new Date().getTime()
+      if Drafts.find({type:'image'}).count() > 0
+        Drafts.update({_id:Drafts.find({type:'image'}).fetch()[0]._id},{$set:{url:inputUrl}})
       Drafts.insert {
         type:'image',
         isImage:true,
@@ -882,6 +887,11 @@ if Meteor.isClient
     iabHandle.addEventListener 'exit',handleExitBrowser
     iabHandle.addEventListener 'hide',handleHideBrowser
   Template.addPost.events
+    'click #ViewOnWeb' :->
+      if Drafts.find({type:'image'}).count() > 0
+        url = Drafts.find({type:'image'}).fetch()[0].url
+        if url and url isnt ''
+          handleAddedLink(url)
     'beUnSelected .resortitem': (e)->
       if window.footbarOppration
         window.unSelectedElem = e.currentTarget

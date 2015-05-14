@@ -76,7 +76,9 @@
             </ul>
         </div>
       </div>
-
+      {{#if linkUrl}}
+        <div id="ViewOnWeb"><i class="fa fa-globe"></i>     阅读原文</div>
+      {{/if}}
       <div class="linkInputBox">
         <input type="text" class="form-control form-group-material-light-blue" id="linkToBeInserted">
         <button class="btn btn-material-light-blue btn-lg" id="pasteLink">黏贴链接</button>
