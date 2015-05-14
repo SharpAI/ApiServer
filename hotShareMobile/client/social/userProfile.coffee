@@ -8,14 +8,95 @@ if Meteor.isClient
     Swiper.setInitialPage Router.current().route.getName()
     Tracker.autorun ->
       if Swiper.pageIs('userProfilePage1')
+        if Session.get("currentPageIndex") isnt 1
+          userProfileList = Session.get("userProfileList")
+          if Session.get("currentPageIndex") is 2
+            currentProfileIndex = Session.get("currentProfileIndex")-1
+            if currentProfileIndex < 0
+               currentProfileIndex = userProfileList.length-1
+            Session.set("currentProfileIndex", currentProfileIndex)
+            nextProfileIndex = currentProfileIndex-1
+            if nextProfileIndex <  0
+               nextProfileIndex = userProfileList.length-1
+            if Session.get("userProfileType") is "newfriends"
+              Session.set("ProfileUserId3", userProfileList[nextProfileIndex].ta)
+            else
+              Session.set("ProfileUserId3", userProfileList[nextProfileIndex].followerId)
+          if Session.get("currentPageIndex") is 3
+            currentProfileIndex = Session.get("currentProfileIndex")+1
+            if currentProfileIndex >  userProfileList.length-1
+               currentProfileIndex = 0
+            Session.set("currentProfileIndex", currentProfileIndex)
+            nextProfileIndex = currentProfileIndex+1
+            if nextProfileIndex >  userProfileList.length-1
+               nextProfileIndex = 0
+            if Session.get("userProfileType") is "newfriends"
+              Session.set("ProfileUserId2", userProfileList[nextProfileIndex].ta)
+            else
+              Session.set("ProfileUserId2", userProfileList[nextProfileIndex].followerId)
+          Session.set("currentPageIndex", 1)
         Router.go 'userProfilePage1'
         Swiper.leftRight('userProfilePage3', 'userProfilePage2')
 
       if Swiper.pageIs('userProfilePage2')
+        if Session.get("currentPageIndex") isnt 2
+          userProfileList = Session.get("userProfileList")
+          if Session.get("currentPageIndex") is 1
+            currentProfileIndex = Session.get("currentProfileIndex")+1
+            if currentProfileIndex >  userProfileList.length-1
+               currentProfileIndex = 0
+            Session.set("currentProfileIndex", currentProfileIndex)
+            nextProfileIndex = currentProfileIndex+1
+            if nextProfileIndex >  userProfileList.length-1
+               nextProfileIndex = 0
+            if Session.get("userProfileType") is "newfriends"
+              Session.set("ProfileUserId3", userProfileList[nextProfileIndex].ta)
+            else
+              Session.set("ProfileUserId3", userProfileList[nextProfileIndex].followerId)
+          if Session.get("currentPageIndex") is 3
+            currentProfileIndex = Session.get("currentProfileIndex")-1
+            if currentProfileIndex < 0
+               currentProfileIndex = userProfileList.length-1
+            Session.set("currentProfileIndex", currentProfileIndex)
+            nextProfileIndex = currentProfileIndex-1
+            if nextProfileIndex <  0
+               nextProfileIndex = userProfileList.length-1
+            if Session.get("userProfileType") is "newfriends"
+              Session.set("ProfileUserId1", userProfileList[nextProfileIndex].ta)
+            else
+              Session.set("ProfileUserId1", userProfileList[nextProfileIndex].followerId)
+          Session.set("currentPageIndex", 2)
         Router.go 'userProfilePage2'
         Swiper.leftRight('userProfilePage1', 'userProfilePage3')
 
       if Swiper.pageIs('userProfilePage3')
+        if Session.get("currentPageIndex") isnt 3
+          userProfileList = Session.get("userProfileList")
+          if Session.get("currentPageIndex") is 1
+            currentProfileIndex = Session.get("currentProfileIndex")-1
+            if currentProfileIndex < 0
+               currentProfileIndex = userProfileList.length-1
+            Session.set("currentProfileIndex", currentProfileIndex)
+            nextProfileIndex = currentProfileIndex-1
+            if nextProfileIndex <  0
+               nextProfileIndex = userProfileList.length-1
+            if Session.get("userProfileType") is "newfriends"
+              Session.set("ProfileUserId2", userProfileList[nextProfileIndex].ta)
+            else
+              Session.set("ProfileUserId2", userProfileList[nextProfileIndex].followerId)
+          if Session.get("currentPageIndex") is 2
+            currentProfileIndex = Session.get("currentProfileIndex")+1
+            if currentProfileIndex >  userProfileList.length-1
+               currentProfileIndex = 0
+            Session.set("currentProfileIndex", currentProfileIndex)
+            nextProfileIndex = currentProfileIndex+1
+            if nextProfileIndex >  userProfileList.length-1
+               nextProfileIndex = 0
+            if Session.get("userProfileType") is "newfriends"
+              Session.set("ProfileUserId1", userProfileList[nextProfileIndex].ta)
+            else
+              Session.set("ProfileUserId1", userProfileList[nextProfileIndex].followerId)
+          Session.set("currentPageIndex", 3)
         Router.go 'userProfilePage3'
         Swiper.leftRight('userProfilePage2', 'userProfilePage1')
 
