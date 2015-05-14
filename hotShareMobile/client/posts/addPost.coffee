@@ -802,6 +802,7 @@ if Meteor.isClient
           Drafts.find({type:'text'}).fetch()[i]
   insertLink = (linkInfo,mainImageUrl,found,inputUrl)->
     if mainImageUrl
+      timestamp = new Date().getTime();
       Drafts.insert {
         type:'image',
         isImage:true,
@@ -809,7 +810,7 @@ if Meteor.isClient
         siteHost:linkInfo.host,
         owner: Meteor.userId(),
         imgUrl:mainImageUrl,
-        filename:null,
+        filename:Meteor.userId()+'_'+timestamp+ '_' + mainImageUrl.replace(/^.*[\\\/]/, ''),
         URI:mainImageUrl,
         url:inputUrl
         toTheEnd: true,
@@ -1116,14 +1117,14 @@ if Meteor.isClient
         #Save gridster layout first. If publish failed, we can recover the drafts
         for i in [0..(draftData.length-1)]
           if i is 0
-            if draftData[i].imgUrl.indexOf("http://") == -1
+            if draftData[i].imgUrl.toLowerCase().indexOf("http://") == -1 or draftData[i].imgUrl.toLowerCase().indexOf("https://") == -1
               mainImage = 'http://data.tiegushi.com/'+draftData[i].filename
             else
               mainImage = draftData[i].imgUrl
             mainImageStyle = draftData[i].style
             mainText = $("#"+draftData[i]._id+"text").val()
           else
-            if draftData[i].isImage and draftData[i].imgUrl.indexOf("http://") == -1
+            if draftData[i].isImage and draftData[i].imgUrl.toLowerCase().indexOf("http://") == -1 and draftData[i].imgUrl.toLowerCase().indexOf("https://") == -1
                 draftData[i].imgUrl = 'http://data.tiegushi.com/'+draftData[i].filename
             #for some case user did not save the draft, directly published, the layout does not stored.
             json = jQuery.parseJSON(layout);
@@ -1150,7 +1151,7 @@ if Meteor.isClient
         draftImageData = Drafts.find({type:'image'}).fetch()
         draftToBeUploadedImageData = []
         for i in [0..(draftImageData.length-1)]
-            if draftImageData[i].imgUrl.indexOf("http://")>= 0
+            if draftImageData[i].imgUrl.toLowerCase().indexOf("http://")>= 0 or draftImageData[i].imgUrl.toLowerCase().indexOf("https://")>= 0
                 continue
             draftToBeUploadedImageData.push(draftImageData[i])
 #       console.log "#####" + pub
