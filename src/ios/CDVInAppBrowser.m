@@ -696,7 +696,7 @@
     self.addressLabel.numberOfLines = 1;
     self.addressLabel.opaque = NO;
     self.addressLabel.shadowOffset = CGSizeMake(0.0, -1.0);
-    self.addressLabel.text = NSLocalizedString(@"Loading...", nil);
+    self.addressLabel.text = NSLocalizedStringFromTable(@"Loading...", @"CDVInAppBrowser", nil);
     self.addressLabel.textAlignment = NSTextAlignmentLeft;
     self.addressLabel.textColor = [UIColor colorWithWhite:1.000 alpha:1.000];
     self.addressLabel.userInteractionEnabled = NO;
@@ -714,7 +714,7 @@
     self.addressText.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
     self.addressText.backgroundColor = [UIColor colorWithWhite: 0.850 alpha:1.000];;//[UIColor darkGrayColor];
     //self.addressText.text = NSLocalizedString(@"Loading...", nil);
-    self.addressText.text = NSLocalizedString(@"", nil);
+    self.addressText.text = @"";
     self.addressText.textAlignment = NSTextAlignmentLeft;
     self.addressText.textColor = [UIColor blackColor];//[UIColor colorWithWhite:1.000 alpha:1.000];
     UIButton *clearButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -726,7 +726,7 @@
     self.addressText.delegate = self;
     
     //Import button
-    NSString* frontImportString = NSLocalizedString(@"Import", nil); // create arrow from Unicode char
+    NSString* frontImportString = NSLocalizedStringFromTable(@"Import", @"CDVInAppBrowser", nil); // create arrow from Unicode char
     self.importButton = [[UIBarButtonItem alloc] initWithTitle:frontImportString style:UIBarButtonItemStylePlain target:self action:@selector(importButtonOnClick:)];
     NSUInteger size = 14;
     UIFont* font = [UIFont boldSystemFontOfSize:size];
@@ -970,7 +970,7 @@
         [self.navigationDelegate browserExit];
     }
 #else
-    self.addressText.text = NSLocalizedString(@"", nil);
+    self.addressText.text = @"";
     if ((self.navigationDelegate != nil) && [self.navigationDelegate respondsToSelector:@selector(browserHide:)]) {
         [self.navigationDelegate browserHide:YES];
     }
@@ -990,7 +990,7 @@
 {
     [CDVUserAgentUtil releaseLock:&_userAgentLockToken];
     self.currentURL = nil;
-    self.addressText.text = NSLocalizedString(@"", nil);
+    self.addressText.text = @"";
 
     if ((self.navigationDelegate != nil) && [self.navigationDelegate respondsToSelector:@selector(browserHide:)]) {
         [self.navigationDelegate browserHide:sendEvent];
