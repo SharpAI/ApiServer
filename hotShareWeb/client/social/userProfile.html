@@ -1,5 +1,10 @@
 <template name="userProfile">
-  <div class="userProfile">
+  <div class="wrapper">
+    {{>swipe Swiper=Swiper}}
+  </div>
+</template>
+<template name="userProfilePage1">
+  <div class="userProfile userProfileMarginTop">
     <div class="head">
       <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
       {{#if profile.profile.fullname}}
@@ -29,7 +34,6 @@
     <div class="showPostsLine"></div>
     <div class="post">
       <span class="postLeft">最近浏览的故事</span>
-      <!--<span class="postRight">更多</span>-->
     </div>
       {{#if compareViewsCount 0}}
         <div class="postImages">
@@ -41,13 +45,6 @@
                   <h4 class="title">
                      {{title}}
                   </h4>
-        <!--
-                  <h6 class="addontitle">
-                      罗浮宫游记
-                  </h6>
-                  <span class="postInfo"><i class="fa fa-eye"></i> 55</span>
-                  <span class="postInfo"><i class="fa fa-comment"></i> 55</span>
-        -->
                 </li>
               {{/if}}
           {{/each}}
@@ -55,27 +52,136 @@
         </div>
       {{/if}}
     <div class="showPostsLine"></div>
-<!--
+    {{#if showPostSuggestionToUser}}
+      {{#if isSuggested}}
+        <div id="suggestedCurrentPost">已推荐</div>
+      {{else}}
+        <div id="suggestCurrentPost">推荐本文</div>
+      {{/if}}
+    {{/if}}
+    {{#if isFollowed}}
+      {{#if withChat}}
+        <div id="sendChatMessage">发消息</div>
+      {{/if}}
+    {{else}}
+      <div id="addToContactList">{{AddFriend}}</div>
+    {{/if}}
+  </div>
+</template>
+<template name="userProfilePage2">
+  <div class="userProfile userProfileMarginTop">
+    <div class="head">
+      <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+      {{#if profile.profile.fullname}}
+        <div>{{profile.profile.fullname}}</div>
+      {{else}}
+        <div>{{profile.username}}</div>
+      {{/if}}
+    </div>
+    <div class="userProfileTop">
+        <img class="icon" src="{{profile.profile.icon}}" width='70' height='70'>
+          <span class="userName">
+          {{#if profile.profile.fullname}}
+              {{profile.profile.fullname}}
+          {{else}}
+              {{profile.username}}
+          {{/if}}
+            {{#if isMale profile.profile.sex}}
+              <img src="/male.png" width='20' height='20'>
+            {{/if}}
+            {{#if isFemale profile.profile.sex}}
+              <img src="/female.png" width='20' height='20'>
+            {{/if}}
+          </span>
+        <span class="location">{{profile.profile.location}}</span>
+        <span class="desc">{{profile.profile.desc}}</span>
+    </div>
+    <div class="showPostsLine"></div>
     <div class="post">
       <span class="postLeft">最近浏览的故事</span>
-      <span class="postRight">更多</span>
     </div>
-    <div class="viewPostImages">
-      <ul>
--->
-    <!--          {{#each postItems}}-->
-<!--
-        <li id="" style="background-image:url(/webbg.jpg)"></li>
-        <li id="" style="background-image:url(/webbg.jpg)"></li>
-        <li id="" style="background-image:url(/webbg.jpg)"></li>
-        <li id="" style="background-image:url(/webbg.jpg)"></li>
-        <li id="" style="background-image:url(/webbg.jpg)"></li>
--->
-    <!--          {{/each}}-->
-<!--
-      </ul>
+      {{#if compareViewsCount 0}}
+        <div class="postImages">
+          <ul>
+            {{#each viewLists}}
+              {{#if postId}}
+                <li id="{{postId}}">
+                  <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
+                  <h4 class="title">
+                     {{title}}
+                  </h4>
+                </li>
+              {{/if}}
+          {{/each}}
+          </ul>
+        </div>
+      {{/if}}
+    <div class="showPostsLine"></div>
+    {{#if showPostSuggestionToUser}}
+      {{#if isSuggested}}
+        <div id="suggestedCurrentPost">已推荐</div>
+      {{else}}
+        <div id="suggestCurrentPost">推荐本文</div>
+      {{/if}}
+    {{/if}}
+    {{#if isFollowed}}
+      {{#if withChat}}
+        <div id="sendChatMessage">发消息</div>
+      {{/if}}
+    {{else}}
+      <div id="addToContactList">{{AddFriend}}</div>
+    {{/if}}
+  </div>
+</template>
+<template name="userProfilePage3">
+  <div class="userProfile userProfileMarginTop">
+    <div class="head">
+      <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+      {{#if profile.profile.fullname}}
+        <div>{{profile.profile.fullname}}</div>
+      {{else}}
+        <div>{{profile.username}}</div>
+      {{/if}}
     </div>
--->
+    <div class="userProfileTop">
+        <img class="icon" src="{{profile.profile.icon}}" width='70' height='70'>
+          <span class="userName">
+          {{#if profile.profile.fullname}}
+              {{profile.profile.fullname}}
+          {{else}}
+              {{profile.username}}
+          {{/if}}
+            {{#if isMale profile.profile.sex}}
+              <img src="/male.png" width='20' height='20'>
+            {{/if}}
+            {{#if isFemale profile.profile.sex}}
+              <img src="/female.png" width='20' height='20'>
+            {{/if}}
+          </span>
+        <span class="location">{{profile.profile.location}}</span>
+        <span class="desc">{{profile.profile.desc}}</span>
+    </div>
+    <div class="showPostsLine"></div>
+    <div class="post">
+      <span class="postLeft">最近浏览的故事</span>
+    </div>
+      {{#if compareViewsCount 0}}
+        <div class="postImages">
+          <ul>
+            {{#each viewLists}}
+              {{#if postId}}
+                <li id="{{postId}}">
+                  <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
+                  <h4 class="title">
+                     {{title}}
+                  </h4>
+                </li>
+              {{/if}}
+          {{/each}}
+          </ul>
+        </div>
+      {{/if}}
+    <div class="showPostsLine"></div>
     {{#if showPostSuggestionToUser}}
       {{#if isSuggested}}
         <div id="suggestedCurrentPost">已推荐</div>
