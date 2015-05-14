@@ -42,7 +42,7 @@ if Meteor.isClient
       Session.set("ProfileUserId3", userProfileList[prevProfileIndex].followerId)
       Session.set("ProfileUserId2", userProfileList[nextProfileIndex].followerId)
       #click on current friends list
-      Router.go 'userProfilePage1'
+      PUB.page('userProfilePage1')
     'click .messageGroup': ()->
       Session.set("Social.LevelOne.Menu", 'messageGroup')      
   Template.addNewFriends.rendered=->
@@ -142,7 +142,7 @@ if Meteor.isClient
       Session.set("ProfileUserId3", userProfileList[prevProfileIndex].ta)
       Session.set("ProfileUserId2", userProfileList[nextProfileIndex].ta)
       #click on suggest friends list
-      Router.go 'userProfilePage1'
+      PUB.page('userProfilePage1')
     "click #addNewFriends":()->
       Session.set("Social.LevelOne.Menu",'addNewFriends')
     'click .delFollow':(e)->
