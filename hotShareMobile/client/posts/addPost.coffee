@@ -7,7 +7,7 @@ if Meteor.isClient
   # the only document I found here https://github.com/percolatestudio/transition-helper/blob/master/transition-helper.js#L4    
   Template.addPost.rendered=->
     Meteor.subscribe("saveddrafts");
-    window.imageCounter = 0
+    window.imageCounter = 1
     window.insertRow = 1
     `global_toolbar_hidden = false`
     $('.addPost').css('min-height',$(window).height())
@@ -384,9 +384,9 @@ if Meteor.isClient
             if Session.get('NewImgAdd') is 'true'
               if (window.imageCounter % 3) is 0
                 grid.add_widget(node, 6, 3,1,window.insertRow)
+                window.insertRow +=3
               else if (window.imageCounter % 3) is 1
                 grid.add_widget(node, 3, 3,1,window.insertRow)
-                window.insertRow +=3
               else
                 grid.add_widget(node, 3, 3,4,window.insertRow)
                 window.insertRow +=3
@@ -682,6 +682,11 @@ if Meteor.isClient
           #  URI: draftData[i].URI,
           #  layout: draftData[i].layout
           #}
+        fromUrl = ''
+        if Drafts.find({type:'image'}).count() > 0
+          url = Drafts.find({type:'image'}).fetch()[0].url
+        if url and url isnt ''
+          fromUrl = url
         try
           if SavedDrafts.find({_id:draftId}).count() > 0
             SavedDrafts.update(
@@ -691,6 +696,7 @@ if Meteor.isClient
               title:title,
               addontitle:addontitle,
               mainImage: mainImage,
+              fromUrl: fromUrl,
               mainText: mainText,
               owner:Meteor.userId(),
               createdAt: new Date(),
@@ -702,6 +708,7 @@ if Meteor.isClient
               pub:pub,
               title:title,
               addontitle:addontitle,
+              fromUrl:fromUrl,
               mainImage: mainImage,
               mainText: mainText,
               owner:Meteor.userId(),
@@ -715,6 +722,7 @@ if Meteor.isClient
               pub:pub,
               title:title,
               addontitle:addontitle,
+              fromUrl:fromUrl,
               mainImage: mainImage,
               mainText: mainText,
               owner:Meteor.userId(),

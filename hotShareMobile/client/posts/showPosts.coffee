@@ -299,8 +299,10 @@ if Meteor.isClient
         if r is 1
           return
         PUB.page('/user')
-
-        draft0 = {_id:self._id, type:'image', isImage:true, owner: Meteor.userId(), imgUrl:self.mainImage, filename:self.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0}
+        fromUrl = ''
+        if self.fromUrl and self.fromUrl isnt ''
+          fromUrl = self.fromUrl
+        draft0 = {_id:self._id, type:'image', isImage:true, url:fromUrl ,owner: Meteor.userId(), imgUrl:self.mainImage, filename:self.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0}
         self.pub.splice(0, 0, draft0);
 
         Posts.remove {
@@ -311,6 +313,7 @@ if Meteor.isClient
           _id:self._id,
           pub:self.pub,
           title:self.title,
+          fromUrl:fromUrl,
           addontitle:self.addontitle,
           mainImage: self.mainImage,
           mainText: self.mainText,
