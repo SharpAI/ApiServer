@@ -21,7 +21,6 @@ if Meteor.isClient
 
   Template.userProfilePage1.rendered=->
     Meteor.subscribe "viewlists", Meteor.userId(),Session.get("ProfileUserId1")
-    $('.userProfile').css('margin-top', '40px') # 40px is the height of head
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
     document.body.scrollTop = document.body.scrollHeight
@@ -75,7 +74,7 @@ if Meteor.isClient
   Template.userProfilePage1.events
     'click .userProfile .back':()->
       Session.set("Social.LevelOne.Menu",'contactsList')
-      history.back()
+      PUB.back()
     'click #suggestCurrentPost': ()->
       username = Meteor.user().username
       if Meteor.user().profile.fullname
@@ -183,7 +182,6 @@ if Meteor.isClient
 
   Template.userProfilePage2.rendered=->
     Meteor.subscribe "viewlists", Meteor.userId(),Session.get("ProfileUserId2")
-    $('.userProfile').css('margin-top', '40px') # 40px is the height of head
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
     document.body.scrollTop = document.body.scrollHeight
@@ -237,7 +235,7 @@ if Meteor.isClient
   Template.userProfilePage2.events
     'click .userProfile .back':()->
       Session.set("Social.LevelOne.Menu",'contactsList')
-      history.back()
+      PUB.back()
     'click #suggestCurrentPost': ()->
       username = Meteor.user().username
       if Meteor.user().profile.fullname
@@ -345,7 +343,6 @@ if Meteor.isClient
 
   Template.userProfilePage3.rendered=->
     Meteor.subscribe "viewlists", Meteor.userId(),Session.get("ProfileUserId3")
-    $('.userProfile').css('margin-top', '40px') # 40px is the height of head
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
     document.body.scrollTop = document.body.scrollHeight
@@ -399,7 +396,7 @@ if Meteor.isClient
   Template.userProfilePage3.events
     'click .userProfile .back':()->
       Session.set("Social.LevelOne.Menu",'contactsList')
-      history.back()
+      PUB.back()
     'click #suggestCurrentPost': ()->
       username = Meteor.user().username
       if Meteor.user().profile.fullname

@@ -29,7 +29,7 @@ if Meteor.isClient
       Meteor.subscribe("userinfo", this.followerId)
       Meteor.subscribe("recentPostsViewByUser", this.followerId)
       #click on current friends list
-      Router.go 'userProfilePage1'
+      PUB.page('userProfilePage1')
     'click .messageGroup': ()->
       Session.set("Social.LevelOne.Menu", 'messageGroup')      
   Template.addNewFriends.rendered=->
@@ -116,7 +116,7 @@ if Meteor.isClient
       Meteor.subscribe("userinfo",this.ta)
       Meteor.subscribe("recentPostsViewByUser",this.ta)
       #click on suggest friends list
-      Router.go 'userProfilePage1'
+      PUB.page('userProfilePage1')
     "click #addNewFriends":()->
       Session.set("Social.LevelOne.Menu",'addNewFriends')
     'click .delFollow':(e)->
