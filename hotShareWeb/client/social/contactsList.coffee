@@ -22,10 +22,27 @@ if Meteor.isClient
     "click #addNewFriends":()->
       Session.set("Social.LevelOne.Menu",'addNewFriends')
     "click .userProfile":(e)->
-      Session.set("ProfileUserId", this.followerId)
-      Meteor.subscribe("userinfo", this.followerId)
-      Meteor.subscribe("recentPostsViewByUser", this.followerId)
-      Session.set("Social.LevelOne.Menu", 'userProfile')
+      userProfileList = Follower.find({"userId":Meteor.userId()},{sort: {createdAt: -1}}).fetch()
+      Session.set("userProfileList", userProfileList)
+      Session.set("userProfileType", "oldfriends");
+      Session.set("currentPageIndex", 1);
+      for i in [0..userProfileList.length-1]
+        Meteor.subscribe("recentPostsViewByUser", userProfileList[i].followerId)
+        Meteor.subscribe "viewlists", Meteor.userId(), userProfileList[i].followerId
+        Meteor.subscribe("userinfo", userProfileList[i].followerId)
+        if userProfileList[i].followerId is this.followerId
+          Session.set("currentProfileIndex", i)
+      prevProfileIndex = Session.get("currentProfileIndex")-1
+      nextProfileIndex = Session.get("currentProfileIndex")+1
+      if prevProfileIndex < 0
+         prevProfileIndex = userProfileList.length-1
+      if nextProfileIndex > userProfileList.length-1
+         nextProfileIndex = 0
+      Session.set("ProfileUserId1", this.followerId)
+      Session.set("ProfileUserId3", userProfileList[prevProfileIndex].followerId)
+      Session.set("ProfileUserId2", userProfileList[nextProfileIndex].followerId)
+      #click on current friends list
+      Router.go 'userProfilePage1'
     'click .messageGroup': ()->
       Session.set("Social.LevelOne.Menu", 'messageGroup')      
   Template.addNewFriends.rendered=->
@@ -105,10 +122,27 @@ if Meteor.isClient
         false
   Template.addNewFriends.events
     "click .newUserProfile":(e)->
-      Session.set("ProfileUserId", this.ta)
-      Meteor.subscribe("userinfo",this.ta)
-      Meteor.subscribe("recentPostsViewByUser",this.ta)
-      Session.set("Social.LevelOne.Menu", 'userProfile')
+      userProfileList = Newfriends.find({meetOnPostId:Session.get("postContent")._id},{sort:{count:-1}}).fetch()
+      Session.set("userProfileList", userProfileList)
+      Session.set("userProfileType", "newfriends")
+      Session.set("currentPageIndex", 1)
+      for i in [0..userProfileList.length-1]
+        Meteor.subscribe("recentPostsViewByUser",userProfileList[i].ta)
+        Meteor.subscribe "viewlists", Meteor.userId(), userProfileList[i].ta
+        Meteor.subscribe("userinfo", userProfileList[i].ta)
+        if userProfileList[i].ta is this.ta
+          Session.set("currentProfileIndex", i)
+      prevProfileIndex = Session.get("currentProfileIndex")-1
+      nextProfileIndex = Session.get("currentProfileIndex")+1
+      if prevProfileIndex < 0
+         prevProfileIndex = userProfileList.length-1
+      if nextProfileIndex > userProfileList.length-1
+         nextProfileIndex = 0
+      Session.set("ProfileUserId1", this.ta)
+      Session.set("ProfileUserId3", userProfileList[prevProfileIndex].ta)
+      Session.set("ProfileUserId2", userProfileList[nextProfileIndex].ta)
+      #click on suggest friends list
+      Router.go 'userProfilePage1'
     "click #addNewFriends":()->
       Session.set("Social.LevelOne.Menu",'addNewFriends')
     'click .delFollow':(e)->
