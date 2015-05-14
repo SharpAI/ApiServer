@@ -76,13 +76,14 @@
             </ul>
         </div>
       </div>
-      {{#if linkUrl}}
-        <div id="ViewOnWeb"><i class="fa fa-globe"></i>     阅读原文</div>
-      {{/if}}
+      <div id="ViewOnWeb" style="{{displayUrl}}"><i class="fa fa-globe"></i>     阅读原文</div>
       <div class="linkInputBox">
         <input type="text" class="form-control form-group-material-light-blue" id="linkToBeInserted">
         <button class="btn btn-material-light-blue btn-lg" id="pasteLink">黏贴链接</button>
         <button class="btn btn-material-light-blue btn-lg" id="insertLink">插入链接</button>
+      </div>
+      <div id="linkOption-toolbar-options" style='visibility: hidden;'>
+          <a href="#" id='del'><i class="fa fa-trash"></i></a>
       </div>
       <div id="mainImage-toolbar-options" style='visibility: hidden;'>
           <a href="#" id='modify'><i class="fa fa-pencil"></i></a>

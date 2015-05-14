@@ -33,6 +33,14 @@ if Meteor.isClient
     #testMenu will be main/font/align. It's for controlling the icon on text menu
     Session.set('textMenu','main')
     Session.set('textareaFocused', false)
+    $('.addPost #ViewOnWeb').toolbar
+      content: '#linkOption-toolbar-options'
+      position: 'top'
+      hideOnClick: true
+      $('.addPost #ViewOnWeb').on 'toolbarItemClick',(event,buttonClicked)->
+        if buttonClicked.id is "del"
+          if Drafts.find({type:'image'}).count() > 0
+            Drafts.update({_id:Drafts.find({type:'image'}).fetch()[0]._id},{$set:{url:''}})
 
     initMainImageToolBar = ()->
       $('.mainImage').toolbar
@@ -629,6 +637,11 @@ if Meteor.isClient
     return
 
   Template.addPost.helpers
+    displayUrl:->
+      if Drafts.findOne({type:'image'}) and Drafts.findOne({type:'image'}).url and Drafts.findOne({type:'image'}).url isnt ''
+        ""
+      else
+        "display:none"
     linkUrl:->
       if Drafts.find({type:'image'}).count() > 0
         Drafts.find({type:'image'}).fetch()[0].url
@@ -895,11 +908,13 @@ if Meteor.isClient
     iabHandle.addEventListener 'exit',handleExitBrowser
     iabHandle.addEventListener 'hide',handleHideBrowser
   Template.addPost.events
+    ###
     'click #ViewOnWeb' :->
       if Drafts.find({type:'image'}).count() > 0
         url = Drafts.find({type:'image'}).fetch()[0].url
         if url and url isnt ''
           handleAddedLink(url)
+    ###
     'beUnSelected .resortitem': (e)->
       if window.footbarOppration
         window.unSelectedElem = e.currentTarget
