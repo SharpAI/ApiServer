@@ -865,8 +865,10 @@ if Meteor.isClient
     if data.title
       console.log 'Title is ' + data.title
       Meteor.setTimeout ()->
-        $('#title').val(data.title)
-        $('#addontitle').val(data.host)
+        unless ($('#title').val() and $('#title').val() isnt '')
+          $('#title').val(data.title)
+        unless ($('#addontitle').val() and $('#addontitle').val() isnt '')
+          $('#addontitle').val(data.host)
       ,2000
 
   @getURL = (e) ->
