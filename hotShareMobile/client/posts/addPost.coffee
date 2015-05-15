@@ -212,11 +212,11 @@ if Meteor.isClient
         ###
 
         $(textarea).focus(()->
-          #$(".head").css 'position','absolute'
           Session.set('textareaFocused', true)
           console.log("textareaFocused true")
           $(node).addClass("edit");
           $(textarea).off('focus')
+          $(".head").css 'position','absolute'
         )
 
         ###
@@ -230,7 +230,6 @@ if Meteor.isClient
         $(textarea).focus()
 
         $(textarea).focusout(()->
-          #$(".head").css 'position','fixed'
           console.log("focusout")
           $(this).attr("readOnly", true)
           `global_disable_longpress = false`
@@ -243,6 +242,7 @@ if Meteor.isClient
           Template.addPost.__helpers.get('saveDraft')()
 
           $(textarea).off('focusout')
+          $(".head").css 'position','fixed'
         )
 
       else if buttonClicked.id == "del"
@@ -925,10 +925,10 @@ if Meteor.isClient
     # console.log('.resortItem seleted')
     'focus [name=textarea]':->
       #Session.set('textareaFocused', true)
-      $(".head").css 'position','absolute'
+      #$(".head").css 'position','absolute'
     'blur [name=textarea]':->
       #Session.set('textareaFocused', false)
-      $(".head").css 'position','fixed'
+      #$(".head").css 'position','fixed'
     'change [name=textarea]' : (e,cxt)->
       console.log("textarea change "+ e.currentTarget.value)
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
