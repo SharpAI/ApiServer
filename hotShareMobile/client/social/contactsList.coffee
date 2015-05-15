@@ -27,7 +27,7 @@ if Meteor.isClient
   Template.contactsList.events
     "click #addNewFriends":()->
       Session.set("Social.LevelOne.Menu",'addNewFriends')
-    "click .eachViewer":(e)->
+    "click .oldFriends":(e)->
       userProfileList = Follower.find({"userId":Meteor.userId()},{sort: {createdAt: -1}}).fetch()
       Session.set("userProfileList", userProfileList)
       Session.set("userProfileType", "oldfriends");
@@ -78,7 +78,7 @@ if Meteor.isClient
       else
         false
   Template.addNewFriends.events
-    "click .eachViewer":(e)->
+    "click .newFriends":(e)->
       userProfileList = Newfriends.find({meetOnPostId:Session.get("postContent")._id},{sort:{count:-1}}).fetch()
       Session.set("userProfileList", userProfileList)
       Session.set("userProfileType", "newfriends")
