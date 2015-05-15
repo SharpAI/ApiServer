@@ -47,6 +47,7 @@ if Meteor.isClient
       Session.set("ProfileUserId1", this.followerId)
       Session.set("ProfileUserId3", userProfileList[prevProfileIndex].followerId)
       Session.set("ProfileUserId2", userProfileList[nextProfileIndex].followerId)
+      window.lastScroll = $(window).scrollTop()
       #click on current friends list
       onUserProfile()
       #PUB.page('userProfilePage1')
@@ -96,6 +97,7 @@ if Meteor.isClient
       Session.set("ProfileUserId3", userProfileList[prevProfileIndex].ta)
       Session.set("ProfileUserId2", userProfileList[nextProfileIndex].ta)
       #click on suggest friends list
+      window.lastScroll = $(window).scrollTop()
       onUserProfile()
       #PUB.page('userProfilePage1')
     "click #addNewFriends":()->

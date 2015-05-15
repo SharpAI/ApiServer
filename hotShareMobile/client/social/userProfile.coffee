@@ -153,7 +153,8 @@ if Meteor.isClient
   Template.userProfilePage1.events
     'click .userProfile .back':()->
       Session.set("Social.LevelOne.Menu",'contactsList')
-      PUB.back()
+      if UserProfileBox
+        UserProfileBox.close()
     'click #suggestCurrentPost': ()->
       username = Meteor.user().username
       if Meteor.user().profile.fullname
@@ -313,7 +314,8 @@ if Meteor.isClient
   Template.userProfilePage2.events
     'click .userProfile .back':()->
       Session.set("Social.LevelOne.Menu",'contactsList')
-      PUB.back()
+      if UserProfileBox
+        UserProfileBox.close()
     'click #suggestCurrentPost': ()->
       username = Meteor.user().username
       if Meteor.user().profile.fullname
@@ -473,7 +475,8 @@ if Meteor.isClient
   Template.userProfilePage3.events
     'click .userProfile .back':()->
       Session.set("Social.LevelOne.Menu",'contactsList')
-      PUB.back()
+      if UserProfileBox
+        UserProfileBox.close()
     'click #suggestCurrentPost': ()->
       username = Meteor.user().username
       if Meteor.user().profile.fullname
