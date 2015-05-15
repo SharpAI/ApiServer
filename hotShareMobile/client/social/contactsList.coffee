@@ -6,13 +6,9 @@ if Meteor.isClient
       if Session.get("postContent") and  Meteor.userId()
         Meteor.subscribe "newfriends", Meteor.userId(),Session.get("postContent")._id
   onUserProfile = ->
-    $('.showBgColor').hide 0
     @UserProfileBox = $('.userProfileBox').bPopup
       positionStyle: 'fixed'
       position: [0, 0]
-      onClose: ->
-        $('.showBgColor').show 0,->
-          $(window).scrollTop(window.lastScroll)
       onOpen: ->
         Session.set('displayUserProfileBox',true)
   Template.contactsList.helpers
@@ -47,7 +43,6 @@ if Meteor.isClient
       Session.set("ProfileUserId1", this.followerId)
       Session.set("ProfileUserId3", userProfileList[prevProfileIndex].followerId)
       Session.set("ProfileUserId2", userProfileList[nextProfileIndex].followerId)
-      window.lastScroll = $(window).scrollTop()
       #click on current friends list
       onUserProfile()
       #PUB.page('userProfilePage1')
@@ -97,7 +92,6 @@ if Meteor.isClient
       Session.set("ProfileUserId3", userProfileList[prevProfileIndex].ta)
       Session.set("ProfileUserId2", userProfileList[nextProfileIndex].ta)
       #click on suggest friends list
-      window.lastScroll = $(window).scrollTop()
       onUserProfile()
       #PUB.page('userProfilePage1')
     "click #addNewFriends":()->
