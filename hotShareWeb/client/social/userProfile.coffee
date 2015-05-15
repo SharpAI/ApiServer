@@ -35,7 +35,6 @@ if Meteor.isClient
             else
               Session.set("ProfileUserId2", userProfileList[nextProfileIndex].followerId)
           Session.set("currentPageIndex", 1)
-        Router.go 'userProfilePage1'
         Swiper.leftRight('userProfilePage3', 'userProfilePage2')
 
       if Swiper.pageIs('userProfilePage2')
@@ -66,7 +65,6 @@ if Meteor.isClient
             else
               Session.set("ProfileUserId1", userProfileList[nextProfileIndex].followerId)
           Session.set("currentPageIndex", 2)
-        Router.go 'userProfilePage2'
         Swiper.leftRight('userProfilePage1', 'userProfilePage3')
 
       if Swiper.pageIs('userProfilePage3')
@@ -97,7 +95,6 @@ if Meteor.isClient
             else
               Session.set("ProfileUserId1", userProfileList[nextProfileIndex].followerId)
           Session.set("currentPageIndex", 3)
-        Router.go 'userProfilePage3'
         Swiper.leftRight('userProfilePage2', 'userProfilePage1')
 
   Template.userProfilePage1.rendered=->
