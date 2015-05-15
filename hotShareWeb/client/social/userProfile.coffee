@@ -1,6 +1,7 @@
 if Meteor.isClient
   # Initialize the Swiper
-  @Swiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
+  Meteor.startup ()->
+    @Swiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
   Template.userProfile.helpers
     Swiper: -> Swiper
   Template.userProfile.rendered = ->
