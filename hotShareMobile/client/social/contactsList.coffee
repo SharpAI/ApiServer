@@ -127,8 +127,6 @@ if Meteor.isClient
       Session.set("userProfileType", "newfriends")
       Session.set("currentPageIndex", 1)
       for i in [0..userProfileList.length-1]
-        Meteor.subscribe("recentPostsViewByUser",userProfileList[i].ta)
-        Meteor.subscribe "viewlists", Meteor.userId(), userProfileList[i].ta
         Meteor.subscribe("userinfo", userProfileList[i].ta)
         if userProfileList[i].ta is this.ta
           Session.set("currentProfileIndex", i)

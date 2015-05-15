@@ -82,7 +82,6 @@ if(Meteor.isServer){
                   fields.title = viewItem.title;
                   try{
                       obj.added("viewlists", fields._id, fields);
-                      count++;
                   }catch(error){
                   }
               }
@@ -163,7 +162,7 @@ if(Meteor.isServer){
                    }
                  }
                }
-             };
+             }
            }
         },
         removed: function (id) {
