@@ -107,8 +107,11 @@ if Meteor.isClient
     hideSocialBar = ()->
       if $('.contactsList .head').is(':visible')
         $('.contactsList .head').fadeOut 300
-      if $('.userProfile .head').is(':visible')
-        $('.userProfile .head').fadeOut 300
+      
+      # comment these two lines to show head on userProfile page
+      # if $('.userProfile .head').is(':visible')
+        # $('.userProfile .head').fadeOut 300
+        
       if $('.socialContent .chatFooter').is(':visible')
         $('.socialContent .chatFooter').fadeOut 300
     scrollEventCallback = ()->
@@ -274,12 +277,12 @@ if Meteor.isClient
       ,animatePageTrasitionTimeout
     'click #edit': (event)->
       #Clear draft first
-      Drafts
-        .find {owner: Meteor.userId()}
-        .forEach (drafts)->
-          Drafts.remove drafts._id
+      Drafts.remove({})
       #Prepare data from post
-      draft0 = {_id:this._id, type:'image', isImage:true, owner: Meteor.userId(), imgUrl:this.mainImage, filename:this.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0,style:this.mainImageStyle}
+      fromUrl = ''
+      if this.fromUrl and this.fromUrl isnt ''
+        fromUrl = this.fromUrl
+      draft0 = {_id:this._id, type:'image', isImage:true, url: fromUrl, owner: Meteor.userId(), imgUrl:this.mainImage, filename:this.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0,style:this.mainImageStyle}
       Drafts.insert(draft0)
       pub = this.pub;
       if pub.length > 0
@@ -295,8 +298,10 @@ if Meteor.isClient
         if r is 1
           return
         PUB.page('/user')
-
-        draft0 = {_id:self._id, type:'image', isImage:true, owner: Meteor.userId(), imgUrl:self.mainImage, filename:self.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0}
+        fromUrl = ''
+        if self.fromUrl and self.fromUrl isnt ''
+          fromUrl = self.fromUrl
+        draft0 = {_id:self._id, type:'image', isImage:true, url:fromUrl ,owner: Meteor.userId(), imgUrl:self.mainImage, filename:self.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0}
         self.pub.splice(0, 0, draft0);
 
         Posts.remove {
@@ -307,6 +312,7 @@ if Meteor.isClient
           _id:self._id,
           pub:self.pub,
           title:self.title,
+          fromUrl:fromUrl,
           addontitle:self.addontitle,
           mainImage: self.mainImage,
           mainText: self.mainText,
