@@ -923,12 +923,12 @@ if Meteor.isClient
         window.footbarOppration = false
     #'beSelected .resortitem':->
     # console.log('.resortItem seleted')
-    'focus [name=textarea]':->
-      #Session.set('textareaFocused', true)
-      #$(".head").css 'position','absolute'
-    'blur [name=textarea]':->
-      #Session.set('textareaFocused', false)
-      #$(".head").css 'position','fixed'
+    'focus [name=textareatitle]':->
+      Session.set('textareaFocused', true)
+      $(".head").css 'position','absolute'
+    'blur [name=textareatitle]':->
+      Session.set('textareaFocused', false)
+      $(".head").css 'position','fixed'
     'change [name=textarea]' : (e,cxt)->
       console.log("textarea change "+ e.currentTarget.value)
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
