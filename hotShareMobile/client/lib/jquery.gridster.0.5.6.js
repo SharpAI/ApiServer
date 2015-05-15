@@ -2335,6 +2335,9 @@
 
 
         delay($.proxy(function() {
+            if (this.$resize_preview_holder == null){
+                return;
+            }
             this.$resize_preview_holder
                 .remove()
                 .css({
