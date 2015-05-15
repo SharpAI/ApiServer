@@ -101,7 +101,6 @@ if Meteor.isClient
         Swiper.leftRight('userProfilePage2', 'userProfilePage1')
 
   Template.userProfilePage1.rendered=->
-    Meteor.subscribe "viewlists", Meteor.userId(),Session.get("ProfileUserId1")
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
     document.body.scrollTop = document.body.scrollHeight
@@ -262,7 +261,6 @@ if Meteor.isClient
       }
 
   Template.userProfilePage2.rendered=->
-    Meteor.subscribe "viewlists", Meteor.userId(),Session.get("ProfileUserId2")
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
     document.body.scrollTop = document.body.scrollHeight
@@ -423,7 +421,6 @@ if Meteor.isClient
       }
 
   Template.userProfilePage3.rendered=->
-    Meteor.subscribe "viewlists", Meteor.userId(),Session.get("ProfileUserId3")
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
     document.body.scrollTop = document.body.scrollHeight

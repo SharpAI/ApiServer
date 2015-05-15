@@ -50,21 +50,6 @@ if Meteor.isClient
   Template.addNewFriends.helpers
     is_meet_count: (count)->
       count > 0
-    username:->
-      Meteor.subscribe("userinfo",this.ta)
-      taUser = Meteor.users.findOne {_id: this.ta}
-      if taUser is undefined
-        return ''
-      UserName = taUser.username
-      if taUser.profile.fullname
-        UserName = taUser.profile.fullname
-      UserName
-    userIcon:->
-      Meteor.subscribe("userinfo",this.ta)
-      taUser = Meteor.users.findOne {_id: this.ta}
-      if taUser is undefined
-        return ''
-      taUser.profile.icon
     meet_count:->
       meetItem = Meets.findOne({me:Meteor.userId(),ta:this.ta})
       if meetItem
