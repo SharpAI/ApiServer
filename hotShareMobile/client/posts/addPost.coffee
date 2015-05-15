@@ -1279,7 +1279,8 @@ if Meteor.isClient
                 Session.set("TopicTitle", title)
                 Session.set("TopicAddonTitle", addontitle)
                 Session.set("TopicMainImage", mainImage)
-                Router.go('addTopicComment')
+                #Router.go('addTopicComment')
+                Router.go('/posts/'+postId)
         )
         return
     'click .remove':(event)->
