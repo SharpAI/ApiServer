@@ -49,6 +49,10 @@ div[data-mask='true'] .crop-container {
     -webkit-box-shadow:0 0 0 2000px rgba(255, 255, 255, .85) !important;
     -khtml-box-shadow:0 0 0 2000px rgba(255, 255, 255, .85) !important;
     -ms-box-shadow:0 0 0 2000px rgba(255, 255, 255, .85) !important;
+    background-image: url('img/move.png'); 
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	
 }
 /*
 .cropMain .crop-container:after {
