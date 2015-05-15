@@ -13,6 +13,9 @@ $.fn.isAboveViewPortBottom = function(){
     viewport.bottom = viewport.top + win.height();
 
     var bounds = this.offset();
+    if (bounds == null){
+        return 0;
+    }
     bounds.right = bounds.left + this.outerWidth();
     bounds.bottom = bounds.top + this.outerHeight();
 
