@@ -5,6 +5,12 @@ if Meteor.isClient
       console.log('In newfriends ' + Meteor.userId())
       if Session.get("postContent") and  Meteor.userId()
         Meteor.subscribe "newfriends", Meteor.userId(),Session.get("postContent")._id
+  onUserProfile = ->
+    @UserProfileBox = $('.userProfileBox').bPopup
+      positionStyle: 'fixed'
+      position: [0, 0]
+      onOpen: ->
+        Session.set('displayUserProfileBox',true)
   Template.contactsList.helpers
     follower:()->
       Follower.find({"userId":Meteor.userId()},{sort: {createdAt: -1}})
@@ -17,7 +23,7 @@ if Meteor.isClient
   Template.contactsList.events
     "click #addNewFriends":()->
       Session.set("Social.LevelOne.Menu",'addNewFriends')
-    "click .userProfile":(e)->
+    "click .oldFriends":(e)->
       userProfileList = Follower.find({"userId":Meteor.userId()},{sort: {createdAt: -1}}).fetch()
       Session.set("userProfileList", userProfileList)
       Session.set("userProfileType", "oldfriends");
@@ -38,7 +44,8 @@ if Meteor.isClient
       Session.set("ProfileUserId3", userProfileList[prevProfileIndex].followerId)
       Session.set("ProfileUserId2", userProfileList[nextProfileIndex].followerId)
       #click on current friends list
-      PUB.page('userProfilePage1')
+      onUserProfile()
+      #PUB.page('userProfilePage1')
     'click .messageGroup': ()->
       Session.set("Social.LevelOne.Menu", 'messageGroup')      
   Template.addNewFriends.rendered=->
@@ -66,7 +73,7 @@ if Meteor.isClient
       else
         false
   Template.addNewFriends.events
-    "click .newUserProfile":(e)->
+    "click .newFriends":(e)->
       userProfileList = Newfriends.find({meetOnPostId:Session.get("postContent")._id},{sort:{count:-1}}).fetch()
       Session.set("userProfileList", userProfileList)
       Session.set("userProfileType", "newfriends")
@@ -85,7 +92,8 @@ if Meteor.isClient
       Session.set("ProfileUserId3", userProfileList[prevProfileIndex].ta)
       Session.set("ProfileUserId2", userProfileList[nextProfileIndex].ta)
       #click on suggest friends list
-      PUB.page('userProfilePage1')
+      onUserProfile()
+      #PUB.page('userProfilePage1')
     "click #addNewFriends":()->
       Session.set("Social.LevelOne.Menu",'addNewFriends')
     'click .delFollow':(e)->

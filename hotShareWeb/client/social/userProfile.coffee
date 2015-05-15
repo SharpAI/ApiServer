@@ -6,7 +6,8 @@ if Meteor.isClient
     Swiper: -> Swiper
   Template.userProfile.rendered = ->
     # starting page
-    Swiper.setInitialPage Router.current().route.getName()
+    console.log 'Showing userProfile'
+    Swiper.setInitialPage 'userProfilePage1'
     Tracker.autorun ->
       if Swiper.pageIs('userProfilePage1')
         if Session.get("currentPageIndex") isnt 1
@@ -152,7 +153,8 @@ if Meteor.isClient
   Template.userProfilePage1.events
     'click .userProfile .back':()->
       Session.set("Social.LevelOne.Menu",'contactsList')
-      PUB.back()
+      if UserProfileBox
+        UserProfileBox.close()
     'click #suggestCurrentPost': ()->
       username = Meteor.user().username
       if Meteor.user().profile.fullname
@@ -312,7 +314,8 @@ if Meteor.isClient
   Template.userProfilePage2.events
     'click .userProfile .back':()->
       Session.set("Social.LevelOne.Menu",'contactsList')
-      PUB.back()
+      if UserProfileBox
+        UserProfileBox.close()
     'click #suggestCurrentPost': ()->
       username = Meteor.user().username
       if Meteor.user().profile.fullname
@@ -472,7 +475,8 @@ if Meteor.isClient
   Template.userProfilePage3.events
     'click .userProfile .back':()->
       Session.set("Social.LevelOne.Menu",'contactsList')
-      PUB.back()
+      if UserProfileBox
+        UserProfileBox.close()
     'click #suggestCurrentPost': ()->
       username = Meteor.user().username
       if Meteor.user().profile.fullname
