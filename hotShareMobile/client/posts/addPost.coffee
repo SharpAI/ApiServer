@@ -1152,7 +1152,7 @@ if Meteor.isClient
         #Save gridster layout first. If publish failed, we can recover the drafts
         for i in [0..(draftData.length-1)]
           if i is 0
-            if draftData[i].imgUrl.toLowerCase().indexOf("http://") == -1 or draftData[i].imgUrl.toLowerCase().indexOf("https://") == -1
+            if draftData[i].imgUrl.toLowerCase().indexOf("http://") == -1 and draftData[i].imgUrl.toLowerCase().indexOf("https://") == -1
               mainImage = 'http://data.tiegushi.com/'+draftData[i].filename
             else
               mainImage = draftData[i].imgUrl
