@@ -6,10 +6,6 @@ if Meteor.isClient
       if Session.get("postContent") and  Meteor.userId()
         Meteor.subscribe "newfriends", Meteor.userId(),Session.get("postContent")._id
   Template.contactsList.helpers
-    location:->
-      Meteor.subscribe("userinfo",this.followerId);
-      UserProfile = Meteor.users.findOne {_id: this.followerId}
-      UserProfile.profile.location
     follower:()->
       Follower.find({"userId":Meteor.userId()},{sort: {createdAt: -1}})
     isViewer:()->
@@ -48,42 +44,6 @@ if Meteor.isClient
   Template.addNewFriends.rendered=->
     Session.set('mrLimit', 0)
   Template.addNewFriends.helpers
-    is_meet_count: (count)->
-      count > 0
-    meet_count:->
-      meetItem = Meets.findOne({me:Meteor.userId(),ta:this.ta})
-      if meetItem
-        meetCount = meetItem.count
-      else
-        meetCount = 0
-      meetCount
-    location:->
-      Meteor.subscribe("userinfo",this.userId);
-      UserProfile = Meteor.users.findOne {_id: this.userId}
-      if  UserProfile and UserProfile.profile.location
-        UserProfile.profile.location
-      else
-        ""
-    viewer:()->
-      #Viewers.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}, limit:21})
-      viewerResult = Viewers.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}, limit:21}).fetch()
-      if viewerResult and (viewerResult.length > 1)
-        for i in [0..(viewerResult.length-1)]
-          meetItem = Meets.findOne({me:Meteor.userId(),ta:viewerResult[i].userId})
-          if meetItem
-            meetCount = meetItem.count
-          else
-            meetCount = 0
-          viewerResult[i].meetCount = meetCount
-        sortBy = (key, a, b, r) ->
-            r = if r then 1 else -1
-            return -1*r if a[key] > b[key]
-            return +1*r if a[key] < b[key]
-            return 0
-        viewerResult.sort((a, b)->
-          sortBy('meetCount', a, b, 1)
-        )
-        return viewerResult
     meeter:()->
       Newfriends.find({meetOnPostId:Session.get("postContent")._id},{sort:{count:-1}})
     isMyself:()->
