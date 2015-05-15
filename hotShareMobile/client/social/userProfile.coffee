@@ -1,11 +1,13 @@
 if Meteor.isClient
   # Initialize the Swiper
-  @Swiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
+  Meteor.startup ()->
+    @Swiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
   Template.userProfile.helpers
     Swiper: -> Swiper
   Template.userProfile.rendered = ->
     # starting page
-    Swiper.setInitialPage Router.current().route.getName()
+    console.log 'Showing userProfile'
+    Swiper.setInitialPage 'userProfilePage1'
     Tracker.autorun ->
       if Swiper.pageIs('userProfilePage1')
         if Session.get("currentPageIndex") isnt 1

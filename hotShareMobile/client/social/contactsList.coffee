@@ -14,7 +14,7 @@ if Meteor.isClient
         $('.showBgColor').show 0,->
           $(window).scrollTop(window.lastScroll)
       onOpen: ->
-        console.log 'User Profile Box Modal opened'
+        Session.set('displayUserProfileBox',true)
   Template.contactsList.helpers
     follower:()->
       Follower.find({"userId":Meteor.userId()},{sort: {createdAt: -1}})
