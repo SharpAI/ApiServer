@@ -71,6 +71,24 @@ if(Meteor.isServer){
       });
     }
   });
+  getViewLists = function(obj,userId,limit){
+      var views = Viewers.find({userId: userId},{sort:{createdAt: -1},limit:limit});
+      if (views.count()>0){
+          views.forEach(function(fields){
+              var viewItem = Posts.findOne({"_id":fields.postId});
+              if(viewItem)
+              {
+                  fields.mainImage = viewItem.mainImage;
+                  fields.title = viewItem.title;
+                  try{
+                      obj.added("viewlists", fields._id, fields);
+                      count++;
+                  }catch(error){
+                  }
+              }
+          });
+      }
+  };
   Meteor.publish("newfriends", function (userId,postId) {
     if(this.userId === null || !Match.test(postId, String))
       return [];
@@ -88,6 +106,7 @@ if(Meteor.isServer){
               if(fcount === 0)
               {
                   self.added("newfriends", id, fields);
+                  getViewLists(self,taId,3);
                   count++;
               }
             }
@@ -115,6 +134,7 @@ if(Meteor.isServer){
                    fields.count = meetItem.count;
                    fields.meetOnPostId = meetItem.meetOnPostId;
                    self.added("newfriends", id, fields);
+                   getViewLists(self,meetItem.ta,3);
                    count++;
                  }
                }
@@ -138,6 +158,7 @@ if(Meteor.isServer){
                      fields.ta = meetItem.ta;
                      fields.count = meetItem.count;
                      self.added("newfriends", id, fields);
+                     getViewLists(self,meetItem.ta,3);
                      count++;
                    }
                  }
