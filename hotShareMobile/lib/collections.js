@@ -540,7 +540,7 @@ if(Meteor.isServer){
           return false;
       },
     update: function(userId, doc, fieldNames, modifier) {
-      if (fieldNames.toString() === 'heart' || fieldNames.toString() === 'retweet' && modifier.$set !== void 0) {
+      if (fieldNames.toString() === 'pub' || fieldNames.toString() === 'heart' || fieldNames.toString() === 'retweet' && modifier.$set !== void 0) {
         return true;
       }
       if (fieldNames.toString() === 'browse' && modifier.$set !== void 0) {

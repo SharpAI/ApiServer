@@ -80,5 +80,40 @@ Template.showPosts.events({
             PUB.toast("无法获取故事标题图片，请稍后重试！");
         }
       })
+    },
+    
+    'click  .like_img' : function(e){
+          if (Meteor.user()) {
+               post = Session.get('postContent');
+              img_id = $(e.currentTarget).parent().prev().attr('data-original');
+              for(var i=0; i < post.pub.length; i++){
+                  if(post.pub[i].imgUrl === img_id){
+                      current_pub = post.pub[i];
+                      pub_Heart = [];
+                      if(current_pub.pubHeart){
+                          // this pic has  like
+                      }else{
+                          // this pic has  no like
+                          pub_Heart.push({
+                            like_userId : Meteor.userId(),
+                            like_createdAt : new Date()
+                          });
+                        current_pub.pubHeart = pub_Heart;
+                        Posts.update({
+                          _id: post._id
+                         }, {
+                          $set: {
+                            pub: current_pub
+                          }
+                        });
+                      }
+                  }
+              }
+
+
+
+              
+          }
+       e.stopPropagation();
     }
 })
