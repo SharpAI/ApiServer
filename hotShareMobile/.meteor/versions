@@ -39,7 +39,6 @@ launch-screen@1.0.2
 leonzhang1109:accounts-qq@0.0.7
 leonzhang1109:accounts-wechat@0.2.6
 leonzhang1109:bootstrap-material-design-noicons@0.2.0
-leonzhang1109:swipe@0.0.10
 less@1.0.14
 livedata@1.0.13
 localstorage@1.0.3
@@ -48,6 +47,7 @@ mdg:camera@1.1.4
 meteor@1.1.6
 meteor-phonegap-push@0.0.1
 meteor-platform@1.2.2
+meteor-swipe@0.0.10
 meteorhacks:async@1.0.0
 meteorhacks:kadira@2.20.1
 meteorhacks:meteorx@1.3.1
