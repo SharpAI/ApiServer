@@ -104,6 +104,19 @@ if(Meteor.isServer){
               var fcount = Follower.find({"userId":userId,"followerId":taId}).count();
               if(fcount === 0)
               {
+                  var taInfo = Meteor.users.findOne({_id: taId},{fields: {'username':1,'email':1,'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1}});
+                  if (taInfo){
+                      try{
+                          fields.location = taInfo.profile.location;
+                          var userName = taInfo.username;
+                          if(taInfo.profile.fullname){
+                              userName = taInfo.profile.fullname;
+                          }
+                          fields.displayName = userName;
+                          fields.userIcon = taInfo.profile.icon;
+                      } catch (error){
+                      }
+                  }
                   self.added("newfriends", id, fields);
                   getViewLists(self,taId,3);
                   count++;
@@ -132,6 +145,19 @@ if(Meteor.isServer){
                    fields.ta = meetItem.ta;
                    fields.count = meetItem.count;
                    fields.meetOnPostId = meetItem.meetOnPostId;
+                   var taInfo = Meteor.users.findOne({_id: fields.ta},{fields: {'username':1,'email':1,'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1}});
+                   if (taInfo){
+                       try{
+                           fields.location = taInfo.profile.location;
+                           var userName = taInfo.username;
+                           if(taInfo.profile.fullname){
+                               userName = taInfo.profile.fullname;
+                           }
+                           fields.displayName = userName;
+                           fields.userIcon = taInfo.profile.icon;
+                       } catch (error){
+                       }
+                   }
                    self.added("newfriends", id, fields);
                    getViewLists(self,meetItem.ta,3);
                    count++;
@@ -156,6 +182,19 @@ if(Meteor.isServer){
                      fields.me = meetItem.me;
                      fields.ta = meetItem.ta;
                      fields.count = meetItem.count;
+                     var taInfo = Meteor.users.findOne({_id: fields.ta},{fields: {'username':1,'email':1,'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1}});
+                     if (taInfo){
+                         try{
+                             fields.location = taInfo.profile.location;
+                             var userName = taInfo.username;
+                             if(taInfo.profile.fullname){
+                                 userName = taInfo.profile.fullname;
+                             }
+                             fields.displayName = userName;
+                             fields.userIcon = taInfo.profile.icon;
+                         } catch (error){
+                         }
+                     }
                      self.added("newfriends", id, fields);
                      getViewLists(self,meetItem.ta,3);
                      count++;
