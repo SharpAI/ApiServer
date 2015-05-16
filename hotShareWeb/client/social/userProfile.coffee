@@ -8,9 +8,9 @@ if Meteor.isClient
     # starting page
     console.log 'Showing userProfile'
     Swiper.setInitialPage 'userProfilePage1'
-    if @userProfileTrackerHandler
-      @userProfileTrackerHandler.stop()
-      @userProfileTrackerHandler = null
+    if userProfileTrackerHandler
+      userProfileTrackerHandler.stop()
+      userProfileTrackerHandler = null
     Tracker.autorun (handler)->
       @userProfileTrackerHandler = handler
       if Swiper.pageIs('userProfilePage1')
