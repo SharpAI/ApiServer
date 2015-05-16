@@ -9,6 +9,8 @@ if Meteor.isClient
     @UserProfileBox = $('.userProfileBox').bPopup
       positionStyle: 'fixed'
       position: [0, 0]
+      onClose: ->
+        Session.set('displayUserProfileBox',false)
       onOpen: ->
         Session.set('displayUserProfileBox',true)
   Template.contactsList.helpers

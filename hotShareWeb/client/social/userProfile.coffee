@@ -8,7 +8,11 @@ if Meteor.isClient
     # starting page
     console.log 'Showing userProfile'
     Swiper.setInitialPage 'userProfilePage1'
-    Tracker.autorun ->
+    if @userProfileTrackerHandler
+      @userProfileTrackerHandler.stop()
+      @userProfileTrackerHandler = null
+    Tracker.autorun (handler)->
+      @userProfileTrackerHandler = handler
       if Swiper.pageIs('userProfilePage1')
         if Session.get("currentPageIndex") isnt 1
           userProfileList = Session.get("userProfileList")
@@ -102,7 +106,6 @@ if Meteor.isClient
   Template.userProfilePage1.rendered=->
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
-    document.body.scrollTop = document.body.scrollHeight
   Template.userProfilePage1.helpers
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
@@ -182,12 +185,10 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
       postId = e.currentTarget.id
-
       $(window).children().off()
       $(window).unbind('scroll')
-      $('.showPosts').fadeOut 300
-      $('.showPostsFooter').fadeOut 300
-      $('.socialContent').fadeOut 300
+      if UserProfileBox
+        UserProfileBox.close()
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/redirect/'+postId
@@ -263,7 +264,6 @@ if Meteor.isClient
   Template.userProfilePage2.rendered=->
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
-    document.body.scrollTop = document.body.scrollHeight
   Template.userProfilePage2.helpers
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
@@ -343,12 +343,10 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
       postId = e.currentTarget.id
-
       $(window).children().off()
       $(window).unbind('scroll')
-      $('.showPosts').fadeOut 300
-      $('.showPostsFooter').fadeOut 300
-      $('.socialContent').fadeOut 300
+      if UserProfileBox
+        UserProfileBox.close()
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/redirect/'+postId
@@ -424,7 +422,6 @@ if Meteor.isClient
   Template.userProfilePage3.rendered=->
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
-    document.body.scrollTop = document.body.scrollHeight
   Template.userProfilePage3.helpers
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
@@ -504,12 +501,10 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
       postId = e.currentTarget.id
-
       $(window).children().off()
       $(window).unbind('scroll')
-      $('.showPosts').fadeOut 300
-      $('.showPostsFooter').fadeOut 300
-      $('.socialContent').fadeOut 300
+      if UserProfileBox
+        UserProfileBox.close()
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/redirect/'+postId
