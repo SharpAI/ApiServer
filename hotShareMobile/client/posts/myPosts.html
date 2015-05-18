@@ -10,7 +10,7 @@
                     {{#each items}}
                         <div  id="{{_id}}" class="mainImage">
                             {{#if mainImage}}
-                              {{>spinner}}
+                              {{>padding noRandomBackgroundColor=true}}
                             {{/if}}
                             <img class="scale item lazy" data-original="{{mainImage}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImageStyle}}" >
                             <header>
