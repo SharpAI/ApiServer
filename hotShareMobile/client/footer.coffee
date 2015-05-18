@@ -55,13 +55,14 @@ if Meteor.isClient
       PUB.page('/user')
     'click #album-select':(e)->
       prepareToEditorMode()
-      PUB.page '/add'
       Meteor.defer ()->
           selectMediaFromAblum(20, (cancel, result,currentCount,totalCount)->
+            PUB.page '/add'
             if cancel
               PUB.back()
               return
             if result
+              #PUB.page '/add'
               console.log 'Local is ' + result.smallImage
               Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
               if currentCount >= totalCount
