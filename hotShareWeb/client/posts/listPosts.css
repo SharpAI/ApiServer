@@ -91,8 +91,8 @@ img.flip {
 /*  font-weight:bold*/
 }
 
-.home .content #list .mainImage{position: relative;max-height: 300px;overflow-y: hidden;margin-bottom: 5px;}
-.home .content #list .footer{position: relative;min-height: 30px;line-height: 30px;margin-bottom: 10px;}
+.home .content #list .mainImage{position: relative;height: 300px;overflow: hidden;margin-bottom: 5px;}
+.home .content #list .footer{position: relative;min-height: 30px;line-height: 30px;margin-bottom: 20px;}
 .home .content #list .footer .icon{border: none;border-radius:50%;margin-bottom: 2.5px;}
 .home .content #list .footer .right{float: right;color: gray;}
 .home .content #list .footer .right i{margin: 0 2px}

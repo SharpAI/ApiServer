@@ -11,7 +11,7 @@
       <div  id="{{_id}}" class="mainImage">
 <!--      <div class="item" id="{{_id}}" style="background-image:url({{mainImage}})">-->
         {{#if mainImage}}
-          {{>spinner}}
+          {{>padding noRandomBackgroundColor=true}}
         {{/if}}
         <img class="scale item lazy" data-original="{{mainImage}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImageStyle}}" >
         <header>
