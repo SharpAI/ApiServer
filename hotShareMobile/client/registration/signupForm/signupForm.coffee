@@ -21,8 +21,6 @@ Template.signupForm.events
       PUB.toast '你的邮箱有误！'
     else if pass1.length < 6
       PUB.toast '密码至少要6位！'
-    else if document.getElementById("deal_check").checked is false
-      PUB.toast '请同意故事贴服务告知！'
     else
       t.find('#sub-registered').disabled = true
       t.find('#sub-registered').value = '正在提交信息...'
