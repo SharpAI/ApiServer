@@ -125,7 +125,6 @@ if Meteor.isClient
         return
 
       if(st + $(window).height()) is window.getDocHeight()
-        $('.showPosts .head').fadeIn 300
         hidePostBar()
         showSocialBar()
         window.lastScroll = st
@@ -144,8 +143,8 @@ if Meteor.isClient
       #Updates scroll position
       window.lastScroll = st
     window.lastScroll = 0;
-    hideSocialBar()
-    showPostBar()
+    #hideSocialBar()
+    #showPostBar()
 
     if withSocialBar
       $(window).scroll(scrollEventCallback)
