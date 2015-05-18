@@ -99,7 +99,9 @@ if Meteor.isClient
         src = $(this).attr('src')
         if src and src isnt ''
           unless src.startsWith('http')
-            if src.startsWith('/')
+            if src.startsWith('//')
+              src = data.protocol + src
+            else if src.startsWith('/')
               src = data.protocol + '//' + data.host + '/' + src
           console.log 'Image Src: ' + src
           if (data.imageArray.indexOf src) <0
