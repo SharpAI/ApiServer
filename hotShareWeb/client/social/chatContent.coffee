@@ -16,6 +16,5 @@ if Meteor.isClient
       sesType is 'groupChat' or sesType is 'chatNotify'
   Template.chatContent.events
     'click .eachChat': (e)->
-      Meteor.subscribe("userinfo",Session.get("ProfileUserId"));
       Session.set("messageDialog_to", {id: e.currentTarget.id, type: 'session'})
       Session.set("Social.LevelOne.Menu", 'messageDialog')

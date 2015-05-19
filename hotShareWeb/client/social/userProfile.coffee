@@ -25,7 +25,7 @@ if Meteor.isClient
     username = Meteor.user().username
     if Meteor.user().profile.fullname
       username = Meteor.user().profile.fullname
-    UserProfile = Meteor.users.findOne {_id: Session.get(userId)}
+    UserProfile = UserDetail.findOne {_id: Session.get(userId)}
     requestee = UserProfile.username
     if UserProfile.profile.fullname
       requestee = UserProfile.profile.fullname
@@ -210,7 +210,7 @@ if Meteor.isClient
     withChat:->
       withChat
     profile:->
-      Meteor.users.findOne {_id: Session.get("ProfileUserId1")}
+      UserDetail.findOne {_id: Session.get("ProfileUserId1")}
     isFollowed:()->
       fcount = Follower.find({"followerId":Session.get("ProfileUserId1")}).count()
       if fcount > 0
@@ -238,7 +238,6 @@ if Meteor.isClient
     'click #suggestCurrentPost': ()->
       suggestCurrentPost("ProfileUserId1")
     'click #sendChatMessage': ()->
-      Meteor.subscribe("userinfo",Session.get("ProfileUserId1"))
       Session.set("messageDialog_to", {id: Session.get("ProfileUserId1"), type: 'user'})
       Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
@@ -271,7 +270,7 @@ if Meteor.isClient
     withChat:->
       withChat
     profile:->
-      Meteor.users.findOne {_id: Session.get("ProfileUserId2")}
+      UserDetail.findOne {_id: Session.get("ProfileUserId2")}
     isFollowed:()->
       fcount = Follower.find({"followerId":Session.get("ProfileUserId2")}).count()
       if fcount > 0
@@ -299,7 +298,6 @@ if Meteor.isClient
     'click #suggestCurrentPost': ()->
       suggestCurrentPost("ProfileUserId2")
     'click #sendChatMessage': ()->
-      Meteor.subscribe("userinfo",Session.get("ProfileUserId2"))
       Session.set("messageDialog_to", {id: Session.get("ProfileUserId2"), type: 'user'})
       Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
@@ -333,7 +331,7 @@ if Meteor.isClient
     withChat:->
       withChat
     profile:->
-      Meteor.users.findOne {_id: Session.get("ProfileUserId3")}
+      UserDetail.findOne {_id: Session.get("ProfileUserId3")}
     isFollowed:()->
       fcount = Follower.find({"followerId":Session.get("ProfileUserId3")}).count()
       if fcount > 0
@@ -361,7 +359,6 @@ if Meteor.isClient
     'click #suggestCurrentPost': ()->
       suggestCurrentPost("ProfileUserId3")
     'click #sendChatMessage': ()->
-      Meteor.subscribe("userinfo",Session.get("ProfileUserId3"))
       Session.set("messageDialog_to", {id: Session.get("ProfileUserId3"), type: 'user'})
       Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
