@@ -4,6 +4,7 @@ if Meteor.isClient
     Deps.autorun ()->
       console.log('In newfriends ' + Meteor.userId())
       if Session.get("postContent") and  Meteor.userId()
+        Meteor.subscribe("userDetail",Meteor.userId())
         Meteor.subscribe "newfriends", Meteor.userId(),Session.get("postContent")._id
   onUserProfile = ->
     @UserProfileBox = $('.userProfileBox').bPopup
@@ -31,9 +32,6 @@ if Meteor.isClient
       Session.set("userProfileType", "oldfriends");
       Session.set("currentPageIndex", 1);
       for i in [0..userProfileList.length-1]
-        Meteor.subscribe("recentPostsViewByUser", userProfileList[i].followerId)
-        Meteor.subscribe "viewlists", Meteor.userId(), userProfileList[i].followerId
-        Meteor.subscribe("userinfo", userProfileList[i].followerId)
         if userProfileList[i].followerId is this.followerId
           Session.set("currentProfileIndex", i)
       prevProfileIndex = Session.get("currentProfileIndex")-1
@@ -81,7 +79,6 @@ if Meteor.isClient
       Session.set("userProfileType", "newfriends")
       Session.set("currentPageIndex", 1)
       for i in [0..userProfileList.length-1]
-        Meteor.subscribe("userinfo", userProfileList[i].ta)
         if userProfileList[i].ta is this.ta
           Session.set("currentProfileIndex", i)
       prevProfileIndex = Session.get("currentProfileIndex")-1

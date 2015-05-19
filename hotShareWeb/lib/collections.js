@@ -19,6 +19,7 @@ Meets = new Meteor.Collection('meets');
 if(Meteor.isClient){
   Newfriends = new Meteor.Collection("newfriends");
   ViewLists = new Meteor.Collection("viewlists");
+  UserDetail = new Meteor.Collection("userDetail");
 }
 if(Meteor.isServer){
   RefNames = new Meteor.Collection("refnames");
@@ -88,6 +89,29 @@ if(Meteor.isServer){
           });
       }
   };
+  Meteor.publish("userDetail", function (userId) {
+      if(!Match.test(userId, String)){
+          return [];
+      }
+      else{
+          var self = this;
+          var handle = Follower.find({userId:userId}).observeChanges({
+              added: function (id,fields) {
+                  if(fields.userId === userId && fields.followerId && fields.followerId !=='') {
+                      var info = Meteor.users.findOne({_id: fields.followerId}, {fields: {'username': 1, 'email': 1, 'profile.fullname': 1, 'profile.icon': 1, 'profile.desc': 1, 'profile.location': 1}});
+                      if (info) {
+                          self.added("userDetail", info._id, info);
+                          getViewLists(self,info._id,3);
+                      }
+                  }
+              }
+          });
+          self.ready();
+          self.onStop(function () {
+              handle.stop();
+          });
+      }
+    });
   Meteor.publish("newfriends", function (userId,postId) {
     if(this.userId === null || !Match.test(postId, String))
       return [];
@@ -114,6 +138,10 @@ if(Meteor.isServer){
                           }
                           fields.displayName = userName;
                           fields.userIcon = taInfo.profile.icon;
+                          try {
+                              self.added("userDetail", taInfo._id, taInfo);
+                          } catch (error){
+                          }
                       } catch (error){
                       }
                   }
@@ -155,6 +183,7 @@ if(Meteor.isServer){
                            }
                            fields.displayName = userName;
                            fields.userIcon = taInfo.profile.icon;
+                           self.added("userDetail",taInfo._id,taInfo);
                        } catch (error){
                        }
                    }
@@ -192,6 +221,7 @@ if(Meteor.isServer){
                              }
                              fields.displayName = userName;
                              fields.userIcon = taInfo.profile.icon;
+                             self.added("userDetail",taInfo._id,taInfo);
                          } catch (error){
                          }
                      }
@@ -216,9 +246,6 @@ if(Meteor.isServer){
       });
     }
   });
-
-
-
   Meteor.publish('meetscountwithlimit', function(limit) {
     if(this.userId === null || !Match.test(limit, Number))
       return [];
@@ -362,13 +389,13 @@ if(Meteor.isServer){
   });
   Meteor.publish("feeds", function(limit) {
     if(this.userId === null || !Match.test(limit, Number))
-      return []
+      return [];
     else
       return Feeds.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
   });
   Meteor.publish("userFeeds", function(followId,postId) {
     if(this.userId === null || !Match.test(followId, String) || !Match.test(postId, String))
-      return []
+      return [];
     else
       return Feeds.find({followby: followId,postId: postId,eventType:'recommand',recommanderId:this.userId}, {sort: {createdAt: -1}, limit:2});
   });
