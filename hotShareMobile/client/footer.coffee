@@ -55,10 +55,11 @@ if Meteor.isClient
       PUB.page('/user')
     'click #album-select':(e)->
       prepareToEditorMode()
-      PUB.page '/add'
       Meteor.defer ()->
           selectMediaFromAblum(20, (cancel, result,currentCount,totalCount)->
+            PUB.page '/add'
             if cancel
+              $('#level2-popup-menu').modal('hide');
               PUB.back()
               return
             if result
