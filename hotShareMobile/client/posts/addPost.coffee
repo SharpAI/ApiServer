@@ -7,7 +7,7 @@ if Meteor.isClient
   # the only document I found here https://github.com/percolatestudio/transition-helper/blob/master/transition-helper.js#L4    
   Template.addPost.rendered=->
     Meteor.subscribe("saveddrafts");
-    window.imageCounter = 1
+    window.imageCounter2 = 1
     window.insertRow = 1
     `global_toolbar_hidden = false`
     $('.addPost').css('min-height',$(window).height())
@@ -390,15 +390,15 @@ if Meteor.isClient
           if grid != undefined
             # Images loaded during rendering
             if Session.get('NewImgAdd') is 'true'
-              if (window.imageCounter % 3) is 0
+              if (window.imageCounter2 % 3) is 0
                 grid.add_widget(node, 6, 3,1,window.insertRow)
                 window.insertRow +=3
-              else if (window.imageCounter % 3) is 1
+              else if (window.imageCounter2 % 3) is 1
                 grid.add_widget(node, 3, 3,1,window.insertRow)
               else
                 grid.add_widget(node, 3, 3,4,window.insertRow)
                 window.insertRow +=3
-              window.imageCounter++
+              window.imageCounter2++
             # Images to be inserted before the element
             else if window.unSelectedElem
               currentCount = node.$blaze_range.view.parentView.dataVar.curValue.currentCount
