@@ -50,8 +50,9 @@ div[data-mask='true'] .crop-container {
     -khtml-box-shadow:0 0 0 2000px rgba(255, 255, 255, .85) !important;
     -ms-box-shadow:0 0 0 2000px rgba(255, 255, 255, .85) !important;
     background-image: url('img/move.png'); 
-	background-size: 100% 100%;
+	background-size: 48px 48px;
 	background-repeat: no-repeat;
+        background-position: center;
 	
 }
 /*
