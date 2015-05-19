@@ -877,6 +877,7 @@ if Meteor.isClient
     if inputUrl && inputUrl isnt ''
       Session.set('lastImportedUrl',inputUrl)
       if Session.get("channel") isnt 'addPost'
+        prepareToEditorMode()
         PUB.page '/add'
       getImagesListFromUrl iabHandle,inputUrl,(data)->
         if data is null
