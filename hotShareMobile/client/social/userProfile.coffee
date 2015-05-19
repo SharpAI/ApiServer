@@ -1,4 +1,93 @@
 if Meteor.isClient
+
+  suggestCurrentPost = (userId)->
+    username = Meteor.user().username
+    if Meteor.user().profile.fullname
+      username = Meteor.user().profile.fullname
+    Feeds.insert {
+      owner:Session.get("postContent").owner
+      ownerName:Session.get("postContent").ownerName
+      ownerIcon:Session.get("postContent").ownerIcon
+      eventType:'recommand'
+      postId:Session.get("postContent")._id
+      postTitle:Session.get("postContent").title
+      mainImage:Session.get("postContent").mainImage
+      createdAt:new Date()
+      heart:Session.get("postContent").heart
+      retweet:Session.get("postContent").retweet
+      comment:Session.get("postContent").comment
+      followby: Session.get(userId)
+      recommander:username
+      recommanderIcon:Meteor.user().profile.icon
+      recommanderId:Meteor.userId()
+    }
+  addToContactList = (userId)->
+    username = Meteor.user().username
+    if Meteor.user().profile.fullname
+      username = Meteor.user().profile.fullname
+    UserProfile = Meteor.users.findOne {_id: Session.get(userId)}
+    requestee = UserProfile.username
+    if UserProfile.profile.fullname
+      requestee = UserProfile.profile.fullname
+    if Follower.findOne({"userId":UserProfile._id,"followerId":Meteor.userId()})
+      Follower.insert {
+        userId: Meteor.userId()
+        userName: username
+        userIcon: Meteor.user().profile.icon
+        userDesc: ''
+        followerId: UserProfile._id
+        followerName: requestee
+        followerIcon: UserProfile.profile.icon
+        followerDesc: ''
+        createAt: new Date()
+      }
+      return
+    if Feeds.findOne({"requesteeId":Meteor.userId(),"requesterId":UserProfile._id})
+      Follower.insert {
+        userId: Meteor.userId()
+        userName: username
+        userIcon: Meteor.user().profile.icon
+        userDesc: ''
+        followerId: UserProfile._id
+        followerName: requestee
+        followerIcon: UserProfile.profile.icon
+        followerDesc: ''
+        createAt: new Date()
+      }
+      Follower.insert {
+        userId: UserProfile._id
+        userName: requestee
+        userIcon: UserProfile.profile.icon
+        userDesc: ''
+        followerId: Meteor.userId()
+        followerName: username
+        followerIcon: Meteor.user().profile.icon
+        followerDesc: ''
+        createAt: new Date()
+      }
+      return
+    Feeds.insert {
+      eventType:'sendrequest'
+      createdAt:new Date()
+      followby:Meteor.userId()
+      requestee:requestee
+      requesteeIcon:UserProfile.profile.icon
+      requesteeId:UserProfile._id
+      requester:username
+      requesterIcon:Meteor.user().profile.icon
+      requesterId:Meteor.userId()
+    }
+    Feeds.insert {
+      eventType:'getrequest'
+      createdAt:new Date()
+      followby:UserProfile._id
+      requestee:requestee
+      requesteeIcon:UserProfile.profile.icon
+      requesteeId:UserProfile._id
+      requester:username
+      requesterIcon:Meteor.user().profile.icon
+      requesterId:Meteor.userId()
+    }
   # Initialize the Swiper
   Meteor.startup ()->
     @Swiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
@@ -130,20 +219,8 @@ if Meteor.isClient
         false
     viewLists:()->
       ViewLists.find({userId:Session.get("ProfileUserId1")},{sort: {createdAt: -1}, limit:3})
-    viewItems:()->
-      value = 0
-      count = Viewers.find({userId:Session.get("ProfileUserId1")},{sort: {createdAt: -1}, limit:3}).count()
-      if count >=3
-        value = 2
-      else
-        value = count-1
-      VFetch = Viewers.find({userId:Session.get("ProfileUserId1")},{sort: {createdAt: -1}, limit:count}).fetch()
-      for i in [0..value]
-        vDoc = VFetch[i]
-        Meteor.subscribe("ViewPostsList",vDoc.postId)
-        Posts.findOne({_id:vDoc.postId})
     compareViewsCount:(value)->
-      if (Viewers.find({userId:Session.get("ProfileUserId1")}, {sort: {createdAt: -1}, limit:3}).count() > value)
+      if (ViewLists.find({userId:Session.get("ProfileUserId1")}, {sort: {createdAt: -1}, limit:3}).count() > value)
         true
       else
         false
@@ -159,28 +236,9 @@ if Meteor.isClient
       if UserProfileBox
         UserProfileBox.close()
     'click #suggestCurrentPost': ()->
-      username = Meteor.user().username
-      if Meteor.user().profile.fullname
-        username = Meteor.user().profile.fullname
-      Feeds.insert {
-        owner:Session.get("postContent").owner
-        ownerName:Session.get("postContent").ownerName
-        ownerIcon:Session.get("postContent").ownerIcon
-        eventType:'recommand'
-        postId:Session.get("postContent")._id
-        postTitle:Session.get("postContent").title
-        mainImage:Session.get("postContent").mainImage
-        createdAt:new Date()
-        heart:Session.get("postContent").heart
-        retweet:Session.get("postContent").retweet
-        comment:Session.get("postContent").comment
-        followby: Session.get("ProfileUserId1")
-        recommander:username
-        recommanderIcon:Meteor.user().profile.icon
-        recommanderId:Meteor.userId()
-      }
+      suggestCurrentPost("ProfileUserId1")
     'click #sendChatMessage': ()->
-      Meteor.subscribe("userinfo",Session.get("ProfileUserId1"));
+      Meteor.subscribe("userinfo",Session.get("ProfileUserId1"))
       Session.set("messageDialog_to", {id: Session.get("ProfileUserId1"), type: 'user'})
       Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
@@ -194,73 +252,7 @@ if Meteor.isClient
         Router.go '/redirect/'+postId
       ,300
     'click #addToContactList': ()->
-      username = Meteor.user().username
-      if Meteor.user().profile.fullname
-        username = Meteor.user().profile.fullname
-      UserProfile = Meteor.users.findOne {_id: Session.get("ProfileUserId1")}
-      requestee = UserProfile.username
-      if UserProfile.profile.fullname
-        requestee = UserProfile.profile.fullname
-      if Follower.findOne({"userId":UserProfile._id,"followerId":Meteor.userId()})
-        Follower.insert {
-          userId: Meteor.userId()
-          userName: username
-          userIcon: Meteor.user().profile.icon
-          userDesc: ''
-          followerId: UserProfile._id
-          followerName: requestee
-          followerIcon: UserProfile.profile.icon
-          followerDesc: ''
-          createAt: new Date()
-        }
-        return
-      if Feeds.findOne({"requesteeId":Meteor.userId(),"requesterId":UserProfile._id})
-        Follower.insert {
-          userId: Meteor.userId()
-          userName: username
-          userIcon: Meteor.user().profile.icon
-          userDesc: ''
-          followerId: UserProfile._id
-          followerName: requestee
-          followerIcon: UserProfile.profile.icon
-          followerDesc: ''
-          createAt: new Date()
-        }
-        Follower.insert {
-          userId: UserProfile._id
-          userName: requestee
-          userIcon: UserProfile.profile.icon
-          userDesc: ''
-          followerId: Meteor.userId()
-          followerName: username
-          followerIcon: Meteor.user().profile.icon
-          followerDesc: ''
-          createAt: new Date()
-        }
-        return
-      Feeds.insert {
-        eventType:'sendrequest'
-        createdAt:new Date()
-        followby:Meteor.userId()
-        requestee:requestee
-        requesteeIcon:UserProfile.profile.icon
-        requesteeId:UserProfile._id
-        requester:username
-        requesterIcon:Meteor.user().profile.icon
-        requesterId:Meteor.userId()
-      }
-      Feeds.insert {
-        eventType:'getrequest'
-        createdAt:new Date()
-        followby:UserProfile._id
-        requestee:requestee
-        requesteeIcon:UserProfile.profile.icon
-        requesteeId:UserProfile._id
-        requester:username
-        requesterIcon:Meteor.user().profile.icon
-        requesterId:Meteor.userId()
-      }
-
+      addToContactList("ProfileUserId1")
   Template.userProfilePage2.rendered=->
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
@@ -288,20 +280,8 @@ if Meteor.isClient
         false
     viewLists:()->
       ViewLists.find({userId:Session.get("ProfileUserId2")},{sort: {createdAt: -1}, limit:3})
-    viewItems:()->
-      value = 0
-      count = Viewers.find({userId:Session.get("ProfileUserId2")},{sort: {createdAt: -1}, limit:3}).count()
-      if count >=3
-        value = 2
-      else
-        value = count-1
-      VFetch = Viewers.find({userId:Session.get("ProfileUserId2")},{sort: {createdAt: -1}, limit:count}).fetch()
-      for i in [0..value]
-        vDoc = VFetch[i]
-        Meteor.subscribe("ViewPostsList",vDoc.postId)
-        Posts.findOne({_id:vDoc.postId})
     compareViewsCount:(value)->
-      if (Viewers.find({userId:Session.get("ProfileUserId2")}, {sort: {createdAt: -1}, limit:3}).count() > value)
+      if (ViewLists.find({userId:Session.get("ProfileUserId2")}, {sort: {createdAt: -1}, limit:3}).count() > value)
         true
       else
         false
@@ -317,28 +297,9 @@ if Meteor.isClient
       if UserProfileBox
         UserProfileBox.close()
     'click #suggestCurrentPost': ()->
-      username = Meteor.user().username
-      if Meteor.user().profile.fullname
-        username = Meteor.user().profile.fullname
-      Feeds.insert {
-        owner:Session.get("postContent").owner
-        ownerName:Session.get("postContent").ownerName
-        ownerIcon:Session.get("postContent").ownerIcon
-        eventType:'recommand'
-        postId:Session.get("postContent")._id
-        postTitle:Session.get("postContent").title
-        mainImage:Session.get("postContent").mainImage
-        createdAt:new Date()
-        heart:Session.get("postContent").heart
-        retweet:Session.get("postContent").retweet
-        comment:Session.get("postContent").comment
-        followby: Session.get("ProfileUserId2")
-        recommander:username
-        recommanderIcon:Meteor.user().profile.icon
-        recommanderId:Meteor.userId()
-      }
+      suggestCurrentPost("ProfileUserId2")
     'click #sendChatMessage': ()->
-      Meteor.subscribe("userinfo",Session.get("ProfileUserId2"));
+      Meteor.subscribe("userinfo",Session.get("ProfileUserId2"))
       Session.set("messageDialog_to", {id: Session.get("ProfileUserId2"), type: 'user'})
       Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
@@ -352,72 +313,7 @@ if Meteor.isClient
         Router.go '/redirect/'+postId
       ,300
     'click #addToContactList': ()->
-      username = Meteor.user().username
-      if Meteor.user().profile.fullname
-        username = Meteor.user().profile.fullname
-      UserProfile = Meteor.users.findOne {_id: Session.get("ProfileUserId2")}
-      requestee = UserProfile.username
-      if UserProfile.profile.fullname
-        requestee = UserProfile.profile.fullname
-      if Follower.findOne({"userId":UserProfile._id,"followerId":Meteor.userId()})
-        Follower.insert {
-          userId: Meteor.userId()
-          userName: username
-          userIcon: Meteor.user().profile.icon
-          userDesc: ''
-          followerId: UserProfile._id
-          followerName: requestee
-          followerIcon: UserProfile.profile.icon
-          followerDesc: ''
-          createAt: new Date()
-        }
-        return
-      if Feeds.findOne({"requesteeId":Meteor.userId(),"requesterId":UserProfile._id})
-        Follower.insert {
-          userId: Meteor.userId()
-          userName: username
-          userIcon: Meteor.user().profile.icon
-          userDesc: ''
-          followerId: UserProfile._id
-          followerName: requestee
-          followerIcon: UserProfile.profile.icon
-          followerDesc: ''
-          createAt: new Date()
-        }
-        Follower.insert {
-          userId: UserProfile._id
-          userName: requestee
-          userIcon: UserProfile.profile.icon
-          userDesc: ''
-          followerId: Meteor.userId()
-          followerName: username
-          followerIcon: Meteor.user().profile.icon
-          followerDesc: ''
-          createAt: new Date()
-        }
-        return
-      Feeds.insert {
-        eventType:'sendrequest'
-        createdAt:new Date()
-        followby:Meteor.userId()
-        requestee:requestee
-        requesteeIcon:UserProfile.profile.icon
-        requesteeId:UserProfile._id
-        requester:username
-        requesterIcon:Meteor.user().profile.icon
-        requesterId:Meteor.userId()
-      }
-      Feeds.insert {
-        eventType:'getrequest'
-        createdAt:new Date()
-        followby:UserProfile._id
-        requestee:requestee
-        requesteeIcon:UserProfile.profile.icon
-        requesteeId:UserProfile._id
-        requester:username
-        requesterIcon:Meteor.user().profile.icon
-        requesterId:Meteor.userId()
-      }
+      addToContactList("ProfileUserId2")
 
   Template.userProfilePage3.rendered=->
     $('.userProfile').css('min-height', $(window).height() - 40)
@@ -446,20 +342,8 @@ if Meteor.isClient
         false
     viewLists:()->
       ViewLists.find({userId:Session.get("ProfileUserId3")},{sort: {createdAt: -1}, limit:3})
-    viewItems:()->
-      value = 0
-      count = Viewers.find({userId:Session.get("ProfileUserId3")},{sort: {createdAt: -1}, limit:3}).count()
-      if count >=3
-        value = 2
-      else
-        value = count-1
-      VFetch = Viewers.find({userId:Session.get("ProfileUserId3")},{sort: {createdAt: -1}, limit:count}).fetch()
-      for i in [0..value]
-        vDoc = VFetch[i]
-        Meteor.subscribe("ViewPostsList",vDoc.postId)
-        Posts.findOne({_id:vDoc.postId})
     compareViewsCount:(value)->
-      if (Viewers.find({userId:Session.get("ProfileUserId3")}, {sort: {createdAt: -1}, limit:3}).count() > value)
+      if (ViewLists.find({userId:Session.get("ProfileUserId3")}, {sort: {createdAt: -1}, limit:3}).count() > value)
         true
       else
         false
@@ -475,28 +359,9 @@ if Meteor.isClient
       if UserProfileBox
         UserProfileBox.close()
     'click #suggestCurrentPost': ()->
-      username = Meteor.user().username
-      if Meteor.user().profile.fullname
-        username = Meteor.user().profile.fullname
-      Feeds.insert {
-        owner:Session.get("postContent").owner
-        ownerName:Session.get("postContent").ownerName
-        ownerIcon:Session.get("postContent").ownerIcon
-        eventType:'recommand'
-        postId:Session.get("postContent")._id
-        postTitle:Session.get("postContent").title
-        mainImage:Session.get("postContent").mainImage
-        createdAt:new Date()
-        heart:Session.get("postContent").heart
-        retweet:Session.get("postContent").retweet
-        comment:Session.get("postContent").comment
-        followby: Session.get("ProfileUserId3")
-        recommander:username
-        recommanderIcon:Meteor.user().profile.icon
-        recommanderId:Meteor.userId()
-      }
+      suggestCurrentPost("ProfileUserId3")
     'click #sendChatMessage': ()->
-      Meteor.subscribe("userinfo",Session.get("ProfileUserId3"));
+      Meteor.subscribe("userinfo",Session.get("ProfileUserId3"))
       Session.set("messageDialog_to", {id: Session.get("ProfileUserId3"), type: 'user'})
       Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
@@ -510,69 +375,4 @@ if Meteor.isClient
         Router.go '/redirect/'+postId
       ,300
     'click #addToContactList': ()->
-      username = Meteor.user().username
-      if Meteor.user().profile.fullname
-        username = Meteor.user().profile.fullname
-      UserProfile = Meteor.users.findOne {_id: Session.get("ProfileUserId3")}
-      requestee = UserProfile.username
-      if UserProfile.profile.fullname
-        requestee = UserProfile.profile.fullname
-      if Follower.findOne({"userId":UserProfile._id,"followerId":Meteor.userId()})
-        Follower.insert {
-          userId: Meteor.userId()
-          userName: username
-          userIcon: Meteor.user().profile.icon
-          userDesc: ''
-          followerId: UserProfile._id
-          followerName: requestee
-          followerIcon: UserProfile.profile.icon
-          followerDesc: ''
-          createAt: new Date()
-        }
-        return
-      if Feeds.findOne({"requesteeId":Meteor.userId(),"requesterId":UserProfile._id})
-        Follower.insert {
-          userId: Meteor.userId()
-          userName: username
-          userIcon: Meteor.user().profile.icon
-          userDesc: ''
-          followerId: UserProfile._id
-          followerName: requestee
-          followerIcon: UserProfile.profile.icon
-          followerDesc: ''
-          createAt: new Date()
-        }
-        Follower.insert {
-          userId: UserProfile._id
-          userName: requestee
-          userIcon: UserProfile.profile.icon
-          userDesc: ''
-          followerId: Meteor.userId()
-          followerName: username
-          followerIcon: Meteor.user().profile.icon
-          followerDesc: ''
-          createAt: new Date()
-        }
-        return
-      Feeds.insert {
-        eventType:'sendrequest'
-        createdAt:new Date()
-        followby:Meteor.userId()
-        requestee:requestee
-        requesteeIcon:UserProfile.profile.icon
-        requesteeId:UserProfile._id
-        requester:username
-        requesterIcon:Meteor.user().profile.icon
-        requesterId:Meteor.userId()
-      }
-      Feeds.insert {
-        eventType:'getrequest'
-        createdAt:new Date()
-        followby:UserProfile._id
-        requestee:requestee
-        requesteeIcon:UserProfile.profile.icon
-        requesteeId:UserProfile._id
-        requester:username
-        requesterIcon:Meteor.user().profile.icon
-        requesterId:Meteor.userId()
-      }
+      addToContactList("ProfileUserId3")
