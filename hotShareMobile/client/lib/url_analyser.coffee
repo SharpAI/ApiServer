@@ -126,6 +126,15 @@ if Meteor.isClient
               console.log 'Background Image: ' + bg_url
               if (data.bgArray.indexOf bg_url) <0
                 data.bgArray.push bg_url
+      pattern = /img src=\"([\s\S]*?)(?=\")/g
+      result = data.body.match(pattern)
+      if result and result.length > 0
+        console.log 'result ' + JSON.stringify(result)
+        for subString in result
+          dataSrc = subString.substring(9, subString.length)
+          if (data.imageArray.indexOf dataSrc) <0 and (data.bgArray.indexOf dataSrc) <0
+            data.imageArray.push(dataSrc)
+            console.log 'push dataSrc: ' + dataSrc
       pattern = /data-src=\"([\s\S]*?)(?=\")/g
       result = data.body.match(pattern)
       if result and result.length > 0
