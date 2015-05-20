@@ -9,6 +9,7 @@ var CROP = (function () {
 			img: undefined,
 			overlay: undefined,
 			shadow: undefined,
+			grid: undefined,
 			preview: undefined,
             callback: undefined
 		};
@@ -62,7 +63,8 @@ var CROP = (function () {
 				img,
 				container,
 				overlay,
-                shadow,
+                		shadow,
+				grid,
 				that = this;
 
 
@@ -116,10 +118,13 @@ var CROP = (function () {
                 left:0
 			});
 
+			grid = '<div class="imgMask"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
+
 			// Add Elements
 			container.append(overlay);
 			container.append(img);
 			container.append(shadow);
+			container.append(grid);
 			cropMain.append(container);
 
 			this.eles.ele = cropMain;
@@ -127,6 +132,7 @@ var CROP = (function () {
 			this.eles.img = img;
 			this.eles.overlay = overlay;
 			this.eles.shadow = shadow;
+			this.eles.grid = grid;
 			this.eles.preview = cropPreview;
 
 			// load image

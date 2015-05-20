@@ -149,3 +149,18 @@ div[data-imgcrop] input[type="range"]::-ms-thumb {
 	background:#fbc93d;
 	border:none
 }
+
+.imgMask div {
+    width: 33%;
+    height: 33%;
+    float: left;
+}
+.imgMask div:nth-child(-n+3) {
+    border-bottom: 1px solid #ccc;
+}
+.imgMask div:nth-child(-n+6) {
+    border-bottom: 1px solid #ccc;
+}
+.imgMask div:nth-child(1), .imgMask div:nth-child(2), .imgMask div:nth-child(4), .imgMask div:nth-child(5), .imgMask div:nth-child(7), .imgMask div:nth-child(8) {
+    border-right: 1px solid #ccc;
+}
