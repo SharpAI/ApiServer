@@ -299,10 +299,17 @@
 					startCoords.pageX = event.originalEvent.targetTouches[0].pageX;
 					startCoords.pageY = event.originalEvent.targetTouches[0].pageY;
 
-					$( '#swipebox-slider' ).css( {
-						'-webkit-transform' : 'translate3d(' + currentX +'%, 0, 0)',
-						'transform' : 'translate3d(' + currentX + '%, 0, 0)'
-					} );
+                    var size = ($( window ).width() * (currentX)/100);
+
+                    $( '#swipebox-slider' ).css( {
+                        '-webkit-transform' : 'translate3d(' + size +'px, 0, 0)',
+                        'transform' : 'translate3d(' + size +'px, 0, 0)'
+                    } );
+
+					//$( '#swipebox-slider' ).css( {
+					//	'-webkit-transform' : 'translate3d(' + currentX +'%, 0, 0)',
+					//	'transform' : 'translate3d(' + currentX + '%, 0, 0)'
+					//} );
 
 					$( '.touching' ).bind( 'touchmove',function( event ) {
 						event.preventDefault();
@@ -341,15 +348,23 @@
 
 								// first slide
 								if ( 0 === index ) {
-									// console.log( 'first' );
+									console.log( 'left first' );
 									$( '#swipebox-overlay' ).addClass( 'leftSpringTouch' );
 								} else {
+                                    $( '#swipebox-overlay' ).removeClass( 'leftSpringTouch' ).removeClass( 'rightSpringTouch' );
+
+                                    var size = ($( window ).width() * (currentX+ hDistancePercent)/100);
+
+                                    $( '#swipebox-slider' ).css( {
+                                        '-webkit-transform' : 'translate3d(' + size +'px, 0, 0)',
+                                        'transform' : 'translate3d(' + size +'px, 0, 0)'
+                                    } );
+
 									// Follow gesture
-									$( '#swipebox-overlay' ).removeClass( 'leftSpringTouch' ).removeClass( 'rightSpringTouch' );
-									$( '#swipebox-slider' ).css( {
-										'-webkit-transform' : 'translate3d(' + ( currentX + hDistancePercent ) +'%, 0, 0)',
-										'transform' : 'translate3d(' + ( currentX + hDistancePercent ) + '%, 0, 0)'
-									} );
+									//$( '#swipebox-slider' ).css( {
+									//	'-webkit-transform' : 'translate3d(' + ( currentX + hDistancePercent ) +'%, 0, 0)',
+								//		'transform' : 'translate3d(' + ( currentX + hDistancePercent ) + '%, 0, 0)'
+								//	} );
 								}
 
 							// swipe rught
@@ -357,14 +372,23 @@
 
 								// last Slide
 								if ( elements.length === index +1 ) {
-									// console.log( 'last' );
+									console.log( 'right last' );
 									$( '#swipebox-overlay' ).addClass( 'rightSpringTouch' );
 								} else {
 									$( '#swipebox-overlay' ).removeClass( 'leftSpringTouch' ).removeClass( 'rightSpringTouch' );
-									$( '#swipebox-slider' ).css( {
-										'-webkit-transform' : 'translate3d(' + ( currentX + hDistancePercent ) +'%, 0, 0)',
-										'transform' : 'translate3d(' + ( currentX + hDistancePercent ) + '%, 0, 0)'
-									} );
+
+                                    var size = ($( window ).width() * (currentX+ hDistancePercent)/100);
+
+                                    $( '#swipebox-slider' ).css( {
+                                        '-webkit-transform' : 'translate3d(' + size +'px, 0, 0)',
+                                        'transform' : 'translate3d(' + size +'px, 0, 0)'
+                                    } );
+
+									//$( '#swipebox-slider' ).css( {
+									//	'-webkit-transform' : 'translate3d(' + ( currentX + hDistancePercent ) +'%, 0, 0)',
+									//	'transform' : 'translate3d(' + ( currentX + hDistancePercent ) + '%, 0, 0)'
+									//} );
+
 								}
 
 							}
@@ -433,10 +457,17 @@
                             }
 						}
 
-					$( '#swipebox-slider' ).css( {
-						'-webkit-transform' : 'translate3d(' + currentX + '%, 0, 0)',
-						'transform' : 'translate3d(' + currentX + '%, 0, 0)'
-					} );
+                    var size = ($( window ).width() * currentX/100);
+
+                    $( '#swipebox-slider' ).css( {
+                            '-webkit-transform' : 'translate3d(' + size +'px, 0, 0)',
+                            'transform' : 'translate3d(' + size +'px, 0, 0)'
+                    } );
+
+					//$( '#swipebox-slider' ).css( {
+					//	'-webkit-transform' : 'translate3d(' + currentX + '%, 0, 0)',
+					//	'transform' : 'translate3d(' + currentX + '%, 0, 0)'
+					//} );
 
 					$( '#swipebox-overlay' ).removeClass( 'leftSpringTouch' ).removeClass( 'rightSpringTouch' );
 					$( '.touching' ).off( 'touchmove' ).removeClass( 'touching' );
@@ -603,12 +634,22 @@
 				currentX = -index*100;
 
 				if ( this.doCssTrans() ) {
-					slider.css( {
-						'-webkit-transform' : 'translate3d(' + (-index*100)+'%, 0, 0)',
-						'transform' : 'translate3d(' + (-index*100)+'%, 0, 0)'
-					} );
+
+                    var size = -$( window ).width() * index;
+
+                    slider.css( {
+                        '-webkit-transform' : 'translate3d(' + size +'px, 0, 0)',
+                        'transform' : 'translate3d(' + size +'px, 0, 0)'
+                    } );
+
+					//slider.css( {
+					//	'-webkit-transform' : 'translate3d(' + (-index*100)+'%, 0, 0)',
+					//	'transform' : 'translate3d(' + (-index*100)+'%, 0, 0)'
+					//} );
 				} else {
-					slider.animate( { left : ( -index*100 )+'%' } );
+                    var size = -$( window ).width() * index;
+                    slider.animate( { left : ( size )+'px' } );
+					//slider.animate( { left : ( -index*100 )+'%' } );
 				}
 
 				$( '#swipebox-slider .slide' ).removeClass( 'current' );
