@@ -151,8 +151,8 @@ div[data-imgcrop] input[type="range"]::-ms-thumb {
 }
 
 .imgMask div {
-    width: 33%;
-    height: 33%;
+    width: 33.3%;
+    height: 33.3%;
     float: left;
 }
 .imgMask div:nth-child(-n+3) {
