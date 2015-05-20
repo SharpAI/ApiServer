@@ -1,7 +1,9 @@
 #space 2
 if Meteor.isClient
   Template.dashboard.rendered=->
-    $('.dashboard').css 'min-height', $(window).height()
+    if Session.get('dashboardHeight') is undefined
+      Session.set('dashboardHeight', $(window).height())
+    $('.dashboard').css 'min-height', Session.get('dashboardHeight')
     return
   Template.dashboard.helpers
     userEmail :->
