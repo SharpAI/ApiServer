@@ -32,6 +32,11 @@ if Meteor.isClient
         0
       )
       Meteor.isCordova
+    fade:->
+      if isAndroidFunc()
+         ''
+      else
+         'fade'
   @prepareToEditorMode = ()->
     $('body').removeClass('modal-open')
     Session.set 'isReviewMode','0'
