@@ -122,53 +122,95 @@ Template.showPosts.events({
            if (Meteor.user()) {
               post = Session.get('postContent');
               img_id = $(e.currentTarget).parent().prev().attr('data-original');
-              for(i = 0; i < post.pub.length; i++){
-                if(post.pub[i].pub_Heart && post.pub[i].imgUrl === img_id){
-                      // has no like
-                  if(post.pub[i].pub_Heart.length == 0){
-                            post.pub[i].pub_Heart.push({
-                              like_userId : Meteor.userId(),
-                              like_createdAt : new Date()
-                            });
-                          Posts.update({
-                            _id: post._id
-                           }, {
-                            $set: {
-                              pub: post.pub
-                            }
-                          });
-                  }else{
-                  for(k=0; k <post.pub[i].pub_Heart.length; k++){
-                     //if has this img & has no like
-                    if(post.pub[i].pub_Heart[k].like_userId != Meteor.userId()){
-                            post.pub[i].pub_Heart.push({
-                              like_userId : Meteor.userId(),
-                              like_createdAt : new Date()
-                            });
-                          Posts.update({
-                            _id: post._id
-                           }, {
-                            $set: {
-                              pub: post.pub
-                            }
-                          });                    
-                    }
-                     //if has my like so remove my like
-                     else if(post.pub[i].pub_Heart[k].like_userId === Meteor.userId()){
-                          post.pub[i].pub_Heart.splice(k, 1);
-                          Posts.update({
-                            _id: post._id
-                           }, {
-                            $set: {
-                              pub: post.pub
-                            }
-                          });
-                      }
-                    }
-                  }
-               }
-             }
+              clickToLike(post, img_id);
            }
        e.stopPropagation();
     }
-})
+});
+
+clickToLike = function(currentPost, current_imgId){
+     for(i = 0; i < currentPost.pub.length; i++){
+      if(currentPost.pub[i].pub_Heart && currentPost.pub[i].imgUrl === current_imgId){
+            // has no like
+        if(currentPost.pub[i].pub_Heart.length == 0){
+                 addLike(currentPost, i);
+        }else{
+        for(k=0; k <currentPost.pub[i].pub_Heart.length; k++){
+           //if has this img & has no like
+          if(currentPost.pub[i].pub_Heart[k].like_userId != Meteor.userId()){
+                 addLike(currentPost, i, k);
+          }
+           //if has my like so remove my like
+           else if(currentPost.pub[i].pub_Heart[k].like_userId === Meteor.userId()){
+               removeLike(currentPost, i, k);
+            }
+          }
+        }
+     }
+   }
+};
+
+addLike = function(currentPost, pubNum){
+    currentPost.pub[pubNum].pub_Heart.push({
+        like_userId : Meteor.userId(),
+        like_createdAt : new Date()
+      });
+    Posts.update({
+      _id: currentPost._id
+     }, {
+      $set: {
+        pub: currentPost.pub
+      }
+    });                    
+};
+removeLike = function(currentPost, pubNum, heartNum){
+  currentPost.pub[pubNum].pub_Heart.splice(heartNum, 1);
+  Posts.update({
+      _id: currentPost._id
+     }, {
+      $set: {
+        pub: currentPost.pub
+      }
+    });
+};
+
+ifIsCurrentLike = function(){
+  Meteor.setTimeout (function(){
+      post = Session.get('postContent');
+      currentImgId = $('.current img').attr("src");
+      //alert(currentImgId);
+      for(i = 0; i < post.pub.length; i++){
+        if(post.pub[i].imgUrl === currentImgId){
+          //the count
+            Session.set("likeCount", post.pub[i].pub_Heart.length);
+            //the like
+          if(post.pub[i].pub_Heart.length == 0){
+              Session.set("hasLiked", false);
+            }else if(post.pub[i].pub_Heart.length > 0){
+                for(k=0; k <post.pub[i].pub_Heart.length; k++){
+                   if(post.pub[i].pub_Heart[k].like_userId == Meteor.userId()){
+                      Session.set("hasLiked", true);
+                   }else{
+                      Session.set("hasLiked", false);
+                   }
+              }
+          }
+        }
+      }
+  },500);
+};
+
+addDynamicTemp = function(){
+    Meteor.setTimeout (function(){
+            dynamic = new Iron.DynamicTemplate();
+            dynamic.insert({el: '#swipebox-overlay'});
+            dynamic.template('bottomLike');
+    },10);     
+};
+
+removeDynamicTemp = function(){
+    dynamic.clear();
+};
+
+
+

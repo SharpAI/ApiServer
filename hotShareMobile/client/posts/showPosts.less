@@ -83,17 +83,27 @@
 /*Mobile*/
 @media screen 
   and (max-width: 768px)  {
-	.like_img{width:30px;}
+	.like_img{width:25px;}
 	.like_div{width:32px;}
 	.big_like{width:50px !important;}
+	.count_like{width:16px !important;}
+	.like_count{bottom:-17px;}
+	.count{bottom:-12px; right:35px;height:90px;}
+	.count p{font-size: 12px;}
 }
 
 /*Pad*/
 @media screen 
   and (min-width: 768px)  {
-	  .like_img{width:74px;}
+	  .like_img{width:60px;}
 	  .like_div{width:76px;}
 	  .big_like{width:100px !important;}
+	  .count_like{width:28px !important;}
+	  .like_count{bottom:-46px;}
+	  .count{bottom:-28px; right:50px;height:80px;}
+	  .count p{font-size: 20px;}
 }
 
-.full_like{height:100px;position:fixed;bottom:5px;left:50%;z-index:9999 !important;transform: translate(-50%, 0);}
+.full_like{height:100px;position:fixed;bottom:10px;left:50%;z-index:99999 !important;transform: translate(-50%, 0);}
+.like_count{height:100px;position:fixed;right:15px;z-index:99999 !important;min-width: 1% !important;}
+.count{position:fixed;z-index:99999 !important;min-width: 1% !important;}

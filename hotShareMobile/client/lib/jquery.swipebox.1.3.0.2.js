@@ -406,6 +406,8 @@
 						'transition' : 'transform 0.4s ease'
 					} );
 
+					ifIsCurrentLike();
+
 					vDistance = endCoords.pageY - startCoords.pageY;
 					hDistance = endCoords.pageX - startCoords.pageX;
 					hDistancePercent = hDistance*100/winWidth;
@@ -441,7 +443,7 @@
 
 					} else { // Top and bottom bars have been removed on touchable devices
 						// tap
-                        if($( this ).hasClass( 'touching' )){
+                        if($( this ).hasClass( 'touching' ) && typeof($("#isClicked").attr('value')) == "undefined"){
                             slider.animate( { 'opacity': 0 },
                                 300,
                                 function () {

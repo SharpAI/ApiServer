@@ -374,15 +374,9 @@ if Meteor.isClient
         initialIndexOnArray: selected
         hideCloseButtonOnMobile : true
         loopAtEnd: false
-        hideBarsDelay:30000
-        beforeOpen: ->
-        afterOpen: -> 
-          Meteor.setTimeout ( ->
-              dynamic = new (Iron.DynamicTemplate)({})
-              dynamic.insert el: '.current'
-              dynamic.template 'bottomLike'
-          ),10
+       
       }
+      addDynamicTemp()
   Template.postFooter.helpers
     refcomment:->
       RC = Session.get 'RC'
