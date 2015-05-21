@@ -844,6 +844,26 @@ if Meteor.isClient
         data_col:'3',
         data_sizex:'6',
         data_sizey:'5'}
+  insertDefaultImage = (linkInfo,mainImageUrl,found,inputUrl)->
+    if mainImageUrl
+      timestamp = new Date().getTime()
+      if Drafts.find({type:'image'}).count() > 0
+        Drafts.update({_id:Drafts.find({type:'image'}).fetch()[0]._id},{$set:{url:inputUrl}})
+      Drafts.insert {
+        type:'image',
+        isImage:true,
+        siteTitle:linkInfo.title,
+        siteHost:linkInfo.host,
+        owner: Meteor.userId(),
+        imgUrl:mainImageUrl,
+        filename:mainImageUrl,
+        URI:mainImageUrl,
+        url:inputUrl,
+        toTheEnd: true,
+        data_row:'1',
+        data_col:'3',
+        data_sizex:'6',
+        data_sizey:'5'}
       #if data.title
       #Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:data.title, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
 
@@ -889,7 +909,7 @@ if Meteor.isClient
             insertLink(data,url,found,inputUrl)
           if index is total
             if found is 0
-              insertLink(data,'http:/data.tiegushi.com/res/defaultMainImage.jpg',found,inputUrl)
+              insertDefaultImage(data,'http://data.tiegushi.com/res/defaultMainImage.jpg',found,inputUrl)
             processReadableText(data)
     else
       PUB.toast('请粘贴需要引用的链接')
