@@ -640,8 +640,11 @@ if (Meteor.isCordova){
     selectMediaFromAblum = function(max_number, callback){
         window.imagePicker.getPictures(
           function(results) {
-            if(results === undefined)
-              return;
+        	  
+            if(results === undefined) {
+            	return;
+            }
+            
             var length = 0;
             try{
               length=results.length;
@@ -650,9 +653,11 @@ if (Meteor.isCordova){
               length=results.length;
             }
             if (length === 0) {
-              callback('cacel');
+              PUB.back();
+              callback('cancel');
               return;
             }
+            
             if(device.platform === 'Android' ){
                 var obj = {};
                 obj.currentCount = 0;
