@@ -103,6 +103,7 @@
 
         if ([url rangeOfString:@"http://meteor.local/"].location != NSNotFound) {
             absoluteUrl = [NSURL URLWithString:@""];
+            self.inAppBrowserViewController.importButton.enabled = NO;
         }
 
         if ([self isSystemUrl:absoluteUrl]) {
@@ -732,7 +733,7 @@
     UIFont* font = [UIFont boldSystemFontOfSize:size];
     NSDictionary* attributes = @{NSFontAttributeName: font};
     [self.importButton setTitleTextAttributes:attributes forState:UIControlStateNormal];
-    self.importButton.enabled = YES;
+    self.importButton.enabled = NO;
     //self.importButton.imageInsets = UIEdgeInsetsZero;
     self.addressButton = [[UIBarButtonItem alloc] initWithCustomView:self.addressText];
     self.addressButton.enabled = YES;
@@ -1088,6 +1089,8 @@
             httpStr = [NSString stringWithFormat:@"%@%@", @"http://", trimStr];
             NSLog(@"Replace url to : %@", httpStr);
         }
+
+        self.importButton.enabled = YES;
         [self.navigationDelegate goToUrl:[NSURL URLWithString:httpStr]];
     }
     return YES;
