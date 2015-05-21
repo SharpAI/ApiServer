@@ -84,6 +84,7 @@ public class InAppBrowser extends CordovaPlugin {
     private InAppBrowserDialog dialog;
     private WebView inAppWebView;
     private ClearableEditText edittext;
+    private Button importBtn;
     private CallbackContext callbackContext;
     private boolean canImport = false; //import after click import button
     private boolean needImport = false; //import after load finished
@@ -101,12 +102,13 @@ public class InAppBrowser extends CordovaPlugin {
      * @param callbackId    The callback id used when calling back into JavaScript.
      * @return              A PluginResult object with a status and message.
      */
-    public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
+	public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
         if (action.equals("open")) {
             this.callbackContext = callbackContext;
             final String url = args.getString(0).replaceAll("http://meteor.local/add", "").replace("http://meteor.local/", "");
             String t = args.optString(1);
             if (t == null || t.equals("") || t.equals(NULL)) {
+                importBtn.setEnabled(false);
                 t = SELF;
             }
             final String target = t;
@@ -416,6 +418,7 @@ public class InAppBrowser extends CordovaPlugin {
         InputMethodManager imm = (InputMethodManager)this.cordova.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(edittext.getWindowToken(), 0);
         canImport = false;
+
         if (!url.startsWith("http") && !url.startsWith("file:")) {
             this.inAppWebView.loadUrl("http://" + url);
         } else {
@@ -487,7 +490,7 @@ public class InAppBrowser extends CordovaPlugin {
             }
 
             @SuppressLint("NewApi")
-            public void run() {
+			public void run() {
                 // Let's create the main dialog
                 dialog = new InAppBrowserDialog(cordova.getActivity(), android.R.style.Theme_NoTitleBar);
                 dialog.getWindow().getAttributes().windowAnimations = android.R.style.Animation_Dialog;
@@ -594,6 +597,7 @@ public class InAppBrowser extends CordovaPlugin {
                     public boolean onKey(View v, int keyCode, KeyEvent event) {
                         // If the event is a key-down event on the "enter" button
                         if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                          importBtn.setEnabled(true);
                           navigate(edittext.getText().toString());
                           return true;
                         }
@@ -627,13 +631,14 @@ public class InAppBrowser extends CordovaPlugin {
                 });
 
                 // Import button
-                Button importBtn = new Button(cordova.getActivity());
+                importBtn = new Button(cordova.getActivity());
                 RelativeLayout.LayoutParams importLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
                 importLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                 importBtn.setLayoutParams(importLayoutParams);
                 importBtn.setContentDescription("Close Button");
                 importBtn.setId(9);
                 importBtn.setText("导入");
+                importBtn.setEnabled(false);
                 importBtn.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                     	if(canImport)
@@ -851,8 +856,8 @@ public class InAppBrowser extends CordovaPlugin {
                 Log.d(LOG_TAG, "Should never happen");
             }
         }
-        
-        public void onPageFinished(WebView view, String url) {
+
+		public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             try {
                 JSONObject obj = new JSONObject();
