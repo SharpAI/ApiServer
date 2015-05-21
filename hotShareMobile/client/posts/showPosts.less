@@ -83,13 +83,17 @@
 /*Mobile*/
 @media screen 
   and (max-width: 768px)  {
-.like_img{width:30px;}
-.like_div{width:32px;}
+	.like_img{width:30px;}
+	.like_div{width:32px;}
+	.big_like{width:50px !important;}
 }
 
 /*Pad*/
 @media screen 
   and (min-width: 768px)  {
-  .like_img{width:74px;}
-  .like_div{width:76px;}
+	  .like_img{width:74px;}
+	  .like_div{width:76px;}
+	  .big_like{width:100px !important;}
 }
+
+.full_like{height:100px;position:fixed;bottom:5px;left:50%;z-index:9999 !important;transform: translate(-50%, 0);}
