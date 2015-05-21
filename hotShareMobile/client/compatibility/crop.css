@@ -151,16 +151,16 @@ div[data-imgcrop] input[type="range"]::-ms-thumb {
 }
 
 .imgMask div {
-    width: 33.3%;
-    height: 33.3%;
+    width: 33.33%;
+    height: 33.33%;
     float: left;
 }
 .imgMask div:nth-child(-n+3) {
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #fff;
 }
 .imgMask div:nth-child(-n+6) {
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #fff;
 }
 .imgMask div:nth-child(1), .imgMask div:nth-child(2), .imgMask div:nth-child(4), .imgMask div:nth-child(5), .imgMask div:nth-child(7), .imgMask div:nth-child(8) {
-    border-right: 1px solid #ccc;
+    border-right: 1px solid #fff;
 }
