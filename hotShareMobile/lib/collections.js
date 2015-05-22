@@ -26,28 +26,519 @@ if(Meteor.isServer){
 }
 
 if(Meteor.isServer){
-  Rnd = 0;
+    Rnd = 0;
+    var newMeetsAddedForNewFriendsDeferHandle = function(self,taId,userId,id,fields){
+        Meteor.defer(function(){
+            // Double check the couter for defer operation(Meteor's implemetation for setTimeout(func,0))
+            if(self.count >= 20){
+                return;
+            }
+            var fcount = Follower.find({"userId":userId,"followerId":taId}).count();
+            if(fcount === 0)
+            {
+                var taInfo = Meteor.users.findOne({_id: taId},{fields: {'username':1,'email':1,'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1}});
+                if (taInfo){
+                    try{
+                        fields.location = taInfo.profile.location;
+                        var userName = taInfo.username;
+                        if(taInfo.profile.fullname){
+                            userName = taInfo.profile.fullname;
+                        }
+                        fields.displayName = userName;
+                        fields.userIcon = taInfo.profile.icon;
+                        try {
+                            self.added("userDetail", taInfo._id, taInfo);
+                        } catch (error){
+                        }
+                    } catch (error){
+                    }
+                }
+                self.added("newfriends", id, fields);
+                getViewLists(self,taId,3);
+                self.count++;
+            }
+        });
+    };
+    var newMeetsChangedForNewFriendsDeferHandle = function(self,fields,userId) {
+        if(fields.isFriend === false)
+        {
+            try{
+                if(self.count<20)
+                {
+                    var meetItem = Meets.findOne({_id:id});
+                    if(meetItem.me === userId && meetItem.ta !== userId && postId === meetItem.meetOnPostId)
+                    {
+                        fields.me = meetItem.me;
+                        fields.ta = meetItem.ta;
+                        fields.count = meetItem.count;
+                        fields.meetOnPostId = meetItem.meetOnPostId;
+                        var taInfo = Meteor.users.findOne({_id: fields.ta},{fields: {'username':1,'email':1,
+                            'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1}});
+                        if (taInfo){
+                            try{
+                                fields.location = taInfo.profile.location;
+                                var userName = taInfo.username;
+                                if(taInfo.profile.fullname){
+                                    userName = taInfo.profile.fullname;
+                                }
+                                fields.displayName = userName;
+                                fields.userIcon = taInfo.profile.icon;
+                                self.added("userDetail",taInfo._id,taInfo);
+                            } catch (error){
+                            }
+                        }
+                        self.added("newfriends", id, fields);
+                        getViewLists(self,meetItem.ta,3);
+                        self.count++;
+                    }
+                }
+            }catch(error){
+            }
+        }
+        if(fields.meetOnPostId && postId === fields.meetOnPostId)
+        {
+            try{
+                self.changed("newfriends", id, fields);
+            }catch(error){
+                if(self.count<20)
+                {
+                    var meetItem = Meets.findOne({_id:id});
+                    if(meetItem.me === userId && meetItem.ta !== userId)
+                    {
+                        var fcount = Follower.find({"userId":meetItem.me,"followerId":meetItem.ta}).count();
+                        if(fcount === 0)
+                        {
+                            fields.me = meetItem.me;
+                            fields.ta = meetItem.ta;
+                            fields.count = meetItem.count;
+                            var taInfo = Meteor.users.findOne({_id: fields.ta},{fields: {'username':1,'email':1,
+                                'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1}});
+                            if (taInfo){
+                                try{
+                                    fields.location = taInfo.profile.location;
+                                    var userName = taInfo.username;
+                                    if(taInfo.profile.fullname){
+                                        userName = taInfo.profile.fullname;
+                                    }
+                                    fields.displayName = userName;
+                                    fields.userIcon = taInfo.profile.icon;
+                                    self.added("userDetail",taInfo._id,taInfo);
+                                } catch (error){
+                                }
+                            }
+                            self.added("newfriends", id, fields);
+                            getViewLists(self,meetItem.ta,3);
+                            self.count++;
+                        }
+                    }
+                }
+            }
+        }
+    };
+    var getViewLists = function(obj,userId,limit){
+        var views = Viewers.find({userId: userId},{sort:{createdAt: -1},limit:limit});
+        if (views.count()>0){
+            views.forEach(function(fields){
+                var viewItem = Posts.findOne({"_id":fields.postId});
+                if(viewItem)
+                {
+                    fields.mainImage = viewItem.mainImage;
+                    fields.title = viewItem.title;
+                    try{
+                        obj.added("viewlists", fields._id, fields);
+                    }catch(error){
+                    }
+                }
+            });
+        }
+    };
+    var viewersAddedForViewListsDeferHandle = function(self,fields,userId) {
+        Meteor.defer(function(){
+            var viewItem = Posts.findOne({"_id":fields.postId});
+            if(viewItem){
+                fields.mainImage = viewItem.mainImage;
+                fields.title = viewItem.title;
+                try{
+                    self.added("viewlists", id, fields);
+                    self.count++;
+                }catch(error){
+                }
+            }
+        });
+    };
+    var followerChangedForUserDetailDeferHandle = function(self,fields,userId) {
+        Meteor.defer(function(){
+            var info = Meteor.users.findOne({_id: fields.followerId}, {fields: {'username': 1,
+                'email': 1, 'profile.fullname': 1, 'profile.icon': 1, 'profile.desc': 1, 'profile.location': 1}});
+            if (info) {
+                self.added("userDetail", info._id, info);
+                getViewLists(self,info._id,3);
+            }
+        });
+    };
+    var publicPostsPublisherDeferHandle = function(self,postId) {
+        Meteor.defer(function(){
+            var needUpdateMeetCount = false;
+            try {
+                if(self.userId && postId ){
+                    if( Viewers.find({userId:self.userId,postId:postId}).count() === 0 ){
+                        needUpdateMeetCount = true;
+                        var userinfo = Meteor.users.findOne({_id: self.userId },{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
+                        if(userinfo){
+                            Viewers.insert({
+                                postId:postId,
+                                username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
+                                userId:self.userId,
+                                userIcon: userinfo.profile.icon,
+                                anonymous: userinfo.profile.anonymous,
+                                createdAt: new Date()
+                            });
+                        }
+                    } else {
+                        userinfo = Meteor.users.findOne({_id: self.userId},{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
+                        if(userinfo) {
+                            Viewers.update({userId: self.userId, postId: postId}, {$set: {createdAt: new Date()}});
+                        }
+                    }
+                }
+            } catch (error){
+            }
+            try{
+                var userId = self.userId;
+                var views=Viewers.find({postId:postId});
+                if(views.count()>0){
+                    views.forEach(function(data){
+                        var meetItemOne = Meets.findOne({me:userId,ta:data.userId});
+                        if(meetItemOne){
+                            var meetCount = meetItemOne.count;
+                            if(meetCount === undefined || isNaN(meetCount))
+                                meetCount = 0;
+                            if ( needUpdateMeetCount ){
+                                meetCount = meetCount+1;
+                            }
+                            Meets.update({me:userId,ta:data.userId},{$set:{count:meetCount,meetOnPostId:postId}});
+                        }else{
+                            Meets.insert({
+                                me:userId,
+                                ta:data.userId,
+                                count:1,
+                                meetOnPostId:postId,
+                                createdAt: new Date()
+                            });
+                        }
+
+                        var meetItemTwo = Meets.findOne({me:data.userId,ta:userId});
+                        if(meetItemTwo){
+                            var meetCount = meetItemTwo.count;
+                            if(meetCount === undefined || isNaN(meetCount))
+                                meetCount = 0;
+                            if ( needUpdateMeetCount ){
+                                meetCount = meetCount+1;
+                                Meets.update({me:data.userId,ta:userId},{$set:{count:meetCount,meetOnPostId:postId,createdAt: new Date()}});
+                            }
+                        }else{
+                            Meets.insert({
+                                me:data.userId,
+                                ta:userId,
+                                count:1,
+                                meetOnPostId:postId,
+                                createdAt: new Date()
+                            });
+                        }
+                    });
+                }
+            }
+            catch(error){}
+        });
+    };
+    var postsInsertHookDeferHandle = function(userId,doc){
+        Meteor.defer(function(){
+            try{
+                var follows=Follower.find({followerId:userId});
+                if(follows.count()>0){
+                    follows.forEach(function(data){
+                        FollowPosts.insert({
+                            postId:doc._id,
+                            title:doc.title,
+                            addontitle:doc.addontitle,
+                            mainImage: doc.mainImage,
+                            mainImageStyle:doc.mainImageStyle,
+                            heart:0,
+                            retweet:0,
+                            comment:0,
+                            browse:0,
+                            owner:doc.owner,
+                            ownerName:doc.ownerName,
+                            ownerIcon:doc.ownerIcon,
+                            createdAt: doc.createdAt,
+                            followby: data.userId
+                        });
+
+                        Feeds.insert({
+                            owner:doc.owner,
+                            ownerName:doc.ownerName,
+                            ownerIcon:doc.ownerIcon,
+                            eventType:'SelfPosted',
+                            postId:doc._id,
+                            postTitle:doc.title,
+                            mainImage:doc.mainImage,
+                            createdAt:doc.createdAt,
+                            heart:0,
+                            retweet:0,
+                            comment:0,
+                            followby: data.userId
+                        });
+                        pushnotification("newpost",doc,data.userId);
+                        waitReadCount = Meteor.users.findOne({_id:data.userId}).profile.waitReadCount;
+                        if(waitReadCount === undefined || isNaN(waitReadCount))
+                        {
+                            waitReadCount = 0;
+                        }
+                        Meteor.users.update({_id: data.userId}, {$set: {'profile.waitReadCount': waitReadCount+1}});
+                    });
+                }
+                FollowPosts.insert({
+                    postId:doc._id,
+                    title:doc.title,
+                    addontitle:doc.addontitle,
+                    mainImage: doc.mainImage,
+                    mainImageStyle:doc.mainImageStyle,
+                    heart:0,
+                    retweet:0,
+                    comment:0,
+                    browse:0,
+                    owner:doc.owner,
+                    ownerName:doc.ownerName,
+                    ownerIcon:doc.ownerIcon,
+                    createdAt: doc.createdAt,
+                    followby: userId
+                });
+            }
+            catch(error){}
+        });
+    };
+    var postsRemoveHookDeferHandle = function(userId,doc){
+        Meteor.defer(function(){
+            try{
+                FollowPosts.remove({
+                    postId:doc._id
+                });
+                Feeds.remove({
+                    owner:userId,
+                    eventType:'SelfPosted',
+                    postId:doc._id
+                });
+                var TPs=TopicPosts.find({postId:doc._id})
+                if(TPs.count()>0){
+                    TPs.forEach(function(data){
+                        PostsCount = Topics.findOne({_id:data.topicId}).posts;
+                        if(PostsCount === 1)
+                        {
+                            Topics.remove({_id:data.topicId});
+                        }
+                        else if(PostsCount > 1)
+                        {
+                            Topics.update({_id: data.topicId}, {$set: {'posts': PostsCount-1}});
+                        }
+                    });
+                }
+                TopicPosts.remove({
+                    postId:doc._id
+                });
+            }
+            catch(error){}
+        });
+    };
+    var postsUpdateHookDeferHandle = function(userId,doc,fieldNames, modifier){
+        Meteor.defer(function(){
+            try{
+                var follows=Follower.find({followerId:userId});
+                if(follows.count()>0){
+                    follows.forEach(function(data){
+                        FollowPosts.update(
+                            {postId:doc._id, followby:data.userId},
+                            {$set:{
+                                title:modifier.$set.title,
+                                addontitle:modifier.$set.addontitle,
+                                mainImage: modifier.$set.mainImage,
+                                mainImageStyle:modifier.$set.mainImageStyle
+                            }
+                            }
+                        );
+                    });
+                }
+                FollowPosts.update(
+                    {postId:doc._id, followby:userId},
+                    {$set:{
+                        title:modifier.$set.title,
+                        addontitle:modifier.$set.addontitle,
+                        mainImage: modifier.$set.mainImage,
+                        mainImageStyle:modifier.$set.mainImageStyle
+                    }
+                    }
+                );
+            }
+            catch(error){}
+        });
+    };
+    var followerInsertHookDeferHook=function(userId,doc){
+        Meteor.defer(function(){
+            try{
+                Meets.update({me:doc.userId,ta:doc.followerId},{$set:{isFriend:true}});
+            }
+            catch(error){}
+            try{
+                var posts=Posts.find({owner: doc.followerId});
+                if(posts.count()>0){
+                    posts.forEach(function(data){
+                        FollowPosts.insert({
+                            postId:data._id,
+                            title:data.title,
+                            addontitle:data.addontitle,
+                            mainImage: data.mainImage,
+                            mainImageStyle:data.mainImageStyle,
+                            owner:data.owner,
+                            ownerName:data.ownerName,
+                            ownerIcon:data.ownerIcon,
+                            createdAt: data.createdAt,
+                            followby: doc.userId
+                        });
+                    });
+                }
+            }
+            catch(error){}
+        });
+    };
+    var followerRemoveHookDeferHook=function(userId,doc){
+        Meteor.defer(function(){
+            try{
+                Meets.update({me:doc.userId,ta:doc.followerId},{$set:{isFriend:false}});
+            }
+            catch(error){}
+            try{
+                FollowPosts.remove({owner:doc.followerId,followby:userId});
+            }
+            catch(error){}
+        });
+    };
+    var commentInsertHookDeferHandle = function(userId,doc) {
+        Meteor.defer(function () {
+            try {
+                var post = Posts.findOne({_id: doc.postId});
+                var commentsCount = post.commentsCount;
+                if (commentsCount === undefined || isNaN(commentsCount)) {
+                    commentsCount = 0;
+                }
+                commentsCount = commentsCount + 1;
+                Posts.update({_id: doc.postId}, {$set: {'commentsCount': commentsCount}});
+                if (post.owner != userId) {
+                    if (ReComment.find({"postId": doc.postId, "commentUserId": userId}).count() === 0) {
+                        ReComment.insert({
+                            postId: doc.postId,
+                            commentUserId: userId
+                        });
+                    }
+                    Feeds.insert({
+                        owner: userId,
+                        ownerName: doc.username,
+                        ownerIcon: doc.userIcon,
+                        eventType: 'comment',
+                        postId: doc.postId,
+                        postTitle: post.title,
+                        mainImage: post.mainImage,
+                        createdAt: doc.createdAt,
+                        heart: 0,
+                        retweet: 0,
+                        comment: 0,
+                        followby: post.owner
+                    });
+                    var waitReadCount = Meteor.users.findOne({_id: post.owner}).profile.waitReadCount;
+                    if (waitReadCount === undefined || isNaN(waitReadCount)) {
+                        waitReadCount = 0;
+                    }
+                    Meteor.users.update({_id: post.owner}, {$set: {'profile.waitReadCount': waitReadCount + 1}});
+                    pushnotification("comment", doc, userId);
+                    var recomments = ReComment.find({"postId": doc.postId}).fetch();
+                    var item;
+                    for (item in recomments) {
+                        if (recomments[item].commentUserId !== undefined && recomments[item].commentUserId !== userId && recomments[item].commentUserId !== post.owner) {
+                            Feeds.insert({
+                                owner: userId,
+                                ownerName: doc.username,
+                                ownerIcon: doc.userIcon,
+                                eventType: 'recomment',
+                                postId: doc.postId,
+                                postTitle: post.title,
+                                mainImage: post.mainImage,
+                                createdAt: doc.createdAt,
+                                heart: 0,
+                                retweet: 0,
+                                comment: 0,
+                                followby: recomments[item].commentUserId
+                            });
+                            waitReadCount = Meteor.users.findOne({_id: recomments[item].commentUserId}).profile.waitReadCount;
+                            if (waitReadCount === undefined || isNaN(waitReadCount)) {
+                                waitReadCount = 0;
+                            }
+                            Meteor.users.update({_id: recomments[item].commentUserId}, {$set: {'profile.waitReadCount': waitReadCount + 1}});
+                            pushnotification("recomment", doc, recomments[item].commentUserId);
+                        }
+                    }
+                }
+            }
+            catch (error) {
+            }
+        });
+    };
+    var viewersInsertHookDeferHook = function(userId,doc){
+        Meteor.defer(function(){
+            try{
+                var views=Viewers.find({postId:doc.postId});
+                if(views.count()>0){
+                    views.forEach(function(data){
+                        var meetItemOne = Meets.findOne({me:doc.userId,ta:data.userId});
+                        if(meetItemOne){
+                            var meetCount = meetItemOne.count;
+                            if(meetCount === undefined || isNaN(meetCount))
+                                meetCount = 0;
+                            Meets.update({me:doc.userId,ta:data.userId},{$set:{count:meetCount+1}});
+                        }else{
+                            Meets.insert({
+                                me:doc.userId,
+                                ta:data.userId,
+                                count:1
+                            });
+                        }
+
+                        var meetItemTwo = Meets.findOne({me:data.userId,ta:doc.userId});
+                        if(meetItemTwo){
+                            var meetCount = meetItemTwo.count;
+                            if(meetCount === undefined || isNaN(meetCount))
+                                meetCount = 0;
+                            Meets.update({me:data.userId,ta:doc.userId},{$set:{count:meetCount+1}});
+                        }else{
+                            Meets.insert({
+                                me:data.userId,
+                                ta:doc.userId,
+                                count:1
+                            });
+                        }
+                    });
+                }
+            }
+            catch(error){}
+        });
+    };
   Meteor.publish("viewlists", function (userId, viewerId) {
     if(this.userId === null || !Match.test(viewerId, String))
       return [];
     else{
       var self = this;
-      var count = 0;
+      this.count = 0;
       var handle = Viewers.find({userId: viewerId},{sort:{createdAt: -1}}).observeChanges({
         added: function (id,fields) {
-          if (count<3)
-          {
-            var viewItem = Posts.findOne({"_id":fields.postId});
-            if(viewItem)
-            {
-              fields.mainImage = viewItem.mainImage;
-              fields.title = viewItem.title;
-              try{
-                self.added("viewlists", id, fields);
-                count++;
-              }catch(error){
-              }
-            }
+          if (count<3){
+              viewersAddedForViewListsDeferHandle(self,fields,userId);
           }
         },
         changed: function (id,fields) {
@@ -59,7 +550,7 @@ if(Meteor.isServer){
         removed: function (id) {
           try{
             self.removed("viewlists", id);
-            count--;
+            self.count--;
           }catch(error){
           }
         }
@@ -72,23 +563,6 @@ if(Meteor.isServer){
       });
     }
   });
-  getViewLists = function(obj,userId,limit){
-      var views = Viewers.find({userId: userId},{sort:{createdAt: -1},limit:limit});
-      if (views.count()>0){
-          views.forEach(function(fields){
-              var viewItem = Posts.findOne({"_id":fields.postId});
-              if(viewItem)
-              {
-                  fields.mainImage = viewItem.mainImage;
-                  fields.title = viewItem.title;
-                  try{
-                      obj.added("viewlists", fields._id, fields);
-                  }catch(error){
-                  }
-              }
-          });
-      }
-  };
   Meteor.publish("userDetail", function (userId) {
       if(!Match.test(userId, String)){
           return [];
@@ -98,11 +572,7 @@ if(Meteor.isServer){
           var handle = Follower.find({userId:userId}).observeChanges({
               added: function (id,fields) {
                   if(fields.userId === userId && fields.followerId && fields.followerId !=='') {
-                      var info = Meteor.users.findOne({_id: fields.followerId}, {fields: {'username': 1, 'email': 1, 'profile.fullname': 1, 'profile.icon': 1, 'profile.desc': 1, 'profile.location': 1}});
-                      if (info) {
-                          self.added("userDetail", info._id, info);
-                          getViewLists(self,info._id,3);
-                      }
+                      followerChangedForUserDetailDeferHandle(self,fields,userId);
                   }
               }
           });
@@ -117,38 +587,15 @@ if(Meteor.isServer){
       return [];
     else{
       var self = this;
-      var count = 0;
+      this.count = 0;
       var handle = Meets.find({me: userId},{sort:{count:-1,createdAt:-1}}).observeChanges({
         added: function (id,fields) {
-          if (count<20)
+          if (self.count<20)
           {
             var taId = fields.ta;
-            if(taId !== userId && postId === fields.meetOnPostId)
-            {
-              var fcount = Follower.find({"userId":userId,"followerId":taId}).count();
-              if(fcount === 0)
-              {
-                  var taInfo = Meteor.users.findOne({_id: taId},{fields: {'username':1,'email':1,'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1}});
-                  if (taInfo){
-                      try{
-                          fields.location = taInfo.profile.location;
-                          var userName = taInfo.username;
-                          if(taInfo.profile.fullname){
-                              userName = taInfo.profile.fullname;
-                          }
-                          fields.displayName = userName;
-                          fields.userIcon = taInfo.profile.icon;
-                          try {
-                              self.added("userDetail", taInfo._id, taInfo);
-                          } catch (error){
-                          }
-                      } catch (error){
-                      }
-                  }
-                  self.added("newfriends", id, fields);
-                  getViewLists(self,taId,3);
-                  count++;
-              }
+            if(taId !== userId && postId === fields.meetOnPostId){
+                //Call defered function here:
+                newMeetsAddedForNewFriendsDeferHandle(self,taId,userId,id,fields);
             }
           }
         },
@@ -157,90 +604,20 @@ if(Meteor.isServer){
            {
              try{
                self.removed("newfriends", id);
-               count--;
+               self.count--;
              }catch(error){
              }
            }
-           if(fields.isFriend === false)
-           {
-             try{
-               if(count<20)
-               {
-                 var meetItem = Meets.findOne({_id:id});
-                 if(meetItem.me === userId && meetItem.ta !== userId && postId === meetItem.meetOnPostId)
-                 {
-                   fields.me = meetItem.me;
-                   fields.ta = meetItem.ta;
-                   fields.count = meetItem.count;
-                   fields.meetOnPostId = meetItem.meetOnPostId;
-                   var taInfo = Meteor.users.findOne({_id: fields.ta},{fields: {'username':1,'email':1,'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1}});
-                   if (taInfo){
-                       try{
-                           fields.location = taInfo.profile.location;
-                           var userName = taInfo.username;
-                           if(taInfo.profile.fullname){
-                               userName = taInfo.profile.fullname;
-                           }
-                           fields.displayName = userName;
-                           fields.userIcon = taInfo.profile.icon;
-                           self.added("userDetail",taInfo._id,taInfo);
-                       } catch (error){
-                       }
-                   }
-                   self.added("newfriends", id, fields);
-                   getViewLists(self,meetItem.ta,3);
-                   count++;
-                 }
-               }
-             }catch(error){
-             }
-           }
-           if(fields.meetOnPostId && postId === fields.meetOnPostId)
-           {
-             try{
-               self.changed("newfriends", id, fields);
-             }catch(error){
-               if(count<20)
-               {
-                 var meetItem = Meets.findOne({_id:id});
-                 if(meetItem.me === userId && meetItem.ta !== userId)
-                 {
-                   var fcount = Follower.find({"userId":meetItem.me,"followerId":meetItem.ta}).count();
-                   if(fcount === 0)
-                   {
-                     fields.me = meetItem.me;
-                     fields.ta = meetItem.ta;
-                     fields.count = meetItem.count;
-                     var taInfo = Meteor.users.findOne({_id: fields.ta},{fields: {'username':1,'email':1,'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1}});
-                     if (taInfo){
-                         try{
-                             fields.location = taInfo.profile.location;
-                             var userName = taInfo.username;
-                             if(taInfo.profile.fullname){
-                                 userName = taInfo.profile.fullname;
-                             }
-                             fields.displayName = userName;
-                             fields.userIcon = taInfo.profile.icon;
-                             self.added("userDetail",taInfo._id,taInfo);
-                         } catch (error){
-                         }
-                     }
-                     self.added("newfriends", id, fields);
-                     getViewLists(self,meetItem.ta,3);
-                     count++;
-                   }
-                 }
-               }
-             }
-           }
+            //Call defered function here:
+            newMeetsChangedForNewFriendsDeferHandle(self,fields,userId);
         },
         removed: function (id) {
-           self.removed("newfriends", id);
+          self.removed("newfriends", id);
+          self.count--;
         }
       });
 
       self.ready();
-
       self.onStop(function () {
         handle.stop();
       });
@@ -302,79 +679,7 @@ if(Meteor.isServer){
         return [];
       else{
         var self = this;
-        Meteor.defer(function(){
-          var needUpdateMeetCount = false;
-          try {
-              if(self.userId && postId ){
-                  if( Viewers.find({userId:self.userId,postId:postId}).count() === 0 ){
-                      needUpdateMeetCount = true;
-                      userinfo = Meteor.users.findOne({_id: self.userId },{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
-                      if(userinfo){
-                          Viewers.insert({
-                              postId:postId,
-                              username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
-                              userId:self.userId,
-                              userIcon: userinfo.profile.icon,
-                              anonymous: userinfo.profile.anonymous,
-                              createdAt: new Date()
-                          });
-                      }
-                  } else {
-                      userinfo = Meteor.users.findOne({_id: self.userId},{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
-                      if(userinfo) {
-                          Viewers.update({userId: self.userId, postId: postId}, {$set: {createdAt: new Date()}});
-                      }
-                  }
-              }
-          } catch (error){
-          }
-          try{
-                var userId = self.userId;
-                var views=Viewers.find({postId:postId});
-                if(views.count()>0){
-                  views.forEach(function(data){
-                    var meetItemOne = Meets.findOne({me:userId,ta:data.userId});
-                    if(meetItemOne){
-                      var meetCount = meetItemOne.count;
-                      if(meetCount === undefined || isNaN(meetCount))
-                        meetCount = 0;
-                      if ( needUpdateMeetCount ){
-                        meetCount = meetCount+1;
-                      }
-                      Meets.update({me:userId,ta:data.userId},{$set:{count:meetCount,meetOnPostId:postId}});
-                    }else{
-                      Meets.insert({
-                        me:userId,
-                        ta:data.userId,
-                        count:1,
-                        meetOnPostId:postId,
-                        createdAt: new Date()
-                      });
-                    }
-
-                    var meetItemTwo = Meets.findOne({me:data.userId,ta:userId});
-                    if(meetItemTwo){
-                      var meetCount = meetItemTwo.count;
-                      if(meetCount === undefined || isNaN(meetCount))
-                        meetCount = 0;
-                      if ( needUpdateMeetCount ){
-                        meetCount = meetCount+1;
-                        Meets.update({me:data.userId,ta:userId},{$set:{count:meetCount,meetOnPostId:postId,createdAt: new Date()}});
-                      }
-                    }else{
-                      Meets.insert({
-                        me:data.userId,
-                        ta:userId,
-                        count:1,
-                        meetOnPostId:postId,
-                        createdAt: new Date()
-                      });
-                    }
-                  });
-                }
-          }
-          catch(error){}
-        });
+        publicPostsPublisherDeferHandle(self,postId);
         return Posts.find({_id: postId});
       }
   });
@@ -521,106 +826,14 @@ if(Meteor.isServer){
   Posts.allow({
     insert: function (userId, doc) {
       if(doc.owner === userId){
-        Meteor.defer(function(){
-            try{
-                var follows=Follower.find({followerId:userId});
-                if(follows.count()>0){
-                    follows.forEach(function(data){
-                        FollowPosts.insert({
-                            postId:doc._id,
-                            title:doc.title,
-                            addontitle:doc.addontitle,
-                            mainImage: doc.mainImage,
-                            mainImageStyle:doc.mainImageStyle,
-                            heart:0,
-                            retweet:0,
-                            comment:0,
-                            browse:0,
-                            owner:doc.owner,
-                            ownerName:doc.ownerName,
-                            ownerIcon:doc.ownerIcon,
-                            createdAt: doc.createdAt,
-                            followby: data.userId
-                        });
-
-                        Feeds.insert({
-                            owner:doc.owner,
-                            ownerName:doc.ownerName,
-                            ownerIcon:doc.ownerIcon,
-                            eventType:'SelfPosted',
-                            postId:doc._id,
-                            postTitle:doc.title,
-                            mainImage:doc.mainImage,
-                            createdAt:doc.createdAt,
-                            heart:0,
-                            retweet:0,
-                            comment:0,
-                            followby: data.userId
-                        });
-                        pushnotification("newpost",doc,data.userId);
-                        waitReadCount = Meteor.users.findOne({_id:data.userId}).profile.waitReadCount;
-                        if(waitReadCount === undefined || isNaN(waitReadCount))
-                        {
-                            waitReadCount = 0;
-                        }
-                        Meteor.users.update({_id: data.userId}, {$set: {'profile.waitReadCount': waitReadCount+1}});
-                    });
-                }
-                FollowPosts.insert({
-                    postId:doc._id,
-                    title:doc.title,
-                    addontitle:doc.addontitle,
-                    mainImage: doc.mainImage,
-                    mainImageStyle:doc.mainImageStyle,
-                    heart:0,
-                    retweet:0,
-                    comment:0,
-                    browse:0,
-                    owner:doc.owner,
-                    ownerName:doc.ownerName,
-                    ownerIcon:doc.ownerIcon,
-                    createdAt: doc.createdAt,
-                    followby: userId
-                });
-            }
-            catch(error){}
-        });
+        postsInsertHookDeferHandle(userId,doc);
         return true;
       }
       return false;
     },
       remove: function (userId, doc) {
           if(doc.owner === userId){
-              Meteor.defer(function(){
-                  try{
-                      FollowPosts.remove({
-                          postId:doc._id
-                      });
-                      Feeds.remove({
-                          owner:userId,
-                          eventType:'SelfPosted',
-                          postId:doc._id
-                      });
-                      var TPs=TopicPosts.find({postId:doc._id})
-                      if(TPs.count()>0){
-                          TPs.forEach(function(data){
-                              PostsCount = Topics.findOne({_id:data.topicId}).posts;
-                              if(PostsCount === 1)
-                              {
-                                  Topics.remove({_id:data.topicId});
-                              }
-                              else if(PostsCount > 1)
-                              {
-                                  Topics.update({_id: data.topicId}, {$set: {'posts': PostsCount-1}});
-                              }
-                          });
-                      }
-                      TopicPosts.remove({
-                          postId:doc._id
-                      });
-                  }
-                  catch(error){}
-              });
+              postsRemoveHookDeferHandle(userId,doc);
               return true;
           }
           return false;
@@ -632,56 +845,12 @@ if(Meteor.isServer){
       if (fieldNames.toString() === 'browse' && modifier.$set !== void 0) {
           Meteor.defer(function(){
               pushnotification("read",doc,userId);
-              /*
-                try{
-                    var followPosts=FollowPosts.find({postId:doc._id});
-                    followPosts.forEach(function(data){
-                        FollowPosts.update(
-                            {postId:doc._id, followby:data.followby},
-                            {$set:{
-                                browse:modifier.$set.browse
-                              }
-                            }
-                        );
-                    });
-                }
-                catch(error){}
-              */
           });
           return true;
       }
 
       if(doc.owner === userId){
-          Meteor.defer(function(){
-            try{
-                var follows=Follower.find({followerId:userId})
-                if(follows.count()>0){
-                    follows.forEach(function(data){
-                        FollowPosts.update(
-                            {postId:doc._id, followby:data.userId},
-                            {$set:{
-                                title:modifier.$set.title,
-                                addontitle:modifier.$set.addontitle,
-                                mainImage: modifier.$set.mainImage,
-                                mainImageStyle:modifier.$set.mainImageStyle
-                              }
-                            }
-                        );
-                    });
-                }
-                FollowPosts.update(
-                    {postId:doc._id, followby:userId},
-                    {$set:{
-                        title:modifier.$set.title,
-                        addontitle:modifier.$set.addontitle,
-                        mainImage: modifier.$set.mainImage,
-                        mainImageStyle:modifier.$set.mainImageStyle
-                      }
-                    }
-                );
-            }
-            catch(error){}
-          });
+        postsUpdateHookDeferHandle(userId,doc,fieldNames, modifier);
         return true;
       }
       return false;
@@ -741,53 +910,18 @@ if(Meteor.isServer){
   });
   Follower.allow({
     insert: function (userId, doc) {
-      if(Follower.findOne({userId:doc.userId,followerId:doc.followerId}))
-      {
+      if(Follower.findOne({userId:doc.userId,followerId:doc.followerId})){
         return false;
       }
       if(doc.userId === userId || doc.followerId === userId){
-        Meteor.defer(function(){
-            try{
-              Meets.update({me:doc.userId,ta:doc.followerId},{$set:{isFriend:true}});
-            }
-            catch(error){};
-            try{
-                var posts=Posts.find({owner: doc.followerId})
-                if(posts.count()>0){
-                    posts.forEach(function(data){
-                        FollowPosts.insert({
-                            postId:data._id,
-                            title:data.title,
-                            addontitle:data.addontitle,
-                            mainImage: data.mainImage,
-                            mainImageStyle:data.mainImageStyle,
-                            owner:data.owner,
-                            ownerName:data.ownerName,
-                            ownerIcon:data.ownerIcon,
-                            createdAt: data.createdAt,
-                            followby: doc.userId
-                        });
-                    });
-                }
-              }
-              catch(error){};
-        });
+        followerInsertHookDeferHook(userId,doc);
         return true;
       }
       return false;
     },
     remove: function (userId, doc) {
       if(doc.userId === userId){
-        Meteor.defer(function(){
-            try{
-              Meets.update({me:doc.userId,ta:doc.followerId},{$set:{isFriend:false}});
-            }
-            catch(error){};
-            try{
-              FollowPosts.remove({owner:doc.followerId,followby:userId});
-            }
-            catch(error){};
-        });
+        followerRemoveHookDeferHook(userId,doc);
         return true;
       }
       return false;
@@ -798,11 +932,11 @@ if(Meteor.isServer){
   });
   Feeds.allow({
     insert: function (userId, doc) {
-      userData = Meteor.users.findOne({_id:userId});
+      var userData = Meteor.users.findOne({_id:userId});
       if(!userData){
           return false;
       }
-      userName = userData.username;
+      var userName = userData.username;
       if(userData.profile && userData.profile.fullname !== null && userData.profile.fullname !== '') {
           userName = userData.profile.fullname;
       }
@@ -846,43 +980,7 @@ if(Meteor.isServer){
           return false;
       }
       if(doc.username !== null) {
-        Meteor.defer(function(){
-            try{
-              var views=Viewers.find({postId:doc.postId});
-              if(views.count()>0){
-                views.forEach(function(data){
-                  var meetItemOne = Meets.findOne({me:doc.userId,ta:data.userId});
-                  if(meetItemOne){
-                    var meetCount = meetItemOne.count;
-                    if(meetCount === undefined || isNaN(meetCount))
-                      meetCount = 0;
-                    Meets.update({me:doc.userId,ta:data.userId},{$set:{count:meetCount+1}});
-                  }else{
-                    Meets.insert({
-                      me:doc.userId,
-                      ta:data.userId,
-                      count:1
-                    });
-                  }
-
-                  var meetItemTwo = Meets.findOne({me:data.userId,ta:doc.userId});
-                  if(meetItemTwo){
-                    var meetCount = meetItemTwo.count;
-                    if(meetCount === undefined || isNaN(meetCount))
-                      meetCount = 0;
-                    Meets.update({me:data.userId,ta:doc.userId},{$set:{count:meetCount+1}});
-                  }else{
-                    Meets.insert({
-                      me:data.userId,
-                      ta:doc.userId,
-                      count:1
-                    });
-                  }
-                });
-              }
-            }
-            catch(error){}
-        });
+        viewersInsertHookDeferHook(userId,doc);
       }
       return doc.username !== null;
     },
@@ -895,87 +993,20 @@ if(Meteor.isServer){
   });
   Comment.allow({
     insert: function (userId, doc) {
-      if(doc.username==null)
+      if(doc.username===null)
           return false;
-      Meteor.defer(function(){
-          try{
-            post = Posts.findOne({_id: doc.postId});
-            commentsCount = post.commentsCount;
-            if(commentsCount === undefined || isNaN(commentsCount)){
-                commentsCount = 0;
-            }
-            commentsCount=commentsCount+1;
-            Posts.update({_id: doc.postId}, {$set: {'commentsCount': commentsCount}});
-            if(post.owner != userId)
-            {
-              if(ReComment.find({"postId":doc.postId,"commentUserId":userId}).count() === 0){
-                  ReComment.insert({
-                      postId: doc.postId,
-                      commentUserId: userId
-                  });
-              }
-              Feeds.insert({
-                  owner:userId,
-                  ownerName:doc.username,
-                  ownerIcon:doc.userIcon,
-                  eventType:'comment',
-                  postId:doc.postId,
-                  postTitle:post.title,
-                  mainImage:post.mainImage,
-                  createdAt:doc.createdAt,
-                  heart:0,
-                  retweet:0,
-                  comment:0,
-                  followby: post.owner
-              });
-              waitReadCount = Meteor.users.findOne({_id:post.owner}).profile.waitReadCount;
-              if(waitReadCount === undefined || isNaN(waitReadCount))
-              {
-                  waitReadCount = 0;
-              }
-              Meteor.users.update({_id: post.owner}, {$set: {'profile.waitReadCount': waitReadCount+1}});
-              pushnotification("comment",doc,userId);
-              recomments = ReComment.find({"postId": doc.postId}).fetch();
-              for(item in recomments)
-              {
-                  if(recomments[item].commentUserId!==undefined && recomments[item].commentUserId !== userId && recomments[item].commentUserId !== post.owner)
-                  {
-                      Feeds.insert({
-                          owner:userId,
-                          ownerName:doc.username,
-                          ownerIcon:doc.userIcon,
-                          eventType:'recomment',
-                          postId:doc.postId,
-                          postTitle:post.title,
-                          mainImage:post.mainImage,
-                          createdAt:doc.createdAt,
-                          heart:0,
-                          retweet:0,
-                          comment:0,
-                          followby: recomments[item].commentUserId
-                      });
-                      waitReadCount = Meteor.users.findOne({_id:recomments[item].commentUserId}).profile.waitReadCount;
-                      if(waitReadCount === undefined || isNaN(waitReadCount))
-                      {
-                          waitReadCount = 0;
-                      }
-                      Meteor.users.update({_id: recomments[item].commentUserId}, {$set: {'profile.waitReadCount': waitReadCount+1}});
-                      pushnotification("recomment",doc,recomments[item].commentUserId);
-                  }
-              }
-            }
-          }
-          catch(error){}
-      });
-      return doc.username !== null;
+      else {
+          commentInsertHookDeferHandle(userId, doc);
+          return true;
+      }
     },
     remove: function (userId, doc) {
       if(doc.userId !== userId)
           return false;
       Meteor.defer(function(){
           try {
-              post = Posts.findOne({_id: doc.postId});
-              commentsCount = post.commentsCount;
+              var post = Posts.findOne({_id: doc.postId});
+              var commentsCount = post.commentsCount;
               if(commentsCount === undefined || isNaN(commentsCount)){
                   commentsCount = 1;
               }
