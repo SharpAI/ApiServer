@@ -146,6 +146,8 @@
       {{/if}}
     </div>
     {{> postFooter}}
+  <div class="popUpBox">
+  {{#if displayCommentInputBox}}
   <div class="commentInputBox">
     <header class="bottomBorder">
       {{#if currentUser}}
@@ -161,7 +163,9 @@
       <div class="footer"><span class="change">换</span></div>
     </form>
   </div>
+  {{/if}}
   {{>userProfileBox}}
+  </div>
 </template>
 <template name="postFooter">
   <div id="postFooter" class="showPostsFooter">

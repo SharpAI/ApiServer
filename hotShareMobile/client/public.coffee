@@ -51,6 +51,8 @@
         return
     # 返回上一页
     'back':->
+        if PopUpBox
+          PopUpBox.close()
         history = Session.get("history_view")
         for tmpPage in history
             console.log "Frank.PUB: back, tmpPage = "+JSON.stringify(tmpPage)

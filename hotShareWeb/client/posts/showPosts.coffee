@@ -1,5 +1,4 @@
 if Meteor.isClient
-  commentBox = null
   @isIOS = (navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false)
   @isWeiXinFunc = ()->
     ua = window.navigator.userAgent.toLowerCase()
@@ -52,7 +51,8 @@ if Meteor.isClient
     $('p').linkify();
     $("a[target='_blank']").click((e)->
       e.preventDefault();
-      window.open($(e.currentTarget).attr('href'), '_system', '');
+      #window.open($(e.currentTarget).attr('href'), '_system', '');
+      window.open($(e.currentTarget).attr('href'), '_blank', 'hidden=no,toolbarposition=top')
     )
 
     $('.showBgColor').css('min-height',$(window).height())
@@ -151,6 +151,8 @@ if Meteor.isClient
     #  PUB.toast("您的手机版本过低，部分图片可能产生变形。");
 
   Template.showPosts.helpers
+    displayCommentInputBox:()->
+      Session.get('displayCommentInputBox')
     inWeiXin: ()->
       isWeiXinFunc()
     withAfterPostIntroduce: ()->
@@ -184,7 +186,7 @@ if Meteor.isClient
   Template.showPosts.events
     'click #ViewOnWeb' :->
       if Session.get("postContent").fromUrl
-        window.open(Session.get("postContent").fromUrl, '_blank', '');
+        handleAddedLink(Session.get("postContent").fromUrl)
     'click .user':->
       Session.set("ProfileUserId", this.owner)
       Meteor.subscribe("userinfo", this.owner)
@@ -208,16 +210,16 @@ if Meteor.isClient
       #  $('#comment').trigger("keyup")
       #,300)
     'click #finish':->
-      if commentBox
-        commentBox.close()
+      if PopUpBox
+        PopUpBox.close()
       else
-        $('.commentInputBox').hide 0
+        $('.popUpBox').hide 0
     "click #submit":->
       $("#new-reply").submit()
-      if commentBox
-        commentBox.close()
+      if PopUpBox
+        PopUpBox.close()
       else
-        $('.commentInputBox').hide 0
+        $('.popUpBox').hide 0
     "submit .new-reply": (event)->
       # This function is called when the new task form is submitted
       content = event.target.comment.value
@@ -421,14 +423,13 @@ if Meteor.isClient
       Posts.update {_id: postId},{$set: {heart: heart}}
       amplify.store(postId,true)
   onComment = ->
-    $('.showBgColor').hide 0
-    commentBox = $('.commentInputBox').bPopup
+    window.PopUpBox = $('.popUpBox').bPopup
       positionStyle: 'fixed'
       position: [0, 0]
       onClose: ->
-        $('.showBgColor').show 0,->
-          $(window).scrollTop(window.lastScroll)
+        Session.set('displayCommentInputBox',false)
       onOpen: ->
+        Session.set('displayCommentInputBox',true)
         Meteor.setTimeout ->
             $('.commentArea').focus()
           ,300
