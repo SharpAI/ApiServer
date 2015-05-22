@@ -859,7 +859,6 @@ public class InAppBrowser extends CordovaPlugin {
 
 		public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            importBtn.setEnabled(true);
             try {
                 JSONObject obj = new JSONObject();
                 obj.put("type", LOAD_STOP_EVENT);
@@ -871,6 +870,7 @@ public class InAppBrowser extends CordovaPlugin {
             }
             if (url.startsWith("http:") || url.startsWith("https:") || url.startsWith("file:")) {
             	importUrl = url;
+                importBtn.setEnabled(true);
             	if(needImport)
             	{
             		importUrl();
