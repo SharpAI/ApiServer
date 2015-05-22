@@ -7,7 +7,7 @@ if Meteor.isClient
         Meteor.subscribe("userDetail",Meteor.userId())
         Meteor.subscribe "newfriends", Meteor.userId(),Session.get("postContent")._id
   onUserProfile = ->
-    @UserProfileBox = $('.userProfileBox').bPopup
+    @PopUpBox = $('.popUpBox').bPopup
       positionStyle: 'fixed'
       position: [0, 0]
       onClose: ->

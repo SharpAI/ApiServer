@@ -233,8 +233,8 @@ if Meteor.isClient
   Template.userProfilePage1.events
     'click .userProfile .back':()->
       Session.set("Social.LevelOne.Menu",'contactsList')
-      if UserProfileBox
-        UserProfileBox.close()
+      if PopUpBox
+        PopUpBox.close()
     'click #suggestCurrentPost': ()->
       suggestCurrentPost("ProfileUserId1")
     'click #sendChatMessage': ()->
@@ -244,8 +244,8 @@ if Meteor.isClient
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
-      if UserProfileBox
-        UserProfileBox.close()
+      if PopUpBox
+        PopUpBox.close()
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/redirect/'+postId
@@ -293,8 +293,8 @@ if Meteor.isClient
   Template.userProfilePage2.events
     'click .userProfile .back':()->
       Session.set("Social.LevelOne.Menu",'contactsList')
-      if UserProfileBox
-        UserProfileBox.close()
+      if PopUpBox
+        PopUpBox.close()
     'click #suggestCurrentPost': ()->
       suggestCurrentPost("ProfileUserId2")
     'click #sendChatMessage': ()->
@@ -304,8 +304,8 @@ if Meteor.isClient
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
-      if UserProfileBox
-        UserProfileBox.close()
+      if PopUpBox
+        PopUpBox.close()
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/redirect/'+postId
@@ -354,8 +354,8 @@ if Meteor.isClient
   Template.userProfilePage3.events
     'click .userProfile .back':()->
       Session.set("Social.LevelOne.Menu",'contactsList')
-      if UserProfileBox
-        UserProfileBox.close()
+      if PopUpBox
+        PopUpBox.close()
     'click #suggestCurrentPost': ()->
       suggestCurrentPost("ProfileUserId3")
     'click #sendChatMessage': ()->
@@ -365,8 +365,8 @@ if Meteor.isClient
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
-      if UserProfileBox
-        UserProfileBox.close()
+      if PopUpBox
+        PopUpBox.close()
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/redirect/'+postId
