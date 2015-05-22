@@ -6,8 +6,13 @@ if Meteor.isClient
   Router.route '/posts/:_id', {
       waitOn: ->
         Meteor.subscribe("publicPosts",this.params._id)
+      loadingTemplate: 'loadingPost'
       action: ->
         post = Posts.findOne({_id: this.params._id})
+        unless post
+          console.log "Cant find the request post"
+          this.render 'postNotFound'
+          return
         Session.set("refComment",[''])
         Meteor.subscribe "refcomments",()->
           Meteor.setTimeout ()->

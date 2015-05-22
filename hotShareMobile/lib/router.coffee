@@ -81,6 +81,10 @@ if Meteor.isClient
         loadingTemplate: 'loadingPost'
         action: ->
           post = Posts.findOne({_id: this.params._id})
+          unless post
+            console.log "Cant find the request post"
+            this.render 'postNotFound'
+            return
           Session.set("refComment",[''])
           Meteor.subscribe "refcomments", ()->
             Meteor.setTimeout ()->
