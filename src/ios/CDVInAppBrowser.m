@@ -1090,7 +1090,6 @@
             NSLog(@"Replace url to : %@", httpStr);
         }
 
-        self.importButton.enabled = YES;
         [self.navigationDelegate goToUrl:[NSURL URLWithString:httpStr]];
     }
     return YES;
@@ -1137,6 +1136,7 @@
     self.forwardButton.enabled = theWebView.canGoForward;
 
     [self.spinner startAnimating];
+    self.importButton.enabled = NO;
 
     return [self.navigationDelegate webViewDidStartLoad:theWebView];
 }
@@ -1163,6 +1163,7 @@
     self.forwardButton.enabled = theWebView.canGoForward;
 
     [self.spinner stopAnimating];
+    self.importButton.enabled = YES;
 
     // Work around a bug where the first time a PDF is opened, all UIWebViews
     // reload their User-Agent from NSUserDefaults.

@@ -597,7 +597,6 @@ public class InAppBrowser extends CordovaPlugin {
                     public boolean onKey(View v, int keyCode, KeyEvent event) {
                         // If the event is a key-down event on the "enter" button
                         if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                          importBtn.setEnabled(true);
                           navigate(edittext.getText().toString());
                           return true;
                         }
@@ -784,6 +783,7 @@ public class InAppBrowser extends CordovaPlugin {
         public void onPageStarted(WebView view, String url,  Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
             String newloc = "";
+            importBtn.setEnabled(false);
             if (url.startsWith("http:") || url.startsWith("https:") || url.startsWith("file:")) {
                 newloc = url;
             } 
@@ -859,6 +859,7 @@ public class InAppBrowser extends CordovaPlugin {
 
 		public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
+            importBtn.setEnabled(true);
             try {
                 JSONObject obj = new JSONObject();
                 obj.put("type", LOAD_STOP_EVENT);
