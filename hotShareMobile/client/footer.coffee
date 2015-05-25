@@ -93,3 +93,26 @@ if Meteor.isClient
               ,100)
             else
               PUB.back()
+              
+@switchFooterMenu = (menu)->
+  switch menu
+    when 'home'
+      $('#footer .footerHome').addClass('footerHomeSelected').removeClass('footerHome')
+      $('#footer .footerSearchSelected').addClass('footerSearch').removeClass('footerSearchSelected')
+      $('#footer .footerMsgSelected').addClass('footerMsg').removeClass('footerMsgSelected')
+      $('#footer .footerMeSelected').addClass('footerMe').removeClass('footerMeSelected')
+    when 'search'
+      $('#footer .footerHomeSelected').addClass('footerHome').removeClass('footerHomeSelected')
+      $('#footer .footerSearch').addClass('footerSearchSelected').removeClass('footerSearch')
+      $('#footer .footerMsgSelected').addClass('footerMsg').removeClass('footerMsgSelected')
+      $('#footer .footerMeSelected').addClass('footerMe').removeClass('footerMeSelected')
+    when 'bell'
+      $('#footer .footerHomeSelected').addClass('footerHome').removeClass('footerHomeSelected')
+      $('#footer .footerSearchSelected').addClass('footerSearch').removeClass('footerSearchSelected')
+      $('#footer .footerMsg').addClass('footerMsgSelected').removeClass('footerMsg')
+      $('#footer .footerMeSelected').addClass('footerMe').removeClass('footerMeSelected')
+    when 'user'
+      $('#footer .footerHomeSelected').addClass('footerHome').removeClass('footerHomeSelected')
+      $('#footer .footerSearchSelected').addClass('footerSearch').removeClass('footerSearchSelected')
+      $('#footer .footerMsgSelected').addClass('footerMsg').removeClass('footerMsgSelected')
+      $('#footer .footerMe').addClass('footerMeSelected').removeClass('footerMe')

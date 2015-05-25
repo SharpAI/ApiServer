@@ -1,5 +1,6 @@
 if Meteor.isClient
   Template.bell.rendered=->
+    switchFooterMenu('bell')
     $('.content').css 'min-height',$(window).height()
     $(window).scroll (event)->
         target = $("#showMoreFeedsResults");
