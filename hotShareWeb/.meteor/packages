@@ -20,3 +20,4 @@ npm-container
 accounts-password
 servicelocale:geoip
 meteor-swipe
+meteorhacks:inject-initial
