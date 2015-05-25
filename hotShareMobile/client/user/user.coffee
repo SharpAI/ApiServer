@@ -3,6 +3,8 @@ if Meteor.isClient
   Template.user.onCreated ()->
     Meteor.subscribe("posts")
     Meteor.subscribe("saveddrafts")
+  Template.user.rendered=->
+    switchFooterMenu('user')
   Template.user.helpers
     followers:->
       #Follower存放用户间关注记录， Follows是推荐偶像列表
