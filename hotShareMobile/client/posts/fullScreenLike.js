@@ -1,13 +1,5 @@
 Template.bottomLike.events({
   "click .full_like": function(e){
-      //prevent image from closing
-      if(typeof($("#isClicked").val()) == "undefined"){
-        $(".bottomLike").append("<div value='hasClick' id='isClicked'></div>");
-      }
-       Meteor.setTimeout (function(){
-          $("#isClicked").remove();
-       },10);
-
        currentImgId = $('#swipebox-slider .current img')[0].src;
        post = Session.get('postContent');
        clickToLike(post, currentImgId);
@@ -20,6 +12,8 @@ Template.bottomLike.events({
                     $(".big_like").attr("src", "/img/gif/"+ img+".png");
                }, 20 *i);
             });
+       }else{
+          $(".big_like").attr("src", "/img/b_unlike.png");
        }
     }
 });
@@ -29,8 +23,6 @@ Template.bottomLike.onRendered(function () {
       currentImgId = $('#swipebox-slider .current img')[0].src;
       for(i = 0; i < post.pub.length; i++){
         if(post.pub[i].imgUrl === currentImgId){
-            //the count
-            Session.set("likeCount", post.pub[i].pub_Heart.length);
             //the like 
             if(post.pub[i].pub_Heart.length == 0){
                 Session.set("hasLiked", false);
@@ -50,9 +42,6 @@ Template.bottomLike.onRendered(function () {
 
 Template.bottomLike.helpers({
   "isLiked": function(){
-                  return Session.get("hasLiked");
-  },
-  "allLikeCount": function(){
-            return Session.get("likeCount");
+            return Session.get("hasLiked");
   }
 });

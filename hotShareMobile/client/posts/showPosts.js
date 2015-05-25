@@ -6,14 +6,16 @@ Template.showPosts.onRendered(function () {
             // this pic has no pub_Heart
               if(post.pub[i].isImage && typeof (post.pub[i].pub_Heart) == "undefined"){
                     post.pub[i].pub_Heart = [];
+                    post.pub[i].like_Count = post.pub[i].pub_Heart.length
                     Posts.update({
-                            _id: post._id
-                       }, {
-                      $set: {
-                            pub:  post.pub
-                      }
-                      });
+                          _id: post._id
+                     }, {
+                    $set: {
+                          pub:  post.pub
+                    }
+                    });
               }
+              
           }
      }
 });
@@ -155,6 +157,7 @@ addLike = function(currentPost, pubNum){
         like_userId : Meteor.userId(),
         like_createdAt : new Date()
       });
+    currentPost.pub[pubNum].like_Count++;
     Posts.update({
       _id: currentPost._id
      }, {
@@ -165,6 +168,7 @@ addLike = function(currentPost, pubNum){
 };
 removeLike = function(currentPost, pubNum, heartNum){
   currentPost.pub[pubNum].pub_Heart.splice(heartNum, 1);
+  currentPost.pub[pubNum].like_Count--;
   Posts.update({
       _id: currentPost._id
      }, {
@@ -181,23 +185,24 @@ ifIsCurrentLike = function(){
       //alert(currentImgId);
       for(i = 0; i < post.pub.length; i++){
         if(post.pub[i].imgUrl === currentImgId){
-          //the count
-            Session.set("likeCount", post.pub[i].pub_Heart.length);
             //the like
           if(post.pub[i].pub_Heart.length == 0){
               Session.set("hasLiked", false);
+              $(".big_like").attr("src", "/img/b_unlike.png");
             }else if(post.pub[i].pub_Heart.length > 0){
                 for(k=0; k <post.pub[i].pub_Heart.length; k++){
                    if(post.pub[i].pub_Heart[k].like_userId == Meteor.userId()){
                       Session.set("hasLiked", true);
+                      $(".big_like").attr("src", "/img/b_like.png");
                    }else{
                       Session.set("hasLiked", false);
+                      $(".big_like").attr("src", "/img/b_unlike.png");
                    }
               }
           }
         }
       }
-  },500);
+  },50);
 };
 
 addDynamicTemp = function(){
