@@ -186,7 +186,10 @@ if Meteor.isClient
   Template.showPosts.events
     'click #ViewOnWeb' :->
       if Session.get("postContent").fromUrl
-        handleAddedLink(Session.get("postContent").fromUrl)
+        if Meteor.isCordova
+          handleAddedLink(Session.get("postContent").fromUrl)
+        else
+          window.location.href=Session.get("postContent").fromUrl
     'click .user':->
       Session.set("ProfileUserId", this.owner)
       Meteor.subscribe("userinfo", this.owner)
