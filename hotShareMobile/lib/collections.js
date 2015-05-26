@@ -181,7 +181,7 @@ if(Meteor.isServer){
             var needUpdateMeetCount = false;
             try {
                 if(self.userId && postId ){
-                    if( Viewers.find({userId:self.userId,postId:postId}).count() === 0 ){
+                    if( Viewers.find({postId:postId,userId:self.userId}).count() === 0 ){
                         needUpdateMeetCount = true;
                         var userinfo = Meteor.users.findOne({_id: self.userId },{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
                         if(userinfo){
