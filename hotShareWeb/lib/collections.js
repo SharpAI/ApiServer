@@ -59,7 +59,7 @@ if(Meteor.isServer){
             }
         });
     };
-    var newMeetsChangedForNewFriendsDeferHandle = function(self,fields,userId) {
+    var newMeetsChangedForNewFriendsDeferHandle = function(self,fields,userId,postId) {
         if(fields.isFriend === false)
         {
             try{
@@ -609,7 +609,7 @@ if(Meteor.isServer){
              }
            }
             //Call defered function here:
-            newMeetsChangedForNewFriendsDeferHandle(self,fields,userId);
+            newMeetsChangedForNewFriendsDeferHandle(self,fields,userId,postId);
         },
         removed: function (id) {
           self.removed("newfriends", id);
