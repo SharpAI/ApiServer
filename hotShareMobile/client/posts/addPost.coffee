@@ -646,6 +646,8 @@ if Meteor.isClient
       if Drafts.find({type:'image'}).count() > 0
         Drafts.find({type:'image'}).fetch()[0].url
     cancelDraftChange:->
+      if TempDrafts.find({}).count() is 0
+        return
       TempDraftData = TempDrafts.find({}).fetch()[0]
       try
         if SavedDrafts.find({_id:draftId}).count() > 0
@@ -1068,20 +1070,36 @@ if Meteor.isClient
 
       return
     'click .cancle':->
-      navigator.notification.confirm('这个操作无法撤销', (r)->
-        console.log('r is ' + r)
-        if r is 2
+      if TempDrafts.find({}).count()>0
+        navigator.notification.confirm('这个操作无法撤销', (r)->
+          console.log('r is ' + r)
+          if r is 2
+            return
+          Session.set 'isReviewMode','1'
+          Template.addPost.__helpers.get('cancelDraftChange')()
+          #Clear Drafts
+          Drafts.remove {owner: Meteor.userId()}
+          TempDrafts.remove {owner: Meteor.userId()}
+          $('.addPost').addClass('animated ' + animateOutUpperEffect);
+          Meteor.setTimeout ()->
+            Router.go('/')
+          ,animatePageTrasitionTimeout
           return
-        Session.set 'isReviewMode','1'
-        Template.addPost.__helpers.get('cancelDraftChange')()
-        #Clear Drafts
-        Drafts.remove {owner: Meteor.userId()}
-        $('.addPost').addClass('animated ' + animateOutUpperEffect);
-        Meteor.setTimeout ()->
-          Router.go('/')
-        ,animatePageTrasitionTimeout
-        return
-      , '您确定要放弃未保存的修改吗？', ['放弃修改','继续编辑']);
+        , '您确定要放弃未保存的修改吗？', ['放弃修改','继续编辑']);
+      else
+        navigator.notification.confirm('这个操作无法撤销', (r)->
+          console.log('r is ' + r)
+          if r is 2
+            return
+          Session.set 'isReviewMode','1'
+          #Clear Drafts
+          Drafts.remove {owner: Meteor.userId()}
+          $('.addPost').addClass('animated ' + animateOutUpperEffect);
+          Meteor.setTimeout ()->
+            Router.go('/')
+          ,animatePageTrasitionTimeout
+          return
+        , '您确定要删除未保存的草稿吗？', ['删除故事','继续创作']);
     'click .cancleCrop':->
       $('#blur_overlay').css('height','')
       $('#blur_bottom').css('height','')
