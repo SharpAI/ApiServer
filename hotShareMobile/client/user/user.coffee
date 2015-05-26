@@ -79,6 +79,11 @@ if Meteor.isClient
         Router.go '/followers'
       ,animatePageTrasitionTimeout
     'click .draftImages ul li':(e)->
+      #Use for if user discard change on Draft
+      TempDrafts
+        .find {owner: Meteor.userId()}
+        .forEach (drafts)->
+          TempDrafts.remove drafts._id
       #Clear draft first
       Drafts
         .find {owner: Meteor.userId()}
@@ -86,6 +91,17 @@ if Meteor.isClient
           Drafts.remove drafts._id
       #Prepare data
       savedDraftData = SavedDrafts.find({_id: e.currentTarget.id}).fetch()[0]
+      TempDrafts.insert {
+        _id:savedDraftData._id,
+        pub:savedDraftData.pub,
+        title:savedDraftData.title,
+        addontitle:savedDraftData.addontitle,
+        fromUrl:savedDraftData.fromUrl,
+        mainImage: savedDraftData.mainImage,
+        mainText: savedDraftData.mainText,
+        owner:savedDraftData.owner,
+        createdAt: savedDraftData.createdAt,
+      }
       pub = savedDraftData.pub
       if device.platform is 'Android'
         pub.index = -1

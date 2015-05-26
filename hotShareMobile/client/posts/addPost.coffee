@@ -645,6 +645,52 @@ if Meteor.isClient
     linkUrl:->
       if Drafts.find({type:'image'}).count() > 0
         Drafts.find({type:'image'}).fetch()[0].url
+    cancelDraftChange:->
+      TempDraftData = TempDrafts.find({}).fetch()[0]
+      try
+        if SavedDrafts.find({_id:draftId}).count() > 0
+          SavedDrafts.update(
+            {_id:TempDraftData._id},
+            {$set:{
+              pub:TempDraftData.pub,
+              title:TempDraftData.title,
+              addontitle:TempDraftData.addontitle,
+              mainImage: TempDraftData.mainImage,
+              fromUrl: TempDraftData.fromUrl,
+              mainText: TempDraftData.mainText,
+              owner:TempDraftData.owner,
+              createdAt: TempDraftData.createAt,
+            }}
+          )
+        else
+          SavedDrafts.insert {
+            _id:TempDraftData._id,
+            pub:TempDraftData.pub,
+            title:TempDraftData.title,
+            addontitle:TempDraftData.addontitle,
+            fromUrl:TempDraftData.fromUrl,
+            mainImage: TempDraftData.mainImage,
+            mainText: TempDraftData.mainText,
+            owner:TempDraftData.owner,
+            createdAt: TempDraftData.createdAt,
+          }
+      catch error
+        console.log("Insert SavedDrafts error! Try update it...");
+        SavedDrafts.update(
+          {_id:TempDraftData._id},
+          {$set:{
+            pub:TempDraftData.pub,
+            title:TempDraftData.title,
+            addontitle:TempDraftData.addontitle,
+            fromUrl:TempDraftData.fromUrl,
+            mainImage: TempDraftData.mainImage,
+            mainText: TempDraftData.mainText,
+            owner:TempDraftData.owner,
+            createdAt: TempDraftData.createdAt,
+          }}
+        )
+      TempDrafts.remove {owner: Meteor.userId()}
+      return
     saveDraft:->
         layout = JSON.stringify(gridster.serialize())
         pub=[]
@@ -1022,16 +1068,12 @@ if Meteor.isClient
 
       return
     'click .cancle':->
-      navigator.notification.confirm('选择删除后将无法恢复您的草稿', (r)->
+      navigator.notification.confirm('这个操作无法撤销', (r)->
         console.log('r is ' + r)
         if r is 2
           return
         Session.set 'isReviewMode','1'
-        #Delete it from SavedDrafts
-        draftData = Drafts.find().fetch()
-        if draftData.length>0
-          draftId = draftData[0]._id
-          SavedDrafts.remove draftId
+        Template.addPost.__helpers.get('cancelDraftChange')()
         #Clear Drafts
         Drafts.remove {owner: Meteor.userId()}
         $('.addPost').addClass('animated ' + animateOutUpperEffect);
@@ -1039,7 +1081,7 @@ if Meteor.isClient
           Router.go('/')
         ,animatePageTrasitionTimeout
         return
-      , '您确定要删除未保存的草稿吗？', ['删除故事','继续创作']);
+      , '您确定要放弃未保存的修改吗？', ['放弃修改','继续编辑']);
     'click .cancleCrop':->
       $('#blur_overlay').css('height','')
       $('#blur_bottom').css('height','')
@@ -1142,6 +1184,7 @@ if Meteor.isClient
     'click #saveDraft':->
       Template.addPost.__helpers.get('saveDraft')()
       Drafts.remove {owner: Meteor.userId()}
+      TempDrafts.remove {owner: Meteor.userId()}
       history.back()
       #PUB.back()
 
@@ -1293,6 +1336,7 @@ if Meteor.isClient
             SavedDrafts.remove({_id:postId})
                 #Delete the Drafts
             Drafts.remove({})
+            TempDrafts.remove({})
             if Session.get('isReviewMode') is '2'
                 Router.go('/posts/'+postId)
             else
