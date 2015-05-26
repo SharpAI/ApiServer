@@ -28,6 +28,11 @@ if Meteor.isClient
             SavedDrafts.remove saveddrafts._id
         PUB.back()
     'click .mainImage':(e)->
+      #Use for if user discard change on Draft
+      TempDrafts
+        .find {owner: Meteor.userId()}
+        .forEach (drafts)->
+          TempDrafts.remove drafts._id
       #Clear draft first
       Drafts
         .find {owner: Meteor.userId()}
@@ -35,6 +40,17 @@ if Meteor.isClient
           Drafts.remove drafts._id
       #Prepare data
       savedDraftData = SavedDrafts.find({_id: @_id}).fetch()[0]
+      TempDrafts.insert {
+        _id:savedDraftData._id,
+        pub:savedDraftData.pub,
+        title:savedDraftData.title,
+        addontitle:savedDraftData.addontitle,
+        fromUrl:savedDraftData.fromUrl,
+        mainImage: savedDraftData.mainImage,
+        mainText: savedDraftData.mainText,
+        owner:savedDraftData.owner,
+        createdAt: savedDraftData.createdAt,
+      }
       #console.log "savedDraftData ="+JSON.stringify(savedDraftData)
       pub = savedDraftData.pub;
       if device.platform is 'Android'

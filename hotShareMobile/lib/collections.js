@@ -2,6 +2,7 @@ Posts = new Meteor.Collection('posts');
 FollowPosts = new Meteor.Collection('followposts');
 Feeds = new Meteor.Collection('feeds');
 Drafts = new Meteor.Collection(null);
+TempDrafts = new Meteor.Collection(null);
 SavedDrafts = new Meteor.Collection('saveddrafts');
 Follows = new Meteor.Collection('follows');
 Follower = new Meteor.Collection('follower');
@@ -876,6 +877,17 @@ if(Meteor.isServer){
     }
   });
   Drafts.allow({
+    insert: function (userId, doc) {
+      return doc.owner === userId;
+    },
+    remove: function (userId, doc) {
+      return doc.owner === userId;
+    },
+    update: function (userId, doc) {
+      return doc.owner === userId;
+    }
+  });
+  TempDrafts.allow({
     insert: function (userId, doc) {
       return doc.owner === userId;
     },
