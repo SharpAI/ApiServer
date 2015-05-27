@@ -21,18 +21,17 @@ Template.showPosts.onRendered(function () {
 });
 
 Template.showPosts.helpers({
-    "isMyLike" : function(userId){
-        if(userId == Meteor.userId()){
-            return true;
-        }else{
-            return false;
+    "isMyLike" : function(pub_Heart){
+     isMy = false;
+        for(i=0; i<pub_Heart.length; i++){
+            if(pub_Heart[i].like_userId === Meteor.userId()){
+                isMy = true;
+                break;
+            }else{
+                isMy = false;
+            }
         }
-    },
-
-    "hasNoLike": function(pub_Heart){
-        if(pub_Heart.length==0){
-          return true;
-        }
+        return isMy;
     }
 });
 
@@ -131,25 +130,30 @@ Template.showPosts.events({
 });
 
 clickToLike = function(currentPost, current_imgId){
-     for(i = 0; i < currentPost.pub.length; i++){
-      if(currentPost.pub[i].pub_Heart && currentPost.pub[i].imgUrl === current_imgId){
-            // has no like
-        if(currentPost.pub[i].pub_Heart.length == 0){
-                 addLike(currentPost, i);
-        }else{
-        for(k=0; k <currentPost.pub[i].pub_Heart.length; k++){
-           //if has this img & has no like
-          if(currentPost.pub[i].pub_Heart[k].like_userId != Meteor.userId()){
-                 addLike(currentPost, i, k);
+    index = -1;
+    isMyliked = false;
+      for(i = 0; i < currentPost.pub.length; i++){
+          if(currentPost.pub[i].pub_Heart && currentPost.pub[i].imgUrl === current_imgId){
+               if(currentPost.pub[i].pub_Heart.length == 0){
+                       addLike(currentPost, i);
+              }else{
+                  for(k=0; k <currentPost.pub[i].pub_Heart.length; k++){
+                     if(currentPost.pub[i].pub_Heart[k].like_userId === Meteor.userId()){
+                            isMyliked = true;
+                            index = k;
+                            break;
+                     }else{
+                            isMyliked = false;
+                     }
+                  }
+                  if(isMyliked){
+                      removeLike(currentPost, i, index);
+                  }else{
+                      addLike(currentPost, i);
+                  }
+              }
           }
-           //if has my like so remove my like
-           else if(currentPost.pub[i].pub_Heart[k].like_userId === Meteor.userId()){
-               removeLike(currentPost, i, k);
-            }
-          }
-        }
-     }
-   }
+      }
 };
 
 addLike = function(currentPost, pubNum){
@@ -202,7 +206,7 @@ ifIsCurrentLike = function(){
           }
         }
       }
-  },50);
+  },250);
 };
 
 addDynamicTemp = function(){
