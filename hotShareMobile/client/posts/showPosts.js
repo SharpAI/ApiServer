@@ -1,4 +1,5 @@
 //when come in to this page, add an array  "pub_Heart (like)" to pub in this post  if it has no  "pub_Heart"
+/*
 Template.showPosts.onRendered(function () {
      if (Meteor.user()) {
           post = Session.get('postContent');
@@ -19,7 +20,6 @@ Template.showPosts.onRendered(function () {
           }
      }
 });
-
 Template.showPosts.helpers({
     "isMyLike" : function(pub_Heart){
      isMy = false;
@@ -34,6 +34,7 @@ Template.showPosts.helpers({
         return isMy;
     }
 });
+ */
 
 Template.showPosts.events({
     'click #WXTimelineShare':function(e, t){
@@ -128,7 +129,7 @@ Template.showPosts.events({
        e.stopPropagation();
     }
 });
-
+/*
 clickToLike = function(currentPost, current_imgId){
     index = -1;
     isMyliked = false;
@@ -220,6 +221,4 @@ addDynamicTemp = function(){
 removeDynamicTemp = function(){
     dynamic.clear();
 };
-
-
-
+*/

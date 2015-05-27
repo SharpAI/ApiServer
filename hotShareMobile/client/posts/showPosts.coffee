@@ -380,7 +380,7 @@ if Meteor.isClient
         loopAtEnd: false
        
       }
-      addDynamicTemp()
+      #addDynamicTemp()
   Template.postFooter.helpers
     refcomment:->
       RC = Session.get 'RC'
