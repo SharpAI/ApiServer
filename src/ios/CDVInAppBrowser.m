@@ -1123,6 +1123,10 @@
     }
 }
 
+- (void) resetImportButton:(NSTimer *)timer
+{
+    self.importButton.enabled = YES;
+}
 - (void)webViewDidStartLoad:(UIWebView*)theWebView
 {
     // loading url, start spinner, update back/forward
@@ -1137,7 +1141,7 @@
 
     [self.spinner startAnimating];
     self.importButton.enabled = NO;
-
+    [NSTimer scheduledTimerWithTimeInterval:3.0f target:self selector:@selector(resetImportButton:) userInfo:nil repeats:NO];
     return [self.navigationDelegate webViewDidStartLoad:theWebView];
 }
 
