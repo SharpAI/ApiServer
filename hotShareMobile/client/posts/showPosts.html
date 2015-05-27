@@ -130,21 +130,13 @@
         {{/if}}
       </div>
     {{/unless}}
-    {{#if isCordova}}
-    {{#unless isMyPost}}
-    <div id="report">举报</div>
-    {{/unless}}
-    {{/if}}
-    <div class="showPostsLine"></div>
+      <div class="showPostsLine"></div>
       {{> commentContent}}
-      </div>
+    </div>
       {{#if withSocialBar}}
-        <div class="superChatIntroduce">
-            <p>故事贴无法获得微信信息，请放心使用</p>
-        </div>
         {{> socialContent}}
       {{/if}}
-    </div>
+  </div>
     {{> postFooter}}
   <div class="popUpBox">
   {{#if displayCommentInputBox}}
@@ -170,17 +162,23 @@
 <template name="postFooter">
   <div id="postFooter" class="showPostsFooter">
     <div class="commentList">
-      <span class="minHeart"><i class="fa fa-thumbs-up"></i>{{heart}}</span>
-      <span class="minComment"><i class="fa fa-comment"></i>{{comment}}</span>
+      <div class="minHeart">{{heart}}</div>
+      <div class="minComment">{{comment}}</div>
     </div>
-    <input readOnly name="comment" class="comment" placeholder="说点什么..." type="text" value="{{refcomment}}">
     <div class="buttons">
-      <span class="refresh">换</span>
       {{#if blueHeart}}
-        <span class="blueHeart"><i class="fa fa-thumbs-up" style="color:#00c4ff;"></i></span>
+        <div class="blueHeart">&nbsp;</div>
       {{else}}
-        <span class="heart"><i class="fa fa-thumbs-o-up" style="color:#00c4ff;"></i></span>
+        <div class="heart">&nbsp;</div>
       {{/if}}
+      {{#if isCordova}}
+      {{#unless isMyPost}}
+      <div class="report" id="report" alt="举报">&nbsp;</div>
+      {{/unless}}
+      {{/if}}
+      <div class="rightBorder">&nbsp;</div>
     </div>
+    <div class="writeComment comment">写评论</div>
+    <!-- <input readOnly name="comment" class="comment" placeholder="说点什么..." type="text" value="{{refcomment}}"> -->
   </div>
 </template>

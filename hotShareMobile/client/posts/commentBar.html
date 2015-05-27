@@ -31,6 +31,10 @@
   <div class="commentContent">
     
     <div class="content">
+      <div class="commentHeader">
+        <div class="commentHeaderLeft">&nbsp;</div>
+        <div class="commentHeaderRight">最新评论</div>
+      </div>
       <div class="box">
         <!--
         <div class='email bottomBorder boxTitle'>{{heart.length}}个人点赞<span><i class="fa fa-angle-right fa-fw"></i></span></div>
@@ -39,14 +43,17 @@
         {{#each comment}}
           <div class="eachComment">
             <div class="bubble">
-              <span class="personName">{{username}}:</span><br>
-              <span class="personSay">{{content}}</span>
+              <div class="bubbleTop">
+                <div class="personAvatar"><img src="{{userIcon}}" width="30" height="30"></div>
+                <div class="personName">{{username}}</div>
+                <div class="time round">{{time_diff createdAt}}</div>
+              </div>
+              <div class="personSay">{{content}}</div>
             </div>
-            <span class="time round">{{time_diff createdAt}}</span>
+            
           </div>
         {{/each}}
       </div>
-      <div class="showPostsLine"></div>
     </div>
 <!--    <div class="bottomdirection"></div>-->
   </div>
