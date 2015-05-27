@@ -53,3 +53,11 @@ select {
     -ms-user-select: auto ;
     user-select: auto ;
 }
+
+#reason {
+    -webkit-user-select: auto ;
+    -khtml-user-select: auto ;
+    -moz-user-select: auto ;
+    -ms-user-select: auto ;
+    user-select: auto ;
+}
