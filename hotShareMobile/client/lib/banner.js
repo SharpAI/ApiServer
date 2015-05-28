@@ -27,14 +27,14 @@ Meteor.startup(function(){
 				return defaultText;
 		},
 		'tryReconnectText': function(event, template){
-			var defaultText = "点击尝试重新连接";
+			var defaultText = "点击重新连接";
 			if(Meteor.settings && Meteor.settings.public && Meteor.settings.public.connectionBanner && Meteor.settings.public.connectionBanner.tryReconnectText)
 				return Meteor.settings.public.connectionBanner.tryReconnectText;
 			else
 				return defaultText;
 		},
 		'reconnectBeforeCountdownText': function(event, template){
-			var defaultText = "正在尝试自动重连";
+			var defaultText = "准备尝试自动重连";
 			if(Meteor.settings && Meteor.settings.public && Meteor.settings.public.connectionBanner && Meteor.settings.public.connectionBanner.reconnectBeforeCountdownText)
 				return Meteor.settings.public.connectionBanner.reconnectBeforeCountdownText;
 			else
