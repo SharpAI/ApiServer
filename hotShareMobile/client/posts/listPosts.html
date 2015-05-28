@@ -9,32 +9,47 @@
           <div>加载失败，请检查网络设置或稍后重试</div>
       {{/if}}
       {{#each myPosts}}
-      <div  id="{{_id}}" class="mainImage">
-<!--      <div class="item" id="{{_id}}" style="background-image:url({{mainImage}})">-->
-        {{#if mainImage}}
-          {{>padding noRandomBackgroundColor=true}}
-        {{/if}}
-        <img class="scale item lazy" data-original="{{mainImage}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImageStyle}}" >
-        <header>
-          <h2 class="title">
-            {{title}}
-          </h2>
-          <h4 class="addontitle">
-            {{addontitle}}
-          </h4>
-        </header>
-      </div>
-      <div class="footer">
-        <span><img class="icon" src="{{ownerIcon}}" width='25' height='25'></span>
-        <span class="name">{{ownerName}}</span>
-        {{#if browse}}
-          <span class="right">
-              <!--<p>浏览{{browse}}次</p>-->
-  <!--          <i class="fa fa-heart"></i>{{heart}}-->
-            <!--<i class="fa fa-retweet"></i>{{retweet}}-->
-  <!--          <i class="fa fa-comment"></i>{{comment}}-->
-          </span>
-        {{/if}}
+      <div class="mainImageBox">
+	      <div id="{{_id}}" class="mainImage">
+	<!--      <div class="item" id="{{_id}}" style="background-image:url({{mainImage}})"> -->
+	        {{#if mainImage}}
+	          {{>padding noRandomBackgroundColor=true}}
+	        {{/if}}
+	        <img class="scale item lazy" data-original="{{mainImage}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImageStyle}}" >
+	        <header>
+	          <h2 class="title">
+	            {{title}}
+	          </h2>
+	          <h4 class="addontitle">
+	            {{addontitle}}
+	          </h4>
+	        </header>
+	        <div class="mainImageMask">
+	        </div>
+	        <div class="icons">
+	        	<div class="browseCount">{{browse}}</div>
+	        	<div class="commentCount">{{comment}}</div>
+	        	<div class="likeCount">{{heart}}</div>
+	        </div>
+	      </div>
+	      <div class="footer">
+	        <div class="avatar"><img class="icon" src="{{ownerIcon}}" width='32' height='32'></div>
+	        <div class="nameBox">
+	        	<div class="name">{{ownerName}}</div>
+	        	<div class="time">{{createdAt}}</div>
+	        </div>
+	        <div class="rightArrow">
+	        	<i class="fa fa-angle-right"></i>
+	        </div>
+	        {{#if browse}}
+	          <span class="right">
+	              <!--<p>浏览{{browse}}次</p>-->
+	  <!--          <i class="fa fa-heart"></i>{{heart}}-->
+	            <!--<i class="fa fa-retweet"></i>{{retweet}}-->
+	  <!--          <i class="fa fa-comment"></i>{{comment}}-->
+	          </span>
+	        {{/if}}
+	      </div>
       </div>
 <!--      </div>-->
       {{else}}

@@ -2,6 +2,8 @@ if Meteor.isClient
   Template.search.onCreated ()->
     Meteor.subscribe("topicposts")
     Meteor.subscribe("topics")
+  Template.search.rendered=->
+    switchFooterMenu('search')
   Template.search.helpers
     theme:()->
       Topics.find({type:"theme"}, {sort: {createdAt: -1}})

@@ -142,7 +142,7 @@ if Meteor.isClient
       #Updates scroll position
       window.lastScroll = st
     window.lastScroll = 0;
-    #hideSocialBar()
+    hideSocialBar()
     #showPostBar()
 
     if withSocialBar
@@ -409,6 +409,15 @@ if Meteor.isClient
         return false
       else
         return true
+    isCordova:()->
+      Meteor.isCordova
+    isMyPost:->
+      if Meteor.user()
+        if Posts.find({_id:this._id}).count() > 0
+          post = Posts.find({_id:this._id}).fetch()[0]
+          if post.owner is Meteor.userId()
+            return true
+      return false
   heartOnePost = ->
     if Meteor.user()
       postId = Session.get("postContent")._id
