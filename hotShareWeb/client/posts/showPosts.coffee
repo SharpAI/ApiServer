@@ -142,6 +142,7 @@ if Meteor.isClient
       #Updates scroll position
       window.lastScroll = st
     window.lastScroll = 0;
+    $('.socialContent .chatFooter').css('display', 'none')
     hideSocialBar()
     #showPostBar()
 
@@ -378,7 +379,9 @@ if Meteor.isClient
         initialIndexOnArray: selected
         hideCloseButtonOnMobile : true
         loopAtEnd: false
+       
       }
+      #addDynamicTemp()
   Template.postFooter.helpers
     refcomment:->
       RC = Session.get 'RC'

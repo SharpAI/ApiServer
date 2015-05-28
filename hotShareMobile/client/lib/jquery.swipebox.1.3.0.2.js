@@ -406,7 +406,7 @@
 						'transition' : 'transform 0.4s ease'
 					} );
 
-					ifIsCurrentLike();
+					//ifIsCurrentLike();
 
 					vDistance = endCoords.pageY - startCoords.pageY;
 					hDistance = endCoords.pageX - startCoords.pageX;

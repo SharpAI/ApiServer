@@ -9,3 +9,9 @@
 	padding-bottom:10px;
 	border-radius: 0px;
 }
+
+.alert-connection-lost {
+    border: 0px;
+    color: black;
+    background-color: #ffc7c4;
+}

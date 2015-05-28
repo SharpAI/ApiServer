@@ -20,21 +20,21 @@ Meteor.startup(function(){
 			return Session.get('MeteorConnection-failedReason');
 		},
 		'connectionLostText': function(event, template){
-			var defaultText = "当前网络不可用，请检查你的网络设置!";
+			var defaultText = "世界上最遥远的距离就是没网，请检查你的网络设置!";
 			if(Meteor.settings && Meteor.settings.public && Meteor.settings.public.connectionBanner && Meteor.settings.public.connectionBanner.connectionLostText)
 				return Meteor.settings.public.connectionBanner.connectionLostText;
 			else
 				return defaultText;
 		},
 		'tryReconnectText': function(event, template){
-			var defaultText = "点击尝试重新连接";
+			var defaultText = "点击重新连接";
 			if(Meteor.settings && Meteor.settings.public && Meteor.settings.public.connectionBanner && Meteor.settings.public.connectionBanner.tryReconnectText)
 				return Meteor.settings.public.connectionBanner.tryReconnectText;
 			else
 				return defaultText;
 		},
 		'reconnectBeforeCountdownText': function(event, template){
-			var defaultText = "正在尝试自动重连";
+			var defaultText = "准备尝试自动重连";
 			if(Meteor.settings && Meteor.settings.public && Meteor.settings.public.connectionBanner && Meteor.settings.public.connectionBanner.reconnectBeforeCountdownText)
 				return Meteor.settings.public.connectionBanner.reconnectBeforeCountdownText;
 			else
@@ -50,7 +50,7 @@ Meteor.startup(function(){
 	});
 
 	Session.setDefault('MeteorConnection-isConnected', true);
-	Session.setDefault('MeteorConnection-wasConnected', false);
+	Session.setDefault('MeteorConnection-wasConnected', true);
 	Session.setDefault('MeteorConnection-retryTimeSeconds', 0);
 	Session.setDefault('MeteorConnection-failedReason', null);
 	var connectionRetryUpdateInterval;
