@@ -39,7 +39,14 @@ if Meteor.isClient
             followPostsDetails[i].browse = postDetails.browse or 0
             followPostsDetails[i].comment = postDetails.commentsCount or 0
             followPostsDetails[i].heart = postDetails.heart.length
-            followPostsDetails[i].createdAt = GetTime0(new Date() - postDetails.createdAt)
+            nowDate = new Date();
+            dateDiff = Math.round((nowDate - postDetails.createdAt) / hour)
+            if dateDiff < 24
+              followPostsDetails[i].createdAt = "#{dateDiff}小时前"
+            else if dateDiff is 24
+              followPostsDetails[i].createdAt = "#1天前"
+            else
+              followPostsDetails[i].createdAt = "#{dateDiff % 24}天前"
           else
             followPostsDetails[i].browse = "loading..."
             followPostsDetails[i].comment = "loading..."
