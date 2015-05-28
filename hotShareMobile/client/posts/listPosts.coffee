@@ -27,31 +27,7 @@ if Meteor.isClient
       else
         0
     myPosts:()->
-      followPostsDetails = FollowPosts.find({followby:Meteor.userId()}, {sort: {createdAt: -1}}).fetch()
-      if undefined != followPostsDetails
-        hour = 1000 * 60 * 60
-        for d, i in followPostsDetails
-          # we need browse count, comment cound and heart count for new homepage, so need to subscribe publicPosts here
-          Meteor.subscribe("publicPosts", d.postId)
-          postDetails = Posts.findOne({_id: d.postId})
-          if postDetails
-            followPostsDetails[i].browse = postDetails.browse or 0
-            followPostsDetails[i].comment = postDetails.commentsCount or 0
-            followPostsDetails[i].heart = postDetails.heart.length
-            nowDate = new Date();
-            dateDiff = Math.round((nowDate - postDetails.createdAt) / hour)
-            if dateDiff < 24
-              followPostsDetails[i].createdAt = "#{dateDiff}小时前"
-            else if dateDiff is 24
-              followPostsDetails[i].createdAt = "#1天前"
-            else
-              followPostsDetails[i].createdAt = "#{dateDiff % 24}天前"
-          else
-            followPostsDetails[i].browse = "loading..."
-            followPostsDetails[i].comment = "loading..."
-            followPostsDetails[i].heart = "loading..."
-            followPostsDetails[i].createdAt = "loading..."
-      return followPostsDetails
+      FollowPosts.find({followby:Meteor.userId()}, {sort: {createdAt: -1}})
     moreResults:->
       !(FollowPosts.find().count() < Session.get("followpostsitemsLimit"))
     loading:->
@@ -59,7 +35,7 @@ if Meteor.isClient
     loadError:->
       Session.equals('followPostsCollection','error')
   Template.listPosts.events
-    'click .mainImageBox': (event)->
+    'click .mainImage': (event)->
       if isIOS
         if (event.clientY + $('.home #footer').height()) >=  $(window).height()
           console.log 'should be triggered in scrolling'
