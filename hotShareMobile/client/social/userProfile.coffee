@@ -90,19 +90,19 @@ if Meteor.isClient
     }
   # Initialize the Swiper
   Meteor.startup ()->
-    @Swiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
+    @UserProfilesSwiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
   Template.userProfile.helpers
-    Swiper: -> Swiper
+    Swiper: -> UserProfilesSwiper
   Template.userProfile.rendered = ->
     # starting page
     console.log 'Showing userProfile'
-    Swiper.setInitialPage 'userProfilePage1'
-    if userProfileTrackerHandler
-      userProfileTrackerHandler.stop()
-      userProfileTrackerHandler = null
+    UserProfilesSwiper.setInitialPage 'userProfilePage1'
+    if window.userProfileTrackerHandler
+      window.userProfileTrackerHandler.stop()
+      window.userProfileTrackerHandler = null
     Tracker.autorun (handler)->
-      @userProfileTrackerHandler = handler
-      if Swiper.pageIs('userProfilePage1')
+      window.userProfileTrackerHandler = handler
+      if UserProfilesSwiper.pageIs('userProfilePage1')
         if Session.get("currentPageIndex") isnt 1
           userProfileList = Session.get("userProfileList")
           if Session.get("currentPageIndex") is 2
@@ -130,9 +130,9 @@ if Meteor.isClient
             else
               Session.set("ProfileUserId2", userProfileList[nextProfileIndex].followerId)
           Session.set("currentPageIndex", 1)
-        Swiper.leftRight('userProfilePage3', 'userProfilePage2')
+        UserProfilesSwiper.leftRight('userProfilePage3', 'userProfilePage2')
 
-      if Swiper.pageIs('userProfilePage2')
+      if UserProfilesSwiper.pageIs('userProfilePage2')
         if Session.get("currentPageIndex") isnt 2
           userProfileList = Session.get("userProfileList")
           if Session.get("currentPageIndex") is 1
@@ -160,9 +160,9 @@ if Meteor.isClient
             else
               Session.set("ProfileUserId1", userProfileList[nextProfileIndex].followerId)
           Session.set("currentPageIndex", 2)
-        Swiper.leftRight('userProfilePage1', 'userProfilePage3')
+        UserProfilesSwiper.leftRight('userProfilePage1', 'userProfilePage3')
 
-      if Swiper.pageIs('userProfilePage3')
+      if UserProfilesSwiper.pageIs('userProfilePage3')
         if Session.get("currentPageIndex") isnt 3
           userProfileList = Session.get("userProfileList")
           if Session.get("currentPageIndex") is 1
@@ -190,7 +190,7 @@ if Meteor.isClient
             else
               Session.set("ProfileUserId1", userProfileList[nextProfileIndex].followerId)
           Session.set("currentPageIndex", 3)
-        Swiper.leftRight('userProfilePage2', 'userProfilePage1')
+        UserProfilesSwiper.leftRight('userProfilePage2', 'userProfilePage1')
 
   Template.userProfilePage1.rendered=->
     $('.userProfile').css('min-height', $(window).height() - 40)
@@ -232,6 +232,9 @@ if Meteor.isClient
         false
   Template.userProfilePage1.events
     'click .userProfile .back':()->
+      if window.userProfileTrackerHandler
+        window.userProfileTrackerHandler.stop()
+        window.userProfileTrackerHandler = null
       Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
         PopUpBox.close()
@@ -292,6 +295,9 @@ if Meteor.isClient
         false
   Template.userProfilePage2.events
     'click .userProfile .back':()->
+      if window.userProfileTrackerHandler
+        window.userProfileTrackerHandler.stop()
+        window.userProfileTrackerHandler = null
       Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
         PopUpBox.close()
@@ -353,6 +359,9 @@ if Meteor.isClient
         false
   Template.userProfilePage3.events
     'click .userProfile .back':()->
+      if window.userProfileTrackerHandler
+        window.userProfileTrackerHandler.stop()
+        window.userProfileTrackerHandler = null
       Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
         PopUpBox.close()
