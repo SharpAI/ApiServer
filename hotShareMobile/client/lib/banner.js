@@ -50,7 +50,7 @@ Meteor.startup(function(){
 	});
 
 	Session.setDefault('MeteorConnection-isConnected', true);
-	Session.setDefault('MeteorConnection-wasConnected', false);
+	Session.setDefault('MeteorConnection-wasConnected', true);
 	Session.setDefault('MeteorConnection-retryTimeSeconds', 0);
 	Session.setDefault('MeteorConnection-failedReason', null);
 	var connectionRetryUpdateInterval;
