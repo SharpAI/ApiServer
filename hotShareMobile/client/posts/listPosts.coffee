@@ -1,6 +1,5 @@
 if Meteor.isClient
   Template.listPosts.rendered=->
-    switchFooterMenu('home')
     $('.content').css 'min-height',$(window).height()
 #    $('.mainImage').css('height',$(window).height()*0.55)
     $(window).scroll (event)->
