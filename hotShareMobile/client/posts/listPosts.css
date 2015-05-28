@@ -1,6 +1,6 @@
 #list
 {
-    width: 100%;
+    width: 90%;
     overflow: hidden;
     margin: auto
 }
@@ -27,7 +27,7 @@
 
 img.scale.item {
     object-fit: cover;
-    height:220px;
+    height:300px;
 }
 
 img.flip {
@@ -65,7 +65,7 @@ img.flip {
   bottom: 0px;
   left: 0;
   width: 100%;
-  padding: 2% 1% 5% 2%;
+  padding: 2% 1% 5% 5%;
   background: -webkit-linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5)); /* For Safari 5.1 to 6.0 */
   background: -o-linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5)); /* For Opera 11.1 to 12.0 */
   background: -moz-linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5)); /* For Firefox 3.6 to 15 */
@@ -73,39 +73,26 @@ img.flip {
 }
 #wrapper .mainImage > header > .title{
   margin: 0;
+  padding-bottom: 12px;
   text-shadow: 0 1px 0 black;
   color: white;
   font-weight:bold;
   white-space: pre-line;
   word-wrap: break-word;
-  font-size: 22px;
 }
 #wrapper .mainImage > header > .addontitle{
-  margin: 0 0 7px 0;
+  margin: 0;
   text-shadow: 0 1px 0 black;
   color: white;
   min-height: 28px;
   line-height: 28px;
+  /*white-space: pre-line;*/
   word-wrap: break-word;
-  font-size: 14px;
+/*  font-weight:bold*/
 }
 
-.home .content #list .mainImageBox{padding-bottom: 7px; background-color: #f7f7f7;}
-.home .content #list .mainImage{position: relative;height: 220px;overflow: hidden;}
-.home .content #list .footer{position: relative;min-height: 42px;line-height: 30px; width: 100%; background-color: #fff; border-bottom: 1px solid #eee;}
-.home .content #list .footer .icon{border: none; margin: 5px 0 0 8px;}
+.home .content #list .mainImage{position: relative;height: 300px;overflow: hidden;margin-bottom: 5px;}
+.home .content #list .footer{position: relative;min-height: 30px;line-height: 30px;margin-bottom: 20px;}
+.home .content #list .footer .icon{border: none;border-radius:50%;margin-bottom: 2.5px;}
 .home .content #list .footer .right{float: right;color: gray;}
 .home .content #list .footer .right i{margin: 0 2px}
-
-.home .content #list .mainImageMask {bottom: 0; left: 0; width: 100%; height: 25px; background-color: rgba(0, 0, 0, 1); opacity: 0.3; filter: alpha(opacity=30); position: absolute;}
-.home .content #list .icons {bottom: 0; left: 0; width: 100%; height: 25px; position: absolute;}
-.home .content #list .browseCount, .home .content #list .commentCount, .home .content #list .likeCount {float: left; width: 33.33%; font-size: 11px; height: 25px;}
-.home .content #list .browseCount {background: url("./img/views.png") no-repeat 15px 3px; background-size: 18px 18px; padding: 8px 0 0 35px;}
-.home .content #list .commentCount {background: url("./img/comment.png") no-repeat 30px 3px; background-size: 18px 18px; padding: 8px 0 0 50px;}
-.home .content #list .likeCount {background: url("./img/likes.png") no-repeat 38px 3px; background-size: 18px 18px; padding: 8px 0 0 58px;}
-
-.home .content #list .avatar {float: left; margin-right: 6px;}
-.home .content #list .nameBox {float: left; height: auto; margin-top: 2px;}
-.home .content #list .name {color: #F4A44A; height: 22px;}
-.home .content #list .time {color: #000; height: 15px; font-size: 10px; margin-top: -6px;}
-.home .content #list .rightArrow {float: right; margin: 6px 12px 0 0; color: #bbb; font-size: 22px;}
