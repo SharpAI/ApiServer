@@ -93,7 +93,7 @@ img.flip {
 .home .content #list .mainImageBox{padding-bottom: 7px; background-color: #f7f7f7;}
 .home .content #list .mainImage{position: relative;height: 220px;overflow: hidden;}
 .home .content #list .footer{position: relative;min-height: 42px;line-height: 30px; width: 100%; background-color: #fff; border-bottom: 1px solid #eee;}
-.home .content #list .footer .icon{border: none; margin: 5px 0 0 8px;}
+.home .content #list .footer .icon{border: none; margin: 5px 0 0 8px; border-radius: 50%;}
 .home .content #list .footer .right{float: right;color: gray;}
 .home .content #list .footer .right i{margin: 0 2px}
 
