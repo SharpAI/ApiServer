@@ -20,7 +20,7 @@ Meteor.startup(function(){
 			return Session.get('MeteorConnection-failedReason');
 		},
 		'connectionLostText': function(event, template){
-			var defaultText = "当前网络不可用，请检查你的网络设置!";
+			var defaultText = "世界上最遥远的距离就是没网，请检查你的网络设置!";
 			if(Meteor.settings && Meteor.settings.public && Meteor.settings.public.connectionBanner && Meteor.settings.public.connectionBanner.connectionLostText)
 				return Meteor.settings.public.connectionBanner.connectionLostText;
 			else
