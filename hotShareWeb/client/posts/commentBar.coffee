@@ -34,6 +34,7 @@ if Meteor.isClient
       GetTime0(new Date() - created)
     comment: ()->
       Comment.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}})
+    
   Template.commentContent.helpers
     refcomment:->
       RC = Session.get 'RC'
@@ -45,11 +46,7 @@ if Meteor.isClient
       GetTime0(new Date() - created)
     comment: ()->
       Comment.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}})
-    hasComment: ()->
-      if Comment.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}}).count() > 0
-        return true
-      else
-        return false
+  
   Template.commentBar.events
     'focus #comment':->
       console.log("#comment get focus");
