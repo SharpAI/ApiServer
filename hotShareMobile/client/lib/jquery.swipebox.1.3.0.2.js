@@ -348,7 +348,6 @@
 
 								// first slide
 								if ( 0 === index ) {
-									console.log( 'left first' );
 									$( '#swipebox-overlay' ).addClass( 'leftSpringTouch' );
 								} else {
                                     $( '#swipebox-overlay' ).removeClass( 'leftSpringTouch' ).removeClass( 'rightSpringTouch' );
@@ -372,7 +371,6 @@
 
 								// last Slide
 								if ( elements.length === index +1 ) {
-									console.log( 'right last' );
 									$( '#swipebox-overlay' ).addClass( 'rightSpringTouch' );
 								} else {
 									$( '#swipebox-overlay' ).removeClass( 'leftSpringTouch' ).removeClass( 'rightSpringTouch' );
