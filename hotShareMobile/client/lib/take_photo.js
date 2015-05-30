@@ -50,8 +50,8 @@ if (Meteor.isCordova) {
     }, { quality: 90,
     destinationType: destinationType.FILE_URI,
     sourceType: pictureSource.CAMERA,
-    targetWidth: 800,
-    targetHeight: 800,
+    targetWidth: 600,
+    targetHeight: 600,
     correctOrientation: true,
     saveToPhotoAlbum: true});
   }
