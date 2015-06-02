@@ -23,6 +23,7 @@ if Meteor.isClient
         Meteor.subscribe "comment",Session.get("postContent")._id
         Meteor.subscribe "viewers",Session.get("postContent")._id
       ,500
+  ###
   onShowImages = ->
     @PopUpBox = $('.popUpBox').bPopup
       positionStyle: 'fixed'
@@ -31,6 +32,7 @@ if Meteor.isClient
         Session.set('displayShowImagesBox',false)
       onOpen: ->
         Session.set('displayShowImagesBox',true)
+  ###
   Template.showPosts.rendered=->
     $('.mainImage').css('height',$(window).height()*0.55)
     $('.comment').css('width',$(window).width()-120)
@@ -381,6 +383,7 @@ if Meteor.isClient
 
       i = 0
       selected = 0
+      ###
       console.log "=============click on image index is: " + this.index
       for image in Session.get('postContent').pub
         if image.imgUrl
@@ -418,7 +421,6 @@ if Meteor.isClient
         loopAtEnd: false
        
       }
-      ###
       #addDynamicTemp()
   Template.postFooter.helpers
     refcomment:->
