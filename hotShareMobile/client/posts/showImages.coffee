@@ -101,17 +101,17 @@ if Meteor.isClient
           Session.set("currentPageIndex", 3)
         ImagesSwiper.leftRight('showImagesPage2', 'showImagesPage1')
   Template.showImagesPage1.rendered=->
-    $('.showImage').css('min-height', $(window).height() - 40)
+    $('.showImage').css('min-height', $(window).height())
   Template.showImagesPage1.helpers
     image:->
       Session.get("showImage1")
   Template.showImagesPage2.rendered=->
-    $('.showImage').css('min-height', $(window).height() - 40)
+    $('.showImage').css('min-height', $(window).height())
   Template.showImagesPage2.helpers
     image:->
       Session.get("showImage2")
   Template.showImagesPage3.rendered=->
-    $('.showImage').css('min-height', $(window).height() - 40)
+    $('.showImage').css('min-height', $(window).height())
   Template.showImagesPage3.helpers
     image:->
       Session.get("showImage3")
