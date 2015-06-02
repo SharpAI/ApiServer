@@ -25,6 +25,7 @@ if Meteor.isClient
       ,500
   Template.showPosts.rendered=->
     $('.mainImage').css('height',$(window).height()*0.55)
+    $('.comment').css('width',$(window).width()-120)
     postContent = Session.get("postContent")
     subscribeCommentAndViewers()
     browseTimes = 0
