@@ -172,15 +172,6 @@ if Meteor.isClient
     Router.route 'userProfilePage3',
       template: 'userProfile'
       path: '/userProfilePage3'
-    Router.route 'showImagesPage1',
-      template: 'showImages'
-      path: '/showImagesPage1'
-    Router.route 'showImagesPage2',
-      template: 'showImages'
-      path: '/showImagesPage2'
-    Router.route 'showImagesPage3',
-      template: 'showImages'
-      path: '/showImagesPage3'
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->
