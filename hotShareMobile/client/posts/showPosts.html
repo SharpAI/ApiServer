@@ -58,7 +58,7 @@
 
         <div class="gridster">
           <ul id="test">
-              {{#each pub}}
+              {{#each getPub}}
                   {{#if isImage}}
                       <li class='resortitem' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
                           <div class="imgdiv">
@@ -165,6 +165,7 @@
   </div>
   {{/if}}
   {{>userProfileBox}}
+  {{>showImagesBox}}
   </div>
 </template>
 <template name="postFooter">

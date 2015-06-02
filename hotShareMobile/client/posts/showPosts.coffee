@@ -23,6 +23,14 @@ if Meteor.isClient
         Meteor.subscribe "comment",Session.get("postContent")._id
         Meteor.subscribe "viewers",Session.get("postContent")._id
       ,500
+  onShowImages = ->
+    @PopUpBox = $('.popUpBox').bPopup
+      positionStyle: 'fixed'
+      position: [0, 0]
+      onClose: ->
+        Session.set('displayShowImagesBox',false)
+      onOpen: ->
+        Session.set('displayShowImagesBox',true)
   Template.showPosts.rendered=->
     $('.mainImage').css('height',$(window).height()*0.55)
     $('.comment').css('width',$(window).width()-120)
@@ -153,6 +161,11 @@ if Meteor.isClient
     #  PUB.toast("您的手机版本过低，部分图片可能产生变形。");
 
   Template.showPosts.helpers
+    getPub:->
+      self = this
+      self.pub = self.pub || []
+      _.map self.pub, (doc, index, cursor)->
+        _.extend(doc, {index: index})
     displayCommentInputBox:()->
       Session.get('displayCommentInputBox')
     inWeiXin: ()->
@@ -368,6 +381,29 @@ if Meteor.isClient
 
       i = 0
       selected = 0
+      console.log "=============click on image index is: " + this.index
+      for image in Session.get('postContent').pub
+        if image.imgUrl
+          if image.imgUrl is this.imgUrl
+            selected = i
+          swipedata.push
+            imgUrl: image.imgUrl
+            index: i
+          i++
+      prevselected = selected-1
+      nextselected = selected+1
+      if prevselected<0
+        prevselected=swipedata.length-1
+      if nextselected>swipedata.length-1
+        nextselected=0
+      Session.set("showImage1", this.imgUrl)
+      Session.set("showImage2", swipedata[nextselected].imgUrl)
+      Session.set("showImage3", swipedata[prevselected].imgUrl)
+      Session.set("swipeImageData", swipedata)
+      Session.set("currentImageIndex", selected)
+      Session.set("currentPageIndex", 1)
+      onShowImages()
+      ###
       for image in Session.get('postContent').pub
         if image.imgUrl
           if image.imgUrl is this.imgUrl
@@ -382,6 +418,7 @@ if Meteor.isClient
         loopAtEnd: false
        
       }
+      ###
       #addDynamicTemp()
   Template.postFooter.helpers
     refcomment:->

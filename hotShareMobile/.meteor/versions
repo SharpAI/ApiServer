@@ -46,6 +46,7 @@ localstorage@1.0.3
 logging@1.0.7
 mdg:camera@1.1.4
 meteor@1.1.6
+meteor-imageswipe@0.0.10
 meteor-phonegap-push@0.0.1
 meteor-platform@1.2.2
 meteor-swipe@0.0.10
