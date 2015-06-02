@@ -2,6 +2,7 @@ Meteor.startup(function(){
 	Template.connectionBanner.events({
 		'click #connection-try-reconnect': function(event, template){
 			event.preventDefault();
+            Session.set('MeteorConnection-isConnecting', true);
 			Meteor.reconnect();
 		}
 	});
@@ -19,6 +20,17 @@ Meteor.startup(function(){
 		'failedReason': function(event, template){
 			return Session.get('MeteorConnection-failedReason');
 		},
+        'isConnecting': function(event, template){
+            return Session.get('MeteorConnection-isConnecting');
+        },
+
+        'connectioningText': function(event, template){
+            var defaultText = "正在连接中";
+            if(Meteor.settings && Meteor.settings.public && Meteor.settings.public.connectionBanner && Meteor.settings.public.connectionBanner.connectioningText)
+                return Meteor.settings.public.connectionBanner.connectionLostText;
+            else
+                return defaultText;
+        },
 		'connectionLostText': function(event, template){
 			var defaultText = "世界上最遥远的距离就是没网，请检查你的网络设置!";
 			if(Meteor.settings && Meteor.settings.public && Meteor.settings.public.connectionBanner && Meteor.settings.public.connectionBanner.connectionLostText)
@@ -50,9 +62,10 @@ Meteor.startup(function(){
 	});
 
 	Session.setDefault('MeteorConnection-isConnected', true);
-	Session.setDefault('MeteorConnection-wasConnected', true);
+	Session.setDefault('MeteorConnection-wasConnected', false);
 	Session.setDefault('MeteorConnection-retryTimeSeconds', 0);
 	Session.setDefault('MeteorConnection-failedReason', null);
+    Session.setDefault('MeteorConnection-isConnecting', false);
 	var connectionRetryUpdateInterval;
 
 	Deps.autorun(function(){
@@ -63,6 +76,7 @@ Meteor.startup(function(){
 			connectionRetryUpdateInterval = undefined;
 			Session.set('MeteorConnection-retryTimeSeconds', 0);
 			Session.set('MeteorConnection-failedReason', null);
+            Session.set('MeteorConnection-isConnecting', false);
 		}else{
 			if(Session.equals('MeteorConnection-wasConnected', true)){
 				if(!connectionRetryUpdateInterval)
@@ -70,10 +84,20 @@ Meteor.startup(function(){
 						var retryIn = Math.round((Meteor.status().retryTime - (new Date()).getTime())/1000);
 						if(isNaN(retryIn))
 							retryIn = 0;
+
+                        if (retryIn == 0){
+                            Session.set('MeteorConnection-isConnecting', true);
+                        }else {
+                            Session.set('MeteorConnection-isConnecting', false);
+                        }
 						Session.set('MeteorConnection-retryTimeSeconds', retryIn);
 						Session.set('MeteorConnection-failedReason', Meteor.status().reason);
 					},500);
-			}
+			}else {
+                Meteor.setTimeout(function(){
+                    Session.set('MeteorConnection-wasConnected', true);
+                }, 5000);
+            }
 		}
 		Session.set('MeteorConnection-isConnected', isConnected);
 	});

@@ -5,14 +5,21 @@
 				<b><i class="fa fa-exclamation-circle fa-lg" style="color:red;"></i> {{connectionLostText}}</b>
 				<br>
                 &nbsp;&nbsp;
-				{{reconnectBeforeCountdownText}} {{retryTimeSeconds}} {{reconnectAfterCountdownText}}
-				&nbsp;&nbsp;
-				<a href="#" id="connection-try-reconnect" class="alert-link"><i class="fa fa-refresh fa-lg"></i> {{tryReconnectText}}</a>
+                {{#if isConnecting}}
+                    {{connectioningText}}
+                {{else}}
+                    {{reconnectBeforeCountdownText}} {{retryTimeSeconds}} {{reconnectAfterCountdownText}}
+                {{/if}}
+                &nbsp;&nbsp;
+
+				<a href="#" id="connection-try-reconnect" class="alert-link" style="color: #009587;"><i class="fa fa-refresh fa-lg"></i> {{tryReconnectText}}</a>
 				{{#if failedReason}}
 					<br>
 					{{failedReason}}
 				{{/if}}
 			</div>
 		{{/if}}
+    {{else}}
+
 	{{/if}}
 </template>
