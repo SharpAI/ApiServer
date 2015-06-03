@@ -226,6 +226,13 @@ if Meteor.isClient
         $('.popUpBox').hide 0
     "click #submit":->
       $("#new-reply").submit()
+      
+      # here need to subscribe refcomments again, otherwise cannot get refcomments data
+      Meteor.subscribe "refcomments", ()->
+        Meteor.setTimeout ()->
+          refComment = RefComments.find()
+          if refComment.count() > 0
+            Session.set("refComment",refComment.fetch())
       if PopUpBox
         PopUpBox.close()
       else
@@ -437,7 +444,7 @@ if Meteor.isClient
       amplify.store(postId,true)
   onComment = ->
     window.PopUpBox = $('.popUpBox').bPopup
-      positionStyle: 'fixed'
+      positionStyle: 'absolute'
       position: [0, 0]
       onClose: ->
         Session.set('displayCommentInputBox',false)
@@ -447,6 +454,7 @@ if Meteor.isClient
             $('.commentArea').focus()
           ,300
         console.log 'Modal opened'
+        $('.popUpBox').css('height', $(document).height())
   onRefresh = ->
     RC = Session.get("RC")+1
     if RC>7
