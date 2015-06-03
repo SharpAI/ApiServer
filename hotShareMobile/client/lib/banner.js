@@ -3,7 +3,7 @@ Meteor.startup(function(){
 		'click #connection-try-reconnect': function(event, template){
 			event.preventDefault();
             Session.set('MeteorConnection-isConnecting', true);
-			Meteor.reconnect();
+            Meteor.reconnect();
 		}
 	});
 
@@ -46,14 +46,14 @@ Meteor.startup(function(){
 				return defaultText;
 		},
 		'reconnectBeforeCountdownText': function(event, template){
-			var defaultText = "准备尝试自动重连";
+			var defaultText = "(未连接)尝试自动重连";
 			if(Meteor.settings && Meteor.settings.public && Meteor.settings.public.connectionBanner && Meteor.settings.public.connectionBanner.reconnectBeforeCountdownText)
 				return Meteor.settings.public.connectionBanner.reconnectBeforeCountdownText;
 			else
 				return defaultText;
 		},
 		'reconnectAfterCountdownText': function(event, template){
-			var defaultText = "秒.";
+			var defaultText = "秒后.";
 			if(Meteor.settings && Meteor.settings.public && Meteor.settings.public.connectionBanner && Meteor.settings.public.connectionBanner.reconnectAfterCountdownText)
 				return Meteor.settings.public.connectionBanner.reconnectAfterCountdownText;
 			else
@@ -84,19 +84,23 @@ Meteor.startup(function(){
 						var retryIn = Math.round((Meteor.status().retryTime - (new Date()).getTime())/1000);
 						if(isNaN(retryIn))
 							retryIn = 0;
-
                         if (retryIn == 0){
                             Session.set('MeteorConnection-isConnecting', true);
-                        }else {
-                            Session.set('MeteorConnection-isConnecting', false);
                         }
 						Session.set('MeteorConnection-retryTimeSeconds', retryIn);
 						Session.set('MeteorConnection-failedReason', Meteor.status().reason);
 					},500);
+
+
 			}else {
                 Meteor.setTimeout(function(){
                     Session.set('MeteorConnection-wasConnected', true);
                 }, 5000);
+            }
+            if(Session.equals('MeteorConnection-isConnecting', true)){
+                Meteor.setTimeout(function(){
+                    Session.set('MeteorConnection-isConnecting', false);
+                }, 1000);
             }
 		}
 		Session.set('MeteorConnection-isConnected', isConnected);
