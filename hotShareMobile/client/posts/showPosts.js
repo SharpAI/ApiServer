@@ -122,18 +122,20 @@ Template.showPosts.events({
     'click #QQShare':function(e, t){
         var current = Router.current();
         var url = current.url;
+        var postUrl;
         if(url.indexOf("http") > 0)
-            url = url.replace("meteor.local", server_domain_name);
+            postUrl = url.replace("meteor.local", server_domain_name);
         else
-            url = "http://" + server_domain_name +url;
+            postUrl = "http://" + server_domain_name +url;
         var title = this.title;
+        console.log("URL is " + postUrl);
         var addontitle = this.addontitle;
         if (this.addontitle && (this.addontitle !=='')){
             title = title + '：' + this.addontitle;
         }
         window.plugins.toast.showShortCenter("分享中，请稍等");
         var args = {};
-        args.url = url;
+        args.url = postUrl;
         args.title = '故事贴';
         args.description = "『故事贴』 "+ title;
         args.imageUrl = this.mainImage;
