@@ -15,4 +15,4 @@ org.apache.cordova.dialogs@0.2.10
 org.apache.cordova.file@1.3.1
 org.apache.cordova.inappbrowser@https://github.com/leonzhang1109/cordova-plugin-inappbrowser/tarball/648f1f3d62f16487640db411a7099a3757345f6b
 org.apache.cordova.network-information@0.2.15
-org.zy.yuancheng.qq@https://github.com/solderzzc/Cordova_QQ/tarball/6f18964aa06d8956730284a18a7c0000ddab2636
+org.zy.yuancheng.qq@https://github.com/leonzhang1109/Cordova_QQ/tarball/6f8059749644985d983f6471bf0d2aa647f4b4a6
