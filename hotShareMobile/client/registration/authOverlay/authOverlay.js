@@ -56,6 +56,7 @@ if (Meteor.isClient) {
       $('#register').css('display',"none")
       $('#weibo').css('display',"none")
       $('#login').css('display',"none")
+      $('.recovery').css('display',"none")
       $('.agreeDeal').css('display',"none");
       Session.set("dealBack","register");
 //      $('.authOverlay').css('-webkit-filter',"blur(10px)")
@@ -66,6 +67,7 @@ if (Meteor.isClient) {
       $('#register').css('display',"none")
       $('#weibo').css('display',"none")
       $('#login').css('display',"none")
+      $('.recovery').css('display',"none")
       $('.agreeDeal').css('display',"none");
 //      $('.authOverlay').css('-webkit-filter',"blur(10px)")
     },

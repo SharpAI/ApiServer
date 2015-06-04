@@ -15,6 +15,23 @@
             <input type="password" id="login-password" class="form-control" placeholder="密码" /><br />
         </div>
         <input type="submit" value="登 录" id="sub-login">
+        <div class="forgetPassword">忘记您的密码?</div>
     </form>
 </div>
 </template>
+<template name="recoveryForm">
+<div class="recoveryForm">
+    <div class="signupHeader">
+        <div id="btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+        <span>重设密码</span>
+    </div>
+    <form class="recoveryBody" id="recovery-form">
+        <div class="input-group">
+            <span class="input-group-addon"><i class="fa fa-envelope fa-fw"></i></span>
+            <input type="text" id="recovery-email" class="form-control" placeholder="电子邮件" /><br />
+        </div>
+        <input type="submit" value="重设" id="sub-recovery">
+    </form>
+</div>
+</template>
+
