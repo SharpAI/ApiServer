@@ -54,7 +54,11 @@ Template.recoveryForm.events
         if error
           PUB.toast '您填写的邮件地址不存在！'
         else
-          PUB.toast '请访问邮件中给出的网页链接地址，根据页面提示完成密码重设。'
+          #PUB.toast '请访问邮件中给出的网页链接地址，根据页面提示完成密码重设。'
+          navigator.notification.confirm('请访问邮件中给出的网页链接地址，根据页面提示完成密码重设。', (r)->
+            if r is 1
+              $('#recovery-email').val('');
+          , '提示信息', ['确定']);
           $('.login').css('display',"none")
           $('#register').css('display',"block")
           $('#weibo').css('display',"block")

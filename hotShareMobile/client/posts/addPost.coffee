@@ -298,7 +298,7 @@ if Meteor.isClient
         Drafts.update({_id: doc_id}, {$set: {style: style}})
       else if buttonClicked.id is "font-quato"
         console.log 'Need font-quato'
-        style = "font-family:Times New Roman, Times, serif" + ';font-size:xx-large' + ';text-align:' + textarea.css('text-align')+';'
+        style = "font-family:Times New Roman, Times, serif" + ';font-size:large' + ';text-align:' + textarea.css('text-align')+';border-left:2px solid black;padding-left:2%; '
         textarea.attr('style', style)
         #Compute the new scrollHeight
         grid_size=Math.floor($('#display').width()/6 - 10);
