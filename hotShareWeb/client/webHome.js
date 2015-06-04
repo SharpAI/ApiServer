@@ -11,6 +11,13 @@ Template.webHome.events({
       }
     }
 });
+
+Template.webHome.helpers({
+    resetPassword: function(){
+        return Session.get('resetPassword');
+    }
+});
+
 Meteor.startup(function() {
     $(window).resize(function() {
       $('.webHome').css('height', $(window).height());

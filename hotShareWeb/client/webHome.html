@@ -1,28 +1,32 @@
 <template name="webHome">
-  <div class="webHome">
-    <div class="title" style="padding:2%">
-    <center><h2>故事贴</h2></center>
-    </div>
-    <div class="subtitle">
-    <center><h4>一帖 一故事，分享 朋友圈</h4></center>
-    </div>
-    <div class="AppleDownloadBtn">
-        <a href="https://itunes.apple.com/app/gu-shi-tie/id957024953" target="_blank" class="iosBtn download"><i class="fa fa-apple"></i> Iphone用户下载</a>
-    </div>
-    <div class="AndroidDownloadBtn">
-        <a href="http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere" target="_blank" class="androidBtn download"><i class="fa fa-android"></i>Android公测下载</a>
-    </div>
-    <div class="webFooter">
-      <div class="companyInfo">
-        <div class="company">
-          <span>© 2015 故事贴 v0.8.60</span>
-          <span class="dot">·</span>
-          <span>昆明讯动科技有限公司</span>
-        </div>
-        <div class="miibeian">
-          <a href="http://www.miibeian.gov.cn/" target="_blank">滇 ICP 备 14007324号</a>
+  {{#if resetPassword}}
+    {{>ResetPassword}}
+  {{else}}
+    <div class="webHome">
+      <div class="title" style="padding:2%">
+      <center><h2>故事贴</h2></center>
+      </div>
+      <div class="subtitle">
+      <center><h4>一帖 一故事，分享 朋友圈</h4></center>
+      </div>
+      <div class="AppleDownloadBtn">
+          <a href="https://itunes.apple.com/app/gu-shi-tie/id957024953" target="_blank" class="iosBtn download"><i class="fa fa-apple"></i> Iphone用户下载</a>
+      </div>
+      <div class="AndroidDownloadBtn">
+          <a href="http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere" target="_blank" class="androidBtn download"><i class="fa fa-android"></i>Android公测下载</a>
+      </div>
+      <div class="webFooter">
+        <div class="companyInfo">
+          <div class="company">
+            <span>© 2015 故事贴 v0.8.60</span>
+            <span class="dot">·</span>
+            <span>昆明讯动科技有限公司</span>
+          </div>
+          <div class="miibeian">
+            <a href="http://www.miibeian.gov.cn/" target="_blank">滇 ICP 备 14007324号</a>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  {{/if}}
 </template>
