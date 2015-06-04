@@ -50,9 +50,16 @@ Template.recoveryForm.events
       email = t.find('#recovery-email').value
       if email is ''
         return
+      t.find('#sub-recovery').disabled = true
+      t.find('#sub-recovery').value = '正在重设...'
       Accounts.forgotPassword {email:email},(error)->
+        t.find('#sub-recovery').disabled = false
+        t.find('#sub-recovery').value = '重设'
         if error
-          PUB.toast '您填写的邮件地址不存在！'
+          if error.error is 403 and error.reason is 'User not found'
+            PUB.toast '您填写的邮件地址不存在！'
+          else
+            PUB.toast '暂时无法处理您的请求，请稍后重试！'
         else
           #PUB.toast '请访问邮件中给出的网页链接地址，根据页面提示完成密码重设。'
           navigator.notification.confirm('请访问邮件中给出的网页链接地址，根据页面提示完成密码重设。', (r)->
