@@ -17,7 +17,7 @@
   <!--require cordova version -->
   <engines>
     <engine name="cordova" version=">=3.5.0" />
-     <engine name="cordova-android" version=">=4.0.0-dev" />
+     <engine name="cordova-android" version=">=3.6.0" />
   </engines>
 
   <!-- js module-->
