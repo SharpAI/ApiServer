@@ -220,6 +220,13 @@ if Meteor.isClient
         $('.popUpBox').hide 0
     "click #submit":->
       $("#new-reply").submit()
+      
+      # here need to subscribe refcomments again, otherwise cannot get refcomments data
+      Meteor.subscribe "refcomments", ()->
+        Meteor.setTimeout ()->
+          refComment = RefComments.find()
+          if refComment.count() > 0
+            Session.set("refComment",refComment.fetch())
       if PopUpBox
         PopUpBox.close()
       else
