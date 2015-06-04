@@ -28,8 +28,7 @@ html.swipebox-html.swipebox-touch {
 }
 
 #swipebox-slider {
-  -webkit-transition: -webkit-transform 0.4s ease;
-  transition: transform 0.4s ease;
+
   height: 100%;
   left: 0;
   top: 0;
@@ -44,6 +43,7 @@ html.swipebox-html.swipebox-touch {
   width: 100%;
   line-height: 1px;
   text-align: center;
+  vertical-align: top;
   display: inline-block;
 }
 #swipebox-slider .slide:before {

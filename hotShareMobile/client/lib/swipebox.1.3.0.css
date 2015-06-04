@@ -43,6 +43,7 @@ html.swipebox-html.swipebox-touch {
   width: 100%;
   line-height: 1px;
   text-align: center;
+  vertical-align: top;
   display: inline-block;
 }
 #swipebox-slider .slide:before {
