@@ -5,22 +5,10 @@
 # but you can also edit it by hand.
 
 meteor-platform
-iron:router
-coffeescript
-jquery
-less
-meteorhacks:fast-render
-fortawesome:fontawesome
-meteorhacks:search-source
+gadicohen:phantomjs
 meteorhacks:npm
-meteor-phonegap-push
 
 
 npm-container
-accounts-password
-servicelocale:geoip
 meteorhacks:kadira
-meteor-swipe
-meteorhacks:inject-initial
-email
 meteorhacks:cluster
