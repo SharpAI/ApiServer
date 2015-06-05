@@ -11,8 +11,6 @@ coffeescript
 less
 fastclick
 accounts-password
-accounts-ui-unstyled
-accounts-ui
 meteorhacks:npm@1.2.2
 npm-container
 accounts-weibo
