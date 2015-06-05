@@ -65,7 +65,7 @@ if Meteor.isClient
           selectMediaFromAblum(20, (cancel, result,currentCount,totalCount)->
             if cancel
               #$('#level2-popup-menu').modal('hide');
-              #PUB.back()
+              PUB.back()
               return
             if result
               console.log 'Local is ' + result.smallImage

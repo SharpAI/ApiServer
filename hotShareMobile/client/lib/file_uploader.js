@@ -653,7 +653,7 @@ if (Meteor.isCordova){
               length=results.length;
             }
             if (length === 0) {
-              PUB.back();
+//              PUB.back();
               callback('cancel');
               return;
             }
