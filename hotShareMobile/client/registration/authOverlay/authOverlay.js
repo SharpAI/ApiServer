@@ -104,6 +104,44 @@ if (Meteor.isClient) {
     $('.webHome').css('height', $(window).height());
     $('.webFooter').css('left', $(window).width()*0.5-105);
   };
+  Template.webHome.helpers({
+      resetPassword: function(t){
+          if(Accounts._resetPasswordToken){
+              Session.set('resetToken', Accounts._resetPasswordToken);
+              Session.set('resetPassword', Accounts._resetPasswordToken);
+          }
+          return Session.get('resetPassword');
+      }
+  });
+  Template.webHome.events({
+      'submit #new-password':function(e,t){
+          e.preventDefault();
+          var newPass=t.find('#new-password-password').value;
+          var repPass=t.find('#new-password-repeat').value;
+          if(newPass!==repPass)
+          {
+            alert("两次填写的密码不一致");
+            return;
+          }
+          if(newPass.length<6 || newPass.length>16)
+          {
+            alert("您输入的密码不符合规则");
+            return;
+          }
+          Accounts.resetPassword(Session.get("resetToken"), newPass,function(error){
+              if(error){
+                  if(error.error===403 && error.reason==="Token expired")
+                    alert("密码重设链接已经过期");
+                  else
+                    alert("暂时无法处理您的请求，请稍后重试！");
+              }
+              else{
+                 alert("您的故事贴密码已重设成功");
+              }
+          });
+      }
+  });
+
   Meteor.startup(function() {
     $(window).resize(function() {
       $('.webHome').css('height', $(window).height());

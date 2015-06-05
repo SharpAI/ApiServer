@@ -38,6 +38,24 @@
 
 <template name="webHome">
   <div class="webHome">
+  {{#if resetPassword}}
+    <form id="new-password" action="action">
+      <h2>重设密码</h2>
+      <h2>现在你可以重新设定您的故事贴密码</h2>
+      <div class="row">
+        <div class="col-md-4 col-lg-4">
+          <label>新密码：</label>
+          <input type="text" class="form-control" id="new-password-password" />
+          <label>6到16个字符。</label>
+          <br>
+          <label>重复输入新密码：</label>
+          <input type="text" class="form-control" id="new-password-repeat" />
+          <label>6到16个字符。</label>
+          <input type="submit" class="form-control" value="重设密码" />
+        </div>
+      </div>
+    </form>
+  {{else}}
     <br>
     <br>
     <br>
@@ -51,6 +69,7 @@
         <a href="http://www.pgyer.com/Yp07/" target="_blank" class="iosBtn download"><i class="fa fa-apple"></i> Iphone用户下载</a>
         <a href="http://www.pgyer.com/tiegushi/" target="_blank" class="androidBtn download"><i class="fa fa-android"></i> Android用户下载</a>
     </div>
+  {{/if}}
     <div class="webFooter">
       <div class="companyInfo">
         <div class="company">
