@@ -1,4 +1,9 @@
 if (Meteor.isClient) {
+  Meteor.startup(function(){
+      if (Accounts._resetPasswordToken) {
+          Session.set('resetPassword', Accounts._resetPasswordToken);
+      }
+  });
   Template.authOverlay.rendered = function() {
       $('.authOverlay').css('height', $(window).height());
     };
@@ -103,21 +108,17 @@ if (Meteor.isClient) {
   Template.webHome.rendered = function() {
     $('.webHome').css('height', $(window).height());
     $('.webFooter').css('left', $(window).width()*0.5-105);
-    Session.set("resetPasswordStatus", false);
+    Session.set("resetPasswordSuccess", false);
   };
   Template.webHome.helpers({
-      resetPassword: function(t){
-          if(Accounts._resetPasswordToken){
-              Session.set('resetToken', Accounts._resetPasswordToken);
-              Session.set('resetPassword', Accounts._resetPasswordToken);
-          }
+      resetPassword: function(){
           return Session.get('resetPassword');
       },
       pwdErrorInfo: function(){
           return Session.get("pwdErrorInfo");
       },
-      resetPasswordNotSuccess: function(){
-          return Session.get("resetPasswordStatus");
+      resetPasswordSuccess: function(){
+          return Session.get("resetPasswordSuccess");
       }
   });
   Template.webHome.events({
@@ -127,36 +128,32 @@ if (Meteor.isClient) {
           var repPass=t.find('#new-password-repeat').value;
           if(newPass!==repPass)
           {
-            //alert("两次填写的密码不一致");
             Session.set("pwdErrorInfo", "两次填写的密码不一致");
             $('.errorInfo').show();
             Meteor.setTimeout(function(){
                 $('.errorInfo').hide();
             },3000);
-            return;
+            return false;
           }
           if(newPass.length<6 || newPass.length>16)
           {
-            //alert("您输入的密码不符合规则");
             Session.set("pwdErrorInfo", "您输入的密码不符合规则");
              $('.errorInfo').show();
             Meteor.setTimeout(function(){
                 $('.errorInfo').hide();
             },3000);
-            return;
+            return false;
           }
-          Accounts.resetPassword(Session.get("resetToken"), newPass,function(error){
+          Accounts.resetPassword(Session.get("resetPassword"), newPass,function(error){
               if(error){
                   if(error.error===403 && error.reason==="Token expired"){
-                    //alert("密码重设链接已经过期");
-                    Session.set("pwdErrorInfo", "密码重设链接已经过期");
+                    Session.set("pwdErrorInfo", "密码重设链接已经过期，请从手机端再次发起重设请求");
                      $('.errorInfo').show();
                       Meteor.setTimeout(function(){
                           $('.errorInfo').hide();
                       },3000);}
                   else{
-                    //alert("暂时无法处理您的请求，请稍后重试！");
-                    Session.set("pwdErrorInfo", "暂时无法处理您的请求，请稍后重试！");
+                    Session.set("pwdErrorInfo", "未能成功重设密码，请稍后重试或从手机端再次发起重设请求");
                      $('.errorInfo').show();
                       Meteor.setTimeout(function(){
                           $('.errorInfo').hide();
@@ -164,14 +161,14 @@ if (Meteor.isClient) {
                     }
               }
               else{
-                 //alert("您的故事贴密码已重设成功");
-                 Session.set("resetPasswordStatus", true);
+                 Session.set("resetPasswordSuccess", true);
               }
           });
-      }
-      // 'click #finishReset' :function(){
-      //     Router.go('/authOverlay');
-      // }
+          return false;
+      },
+      'click #finishReset' :function(){
+           Session.set('resetPassword', false);
+       }
   });
 
   Meteor.startup(function() {
