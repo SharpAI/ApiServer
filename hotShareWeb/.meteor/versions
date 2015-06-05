@@ -41,6 +41,7 @@ meteor-phonegap-push@0.0.1
 meteor-platform@1.2.2
 meteor-swipe@0.0.10
 meteorhacks:async@1.0.0
+meteorhacks:cluster@1.6.4
 meteorhacks:fast-render@2.4.0
 meteorhacks:inject-data@1.2.3
 meteorhacks:inject-initial@1.0.2
