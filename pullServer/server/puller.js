@@ -1,6 +1,5 @@
 
 if (Meteor.isServer){
-  phantom = Meteor.npmRequire('phantom');
   if ( typeof String.prototype.startsWith != 'function' ) {
     String.prototype.startsWith = function( str ) {
       return this.substring( 0, str.length ) === str;
@@ -8,7 +7,6 @@ if (Meteor.isServer){
   }
   var pullFromServer = function(url){
     Meteor.defer(function(){
-      //console.log("processing pullFromServer");
       try{
         if (url && url !=='') {
           var requestUrl = '';
@@ -17,14 +15,27 @@ if (Meteor.isServer){
           } else {
             requestUrl = 'http://cdn.tiegushi.com/posts/' + url;
           }
-          phantom.create(function (ph) {
-            ph.createPage(function (page) {
-              page.open(requestUrl, function (status) {
-                //console.log("opened post " + status + " url is " + requestUrl);
-                ph.exit();
-              });
-            });
+
+          console.log("processing pullFromServer " + requestUrl);
+          Meteor.http.get(requestUrl, {
+            headers: {
+              'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+              'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 Safari/537.36',
+              'Accept-Encoding': 'gzip, deflate, sdch'
+            }
+          }, function (error, result) {
+            if(error) {
+              console.log('http get FAILED!');
+            } else {
+              console.log('http get SUCCES');
+              if (result.statusCode === 200) {
+                console.log('Status code = 200!');
+                //console.log(result.content);
+                console.log(result);
+              }
+            }
           });
+          //s.get(requestUrl, function(retval) {console.log('Link('+ requestUrl+') got ' + retval);});
         }
       } catch(error){}}
     );
@@ -34,5 +45,5 @@ if (Meteor.isServer){
     "pullFromServer": pullFromServer
   });
 
-  //Meteor.call("pullFromServer","http://www.tiegushi.com/posts/CY9RQnawWnXHDBxLM");
+  Meteor.call("pullFromServer","http://cdn.tiegushi.com/posts/CY9RQnawWnXHDBxLM");
 }
