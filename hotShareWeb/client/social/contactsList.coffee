@@ -14,6 +14,8 @@ if Meteor.isClient
         Session.set('displayUserProfileBox',false)
       onOpen: ->
         Session.set('displayUserProfileBox',true)
+  Template.contactsList.rendered=->
+    $('body').css('overflow', 'visible')
   Template.contactsList.helpers
     follower:()->
       Follower.find({"userId":Meteor.userId()},{sort: {createdAt: -1}})

@@ -13,6 +13,7 @@ if Meteor.isClient
   ###
   Template.information.rendered=->
     document.body.scrollTop = document.body.scrollHeight
+    $('body').css('overflow', 'hidden')
   Template.information.helpers
     nickname:()->
       if Meteor.user()
@@ -37,19 +38,10 @@ if Meteor.isClient
       if Meteor.user()
         Meteor.user().profile.fullname
   Template.setNickname.rendered=->
-    $('.showPostsBox').css('display', 'none')
-    $('.chatFooter').css('display', 'none')
-    $('#postFooter').css('display', 'none')
-    $('.chatBoxContent').css('min-height', '0px')
-    $('.showBgColor').css('min-height','0px')
-    $('body').css('background-color' ,'#EFEFF4')
+    document.body.scrollTop = document.body.scrollHeight
+    $('body').css('overflow', 'hidden')
     $('.text').focus()
   Template.setNickname.destroyed=->
-    $('.showPostsBox').css('display', 'block')
-    $('.chatFooter').css('display', 'block')
-    $('.chatBoxContent').css('min-height',$(window).height()-90)
-    $('.showBgColor').css('min-height',$(window).height())
-    $('body').css('background-color' ,'#000')
   Template.setNickname.events
     'focus .text':->
       console.log("#comment get focus");
@@ -78,6 +70,7 @@ if Meteor.isClient
   ###
   Template.setSex.rendered=->
     document.body.scrollTop = document.body.scrollHeight
+    $('body').css('overflow', 'hidden')
   Template.setSex.helpers
     isMale:()->
       if Meteor.user()
