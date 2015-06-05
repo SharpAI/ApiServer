@@ -76,7 +76,7 @@ img.flip {
   padding-bottom: 12px;
   text-shadow: 0 1px 0 black;
   color: white;
-  font-weight:bold;
+  font-weight: normal;
   white-space: pre-line;
   word-wrap: break-word;
 }
