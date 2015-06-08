@@ -13,9 +13,9 @@ if Meteor.isClient
   ###
   Template.information.rendered=->
     document.body.scrollTop = document.body.scrollHeight
-    $('body').css('overflow', 'hidden')
+    $('body').css('overflow-y', 'hidden')
   Template.information.destroyed=->
-    $('body').css('overflow', 'visible')
+    $('body').css('overflow-y', 'visible')
   Template.information.helpers
     nickname:()->
       if Meteor.user()
@@ -41,10 +41,10 @@ if Meteor.isClient
         Meteor.user().profile.fullname
   Template.setNickname.rendered=->
     document.body.scrollTop = document.body.scrollHeight
-    $('body').css('overflow', 'hidden')
+    $('body').css('overflow-y', 'hidden')
     $('.text').focus()
   Template.setNickname.destroyed=->
-    $('body').css('overflow', 'visible')
+    $('body').css('overflow-y', 'visible')
   Template.setNickname.events
     'focus .text':->
       console.log("#comment get focus");
@@ -73,9 +73,9 @@ if Meteor.isClient
   ###
   Template.setSex.rendered=->
     document.body.scrollTop = document.body.scrollHeight
-    $('body').css('overflow', 'hidden')
+    $('body').css('overflow-y', 'hidden')
   Template.setSex.destroyed=->
-    $('body').css('overflow', 'visible')
+    $('body').css('overflow-y', 'visible')
   Template.setSex.helpers
     isMale:()->
       if Meteor.user()
