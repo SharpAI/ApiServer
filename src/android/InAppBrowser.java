@@ -19,8 +19,10 @@
 package org.apache.cordova.inappbrowser;
 
 import android.annotation.SuppressLint;
+
 import org.apache.cordova.inappbrowser.InAppBrowserDialog;
 import org.apache.cordova.inappbrowser.ClearableEditText;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -29,6 +31,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.text.InputType;
 import android.util.Log;
 import android.util.TypedValue;
@@ -80,12 +83,16 @@ public class InAppBrowser extends CordovaPlugin {
     private static final String LOAD_ERROR_EVENT = "loaderror";
     private static final String CLEAR_ALL_CACHE = "clearcache";
     private static final String CLEAR_SESSION_CACHE = "clearsessioncache";
+	private final long startTime = 3000;
+	private final long interval = 1000;
 
     private InAppBrowserDialog dialog;
     private WebView inAppWebView;
     private ClearableEditText edittext;
     private Button importBtn;
     private CallbackContext callbackContext;
+    private MyCountDownTimer countDownTimer;
+
     private boolean canImport = false; //import after click import button
     private boolean needImport = false; //import after load finished
     private String importUrl = "";
@@ -491,6 +498,8 @@ public class InAppBrowser extends CordovaPlugin {
 
             @SuppressLint("NewApi")
 			public void run() {
+            	countDownTimer = new MyCountDownTimer(startTime, interval);
+
                 // Let's create the main dialog
                 dialog = new InAppBrowserDialog(cordova.getActivity(), android.R.style.Theme_NoTitleBar);
                 dialog.getWindow().getAttributes().windowAnimations = android.R.style.Animation_Dialog;
@@ -847,6 +856,7 @@ public class InAppBrowser extends CordovaPlugin {
             }
 
             try {
+            	countDownTimer.start();
                 JSONObject obj = new JSONObject();
                 obj.put("type", LOAD_START_EVENT);
                 obj.put("url", newloc);
@@ -860,6 +870,7 @@ public class InAppBrowser extends CordovaPlugin {
 		public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             try {
+            	countDownTimer.cancel();
                 JSONObject obj = new JSONObject();
                 obj.put("type", LOAD_STOP_EVENT);
                 obj.put("url", url);
@@ -896,4 +907,25 @@ public class InAppBrowser extends CordovaPlugin {
             }
         }
     }
+    
+	// CountDownTimer class
+	public class MyCountDownTimer extends CountDownTimer
+	{
+
+		public MyCountDownTimer(long startTime, long interval)
+			{
+				super(startTime, interval);
+			}
+
+		@Override
+		public void onFinish()
+			{
+			    importBtn.setEnabled(true);
+			}
+
+		@Override
+		public void onTick(long millisUntilFinished)
+			{
+			}
+	}
 }
