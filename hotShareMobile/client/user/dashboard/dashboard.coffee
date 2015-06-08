@@ -48,17 +48,23 @@ if Meteor.isClient
       new_pass = $("#my_edit_password").val()
       new_pass_confirm = $("#my_edit_password_confirm").val()
       if new_pass != new_pass_confirm
-        PUB.toast "password mismatch!"
+        PUB.toast "两次填写的密码不一致!"
+        return
+      else if new_pass.length<6
+        PUB.toast "密码至少要6位";
         return
       if new_pass
         Meteor.call "changeMyPassword", new_pass, (error, result) ->
           if error
-            PUB.toast 'fail to change password!'
+            PUB.toast '修改密码失败!'
           else
-            Router.go '/'
+            navigator.notification.confirm('请重新登录!', (r)->
+              if r is 1
+                Router.go '/'
+            , '修改密码成功', ['确定']);
           return
       else
-        PUB.toast "password could not be empty!"
+        PUB.toast "密码不能为空!"
     'click #pass_btn_back' :->
       Router.go '/dashboard'
 
