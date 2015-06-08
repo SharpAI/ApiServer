@@ -1092,6 +1092,11 @@ if Meteor.isClient
           if r is 2
             return
           Session.set 'isReviewMode','1'
+          #Delete it from SavedDrafts
+          draftData = Drafts.find().fetch()
+          if draftData[0] and draftData[0]._id
+            draftId = draftData[0]._id
+            SavedDrafts.remove draftId
           #Clear Drafts
           Drafts.remove {owner: Meteor.userId()}
           $('.addPost').addClass('animated ' + animateOutUpperEffect);

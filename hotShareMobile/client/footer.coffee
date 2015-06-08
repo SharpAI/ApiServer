@@ -38,6 +38,7 @@ if Meteor.isClient
       else
          'fade'
   @prepareToEditorMode = ()->
+    TempDrafts.remove({})
     $('body').removeClass('modal-open')
     Session.set 'isReviewMode','0'
     Session.set('draftTitle', '');
