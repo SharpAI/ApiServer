@@ -665,6 +665,21 @@ if(Meteor.isServer){
     else
       return Posts.find({owner: this.userId},{sort: {createdAt: -1}});
   });
+
+  Meteor.publish("postsWithCounter", function(limit) {
+      if(this.userId === null) {
+          return [];
+      }
+      else{
+          /*  https://github.com/percolatestudio/publish-counts/#readiness
+           *  If you publish a count within a publication that also returns cursor(s),
+           *  you probably want to pass {noReady: true} as a final argument to ensure that
+           *  the "data" publication sets the ready state.
+           */
+          Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId}), { noReady: true });
+          return Posts.find({owner: this.userId},{sort: {createdAt: -1},limit:limit});
+      }
+  });
   Meteor.publish("followposts", function(limit) {
     if(this.userId === null || !Match.test(limit, Number))
       return [];

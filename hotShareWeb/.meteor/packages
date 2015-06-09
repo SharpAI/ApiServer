@@ -24,3 +24,4 @@ meteor-swipe
 meteorhacks:inject-initial
 email
 meteorhacks:cluster
+tmeasday:publish-counts

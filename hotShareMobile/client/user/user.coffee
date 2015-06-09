@@ -1,7 +1,9 @@
 #space 2
 if Meteor.isClient
   Template.user.onCreated ()->
-    Meteor.subscribe("posts")
+    Meteor.subscribe("postsWithCounter",4,()->
+      console.log('Subscribe callback called')
+    )
     Meteor.subscribe("saveddrafts")
   Template.user.helpers
     followers:->
@@ -18,7 +20,7 @@ if Meteor.isClient
     items:()->
       SavedDrafts.find({},{sort: {createdAt: -1},limit:2})
     postsCount:->
-      Posts.find({owner: Meteor.userId()}).count()
+      Counts.get('myPostsCount')
     comparePostsCount:(value)->
       if (Posts.find({owner: Meteor.userId()}).count() > value)
         true
