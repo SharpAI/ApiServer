@@ -83,9 +83,13 @@ if Meteor.isClient
       $(textarea).css('height', '')
       sizex = $(itemElem).attr("data-sizex")
       sizey_orig = parseInt($(itemElem).attr("data-sizey"))
+
       if sizey isnt sizey_orig
         $(itemElem).attr("data-sizey", sizey)
         gridster.resize_widget($(itemElem), sizex,sizey)
+
+      height = sizey*min_widget_height - 10
+      $(itemElem).css("line-height", height+'px')
     )
     hidePostBar = ()->
       if $('.showPostsFooter').is(':visible')
