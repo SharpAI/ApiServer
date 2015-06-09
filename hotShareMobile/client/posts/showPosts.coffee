@@ -425,6 +425,11 @@ if Meteor.isClient
       else
         return true
   heartOnePost = ->
+    Meteor.subscribe "refcomments", ()->
+      Meteor.setTimeout ()->
+        refComment = RefComments.find()
+        if refComment.count() > 0
+          Session.set("refComment",refComment.fetch())
     if Meteor.user()
       postId = Session.get("postContent")._id
       FollowPostsId = Session.get("FollowPostsId")
@@ -482,6 +487,11 @@ if Meteor.isClient
           FollowPosts.update {_id: FollowPostsId},{$inc: {retweet: 1}}
           return
     'click .blueHeart':->
+      Meteor.subscribe "refcomments", ()->
+          Meteor.setTimeout ()->
+            refComment = RefComments.find()
+            if refComment.count() > 0
+              Session.set("refComment",refComment.fetch())
       if Meteor.user()
         postId = Session.get("postContent")._id
         FollowPostsId = Session.get("FollowPostsId")
