@@ -22,6 +22,7 @@ if Meteor.isClient
        PUB.page '/topicPosts'
   Template.searchFollow.rendered=->
     Session.set('isSearching', false)
+    Meteor.subscribe 'follows'
     $('#search-box').bind('propertychange input',(e)->
        text = $(e.target).val().trim()
        if text.length > 0

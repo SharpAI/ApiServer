@@ -6,6 +6,7 @@ if (Meteor.isClient) {
   });
   Template.authOverlay.rendered = function() {
       $('.authOverlay').css('height', $(window).height());
+      Meteor.subscribe("follows");
     };
   Template.authOverlay.helpers({
       isLoggingIn:function() {
