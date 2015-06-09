@@ -664,9 +664,8 @@ if(Meteor.isServer){
     else
       return Posts.find({owner: this.userId},{sort: {createdAt: -1}});
   });
-
   Meteor.publish("postsWithCounter", function(limit) {
-      if(this.userId === null) {
+      if(this.userId === null|| !Match.test(limit, Number)) {
           return [];
       }
       else{
@@ -675,8 +674,35 @@ if(Meteor.isServer){
            *  you probably want to pass {noReady: true} as a final argument to ensure that
            *  the "data" publication sets the ready state.
            */
-          Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId}), { noReady: true });
+          Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId}), { noReady: true,nonReactive: true });
           return Posts.find({owner: this.userId},{sort: {createdAt: -1},limit:limit});
+      }
+  });
+  Meteor.publish("savedDraftsWithCounter", function(limit) {
+      if(this.userId === null|| !Match.test(limit, Number)){
+          return [];
+      }
+      else{
+          Counts.publish(this, 'mySavedDraftsCount', SavedDrafts.find({owner: this.userId}), { noReady: true,nonReactive: true });
+          return SavedDrafts.find({owner: this.userId},{sort: {createdAt: -1},limit:limit});
+      }
+  });
+  Meteor.publish("followedByWithCounter", function(limit) {
+      if(this.userId === null|| !Match.test(limit, Number)){
+          return [];
+      }
+      else {
+          Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { noReady: true,nonReactive: true });
+          return Follower.find({followerId:this.userId},{limit:limit});
+      }
+  });
+  Meteor.publish("followToWithCounter", function(limit) {
+      if(this.userId === null|| !Match.test(limit, Number)){
+          return [];
+      }
+      else {
+          Counts.publish(this, 'myFollowToCount', Follower.find({userId:this.userId}), { noReady: true,nonReactive: true });
+          return Follower.find({userId:this.userId},{limit:limit});
       }
   });
   Meteor.publish("followposts", function(limit) {
@@ -1314,7 +1340,6 @@ if(Meteor.isClient){
             window.refreshMainDataSource();
             Meteor.setTimeout( function() {
                 Meteor.subscribe("follows");
-                Meteor.subscribe("follower");
             },3000);
         }
         var options = {

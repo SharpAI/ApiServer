@@ -1,19 +1,21 @@
 #space 2
 if Meteor.isClient
-  Template.user.onCreated ()->
-    Meteor.subscribe("postsWithCounter",4,()->
-      console.log('Subscribe callback called')
-    )
-    Meteor.subscribe("saveddrafts")
+  Meteor.startup ()->
+    Tracker.autorun ()->
+      if Meteor.user() and Session.equals('channel','user')
+        Meteor.subscribe("postsWithCounter",4)
+        Meteor.subscribe("savedDraftsWithCounter",2)
+        Meteor.subscribe("followedByWithCounter",10)
+        Meteor.subscribe("followToWithCounter",10)
   Template.user.helpers
     followers:->
       #Follower存放用户间关注记录， Follows是推荐偶像列表
       #followerId是偶像userId, userId是粉丝userId
-      Follower.find({"followerId":Meteor.userId()}).count()
+      Counts.get('myFollowedByCount')
     draftsCount:->
-      SavedDrafts.find().count()
+      Counts.get('mySavedDraftsCount')
     compareDraftsCount:(value)->
-      if (SavedDrafts.find().count() > value)
+      if (Counts.get('mySavedDraftsCount')> value)
         true
       else
         false
@@ -22,14 +24,14 @@ if Meteor.isClient
     postsCount:->
       Counts.get('myPostsCount')
     comparePostsCount:(value)->
-      if (Posts.find({owner: Meteor.userId()}).count() > value)
+      if (Counts.get('myPostsCount') > value)
         true
       else
         false
     postItems:()->
       Posts.find({owner: Meteor.userId()}, {sort: {createdAt: -1},limit:4})
     followCount:->
-      Follower.find({"userId":Meteor.userId()}).count()
+      Counts.get('myFollowToCount')
     getmainImage:()->
       mImg = this.mainImage
       if (mImg.indexOf('file:///') >= 0) and device.platform is 'Android'
