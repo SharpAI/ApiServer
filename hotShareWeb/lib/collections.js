@@ -1338,24 +1338,21 @@ if(Meteor.isClient){
         if (Meteor.isCordova){
             console.log('Refresh Main Data Source when logon');
             window.refreshMainDataSource();
-            Meteor.setTimeout( function() {
-                Meteor.subscribe("follows");
-            },3000);
+            var options = {
+                keepHistory: 1000 * 60 * 5,
+                localSearch: true
+            };
+            var fields = ['username', 'profile.fullname'];
+            FollowUsersSearch = new SearchSource('followusers', fields, options);
+            var topicsfields = ['text'];
+            TopicsSearch = new SearchSource('topics', topicsfields, options);
         }
-        var options = {
-            keepHistory: 1000 * 60 * 5,
-            localSearch: true
-        };
-        var fields = ['username', 'profile.fullname'];
-        FollowUsersSearch = new SearchSource('followusers', fields, options);
-        var topicsfields = ['text'];
-        TopicsSearch = new SearchSource('topics', topicsfields, options);
-      if(withChat) {
-          // 消息会话、最近联系人
-          Meteor.subscribe("msgSession");
-          //群信息
-          Meteor.subscribe("msgGroup");
-      }
+        if(withChat) {
+            // 消息会话、最近联系人
+            Meteor.subscribe("msgSession");
+            //群信息
+            Meteor.subscribe("msgGroup");
+        }
     }
   });
 }
