@@ -1,3 +1,4 @@
+###
 if Meteor.isClient
   Meteor.startup ()->
     offlineHandler = ()->
@@ -27,3 +28,5 @@ if Meteor.isClient
         console.log "Connected to Server"
       console.log("Reconnect in "+(Meteor.status().retryTime - (new Date()).getTime())+" Status is "+JSON.stringify(Meteor.status()))
       checkConnection()
+
+###
