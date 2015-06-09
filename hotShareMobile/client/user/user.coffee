@@ -3,6 +3,7 @@ if Meteor.isClient
   Meteor.startup ()->
     Tracker.autorun ()->
       if Meteor.user() and Session.equals('channel','user')
+        Meteor.subscribe("myCounter")
         Meteor.subscribe("postsWithCounter",4)
         Meteor.subscribe("savedDraftsWithCounter",2)
         Meteor.subscribe("followedByWithCounter",10)

@@ -665,17 +665,17 @@ if(Meteor.isServer){
     else
       return Posts.find({owner: this.userId},{sort: {createdAt: -1}});
   });
+  Meteor.publish("myCounter",function(){
+      Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId}), {nonReactive: true });
+      Counts.publish(this, 'mySavedDraftsCount', SavedDrafts.find({owner: this.userId}), {nonReactive: true });
+      Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { nonReactive: true });
+      Counts.publish(this, 'myFollowToCount', Follower.find({userId:this.userId}), {nonReactive: true });
+  });
   Meteor.publish("postsWithCounter", function(limit) {
       if(this.userId === null|| !Match.test(limit, Number)) {
           return [];
       }
       else{
-          /*  https://github.com/percolatestudio/publish-counts/#readiness
-           *  If you publish a count within a publication that also returns cursor(s),
-           *  you probably want to pass {noReady: true} as a final argument to ensure that
-           *  the "data" publication sets the ready state.
-           */
-          Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId}), { noReady: true,nonReactive: true });
           return Posts.find({owner: this.userId},{sort: {createdAt: -1},limit:limit});
       }
   });
@@ -684,7 +684,6 @@ if(Meteor.isServer){
           return [];
       }
       else{
-          Counts.publish(this, 'mySavedDraftsCount', SavedDrafts.find({owner: this.userId}), { noReady: true,nonReactive: true });
           return SavedDrafts.find({owner: this.userId},{sort: {createdAt: -1},limit:limit});
       }
   });
@@ -693,7 +692,6 @@ if(Meteor.isServer){
           return [];
       }
       else {
-          Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { noReady: true,nonReactive: true });
           return Follower.find({followerId:this.userId},{limit:limit});
       }
   });
@@ -702,7 +700,6 @@ if(Meteor.isServer){
           return [];
       }
       else {
-          Counts.publish(this, 'myFollowToCount', Follower.find({userId:this.userId}), { noReady: true,nonReactive: true });
           return Follower.find({userId:this.userId},{limit:limit});
       }
   });
