@@ -58,9 +58,9 @@ if Meteor.isClient
          false
     moreResults:->
       if Session.get('followers_tag')
-        !(Counts.get('myFollowToCount') < Session.get("followersitemsLimit"))
+        !(Session.get('myFollowToCount') < Session.get("followersitemsLimit"))
       else
-        !(Counts.get('myFollowedByCount') < Session.get("followeesitemsLimit"))
+        !(Session.get('myFollowedByCount') < Session.get("followeesitemsLimit"))
     loading:->
       if Session.get('followers_tag')
         Session.equals('followersCollection','loading')

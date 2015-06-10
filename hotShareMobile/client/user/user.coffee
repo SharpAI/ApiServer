@@ -1,6 +1,16 @@
 #space 2
 if Meteor.isClient
   Meteor.startup ()->
+    Session.setDefault('myFollowedByCount',0)
+    Session.setDefault('mySavedDraftsCount',0)
+    Session.setDefault('myPostsCount',0)
+    Session.setDefault('myFollowToCount',0)
+    Tracker.autorun ()->
+      Session.set('myFollowedByCount',Counts.get('myFollowedByCount'))
+      Session.set('mySavedDraftsCount',Counts.get('mySavedDraftsCount'))
+      Session.set('myPostsCount',Counts.get('myPostsCount'))
+      Session.set('myFollowToCount',Counts.get('myFollowToCount'))
+
     Tracker.autorun ()->
       if Meteor.user() and Session.equals('channel','user')
         Meteor.subscribe("myCounter")
@@ -12,27 +22,27 @@ if Meteor.isClient
     followers:->
       #Follower存放用户间关注记录， Follows是推荐偶像列表
       #followerId是偶像userId, userId是粉丝userId
-      Counts.get('myFollowedByCount')
+      Session.get('myFollowedByCount')
     draftsCount:->
-      Counts.get('mySavedDraftsCount')
+      Session.get('mySavedDraftsCount')
     compareDraftsCount:(value)->
-      if (Counts.get('mySavedDraftsCount')> value)
+      if (Session.get('mySavedDraftsCount')> value)
         true
       else
         false
     items:()->
       SavedDrafts.find({},{sort: {createdAt: -1},limit:2})
     postsCount:->
-      Counts.get('myPostsCount')
+      Session.get('myPostsCount')
     comparePostsCount:(value)->
-      if (Counts.get('myPostsCount') > value)
+      if (Session.get('myPostsCount') > value)
         true
       else
         false
     postItems:()->
       Posts.find({owner: Meteor.userId()}, {sort: {createdAt: -1},limit:4})
     followCount:->
-      Counts.get('myFollowToCount')
+      Session.get('myFollowToCount')
     getmainImage:()->
       mImg = this.mainImage
       if (mImg.indexOf('file:///') >= 0) and device.platform is 'Android'
