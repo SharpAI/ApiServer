@@ -671,7 +671,7 @@ if(Meteor.isServer){
       Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { nonReactive: true });
       Counts.publish(this, 'myFollowToCount', Follower.find({userId:this.userId}), {nonReactive: true });
   });
-  Meteor.publish("postsWithCounter", function(limit) {
+  Meteor.publish("postsWithLimit", function(limit) {
       if(this.userId === null|| !Match.test(limit, Number)) {
           return [];
       }
@@ -679,7 +679,7 @@ if(Meteor.isServer){
           return Posts.find({owner: this.userId},{sort: {createdAt: -1},limit:limit});
       }
   });
-  Meteor.publish("savedDraftsWithCounter", function(limit) {
+  Meteor.publish("savedDraftsWithLimit", function(limit) {
       if(this.userId === null|| !Match.test(limit, Number)){
           return [];
       }
@@ -687,7 +687,7 @@ if(Meteor.isServer){
           return SavedDrafts.find({owner: this.userId},{sort: {createdAt: -1},limit:limit});
       }
   });
-  Meteor.publish("followedByWithCounter", function(limit) {
+  Meteor.publish("followedByWithLimit", function(limit) {
       /*列出自己的粉丝*/
       if(this.userId === null|| !Match.test(limit, Number)){
           return [];
@@ -696,7 +696,7 @@ if(Meteor.isServer){
           return Follower.find({followerId:this.userId},{limit:limit});
       }
   });
-  Meteor.publish("followToWithCounter", function(limit) {
+  Meteor.publish("followToWithLimit", function(limit) {
       /*列出自己的偶像*/
       if(this.userId === null|| !Match.test(limit, Number)){
           return [];
@@ -1337,7 +1337,7 @@ if(Meteor.isClient){
       Session.set('followersCollection','error');
       Meteor.setTimeout(function(){
           Session.set('followersCollection','loading');
-          Meteor.subscribe('followToWithCounter', Session.get('followersitemsLimit'), {
+          Meteor.subscribe('followToWithLimit', Session.get('followersitemsLimit'), {
               onStop: subscribeFollowersOnStop,
               onReady: function(){
                   console.log('followersCollection loaded');
@@ -1351,7 +1351,7 @@ if(Meteor.isClient){
       Session.set('followeesCollection','error');
       Meteor.setTimeout(function(){
           Session.set('followeesCollection','loading');
-          Meteor.subscribe('followedByWithCounter', Session.get('followeesitemsLimit'), {
+          Meteor.subscribe('followedByWithLimit', Session.get('followeesitemsLimit'), {
               onStop: subscribeFolloweesOnStop,
               onReady: function(){
                   console.log('followeesCollection loaded');
@@ -1376,14 +1376,14 @@ if(Meteor.isClient){
             Session.set('feedsCollection', 'loaded');
         }
     });
-    Meteor.subscribe('followToWithCounter', Session.get('followersitemsLimit'), {
+    Meteor.subscribe('followToWithLimit', Session.get('followersitemsLimit'), {
         onStop: subscribeFollowersOnStop,
         onReady: function(){
             console.log('followersCollection loaded');
             Session.set('followersCollection', 'loaded');
         }
     });
-    Meteor.subscribe('followedByWithCounter', Session.get('followeesitemsLimit'), {
+    Meteor.subscribe('followedByWithLimit', Session.get('followeesitemsLimit'), {
         onStop: subscribeFolloweesOnStop,
         onReady: function(){
             console.log('followeesCollection loaded');

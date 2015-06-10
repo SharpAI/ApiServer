@@ -4,10 +4,10 @@ if Meteor.isClient
     Tracker.autorun ()->
       if Meteor.user() and Session.equals('channel','user')
         Meteor.subscribe("myCounter")
-        Meteor.subscribe("postsWithCounter",4)
-        Meteor.subscribe("savedDraftsWithCounter",2)
-        Meteor.subscribe("followedByWithCounter",10)
-        Meteor.subscribe("followToWithCounter",10)
+        Meteor.subscribe("postsWithLimit",4)
+        Meteor.subscribe("savedDraftsWithLimit",2)
+        Meteor.subscribe("followedByWithLimit",10)
+        Meteor.subscribe("followToWithLimit",10)
   Template.user.helpers
     followers:->
       #Follower存放用户间关注记录， Follows是推荐偶像列表
