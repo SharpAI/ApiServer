@@ -1296,14 +1296,17 @@ if(Meteor.isClient){
   var FOLLOWPOSTS_ITEMS_INCREMENT = 10;
   var FEEDS_ITEMS_INCREMENT = 20;
   var FOLLOWS_ITEMS_INCREMENT = 10;
+  var MYPOSTS_ITEMS_INCREMENT = 4;
   Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
   Session.setDefault('feedsitemsLimit', FEEDS_ITEMS_INCREMENT);
   Session.setDefault('followersitemsLimit', FOLLOWS_ITEMS_INCREMENT);
   Session.setDefault('followeesitemsLimit', FOLLOWS_ITEMS_INCREMENT);
+  Session.setDefault('mypostsitemsLimit', MYPOSTS_ITEMS_INCREMENT);
   Session.set('followPostsCollection','loading');
   Session.set('feedsCollection','loading');
   Session.set('followersCollection','loading');
   Session.set('followeesCollection','loading');
+  Session.set('myPostsCollection','loading');
   var subscribeFollowPostsOnStop = function(err){
       console.log('followPostsCollection ' + err);
       Session.set('followPostsCollection','error');
@@ -1367,6 +1370,12 @@ if(Meteor.isClient){
                   onReady: function () {
                       console.log('followeesCollection loaded');
                       Session.set('followeesCollection', 'loaded');
+                  }
+              });
+              Meteor.subscribe('postsWithLimit', Session.get('mypostsitemsLimit'), {
+                  onReady: function(){
+                      console.log('myPostsCollection loaded');
+                      Session.set('myPostsCollection','loaded');
                   }
               });
           }
