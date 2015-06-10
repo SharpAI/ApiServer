@@ -689,6 +689,7 @@ if(Meteor.isServer){
       }
   });
   Meteor.publish("followedByWithCounter", function(limit) {
+      /*列出自己的粉丝*/
       if(this.userId === null|| !Match.test(limit, Number)){
           return [];
       }
@@ -698,6 +699,7 @@ if(Meteor.isServer){
       }
   });
   Meteor.publish("followToWithCounter", function(limit) {
+      /*列出自己的偶像*/
       if(this.userId === null|| !Match.test(limit, Number)){
           return [];
       }
@@ -1296,10 +1298,15 @@ if(Meteor.isServer){
 if(Meteor.isClient){
   var FOLLOWPOSTS_ITEMS_INCREMENT = 10;
   var FEEDS_ITEMS_INCREMENT = 20;
+  var FOLLOWS_ITEMS_INCREMENT = 10;
   Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
   Session.setDefault('feedsitemsLimit', FEEDS_ITEMS_INCREMENT);
+  Session.setDefault('followersitemsLimit', FOLLOWS_ITEMS_INCREMENT);
+  Session.setDefault('followeesitemsLimit', FOLLOWS_ITEMS_INCREMENT);
   Session.set('followPostsCollection','loading');
   Session.set('feedsCollection','loading');
+  Session.set('followersCollection','loading');
+  Session.set('followeesCollection','loading');
   var subscribeFollowPostsOnStop = function(err){
       console.log('followPostsCollection ' + err);
       Session.set('followPostsCollection','error');
@@ -1328,6 +1335,34 @@ if(Meteor.isClient){
           });
       },2000);
   };
+  var subscribeFollowersOnStop = function(err){
+      console.log('followersCollection ' + err);
+      Session.set('followersCollection','error');
+      Meteor.setTimeout(function(){
+          Session.set('followersCollection','loading');
+          Meteor.subscribe('followToWithCounter', Session.get('followersitemsLimit'), {
+              onStop: subscribeFollowersOnStop,
+              onReady: function(){
+                  console.log('followersCollection loaded');
+                  Session.set('followersCollection','loaded');
+              }
+          });
+      },2000);
+  };
+  var subscribeFolloweesOnStop = function(err){
+      console.log('followeesCollection ' + err);
+      Session.set('followeesCollection','error');
+      Meteor.setTimeout(function(){
+          Session.set('followeesCollection','loading');
+          Meteor.subscribe('followedByWithCounter', Session.get('followeesitemsLimit'), {
+              onStop: subscribeFolloweesOnStop,
+              onReady: function(){
+                  console.log('followeesCollection loaded');
+                  Session.set('followeesCollection','loaded');
+              }
+          });
+      },2000);
+  };
   window.refreshMainDataSource = function(){
     Meteor.subscribe('waitreadcount');
     Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'), {
@@ -1342,6 +1377,20 @@ if(Meteor.isClient){
         onReady: function(){
             console.log('feedsCollection loaded');
             Session.set('feedsCollection', 'loaded');
+        }
+    });
+    Meteor.subscribe('followToWithCounter', Session.get('followersitemsLimit'), {
+        onStop: subscribeFollowersOnStop,
+        onReady: function(){
+            console.log('followersCollection loaded');
+            Session.set('followersCollection', 'loaded');
+        }
+    });
+    Meteor.subscribe('followedByWithCounter', Session.get('followeesitemsLimit'), {
+        onStop: subscribeFolloweesOnStop,
+        onReady: function(){
+            console.log('followeesCollection loaded');
+            Session.set('followeesCollection', 'loaded');
         }
     });
   };

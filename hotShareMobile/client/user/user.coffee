@@ -69,6 +69,8 @@ if Meteor.isClient
         Router.go '/dashboard'
       ,animatePageTrasitionTimeout
     'click .follower' :->
+      Session.set('followersitemsLimit', 10);
+      Session.set('followeesitemsLimit', 10);
       #true 列出偶像列表，false 列出粉丝列表
       Session.set 'followers_tag', false
       $('.user').addClass('animated ' + animateOutLowerEffect);
@@ -76,6 +78,8 @@ if Meteor.isClient
         Router.go '/followers'
       ,animatePageTrasitionTimeout
     'click .following' :->
+      Session.set('followeesitemsLimit', 10);
+      Session.set('followersitemsLimit', 10);
       #true 列出偶像列表，false 列出粉丝列表
       Session.set 'followers_tag', true
       $('.user').addClass('animated ' + animateOutLowerEffect);

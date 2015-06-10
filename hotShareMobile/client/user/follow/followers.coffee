@@ -1,5 +1,25 @@
 #space 2
 if Meteor.isClient
+  Template.followers.rendered=->
+    $('.content').css 'min-height',$(window).height()
+    $(window).scroll (event)->
+        target = $("#showMoreFollowsResults");
+        FOLLOWS_ITEMS_INCREMENT = 10;
+        if (!target.length)
+            return;
+        threshold = $(window).scrollTop() + $(window).height() - target.height();
+        if target.offset().top < threshold
+            if (!target.data("visible"))
+                target.data("visible", true);
+                if Session.get('followers_tag')
+                  Session.set("followersitemsLimit",
+                  Session.get("followersitemsLimit") + FOLLOWS_ITEMS_INCREMENT);
+                else
+                  Session.set("followeesitemsLimit",
+                  Session.get("followeesitemsLimit") + FOLLOWS_ITEMS_INCREMENT);
+        else
+            if (target.data("visible"))
+                target.data("visible", false);
   Template.followers.helpers
     followers:->
       #true 列出偶像列表，false 列出粉丝列表
@@ -7,10 +27,10 @@ if Meteor.isClient
       #followerId是偶像userId, userId是粉丝userId
       if Session.get('followers_tag')
           #粉丝是自己的； true 列出偶像
-          Follower.find({"userId":Meteor.userId()}, {sort: {createdAt: -1}})
+          Follower.find({"userId":Meteor.userId()}, {sort: {createdAt: -1}}, {limit:Session.get("followersitemsLimit")})
       else
           #偶像id是自己的； false 列出粉丝
-          Follower.find({"followerId":Meteor.userId()}, {sort: {createdAt: -1}})
+          Follower.find({"followerId":Meteor.userId()}, {sort: {createdAt: -1}}, {limit:Session.get("followeesitemsLimit")})
     isFollowers:->
       if Session.get('followers_tag')
          true
@@ -36,7 +56,21 @@ if Meteor.isClient
          true
       else
          false
-
+    moreResults:->
+      if Session.get('followers_tag')
+        !(Counts.get('myFollowToCount') < Session.get("followersitemsLimit"))
+      else
+        !(Counts.get('myFollowedByCount') < Session.get("followeesitemsLimit"))
+    loading:->
+      if Session.get('followers_tag')
+        Session.equals('followersCollection','loading')
+      else
+        Session.equals('followeesCollection','loading')
+    loadError:->
+      if Session.get('followers_tag')
+        Session.equals('followersCollection','error')
+      else
+        Session.equals('followeesCollection','error')
   Template.followers.events
     'click .back' :->
       Router.go '/user'
