@@ -266,16 +266,25 @@ if Meteor.isClient
           ,500
       else if buttonClicked.id is "aligntoleft"
         console.log 'Need aligntoleft'
-        style = "font-family:" + textarea.css("font-family") + ';font-size:' + textarea.css("font-size") + ';text-align:left;'
+        style = "font-family:" + textarea.css("font-family") + ";font-size:" + textarea.css("font-size") + 
+        ";text-align:left"+";background: " + textarea.css("background") + ";padding-left:" + textarea.css("padding-left") + ";padding-right:" + textarea.css("padding-right") + ";color:" + textarea.css("color") + ";height:"+
+        textarea.css('height')+";"
         Drafts.update({_id: doc_id}, {$set: {style: style}});
+        textarea.attr('style', style)
       else if buttonClicked.id is "aligntocenter"
         console.log 'Need aligntocenter'
-        style = "font-family:" + textarea.css("font-family") + ';font-size:' + textarea.css("font-size") + ';text-align:center;'
+        style = "font-family:" + textarea.css("font-family") + ";font-size:" + textarea.css("font-size") + 
+        ";text-align:center"+";background: " + textarea.css("background") + ";padding-left:" + textarea.css("padding-left") + ";padding-right:" + textarea.css("padding-right") + ";color:" + textarea.css("color") + ";height:"+
+        textarea.css('height')+";"
         Drafts.update({_id: doc_id}, {$set: {style: style}});
+        textarea.attr('style', style)
       else if buttonClicked.id is "aligntoright"
         console.log 'Need aligntoright'
-        style = "font-family:" + textarea.css("font-family") + ';font-size:' + textarea.css("font-size") + ';text-align:right;'
+        style = "font-family:" + textarea.css("font-family") + ";font-size:" + textarea.css("font-size") +
+        ";text-align:right"+";background: " + textarea.css("background") + ";padding-left:" + textarea.css("padding-left") + ";padding-right:" + textarea.css("padding-right") + ";color:" + textarea.css("color") + ";height:"+
+        textarea.css('height')+";"
         Drafts.update({_id: doc_id}, {$set: {style: style}});
+        textarea.attr('style', style)
       else if buttonClicked.id is "font-normal"
         console.log 'Need font-normal'
         style = 'font-family:;font-size:large' + ';text-align:' + textarea.css('text-align')+';'
@@ -298,7 +307,10 @@ if Meteor.isClient
         Drafts.update({_id: doc_id}, {$set: {style: style}})
       else if buttonClicked.id is "font-quato"
         console.log 'Need font-quato'
-        style = "font-family:Times New Roman, Times, serif" + ';font-size:large' + ';text-align:' + textarea.css('text-align')+';border-left:2px solid black;padding-left:2%; '
+        style = "font-family:Times New Roman, Times, serif" + ';font-size:15px' +
+        ';text-align:'+ textarea.css('text-align')+
+        ';background: #F5F5F5;padding-left:3%;padding-right:3%;color:grey;height:'+
+        textarea.css('height')+";"
         textarea.attr('style', style)
         #Compute the new scrollHeight
         grid_size=Math.floor($('#display').width()/6 - 10);
