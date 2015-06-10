@@ -2,6 +2,7 @@ if Meteor.isClient
   Meteor.startup ()->
     Tracker.autorun ()->
       channel = Session.get 'channel'
+      $(window).off('scroll')
       Meteor.setTimeout ->
           Session.set 'focusOn',channel
         ,300
