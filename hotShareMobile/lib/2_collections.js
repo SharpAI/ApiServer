@@ -747,6 +747,12 @@ if(Meteor.isServer){
     else
       return Feeds.find({followby: followId,postId: postId,eventType:'recommand',recommanderId:this.userId}, {sort: {createdAt: -1}, limit:2});
   });
+  Meteor.publish("friendFeeds", function(friendId,userId) {
+    if(this.userId === null || !Match.test(friendId, String) || !Match.test(userId, String) || this.userId !== userId)
+      return [];
+    else
+      return Feeds.find({requesteeId:friendId,requesterId:userId},{sort: {createdAt: -1}, limit:2})
+  });
   Meteor.publish("follows", function() {
     return Follows.find({}, {sort: { index: 1 }} );
   });
