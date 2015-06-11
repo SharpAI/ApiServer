@@ -203,6 +203,7 @@ if Meteor.isClient
     isFemale:(sex)->
       sex is 'female'
     AddFriend:->
+      Meteor.subscribe("friendFeeds", Session.get("ProfileUserId1"),Meteor.userId())
       addstr = '添加'
       if Feeds.find({requesteeId:Session.get("ProfileUserId1"),requesterId:Meteor.userId()}).count()>0
         addstr = '已发送邀请'
@@ -263,6 +264,7 @@ if Meteor.isClient
     isFemale:(sex)->
       sex is 'female'
     AddFriend:->
+      Meteor.subscribe("friendFeeds", Session.get("ProfileUserId1"),Meteor.userId())
       addstr = '添加'
       if Feeds.find({requesteeId:Session.get("ProfileUserId2"),requesterId:Meteor.userId()}).count()>0
         addstr = '已发送邀请'
@@ -324,6 +326,7 @@ if Meteor.isClient
     isFemale:(sex)->
       sex is 'female'
     AddFriend:->
+      Meteor.subscribe("friendFeeds", Session.get("ProfileUserId1"),Meteor.userId())
       addstr = '添加'
       if Feeds.find({requesteeId:Session.get("ProfileUserId3"),requesterId:Meteor.userId()}).count()>0
         addstr = '已发送邀请'
