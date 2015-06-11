@@ -2,6 +2,7 @@ Posts = new Meteor.Collection('posts');
 FollowPosts = new Meteor.Collection('followposts');
 Feeds = new Meteor.Collection('feeds');
 Drafts = new Meteor.Collection(null);
+TempDrafts = new Meteor.Collection(null);
 SavedDrafts = new Meteor.Collection('saveddrafts');
 Follows = new Meteor.Collection('follows');
 Follower = new Meteor.Collection('follower');
@@ -761,6 +762,12 @@ if(Meteor.isServer){
     else
       return Follower.find({$or:[{userId:this.userId},{followerId:this.userId}]});
   });
+  Meteor.publish("friendFollower", function(userId,friendId) {
+    if(this.userId === null || !Match.test(friendId, String) || !Match.test(userId, String) || this.userId !== userId)
+      return [];
+    else
+      return Follower.find({"userId":userId,"followerId":friendId},{sort: {createdAt: -1}, limit:2})
+  });
   Meteor.publish("userinfo", function(id) {
     if(!Match.test(id, String))
       return [];
@@ -924,6 +931,17 @@ if(Meteor.isServer){
     }
   });
   Drafts.allow({
+    insert: function (userId, doc) {
+      return doc.owner === userId;
+    },
+    remove: function (userId, doc) {
+      return doc.owner === userId;
+    },
+    update: function (userId, doc) {
+      return doc.owner === userId;
+    }
+  });
+  TempDrafts.allow({
     insert: function (userId, doc) {
       return doc.owner === userId;
     },
@@ -1380,8 +1398,7 @@ if(Meteor.isClient){
         if (Meteor.isCordova){
             console.log('Refresh Main Data Source when logon');
             Meteor.subscribe('waitreadcount');
-        }
-        /*
+        }/*
         if(withChat) {
             // 消息会话、最近联系人
             Meteor.subscribe("msgSession");
