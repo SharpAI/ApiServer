@@ -1347,6 +1347,9 @@ if(Meteor.isClient){
           });
       },2000);
   };
+  window.refreshMainDataSource = function(){
+      Meteor.subscribe('waitreadcount');
+  };
   if(Meteor.isCordova){
       var options = {
           keepHistory: 1000 * 60 * 5,
@@ -1397,7 +1400,7 @@ if(Meteor.isClient){
     if (Meteor.userId()) {
         if (Meteor.isCordova){
             console.log('Refresh Main Data Source when logon');
-            Meteor.subscribe('waitreadcount');
+            window.refreshMainDataSource();
         }/*
         if(withChat) {
             // 消息会话、最近联系人
