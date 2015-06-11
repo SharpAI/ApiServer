@@ -55,12 +55,20 @@ if Meteor.isClient
     'focus .text':->
       console.log("#comment get focus");
       $('.contactsList .head').css('display' ,'block')
-      if Meteor.isCordova and isIOS
+      if Meteor.isCordova and device.platform is 'iOS'
+        $('.me .setNickname .head').css('position', 'static')
+        Meteor.setTimeout(()->
+          distance = $('.me .setNickname .head').offset().top - ($(window).scrollTop())
+          distance = '-' + distance + 'px'
+          $('.me .setNickname .head').css 'margin-top', distance
+          return
+        ,5)
         cordova.plugins.Keyboard.disableScroll(true)
     'blur .text':->
       console.log("#comment lost focus");
       $('.contactsList .head').css('display' ,'block')
-      if Meteor.isCordova and isIOS
+      if Meteor.isCordova and device.platform is 'iOS'
+        $('.me .setNickname .head').css('position', 'fixed').css('margin-top', 0)
         cordova.plugins.Keyboard.disableScroll(false)
     'click .left-btn':(e)->
       Session.set("Social.LevelTwo.Me.Menu","information")
