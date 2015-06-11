@@ -98,8 +98,15 @@ Meteor.startup(function(){
                 }, 5000);
             }
             if(Session.equals('MeteorConnection-isConnecting', true)){
+
                 Meteor.setTimeout(function(){
-                    Session.set('MeteorConnection-isConnecting', false);
+                    var retryIn = Math.round((Meteor.status().retryTime - (new Date()).getTime())/1000);
+                    if(isNaN(retryIn))
+                        retryIn = 0;
+
+                    if (retryIn != 0){
+                        Session.set('MeteorConnection-isConnecting', false);
+                    }
                 }, 1000);
             }
 		}
