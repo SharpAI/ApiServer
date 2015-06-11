@@ -1386,13 +1386,13 @@ if(Meteor.isClient){
         if (Meteor.isCordova){
             console.log('Refresh Main Data Source when logon');
             Meteor.subscribe('waitreadcount');
-        }
+        }/*
         if(withChat) {
             // 消息会话、最近联系人
             Meteor.subscribe("msgSession");
             //群信息
             Meteor.subscribe("msgGroup");
-        }
+        }*/
     }
   });
 }
