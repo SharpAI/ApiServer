@@ -18,6 +18,7 @@ if Meteor.isClient
                 target.data("visible", false);
   Template.bell.helpers
     isFriend:(userId)->
+      Meteor.subscribe("friendFollower",Meteor.userId(),userId)
       if Follower.findOne({"userId":Meteor.userId(),"followerId":userId})
         true
       else

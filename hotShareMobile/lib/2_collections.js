@@ -762,6 +762,12 @@ if(Meteor.isServer){
     else
       return Follower.find({$or:[{userId:this.userId},{followerId:this.userId}]});
   });
+  Meteor.publish("friendFollower", function(userId,friendId) {
+    if(this.userId === null || !Match.test(friendId, String) || !Match.test(userId, String) || this.userId !== userId)
+      return [];
+    else
+      return Follower.find({"userId":userId,"followerId":friendId},{sort: {createdAt: -1}, limit:2})
+  });
   Meteor.publish("userinfo", function(id) {
     if(!Match.test(id, String))
       return [];
