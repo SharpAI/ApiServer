@@ -56,7 +56,7 @@ if Meteor.isClient
       console.log("#comment get focus");
       $('.contactsList .head').css('display' ,'block')
       if Meteor.isCordova and device.platform is 'iOS'
-        $('.me .setNickname .head').css('position', 'static')
+        $('.me .setNickname .head').css('position', 'relative')
         Meteor.setTimeout(()->
           distance = $('.me .setNickname .head').offset().top - ($(window).scrollTop())
           distance = '-' + distance + 'px'
