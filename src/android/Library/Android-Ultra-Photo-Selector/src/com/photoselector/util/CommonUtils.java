@@ -12,7 +12,7 @@ import android.provider.MediaStore.Images.ImageColumns;
 import android.util.DisplayMetrics;
 
 /**
- * Í¨ÓÃ¹¤¾ßÀà
+ * é€šç”¨å·¥å…·ç±»
  * 
  * @author chenww
  * 
@@ -20,7 +20,7 @@ import android.util.DisplayMetrics;
 public class CommonUtils {
 
 	/**
-	 * ¿ªÆôactivity
+	 * å¼€å¯activity
 	 */
 	public static void launchActivity(Context context, Class<?> activity) {
 		Intent intent = new Intent(context, activity);
@@ -29,7 +29,7 @@ public class CommonUtils {
 	}
 
 	/**
-	 * ¿ªÆôactivity(´ø²ÎÊı)
+	 * å¼€å¯activity(å¸¦å‚æ•°)
 	 */
 	public static void launchActivity(Context context, Class<?> activity, Bundle bundle) {
 		Intent intent = new Intent(context, activity);
@@ -39,7 +39,7 @@ public class CommonUtils {
 	}
 
 	/**
-	 * ¿ªÆôactivity(´ø²ÎÊı)
+	 * å¼€å¯activity(å¸¦å‚æ•°)
 	 */
 	public static void launchActivity(Context context, Class<?> activity, String key, int value) {
 		Bundle bundle = new Bundle();
@@ -70,7 +70,7 @@ public class CommonUtils {
 		activity.startActivityForResult(intent, requestCode);
 	}
 
-	/** Æô¶¯Ò»¸ö·şÎñ */
+	/** å¯åŠ¨ä¸€ä¸ªæœåŠ¡ */
 	public static void launchService(Context context, Class<?> service) {
 		Intent intent = new Intent(context, service);
 		context.startService(intent);
@@ -82,7 +82,7 @@ public class CommonUtils {
 	}
 
 	/**
-	 * ÅĞ¶Ï×Ö·û´®ÊÇ·ñÎª¿Õ
+	 * åˆ¤æ–­å­—ç¬¦ä¸²æ˜¯å¦ä¸ºç©º
 	 * @param text
 	 * @return true null false !null
 	 */
@@ -92,21 +92,21 @@ public class CommonUtils {
 		return false;
 	}
 
-	/** »ñÈ¡ÆÁÄ»¿í¶È */
+	/** è·å–å±å¹•å®½åº¦ */
 	public static int getWidthPixels(Activity activity) {
 		DisplayMetrics dm = new DisplayMetrics();
 		activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
 		return dm.widthPixels;
 	}
 
-	/** »ñÈ¡ÆÁÄ»¸ß¶È */
+	/** è·å–å±å¹•é«˜åº¦ */
 	public static int getHeightPixels(Activity activity) {
 		DisplayMetrics dm = new DisplayMetrics();
 		activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
 		return dm.heightPixels;
 	}
 
-	/** Í¨¹ıUri»ñÈ¡Í¼Æ¬Â·¾¶ */
+	/** é€šè¿‡Uriè·å–å›¾ç‰‡è·¯å¾„ */
 	public static String query(Context context, Uri uri) {
 		Cursor cursor = context.getContentResolver().query(uri, new String[] { ImageColumns.DATA }, null, null, null);
 		cursor.moveToNext();

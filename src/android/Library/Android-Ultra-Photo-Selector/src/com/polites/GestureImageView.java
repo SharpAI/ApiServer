@@ -741,9 +741,9 @@ public class GestureImageView extends ImageView  {
 
 		@Override
 		public void onPosition(float x, float y) {
-			/** µ±position¸Ä±äÊ± */
-			/** position = Í¼Æ¬ÊúÖ±ÖĞĞÄÖáÏà¶ÔView×ó±ßÔµµÄ¾àÀë */
-			/** position = viewµÄË®Æ½³¤¶È - Í¼Æ¬Ë®Æ½³¤¶ÈµÄÒ»°ã */
+			/** å½“positionæ”¹å˜æ—¶ */
+			/** position = å›¾ç‰‡ç«–ç›´ä¸­å¿ƒè½´ç›¸å¯¹Viewå·¦è¾¹ç¼˜çš„è·ç¦» */
+			/** position = viewçš„æ°´å¹³é•¿åº¦ - å›¾ç‰‡æ°´å¹³é•¿åº¦çš„ä¸€èˆ¬ */
 			double halfImage = GestureImageView.this.getScaledWidth() / 2.0;
 			double viewWidth = GestureImageView.this.getWidth();
 			System.out.println(x);
