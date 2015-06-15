@@ -51,6 +51,7 @@ if Meteor.isClient
       else
          #follow.userId是粉丝
          #找followerId是follow.userId，是否互粉
+         Meteor.subscribe("friendFollower",Meteor.userId(),follow.userId)
          fcount = Follower.find({"userId":Meteor.userId(),"followerId":follow.userId}).count()
       if fcount > 0
          true
