@@ -6,6 +6,7 @@ if Meteor.isClient
       if Session.get("postContent") and  Meteor.userId()
         Meteor.subscribe("userDetail",Meteor.userId())
         Meteor.subscribe "newfriends", Meteor.userId(),Session.get("postContent")._id
+        Meteor.subscribe 'followToWithLimit', 9999
   onUserProfile = ->
     @PopUpBox = $('.popUpBox').bPopup
       positionStyle: 'fixed'
