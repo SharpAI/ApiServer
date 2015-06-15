@@ -67,7 +67,7 @@ if Meteor.isClient
         followerIcon: @profile.icon
         followerDesc: @desc
         createAt: new Date()
-    }
+      }
     'click .del':(e)->
       followerId = e.currentTarget.id
       FollowerId = Follower.findOne({
@@ -102,12 +102,14 @@ if Meteor.isClient
     follows: ->
       Follows.find()
     isFollowed:(follow)->
+      Meteor.subscribe("friendFollower",Meteor.userId(),follow.userId)
       fcount = Follower.find({"userId":Meteor.userId(),"followerId":follow.userId}).count()
       if fcount > 0
         true
       else
         false
     isFollowedUser:(follow)->
+      Meteor.subscribe("friendFollower",Meteor.userId(),follow._id)
       fcount = Follower.find({"userId":Meteor.userId(),"followerId":follow._id}).count()
       if fcount > 0
         true
