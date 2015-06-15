@@ -15,31 +15,32 @@ updateFromThirdPartWebsite = ()->
       if address isnt ''
         Meteor.users.update Meteor.userId(),{$set:{'profile.location':address}}
         console.log 'Set address to ' + address
-
+window.updateMyOwnLocationAddress = ()->
+  console.log('Update location now')
+  url = "http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js"
+  $.getScript url, (data, textStatus, jqxhr)->
+    console.log 'status is ' + textStatus
+    address = ''
+    if textStatus is 'success' and remote_ip_info and remote_ip_info.ret is 1
+      console.log 'Remote IP Info is ' + JSON.stringify(remote_ip_info)
+      if remote_ip_info.country and remote_ip_info.country isnt '' and remote_ip_info.country isnt '中国'
+        address += remote_ip_info.country
+        address += ' '
+      if remote_ip_info.province and remote_ip_info.province isnt ''
+        address += remote_ip_info.province
+        address += ' '
+      if remote_ip_info.city and remote_ip_info.city isnt '' and remote_ip_info.city isnt remote_ip_info.province
+        address += remote_ip_info.city
+      console.log 'Address is ' + address
+      if address isnt ''
+        Meteor.users.update Meteor.userId(),{$set:{'profile.location':address}}
+      else
+        updateFromThirdPartWebsite()
+    else
+      updateFromThirdPartWebsite()
 Accounts.onLogin(()->
   Meteor.setTimeout ()->
     console.log("Accounts.onLogin")
-    window.BMap_loadScriptTime = (new Date).getTime()
-    url = "http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js"
-    $.getScript url, (data, textStatus, jqxhr)->
-      console.log 'status is ' + textStatus
-      address = ''
-      if textStatus is 'success' and remote_ip_info and remote_ip_info.ret is 1
-        console.log 'Remote IP Info is ' + JSON.stringify(remote_ip_info)
-        if remote_ip_info.country and remote_ip_info.country isnt '' and remote_ip_info.country isnt '中国'
-          address += remote_ip_info.country
-          address += ' '
-        if remote_ip_info.province and remote_ip_info.province isnt ''
-          address += remote_ip_info.province
-          address += ' '
-        if remote_ip_info.city and remote_ip_info.city isnt '' and remote_ip_info.city isnt remote_ip_info.province
-          address += remote_ip_info.city
-        console.log 'Address is ' + address
-        if address isnt ''
-          Meteor.users.update Meteor.userId(),{$set:{'profile.location':address}}
-        else
-          updateFromThirdPartWebsite()
-      else
-        updateFromThirdPartWebsite()
+    window.updateMyOwnLocationAddress();
   ,3000
 )
