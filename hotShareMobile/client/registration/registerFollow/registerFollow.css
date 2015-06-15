@@ -2,6 +2,7 @@
 .registerFollow hr{border-color: gray}
 .registerFollow .user_head{position: relative}
 .registerFollow .user_head i{font-size: 38px; position: absolute;top: 30px;right: 20px;}
+.registerFollow .user_head img{border: none;border-radius:50%;}
 .registerFollow .follow_user{font-size: 19px;}
 .registerFollow .container{border:none}
 .registerFollow .container #continue{width: 100%;text-align: center;border: none;border-radius: 8px;padding: 5px;background-color: #00c4ff;font-size: 18px;}
