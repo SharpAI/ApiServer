@@ -1,5 +1,33 @@
 if Meteor.isClient
 
+  getLocation = (userId)->
+    userInfo = UserDetail.findOne {_id:userId}
+    console.log('Get location for user '+ userId + JSON.stringify(userInfo))
+    if userInfo and userInfo.profile
+      if userInfo.profile.location and userInfo.profile.location isnt ''
+        return userInfo.profile.location
+      else if userInfo.profile.lastLogonIP and userInfo.profile.lastLogonIP isnt ''
+        unless Session.get('userLocation_'+userId)
+          console.log 'Get Address from ' + userInfo.profile.lastLogonIP
+          url = "http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js&ip="+userInfo.profile.lastLogonIP
+          $.getScript url, (data, textStatus, jqxhr)->
+            console.log 'status is ' + textStatus
+            address = ''
+            if textStatus is 'success' and remote_ip_info and remote_ip_info.ret is 1
+              console.log 'Remote IP Info is ' + JSON.stringify(remote_ip_info)
+              if remote_ip_info.country and remote_ip_info.country isnt '' and remote_ip_info.country isnt '中国'
+                address += remote_ip_info.country
+                address += ' '
+              if remote_ip_info.province and remote_ip_info.province isnt ''
+                address += remote_ip_info.province
+                address += ' '
+              if remote_ip_info.city and remote_ip_info.city isnt '' and remote_ip_info.city isnt remote_ip_info.province
+                address += remote_ip_info.city
+              console.log 'Address is ' + address
+              if address isnt ''
+                Session.set('userLocation_'+userId,address)
+        return Session.get('userLocation_'+userId)
+
   suggestCurrentPost = (userId)->
     username = Meteor.user().username
     if Meteor.user().profile.fullname
@@ -212,6 +240,8 @@ if Meteor.isClient
       withChat
     profile:->
       UserDetail.findOne {_id: Session.get("ProfileUserId1")}
+    location:->
+      getLocation(Session.get("ProfileUserId1"))
     isFollowed:()->
       fcount = Follower.find({"followerId":Session.get("ProfileUserId1")}).count()
       if fcount > 0
@@ -276,6 +306,8 @@ if Meteor.isClient
       withChat
     profile:->
       UserDetail.findOne {_id: Session.get("ProfileUserId2")}
+    location:->
+      getLocation(Session.get("ProfileUserId2"))
     isFollowed:()->
       fcount = Follower.find({"followerId":Session.get("ProfileUserId2")}).count()
       if fcount > 0
@@ -341,6 +373,8 @@ if Meteor.isClient
       withChat
     profile:->
       UserDetail.findOne {_id: Session.get("ProfileUserId3")}
+    location:->
+      getLocation(Session.get("ProfileUserId3"))
     isFollowed:()->
       fcount = Follower.find({"followerId":Session.get("ProfileUserId3")}).count()
       if fcount > 0

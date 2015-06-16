@@ -37,7 +37,8 @@ if(Meteor.isServer){
             var fcount = Follower.find({"userId":userId,"followerId":taId}).count();
             if(fcount === 0)
             {
-                var taInfo = Meteor.users.findOne({_id: taId},{fields: {'username':1,'email':1,'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1}});
+                var taInfo = Meteor.users.findOne({_id: taId},{fields: {'username':1,'email':1,'profile.fullname':1,
+                    'profile.icon':1, 'profile.desc':1, 'profile.location':1,'profile.lastLogonIP':1}});
                 if (taInfo){
                     try{
                         fields.location = taInfo.profile.location;
@@ -74,7 +75,8 @@ if(Meteor.isServer){
                         fields.count = meetItem.count;
                         fields.meetOnPostId = meetItem.meetOnPostId;
                         var taInfo = Meteor.users.findOne({_id: fields.ta},{fields: {'username':1,'email':1,
-                            'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1}});
+                            'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1,
+                            'profile.lastLogonIP':1}});
                         if (taInfo){
                             try{
                                 fields.location = taInfo.profile.location;
@@ -113,7 +115,8 @@ if(Meteor.isServer){
                             fields.ta = meetItem.ta;
                             fields.count = meetItem.count;
                             var taInfo = Meteor.users.findOne({_id: fields.ta},{fields: {'username':1,'email':1,
-                                'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1}});
+                                'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1,
+                                'profile.lastLogonIP':1}});
                             if (taInfo){
                                 try{
                                     fields.location = taInfo.profile.location;
@@ -170,7 +173,8 @@ if(Meteor.isServer){
     var followerChangedForUserDetailDeferHandle = function(self,fields,userId) {
         Meteor.defer(function(){
             var info = Meteor.users.findOne({_id: fields.followerId}, {fields: {'username': 1,
-                'email': 1, 'profile.fullname': 1, 'profile.icon': 1, 'profile.desc': 1, 'profile.location': 1}});
+                'email': 1, 'profile.fullname': 1, 'profile.icon': 1, 'profile.desc': 1, 'profile.location': 1,
+                'profile.lastLogonIP':1}});
             if (info) {
                 self.added("userDetail", info._id, info);
                 getViewLists(self,info._id,3);
