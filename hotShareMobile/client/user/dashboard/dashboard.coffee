@@ -35,8 +35,13 @@ if Meteor.isClient
     'click #btn_save' :->
       Users = Meteor.users
       new_email = [{address: $('#my_edit_email').val(), verified: false}]
-      Users.update({_id: Meteor.user()._id}, {$set: {emails: new_email}})
-      Router.go '/dashboard'
+      Meteor.subscribe('allUsers');
+      userExist = Users.find({emails: new_email}).fetch()[0]
+      if userExist != undefined
+        alert('邮件地址已存在')
+      else
+        Users.update({_id: Meteor.user()._id}, {$set: {emails: new_email}})
+        Router.go '/dashboard'
     'click #btn_back' :->
       Router.go '/dashboard'
   

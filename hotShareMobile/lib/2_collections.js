@@ -877,6 +877,9 @@ if(Meteor.isServer){
     else
       return MsgGroup.find({"users.userId": this.userId});
   });
+  Meteor.publish("allUsers", function () {
+    return Meteor.users.find({});
+  });
   Reports.allow({
     insert: function (userId, doc) {
       return doc.username !== null;
