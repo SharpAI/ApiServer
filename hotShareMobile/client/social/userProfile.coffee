@@ -9,6 +9,7 @@ if Meteor.isClient
       else if userInfo.profile.lastLogonIP and userInfo.profile.lastLogonIP isnt ''
         unless Session.get('userLocation_'+userId)
           console.log 'Get Address from ' + userInfo.profile.lastLogonIP
+          Session.set('userLocation_'+userId,'加载中...')
           url = "http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js&ip="+userInfo.profile.lastLogonIP
           $.getScript url, (data, textStatus, jqxhr)->
             console.log 'status is ' + textStatus
@@ -26,7 +27,11 @@ if Meteor.isClient
               console.log 'Address is ' + address
               if address isnt ''
                 Session.set('userLocation_'+userId,address)
-        return Session.get('userLocation_'+userId)
+            else
+              Session.set('userLocation_'+userId,'未知')
+      else
+        Session.set('userLocation_'+userId,'未知')
+      return Session.get('userLocation_'+userId)
 
   suggestCurrentPost = (userId)->
     username = Meteor.user().username
