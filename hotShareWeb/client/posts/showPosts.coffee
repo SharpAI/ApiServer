@@ -23,6 +23,14 @@ if Meteor.isClient
         Meteor.subscribe "comment",Session.get("postContent")._id
         Meteor.subscribe "viewers",Session.get("postContent")._id
       ,500
+  onUserProfile = ->
+    @PopUpBox = $('.popUpBox').bPopup
+      positionStyle: 'fixed'
+      position: [0, 0]
+      onClose: ->
+        Session.set('displayUserProfileBox',false)
+      onOpen: ->
+        Session.set('displayUserProfileBox',true)
   Template.showPosts.rendered=->
     $('.mainImage').css('height',$(window).height()*0.55)
     postContent = Session.get("postContent")
@@ -82,9 +90,11 @@ if Meteor.isClient
       $(textarea).css('height', '')
       sizex = $(itemElem).attr("data-sizex")
       sizey_orig = parseInt($(itemElem).attr("data-sizey"))
+
       if sizey isnt sizey_orig
         $(itemElem).attr("data-sizey", sizey)
         gridster.resize_widget($(itemElem), sizex,sizey)
+
       height = sizey*min_widget_height - 10
       $(itemElem).css("line-height", height+'px')
     )
@@ -154,6 +164,11 @@ if Meteor.isClient
     #  PUB.toast("您的手机版本过低，部分图片可能产生变形。");
 
   Template.showPosts.helpers
+    getPub:->
+      self = this
+      self.pub = self.pub || []
+      _.map self.pub, (doc, index, cursor)->
+        _.extend(doc, {index: index})
     displayCommentInputBox:()->
       Session.get('displayCommentInputBox')
     inWeiXin: ()->
@@ -194,10 +209,12 @@ if Meteor.isClient
         else
           window.location.href=Session.get("postContent").fromUrl
     'click .user':->
-      Session.set("ProfileUserId", this.owner)
-      Meteor.subscribe("userinfo", this.owner)
-      Meteor.subscribe("recentPostsViewByUser", this.owner)
-      Session.set("Social.LevelOne.Menu", 'userProfile')
+      Session.set("ProfileUserId1", this.owner)
+      Session.set("currentPageIndex",-1)
+      #Meteor.subscribe("userinfo", this.owner)
+      #Meteor.subscribe("recentPostsViewByUser", this.owner)
+      onUserProfile()
+      #Session.set("Social.LevelOne.Menu", 'userProfile')
     "click .showPostsFollowMe span a":->
       if Meteor.isCordova
         cordova.plugins.clipboard.copy('故事贴')
@@ -376,6 +393,7 @@ if Meteor.isClient
 
       i = 0
       selected = 0
+      console.log "=============click on image index is: " + this.index
       for image in Session.get('postContent').pub
         if image.imgUrl
           if image.imgUrl is this.imgUrl
@@ -420,6 +438,11 @@ if Meteor.isClient
       else
         return true
   heartOnePost = ->
+    Meteor.subscribe "refcomments", ()->
+      Meteor.setTimeout ()->
+        refComment = RefComments.find()
+        if refComment.count() > 0
+          Session.set("refComment",refComment.fetch())
     if Meteor.user()
       postId = Session.get("postContent")._id
       FollowPostsId = Session.get("FollowPostsId")
@@ -476,6 +499,11 @@ if Meteor.isClient
           FollowPosts.update {_id: FollowPostsId},{$inc: {retweet: 1}}
           return
     'click .blueHeart':->
+      Meteor.subscribe "refcomments", ()->
+          Meteor.setTimeout ()->
+            refComment = RefComments.find()
+            if refComment.count() > 0
+              Session.set("refComment",refComment.fetch())
       if Meteor.user()
         postId = Session.get("postContent")._id
         FollowPostsId = Session.get("FollowPostsId")

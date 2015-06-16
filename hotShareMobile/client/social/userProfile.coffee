@@ -136,7 +136,7 @@ if Meteor.isClient
     Tracker.autorun (handler)->
       window.userProfileTrackerHandler = handler
       if UserProfilesSwiper.pageIs('userProfilePage1')
-        if Session.get("currentPageIndex") isnt 1
+        if Session.get("currentPageIndex") isnt 1 and Session.get("currentPageIndex") isnt -1
           userProfileList = Session.get("userProfileList")
           if Session.get("currentPageIndex") is 2
             currentProfileIndex = Session.get("currentProfileIndex")-1
@@ -163,7 +163,10 @@ if Meteor.isClient
             else
               Session.set("ProfileUserId2", userProfileList[nextProfileIndex].followerId)
           Session.set("currentPageIndex", 1)
-        UserProfilesSwiper.leftRight('userProfilePage3', 'userProfilePage2')
+        if Session.get("currentPageIndex") is -1
+          UserProfilesSwiper.leftRight(null, null)
+        else
+          UserProfilesSwiper.leftRight('userProfilePage3', 'userProfilePage2')
 
       if UserProfilesSwiper.pageIs('userProfilePage2')
         if Session.get("currentPageIndex") isnt 2
