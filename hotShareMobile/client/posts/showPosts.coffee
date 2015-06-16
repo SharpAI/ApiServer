@@ -212,8 +212,8 @@ if Meteor.isClient
     'click .user':->
       Session.set("ProfileUserId1", this.owner)
       Session.set("currentPageIndex",-1)
-      #Meteor.subscribe("userinfo", this.owner)
-      #Meteor.subscribe("recentPostsViewByUser", this.owner)
+      Meteor.subscribe("userinfo", this.owner)
+      Meteor.subscribe("recentPostsViewByUser", this.owner)
       onUserProfile()
       #Session.set("Social.LevelOne.Menu", 'userProfile')
     "click .showPostsFollowMe span a":->
