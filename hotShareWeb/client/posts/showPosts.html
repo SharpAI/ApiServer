@@ -34,6 +34,7 @@
               {{/if}}
               <li role="presentation"><a id="WXSessionShare" role="menuitem" tabindex="-1" ><i class="fa fa-weixin fa-fw"></i>分享给微信好友</a></li>
               <li role="presentation"><a id="WXTimelineShare" role="menuitem" tabindex="-1" ><i class="fa fa-weixin fa-fw"></i>分享到微信朋友圈</a></li>
+              <li role="presentation"><a id="QQShare" role="menuitem" tabindex="-1" ><i class="fa fa-qq fa-fw"></i>分享到QQ</a></li>
               <li role="presentation"><a id="socialShare" role="menuitem" tabindex="-1" ><i class="fa fa-share-alt fa-fw"></i>分享到更多应用</a></li>
             </ul>
           </div>
@@ -58,12 +59,24 @@
 
         <div class="gridster">
           <ul id="test">
-              {{#each pub}}
+              {{#each getPub}}
                   {{#if isImage}}
                       <li class='resortitem' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
                           <div class="imgdiv">
                               {{>padding}}
-                              <img class="lazy" data-original="{{imgUrl}}" style="object-fit:cover;width:100%;height:100%;position:absolute;{{style}}" >
+                              <img class="lazy" data-original="{{imgUrl}}" style="object-fit:cover;width:100%;height:100%;position:absolute;{{style}};z-index=1;" >
+                              <!--
+                              <div class="like_div" style="position:absolute;z-index=2;  right: 5px;bottom: 10px;">
+                                    {{#if  isMyLike pub_Heart}}
+                                      <img class ="like_img" src="/img/like.png" style="display:block">
+                                    {{else}}
+                                      <img class ="like_img" src="/img/unlike.png" style="display:block">
+                                    {{/if}}
+                              </div>
+                              <div class="count_div" style="position:absolute;z-index=2; ">
+                                  {{like_Count}}
+                              </div>
+                              -->
                           </div>
                       </li>
                   {{else}}

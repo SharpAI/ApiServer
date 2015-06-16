@@ -23,6 +23,14 @@ if Meteor.isClient
         Meteor.subscribe "comment",Session.get("postContent")._id
         Meteor.subscribe "viewers",Session.get("postContent")._id
       ,500
+  onUserProfile = ->
+    @PopUpBox = $('.popUpBox').bPopup
+      positionStyle: 'fixed'
+      position: [0, 0]
+      onClose: ->
+        Session.set('displayUserProfileBox',false)
+      onOpen: ->
+        Session.set('displayUserProfileBox',true)
   Template.showPosts.rendered=->
     $('.mainImage').css('height',$(window).height()*0.55)
     $('.comment').css('width',$(window).width()-120)
@@ -202,10 +210,12 @@ if Meteor.isClient
         else
           window.location.href=Session.get("postContent").fromUrl
     'click .user':->
-      Session.set("ProfileUserId", this.owner)
-      Meteor.subscribe("userinfo", this.owner)
-      Meteor.subscribe("recentPostsViewByUser", this.owner)
-      Session.set("Social.LevelOne.Menu", 'userProfile')
+      Session.set("ProfileUserId1", this.owner)
+      Session.set("currentPageIndex",-1)
+      #Meteor.subscribe("userinfo", this.owner)
+      #Meteor.subscribe("recentPostsViewByUser", this.owner)
+      onUserProfile()
+      #Session.set("Social.LevelOne.Menu", 'userProfile')
     "click .showPostsFollowMe span a":->
       if Meteor.isCordova
         cordova.plugins.clipboard.copy('故事贴')
