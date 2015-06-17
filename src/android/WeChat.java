@@ -74,7 +74,7 @@ public class WeChat extends CordovaPlugin {
 
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
-        String appId = webView.getProperty(WECHAT_APPID_KEY, "wxd930ea5d5a258f4f");
+        String appId = webView.getPreferences().getString(WECHAT_APPID_KEY,"wxd930ea5d5a258f4f");
         api = WXAPIFactory.createWXAPI(webView.getContext(), appId, true);
         api.registerApp(appId);
     }
