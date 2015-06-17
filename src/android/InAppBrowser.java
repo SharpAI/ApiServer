@@ -131,8 +131,7 @@ public class InAppBrowser extends CordovaPlugin {
                     if (SELF.equals(target)) {
                         Log.d(LOG_TAG, "in self");
                         // load in webview
-                        if (url.startsWith("file://") || url.startsWith("javascript:") 
-                                || Config.isUrlWhiteListed(url)) {
+                        if (url.startsWith("file://") || url.startsWith("javascript:")) {
                             Log.d(LOG_TAG, "loading in webview");
                             webView.loadUrl(url);
                         }
