@@ -1,10 +1,10 @@
-com.clone.phonegap.plugins.pushplugin@2.4.1
-com.file-transfer.baidu.bcs@0.4.22
+com.clone.phonegap.plugins.PushPlugin@https://github.com/solderzzc/PushPlugin/tarball/4e652b9a6dce02ad58f4812cdd10f742f5a3b981
+com.file-transfer.baidu.bcs@https://github.com/solderzzc/cordova-plugin-file-transfer/tarball/88764d4cf9d35b8df264bfd0dfeedd8c4f4e6e6a
 com.ionic.keyboard@https://github.com/driftyco/ionic-plugins-keyboard/tarball/4682535c92f81557d64fa8b438339fdb043d07ef
-com.leon.cordova.wechat@https://github.com/leonzhang1109/wechat-cordova-plugin/tarball/754d371205a8948c9f178009e5cc01ba0dae49a9
-com.moya.imagebase64@https://github.com/shiliutanwei/cordova-plugin-image-base64/tarball/bccd195cbf52f43e53617bf9a6f2fac498603575
+com.leon.cordova.wechat@https://github.com/leonzhang1109/wechat-cordova-plugin/tarball/2df60992bcc11763d094b5bdc2790b593d41c85b
+com.moya.imagebase64@https://github.com/solderzzc/cordova-plugin-image-base64/tarball/1353078bd88276dcf3aeca755d9b9058dfbc3b2c
 com.phonegap.JPushPlugin@https://github.com/leonzhang1109/jpush-phonegap-plugin/tarball/ca7d1332d5ef4999267c1553134cf66868f6df4e
-com.synconset.imagepicker@https://github.com/leonzhang1109/cordova-imagePicker/tarball/92bc17e36076b0d0086eaab5b0945c78599e3e2c
+com.synconset.imagepicker@https://github.com/leonzhang1109/cordova-imagePicker/tarball/c326cb657888da18ee006db131d470b63e65ce64
 com.verso.cordova.clipboard@0.1.0
 de.appplant.cordova.plugin.local-notification@0.7.8
 nl.x-services.plugins.socialsharing@https://github.com/yunhaia/SocialSharing-PhoneGap-Plugin/tarball/75d3661cc9bac4510b79a17b826981014c0bf96d
@@ -13,6 +13,6 @@ org.apache.cordova.device@0.2.12
 org.apache.cordova.device-motion@0.2.11
 org.apache.cordova.dialogs@0.2.10
 org.apache.cordova.file@1.3.1
-org.apache.cordova.inappbrowser@https://github.com/leonzhang1109/cordova-plugin-inappbrowser/tarball/abe87b12568e930539fe7178cd9d644cbbbce167
+org.apache.cordova.inappbrowser@https://github.com/leonzhang1109/cordova-plugin-inappbrowser/tarball/7867d30e4f89134cb57513d2aa6af0294268aca9
 org.apache.cordova.network-information@0.2.15
 org.zy.yuancheng.qq@https://github.com/leonzhang1109/Cordova_QQ/tarball/6f8059749644985d983f6471bf0d2aa647f4b4a6
