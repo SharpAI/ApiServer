@@ -16,7 +16,20 @@ if Meteor.isClient
     Posts:()->
       TopicPosts.find({topicId:Session.get('topicId')}, {sort: {createdAt: -1}})
   Template.topicPosts.events
-    'click .back' :->
-      history.back()
+    'click .back':(event)->
+      $('.home').addClass('animated ' + animateOutUpperEffect);
+      Meteor.setTimeout ()->
+        PUB.back()
+      ,animatePageTrasitionTimeout
     'click .mainImage': (event)->
-      Router.go '/posts/'+this.postId
+      if isIOS
+        if (event.clientY + $('#footer').height()) >=  $(window).height()
+          console.log 'should be triggered in scrolling'
+          return false
+      postId = this.postId
+      $('.home').addClass('animated ' + animateOutUpperEffect);
+      Meteor.setTimeout ()->
+        PUB.page '/posts/'+postId
+      ,animatePageTrasitionTimeout
+      Session.set 'FollowPostsId',this._id
+      return
