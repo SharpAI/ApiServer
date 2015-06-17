@@ -120,8 +120,10 @@
 		</config-file>
 		
 		<config-file target="AndroidManifest.xml" parent="/manifest/application">
-		    <activity android:label="@string/multi_app_name" android:name="com.synconset.MultiImageChooserActivity" android:theme="@android:style/Theme.Holo.Light">
-                <intent-filter />
+            <activity android:label="@string/multi_app_name" android:name="com.synconset.MultiImageChooserActivity" android:theme="@android:style/Theme.Holo.Light">
+                <intent-filter>
+                    <action android:name="com.synconset.MultiImageChooserActivity" />
+                </intent-filter>
             </activity>
        	<activity
             android:name="com.photoselector.ui.PhotoSelectorActivity"
