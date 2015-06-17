@@ -17,6 +17,14 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:theme="@android:style/Theme.Light.NoTitleBar" >
+        <activity 
+            android:label="@string/multi_app_name"
+            android:name="com.synconset.MultiImageChooserActivity"
+            android:theme="@android:style/Theme.Holo.Light">
+            <intent-filter>
+                <action android:name="com.synconset.MultiImageChooserActivity" />
+            </intent-filter>
+        </activity>
         <activity
             android:name="com.photoselector.ui.PhotoSelectorActivity"
             android:label="图片选择" >
