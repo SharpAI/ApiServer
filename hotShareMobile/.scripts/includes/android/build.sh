@@ -1,11 +1,13 @@
 # URL of crosswalk release (includes both x86 and arm processor versions)
 CROSSWALK_RELEASE="https://s3.amazonaws.com/meteor-mobile/crosswalk-11.40.277.1.zip";
+CROSSWALK_RELEASE="https://download.01.org/crosswalk/releases/crosswalk/android/beta/12.41.296.9/crosswalk-12.41.296.9.zip"
 
 # Directory of build cordova project for android
 ANDROID_DIR="${METEOR_ROOT}/.meteor/local/cordova-build/platforms/android";
 
 # Directory where crosswalk release is stored
 CROSSWALK_DIR="${METEOR_ROOT}/.build-tools/crosswalk-11.40.277.1";
+CROSSWALK_DIR="${METEOR_ROOT}/.build-tools/crosswalk-12.41.296.9";
 
 # Android SDK
 SDK="${ANDROID_HOME}"
@@ -26,8 +28,8 @@ SDK_PLATFORM_TOOLS="${SDK}/platform-tools";
 if [ ! -d "$CROSSWALK_DIR" ]; then
   mkdir "${METEOR_ROOT}/.build-tools"
   cd "${METEOR_ROOT}/.build-tools";
-  curl -sS $CROSSWALK_RELEASE > crosswalk-11.40.277.1.zip
-  unzip crosswalk-11.40.277.1.zip -d ./;
+  curl -sS $CROSSWALK_RELEASE > crosswalk-12.41.296.9.zip
+  unzip crosswalk-12.41.296.9.zip -d ./;
   cd ../;
 fi
 
@@ -54,7 +56,6 @@ rm -Rf ant-build;
 # Move to .meteor/local/cordova-build
 cd "${ANDROID_DIR}/../../";
 
-cp "${METEOR_ROOT}/cordova-build-overide/plugins/org.apache.cordova.splashscreen/src/android/SplashScreen.java" platforms/android/src/org/apache/cordova/splashscreen/SplashScreen.java
 
 # Build cordova project
 if [ "${DEBUG_MODE}" = true ]; then
