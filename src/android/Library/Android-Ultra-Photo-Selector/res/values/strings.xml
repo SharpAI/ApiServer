@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">UltraPhotoSelector</string>
+    <string name="app_name">故事贴</string>
     <string name="more_than_max">Exceeds the upper limit</string>
     <string name="preview">Preview</string>
     <string name="recent_photos">Recent photos</string>

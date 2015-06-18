@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">PhotoSelector</string>
+    <string name="app_name">故事贴</string>
     <string name="more_than_max">超过了上限</string>
     <string name="preview">预览</string>
     <string name="recent_photos">最近照片</string>
