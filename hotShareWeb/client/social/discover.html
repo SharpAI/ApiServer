@@ -1,45 +1,51 @@
 <template name="discover">
   <div class="comFadeIn discover" style="position:absolute;top: 0px;">
-    <h2>敬请期待</h2>
-    <h1>Coming Soon</h1>
     {{#if hasDiscover}}
       <!--朋友圈 start-->
       <div class="disTop">
         <div class="disBg"></div>
-        <div class="disRight">
-          <p class="disname">DreamTime</p>
-          <div class="dispic"><img src="img/demo-1.jpg"> </div>
+        <div class="disLeft">
+          <p class="disname">朋友圈</p>
+          <p class="disdesc">看过当前帖子的朋友，还看过...</p>
         </div>
       </div>
-      <div class="disrelease">
-          <div class="disrelease-left"><img src="img/48X48follow_60.png"> </div>
-          <div class="disrelease-right">
-            <p><a href="#">DreamTime</a> </p>
-            <p>一个卖火柴的小女孩在街上走着，她的衣服又旧又破，打着许多补丁，脚上穿着一双妈妈的大拖鞋，但是这又有什么用呢？她还是又冷又饿，风吹得她瑟瑟发抖.她的口袋里装着许多盒火柴，一路上不住口地叫着：“卖火柴呀，卖火柴呀！”人们都在买节日的食品和礼物，又有谁会理她呢？</p>
-            <p><a href="#">全文</a> </p>
-            <div class="disImg"></div>
-            <p>2小时前<span>评论</span></p>
-            <div class="dz">
-              <p class="bod"><a href="#">点赞</a> <a href="#">路人甲</a> <a href="#">路人乙</a> </p>
-              <p><a href="#">路人甲：</a>默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞</p>
-            </div>
-          </div>
-      </div>
-      <div class="disrelease">
-        <div class="disrelease-left"><img src="img/48X48follow_60.png"> </div>
-        <div class="disrelease-right">
-          <p><a href="#">DreamTime</a> </p>
-          <p>一个卖火柴的小女孩在街上走着，她的衣服又旧又破，打着许多补丁，脚上穿着一双妈妈的大拖鞋，但是这又有什么用呢？她还是又冷又饿，风吹得她瑟瑟发抖.她的口袋里装着许多盒火柴，一路上不住口地叫着：“卖火柴呀，卖火柴呀！”人们都在买节日的食品和礼物，又有谁会理她呢？</p>
-          <p><a href="#">全文</a> </p>
-          <div class="disImg"></div>
-          <p>2小时前<span>评论</span></p>
-          <div class="dz">
-            <p class="bod"><a href="#">点赞</a> <a href="#">路人甲</a> <a href="#">路人乙</a> </p>
-            <p><a href="#">路人甲：</a>默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞默默点赞</p>
-          </div>
-        </div>
-      </div>
+      {{>moments}}
       <!--朋友圈 end-->
     {{/if}}
   </div>
+</template>
+<template name="moments">
+      <div class="moments">
+            {{#if loading}}
+                <div>正在加载中...</div>
+            {{/if}}
+            {{#if loadError}}
+                <div>加载失败，请检查网络设置或稍后重试</div>
+            {{/if}}
+            <div id="wrapper">
+            {{#each moments}}
+                <div id="list">
+                    <div class="icon">
+                       <img src="{{userIcon}}" width="40" height="40"/>
+                    </div>
+                    <div class="user_name">
+                      <h2>{{username}}&nbsp;<span>阅读了一个故事</span></h2>
+                          <dl>
+                             <dt>
+                                <img class="post_pic" src="{{mainImage}}" width="40" height="40"/>
+                             </dt>
+                             <dd>{{title}}&nbsp;&nbsp;{{addontitle}}</dd>
+                          </dl>
+                      <p>{{time_diff createdAt}}</p>
+                    </div>
+                    <div class="clear"></div>
+                    </div>
+            {{/each}}
+            {{#if moreResults}}
+            <div id="showMoreMomentsResults" style="margin-left: 25px;">
+                <span class="loading">加载中...</span>
+            </div>
+            {{/if}}
+            </div>
+      </div>
 </template>

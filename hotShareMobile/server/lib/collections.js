@@ -5,6 +5,88 @@ Meteor.startup(function(){
         android: "0.9.2"
       });
     }
+    Meteor.defer(function(){
+	    if(Moments.find().count() === 0){
+	      try{
+		var views=Viewers.find({},{sort:{createdAt: 1}});
+		if(views.count()>0){
+		  views.forEach(function(data){
+		                //根据看过帖子的人的userId，找到看过的帖子
+		                var viewposts=Viewers.find({userId:data.userId,postId:{$ne:data.postId}},{sort:{createdAt: 1}});
+		                var currentpost = Posts.findOne(data.postId);
+		                var userinfo = Meteor.users.findOne({_id: data.userId},{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
+		                if(viewposts.count()>0 && currentpost && userinfo){
+		                    viewposts.forEach(function(pdata){
+		                        var readpost = Posts.findOne(pdata.postId);
+		                        if(currentpost && readpost){
+				                //1. 给当前帖子，增加所有看过的帖子
+				                if(Moments.findOne({currentPostId:currentpost._id, readPostId:readpost._id})){
+				                  Moments.update(
+				                    {currentPostId:currentpost._id, readPostId:readpost._id},
+				                    {$set:{
+				                            currentPostId:currentpost._id,
+				                            userId:data.userId,
+				                            userIcon:userinfo.profile.icon,
+				                            username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
+				                            readPostId:readpost._id,
+				                            mainImage:readpost.mainImage,
+				                            title:readpost.title,
+				                            addontitle:readpost.addontitle,
+				                            createdAt:pdata.createdAt
+				                          }
+				                    }
+				                  );
+				                }else{
+				                  Moments.insert({
+				                    currentPostId:currentpost._id,
+				                    userId:data.userId,
+				                    userIcon:userinfo.profile.icon,
+				                    username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
+				                    readPostId:readpost._id,
+				                    mainImage:readpost.mainImage,
+				                    title:readpost.title,
+				                    addontitle:readpost.addontitle,
+				                    createdAt:pdata.createdAt
+				                  });
+				                }
+				                //2. 给所有看过的帖子，增加当前帖子
+				                if(Moments.findOne({currentPostId:readpost._id, readPostId:currentpost._id})){
+				                  Moments.update(
+				                    {currentPostId:readpost._id, readPostId:currentpost._id},
+				                    {$set:{
+				                            currentPostId:readpost._id,
+				                            userId:data.userId,
+				                            userIcon:userinfo.profile.icon,
+				                            username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
+				                            readPostId:currentpost._id,
+				                            mainImage:currentpost.mainImage,
+				                            title:currentpost.title,
+				                            addontitle:currentpost.addontitle,
+				                            createdAt:new Date()
+				                          }
+				                    }
+				                  );
+				                }else{
+				                  Moments.insert({
+				                    currentPostId:readpost._id,
+				                    userId:data.userId,
+				                    userIcon:userinfo.profile.icon,
+				                    username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
+				                    readPostId:currentpost._id,
+				                    mainImage:currentpost.mainImage,
+				                    title:currentpost.title,
+				                    addontitle:currentpost.addontitle,
+				                    createdAt:new Date()
+				                  });
+				                }
+			                }
+		                    });
+		                }
+		  });
+		}
+	      }catch(error){}
+	    }
+    });
     if(RefComments.find().count() === 0){
       RefComments.insert({
         text: "看贴回帖是一种美德",

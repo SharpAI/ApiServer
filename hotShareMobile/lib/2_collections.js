@@ -18,6 +18,7 @@ MsgSession = new Meteor.Collection('msgsession');
 MsgGroup = new Meteor.Collection('msggroup');
 Meets = new Meteor.Collection('meets');
 Versions = new Meteor.Collection('versions');
+Moments = new Meteor.Collection('moments');
 if(Meteor.isClient){
   Newfriends = new Meteor.Collection("newfriends");
   ViewLists = new Meteor.Collection("viewlists");
@@ -251,6 +252,77 @@ if(Meteor.isServer){
                                 createdAt: new Date()
                             });
                         }
+                        //根据看过帖子的人的userId，找到看过的帖子
+                        var viewposts=Viewers.find({userId:userId,postId:{$ne:postId}});
+                        var currentpost = Posts.findOne(postId);
+                        var userinfo = Meteor.users.findOne({_id: userId},{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
+                        if(viewposts.count()>0 && currentpost && userinfo){
+                            viewposts.forEach(function(pdata){
+                                var readpost = Posts.findOne(pdata.postId);
+                                if(currentpost && readpost){
+		                        //1. 给当前帖子，增加所有看过的帖子
+		                        if(Moments.findOne({currentPostId:currentpost._id, readPostId:readpost._id})){
+		                          Moments.update(
+		                            {currentPostId:currentpost._id, readPostId:readpost._id},
+		                            {$set:{
+		                                    currentPostId:currentpost._id,
+		                                    userId:userId,
+		                                    userIcon:userinfo.profile.icon,
+		                                    username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
+		                                    readPostId:readpost._id,
+		                                    mainImage:readpost.mainImage,
+		                                    title:readpost.title,
+		                                    addontitle:readpost.addontitle,
+		                                    createdAt:pdata.createdAt
+		                                  }
+		                            }
+		                          );
+		                        }else{
+		                          Moments.insert({
+		                            currentPostId:currentpost._id,
+		                            userId:userId,
+		                            userIcon:userinfo.profile.icon,
+		                            username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
+		                            readPostId:readpost._id,
+		                            mainImage:readpost.mainImage,
+		                            title:readpost.title,
+		                            addontitle:readpost.addontitle,
+		                            createdAt:pdata.createdAt
+		                          });
+		                        }
+		                        //2. 给所有看过的帖子，增加当前帖子
+		                        if(Moments.findOne({currentPostId:readpost._id, readPostId:currentpost._id})){
+		                          Moments.update(
+		                            {currentPostId:readpost._id, readPostId:currentpost._id},
+		                            {$set:{
+		                                    currentPostId:readpost._id,
+		                                    userId:userId,
+		                                    userIcon:userinfo.profile.icon,
+		                                    username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
+		                                    readPostId:currentpost._id,
+		                                    mainImage:currentpost.mainImage,
+		                                    title:currentpost.title,
+		                                    addontitle:currentpost.addontitle,
+		                                    createdAt:new Date()
+		                                  }
+		                            }
+		                          );
+		                        }else{
+		                          Moments.insert({
+		                            currentPostId:readpost._id,
+		                            userId:userId,
+		                            userIcon:userinfo.profile.icon,
+		                            username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
+		                            readPostId:currentpost._id,
+		                            mainImage:currentpost.mainImage,
+		                            title:currentpost.title,
+		                            addontitle:currentpost.addontitle,
+		                            createdAt:new Date()
+		                          });
+		                        }
+	                        }
+                            });
+                        }
                     });
                 }
             }
@@ -328,6 +400,7 @@ if(Meteor.isServer){
     var postsRemoveHookDeferHandle = function(userId,doc){
         Meteor.defer(function(){
             try{
+                Moments.remove({$or:[{currentPostId:doc._id},{readPostId:doc._id}]});
                 FollowPosts.remove({
                     postId:doc._id
                 });
@@ -708,6 +781,14 @@ if(Meteor.isServer){
       }
       else {
           return Follower.find({userId:this.userId},{limit:limit});
+      }
+  });
+  Meteor.publish("momentsWithLimit", function(postId,limit) {
+      if(this.userId === null|| !Match.test(limit, Number)) {
+          return [];
+      }
+      else{
+          return Moments.find({currentPostId: postId},{sort: {createdAt: -1},limit:limit});
       }
   });
   Meteor.publish("followposts", function(limit) {
@@ -1320,16 +1401,20 @@ if(Meteor.isClient){
   var FEEDS_ITEMS_INCREMENT = 20;
   var FOLLOWS_ITEMS_INCREMENT = 10;
   var MYPOSTS_ITEMS_INCREMENT = 4;
+  var MOMENTS_ITEMS_INCREMENT = 10;
+  var POST_ID = null;
   Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
   Session.setDefault('feedsitemsLimit', FEEDS_ITEMS_INCREMENT);
   Session.setDefault('followersitemsLimit', FOLLOWS_ITEMS_INCREMENT);
   Session.setDefault('followeesitemsLimit', FOLLOWS_ITEMS_INCREMENT);
   Session.setDefault('mypostsitemsLimit', MYPOSTS_ITEMS_INCREMENT);
+  Session.setDefault('momentsitemsLimit', MOMENTS_ITEMS_INCREMENT);
   Session.set('followPostsCollection','loading');
   Session.set('feedsCollection','loading');
   Session.set('followersCollection','loading');
   Session.set('followeesCollection','loading');
   Session.set('myPostsCollection','loading');
+  Session.set('momentsCollection','loading');
   var subscribeFollowPostsOnStop = function(err){
       console.log('followPostsCollection ' + err);
       Session.set('followPostsCollection','error');
@@ -1404,6 +1489,19 @@ if(Meteor.isClient){
                       Session.set('myPostsCollection','loaded');
                   }
               });
+              if(Session.get("postContent")){
+                if(POST_ID !== Session.get("postContent")._id)
+                {
+                  POST_ID = Session.get("postContent")._id;
+                  Session.set('momentsitemsLimit', MOMENTS_ITEMS_INCREMENT);
+                }
+                Meteor.subscribe('momentsWithLimit', Session.get("postContent")._id, Session.get('momentsitemsLimit'), {
+                    onReady: function(){
+                        console.log('momentsCollection loaded');
+                        Session.set('momentsCollection','loaded');
+                    }
+                });
+              }
           }
       });
   }
