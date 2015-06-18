@@ -24,5 +24,6 @@
     </config-file>
 
     <source-file src="src/android/ImageBase64.java" target-dir="src/com/moya/imagebase64" />
+    <source-file src="src/android/FileHelper.java" target-dir="src/com/moya/imagebase64" />
   </platform>
 </plugin>
