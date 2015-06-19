@@ -1,4 +1,6 @@
 #!/bin/bash
+echo 'Applying changes from meteor build directory'
+cp -rf .meteor/local/build/programs/web.cordova/* .meteor/local/cordova-build/www/application/
 cd .meteor/local/cordova-build/
 echo 'Updating cordova-android to the latest'
 cordova platform update android
@@ -17,9 +19,9 @@ cordova plugin add https://github.com/solderzzc/cordova-plugin-file-transfer.git
 echo 'Fixing up the config.xml for whitelist access control'
 printf '%s\n' /content/a '  <allow-navigation href="*" subdomain="true" />' . w q | ex -s config.xml 
 printf '%s\n' /content/a '  <access origin="*" subdomains="true"/>' . w q | ex -s config.xml 
-cp ../../../../cordova-build-overide/platforms/android/assets/www/index.html platforms/android/assets/www/index.html
+cp ../../../../cordova-build-overide/platforms/android/assets/www/index.html www/index.html
 
 echo 'Starting build'
-cordova compile android
+cordova build android
 cd ../../../
 
