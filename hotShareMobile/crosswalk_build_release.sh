@@ -12,7 +12,7 @@ cordova plugin add https://github.com/MobileChromeApps/cordova-plugin-crosswalk-
 cordova plugin add https://github.com/solderzzc/cordova-plugin-file-transfer.git#r0.5.2
 printf '%s\n' /content/a '  <allow-navigation href="*" subdomain="true" />' . w q | ex -s config.xml 
 printf '%s\n' /content/a '  <access origin="*" subdomains="true"/>' . w q | ex -s config.xml 
-printf "%s\n" /head/a "  <meta http-equiv=\"Content-Security-Policy\" content=\"default-src * data: gap: https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://int.dpool.sina.com.cn\"; >" . w q | ex -s platforms/android/assets/www/index.html
+cp ../../../../cordova-build-overide/platforms/android/assets/www/index.html platforms/android/assets/www/index.html
 cordova compile android --release
 cd ../../../
 cp .meteor/local/cordova-build/platforms/android/build/outputs/apk/android-armv7-release-unsigned.apk android-armv7-release-unsigned.apk
