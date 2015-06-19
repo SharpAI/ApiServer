@@ -22,11 +22,21 @@ if Meteor.isClient
     'click .back':(event)->
         PUB.back()
     'click .rightButton':(event)->
-        SavedDrafts
-          .find {owner: Meteor.userId()}
-          .forEach (saveddrafts)->
-            SavedDrafts.remove saveddrafts._id
-        PUB.back()
+        navigator.notification.confirm('这个操作无法撤销', (r)->
+          console.log('r is ' + r)
+          if r is 2
+            return
+          #Clear All Saved Drafts
+          #SavedDrafts.remove {owner: Meteor.userId()}
+          SavedDrafts
+            .find {owner: Meteor.userId()}
+            .forEach (saveddrafts)->
+              SavedDrafts.remove saveddrafts._id
+          Meteor.setTimeout ()->
+            PUB.back()
+          ,animatePageTrasitionTimeout
+          return
+        , '您确定删除全部草稿吗？', ['继续删除','放弃删除']);
     'click .mainImage':(e)->
       #Use for if user discard change on Draft
       TempDrafts
