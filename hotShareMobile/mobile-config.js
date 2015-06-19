@@ -48,7 +48,8 @@ App.configurePlugin('nl.x-services.plugins.socialsharing', {
 });
 
 App.configurePlugin('com.leon.cordova.wechat', {
-    APP_ID: 'wxcfcf19c225a36351'
+    APP_ID: 'wxcfcf19c225a36351',
+    QQ_APP_ID: '1104127289'
 });
 
 App.configurePlugin('org.zy.yuancheng.qq', {
