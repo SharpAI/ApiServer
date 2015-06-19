@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<widget id="org.hotshare.everywhere" version="0.9.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>hotShare</name>
+  <description>Share everything with everyone</description>
+  <author href="" email="">hotShare Design Team</author>
+  <preference name="webviewbounce" value="false"/>
+  <preference name="DisallowOverscroll" value="true"/>
+  <preference name="AutoHideSplashScreen" value="false"/>
+  <preference name="SplashScreen" value="screen"/>
+  <preference name="SplashScreenDelay" value="10000"/>
+  <preference name="KeyboardDisplayRequiresUserAction" value="false"/>
+  <preference name="StatusBarOverlaysWebView" value="false"/>
+  <preference name="orientation" value="portrait"/>
+  <preference name="StatusBarBackgroundColor" value="#000000"/>
+  <content src="index.html"/>
+  <allow-navigation href="*" subdomain="true" />
+  <access origin="*" subdomains="true"/>
+  <platform name="ios">
+    <icon src="resources/iphone.icon.png" width="60" height="60"/>
+    <icon src="resources/iphone.icon.png" width="29" height="29"/>
+    <icon src="resources/iphone.icon.png" width="40" height="40"/>
+    <icon src="resources/iphone.icon.png" width="50" height="50"/>
+    <icon src="resources/iphone.icon.png" width="57" height="57"/>
+    <icon src="resources/iphone.icon.png" width="58" height="58"/>
+    <icon src="resources/iphone_2x.icon.png" width="120" height="120"/>
+    <icon src="resources/iphone_2x.icon.png" width="80" height="80"/>
+    <icon src="resources/iphone_2x.icon.png" width="100" height="100"/>
+    <icon src="resources/iphone_2x.icon.png" width="114" height="114"/>
+    <icon src="resources/iphone_3x.icon.png" width="180" height="180"/>
+    <icon src="resources/ipad.icon.png" width="76" height="76"/>
+    <icon src="resources/ipad.icon.png" width="72" height="72"/>
+    <icon src="resources/ipad_2x.icon.png" width="152" height="152"/>
+    <icon src="resources/ipad_2x.icon.png" width="144" height="144"/>
+    <splash src="resources/iphone.splash.png" width="320" height="480"/>
+    <splash src="resources/iphone_2x.splash.png" width="640" height="960"/>
+    <splash src="resources/iphone5.splash.png" width="640" height="1136"/>
+    <splash src="resources/iphone6.splash.png" width="750" height="1334"/>
+    <splash src="resources/iphone6p_portrait.splash.png" width="1242" height="2208"/>
+    <splash src="resources/iphone6p_landscape.splash.png" width="2208" height="1242"/>
+    <splash src="resources/ipad_portrait.splash.png" width="768" height="1004"/>
+    <splash src="resources/ipad_portrait.splash.png" width="768" height="1024"/>
+    <splash src="resources/ipad_portrait_2x.splash.png" width="1536" height="2008"/>
+    <splash src="resources/ipad_portrait_2x.splash.png" width="1536" height="2048"/>
+    <splash src="resources/ipad_landscape.splash.png" width="1024" height="748"/>
+    <splash src="resources/ipad_landscape.splash.png" width="1024" height="768"/>
+    <splash src="resources/ipad_landscape_2x.splash.png" width="2048" height="1496"/>
+    <splash src="resources/ipad_landscape_2x.splash.png" width="2048" height="1536"/>
+  </platform>
+  <platform name="android">
+    <icon src="resources/android_ldpi.icon.png" width="36" height="36"/>
+    <icon src="resources/android_mdpi.icon.png" width="42" height="42"/>
+    <icon src="resources/android_hdpi.icon.png" width="72" height="72"/>
+    <icon src="resources/android_xhdpi.icon.png" width="96" height="96"/>
+    <splash src="resources/android_ldpi_portrait.splash.png" width="320" height="426" density="port-ldpi"/>
+    <splash src="resources/android_ldpi_landscape.splash.png" width="426" height="320" density="land-ldpi"/>
+    <splash src="resources/android_mdpi_portrait.splash.png" width="320" height="470" density="port-mdpi"/>
+    <splash src="resources/android_mdpi_landscape.splash.png" width="470" height="320" density="land-mdpi"/>
+    <splash src="resources/android_hdpi_portrait.splash.png" width="480" height="640" density="port-hdpi"/>
+    <splash src="resources/android_hdpi_landscape.splash.png" width="640" height="480" density="land-hdpi"/>
+    <splash src="resources/android_xhdpi_portrait.splash.png" width="720" height="960" density="port-xhdpi"/>
+    <splash src="resources/android_xhdpi_landscape.splash.png" width="960" height="720" density="land-xhdpi"/>
+  </platform>
+</widget>
