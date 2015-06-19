@@ -9,7 +9,7 @@ cordova plugin rm cordova-plugin-crosswalk-webview
 cordova plugin rm cordova-plugin-whitelist
 cordova plugin add https://github.com/solderzzc/cordova-plugin-whitelist.git#r1.1.1
 cordova plugin add https://github.com/MobileChromeApps/cordova-plugin-crosswalk-webview.git#1.2.0
-cordova plugin add https://github.com/solderzzc/cordova-plugin-file-transfer.git#r0.5.1
+cordova plugin add https://github.com/solderzzc/cordova-plugin-file-transfer.git#r0.5.2
 cp ../../../../cordova-build-overide/config.xml ./
 cp ../../../../cordova-build-overide/platforms/android/assets/www/index.html platforms/android/assets/www/index.html
 cordova compile android --release
