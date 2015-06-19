@@ -19,14 +19,7 @@ printf '%s\n' /content/a '  <allow-navigation href="*" subdomain="true" />' . w 
 printf '%s\n' /content/a '  <access origin="*" subdomains="true"/>' . w q | ex -s config.xml 
 cp ../../../../cordova-build-overide/platforms/android/assets/www/index.html platforms/android/assets/www/index.html
 
-echo 'Remove android:debuggable to avoid the build error'
-sed -i -- 's/android:debuggable=\"false\"//g' platforms/android/AndroidManifest.xml
-
 echo 'Starting build'
-cordova compile android --release
+cordova compile android
 cd ../../../
 
-echo 'Signing'
-cp .meteor/local/cordova-build/platforms/android/build/outputs/apk/android-armv7-release-unsigned.apk android-armv7-release-unsigned.apk
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore keystore android-armv7-release-unsigned.apk "wifi whiteboard" 
-mv android-armv7-release-unsigned.apk android-armv7-release.apk
