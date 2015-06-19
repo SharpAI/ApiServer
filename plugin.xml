@@ -20,6 +20,7 @@
   <!-- ios -->
   <platform name="ios">
     <preference name="APP_ID" />
+    <preference name="QQ_APP_ID" />
 
     <config-file target="config.xml" parent="/*">
       <feature name="WeChat">
@@ -36,6 +37,14 @@
           <key>CFBundleURLSchemes</key>
           <array>
             <string>$APP_ID</string>
+          </array>
+        </dict>
+        <dict>
+          <key>CFBundleURLName</key>
+          <string>tencentopenapi</string>
+          <key>CFBundleURLSchemes</key>
+          <array>
+            <string>tencent$QQ_APP_ID</string>
           </array>
         </dict>
       </array>
