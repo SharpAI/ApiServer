@@ -1064,7 +1064,7 @@ if Meteor.isClient
       return
     'click #delete':(event)->
       navigator.notification.confirm('您是否要删除草稿？', (r)->
-        if r is 1
+        if r isnt 2
           return
         Session.set 'isReviewMode','1'
         #Delete it from SavedDrafts
@@ -1085,7 +1085,7 @@ if Meteor.isClient
       if TempDrafts.find({}).count()>0
         navigator.notification.confirm('这个操作无法撤销', (r)->
           console.log('r is ' + r)
-          if r is 2
+          if r isnt 1
             return
           Session.set 'isReviewMode','1'
           Template.addPost.__helpers.get('cancelDraftChange')()
@@ -1101,7 +1101,7 @@ if Meteor.isClient
       else
         navigator.notification.confirm('这个操作无法撤销', (r)->
           console.log('r is ' + r)
-          if r is 2
+          if r isnt 1
             return
           Session.set 'isReviewMode','1'
           #Delete it from SavedDrafts
