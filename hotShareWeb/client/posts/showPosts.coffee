@@ -329,7 +329,7 @@ if Meteor.isClient
     'click #unpublish': (event)->
       self = this
       navigator.notification.confirm('取消发表的故事将会被转换为草稿。', (r)->
-        if r is 1
+        if r isnt 2
           return
         PUB.page('/user')
         fromUrl = ''
