@@ -60,7 +60,10 @@ if Meteor.isClient
     $("a[target='_blank']").click((e)->
       e.preventDefault();
       #window.open($(e.currentTarget).attr('href'), '_system', '');
-      window.open($(e.currentTarget).attr('href'), '_blank', 'hidden=no,toolbarposition=top')
+      if Meteor.isCordova
+        handleAddedLink($(e.currentTarget).attr('href'))
+      else
+        window.open($(e.currentTarget).attr('href'), '_blank', 'hidden=no,toolbarposition=top')
     )
 
     $('.showBgColor').css('min-height',$(window).height())
