@@ -331,7 +331,7 @@ if Meteor.isClient
 
     initToolBar = (node, grid)->
       #console.log 'Added node id is ' + node.id
-      insertedObj = node.$blaze_range.view.parentView.dataVar.curValue
+      insertedObj = Blaze.getData(node)
       type = insertedObj.type
       if type == "text"
           if grid != undefined
@@ -595,7 +595,7 @@ if Meteor.isClient
 
         Deps.afterFlush ->
           initToolBar(node, gridster)
-          type = node.$blaze_range.view.parentView.dataVar.curValue.type
+          type = Blaze.getData(node).type
           if type == "text"
             $(node).trigger("toolbarItemClick", {id:"modify"})
     }
