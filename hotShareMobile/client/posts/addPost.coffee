@@ -1385,3 +1385,21 @@ if Meteor.isClient
         return
     'click .remove':(event)->
       Drafts.remove this._id
+    'click .imgContainer': (e)->
+      if Session.get('isReviewMode') isnt '1'
+        return
+      swipedata = []
+      selected = 0
+      draftData = Drafts.find({type:'image'}).fetch()
+      for i in [1..(draftData.length-1)]
+        if draftData[i].imgUrl
+          if draftData[i].imgUrl is this.imgUrl
+            selected = i-1
+          swipedata.push
+            href: draftData[i].imgUrl
+            title: draftData[i].text
+      $.swipebox swipedata,{
+        initialIndexOnArray: selected
+        hideCloseButtonOnMobile : true
+        loopAtEnd: false
+      }
