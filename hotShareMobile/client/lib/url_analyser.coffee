@@ -87,7 +87,7 @@ if Meteor.isClient
           callback(url,w,h,found,index,length)
         else
           callback(null,0,0,found,index,length)
-      ,minimal
+      ,minimal,false
     else
       callback(null,0,0,0,0,0)
   # data.body, the data to be analyse. (string)
@@ -224,7 +224,7 @@ if Meteor.isClient
         info.imageArray = []
         info.body = node.innerHTML
         console.log('    Node['+index+'] '+node.nodeName)
-        text = $(node).text().toString()
+        text = $(node).text().toString().replace(/\s+/g, '')
         if text and text isnt ''
           previousIsImage = false
           console.log '    Got text in this element ' + text
@@ -241,6 +241,16 @@ if Meteor.isClient
             toBeInsertedText = ''
             for imageUrl in info.imageArray
               console.log('    save imageUrl ' + imageUrl)
+              resortedArticle.push {type:'image',imageUrl:imageUrl}
+              data.imageArray.push imageUrl
+          else if info.bgArray.length > 0
+            console.log('    Got Background image')
+            previousIsImage = true
+            if toBeInsertedText and toBeInsertedText isnt ''
+              resortedArticle.push {type:'text',text:toBeInsertedText}
+            toBeInsertedText = ''
+            for imageUrl in info.bgArray
+              console.log('    save background imageUrl ' + imageUrl)
               resortedArticle.push {type:'image',imageUrl:imageUrl}
               data.imageArray.push imageUrl
       if toBeInsertedText and toBeInsertedText isnt ''

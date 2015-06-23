@@ -953,7 +953,33 @@ if Meteor.isClient
         unless ($('#addontitle').val() and $('#addontitle').val() isnt '')
           $('#addontitle').val(data.host)
       ,2000
-
+  renderResortedArticle = (data,inputUrl,resortedObj)->
+    if (resortedObj.index < resortedObj.length)
+      console.log('Index ' + resortedObj.index)
+      item = data.resortedArticle[resortedObj.index]
+      if item.type is 'text'
+        Drafts.insert {type:'text', toTheEnd:true ,noKeyboardPopup:true,isImage:false, owner: Meteor.userId(), text:item.text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+        if ++resortedObj.index < resortedObj.length
+          renderResortedArticle(data,inputUrl,resortedObj)
+        else
+          processTitleOfPost(data)
+      else if item.type is 'image'
+        if item.imageUrl and item.imageUrl isnt '' and (item.imageUrl isnt resortedObj.mainUrl)
+          imageArray = []
+          imageArray.push(item.imageUrl)
+          seekSuitableImageFromArray(imageArray,(url,w,h,found,index,total)->
+            if url
+              insertLink(data,url,true,inputUrl)
+            if ++resortedObj.index < resortedObj.length
+              renderResortedArticle(data,inputUrl,resortedObj)
+            else
+              processTitleOfPost(data)
+          ,200)
+        else
+          if ++resortedObj.index < resortedObj.length
+            renderResortedArticle(data,inputUrl,resortedObj)
+          else
+            processTitleOfPost(data)
   @getURL = (e) ->
     inputUrl = e.url
     console.log "input url: " + inputUrl
@@ -968,13 +994,21 @@ if Meteor.isClient
           return
         console.log('Got data')
         Session.set('NewImgAdd',false)
-        seekOneUsableMainImage data,(url,w,h,found,index,total)->
-          console.log('found ' + found + ' index ' + index + ' total ' + total + ' url ' + url)
-          if url
-            insertDefaultImage(data,url,found,inputUrl)
-          else
-            insertDefaultImage(data,'http://data.tiegushi.com/res/defaultMainImage.jpg',false,inputUrl)
-          if data.resortedArticle.length > 0
+        resortObj = {}
+        seekOneUsableMainImage(data,(url,w,h,found,index,total)->
+            console.log('found ' + found + ' index ' + index + ' total ' + total + ' url ' + url)
+            if url
+              insertDefaultImage(data,url,found,inputUrl)
+              resortObj.mainUrl = url
+            else
+              insertDefaultImage(data,'http://data.tiegushi.com/res/defaultMainImage.jpg',false,inputUrl)
+            if data.resortedArticle.length > 0
+              resortObj.index = 0
+              resortObj.length = data.resortedArticle.length
+              console.log('resortObj' + JSON.stringify(resortObj))
+              renderResortedArticle(data,inputUrl,resortObj)
+          ,200)
+          ###
             for item in data.resortedArticle
               if item.type is 'text'
                 Drafts.insert {type:'text', toTheEnd:true ,noKeyboardPopup:true,isImage:false, owner: Meteor.userId(), text:item.text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
@@ -982,6 +1016,7 @@ if Meteor.isClient
                 if item.imageUrl isnt url
                   insertLink(data,item.imageUrl,true,inputUrl)
           processTitleOfPost(data)
+          ###
       ###
       processInAppInjectionData data,(url,w,h,found,index,total)->
         console.log('found ' + found + ' index ' + index + ' total ' + total + ' url ' + url)
