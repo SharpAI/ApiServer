@@ -224,7 +224,7 @@ if Meteor.isClient
         info.imageArray = []
         info.body = node.innerHTML
         console.log('    Node['+index+'] '+node.nodeName)
-        text = $(node).text().toString().replace(/\s+/g, '')
+        text = $(node).text().toString().replace(/\s\s\s+/g, '')
         if text and text isnt ''
           previousIsImage = false
           console.log '    Got text in this element ' + text
