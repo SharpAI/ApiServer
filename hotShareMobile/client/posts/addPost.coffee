@@ -445,7 +445,7 @@ if Meteor.isClient
               grid.add_widget(node, insert_sizex, insert_sizey, insert_col, insert_row)
             # To be inserted at the end of the screen.
             else if insertedObj.toTheEnd
-              grid.add_widget(node, 3, 3)
+              grid.add_widget(node, 6, 6)
             # To be inserted on the middle of screen.
             else
               max_row = 1
@@ -596,7 +596,7 @@ if Meteor.isClient
         Deps.afterFlush ->
           initToolBar(node, gridster)
           type = Blaze.getData(node).type
-          if type == "text"
+          if type == "text" and (!Blaze.getData(node).noKeyboardPopup)
             $(node).trigger("toolbarItemClick", {id:"modify"})
     }
 
@@ -942,11 +942,14 @@ if Meteor.isClient
       toDisplay = fullText.substring(0, 200)
       toDisplay += ' ...'
       Drafts.insert {type:'text', toTheEnd:true ,isImage:false, owner: Meteor.userId(), text:toDisplay, fullText:fullText, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+    processTitleOfPost(data)
+  processTitleOfPost=(data)->
     if data.title
       console.log 'Title is ' + data.title
       Meteor.setTimeout ()->
         unless ($('#title').val() and $('#title').val() isnt '')
           $('#title').val(data.title)
+          $('#title').trigger('keyup')
         unless ($('#addontitle').val() and $('#addontitle').val() isnt '')
           $('#addontitle').val(data.host)
       ,2000
@@ -959,18 +962,36 @@ if Meteor.isClient
       if Session.get("channel") isnt 'addPost'
         prepareToEditorMode()
         PUB.page '/add'
-      getImagesListFromUrl iabHandle,inputUrl,(data)->
+      getContentListsFromUrl iabHandle,inputUrl,(data)->
         if data is null
           console.log('AnalyseUrl error, need add error notification')
           return
-        processInAppInjectionData data,(url,w,h,found,index,total)->
+        console.log('Got data')
+        Session.set('NewImgAdd',false)
+        seekOneUsableMainImage data,(url,w,h,found,index,total)->
           console.log('found ' + found + ' index ' + index + ' total ' + total + ' url ' + url)
           if url
-            insertLink(data,url,found,inputUrl)
-          if index is total
-            if found is 0
-              insertDefaultImage(data,'http://data.tiegushi.com/res/defaultMainImage.jpg',found,inputUrl)
-            processReadableText(data)
+            insertDefaultImage(data,url,found,inputUrl)
+          else
+            insertDefaultImage(data,'http://data.tiegushi.com/res/defaultMainImage.jpg',false,inputUrl)
+          if data.resortedArticle.length > 0
+            for item in data.resortedArticle
+              if item.type is 'text'
+                Drafts.insert {type:'text', toTheEnd:true ,noKeyboardPopup:true,isImage:false, owner: Meteor.userId(), text:item.text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+              else if item.type is 'image'
+                if item.imageUrl isnt url
+                  insertLink(data,item.imageUrl,true,inputUrl)
+          processTitleOfPost(data)
+      ###
+      processInAppInjectionData data,(url,w,h,found,index,total)->
+        console.log('found ' + found + ' index ' + index + ' total ' + total + ' url ' + url)
+        if url
+          insertLink(data,url,found,inputUrl)
+        if index is total
+          if found is 0
+            insertDefaultImage(data,'http://data.tiegushi.com/res/defaultMainImage.jpg',found,inputUrl)
+          processReadableText(data)
+      ###
     else
       PUB.toast('请粘贴需要引用的链接')
   @handleExitBrowser = ()->
