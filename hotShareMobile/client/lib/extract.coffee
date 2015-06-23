@@ -88,7 +88,7 @@ fishy = (node) ->
   linkDensity   = linkDensityFor(node)
   contentLength = textContentFor(node).length
 
-  return true if img > p
+  #return true if img > p
   return true if li > p and node.tagName != "ul" and node.tagName != "ol"
   return true if input > Math.floor(p/3)
   return true if contentLength < 25 and (img == 0 || img > 2)
