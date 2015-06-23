@@ -77,6 +77,8 @@ if Meteor.isClient
                 ,100)
           )
     'click #web-import':(e)->
+      Meteor.defer ()->
+        $('.modal-backdrop.in').remove()
       prepareToEditorMode()
       PUB.page '/add'
       handleAddedLink(null)
