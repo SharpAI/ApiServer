@@ -1,6 +1,7 @@
 Template.webHome.rendered = function() {
     $('.webHome').css('height', $(window).height());
     $('.webFooter').css('left', $(window).width()*0.5-105);
+    Meteor.subscribe("versions");
   };
 Template.webHome.events({
     'click .iosBtn':function(){
@@ -15,6 +16,9 @@ Template.webHome.events({
 Template.webHome.helpers({
     resetPassword: function(){
         return Session.get('resetPassword');
+    },
+    versions: function(){
+        return Versions.findOne();
     }
 });
 

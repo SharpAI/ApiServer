@@ -1,4 +1,10 @@
 Meteor.startup(function(){
+    if(Versions.find().count() === 0){
+      Versions.insert({
+        ios: "0.8.61",
+        android: "0.9.2"
+      });
+    }
     if(RefComments.find().count() === 0){
       RefComments.insert({
         text: "看贴回帖是一种美德",

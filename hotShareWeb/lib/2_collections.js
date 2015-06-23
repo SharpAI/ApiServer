@@ -17,6 +17,7 @@ Messages = new Meteor.Collection('messages');
 MsgSession = new Meteor.Collection('msgsession');
 MsgGroup = new Meteor.Collection('msggroup');
 Meets = new Meteor.Collection('meets');
+Versions = new Meteor.Collection('versions');
 if(Meteor.isClient){
   Newfriends = new Meteor.Collection("newfriends");
   ViewLists = new Meteor.Collection("viewlists");
@@ -876,6 +877,9 @@ if(Meteor.isServer){
       return [];
     else
       return MsgGroup.find({"users.userId": this.userId});
+  });
+  Meteor.publish('versions', function() {
+    return Versions.find({});
   });
   Reports.allow({
     insert: function (userId, doc) {
