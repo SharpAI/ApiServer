@@ -4,3 +4,6 @@ if Meteor.isClient
     Template.loadingPost.events
       'click .back' :->
         PUB.back()
+    Template.loadingPost.helpers
+      isMobile:->
+        Meteor.isCordova
