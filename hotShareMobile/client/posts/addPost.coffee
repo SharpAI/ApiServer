@@ -1003,11 +1003,13 @@ if Meteor.isClient
         positionStyle: 'absolute'
         position: [0, 0]
         onOpen: ()->
-          $(this).find('#cancelImport').off('click')
           $(this).find('#cancelImport').on('click',()->
             console.log('Clicked on cancelImport button')
             Session.set('cancelImport',true)
           )
+        onClose: ()->
+          $(this).find('#cancelImport').off('click')
+          $(this).find('.progress-bar').css('width', '0%').attr('aria-valuenow', 0);
       Tracker.autorun (handler)->
         $('.importProgressBar').find('.progress-bar').css('width', Session.get('importProcedure')+'%').attr('aria-valuenow', Session.get('importProcedure'));
         if Session.equals('importProcedure',100)
