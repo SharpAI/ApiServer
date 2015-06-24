@@ -60,6 +60,8 @@ if Meteor.isClient
     'click #user':(e)->
       PUB.page('/user')
     'click #album-select':(e)->
+      Meteor.defer ()->
+        $('.modal-backdrop.in').remove()
       prepareToEditorMode()
       PUB.page '/add'
       Meteor.defer ()->
@@ -83,6 +85,8 @@ if Meteor.isClient
       PUB.page '/add'
       handleAddedLink(null)
     'click #photo-select':(e)->
+      Meteor.defer ()->
+        $('.modal-backdrop.in').remove()
       prepareToEditorMode()
       PUB.page '/add'
       Meteor.defer ()->
