@@ -998,9 +998,16 @@ if Meteor.isClient
         prepareToEditorMode()
         PUB.page '/add'
       Session.set('importProcedure',1)
+      Session.set('cancelImport',false)
       popupProgressBar = $('.importProgressBar').bPopup
         positionStyle: 'absolute'
         position: [0, 0]
+        onOpen: ()->
+          $(this).find('#cancelImport').off('click')
+          $(this).find('#cancelImport').on('click',()->
+            console.log('Clicked on cancelImport button')
+            Session.set('cancelImport',true)
+          )
       Tracker.autorun (handler)->
         if Session.equals('importProcedure',100)
           popupProgressBar.close()
@@ -1075,9 +1082,6 @@ if Meteor.isClient
         if url and url isnt ''
           handleAddedLink(url)
     ###
-    'click #cancelImport': ()->
-      console.log('Clicked on cancelImport button')
-      Session.set('cancelImport',true)
     'beUnSelected .resortitem': (e)->
       if window.footbarOppration
         window.unSelectedElem = e.currentTarget
