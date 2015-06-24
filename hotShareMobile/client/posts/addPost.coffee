@@ -649,6 +649,8 @@ if Meteor.isClient
     return
 
   Template.addPost.helpers
+    progressBarWidth:->
+      Session.get('importProcedure')
     displayUrl:->
       if Drafts.findOne({type:'image'}) and Drafts.findOne({type:'image'}).url and Drafts.findOne({type:'image'}).url isnt ''
         ""
@@ -946,6 +948,7 @@ if Meteor.isClient
   processTitleOfPost=(data)->
     if data.title
       console.log 'Title is ' + data.title
+      Session.set('importProcedure',100)
       Meteor.setTimeout ()->
         unless ($('#title').val() and $('#title').val() isnt '')
           $('#title').val(data.title)
@@ -954,8 +957,14 @@ if Meteor.isClient
           $('#addontitle').val(data.host)
       ,2000
   renderResortedArticle = (data,inputUrl,resortedObj)->
+    if Session.get('cancelImport')
+      Session.set('importProcedure',100)
+      console.log('User canceled the url importing by click on the cancel button')
+      return
     if (resortedObj.index < resortedObj.length)
-      console.log('Index ' + resortedObj.index)
+      percentage = 5 + Math.round(94*(resortedObj.index/resortedObj.length))
+      Session.set('importProcedure',percentage)
+      console.log('Index ' + resortedObj.index + '@ ' + Session.get('importProcedure')+'%')
       item = data.resortedArticle[resortedObj.index]
       if item.type is 'text'
         Drafts.insert {type:'text', toTheEnd:true ,noKeyboardPopup:true,isImage:false, owner: Meteor.userId(), text:item.text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
@@ -988,6 +997,15 @@ if Meteor.isClient
       if Session.get("channel") isnt 'addPost'
         prepareToEditorMode()
         PUB.page '/add'
+      Session.set('importProcedure',1)
+      popupProgressBar = $('.importProgressBar').bPopup
+        positionStyle: 'absolute'
+        position: [0, 0]
+      Tracker.autorun (handler)->
+        if Session.equals('importProcedure',100)
+          popupProgressBar.close()
+          handler.stop()
+          Session.set('importProcedure',0)
       getContentListsFromUrl iabHandle,inputUrl,(data)->
         if data is null
           console.log('AnalyseUrl error, need add error notification')
@@ -997,6 +1015,7 @@ if Meteor.isClient
         resortObj = {}
         seekOneUsableMainImage(data,(url,w,h,found,index,total)->
             console.log('found ' + found + ' index ' + index + ' total ' + total + ' url ' + url)
+            Session.set('importProcedure',5)
             if url
               insertDefaultImage(data,url,found,inputUrl)
               resortObj.mainUrl = url
@@ -1007,6 +1026,8 @@ if Meteor.isClient
               resortObj.length = data.resortedArticle.length
               console.log('resortObj' + JSON.stringify(resortObj))
               renderResortedArticle(data,inputUrl,resortObj)
+            else
+              processTitleOfPost(data)
           ,200)
           ###
             for item in data.resortedArticle
@@ -1054,6 +1075,9 @@ if Meteor.isClient
         if url and url isnt ''
           handleAddedLink(url)
     ###
+    'click #cancelImport': ()->
+      console.log('Clicked on cancelImport button')
+      Session.set('cancelImport',true)
     'beUnSelected .resortitem': (e)->
       if window.footbarOppration
         window.unSelectedElem = e.currentTarget
