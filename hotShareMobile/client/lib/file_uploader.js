@@ -164,6 +164,9 @@ if (Meteor.isCordova){
     downloadFromBCS = function(source, callback){
         function fail(error) {
             console.log(error)
+            if(callback){
+                callback(null, source);
+            }
         }
         function onFileSystemSuccess(fileSystem) {
             var filename = source.replace(/^.*[\\\/]/, '');
