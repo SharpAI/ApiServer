@@ -169,7 +169,9 @@ if (Meteor.isCordova){
             }
         }
         function onFileSystemSuccess(fileSystem) {
-            var filename = source.replace(/^.*[\\\/]/, '');
+            var timestamp = new Date().getTime();
+            var hashOnUrl = Math.abs(source.hashCode());
+            var filename = Meteor.userId()+'_'+timestamp+ '_' + hashOnUrl;
             fileSystem.root.getFile(filename, {create: true, exclusive: false}, 
                 function(fileEntry){
                     console.log("filename = "+filename+", fileEntry.toURL()="+fileEntry.toURL());
@@ -206,7 +208,7 @@ if (Meteor.isCordova){
 
                 }, fail);
         }
-        window.requestFileSystem(LocalFileSystem.TEMPORARY, 0, onFileSystemSuccess, fail);
+        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, fail);
     }
 
     /**
