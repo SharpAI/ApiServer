@@ -656,7 +656,7 @@ if Meteor.isClient
         else
           obj.imgUrl
     getImageURL:->
-      if this.imgUrl and this.imgUrl is '' and this.smallImage and this.smallImage isnt ''
+      if ((!this.imgUrl) or (this.imgUrl and this.imgUrl is '')) and this.smallImage and this.smallImage isnt ''
         this.smallImage
       else
         this.imgUrl
@@ -1010,14 +1010,15 @@ if Meteor.isClient
         if item.imageUrl and item.imageUrl isnt '' and (item.imageUrl isnt resortedObj.mainUrl)
           imageArray = []
           imageArray.push(item.imageUrl)
-          seekSuitableImageFromArray(imageArray,(url,w,h,found,index,total)->
-            if url
-              insertLink(data,url,true,inputUrl)
+          seekSuitableImageFromArrayAndDownloadToLocal imageArray,(file,w,h,found,index,total,source)->
+            if file
+              console.log('Inserting file ' + file.name)
+              insertDownloadedImage(data,source,found,inputUrl,file)
             if ++resortedObj.index < resortedObj.length
               renderResortedArticle(data,inputUrl,resortedObj)
             else
               processTitleOfPost(data)
-          ,200)
+          ,200
         else
           if ++resortedObj.index < resortedObj.length
             renderResortedArticle(data,inputUrl,resortedObj)
