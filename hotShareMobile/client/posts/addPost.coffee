@@ -64,7 +64,7 @@ if Meteor.isClient
                 console.log 'image url is ' + result.smallImage
                 if Drafts.find({type:'image'}).count() > 0
                   mainImageDoc = Drafts.find({type:'image'}).fetch()[0]
-                  Drafts.update({_id: mainImageDoc._id}, {$set: {imgUrl:result.smallImage, filename:result.filename, URI:result.URI }});
+                  Drafts.update({_id: mainImageDoc._id}, {$set: {imgUrl:result.smallImage,smallImage:'' ,filename:result.filename, URI:result.URI }});
           else if buttonClicked.id == "crop"
             console.log("crop "+ event.currentTarget.id)
             Session.set 'isReviewMode','3'
@@ -78,7 +78,7 @@ if Meteor.isClient
             $('#'+mainImageId).css('display',"none")
             $('#crop'+mainImageId).css('display',"block")
             $('#'+mainImageId).css('z-index',"12")
-            image = Drafts.findOne({_id:mainImageId}).imgUrl
+            image = $(this).find('img').attr("src")
             #style = Drafts.findOne({_id:mainImageId}).style
             style = $('#'+mainImageId).getStyleProp();
             if style is undefined
@@ -487,7 +487,7 @@ if Meteor.isClient
               $('#isImage'+node.id).css('display',"none")
               $('#crop'+node.id).css('display',"block")
               $('#'+node.id).css('z-index',"12")
-              image = Drafts.findOne({_id:node.id}).imgUrl
+              image = $(node).find('img').attr("src")
               #style = Drafts.findOne({_id:node.id}).style
               style = $('#'+node.id).getStyleProp();
               if style is undefined
@@ -1130,7 +1130,7 @@ if Meteor.isClient
           window.takePhoto (result)->
             console.log 'result from camera is ' + JSON.stringify(result)
             if result
-              Drafts.insert {type:'image', currentCount:1, totalCount:1,isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
+              Drafts.insert {type:'image', currentCount:1, totalCount:1,isImage:true, owner: Meteor.userId(),smallImage:'' ,imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
 
     'click #addmore':->
       window.footbarOppration = true
@@ -1148,7 +1148,7 @@ if Meteor.isClient
           #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
           console.log 'Current Count is ' + currentCount + ' Total is ' + totalCount
           console.log 'image url is ' + result.smallImage
-          Drafts.insert {type:'image', currentCount:currentCount, totalCount:totalCount,isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
+          Drafts.insert {type:'image', currentCount:currentCount, totalCount:totalCount,isImage:true, owner: Meteor.userId(),smallImage:'' ,imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
           if (currentCount >= totalCount)
             Meteor.setTimeout ()->
               Template.addPost.__helpers.get('saveDraft')()
