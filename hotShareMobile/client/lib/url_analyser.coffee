@@ -28,6 +28,40 @@ if Meteor.isClient
       else
         callback null,0,0,foundImages,imageCounter,imageArray.length
     imageResolver.src = imageArray[imageCounter]
+  @seekSuitableImageFromArrayAndDownloadToLocal = (imageArray,callback,minimal,onlyOne)->
+    @imageCounter = 0
+    @foundImages = 0
+    if minimal
+      minimalWidthAndHeight = minimal
+    else
+      minimalWidthAndHeight = 150
+    downloadHandler = (downloadedUrl,source)->
+      console.log('Got downloaded URL ' + downloadedUrl)
+      if downloadedUrl
+        onSuccess(downloadedUrl,source)
+      else
+        onError(source)
+    onSuccess = (url,source)->
+      get_image_size_from_URI(url,(width,height)->
+        console.log url + ' width is ' + width + ' height is ' + height
+        if height >= minimalWidthAndHeight and width >= minimalWidthAndHeight
+          console.log 'This image can be used ' + imageArray[imageCounter] + ' width is ' + width + ' height is ' + height
+          callback url,width,height, ++foundImages,imageCounter,imageArray.length,source
+          if onlyOne
+            return
+        if ++imageCounter < imageArray.length
+          downloadFromBCS(imageArray[imageCounter],downloadHandler)
+        else
+          callback null,0,0,foundImages,imageCounter,imageArray.length,source
+      )
+    onError = (source)->
+      console.log 'image resolve url got error'
+      if ++imageCounter < imageArray.length
+        downloadFromBCS(imageArray[imageCounter],downloadHandler)
+      else
+        callback null,0,0,foundImages,imageCounter,imageArray.length,null,source
+    downloadFromBCS(imageArray[imageCounter],downloadHandler)
+
   @analyseUrl = (url,callback)->
     @iabRef = window.open(url, '_blank', 'hidden=yes')
     iabRef.addEventListener 'loadstop', ()->
@@ -60,14 +94,16 @@ if Meteor.isClient
           imageArray.push imageUrl
     console.log 'Got images to be anylised ' + JSON.stringify(imageArray)
     if imageArray.length > 0
-      seekSuitableImageFromArray imageArray,(url,w,h,found,index,length)->
+      seekSuitableImageFromArrayAndDownloadToLocal imageArray,(url,w,h,found,index,length,source)->
         if url
-          callback(url,w,h,found,index,length)
+          console.log('Original source:'+source+'Got local url '+url+' w:'+w+' h:'+h)
+          callback(url,w,h,found,index,length,source)
         else
-          callback(null,0,0,found,index,length)
+          console.log('No local url '+url + ' w:'+w + ' h:' +h)
+          callback(null,0,0,found,index,length,source)
       ,minimal,true
     else
-      callback(null,0,0,0,0,0)
+      callback(null,0,0,0,0,0,null)
   @processInAppInjectionData = (data,callback,minimal)->
     imageArray = []
     #console.log 'Url Analyse result is ' + JSON.stringify(data)

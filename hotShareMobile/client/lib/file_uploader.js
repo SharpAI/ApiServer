@@ -197,7 +197,7 @@ if (Meteor.isCordova){
                     ft.download(source, target, function(theFile){
                         console.log('download suc, theFile.toURL='+theFile.toURL());
                         if(callback){
-                            callback(theFile.toURL());
+                            callback(theFile.toURL(),source);
                         }
                     }, function(e){
                         console.log('download error: ' + e.code)
@@ -291,7 +291,7 @@ if (Meteor.isCordova){
             width: ImageWidth,
             height: ImageHeight,
             quality: ImageQuality,
-            storage: 'temporary'
+            storage: 'persistent'
           });
         }
         }

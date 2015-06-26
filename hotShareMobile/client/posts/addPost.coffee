@@ -906,7 +906,7 @@ if Meteor.isClient
         data_col:'3',
         data_sizex:'6',
         data_sizey:'5'}
-  insertDefaultImage = (linkInfo,mainImageUrl,found,inputUrl)->
+  insertDefaultImage = (linkInfo,mainImageUrl,found,inputUrl,localURI)->
     if mainImageUrl
       timestamp = new Date().getTime()
       if Drafts.find({type:'image'}).count() > 0
@@ -921,6 +921,7 @@ if Meteor.isClient
         filename:mainImageUrl,
         URI:mainImageUrl,
         url:inputUrl,
+        localURI: localURI,
         toTheEnd: true,
         data_row:'1',
         data_col:'3',
@@ -1006,6 +1007,10 @@ if Meteor.isClient
           $(this).find('#cancelImport').on('click',()->
             console.log('Clicked on cancelImport button')
             Session.set('cancelImport',true)
+            popupProgressBar.close()
+            $('.modal-backdrop.in').remove()
+            if Drafts.find().count() < 1
+              Router.go('/')
           )
         onClose: ()->
           $(this).find('#cancelImport').off('click')
@@ -1023,14 +1028,14 @@ if Meteor.isClient
         console.log('Got data')
         Session.set('NewImgAdd',false)
         resortObj = {}
-        seekOneUsableMainImage(data,(url,w,h,found,index,total)->
-            console.log('found ' + found + ' index ' + index + ' total ' + total + ' url ' + url)
+        seekOneUsableMainImage(data,(localURI,w,h,found,index,total,source)->
+            console.log('found ' + found + ' index ' + index + ' total ' + total + ' url ' + localURI + ' source ' + source )
             Session.set('importProcedure',5)
-            if url
-              insertDefaultImage(data,url,found,inputUrl)
-              resortObj.mainUrl = url
+            if localURI
+              insertDefaultImage(data,source,found,inputUrl,localURI)
+              resortObj.mainUrl = source
             else
-              insertDefaultImage(data,'http://data.tiegushi.com/res/defaultMainImage.jpg',false,inputUrl)
+              insertDefaultImage(data,'http://data.tiegushi.com/res/defaultMainImage.jpg',false,inputUrl,'')
             if data.resortedArticle.length > 0
               resortObj.index = 0
               resortObj.length = data.resortedArticle.length
@@ -1039,25 +1044,6 @@ if Meteor.isClient
             else
               processTitleOfPost(data)
           ,200)
-          ###
-            for item in data.resortedArticle
-              if item.type is 'text'
-                Drafts.insert {type:'text', toTheEnd:true ,noKeyboardPopup:true,isImage:false, owner: Meteor.userId(), text:item.text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
-              else if item.type is 'image'
-                if item.imageUrl isnt url
-                  insertLink(data,item.imageUrl,true,inputUrl)
-          processTitleOfPost(data)
-          ###
-      ###
-      processInAppInjectionData data,(url,w,h,found,index,total)->
-        console.log('found ' + found + ' index ' + index + ' total ' + total + ' url ' + url)
-        if url
-          insertLink(data,url,found,inputUrl)
-        if index is total
-          if found is 0
-            insertDefaultImage(data,'http://data.tiegushi.com/res/defaultMainImage.jpg',found,inputUrl)
-          processReadableText(data)
-      ###
     else
       PUB.toast('请粘贴需要引用的链接')
   @handleExitBrowser = ()->
