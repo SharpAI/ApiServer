@@ -193,16 +193,16 @@ extern NSUInteger kDNImageFlowMaxSeletedNumber;
     return dir;
 }
 
-- (NSString *)applicationDocumentsDirectory 
-{    
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+- (NSString *)applicationLibraryDirectory
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
     return basePath;
 }
 
 - (NSString *)getDraftsDirectory
 {
-    NSString *draftsDirectory = [[self applicationDocumentsDirectory] stringByAppendingPathComponent:@"drafts"];
+    NSString *draftsDirectory = [[self applicationLibraryDirectory] stringByAppendingPathComponent:@"files/drafts"];
     [self createDirectory:draftsDirectory];
     return draftsDirectory;
 }
