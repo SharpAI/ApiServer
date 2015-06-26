@@ -35,18 +35,18 @@ if Meteor.isClient
       minimalWidthAndHeight = minimal
     else
       minimalWidthAndHeight = 150
-    downloadHandler = (downloadedUrl,source)->
+    downloadHandler = (downloadedUrl,source,file)->
       console.log('Got downloaded URL ' + downloadedUrl)
       if downloadedUrl
-        onSuccess(downloadedUrl,source)
+        onSuccess(downloadedUrl,source,file)
       else
         onError(source)
-    onSuccess = (url,source)->
+    onSuccess = (url,source,file)->
       get_image_size_from_URI(url,(width,height)->
         console.log url + ' width is ' + width + ' height is ' + height
         if height >= minimalWidthAndHeight and width >= minimalWidthAndHeight
           console.log 'This image can be used ' + imageArray[imageCounter] + ' width is ' + width + ' height is ' + height
-          callback url,width,height, ++foundImages,imageCounter,imageArray.length,source
+          callback file,width,height, ++foundImages,imageCounter,imageArray.length,source
           if onlyOne
             return
         if ++imageCounter < imageArray.length
@@ -94,12 +94,12 @@ if Meteor.isClient
           imageArray.push imageUrl
     console.log 'Got images to be anylised ' + JSON.stringify(imageArray)
     if imageArray.length > 0
-      seekSuitableImageFromArrayAndDownloadToLocal imageArray,(url,w,h,found,index,length,source)->
-        if url
-          console.log('Original source:'+source+'Got local url '+url+' w:'+w+' h:'+h)
-          callback(url,w,h,found,index,length,source)
+      seekSuitableImageFromArrayAndDownloadToLocal imageArray,(file,w,h,found,index,length,source)->
+        if file
+          console.log('Original source:'+source+'Got local url '+ JSON.stringify(file)+' w:'+w+' h:'+h)
+          callback(file,w,h,found,index,length,source)
         else
-          console.log('No local url '+url + ' w:'+w + ' h:' +h)
+          console.log('No local url '+' w:'+w+' h:'+h)
           callback(null,0,0,found,index,length,source)
       ,minimal,true
     else
@@ -276,9 +276,10 @@ if Meteor.isClient
               resortedArticle.push {type:'text',text:toBeInsertedText}
             toBeInsertedText = ''
             for imageUrl in info.imageArray
-              console.log('    save imageUrl ' + imageUrl)
-              resortedArticle.push {type:'image',imageUrl:imageUrl}
-              data.imageArray.push imageUrl
+              if imageUrl.indexOf('http://') or imageUrl.indexOf('https://')
+                console.log('    save imageUrl ' + imageUrl)
+                resortedArticle.push {type:'image',imageUrl:imageUrl}
+                data.imageArray.push imageUrl
           else if info.bgArray.length > 0
             console.log('    Got Background image')
             previousIsImage = true
