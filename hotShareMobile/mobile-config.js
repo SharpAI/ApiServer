@@ -13,6 +13,8 @@ App.setPreference('StatusBarOverlaysWebView', false);
 App.setPreference('orientation', 'portrait');
 App.setPreference('StatusBarBackgroundColor', '#000000');
 App.setPreference('AutoHideSplashScreen', true);
+App.setPreference('AndroidPersistentFileLocation','Internal');
+App.setPreference('iosPersistentFileLocation','Library');
 App.accessRule('*');
 App.accessRule('http://*');
 App.accessRule('https://*');

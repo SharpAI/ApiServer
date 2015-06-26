@@ -64,7 +64,7 @@ if Meteor.isClient
                 console.log 'image url is ' + result.smallImage
                 if Drafts.find({type:'image'}).count() > 0
                   mainImageDoc = Drafts.find({type:'image'}).fetch()[0]
-                  Drafts.update({_id: mainImageDoc._id}, {$set: {imgUrl:result.smallImage,smallImage:'' ,filename:result.filename, URI:result.URI }});
+                  Drafts.update({_id: mainImageDoc._id}, {$set: {imgUrl:result.smallImage,filename:result.filename, URI:result.URI }});
           else if buttonClicked.id == "crop"
             console.log("crop "+ event.currentTarget.id)
             Session.set 'isReviewMode','3'
@@ -649,17 +649,6 @@ if Meteor.isClient
     return
 
   Template.addPost.helpers
-    getMainImageURL:(obj)->
-      if obj
-        if ((!obj.imgUrl) or (obj.imgUrl and obj.imgUrl is '')) and obj.smallImage and obj.smallImage isnt ''
-          obj.smallImage
-        else
-          obj.imgUrl
-    getImageURL:->
-      if ((!this.imgUrl) or (this.imgUrl and this.imgUrl is '')) and this.smallImage and this.smallImage isnt ''
-        this.smallImage
-      else
-        this.imgUrl
     progressBarWidth:->
       Session.get('importProcedure')
     displayUrl:->
@@ -922,14 +911,15 @@ if Meteor.isClient
       timestamp = new Date().getTime()
       if Drafts.find({type:'image'}).count() > 0
         Drafts.update({_id:Drafts.find({type:'image'}).fetch()[0]._id},{$set:{url:inputUrl}})
+      if isIOS
+        imgUrl = 'cdvfile://localhost/persistent/'+file.name
       Drafts.insert {
         type:'image',
         isImage:true,
         siteTitle:linkInfo.title,
         siteHost:linkInfo.host,
         owner: Meteor.userId(),
-        smallImage:imageExternalURL,
-        imgUrl:'',
+        imgUrl:imgUrl,
         filename:file.name,
         URI:file.toURL(),
         url:inputUrl,
@@ -1130,7 +1120,7 @@ if Meteor.isClient
           window.takePhoto (result)->
             console.log 'result from camera is ' + JSON.stringify(result)
             if result
-              Drafts.insert {type:'image', currentCount:1, totalCount:1,isImage:true, owner: Meteor.userId(),smallImage:'' ,imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
+              Drafts.insert {type:'image', currentCount:1, totalCount:1,isImage:true, owner: Meteor.userId(),imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
 
     'click #addmore':->
       window.footbarOppration = true
@@ -1148,7 +1138,7 @@ if Meteor.isClient
           #Drafts.insert {owner: Meteor.userId(), imgUrl:result}
           console.log 'Current Count is ' + currentCount + ' Total is ' + totalCount
           console.log 'image url is ' + result.smallImage
-          Drafts.insert {type:'image', currentCount:currentCount, totalCount:totalCount,isImage:true, owner: Meteor.userId(),smallImage:'' ,imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
+          Drafts.insert {type:'image', currentCount:currentCount, totalCount:totalCount,isImage:true, owner: Meteor.userId(),imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
           if (currentCount >= totalCount)
             Meteor.setTimeout ()->
               Template.addPost.__helpers.get('saveDraft')()
