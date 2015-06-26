@@ -649,6 +649,17 @@ if Meteor.isClient
     return
 
   Template.addPost.helpers
+    getMainImageURL:(obj)->
+      if obj
+        if ((!obj.imgUrl) or (obj.imgUrl and obj.imgUrl is '')) and obj.smallImage and obj.smallImage isnt ''
+          obj.smallImage
+        else
+          obj.imgUrl
+    getImageURL:->
+      if this.imgUrl and this.imgUrl is '' and this.smallImage and this.smallImage isnt ''
+        this.smallImage
+      else
+        this.imgUrl
     progressBarWidth:->
       Session.get('importProcedure')
     displayUrl:->
@@ -906,7 +917,28 @@ if Meteor.isClient
         data_col:'3',
         data_sizex:'6',
         data_sizey:'5'}
-  insertDefaultImage = (linkInfo,mainImageUrl,found,inputUrl,localURI)->
+  insertDownloadedImage = (linkInfo,imageExternalURL,found,inputUrl,file)->
+    if file
+      timestamp = new Date().getTime()
+      if Drafts.find({type:'image'}).count() > 0
+        Drafts.update({_id:Drafts.find({type:'image'}).fetch()[0]._id},{$set:{url:inputUrl}})
+      Drafts.insert {
+        type:'image',
+        isImage:true,
+        siteTitle:linkInfo.title,
+        siteHost:linkInfo.host,
+        owner: Meteor.userId(),
+        smallImage:imageExternalURL,
+        imgUrl:'',
+        filename:file.name,
+        URI:file.toURL(),
+        url:inputUrl,
+        toTheEnd: true,
+        data_row:'1',
+        data_col:'3',
+        data_sizex:'6',
+        data_sizey:'5'}
+  insertDefaultImage = (linkInfo,mainImageUrl,found,inputUrl)->
     if mainImageUrl
       timestamp = new Date().getTime()
       if Drafts.find({type:'image'}).count() > 0
@@ -921,7 +953,6 @@ if Meteor.isClient
         filename:mainImageUrl,
         URI:mainImageUrl,
         url:inputUrl,
-        localURI: localURI,
         toTheEnd: true,
         data_row:'1',
         data_col:'3',
@@ -968,12 +999,14 @@ if Meteor.isClient
       console.log('Index ' + resortedObj.index + '@ ' + Session.get('importProcedure')+'%')
       item = data.resortedArticle[resortedObj.index]
       if item.type is 'text'
+        console.log('Processing Text')
         Drafts.insert {type:'text', toTheEnd:true ,noKeyboardPopup:true,isImage:false, owner: Meteor.userId(), text:item.text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
         if ++resortedObj.index < resortedObj.length
           renderResortedArticle(data,inputUrl,resortedObj)
         else
           processTitleOfPost(data)
       else if item.type is 'image'
+        console.log('Processing Image ' + item.imageUrl)
         if item.imageUrl and item.imageUrl isnt '' and (item.imageUrl isnt resortedObj.mainUrl)
           imageArray = []
           imageArray.push(item.imageUrl)
@@ -1028,14 +1061,14 @@ if Meteor.isClient
         console.log('Got data')
         Session.set('NewImgAdd',false)
         resortObj = {}
-        seekOneUsableMainImage(data,(localURI,w,h,found,index,total,source)->
-            console.log('found ' + found + ' index ' + index + ' total ' + total + ' url ' + localURI + ' source ' + source )
+        seekOneUsableMainImage(data,(file,w,h,found,index,total,source)->
+            console.log('found ' + found + ' index ' + index + ' total ' + total + ' fileObject ' + file + ' source ' + source )
             Session.set('importProcedure',5)
-            if localURI
-              insertDefaultImage(data,source,found,inputUrl,localURI)
+            if file
+              insertDownloadedImage(data,source,found,inputUrl,file)
               resortObj.mainUrl = source
             else
-              insertDefaultImage(data,'http://data.tiegushi.com/res/defaultMainImage.jpg',false,inputUrl,'')
+              insertDefaultImage(data,'http://data.tiegushi.com/res/defaultMainImage.jpg',false,inputUrl)
             if data.resortedArticle.length > 0
               resortObj.index = 0
               resortObj.length = data.resortedArticle.length

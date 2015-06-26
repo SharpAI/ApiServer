@@ -276,7 +276,7 @@ if Meteor.isClient
               resortedArticle.push {type:'text',text:toBeInsertedText}
             toBeInsertedText = ''
             for imageUrl in info.imageArray
-              if imageUrl.indexOf('http://') or imageUrl.indexOf('https://')
+              if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
                 console.log('    save imageUrl ' + imageUrl)
                 resortedArticle.push {type:'image',imageUrl:imageUrl}
                 data.imageArray.push imageUrl
@@ -287,9 +287,10 @@ if Meteor.isClient
               resortedArticle.push {type:'text',text:toBeInsertedText}
             toBeInsertedText = ''
             for imageUrl in info.bgArray
-              console.log('    save background imageUrl ' + imageUrl)
-              resortedArticle.push {type:'image',imageUrl:imageUrl}
-              data.imageArray.push imageUrl
+              if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
+                console.log('    save background imageUrl ' + imageUrl)
+                resortedArticle.push {type:'image',imageUrl:imageUrl}
+                data.imageArray.push imageUrl
       if toBeInsertedText and toBeInsertedText isnt ''
         resortedArticle.push {type:'text',text:toBeInsertedText}
       data.resortedArticle = resortedArticle

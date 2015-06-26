@@ -1,7 +1,7 @@
 
 get_image_size_from_URI = function(imageURI,callback) {
 // This function is called once an imageURI is rerturned from PhoneGap's camera or gallery function
-	window.resolveLocalFileSystemURI(imageURI, function(fileEntry) {
+	window.resolveLocalFileSystemURL(imageURI, function(fileEntry) {
 		fileEntry.file(function(fileObject){
 // Create a reader to read the file
 			var reader = new FileReader();

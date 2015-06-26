@@ -197,7 +197,7 @@ if (Meteor.isCordova){
                     ft.download(source, target, function(theFile){
                         console.log('download suc, theFile.toURL='+theFile.toURL());
                         if(callback){
-                            callback(theFile.toURL(),source);
+                            callback(theFile.toURL(),source,theFile);
                         }
                     }, function(e){
                         console.log('download error: ' + e.code)
