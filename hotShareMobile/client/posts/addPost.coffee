@@ -919,7 +919,7 @@ if Meteor.isClient
         siteTitle:linkInfo.title,
         siteHost:linkInfo.host,
         owner: Meteor.userId(),
-        imgUrl:imgUrl,
+        imgUrl:'cdvfile://localhost/persistent/'+file.name,
         filename:file.name,
         URI:file.toURL(),
         url:inputUrl,
