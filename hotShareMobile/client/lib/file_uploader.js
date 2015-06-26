@@ -685,6 +685,7 @@ if (Meteor.isCordova){
                   var originalFilename = results[i].replace(/^.*[\\\/]/, '');
                   var filename = Meteor.userId()+'_'+timestamp+ '_' + originalFilename;
                   console.log('File name ' + filename);
+                  console.log('Original full path ' + results[i]);
                   var params = {filename:filename, URI:results[i], smallImage:'cdvfile://localhost/persistent/drafts/' + originalFilename}
                   callback(null, params,(i+1),length);
                 }
