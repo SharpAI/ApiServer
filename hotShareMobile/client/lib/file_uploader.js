@@ -663,7 +663,7 @@ if (Meteor.isCordova){
               return;
             }
             
-            if(device.platform === 'Android' ){
+            /*if(device.platform === 'Android' ){
                 var obj = {};
                 obj.currentCount = 0;
                 obj.totalCount = length;
@@ -679,17 +679,28 @@ if (Meteor.isCordova){
                     }
                 };
                 processImageInAndroid(obj.currentCount,results,processImageInAndroidCallback);
-            } else {
+            } else {*/
                 for (var i = 0; i < length; i++) {
                   var timestamp = new Date().getTime();
                   var originalFilename = results[i].replace(/^.*[\\\/]/, '');
                   var filename = Meteor.userId()+'_'+timestamp+ '_' + originalFilename;
                   console.log('File name ' + filename);
                   console.log('Original full path ' + results[i]);
-                  var params = {filename:filename, URI:results[i], smallImage:'cdvfile://localhost/persistent/drafts/' + originalFilename}
+                  window.resolveLocalFileSystemURL(results[i], function(fileEntry){
+                      console.log('File is ' + fileEntry.toURL());
+                  }, function(){
+                      console.log('gotError ');
+                  });
+                  var params = '';
+                  if(device.platform === 'Android'){
+                      params = {filename:filename, URI:results[i], smallImage:'cdvfile://localhost/cache/' + originalFilename};
+                  }
+                  else {
+                      params = {filename:filename, URI:results[i], smallImage:'cdvfile://localhost/persistent/drafts/' + originalFilename};
+                  }
                   callback(null, params,(i+1),length);
                 }
-            }
+            //}
           }, function (error){
               console.log('Pick Image Error ' + error);
               if(callback){
