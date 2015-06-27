@@ -32,4 +32,13 @@ if Meteor.isClient
       Session.equals('momentsCollection','loading')
     loadError:->
       Session.equals('momentsCollection','error')
-      
+  Template.moments.events
+    'click .readpost':(e)->
+      postId = this.readPostId
+      $(window).children().off()
+      $(window).unbind('scroll')
+      Meteor.setTimeout ()->
+        Session.set("Social.LevelOne.Menu",'contactsList')
+        Router.go '/redirect/'+postId
+      ,300
+
