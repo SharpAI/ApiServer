@@ -254,6 +254,7 @@ if Meteor.isClient
       toBeInsertedText = ''
       previousIsImage = false
       resortedArticle = []
+      sortedImages = 0
       $(extracted.innerHTML).children().each (index,node)->
         info = {}
         info.bgArray = []
@@ -278,8 +279,8 @@ if Meteor.isClient
             for imageUrl in info.imageArray
               if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
                 console.log('    save imageUrl ' + imageUrl)
+                sortedImages++;
                 resortedArticle.push {type:'image',imageUrl:imageUrl}
-                data.imageArray.push imageUrl
           else if info.bgArray.length > 0
             console.log('    Got Background image')
             previousIsImage = true
@@ -289,10 +290,22 @@ if Meteor.isClient
             for imageUrl in info.bgArray
               if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
                 console.log('    save background imageUrl ' + imageUrl)
+                sortedImages++
                 resortedArticle.push {type:'image',imageUrl:imageUrl}
-                data.imageArray.push imageUrl
       if toBeInsertedText and toBeInsertedText isnt ''
         resortedArticle.push {type:'text',text:toBeInsertedText}
+      if sortedImages < 1
+        grabImagesInHTMLString(data)
+        if data.imageArray.length > 0
+          for imageUrl in data.imageArray
+            if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
+              console.log('    save imageUrl ' + imageUrl)
+              resortedArticle.push {type:'image',imageUrl:imageUrl}
+        else if data.bgArray.length > 0
+          for imageUrl in data.bgArray
+            if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
+              console.log('    save background imageUrl ' + imageUrl)
+              resortedArticle.push {type:'image',imageUrl:imageUrl}
       data.resortedArticle = resortedArticle
       console.log('Resorted Article is ' + data.resortedArticle)
       callback data
