@@ -686,11 +686,6 @@ if (Meteor.isCordova){
                   var filename = Meteor.userId()+'_'+timestamp+ '_' + originalFilename;
                   console.log('File name ' + filename);
                   console.log('Original full path ' + results[i]);
-                  window.resolveLocalFileSystemURL(results[i], function(fileEntry){
-                      console.log('File is ' + fileEntry.toURL());
-                  }, function(){
-                      console.log('gotError ');
-                  });
                   var params = '';
                   if(device.platform === 'Android'){
                       params = {filename:filename, URI:results[i], smallImage:'cdvfile://localhost/cache/' + originalFilename};
