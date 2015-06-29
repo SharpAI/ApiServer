@@ -187,13 +187,6 @@ if (Meteor.isCordova){
                     };
                     options.headers = headers;
                     var ft = new FileTransferBCS();
-                    ft.onprogress = function(progressEvent) {
-                      if (progressEvent.lengthComputable) {
-                        console.log('Download Progress ' + 100* (progressEvent.loaded / progressEvent.total ) + '%');
-                      } else {
-                        console.log('Download ++');
-                      }
-                    };
                     ft.download(source, target, function(theFile){
                         console.log('download suc, theFile.toURL='+theFile.toURL());
                         if(callback){
