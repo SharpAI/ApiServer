@@ -1,7 +1,7 @@
 #用户 space2
 Template.follow_user.helpers
   follows: ->
-    Follows.find()
+    Follows.find({},{sort: {index: 1}})
 Template.follow_user_list.helpers
   isFollowed:(follow)->
     fcount = Follower.find({"userId":Meteor.userId(),"followerId":follow.userId}).count()
