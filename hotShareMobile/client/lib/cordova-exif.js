@@ -8,7 +8,7 @@ get_image_size_from_URI = function(imageURI,callback) {
 
 			// Create a function to process the file once it's read
 			reader.onloadend = function(evt) {
-				console.log('Create an image element that we will load the data into ');
+				//console.log('Create an image element that we will load the data into ');
 				var image = new Image();
 				image.onerror = function(){
 					image = null;
@@ -20,8 +20,7 @@ get_image_size_from_URI = function(imageURI,callback) {
 					// The image has been loaded and the data is ready
 					var image_width = this.width;
 					var image_height = this.height;
-					console.log("IMAGE HEIGHT: " + image_height);
-					console.log("IMAGE WIDTH: " + image_width);
+					console.log("IMAGE HEIGHT: " + image_height + " IMAGE WIDTH: " + image_width);
 					// We don't need the image element anymore. Get rid of it.
 					image = null;
 					if (callback){

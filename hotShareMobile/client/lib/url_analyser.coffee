@@ -1,4 +1,5 @@
 if Meteor.isClient
+  showDebug=false
   @seekSuitableImageFromArray = (imageArray,callback,minimal,onlyOne)->
     @imageCounter = 0
     @foundImages = 0
@@ -11,9 +12,9 @@ if Meteor.isClient
     imageResolver.onload = ->
       height = imageResolver.height
       width = imageResolver.width
-      console.log imageArray[imageCounter] + ' width is ' + width + ' height is ' + height
+      showDebug&&console.log imageArray[imageCounter] + ' width is ' + width + ' height is ' + height
       if height >= minimalWidthAndHeight and width >= minimalWidthAndHeight
-        console.log 'This image can be used ' + imageArray[imageCounter] + ' width is ' + width + ' height is ' + height
+        showDebug&&console.log 'This image can be used ' + imageArray[imageCounter] + ' width is ' + width + ' height is ' + height
         callback imageArray[imageCounter],width,height, ++foundImages,imageCounter,imageArray.length
         if onlyOne
           return
@@ -22,7 +23,7 @@ if Meteor.isClient
       else
         callback null,0,0,foundImages,imageCounter,imageArray.length
     imageResolver.onerror = ->
-      console.log 'image resolve url got error'
+      showDebug&&console.log 'image resolve url got error'
       if ++imageCounter < imageArray.length
         imageResolver.src = imageArray[imageCounter]
       else
@@ -36,28 +37,28 @@ if Meteor.isClient
     else
       minimalWidthAndHeight = 150
     downloadHandler = (downloadedUrl,source,file)->
-      console.log('Got downloaded URL ' + downloadedUrl)
+      #showDebug&&console.log('Got downloaded URL ' + downloadedUrl)
       if downloadedUrl
         onSuccess(downloadedUrl,source,file)
       else
         onError(source)
     onSuccess = (url,source,file)->
-      console.log('To call get_image_size_from_URI on ' + url)
+      #showDebug&&console.log('To call get_image_size_from_URI on ' + url)
       get_image_size_from_URI(url,(width,height)->
-        console.log url + ' width is ' + width + ' height is ' + height
+        #showDebug&&console.log url + ' width is ' + width + ' height is ' + height
         if height >= minimalWidthAndHeight and width >= minimalWidthAndHeight
-          console.log 'This image can be used ' + imageArray[imageCounter] + ' width is ' + width + ' height is ' + height
+          #showDebug&&console.log 'This image can be used ' + imageArray[imageCounter] + ' width is ' + width + ' height is ' + height
           callback file,width,height, ++foundImages,imageCounter,imageArray.length,source
           if onlyOne
             return
         if ++imageCounter < imageArray.length
-          console.log('imageCounter ' + imageCounter + ' imageArray.length ' + imageArray.length)
+          #showDebug&&console.log('imageCounter ' + imageCounter + ' imageArray.length ' + imageArray.length)
           downloadFromBCS(imageArray[imageCounter],downloadHandler)
         else
           callback null,0,0,foundImages,imageCounter,imageArray.length,source
       )
     onError = (source)->
-      console.log 'image resolve url got error'
+      showDebug&&console.log 'image resolve url got error'
       if ++imageCounter < imageArray.length
         downloadFromBCS(imageArray[imageCounter],downloadHandler)
       else
@@ -67,10 +68,10 @@ if Meteor.isClient
   @analyseUrl = (url,callback)->
     @iabRef = window.open(url, '_blank', 'hidden=yes')
     iabRef.addEventListener 'loadstop', ()->
-      console.log 'load stop'
+      showDebug&&console.log 'load stop'
       getImagesListFromUrl(iabRef,url,callback)
     iabRef.addEventListener 'loaderror', ()->
-      console.log 'load error'
+      showDebug&&console.log 'load error'
       if callback
         callback(null,0,0)
   @reAnalyseUrl = (url,callback)->
@@ -84,7 +85,7 @@ if Meteor.isClient
       iabRef = undefined
   @seekOneUsableMainImage = (data,callback,minimal)->
     imageArray = []
-    #console.log 'Url Analyse result is ' + JSON.stringify(data)
+    #showDebug&&console.log 'Url Analyse result is ' + JSON.stringify(data)
     if data.imageArray
       for img in data.imageArray
         if img and img.startsWith("http")
@@ -94,21 +95,21 @@ if Meteor.isClient
         imageUrl = (bgImg.match( /url\([^\)]+\)/gi ) ||[""])[0].split(/[()'"]+/)[1]
         if imageUrl and imageUrl.startsWith("http")
           imageArray.push imageUrl
-    console.log 'Got images to be anylised ' + JSON.stringify(imageArray)
+    showDebug&&console.log 'Got images to be anylised ' + JSON.stringify(imageArray)
     if imageArray.length > 0
       seekSuitableImageFromArrayAndDownloadToLocal imageArray,(file,w,h,found,index,length,source)->
         if file
-          console.log('Original source:'+source+'Got local url '+ JSON.stringify(file)+' w:'+w+' h:'+h)
+          showDebug&&console.log('Original source:'+source+'Got local url '+ JSON.stringify(file)+' w:'+w+' h:'+h)
           callback(file,w,h,found,index,length,source)
         else
-          console.log('No local url '+' w:'+w+' h:'+h)
+          showDebug&&console.log('No local url '+' w:'+w+' h:'+h)
           callback(null,0,0,found,index,length,source)
       ,minimal,true
     else
       callback(null,0,0,0,0,0,null)
   @processInAppInjectionData = (data,callback,minimal)->
     imageArray = []
-    #console.log 'Url Analyse result is ' + JSON.stringify(data)
+    #showDebug&&console.log 'Url Analyse result is ' + JSON.stringify(data)
     if data.imageArray
       for img in data.imageArray
         if img and img.startsWith("http")
@@ -118,7 +119,7 @@ if Meteor.isClient
         imageUrl = (bgImg.match( /url\([^\)]+\)/gi ) ||[""])[0].split(/[()'"]+/)[1]
         if imageUrl and imageUrl.startsWith("http")
           imageArray.push imageUrl
-    console.log 'Got images to be anylised ' + JSON.stringify(imageArray)
+    showDebug&&console.log 'Got images to be anylised ' + JSON.stringify(imageArray)
     if imageArray.length > 0
       seekSuitableImageFromArray imageArray,(url,w,h,found,index,length)->
         if url
@@ -143,14 +144,14 @@ if Meteor.isClient
             src = data.protocol + src
           else if src.startsWith('/')
             src = data.protocol + '//' + data.host + '/' + src
-        console.log 'Image Src: ' + src
+        showDebug&&console.log 'Image Src: ' + src
         if (data.imageArray.indexOf src) <0
           data.imageArray.push src
     $(documentBody).find('input').each ()->
       src = $(this).attr('src')
       if src and src isnt '' and src.startsWith('http')
         if (data.imageArray.indexOf src) <0
-          console.log 'Got src is ' + src
+          showDebug&&console.log 'Got src is ' + src
           data.imageArray.push src
     $(documentBody).find('div').each ()->
       bg_url = $(this).css('background-image')
@@ -163,36 +164,36 @@ if Meteor.isClient
           if bg_url and bg_url isnt ''
             unless bg_url.startsWith('http')
               bg_url = data.protocol + '//' + data.host + '/' + bg_url
-            console.log 'Background Image: ' + bg_url
+            showDebug&&console.log 'Background Image: ' + bg_url
             if (data.bgArray.indexOf bg_url) <0
               data.bgArray.push bg_url
     pattern = /img src=\"([\s\S]*?)(?=\")/g
     result = data.body.match(pattern)
     if result and result.length > 0
-      console.log 'result ' + JSON.stringify(result)
+      showDebug&&console.log 'result ' + JSON.stringify(result)
       for subString in result
         dataSrc = subString.substring(9, subString.length)
         if (data.imageArray.indexOf dataSrc) <0 and (data.bgArray.indexOf dataSrc) <0
           data.imageArray.push(dataSrc)
-          console.log 'push dataSrc: ' + dataSrc
+          showDebug&&console.log 'push dataSrc: ' + dataSrc
     pattern = /data-src=\"([\s\S]*?)(?=\")/g
     result = data.body.match(pattern)
     if result and result.length > 0
-      console.log 'result ' + JSON.stringify(result)
+      showDebug&&console.log 'result ' + JSON.stringify(result)
       for subString in result
         dataSrc = subString.substring(10, subString.length)
         if (data.imageArray.indexOf dataSrc) <0 and (data.bgArray.indexOf dataSrc) <0
           data.imageArray.push(dataSrc)
-          console.log 'push dataSrc: ' + dataSrc
+          showDebug&&console.log 'push dataSrc: ' + dataSrc
     pattern = /data-url=\"([\s\S]*?)(?=\")/g
     result = data.body.match(pattern)
     if result and result.length > 0
-      console.log 'result ' + JSON.stringify(result)
+      showDebug&&console.log 'result ' + JSON.stringify(result)
       for subString in result
         dataSrc = subString.substring(10, subString.length)
         if (data.imageArray.indexOf dataSrc) <0 and (data.bgArray.indexOf dataSrc) <0
           data.imageArray.push(dataSrc)
-          console.log 'push dataSrc: ' + dataSrc
+          showDebug&&console.log 'push dataSrc: ' + dataSrc
   @getImagesListFromUrl = (inappBrowser,url,callback)->
     inappBrowser.executeScript {
         code: '
@@ -214,7 +215,7 @@ if Meteor.isClient
       '}
     ,(data)->
       if data[0]
-        console.log 'data0 is ' + JSON.stringify(data[0])
+        showDebug&&console.log 'data0 is ' + JSON.stringify(data[0])
         data = data[0]
       data.bgArray = []
       data.imageArray = []
@@ -223,7 +224,7 @@ if Meteor.isClient
       documentBody.innerHTML = data.body
       extracted = extract(documentBody)
       data.fullText = $(extracted).text()
-      #console.log data.body
+      #showDebug&&console.log data.body
       callback data
   @getContentListsFromUrl = (inappBrowser,url,callback)->
     inappBrowser.executeScript {
@@ -246,7 +247,7 @@ if Meteor.isClient
       '}
     ,(data)->
       if data[0]
-        console.log 'data0 is ' + JSON.stringify(data[0])
+        showDebug&&console.log 'data0 is ' + JSON.stringify(data[0])
         data = data[0]
       data.bgArray = []
       data.imageArray = []
@@ -262,11 +263,11 @@ if Meteor.isClient
         info.bgArray = []
         info.imageArray = []
         info.body = node.innerHTML
-        console.log('    Node['+index+'] '+node.nodeName)
+        showDebug&&console.log('    Node['+index+'] '+node.nodeName)
         text = $(node).text().toString().replace(/\s\s\s+/g, '')
         if text and text isnt ''
           previousIsImage = false
-          console.log '    Got text in this element('+toBeInsertedText.length+') '+text
+          showDebug&&console.log '    Got text in this element('+toBeInsertedText.length+') '+text
           if toBeInsertedText.length < 50
             if toBeInsertedText.length > 0
               toBeInsertedText += '\n'
@@ -277,26 +278,26 @@ if Meteor.isClient
         if info.body
           grabImagesInHTMLString(info)
           if info.imageArray.length > 0
-            console.log('    Got image')
+            showDebug&&console.log('    Got image')
             previousIsImage = true
             if toBeInsertedText and toBeInsertedText isnt ''
               resortedArticle.push {type:'text',text:toBeInsertedText}
             toBeInsertedText = ''
             for imageUrl in info.imageArray
               if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
-                console.log('    save imageUrl ' + imageUrl)
+                showDebug&&console.log('    save imageUrl ' + imageUrl)
                 sortedImages++;
                 resortedArticle.push {type:'image',imageUrl:imageUrl}
                 data.imageArray.push imageUrl
           else if info.bgArray.length > 0
-            console.log('    Got Background image')
+            showDebug&&console.log('    Got Background image')
             previousIsImage = true
             if toBeInsertedText and toBeInsertedText isnt ''
               resortedArticle.push {type:'text',text:toBeInsertedText}
             toBeInsertedText = ''
             for imageUrl in info.bgArray
               if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
-                console.log('    save background imageUrl ' + imageUrl)
+                showDebug&&console.log('    save background imageUrl ' + imageUrl)
                 sortedImages++
                 resortedArticle.push {type:'image',imageUrl:imageUrl}
                 data.imageArray.push imageUrl
@@ -307,13 +308,13 @@ if Meteor.isClient
         if data.imageArray.length > 0
           for imageUrl in data.imageArray
             if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
-              console.log('    save imageUrl ' + imageUrl)
+              showDebug&&console.log('    save imageUrl ' + imageUrl)
               resortedArticle.push {type:'image',imageUrl:imageUrl}
         else if data.bgArray.length > 0
           for imageUrl in data.bgArray
             if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
-              console.log('    save background imageUrl ' + imageUrl)
+              showDebug&&console.log('    save background imageUrl ' + imageUrl)
               resortedArticle.push {type:'image',imageUrl:imageUrl}
       data.resortedArticle = resortedArticle
-      console.log('Resorted Article is ' + data.resortedArticle)
+      showDebug&&console.log('Resorted Article is ' + data.resortedArticle)
       callback data

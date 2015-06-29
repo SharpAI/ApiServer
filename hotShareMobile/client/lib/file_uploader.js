@@ -2,16 +2,17 @@
 if (Meteor.isCordova){
     uploadingFilesInfo = {filesCount:0, files:[]};
     abortuploader = function(){}
+    var showDebug=false
   
     var uploadToAliyun = function(filename,URI, callback, errCallback){
       Meteor.call('getAliyunWritePolicy',filename,URI,function(error,result){
         if(error) {
-          console.log('getAliyunWritePolicy error: ' + error);
+          showDebug && console.log('getAliyunWritePolicy error: ' + error);
             if(callback){
                 callback(null);
             }
         }
-        console.log('File URI is ' + result.orignalURI);
+        showDebug && console.log('File URI is ' + result.orignalURI);
         var options = new FileUploadOptions();
         options.mimeType ="image/jpeg";
         options.chunkedMode = false;
@@ -31,11 +32,11 @@ if (Meteor.isCordova){
         var ft = new FileTransferBCS();
         ft.onprogress = function(progressEvent) {
           if (progressEvent.lengthComputable) {
-            console.log('Loaded ' + progressEvent.loaded + ' Total ' + progressEvent.total);
+            showDebug && console.log('Loaded ' + progressEvent.loaded + ' Total ' + progressEvent.total);
             computeProgressBar(filename, 60*(progressEvent.loaded/progressEvent.total));
-            console.log('Uploaded Progress ' + 60* (progressEvent.loaded / progressEvent.total ) + '%');
+            showDebug && console.log('Uploaded Progress ' + 60* (progressEvent.loaded / progressEvent.total ) + '%');
           } else {
-            console.log('Upload ++');
+            showDebug && console.log('Upload ++');
           }
         };
         ft.upload(result.orignalURI, uri, function(e){
@@ -44,7 +45,7 @@ if (Meteor.isCordova){
                 callback(result.acceccURI);
             }
         }, function(e){
-          console.log('upload error' + e.code );
+          showDebug && console.log('upload error' + e.code );
           if (errCallback) {
             errCallback(filename);
           } else {
@@ -60,12 +61,12 @@ if (Meteor.isCordova){
     var uploadToS3 = function(filename,URI,callback){
       Meteor.call('getS3WritePolicy',filename,URI,function(error,result){
         if(error) {
-          console.log('getS3WritePolice error: ' + error);
+          showDebug && console.log('getS3WritePolice error: ' + error);
             if(callback){
                 callback(null);
             }
         }
-        console.log('File URI is ' + result.orignalURI);
+        showDebug && console.log('File URI is ' + result.orignalURI);
         var options = new FileUploadOptions();
         options.fileKey="file";
         var time = new Date().getTime();
@@ -90,9 +91,9 @@ if (Meteor.isCordova){
         var ft = new FileTransfer();
         ft.onprogress = function(progressEvent) {
           if (progressEvent.lengthComputable) {
-            console.log('Uploaded Progress ' + 100* (progressEvent.loaded / progressEvent.total ) + '%');
+            showDebug && console.log('Uploaded Progress ' + 100* (progressEvent.loaded / progressEvent.total ) + '%');
           } else {
-            console.log('Upload ++');
+            showDebug && console.log('Upload ++');
           }
         };
         ft.upload(result.orignalURI, uri, function(e){
@@ -100,7 +101,7 @@ if (Meteor.isCordova){
                 callback('https://travelers-bucket.s3.amazonaws.com/' + filename);
             }
         }, function(e){
-          console.log('upload error' + e.code )
+          showDebug && console.log('upload error' + e.code )
           if(callback){
               callback(null);
           }
@@ -110,14 +111,14 @@ if (Meteor.isCordova){
     var uploadToBCS = function(filename,URI,callback,errCallback){
       Meteor.call('getBCSSigniture',filename,URI,function(error,result){
         if(error) {
-            console.log('getBCSSigniture error: ' + error);
+            showDebug && console.log('getBCSSigniture error: ' + error);
             if(callback){
                 callback(null);
             }
             return;
         }
-        console.log('File URI is ' + result.orignalURI);
-        console.log('Result is ' + JSON.stringify(result));
+        showDebug && console.log('File URI is ' + result.orignalURI);
+        showDebug && console.log('Result is ' + JSON.stringify(result));
         var options = new FileUploadOptions();
         var time = new Date().getTime();
         options.mimeType ="image/jpeg";
@@ -136,9 +137,9 @@ if (Meteor.isCordova){
         ft.onprogress = function(progressEvent) {
           if (progressEvent.lengthComputable) {
             computeProgressBar(filename, 100*(progressEvent.loaded/progressEvent.total));
-            console.log('Uploaded Progress ' + 100* (progressEvent.loaded / progressEvent.total ) + '%');
+            showDebug && console.log('Uploaded Progress ' + 100* (progressEvent.loaded / progressEvent.total ) + '%');
           } else {
-            console.log('Upload ++');
+            showDebug && console.log('Upload ++');
           }
         };
         ft.upload(result.orignalURI, uri, function(e){
@@ -146,7 +147,7 @@ if (Meteor.isCordova){
                 callback('http://bcs.duapp.com/travelers-km/' + filename);
             }
         }, function(e){
-          console.log('upload error' + e.code )
+          showDebug && console.log('upload error' + e.code )
           if (errCallback) {
             errCallback(filename);
           } else {
@@ -163,7 +164,7 @@ if (Meteor.isCordova){
     };
     downloadFromBCS = function(source, callback){
         function fail(error) {
-            console.log(error)
+            showDebug && console.log(error)
             if(callback){
                 callback(null, source);
             }
@@ -174,10 +175,10 @@ if (Meteor.isCordova){
             var filename = Meteor.userId()+'_'+timestamp+ '_' + hashOnUrl;
             fileSystem.root.getFile(filename, {create: true, exclusive: false}, 
                 function(fileEntry){
-                    console.log("filename = "+filename+", fileEntry.toURL()="+fileEntry.toURL());
+                    showDebug && console.log("filename = "+filename+", fileEntry.toURL()="+fileEntry.toURL());
                     //var target = "cdvfile://localhost/temporary/"+filename
                     var target = fileEntry.toURL();
-                    console.log("target = "+target);
+                    showDebug && console.log("target = "+target);
 
                     var options = new FileDownloadOptions();
                     var headers = {
@@ -188,12 +189,12 @@ if (Meteor.isCordova){
                     options.headers = headers;
                     var ft = new FileTransferBCS();
                     ft.download(source, target, function(theFile){
-                        console.log('download suc, theFile.toURL='+theFile.toURL());
+                        //showDebug && console.log('download suc, theFile.toURL='+theFile.toURL());
                         if(callback){
                             callback(theFile.toURL(),source,theFile);
                         }
                     }, function(e){
-                        console.log('download error: ' + e.code)
+                        showDebug && console.log('download error: ' + e.code)
                         if(callback){
                           callback(null, source);
                         }
@@ -239,7 +240,7 @@ if (Meteor.isCordova){
               }
               var timestamp = new Date().getTime();
               var filename = Meteor.userId()+'_'+timestamp+'.jpg';
-              console.log('File name ' + filename);
+              showDebug && console.log('File name ' + filename);
               //uploadToS3(filename,results[i],callback);
               uploadToAliyun(filename,s,callback);
           }, function(s){
@@ -270,12 +271,12 @@ if (Meteor.isCordova){
               var timestamp = new Date().getTime();
               var originalFilename = results[i].replace(/^.*[\\\/]/, '');
               var filename = Meteor.userId()+'_'+timestamp+ '_' + originalFilename;
-              console.log('File name ' + filename);
+              showDebug && console.log('File name ' + filename);
               //uploadToS3(filename,results[i],callback);
               uploadToAliyun(filename,results[i],callback);
             }
           }, function (error){
-              console.log('Pick Image Error ' + error);
+              showDebug && console.log('Pick Image Error ' + error);
               if(callback){
                   callback(null);
               }
@@ -317,9 +318,9 @@ if (Meteor.isCordova){
         }
         for (var i=0; i<uploadingFilesInfo.files.length; i++) {
             percent += uploadingFilesInfo.files[i].percent ? uploadingFilesInfo.files[i].percent : 0;//所有文件上传的百分比
-            //console.log("uploadingFilesInfo.files["+i+"].percent = "+uploadingFilesInfo.files[i].percent);
+            //showDebug && console.log("uploadingFilesInfo.files["+i+"].percent = "+uploadingFilesInfo.files[i].percent);
         }
-        //console.log("progressBarWidth="+parseInt(percent/uploadingFilesInfo.filesCount)+",percent="+percent+", filesCount="+uploadingFilesInfo.filesCount);
+        //showDebug && console.log("progressBarWidth="+parseInt(percent/uploadingFilesInfo.filesCount)+",percent="+percent+", filesCount="+uploadingFilesInfo.filesCount);
         if (parseInt(percent/uploadingFilesInfo.files.length) > Session.get('progressBarWidth')) {
             Session.set('progressBarWidth', parseInt(percent/uploadingFilesInfo.files.length));
         }
@@ -327,7 +328,7 @@ if (Meteor.isCordova){
         //Clear timeout timer of this file
         for (var i=0; i<multiThreadsInfo.length; i++) {
             if (multiThreadsInfo[i].filename == fileName) {
-                console.log("computeProgressBar: reset timeout counter for: "+fileName);
+                showDebug && console.log("computeProgressBar: reset timeout counter for: "+fileName);
                 multiThreadsInfo[i].time = 0;
                 break;
             }
@@ -347,10 +348,10 @@ if (Meteor.isCordova){
             for (var i=0; i<multiThreadsInfo.length; i++) {
                 if (multiThreadsInfo[i].status == 0) {
                     multiThreadsInfo[i].time++;
-                    //console.log("multiThreadUploadFile: multiThreadsInfo["+i+"].time="+multiThreadsInfo[i].time);
+                    //showDebug && console.log("multiThreadUploadFile: multiThreadsInfo["+i+"].time="+multiThreadsInfo[i].time);
                     if (multiThreadsInfo[i].time > multiThreadsTimeout) {
                         clearInterval(multiThreadsIntervalHandle);
-                        console.log("multiThreadUploadFile: timeout!!! file info is: "+JSON.stringify(multiThreadsInfo[i]));
+                        showDebug && console.log("multiThreadUploadFile: timeout!!! file info is: "+JSON.stringify(multiThreadsInfo[i]));
                         //multiThreadsInfo = [];
                         callback(null);
                         return;
@@ -406,7 +407,7 @@ if (Meteor.isCordova){
         };
         
         var stopUploader = function(){
-          console.log('stop uploader...('+multiThreadsInfo.length+')');
+          showDebug && console.log('stop uploader...('+multiThreadsInfo.length+')');
           clearInterval(multiThreadsIntervalHandle);
           for (var i=0; i<multiThreadsInfo.length; i++) {
             if (multiThreadsInfo[i].status == 0 && multiThreadsInfo[i].fileTransfer){
@@ -429,15 +430,15 @@ if (Meteor.isCordova){
         var ft = uploadToAliyun(tmpFileInfo.filename, tmpFileInfo.URI, function(result){
             var tmpFileInfo2 = getFileInfo(result.replace(/^.*[\\\/]/, ''));
             if (tmpFileInfo2 == null) {
-                console.log("startThreadUploadFile: invalid file info! result="+result);
+                showDebug && console.log("startThreadUploadFile: invalid file info! result="+result);
                 return;
             }
             tmpFileInfo2.status = 1;
 
-            console.log("uploaded("+getUploadedCount()+"/"+draftData.length+")..."+multiThreadsInfo.length);
+            showDebug && console.log("uploaded("+getUploadedCount()+"/"+draftData.length+")..."+multiThreadsInfo.length);
             if (getUploadedCount() == draftData.length) {
                 if (callback) {
-                    console.log("startThreadUploadFile: suc");
+                    showDebug && console.log("startThreadUploadFile: suc");
                     //stopUploader();
                     //multiThreadsInfo = [];
                     callback('Suc');
@@ -453,26 +454,26 @@ if (Meteor.isCordova){
             } else {
                 runningThreadCount--;
                 if (!hasActiveUpload()) {
-                    console.log("startThreadUploadFile: failed, 1");
+                    showDebug && console.log("startThreadUploadFile: failed, 1");
                     callback(null);
                     stopUploader();
                 }
             }
         }, function(filename) {
-            console.log("uploaded failed: filename="+filename);
+            showDebug && console.log("uploaded failed: filename="+filename);
             //stopUploader();
           
             var tmpFileInfo3 = getFileInfo(filename);
             if (tmpFileInfo3 == null) {
-                console.log("startThreadUploadFile: invalid file info! filename="+filename);
+                showDebug && console.log("startThreadUploadFile: invalid file info! filename="+filename);
                 return;
             }
             if (tmpFileInfo3.tryCount >= 1) {
-                console.log("!!Abort, "+ filename +", tried "+tmpFileInfo3.tryCount+" times.");
+                showDebug && console.log("!!Abort, "+ filename +", tried "+tmpFileInfo3.tryCount+" times.");
                 tmpFileInfo3.status = -1;
                 runningThreadCount--;
                 if (!hasActiveUpload()) {
-                    console.log("startThreadUploadFile: failed, 2");
+                    showDebug && console.log("startThreadUploadFile: failed, 2");
                     clearInterval(multiThreadsIntervalHandle);
                     callback(null);
                 }
@@ -480,14 +481,14 @@ if (Meteor.isCordova){
             }
             if (!hasErrorUpload()) {
                 tmpFileInfo3.tryCount += 1;
-                console.log("uploaded("+getUploadedCount()+"/"+draftData.length+") failed, trying "+tmpFileInfo.tryCount+"...");
+                showDebug && console.log("uploaded("+getUploadedCount()+"/"+draftData.length+") failed, trying "+tmpFileInfo.tryCount+"...");
                 
                 // 错误就不在上传
                 //startThreadUploadFile(draftData, tmpFileInfo3, info, callback);
             } else {
                 runningThreadCount--;
                 if (!hasActiveUpload()) {
-                    console.log("startThreadUploadFile: failed, 3.");
+                    showDebug && console.log("startThreadUploadFile: failed, 3.");
                     clearInterval(multiThreadsIntervalHandle);
                     callback(null);
                 }
@@ -504,7 +505,7 @@ if (Meteor.isCordova){
             return;
         }
         var uploadedCount = 0;
-        //console.log("draftData="+JSON.stringify(draftData));
+        //showDebug && console.log("draftData="+JSON.stringify(draftData));
         if (draftData.length > 0) {
             Session.set('isDelayPublish', false);
             Template.progressBar.__helpers.get('show')();
@@ -523,14 +524,14 @@ if (Meteor.isCordova){
           if (result) {
               Template.progressBar.__helpers.get('close')();
               //Session.set('progressBarWidth', 100);
-              console.log("Jump to post page...");
+              showDebug && console.log("Jump to post page...");
               //$('.addProgress').css('display',"none");
 //                $('body').css('background-color',"#111");
               PUB.pagepop();//Pop addPost page, it was added by PUB.page('/progressBar');
               //Router.go('/posts/'+postId);
               callback('suc');
               //PUB.alert("上传图片失败。");
-              console.log("multiThreadUploadFile, suc");
+              showDebug && console.log("multiThreadUploadFile, suc");
               //callback(null);
           } else {
               /*navigator.notification.confirm('上传图片失败，需要重新上传吗？',function(index){
@@ -562,7 +563,7 @@ if (Meteor.isCordova){
             return;
         }
         var uploadedCount = 0;
-        //console.log("draftData="+JSON.stringify(draftData));
+        //showDebug && console.log("draftData="+JSON.stringify(draftData));
         if (draftData.length > 0) {
             Session.set('isDelayPublish', false);
 //            PUB.page('/progressBar');
@@ -574,15 +575,15 @@ if (Meteor.isCordova){
             uploadToAliyun(draftData[i].filename, draftData[i].URI, function(result){
             //uploadToBCS(draftData[i].filename, draftData[i].URI, function(result){
                 uploadedCount++;
-                console.log("uploading("+uploadedCount+"/"+draftData.length+")...");
+                showDebug && console.log("uploading("+uploadedCount+"/"+draftData.length+")...");
                 if (uploadedCount == draftData.length) {
                     /*window.imagePicker.cleanupPersistentDirectory(function(result2){
-                        console.log('cleanupPersistentDirectory suc ');
+                        showDebug && console.log('cleanupPersistentDirectory suc ');
                     }, function (error){
-                        console.log('cleanupPersistentDirectory Error ' + error);
+                        showDebug && console.log('cleanupPersistentDirectory Error ' + error);
                     });*/
                     Session.set('progressBarWidth', 100);
-                    console.log("Jump to post page...");
+                    showDebug && console.log("Jump to post page...");
 //                    $('body').css('background-color',"#111");
                     $('.addProgress').css('display',"none");
                     Router.go('/posts/'+postId);
@@ -597,7 +598,7 @@ if (Meteor.isCordova){
         var originalFilename = results[i].replace(/^.*[\\\/]/, '');
         var filename = Meteor.userId()+'_'+timestamp+ '_' + originalFilename.replace(/%/g, '');
         var toProcessURI = results[i];
-        console.log('File name ' + filename);
+        showDebug && console.log('File name ' + filename);
 
         var params = {filename:filename, originalFilename:originalFilename, URI:toProcessURI, smallImage:''};
         var fileExt = filename.split('.').pop();
@@ -613,7 +614,7 @@ if (Meteor.isCordova){
                     callback(null, params,i+1,length);
                 },
                 function(e) {
-                    console.log("error" + e);
+                    showDebug && console.log("error" + e);
                     callback('error');
                 });
         }else{
@@ -626,11 +627,11 @@ if (Meteor.isCordova){
                     };
                     reader.readAsDataURL(file);
                 }, function(e) {
-                    console.log('fileEntry.file Error = ' + e);
+                    showDebug && console.log('fileEntry.file Error = ' + e);
                     callback('error');
                 });
             }, function(e) {
-                console.log('resolveLocalFileSystemURL Error = ' + e);
+                showDebug && console.log('resolveLocalFileSystemURL Error = ' + e);
                 callback('error');
             });
         }
@@ -662,7 +663,7 @@ if (Meteor.isCordova){
                 obj.totalCount = length;
                 var processImageInAndroidCallback = function(error, data,currentCount,totalCount){
                     if (error){
-                        console.log('Got error');
+                        showDebug && console.log('Got error');
                     }
                     if (callback){
                         callback(null,data,currentCount,totalCount);
@@ -677,8 +678,8 @@ if (Meteor.isCordova){
                   var timestamp = new Date().getTime();
                   var originalFilename = results[i].replace(/^.*[\\\/]/, '');
                   var filename = Meteor.userId()+'_'+timestamp+ '_' + originalFilename;
-                  console.log('File name ' + filename);
-                  console.log('Original full path ' + results[i]);
+                  showDebug && console.log('File name ' + filename);
+                  showDebug && console.log('Original full path ' + results[i]);
                   var params = '';
                   if(device.platform === 'Android'){
                       params = {filename:filename, URI:results[i], smallImage:'cdvfile://localhost/cache/' + originalFilename};
@@ -690,7 +691,7 @@ if (Meteor.isCordova){
                 }
             //}
           }, function (error){
-              console.log('Pick Image Error ' + error);
+              showDebug && console.log('Pick Image Error ' + error);
               if(callback){
                   callback(null);
               }

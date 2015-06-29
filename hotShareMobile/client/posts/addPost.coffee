@@ -999,11 +999,8 @@ if Meteor.isClient
         if item.imageUrl and item.imageUrl isnt '' and (item.imageUrl isnt resortedObj.mainUrl)
           imageArray = []
           imageArray.push(item.imageUrl)
-          console.log('imageArray is ' + JSON.stringify(imageArray))
           seekSuitableImageFromArrayAndDownloadToLocal imageArray,(file,w,h,found,index,total,source)->
-            console.log('Callback from seekSuitableImageFromArrayAndDownloadToLocal')
             if file
-              console.log('Inserting file ' + file.name)
               insertDownloadedImage(data,source,found,inputUrl,file)
             if ++resortedObj.index < resortedObj.length
               renderResortedArticle(data,inputUrl,resortedObj)
@@ -1060,7 +1057,7 @@ if Meteor.isClient
               insertDownloadedImage(data,source,found,inputUrl,file)
               resortObj.mainUrl = source
             else
-              insertDefaultImage(data,'http://data.tiegushi.com/res/defaultMainImage.jpg',false,inputUrl)
+              insertDefaultImage(data,'http://data.tiegushi.com/res/defaultMainImage1.jpg',false,inputUrl)
             if data.resortedArticle.length > 0
               resortObj.index = 0
               resortObj.length = data.resortedArticle.length
