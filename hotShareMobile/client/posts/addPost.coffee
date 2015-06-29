@@ -1009,7 +1009,7 @@ if Meteor.isClient
               renderResortedArticle(data,inputUrl,resortedObj)
             else
               processTitleOfPost(data)
-          ,200,true
+          ,150,true
         else
           if ++resortedObj.index < resortedObj.length
             renderResortedArticle(data,inputUrl,resortedObj)

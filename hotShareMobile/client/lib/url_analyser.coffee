@@ -266,8 +266,10 @@ if Meteor.isClient
         text = $(node).text().toString().replace(/\s\s\s+/g, '')
         if text and text isnt ''
           previousIsImage = false
-          console.log '    Got text in this element ' + text
+          console.log '    Got text in this element('+toBeInsertedText.length+') '+text
           if toBeInsertedText.length < 50
+            if toBeInsertedText.length > 0
+              toBeInsertedText += '\n'
             toBeInsertedText += text
           else
             resortedArticle.push {type:'text',text:toBeInsertedText}
