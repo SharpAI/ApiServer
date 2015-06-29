@@ -146,9 +146,6 @@ Template.messageDialogInput.events
       1
       (cancel, result)->
         if !cancel and result
-          Meteor.setTimeout(()->
-              Template.addPost.__helpers.get('saveDraft')()
-            12000)
           to = Session.get("messageDialog_to") || {}
           insert = {}
 

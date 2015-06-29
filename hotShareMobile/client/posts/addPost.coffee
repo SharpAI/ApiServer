@@ -58,9 +58,6 @@ if Meteor.isClient
                   PUB.back()
                 return
               if result
-                Meteor.setTimeout(()->
-                    Template.addPost.__helpers.get('saveDraft')()
-                  12000)
                 console.log 'image url is ' + result.smallImage
                 if Drafts.find({type:'image'}).count() > 0
                   mainImageDoc = Drafts.find({type:'image'}).fetch()[0]
