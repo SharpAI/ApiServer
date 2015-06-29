@@ -107,6 +107,7 @@
 
 @property (nonatomic) NSString* _javascriptListener;
 - (void)close;
+- (void)realClose;
 - (void)hide;
 - (void)navigateTo:(NSURL*)url;
 - (void)showLocationBar:(BOOL)show;

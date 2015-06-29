@@ -66,7 +66,7 @@
         return;
     }
     // Things are cleaned up in browserExit.
-    [self.inAppBrowserViewController close];
+    [self.inAppBrowserViewController realClose];
 }
 
 - (BOOL) isSystemUrl:(NSURL*)url
@@ -959,6 +959,25 @@
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
     return UIStatusBarStyleDefault;
+}
+
+- (void)realClose
+{
+    [CDVUserAgentUtil releaseLock:&_userAgentLockToken];
+    self.currentURL = nil;
+
+    if ((self.navigationDelegate != nil) && [self.navigationDelegate respondsToSelector:@selector(browserExit)]) {
+        [self.navigationDelegate browserExit];
+    }
+
+    // Run later to avoid the "took a long time" log message.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([self respondsToSelector:@selector(presentingViewController)]) {
+            [[self presentingViewController] dismissViewControllerAnimated:YES completion:nil];
+        } else {
+            [[self parentViewController] dismissViewControllerAnimated:YES completion:nil];
+        }
+    });
 }
 
 - (void)close
