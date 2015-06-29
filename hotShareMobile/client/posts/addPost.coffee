@@ -1,5 +1,5 @@
 if Meteor.isClient
-  @iabHandle = null
+  window.iabHandle = null
   Session.set('lastImportedUrl','')
   Template.addPost.destroyed = ->
     $('.tool-container').remove();
@@ -1069,21 +1069,21 @@ if Meteor.isClient
     else
       PUB.toast('请粘贴需要引用的链接')
   @handleExitBrowser = ()->
-    @iabHandle = null
+    window.iabHandle = null
   @handleHideBrowser = ()->
     if Session.get("channel") is 'addPost' and Drafts.find().count() is 0
       Router.go '/'
   @handleAddedLink = (url)->
     if iabHandle
       iabHandle.removeEventListener 'import',getURL
-      iabHandle.removeEventListener 'exit',handleExitBrowser
+      #iabHandle.removeEventListener 'exit',handleExitBrowser
       iabHandle.removeEventListener 'hide',handleHideBrowser
     if url and url isnt ''
-      @iabHandle = window.open(url, '_blank', 'hidden=no,toolbarposition=top')
+      window.iabHandle = window.open(url, '_blank', 'hidden=no,toolbarposition=top')
     else
-      @iabHandle = window.open('', '_blank', 'hidden=no,toolbarposition=top')
+      window.iabHandle = window.open('', '_blank', 'hidden=no,toolbarposition=top')
     iabHandle.addEventListener 'import',getURL
-    iabHandle.addEventListener 'exit',handleExitBrowser
+    #iabHandle.addEventListener 'exit',handleExitBrowser
     iabHandle.addEventListener 'hide',handleHideBrowser
   Template.addPost.events
     ###
