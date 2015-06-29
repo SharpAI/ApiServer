@@ -976,7 +976,7 @@ if Meteor.isClient
           $('#title').trigger('keyup')
         unless ($('#addontitle').val() and $('#addontitle').val() isnt '')
           $('#addontitle').val(data.host)
-      ,2000
+      ,1000
   renderResortedArticle = (data,inputUrl,resortedObj)->
     if Session.get('cancelImport')
       Session.set('importProcedure',100)
@@ -1035,6 +1035,7 @@ if Meteor.isClient
               Router.go('/')
           )
         onClose: ()->
+          Session.set('importProcedure',0)
           $(this).find('#cancelImport').off('click')
           $(this).find('.progress-bar').css('width', '0%').attr('aria-valuenow', 0);
       Tracker.autorun (handler)->
@@ -1042,7 +1043,6 @@ if Meteor.isClient
         if Session.equals('importProcedure',100)
           popupProgressBar.close()
           handler.stop()
-          Session.set('importProcedure',0)
       getContentListsFromUrl iabHandle,inputUrl,(data)->
         if data is null
           console.log('AnalyseUrl error, need add error notification')
