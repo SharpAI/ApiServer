@@ -42,6 +42,7 @@ if Meteor.isClient
       else
         onError(source)
     onSuccess = (url,source,file)->
+      console.log('To call get_image_size_from_URI on ' + url)
       get_image_size_from_URI(url,(width,height)->
         console.log url + ' width is ' + width + ' height is ' + height
         if height >= minimalWidthAndHeight and width >= minimalWidthAndHeight
@@ -50,6 +51,7 @@ if Meteor.isClient
           if onlyOne
             return
         if ++imageCounter < imageArray.length
+          console.log('imageCounter ' + imageCounter + ' imageArray.length ' + imageArray.length)
           downloadFromBCS(imageArray[imageCounter],downloadHandler)
         else
           callback null,0,0,foundImages,imageCounter,imageArray.length,source
@@ -265,9 +267,11 @@ if Meteor.isClient
         if text and text isnt ''
           previousIsImage = false
           console.log '    Got text in this element ' + text
-          if toBeInsertedText isnt ''
-            toBeInsertedText+='\n'
-          toBeInsertedText += text
+          if toBeInsertedText.length < 50
+            toBeInsertedText += text
+          else
+            resortedArticle.push {type:'text',text:toBeInsertedText}
+            toBeInsertedText = text;
         if info.body
           grabImagesInHTMLString(info)
           if info.imageArray.length > 0
@@ -281,6 +285,7 @@ if Meteor.isClient
                 console.log('    save imageUrl ' + imageUrl)
                 sortedImages++;
                 resortedArticle.push {type:'image',imageUrl:imageUrl}
+                data.imageArray.push imageUrl
           else if info.bgArray.length > 0
             console.log('    Got Background image')
             previousIsImage = true
@@ -292,6 +297,7 @@ if Meteor.isClient
                 console.log('    save background imageUrl ' + imageUrl)
                 sortedImages++
                 resortedArticle.push {type:'image',imageUrl:imageUrl}
+                data.imageArray.push imageUrl
       if toBeInsertedText and toBeInsertedText isnt ''
         resortedArticle.push {type:'text',text:toBeInsertedText}
       if sortedImages < 1
