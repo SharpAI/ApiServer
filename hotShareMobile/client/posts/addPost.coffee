@@ -1,6 +1,8 @@
 if Meteor.isClient
   window.iabHandle = null
   Session.set('lastImportedUrl','')
+  getDisplayElementWidth=()->
+    $('.addPost').width()*0.9
   handleSaveDraft = ()->
     layout = JSON.stringify(gridster.serialize())
     pub=[]
@@ -481,7 +483,7 @@ if Meteor.isClient
       style = 'font-family:;font-size:large' + ';text-align:' + textarea.css('text-align')+';'
       textarea.attr('style', style)
       #Compute the new scrollHeight
-      grid_size=Math.floor($('#display').width()/6 - 10);
+      grid_size=Math.floor(getDisplayElementWidth()/6 - 10);
       min_widget_height = (5 * 2) + grid_size;
       $(textarea).css('height', 'auto');
       scrollHeight = document.getElementById(node.id+"TextArea").scrollHeight
@@ -504,7 +506,7 @@ if Meteor.isClient
         textarea.css('height')+";"
       textarea.attr('style', style)
       #Compute the new scrollHeight
-      grid_size=Math.floor($('#display').width()/6 - 10);
+      grid_size=Math.floor(getDisplayElementWidth()/6 - 10);
       min_widget_height = (5 * 2) + grid_size;
       scrollHeight = document.getElementById(node.id+"TextArea").scrollHeight
       $(textarea).css('height', 'auto').css('height', scrollHeight);
@@ -563,17 +565,18 @@ if Meteor.isClient
       $('#'+node.id+'TextArea').on('keyup input',(e)->
         e.preventDefault()
         id = this.id.replace("TextArea", "")
-        grid_size=Math.floor($('#display').width()/6 - 10);
-
+        grid_size=Math.floor(getDisplayElementWidth()/6 - 10)
+        console.log('#display width is '+getDisplayElementWidth()+' .addPost width is '+$('.addPost').width())
         min_widget_height =  grid_size + 10;
         #offset = this.offsetHeight - this.clientHeight;
-        $(this).css('height', 'auto').css('height', this.scrollHeight);
+        $(this).css('height', 'auto').css('height', this.scrollHeight)
 
         sizey = Math.ceil((this.scrollHeight+10)/min_widget_height)
 
         resizeItem = $('#'+id)
         #resizeItem.css("height", this.scrollHeight)
         orig_sizey = parseInt(resizeItem.attr("data-sizey"))
+        console.log('sizey '+sizey+' this.scrollHeight '+this.scrollHeight+' min_widget_height'+min_widget_height)
         if gridster? and sizey isnt orig_sizey
           $(this).css('height', "")
           sizex = parseInt(resizeItem.attr("data-sizex"))
@@ -585,6 +588,7 @@ if Meteor.isClient
       )
       text = insertedObj.text
       if text and text isnt ''
+        console.log('Trigger the key up event in defer')
         Meteor.defer ()->
           $('#'+node.id+'TextArea').trigger('keyup')
     else if type == "image"
@@ -826,7 +830,7 @@ if Meteor.isClient
       initToolBar(itemElem, undefined)
     )
 
-    base_size=Math.floor($('#display').width()/6 - 10);
+    base_size=Math.floor(getDisplayElementWidth()/6 - 10);
     test = $("#display");
     `gridster = test.gridster({serialize_params: function ($w, wgd) {
       return {
