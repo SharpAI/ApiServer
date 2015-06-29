@@ -395,9 +395,8 @@ if Meteor.isClient
           )
           text = insertedObj.text
           if text and text isnt ''
-            Meteor.setTimeout ()->
+            Meteor.defer ()->
               $('#'+node.id+'TextArea').trigger('keyup')
-            ,1000
       else if type == "image"
           if grid != undefined
             # Images loaded during rendering
@@ -1000,7 +999,9 @@ if Meteor.isClient
         if item.imageUrl and item.imageUrl isnt '' and (item.imageUrl isnt resortedObj.mainUrl)
           imageArray = []
           imageArray.push(item.imageUrl)
+          console.log('imageArray is ' + JSON.stringify(imageArray))
           seekSuitableImageFromArrayAndDownloadToLocal imageArray,(file,w,h,found,index,total,source)->
+            console.log('Callback from seekSuitableImageFromArrayAndDownloadToLocal')
             if file
               console.log('Inserting file ' + file.name)
               insertDownloadedImage(data,source,found,inputUrl,file)
@@ -1008,7 +1009,7 @@ if Meteor.isClient
               renderResortedArticle(data,inputUrl,resortedObj)
             else
               processTitleOfPost(data)
-          ,200
+          ,200,true
         else
           if ++resortedObj.index < resortedObj.length
             renderResortedArticle(data,inputUrl,resortedObj)
