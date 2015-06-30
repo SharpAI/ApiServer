@@ -6,6 +6,7 @@ if Meteor.isClient
     'click .contactsBtn':->
       Session.set("Social.LevelOne.Menu",'contactsList')
     'click .discoverBtn':->
+      Session.set('momentsitemsLimit', 10);
       Session.set("Social.LevelOne.Menu",'discover')
     'click .meBtn':->
       Session.set("Social.LevelOne.Menu",'me')
