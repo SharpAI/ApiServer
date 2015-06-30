@@ -3,15 +3,16 @@ if Meteor.isClient
     Tracker.autorun ()->
       channel = Session.get 'channel'
       $(window).off('scroll')
-      if channel isnt 'addPost' and (Session.get('focusOn') is 'addPost')
+      console.log('channel changed to '+channel+' Off Scroll')
+      Meteor.setTimeout ->
+          Session.set 'focusOn',channel
+        ,300
+    Tracker.autorun ()->
+      if Session.get('channel') isnt 'addPost' and (Session.get('focusOn') is 'addPost')
         console.log('Leaving addPost mode')
         if window.iabHandle
           window.iabHandle.close()
           window.iabHandle = null
-      Meteor.setTimeout ->
-          Session.set 'focusOn',channel
-        ,300
-
     Router.route '/',()->
       this.render 'home'
       Session.set 'channel','home'
