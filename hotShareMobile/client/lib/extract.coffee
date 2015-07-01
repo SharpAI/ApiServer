@@ -6,7 +6,7 @@
 # Copyright (c) 2011 MORITA Hajime
 # This software is licensed under the Apache License, Version 2.0.
 #
-
+removeStyle = false
 class Log
   this.print = (message) -> console.log(message)
   this.error = (message) -> console.log(message)
@@ -44,7 +44,8 @@ REGEXPS =
   videos:           /http:\/\/(www\.)?(youtube|vimeo)\.com/i,
   skipFootnoteLink: /^\s*(\[?[a-z0-9]{1,2}\]?|^|edit|citation needed)\s*$/i,
   nextLink:         /(next|weiter|continue|>([^\|]|$)|ﾂｻ([^\|]|$))/i, # Match: next, continue, >, >>, ﾂｻ but not >|, ﾂｻ| as those usually mean last.
-  prevLink:         /(prev|earl|old|new|<|ﾂｫ)/i
+  prevLink:         /(prev|earl|old|new|<|ﾂｫ)/i,
+  specialTags:      /blockquote|section/i
 
 
 textContentFor = (node, normalizeWs = true) ->
@@ -97,9 +98,23 @@ fishy = (node) ->
   return true if (embed == 1 && contentLength < 75) || embed > 1
   false
 
+deepInsideThislayer = (node,tagName)->
+  childrenNumber=$(node).children().length
+  if childrenNumber > 0 and childrenNumber <=2
+    firstChild = $(node).find(':first-child').get(0)
+    if firstChild and firstChild.tagName is tagName
+      return deepInsideThislayer(firstChild,tagName)
+  return node
 # Turn all divs that don't have children block level elements into p's
 # TODO(omo): support experimental parify text node
 parify = (node) ->
+  if node.tagName.search(REGEXPS.specialTags) > -1
+    newNode = deepInsideThislayer(node,node.tagName)
+    if newNode
+      console.log('we got you')
+      p = $("<p>").html(newNode.innerHTML)[0]
+      node.parentNode.replaceChild(p, node)
+      return p
   return node if node.tagName != "DIV"
   return node if node.innerHTML.search(REGEXPS.divToPElements) > -1
   p = $("<p>").html(node.innerHTML)[0]
@@ -166,7 +181,8 @@ removeFragments = (node) ->
   jn.find("h1,h2,h3").find(
     (n) -> classWeight(n) < 0 #or linkDensityFor(n) > 0.33
   ).remove()
-  jn.find("*").removeAttr("style")
+  if removeStyle
+    jn.find("*").removeAttr("style")
   jn.find("p").filter(-> \
     0 == $(this).find("img").length and \
     0 == $(this).find("embed").length and \
@@ -176,10 +192,12 @@ removeFragments = (node) ->
   jn.find("table").filter(-> fishy(this)).remove()
   jn.find("ul").filter(-> fishy(this)).remove()
   jn.find("div").filter(-> fishy(this)).remove()
-  jn.find("object,h1,iframe,script,link,style").remove()
+  if removeStyle
+    jn.find("object,h1,iframe,script,link,style").remove()
+  else
+    jn.find("object,h1,iframe,script,link").remove()
   jn.find("h2").remove() if jn.find("h2").length == 1
   node.innerHTML = node.innerHTML.replace(/<br[^>]*>\s*<p/gi, '<p')
-
 asTop = (page) ->
   Log.log("not found. using page element")
   page.score = new Score(page)
