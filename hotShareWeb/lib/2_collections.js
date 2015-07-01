@@ -183,6 +183,56 @@ if(Meteor.isServer){
             }
         });
     };
+    var updateMomentsDeferHandle = function(self,postId){
+        Meteor.defer(function() {
+            var userId = self.userId;
+            var viewposts = Viewers.find({userId: userId, postId: {$ne: postId}});
+            var currentpost = Posts.findOne(postId);
+            var userinfo = Meteor.users.findOne({_id: userId}, {
+                fields: {
+                    'username': 1,
+                    'profile.fullname': 1,
+                    'profile.icon': 1,
+                    'profile.anonymous': 1
+                }
+            });
+            if (viewposts.count() > 0 && currentpost && userinfo) {
+                viewposts.forEach(function (pdata) {
+                    var readpost = Posts.findOne(pdata.postId);
+                    if (currentpost && readpost) {
+                        //1. 给当前帖子，增加所有看过的帖子
+                        if (Moments.find({currentPostId: currentpost._id, readPostId: readpost._id}).count()===0) {
+                            Moments.insert({
+                                currentPostId: currentpost._id,
+                                userId: userId,
+                                userIcon: userinfo.profile.icon,
+                                username: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
+                                readPostId: readpost._id,
+                                mainImage: readpost.mainImage,
+                                title: readpost.title,
+                                addontitle: readpost.addontitle,
+                                createdAt: pdata.createdAt
+                            });
+                        }
+                        //2. 给所有看过的帖子，增加当前帖子
+                        if (Moments.find({currentPostId: readpost._id, readPostId: currentpost._id}).count()===0) {
+                            Moments.insert({
+                                currentPostId: readpost._id,
+                                userId: userId,
+                                userIcon: userinfo.profile.icon,
+                                username: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
+                                readPostId: currentpost._id,
+                                mainImage: currentpost.mainImage,
+                                title: currentpost.title,
+                                addontitle: currentpost.addontitle,
+                                createdAt: new Date()
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
     var publicPostsPublisherDeferHandle = function(self,postId) {
         Meteor.defer(function(){
             var needUpdateMeetCount = false;
@@ -250,77 +300,6 @@ if(Meteor.isServer){
                                 count:1,
                                 meetOnPostId:postId,
                                 createdAt: new Date()
-                            });
-                        }
-                        //根据看过帖子的人的userId，找到看过的帖子
-                        var viewposts=Viewers.find({userId:userId,postId:{$ne:postId}});
-                        var currentpost = Posts.findOne(postId);
-                        var userinfo = Meteor.users.findOne({_id: userId},{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
-                        if(viewposts.count()>0 && currentpost && userinfo){
-                            viewposts.forEach(function(pdata){
-                                var readpost = Posts.findOne(pdata.postId);
-                                if(currentpost && readpost){
-		                        //1. 给当前帖子，增加所有看过的帖子
-		                        if(Moments.findOne({currentPostId:currentpost._id, readPostId:readpost._id})){
-		                          Moments.update(
-		                            {currentPostId:currentpost._id, readPostId:readpost._id},
-		                            {$set:{
-		                                    currentPostId:currentpost._id,
-		                                    userId:userId,
-		                                    userIcon:userinfo.profile.icon,
-		                                    username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
-		                                    readPostId:readpost._id,
-		                                    mainImage:readpost.mainImage,
-		                                    title:readpost.title,
-		                                    addontitle:readpost.addontitle,
-		                                    createdAt:pdata.createdAt
-		                                  }
-		                            }
-		                          );
-		                        }else{
-		                          Moments.insert({
-		                            currentPostId:currentpost._id,
-		                            userId:userId,
-		                            userIcon:userinfo.profile.icon,
-		                            username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
-		                            readPostId:readpost._id,
-		                            mainImage:readpost.mainImage,
-		                            title:readpost.title,
-		                            addontitle:readpost.addontitle,
-		                            createdAt:pdata.createdAt
-		                          });
-		                        }
-		                        //2. 给所有看过的帖子，增加当前帖子
-		                        if(Moments.findOne({currentPostId:readpost._id, readPostId:currentpost._id})){
-		                          Moments.update(
-		                            {currentPostId:readpost._id, readPostId:currentpost._id},
-		                            {$set:{
-		                                    currentPostId:readpost._id,
-		                                    userId:userId,
-		                                    userIcon:userinfo.profile.icon,
-		                                    username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
-		                                    readPostId:currentpost._id,
-		                                    mainImage:currentpost.mainImage,
-		                                    title:currentpost.title,
-		                                    addontitle:currentpost.addontitle,
-		                                    createdAt:new Date()
-		                                  }
-		                            }
-		                          );
-		                        }else{
-		                          Moments.insert({
-		                            currentPostId:readpost._id,
-		                            userId:userId,
-		                            userIcon:userinfo.profile.icon,
-		                            username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
-		                            readPostId:currentpost._id,
-		                            mainImage:currentpost.mainImage,
-		                            title:currentpost.title,
-		                            addontitle:currentpost.addontitle,
-		                            createdAt:new Date()
-		                          });
-		                        }
-	                        }
                             });
                         }
                     });
@@ -809,6 +788,7 @@ if(Meteor.isServer){
       else{
         var self = this;
         publicPostsPublisherDeferHandle(self,postId);
+        updateMomentsDeferHandle(self,postId);
         return Posts.find({_id: postId});
       }
   });
