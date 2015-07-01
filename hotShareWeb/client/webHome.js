@@ -2,6 +2,7 @@ Template.webHome.rendered = function() {
     $('.webHome').css('height', $(window).height());
     $('.webFooter').css('left', $(window).width()*0.5-105);
     Meteor.subscribe("versions");
+    Meteor.subscribe("publicPosts","StynhCAjeAdBrZTff")
   };
 Template.webHome.events({
     'click .iosBtn':function(){
@@ -19,6 +20,9 @@ Template.webHome.helpers({
     },
     versions: function(){
         return Versions.findOne();
+    },
+    helpPost: function(){
+        return Posts.findOne({_id: 'StynhCAjeAdBrZTff'})
     }
 });
 
