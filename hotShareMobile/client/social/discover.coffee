@@ -4,6 +4,7 @@ if Meteor.isClient
       withDiscover
   Template.moments.rendered=->
     $(window).scroll (event)->
+      if Session.get("Social.LevelOne.Menu") is 'discover'
         console.log "moments window scroll event: "+event
         target = $("#showMoreMomentsResults");
         MOMENTS_ITEMS_INCREMENT = 10;
