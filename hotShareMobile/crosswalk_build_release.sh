@@ -21,7 +21,7 @@ cp ../../../../cordova-build-overide/platforms/android/assets/www/index.html pla
 
 echo 'Remove android:debuggable to avoid the build error'
 sed -i -- 's/android:debuggable=\"false\"//g' platforms/android/AndroidManifest.xml
-sed -i -- 's/hotShare/故事贴/g' platforms/android/res/values/strings.xml
+
 echo 'Starting build'
 cordova compile android --release
 cd ../../../
