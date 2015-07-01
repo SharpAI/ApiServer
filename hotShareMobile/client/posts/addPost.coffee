@@ -189,7 +189,12 @@ if Meteor.isClient
       item = data.resortedArticle[resortedObj.index]
       if item.type is 'text'
         console.log('Processing Text')
-        Drafts.insert {type:'text', toTheEnd:true ,noKeyboardPopup:true,isImage:false, owner: Meteor.userId(), text:item.text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+        if item.color and item.color isnt ''
+          Drafts.insert {type:'text', toTheEnd:true ,noKeyboardPopup:true,isImage:false, color:item.color,\
+            backgroundColor:item.backgroundColor,owner: Meteor.userId(), text:item.text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+        else
+          Drafts.insert {type:'text', toTheEnd:true ,noKeyboardPopup:true,isImage:false, owner: Meteor.userId(),\
+            text:item.text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
         if ++resortedObj.index < resortedObj.length
           renderResortedArticle(data,inputUrl,resortedObj)
         else
@@ -586,9 +591,12 @@ if Meteor.isClient
         height = sizey*min_widget_height - 10
         resizeItem.css("line-height", height+'px')
       )
+      if insertedObj.color and insertedObj.color isnt ''
+        $('#'+node.id+'TextArea').css('color',insertedObj.color)
+      if insertedObj.backgroundColor and insertedObj.backgroundColor isnt ''
+        $('#'+node.id+'TextArea').css('background-color',insertedObj.backgroundColor)
       text = insertedObj.text
       if text and text isnt ''
-        console.log('Trigger the key up event in defer')
         Meteor.defer ()->
           $('#'+node.id+'TextArea').trigger('keyup')
     else if type == "image"

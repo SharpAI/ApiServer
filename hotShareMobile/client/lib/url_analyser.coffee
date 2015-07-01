@@ -263,18 +263,28 @@ if Meteor.isClient
         info.bgArray = []
         info.imageArray = []
         info.body = node.innerHTML
-        showDebug&&console.log('    Node['+index+'] '+node.nodeName)
+        nodeColor = $(node).css('color')
+        nodeBackgroundColor = $(node).css('background-color')
+        #console.log('    Node['+index+'] '+node.nodeName+' color is'+nodeColor+' HTML is '+info.body)
         text = $(node).text().toString().replace(/\s\s\s+/g, '')
         if text and text isnt ''
           previousIsImage = false
           showDebug&&console.log '    Got text in this element('+toBeInsertedText.length+') '+text
-          if toBeInsertedText.length < 50
+          console.log 'Text  ['+text+'] color is '+nodeColor+' nodeBackgroundColor is '+nodeBackgroundColor
+          if nodeColor and nodeColor isnt ''
             if toBeInsertedText.length > 0
               toBeInsertedText += '\n'
-            toBeInsertedText += text
+              resortedArticle.push {type:'text',text:toBeInsertedText}
+              toBeInsertedText = ''
+            resortedArticle.push {type:'text',text:text,color:nodeColor,backgroundColor:nodeBackgroundColor}
           else
-            resortedArticle.push {type:'text',text:toBeInsertedText}
-            toBeInsertedText = text;
+            if toBeInsertedText.length < 50
+              if toBeInsertedText.length > 0
+                toBeInsertedText += '\n'
+              toBeInsertedText += text
+            else
+              resortedArticle.push {type:'text',text:toBeInsertedText}
+              toBeInsertedText = text;
         if info.body
           grabImagesInHTMLString(info)
           if info.imageArray.length > 0
