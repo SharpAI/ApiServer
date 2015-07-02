@@ -1072,12 +1072,32 @@ if Meteor.isClient
       Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:'', style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
       return
     'click .back':(event)->
-      Drafts.remove {owner: Meteor.userId()}
-      $('.addPost').addClass('animated ' + animateOutUpperEffect);
-      Meteor.setTimeout ()->
-        PUB.back()
-      ,animatePageTrasitionTimeout
-      return
+      if Session.get('isReviewMode') is '2'
+        navigator.notification.confirm('这个操作无法撤销', (r)->
+          console.log('r is ' + r)
+          if r isnt 1
+            return
+          Session.set 'isReviewMode','1'
+          #Delete it from SavedDrafts
+          draftData = Drafts.find().fetch()
+          if draftData[0] and draftData[0]._id
+            draftId = draftData[0]._id
+            SavedDrafts.remove draftId
+          #Clear Drafts
+          Drafts.remove {owner: Meteor.userId()}
+          $('.addPost').addClass('animated ' + animateOutUpperEffect);
+          Meteor.setTimeout ()->
+            PUB.back()
+          ,animatePageTrasitionTimeout
+          return
+        , '您确定要放弃未保存的修改吗？', ['放弃修改','继续编辑']);
+      else
+        Drafts.remove {owner: Meteor.userId()}
+        $('.addPost').addClass('animated ' + animateOutUpperEffect);
+        Meteor.setTimeout ()->
+          PUB.back()
+        ,animatePageTrasitionTimeout
+        return
     'click #edit':(event)->
       Session.set 'isReviewMode','0'
       return
