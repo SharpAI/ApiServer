@@ -6,7 +6,7 @@
 # Copyright (c) 2011 MORITA Hajime
 # This software is licensed under the Apache License, Version 2.0.
 #
-removeStyle = false
+removeStyle = true
 class Log
   this.print = (message) -> console.log(message)
   this.error = (message) -> console.log(message)
