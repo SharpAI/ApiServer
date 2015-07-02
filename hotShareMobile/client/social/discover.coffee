@@ -24,7 +24,7 @@ if Meteor.isClient
                 target.data("visible", false);
   Template.moments.helpers
     moments:->
-      Moments.find({currentPostId:Session.get("postContent")._id})
+      Moments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}})
     time_diff: (created)->
       GetTime0(new Date() - created)
     moreResults:->
