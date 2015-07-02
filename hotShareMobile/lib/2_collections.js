@@ -1469,19 +1469,6 @@ if(Meteor.isClient){
                       Session.set('myPostsCollection','loaded');
                   }
               });
-              if(Session.get("postContent")){
-                if(POST_ID !== Session.get("postContent")._id)
-                {
-                  POST_ID = Session.get("postContent")._id;
-                  Session.set('momentsitemsLimit', MOMENTS_ITEMS_INCREMENT);
-                }
-                Meteor.subscribe('momentsWithLimit', Session.get("postContent")._id, Session.get('momentsitemsLimit'), {
-                    onReady: function(){
-                        console.log('momentsCollection loaded');
-                        Session.set('momentsCollection','loaded');
-                    }
-                });
-              }
           }
       });
   }
@@ -1497,6 +1484,19 @@ if(Meteor.isClient){
             //群信息
             Meteor.subscribe("msgGroup");
         }*/
+        if(Session.get("postContent")){
+            if(POST_ID !== Session.get("postContent")._id)
+            {
+                POST_ID = Session.get("postContent")._id;
+                Session.set('momentsitemsLimit', MOMENTS_ITEMS_INCREMENT);
+            }
+            Meteor.subscribe('momentsWithLimit', Session.get("postContent")._id, Session.get('momentsitemsLimit'), {
+                onReady: function(){
+                    console.log('momentsCollection loaded');
+                    Session.set('momentsCollection','loaded');
+                }
+            });
+        }
     }
   });
 }
