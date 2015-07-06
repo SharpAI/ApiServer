@@ -63,7 +63,6 @@ if Meteor.isClient
       }
       #console.log "savedDraftData ="+JSON.stringify(savedDraftData)
       pub = savedDraftData.pub;
-      ###
       if device.platform is 'Android'
         pub.index = -1
 
@@ -85,7 +84,7 @@ if Meteor.isClient
             ProcessText()
 
         ProcessText = ()->
-  # must text
+          # must text
           Drafts.insert(pub[pub.index])
           Dispatch()
 
@@ -100,12 +99,9 @@ if Meteor.isClient
           Dispatch()
 
         Dispatch()
-
-
       else
-      ###
-      for i in [0..(pub.length-1)]
-        Drafts.insert(pub[i])
-      Session.set 'isReviewMode','1'
-      PUB.page('/add')
+        for i in [0..(pub.length-1)]
+          Drafts.insert(pub[i])
+        Session.set 'isReviewMode','1'
+        PUB.page('/add')
       return
