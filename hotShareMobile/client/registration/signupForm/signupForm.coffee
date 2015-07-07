@@ -1,5 +1,24 @@
+Template.signupForm.helpers
+  names:->
+   if Session.get("signUpName")
+     Session.get("signUpName")
+   else
+     ''
+  email:->
+   if Session.get("signUpMail")
+     Session.get("signUpMail")
+   else
+     ''
 Template.signupForm.events
+  'click .term_notice' :(e,t)->
+    names = t.find('#signup-username').value
+    email = t.find('#signup-email').value.toLowerCase()
+    Session.set("signUpName", names)
+    Session.set("signUpMail", email)
+    Router.go '/deal_page'
   'click #btn_back' :->
+    Session.set("signUpName", '')
+    Session.set("signUpMail", '')
     $('.register').css('display',"none")
     $('#login').css('display',"block")
     $('#weibo').css('display',"block")
@@ -10,6 +29,8 @@ Template.signupForm.events
     if Meteor.status().connected isnt true
       PUB.toast '当前为离线状态,请检查网络连接'
       return
+    Session.set("signUpName", '')
+    Session.set("signUpMail", '')
     names = t.find('#signup-username').value
     email = t.find('#signup-email').value.toLowerCase()
     Session.set 'userName',names
