@@ -14,7 +14,7 @@ if Meteor.isClient
        PUB.page '/searchFollow'
     'click .themeBtn': (event)->
        Session.set "topicId", @_id
-       Session.set "topicTitle", @text + "#"
+       Session.set "topicTitle", "#"+ @text + "#"
        PUB.page '/topicPosts'
     'click .topic': (event)->
        Session.set "topicId", @_id
