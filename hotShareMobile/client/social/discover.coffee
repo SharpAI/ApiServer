@@ -1,5 +1,10 @@
 if Meteor.isClient
   Template.discover.helpers
+    NoMoments:()->
+      if DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
+        false
+      else
+        true
     hasDiscover: ()->
       withDiscover
   Template.moments.rendered=->
@@ -23,15 +28,25 @@ if Meteor.isClient
             if (target.data("visible"))
                 target.data("visible", false);
   Template.moments.helpers
-    moments:->
-      Moments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}})
+    NoMoments:()->
+      if DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
+        false
+      else
+        true
+    moments:()->
+      DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}})
+    suggestPosts:()->
+      SuggestPosts.find({},{sort: {createdAt: -1}})
     time_diff: (created)->
       GetTime0(new Date() - created)
-    moreResults:->
-      !(Moments.find({currentPostId:Session.get("postContent")._id}).count() < Session.get("momentsitemsLimit"))
-    loading:->
+    moreResults:()->
+      if DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
+        !(DynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() < Session.get("momentsitemsLimit"))
+      else
+        false
+    loading:()->
       Session.equals('momentsCollection','loading')
-    loadError:->
+    loadError:()->
       Session.equals('momentsCollection','error')
   Template.moments.events
     'click .readpost':(e)->

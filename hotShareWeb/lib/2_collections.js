@@ -23,6 +23,8 @@ if(Meteor.isClient){
   Newfriends = new Meteor.Collection("newfriends");
   ViewLists = new Meteor.Collection("viewlists");
   UserDetail = new Meteor.Collection("userDetail");
+  DynamicMoments = new Meteor.Collection('dynamicmoments');
+  SuggestPosts = new Meteor.Collection('suggestposts');
 }
 if(Meteor.isServer){
   RefNames = new Meteor.Collection("refnames");
@@ -589,15 +591,76 @@ if(Meteor.isServer){
             catch(error){}
         });
     };
+    var momentsAddForDynamicMomentsDeferHandle = function(self,id,fields,userId) {
+        Meteor.defer(function(){
+            var viewItem = Viewers.find({userId:userId,postId:fields.readPostId}).count();
+            if(viewItem===0){
+                try{
+                    self.added("dynamicmoments", id, fields);
+                    self.count++;
+                }catch(error){
+                }
+            }
+        });
+    };
+    var postsAddForSuggestPostsDeferHandle = function(self,id,fields,userId) {
+        Meteor.defer(function(){
+            var isfollower = Follows.find({userId:fields.owner}).count();
+            if(isfollower){
+                var viewItem = Viewers.find({userId:userId,postId:fields._id}).count();
+                if(viewItem===0) {
+                    try {
+                        self.added("suggestposts", id, fields);
+                        self.count++;
+                    } catch (error) {
+                    }
+                }
+            }
+        });
+    };
+    Meteor.publish("suggestPosts", function (limit) {
+        var self = this;
+        self.count = 0;
+        var handle = Posts.find({ownerId:{$ne:this.userId}},{sort: {createdAt: -1}}).observeChanges({
+            added: function (id,fields) {
+                if(self.count<limit)
+                {
+                    postsAddForSuggestPostsDeferHandle(self,id,fields,this.userId);
+                }
+            }
+        });
+        self.ready();
+        self.onStop(function () {
+            handle.stop();
+        });
+    });
+  Meteor.publish("dynamicMoments", function (postId,limit) {
+      if(!Match.test(postId, String) ){
+          return [];
+      }
+      else{
+          var self = this;
+          self.count = 0;
+          var handle = Moments.find({currentPostId: postId,userId:{$ne:this.userId}},{sort: {createdAt: -1},limit:limit}).observeChanges({
+              added: function (id,fields) {
+                      momentsAddForDynamicMomentsDeferHandle(self,id,fields,this.userId);
+              }
+          });
+          self.ready();
+          self.onStop(function () {
+              handle.stop();
+          });
+      }
+  });
   Meteor.publish("viewlists", function (userId, viewerId) {
     if(this.userId === null || !Match.test(viewerId, String))
       return [];
     else{
       var self = this;
-      this.count = 0;
+      self.count = 0;
       var handle = Viewers.find({userId: viewerId},{sort:{createdAt: -1}}).observeChanges({
         added: function (id,fields) {
-          if (count<3){
+          if (self.count<3){
               viewersAddedForViewListsDeferHandle(self,fields,userId);
           }
         },
@@ -1487,7 +1550,15 @@ if(Meteor.isClient){
                 POST_ID = Session.get("postContent")._id;
                 Session.set('momentsitemsLimit', MOMENTS_ITEMS_INCREMENT);
             }
-            Meteor.subscribe('momentsWithLimit', Session.get("postContent")._id, Session.get('momentsitemsLimit'), {
+            if(DynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() === 0)
+            {
+                Meteor.subscribe('suggestPosts', MOMENTS_ITEMS_INCREMENT, {
+                    onReady: function(){
+                        Session.set('momentsCollection','loaded');
+                    }
+                });
+            }
+            Meteor.subscribe('dynamicMoments', Session.get("postContent")._id, Session.get('momentsitemsLimit'), {
                 onReady: function(){
                     console.log('momentsCollection loaded');
                     Session.set('momentsCollection','loaded');

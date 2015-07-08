@@ -1,5 +1,5 @@
 if Meteor.isClient
-  Session.setDefault("Social.LevelOne.Menu",'contactsList')
+  Session.setDefault("Social.LevelOne.Menu",'discover')
   Template.socialContent.events
     'click .chatBtn':->
       Session.set("Social.LevelOne.Menu",'chatContent')

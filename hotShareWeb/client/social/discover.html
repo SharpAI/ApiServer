@@ -6,7 +6,11 @@
         <div class="disBg"></div>
         <div class="disLeft">
           <p class="disname">朋友圈</p>
-          <p class="disdesc">看过当前帖子的朋友，还看过...</p>
+          {{#if NoMoments}}
+              <p class="disdesc">看过当前帖子的朋友还没看过其他帖子，特意为您推荐以下帖子...</p>
+          {{else}}
+              <p class="disdesc">看过当前帖子的朋友，还看过...</p>
+          {{/if}}
         </div>
       </div>
       {{>moments}}
@@ -23,26 +27,49 @@
                 <div>加载失败，请检查网络设置或稍后重试</div>
             {{/if}}
             <div id="wrapper">
-            {{#each moments}}
-                <div id="list">
-                    <div class="icon">
-                       <img src="{{userIcon}}" width="40" height="40"/>
-                    </div>
-                    <div class="user_name">
-                      <h2>{{username}}&nbsp;<span>阅读了一个故事</span></h2>
-                          <div class="readpost">
-                          <dl>
-                             <dt>
-                                <img class="post_pic" src="{{mainImage}}" width="40" height="40"/>
-                             </dt>
-                             <dd>{{title}}&nbsp;&nbsp;{{addontitle}}</dd>
-                          </dl>
-                          </div>
-                      <p>{{time_diff createdAt}}</p>
-                    </div>
-                    <div class="clear"></div>
-                    </div>
-            {{/each}}
+                {{#if NoMoments}}
+                    {{#each suggestPosts}}
+                        <div id="list">
+                            <div class="icon">
+                                <img src="{{ownerIcon}}" width="40" height="40"/>
+                            </div>
+                            <div class="user_name">
+                                <h2>{{ownerName}}&nbsp;<span>发布了一个故事</span></h2>
+                                <div class="readpost">
+                                    <dl>
+                                        <dt>
+                                            <img class="post_pic" src="{{mainImage}}" width="40" height="40"/>
+                                        </dt>
+                                        <dd>{{title}}&nbsp;&nbsp;{{addontitle}}</dd>
+                                    </dl>
+                                </div>
+                                <p>{{time_diff createdAt}}</p>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    {{/each}}
+                {{else}}
+                    {{#each moments}}
+                        <div id="list">
+                            <div class="icon">
+                               <img src="{{userIcon}}" width="40" height="40"/>
+                            </div>
+                            <div class="user_name">
+                              <h2>{{username}}&nbsp;<span>阅读了一个故事</span></h2>
+                                  <div class="readpost">
+                                  <dl>
+                                     <dt>
+                                        <img class="post_pic" src="{{mainImage}}" width="40" height="40"/>
+                                     </dt>
+                                     <dd>{{title}}&nbsp;&nbsp;{{addontitle}}</dd>
+                                  </dl>
+                                  </div>
+                              <p>{{time_diff createdAt}}</p>
+                            </div>
+                            <div class="clear"></div>
+                            </div>
+                    {{/each}}
+                {{/if}}
             {{#if moreResults}}
             <div id="showMoreMomentsResults" style="margin-left: 25px;">
                 <span class="loading">加载中...</span>

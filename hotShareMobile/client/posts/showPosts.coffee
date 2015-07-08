@@ -37,7 +37,7 @@ if Meteor.isClient
     postContent = Session.get("postContent")
     subscribeCommentAndViewers()
     browseTimes = 0
-    Session.set("Social.LevelOne.Menu",'contactsList')
+    Session.set("Social.LevelOne.Menu",'discover')
     if (postContent.browse != undefined)
       browseTimes = postContent.browse + 1
     else
