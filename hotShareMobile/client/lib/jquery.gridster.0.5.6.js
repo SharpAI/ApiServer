@@ -1325,6 +1325,8 @@
 
         this.register_widget($w);
 
+        this.rows+=pos.size_y;
+
         this.add_faux_rows(pos.size_y);
         //this.add_faux_cols(pos.size_x);
 
