@@ -34,10 +34,15 @@ Template.registerFollow.events
                  })._id
       Follower.remove(followerId)
     else
+      #匿名用户刚注册，系统就已经分配随机全名
+      if Meteor.user().profile and Meteor.user().profile.fullname
+        username = Meteor.user().profile.fullname
+      else
+        username = Meteor.user().username
       Follower.insert {
         userId: Meteor.userId()
         #用户更新fullname后，这里存放fullname
-        userName: Meteor.user().username
+        userName: username
         #刚注册，用户还没有设置头像和个性签名
         #注册时，头像用默认头像，desc用''
         userIcon: Meteor.user().profile.icon
