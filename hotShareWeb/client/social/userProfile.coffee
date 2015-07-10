@@ -238,6 +238,8 @@ if Meteor.isClient
       sex is 'male'
     isFemale:(sex)->
       sex is 'female'
+    isMyself:()->
+      Session.get("ProfileUserId1") is Meteor.userId()
     AddFriend:->
       Meteor.subscribe("friendFeeds", Session.get("ProfileUserId1"),Meteor.userId())
       addstr = '添加'

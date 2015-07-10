@@ -900,8 +900,31 @@ if(Meteor.isServer){
   Meteor.publish("userinfo", function(id) {
     if(!Match.test(id, String))
       return [];
-    else
-      return Meteor.users.find({_id: id},{fields: {'username':1,'email':1,'profile.fullname':1,'profile.icon':1, 'profile.desc':1, 'profile.location':1}});
+    else {
+        try {
+            var self = this;
+            var info = Meteor.users.findOne({_id: id}, {
+                fields: {
+                    'username': 1,
+                    'email': 1, 'profile.fullname': 1, 'profile.icon': 1, 'profile.desc': 1, 'profile.location': 1,
+                    'profile.lastLogonIP': 1
+                }
+            });
+            self.added("userDetail", info._id, info);
+            getViewLists(self, info._id, 3);
+        } catch (error) {
+        }
+        return Meteor.users.find({_id: id}, {
+            fields: {
+                'username': 1,
+                'email': 1,
+                'profile.fullname': 1,
+                'profile.icon': 1,
+                'profile.desc': 1,
+                'profile.location': 1
+            }
+        });
+    }
   });
   Meteor.publish("comment", function(postId) {
     if(!Match.test(postId, String))

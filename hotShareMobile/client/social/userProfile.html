@@ -64,7 +64,9 @@
         <div class="no-swipe" id="sendChatMessage">发消息</div>
       {{/if}}
     {{else}}
-      <div class="no-swipe" id="addToContactList">{{AddFriend}}</div>
+      {{#unless isMyself}}
+        <div class="no-swipe" id="addToContactList">{{AddFriend}}</div>
+      {{/unless}}
     {{/if}}
   </div>
 </template>
@@ -129,7 +131,9 @@
         <div class="no-swipe" id="sendChatMessage">发消息</div>
       {{/if}}
     {{else}}
-      <div class="no-swipe" id="addToContactList">{{AddFriend}}</div>
+      {{#unless isMyself}}
+        <div class="no-swipe" id="addToContactList">{{AddFriend}}</div>
+      {{/unless}}
     {{/if}}
   </div>
 </template>
@@ -194,7 +198,9 @@
         <div class="no-swipe" id="sendChatMessage">发消息</div>
       {{/if}}
     {{else}}
-      <div class="no-swipe" id="addToContactList">{{AddFriend}}</div>
+      {{#unless isMyself}}
+        <div class="no-swipe" id="addToContactList">{{AddFriend}}</div>
+      {{/unless}}
     {{/if}}
   </div>
 </template>
