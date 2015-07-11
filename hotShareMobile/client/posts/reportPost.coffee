@@ -13,6 +13,7 @@ if Meteor.isClient
        reportTitle = Session.get("postContent").title
        reportReason = $('#reason').val()
        if reportReason is ""
+         PUB.toast('请添加举报理由！')
          return false
        if reportReason != ''
          try
