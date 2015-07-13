@@ -287,9 +287,10 @@ if Meteor.isClient
       window.iabHandle = window.open(url, '_blank', 'hidden=no,toolbarposition=top')
     else
       window.iabHandle = window.open('', '_blank', 'hidden=no,toolbarposition=top')
-    iabHandle.addEventListener 'import',getURL
-    #iabHandle.addEventListener 'exit',handleExitBrowser
-    iabHandle.addEventListener 'hide',handleHideBrowser
+    if Session.get('isReviewMode') isnt '1'
+      iabHandle.addEventListener 'import',getURL
+      #iabHandle.addEventListener 'exit',handleExitBrowser
+      iabHandle.addEventListener 'hide',handleHideBrowser
 
   initMainImageToolBar = ()->
     $('.mainImage').toolbar
@@ -1021,6 +1022,13 @@ if Meteor.isClient
         for i in [1..(Drafts.find({type:'text'}).count()-1)]
           Drafts.find({type:'text'}).fetch()[i]
   Template.addPost.events
+    'click #ViewOnWeb' :->
+      if Meteor.isCordova and Session.get('isReviewMode') is '1'
+        if Drafts.find({type:'image'}).count() > 0
+          url = Drafts.find({type:'image'}).fetch()[0].url
+          if url and url isnt ''
+            fromUrl = url
+            handleAddedLink(fromUrl)
     'beUnSelected .resortitem': (e)->
       if window.footbarOppration
         window.unSelectedElem = e.currentTarget
