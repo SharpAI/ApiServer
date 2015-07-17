@@ -21,8 +21,12 @@
             tmpPageName = 'addPost'
         else
             tmpPageName = pageName.substr(1)
+        if Session.get("postContent")
+            currentPostView='posts/'+Session.get("postContent")._id
+        else
+            currentPostView=''
         for page in footerPages
-            if tmpPageName is page
+            if tmpPageName is page and view isnt currentPostView
                 history = []
                 value = Session.get 'document_body_scrollTop_'+page
                 if value is undefined
@@ -62,6 +66,12 @@
         unless history is undefined or history is ""
             if history.length > 0
                 page =  history.pop()
+                if Session.get("postContent")
+                    currentPostView='posts/'+Session.get("postContent")._id
+                else
+                    currentPostView=''
+                if page.view is currentPostView and history.length >0
+                    page = history.pop()
                 Session.set "document_body_scrollTop", page.scrollTop
                 Session.set "history_view", history
                 #Session.set "view", page.view
