@@ -13,6 +13,7 @@ if (Meteor.isClient) {
     friends_request:0
   });
   Template.body.rendered = function(){
+    Meteor.subscribe('posts-visits-count');
     Meteor.call('getStatics',function(error,data){
       if (error){
         console.log('got error from call');
@@ -64,6 +65,9 @@ if (Meteor.isClient) {
     },
     count: function () {
       return RefNames.find({}).count();
+    },
+    total_browse: function () {
+      return Counts.get('posts-visits')
     }
   });
   Template.body.events({

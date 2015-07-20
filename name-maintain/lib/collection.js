@@ -23,6 +23,9 @@ if (Meteor.isServer){
     Meteor.publish('refnames',function(){
         return RefNames.find({})
     });
+    Meteor.publish('posts-visits-count', function() {
+        Counts.publish(this, 'posts-visits', Posts.find(), { countFromField: 'browse' });
+    });
     RefNames.allow({
         insert: function (userId, doc) {
             check(doc.text,String);
