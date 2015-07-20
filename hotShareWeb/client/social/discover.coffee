@@ -51,6 +51,8 @@ if Meteor.isClient
   Template.moments.events
     'click .readpost':(e)->
       postId = this.readPostId
+      if postId is undefined
+        postId = this._id
       $(window).children().off()
       $(window).unbind('scroll')
       Meteor.setTimeout ()->
