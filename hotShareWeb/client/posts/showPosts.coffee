@@ -208,6 +208,7 @@ if Meteor.isClient
     'click #ViewOnWeb' :->
       if Session.get("postContent").fromUrl
         if Meteor.isCordova
+          Session.set("isReviewMode","undefined")
           handleAddedLink(Session.get("postContent").fromUrl)
         else
           window.location.href=Session.get("postContent").fromUrl
