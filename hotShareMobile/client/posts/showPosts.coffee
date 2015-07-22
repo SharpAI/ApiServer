@@ -62,6 +62,7 @@ if Meteor.isClient
       e.preventDefault();
       #window.open($(e.currentTarget).attr('href'), '_system', '');
       if Meteor.isCordova
+        Session.set("isReviewMode","undefined")
         handleAddedLink($(e.currentTarget).attr('href'))
       else
         window.open($(e.currentTarget).attr('href'), '_blank', 'hidden=no,toolbarposition=top')
