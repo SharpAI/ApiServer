@@ -112,7 +112,12 @@ public class InAppBrowser extends CordovaPlugin {
 	public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
         if (action.equals("open")) {
             this.callbackContext = callbackContext;
-            final String url = args.getString(0).replaceAll("http://meteor.local/add", "").replace("http://meteor.local/", "");
+            final String url;
+            int mIdx=args.getString(0).indexOf("http://meteor.local/");
+            if(mIdx>=0)
+            	url="";
+            else
+            	url =args.getString(0);
             String t = args.optString(1);
             if (t == null || t.equals("") || t.equals(NULL)) {
                 importBtn.setEnabled(false);
@@ -498,9 +503,10 @@ public class InAppBrowser extends CordovaPlugin {
             @SuppressLint("NewApi")
 			public void run() {
             	countDownTimer = new MyCountDownTimer(startTime, interval);
-            	if(dialog!= null)
-            		dialog.dismiss();
-            		
+
+                if(dialog!= null)
+                       dialog.dismiss();
+
                 // Let's create the main dialog
                 dialog = new InAppBrowserDialog(cordova.getActivity(), android.R.style.Theme_NoTitleBar);
                 dialog.getWindow().getAttributes().windowAnimations = android.R.style.Animation_Dialog;
