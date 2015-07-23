@@ -63,6 +63,8 @@ if Meteor.isClient
       #window.open($(e.currentTarget).attr('href'), '_system', '');
       if Meteor.isCordova
         Session.set("isReviewMode","undefined")
+        prepareToEditorMode()
+        PUB.page '/add'
         handleAddedLink($(e.currentTarget).attr('href'))
       else
         window.open($(e.currentTarget).attr('href'), '_blank', 'hidden=no,toolbarposition=top')
@@ -211,6 +213,8 @@ if Meteor.isClient
       if Session.get("postContent").fromUrl
         if Meteor.isCordova
           Session.set("isReviewMode","undefined")
+          prepareToEditorMode()
+          PUB.page '/add'
           handleAddedLink(Session.get("postContent").fromUrl)
         else
           window.location.href=Session.get("postContent").fromUrl
