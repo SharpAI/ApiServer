@@ -292,7 +292,10 @@
 				$this.setTimeout();
 
 				$( '#swipebox-slider' ).bind( 'touchstart', function( event ) {
-
+					if(StartZoom>0)
+					{
+						return false;
+					}
 					$( this ).addClass( 'touching' );
 					index = $( '#swipebox-slider .slide' ).index( $( '#swipebox-slider .slide.current' ) );
 					endCoords = event.originalEvent.targetTouches[0];
@@ -314,6 +317,10 @@
 					$( '.touching' ).bind( 'touchmove',function( event ) {
 						event.preventDefault();
 						event.stopPropagation();
+						if(StartZoom>0)
+						{
+							return false;
+						}
 						endCoords = event.originalEvent.targetTouches[0];
 
 						if ( ! hSwipe ) {
@@ -398,7 +405,11 @@
 				} ).bind( 'touchend',function( event ) {
 					event.preventDefault();
 					event.stopPropagation();
-
+					if(StartZoom>0)
+					{
+						StartZoom--;
+						return false;
+					}
 					$( '#swipebox-slider' ).css( {
 						'-webkit-transition' : '-webkit-transform 0.4s ease',
 						'transition' : 'transform 0.4s ease'
@@ -665,56 +676,48 @@
 				pinch.recognizeWith(rotate);
 				hammertime.add([pinch, rotate]);
 				var scale = 1; // scale of the image
-				var xLast = 0; // last x location on the screen
-				var yLast = 0; // last y location on the screen
-				var xImage = 0; // last x location on the image
-				var yImage = 0; // last y location on the image
 
 				hammertime.on("pinchstart pinchin pinchout pinchend", function(event) {
 					event.preventDefault();
 					/*
 					console.log("========ev begin===========");
 					console.log("pageX0: "+event.pointers[0].pageX);
-					console.log("pageY: "+event.pointers[0].pageY);
-					console.log("screenX: "+event.pointers[0].screenX);
-					console.log("screenY: "+event.pointers[0].screenY);
-					console.log("clientX: "+event.pointers[0].clientX);
-					console.log("clientY: "+event.pointers[0].clientY);
+					console.log("pageY0: "+event.pointers[0].pageY);
+					console.log("screenX0: "+event.pointers[0].screenX);
+					console.log("screenY0: "+event.pointers[0].screenY);
+					console.log("clientX0: "+event.pointers[0].clientX);
+					console.log("clientY0: "+event.pointers[0].clientY);
 					console.log("pageX1: "+event.pointers[1].pageX);
-					console.log("pageY: "+event.pointers[1].pageY);
-					console.log("screenX: "+event.pointers[1].screenX);
-					console.log("screenY: "+event.pointers[1].screenY);
-					console.log("clientX: "+event.pointers[1].clientX);
-					console.log("clientY: "+event.pointers[1].clientY);
-					console.log("clientY: "+JSON.stringify(event.center));
+					console.log("pageY1: "+event.pointers[1].pageY);
+					console.log("screenX1: "+event.pointers[1].screenX);
+					console.log("screenY1: "+event.pointers[1].screenY);
+					console.log("clientX1: "+event.pointers[1].clientX);
+					console.log("clientY1: "+event.pointers[1].clientY);
+					console.log("center: "+JSON.stringify(event.center));
 					console.log("========ev   end===========");
 					*/
-					var posX = event.center.x;
-					var posY = event.center.y;
 
-
-					// find current location on screen
-					var xScreen = posX; //- $(this).offset().left;
-					var yScreen = posY; //- $(this).offset().top;
-
-					// find current location on the image at the current scale
-					xImage = xImage + ((xScreen - xLast) / scale);
-					yImage = yImage + ((yScreen - yLast) / scale);
-
-					scale = event.scale;
-
-					// determine the location on the screen at the new scale
-					var xNew = (xScreen - xImage) / scale;
-					var yNew = (yScreen - yImage) / scale;
-
-					// save the current screen location
-					xLast = xScreen;
-					yLast = yScreen;
-
-					// redraw
-					currentSlide.css('-webkit-transform', 'scale(' + scale + ')' + 'translate(' + xNew + 'px, ' + yNew + 'px' + ')')
-						.css('-webkit-transform-origin', xImage + 'px ' + yImage + 'px').css('-moz-transform', 'scale(' + scale + ') translate(' + xNew + 'px, ' + yNew + 'px)').css('-moz-transform-origin', xImage + 'px ' + yImage + 'px')
-						.css('-o-transform', 'scale(' + scale + ') translate(' + xNew + 'px, ' + yNew + 'px)').css('-o-transform-origin', xImage + 'px ' + yImage + 'px').css('transform', 'scale(' + scale + ') translate(' + xNew + 'px, ' + yNew + 'px)');
+					if(event.type === 'pinchstart')
+					{
+						initScale = scale
+						pinchStatus = 1;
+					}
+					else if(event.type === 'pinchend')
+					{
+						initScale = scale
+						pinchStatus = 0
+					}
+					else if(event.type === 'pinchin' || event.type === 'pinchout')
+					{
+						if (pinchStatus === 0)
+							return;
+						StartZoom=2;
+						scale = initScale * event.scale;
+						if(scale<1 || scale>3)
+							return;
+						// redraw
+						currentSlide.css('-webkit-transform', 'scale(' + scale + ')');
+					}
 				});
 
 				if ( isFirst ) {
