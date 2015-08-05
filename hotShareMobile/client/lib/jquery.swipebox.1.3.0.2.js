@@ -292,7 +292,7 @@
 				$this.setTimeout();
 
 				$( '#swipebox-slider' ).bind( 'touchstart', function( event ) {
-					if(StartZoom>0)
+					if(typeof StartZoom != 'undefined' && StartZoom>0)
 					{
 						return false;
 					}
@@ -317,7 +317,7 @@
 					$( '.touching' ).bind( 'touchmove',function( event ) {
 						event.preventDefault();
 						event.stopPropagation();
-						if(StartZoom>0)
+						if(typeof StartZoom != 'undefined' && StartZoom>0)
 						{
 							return false;
 						}
@@ -405,7 +405,7 @@
 				} ).bind( 'touchend',function( event ) {
 					event.preventDefault();
 					event.stopPropagation();
-					if(StartZoom>0)
+					if(typeof StartZoom != 'undefined' && StartZoom>0)
 					{
 						StartZoom--;
 						return false;
