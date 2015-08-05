@@ -370,7 +370,10 @@
 							}
 						}
 					} );
-
+					if(!hSwipe && !vSwipe)
+					{
+						startTime = new Date().getTime();
+					}
 					return false;
 
 				} ).bind( 'touchend',function( event ) {
@@ -416,6 +419,16 @@
 						}
 
 					} else { // Top and bottom bars have been removed on touchable devices
+                                                if(typeof startTime != 'undefined')
+                                                {
+        					    var endTime = new Date().getTime();
+		    				    var longpress = (endTime - startTime < 500) ? false : true;
+						    if(longpress)
+						    {
+					  			return false;
+					  	    }
+                                                }
+
 						// tap
                         if($( this ).hasClass( 'touching' )){
                             slider.animate( { 'opacity': 0 },
