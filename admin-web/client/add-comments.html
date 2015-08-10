@@ -8,6 +8,7 @@
 <form class="new-comment">
 <input type="text" name="text" placeholder="Type to add new comment" />
 </form>
+{{> sendEmailBtn}}
 </header>
 <ul>
 {{#each comments}}
@@ -22,4 +23,7 @@
 <input type="checkbox" checked="{{checked}}" class="toggle-checked" />
 <span class="text">{{text}}</span>
 </li>
+</template>
+<template name="sendEmailBtn">
+	<button class="sendHtmlEmail" style="float:right;">发送邮件</button>
 </template>

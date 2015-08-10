@@ -1,4 +1,3 @@
-RefComments = new Mongo.Collection("refcomments");
 if (Meteor.isClient) {
 // This code only runs on the client
 Template.body.helpers({
@@ -33,4 +32,20 @@ RefComments.update(this._id, {$set: {checked: ! this.checked}});
   }
 }
 });
+
+Template.sendEmailBtn.events({
+    "click .sendHtmlEmail": function () {
+        var to = "zhzhang@actiontec.com";
+        var from = 'admin@hotshare.com';
+        var subject = '故事贴每周精选故事'
+        var html = Blaze.toHTML(Template.emallTemplate);  
+        Meteor.call("sendHtmlEmail", to, from, subject, html, function(error, result) {
+          if(error){
+            return console.log(error.reason);
+          }else{
+            console.log(result);
+          }
+        });
+      }
+  });
 }
