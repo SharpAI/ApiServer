@@ -434,17 +434,40 @@ if Meteor.isClient
       postId = Session.get("postContent")._id
       post = Session.get("postContent").pub
       userId = Meteor.userId()
+      likeUserJson = {}
+      likeUserJson[userId]=true
       if not post[i].likeUserId
         likeUserId = []
         post[i].likeUserId = likeUserId
-      likeUserJson = {}
-      likeUserJson[userId]=true
       if not post[i].likeSum
         likeSum = 0
         post[i].likeSum = likeSum
-      if JSON.stringify(post[i].likeUserId).indexOf(Meteor.userId()) is -1
+      if not post[i].dislikeUserId
+        dislikeUserId = []
+        post[i].dislikeUserId = dislikeUserId
+      if not post[i].dislikeSum
+        dislikeSum = 0
+        post[i].dislikeSum = dislikeSum
+      if JSON.stringify(post[i].likeUserId).indexOf(Meteor.userId()) is -1 and  JSON.stringify(post[i].dislikeUserId).indexOf(Meteor.userId()) is -1
         post[i].likeSum += 1
         post[i].likeUserId.push(likeUserJson)
+        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
+          if error
+            console.log(error.reason);
+          else
+            console.log("success");
+        )
+      else if  JSON.stringify(post[i].likeUserId).indexOf(Meteor.userId()) is -1 and  JSON.stringify(post[i].dislikeUserId).indexOf(Meteor.userId()) isnt -1
+        post[i].likeSum += 1
+        post[i].likeUserId.push(likeUserJson)
+        post[i].dislikeSum -= 1
+        num = post[i].dislikeUserId.length - 1
+#        arr = []
+        for j in [0..num]
+          delete post[i].dislikeUserId[j][Meteor.userId()]
+#          if post[i].dislikeUserId[j] isnt {}
+#            arr.push(post[i].dislikeUserId[j])
+#        post[i].dislikeUserId = arr
         Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
           if error
             console.log(error.reason);
@@ -460,17 +483,36 @@ if Meteor.isClient
       postId = Session.get("postContent")._id
       post = Session.get("postContent").pub
       userId = Meteor.userId()
+      dislikeUserJson = {}
+      dislikeUserJson[userId]=true
+      if not post[i].likeUserId
+        likeUserId = []
+        post[i].likeUserId = likeUserId
+      if not post[i].likeSum
+        likeSum = 0
+        post[i].likeSum = likeSum
       if not post[i].dislikeUserId
         dislikeUserId = []
         post[i].dislikeUserId = dislikeUserId
-      dislikeUserJson = {}
-      dislikeUserJson[userId]=true
       if not post[i].dislikeSum
         dislikeSum = 0
         post[i].dislikeSum = dislikeSum
-      if JSON.stringify(post[i].dislikeUserId).indexOf(Meteor.userId()) is -1
+      if JSON.stringify(post[i].dislikeUserId).indexOf(Meteor.userId()) is -1 and  JSON.stringify(post[i].likeUserId).indexOf(Meteor.userId()) is -1
         post[i].dislikeSum += 1
         post[i].dislikeUserId.push(dislikeUserJson)
+        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
+          if error
+            console.log(error.reason);
+          else
+            console.log("success");
+        )
+      else if  JSON.stringify(post[i].likeUserId).indexOf(Meteor.userId()) isnt -1 and  JSON.stringify(post[i].dislikeUserId).indexOf(Meteor.userId()) is -1
+        post[i].dislikeSum += 1
+        post[i].dislikeUserId.push(dislikeUserJson)
+        post[i].likeSum -= 1
+        num = post[i].likeUserId.length - 1
+        for j in [0..num]
+          delete post[i].likeUserId[j][Meteor.userId()]
         Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
           if error
             console.log(error.reason);
