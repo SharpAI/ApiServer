@@ -209,15 +209,15 @@ if Meteor.isClient
       else
         true
     plike:->
-      if this.like is undefined
+      if this.likeSum is undefined
         0
       else
-        this.like
+        this.likeSum
     pdislike:->
-      if this.dislike is undefined
+      if this.dislikeSum is undefined
         0
       else
-        this.dislike
+        this.dislikeSum
   Template.showPosts.events
     'click #ViewOnWeb' :->
       if Session.get("postContent").fromUrl
@@ -430,8 +430,55 @@ if Meteor.isClient
       }
     'click .fa-thumbs-o-up': (e)->
       console.log "=============click on thumb up index is: " + this.index
+      i = this.index
+      postId = Session.get("postContent")._id
+      post = Session.get("postContent").pub
+      userId = Meteor.userId()
+      if not post[i].likeUserId
+        likeUserId = []
+        post[i].likeUserId = likeUserId
+      likeUserJson = {}
+      likeUserJson[userId]=true
+      if not post[i].likeSum
+        likeSum = 0
+        post[i].likeSum = likeSum
+      if JSON.stringify(post[i].likeUserId).indexOf(Meteor.userId()) is -1
+        post[i].likeSum += 1
+        post[i].likeUserId.push(likeUserJson)
+        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
+          if error
+            console.log(error.reason);
+          else
+            console.log("success");
+        )
+      else
+        return
+      console.log post
     'click .fa-thumbs-o-down': (e)->
       console.log "=============click on thumb down index is: " + this.index
+      i = this.index
+      postId = Session.get("postContent")._id
+      post = Session.get("postContent").pub
+      userId = Meteor.userId()
+      if not post[i].dislikeUserId
+        dislikeUserId = []
+        post[i].dislikeUserId = dislikeUserId
+      dislikeUserJson = {}
+      dislikeUserJson[userId]=true
+      if not post[i].dislikeSum
+        dislikeSum = 0
+        post[i].dislikeSum = dislikeSum
+      if JSON.stringify(post[i].dislikeUserId).indexOf(Meteor.userId()) is -1
+        post[i].dislikeSum += 1
+        post[i].dislikeUserId.push(dislikeUserJson)
+        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
+          if error
+            console.log(error.reason);
+          else
+            console.log("success");
+        )
+      else
+        return
       #addDynamicTemp()
   Template.postFooter.helpers
     refcomment:->
