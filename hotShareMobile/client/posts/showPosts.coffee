@@ -208,6 +208,16 @@ if Meteor.isClient
         false
       else
         true
+    plike:->
+      if this.like is undefined
+        0
+      else
+        this.like
+    pdislike:->
+      if this.dislike is undefined
+        0
+      else
+        this.dislike
   Template.showPosts.events
     'click #ViewOnWeb' :->
       if Session.get("postContent").fromUrl
@@ -418,6 +428,10 @@ if Meteor.isClient
         loopAtEnd: false
        
       }
+    'click .fa-thumbs-o-up': (e)->
+      console.log "=============click on thumb up index is: " + this.index
+    'click .fa-thumbs-o-down': (e)->
+      console.log "=============click on thumb down index is: " + this.index
       #addDynamicTemp()
   Template.postFooter.helpers
     refcomment:->
