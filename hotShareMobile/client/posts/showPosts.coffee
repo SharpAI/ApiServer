@@ -474,6 +474,17 @@ if Meteor.isClient
           else
             console.log("success");
         )
+      else if JSON.stringify(post[i].likeUserId).indexOf(Meteor.userId()) isnt -1 and  JSON.stringify(post[i].dislikeUserId).indexOf(Meteor.userId()) is -1
+        post[i].likeSum -= 1
+        num = post[i].likeUserId.length - 1
+        for j in [0..num]
+          delete post[i].likeUserId[j][Meteor.userId()]
+        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
+          if error
+            console.log(error.reason);
+          else
+            console.log("success");
+        )
       else
         return
       console.log post
@@ -513,6 +524,17 @@ if Meteor.isClient
         num = post[i].likeUserId.length - 1
         for j in [0..num]
           delete post[i].likeUserId[j][Meteor.userId()]
+        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
+          if error
+            console.log(error.reason);
+          else
+            console.log("success");
+        )
+      else if JSON.stringify(post[i].likeUserId).indexOf(Meteor.userId()) is -1 and  JSON.stringify(post[i].dislikeUserId).indexOf(Meteor.userId()) isnt -1
+        post[i].dislikeSum -= 1
+        num = post[i].dislikeUserId.length - 1
+        for j in [0..num]
+          delete post[i].dislikeUserId[j][Meteor.userId()]
         Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
           if error
             console.log(error.reason);
