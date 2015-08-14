@@ -292,7 +292,10 @@
 				$this.setTimeout();
 
 				$( 'body' ).bind( 'touchstart', function( event ) {
-
+					if(typeof StartZoom != 'undefined' && StartZoom>0)
+					{
+						return false;
+					}
 					$( this ).addClass( 'touching' );
 					index = $( '#swipebox-slider .slide' ).index( $( '#swipebox-slider .slide.current' ) );
 					endCoords = event.originalEvent.targetTouches[0];
@@ -307,6 +310,10 @@
 					$( '.touching' ).bind( 'touchmove',function( event ) {
 						event.preventDefault();
 						event.stopPropagation();
+						if(typeof StartZoom != 'undefined' && StartZoom>0)
+						{
+							return false;
+						}
 						endCoords = event.originalEvent.targetTouches[0];
 
 						if ( ! hSwipe ) {
@@ -379,7 +386,11 @@
 				} ).bind( 'touchend',function( event ) {
 					event.preventDefault();
 					event.stopPropagation();
-
+					if(typeof StartZoom != 'undefined' && StartZoom>0)
+					{
+						StartZoom--;
+						return false;
+					}
 					$( '#swipebox-slider' ).css( {
 						'-webkit-transition' : '-webkit-transform 0.4s ease',
 						'transition' : 'transform 0.4s ease'
@@ -625,8 +636,61 @@
 				}
 
 				$( '#swipebox-slider .slide' ).removeClass( 'current' );
+				$( '#swipebox-slider .slide').removeAttr( 'style' );
 				$( '#swipebox-slider .slide' ).eq( index ).addClass( 'current' );
 				this.setTitle( index );
+
+				var currentSlide = $( '#swipebox-slider .slide' ).eq( index );
+				var zoomimg = currentSlide[0];
+				var hammertime = new Hammer(zoomimg);
+				var pinch = new Hammer.Pinch();
+				var rotate = new Hammer.Rotate();
+				pinch.recognizeWith(rotate);
+				hammertime.add([pinch, rotate]);
+				var scale = 1; // scale of the image
+
+				hammertime.on("pinchstart pinchin pinchout pinchend", function(event) {
+					event.preventDefault();
+					/*
+					console.log("========ev begin===========");
+					console.log("pageX0: "+event.pointers[0].pageX);
+					console.log("pageY0: "+event.pointers[0].pageY);
+					console.log("screenX0: "+event.pointers[0].screenX);
+					console.log("screenY0: "+event.pointers[0].screenY);
+					console.log("clientX0: "+event.pointers[0].clientX);
+					console.log("clientY0: "+event.pointers[0].clientY);
+					console.log("pageX1: "+event.pointers[1].pageX);
+					console.log("pageY1: "+event.pointers[1].pageY);
+					console.log("screenX1: "+event.pointers[1].screenX);
+					console.log("screenY1: "+event.pointers[1].screenY);
+					console.log("clientX1: "+event.pointers[1].clientX);
+					console.log("clientY1: "+event.pointers[1].clientY);
+					console.log("center: "+JSON.stringify(event.center));
+					console.log("========ev   end===========");
+					*/
+
+					if(event.type === 'pinchstart')
+					{
+						initScale = scale
+						pinchStatus = 1;
+					}
+					else if(event.type === 'pinchend')
+					{
+						initScale = scale
+						pinchStatus = 0
+					}
+					else if(event.type === 'pinchin' || event.type === 'pinchout')
+					{
+						if (pinchStatus === 0)
+							return;
+						StartZoom=2;
+						scale = initScale * event.scale;
+						if(scale<1 || scale>3)
+							return;
+						// redraw
+						currentSlide.css('-webkit-transform', 'scale(' + scale + ')');
+					}
+				});
 
 				if ( isFirst ) {
 					slider.fadeIn();
