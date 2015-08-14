@@ -226,11 +226,11 @@ if Meteor.isClient
         0
       else
         this.dislikeSum
-#    pcomments:->
-#      if this.pcomments is undefined
-#        0
-#      else
-#        this.pcomments.length
+    pcomments:->
+      if this.pcomments is undefined
+        0
+      else
+        this.pcomments.length
   Template.showPosts.events
     'click #ViewOnWeb' :->
       if Session.get("postContent").fromUrl
@@ -549,6 +549,8 @@ if Meteor.isClient
       else
         return
       #addDynamicTemp()
+    'click .pcomments': (e)->
+      $('.pcommentsList' + this._id).fadeIn 300
   Template.postFooter.helpers
     refcomment:->
       RC = Session.get 'RC'
