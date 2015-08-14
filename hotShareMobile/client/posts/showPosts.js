@@ -35,7 +35,38 @@ Template.showPosts.helpers({
     }
 });
  */
+// Template.postFooter.helpers({
+//   postFootContainer:function(){
+//      if(document.getElementById('commitMsg') == document.activeElement){
+//        return "commitHide"
+//      }else{
+//        return "commitShow"
+//      }
+//   },
+//   commitContainer:function(){
+//      if(document.getElementById('commitMsg') == document.activeElement){
+//        return "commitShow"
+//      }else{
+//        return "commitHide"
+//      }
+//   }
+// });
 
+// Template.postFooter.events({
+//   "click #postFooter .toCommit": function(){
+//     $('.commitHide').fadeIn(400);
+//     $('.commitShow').fadeOut(400);
+//     $('#commitMsg').focus();
+//   },
+//    "click #sendMsg": function(){
+//     $('#commitMsg').blur();
+//     $('.commitHide').fadeOut(400);
+//     $('.commitShow').fadeIn(400);
+//   },
+//    "click .refresh": function(){
+//       $('#commitMsg').focus();
+//    }
+// });
 Template.showPosts.events({
     'click #WXTimelineShare':function(e, t){
       current = Router.current();

@@ -170,18 +170,36 @@
 </template>
 <template name="postFooter">
   <div id="postFooter" class="showPostsFooter">
-    <div class="commentList">
-      <span class="minHeart"><i class="fa fa-thumbs-up"></i>{{heart}}</span>
-      <span class="minComment"><i class="fa fa-comment"></i>{{comment}}</span>
-    </div>
-    <input readOnly name="comment" class="comment" placeholder="说点什么..." type="text" value="{{refcomment}}">
-    <div class="buttons">
-      <span class="refresh">换</span>
-      {{#if blueHeart}}
-        <span class="blueHeart"><i class="fa fa-thumbs-up" style="color:#00c4ff;"></i></span>
-      {{else}}
-        <span class="heart"><i class="fa fa-thumbs-o-up" style="color:#00c4ff;"></i></span>
-      {{/if}}
-    </div>
+    <!-- <div class="{{postFootContainer}}"> -->
+        <div class="commentList" >
+          <span class="minHeart"><i class="fa fa-thumbs-up"></i>{{heart}}</span>
+          <span class="minComment"><i class="fa fa-comment"></i>{{comment}}</span>
+        </div>
+        <!-- <input readOnly name="comment" class="comment" placeholder="说点什么..." type="text" value="{{refcomment}}"> -->
+        <div class="buttons">
+          <!-- <span class="refresh">换</span> -->
+          {{#if blueHeart}}
+            <span class="blueHeart"><i class="fa fa-thumbs-up" style="color:#00c4ff;"></i></span>
+          {{else}}
+            <span class="heart"><i class="fa fa-thumbs-o-up" style="color:#00c4ff;"></i></span>
+          {{/if}}
+            <span class="toWarning"><i class="fa fa-exclamation-triangle" style="color:#00c4ff;"></i></span>
+            <span class="toCommit comment">
+                <i class="fa fa-pencil-square-o" style="color:#00c4ff;">
+                     <span style="font-size: 15px;">写评论</span>
+                </i>
+            </span>
+        </div>
+    <!-- </div> -->
+<!--     <div class="{{commitContainer}}">
+      <form id="new-reply" name="new-reply" class="new-reply">
+          <input id="sendMsg" type="submit" value="发送" style="float: right;height: 30px; margin: 5px;line-height: 30px;" />
+          <span class="refresh" style="float: right;">换</span> 
+          <div style="overflow: hidden; padding-right: .5em;">
+             <input id="commitMsg" type="text" value="{{refcomment}}" style="width: 100%;margin-top: 5px;height: 30px;margin-left: 5px;line-height: 30px;" />
+          </div>
+      </form>
+    </div> -->
+
   </div>
 </template>
