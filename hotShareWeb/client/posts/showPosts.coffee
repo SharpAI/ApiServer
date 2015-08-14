@@ -107,13 +107,13 @@ if Meteor.isClient
     hidePostBar = ()->
       if $('.showPostsFooter').is(':visible')
         $('.showPostsFooter').fadeOut 300
-      if $('.showPosts .head').is(':visible')
-        $('.showPosts .head').fadeOut 300
+#      if $('.showPosts .head').is(':visible')
+#        $('.showPosts .head').fadeOut 300
     showPostBar = ()->
       unless $('.showPostsFooter').is(':visible')
         $('.showPostsFooter').fadeIn 300
-      unless $('.showPosts .head').is(':visible')
-        $('.showPosts .head').fadeIn 300
+#      unless $('.showPosts .head').is(':visible')
+#        $('.showPosts .head').fadeIn 300
 
     showSocialBar = ()->
       unless $('.contactsList .head').is(':visible')
@@ -138,16 +138,24 @@ if Meteor.isClient
       if st is 0
         hideSocialBar()
         showPostBar()
+        unless $('.showPosts .head').is(':visible')
+          $('.showPosts .head').fadeIn 300
         window.lastScroll = st
         return
 
+      if window.lastScroll - st > 5
+        $('.showPosts .head').fadeIn 300
+        
+      if window.lastScroll - st < -5
+        $('.showPosts .head').fadeOut 300
+      
       if(st + $(window).height()) is window.getDocHeight()
         hidePostBar()
         showSocialBar()
         window.lastScroll = st
         return
       # Changed is too small
-      if Math.abs(window.lastScroll - st) < 10
+      if Math.abs(window.lastScroll - st) < 5
         return
       #Determines up-or-down scrolling
       displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
