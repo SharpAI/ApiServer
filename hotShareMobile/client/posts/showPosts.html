@@ -82,16 +82,18 @@
                   {{else}}
                       <li style="height:auto" class='hastextarea resortitem' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
                           <div class="textdiv">
-                              <div class="textDiv1" text={{_id}} name="textarea" style="{{style}}">{{text}}<i class="fa fa-thumbs-o-up" style="color:red;">{{plike}}</i>  <i class="fa fa-thumbs-o-down" style="color:blue;">{{pdislike}}</i> <i class="fa fa-comment-o pcomments">{{pcomments}}</i></div>
+                              <div class="textDiv1" text={{_id}} name="textarea" style="{{style}}">{{text}}<i class="fa fa-thumbs-o-up" style="color:red;">{{plike}}</i>  <i class="fa fa-thumbs-o-down" style="color:blue;">{{pdislike}}</i>
+<!--                                 <i class="fa fa-comment-o pcomments">{{pcomments}}</i>-->
+                              </div>
                           </div>
-                          <div class="pcommentsList{{_id}}" style="display:none;">
-<!--                            {{#each pcomments}}
+<!--                          <div class="pcommentsList{{_id}}" style="display:none;">
+                            {{#each pcomments}}
                               <div>{{content}}</div>
                               <div>{{username}}</div>
                               <div>{{userIcon}}</div>
                               <div>{{createdAt}}</div>
-                            {{/each}}-->
-                          </div>
+                            {{/each}}
+                          </div>-->
                       </li>
                   {{/if}}
               {{/each}}
