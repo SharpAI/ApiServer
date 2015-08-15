@@ -107,14 +107,19 @@ if Meteor.isClient
         data_row:'1',
         data_col:'3',
         data_sizex:'6',
-        data_sizey:'5'}
-  insertDownloadedImage = (linkInfo,imageExternalURL,found,inputUrl,file)->
+        data_sizey:'6'}
+  insertDownloadedImage = (linkInfo,imageExternalURL,found,inputUrl,file,width,height)->
     if file
       timestamp = new Date().getTime()
       if Drafts.find({type:'image'}).count() > 0
         Drafts.update({_id:Drafts.find({type:'image'}).fetch()[0]._id},{$set:{url:inputUrl}})
       if isIOS
         imgUrl = 'cdvfile://localhost/persistent/'+file.name
+      sizey = Math.round( 6 * height / width )
+      if sizey <= 0
+        sizey = 1
+      if sizey >= 12
+        sizey = 12
       Drafts.insert {
         type:'image',
         isImage:true,
@@ -129,7 +134,7 @@ if Meteor.isClient
         data_row:'1',
         data_col:'3',
         data_sizex:'6',
-        data_sizey:'5'}
+        data_sizey:sizey.toString()}
   insertDefaultImage = (linkInfo,mainImageUrl,found,inputUrl)->
     if mainImageUrl
       timestamp = new Date().getTime()
@@ -149,7 +154,7 @@ if Meteor.isClient
         data_row:'1',
         data_col:'3',
         data_sizex:'6',
-        data_sizey:'5'}
+        data_sizey:'6'}
   processReadableText=(data)->
     fullText = ''
     if data.fullText
@@ -206,7 +211,7 @@ if Meteor.isClient
           imageArray.push(item.imageUrl)
           seekSuitableImageFromArrayAndDownloadToLocal imageArray,(file,w,h,found,index,total,source)->
             if file
-              insertDownloadedImage(data,source,found,inputUrl,file)
+              insertDownloadedImage(data,source,found,inputUrl,file,w,h)
             if ++resortedObj.index < resortedObj.length
               renderResortedArticle(data,inputUrl,resortedObj)
             else
@@ -259,7 +264,7 @@ if Meteor.isClient
           console.log('found ' + found + ' index ' + index + ' total ' + total + ' fileObject ' + file + ' source ' + source )
           Session.set('importProcedure',5)
           if file
-            insertDownloadedImage(data,source,found,inputUrl,file)
+            insertDownloadedImage(data,source,found,inputUrl,file,w,h)
             resortObj.mainUrl = source
           else
             insertDefaultImage(data,'http://data.tiegushi.com/res/defaultMainImage1.jpg',false,inputUrl)
@@ -647,7 +652,7 @@ if Meteor.isClient
           grid.add_widget(node, insert_sizex, insert_sizey, insert_col, insert_row)
 # To be inserted at the end of the screen.
         else if insertedObj.toTheEnd
-          grid.add_widget(node, 6, 6)
+          grid.add_widget(node, parseInt(Blaze.getData(node).data_sizex,10), parseInt(Blaze.getData(node).data_sizey,10))
 # To be inserted on the middle of screen.
         else
           max_row = 1
@@ -998,7 +1003,7 @@ if Meteor.isClient
             draftTitles.title = $("#title").val()
             draftTitles.addontitle = $("#addontitle").val()
             console.log("draftTitles.title="+draftTitles.title+", draftTitles.addontitle="+draftTitles.addontitle);
-          draftTitles 
+          draftTitles
     mainImage:->
       Meteor.setTimeout ->
         $('.mainImage').css('height',$(window).height()*0.55)
@@ -1170,7 +1175,7 @@ if Meteor.isClient
       $('#blur_left').css('height','')
       $('#blur_right').css('height','')
       cropDraftId = Session.get('cropDraftId')
-      
+
       $('#isImage'+cropDraftId).css('display',"block")
       $('#'+cropDraftId).css('display',"block")
       $('#crop'+cropDraftId).css('display',"none")
@@ -1188,7 +1193,7 @@ if Meteor.isClient
       $('#blur_left').css('height','')
       $('#blur_right').css('height','')
       cropDraftId = Session.get('cropDraftId')
-      
+
       console.log cropDraftId
       imgSize =
         w : Session.get 'imgSizeW'
@@ -1199,7 +1204,7 @@ if Meteor.isClient
       imgZoomSize =
         w : $("#default"+cropDraftId+" .crop-img").width()
         h : $("#default"+cropDraftId+" .crop-img").height()
-      holderSize = 
+      holderSize =
         w : $("#default"+cropDraftId).width()
         h : $("#default"+cropDraftId).height()
       holderRatio =
@@ -1211,14 +1216,14 @@ if Meteor.isClient
       else
         img_width = (imgZoomSize.w / imgSize.w)*imgRatio.wh*holderRatio.hw*100 + '%'
         img_height = (imgZoomSize.h / imgSize.h)*100 + '%'
-      imgMove = 
+      imgMove =
         t : $("#default"+cropDraftId+" .crop-img").css('top')
         l : $("#default"+cropDraftId+" .crop-img").css('left')
       img_top = (parseFloat(imgMove.t) / holderSize.h)*100 + '%'
       img_left = (parseFloat(imgMove.l) / holderSize.w)*100 + '%'
       console.log "imgRatio is "+JSON.stringify(imgRatio)+"holderRatio is "+JSON.stringify(holderRatio)+"imgSize is "+JSON.stringify(imgSize)\
         +" imgZoomSize is "+JSON.stringify(imgZoomSize)+" holderSize is "+JSON.stringify(holderSize)+" imgMove is "+JSON.stringify(imgMove)+" img_top is "+img_top
-      
+
       w1 = $("#default"+cropDraftId+" .crop-img").css('width')
       h1 = $("#default"+cropDraftId+" .crop-img").css('height')
       l1 = $("#default"+cropDraftId+" .crop-img").css('left')
@@ -1247,7 +1252,7 @@ if Meteor.isClient
         Session.set 'isReviewMode','2'
       else
         Session.set 'isReviewMode','0'
-    
+
     'click #saveDraft':->
       Template.addPost.__helpers.get('saveDraft')()
       Drafts.remove {owner: Meteor.userId()}
@@ -1255,7 +1260,7 @@ if Meteor.isClient
       history.back()
       #PUB.back()
 
-      
+
     'click #publish':->
       if Meteor.user() is null
         window.plugins.toast.showShortBottom('请登录后发表您的故事')
