@@ -111,3 +111,112 @@
 .full_like{height:100px;position:fixed;bottom:10px;left:50%;z-index:99999 !important;transform: translate(-50%, 0);}
 .like_count{height:100px;position:fixed;right:15px;z-index:99999 !important;min-width: 1% !important;}
 .count{position:fixed;z-index:99999 !important;min-width: 1% !important;}
+.pcommentsList{
+  position: fixed;
+  top: 20%;
+  background-color: #fff;
+  color: black;
+  right: 2%;
+  left: 2%;
+  z-index: 99999;
+  overflow-y: scroll;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border: 1px #fff solid;
+  bottom: 40px;
+}
+.pcommentsList .pcomment{
+  position: relative;
+  background-color: #fff;
+  padding-top: 10px;
+  padding-bottom: 30px;
+}
+
+.pcommentsList .pcomment .eachComment {
+  min-height: 90px;
+  display: inline-block;
+  width: 100%;
+}
+
+.pcommentsList .pcomment .eachComment .icon{border-radius: 50%;margin: 10px;margin-top: 20px;}
+.pcommentsList .pcomment .eachComment .userName{display: inline-block;font-weight: bold;color: #000}
+.pcommentsList .pcomment .eachComment .createAt{display: inline-block;position:relative; color: #000;margin-right:-100px;}
+.pcommentsList .pcomment .eachComment .commentDetail{margin-right: 20px;margin-bottom: 5px;margin-left: 50px;white-space: normal;word-break: break-all;}
+.pcommentsList .pcomment .eachComment .personName {  padding-left:0px; color:black; font-weight:600;}
+.pcommentsList .pcomment .eachComment .personSay {   padding-left:0px; color:#000; font-weight:300;word-wrap: break-word;}
+.pcommentsList .pcomment .eachComment .round { -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; }
+.pcommentsList .pcomment .eachComment .time { color:#000; font-weight:300;position: absolute;right:5px;vertical-align: top;}
+.pcommentsList .pcomment .eachComment .bubble{
+    background-color: #F2F2F2;
+    border-radius: 5px;
+    box-shadow: 0 0 6px #B2B2B2;
+    display: inline-block;
+    padding: 10px 18px;
+    position: relative;
+    vertical-align: top;
+    float: left;
+    margin: 5px 45px 5px 20px;
+    border-color: #cdecb0;
+}
+.pcommentsList .pcomment .eachComment .bubble::before {
+    background-color: #F2F2F2;
+    content: "\00a0";
+    display: block;
+    height: 16px;
+    position: absolute;
+    top: 11px;
+    transform:             rotate( 29deg ) skew( -35deg );
+        -moz-transform:    rotate( 29deg ) skew( -35deg );
+        -ms-transform:     rotate( 29deg ) skew( -35deg );
+        -o-transform:      rotate( 29deg ) skew( -35deg );
+        -webkit-transform: rotate( 29deg ) skew( -35deg );
+    width:  20px;
+    box-shadow: -2px 2px 2px 0 rgba( 178, 178, 178, .4 );
+    left: -9px;
+	}
+.pcommentsList .pcomment .eachComment .bubble{
+		background-color: #F2F2F2;
+		border-radius: 5px;
+		box-shadow: 0 0 6px #B2B2B2;
+		display: inline-block;
+		padding: 10px 18px;
+		position: relative;
+		vertical-align: top;
+		margin: 10px 10px;
+		border-color: #cdecb0;
+		width: 75%;
+	}
+
+.pcommentsList .input-group{
+  background-color: rgba(255, 255, 255, 0.6);
+  font-size: larger;
+  border: none;
+  border-radius: 5px;
+  padding: 0 10px;
+  bottom: 40px;
+  position: fixed;
+  width: 100%;
+  }
+  .pcommentsList .input-group #pcommitReport{
+    width: 80%;
+    float: left;
+  }
+  .pcommentsList .input-group #pcommitReportBtn{
+    width: 18%;
+  }
+ .pcommentsList  .accountIcon{  
+    width: 30px;
+    position: relative;
+    top: 5px;
+ }
+
+.alertBackground{
+  width:100%;
+  height:100%;
+  position:fixed;
+  top:0px;
+  left:0px;
+  z-index: 99998;
+  display:none;
+  background: rgba(130,130,130,0.5);
+}

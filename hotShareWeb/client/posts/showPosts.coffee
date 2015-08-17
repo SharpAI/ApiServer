@@ -225,6 +225,11 @@ if Meteor.isClient
         0
       else
         this.dislikeSum
+    pcomments:->
+      if this.pcomments is undefined
+        0
+      else
+        this.pcomments.length
   Template.showPosts.events
     'click #ViewOnWeb' :->
       if Session.get("postContent").fromUrl
@@ -543,6 +548,9 @@ if Meteor.isClient
       else
         return
       #addDynamicTemp()
+    'click .pcomments': (e)->
+      $('.pcommentsList,.alertBackground').fadeIn 300
+      Session.set "pcommentIndexNum", this.index
   Template.postFooter.helpers
     refcomment:->
       RC = Session.get 'RC'
@@ -663,3 +671,54 @@ if Meteor.isClient
           Posts.update {_id: postId},{$set: {retweet: arr}}
           FollowPosts.update {_id: FollowPostsId},{$inc: {retweet: -1}}
           return
+  Template.pCommentsList.helpers
+      time_diff: (created)->
+        GetTime0(new Date() - created)
+      pcomments:->
+         i = Session.get "pcommentIndexNum"
+         post = Session.get("postContent").pub
+         return post[i].pcomments
+        
+  Template.pCommentsList.events
+      'click .alertBackground':->
+        $('.pcommentsList,.alertBackground').fadeOut 300
+      'click #pcommitReportBtn':(e, t)->
+        i = Session.get "pcommentIndexNum"
+        content = t.find('#pcommitReport').value
+        if content is ""
+          return false
+        postId = Session.get("postContent")._id
+        post = Session.get("postContent").pub
+        if Meteor.user()
+          if Meteor.user().profile.fullname
+            username = Meteor.user().profile.fullname
+          else
+            username = Meteor.user().username
+          userId = Meteor.user()._id
+          userIcon = Meteor.user().profile.icon
+        else
+          username = '匿名'
+          userId = 0
+          userIcon = ''
+        
+        if not post[i].pcomments
+          pcomments = []
+          post[i].pcomments = pcomments
+        pcommentJson = {
+          content:content
+          username:username
+          userId:userId
+          userIcon:userIcon
+          createdAt: new Date()
+        }
+        post[i].pcomments.push(pcommentJson)
+        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)->
+          if error
+            console.log(error.reason);
+          else
+            console.log("success");
+        )
+        t.find('#pcommitReport').value = ""
+        $("#pcommitReport").attr("placeholder", "说点什么")
+#        $('.pcommentsList,.alertBackground').fadeOut 300
+        false
