@@ -38,6 +38,7 @@ if Meteor.isClient
     subscribeCommentAndViewers()
     browseTimes = 0
     Session.set("Social.LevelOne.Menu",'discover')
+    Session.set("SocialOnButton",'postBtn')
     if (postContent.browse != undefined)
       browseTimes = postContent.browse + 1
     else
@@ -163,9 +164,14 @@ if Meteor.isClient
       displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
       if displaySocialBar
         showSocialBar()
+        if Session.equals("Social.LevelOne.Menu",'discover')
+          Session.set("SocialOnButton",'discover')
+        if Session.equals("Social.LevelOne.Menu",'contactsList')
+          Session.set("SocialOnButton",'contactsList')
 #        hidePostBar()
       else
         showSocialBar()
+        Session.set("SocialOnButton",'postBtn')
 #        hideSocialBar()
 #        showPostBar()
       #Updates scroll position
@@ -185,7 +191,7 @@ if Meteor.isClient
       i = this.index
       userId = Meteor.userId()
       post = Session.get("postContent").pub
-      if post[i].likeUserId[userId] is true
+      if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].likeUserId[userId] is true
         return true
       else
         return false
@@ -193,7 +199,7 @@ if Meteor.isClient
       i = this.index
       userId = Meteor.userId()
       post = Session.get("postContent").pub
-      if post[i].dislikeUserId[userId] is true
+      if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].dislikeUserId[userId] is true
         return true
       else
         return false
@@ -352,7 +358,8 @@ if Meteor.isClient
       $('.showPosts').addClass('animated ' + animateOutUpperEffect)
       $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect)
       Meteor.setTimeout ()->
-        PUB.back()
+        #PUB.back()
+        PUB.postPageBack()
         if Session.get("Social.LevelOne.Menu") is 'userProfile'
           Session.set("Social.LevelOne.Menu",'contactsList')
           return
@@ -695,7 +702,10 @@ if Meteor.isClient
       pcomments:->
          i = Session.get "pcommentIndexNum"
          post = Session.get("postContent").pub
-         return post[i].pcomments
+         if post[i] isnt undefined
+           return post[i].pcomments
+         else
+           return ''
         
   Template.pCommentsList.events
       'click .alertBackground':->
