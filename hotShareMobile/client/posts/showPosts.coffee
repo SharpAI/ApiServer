@@ -148,10 +148,10 @@ if Meteor.isClient
 
       if window.lastScroll - st > 5
         $('.showPosts .head').fadeIn 300
-        
+        showSocialBar()
       if window.lastScroll - st < -5
         $('.showPosts .head').fadeOut 300
-      
+        hideSocialBar()
       if(st + $(window).height()) is window.getDocHeight()
 #        hidePostBar()
         showSocialBar()
@@ -163,14 +163,14 @@ if Meteor.isClient
       #Determines up-or-down scrolling
       displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
       if displaySocialBar
-        showSocialBar()
+        #showSocialBar()
         if Session.equals("Social.LevelOne.Menu",'discover')
           Session.set("SocialOnButton",'discover')
         if Session.equals("Social.LevelOne.Menu",'contactsList')
           Session.set("SocialOnButton",'contactsList')
 #        hidePostBar()
       else
-        showSocialBar()
+        #showSocialBar()
         Session.set("SocialOnButton",'postBtn')
 #        hideSocialBar()
 #        showPostBar()
