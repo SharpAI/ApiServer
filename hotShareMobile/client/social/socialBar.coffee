@@ -1,6 +1,8 @@
 if Meteor.isClient
   Session.setDefault("Social.LevelOne.Menu",'discover')
   Template.socialContent.events
+    'click .postBack':->
+      PUB.postPageBack()
     'click .chatBtn':->
       Session.set("Social.LevelOne.Menu",'chatContent')
     'click .contactsBtn':->

@@ -1,3 +1,4 @@
+postPageArr = []
 #公共函数
 @PUB =
     # 该方法实现页面切换
@@ -132,3 +133,25 @@
 #          ]
 #    "photos":(items)->
 #        window.openPhotoSwipe(items)
+      "postPage":(postID)->
+          postIdJson = {
+            postId: postID
+          }
+          postPageArr.push(postIdJson)
+      "postPageBack":->
+          if postPageArr.length is 0
+            $(window).children().off()
+            $(window).unbind('scroll')
+            $('.showPosts').addClass('animated ' + animateOutUpperEffect)
+            $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect)
+            Meteor.setTimeout ()->
+              PUB.back()
+              if Session.get("Social.LevelOne.Menu") is 'userProfile'
+                Session.set("Social.LevelOne.Menu",'contactsList')
+                return
+            ,animatePageTrasitionTimeout
+          else
+            post = postPageArr.pop()
+            postId = post.postId
+            Router.go '/posts/'+postId
+          
