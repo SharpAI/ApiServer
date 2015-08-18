@@ -179,6 +179,22 @@ if Meteor.isClient
     #  PUB.toast("您的手机版本过低，部分图片可能产生变形。");
 
   Template.showPosts.helpers
+    myselfClickedUp:->
+      i = this.index
+      userId = Meteor.userId()
+      post = Session.get("postContent").pub
+      if post[i].likeUserId[userId] is true
+        return true
+      else
+        return false
+    myselfClickedDown:->
+      i = this.index
+      userId = Meteor.userId()
+      post = Session.get("postContent").pub
+      if post[i].dislikeUserId[userId] is true
+        return true
+      else
+        return false
     getPub:->
       self = this
       self.pub = self.pub || []
@@ -441,8 +457,7 @@ if Meteor.isClient
         loopAtEnd: false
        
       }
-    'click .fa-thumbs-o-up': (e)->
-      console.log "=============click on thumb up index is: " + this.index
+    'click .thumbsUp': (e)->
       i = this.index
       postId = Session.get("postContent")._id
       post = Session.get("postContent").pub
@@ -495,8 +510,7 @@ if Meteor.isClient
       else
         return
       console.log post
-    'click .fa-thumbs-o-down': (e)->
-      console.log "=============click on thumb down index is: " + this.index
+    'click .thumbsDown': (e)->
       i = this.index
       postId = Session.get("postContent")._id
       post = Session.get("postContent").pub
