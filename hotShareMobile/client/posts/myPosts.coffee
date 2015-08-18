@@ -1,6 +1,8 @@
 if Meteor.isClient
   Template.myPosts.rendered=->
     $('.content').css 'min-height',$(window).height()
+    if(!Session.get("showBigImage"))
+      Session.set("showBigImage",true)
     $(window).scroll (event)->
         console.log "myPosts window scroll event: "+event
         target = $("#showMoreMyPostsResults");
@@ -18,6 +20,13 @@ if Meteor.isClient
             if (target.data("visible"))
                 target.data("visible", false);
   Template.myPosts.helpers
+    showBigImage:()->
+      return Session.get("showBigImage")
+    showRightIcon:()->
+      if(Session.get("showBigImage"))
+        return "fa fa-list fa-fw"
+      else
+        return "fa fa-th-large"
     items:()->
       Posts.find({owner:Meteor.userId()}, {sort: {createdAt: -1}}, {limit:Session.get("mypostsitemsLimit")})
       #for i in [0..Posts.find({owner:Meteor.userId()}, {sort: {createdAt: -1}}).count()-1]
@@ -51,3 +60,8 @@ if Meteor.isClient
         ,animatePageTrasitionTimeout
         Session.set 'FollowPostsId',this._id
         return
+    'click .listView':()->
+      if(Session.get("showBigImage"))
+        Session.set("showBigImage",false)
+      else
+        Session.set("showBigImage",true)

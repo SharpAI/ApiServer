@@ -3,6 +3,10 @@
         <div class="head">
           <div>故事</div>
           <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+          <div class="rightButton listView">
+           <!--  fa fa-list fa-fw    fa fa-th-large -->
+                <i style="font-size:1.2em;" class="{{showRightIcon}}"></i>
+            </div>
         </div>
         <div class="content">
             {{#if loading}}
@@ -14,27 +18,38 @@
             <div id="wrapper">
                 <div id="list">
                     {{#each items}}
-                        <div  id="{{_id}}" class="mainImage">
-                            {{#if mainImage}}
-                              {{>padding noRandomBackgroundColor=true}}
-                            {{/if}}
-                            <img class="scale item lazy" data-original="{{mainImage}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImageStyle}}" >
-                            <header>
-                                <h1 class="title">{{title}}</h1>
-                                <h3 class="addontitle">{{addontitle}}</h3>
-                            </header>
-                        </div>
-                        <div class="footer">
-                            <span><img class="icon" src="{{ownerIcon}}" width='25' height='25'></span>
-                            <span class="name">{{ownerName}}</span>
-                            <span class="right">
-                              浏览{{getBrowseCount browse}}次
-<!--                            <i class="fa fa-heart"></i>{{heart}}-->
-                            <!--<i class="fa fa-retweet"></i>{{retweet}}-->
-                            <i class="fa fa-comment"></i>{{commentsCount}}
-                            </span>
-                        </div>
-                    {{else}}
+                        {{#if showBigImage}}
+                             <div  id="{{_id}}" class="mainImage">
+                                {{#if mainImage}}
+                                  {{>padding noRandomBackgroundColor=true}}
+                                {{/if}}
+                                <img class="scale item lazy" data-original="{{mainImage}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImageStyle}}" >
+                                <header>
+                                    <h1 class="title">{{title}}</h1>
+                                    <h3 class="addontitle">{{addontitle}}</h3>
+                                </header>
+                            </div>
+                            <div class="footer">
+                                <span><img class="icon" src="{{ownerIcon}}" width='25' height='25'></span>
+                                <span class="name">{{ownerName}}</span>
+                                <span class="right">
+                                  浏览{{getBrowseCount browse}}次
+                                <!-- <i class="fa fa-heart"></i>{{heart}}-->
+                                <!--<i class="fa fa-retweet"></i>{{retweet}}-->
+                                <i class="fa fa-comment"></i>{{commentsCount}}
+                                </span>
+                            </div> 
+                        {{else}}
+                            <div  id="{{_id}}" class="mainImage" style="height:50px;">
+                                {{#if mainImage}}
+                                  {{>padding noRandomBackgroundColor=true}}
+                                {{/if}}
+                                <img class="scale item lazy" data-original="{{mainImage}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImageStyle}}" >
+                                <header>
+                                    <h3 class="title">{{title}}</h3>
+                                </header>
+                            </div>
+                        {{/if}}
                     {{/each}}
                 </div>
             </div>
