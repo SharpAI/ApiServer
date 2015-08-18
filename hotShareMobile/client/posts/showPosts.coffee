@@ -573,7 +573,8 @@ if Meteor.isClient
         return
       #addDynamicTemp()
     'click .pcomments': (e)->
-      $('.pcommentsList,.alertBackground').fadeIn 300
+      $('.pcommentsList,.alertBackground').fadeIn 300, ()->
+        $('#pcommitReport').focus()
       Session.set "pcommentIndexNum", this.index
   Template.postFooter.helpers
     refcomment:->
