@@ -137,8 +137,9 @@ if Meteor.isClient
       #Sets the current scroll position
       st = $(window).scrollTop()
       if st is 0
-        hideSocialBar()
-        showPostBar()
+        showSocialBar()
+#        hideSocialBar()
+#        showPostBar()
         unless $('.showPosts .head').is(':visible')
           $('.showPosts .head').fadeIn 300
         window.lastScroll = st
@@ -151,7 +152,7 @@ if Meteor.isClient
         $('.showPosts .head').fadeOut 300
       
       if(st + $(window).height()) is window.getDocHeight()
-        hidePostBar()
+#        hidePostBar()
         showSocialBar()
         window.lastScroll = st
         return
@@ -162,14 +163,15 @@ if Meteor.isClient
       displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
       if displaySocialBar
         showSocialBar()
-        hidePostBar()
+#        hidePostBar()
       else
-        hideSocialBar()
-        showPostBar()
+        showSocialBar()
+#        hideSocialBar()
+#        showPostBar()
       #Updates scroll position
       window.lastScroll = st
     window.lastScroll = 0;
-    $('.socialContent .chatFooter').css('display', 'none')
+#    $('.socialContent .chatFooter').css('display', 'none')
     #hideSocialBar()
     #showPostBar()
 
