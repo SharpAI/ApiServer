@@ -55,6 +55,8 @@ if Meteor.isClient
         postId = this._id
       $(window).children().off()
       $(window).unbind('scroll')
+      id = Session.get("postContent")._id
+      PUB.postPage(id)
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/redirect/'+postId

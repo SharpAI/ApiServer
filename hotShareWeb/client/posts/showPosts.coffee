@@ -37,6 +37,7 @@ if Meteor.isClient
     subscribeCommentAndViewers()
     browseTimes = 0
     Session.set("Social.LevelOne.Menu",'discover')
+    Session.set("SocialOnButton",'postBtn')
     if (postContent.browse != undefined)
       browseTimes = postContent.browse + 1
     else
@@ -116,10 +117,12 @@ if Meteor.isClient
 #        $('.showPosts .head').fadeIn 300
 
     showSocialBar = ()->
-      unless $('.contactsList .head').is(':visible')
-        $('.contactsList .head').fadeIn 300
-      unless $('.userProfile .head').is(':visible')
-        $('.userProfile .head').fadeIn 300
+      displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
+      if displaySocialBar
+        unless $('.contactsList .head').is(':visible')
+          $('.contactsList .head').fadeIn 300
+        unless $('.userProfile .head').is(':visible')
+          $('.userProfile .head').fadeIn 300
       unless $('.socialContent .chatFooter').is(':visible')
         $('.socialContent .chatFooter').fadeIn 300
     hideSocialBar = ()->
@@ -136,8 +139,9 @@ if Meteor.isClient
       #Sets the current scroll position
       st = $(window).scrollTop()
       if st is 0
-        hideSocialBar()
-        showPostBar()
+        showSocialBar()
+#        hideSocialBar()
+#        showPostBar()
         unless $('.showPosts .head').is(':visible')
           $('.showPosts .head').fadeIn 300
         window.lastScroll = st
@@ -145,12 +149,16 @@ if Meteor.isClient
 
       if window.lastScroll - st > 5
         $('.showPosts .head').fadeIn 300
-        
+        showSocialBar()
       if window.lastScroll - st < -5
         $('.showPosts .head').fadeOut 300
-      
+        displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
+        if displaySocialBar
+          showSocialBar()
+        else
+          hideSocialBar()
       if(st + $(window).height()) is window.getDocHeight()
-        hidePostBar()
+#        hidePostBar()
         showSocialBar()
         window.lastScroll = st
         return
@@ -160,15 +168,23 @@ if Meteor.isClient
       #Determines up-or-down scrolling
       displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
       if displaySocialBar
-        showSocialBar()
-        hidePostBar()
+        #showSocialBar()
+        if Session.equals("Social.LevelOne.Menu",'discover')
+          Session.set("SocialOnButton",'discover')
+        if Session.equals("Social.LevelOne.Menu",'contactsList')
+          Session.set("SocialOnButton",'contactsList')
+#        hidePostBar()
       else
-        hideSocialBar()
-        showPostBar()
+        #showSocialBar()
+        if $('.contactsList .head').is(':visible')
+          $('.contactsList .head').fadeOut 300
+        Session.set("SocialOnButton",'postBtn')
+#        hideSocialBar()
+#        showPostBar()
       #Updates scroll position
       window.lastScroll = st
     window.lastScroll = 0;
-    $('.socialContent .chatFooter').css('display', 'none')
+#    $('.socialContent .chatFooter').css('display', 'none')
     #hideSocialBar()
     #showPostBar()
 
@@ -182,7 +198,7 @@ if Meteor.isClient
       i = this.index
       userId = Meteor.userId()
       post = Session.get("postContent").pub
-      if post[i].likeUserId[userId] is true
+      if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].likeUserId[userId] is true
         return true
       else
         return false
@@ -190,7 +206,7 @@ if Meteor.isClient
       i = this.index
       userId = Meteor.userId()
       post = Session.get("postContent").pub
-      if post[i].dislikeUserId[userId] is true
+      if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].dislikeUserId[userId] is true
         return true
       else
         return false
@@ -349,7 +365,8 @@ if Meteor.isClient
       $('.showPosts').addClass('animated ' + animateOutUpperEffect)
       $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect)
       Meteor.setTimeout ()->
-        PUB.back()
+        #PUB.back()
+        PUB.postPageBack()
         if Session.get("Social.LevelOne.Menu") is 'userProfile'
           Session.set("Social.LevelOne.Menu",'contactsList')
           return
@@ -563,7 +580,8 @@ if Meteor.isClient
         return
       #addDynamicTemp()
     'click .pcomments': (e)->
-      $('.pcommentsList,.alertBackground').fadeIn 300
+      $('.pcommentsList,.alertBackground').fadeIn 300, ()->
+        $('#pcommitReport').focus()
       Session.set "pcommentIndexNum", this.index
   Template.postFooter.helpers
     refcomment:->
@@ -691,7 +709,10 @@ if Meteor.isClient
       pcomments:->
          i = Session.get "pcommentIndexNum"
          post = Session.get("postContent").pub
-         return post[i].pcomments
+         if post[i] isnt undefined
+           return post[i].pcomments
+         else
+           return ''
         
   Template.pCommentsList.events
       'click .alertBackground':->

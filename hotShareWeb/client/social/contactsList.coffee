@@ -53,7 +53,7 @@ if Meteor.isClient
     Session.set('mrLimit', 0)
   Template.addNewFriends.helpers
     meeter:()->
-      Newfriends.find({meetOnPostId:Session.get("postContent")._id},{sort:{count:-1}})
+      Newfriends.find({meetOnPostId:Session.get("postContent")._id},{sort:{createdAt:-1}})
     isMyself:()->
       this.ta is Meteor.userId()
     isSelf:(follow)->
