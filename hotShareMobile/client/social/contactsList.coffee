@@ -50,10 +50,28 @@ if Meteor.isClient
     'click .messageGroup': ()->
       Session.set("Social.LevelOne.Menu", 'messageGroup')      
   Template.addNewFriends.rendered=->
-    Session.set('mrLimit', 0)
+    $(window).scroll (event)->
+      if Session.get("Social.LevelOne.Menu") is 'contactsList'
+        console.log "postfriends window scroll event: "+event
+        target = $("#showMorePostFriendsResults");
+        POSTFRIENDS_ITEMS_INCREMENT = 10;
+        console.log "target.length: " + target.length
+        if (!target.length)
+          return;
+        threshold = $(window).scrollTop() + $(window).height() - target.height();
+        console.log "threshold: " + threshold
+        console.log "target.top: " + target.offset().top
+        if target.offset().top < threshold
+          if (!target.data("visible"))
+            target.data("visible", true);
+            Session.set("postfriendsitemsLimit",
+              Session.get("postfriendsitemsLimit") + POSTFRIENDS_ITEMS_INCREMENT);
+        else
+          if (target.data("visible"))
+            target.data("visible", false);
   Template.addNewFriends.helpers
     meeter:()->
-      Newfriends.find({meetOnPostId:Session.get("postContent")._id},{sort:{createdAt:-1}})
+      PostFriends.find({meetOnPostId:Session.get("postContent")._id},{sort:{createdAt:-1}})
     isMyself:()->
       this.ta is Meteor.userId()
     isSelf:(follow)->
@@ -73,6 +91,15 @@ if Meteor.isClient
         true
       else
         false
+    moreResults:()->
+      if PostFriends.find({meetOnPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
+        !(PostFriends.find({meetOnPostId:Session.get("postContent")._id}).count() < Session.get("postfriendsitemsLimit"))
+      else
+        false
+    loading:()->
+      Session.equals('postfriendsCollection','loading')
+    loadError:()->
+      Session.equals('postfriendsCollection','error')
   Template.addNewFriends.events
     "click .newFriends":(e)->
       userProfileList = Newfriends.find({meetOnPostId:Session.get("postContent")._id},{sort:{count:-1}}).fetch()

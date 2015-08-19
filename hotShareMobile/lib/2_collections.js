@@ -20,6 +20,7 @@ Meets = new Meteor.Collection('meets');
 Versions = new Meteor.Collection('versions');
 Moments = new Meteor.Collection('moments');
 if(Meteor.isClient){
+  PostFriends = new Meteor.Collection("postfriends")
   Newfriends = new Meteor.Collection("newfriends");
   ViewLists = new Meteor.Collection("viewlists");
   UserDetail = new Meteor.Collection("userDetail");
@@ -32,6 +33,31 @@ if(Meteor.isServer){
 
 if(Meteor.isServer){
     Rnd = 0;
+    var newMeetsAddedForPostFriendsDeferHandle = function(self,taId,userId,id,fields){
+        Meteor.defer(function(){
+            var taInfo = Meteor.users.findOne({_id: taId},{fields: {'username':1,'email':1,'profile.fullname':1,
+                'profile.icon':1, 'profile.desc':1, 'profile.location':1,'profile.lastLogonIP':1}});
+            if (taInfo){
+                try{
+                    fields.location = taInfo.profile.location;
+                    var userName = taInfo.username;
+                    if(taInfo.profile.fullname){
+                        userName = taInfo.profile.fullname;
+                    }
+                    fields.displayName = userName;
+                    fields.userIcon = taInfo.profile.icon;
+                    try {
+                        self.added("userDetail", taInfo._id, taInfo);
+                    } catch (error){
+                    }
+                } catch (error){
+                }
+            }
+            self.added("postfriends", id, fields);
+            getViewLists(self,taId,3);
+            self.count++;
+        });
+    };
     var newMeetsAddedForNewFriendsDeferHandle = function(self,taId,userId,id,fields){
         Meteor.defer(function(){
             // Double check the couter for defer operation(Meteor's implemetation for setTimeout(func,0))
@@ -704,7 +730,27 @@ if(Meteor.isServer){
               handle.stop();
           });
       }
-    });
+  });
+  Meteor.publish("postFriends", function (userId,postId,limit) {
+        if(this.userId === null || !Match.test(postId, String) ){
+            return [];
+        }
+        else{
+            var self = this;
+            self.count = 0;
+            var handle = Meets.find({me: userId,meetOnPostId:postId,ta:{$ne:userId}},{sort: {count:-1,createdAt: -1},limit:limit}).observeChanges({
+                added: function (id,fields) {
+                    var taId = fields.ta;
+                    //Call defered function here:
+                    newMeetsAddedForPostFriendsDeferHandle(self,taId,userId,id,fields);
+                }
+            });
+            self.ready();
+            self.onStop(function () {
+                handle.stop();
+            });
+        }
+  });
   Meteor.publish("newfriends", function (userId,postId) {
     if(this.userId === null || !Match.test(postId, String))
       return [];
@@ -1468,6 +1514,7 @@ if(Meteor.isClient){
   var FOLLOWS_ITEMS_INCREMENT = 10;
   var MYPOSTS_ITEMS_INCREMENT = 4;
   var MOMENTS_ITEMS_INCREMENT = 10;
+  var POSTFRIENDS_ITEMS_INCREMENT = 10;
   var POST_ID = null;
   Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
   Session.setDefault('feedsitemsLimit', FEEDS_ITEMS_INCREMENT);
@@ -1475,12 +1522,14 @@ if(Meteor.isClient){
   Session.setDefault('followeesitemsLimit', FOLLOWS_ITEMS_INCREMENT);
   Session.setDefault('mypostsitemsLimit', MYPOSTS_ITEMS_INCREMENT);
   Session.setDefault('momentsitemsLimit', MOMENTS_ITEMS_INCREMENT);
+  Session.setDefault('postfriendsitemsLimit', POSTFRIENDS_ITEMS_INCREMENT);
   Session.set('followPostsCollection','loading');
   Session.set('feedsCollection','loading');
   Session.set('followersCollection','loading');
   Session.set('followeesCollection','loading');
   Session.set('myPostsCollection','loading');
   Session.set('momentsCollection','loading');
+  Session.set('postfriendsCollection','loading');
   var subscribeFollowPostsOnStop = function(err){
       console.log('followPostsCollection ' + err);
       Session.set('followPostsCollection','error');
@@ -1588,6 +1637,12 @@ if(Meteor.isClient){
                 onReady: function(){
                     console.log('momentsCollection loaded');
                     Session.set('momentsCollection','loaded');
+                }
+            });
+            Meteor.subscribe('postFriends', Meteor.userId(), Session.get("postContent")._id, Session.get('postfriendsitemsLimit'), {
+                onReady: function(){
+                    console.log('postfriendsCollection loaded');
+                    Session.set('postfriendsCollection','loaded');
                 }
             });
         }
