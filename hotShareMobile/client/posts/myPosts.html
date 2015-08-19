@@ -4,7 +4,6 @@
           <div>故事</div>
           <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
           <div class="rightButton listView">
-           <!--  fa fa-list fa-fw    fa fa-th-large -->
                 <i style="font-size:1.2em;" class="{{showRightIcon}}"></i>
             </div>
         </div>
@@ -40,15 +39,14 @@
                                 </span>
                             </div> 
                         {{else}}
-                            <div  id="{{_id}}" class="mainImage" style="height:50px;">
-                                {{#if mainImage}}
-                                  {{>padding noRandomBackgroundColor=true}}
-                                {{/if}}
-                                <img class="scale item lazy" data-original="{{mainImage}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImageStyle}}" >
-                                <header>
-                                    <h3 class="title">{{title}}</h3>
-                                </header>
-                            </div>
+                                <div class="readpost" style="font-size:15px;width: 100%;float: left;margin-right: 2%; height: 56px; overflow: hidden;">
+                                    <dl style='background: grey;padding: 5px; margin-top: 6px;min-height: 50px;margin-bottom: 1px;'>
+                                        <dt style="float: left;margin-right: 10px;">
+                                            <img class="post_pic" src="{{mainImage}}" width="40" height="40"/>
+                                        </dt>
+                                        <dd style="font-size: 15px;height: 36px;overflow: hidden;word-wrap: break-word;">{{title}}  {{addontitle}}</dd>
+                                    </dl>
+                                </div>
                         {{/if}}
                     {{/each}}
                 </div>

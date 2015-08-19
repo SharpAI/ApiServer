@@ -1,8 +1,7 @@
 if Meteor.isClient
   Template.myPosts.rendered=->
     $('.content').css 'min-height',$(window).height()
-    if(!Session.get("showBigImage"))
-      Session.set("showBigImage",true)
+    Session.set("showBigImage",true)
     $(window).scroll (event)->
         console.log "myPosts window scroll event: "+event
         target = $("#showMoreMyPostsResults");
@@ -63,5 +62,7 @@ if Meteor.isClient
     'click .listView':()->
       if(Session.get("showBigImage"))
         Session.set("showBigImage",false)
+        Session.set("mypostsitemsLimit",10)
       else
         Session.set("showBigImage",true)
+        Session.set("mypostsitemsLimit",4)
