@@ -833,6 +833,14 @@ if(Meteor.isServer){
           return Moments.find({currentPostId: postId},{sort: {createdAt: -1},limit:limit});
       }
   });
+  Meteor.publish("newfriendsWithLimit", function(postId,limit) {
+      if(this.userId === null|| !Match.test(limit, Number)) {
+          return [];
+      }
+      else{
+        return Newfriends.find({ meetOnPostId: postId }, { limit: limit });
+      }
+  });
   Meteor.publish("followposts", function(limit) {
     if(this.userId === null || !Match.test(limit, Number))
       return [];
@@ -1468,6 +1476,7 @@ if(Meteor.isClient){
   var FOLLOWS_ITEMS_INCREMENT = 10;
   var MYPOSTS_ITEMS_INCREMENT = 4;
   var MOMENTS_ITEMS_INCREMENT = 10;
+  var NEWFRIENDS_ITEMS_INCREMENT = 10;
   var POST_ID = null;
   Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
   Session.setDefault('feedsitemsLimit', FEEDS_ITEMS_INCREMENT);
@@ -1475,12 +1484,14 @@ if(Meteor.isClient){
   Session.setDefault('followeesitemsLimit', FOLLOWS_ITEMS_INCREMENT);
   Session.setDefault('mypostsitemsLimit', MYPOSTS_ITEMS_INCREMENT);
   Session.setDefault('momentsitemsLimit', MOMENTS_ITEMS_INCREMENT);
+  Session.setDefault('newfriendsitemsLimit', NEWFRIENDS_ITEMS_INCREMENT);
   Session.set('followPostsCollection','loading');
   Session.set('feedsCollection','loading');
   Session.set('followersCollection','loading');
   Session.set('followeesCollection','loading');
   Session.set('myPostsCollection','loading');
   Session.set('momentsCollection','loading');
+  Session.set('newFriendsCollection','loading');
   var subscribeFollowPostsOnStop = function(err){
       console.log('followPostsCollection ' + err);
       Session.set('followPostsCollection','error');
@@ -1553,6 +1564,12 @@ if(Meteor.isClient){
                   onReady: function(){
                       console.log('myPostsCollection loaded');
                       Session.set('myPostsCollection','loaded');
+                  }
+              });
+              Meteor.subscribe('newfriendsWithLimit', Session.get("postContent")._id, Session.get('newfriendsitemsLimit'), {
+                  onReady: function(){
+                      console.log('newFriendsCollection loaded');
+                      Session.set('newFriendsCollection','loaded');
                   }
               });
           }

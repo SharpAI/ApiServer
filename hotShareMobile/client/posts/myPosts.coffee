@@ -58,6 +58,7 @@ if Meteor.isClient
           PUB.page '/posts/'+postId
         ,animatePageTrasitionTimeout
         Session.set 'FollowPostsId',this._id
+        Session.set "newfriendsitemsLimit",10
         return
     'click .listView':()->
       if(Session.get("showBigImage"))

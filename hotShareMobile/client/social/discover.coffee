@@ -56,6 +56,7 @@ if Meteor.isClient
       $(window).children().off()
       $(window).unbind('scroll')
       id = Session.get("postContent")._id
+      Session.set "newfriendsitemsLimit",10
       PUB.postPage(id)
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
