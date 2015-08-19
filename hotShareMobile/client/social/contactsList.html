@@ -11,10 +11,12 @@
     </div>
     <div class="chatContentLine"></div>
       {{> addNewFriends}}
+    <!--
     <div id="" class="eachViewer messageGroup">
       <img class="icon" src="/usersChat.jpg" width="30" height="30">
       <span class="userName">群聊</span>
     </div>
+    -->
     <!--
       <div class="chatContentLine"></div>
       <div id="" class="eachViewer">
@@ -27,11 +29,11 @@
         <span class="userName">公众号</span>
       </div>
     -->
+    <!--
     <div class="showPostsLine">看过本文的朋友</div>
     {{#each follower}}
       {{#if isViewer}}
         <div id="{{followerId}}" class="eachViewer oldFriends">
-          <!--列出浏览人-->
           <img class="icon" src="{{followerIcon}}" width="30" height="30">
           <span class="userName">{{followerName}}</span>
         </div>
@@ -43,7 +45,6 @@
       {{#unless isViewer}}
         {{#if followerId}}
           <div id="{{followerId}}" class="eachViewer oldFriends">
-            <!--列出浏览人-->
             <img class="icon" src="{{followerIcon}}" width="30" height="30">
             <span class="userName">{{followerName}}</span>
           </div>
@@ -51,6 +52,7 @@
         {{/if}}
       {{/unless}}
     {{/each}}
+    -->
   </div>
 </template>
 

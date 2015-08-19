@@ -118,10 +118,12 @@ if Meteor.isClient
 #        $('.showPosts .head').fadeIn 300
 
     showSocialBar = ()->
-      unless $('.contactsList .head').is(':visible')
-        $('.contactsList .head').fadeIn 300
-      unless $('.userProfile .head').is(':visible')
-        $('.userProfile .head').fadeIn 300
+      displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
+      if displaySocialBar
+        unless $('.contactsList .head').is(':visible')
+          $('.contactsList .head').fadeIn 300
+        unless $('.userProfile .head').is(':visible')
+          $('.userProfile .head').fadeIn 300
       unless $('.socialContent .chatFooter').is(':visible')
         $('.socialContent .chatFooter').fadeIn 300
     hideSocialBar = ()->
@@ -151,7 +153,11 @@ if Meteor.isClient
         showSocialBar()
       if window.lastScroll - st < -5
         $('.showPosts .head').fadeOut 300
-        hideSocialBar()
+        displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
+        if displaySocialBar
+          showSocialBar()
+        else
+          hideSocialBar()
       if(st + $(window).height()) is window.getDocHeight()
 #        hidePostBar()
         showSocialBar()
@@ -171,6 +177,8 @@ if Meteor.isClient
 #        hidePostBar()
       else
         #showSocialBar()
+        if $('.contactsList .head').is(':visible')
+          $('.contactsList .head').fadeOut 300
         Session.set("SocialOnButton",'postBtn')
 #        hideSocialBar()
 #        showPostBar()
