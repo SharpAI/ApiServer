@@ -1,4 +1,5 @@
 <template name="showPosts">
+  {{> pCommentsList}}
   <div class="showBgColor">
     <div class="showPostsBox">
     <div class="showPosts">
@@ -168,7 +169,6 @@
   {{/if}}
   {{> userProfileBox}}
   </div>
-  {{> pCommentsList}}
 </template>
 <template name="postFooter">
   <div id="postFooter" class="showPostsFooter">
