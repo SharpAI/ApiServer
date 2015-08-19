@@ -15,16 +15,16 @@ if Meteor.isClient
     'click .contactsBtn':->
       Session.set("Social.LevelOne.Menu",'contactsList')
       Session.set("SocialOnButton",'contactsList')
-      document.body.scrollTop = document.body.scrollHeight
+      document.body.scrollTop = $(".showPostsBox").height()
     'click .discoverBtn':->
       Session.set("SocialOnButton",'discover')
       Session.set('momentsitemsLimit', 10);
       Session.set("Social.LevelOne.Menu",'discover')
-      document.body.scrollTop = document.body.scrollHeight
+      document.body.scrollTop = $(".showPostsBox").height()
     'click .meBtn':->
       Session.set("SocialOnButton",'me')
       Session.set("Social.LevelOne.Menu",'me')
-      document.body.scrollTop = document.body.scrollHeight
+      document.body.scrollTop = $(".showPostsBox").height()
   Template.socialContent.rendered=->
     $('.chatBoxContent').css('min-height',$(window).height()-90)
   Template.socialContent.helpers
