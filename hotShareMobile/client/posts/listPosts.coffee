@@ -47,5 +47,4 @@ if Meteor.isClient
       ,animatePageTrasitionTimeout
       console.log this.postId
       Session.set 'FollowPostsId',this._id
-      Session.set "newfriendsitemsLimit",10
       console.log this._id
