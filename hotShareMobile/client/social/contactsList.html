@@ -72,6 +72,9 @@
                 <img class="icon" src="{{userIcon}}" width="30" height="30">
                 <span class="userName">{{displayName}}</span>
                 <div class="meet_count">缘分啊，我们已偶遇{{count}}次了!</div>
+                {{#if showRedSpot}}
+                <div class="red_spot"></div>
+                {{/if}}
               </div>
               <div class="chatContentLine"></div>
             {{/if}}
