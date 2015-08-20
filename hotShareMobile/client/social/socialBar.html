@@ -23,6 +23,9 @@
           <div class="contactsBtn {{isFocus 'contactsList'}}">
             <i class="fa fa-list"></i>
             <div>新朋友</div>
+            {{#if haveNewFriends}}
+            <div class="red_spot"></div>
+            {{/if}}
           </div>
           <div class="discoverBtn {{isFocus 'discover'}}">
             <i class="fa fa-compass"></i>
