@@ -13,7 +13,6 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu",'chatContent')
       Session.set("SocialOnButton",'chatContent')
     'click .contactsBtn':->
-      Session.set('postfriendsitemsLimit', 10);
       Session.set("Social.LevelOne.Menu",'contactsList')
       Session.set("SocialOnButton",'contactsList')
       document.body.scrollTop = $(".showPostsBox").height()
@@ -29,11 +28,11 @@ if Meteor.isClient
   Template.socialContent.rendered=->
     $('.chatBoxContent').css('min-height',$(window).height()-90)
   Template.socialContent.helpers
-    haveNewFriends: ->
+    haveNewFriends: -> 
       if PostFriends.find({meetOnPostId:Session.get("postContent")._id,count:1,checked:{$ne:true}},{sort:{createdAt:-1}}).count()>0
-        true
+          true
       else
-        false
+          false
     whichOne : ->
       Session.get('Social.LevelOne.Menu')
     isFocus : (view) ->

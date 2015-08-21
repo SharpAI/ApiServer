@@ -39,12 +39,13 @@
                                 </span>
                             </div> 
                         {{else}}
-                                <div class="readpost" style="font-size:15px;width: 100%;float: left;margin-right: 2%; height: 56px; overflow: hidden;">
+                                <div id="{{_id}}" class="mainImage" style="font-size:15px;width: 100%;float: left;margin-right: 2%; height: 56px; overflow: hidden;">
                                     <dl style='background: grey;padding: 5px; margin-top: 6px;min-height: 50px;margin-bottom: 1px;'>
-                                        <dt style="float: left;margin-right: 10px;">
+<!--                                         <dt style="float: left;margin-right: 10px;">
                                             <img class="post_pic" src="{{mainImage}}" width="40" height="40"/>
-                                        </dt>
-                                        <dd style="font-size: 15px;height: 36px;overflow: hidden;word-wrap: break-word;">{{title}}  {{addontitle}}</dd>
+                                        </dt> -->
+                                        <dd style="font-size: 18px;overflow: hidden;word-wrap: break-word;white-space: nowrap;text-overflow: ellipsis;">{{title}}</dd>
+                                        <dd style="font-size: 15px;overflow: hidden;word-wrap: break-word;white-space: nowrap;text-overflow: ellipsis;color: #ccc">{{addontitle}}</dd>
                                     </dl>
                                 </div>
                         {{/if}}

@@ -70,6 +70,7 @@ if Meteor.isClient
           if (target.data("visible"))
             target.data("visible", false);
   Template.addNewFriends.helpers
+    hasFriendMeet:()->
     meeter:()->
       PostFriends.find({meetOnPostId:Session.get("postContent")._id},{sort:{createdAt:-1}})
     isMyself:()->
