@@ -270,7 +270,7 @@ if Meteor.isClient
         if Meteor.isCordova
           Session.set("isReviewMode","undefined")
           prepareToEditorMode()
-          #PUB.page '/add'
+          PUB.page '/add'
           handleAddedLink(Session.get("postContent").fromUrl)
         else
           window.location.href=Session.get("postContent").fromUrl
