@@ -715,8 +715,8 @@ if Meteor.isClient
            return ''
         
   Template.pCommentsList.events
-      'click .alertBackground':->
-        $('.pcommentsList,.alertBackground').fadeOut 300
+#      'click .alertBackground':->
+#        $('.pcommentsList,.alertBackground').fadeOut 300
       'click #pcommitReportBtn':(e, t)->
         i = Session.get "pcommentIndexNum"
         content = t.find('#pcommitReport').value
