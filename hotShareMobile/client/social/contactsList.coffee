@@ -108,7 +108,8 @@ if Meteor.isClient
       Session.equals('postfriendsCollection','error')
   Template.addNewFriends.events
     "click .newFriends":(e)->
-      Meets.update({_id: this._id}, {$set: {count: 2}})
+      if this.count is 1
+        Meets.update({_id: this._id}, {$set: {count: 2}})
       userProfileList = PostFriends.find({meetOnPostId:Session.get("postContent")._id},{sort:{count:-1}}).fetch()
       Session.set("userProfileList", userProfileList)
       Session.set("userProfileType", "newfriends")
