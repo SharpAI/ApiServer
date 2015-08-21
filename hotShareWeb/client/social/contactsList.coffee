@@ -91,6 +91,11 @@ if Meteor.isClient
         true
       else
         false
+    showRedSpot:()->
+      if this.count>1
+        false
+      else
+        true
     moreResults:()->
       if PostFriends.find({meetOnPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
         !(PostFriends.find({meetOnPostId:Session.get("postContent")._id}).count() < Session.get("postfriendsitemsLimit"))
@@ -102,7 +107,8 @@ if Meteor.isClient
       Session.equals('postfriendsCollection','error')
   Template.addNewFriends.events
     "click .newFriends":(e)->
-      userProfileList = Newfriends.find({meetOnPostId:Session.get("postContent")._id},{sort:{count:-1}}).fetch()
+      Meets.update({_id: this._id}, {$set: {count: 2}})
+      userProfileList = PostFriends.find({meetOnPostId:Session.get("postContent")._id},{sort:{count:-1}}).fetch()
       Session.set("userProfileList", userProfileList)
       Session.set("userProfileType", "newfriends")
       Session.set("currentPageIndex", 1)

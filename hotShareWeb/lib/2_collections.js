@@ -743,6 +743,12 @@ if(Meteor.isServer){
                     var taId = fields.ta;
                     //Call defered function here:
                     newMeetsAddedForPostFriendsDeferHandle(self,taId,userId,id,fields);
+                },
+                changed: function (id,fields) {
+                    try{
+                        self.changed("postfriends", id, fields);
+                    }catch(error){
+                    }
                 }
             });
             self.ready();
@@ -1074,7 +1080,13 @@ if(Meteor.isServer){
   Meteor.publish('versions', function() {
     return Versions.find({});
   });
-  Reports.allow({
+  Meets.allow({
+      update: function (userId,doc) {
+          return doc.me===userId;
+      }
+  });
+
+    Reports.allow({
     insert: function (userId, doc) {
       return doc.username !== null;
     }

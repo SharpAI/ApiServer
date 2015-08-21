@@ -28,11 +28,13 @@ if Meteor.isClient
   Template.socialContent.rendered=->
     $('.chatBoxContent').css('min-height',$(window).height()-90)
   Template.socialContent.helpers
-    haveNewFriends: -> 
-      if PostFriends.find({meetOnPostId:Session.get("postContent")._id,count:1,checked:{$ne:true}},{sort:{createdAt:-1}}).count()>0
-          true
+    newcount:()->
+      PostFriends.find({meetOnPostId:Session.get("postContent")._id,count:1},{sort: {createdAt: -1}}).count()
+    haveNewFriends: ->
+      if PostFriends.find({meetOnPostId:Session.get("postContent")._id,count:1},{sort:{createdAt:-1}}).count()>0
+        true
       else
-          false
+        false
     whichOne : ->
       Session.get('Social.LevelOne.Menu')
     isFocus : (view) ->
