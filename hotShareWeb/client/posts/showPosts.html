@@ -206,5 +206,10 @@
         <input type="submit" value="发表" id="pcommitReportBtn">
       </div>
   </div>
-  <div class="alertBackground"></div>
+  <div onclick="hidePcomments()" class="alertBackground"></div>
+    <script>
+       function hidePcomments(){
+         $('.pcommentsList,.alertBackground').fadeOut(300);
+       }
+    </script>
 </template>
