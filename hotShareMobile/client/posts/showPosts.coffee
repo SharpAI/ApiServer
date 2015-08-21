@@ -32,6 +32,7 @@ if Meteor.isClient
       onOpen: ->
         Session.set('displayUserProfileBox',true)
   Template.showPosts.rendered=->
+    Session.set('postfriendsitemsLimit', 10);
     $('.mainImage').css('height',$(window).height()*0.55)
     $('.comment').css('width',$(window).width()-120)
     postContent = Session.get("postContent")
