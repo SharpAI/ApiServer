@@ -440,13 +440,11 @@
 						hSwipe = false;
 
 						// swipeLeft
-						if( hDistance >= hSwipMinDistance && hDistance >= hDistanceLast) {
-
+						if( hDistance >= hSwipMinDistance && hDistance >= hDistanceLast&&hDistancePercent>=50) {
 							$this.getPrev();
 
 						// swipeRight
-						} else if ( hDistance <= -hSwipMinDistance && hDistance <= hDistanceLast) {
-
+						} else if ( hDistance <= -hSwipMinDistance && hDistance <= hDistanceLast&&hDistancePercent<=-50) {
 							$this.getNext();
 						}
 
