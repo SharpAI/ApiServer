@@ -25,6 +25,11 @@ if Meteor.isClient
       else
         false
   Template.contactsList.events
+     'click .contactsList .back' :->
+      $(window).children().off()
+      $(window).unbind('scroll')
+      Meteor.setTimeout ()->
+        PUB.postPageBack()
     "click #addNewFriends":()->
       Session.set("Social.LevelOne.Menu",'addNewFriends')
     "click .oldFriends":(e)->
