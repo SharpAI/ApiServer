@@ -1,7 +1,8 @@
 if Meteor.isClient
   Template.myPosts.rendered=->
     $('.content').css 'min-height',$(window).height()
-    Session.set("showBigImage",true)
+    if(Session.get("showBigImage") == undefined)
+      Session.set("showBigImage",true)
     $(window).scroll (event)->
         console.log "myPosts window scroll event: "+event
         target = $("#showMoreMyPostsResults");
