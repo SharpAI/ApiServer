@@ -31,7 +31,50 @@ if Meteor.isClient
         Session.set('displayUserProfileBox',false)
       onOpen: ->
         Session.set('displayUserProfileBox',true)
+  reRender = ()->
+    base_size=Math.floor($('#test').width()/6 - 10)
+    test = $("#test");
+    `gridster = test.gridster({widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], min_cols: 3, max_cols:6, resize: {enabled: false },draggable:{long_press:false}}).data('gridster');`
+    gridster.disable()
+    $("#test").find('.hastextarea').each( ( i, itemElem )->
+      textdiv = $(itemElem).children('.textdiv')
+      textarea = $(textdiv).children('.textDiv1')
+
+      #offset = this.offsetHeight - this.clientHeight;
+      #height = $(textarea).height()
+      #width = $( window ).width()
+      #5*2 is gridster gap size, 4*2 is padding
+      #$(textarea).css('width', width - 10)
+      $(textarea).css('height', 'auto')
+      height = $(textarea).height()
+
+      min_widget_height = (5 * 2) + base_size;
+      sizey = Math.ceil((this.scrollHeight+10)/min_widget_height)
+
+      #$(textarea).css('width', '')
+      $(textarea).css('height', '')
+      sizex = $(itemElem).attr("data-sizex")
+      sizey_orig = parseInt($(itemElem).attr("data-sizey"))
+
+      if sizey isnt sizey_orig
+        $(itemElem).attr("data-sizey", sizey)
+        gridster.resize_widget($(itemElem), sizex,sizey)
+
+      height = sizey*min_widget_height - 10
+      $(itemElem).css("line-height", height+'px')
+    )
+  onFontResize = (e,args)->
+    #msg = "\nThe base font size in pixels: " + args[0].iBase;
+    #msg +="\nThe current font size in pixels: " + args[0].iSize;
+    #msg += "\nThe change in pixels from the last size:" + args[0].iDelta;
+    reRender()
+    #console.log msg
+  init = ()->
+    iBase = TextResizeDetector.addEventListener(onFontResize,null)
+    #console.log "The base font size = " + iBase
   Template.showPosts.rendered=->
+    TextResizeDetector.TARGET_ELEMENT_ID = 'fontresizedetector'
+    TextResizeDetector.USER_INIT_FUNC = init()
     Session.set('postfriendsitemsLimit', 10);
     $('.mainImage').css('height',$(window).height()*0.55)
     postContent = Session.get("postContent")
