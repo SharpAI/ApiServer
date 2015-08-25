@@ -59,7 +59,7 @@ if Meteor.isClient
           }
         )
       ,1000
-    $('p').linkify();
+    $('.textDiv1').linkify();
     $("a[target='_blank']").click((e)->
       e.preventDefault();
       #window.open($(e.currentTarget).attr('href'), '_system', '');
@@ -82,7 +82,7 @@ if Meteor.isClient
 
     $("#test").find('.hastextarea').each( ( i, itemElem )->
       textdiv = $(itemElem).children('.textdiv')
-      textarea = $(textdiv).children('p')
+      textarea = $(textdiv).children('.textDiv1')
 
       #offset = this.offsetHeight - this.clientHeight;
       #height = $(textarea).height()
