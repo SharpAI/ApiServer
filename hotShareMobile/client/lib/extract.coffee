@@ -24,6 +24,7 @@ class Score
   this.initialScoreFor = (tagName) ->
     switch tagName
       when 'DIV' then 5
+      when 'IFRAME' then 5
       when 'PRE', 'TD', 'BLOCKQUOTE' then 3
       when 'ADDRESS', 'OL', 'UL', 'DL', 'DD', 'DT', 'LI', 'FORM' then -3
       when 'H1', 'H2', 'H3', 'H4', 'H5' then -5
@@ -32,7 +33,7 @@ class Score
 REGEXPS =
   unlikelyCandidates:    /combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad-break|agegate|pagination|pager|popup|tweet|twitter/i,
   okMaybeItsACandidate:  /and|article|body|column|main|shadow/i,  okMaybeItsACandidate:  /and|article|body|column|main|shadow/i,
-  positive: /article|body|content|entry|hentry|main|page|pagination|post|text|blog|story/i,
+  positive: /iframe|article|body|content|entry|hentry|main|page|pagination|post|text|blog|story/i,
   negative: /combx|comment|com-|contact|foot|footer|footnote|masthead|media|meta|outbrain|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget/i,
   extraneous:       /print|archive|comment|discuss|e[\-]?mail|share|reply|all|login|sign|single/i,
   divToPElements:   /<(a|blockquote|dl|div|img|ol|p|pre|table|ul)/i,
@@ -112,9 +113,8 @@ parify = (node) ->
     newNode = deepInsideThislayer(node,node.tagName)
     if newNode
       console.log('we got you')
-      p = $("<p>").html(newNode.innerHTML)[0]
-      node.parentNode.replaceChild(p, node)
-      return p
+      node.parentNode.replaceChild(newNode, node)
+      return newNode
   return node if node.tagName != "DIV"
   return node if node.innerHTML.search(REGEXPS.divToPElements) > -1
   p = $("<p>").html(node.innerHTML)[0]
@@ -193,9 +193,9 @@ removeFragments = (node) ->
   jn.find("ul").filter(-> fishy(this)).remove()
   jn.find("div").filter(-> fishy(this)).remove()
   if removeStyle
-    jn.find("object,h1,iframe,script,link,style").remove()
+    jn.find("object,h1,script,link,style").remove()
   else
-    jn.find("object,h1,iframe,script,link").remove()
+    jn.find("object,h1,script,link").remove()
   jn.find("h2").remove() if jn.find("h2").length == 1
   node.innerHTML = node.innerHTML.replace(/<br[^>]*>\s*<p/gi, '<p')
 asTop = (page) ->
