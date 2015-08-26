@@ -624,6 +624,9 @@ if Meteor.isClient
         return
       #addDynamicTemp()
     'click .pcomments': (e)->
+      backgroundTop = 0-$(window).scrollTop()
+      Session.set('backgroundTop', backgroundTop);
+      $('.showBgColor').attr('style','position:fixed;top:'+Session.get('backgroundTop')+'px')
       $('.pcommentsList,.alertBackground').fadeIn 300, ()->
         $('#pcommitReport').focus()
       Session.set "pcommentIndexNum", this.index

@@ -209,7 +209,9 @@
   <div onclick="hidePcomments()" class="alertBackground"></div>
     <script>
        function hidePcomments(){
+         $('.showBgColor').attr('style','margin-top:'+Session.get('backgroundTop')+'px')
          $('.pcommentsList,.alertBackground').fadeOut(300);
+         Session.set('backgroundTop','')
        }
     </script>
 </template>
