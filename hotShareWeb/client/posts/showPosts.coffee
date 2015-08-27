@@ -33,25 +33,18 @@ if Meteor.isClient
         Session.set('displayUserProfileBox',true)
   reRender = ()->
     base_size=Math.floor($('#test').width()/6 - 10)
-    test = $("#test");
-    `gridster = test.gridster({widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], min_cols: 3, max_cols:6, resize: {enabled: false },draggable:{long_press:false}}).data('gridster');`
-    gridster.disable()
     $("#test").find('.hastextarea').each( ( i, itemElem )->
       textdiv = $(itemElem).children('.textdiv')
       textarea = $(textdiv).children('.textDiv1')
 
-      #offset = this.offsetHeight - this.clientHeight;
-      #height = $(textarea).height()
-      #width = $( window ).width()
-      #5*2 is gridster gap size, 4*2 is padding
-      #$(textarea).css('width', width - 10)
       $(textarea).css('height', 'auto')
       height = $(textarea).height()
 
       min_widget_height = (5 * 2) + base_size;
-      sizey = Math.ceil((this.scrollHeight+10)/min_widget_height)
 
-      #$(textarea).css('width', '')
+      scrollHeight = $(textarea).prop('scrollHeight')
+      sizey = Math.ceil((scrollHeight+10)/min_widget_height)
+
       $(textarea).css('height', '')
       sizex = $(itemElem).attr("data-sizex")
       sizey_orig = parseInt($(itemElem).attr("data-sizey"))
@@ -62,6 +55,7 @@ if Meteor.isClient
 
       height = sizey*min_widget_height - 10
       $(itemElem).css("line-height", height+'px')
+
     )
   onFontResize = (e,args)->
     #msg = "\nThe base font size in pixels: " + args[0].iBase;
@@ -72,9 +66,16 @@ if Meteor.isClient
   init = ()->
     iBase = TextResizeDetector.addEventListener(onFontResize,null)
     #console.log "The base font size = " + iBase
-  Template.showPosts.rendered=->
+    if iBase isnt 20
+      setTimeout(()->
+        reRender()
+      ,200)
+
+  Template.showPosts.created=->
     TextResizeDetector.TARGET_ELEMENT_ID = 'fontresizedetector'
-    TextResizeDetector.USER_INIT_FUNC = init()
+    TextResizeDetector.init()
+    TextResizeDetector.USER_INIT_FUNC = init
+  Template.showPosts.rendered=->
     Session.set('postfriendsitemsLimit', 10);
     $('.mainImage').css('height',$(window).height()*0.55)
     postContent = Session.get("postContent")
@@ -121,21 +122,16 @@ if Meteor.isClient
     `gridster = test.gridster({widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], min_cols: 3, max_cols:6, resize: {enabled: false },draggable:{long_press:false}}).data('gridster');`
     gridster.disable()
 
-
     $("#test").find('.hastextarea').each( ( i, itemElem )->
       textdiv = $(itemElem).children('.textdiv')
       textarea = $(textdiv).children('.textDiv1')
 
-      #offset = this.offsetHeight - this.clientHeight;
-      #height = $(textarea).height()
-      #width = $( window ).width()
-      #5*2 is gridster gap size, 4*2 is padding
-      #$(textarea).css('width', width - 10)
       $(textarea).css('height', 'auto')
       height = $(textarea).height()
 
       min_widget_height = (5 * 2) + base_size;
-      sizey = Math.ceil((this.scrollHeight+10)/min_widget_height)
+      scrollHeight = $(textarea).prop('scrollHeight')
+      sizey = Math.ceil((scrollHeight+10)/min_widget_height)
 
       #$(textarea).css('width', '')
       $(textarea).css('height', '')
@@ -145,10 +141,10 @@ if Meteor.isClient
       if sizey isnt sizey_orig
         $(itemElem).attr("data-sizey", sizey)
         gridster.resize_widget($(itemElem), sizex,sizey)
-
       height = sizey*min_widget_height - 10
       $(itemElem).css("line-height", height+'px')
     )
+
     hidePostBar = ()->
       if $('.showPostsFooter').is(':visible')
         $('.showPostsFooter').fadeOut 300
@@ -172,11 +168,11 @@ if Meteor.isClient
     hideSocialBar = ()->
       if $('.contactsList .head').is(':visible')
         $('.contactsList .head').fadeOut 300
-      
+
       # comment these two lines to show head on userProfile page
       # if $('.userProfile .head').is(':visible')
         # $('.userProfile .head').fadeOut 300
-        
+
       if $('.socialContent .chatFooter').is(':visible')
         $('.socialContent .chatFooter').fadeOut 300
     scrollEventCallback = ()->
@@ -236,6 +232,7 @@ if Meteor.isClient
       $(window).scroll(scrollEventCallback)
     #if !$('body').isSupportObjectFit()
     #  PUB.toast("您的手机版本过低，部分图片可能产生变形。");
+    #PUB.toast("render finish");
 
   Template.showPosts.helpers
     myselfClickedUp:->
@@ -347,7 +344,7 @@ if Meteor.isClient
         $('.popUpBox').hide 0
     "click #submit":->
       $("#new-reply").submit()
-      
+
       # here need to subscribe refcomments again, otherwise cannot get refcomments data
       Meteor.subscribe "refcomments", ()->
         Meteor.setTimeout ()->
@@ -515,7 +512,7 @@ if Meteor.isClient
         initialIndexOnArray: selected
         hideCloseButtonOnMobile : true
         loopAtEnd: false
-       
+
       }
     'click .thumbsUp': (e)->
       i = this.index
@@ -534,14 +531,14 @@ if Meteor.isClient
       if not post[i].dislikeSum
         dislikeSum = 0
         post[i].dislikeSum = dislikeSum
-      if post[i].likeUserId.hasOwnProperty(userId) isnt true 
+      if post[i].likeUserId.hasOwnProperty(userId) isnt true
         post[i].likeUserId[Meteor.userId()] = false
       if  post[i].dislikeUserId.hasOwnProperty(userId) isnt true
         post[i].dislikeUserId[userId] = false
       if post[i].likeUserId[userId] isnt true  and post[i].dislikeUserId[userId] isnt true
         post[i].likeSum += 1
         post[i].likeUserId[userId] = true
-        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
+        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)->
           if error
             console.log(error.reason);
           else
@@ -552,7 +549,7 @@ if Meteor.isClient
         post[i].likeUserId[userId] = true
         post[i].dislikeSum -= 1
         post[i].dislikeUserId[Meteor.userId()] = false
-        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
+        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)->
           if error
             console.log(error.reason);
           else
@@ -561,7 +558,7 @@ if Meteor.isClient
       else if post[i].likeUserId[userId] is true and  post[i].dislikeUserId[userId] isnt true
         post[i].likeSum -= 1
         post[i].likeUserId[userId] = false
-        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
+        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)->
           if error
             console.log(error.reason);
           else
@@ -587,14 +584,14 @@ if Meteor.isClient
       if not post[i].dislikeSum
         dislikeSum = 0
         post[i].dislikeSum = dislikeSum
-      if post[i].likeUserId.hasOwnProperty(userId) isnt true 
+      if post[i].likeUserId.hasOwnProperty(userId) isnt true
         post[i].likeUserId[Meteor.userId()] = false
       if  post[i].dislikeUserId.hasOwnProperty(userId) isnt true
         post[i].dislikeUserId[userId] = false
       if post[i].likeUserId[userId] isnt true  and post[i].dislikeUserId[userId] isnt true
         post[i].dislikeSum += 1
         post[i].dislikeUserId[userId] = true
-        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
+        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)->
           if error
             console.log(error.reason);
           else
@@ -605,7 +602,7 @@ if Meteor.isClient
         post[i].dislikeUserId[userId] = true
         post[i].likeSum -= 1
         post[i].likeUserId[Meteor.userId()] = false
-        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
+        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)->
           if error
             console.log(error.reason);
           else
@@ -614,7 +611,7 @@ if Meteor.isClient
       else if post[i].likeUserId[userId] isnt true and  post[i].dislikeUserId[userId] is true
         post[i].dislikeSum -= 1
         post[i].dislikeUserId[userId] = false
-        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
+        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)->
           if error
             console.log(error.reason);
           else
@@ -624,9 +621,6 @@ if Meteor.isClient
         return
       #addDynamicTemp()
     'click .pcomments': (e)->
-      backgroundTop = 0-$(window).scrollTop()
-      Session.set('backgroundTop', backgroundTop);
-      $('.showBgColor').attr('style','position:fixed;top:'+Session.get('backgroundTop')+'px')
       $('.pcommentsList,.alertBackground').fadeIn 300, ()->
         $('#pcommitReport').focus()
       Session.set "pcommentIndexNum", this.index
@@ -760,7 +754,7 @@ if Meteor.isClient
            return post[i].pcomments
          else
            return ''
-        
+
   Template.pCommentsList.events
 #      'click .alertBackground':->
 #        $('.pcommentsList,.alertBackground').fadeOut 300
@@ -782,7 +776,7 @@ if Meteor.isClient
           username = '匿名'
           userId = 0
           userIcon = ''
-        
+
         if not post[i].pcomments
           pcomments = []
           post[i].pcomments = pcomments
