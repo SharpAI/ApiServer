@@ -102,7 +102,7 @@ if Meteor.isClient
         imgUrl:mainImageUrl,
         filename:Meteor.userId()+'_'+timestamp+ '_' + mainImageUrl.replace(/^.*[\\\/]/, ''),
         URI:mainImageUrl,
-        url:inputUrl
+        url:inputUrl,
         toTheEnd: true,
         data_row:'1',
         data_col:'3',
@@ -210,6 +210,20 @@ if Meteor.isClient
             insertDownloadedImage(self.data,source,found,self.inputUrl,file,w,h)
           callback(null,item)
         ,150,true
+    else if item.type is 'iframe'
+      Drafts.insert {
+        type:'image',
+        isImage:true,
+        inIframe:true,
+        owner: Meteor.userId(),
+        toTheEnd: true,
+        text:'您当前程序不支持视频观看',
+        iframe: item.iframe,
+        imgUrl:'http://data.tiegushi.com/res/video_old_version.jpg',
+        data_row:'1',
+        data_col:'3',
+        data_sizex:'6',
+        data_sizey:'4'}
     callback(null,item)
   renderResortedArticleAsync = (data,inputUrl,resortedObj)->
     resortedObj.itemProcessor = itemProcessor

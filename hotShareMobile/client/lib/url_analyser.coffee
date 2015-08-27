@@ -137,8 +137,9 @@ if Meteor.isClient
     documentBody = $.parseHTML( data.body )
     documentBody.innerHTML = data.body
     $(documentBody).find('img').each ()->
-      src = $(this).attr('src').replace(/&amp;/g, '&').replace("tp=webp","tp=jpeg")
+      src = $(this).attr('src')
       if src and src isnt ''
+        src = src.replace(/&amp;/g, '&').replace("tp=webp","tp=jpeg")
         unless src.startsWith('http')
           if src.startsWith('//')
             src = data.protocol + src
@@ -148,15 +149,17 @@ if Meteor.isClient
         if (data.imageArray.indexOf src) <0
           data.imageArray.push src
     $(documentBody).find('input').each ()->
-      src = $(this).attr('src').replace(/&amp;/g, '&').replace("tp=webp","tp=jpeg")
+      src = $(this).attr('src')
       if src and src isnt '' and src.startsWith('http')
+        src = src.replace(/&amp;/g, '&').replace("tp=webp","tp=jpeg")
         if (data.imageArray.indexOf src) <0
           showDebug&&console.log 'Got src is ' + src
           data.imageArray.push src
     $(documentBody).find('div').each ()->
-      bg_url = $(this).css('background-image').replace(/&amp;/g, '&').replace("tp=webp","tp=jpeg")
+      bg_url = $(this).css('background-image')
       # ^ Either "none" or url("...urlhere..")
       if bg_url and bg_url isnt ''
+        bg_url = bg_url.replace(/&amp;/g, '&').replace("tp=webp","tp=jpeg")
         bg_url = /^url\((['"]?)(.*)\1\)$/.exec(bg_url)
         # If matched, retrieve url, otherwise ""
         if bg_url
@@ -265,6 +268,7 @@ if Meteor.isClient
         info.body = node.innerHTML
         nodeColor = $(node).css('color')
         nodeBackgroundColor = $(node).css('background-color')
+        iframeNumber = $(node).find('iframe').length
         #console.log('    Node['+index+'] '+node.nodeName+' color is'+nodeColor+' HTML is '+info.body)
         text = $(node).text().toString().replace(/\s\s\s+/g, '')
         if text and text isnt ''
@@ -285,6 +289,13 @@ if Meteor.isClient
             else
               resortedArticle.push {type:'text',text:toBeInsertedText}
               toBeInsertedText = text;
+        if iframeNumber > 0
+          console.log('iframe number is ' + iframeNumber)
+          console.log($(node).html())
+          if toBeInsertedText and toBeInsertedText isnt ''
+            resortedArticle.push {type:'text',text:toBeInsertedText}
+            toBeInsertedText = ''
+          resortedArticle.push {type:'iframe',iframe:$(node).html()}
         if info.body
           grabImagesInHTMLString(info)
           if info.imageArray.length > 0

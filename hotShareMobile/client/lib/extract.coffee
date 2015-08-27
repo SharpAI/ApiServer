@@ -26,7 +26,7 @@ class Score
       when 'DIV' then 5
       when 'IFRAME' then 15
       when 'BLOCKQUOTE' then 15
-      when 'PRE', 'TD', 'BLOCKQUOTE' then 3
+      when 'PRE', 'TD' then 3
       when 'ADDRESS', 'OL', 'UL', 'DL', 'DD', 'DT', 'LI', 'FORM' then -3
       when 'H1', 'H2', 'H3', 'H4', 'H5' then -5
       else 0
@@ -47,7 +47,8 @@ REGEXPS =
   skipFootnoteLink: /^\s*(\[?[a-z0-9]{1,2}\]?|^|edit|citation needed)\s*$/i,
   nextLink:         /(next|weiter|continue|>([^\|]|$)|ﾂｻ([^\|]|$))/i, # Match: next, continue, >, >>, ﾂｻ but not >|, ﾂｻ| as those usually mean last.
   prevLink:         /(prev|earl|old|new|<|ﾂｫ)/i,
-  specialTags:      /blockquote|section/i
+  specialTags:      /blockquote|section/i,
+  possibleVideoTags: /iframe/i
 
 
 textContentFor = (node, normalizeWs = true) ->
@@ -78,7 +79,7 @@ classWeight = (node) ->
   weight
 
 fishy = (node) ->
-  if node.tagName == 'iframe' || node.tagName == 'IFRAME'
+  if node.tagName == 'iframe' || $(node).find('iframe').length > 0
     console.log('fishy on iframe')
     return false
   weight = classWeight(node)
@@ -144,8 +145,8 @@ propagateScore = (node, scoredList, score) ->
 
 scoreNode = (node) ->
   if node.tagName == "IFRAME"
-    console.log('scoreNode on IFRAME +5')
-    return 5
+    console.log('scoreNode on IFRAME +15')
+    return 15
   unlikely = node.className + node.id
   if unlikely.search(REGEXPS.unlikelyCandidates) != -1 and \
      unlikely.search(REGEXPS.okMaybeItsACandidate) == -1 and \
@@ -171,13 +172,16 @@ isAcceptableSibling = (top, sib) ->
   if sib.innerHTML.search(REGEXPS.specialTags) > -1
     console.log('Sib of ' + sib.tagName + ' has specialTags')
     return true
+  if sib.innerHTML.search(REGEXPS.possibleVideoTags) > -1
+    console.log('sib contain video tags ' + sib.tagName)
+    return true
   threshold = Math.max(10, top.score.value * 0.2)
   return true if threshold <= scoreSibling(top, sib)
   return false if "P" != sib.tagName
   #density = linkDensityFor(sib)
   text = textContentFor(sib)
   textLen = text.length
-  return true if 80 < textLen #and density < 0.25
+  return true if 25 < textLen #and density < 0.25
   #return true if textLen < 80 and density == 0 and text.search(/\.( |$)/) != -1
   false
 
@@ -200,6 +204,7 @@ removeFragments = (node) ->
     0 == $(this).find("img").length and \
     0 == $(this).find("embed").length and \
     0 == $(this).find("object").length and \
+    0 == $(this).find("iframe").length and \
     0 == textContentFor(this, false).length).remove()
   jn.find("form").filter(-> fishy(this)).remove()
   jn.find("table").filter(-> fishy(this)).remove()
