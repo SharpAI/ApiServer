@@ -313,8 +313,12 @@
 					//	'-webkit-transform' : 'translate3d(' + currentX +'%, 0, 0)',
 					//	'transform' : 'translate3d(' + currentX + '%, 0, 0)'
 					//} );
-
-					$( '.touching' ).bind( 'touchmove',function( event ) {
+					Session.set('longTouch', false);
+					$( '.touching' ).bind('touchstart',function(){
+					       setTimeout(function() {
+					            Session.set('longTouch', true);
+					        }, 500);
+					}).bind( 'touchmove',function( event ) {
 						event.preventDefault();
 						event.stopPropagation();
 						if(typeof StartZoom != 'undefined' && StartZoom>0)
@@ -438,14 +442,24 @@
 					} else if ( hSwipe ) {
 
 						hSwipe = false;
+						if(Session.get('longTouch')){
+							// swipeLeft
+							if(hDistancePercent>=50) {
+								$this.getPrev();
 
-						// swipeLeft
-						if( hDistance >= hSwipMinDistance && hDistance >= hDistanceLast&&hDistancePercent>=50) {
-							$this.getPrev();
+							// swipeRight
+							}else if ( hDistancePercent<=-50) {
+								$this.getNext();
+							}
+						}else{
+							// swipeLeft
+							if( hDistance >= hSwipMinDistance && hDistance >= hDistanceLast) {
+								$this.getPrev();
 
-						// swipeRight
-						} else if ( hDistance <= -hSwipMinDistance && hDistance <= hDistanceLast&&hDistancePercent<=-50) {
-							$this.getNext();
+							// swipeRight
+							} else if ( hDistance <= -hSwipMinDistance && hDistance <= hDistanceLast) {
+								$this.getNext();
+							}
 						}
 
 					} else { // Top and bottom bars have been removed on touchable devices
