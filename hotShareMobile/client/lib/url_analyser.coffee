@@ -137,7 +137,7 @@ if Meteor.isClient
     documentBody = $.parseHTML( data.body )
     documentBody.innerHTML = data.body
     $(documentBody).find('img').each ()->
-      src = $(this).attr('src').replace(/&amp;/g, '&')
+      src = $(this).attr('src').replace(/&amp;/g, '&').replace("tp=webp","tp=jpeg")
       if src and src isnt ''
         unless src.startsWith('http')
           if src.startsWith('//')
@@ -148,13 +148,13 @@ if Meteor.isClient
         if (data.imageArray.indexOf src) <0
           data.imageArray.push src
     $(documentBody).find('input').each ()->
-      src = $(this).attr('src').replace(/&amp;/g, '&')
+      src = $(this).attr('src').replace(/&amp;/g, '&').replace("tp=webp","tp=jpeg")
       if src and src isnt '' and src.startsWith('http')
         if (data.imageArray.indexOf src) <0
           showDebug&&console.log 'Got src is ' + src
           data.imageArray.push src
     $(documentBody).find('div').each ()->
-      bg_url = $(this).css('background-image').replace(/&amp;/g, '&')
+      bg_url = $(this).css('background-image').replace(/&amp;/g, '&').replace("tp=webp","tp=jpeg")
       # ^ Either "none" or url("...urlhere..")
       if bg_url and bg_url isnt ''
         bg_url = /^url\((['"]?)(.*)\1\)$/.exec(bg_url)
@@ -172,7 +172,7 @@ if Meteor.isClient
     if result and result.length > 0
       showDebug&&console.log 'result ' + JSON.stringify(result)
       for subString in result
-        dataSrc = subString.substring(9, subString.length).replace(/&amp;/g, '&')
+        dataSrc = subString.substring(9, subString.length).replace(/&amp;/g, '&').replace("tp=webp","tp=jpeg")
         if (data.imageArray.indexOf dataSrc) <0 and (data.bgArray.indexOf dataSrc) <0
           data.imageArray.push(dataSrc)
           showDebug&&console.log 'push dataSrc: ' + dataSrc
@@ -181,7 +181,7 @@ if Meteor.isClient
     if result and result.length > 0
       showDebug&&console.log 'result ' + JSON.stringify(result)
       for subString in result
-        dataSrc = subString.substring(10, subString.length).replace(/&amp;/g, '&')
+        dataSrc = subString.substring(10, subString.length).replace(/&amp;/g, '&').replace("tp=webp","tp=jpeg")
         if (data.imageArray.indexOf dataSrc) <0 and (data.bgArray.indexOf dataSrc) <0
           data.imageArray.push(dataSrc)
           showDebug&&console.log 'push dataSrc: ' + dataSrc
@@ -190,7 +190,7 @@ if Meteor.isClient
     if result and result.length > 0
       showDebug&&console.log 'result ' + JSON.stringify(result)
       for subString in result
-        dataSrc = subString.substring(10, subString.length).replace(/&amp;/g, '&')
+        dataSrc = subString.substring(10, subString.length).replace(/&amp;/g, '&').replace("tp=webp","tp=jpeg")
         if (data.imageArray.indexOf dataSrc) <0 and (data.bgArray.indexOf dataSrc) <0
           data.imageArray.push(dataSrc)
           showDebug&&console.log 'push dataSrc: ' + dataSrc
