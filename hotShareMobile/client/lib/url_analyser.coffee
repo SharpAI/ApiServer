@@ -1,5 +1,32 @@
 if Meteor.isClient
   showDebug=false
+
+  ###
+  http://stackoverflow.com/a/1634841/3380894
+  To remove the width/height parameter in url, center the video play icon
+  ###
+  `function removeURLParameter(url, parameter) {
+      //prefer to use l.search if you have a location/link object
+      var urlparts= url.split('?');
+      if (urlparts.length>=2) {
+
+          var prefix= encodeURIComponent(parameter)+'=';
+          var pars= urlparts[1].split(/[&;]/g);
+
+          //reverse iteration as may be destructive
+          for (var i= pars.length; i-- > 0;) {
+              //idiom for string.startsWith
+              if (pars[i].lastIndexOf(prefix, 0) !== -1) {
+                  pars.splice(i, 1);
+              }
+          }
+
+          url= urlparts[0]+'?'+pars.join('&');
+          return url;
+      } else {
+          return url;
+      }
+  }`
   @seekSuitableImageFromArray = (imageArray,callback,minimal,onlyOne)->
     @imageCounter = 0
     @foundImages = 0
@@ -291,7 +318,12 @@ if Meteor.isClient
               toBeInsertedText = text;
         if iframeNumber > 0
           console.log('iframe number is ' + iframeNumber)
-          console.log($(node).html())
+          $(node).find('iframe').each (index,iframe)->
+            iframe.width = '100%'
+            iframe.height = '100%'
+            iframe.src = removeURLParameter(iframe.src,'width')
+            iframe.src = removeURLParameter(iframe.src,'height')
+          showDebug&&console.log($(node).html())
           if toBeInsertedText and toBeInsertedText isnt ''
             resortedArticle.push {type:'text',text:toBeInsertedText}
             toBeInsertedText = ''
