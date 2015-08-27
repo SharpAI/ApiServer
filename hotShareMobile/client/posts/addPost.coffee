@@ -182,46 +182,43 @@ if Meteor.isClient
         unless ($('#addontitle').val() and $('#addontitle').val() isnt '')
           $('#addontitle').val(data.host)
       ,1000
-  renderResortedArticle = (data,inputUrl,resortedObj)->
+  itemProcessor = (item,callback)->
+    this.index++
+    console.log('item[' + this.index + ']: ' + JSON.stringify(item))
+    percentage = 5 + Math.round(94*(this.index/this.length))
+    Session.set('importProcedure',percentage)
     if Session.get('cancelImport')
       Session.set('importProcedure',100)
       console.log('User canceled the url importing by click on the cancel button')
-      return
-    if (resortedObj.index < resortedObj.length)
-      percentage = 5 + Math.round(94*(resortedObj.index/resortedObj.length))
-      Session.set('importProcedure',percentage)
-      console.log('Index ' + resortedObj.index + '@ ' + Session.get('importProcedure')+'%')
-      item = data.resortedArticle[resortedObj.index]
-      if item.type is 'text'
-        console.log('Processing Text')
-        if item.color and item.color isnt ''
-          Drafts.insert {type:'text', toTheEnd:true ,noKeyboardPopup:true,isImage:false, color:item.color,\
-            backgroundColor:item.backgroundColor,owner: Meteor.userId(), text:item.text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
-        else
-          Drafts.insert {type:'text', toTheEnd:true ,noKeyboardPopup:true,isImage:false, owner: Meteor.userId(),\
-            text:item.text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
-        if ++resortedObj.index < resortedObj.length
-          renderResortedArticle(data,inputUrl,resortedObj)
-        else
-          processTitleOfPost(data)
-      else if item.type is 'image'
-        console.log('Processing Image ' + item.imageUrl)
-        if item.imageUrl and item.imageUrl isnt '' and (item.imageUrl isnt resortedObj.mainUrl)
-          imageArray = []
-          imageArray.push(item.imageUrl)
-          seekSuitableImageFromArrayAndDownloadToLocal imageArray,(file,w,h,found,index,total,source)->
-            if file
-              insertDownloadedImage(data,source,found,inputUrl,file,w,h)
-            if ++resortedObj.index < resortedObj.length
-              renderResortedArticle(data,inputUrl,resortedObj)
-            else
-              processTitleOfPost(data)
-          ,150,true
-        else
-          if ++resortedObj.index < resortedObj.length
-            renderResortedArticle(data,inputUrl,resortedObj)
-          else
-            processTitleOfPost(data)
+      return callback(new Error('Cancled'),item)
+    if item.type is 'text'
+      console.log('Processing Text')
+      if item.color and item.color isnt ''
+        Drafts.insert {type:'text', toTheEnd:true ,noKeyboardPopup:true,isImage:false, color:item.color,\
+          backgroundColor:item.backgroundColor,owner: Meteor.userId(), text:item.text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+      else
+        Drafts.insert {type:'text', toTheEnd:true ,noKeyboardPopup:true,isImage:false, owner: Meteor.userId(),\
+          text:item.text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+    else if item.type is 'image'
+      console.log('Processing Image ' + item.imageUrl)
+      self = this
+      if item.imageUrl and item.imageUrl isnt '' and (item.imageUrl isnt this.mainUrl)
+        imageArray = []
+        imageArray.push(item.imageUrl)
+        return seekSuitableImageFromArrayAndDownloadToLocal imageArray,(file,w,h,found,index,total,source)->
+          if file
+            insertDownloadedImage(self.data,source,found,self.inputUrl,file,w,h)
+          callback(null,item)
+        ,150,true
+    callback(null,item)
+  renderResortedArticleAsync = (data,inputUrl,resortedObj)->
+    resortedObj.itemProcessor = itemProcessor
+    resortedObj.data = data
+    resortedObj.inputUrl = inputUrl
+    async.mapLimit(data.resortedArticle,1,resortedObj.itemProcessor.bind(resortedObj),(err,results)->
+      console.log('error ' + err)
+      processTitleOfPost(data)
+    )
   @getURL = (e) ->
     inputUrl = e.url
     console.log "input url: " + inputUrl
@@ -272,7 +269,7 @@ if Meteor.isClient
             resortObj.index = 0
             resortObj.length = data.resortedArticle.length
             console.log('resortObj' + JSON.stringify(resortObj))
-            renderResortedArticle(data,inputUrl,resortObj)
+            renderResortedArticleAsync(data,inputUrl,resortObj)
           else
             processTitleOfPost(data)
         ,200)
