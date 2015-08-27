@@ -722,7 +722,8 @@ if Meteor.isClient
         
   Template.pCommentsList.events
       'click .alertBackground':->
-        $('.showBgColor').attr('style','margin-top:'+Session.get('backgroundTop')+'px')
+        $('.showBgColor').removeAttr('style')
+        $(window).scrollTop(0-Session.get('backgroundTop'))
         $('.pcommentsList,.alertBackground').fadeOut 300
         Session.set('backgroundTop','')
       'click #pcommitReportBtn':(e, t)->
