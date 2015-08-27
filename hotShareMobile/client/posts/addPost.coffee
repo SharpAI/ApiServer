@@ -618,8 +618,11 @@ if Meteor.isClient
           $('#'+node.id+'TextArea').trigger('keyup')
     else if type == "image"
       if grid != undefined
+        if insertedObj.inIframe and insertedObj.iframe
+          console.log('to insert iframe')
+          grid.add_widget(node, parseInt(insertedObj.data_sizex,10), parseInt(insertedObj.data_sizey,10))
 # Images loaded during rendering
-        if Session.get('NewImgAdd') is 'true'
+        else if Session.get('NewImgAdd') is 'true'
           if (window.imageCounter2 % 3) is 0
             grid.add_widget(node, 6, 3,1,window.insertRow)
             window.insertRow +=3
@@ -631,8 +634,8 @@ if Meteor.isClient
           window.imageCounter2++
 # Images to be inserted before the element
         else if window.unSelectedElem
-          currentCount = Blaze.getData(node).currentCount
-          totalCount = Blaze.getData(node).totalCount
+          currentCount = insertedObj.currentCount
+          totalCount = insertedObj.totalCount
           console.log("Now painting currentCount is " + currentCount + " totalCount is " + totalCount)
           if currentCount is 1
             insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
@@ -663,7 +666,7 @@ if Meteor.isClient
           grid.add_widget(node, insert_sizex, insert_sizey, insert_col, insert_row)
 # To be inserted at the end of the screen.
         else if insertedObj.toTheEnd
-          grid.add_widget(node, parseInt(Blaze.getData(node).data_sizex,10), parseInt(Blaze.getData(node).data_sizey,10))
+          grid.add_widget(node, parseInt(insertedObj.data_sizex,10), parseInt(insertedObj.data_sizey,10))
 # To be inserted on the middle of screen.
         else
           max_row = 1
