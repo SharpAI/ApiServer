@@ -24,7 +24,8 @@ class Score
   this.initialScoreFor = (tagName) ->
     switch tagName
       when 'DIV' then 5
-      when 'IFRAME' then 5
+      when 'IFRAME' then 15
+      when 'BLOCKQUOTE' then 15
       when 'PRE', 'TD', 'BLOCKQUOTE' then 3
       when 'ADDRESS', 'OL', 'UL', 'DL', 'DD', 'DT', 'LI', 'FORM' then -3
       when 'H1', 'H2', 'H3', 'H4', 'H5' then -5
@@ -77,6 +78,9 @@ classWeight = (node) ->
   weight
 
 fishy = (node) ->
+  if node.tagName == 'iframe' || node.tagName == 'IFRAME'
+    console.log('fishy on iframe')
+    return false
   weight = classWeight(node)
   contentScore = if node.score then node.score.value else 0
   return true if weight + contentScore < 0
@@ -93,7 +97,7 @@ fishy = (node) ->
   #return true if img > p
   return true if li > p and node.tagName != "ul" and node.tagName != "ol"
   return true if input > Math.floor(p/3)
-  return true if contentLength < 25 and (img == 0 || img > 2)
+  return true if contentLength < 5 and (img == 0 || img > 2)
   return true if weight < 25 && linkDensity > 0.2
   return true if weight >= 25 && linkDensity > 0.5
   return true if (embed == 1 && contentLength < 75) || embed > 1
@@ -125,6 +129,7 @@ ensureScore = (array, node) ->
   return if !node or typeof(node.tagName) == 'undefined'
   if not node.score
     node.score = new Score(node)
+    console.log('Node tag ' + node.tagName + ' score value ' + node.score.value)
     array.push(node)
 
 propagateScore = (node, scoredList, score) ->
@@ -138,6 +143,9 @@ propagateScore = (node, scoredList, score) ->
       grandParent.score.add(score/2)
 
 scoreNode = (node) ->
+  if node.tagName == "IFRAME"
+    console.log('scoreNode on IFRAME +5')
+    return 5
   unlikely = node.className + node.id
   if unlikely.search(REGEXPS.unlikelyCandidates) != -1 and \
      unlikely.search(REGEXPS.okMaybeItsACandidate) == -1 and \
@@ -146,18 +154,23 @@ scoreNode = (node) ->
   unless node.tagName == "P" || node.tagName == "TD" || node.tagName == "PRE"
     return 0
   text = textContentFor(node)
-  return 0 if text.length < 25
+  return 0 if text.length < 5
   # Add points for any commas within this paragraph
   # For every 100 characters in this paragraph, add another point. Up to 3 points.
   1 + text.split(',').length + Math.min(Math.floor(text.length / 100), 3)
 
 reduceScorable = (scoredList, node) ->
   score = scoreNode(node)
+  if node.tagName == 'IFRAME'
+    console.log('reduceScoreable on IFRAME ' + score)
   propagateScore(node, scoredList, score) if 0 < score
   scoredList
 
 isAcceptableSibling = (top, sib) ->
   return true if top == sib
+  if sib.innerHTML.search(REGEXPS.specialTags) > -1
+    console.log('Sib of ' + sib.tagName + ' has specialTags')
+    return true
   threshold = Math.max(10, top.score.value * 0.2)
   return true if threshold <= scoreSibling(top, sib)
   return false if "P" != sib.tagName
