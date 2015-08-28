@@ -38,10 +38,17 @@ if Meteor.isClient
       Meteor.subscribe('allUsers');
       userExist = Users.find({emails: new_email}).fetch()[0]
       if userExist != undefined
-        alert('邮件地址已存在')
+        PUB.toast "邮箱地址未修改！"
+#        PUB.toast "邮箱地址已存在！"
       else
-        Users.update({_id: Meteor.user()._id}, {$set: {emails: new_email}})
-        Router.go '/dashboard'
+        Users.update {_id: Meteor.user()._id}, {$set: {emails: new_email}},  (error, result) ->
+          if error
+            PUB.toast "邮箱地址已存在！"
+            return
+          else
+            PUB.toast "邮箱修改成功！"
+            Router.go '/dashboard'
+        
     'click #btn_back' :->
       Router.go '/dashboard'
   
