@@ -296,7 +296,7 @@ if Meteor.isClient
         nodeColor = $(node).css('color')
         nodeBackgroundColor = $(node).css('background-color')
         iframeNumber = $(node).find('iframe').length
-        #console.log('    Node['+index+'] '+node.nodeName+' color is'+nodeColor+' HTML is '+info.body)
+        console.log('    Node['+index+'] tagName '+node.tagName)
         text = $(node).text().toString().replace(/\s\s\s+/g, '')
         if text and text isnt ''
           previousIsImage = false
@@ -328,6 +328,16 @@ if Meteor.isClient
             resortedArticle.push {type:'text',text:toBeInsertedText}
             toBeInsertedText = ''
           resortedArticle.push {type:'iframe',iframe:$(node).html()}
+        else if node.tagName == 'IFRAME'
+          node.width = '100%'
+          node.height = '100%'
+          node.src = removeURLParameter(node.src,'width')
+          node.src = removeURLParameter(node.src,'height')
+          showDebug&&console.log(node.outerHTML)
+          if toBeInsertedText and toBeInsertedText isnt ''
+            resortedArticle.push {type:'text',text:toBeInsertedText}
+            toBeInsertedText = ''
+          resortedArticle.push {type:'iframe',iframe:node.outerHTML}
         if info.body
           grabImagesInHTMLString(info)
           if info.imageArray.length > 0

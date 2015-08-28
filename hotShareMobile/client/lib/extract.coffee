@@ -35,7 +35,7 @@ REGEXPS =
   unlikelyCandidates:    /combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad-break|agegate|pagination|pager|popup|tweet|twitter/i,
   okMaybeItsACandidate:  /and|article|body|column|main|shadow/i,  okMaybeItsACandidate:  /and|article|body|column|main|shadow/i,
   positive: /iframe|article|body|content|entry|hentry|main|page|pagination|post|text|blog|story/i,
-  negative: /combx|comment|com-|contact|foot|footer|footnote|masthead|media|meta|outbrain|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget/i,
+  negative: /combx|comment|com-|contact|foot|footer|footnote|masthead|media|meta|outbrain|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget|js_profile_qrcode/i,
   extraneous:       /print|archive|comment|discuss|e[\-]?mail|share|reply|all|login|sign|single/i,
   divToPElements:   /<(a|blockquote|dl|div|img|ol|p|pre|table|ul)/i,
   replaceBrs:       /(<br[^>]*>[ \n\r\t]*){2,}/gi,
@@ -236,8 +236,12 @@ collectSiblings = (top) ->
 
 @extract = (page) ->
   parified = _.map($(page).find('*'), parify)
+  console.log('1. iframe number ' + $(parified).find('iframe').length)
   top = scoreAndSelectTop(parified) or asTop(page)
+  console.log('2. iframe number ' + $(top).find('iframe').length)
   root = collectSiblings(top)
+  console.log('3. iframe number ' + $(root).find('iframe').length)
   removeFragments(root)
+  console.log('4. iframe number ' + $(root).find('iframe').length)
   root
 
