@@ -6,7 +6,7 @@ if Meteor.isClient
     $(window).scroll (event)->
         console.log "myPosts window scroll event: "+event
         target = $("#showMoreMyPostsResults");
-        MYPOSTS_ITEMS_INCREMENT = 4;
+        MYPOSTS_ITEMS_INCREMENT = 15;
         if (!target.length)
             return;
         threshold = $(window).scrollTop() + $(window).height() - target.height();
