@@ -63,7 +63,7 @@ if Meteor.isClient
     'click .listView':()->
       if(Session.get("showBigImage"))
         Session.set("showBigImage",false)
-        Session.set("mypostsitemsLimit",10)
+        Session.set("mypostsitemsLimit",15)
       else
         Session.set("showBigImage",true)
-        Session.set("mypostsitemsLimit",4)
+        Session.set("mypostsitemsLimit",15)
