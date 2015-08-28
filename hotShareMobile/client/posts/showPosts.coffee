@@ -499,7 +499,7 @@ if Meteor.isClient
       if post[i].likeUserId[userId] isnt true  and post[i].dislikeUserId[userId] isnt true
         post[i].likeSum += 1
         post[i].likeUserId[userId] = true
-        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
+        Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
           else
@@ -510,7 +510,7 @@ if Meteor.isClient
         post[i].likeUserId[userId] = true
         post[i].dislikeSum -= 1
         post[i].dislikeUserId[Meteor.userId()] = false
-        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
+        Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
           else
@@ -519,7 +519,7 @@ if Meteor.isClient
       else if post[i].likeUserId[userId] is true and  post[i].dislikeUserId[userId] isnt true
         post[i].likeSum -= 1
         post[i].likeUserId[userId] = false
-        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
+        Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
           else
@@ -552,7 +552,7 @@ if Meteor.isClient
       if post[i].likeUserId[userId] isnt true  and post[i].dislikeUserId[userId] isnt true
         post[i].dislikeSum += 1
         post[i].dislikeUserId[userId] = true
-        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
+        Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
           else
@@ -563,7 +563,7 @@ if Meteor.isClient
         post[i].dislikeUserId[userId] = true
         post[i].likeSum -= 1
         post[i].likeUserId[Meteor.userId()] = false
-        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
+        Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
           else
@@ -572,7 +572,7 @@ if Meteor.isClient
       else if post[i].likeUserId[userId] isnt true and  post[i].dislikeUserId[userId] is true
         post[i].dislikeSum -= 1
         post[i].dislikeUserId[userId] = false
-        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)-> 
+        Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
           else
@@ -756,7 +756,7 @@ if Meteor.isClient
           createdAt: new Date()
         }
         post[i].pcomments.push(pcommentJson)
-        Posts.update({_id: postId},{"$set":{"pub":post}}, (error, result)->
+        Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"pcomments","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
           else

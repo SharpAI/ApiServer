@@ -27,9 +27,17 @@ if Meteor.isClient
       document.body.scrollTop = $(".showPostsBox").height()
   Template.socialContent.rendered=->
     $('.chatBoxContent').css('min-height',$(window).height()-90)
+    Meteor.subscribe "pcomments"
   Template.socialContent.helpers
     newcount:()->
       PostFriends.find({meetOnPostId:Session.get("postContent")._id,count:1},{sort: {createdAt: -1}}).count()
+    feedscount:()->
+      Feeds.find({followby:Meteor.userId(),checked:false}).count()
+    haveFeeds:->
+      if Feeds.find({followby:Meteor.userId(),checked:false}).count()>0
+        true
+      else
+        false
     haveNewFriends: ->
       if PostFriends.find({meetOnPostId:Session.get("postContent")._id,count:1},{sort:{createdAt:-1}}).count()>0
         true

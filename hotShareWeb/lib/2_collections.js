@@ -29,6 +29,7 @@ if(Meteor.isClient){
 }
 if(Meteor.isServer){
   RefNames = new Meteor.Collection("refnames");
+  PComments = new Meteor.Collection("pcomments")
 }
 
 if(Meteor.isServer){
@@ -437,6 +438,53 @@ if(Meteor.isServer){
             catch(error){}
         });
     };
+    var updateServerSidePcommentsHookDeferHandle = function(userId,doc,ptype,pindex){
+        Meteor.defer(function(){
+            try{
+                PComments.insert({
+                    postId:doc._id,
+                    pindex:pindex,
+                    ptype:ptype,
+                    commentUserId: userId,
+                    createdAt: new Date()
+                });
+                var pcs=PComments.find({postId:doc._id,$and:[{commentUserId:{$ne:userId}},{commentUserId:{$ne:doc.owner}}]});
+                //console.log("=======pcs.count=="+pcs.count()+"======================");
+                if(pcs.count()>0)
+                {
+                    pcs.forEach(function(data){
+                        var pfeeds=Feeds.findOne({followby:data.commentUserId,checked:false,postId:data.postId});
+                        if(pfeeds){
+                            //console.log("==================already have feed==========");
+                        }else{
+                            var userinfo = Meteor.users.findOne({_id: userId },{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
+                            if(userinfo){
+                                Feeds.insert({
+                                    owner: userId,
+                                    ownerName: userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
+                                    ownerIcon: userinfo.profile.icon,
+                                    eventType: 'pcomment',
+                                    postId: data.postId,
+                                    postTitle: doc.title,
+                                    addontitle:doc.addontitle,
+                                    pindex:pindex,
+                                    mainImage: doc.mainImage,
+                                    createdAt: new Date(),
+                                    heart: 0,
+                                    retweet: 0,
+                                    comment: 0,
+                                    followby: data.commentUserId,
+                                    checked:false
+                                });
+                            }
+                        }
+                    });
+                }
+            }catch(error){
+                //console.log("=====================error:"+error+"=====================");
+            }
+        });
+    };
     var postsUpdateHookDeferHandle = function(userId,doc,fieldNames, modifier){
         Meteor.defer(function(){
             try{
@@ -837,6 +885,12 @@ if(Meteor.isServer){
     else
       return Posts.find({owner: this.userId},{sort: {createdAt: -1}});
   });
+  Meteor.publish('pcomments', function() {
+      if(this.userId === null)
+          return [];
+      else
+          return Feeds.find({followby:this.userId,checked:false});
+  });
   Meteor.publish("myCounter",function(){
       Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId}), {nonReactive: true });
       Counts.publish(this, 'mySavedDraftsCount', SavedDrafts.find({owner: this.userId}), {nonReactive: true });
@@ -1107,6 +1161,17 @@ if(Meteor.isServer){
           return false;
       },
     update: function(userId, doc, fieldNames, modifier) {
+      if(fieldNames.toString() ==='pub,ptype,pindex')
+      {
+          //console.log("====================change ptype========================");
+          //console.log("=========ptype:"+doc.ptype+"===================");
+          //console.log("=========pindex:"+doc.pindex+"=================");
+          //console.log("=========ptype:"+modifier.$set["ptype"]+"==========");
+          //console.log("=========pindex:"+modifier.$set["pindex"]+"==========");
+
+          updateServerSidePcommentsHookDeferHandle(userId,doc,modifier.$set["ptype"],modifier.$set["pindex"]);
+          return true;
+      }
       if (fieldNames.toString() === 'pub' || fieldNames.toString() === 'heart' || fieldNames.toString() === 'retweet' && modifier.$set !== void 0) {
         return true;
       }
@@ -1248,6 +1313,9 @@ if(Meteor.isServer){
         }
         return true;
       }
+    },
+    update: function (userId, doc) {
+        return doc.followby === userId;
     }
   });
   Viewers.allow({

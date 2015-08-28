@@ -30,6 +30,9 @@
           <div class="discoverBtn {{isFocus 'discover'}}">
             <i class="fa fa-compass"></i>
             <div>动态</div>
+            {{#if haveFeeds}}
+                <div class="red_spot">{{feedscount}}</div>
+            {{/if}}
           </div>
           <div class="meBtn {{isFocus 'me'}}">
             <i class="fa fa-user"></i>

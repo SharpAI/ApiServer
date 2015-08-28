@@ -61,4 +61,21 @@ if Meteor.isClient
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/redirect/'+postId
       ,300
-
+  Template.lpcomments.helpers
+    lpcomments:()->
+      Feeds.find({followby:Meteor.userId(),checked:false},{sort: {createdAt: -1}})
+    time_diff: (created)->
+      GetTime0(new Date() - created)
+  Template.lpcomments.events
+    'click .readpost':(e)->
+      postId = this.postId
+      Feeds.update({_id:this._id},{$set: {checked:true}})
+      id = Session.get("postContent")._id
+      if postId isnt id
+        $(window).children().off()
+        $(window).unbind('scroll')
+        PUB.postPage(id)
+        Meteor.setTimeout ()->
+          Session.set("Social.LevelOne.Menu",'contactsList')
+          Router.go '/redirect/'+postId
+        ,300
