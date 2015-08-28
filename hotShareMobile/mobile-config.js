@@ -12,7 +12,7 @@ App.setPreference('KeyboardDisplayRequiresUserAction', false);
 App.setPreference('StatusBarOverlaysWebView', false);
 App.setPreference('orientation', 'portrait');
 App.setPreference('StatusBarBackgroundColor', '#000000');
-App.setPreference('AutoHideSplashScreen', true);
+App.setPreference('AutoHideSplashScreen', false);
 App.setPreference('AndroidPersistentFileLocation','Internal');
 App.setPreference('iosPersistentFileLocation','Library');
 App.accessRule('*');

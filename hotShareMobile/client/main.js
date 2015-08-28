@@ -18,6 +18,7 @@ if (Meteor.isCordova) {
     // PhoneGap加载完毕
     function onDeviceReady() {
         // 按钮事件
+        navigator.splashscreen.hide();
         document.addEventListener("backbutton", eventBackButton, false); // 返回键
         document.addEventListener("pause", eventPause, false);//挂起
         document.addEventListener("resume", eventResume, false);
