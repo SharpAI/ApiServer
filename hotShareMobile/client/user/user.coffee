@@ -176,7 +176,7 @@ if Meteor.isClient
         Router.go '/posts/'+postId
       ,animatePageTrasitionTimeout
     'click .postRight':(e)->
-      Session.set("mypostsitemsLimit", 4)
+      Session.set("mypostsitemsLimit", 15)
       $('.user').addClass('animated ' + animateOutLowerEffect);
       Meteor.setTimeout ()->
         PUB.page('/myPosts')
