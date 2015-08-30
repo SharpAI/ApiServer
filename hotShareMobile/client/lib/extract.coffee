@@ -28,14 +28,14 @@ class Score
       when 'BLOCKQUOTE' then 15
       when 'PRE', 'TD' then 3
       when 'ADDRESS', 'OL', 'UL', 'DL', 'DD', 'DT', 'LI', 'FORM' then -3
-      when 'H1', 'H2', 'H3', 'H4', 'H5' then -5
+      when 'H2', 'H3', 'H4', 'H5' then -5
       else 0
 
 REGEXPS =
   unlikelyCandidates:    /combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad-break|agegate|pagination|pager|popup|tweet|twitter/i,
   okMaybeItsACandidate:  /and|article|body|column|main|shadow/i,  okMaybeItsACandidate:  /and|article|body|column|main|shadow/i,
-  positive: /iframe|article|body|content|entry|hentry|main|page|pagination|post|text|blog|story/i,
-  negative: /combx|comment|com-|contact|foot|footer|footnote|masthead|media|meta|outbrain|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget|js_profile_qrcode/i,
+  positive: /iframe|article|body|content|entry|hentry|main|page|pagination|post|text|blog|story|rich_media_content/i,
+  negative: /combx|comment|com-|contact|foot|footer|footnote|masthead|media|meta|outbrain|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget|js_profile_qrcode|rich_media_meta_list|profile_inner/i,
   extraneous:       /print|archive|comment|discuss|e[\-]?mail|share|reply|all|login|sign|single/i,
   divToPElements:   /<(a|blockquote|dl|div|img|ol|p|pre|table|ul)/i,
   replaceBrs:       /(<br[^>]*>[ \n\r\t]*){2,}/gi,
@@ -114,12 +114,14 @@ deepInsideThislayer = (node,tagName)->
 # Turn all divs that don't have children block level elements into p's
 # TODO(omo): support experimental parify text node
 parify = (node) ->
+  ###
   if node.tagName.search(REGEXPS.specialTags) > -1
     newNode = deepInsideThislayer(node,node.tagName)
     if newNode
       console.log('we got you')
       node.parentNode.replaceChild(newNode, node)
       return newNode
+  ###
   return node if node.tagName != "DIV"
   return node if node.innerHTML.search(REGEXPS.divToPElements) > -1
   p = $("<p>").html(node.innerHTML)[0]
@@ -130,7 +132,7 @@ ensureScore = (array, node) ->
   return if !node or typeof(node.tagName) == 'undefined'
   if not node.score
     node.score = new Score(node)
-    console.log('Node tag ' + node.tagName + ' score value ' + node.score.value)
+    console.log('Node tag ' + node.tagName + ' class ' + node.className + ' id ' + node.id + ' score value ' + node.score.value)
     array.push(node)
 
 propagateScore = (node, scoredList, score) ->
@@ -147,6 +149,9 @@ scoreNode = (node) ->
   if node.tagName == "IFRAME"
     console.log('scoreNode on IFRAME +15')
     return 15
+  if node.className && node.className == 'rich_media_content'
+    console.log('rich_media_content bingo')
+    return 250
   unlikely = node.className + node.id
   if unlikely.search(REGEXPS.unlikelyCandidates) != -1 and \
      unlikely.search(REGEXPS.okMaybeItsACandidate) == -1 and \
@@ -236,12 +241,16 @@ collectSiblings = (top) ->
 
 @extract = (page) ->
   parified = _.map($(page).find('*'), parify)
-  console.log('1. iframe number ' + $(parified).find('iframe').length)
+  console.log('1. rich_media_content number ' + $(parified).find('.rich_media_content').length)
+  if $(parified).find('.rich_media_content').length > 0
+    root = document.createElement("div")
+    root.appendChild($(parified).find('.rich_media_content')[0])
+    return root
   top = scoreAndSelectTop(parified) or asTop(page)
-  console.log('2. iframe number ' + $(top).find('iframe').length)
+  console.log('2. rich_media_content number ' + $(top).find('.rich_media_content').length)
   root = collectSiblings(top)
-  console.log('3. iframe number ' + $(root).find('iframe').length)
+  console.log('3. rich_media_content number ' + $(root).find('.rich_media_content').length)
   removeFragments(root)
-  console.log('4. iframe number ' + $(root).find('iframe').length)
+  console.log('4. rich_media_content number ' + $(root).find('.rich_media_content').length)
   root
 

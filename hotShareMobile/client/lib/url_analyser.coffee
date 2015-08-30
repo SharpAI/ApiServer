@@ -1,5 +1,6 @@
 if Meteor.isClient
   showDebug=false
+  importColor=false
 
   ###
   http://stackoverflow.com/a/1634841/3380894
@@ -164,7 +165,11 @@ if Meteor.isClient
     documentBody = $.parseHTML( data.body )
     documentBody.innerHTML = data.body
     $(documentBody).find('img').each ()->
-      src = $(this).attr('src')
+      dataSrc = $(this).attr('data-src')
+      if dataSrc and dataSrc isnt ''
+        src = dataSrc
+      else
+        src = $(this).attr('src')
       if src and src isnt ''
         src = src.replace(/&amp;/g, '&').replace("tp=webp","tp=jpeg")
         unless src.startsWith('http')
@@ -288,7 +293,26 @@ if Meteor.isClient
       previousIsImage = false
       resortedArticle = []
       sortedImages = 0
-      $(extracted.innerHTML).children().each (index,node)->
+      if $(extracted).find('.rich_media_content')
+        treeWalker = document.createTreeWalker(
+          extracted,
+          NodeFilter.SHOW_ELEMENT,
+          null,
+          false
+        )
+        newRoot = document.createElement("div")
+        nodeList = []
+        while(treeWalker.nextNode())
+          nodeList.push(treeWalker.currentNode)
+        for node in nodeList
+          unless node.hasChildNodes()
+            newRoot.appendChild(node)
+          else if node.childNodes.length is 1 and node.childNodes[0].nodeType is Node.TEXT_NODE
+            newRoot.appendChild(node)
+        console.log('node length ' + nodeList.length)
+      else
+        newRoot = extracted.innerHTML
+      $(newRoot).children().each (index,node)->
         info = {}
         info.bgArray = []
         info.imageArray = []
@@ -302,7 +326,7 @@ if Meteor.isClient
           previousIsImage = false
           showDebug&&console.log '    Got text in this element('+toBeInsertedText.length+') '+text
           console.log 'Text  ['+text+'] color is '+nodeColor+' nodeBackgroundColor is '+nodeBackgroundColor
-          if nodeColor and nodeColor isnt ''
+          if importColor and nodeColor and nodeColor isnt ''
             if toBeInsertedText.length > 0
               toBeInsertedText += '\n'
               resortedArticle.push {type:'text',text:toBeInsertedText}
@@ -338,7 +362,28 @@ if Meteor.isClient
             resortedArticle.push {type:'text',text:toBeInsertedText}
             toBeInsertedText = ''
           resortedArticle.push {type:'iframe',iframe:node.outerHTML}
-        if info.body
+        else if node.tagName == 'IMG'
+          dataSrc = $(node).attr('data-src')
+          if dataSrc and dataSrc isnt ''
+            src = dataSrc
+          else
+            src = $(node).attr('src')
+          if src and src isnt ''
+            src = src.replace(/&amp;/g, '&').replace("tp=webp","tp=jpeg")
+            unless src.startsWith('http')
+              if src.startsWith('//')
+                src = data.protocol + src
+              else if src.startsWith('/')
+                src = data.protocol + '//' + data.host + '/' + src
+            showDebug&&console.log 'Image Src: ' + src
+            previousIsImage = true
+            if toBeInsertedText and toBeInsertedText isnt ''
+              resortedArticle.push {type:'text',text:toBeInsertedText}
+            toBeInsertedText = ''
+            sortedImages++;
+            resortedArticle.push {type:'image',imageUrl:src}
+            data.imageArray.push src
+        else if info.body
           grabImagesInHTMLString(info)
           if info.imageArray.length > 0
             showDebug&&console.log('    Got image')
