@@ -2,6 +2,7 @@ accounts-base@1.2.0
 accounts-oauth@1.1.5
 accounts-password@1.1.1
 accounts-weibo@1.0.4
+amplify@1.0.0
 autoupdate@1.2.1
 base64@1.0.3
 binary-heap@1.0.3
@@ -83,6 +84,7 @@ templating@1.1.1
 tmeasday:publish-counts@0.7.0
 tracker@1.0.7
 twbs:bootstrap-noglyph@3.3.5
+u2622:persistent-session@0.4.1
 ui@1.0.6
 underscore@1.0.3
 url@1.0.4
