@@ -6,6 +6,15 @@ if Meteor.isClient
     {'prefix':'view.inews.qq.com','titleClass':'title'},
     {'prefix':'buluo.qq.com','titleClass':'post-title'}
   ]
+  hostnameMapping = [
+    {'hostname':'mp.weixin.qq.com',displayName:'微信公众号'},
+    {'hostname':'m.toutiao.com',displayName:'头条'},
+    {'hostname':'news.shou.com',displayName:'搜狐新闻'},
+    {'hostname':'m.shou.com',displayName:'搜狐'},
+    {'hostname':'www.zhihu.com',displayName:'知乎'},
+    {'hostname':'card.weibo.com',displayName:'微博'},
+    {'hostname':'mil.sohu.com',displayName:'搜狐军事'}
+  ]
   ###
   http://stackoverflow.com/a/1634841/3380894
   To remove the width/height parameter in url, center the video play icon
@@ -300,6 +309,10 @@ if Meteor.isClient
             data.host = data.title
             data.title = realTitle
             break
+      for item  in hostnameMapping
+        if data.host is item.hostname
+          data.host = '摘自 ' + item.displayName
+          break
       extracted = extract(documentBody)
       toBeInsertedText = ''
       previousIsImage = false
