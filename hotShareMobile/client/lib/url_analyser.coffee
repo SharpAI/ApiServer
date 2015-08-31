@@ -329,7 +329,7 @@ if Meteor.isClient
       while(treeWalker.nextNode())
         nodeList.push(treeWalker.currentNode)
       for node in nodeList
-        console.log('textContent: ' + node.textContent)
+        showDebug&&console.log('textContent: ' + node.textContent)
         unless node.hasChildNodes()
           if node.nodeType is Node.TEXT_NODE
             p = document.createElement("P")
@@ -337,7 +337,7 @@ if Meteor.isClient
             newRoot.appendChild(p)
           else
             newRoot.appendChild(node)
-      console.log('node length ' + nodeList.length)
+      showDebug&&console.log('node length ' + nodeList.length)
       $(newRoot).children().each (index,node)->
         info = {}
         info.bgArray = []
@@ -346,12 +346,12 @@ if Meteor.isClient
         nodeColor = $(node).css('color')
         nodeBackgroundColor = $(node).css('background-color')
         iframeNumber = $(node).find('iframe').length
-        console.log('    Node['+index+'] tagName '+node.tagName+ ' text ' + node.textContent)
+        showDebug&&console.log('    Node['+index+'] tagName '+node.tagName+ ' text ' + node.textContent)
         text = $(node).text().toString().replace(/\s\s\s+/g, '')
         if text and text isnt ''
           previousIsImage = false
           showDebug&&console.log '    Got text in this element('+toBeInsertedText.length+') '+text
-          console.log 'Text  ['+text+'] color is '+nodeColor+' nodeBackgroundColor is '+nodeBackgroundColor
+          showDebug&&console.log 'Text  ['+text+'] color is '+nodeColor+' nodeBackgroundColor is '+nodeBackgroundColor
           if importColor and nodeColor and nodeColor isnt ''
             if toBeInsertedText.length > 0
               toBeInsertedText += '\n'
