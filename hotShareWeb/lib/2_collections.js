@@ -700,11 +700,22 @@ if(Meteor.isServer){
             }
         });
     };
+    var momentsChangeForDynamicMomentsDeferHandle = function(self,id,fields,userId) {
+        Meteor.defer(function(){
+            var viewItem = Viewers.find({userId:userId,postId:fields.readPostId}).count();
+            if(viewItem===0){
+                try{
+                    self.changed("dynamicmoments", id, fields);
+                }catch(error){
+                }
+            }
+        });
+    };
     var postsAddForSuggestPostsDeferHandle = function(self,id,fields,userId) {
         Meteor.defer(function(){
             var isfollower = Follows.find({userId:fields.owner}).count();
             if(isfollower){
-                var viewItem = Viewers.find({userId:userId,postId:fields._id}).count();
+                var viewItem = Viewers.find({userId:userId,postId:id}).count();
                 if(viewItem===0) {
                     try {
                         self.added("suggestposts", id, fields);
@@ -715,15 +726,34 @@ if(Meteor.isServer){
             }
         });
     };
+    var postsChangeForSuggestPostsDeferHandle = function(self,id,fields,userId) {
+        Meteor.defer(function(){
+            var handle = Posts.findOne({_id:id});
+            var isfollower = Follows.find({userId:handle.owner}).count();
+            if(isfollower){
+                var viewItem = Viewers.find({userId:userId,postId:id}).count();
+                if(viewItem !== 0) {
+                    try {
+                        self.removed("suggestposts", id, fields);
+                        self.count--;
+                    } catch (error) {
+                    }
+                }
+            }
+        });
+    };
     Meteor.publish("suggestPosts", function (limit) {
         var self = this;
         self.count = 0;
-        var handle = Posts.find({owner:{$ne:this.userId}},{sort: {createdAt: -1},limit:limit+10}).observeChanges({
+        var handle = Posts.find({owner:{$ne:self.userId}},{sort: {createdAt: -1},limit:limit+10}).observeChanges({
             added: function (id,fields) {
                 if(self.count<limit)
                 {
-                    postsAddForSuggestPostsDeferHandle(self,id,fields,this.userId);
+                    postsAddForSuggestPostsDeferHandle(self,id,fields,self.userId);
                 }
+            },
+            changed:function(id,fields){
+                    postsChangeForSuggestPostsDeferHandle(self,id,fields,self.userId);
             }
         });
         self.ready();
@@ -738,15 +768,12 @@ if(Meteor.isServer){
       else{
           var self = this;
           self.count = 0;
-          var handle = Moments.find({currentPostId: postId,userId:{$ne:this.userId}},{sort: {createdAt: -1},limit:limit}).observeChanges({
+          var handle = Moments.find({currentPostId: postId,userId:{$ne:self.userId}},{sort: {createdAt: -1},limit:limit}).observeChanges({
               added: function (id,fields) {
-                      momentsAddForDynamicMomentsDeferHandle(self,id,fields,this.userId);
+                  momentsAddForDynamicMomentsDeferHandle(self,id,fields,self.userId);
               },
               changed:function (id,fields){
-                  try{
-                      self.changed("dynamicmoments", id, fields);
-                  }catch(error){
-                  }
+                  momentsChangeForDynamicMomentsDeferHandle(self,id,fields,self.userId);
               }
           });
           self.ready();
