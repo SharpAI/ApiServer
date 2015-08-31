@@ -1,12 +1,12 @@
-/** 
+/**
  *  @fileoverview TextResizeDetector
- * 
+ *
  *  Detects changes to font sizes when user changes browser settings
  *  <br>Fires a custom event with the following data:<br><br>
- * 	iBase  : base font size  	
+ * 	iBase  : base font size
  *	iDelta : difference in pixels from previous setting<br>
  *  	iSize  : size in pixel of text<br>
- *  
+ *
  *  * @author Lawrence Carvalho carvalho@uk.yahoo-inc.com
  * @version 1.0
  */
@@ -14,7 +14,7 @@
 /**
  * @constructor
  */
-TextResizeDetector = function() { 
+TextResizeDetector = function() {
     var el  = null;
 	var iIntervalDelay  = 200;
 	var iInterval = null;
@@ -43,10 +43,10 @@ TextResizeDetector = function() {
 			iInterval = window.setInterval('TextResizeDetector.detect()',iIntervalDelay);
 		}
 	};
- 	
+
  	 function _detect() {
  		var iNewSize = TextResizeDetector.getSize();
-		
+
  		if(iNewSize!== iCurrSize) {
 			for (var 	i=0;i <aListeners.length;i++) {
 				aListnr = aListeners[i];
@@ -63,7 +63,7 @@ TextResizeDetector = function() {
  		return iCurrSize;
  	};
 	var onAvailable = function() {
-		
+
 		if (!TextResizeDetector.onAvailableCount_i ) {
 			TextResizeDetector.onAvailableCount_i =0;
 		}
@@ -82,23 +82,23 @@ TextResizeDetector = function() {
 			}
 		}
 	};
-	setTimeout(onAvailable,500);
+	//setTimeout(onAvailable,500);
 
  	return {
 		 	/*
 		 	 * Initializes the detector
-		 	 * 
+		 	 *
 		 	 * @param {String} sId The id of the element in which to create the control element
 		 	 */
 		 	init: function() {
-		 		
-		 		createControlElement();		
+
+		 		createControlElement();
 				_startDetector();
  			},
 			/**
-			 * Adds listeners to the ontextsizechange event. 
+			 * Adds listeners to the ontextsizechange event.
 			 * Returns the base font size
-			 * 
+			 *
 			 */
  			addEventListener:function(fn,obj,bScope) {
 				aListeners[aListeners.length] = {
@@ -117,15 +117,15 @@ TextResizeDetector = function() {
  			},
  			/**
  			 * Returns the height of the control element
- 			 * 
+ 			 *
 			 * @return the current height of control element
 			 * @type {integer}
  			 */
  			getSize:function() {
 	 				var iSize;
 			 		return el.offsetHeight;
-		 		
-		 		
+
+
  			},
  			/**
  			 * Stops the detector
@@ -144,5 +144,3 @@ TextResizeDetector = function() {
 
 TextResizeDetector.TARGET_ELEMENT_ID = 'doc';
 TextResizeDetector.USER_INIT_FUNC = null;
-
-

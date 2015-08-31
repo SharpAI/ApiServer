@@ -1,4 +1,5 @@
 if Meteor.isClient
+  @baseGap = 0
   @isIOS = (navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false)
   @isWeiXinFunc = ()->
     ua = window.navigator.userAgent.toLowerCase()
@@ -32,7 +33,7 @@ if Meteor.isClient
       onOpen: ->
         Session.set('displayUserProfileBox',true)
   reRender = ()->
-    base_size=Math.floor($('#test').width()/6 - 10)
+    base_size=Math.floor($('#test').width()/6 - baseGap * 2)
     $("#test").find('.hastextarea').each( ( i, itemElem )->
       textdiv = $(itemElem).children('.textdiv')
       textarea = $(textdiv).children('.textDiv1')
@@ -40,10 +41,10 @@ if Meteor.isClient
       $(textarea).css('height', 'auto')
       height = $(textarea).height()
 
-      min_widget_height = (5 * 2) + base_size;
+      min_widget_height = (baseGap * 2) + base_size;
 
       scrollHeight = $(textarea).prop('scrollHeight')
-      sizey = Math.ceil((scrollHeight+10)/min_widget_height)
+      sizey = Math.ceil((scrollHeight + baseGap * 2)/min_widget_height)
 
       $(textarea).css('height', '')
       sizex = $(itemElem).attr("data-sizex")
@@ -52,30 +53,23 @@ if Meteor.isClient
       if sizey isnt sizey_orig
         $(itemElem).attr("data-sizey", sizey)
         gridster.resize_widget($(itemElem), sizex,sizey)
-
-      height = sizey*min_widget_height - 10
+      height = sizey*min_widget_height - baseGap * 2
       $(itemElem).css("line-height", height+'px')
-
+      $(itemElem).css("height", height+'px')
     )
   onFontResize = (e,args)->
     #msg = "\nThe base font size in pixels: " + args[0].iBase;
     #msg +="\nThe current font size in pixels: " + args[0].iSize;
     #msg += "\nThe change in pixels from the last size:" + args[0].iDelta;
     reRender()
-    #console.log msg
-  init = ()->
-    iBase = TextResizeDetector.addEventListener(onFontResize,null)
-    #console.log "The base font size = " + iBase
-    if iBase isnt 20
-      setTimeout(()->
-        reRender()
-      ,200)
 
-  Template.showPosts.created=->
-    TextResizeDetector.TARGET_ELEMENT_ID = 'fontresizedetector'
-    TextResizeDetector.init()
-    TextResizeDetector.USER_INIT_FUNC = init
   Template.showPosts.rendered=->
+    if isWeiXinFunc() is true
+      console.log("in wechat")
+      TextResizeDetector.TARGET_ELEMENT_ID = 'fontresizedetector'
+      TextResizeDetector.addEventListener(onFontResize,null)
+      TextResizeDetector.init()
+
     Session.set('postfriendsitemsLimit', 10);
     $('.mainImage').css('height',$(window).height()*0.55)
     postContent = Session.get("postContent")
@@ -116,10 +110,12 @@ if Meteor.isClient
     )
 
     $('.showBgColor').css('min-height',$(window).height())
-    base_size=Math.floor($('#test').width()/6 - 10);
+    base_size=Math.floor($('#test').width()/6 - baseGap * 2);
 
+    min_widget_height = (baseGap * 2) + base_size;
+    console.log('min_widget_height ' + min_widget_height)
     test = $("#test");
-    `gridster = test.gridster({widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], min_cols: 3, max_cols:6, resize: {enabled: false },draggable:{long_press:false}}).data('gridster');`
+    `gridster = test.gridster({widget_base_dimensions: [base_size, base_size],widget_margins: [baseGap, baseGap], min_cols: 3, max_cols:6, resize: {enabled: false },draggable:{long_press:false}}).data('gridster');`
     gridster.disable()
 
     $("#test").find('.hastextarea').each( ( i, itemElem )->
@@ -129,9 +125,8 @@ if Meteor.isClient
       $(textarea).css('height', 'auto')
       height = $(textarea).height()
 
-      min_widget_height = (5 * 2) + base_size;
       scrollHeight = $(textarea).prop('scrollHeight')
-      sizey = Math.ceil((scrollHeight+10)/min_widget_height)
+      sizey = Math.ceil((scrollHeight + baseGap * 2)/min_widget_height)
 
       #$(textarea).css('width', '')
       $(textarea).css('height', '')
@@ -141,8 +136,11 @@ if Meteor.isClient
       if sizey isnt sizey_orig
         $(itemElem).attr("data-sizey", sizey)
         gridster.resize_widget($(itemElem), sizex,sizey)
-      height = sizey*min_widget_height - 10
+      height = sizey*min_widget_height - baseGap * 2
       $(itemElem).css("line-height", height+'px')
+      $(itemElem).css("height", height+'px')
+      offsetHeight =  $(textarea).prop('offsetHeight')
+      console.log(i + ' sizey:' + offsetHeight + ' height:' + height + ' scrollHeight:' + scrollHeight + ' gap ' + (height - scrollHeight))
     )
 
     hidePostBar = ()->

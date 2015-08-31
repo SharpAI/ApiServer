@@ -1,6 +1,7 @@
 <template name="showPosts">
   {{> pCommentsList}}
-  <div class="showBgColor">
+  <div id="fontresizedetector"></div>
+  <div class="showBgColor" >
     <div class="showPostsBox">
     <div class="showPosts">
       <div id="blur_overlay" style="position: absolute; opacity: 0.5; z-index: -1; width:100%; background-color:white;">
@@ -41,7 +42,7 @@
           </div>
         {{/if}}
       </div>
-      <div class="content">
+      <div class="content" >
         <div id="wrapper">
           <div class="mainImage" id="{{_id}}">
             {{>padding noRandomBackgroundColor=true}}
@@ -58,7 +59,7 @@
           {{/if}}
         </div>
 
-        <div class="gridster" id="fontresizedetector">
+        <div class="gridster" >
           <ul id="test">
               {{#each getPub}}
                   {{#if isImage}}
@@ -198,7 +199,7 @@
 
 <template name="pCommentsList">
   <div class="pcommentsList" style="display:none;">
-      <div class="pcomment">                      
+      <div class="pcomment">
          {{#each pcomments}}
           <div class="eachComment">
             <div class="bubble">
