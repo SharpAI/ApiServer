@@ -305,27 +305,26 @@ if Meteor.isClient
       previousIsImage = false
       resortedArticle = []
       sortedImages = 0
-      if $(extracted).find('.rich_media_content') || $(extracted).find('.note-content')
-        treeWalker = document.createTreeWalker(
-          extracted,
-          NodeFilter.SHOW_ELEMENT,
-          null,
-          false
-        )
-        newRoot = document.createElement("div")
-        nodeList = []
-        while(treeWalker.nextNode())
-          nodeList.push(treeWalker.currentNode)
-        for node in nodeList
-          console.log('textContent: ' + node.textContent)
-          unless node.hasChildNodes()
+      treeWalker = document.createTreeWalker(
+        extracted,
+        NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT,
+        null,
+        false
+      )
+      newRoot = document.createElement("div")
+      nodeList = []
+      while(treeWalker.nextNode())
+        nodeList.push(treeWalker.currentNode)
+      for node in nodeList
+        console.log('textContent: ' + node.textContent)
+        unless node.hasChildNodes()
+          if node.nodeType is Node.TEXT_NODE
+            p = document.createElement("P")
+            p.appendChild(node)
+            newRoot.appendChild(p)
+          else
             newRoot.appendChild(node)
-          else if node.childNodes.length is 1 and node.childNodes[0].nodeType is Node.TEXT_NODE
-            console.log('textContent: ' + node.textContent)
-            newRoot.appendChild(node)
-        console.log('node length ' + nodeList.length)
-      else
-        newRoot = extracted.innerHTML
+      console.log('node length ' + nodeList.length)
       $(newRoot).children().each (index,node)->
         info = {}
         info.bgArray = []

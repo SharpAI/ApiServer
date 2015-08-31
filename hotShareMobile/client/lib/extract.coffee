@@ -48,8 +48,14 @@ REGEXPS =
   nextLink:         /(next|weiter|continue|>([^\|]|$)|ﾂｻ([^\|]|$))/i, # Match: next, continue, >, >>, ﾂｻ but not >|, ﾂｻ| as those usually mean last.
   prevLink:         /(prev|earl|old|new|<|ﾂｫ)/i,
   specialTags:      /blockquote|section/i,
-  possibleVideoTags: /iframe/i
+  possibleVideoTags: /iframe/i,
+  specialClass:     /note-content|rich_media_content|WBA_content/i
 
+specialClassNameForPopularMobileSite = [
+  '.note-content', # Douban
+  '.rich_media_content', # Wechat
+  '.WBA_content' # Weibo
+]
 
 textContentFor = (node, normalizeWs = true) ->
   return "" unless node.textContent
@@ -149,8 +155,8 @@ scoreNode = (node) ->
   if node.tagName == "IFRAME"
     console.log('scoreNode on IFRAME +15')
     return 15
-  if node.className && node.className == 'rich_media_content'
-    console.log('rich_media_content bingo')
+  if node.className && node.className.search(REGEXPS.specialClass)
+    console.log('the main class of mainstream web for mobile. bingo')
     return 250
   unlikely = node.className + node.id
   if unlikely.search(REGEXPS.unlikelyCandidates) != -1 and \
@@ -241,16 +247,13 @@ collectSiblings = (top) ->
 
 @extract = (page) ->
   parified = _.map($(page).find('*'), parify)
-  console.log('1. rich_media_content number ' + $(parified).find('.rich_media_content').length)
-  if $(parified).find('.rich_media_content').length > 0
-    root = document.createElement("div")
-    root.appendChild($(parified).find('.rich_media_content')[0])
-    return root
+  for tag in specialClassNameForPopularMobileSite
+    if $(parified).find(tag).length > 0
+      root = document.createElement("div")
+      root.appendChild($(parified).find(tag)[0])
+      return root
   top = scoreAndSelectTop(parified) or asTop(page)
-  console.log('2. rich_media_content number ' + $(top).find('.rich_media_content').length)
   root = collectSiblings(top)
-  console.log('3. rich_media_content number ' + $(root).find('.rich_media_content').length)
   removeFragments(root)
-  console.log('4. rich_media_content number ' + $(root).find('.rich_media_content').length)
   root
 
