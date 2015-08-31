@@ -401,8 +401,11 @@ if(Meteor.isServer){
                 });
             }
             catch(error){}
-            var pullingConn = Cluster.discoverConnection("pulling");
-            pullingConn.call("pullFromServer", doc._id);
+            try {
+                var pullingConn = Cluster.discoverConnection("pulling");
+                pullingConn.call("pullFromServer", doc._id);
+            }
+            catch(error){}
         });
     };
     var postsRemoveHookDeferHandle = function(userId,doc){
