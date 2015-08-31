@@ -72,7 +72,7 @@ if Meteor.isClient
   Template.addNewFriends.helpers
     hasFriendMeet:()->
     meeter:()->
-      PostFriends.find({meetOnPostId:Session.get("postContent")._id},{sort:{createdAt:-1}})
+      PostFriends.find({meetOnPostId:Session.get("postContent")._id,ta:{$ne:null}},{sort:{createdAt:-1}})
     isMyself:()->
       this.ta is Meteor.userId()
     isSelf:(follow)->
