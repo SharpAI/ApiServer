@@ -38,9 +38,3 @@ window.updateMyOwnLocationAddress = ()->
         updateFromThirdPartWebsite()
     else
       updateFromThirdPartWebsite()
-Accounts.onLogin(()->
-  Meteor.setTimeout ()->
-    console.log("Accounts.onLogin")
-    window.updateMyOwnLocationAddress();
-  ,3000
-)

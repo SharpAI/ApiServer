@@ -4,16 +4,18 @@ if Meteor.isClient
     is_wait_read_count: (count)->
       count > 0
     wait_read_count:->
-      if Meteor.user() is null
-        0
+      me = Meteor.user()
+      if me
+        if me.profile and me.profile.waitReadCount
+          waitReadCount = me.profile.waitReadCount
+          if waitReadCount is undefined or isNaN(waitReadCount)
+            waitReadCount = 0
+          if Session.get('channel') is 'bell' and waitReadCount > 0
+            waitReadCount = 0
+            Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
+          return waitReadCount
       else
-        waitReadCount = Meteor.user().profile.waitReadCount
-        if waitReadCount is undefined or isNaN(waitReadCount)
-          waitReadCount = 0
-        if Session.get('channel') is 'bell' and waitReadCount > 0
-          waitReadCount = 0
-          Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
-        waitReadCount
+        0
     focus_style:(channelName)->
       channel = Session.get "focusOn"
       if channel is channelName

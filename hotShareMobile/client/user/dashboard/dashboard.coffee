@@ -23,6 +23,7 @@ if Meteor.isClient
       Router.go '/user'
     'click .logout':->
       Meteor.logout (msg)->
+        Session.setPersistent('persistentLoginStatus',false)
         console.log msg
       Router.go '/authOverlay'
   Template.my_email.rendered=->
