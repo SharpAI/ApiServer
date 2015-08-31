@@ -259,8 +259,6 @@ if(Meteor.isServer){
                         }
                     }
                 });
-                var currentlimit=Session.get('momentsitemsLimit');
-                Session.set('momentsitemsLimit',1+currentlimit);
             }
         });
     }
