@@ -1,7 +1,11 @@
 if Meteor.isClient
   showDebug=false
   importColor=false
-
+  titleRules = [
+    # link string, class name
+    {'prefix':'view.inews.qq.com','titleClass':'title'},
+    {'prefix':'buluo.qq.com','titleClass':'post-title'}
+  ]
   ###
   http://stackoverflow.com/a/1634841/3380894
   To remove the width/height parameter in url, center the video play icon
@@ -288,30 +292,39 @@ if Meteor.isClient
       data.imageArray = []
       documentBody = $.parseHTML( data.body )
       documentBody.innerHTML = data.body
+
+      for titleRule in titleRules
+        if url.indexOf(titleRule.prefix) > -1
+          realTitle = $(documentBody).find('.'+titleRule.titleClass).text()
+          if realTitle and realTitle isnt ''
+            data.host = data.title
+            data.title = realTitle
+            break
       extracted = extract(documentBody)
       toBeInsertedText = ''
       previousIsImage = false
       resortedArticle = []
       sortedImages = 0
-      if $(extracted).find('.rich_media_content')
-        treeWalker = document.createTreeWalker(
-          extracted,
-          NodeFilter.SHOW_ELEMENT,
-          null,
-          false
-        )
-        newRoot = document.createElement("div")
-        nodeList = []
-        while(treeWalker.nextNode())
-          nodeList.push(treeWalker.currentNode)
-        for node in nodeList
-          unless node.hasChildNodes()
+      treeWalker = document.createTreeWalker(
+        extracted,
+        NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT,
+        null,
+        false
+      )
+      newRoot = document.createElement("div")
+      nodeList = []
+      while(treeWalker.nextNode())
+        nodeList.push(treeWalker.currentNode)
+      for node in nodeList
+        console.log('textContent: ' + node.textContent)
+        unless node.hasChildNodes()
+          if node.nodeType is Node.TEXT_NODE
+            p = document.createElement("P")
+            p.appendChild(node)
+            newRoot.appendChild(p)
+          else
             newRoot.appendChild(node)
-          else if node.childNodes.length is 1 and node.childNodes[0].nodeType is Node.TEXT_NODE
-            newRoot.appendChild(node)
-        console.log('node length ' + nodeList.length)
-      else
-        newRoot = extracted.innerHTML
+      console.log('node length ' + nodeList.length)
       $(newRoot).children().each (index,node)->
         info = {}
         info.bgArray = []
@@ -320,7 +333,7 @@ if Meteor.isClient
         nodeColor = $(node).css('color')
         nodeBackgroundColor = $(node).css('background-color')
         iframeNumber = $(node).find('iframe').length
-        console.log('    Node['+index+'] tagName '+node.tagName)
+        console.log('    Node['+index+'] tagName '+node.tagName+ ' text ' + node.textContent)
         text = $(node).text().toString().replace(/\s\s\s+/g, '')
         if text and text isnt ''
           previousIsImage = false
