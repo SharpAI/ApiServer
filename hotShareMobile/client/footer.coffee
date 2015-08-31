@@ -53,11 +53,11 @@ if Meteor.isClient
     'click #search':(e)->
       PUB.page('/search')
     'click #bell':(e)->
-      waitReadCount = Meteor.user().profile.waitReadCount
-      if waitReadCount is undefined or isNaN(waitReadCount)
-        waitReadCount = 0
-      if waitReadCount > 0
-        Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
+      Meteor.defer ()->
+        me = Meteor.user()
+        if me and me.profile and me.profile.waitReadCount
+          if me.profile.waitReadCount > 0
+            Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
       PUB.page('/bell')
     'click #user':(e)->
       PUB.page('/user')
