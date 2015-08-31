@@ -242,6 +242,16 @@ if(Meteor.isServer){
                                 addontitle: readpost.addontitle,
                                 createdAt: pdata.createdAt
                             });
+                        }else{
+                            Moments.update({currentPostId: currentpost._id, readPostId: readpost._id},{$set:{
+                                userId: userId,
+                                userIcon: userinfo.profile.icon,
+                                username: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
+                                mainImage: readpost.mainImage,
+                                title: readpost.title,
+                                addontitle: readpost.addontitle,
+                                createdAt: new Date()
+                            }});
                         }
                         //2. 给所有看过的帖子，增加当前帖子
                         if (Moments.find({currentPostId: readpost._id, readPostId: currentpost._id}).count()===0) {
@@ -256,6 +266,16 @@ if(Meteor.isServer){
                                 addontitle: currentpost.addontitle,
                                 createdAt: new Date()
                             });
+                        }else{
+                            Moments.update({currentPostId: readpost._id, readPostId: currentpost._id},{$set:{
+                                userId: userId,
+                                userIcon: userinfo.profile.icon,
+                                username: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
+                                mainImage: currentpost.mainImage,
+                                title: currentpost.title,
+                                addontitle: currentpost.addontitle,
+                                createdAt: new Date()
+                            }});
                         }
                     }
                 });
@@ -721,6 +741,12 @@ if(Meteor.isServer){
           var handle = Moments.find({currentPostId: postId,userId:{$ne:this.userId}},{sort: {createdAt: -1},limit:limit}).observeChanges({
               added: function (id,fields) {
                       momentsAddForDynamicMomentsDeferHandle(self,id,fields,this.userId);
+              },
+              changed:function (id,fields){
+                  try{
+                      self.changed("dynamicmoments", id, fields);
+                  }catch(error){
+                  }
               }
           });
           self.ready();
