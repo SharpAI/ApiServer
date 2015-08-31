@@ -118,8 +118,8 @@ if Meteor.isClient
       sizey = Math.round( 6 * height / width )
       if sizey <= 0
         sizey = 1
-      if sizey >= 12
-        sizey = 12
+      #if sizey >= 12
+      #  sizey = 12
       Drafts.insert {
         type:'image',
         isImage:true,
