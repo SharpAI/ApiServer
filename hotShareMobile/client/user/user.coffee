@@ -1,15 +1,21 @@
 #space 2
 if Meteor.isClient
   Meteor.startup ()->
+    ###
     Session.setDefault('myFollowedByCount',0)
     Session.setDefault('mySavedDraftsCount',0)
     Session.setDefault('myPostsCount',0)
     Session.setDefault('myFollowToCount',0)
+    ###
     Tracker.autorun ()->
-      Session.set('myFollowedByCount',Counts.get('myFollowedByCount'))
-      Session.set('mySavedDraftsCount',Counts.get('mySavedDraftsCount'))
-      Session.set('myPostsCount',Counts.get('myPostsCount'))
-      Session.set('myFollowToCount',Counts.get('myFollowToCount'))
+      if Counts.get('myFollowedByCount') > 0
+        Session.setPersistent('myFollowedByCount',Counts.get('myFollowedByCount'))
+      if Counts.get('mySavedDraftsCount') > 0
+        Session.setPersistent('mySavedDraftsCount',Counts.get('mySavedDraftsCount'))
+      if Counts.get('myPostsCount') > 0
+        Session.setPersistent('myPostsCount',Counts.get('myPostsCount'))
+      if Counts.get('myFollowToCount') > 0
+        Session.setPersistent('myFollowToCount',Counts.get('myFollowToCount'))
 
     Tracker.autorun ()->
       if Meteor.user() and Session.equals('channel','user')
@@ -19,30 +25,70 @@ if Meteor.isClient
         Meteor.subscribe("followedByWithLimit",10)
         Meteor.subscribe("followToWithLimit",10)
   Template.user.helpers
+    myProfileIcon:->
+      me = Meteor.user()
+      if me and me.profile and me.profile.icon
+        Session.setPersistent('persistentProfileIcon',me.profile.icon)
+      Session.get('persistentProfileIcon')
+    myProfileName:->
+      me = Meteor.user()
+      if me and me.profile and me.profile.fullname
+        Session.setPersistent('persistentProfileName',me.profile.fullname)
+      else if me and me.username
+        Session.setPersistent('persistentProfileName',me.username)
+      Session.get('persistentProfileName')
     followers:->
       #Follower存放用户间关注记录， Follows是推荐偶像列表
       #followerId是偶像userId, userId是粉丝userId
-      Session.get('myFollowedByCount')
+      myFollowedByCount = Session.get('myFollowedByCount')
+      if myFollowedByCount
+        myFollowedByCount
+      else
+        0
     draftsCount:->
-      Session.get('mySavedDraftsCount')
+      mySavedDraftsCount = Session.get('mySavedDraftsCount')
+      if mySavedDraftsCount
+        mySavedDraftsCount
+      else
+        0
     compareDraftsCount:(value)->
       if (Session.get('mySavedDraftsCount')> value)
         true
       else
         false
     items:()->
-      SavedDrafts.find({},{sort: {createdAt: -1},limit:2})
+      mySavedDrafts = SavedDrafts.find({},{sort: {createdAt: -1},limit:2})
+      if mySavedDrafts.count() > 0
+        Meteor.defer ()->
+          Session.setPersistent('persistentMySavedDrafts',mySavedDrafts.fetch())
+        return mySavedDrafts
+      else
+        Session.get('persistentMySavedDrafts')
     postsCount:->
-      Session.get('myPostsCount')
+      myPostsCount = Session.get('myPostsCount')
+      if myPostsCount
+        myPostsCount
+      else
+        0
     comparePostsCount:(value)->
       if (Session.get('myPostsCount') > value)
         true
       else
         false
     postItems:()->
-      Posts.find({owner: Meteor.userId()}, {sort: {createdAt: -1},limit:4})
+      myOwnPosts = Posts.find({owner: Meteor.userId()}, {sort: {createdAt: -1},limit:4})
+      if myOwnPosts.count() > 0
+        Meteor.defer ()->
+          Session.setPersistent('persistentMyOwnPosts',myOwnPosts.fetch())
+        return myOwnPosts
+      else
+        Session.get('persistentMyOwnPosts')
     followCount:->
-      Session.get('myFollowToCount')
+      myFollowToCount = Session.get('myFollowToCount')
+      if myFollowToCount
+        myFollowToCount
+      else
+        0
     getmainImage:()->
       mImg = this.mainImage
       if (mImg.indexOf('file:///') >= 0) and device.platform is 'Android'

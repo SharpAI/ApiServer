@@ -9,17 +9,13 @@
     </div>
     <div class="top">
       <div class="icon">
-        {{#if currentUser.profile.icon}}
-          <img src="{{currentUser.profile.icon}}" width='80' height='80'>
+        {{#if myProfileIcon}}
+          <img src="{{myProfileIcon}}" width='80' height='80'>
         {{else}}
           <i class="fa fa-camera"></i>上传头像
         {{/if}}
       </div>
-        {{#if currentUser.profile.fullname}}
-          <span class="userName">{{currentUser.profile.fullname}}</span>
-        {{else}}
-          <span class="userName">{{currentUser.username}}</span>
-        {{/if}}
+        <span class="userName">{{myProfileName}}</span>
     </div>
     <div class="line">
       <span></span>
