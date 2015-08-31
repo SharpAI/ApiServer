@@ -59,7 +59,7 @@ if Meteor.isClient
           }
         )
       ,1000
-    $('.textDiv1').linkify();
+    $('.textDiv1Link').linkify();
     $("a[target='_blank']").click((e)->
       e.preventDefault();
       #window.open($(e.currentTarget).attr('href'), '_system', '');
