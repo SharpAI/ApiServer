@@ -13,6 +13,7 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu",'chatContent')
       Session.set("SocialOnButton",'chatContent')
     'click .contactsBtn':->
+      Session.set('postfriendsitemsLimit', 10);
       Session.set("Social.LevelOne.Menu",'contactsList')
       Session.set("SocialOnButton",'contactsList')
       document.body.scrollTop = $(".showPostsBox").height()
@@ -30,7 +31,7 @@ if Meteor.isClient
     Meteor.subscribe "pcomments"
   Template.socialContent.helpers
     newcount:()->
-      PostFriends.find({meetOnPostId:Session.get("postContent")._id,count:1},{sort: {createdAt: -1}}).count()
+      PostFriends.find({meetOnPostId:Session.get("postContent")._id,count:1,ta:{$ne:null}},{sort: {createdAt: -1}}).count()
     feedscount:()->
       Feeds.find({followby:Meteor.userId(),checked:false}).count()
     haveFeeds:->
@@ -39,7 +40,7 @@ if Meteor.isClient
       else
         false
     haveNewFriends: ->
-      if PostFriends.find({meetOnPostId:Session.get("postContent")._id,count:1},{sort:{createdAt:-1}}).count()>0
+      if PostFriends.find({meetOnPostId:Session.get("postContent")._id,count:1,ta:{$ne:null}},{sort:{createdAt:-1}}).count()>0
         true
       else
         false
