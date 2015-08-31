@@ -74,6 +74,9 @@ if Meteor.isClient
     Router.route '/webHome',()->
       this.render 'webHome'
       return
+    Router.route '/help',()->
+      this.render 'help'
+      return
     Router.route '/progressBar',()->
       if Meteor.isCordova is true
         this.render 'progressBar'

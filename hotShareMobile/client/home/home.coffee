@@ -6,3 +6,5 @@ if Meteor.isClient
   Template.home.events
     'click #follow': (event)->
        Router.go '/searchFollow'
+    'click .clickHelp':(event)->
+      PUB.page '/help'
