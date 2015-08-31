@@ -4,9 +4,21 @@ if Meteor.isClient
     Meteor.subscribe("topics")
   Template.search.helpers
     theme:()->
-      Topics.find({type:"theme"}, {sort: {createdAt: -1}})
+      themes = Topics.find({type:"theme"}, {sort: {createdAt: -1}})
+      if themes.count() > 0
+        Meteor.defer ()->
+          Session.setPersistent('persistentThemes',themes.fetch())
+        return themes
+      else
+        Session.get('persistentThemes')
     topic:()->
-      Topics.find({type:"topic"}, {sort: {createdAt: -1}})
+      topics = Topics.find({type:"topic"}, {sort: {createdAt: -1}})
+      if topics.count() > 0
+        Meteor.defer ()->
+          Session.setPersistent('persistentTopics',topics.fetch())
+        return topics
+      else
+        Session.get('persistentTopics')
   Template.search.events
     'focus #search-box': (event)->
        PUB.page '/searchPeopleAndTopic'

@@ -24,7 +24,13 @@ if Meteor.isClient
       else
         false
     eventFeeds:->
-      Feeds.find({}, {sort: {createdAt: -1}})
+      feeds = Feeds.find({}, {sort: {createdAt: -1}})
+      if feeds.count() > 0
+        Meteor.defer ()->
+          Session.setPersistent('persistentFeedsForMe',feeds.fetch())
+        return feeds
+      else
+        Session.get('persistentFeedsForMe')
     isGetRequest:(eventType)->
       eventType is 'getrequest'
     isSendRequest:(eventType)->
