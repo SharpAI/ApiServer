@@ -250,7 +250,7 @@ if(Meteor.isServer){
                                 mainImage: readpost.mainImage,
                                 title: readpost.title,
                                 addontitle: readpost.addontitle,
-                                createdAt: new Date()
+                                createdAt: pdata.createdAt
                             }});
                         }
                         //2. 给所有看过的帖子，增加当前帖子
