@@ -345,8 +345,8 @@ if Meteor.isClient
         info.body = node.innerHTML
         nodeColor = $(node).css('color')
         nodeBackgroundColor = $(node).css('background-color')
-        iframeNumber = $(node).find('iframe').length
-        showDebug&&console.log('    Node['+index+'] tagName '+node.tagName+ ' text ' + node.textContent)
+        #iframeNumber = $(node).find('iframe').length
+        #showDebug&&console.log('    Node['+index+'] tagName '+node.tagName+ ' text ' + node.textContent)
         text = $(node).text().toString().replace(/\s\s\s+/g, '')
         if text and text isnt ''
           previousIsImage = false
@@ -366,6 +366,8 @@ if Meteor.isClient
             else
               resortedArticle.push {type:'text',text:toBeInsertedText}
               toBeInsertedText = text;
+        ###
+        Since we traversal the dom tree and record only node w/o children, so the iframe will be the node.
         if iframeNumber > 0
           console.log('iframe number is ' + iframeNumber)
           $(node).find('iframe').each (index,iframe)->
@@ -373,16 +375,26 @@ if Meteor.isClient
             iframe.height = '100%'
             iframe.src = removeURLParameter(iframe.src,'width')
             iframe.src = removeURLParameter(iframe.src,'height')
+            iframe.src.replace(/https:\/\//g, 'http://')
           showDebug&&console.log($(node).html())
           if toBeInsertedText and toBeInsertedText isnt ''
             resortedArticle.push {type:'text',text:toBeInsertedText}
             toBeInsertedText = ''
           resortedArticle.push {type:'iframe',iframe:$(node).html()}
-        else if node.tagName == 'IFRAME'
+        else ###
+        if node.tagName == 'IFRAME'
           node.width = '100%'
           node.height = '100%'
           node.src = removeURLParameter(node.src,'width')
           node.src = removeURLParameter(node.src,'height')
+          node.src = node.src.replace(/https:\/\//g, 'http://')
+          node.removeAttribute("style")
+          dataSrc = node.getAttribute('data-src')
+          if dataSrc
+            dataSrc = removeURLParameter(dataSrc,'width')
+            dataSrc = removeURLParameter(dataSrc,'height')
+            dataSrc = dataSrc.replace(/https:\/\//g, 'http://')
+            node.setAttribute('data-src',dataSrc)
           showDebug&&console.log(node.outerHTML)
           if toBeInsertedText and toBeInsertedText isnt ''
             resortedArticle.push {type:'text',text:toBeInsertedText}
