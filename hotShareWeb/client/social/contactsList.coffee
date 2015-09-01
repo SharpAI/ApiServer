@@ -110,7 +110,7 @@ if Meteor.isClient
     "click .newFriends":(e)->
       if this.count is 1
         Meets.update({_id: this._id}, {$set: {count: 2}})
-      userProfileList = PostFriends.find({meetOnPostId:Session.get("postContent")._id},{sort:{count:-1}}).fetch()
+      userProfileList = PostFriends.find({meetOnPostId:Session.get("postContent")._id,ta:{$ne:null}},{sort:{createdAt:-1}}).fetch()
       Session.set("userProfileList", userProfileList)
       Session.set("userProfileType", "newfriends")
       Session.set("currentPageIndex", 1)
