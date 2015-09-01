@@ -196,6 +196,11 @@ if Meteor.isClient
     #  PUB.toast("您的手机版本过低，部分图片可能产生变形。");
 
   Template.showPosts.helpers
+    isTextLength:(text)->
+      if(text.trim().length>0)
+        return true
+      else
+        return false
     myselfClickedUp:->
       i = this.index
       userId = Meteor.userId()
