@@ -202,7 +202,7 @@ if Meteor.isClient
     else if item.type is 'image'
       console.log('Processing Image ' + item.imageUrl)
       self = this
-      if item.imageUrl and item.imageUrl isnt '' and (item.imageUrl isnt this.mainUrl)
+      if item.imageUrl and item.imageUrl isnt ''
         imageArray = []
         imageArray.push(item.imageUrl)
         return seekSuitableImageFromArrayAndDownloadToLocal imageArray,(file,w,h,found,index,total,source)->
