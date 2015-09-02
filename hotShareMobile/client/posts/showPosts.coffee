@@ -31,6 +31,11 @@ if Meteor.isClient
         Session.set('displayUserProfileBox',false)
       onOpen: ->
         Session.set('displayUserProfileBox',true)
+  Template.showPosts.onRendered ->
+    if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
+      Meteor.setTimeout ()->
+          document.body.scrollTop = Session.get("postPageScrollTop") 
+        , 280
   Template.showPosts.rendered=->
     Session.set('postfriendsitemsLimit', 10);
     $('.mainImage').css('height',$(window).height()*0.55)

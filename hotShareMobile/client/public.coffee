@@ -133,9 +133,11 @@ postPageArr = []
 #          ]
 #    "photos":(items)->
 #        window.openPhotoSwipe(items)
-      "postPage":(postID)->
+      "postPage":(postID,scrollTop)->
+          Session.set("postPageScrollTop", 0)
           postIdJson = {
-            postId: postID
+            postId: postID,
+            scrollTop: scrollTop
           }
           postPageArr.push(postIdJson)
       "postPageBack":->
@@ -153,5 +155,10 @@ postPageArr = []
           else
             post = postPageArr.pop()
             postId = post.postId
+            if post.scrollTop is undefined
+              postPageScrollTop = 0
+            else
+              postPageScrollTop = post.scrollTop
+            Session.set("postPageScrollTop", postPageScrollTop)
             Router.go '/posts/'+postId
           

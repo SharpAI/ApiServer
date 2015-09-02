@@ -62,7 +62,11 @@ if Meteor.isClient
     #msg +="\nThe current font size in pixels: " + args[0].iSize;
     #msg += "\nThe change in pixels from the last size:" + args[0].iDelta;
     reRender()
-
+  Template.showPosts.onRendered ->
+    if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
+      Meteor.setTimeout ()->
+          document.body.scrollTop = Session.get("postPageScrollTop") 
+        , 280
   Template.showPosts.rendered=->
     if isWeiXinFunc() is true
       console.log("in wechat")

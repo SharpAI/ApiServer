@@ -51,12 +51,13 @@ if Meteor.isClient
   Template.moments.events
     'click .readpost':(e)->
       postId = this.readPostId
+      scrollTop = $(window).scrollTop()
       if postId is undefined
         postId = this._id
       $(window).children().off()
       $(window).unbind('scroll')
       id = Session.get("postContent")._id
-      PUB.postPage(id)
+      PUB.postPage(id,scrollTop)
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/redirect/'+postId
@@ -69,12 +70,13 @@ if Meteor.isClient
   Template.lpcomments.events
     'click .readpost':(e)->
       postId = this.postId
+      scrollTop = $(window).scrollTop()
       Feeds.update({_id:this._id},{$set: {checked:true}})
       id = Session.get("postContent")._id
       if postId isnt id
         $(window).children().off()
         $(window).unbind('scroll')
-        PUB.postPage(id)
+        PUB.postPage(id,scrollTop)
         Meteor.setTimeout ()->
           Session.set("Social.LevelOne.Menu",'contactsList')
           Router.go '/redirect/'+postId
