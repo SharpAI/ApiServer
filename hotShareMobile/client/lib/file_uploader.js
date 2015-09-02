@@ -33,7 +33,7 @@ if (Meteor.isCordova){
                 if (progressEvent.lengthComputable) {
                     if (callback){
                         showDebug && console.log('Loaded ' + progressEvent.loaded + ' Total ' + progressEvent.total);
-                        callback('downloading',progressEvent)
+                        callback('uploading',progressEvent)
                     }
                 } else {
                     showDebug && console.log('Upload ++');
@@ -350,8 +350,8 @@ if (Meteor.isCordova){
             if (Session.get('terminateUpload')) {
                 callback(new Error('aboutUpload'),null)
             }
-            if (status === 'downloading'){
-                Session.set('progressBarWidth', parseInt(90*(self.uploaded/self.total + progressEvent.loaded / progressEvent.total)));
+            if (status === 'uploading'){
+                Session.set('progressBarWidth', parseInt(90*(self.uploaded/self.total + (progressEvent.loaded / progressEvent.total))/self.total));
             } else if (status === 'done'){
                 self.uploaded++;
                 Session.set('progressBarWidth', parseInt(90*self.uploaded/self.total));
@@ -370,8 +370,14 @@ if (Meteor.isCordova){
     var asyncCallback = function (err,result){
         console.log('async processing done ' + JSON.stringify(result));
         Template.progressBar.__helpers.get('close')();
-        if (this.finalCallback) {
-            this.finalCallback(null);
+        if (error){
+            if (this.finalCallback) {
+                this.finalCallback('error');
+            }
+        } else {
+            if (this.finalCallback) {
+                this.finalCallback(null);
+            }
         }
     };
     var multiThreadUploadFile_new = function(draftData, maxThreads, callback) {
