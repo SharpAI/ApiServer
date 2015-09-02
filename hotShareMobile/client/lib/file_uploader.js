@@ -30,7 +30,7 @@ if (Meteor.isCordova){
 
             var ft = new FileTransferBCS();
             ft.onprogress = function(progressEvent) {
-                if (progressEvent.lengthComputable) {
+                if (progressEvent && progressEvent.lengthComputable) {
                     if (callback){
                         showDebug && console.log('Loaded ' + progressEvent.loaded + ' Total ' + progressEvent.total);
                         callback('uploading',progressEvent)
@@ -350,8 +350,8 @@ if (Meteor.isCordova){
             if (Session.get('terminateUpload')) {
                 callback(new Error('aboutUpload'),null)
             }
-            if (status === 'uploading'){
-                Session.set('progressBarWidth', parseInt(90*(self.uploaded/self.total + (progressEvent.loaded / progressEvent.total))/self.total));
+            if (status === 'uploading' && param){
+                Session.set('progressBarWidth', parseInt(90*(self.uploaded/self.total + (param.loaded / param.total))/self.total));
             } else if (status === 'done'){
                 self.uploaded++;
                 Session.set('progressBarWidth', parseInt(90*self.uploaded/self.total));
