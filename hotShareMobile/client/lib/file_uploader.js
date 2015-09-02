@@ -351,10 +351,10 @@ if (Meteor.isCordova){
                 callback(new Error('aboutUpload'),null)
             }
             if (status === 'uploading' && param){
-                Session.set('progressBarWidth', parseInt(90*(self.uploaded/self.total + (param.loaded / param.total))/self.total));
+                Session.set('progressBarWidth', parseInt(100*(self.uploaded/self.total + (param.loaded / param.total)/self.total)));
             } else if (status === 'done'){
                 self.uploaded++;
-                Session.set('progressBarWidth', parseInt(90*self.uploaded/self.total));
+                Session.set('progressBarWidth', parseInt(100*self.uploaded/self.total));
                 item.imgUrl = param;
                 item.uploaded = true;
                 callback(null,item)
@@ -370,7 +370,7 @@ if (Meteor.isCordova){
     var asyncCallback = function (err,result){
         console.log('async processing done ' + JSON.stringify(result));
         Template.progressBar.__helpers.get('close')();
-        if (error){
+        if (err){
             if (this.finalCallback) {
                 this.finalCallback('error');
             }
