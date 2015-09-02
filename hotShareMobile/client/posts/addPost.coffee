@@ -1,4 +1,5 @@
 if Meteor.isClient
+  @baseGap = 5
   window.iabHandle = null
   Session.set('lastImportedUrl','')
   getDisplayElementWidth=()->
@@ -505,16 +506,16 @@ if Meteor.isClient
       style = 'font-family:;font-size:large' + ';text-align:' + textarea.css('text-align')+';'
       textarea.attr('style', style)
       #Compute the new scrollHeight
-      grid_size=Math.floor(getDisplayElementWidth()/6 - 10);
-      min_widget_height = (5 * 2) + grid_size;
+      grid_size=Math.floor(getDisplayElementWidth()/6 - baseGap*2);
+      min_widget_height = (baseGap * 2) + grid_size;
       $(textarea).css('height', 'auto');
       scrollHeight = document.getElementById(node.id+"TextArea").scrollHeight
       $(textarea).css('height', scrollHeight);
-      sizey = Math.ceil((scrollHeight+10)/min_widget_height)
+      sizey = Math.ceil((scrollHeight+baseGap*2)/min_widget_height)
       resizeItem = $('#'+node.id)
       orig_sizey = parseInt(resizeItem.attr("data-sizey"))
       if sizey isnt orig_sizey
-        height = sizey*min_widget_height - 10
+        height = sizey*min_widget_height - baseGap*2
         resizeItem.css("height", height)
         $(node).css('height', "")
         sizex = parseInt(resizeItem.attr("data-sizex"))
@@ -528,15 +529,15 @@ if Meteor.isClient
         textarea.css('height')+";"
       textarea.attr('style', style)
       #Compute the new scrollHeight
-      grid_size=Math.floor(getDisplayElementWidth()/6 - 10);
-      min_widget_height = (5 * 2) + grid_size;
+      grid_size=Math.floor(getDisplayElementWidth()/6 - baseGap*2);
+      min_widget_height = (baseGap * 2) + grid_size;
       scrollHeight = document.getElementById(node.id+"TextArea").scrollHeight
       $(textarea).css('height', 'auto').css('height', scrollHeight);
-      sizey = Math.ceil((scrollHeight+10)/min_widget_height)
+      sizey = Math.ceil((scrollHeight+baseGap*2)/min_widget_height)
       resizeItem = $('#'+node.id)
       orig_sizey = parseInt(resizeItem.attr("data-sizey"))
       if sizey isnt orig_sizey
-        height = sizey*min_widget_height - 10
+        height = sizey*min_widget_height - baseGap*2
         resizeItem.css("height", height)
         $(node).css('height', "")
         sizex = parseInt(resizeItem.attr("data-sizex"))
@@ -587,13 +588,13 @@ if Meteor.isClient
       $('#'+node.id+'TextArea').on('keyup input',(e)->
         e.preventDefault()
         id = this.id.replace("TextArea", "")
-        grid_size=Math.floor(getDisplayElementWidth()/6 - 10)
+        grid_size=Math.floor(getDisplayElementWidth()/6 - baseGap*2)
         console.log('#display width is '+getDisplayElementWidth()+' .addPost width is '+$('.addPost').width())
-        min_widget_height =  grid_size + 10;
+        min_widget_height =  grid_size + baseGap*2;
         #offset = this.offsetHeight - this.clientHeight;
         $(this).css('height', 'auto').css('height', this.scrollHeight)
 
-        sizey = Math.ceil((this.scrollHeight+10)/min_widget_height)
+        sizey = Math.ceil((this.scrollHeight+baseGap*2)/min_widget_height)
 
         resizeItem = $('#'+id)
         #resizeItem.css("height", this.scrollHeight)
@@ -605,7 +606,7 @@ if Meteor.isClient
           gridster.resize_widget(resizeItem, sizex,sizey)
           console.log('propertychange sizey:'+ sizey + 'height:' +height + 'scrollHeight:'+this.scrollHeight)
 
-        height = sizey*min_widget_height - 10
+        height = sizey*min_widget_height - baseGap*2
         resizeItem.css("line-height", height+'px')
       )
       if insertedObj.color and insertedObj.color isnt ''
@@ -620,7 +621,7 @@ if Meteor.isClient
       if grid != undefined
         if insertedObj.inIframe and insertedObj.iframe
           console.log('to insert iframe')
-          grid.add_widget(node, parseInt(insertedObj.data_sizex,10), parseInt(insertedObj.data_sizey,10))
+          grid.add_widget(node, parseInt(insertedObj.data_sizex,baseGap*2), parseInt(insertedObj.data_sizey,baseGap*2))
 # Images loaded during rendering
         else if Session.get('NewImgAdd') is 'true'
           if (window.imageCounter2 % 3) is 0
@@ -666,7 +667,7 @@ if Meteor.isClient
           grid.add_widget(node, insert_sizex, insert_sizey, insert_col, insert_row)
 # To be inserted at the end of the screen.
         else if insertedObj.toTheEnd
-          grid.add_widget(node, parseInt(insertedObj.data_sizex,10), parseInt(insertedObj.data_sizey,10))
+          grid.add_widget(node, parseInt(insertedObj.data_sizex,baseGap*2), parseInt(insertedObj.data_sizey,baseGap*2))
 # To be inserted on the middle of screen.
         else
           max_row = 1
@@ -858,7 +859,7 @@ if Meteor.isClient
       initToolBar(itemElem, undefined)
     )
 
-    base_size=Math.floor(getDisplayElementWidth()/6 - 10);
+    base_size=Math.floor(getDisplayElementWidth()/6 - baseGap*2);
     test = $("#display");
     `gridster = test.gridster({serialize_params: function ($w, wgd) {
       return {
@@ -868,7 +869,7 @@ if Meteor.isClient
         size_x: wgd.size_x,
         size_y: wgd.size_y
       };
-    }, widget_base_dimensions: [base_size, base_size],widget_margins: [5, 5], min_cols: 3, max_cols:6, resize: {enabled: true, max_size: [9,9], min_size: [2, 2], start: function(e, ui, $widget) {
+    }, widget_base_dimensions: [base_size, base_size],widget_margins: [baseGap, baseGap], min_cols: 3, max_cols:6, resize: {enabled: true, max_size: [9,9], min_size: [2, 2], start: function(e, ui, $widget) {
 
       }, stop: function(e, ui, $widget) {
         //$widget.actImageFitCover(e, ui, $widget);

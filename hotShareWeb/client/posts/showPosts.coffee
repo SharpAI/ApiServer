@@ -1,5 +1,6 @@
 if Meteor.isClient
-  @baseGap = 0
+  @baseGap = 2
+  @baseFont = 18
   @isIOS = (navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false)
   @isWeiXinFunc = ()->
     ua = window.navigator.userAgent.toLowerCase()
@@ -43,7 +44,7 @@ if Meteor.isClient
 
       min_widget_height = (baseGap * 2) + base_size;
 
-      scrollHeight = $(textarea).prop('scrollHeight')
+      scrollHeight = $(textarea).prop('scrollHeight') - baseFont*2
       sizey = Math.ceil((scrollHeight + baseGap * 2)/min_widget_height)
 
       $(textarea).css('height', '')
@@ -65,7 +66,7 @@ if Meteor.isClient
   Template.showPosts.onRendered ->
     if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
       Meteor.setTimeout ()->
-          document.body.scrollTop = Session.get("postPageScrollTop") 
+          document.body.scrollTop = Session.get("postPageScrollTop")
         , 280
   Template.showPosts.rendered=->
     if isWeiXinFunc() is true
@@ -129,7 +130,7 @@ if Meteor.isClient
       $(textarea).css('height', 'auto')
       height = $(textarea).height()
 
-      scrollHeight = $(textarea).prop('scrollHeight')
+      scrollHeight = $(textarea).prop('offsetHeight') - baseFont*2
       sizey = Math.ceil((scrollHeight + baseGap * 2)/min_widget_height)
 
       #$(textarea).css('width', '')
