@@ -24,6 +24,16 @@ if Meteor.isClient
     'click .logout':->
       Meteor.logout (msg)->
         Session.setPersistent('persistentLoginStatus',false)
+        Session.setPersistent('persistentFeedsForMe',null)
+        Session.setPersistent('persistentMyFollowedPosts',null)
+        Session.setPersistent('myFollowedByCount',0)
+        Session.setPersistent('mySavedDraftsCount',0)
+        Session.setPersistent('myPostsCount',0)
+        Session.setPersistent('myFollowToCount',0)
+        Session.setPersistent('persistentProfileIcon',null)
+        Session.setPersistent('persistentProfileName',null)
+        Session.setPersistent('persistentMySavedDrafts',null)
+        Session.setPersistent('persistentMyOwnPosts',null)
         console.log msg
       Router.go '/authOverlay'
   Template.my_email.rendered=->
