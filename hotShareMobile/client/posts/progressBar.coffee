@@ -25,5 +25,5 @@ if Meteor.isClient
 
     Template.progressBar.events
         'click #delayPublish':->
-            abortuploader();
+            Session.set('terminateUpload', true);
             Template.progressBar.__helpers.get('close')()
