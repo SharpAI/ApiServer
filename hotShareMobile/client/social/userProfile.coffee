@@ -1,5 +1,10 @@
 if Meteor.isClient
-
+  updateMeetsCount = (userId)->
+    meetInfo = PostFriends.findOne({me:Meteor.userId(),ta:userId})
+    if(meetInfo)
+      meetCount=meetInfo.count
+      if(meetCount and meetCount is 1)
+        Meets.update({_id: meetInfo._id}, {$set: {count: 2}})
   getLocation = (userId)->
     userInfo = UserDetail.findOne {_id:userId}
     console.log('Get location for user '+ userId + JSON.stringify(userInfo))
@@ -137,6 +142,7 @@ if Meteor.isClient
       window.userProfileTrackerHandler = handler
       if UserProfilesSwiper.pageIs('userProfilePage1')
         if Session.get("currentPageIndex") isnt 1 and Session.get("currentPageIndex") isnt -1
+          updateMeetsCount Session.get("ProfileUserId1")
           userProfileList = Session.get("userProfileList")
           if Session.get("currentPageIndex") is 2
             currentProfileIndex = Session.get("currentProfileIndex")-1
@@ -170,6 +176,7 @@ if Meteor.isClient
 
       if UserProfilesSwiper.pageIs('userProfilePage2')
         if Session.get("currentPageIndex") isnt 2
+          updateMeetsCount Session.get("ProfileUserId2")
           userProfileList = Session.get("userProfileList")
           if Session.get("currentPageIndex") is 1
             currentProfileIndex = Session.get("currentProfileIndex")+1
@@ -200,6 +207,7 @@ if Meteor.isClient
 
       if UserProfilesSwiper.pageIs('userProfilePage3')
         if Session.get("currentPageIndex") isnt 3
+          updateMeetsCount Session.get("ProfileUserId3")
           userProfileList = Session.get("userProfileList")
           if Session.get("currentPageIndex") is 1
             currentProfileIndex = Session.get("currentProfileIndex")-1
