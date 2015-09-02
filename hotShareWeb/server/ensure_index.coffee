@@ -16,6 +16,7 @@ if Meteor.isServer
     ReComment._ensureIndex({postId: 1, commentUserId: 1})
     ReComment._ensureIndex({postId: 1})
     Meets._ensureIndex({me: 1, count: -1, createdAt: -1})
+    Meets._ensureIndex({me: 1, ta: 1, meetOnPostId: 1, count: -1, createdAt: -1})
     Meets._ensureIndex({me: 1, ta: 1})
     Posts._ensureIndex({owner: 1, createdAt: -1})
     FollowPosts._ensureIndex({followby: 1, createdAt: -1})
