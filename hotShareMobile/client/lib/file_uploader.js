@@ -291,7 +291,7 @@ if (Meteor.isCordova){
               var filename = Meteor.userId()+'_'+timestamp+'.jpg';
               showDebug && console.log('File name ' + filename);
               //uploadToS3(filename,results[i],callback);
-              uploadToAliyun(filename,s,callback);
+              uploadToAliyun_new(filename,s,callback);
           }, function(s){
               console.info(s);
           }, {
@@ -322,7 +322,7 @@ if (Meteor.isCordova){
               var filename = Meteor.userId()+'_'+timestamp+ '_' + originalFilename;
               showDebug && console.log('File name ' + filename);
               //uploadToS3(filename,results[i],callback);
-              uploadToAliyun(filename,results[i],callback);
+                uploadToAliyun_new(filename,results[i],callback);
             }
           }, function (error){
               showDebug && console.log('Pick Image Error ' + error);
