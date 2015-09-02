@@ -1341,7 +1341,7 @@ if Meteor.isClient
         #uploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId)
         #Don't add addpost page into history
         multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId, (err, result)->
-            if err
+            if err and result
                 for i in [0..(result.length-1)]
                   if result[i].uploaded and result[i]._id and result[i].imgUrl
                     Drafts.update({_id: result[i]._id}, {$set: {imgUrl:result[i].imgUrl}});
