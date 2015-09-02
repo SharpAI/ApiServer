@@ -536,6 +536,13 @@ if Meteor.isClient
       if post[i].likeUserId[userId] isnt true  and post[i].dislikeUserId[userId] isnt true
         post[i].likeSum += 1
         post[i].likeUserId[userId] = true
+        pclength=0
+        if(post[i].pcomments)
+          pclength=post[i].pcomments.length
+        if post[i].dislikeSum + post[i].likeSum + pclength is 0
+          post[i].style=""
+        else
+          post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -547,6 +554,13 @@ if Meteor.isClient
         post[i].likeUserId[userId] = true
         post[i].dislikeSum -= 1
         post[i].dislikeUserId[Meteor.userId()] = false
+        pclength=0
+        if(post[i].pcomments)
+          pclength=post[i].pcomments.length
+        if post[i].dislikeSum + post[i].likeSum + pclength is 0
+          post[i].style=""
+        else
+          post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -556,6 +570,13 @@ if Meteor.isClient
       else if post[i].likeUserId[userId] is true and  post[i].dislikeUserId[userId] isnt true
         post[i].likeSum -= 1
         post[i].likeUserId[userId] = false
+        pclength=0
+        if(post[i].pcomments)
+          pclength=post[i].pcomments.length
+        if post[i].dislikeSum + post[i].likeSum + pclength is 0
+          post[i].style=""
+        else
+          post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -589,6 +610,13 @@ if Meteor.isClient
       if post[i].likeUserId[userId] isnt true  and post[i].dislikeUserId[userId] isnt true
         post[i].dislikeSum += 1
         post[i].dislikeUserId[userId] = true
+        pclength=0
+        if(post[i].pcomments)
+          pclength=post[i].pcomments.length
+        if post[i].dislikeSum + post[i].likeSum + pclength is 0
+          post[i].style=""
+        else
+          post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -600,6 +628,13 @@ if Meteor.isClient
         post[i].dislikeUserId[userId] = true
         post[i].likeSum -= 1
         post[i].likeUserId[Meteor.userId()] = false
+        pclength=0
+        if(post[i].pcomments)
+          pclength=post[i].pcomments.length
+        if post[i].dislikeSum + post[i].likeSum + pclength is 0
+          post[i].style=""
+        else
+          post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -609,6 +644,13 @@ if Meteor.isClient
       else if post[i].likeUserId[userId] isnt true and  post[i].dislikeUserId[userId] is true
         post[i].dislikeSum -= 1
         post[i].dislikeUserId[userId] = false
+        pclength=0
+        if(post[i].pcomments)
+          pclength=post[i].pcomments.length
+        if post[i].dislikeSum + post[i].likeSum + pclength is 0
+          post[i].style=""
+        else
+          post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -789,6 +831,7 @@ if Meteor.isClient
           createdAt: new Date()
         }
         post[i].pcomments.push(pcommentJson)
+        post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"pcomments","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
