@@ -36,7 +36,7 @@ if Meteor.isClient
     moments:()->
       DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}})
     suggestPosts:()->
-      SuggestPosts.find({},{sort: {createdAt: -1}})
+      SuggestPosts.find({},{sort: {createdAt: -1}},limit:10)
     time_diff: (created)->
       GetTime0(new Date() - created)
     moreResults:()->
