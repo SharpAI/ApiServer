@@ -343,12 +343,12 @@ if (Meteor.isCordova){
         console.log('uploading ' + JSON.stringify(item));
 
         if (Session.get('terminateUpload')) {
-            callback(new Error('aboutUpload'),null)
+            return callback(new Error('aboutUpload'),null)
         }
         var self = this;
         var ft = uploadToAliyun_new(item.filename, item.URI, function(status,param){
             if (Session.get('terminateUpload')) {
-                callback(new Error('aboutUpload'),null)
+                return callback(new Error('aboutUpload'),null)
             }
             if (status === 'uploading' && param){
                 Session.set('progressBarWidth', parseInt(100*(self.uploaded/self.total + (param.loaded / param.total)/self.total)));
