@@ -22,6 +22,7 @@ if Meteor.isClient
         PUB.back()
       ,animatePageTrasitionTimeout
     'click .mainImage': (event)->
+      Session.set("postPageScrollTop", 0)
       if isIOS
         if (event.clientY + $('#footer').height()) >=  $(window).height()
           console.log 'should be triggered in scrolling'

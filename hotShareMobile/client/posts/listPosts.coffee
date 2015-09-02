@@ -42,6 +42,7 @@ if Meteor.isClient
       Session.equals('followPostsCollection','error')
   Template.listPosts.events
     'click .mainImage': (event)->
+      Session.set("postPageScrollTop", 0)
       if isIOS
         if (event.clientY + $('.home #footer').height()) >=  $(window).height()
           console.log 'should be triggered in scrolling'
