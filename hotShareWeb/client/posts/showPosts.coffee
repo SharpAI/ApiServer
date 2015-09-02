@@ -544,9 +544,15 @@ if Meteor.isClient
         if(post[i].pcomments)
           pclength=post[i].pcomments.length
         if post[i].dislikeSum + post[i].likeSum + pclength is 0
-          post[i].style=""
+          if post[i].style and post[i].style.length>100
+            post[i].style=post[i].style.replace("#F30B44","grey")
+          else
+            post[i].style=""
         else
-          post[i].style="color: #F30B44;"
+          if post[i].style and post[i].style.length>100
+            post[i].style=post[i].style.replace("grey","#F30B44")
+          else
+            post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -562,9 +568,15 @@ if Meteor.isClient
         if(post[i].pcomments)
           pclength=post[i].pcomments.length
         if post[i].dislikeSum + post[i].likeSum + pclength is 0
-          post[i].style=""
+          if post[i].style and post[i].style.length>100
+            post[i].style=post[i].style.replace("#F30B44","grey")
+          else
+            post[i].style=""
         else
-          post[i].style="color: #F30B44;"
+          if post[i].style and post[i].style.length>100
+            post[i].style=post[i].style.replace("grey","#F30B44")
+          else
+            post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -578,9 +590,15 @@ if Meteor.isClient
         if(post[i].pcomments)
           pclength=post[i].pcomments.length
         if post[i].dislikeSum + post[i].likeSum + pclength is 0
-          post[i].style=""
+          if post[i].style and post[i].style.length>100
+            post[i].style=post[i].style.replace("#F30B44","grey")
+          else
+            post[i].style=""
         else
-          post[i].style="color: #F30B44;"
+          if post[i].style and post[i].style.length>100
+            post[i].style=post[i].style.replace("grey","#F30B44")
+          else
+            post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -618,9 +636,15 @@ if Meteor.isClient
         if(post[i].pcomments)
           pclength=post[i].pcomments.length
         if post[i].dislikeSum + post[i].likeSum + pclength is 0
-          post[i].style=""
+          if post[i].style and post[i].style.length>100
+            post[i].style=post[i].style.replace("#F30B44","grey")
+          else
+            post[i].style=""
         else
-          post[i].style="color: #F30B44;"
+          if post[i].style and post[i].style.length>100
+            post[i].style=post[i].style.replace("grey","#F30B44")
+          else
+            post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -636,9 +660,15 @@ if Meteor.isClient
         if(post[i].pcomments)
           pclength=post[i].pcomments.length
         if post[i].dislikeSum + post[i].likeSum + pclength is 0
-          post[i].style=""
+          if post[i].style and post[i].style.length>100
+            post[i].style=post[i].style.replace("#F30B44","grey")
+          else
+            post[i].style=""
         else
-          post[i].style="color: #F30B44;"
+          if post[i].style and post[i].style.length>100
+            post[i].style=post[i].style.replace("grey","#F30B44")
+          else
+            post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -652,9 +682,15 @@ if Meteor.isClient
         if(post[i].pcomments)
           pclength=post[i].pcomments.length
         if post[i].dislikeSum + post[i].likeSum + pclength is 0
-          post[i].style=""
+          if post[i].style and post[i].style.length>100
+            post[i].style=post[i].style.replace("#F30B44","grey")
+          else
+            post[i].style=""
         else
-          post[i].style="color: #F30B44;"
+          if post[i].style and post[i].style.length>100
+            post[i].style=post[i].style.replace("grey","#F30B44")
+          else
+            post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -835,7 +871,10 @@ if Meteor.isClient
           createdAt: new Date()
         }
         post[i].pcomments.push(pcommentJson)
-        post[i].style="color: #F30B44;"
+        if post[i].style and post[i].style.length>100
+          post[i].style=post[i].style.replace("grey","#F30B44")
+        else
+          post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"pcomments","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
