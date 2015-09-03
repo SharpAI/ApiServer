@@ -1341,6 +1341,7 @@ if Meteor.isClient
             draftToBeUploadedImageData.push(draftImageData[i])
         #uploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId)
         #Don't add addpost page into history
+        Session.set('terminateUpload', false)
         multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId, (err, result)->
             if err and result
                 for i in [0..(result.length-1)]

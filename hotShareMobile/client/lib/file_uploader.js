@@ -343,12 +343,12 @@ if (Meteor.isCordova){
         console.log('uploading ' + JSON.stringify(item));
 
         if (Session.get('terminateUpload')) {
-            return callback(new Error('aboutUpload'),null)
+            return callback(new Error('aboutUpload'),item)
         }
         var self = this;
         var ft = uploadToAliyun_new(item.filename, item.URI, function(status,param){
             if (Session.get('terminateUpload')) {
-                return callback(new Error('aboutUpload'),null)
+                return callback(new Error('aboutUpload'),item)
             }
             if (status === 'uploading' && param){
                 Session.set('progressBarWidth', parseInt(100*(self.uploaded/self.total + (param.loaded / param.total)/self.total)));
@@ -372,7 +372,7 @@ if (Meteor.isCordova){
         Template.progressBar.__helpers.get('close')();
         if (err){
             if (this.finalCallback) {
-                this.finalCallback('error');
+                this.finalCallback('error',result);
             }
         } else {
             if (this.finalCallback) {
@@ -413,7 +413,7 @@ if (Meteor.isCordova){
               Template.progressBar.__helpers.get('close')();
               showDebug && console.log("Jump to post page...");
               PUB.pagepop();//Pop addPost page, it was added by PUB.page('/progressBar');
-              callback('failed');
+              callback('failed', result);
               showDebug && console.log("multiThreadUploadFile, failed");
           }
         };
