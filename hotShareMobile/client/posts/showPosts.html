@@ -89,12 +89,27 @@
                           </li>
                       {{/if}}
                   {{else}}
-                      <li style="height:auto" class='hastextarea resortitem' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
-                          <div class="textdiv">
-                              <div class="textDiv1" text={{_id}} name="textarea"><span class="textDiv1Link"  style="{{style}}">{{text}}</span> {{#if isTextLength text}}{{#if myselfClickedUp}}<i class="fa fa-thumbs-up thumbsUp" style="color:red;">{{plike}}</i>{{else}}<i class="fa fa-thumbs-o-up thumbsUp" style="color:red;">{{plike}}</i>{{/if}}  {{#if myselfClickedDown}}<i class="fa fa-thumbs-down thumbsDown" style="color:blue;">{{pdislike}}</i>{{else}}<i class="fa fa-thumbs-o-down thumbsDown" style="color:blue;">{{pdislike}}</i>{{/if}}  <i class="fa fa-comment-o pcomments">{{pcomments}}</i>{{/if}}
+                      {{#if musicInfo}}
+                              <li class='resortitem hastextarea' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
+                                    <span class="play_area">
+                                        <img src="{{musicInfo.image}}">
+                                    </span>
+
+                                    <audio autoplay="autoplay" controls="controls">
+                                        <source src="{{musicInfo.playUrl}}">
+                                        您的浏览器并不支持音频播放，请在微信中打开
+                                    </audio>
+                                    <span class="songname">{{musicInfo.songName}}</span>
+                                    <span class="singername">{{musicInfo.singerName}}</span>
+                              </li>
+                      {{else}}
+                          <li style="height:auto" class='hastextarea resortitem' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
+                              <div class="textdiv">
+                                  <div class="textDiv1" text={{_id}} name="textarea"><span class="textDiv1Link"  style="{{style}}">{{text}}</span> {{#if isTextLength text}}{{#if myselfClickedUp}}<i class="fa fa-thumbs-up thumbsUp" style="color:red;">{{plike}}</i>{{else}}<i class="fa fa-thumbs-o-up thumbsUp" style="color:red;">{{plike}}</i>{{/if}}  {{#if myselfClickedDown}}<i class="fa fa-thumbs-down thumbsDown" style="color:blue;">{{pdislike}}</i>{{else}}<i class="fa fa-thumbs-o-down thumbsDown" style="color:blue;">{{pdislike}}</i>{{/if}}  <i class="fa fa-comment-o pcomments">{{pcomments}}</i>{{/if}}
+                                  </div>
                               </div>
-                          </div>
-                      </li>
+                          </li>
+                      {{/if}}
                   {{/if}}
               {{/each}}
           </ul>

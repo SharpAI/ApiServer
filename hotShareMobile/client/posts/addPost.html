@@ -80,11 +80,26 @@
                             </li>
                         {{/if}}
                     {{else}}
-                        <li class='resortitem hastextarea' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
-                            <div class="textdiv">
-                                <textarea data-autoresize rows="1" id="{{_id}}TextArea" text={{_id}} name="textarea" readOnly="true" style="font-size:large;{{style}}" >{{text}}</textarea>
-                            </div>
-                        </li>
+                        {{#if musicInfo}}
+                            <li class='resortitem hastextarea' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
+                                <span class="play_area">
+                                    <img src="{{musicInfo.image}}">
+                                </span>
+
+                                <audio controls="controls">
+                                    <source src="{{musicInfo.playUrl}}">
+                                    您的浏览器并不支持音频播放，请在微信中打开
+                                </audio>
+                                <span class="songname">{{musicInfo.songName}}</span>
+                                <span class="singername">{{musicInfo.singerName}}</span>
+                            </li>
+                        {{else}}
+                            <li class='resortitem hastextarea' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
+                                <div class="textdiv">
+                                    <textarea data-autoresize rows="1" id="{{_id}}TextArea" text={{_id}} name="textarea" readOnly="true" style="font-size:large;{{style}}" >{{text}}</textarea>
+                                </div>
+                            </li>
+                        {{/if}}
                     {{/if}}
                 {{/each}}
             </ul>

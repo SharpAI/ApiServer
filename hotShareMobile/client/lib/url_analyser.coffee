@@ -15,6 +15,34 @@ if Meteor.isClient
     {'hostname':'card.weibo.com',displayName:'微博'},
     {'hostname':'mil.sohu.com',displayName:'搜狐军事'}
   ]
+  musicExtactorMapping = [
+    {
+      musicClass:'.qqmusic_area',
+      musicUrlSelector:'.qqmusic_area .qqmusic_thumb',
+      musicUrlAttr:'data-autourl',
+      musicImgSelector:'.qqmusic_area .qqmusic_thumb',
+      musicImgAttr:'src',
+      musicSongNameSelector:'.qqmusic_area .qqmusic_songname',
+      musicSingerNameSelector:'.qqmusic_area .qqmusic_singername'
+    }
+  ]
+  getMusicFromPage = (page) ->
+    for s in musicExtactorMapping
+      if $(page).find(s.musicClass).length > 0
+        playUrl = $(page).find(s.musicUrlSelector).attr(s.musicUrlAttr)
+        image = $(page).find(s.musicImgSelector).attr(s.musicImgAttr)
+        songName = $(page).find(s.musicSongNameSelector).text()
+        singerName = $(page).find(s.musicSingerNameSelector).text()
+        console.log('found music element ' + playUrl + ' image ' + image + ' song name ' + songName + ' singer ' + singerName)
+        $(page).find(s.musicClass).remove()
+        if playUrl
+          return {
+            playUrl : playUrl,
+            image : image,
+            songName : songName,
+            singerName: singerName
+          }
+    return null
   ###
   http://stackoverflow.com/a/1634841/3380894
   To remove the width/height parameter in url, center the video play icon
@@ -313,12 +341,15 @@ if Meteor.isClient
         if data.host is item.hostname
           data.host = '摘自 ' + item.displayName
           break
+      musicInfo = getMusicFromPage documentBody
       extracted = extract(documentBody)
       toBeInsertedText = ''
       previousIsImage = false
       resortedArticle = []
       sortedImages = 0
 
+      if musicInfo
+        resortedArticle.push {type:'music', musicInfo: musicInfo}
       if extracted.id is 'hotshare_special_tag_will_not_hit_other'
         toBeProcessed = extracted
       else
@@ -446,6 +477,8 @@ if Meteor.isClient
             if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
               showDebug&&console.log('    save background imageUrl ' + imageUrl)
               resortedArticle.push {type:'image',imageUrl:imageUrl}
+      if musicInfo
+        data.musicInfo = musicInfo
       data.resortedArticle = resortedArticle
       showDebug&&console.log('Resorted Article is ' + data.resortedArticle)
       callback data
