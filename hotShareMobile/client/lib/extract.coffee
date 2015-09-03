@@ -104,7 +104,7 @@ fishy = (node) ->
   #return true if img > p
   return true if li > p and node.tagName != "ul" and node.tagName != "ol"
   return true if input > Math.floor(p/3)
-  return true if contentLength < 5 and (img == 0 || img > 2)
+  return true if contentLength < 25 and (img == 0 || img > 2)
   return true if weight < 25 && linkDensity > 0.2
   return true if weight >= 25 && linkDensity > 0.5
   return true if (embed == 1 && contentLength < 75) || embed > 1
@@ -152,12 +152,12 @@ propagateScore = (node, scoredList, score) ->
       grandParent.score.add(score/2)
 
 scoreNode = (node) ->
-  if node.tagName == "IFRAME"
-    console.log('scoreNode on IFRAME +15')
-    return 15
-  if node.className && node.className.search(REGEXPS.specialClass)
-    console.log('the main class of mainstream web for mobile. bingo')
-    return 250
+  #if node.tagName == "IFRAME"
+  #  console.log('scoreNode on IFRAME +15')
+  #  return 15
+  #if node.className && node.className.search(REGEXPS.specialClass)
+  #  console.log('the main class of mainstream web for mobile. bingo')
+  #  return 250
   unlikely = node.className + node.id
   if unlikely.search(REGEXPS.unlikelyCandidates) != -1 and \
      unlikely.search(REGEXPS.okMaybeItsACandidate) == -1 and \
@@ -166,7 +166,7 @@ scoreNode = (node) ->
   unless node.tagName == "P" || node.tagName == "TD" || node.tagName == "PRE"
     return 0
   text = textContentFor(node)
-  return 0 if text.length < 5
+  return 0 if text.length < 25
   # Add points for any commas within this paragraph
   # For every 100 characters in this paragraph, add another point. Up to 3 points.
   1 + text.split(',').length + Math.min(Math.floor(text.length / 100), 3)
@@ -192,7 +192,7 @@ isAcceptableSibling = (top, sib) ->
   #density = linkDensityFor(sib)
   text = textContentFor(sib)
   textLen = text.length
-  return true if 25 < textLen #and density < 0.25
+  return true if 80 < textLen #and density < 0.25
   #return true if textLen < 80 and density == 0 and text.search(/\.( |$)/) != -1
   false
 
@@ -222,9 +222,9 @@ removeFragments = (node) ->
   jn.find("ul").filter(-> fishy(this)).remove()
   jn.find("div").filter(-> fishy(this)).remove()
   if removeStyle
-    jn.find("object,h1,script,link,style").remove()
+    jn.find("object,h1,script,link,iframe,style").remove()
   else
-    jn.find("object,h1,script,link").remove()
+    jn.find("object,h1,script,iframe,link").remove()
   jn.find("h2").remove() if jn.find("h2").length == 1
   node.innerHTML = node.innerHTML.replace(/<br[^>]*>\s*<p/gi, '<p')
 asTop = (page) ->
@@ -249,9 +249,27 @@ collectSiblings = (top) ->
   parified = _.map($(page).find('*'), parify)
   for tag in specialClassNameForPopularMobileSite
     if $(parified).find(tag).length > 0
-      root = document.createElement("div")
-      root.appendChild($(parified).find(tag)[0])
-      return root
+
+      treeWalker = document.createTreeWalker(
+        $(parified).find(tag)[0],
+        NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT,
+        null,
+        false
+      )
+      newRoot = document.createElement("div")
+      nodeList = []
+      while(treeWalker.nextNode())
+        nodeList.push(treeWalker.currentNode)
+      for node in nodeList
+        unless node.hasChildNodes()
+          if node.nodeType is Node.TEXT_NODE
+            p = document.createElement("P")
+            p.appendChild(node)
+            newRoot.appendChild(p)
+          else
+            newRoot.appendChild(node)
+      console.log('node length ' + nodeList.length)
+      return newRoot
   top = scoreAndSelectTop(parified) or asTop(page)
   root = collectSiblings(top)
   removeFragments(root)

@@ -318,27 +318,8 @@ if Meteor.isClient
       previousIsImage = false
       resortedArticle = []
       sortedImages = 0
-      treeWalker = document.createTreeWalker(
-        extracted,
-        NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT,
-        null,
-        false
-      )
-      newRoot = document.createElement("div")
-      nodeList = []
-      while(treeWalker.nextNode())
-        nodeList.push(treeWalker.currentNode)
-      for node in nodeList
-        showDebug&&console.log('textContent: ' + node.textContent)
-        unless node.hasChildNodes()
-          if node.nodeType is Node.TEXT_NODE
-            p = document.createElement("P")
-            p.appendChild(node)
-            newRoot.appendChild(p)
-          else
-            newRoot.appendChild(node)
-      showDebug&&console.log('node length ' + nodeList.length)
-      $(newRoot).children().each (index,node)->
+
+      $(extracted).children().each (index,node)->
         info = {}
         info.bgArray = []
         info.imageArray = []
