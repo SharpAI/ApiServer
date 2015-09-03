@@ -33,6 +33,7 @@ if Meteor.isServer
     Feeds._ensureIndex({requesteeId: 1, requesterId: 1, followby: 1})
     Feeds._ensureIndex({followby: 1, checked: 1, postId: 1})
     PComments._ensureIndex({postId:1,commentUserId:1})
+    PComments._ensureIndex({ptype:1})
     # this one do not need index
     # Topics.find({})
     # Topics._ensureIndex({text: 1, createdAt: -1})

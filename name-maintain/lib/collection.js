@@ -20,6 +20,7 @@ if (Meteor.isServer){
     MsgGroup = new Meteor.Collection('msggroup');
     Meets = new Meteor.Collection('meets');
     Users = new Meteor.Collection ('users');
+    PComments = new Meteor.Collection("pcomments")
     Meteor.publish('refnames',function(){
         return RefNames.find({})
     });
@@ -54,6 +55,9 @@ if (Meteor.isServer){
                 var total_saved_draft = SavedDrafts.find().count();
                 var suggest_read = Feeds.find({'eventType':'recommand'}).count();
                 var friends_request = Feeds.find({'eventType':'sendrequest'}).count();
+                var total_ups = PComments.find({"ptype" : "like"}).count();
+                var total_dns = PComments.find({"ptype" : "dislike"}).count();
+                var total_pcs = PComments.find({"ptype" : "pcomments"}).count();
                 return {
                     total_posts:total_posts,
                     total_users:total_users,
@@ -65,7 +69,10 @@ if (Meteor.isServer){
                     total_comments:total_comments,
                     total_saved_draft:total_saved_draft,
                     suggest_read:suggest_read,
-                    friends_request:friends_request
+                    friends_request:friends_request,
+                    total_ups:total_ups,
+                    total_dns:total_dns,
+                    total_pcs:total_pcs
                 };
             }
         }
