@@ -225,6 +225,17 @@ if Meteor.isClient
         data_col:'3',
         data_sizex:'6',
         data_sizey:'4'}
+    else if item.type is 'music'
+      Drafts.insert {
+        type:'music',
+        owner: Meteor.userId(),
+        toTheEnd: true,
+        text:'您当前程序不支持音频播放，请分享到微信中欣赏',
+        musicInfo: item.musicInfo
+        data_row:'1',
+        data_col:'3',
+        data_sizex:'6',
+        data_sizey:'1'}
     callback(null,item)
   renderResortedArticleAsync = (data,inputUrl,resortedObj)->
     resortedObj.itemProcessor = itemProcessor
@@ -271,6 +282,8 @@ if Meteor.isClient
           return
         console.log('Got data')
         Session.set('NewImgAdd',false)
+        if data.musicInfo
+          Session.set('musicInfo',data.musicInfo)
         resortObj = {}
         seekOneUsableMainImage(data,(file,w,h,found,index,total,source)->
           console.log('found ' + found + ' index ' + index + ' total ' + total + ' fileObject ' + file + ' source ' + source )
@@ -617,6 +630,8 @@ if Meteor.isClient
       if text and text isnt ''
         Meteor.defer ()->
           $('#'+node.id+'TextArea').trigger('keyup')
+    else if type is 'music'
+      grid.add_widget(node, 6, 1, 1)
     else if type == "image"
       if grid != undefined
         if insertedObj.inIframe and insertedObj.iframe
