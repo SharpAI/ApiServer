@@ -14,6 +14,7 @@ if Meteor.isClient
         if target.offset().top < threshold
             if (!target.data("visible"))
                 target.data("visible", true);
+                Session.set('myPostsCollection','loading')
                 Session.set("mypostsitemsLimit",
                 Session.get("mypostsitemsLimit") + MYPOSTS_ITEMS_INCREMENT);
         else
@@ -37,7 +38,10 @@ if Meteor.isClient
       else
         0
     moreResults:->
-      !(Posts.find({owner:Meteor.userId()}).count() < Session.get("mypostsitemsLimit"))
+      if (!(Posts.find({owner:Meteor.userId()}).count() < Session.get("mypostsitemsLimit"))) or (Session.equals('myPostsCollection','loading'))
+        true
+      else
+        false
     loading:->
       Session.equals('myPostsCollection','loading')
     loadError:->

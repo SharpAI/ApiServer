@@ -1737,7 +1737,9 @@ if(Meteor.isClient){
               Meteor.subscribe('postsWithLimit', Session.get('mypostsitemsLimit'), {
                   onReady: function(){
                       console.log('myPostsCollection loaded');
-                      Session.set('myPostsCollection','loaded');
+                      Meteor.setTimeout(function(){
+                        Session.set('myPostsCollection','loaded');
+                      },500);
                   }
               });
           }
