@@ -253,7 +253,13 @@ collectSiblings = (top) ->
       treeWalker = document.createTreeWalker(
         $(parified).find(tag)[0],
         NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT,
-        null,
+        {
+          acceptNode : (node)->
+            if $(node).css("display") is 'none'
+              return NodeFilter.FILTER_REJECT
+            else
+              return NodeFilter.FILTER_ACCEPT
+        },
         false
       )
       newRoot = document.createElement("div")
