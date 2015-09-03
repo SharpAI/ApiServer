@@ -319,7 +319,11 @@ if Meteor.isClient
       resortedArticle = []
       sortedImages = 0
 
-      $(extracted).children().each (index,node)->
+      if extracted.id is 'hotshare_special_tag_will_not_hit_other'
+        toBeProcessed = extracted
+      else
+        toBeProcessed = extracted.innerHTML
+      $(toBeProcessed).children().each (index,node)->
         info = {}
         info.bgArray = []
         info.imageArray = []

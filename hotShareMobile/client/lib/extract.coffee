@@ -269,6 +269,7 @@ collectSiblings = (top) ->
           else
             newRoot.appendChild(node)
       console.log('node length ' + nodeList.length)
+      newRoot.id = 'hotshare_special_tag_will_not_hit_other'
       return newRoot
   top = scoreAndSelectTop(parified) or asTop(page)
   root = collectSiblings(top)
