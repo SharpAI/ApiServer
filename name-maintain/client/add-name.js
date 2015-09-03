@@ -24,6 +24,15 @@ if (Meteor.isClient) {
     });
   };
   Template.body.helpers({
+    total_ups: function(){
+      return Session.get("statics_data").total_ups;
+    },
+    total_dns: function(){
+      return Session.get("statics_data").total_dns;
+    },
+    total_pcs: function(){
+      return Session.get("statics_data").total_pcs;
+    },
     total_posts: function(){
       return Session.get('statics_data').total_posts;
     },
