@@ -18,6 +18,16 @@
           <div>加载失败，请检查网络设置或稍后重试</div>
       {{/if}}
       {{#each eventFeeds}}
+        {{#if isPcommentOwner eventType}}
+            <a href="/posts/{{postId}}" class="contentList">
+                <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+                <div id="{{postId}}" class="alarm">{{ownerName}} 点评了您的故事 《{{postTitle}}》</div>
+                <div class="createAt">{{time_diff createdAt}}</div>
+            </a>
+            <div class="line">
+                <span></span>
+            </div>
+        {{/if}}
         {{#if isReComment eventType}}
           <a href="/posts/{{postId}}" class="contentList">
             <img class="icon" src="{{ownerIcon}}" width='30' height='30'>

@@ -31,6 +31,8 @@ if Meteor.isClient
         return feeds
       else
         Session.get('persistentFeedsForMe')
+    isPcommentOwner:(eventType)->
+      eventType is 'pcommentowner'
     isGetRequest:(eventType)->
       eventType is 'getrequest'
     isSendRequest:(eventType)->
