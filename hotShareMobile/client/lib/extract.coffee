@@ -255,9 +255,12 @@ collectSiblings = (top) ->
         NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT,
         {
           acceptNode : (node)->
-            if $(node).css("display") is 'none'
-              return NodeFilter.FILTER_REJECT
-            else
+            try
+              if $(node).css("display") is 'none'
+                return NodeFilter.FILTER_REJECT
+              else
+                return NodeFilter.FILTER_ACCEPT
+            catch e
               return NodeFilter.FILTER_ACCEPT
         },
         false
