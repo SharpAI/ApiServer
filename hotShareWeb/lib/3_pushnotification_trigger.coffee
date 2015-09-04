@@ -3,7 +3,15 @@ if Meteor.isServer
     @JPush = Meteor.npmRequire "jpush-sdk"
     @client = JPush.buildClient '50e8f00890be941f05784e6f', 'ec9940bbc7fcc646fc492ed8'
   @pushnotification = (type, doc, userId)->
-    if type == "comment"
+    console.log "type:"+type
+    if type is "pcommentowner"
+      content = '有人点评了您的故事:\n《' + doc.title + '》'
+      extras = {
+        type: "pcommentowner"
+        postId: doc._id
+      }
+      toUserId = doc.owner
+    else if type is "comment"
       post = Posts.findOne({_id: doc.postId});
       if post.owner == userId
         #console.log "comment self post"
@@ -15,7 +23,7 @@ if Meteor.isServer
         postId: doc.postId
       }
       toUserId = post.owner
-    else if type == "read"
+    else if type is "read"
       if doc.owner == userId
         #console.log "read self post"
         return
@@ -25,21 +33,21 @@ if Meteor.isServer
         postId: doc._id
       }
       toUserId = doc.owner
-    else if type == "recommand"
+    else if type is "recommand"
       content = doc.recommander + '推荐您阅读' + doc.ownerName + '的故事\n《' + doc.postTitle + '》'
       extras = {
         type: "recommand"
         postId: doc.postId
       }
       toUserId = doc.followby
-    else if type == "getrequest"
+    else if type is "getrequest"
       content = doc.requester + '邀请您加为好友!'
       extras = {
         type: "getrequest"
         requesterId: doc.requesterId
       }
       toUserId = doc.followby
-    else if type == "newpost"
+    else if type is "newpost"
       content = doc.ownerName + '发布了新故事:\n《' + doc.title + '》'
       extras = {
         type: "newpost"
@@ -58,7 +66,6 @@ if Meteor.isServer
          return;
       toUserId = userId
     toUserToken = Meteor.users.findOne({_id: toUserId})
-
 
     unless toUserToken is undefined or toUserToken.type is undefined or toUserToken.token is undefined
       pushToken = {type: toUserToken.type, token: toUserToken.token}
