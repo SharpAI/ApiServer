@@ -6,17 +6,23 @@ if Meteor.isClient
     $(window).scroll (event)->
         console.log "myPosts window scroll event: "+event
         target = $("#showMoreMyPostsResults");
-        MYPOSTS_ITEMS_INCREMENT = 15;
+        MYPOSTS_ITEMS_INCREMENT = 300;
         if (!target.length)
             return;
         threshold = $(window).scrollTop() + $(window).height() - target.height();
 
         if target.offset().top < threshold
             if (!target.data("visible"))
-                target.data("visible", true);
-                Session.set('myPostsCollection','loading')
-                Session.set("mypostsitemsLimit",
-                Session.get("mypostsitemsLimit") + MYPOSTS_ITEMS_INCREMENT);
+                #console.log "my posts items limit:"+Session.get("mypostsitemsLimit")
+                #console.log "my posts count:"+Session.get('myPostsCount')
+                if Session.get("mypostsitemsLimit") < Session.get('myPostsCount')
+                    #console.log "================Loading more==============="
+                    target.data("visible", true);
+                    Next_Limit = Session.get("mypostsitemsLimit") + MYPOSTS_ITEMS_INCREMENT
+                    if Next_Limit > Session.get('myPostsCount')
+                        Next_Limit = Session.get('myPostsCount')
+                    Session.set('myPostsCollection','loading')
+                    Session.set("mypostsitemsLimit", Next_Limit);
         else
             if (target.data("visible"))
                 target.data("visible", false);
@@ -38,7 +44,8 @@ if Meteor.isClient
       else
         0
     moreResults:->
-      if (!(Posts.find({owner:Meteor.userId()}).count() < Session.get("mypostsitemsLimit"))) or (Session.equals('myPostsCollection','loading'))
+      #if (!(Posts.find({owner:Meteor.userId()}).count() < Session.get("mypostsitemsLimit"))) or (Session.equals('myPostsCollection','loading'))
+      if (Posts.find({owner:Meteor.userId()}).count() < Session.get('myPostsCount')) or (Session.equals('myPostsCollection','loading'))
         true
       else
         false
@@ -67,7 +74,5 @@ if Meteor.isClient
     'click .listView':()->
       if(Session.get("showBigImage"))
         Session.set("showBigImage",false)
-        Session.set("mypostsitemsLimit",15)
       else
         Session.set("showBigImage",true)
-        Session.set("mypostsitemsLimit",15)
