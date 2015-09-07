@@ -40,6 +40,9 @@ if Meteor.isClient
   Router.route '/',()->
     this.render 'webHome'
     return
+  Router.route '/help',()->
+    this.render 'help'
+    return
   Router.route 'userProfilePage1',
     template: 'userProfile'
     path: '/userProfilePage1'

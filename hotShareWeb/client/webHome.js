@@ -11,6 +11,9 @@ Template.webHome.events({
 //        document.write('微信内无法下载，请点击“右上角”按钮，选择“在浏览器中打开”即可正常下载');
         window.location.href = 'http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere';
       }
+    },
+    'click .helpPost':function(){
+      PUB.page('/help')
     }
 });
 
