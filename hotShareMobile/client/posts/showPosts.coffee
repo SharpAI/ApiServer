@@ -194,6 +194,24 @@ if Meteor.isClient
     #  PUB.toast("您的手机版本过低，部分图片可能产生变形。");
 
   Template.showPosts.helpers
+    getStyle:->
+      self=this
+      pclength=0
+      if self.pcomments
+        pclength=self.pcomments.length
+      dislikeSum = 0
+      if self.dislikeSum
+        dislikeSum=self.dislikeSum
+      likeSum=0
+      if self.likeSum
+        likeSum=self.likeSum
+      if dislikeSum + likeSum + pclength is 0
+        self.style
+      else
+        if self.style.length is 0
+          "color: #F30B44;"
+        else
+          self.style.replace("grey","#F30B44").replace("rgb(128, 128, 128)","#F30B44").replace("rgb(0, 0, 0)","#F30B44")
     isTextLength:(text)->
       if(text.trim().length>0)
         return true
@@ -510,11 +528,6 @@ if Meteor.isClient
             post[i].style=post[i].style.replace("#F30B44","grey")
           else
             post[i].style=""
-        else
-          if post[i].style and post[i].style.length>100
-            post[i].style=post[i].style.replace("grey","#F30B44")
-          else
-            post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -534,11 +547,6 @@ if Meteor.isClient
             post[i].style=post[i].style.replace("#F30B44","grey")
           else
             post[i].style=""
-        else
-          if post[i].style and post[i].style.length>100
-            post[i].style=post[i].style.replace("grey","#F30B44")
-          else
-            post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -556,11 +564,6 @@ if Meteor.isClient
             post[i].style=post[i].style.replace("#F30B44","grey")
           else
             post[i].style=""
-        else
-          if post[i].style and post[i].style.length>100
-            post[i].style=post[i].style.replace("grey","#F30B44")
-          else
-            post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -602,11 +605,6 @@ if Meteor.isClient
             post[i].style=post[i].style.replace("#F30B44","grey")
           else
             post[i].style=""
-        else
-          if post[i].style and post[i].style.length>100
-            post[i].style=post[i].style.replace("grey","#F30B44")
-          else
-            post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -626,11 +624,6 @@ if Meteor.isClient
             post[i].style=post[i].style.replace("#F30B44","grey")
           else
             post[i].style=""
-        else
-          if post[i].style and post[i].style.length>100
-            post[i].style=post[i].style.replace("grey","#F30B44")
-          else
-            post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -648,11 +641,6 @@ if Meteor.isClient
             post[i].style=post[i].style.replace("#F30B44","grey")
           else
             post[i].style=""
-        else
-          if post[i].style and post[i].style.length>100
-            post[i].style=post[i].style.replace("grey","#F30B44")
-          else
-            post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -837,10 +825,6 @@ if Meteor.isClient
           createdAt: new Date()
         }
         post[i].pcomments.push(pcommentJson)
-        if post[i].style and post[i].style.length>100
-          post[i].style=post[i].style.replace("grey","#F30B44")
-        else
-          post[i].style="color: #F30B44;"
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"pcomments","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
