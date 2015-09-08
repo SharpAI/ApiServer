@@ -238,6 +238,11 @@ if Meteor.isClient
     #PUB.toast("render finish");
 
   Template.showPosts.helpers
+    isTextLength:(text)->
+      if(text.trim().length>0)
+        return true
+      else
+        return false
     myselfClickedUp:->
       i = this.index
       userId = Meteor.userId()
