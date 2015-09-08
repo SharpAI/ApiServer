@@ -16,7 +16,7 @@
 	-o-transition: all 0.5s ease-in;
 	transition: all 0.5s ease-in;
 }
-.masonry_container .masonry_element img
+.masonry_container .masonry_element .mainImage
 {
 	/*display: none;*/
   display: block;
@@ -26,8 +26,12 @@
 }
 
 .masonry_container .masonry_element .icon { position:absolute;}
-.masonry_container .masonry_element header{position: absolute;bottom: 24px;color: #fff;left: 0;width: 100%;background: -webkit-linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5));background: -o-linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5));background: -moz-linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5));background: linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5));}
+.masonry_container .masonry_element header{position: absolute;bottom: 44px;color: #fff;left: 0;width: 100%;background: -webkit-linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5));background: -o-linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5));background: -moz-linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5));background: linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5));}
 .masonry_container .masonry_element p{margin: 0;padding: 2% 1% 1% 5%;}
 .masonry_container .masonry_element .title{font-size: 16px;text-shadow: 0 1px 0 black;color: white;font-weight: normal;white-space: pre-line;word-wrap: break-word;}
 .masonry_container .masonry_element .addontitle{font-size: 11px;text-shadow: 0 1px 0 black;color: white;white-space: pre-line; word-wrap: break-word;}
-.masonry_container .masonry_element .username{font-size: 11px;font-weight: bold; color: grey;}
+.masonry_container .masonry_element .userIcon{border-radius: 5px;margin: 2%;}
+.masonry_container .masonry_element .pin_content{position: relative;height: 45px;border-top: 1px solid #ebebeb;}
+.masonry_container .masonry_element h2{position: absolute;font-size: 12px;top: 26px;color: #999999;font-weight: normal;padding: 0px;margin: 0px;left: 49px;}
+.masonry_container .masonry_element h1{left: 49px;position: absolute;font-size: 12px;top: 8px;padding: 0px;margin: 0px;color: #07519a;letter-spacing: 1px;font-weight: normal;}
+.masonry_container .masonry_element b{position: absolute;right: 7px;top: 6px;font-size: 11px;font-weight: normal;color: #999999;}
