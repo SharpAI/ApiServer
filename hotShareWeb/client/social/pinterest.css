@@ -1,6 +1,7 @@
 .masonry_container {
 	width: 99.5%;
 	margin-left: 0.5%;
+	margin-bottom: 50px;
 }
 .masonry_container .masonry_element {
 	width:  49%;
@@ -25,3 +26,8 @@
 }
 
 .masonry_container .masonry_element .icon { position:absolute;}
+.masonry_container .masonry_element header{position: absolute;bottom: 24px;color: #fff;left: 0;width: 100%;background: -webkit-linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5));background: -o-linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5));background: -moz-linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5));background: linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5));}
+.masonry_container .masonry_element p{margin: 0;padding: 2% 1% 1% 5%;}
+.masonry_container .masonry_element .title{font-size: 16px;text-shadow: 0 1px 0 black;color: white;font-weight: normal;white-space: pre-line;word-wrap: break-word;}
+.masonry_container .masonry_element .addontitle{font-size: 11px;text-shadow: 0 1px 0 black;color: white;white-space: pre-line; word-wrap: break-word;}
+.masonry_container .masonry_element .username{font-size: 11px;font-weight: bold; color: grey;}
