@@ -1,6 +1,8 @@
 <template name="home">
-  <div class="home">
-  {{#if wasLogon}}
+  {{#if isFirstLog}}
+    {{> splashScreen}}
+  {{else}}
+    {{#if wasLogon}}
       <div class="head">
         <strong>故事贴</strong>
         <div id="follow" class="leftButton">
@@ -12,12 +14,12 @@
         {{> listPosts}}
       </div>
       {{> footer}}
-  {{else}}
+    {{else}}
       {{#if isCordova}}
           {{> authOverlay}}
       {{else}}
           {{> webHome}}
       {{/if}}
+    {{/if}}
   {{/if}}
-  </div>
 </template>
