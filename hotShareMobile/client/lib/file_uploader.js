@@ -103,7 +103,7 @@ if (Meteor.isCordova){
             }
           }
         }, options,true);
-        
+
         return ft;
       });
     }
@@ -222,7 +222,7 @@ if (Meteor.isCordova){
             var timestamp = new Date().getTime();
             var hashOnUrl = Math.abs(source.hashCode());
             var filename = Meteor.userId()+'_'+timestamp+ '_' + hashOnUrl;
-            fileSystem.root.getFile(filename, {create: true, exclusive: false}, 
+            fileSystem.root.getFile(filename, {create: true, exclusive: false},
                 function(fileEntry){
                     showDebug && console.log("filename = "+filename+", fileEntry.toURL()="+fileEntry.toURL());
                     //var target = "cdvfile://localhost/temporary/"+filename
@@ -301,7 +301,7 @@ if (Meteor.isCordova){
             destinationType: destinationType.NATIVE_URI,
             sourceType: pictureSource.SAVEDPHOTOALBUM
           });
-          
+
       }else{
         window.imagePicker.getPictures(
           function(results) {
@@ -405,7 +405,7 @@ if (Meteor.isCordova){
         } else {
             callback('failed');
         }
-      
+
         var multiThreadUploadFileCallback = function(err,result){
           if (!err) {
               callback(null, result);
@@ -452,11 +452,11 @@ if (Meteor.isCordova){
     selectMediaFromAblum = function(max_number, callback){
         window.imagePicker.getPictures(
           function(results) {
-        	  
+
             if(results === undefined) {
             	return;
             }
-            
+
             var length = 0;
             try{
               length=results.length;
@@ -491,9 +491,9 @@ if (Meteor.isCordova){
               }
           }, {
             maximumImagesCount: max_number,
-            width: 600,
-            height: 600,
-            quality: 90,
+            width: 2000,
+            height: 2000,
+            quality: 1,
             storage: 'persistent'
           });
         };
