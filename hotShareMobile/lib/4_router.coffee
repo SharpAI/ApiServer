@@ -17,10 +17,6 @@ if Meteor.isClient
       this.render 'home'
       Session.set 'channel','home'
       return
-    Router.route '/splashScreen',()->
-      this.render 'splashScreen'
-      Session.set 'channel', 'splashScreen'
-      return
     Router.route '/search',()->
       if Meteor.isCordova is true
         this.render 'search'
