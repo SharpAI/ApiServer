@@ -89,7 +89,6 @@ if Meteor.isClient
     Router.route '/posts/:_id', {
         waitOn: ->
           Meteor.subscribe("publicPosts",this.params._id)
-          Meteor.subscribe "pcomments"
         loadingTemplate: 'loadingPost'
         action: ->
           post = Posts.findOne({_id: this.params._id})
@@ -188,5 +187,4 @@ if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->
         Meteor.subscribe("publicPosts",this.params._id)
-        Meteor.subscribe "pcomments"
     }
