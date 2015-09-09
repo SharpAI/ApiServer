@@ -1077,6 +1077,25 @@ if Meteor.isClient
     'change [name=textarea]' : (e,cxt)->
       console.log("textarea change "+ e.currentTarget.value)
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
+    'click #addAudio': ()->
+      window.plugins.iOSAudioPicker.getAudio((list)->
+        ###
+        {
+          "artist":"Carrie Underwood",
+          "albumTitle":"Greatest Hits: Decade #1",
+          "ipodurl":"ipod-library://item/item.m4a?id=8615795969436387427",
+          "title":"Something in the Water",
+          "image":"BASE64",
+          "duration":238.059,
+          "exportedurl":"file:///var/mobile/Containers/Data/Application/B84BB3DE-20DC-4FF2-AD62-1A8D47337214/Documents/Something%20in%20the%20Water.m4a",
+          "filename":"Something in the Water.m4a",
+          "genre":"Country"
+        }
+        ###
+        console.log('Got list' + JSON.stringify(list))
+      ,()->
+        console.log('Got error')
+      ,'false','true');
     'click #addLink': ()->
       console.log 'Add Link ' + Session.get('lastImportedUrl')
       cordova.plugins.clipboard.paste (text)->
