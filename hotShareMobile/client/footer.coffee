@@ -85,7 +85,11 @@ if Meteor.isClient
         $('.modal-backdrop.in').remove()
       prepareToEditorMode()
       PUB.page '/add'
-      handleAddedLink(null)
+      cordova.plugins.clipboard.paste (text)->
+        if text and text isnt '' and text.indexOf('http') > -1
+          handleAddedLink(text)
+        else
+          handleAddedLink(null)
     'click #photo-select':(e)->
       Meteor.defer ()->
         $('.modal-backdrop.in').remove()

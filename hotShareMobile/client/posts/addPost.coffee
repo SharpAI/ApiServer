@@ -1079,7 +1079,11 @@ if Meteor.isClient
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
     'click #addLink': ()->
       console.log 'Add Link ' + Session.get('lastImportedUrl')
-      handleAddedLink(Session.get('lastImportedUrl'))
+      cordova.plugins.clipboard.paste (text)->
+        if text and text isnt '' and text.indexOf('http') > -1
+          handleAddedLink(text)
+        else
+          handleAddedLink(Session.get('lastImportedUrl'))
     'click #takephoto': ()->
       if Drafts.find().count() > 0
         window.footbarOppration = true
