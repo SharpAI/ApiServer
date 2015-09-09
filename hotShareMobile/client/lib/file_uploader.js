@@ -491,9 +491,9 @@ if (Meteor.isCordova){
               }
           }, {
             maximumImagesCount: max_number,
-            width: 2000,
-            height: 2000,
-            quality: 1,
+            width: 1900,
+            height: 1900,
+            quality: 20,
             storage: 'persistent'
           });
         };

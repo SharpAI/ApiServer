@@ -23,11 +23,11 @@ if (Meteor.isCordova) {
       if(callback){
         callback(null);
       }
-    }, { quality: 1,
+    }, { quality: 20,
     destinationType: destinationType.FILE_URI,
     sourceType: pictureSource.CAMERA,
-    targetWidth: 2000,
-    targetHeight: 2000,
+    targetWidth: 1900,
+    targetHeight: 1900,
     correctOrientation: true,
     saveToPhotoAlbum: false});
   }
