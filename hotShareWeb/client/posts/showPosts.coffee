@@ -74,7 +74,7 @@ if Meteor.isClient
       TextResizeDetector.TARGET_ELEMENT_ID = 'fontresizedetector'
       TextResizeDetector.addEventListener(onFontResize,null)
       TextResizeDetector.init()
-
+    Session.setDefault "toasted",false
     Session.set('postfriendsitemsLimit', 10);
     $('.mainImage').css('height',$(window).height()*0.55)
     postContent = Session.get("postContent")
@@ -243,6 +243,22 @@ if Meteor.isClient
       pclength=0
       if self.pcomments
         pclength=self.pcomments.length
+      userId=Session.get("pcommetsId")
+      userName=Session.get("pcommentsName")
+      scolor="#F30B44"
+      if userId and userId isnt ""
+        if self.likeUserId and self.likeUserId[userId] is true
+          scolor="#304EF5"
+        if scolor is "#F30B44" and self.dislikeUserId and self.dislikeUserId[userId] is true
+          scolor="#304EF5"
+        if scolor is "#F30B44" and pclength>0
+          for icomment in self.pcomments
+            if icomment["userId"] is userId
+              scolor="#304EF5"
+              break
+      if scolor is "#304EF5" and Session.get("toasted") is false
+        Session.set "toasted",true
+        PUB.toast(userName+"点评过的段落将为您用蓝色标注！")
       dislikeSum = 0
       if self.dislikeSum
         dislikeSum=self.dislikeSum
@@ -252,10 +268,10 @@ if Meteor.isClient
       if dislikeSum + likeSum + pclength is 0
         self.style
       else
-        if self.style.length is 0
-          "color: #F30B44;"
+        if self.style is undefined or self.style.length is 0
+          "color: "+scolor+";"
         else
-          self.style.replace("grey","#F30B44").replace("rgb(128, 128, 128)","#F30B44").replace("rgb(0, 0, 0)","#F30B44")
+          self.style.replace("grey",scolor).replace("rgb(128, 128, 128)",scolor).replace("rgb(0, 0, 0)",scolor).replace("#F30B44",scolor)
     isTextLength:(text)->
       if(text.trim().length>0)
         return true
@@ -427,6 +443,8 @@ if Meteor.isClient
       if Meteor.isCordova and isIOS
         cordova.plugins.Keyboard.disableScroll(false)
     'click .showPosts .back' :->
+      Session.set("pcommetsId","")
+      Session.set("pcommentsName","")
       $(window).children().off()
       $(window).unbind('scroll')
       $('.showPosts').addClass('animated ' + animateOutUpperEffect)
