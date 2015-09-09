@@ -92,6 +92,7 @@ if Meteor.isClient
       scrollTop = $(window).scrollTop()
       Session.set("pcommetsId",this.owner)
       Session.set("pcommentsName",this.ownerName)
+      Session.set "toasted",false
       Feeds.update({_id:this._id},{$set: {checked:true}})
       id = Session.get("postContent")._id
       if postId isnt id
