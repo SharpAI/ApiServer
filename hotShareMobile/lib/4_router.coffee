@@ -13,6 +13,12 @@ if Meteor.isClient
         if window.iabHandle
           window.iabHandle.close()
           window.iabHandle = null
+    subs = new SubsManager({
+      # maximum number of cache subscriptions
+      cacheLimit: 300,
+      # any subscription will be expire after minutes, if it's not subscribed again
+      expireIn: 60*24
+    })
     Router.route '/',()->
       this.render 'home'
       Session.set 'channel','home'
@@ -92,23 +98,10 @@ if Meteor.isClient
       return
     Router.route '/posts/:_id', {
         waitOn: ->
-          Meteor.subscribe("publicPosts",this.params._id)
+          subs.subscribe("publicPosts",this.params._id)
         loadingTemplate: 'loadingPost'
         action: ->
           post = Posts.findOne({_id: this.params._id})
-          ###
-          unless post
-            console.log "Cant find the request post"
-            this.render 'postNotFound'
-            return
-          ###
-          Session.set("refComment",[''])
-          Meteor.subscribe "refcomments", ()->
-            Meteor.setTimeout ()->
-              refComment = RefComments.find()
-              if refComment.count() > 0
-                Session.set("refComment",refComment.fetch())
-            ,2000
           Session.set('postContent',post)
           if post.addontitle and (post.addontitle isnt '')
             documentTitle = "『故事贴』" + post.title + "：" + post.addontitle

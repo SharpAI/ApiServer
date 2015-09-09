@@ -1,3 +1,11 @@
+
+subs = new SubsManager({
+# maximum number of cache subscriptions
+  cacheLimit: 300,
+# any subscription will be expire after minutes, if it's not subscribed again
+  expireIn: 60*24
+})
+
 if Meteor.isClient
   Router.route '/redirect/:_id',()->
     Session.set('nextPostID',this.params._id)
@@ -5,7 +13,7 @@ if Meteor.isClient
     return
   Router.route '/posts/:_id', {
       waitOn: ->
-        Meteor.subscribe("publicPosts",this.params._id)
+        subs.subscribe("publicPosts",this.params._id)
       loadingTemplate: 'loadingPost'
       action: ->
         post = Posts.findOne({_id: this.params._id})
@@ -54,6 +62,6 @@ if Meteor.isClient
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->
-        Meteor.subscribe("publicPosts",this.params._id)
+        subs.subscribe("publicPosts",this.params._id)
       fastRender: true
     }
