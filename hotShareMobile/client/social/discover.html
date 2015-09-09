@@ -55,47 +55,44 @@
                 <div>加载失败，请检查网络设置或稍后重试</div>
             {{/if}}
             {{#masonryContainer columnWidth=getWidth gutter=0 id="pin_container" }}
-                {{#if NoMoments}}
-                    {{#each suggestPosts}}
-                        {{#masonryElement "pin_container"}}
-                            <div class="readPost" id="{{_id}}">
-                                <img class="mainImage" src="{{mainImage}}" />
+                {{#each suggestPosts}}
+                    {{#masonryElement "pin_container"}}
+                        <div class="readPost" id="{{_id}}">
+                            <img class="mainImage" src="{{mainImage}}" />
 <!--                                <header>
-                                  <p class="title">{{title}}</p>
-                                  <p class="addontitle">{{addontitle}}</p>
-                                </header>-->
-                                <div class="pin_content">
+                              <p class="title">{{title}}</p>
+                              <p class="addontitle">{{addontitle}}</p>
+                            </header>-->
+                            <div class="pin_content">
 <!--                                  <span><img class="userIcon" src="{{userIcon}}" width="35" height="35" /></span>-->
-                                  <p class="title">{{title}}</p>
-                                  <p class="addontitle">{{addontitle}}</p>
-                                  <h1 class="username">{{username}}  <span>发布</span></h1>
+                              <p class="title">{{title}}</p>
+                              <p class="addontitle">{{addontitle}}</p>
+                              <h1 class="username">{{ownerName}}  <span>发布</span></h1>
 <!--                                  <h2>发布了一个故事</h2>-->
 <!--                                  <b>{{time_diff createdAt}}</b>-->
-                                </div>
                             </div>
-                        {{/masonryElement}}
-                    {{/each}}
-                {{else}}
-                    {{#each moments}}
-                        {{#masonryElement "pin_container"}}
-                            <div class="readPost" id="{{readPostId}}">
-                                <img class="mainImage" src="{{mainImage}}" />
+                        </div>
+                    {{/masonryElement}}
+                {{/each}}
+                {{#each moments}}
+                    {{#masonryElement "pin_container"}}
+                        <div class="readPost" id="{{readPostId}}">
+                            <img class="mainImage" src="{{mainImage}}" />
 <!--                                <header>
-                                  <p class="title">{{title}}</p>
-                                  <p class="addontitle">{{addontitle}}</p>
-                                </header>-->
-                                <div class="pin_content">
-                                  <p class="title">{{title}}</p>
-                                  <p class="addontitle">{{addontitle}}</p>
+                              <p class="title">{{title}}</p>
+                              <p class="addontitle">{{addontitle}}</p>
+                            </header>-->
+                            <div class="pin_content">
+                              <p class="title">{{title}}</p>
+                              <p class="addontitle">{{addontitle}}</p>
 <!--                                  <span><img class="userIcon" src="{{userIcon}}" width="35" height="35" /></span>-->
-                                  <h1 class="username">{{username}}  <span>读过</span></h1>
+                              <h1 class="username">{{username}}  <span>读过</span></h1>
 <!--                                  <h2>阅读了一个故事</h2>-->
 <!--                                  <b>{{time_diff createdAt}}</b>-->
-                                </div>
                             </div>
-                        {{/masonryElement}}
-                    {{/each}}
-                {{/if}}
+                        </div>
+                    {{/masonryElement}}
+                {{/each}}
             {{/masonryContainer}}
             {{#if moreResults}}
                 <div id="showMoreMomentsResults" style="margin-left: 25px;">

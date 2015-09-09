@@ -1767,8 +1767,18 @@ if(Meteor.isClient){
           }
       });
   }
+  Tracker.autorun(function(){
+      if (Meteor.user()){
+          Meteor.subscribe('suggestPosts', MOMENTS_ITEMS_INCREMENT, {
+              onReady: function(){
+                  Session.set('momentsCollection','loaded');
+              }
+          });
+      }
+  });
+
   Tracker.autorun(function() {
-    if (Meteor.userId()) {
+    if (Meteor.user()) {
         if (Meteor.isCordova){
             console.log('Refresh Main Data Source when logon');
             window.refreshMainDataSource();
@@ -1784,14 +1794,6 @@ if(Meteor.isClient){
             {
                 POST_ID = Session.get("postContent")._id;
                 Session.set('momentsitemsLimit', MOMENTS_ITEMS_INCREMENT);
-            }
-            if(DynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() === 0)
-            {
-                Meteor.subscribe('suggestPosts', MOMENTS_ITEMS_INCREMENT, {
-                    onReady: function(){
-                        Session.set('momentsCollection','loaded');
-                    }
-                });
             }
             Meteor.subscribe('dynamicMoments', Session.get("postContent")._id, Session.get('momentsitemsLimit'), {
                 onReady: function(){
