@@ -87,6 +87,8 @@ if Meteor.isClient
     'click .readpost':(e)->
       postId = this.postId
       scrollTop = $(window).scrollTop()
+      Session.set("pcommetsId",this.owner)
+      Session.set("pcommentsName",this.ownerName)
       Feeds.update({_id:this._id},{$set: {checked:true}})
       id = Session.get("postContent")._id
       if postId isnt id
@@ -97,3 +99,5 @@ if Meteor.isClient
           Session.set("Social.LevelOne.Menu",'contactsList')
           Router.go '/redirect/'+postId
         ,300
+      else
+        document.body.scrollTop = 0
