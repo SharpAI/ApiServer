@@ -141,17 +141,26 @@ postPageArr = []
           }
           postPageArr.push(postIdJson)
       "postPageBack":->
-          if postPageArr.length is 0
-            $(window).children().off()
-            $(window).unbind('scroll')
-            $('.showPosts').addClass('animated ' + animateOutUpperEffect)
-            $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect)
-            Meteor.setTimeout ()->
-              PUB.back()
-              if Session.get("Social.LevelOne.Menu") is 'userProfile'
-                Session.set("Social.LevelOne.Menu",'contactsList')
-                return
-            ,animatePageTrasitionTimeout
+          if postPageArr.length is 1
+            Session.set 'displayShowPostLeftBackBtn',false
+            post = postPageArr.pop()
+            postId = post.postId
+            if post.scrollTop is undefined
+              postPageScrollTop = 0
+            else
+              postPageScrollTop = post.scrollTop
+            Session.set("postPageScrollTop", postPageScrollTop)
+            Router.go '/posts/'+postId
+#            $(window).children().off()
+#            $(window).unbind('scroll')
+#            $('.showPosts').addClass('animated ' + animateOutUpperEffect)
+#            $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect)
+#            Meteor.setTimeout ()->
+#            PUB.back()
+#            if Session.get("Social.LevelOne.Menu") is 'userProfile'
+#              Session.set("Social.LevelOne.Menu",'contactsList')
+#              return
+#            ,animatePageTrasitionTimeout
           else
             post = postPageArr.pop()
             postId = post.postId

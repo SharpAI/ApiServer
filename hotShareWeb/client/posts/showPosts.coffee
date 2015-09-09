@@ -238,6 +238,11 @@ if Meteor.isClient
     #PUB.toast("render finish");
 
   Template.showPosts.helpers
+    displayBackBtn:->
+      if Session.get('displayShowPostLeftBackBtn') is true
+        true
+      else
+        false
     getStyle:->
       self=this
       pclength=0
@@ -447,15 +452,15 @@ if Meteor.isClient
       Session.set("pcommentsName","")
       $(window).children().off()
       $(window).unbind('scroll')
-      $('.showPosts').addClass('animated ' + animateOutUpperEffect)
-      $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect)
-      Meteor.setTimeout ()->
+#      $('.showPosts').addClass('animated ' + animateOutUpperEffect)
+#      $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect)
+#      Meteor.setTimeout ()->
         #PUB.back()
-        PUB.postPageBack()
-        if Session.get("Social.LevelOne.Menu") is 'userProfile'
-          Session.set("Social.LevelOne.Menu",'contactsList')
-          return
-      ,animatePageTrasitionTimeout
+      PUB.postPageBack()
+      if Session.get("Social.LevelOne.Menu") is 'userProfile'
+        Session.set("Social.LevelOne.Menu",'contactsList')
+        return
+#      ,animatePageTrasitionTimeout
     'click #edit': (event)->
       #Clear draft first
       Drafts.remove({})
