@@ -6,6 +6,7 @@ com.moya.imagebase64@https://github.com/solderzzc/cordova-plugin-image-base64/ta
 com.phonegap.JPushPlugin@https://github.com/leonzhang1109/jpush-phonegap-plugin/tarball/ca7d1332d5ef4999267c1553134cf66868f6df4e
 com.synconset.imagepicker@https://github.com/leonzhang1109/cordova-imagePicker/tarball/9015d2cc889391697deb1dd4b044632ecbf5600b
 com.verso.cordova.clipboard@0.1.0
+nl.x-services.plugins.backgroundaudio@https://github.com/solderzzc/cordova-plugin-backgroundaudio/tarball/c5478bec71c99e9eb1722f77fb73d356fd770737
 nl.x-services.plugins.socialsharing@https://github.com/yunhaia/SocialSharing-PhoneGap-Plugin/tarball/75d3661cc9bac4510b79a17b826981014c0bf96d
 nl.x-services.plugins.toast@2.0.2
 org.apache.cordova.device@0.2.12
