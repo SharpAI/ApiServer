@@ -1,3 +1,9 @@
+subs = new SubsManager({
+  # maximum number of cache subscriptions
+  cacheLimit: 300,
+  # any subscription will be expire after minutes, if it's not subscribed again
+  expireIn: 60*24
+})
 if Meteor.isClient
   Meteor.startup ()->
     Tracker.autorun ()->
@@ -13,12 +19,6 @@ if Meteor.isClient
         if window.iabHandle
           window.iabHandle.close()
           window.iabHandle = null
-    subs = new SubsManager({
-      # maximum number of cache subscriptions
-      cacheLimit: 300,
-      # any subscription will be expire after minutes, if it's not subscribed again
-      expireIn: 60*24
-    })
     Router.route '/',()->
       this.render 'home'
       Session.set 'channel','home'
@@ -98,7 +98,8 @@ if Meteor.isClient
       return
     Router.route '/posts/:_id', {
         waitOn: ->
-          subs.subscribe("publicPosts",this.params._id)
+          [subs.subscribe("publicPosts",this.params._id),
+          subs.subscribe "pcomments"]
         loadingTemplate: 'loadingPost'
         action: ->
           post = Posts.findOne({_id: this.params._id})
@@ -183,5 +184,6 @@ if Meteor.isClient
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->
-        Meteor.subscribe("publicPosts",this.params._id)
+          [subs.subscribe("publicPosts",this.params._id),
+          subs.subscribe "pcomments"]
     }

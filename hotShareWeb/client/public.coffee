@@ -169,5 +169,5 @@ postPageArr = []
             else
               postPageScrollTop = post.scrollTop
             Session.set("postPageScrollTop", postPageScrollTop)
-            Router.go '/posts/'+postId
-          
+            Router.go '/redirect/'+postId
+
