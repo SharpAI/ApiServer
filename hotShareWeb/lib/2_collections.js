@@ -770,7 +770,7 @@ if(Meteor.isServer){
     Meteor.publish("suggestPosts", function (limit) {
         var self = this;
         self.count = 0;
-        var handle = Posts.find({owner:{$ne:self.userId}},{sort: {createdAt: -1}}).observeChanges({
+        var handle = Posts.find({owner:{$ne:self.userId}},{sort: {createdAt: -1},limit:limit + 20}).observeChanges({
             added: function (id,fields) {
                 if(self.count<limit)
                 {
@@ -892,7 +892,7 @@ if(Meteor.isServer){
     else{
       var self = this;
       this.count = 0;
-      var handle = Meets.find({me: userId},{sort:{count:-1,createdAt:-1}}).observeChanges({
+      var handle = Meets.find({me: userId},{sort:{count:-1,createdAt:-1},limit:40}).observeChanges({
         added: function (id,fields) {
           if (self.count<20)
           {
@@ -916,8 +916,11 @@ if(Meteor.isServer){
             newMeetsChangedForNewFriendsDeferHandle(id,self,fields,userId,postId);
         },
         removed: function (id) {
-          self.removed("newfriends", id);
-          self.count--;
+          try {
+              self.removed("newfriends", id);
+              self.count--;
+          } catch (error){
+          }
         }
       });
 
