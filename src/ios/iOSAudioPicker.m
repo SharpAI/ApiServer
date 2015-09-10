@@ -116,7 +116,7 @@
 
             exporter.outputFileType = @"com.apple.m4a-audio";
 
-            NSString *filename = [NSString stringWithFormat:@"/files/audio/%@.m4a",title];
+            NSString *filename = [NSString stringWithFormat:@"/files/%@.m4a",title];
 
             NSString *outputfile = [libraryDir stringByAppendingPathComponent:filename];
 
