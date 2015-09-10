@@ -1732,7 +1732,7 @@ if(Meteor.isClient){
       var topicsfields = ['text'];
       TopicsSearch = new SearchSource('topics', topicsfields, options);
       Tracker.autorun(function(){
-          if (Meteor.user()) {
+          if (Meteor.userId()) {
               Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'), {
                   onStop: subscribeFollowPostsOnStop,
                   onReady: function () {
@@ -1771,7 +1771,7 @@ if(Meteor.isClient){
       });
   }
   Tracker.autorun(function(){
-      if (Meteor.user()){
+      if (Meteor.userId()){
           Meteor.subscribe('suggestPosts', MOMENTS_ITEMS_INCREMENT, {
               onReady: function(){
                   Session.set('momentsCollection','loaded');
@@ -1781,7 +1781,7 @@ if(Meteor.isClient){
   });
 
   Tracker.autorun(function() {
-    if (Meteor.user()) {
+    if (Meteor.userId()) {
         if (Meteor.isCordova){
             console.log('Refresh Main Data Source when logon');
             window.refreshMainDataSource();
