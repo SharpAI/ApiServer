@@ -44,7 +44,12 @@ NSString *QQ_LOGIN_NETWORK_ERROR = @"QQ login network error";
     self.callback=command.callbackId;
     NSDictionary *args         = [command.arguments objectAtIndex:0];
     NSLog(@"%@",args);
-    if(args && [TencentOAuth iphoneQQInstalled]){
+    if (![TencentOAuth iphoneQQInstalled]){
+        CDVPluginResult *pluginResult=[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:QQ_NOT_INSTALLED];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
+    if(args){
         NSString *url = [args objectForKey:@"url"];
         //分享图预览图URL地址
         NSString *previewImageUrl = [args objectForKey:@"imageUrl"];
