@@ -114,8 +114,6 @@ if Meteor.isClient
       timestamp = new Date().getTime()
       if Drafts.find({type:'image'}).count() > 0
         Drafts.update({_id:Drafts.find({type:'image'}).fetch()[0]._id},{$set:{url:inputUrl}})
-      if isIOS
-        imgUrl = 'cdvfile://localhost/persistent/'+file.name
       sizey = Math.round( 6 * height / width )
       if sizey <= 0
         sizey = 1
@@ -282,8 +280,6 @@ if Meteor.isClient
           return
         console.log('Got data')
         Session.set('NewImgAdd',false)
-        if data.musicInfo
-          Session.set('musicInfo',data.musicInfo)
         resortObj = {}
         seekOneUsableMainImage(data,(file,w,h,found,index,total,source)->
           console.log('found ' + found + ' index ' + index + ' total ' + total + ' fileObject ' + file + ' source ' + source )
@@ -918,6 +914,8 @@ if Meteor.isClient
     return
 
   Template.addPost.helpers
+    isIOS:->
+      isIOS
     progressBarWidth:->
       Session.get('importProcedure')
     displayUrl:->
@@ -1078,24 +1076,46 @@ if Meteor.isClient
       console.log("textarea change "+ e.currentTarget.value)
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
     'click #addAudio': ()->
-      window.plugins.iOSAudioPicker.getAudio((list)->
-        ###
-        {
-          "artist":"Carrie Underwood",
-          "albumTitle":"Greatest Hits: Decade #1",
-          "ipodurl":"ipod-library://item/item.m4a?id=8615795969436387427",
-          "title":"Something in the Water",
-          "image":"BASE64",
-          "duration":238.059,
-          "exportedurl":"file:///var/mobile/Containers/Data/Application/B84BB3DE-20DC-4FF2-AD62-1A8D47337214/Documents/Something%20in%20the%20Water.m4a",
-          "filename":"Something in the Water.m4a",
-          "genre":"Country"
-        }
-        ###
-        console.log('Got list' + JSON.stringify(list))
-      ,()->
-        console.log('Got error')
-      ,'false','true');
+      if isIOS
+        window.plugins.iOSAudioPicker.getAudio((list)->
+          ###
+          {
+            "artist":"Carrie Underwood",
+            "albumTitle":"Greatest Hits: Decade #1",
+            "ipodurl":"ipod-library://item/item.m4a?id=8615795969436387427",
+            "title":"Something in the Water",
+            "image":"BASE64",
+            "duration":238.059,
+            "exportedurl":"file:///var/mobile/Containers/Data/Application/B84BB3DE-20DC-4FF2-AD62-1A8D47337214/Library/Something%20in%20the%20Water.m4a",
+            "filename":"Something in the Water.m4a",
+            "genre":"Country"
+          }
+          ###
+          #console.log('Got list' + JSON.stringify(list))
+          for item in list
+            if item
+              musicInfo = {}
+              if item.image and item.image isnt ''
+                console.log('has image')
+              if item.exportedurl and  item.exportedurl isnt ''
+                orignalFilename = item.exportedurl.replace(/^.*[\\\/]/, '')
+                musicInfo.playUrl = 'cdvfile://localhost/persistent/files/' + orignalFilename
+                musicInfo.URI = item.exportedurl
+                musicInfo.songName = item.title
+                musicInfo.singerName = item.artist
+                Drafts.insert {
+                  type:'music',
+                  owner: Meteor.userId(),
+                  toTheEnd: true,
+                  text:'您当前程序不支持音频播放，请分享到微信中欣赏',
+                  musicInfo: musicInfo
+                  data_row:'1',
+                  data_col:'3',
+                  data_sizex:'6',
+                  data_sizey:'1'}
+        ,()->
+          console.log('Got error')
+        ,'false','true');
     'click #addLink': ()->
       console.log 'Add Link ' + Session.get('lastImportedUrl')
       cordova.plugins.clipboard.paste (text)->

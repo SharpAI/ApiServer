@@ -164,9 +164,15 @@
           <div id="addText">
             <i class="fa fa-pencil-square-o"></i>
           </div>
-          <div id="addLink">
-            <i class="fa fa-link"></i>
-          </div>
+          {{#if isIOS}}
+            <div id="addAudio">
+              <i class="fa fa-music"></i>
+            </div>
+          {{else}}
+            <div id="addLink">
+              <i class="fa fa-link"></i>
+            </div>
+          {{/if}}
         </div>
         <div class="addProgress" style="display:none">
           {{> progressBar}}
