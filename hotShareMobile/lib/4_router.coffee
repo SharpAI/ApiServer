@@ -1,39 +1,10 @@
+subs = new SubsManager({
+  # maximum number of cache subscriptions
+  cacheLimit: 300,
+  # any subscription will be expire after minutes, if it's not subscribed again
+  expireIn: 60*24
+})
 if Meteor.isClient
-  SyncPostToClient = (postId)->
-    post = Posts.findOne({_id: postId})
-    if post
-      try
-        if ClientPosts.find({_id:postId}).count() is 0
-          ClientPosts.insert {
-            _id:post._id,
-            pub:post.pub,
-            title:post.title,
-            addontitle:post.addontitle,
-            fromUrl:post.fromUrl,
-            mainImage: post.mainImage,
-            heart: post.heart,
-            retweet: post.retweet,
-            comment: post.comment,
-            owner:post.owner,
-            ownerName:post.ownerName,
-            ownerIcon:post.ownerIcon,
-            createdAt: post.createdAt
-          }
-      catch error
-        console.log("Insert ClientPosts error!");
-  PostRender = (self,postId)->
-    post = ClientPosts.findOne({_id: postId})
-    if post
-      Session.set('postContent',post)
-      if post.addontitle and (post.addontitle isnt '')
-        documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
-      else
-        documentTitle = "『故事贴』" + post.title
-      Session.set("DocumentTitle",documentTitle)
-      self.render 'showPosts', {data: post}
-      Session.set 'channel','posts/'+postId
-    else
-      Router.go '/posts/'+postId
   Meteor.startup ()->
     Tracker.autorun ()->
       channel = Session.get 'channel'
@@ -125,19 +96,21 @@ if Meteor.isClient
       Session.set('nextPostID',this.params._id)
       this.render 'redirect'
       return
-    Router.route '/post/:_id', {
-      loadingTemplate: 'loadingPost'
-      action: ->
-        PostRender(this, this.params._id)
-    }
     Router.route '/posts/:_id', {
         waitOn: ->
-          [Meteor.subscribe("publicPosts",this.params._id),
-          Meteor.subscribe "pcomments"]
+          [subs.subscribe("publicPosts",this.params._id),
+          subs.subscribe "pcomments"]
         loadingTemplate: 'loadingPost'
         action: ->
-          [SyncPostToClient(this.params._id),
-           PostRender(this,this.params._id)]
+          post = Posts.findOne({_id: this.params._id})
+          Session.set('postContent',post)
+          if post.addontitle and (post.addontitle isnt '')
+            documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
+          else
+            documentTitle = "『故事贴』" + post.title
+          Session.set("DocumentTitle",documentTitle)
+          this.render 'showPosts', {data: post}
+          Session.set 'channel','posts/'+this.params._id
       }
     Router.route '/allDrafts',()->
       if Meteor.isCordova is true
@@ -211,6 +184,6 @@ if Meteor.isClient
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->
-          [Meteor.subscribe("publicPosts",this.params._id),
-          Meteor.subscribe "pcomments"]
+          [subs.subscribe("publicPosts",this.params._id),
+          subs.subscribe "pcomments"]
     }
