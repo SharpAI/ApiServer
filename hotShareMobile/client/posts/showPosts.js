@@ -161,7 +161,7 @@ Template.showPosts.events({
         var current = Router.current();
         var url = current.url;
         var postUrl;
-        if(url.indexOf("http") > 0)
+        if(url.indexOf("http") > -1)
             postUrl = url.replace("meteor.local", server_domain_name);
         else
             postUrl = "http://" + server_domain_name +url;
