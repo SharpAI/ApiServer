@@ -842,6 +842,8 @@ if(Meteor.isServer){
     }
   });
   Meteor.publish("userDetail", function (userId) {
+      return [];
+      /*
       if(!Match.test(userId, String)){
           return [];
       }
@@ -858,7 +860,7 @@ if(Meteor.isServer){
           self.onStop(function () {
               handle.stop();
           });
-      }
+      }*/
   });
   Meteor.publish("postFriends", function (userId,postId,limit) {
         if(this.userId === null || !Match.test(postId, String) ){
