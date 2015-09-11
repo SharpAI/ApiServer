@@ -71,7 +71,7 @@ Template.showPosts.events({
     'click #WXTimelineShare':function(e, t){
       current = Router.current();
       url = current.url;
-      if(url.indexOf("http") > 0)
+      if(url.indexOf("http") > -1)
         url = url.replace("meteor.local", server_domain_name);
       else
         url = "http://" + server_domain_name +url;
@@ -117,7 +117,7 @@ Template.showPosts.events({
     'click #WXSessionShare':function(e, t){
       current = Router.current();
       url = current.url;
-      if(url.indexOf("http") > 0)
+      if(url.indexOf("http") > -1)
         url = url.replace("meteor.local", server_domain_name);
       else
         url = "http://" + server_domain_name +url;
