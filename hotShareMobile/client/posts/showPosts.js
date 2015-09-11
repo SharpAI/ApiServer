@@ -16,7 +16,7 @@ Template.showPosts.onRendered(function () {
                     }
                     });
               }
-              
+
           }
      }
 });
@@ -103,7 +103,11 @@ Template.showPosts.events({
               }, function (reason) {
                 // 分享失败
                 console.log(reason);
-                PUB.toast("无法获取故事标题图片，请稍后重试！");
+                if (reason ==='ERR_WECHAT_NOT_INSTALLED') {
+                    PUB.toast("未安装微信客户端，分享失败");
+                } else {
+                    PUB.toast("分享失败");
+                }
               });
         } else {
             PUB.toast("无法获取故事标题图片，请稍后重试！");
@@ -141,9 +145,12 @@ Template.showPosts.events({
             console.log('分享成功~');
           }, function (reason) {
             // 分享失败
-            PUB.toast("无法获取故事标题图片，请稍后重试！");
+            if (reason ==='ERR_WECHAT_NOT_INSTALLED') {
+              PUB.toast("未安装微信客户端，分享失败");
+            } else {
+              PUB.toast("分享失败");
+            }
             console.log(reason);
-
           });
         } else {
             PUB.toast("无法获取故事标题图片，请稍后重试！");
@@ -173,11 +180,15 @@ Template.showPosts.events({
         args.appName = "故事贴";
         YCQQ.shareToQQ(function(){
             console.log("share success");
-        },function(failReason){
-            console.log(failReason);
+        },function(reason){
+            if (reason ==='QQ Client is not installed') {
+                PUB.toast("未安装QQ客户端，分享失败");
+            } else {
+                PUB.toast("分享失败");
+            }
         },args);
     },
-    
+
     'click  .like_img' : function(e){
            if (Meteor.user()) {
               post = Session.get('postContent');
@@ -227,7 +238,7 @@ addLike = function(currentPost, pubNum){
       $set: {
         pub: currentPost.pub
       }
-    });                    
+    });
 };
 removeLike = function(currentPost, pubNum, heartNum){
   currentPost.pub[pubNum].pub_Heart.splice(heartNum, 1);
@@ -273,7 +284,7 @@ addDynamicTemp = function(){
             dynamic = new Iron.DynamicTemplate();
             dynamic.insert({el: '#swipebox-overlay'});
             dynamic.template('bottomLike');
-    },10);     
+    },10);
 };
 
 removeDynamicTemp = function(){
