@@ -1,11 +1,3 @@
-
-subs = new SubsManager({
-# maximum number of cache subscriptions
-  cacheLimit: 300,
-# any subscription will be expire after minutes, if it's not subscribed again
-  expireIn: 60*24
-})
-
 if Meteor.isClient
   Router.route '/redirect/:_id',()->
     Session.set('nextPostID',this.params._id)
