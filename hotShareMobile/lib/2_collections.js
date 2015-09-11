@@ -867,11 +867,12 @@ if(Meteor.isServer){
         else{
             var self = this;
             self.count = 0;
-            var handle = Meets.find({me: userId,ta:{$ne:userId},meetOnPostId:postId},{sort: {count:-1,createdAt: -1},limit:limit}).observeChanges({
+            var handle = Meets.find({me: userId,meetOnPostId:postId},{sort: {createdAt: -1},limit:limit}).observeChanges({
                 added: function (id,fields) {
                     var taId = fields.ta;
                     //Call defered function here:
-                    newMeetsAddedForPostFriendsDeferHandle(self,taId,userId,id,fields);
+                    if (taId !== userId)
+                        newMeetsAddedForPostFriendsDeferHandle(self,taId,userId,id,fields);
                 },
                 changed: function (id,fields) {
                     try{
