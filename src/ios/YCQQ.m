@@ -44,7 +44,7 @@ NSString *QQ_LOGIN_NETWORK_ERROR = @"QQ login network error";
     self.callback=command.callbackId;
     NSDictionary *args         = [command.arguments objectAtIndex:0];
     NSLog(@"%@",args);
-    if(args){
+    if(args && [TencentOAuth iphoneQQInstalled]){
         NSString *url = [args objectForKey:@"url"];
         //分享图预览图URL地址
         NSString *previewImageUrl = [args objectForKey:@"imageUrl"];
