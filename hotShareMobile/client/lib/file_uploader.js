@@ -346,7 +346,16 @@ if (Meteor.isCordova){
             return callback(new Error('aboutUpload'),item)
         }
         var self = this;
-        var ft = uploadToAliyun_new(item.filename, item.URI, function(status,param){
+        var filename = '';
+        var URI = ''
+        if (item.type === 'music') {
+            filename = item.musicInfo.filename
+            URI = item.musicInfo.URI
+        } else {
+            filename = item.filename;
+            URI = item.URI
+        }
+        var ft = uploadToAliyun_new(filename, URI, function(status,param){
             if (Session.get('terminateUpload')) {
                 return callback(new Error('aboutUpload'),item)
             }
@@ -355,7 +364,11 @@ if (Meteor.isCordova){
             } else if (status === 'done'){
                 self.uploaded++;
                 Session.set('progressBarWidth', parseInt(100*self.uploaded/self.total));
-                item.imgUrl = param;
+                if ( item.type === 'music'){
+                    item.musicInfo.playUrl = param;
+                } else {
+                    item.imgUrl = param;
+                }
                 item.uploaded = true;
                 callback(null,item)
             } else if (status === 'error'){

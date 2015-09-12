@@ -1193,12 +1193,12 @@ if Meteor.isClient
               if item.image and item.image isnt ''
                 console.log('has image')
               if item.exportedurl and  item.exportedurl isnt ''
-                orignalFilename = item.exportedurl.replace(/^.*[\\\/]/, '')
-                musicInfo.playUrl = 'cdvfile://localhost/persistent/files/' + orignalFilename
+                originalFilename = item.exportedurl.replace(/^.*[\\\/]/, '')
+                musicInfo.playUrl = 'cdvfile://localhost/persistent/files/' + originalFilename
                 musicInfo.URI = item.exportedurl
+                musicInfo.filename = Meteor.userId()+'_'+new Date().getTime()+ '_' + encodeURI(originalFilename);
                 musicInfo.songName = item.title
                 musicInfo.singerName = item.artist
-                imageData = 'data:image/png;base64,'+item.image
                 console.log('Image ')
                 window.imageResizer.resizeImage( (data)->
                     musicInfo.image = "data:image/png;base64," + data.imageData;
@@ -1444,11 +1444,16 @@ if Meteor.isClient
           return
         #get the images to be uploaded
         draftImageData = Drafts.find({type:'image'}).fetch()
+        draftMusicData = Drafts.find({type:'music'}).fetch()
         draftToBeUploadedImageData = []
         for i in [0..(draftImageData.length-1)]
             if draftImageData[i].imgUrl.toLowerCase().indexOf("http://")>= 0 or draftImageData[i].imgUrl.toLowerCase().indexOf("https://")>= 0
                 continue
             draftToBeUploadedImageData.push(draftImageData[i])
+        for music in draftMusicData
+          if music.musicInfo.playUrl.toLowerCase().indexOf("http://")>= 0 or music.musicInfo.playUrl.toLowerCase().indexOf("https://")>= 0
+            continue
+          draftToBeUploadedImageData.push(music)
         #uploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId)
         #Don't add addpost page into history
         Session.set('terminateUpload', false)
@@ -1461,8 +1466,11 @@ if Meteor.isClient
               window.plugins.toast.showShortBottom('上传失败，请稍后重试')
               return
             for item in result
-              if item.uploaded and item._id and item.imgUrl
-                Drafts.update({_id: item._id}, {$set: {imgUrl:item.imgUrl}});
+              if item.uploaded and item._id
+                if item.type is 'image' and item.imgUrl
+                  Drafts.update({_id: item._id}, {$set: {imgUrl:item.imgUrl}});
+                else if item.type is 'music' and item.musicInfo and item.musicInfo.playUrl
+                  Drafts.update({_id: item._id}, {$set: {"musicInfo.playUrl":item.musicInfo.playUrl}});
             if err
               window.plugins.toast.showShortBottom('上传失败，请稍后重试')
               return
