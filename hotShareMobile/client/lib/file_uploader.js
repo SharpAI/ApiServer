@@ -41,7 +41,7 @@ if (Meteor.isCordova){
             };
             ft.upload(result.orignalURI, uri, function(e){
                 if(callback){
-                    callback('done',result.acceccURI);
+                    callback('done',result.readURI);
                 }
             }, function(e){
                 showDebug && console.log('upload error' + e.code );

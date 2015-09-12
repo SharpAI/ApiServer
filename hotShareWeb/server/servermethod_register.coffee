@@ -37,6 +37,7 @@ if Meteor.isServer
           date: date.toGMTString()
           auth: authheader
           acceccURI: 'http://oss.tiegushi.com/'+filename
+          readURI: 'http://data.tiegushi.com/'+filename
         }
         policy
       "getGeoFromConnection":()->

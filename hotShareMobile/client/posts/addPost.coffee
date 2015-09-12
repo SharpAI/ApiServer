@@ -1196,7 +1196,7 @@ if Meteor.isClient
                 originalFilename = item.exportedurl.replace(/^.*[\\\/]/, '')
                 musicInfo.playUrl = 'cdvfile://localhost/persistent/files/' + originalFilename
                 musicInfo.URI = item.exportedurl
-                musicInfo.filename = Meteor.userId()+'_'+new Date().getTime()+ '_' + encodeURI(originalFilename);
+                musicInfo.filename = Meteor.userId()+'_'+new Date().getTime()+ '_' + MD5(originalFilename)+'.'+originalFilename.split('.').pop();
                 musicInfo.songName = item.title
                 musicInfo.singerName = item.artist
                 console.log('Image ')
