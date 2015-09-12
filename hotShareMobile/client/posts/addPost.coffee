@@ -154,6 +154,17 @@ if Meteor.isClient
         data_col:'3',
         data_sizex:'6',
         data_sizey:'6'}
+  insertMusicInfo = (musicInfo)->
+    Drafts.insert {
+      type:'music',
+      owner: Meteor.userId(),
+      toTheEnd: true,
+      text:'您当前程序不支持音频播放，请分享到微信中欣赏',
+      musicInfo: musicInfo
+      data_row:'1',
+      data_col:'3',
+      data_sizex:'6',
+      data_sizey:'1'}
   processReadableText=(data)->
     fullText = ''
     if data.fullText
@@ -224,16 +235,7 @@ if Meteor.isClient
         data_sizex:'6',
         data_sizey:'4'}
     else if item.type is 'music'
-      Drafts.insert {
-        type:'music',
-        owner: Meteor.userId(),
-        toTheEnd: true,
-        text:'您当前程序不支持音频播放，请分享到微信中欣赏',
-        musicInfo: item.musicInfo
-        data_row:'1',
-        data_col:'3',
-        data_sizex:'6',
-        data_sizey:'1'}
+      insertMusicInfo(item.musicInfo)
     callback(null,item)
   renderResortedArticleAsync = (data,inputUrl,resortedObj)->
     resortedObj.itemProcessor = itemProcessor
@@ -912,7 +914,110 @@ if Meteor.isClient
         $("#addontitle").attr('disabled',false)
         `global_toolbar_hidden = false`
     return
+  publishPostHandle = ()->
+    layout = JSON.stringify(gridster.serialize())
+    pub=[]
+    addontitle = $("#addontitle").val()
+    title = $("#title").val()
+    try
+      ownerIcon = Meteor.user().profile.icon
+    catch
+      ownerIcon = '/userPicture.png'
+    Session.set 'draftTitle',''
+    Session.set 'draftAddontitle',''
+    console.log 'Full name is ' + Meteor.user().profile.fullname
+    if Meteor.user().profile.fullname && (Meteor.user().profile.fullname isnt '')
+      ownerName = Meteor.user().profile.fullname
+    else
+      ownerName = Meteor.user().username
 
+    draftData = Drafts.find().fetch()
+    postId = draftData[0]._id;
+    fromUrl = draftData[0].url;
+
+    #Save gridster layout first. If publish failed, we can recover the drafts
+    for i in [0..(draftData.length-1)]
+      if i is 0
+        mainImage = draftData[i].imgUrl
+        mainImageStyle = draftData[i].style
+        mainText = $("#"+draftData[i]._id+"text").val()
+      else
+  #for some case user did not save the draft, directly published, the layout does not stored.
+        json = jQuery.parseJSON(layout);
+        for item in json
+          if item.id is draftData[i]._id
+            draftData[i].data_row = item.row
+            draftData[i].data_col = item.col
+            draftData[i].data_sizex = item.size_x
+            draftData[i].data_sizey = item.size_y
+        pub.push(draftData[i])
+    sortBy = (key, a, b, r) ->
+      r = if r then 1 else -1
+      return -1*r if a[key] and b[key] and a[key] > b[key]
+      return +1*r if a[key] and b[key] and a[key] < b[key]
+      return +1*r if a[key] is undefined and b[key]
+      return -1*r if a[key] and b[key] is undefined
+      return 0
+    pub.sort((a, b)->
+      sortBy('data_row', a, b)
+    )
+    if Session.get('isReviewMode') is '2' or Posts.find({_id:postId}).count()>0
+      Posts.update(
+        {
+          _id:postId
+        },
+        {
+          $set:{
+            pub:pub,
+            title:title,
+            heart:[],  #点赞
+            retweet:[],#转发
+            comment:[], #评论
+            addontitle:addontitle,
+            mainImage: mainImage,
+            mainImageStyle:mainImageStyle,
+            mainText: mainText,
+            fromUrl: fromUrl,
+            owner:Meteor.userId(),
+            ownerName:ownerName,
+            ownerIcon:ownerIcon,
+            createdAt: new Date(),
+          }
+        }
+      )
+    else
+      Posts.insert( {
+        _id:postId,
+        pub:pub,
+        title:title,
+        browse:0,
+        heart:[],  #点赞
+        retweet:[],#转发
+        comment:[], #评论
+        commentsCount:0,
+        addontitle:addontitle,
+        mainImage: mainImage,
+        mainImageStyle:mainImageStyle,
+        mainText: mainText,
+        fromUrl: fromUrl,
+        owner:Meteor.userId(),
+        ownerName:ownerName,
+        ownerIcon:ownerIcon,
+        createdAt: new Date(),
+      })
+    #Delete from SavedDrafts if it is a saved draft.
+    SavedDrafts.remove({_id:postId})
+    #Delete the Drafts
+    Drafts.remove({})
+    TempDrafts.remove({})
+    if Session.get('isReviewMode') is '2'
+      Router.go('/posts/'+postId)
+    else
+      Session.set("TopicPostId", postId)
+      Session.set("TopicTitle", title)
+      Session.set("TopicAddonTitle", addontitle)
+      Session.set("TopicMainImage", mainImage)
+      Router.go('addTopicComment')
   Template.addPost.helpers
     isIOS:->
       isIOS
@@ -1040,20 +1145,10 @@ if Meteor.isClient
         Drafts.find({type:'image'}).fetch()[0]
       else
         null
-
     pub:()->
       if Drafts.find().count() > 1
         for i in [1..(Drafts.find({}).count()-1)]
           Drafts.find({}).fetch()[i]
-
-    items:()->
-      if Drafts.find({type:'image'}).count() > 1
-        for i in [1..(Drafts.find({type:'image'}).count()-1)]
-          Drafts.find({type:'image'}).fetch()[i]
-    texts:()->
-      if Drafts.find({type:'text'}).count() > 1
-        for i in [1..(Drafts.find({type:'text'}).count()-1)]
-          Drafts.find({type:'text'}).fetch()[i]
   Template.addPost.events
     'click #ViewOnWeb' :->
       if Meteor.isCordova and Session.get('isReviewMode') is '1'
@@ -1103,16 +1198,18 @@ if Meteor.isClient
                 musicInfo.URI = item.exportedurl
                 musicInfo.songName = item.title
                 musicInfo.singerName = item.artist
-                Drafts.insert {
-                  type:'music',
-                  owner: Meteor.userId(),
-                  toTheEnd: true,
-                  text:'您当前程序不支持音频播放，请分享到微信中欣赏',
-                  musicInfo: musicInfo
-                  data_row:'1',
-                  data_col:'3',
-                  data_sizex:'6',
-                  data_sizey:'1'}
+                imageData = 'data:image/png;base64,'+item.image
+                console.log('Image ')
+                window.imageResizer.resizeImage( (data)->
+                    musicInfo.image = "data:image/png;base64," + data.imageData;
+                    console.log('Got image data ' + musicInfo.image);
+                    insertMusicInfo(musicInfo)
+                  ,(error)->
+                    console.log("Error : \r\n" + error);
+                    insertMusicInfo(musicInfo)
+                  ,item.image
+                  ,64, 64, {imageDataType:ImageResizer.IMAGE_DATA_TYPE_BASE64,format:'png'});
+
         ,()->
           console.log('Got error')
         ,'false','true');
@@ -1340,56 +1437,11 @@ if Meteor.isClient
         Router.go('/user')
         false
       else
-        layout = JSON.stringify(gridster.serialize())
-        pub=[]
         title = $("#title").val()
-
         if title is '' or title is '[空标题]'
           $("#title").val('')
           window.plugins.toast.showShortBottom('请为您的故事加个标题')
           return
-
-        addontitle = $("#addontitle").val()
-        try
-          ownerIcon = Meteor.user().profile.icon
-        catch
-          ownerIcon = '/userPicture.png'
-        draftData = Drafts.find().fetch()
-        postId = draftData[0]._id;
-        fromUrl = draftData[0].url;
-
-        #Save gridster layout first. If publish failed, we can recover the drafts
-        for i in [0..(draftData.length-1)]
-          if i is 0
-            if draftData[i].imgUrl.toLowerCase().indexOf("http://") == -1 and draftData[i].imgUrl.toLowerCase().indexOf("https://") == -1
-              mainImage = 'http://data.tiegushi.com/'+draftData[i].filename
-            else
-              mainImage = draftData[i].imgUrl
-            mainImageStyle = draftData[i].style
-            mainText = $("#"+draftData[i]._id+"text").val()
-          else
-            if draftData[i].isImage and draftData[i].imgUrl.toLowerCase().indexOf("http://") == -1 and draftData[i].imgUrl.toLowerCase().indexOf("https://") == -1
-                draftData[i].imgUrl = 'http://data.tiegushi.com/'+draftData[i].filename
-            #for some case user did not save the draft, directly published, the layout does not stored.
-            json = jQuery.parseJSON(layout);
-            for item in json
-              if item.id is draftData[i]._id
-                draftData[i].data_row = item.row
-                draftData[i].data_col = item.col
-                draftData[i].data_sizex = item.size_x
-                draftData[i].data_sizey = item.size_y
-            pub.push(draftData[i])
-        sortBy = (key, a, b, r) ->
-          r = if r then 1 else -1
-          return -1*r if a[key] and b[key] and a[key] > b[key]
-          return +1*r if a[key] and b[key] and a[key] < b[key]
-          return +1*r if a[key] is undefined and b[key]
-          return -1*r if a[key] and b[key] is undefined
-          return 0
-        pub.sort((a, b)->
-          sortBy('data_row', a, b)
-        )
-
         #get the images to be uploaded
         draftImageData = Drafts.find({type:'image'}).fetch()
         draftToBeUploadedImageData = []
@@ -1400,74 +1452,24 @@ if Meteor.isClient
         #uploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId)
         #Don't add addpost page into history
         Session.set('terminateUpload', false)
-        multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId, (err, result)->
-            if err and result
-                for i in [0..(result.length-1)]
-                  if result[i].uploaded and result[i]._id and result[i].imgUrl
-                    Drafts.update({_id: result[i]._id}, {$set: {imgUrl:result[i].imgUrl}});
-                return
-            Session.set 'draftTitle',''
-            Session.set 'draftAddontitle',''
-            console.log 'Full name is ' + Meteor.user().profile.fullname
-            if Meteor.user().profile.fullname && (Meteor.user().profile.fullname isnt '')
-              ownerName = Meteor.user().profile.fullname
-            else
-              ownerName = Meteor.user().username
-            if Session.get('isReviewMode') is '2' or Posts.find({_id:postId}).count()>0
-                Posts.update(
-                  {_id:postId},
-                  {$set:{
-                      pub:pub,
-                      title:title,
-                      heart:[],  #点赞
-                      retweet:[],#转发
-                      comment:[], #评论
-                      addontitle:addontitle,
-                      mainImage: mainImage,
-                      mainImageStyle:mainImageStyle,
-                      mainText: mainText,
-                      fromUrl: fromUrl,
-                      owner:Meteor.userId(),
-                      ownerName:ownerName,
-                      ownerIcon:ownerIcon,
-                      createdAt: new Date(),
-                    }
-                  }
-                )
-            else
-                Posts.insert {
-                  _id:postId,
-                  pub:pub,
-                  title:title,
-                  browse:0,
-                  heart:[],  #点赞
-                  retweet:[],#转发
-                  comment:[], #评论
-                  commentsCount:0,
-                  addontitle:addontitle,
-                  mainImage: mainImage,
-                  mainImageStyle:mainImageStyle,
-                  mainText: mainText,
-                  fromUrl: fromUrl,
-                  owner:Meteor.userId(),
-                  ownerName:ownerName,
-                  ownerIcon:ownerIcon,
-                  createdAt: new Date(),
-                }
-                #Delete from SavedDrafts if it is a saved draft.
-            SavedDrafts.remove({_id:postId})
-                #Delete the Drafts
-            Drafts.remove({})
-            TempDrafts.remove({})
-            if Session.get('isReviewMode') is '2'
-                Router.go('/posts/'+postId)
-            else
-                Session.set("TopicPostId", postId)
-                Session.set("TopicTitle", title)
-                Session.set("TopicAddonTitle", addontitle)
-                Session.set("TopicMainImage", mainImage)
-                Router.go('addTopicComment')
-        )
+        if draftToBeUploadedImageData.length > 0
+          multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, null, (err, result)->
+            unless result
+              window.plugins.toast.showShortBottom('上传失败，请稍后重试')
+              return
+            if result.length < 1
+              window.plugins.toast.showShortBottom('上传失败，请稍后重试')
+              return
+            for item in result
+              if item.uploaded and item._id and item.imgUrl
+                Drafts.update({_id: item._id}, {$set: {imgUrl:item.imgUrl}});
+            if err
+              window.plugins.toast.showShortBottom('上传失败，请稍后重试')
+              return
+            publishPostHandle()
+          )
+        else
+          publishPostHandle()
         return
     'click .remove':(event)->
       Drafts.remove this._id

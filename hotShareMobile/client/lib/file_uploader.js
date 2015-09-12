@@ -372,11 +372,11 @@ if (Meteor.isCordova){
         Template.progressBar.__helpers.get('close')();
         if (err){
             if (this.finalCallback) {
-                this.finalCallback('error',result);
+                this.finalCallback('error');
             }
         } else {
             if (this.finalCallback) {
-                this.finalCallback(null);
+                this.finalCallback(null,result);
             }
         }
     };
@@ -395,10 +395,6 @@ if (Meteor.isCordova){
         async.mapLimit(draftData,maxThreads,uploadObj.fileUploader.bind(uploadObj),uploadObj.asyncCallback.bind(uploadObj));
     };
     multiThreadUploadFileWhenPublishInCordova = function(draftData, postId, callback){
-        if(device.platform === 'testAndroid' ){
-            Router.go('/posts/'+postId);
-            return;
-        }
         //showDebug && console.log("draftData="+JSON.stringify(draftData));
         if (draftData.length > 0) {
             Template.progressBar.__helpers.get('show')();
