@@ -59,17 +59,12 @@
                     {{#each suggestPosts}}
                         {{#masonryElement "pin_container"}}
                             <div class="readPost" id="{{_id}}">
-                                <img class="mainImage" src="{{mainImage}}" />
+                                <img src="{{mainImage}}" />
                                 <header>
                                   <p class="title">{{title}}</p>
                                   <p class="addontitle">{{addontitle}}</p>
                                 </header>
-                                <div class="pin_content">
-                                  <span><img class="userIcon" src="{{userIcon}}" width="35" height="35" /></span>
-                                  <h1 class="username">{{username}}</h1>
-                                  <h2>发布了一个故事</h2>
-                                  <b>{{time_diff createdAt}}</b>
-                                </div>
+                                <p class="username">{{ownerName}} 发布</p>
                             </div>
                         {{/masonryElement}}
                     {{/each}}
@@ -77,17 +72,12 @@
                     {{#each moments}}
                         {{#masonryElement "pin_container"}}
                             <div class="readPost" id="{{readPostId}}">
-                                <img class="mainImage" src="{{mainImage}}" />
+                                <img src="{{mainImage}}" />
                                 <header>
                                   <p class="title">{{title}}</p>
                                   <p class="addontitle">{{addontitle}}</p>
                                 </header>
-                                <div class="pin_content">
-                                  <span><img class="userIcon" src="{{userIcon}}" width="35" height="35" /></span>
-                                  <h1 class="username">{{username}}</h1>
-                                  <h2>阅读了一个故事</h2>
-                                  <b>{{time_diff createdAt}}</b>
-                                </div>
+                                <p class="username">{{username}} 读过</p>
                             </div>
                         {{/masonryElement}}
                     {{/each}}
