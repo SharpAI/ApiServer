@@ -1020,7 +1020,8 @@ if Meteor.isClient
       Router.go('addTopicComment')
   Template.addPost.helpers
     isIOS:->
-      isIOS
+      #isIOS
+      false
     progressBarWidth:->
       Session.get('importProcedure')
     displayUrl:->
