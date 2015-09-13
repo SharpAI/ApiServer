@@ -25,4 +25,3 @@ meteorhacks:inject-initial
 email
 meteorhacks:cluster
 tmeasday:publish-counts
-voodoohop:masonrify
