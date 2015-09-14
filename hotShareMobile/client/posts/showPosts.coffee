@@ -195,8 +195,23 @@ if Meteor.isClient
     #  PUB.toast("您的手机版本过低，部分图片可能产生变形。");
 
   Template.showPosts.helpers
-    getStyle:->
-      self=this
+    getPostPub:->
+      if Session.get("postContent")._id
+        Post=Posts.findOne({_id: Session.get("postContent")._id})
+        if Post
+          #ClientPosts.update({_id: Post._id},{"$set":Post}, (error, result)->
+          ClientPosts.update({_id: Post._id},{"$set":{"pub":Post.pub}}, (error, result)->
+            if error
+              console.log(error.reason);
+            else
+              console.log("success");
+          )
+          Post.pub
+        else
+          Meteor.subscribe("publicPosts",Session.get("postContent")._id)
+          Session.get("postContent").pub
+    getStyle:(postpub)->
+      self=postpub[this.index]
       pclength=0
       if self.pcomments
         pclength=self.pcomments.length
@@ -234,18 +249,18 @@ if Meteor.isClient
         return true
       else
         return false
-    myselfClickedUp:->
+    myselfClickedUp:(postpub)->
       i = this.index
       userId = Meteor.userId()
-      post = Session.get("postContent").pub
+      post=postpub
       if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].likeUserId[userId] is true
         return true
       else
         return false
-    myselfClickedDown:->
+    myselfClickedDown:(postpub)->
       i = this.index
       userId = Meteor.userId()
-      post = Session.get("postContent").pub
+      post = postpub
       if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].dislikeUserId[userId] is true
         return true
       else
@@ -287,21 +302,24 @@ if Meteor.isClient
         false
       else
         true
-    plike:->
-      if this.likeSum is undefined
+    plike:(postpub)->
+      post = postpub
+      if post[this.index].likeSum is undefined
         0
       else
-        this.likeSum
-    pdislike:->
-      if this.dislikeSum is undefined
+        post[this.index].likeSum
+    pdislike:(postpub)->
+      post = postpub
+      if post[this.index].dislikeSum is undefined
         0
       else
-        this.dislikeSum
-    pcomments:->
-      if this.pcomments is undefined
+        post[this.index].dislikeSum
+    pcomments:(postpub)->
+      post = postpub
+      if post[this.index].pcomments is undefined
         0
       else
-        this.pcomments.length
+        post[this.index].pcomments.length
   Template.showPosts.events
     'click #ViewOnWeb' :->
       if Session.get("postContent").fromUrl
