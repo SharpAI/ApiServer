@@ -5,4 +5,5 @@
 @withDiscover = true
 @withAutoSavedOnPaused = false
 @withPostSuggestionToUser = false
+@withNewLayoutMoment = true
 

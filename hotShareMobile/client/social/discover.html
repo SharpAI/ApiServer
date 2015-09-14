@@ -54,55 +54,103 @@
             {{#if loadError}}
                 <div>加载失败，请检查网络设置或稍后重试</div>
             {{/if}}
-            <div id="wrapper">
-                {{#if NoMoments}}
+            {{#if newLayoutMoment}}
+                {{#masonryContainer columnWidth=getWidth gutter=0 id="pin_container" }}
                     {{#each suggestPosts}}
-                        <div id="list">
-                            <div class="icon">
-                                <img src="{{ownerIcon}}" width="40" height="40"/>
-                            </div>
-                            <div class="user_name">
-                                <h2>{{ownerName}}&nbsp;<span>发布了一个故事</span></h2>
-                                <div class="readpost">
-                                    <dl>
-                                        <dt>
-                                            <img class="post_pic" src="{{mainImage}}" width="40" height="40"/>
-                                        </dt>
-                                        <dd>{{title}}  {{addontitle}}</dd>
-                                    </dl>
+                        {{#masonryElement "pin_container"}}
+                            <div class="readPost" id="{{_id}}">
+                                <img class="mainImage" src="{{mainImage}}" />
+    <!--                                <header>
+                                  <p class="title">{{title}}</p>
+                                  <p class="addontitle">{{addontitle}}</p>
+                                </header>-->
+                                <div class="pin_content">
+    <!--                                  <span><img class="userIcon" src="{{userIcon}}" width="35" height="35" /></span>-->
+                                  <p class="title">{{title}}</p>
+                                  <p class="addontitle">{{addontitle}}</p>
+                                  <h1 class="username">{{ownerName}}  <span>发布</span></h1>
+    <!--                                  <h2>发布了一个故事</h2>-->
+    <!--                                  <b>{{time_diff createdAt}}</b>-->
                                 </div>
-                                <p>{{time_diff createdAt}}</p>
                             </div>
-                            <div class="clear"></div>
-                        </div>
+                        {{/masonryElement}}
                     {{/each}}
-                {{else}}
                     {{#each moments}}
-                        <div id="list">
-                            <div class="icon">
-                               <img src="{{userIcon}}" width="40" height="40"/>
+                        {{#masonryElement "pin_container"}}
+                            <div class="readPost" id="{{readPostId}}">
+                                <img class="mainImage" src="{{mainImage}}" />
+    <!--                                <header>
+                                  <p class="title">{{title}}</p>
+                                  <p class="addontitle">{{addontitle}}</p>
+                                </header>-->
+                                <div class="pin_content">
+                                  <p class="title">{{title}}</p>
+                                  <p class="addontitle">{{addontitle}}</p>
+    <!--                                  <span><img class="userIcon" src="{{userIcon}}" width="35" height="35" /></span>-->
+                                  <h1 class="username">{{username}}  <span>读过</span></h1>
+    <!--                                  <h2>阅读了一个故事</h2>-->
+    <!--                                  <b>{{time_diff createdAt}}</b>-->
+                                </div>
                             </div>
-                            <div class="user_name">
-                              <h2>{{username}}&nbsp;<span>阅读了一个故事</span></h2>
-                                  <div class="readpost">
-                                  <dl>
-                                     <dt>
-                                        <img class="post_pic" src="{{mainImage}}" width="40" height="40"/>
-                                     </dt>
-                                     <dd>{{title}}  {{addontitle}}</dd>
-                                  </dl>
-                                  </div>
-                              <p>{{time_diff createdAt}}</p>
-                            </div>
-                            <div class="clear"></div>
-                            </div>
+                        {{/masonryElement}}
                     {{/each}}
+                {{/masonryContainer}}
+                {{#if moreResults}}
+                    <div id="showMoreMomentsResults" style="margin-left: 25px;">
+                        <span class="loading">加载中...</span>
+                    </div>
                 {{/if}}
-            {{#if moreResults}}
-            <div id="showMoreMomentsResults" style="margin-left: 25px;">
-                <span class="loading">加载中...</span>
-            </div>
+            {{else}}
+                <div id="wrapper">
+                    {{#if NoMoments}}
+                        {{#each suggestPosts}}
+                            <div id="list">
+                                <div class="icon">
+                                    <img src="{{ownerIcon}}" width="40" height="40"/>
+                                </div>
+                                <div class="user_name">
+                                    <h2>{{ownerName}}&nbsp;<span>发布了一个故事</span></h2>
+                                    <div class="readpost">
+                                        <dl>
+                                            <dt>
+                                                <img class="post_pic" src="{{mainImage}}" width="40" height="40"/>
+                                            </dt>
+                                            <dd>{{title}}  {{addontitle}}</dd>
+                                        </dl>
+                                    </div>
+                                    <p>{{time_diff createdAt}}</p>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        {{/each}}
+                    {{else}}
+                        {{#each moments}}
+                            <div id="list">
+                                <div class="icon">
+                                    <img src="{{userIcon}}" width="40" height="40"/>
+                                </div>
+                                <div class="user_name">
+                                    <h2>{{username}}&nbsp;<span>阅读了一个故事</span></h2>
+                                    <div class="readpost">
+                                        <dl>
+                                            <dt>
+                                                <img class="post_pic" src="{{mainImage}}" width="40" height="40"/>
+                                            </dt>
+                                            <dd>{{title}}  {{addontitle}}</dd>
+                                        </dl>
+                                    </div>
+                                    <p>{{time_diff createdAt}}</p>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        {{/each}}
+                    {{/if}}
+                    {{#if moreResults}}
+                        <div id="showMoreMomentsResults" style="margin-left: 25px;">
+                            <span class="loading">加载中...</span>
+                        </div>
+                    {{/if}}
+                </div>
             {{/if}}
-            </div>
       </div>
 </template>

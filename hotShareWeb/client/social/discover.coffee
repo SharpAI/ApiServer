@@ -28,6 +28,11 @@ if Meteor.isClient
             if (target.data("visible"))
                 target.data("visible", false);
   Template.moments.helpers
+    newLayoutMoment:()->
+      withNewLayoutMoment
+    getWidth:()->
+      console.log('width is ' + Math.round(document.width*0.49))
+      Math.round(document.width*0.49)
     NoMoments:()->
       if DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
         false
@@ -52,6 +57,20 @@ if Meteor.isClient
     'click .readpost':(e)->
       Session.set 'displayShowPostLeftBackBtn',true
       postId = this.readPostId
+      scrollTop = $(window).scrollTop()
+      if postId is undefined
+        postId = this._id
+      $(window).children().off()
+      $(window).unbind('scroll')
+      id = Session.get("postContent")._id
+      PUB.postPage(id,scrollTop)
+      Meteor.setTimeout ()->
+        Session.set("Social.LevelOne.Menu",'contactsList')
+        Router.go '/redirect/'+postId
+      ,300
+    'click .masonry_element':(e)->
+      Session.set 'displayShowPostLeftBackBtn',true
+      postId = $(e.currentTarget).find('.readPost')[0].id
       scrollTop = $(window).scrollTop()
       if postId is undefined
         postId = this._id
