@@ -55,49 +55,60 @@
                 <div>加载失败，请检查网络设置或稍后重试</div>
             {{/if}}
             {{#if newLayoutMoment}}
-                {{#masonryContainer columnWidth=getWidth gutter=0 id="pin_container" }}
+                {{#newLayoutContainer columnWidth=getWidth gutter=0 layoutId=onPostId }}
                     {{#each suggestPosts}}
-                        {{#masonryElement "pin_container"}}
-                            <div class="readPost" id="{{_id}}">
-                                <img class="mainImage" src="{{mainImage}}" />
-    <!--                                <header>
-                                  <p class="title">{{title}}</p>
-                                  <p class="addontitle">{{addontitle}}</p>
-                                </header>-->
-                                <div class="pin_content">
-    <!--                                  <span><img class="userIcon" src="{{userIcon}}" width="35" height="35" /></span>-->
-                                  <p class="title">{{title}}</p>
-                                  <p class="addontitle">{{addontitle}}</p>
-                                  <h1 class="username">{{ownerName}}  <span>发布</span></h1>
-    <!--                                  <h2>发布了一个故事</h2>-->
-    <!--                                  <b>{{time_diff createdAt}}</b>-->
-                                </div>
+                        {{#newLayoutElement layoutId=onPostId displayId=_id}}
+                            <img class="mainImage" src="{{mainImage}}" />
+<!--                                <header>
+                              <p class="title">{{title}}</p>
+                              <p class="addontitle">{{addontitle}}</p>
+                            </header>-->
+                            <div class="pin_content">
+<!--                                  <span><img class="userIcon" src="{{userIcon}}" width="35" height="35" /></span>-->
+                              <p class="title">{{title}}</p>
+                              <p class="addontitle">{{addontitle}}</p>
+                              <h1 class="username">{{ownerName}}  <span>发布</span></h1>
+<!--                                  <h2>发布了一个故事</h2>-->
+<!--                                  <b>{{time_diff createdAt}}</b>-->
                             </div>
-                        {{/masonryElement}}
+                        {{/newLayoutElement}}
                     {{/each}}
                     {{#each moments}}
-                        {{#masonryElement "pin_container"}}
-                            <div class="readPost" id="{{readPostId}}">
-                                <img class="mainImage" src="{{mainImage}}" />
-    <!--                                <header>
-                                  <p class="title">{{title}}</p>
-                                  <p class="addontitle">{{addontitle}}</p>
-                                </header>-->
-                                <div class="pin_content">
-                                  <p class="title">{{title}}</p>
-                                  <p class="addontitle">{{addontitle}}</p>
-    <!--                                  <span><img class="userIcon" src="{{userIcon}}" width="35" height="35" /></span>-->
-                                  <h1 class="username">{{username}}  <span>读过</span></h1>
-    <!--                                  <h2>阅读了一个故事</h2>-->
-    <!--                                  <b>{{time_diff createdAt}}</b>-->
-                                </div>
+                        {{#newLayoutElement layoutId=onPostId displayId=readPostId}}
+                            <img class="mainImage" src="{{mainImage}}" />
+<!--                                <header>
+                              <p class="title">{{title}}</p>
+                              <p class="addontitle">{{addontitle}}</p>
+                            </header>-->
+                            <div class="pin_content">
+                              <p class="title">{{title}}</p>
+                              <p class="addontitle">{{addontitle}}</p>
+<!--                                  <span><img class="userIcon" src="{{userIcon}}" width="35" height="35" /></span>-->
+                              <h1 class="username">{{username}}  <span>读过</span></h1>
+<!--                                  <h2>阅读了一个故事</h2>-->
+<!--                                  <b>{{time_diff createdAt}}</b>-->
                             </div>
-                        {{/masonryElement}}
+                        {{/newLayoutElement}}
                     {{/each}}
-                {{/masonryContainer}}
-                {{#if moreResults}}
-                    <div id="showMoreMomentsResults" style="margin-left: 25px;">
-                        <span class="loading">加载中...</span>
+                {{/newLayoutContainer}}
+                {{#if isLoading}}
+                    <div class="loading-spinner">
+                        <div class='spinner-overlay'>
+                            <div class='spinner center'>
+                                <div class='spinner-blade'></div>
+                                <div class='spinner-blade'></div>
+                                <div class='spinner-blade'></div>
+                                <div class='spinner-blade'></div>
+                                <div class='spinner-blade'></div>
+                                <div class='spinner-blade'></div>
+                                <div class='spinner-blade'></div>
+                                <div class='spinner-blade'></div>
+                                <div class='spinner-blade'></div>
+                                <div class='spinner-blade'></div>
+                                <div class='spinner-blade'></div>
+                                <div class='spinner-blade'></div>
+                            </div>
+                        </div>
                     </div>
                 {{/if}}
             {{else}}

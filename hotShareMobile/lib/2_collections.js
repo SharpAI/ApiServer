@@ -1813,7 +1813,15 @@ if(Meteor.isClient){
             Meteor.subscribe('dynamicMoments', Session.get("postContent")._id, Session.get('momentsitemsLimit'), {
                 onReady: function(){
                     console.log('momentsCollection loaded');
+                    window.momentsCollection_getmore = 'done';
                     Session.set('momentsCollection','loaded');
+                    Session.set('momentsCollection_getmore','done');
+                },
+                onError: function(){
+                    console.log('momentsCollection Error');
+                    window.momentsCollection_getmore = 'done';
+                    Session.set('momentsCollection','loaded');
+                    Session.set('momentsCollection_getmore','done');
                 }
             });
             Meteor.subscribe('postFriends', Meteor.userId(), Session.get("postContent")._id, Session.get('postfriendsitemsLimit'), {
