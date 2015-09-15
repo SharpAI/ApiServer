@@ -508,26 +508,34 @@ if(Meteor.isServer){
                 //有人点评了您发表的帖子
                 if(doc.owner !== userId)
                 {
-                    Feeds.insert({
-                        owner: userId,
-                        ownerName: userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
-                        ownerIcon: userinfo.profile.icon,
-                        eventType: 'pcommentowner',
-                        postId: doc._id,
-                        postTitle: doc.title,
-                        mainImage: doc.mainImage,
-                        createdAt: new Date(),
-                        heart: 0,
-                        retweet: 0,
-                        comment: 0,
-                        followby: doc.owner
-                    });
-                    var waitReadCount = Meteor.users.findOne({_id: doc.owner}).profile.waitReadCount;
-                    if (waitReadCount === undefined || isNaN(waitReadCount)) {
-                        waitReadCount = 0;
+                    var pfeeds=Feeds.findOne({followby:doc.owner,checked:false,postId:doc._id});
+                    if(pfeeds){
+                        //console.log("==================already have feed==========");
+                    }else {
+                        if (userinfo) {
+                            Feeds.insert({
+                                owner: userId,
+                                ownerName: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
+                                ownerIcon: userinfo.profile.icon,
+                                eventType: 'pcommentowner',
+                                postId: doc._id,
+                                postTitle: doc.title,
+                                mainImage: doc.mainImage,
+                                createdAt: new Date(),
+                                heart: 0,
+                                retweet: 0,
+                                comment: 0,
+                                followby: doc.owner,
+                                checked: false
+                            });
+                            var waitReadCount = Meteor.users.findOne({_id: doc.owner}).profile.waitReadCount;
+                            if (waitReadCount === undefined || isNaN(waitReadCount)) {
+                                waitReadCount = 0;
+                            }
+                            Meteor.users.update({_id: doc.owner}, {$set: {'profile.waitReadCount': waitReadCount + 1}});
+                            pushnotification("pcommentowner", doc, userId);
+                        }
                     }
-                    Meteor.users.update({_id: doc.owner}, {$set: {'profile.waitReadCount': waitReadCount + 1}});
-                    pushnotification("pcommentowner", doc, userId);
                 }
             }catch(error){
                 //console.log("=====================error:"+error+"=====================");

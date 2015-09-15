@@ -81,6 +81,11 @@ if Meteor.isClient
         Router.go '/redirect/'+postId
       ,300
   Template.lpcomments.helpers
+    description:->
+      if this.eventType is "pcommentowner"
+        "点评了您的故事"
+      else
+        "也点评了此故事"
     lpcomments:()->
       Feeds.find({followby:Meteor.userId(),checked:false},{sort: {createdAt: -1}})
     time_diff: (created)->
