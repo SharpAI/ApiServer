@@ -19,7 +19,6 @@ MsgGroup = new Meteor.Collection('msggroup');
 Meets = new Meteor.Collection('meets');
 Versions = new Meteor.Collection('versions');
 Moments = new Meteor.Collection('moments');
-ClientPosts = new Meteor.Collection(null);
 if(Meteor.isClient){
   PostFriends = new Meteor.Collection("postfriends")
   Newfriends = new Meteor.Collection("newfriends");
