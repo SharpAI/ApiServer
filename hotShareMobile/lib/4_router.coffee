@@ -1,4 +1,69 @@
 if Meteor.isClient
+  SyncPostToClient = (postId)->
+    post = Posts.findOne({_id: postId})
+    if post
+      try
+        if ClientPosts.find({_id:postId}).count() is 0
+          ClientPosts.insert( {
+            _id:post._id,
+            pub:post.pub,
+            title:post.title,
+            browse:post.browse,
+            heart:post.heart,  #点赞
+            retweet:post.retweet,#转发
+            comment:post.comment, #评论
+            commentsCount:post.commentsCount,
+            addontitle:post.addontitle,
+            mainImage: post.mainImage,
+            mainImageStyle:post.mainImageStyle,
+            mainText: post.mainText,
+            fromUrl: post.fromUrl,
+            owner:post.owner,
+            ownerName:post.ownerName,
+            ownerIcon:post.ownerIcon,
+            createdAt: post.createdAt
+          })
+          #ClientPosts.insert post
+        else
+          ClientPosts.update(
+            {
+              _id:post._id
+            },
+            {
+              $set:{
+                pub:post.pub,
+                title:post.title,
+                heart:post.heart,  #点赞
+                retweet:post.retweet,#转发
+                comment:post.comment, #评论
+                addontitle:post.addontitle,
+                mainImage: post.mainImage,
+                mainImageStyle:post.mainImageStyle,
+                mainText: post.mainText,
+                fromUrl: post.fromUrl,
+                owner:post.owner,
+                ownerName:post.ownerName,
+                ownerIcon:post.ownerIcon,
+                createdAt:post.createdAt
+              }
+            }
+          )
+          #ClientPosts.update {_id: post._id},{$set:post}
+      catch error
+        console.log("Insert ClientPosts error!");
+  PostRender = (self,postId)->
+    post = ClientPosts.findOne({_id: postId})
+    if post
+      Session.set('postContent',post)
+      if post.addontitle and (post.addontitle isnt '')
+        documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
+      else
+        documentTitle = "『故事贴』" + post.title
+      Session.set("DocumentTitle",documentTitle)
+      self.render 'showPosts', {data: post}
+      Session.set 'channel','posts/'+postId
+    else
+      Router.go '/posts/'+postId
   Meteor.startup ()->
     Tracker.autorun ()->
       channel = Session.get 'channel'
@@ -90,21 +155,19 @@ if Meteor.isClient
       Session.set('nextPostID',this.params._id)
       this.render 'redirect'
       return
+    Router.route '/post/:_id', {
+      loadingTemplate: 'loadingPost'
+      action: ->
+        PostRender(this, this.params._id)
+    }
     Router.route '/posts/:_id', {
         waitOn: ->
           [Meteor.subscribe("publicPosts",this.params._id),
            Meteor.subscribe "pcomments"]
         loadingTemplate: 'loadingPost'
         action: ->
-          post = Posts.findOne({_id: this.params._id})
-          Session.set('postContent',post)
-          if post.addontitle and (post.addontitle isnt '')
-            documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
-          else
-            documentTitle = "『故事贴』" + post.title
-          Session.set("DocumentTitle",documentTitle)
-          this.render 'showPosts', {data: post}
-          Session.set 'channel','posts/'+this.params._id
+          [SyncPostToClient(this.params._id),
+           PostRender(this,this.params._id)]
       }
     Router.route '/allDrafts',()->
       if Meteor.isCordova is true
