@@ -1020,8 +1020,10 @@ if Meteor.isClient
       Router.go('addTopicComment')
   Template.addPost.helpers
     isIOS:->
-      #isIOS
-      false
+      if withMusicSharing
+        isIOS
+      else
+        false
     progressBarWidth:->
       Session.get('importProcedure')
     displayUrl:->

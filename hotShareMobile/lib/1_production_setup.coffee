@@ -6,4 +6,4 @@
 @withAutoSavedOnPaused = true
 @withPostSuggestionToUser = false
 @withNewLayoutMoment = true
-
+@withMusicSharing = true
