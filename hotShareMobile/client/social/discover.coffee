@@ -1,4 +1,10 @@
 if Meteor.isClient
+  Session.setDefault("momentsitemsLimit",10);
+  hasMoreResult = ()->
+    if DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
+      !(DynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() < Session.get("momentsitemsLimit"))
+    else
+      false
   Template.discover.helpers
     NoMoments:()->
       if DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
@@ -10,24 +16,44 @@ if Meteor.isClient
   Template.moments.rendered=->
     $(window).scroll (event)->
       if Session.get("Social.LevelOne.Menu") is 'discover'
-        console.log "moments window scroll event: "+event
-        target = $("#showMoreMomentsResults");
         MOMENTS_ITEMS_INCREMENT = 10;
+        console.log("moments window scroll event: "+event);
+        if window.innerHeight
+          winHeight = window.innerHeight
+        else
+          winHeight = $(window).height() # iphone fix
+        closeToBottom = ($(window).scrollTop() + winHeight > $(document).height() - 100);
+        console.log('Close to bottom: '+closeToBottom)
+        if (closeToBottom and hasMoreResult())
+          if window.momentsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
+            console.log('Triggered data source refresh');
+            window.momentsCollection_getmore = 'inprogress'
+            Session.set("momentsitemsLimit",Session.get("momentsitemsLimit") + MOMENTS_ITEMS_INCREMENT);
+        ###
+        target = $("#showMoreMomentsResults");
         console.log "target.length: " + target.length
         if (!target.length)
-            return;
+          return;
         threshold = $(window).scrollTop() + $(window).height() - target.height();
         console.log "threshold: " + threshold
         console.log "target.top: " + target.offset().top
         if target.offset().top < threshold
+          if window.momentsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
             if (!target.data("visible"))
-                target.data("visible", true);
-                Session.set("momentsitemsLimit",
-                Session.get("momentsitemsLimit") + MOMENTS_ITEMS_INCREMENT);
+              target.data("visible", true);
+              window.momentsCollection_getmore = 'inprogress'
+              Session.set("momentsitemsLimit",Session.get("momentsitemsLimit") + MOMENTS_ITEMS_INCREMENT);
         else
-            if (target.data("visible"))
-                target.data("visible", false);
+          if (target.data("visible"))
+            target.data("visible", false);
+        ###
   Template.moments.helpers
+    isLoading:()->
+      (Session.equals('newLayoutImageDownloading',true) or
+        !Session.equals('momentsCollection_getmore','done')) and
+        Session.equals("SocialOnButton",'discover')
+    onPostId:()->
+      Session.get("postContent")._id
     newLayoutMoment:()->
       withNewLayoutMoment
     getWidth:()->
@@ -45,10 +71,7 @@ if Meteor.isClient
     time_diff: (created)->
       GetTime0(new Date() - created)
     moreResults:()->
-      if DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
-        !(DynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() < Session.get("momentsitemsLimit"))
-      else
-        false
+      hasMoreResult()
     loading:()->
       Session.equals('momentsCollection','loading')
     loadError:()->

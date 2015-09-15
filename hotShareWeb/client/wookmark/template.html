@@ -1,0 +1,11 @@
+<template name="newLayoutContainer">
+    <div class="newLayout_container newLayout_container_{{layoutId}}">
+        {{> UI.contentBlock}}
+    </div>
+</template>
+
+<template name="newLayoutElement">
+    <div class="newLayout_element newLayout_element_{{layoutId}}" id="{{displayId}}" style="display:none">
+        {{> UI.contentBlock}}
+    </div>
+</template>
