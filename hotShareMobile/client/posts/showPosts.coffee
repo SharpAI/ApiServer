@@ -203,8 +203,6 @@ if Meteor.isClient
           ClientPosts.update({_id: Post._id},{$set:{pub:Post.pub}}, (error, result)->
             if error
               console.log(error.reason);
-            else
-              console.log("success");
           )
           Post.pub
         else
