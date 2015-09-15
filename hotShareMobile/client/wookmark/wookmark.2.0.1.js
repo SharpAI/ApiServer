@@ -544,7 +544,8 @@
         columns = Math.max(flexibleColumns, fixedColumns),
         columnWidth = Math.min(flexibleWidth, Math.floor((innerWidth - (columns - 1) * this.offset) / columns));
 
-      itemWidth = Math.max(itemWidth, columnWidth);
+      //itemWidth = Math.max(itemWidth, columnWidth);
+      itemWidth = columnWidth;
     }
 
     return itemWidth;
