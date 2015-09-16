@@ -1696,6 +1696,7 @@ if(Meteor.isClient){
   Session.setDefault('mypostsitemsLimit', MYPOSTS_ITEMS_INCREMENT);
   Session.setDefault('momentsitemsLimit', MOMENTS_ITEMS_INCREMENT);
   Session.setDefault('postfriendsitemsLimit', POSTFRIENDS_ITEMS_INCREMENT);
+  Session.setDefault("momentsitemsLimit",MOMENTS_ITEMS_INCREMENT);
   Session.set('followPostsCollection','loading');
   Session.set('feedsCollection','loading');
   Session.set('followersCollection','loading');

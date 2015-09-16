@@ -1,6 +1,5 @@
 if Meteor.isClient
   Meteor.startup ()->
-    Session.setDefault("momentsitemsLimit",10);
     hasMoreResult = ()->
       if DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
         !(DynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() < Session.get("momentsitemsLimit"))
