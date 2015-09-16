@@ -204,6 +204,7 @@ if Meteor.isClient
             if error
               console.log(error.reason);
           )
+          Session.set('postContent',Post)
           Post.pub
         else
           Meteor.subscribe("publicPosts",Session.get("postContent")._id)
