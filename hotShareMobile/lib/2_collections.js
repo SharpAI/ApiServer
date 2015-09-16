@@ -779,7 +779,7 @@ if(Meteor.isServer){
     Meteor.publish("suggestPosts", function (limit) {
         var self = this;
         self.count = 0;
-        var handle = Posts.find({owner:{$ne:self.userId}},{sort: {createdAt: -1},limit:limit + 20}).observeChanges({
+        var handle = Posts.find({},{sort: {createdAt: -1},limit:limit + 20}).observeChanges({
             added: function (id,fields) {
                 if(self.count<limit)
                 {
