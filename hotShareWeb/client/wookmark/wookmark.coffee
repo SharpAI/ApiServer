@@ -55,6 +55,7 @@ class newLayout
     );
 Template.newLayoutContainer.events =
   'click .newLayout_element':(e)->
+    Session.set 'displayShowPostLeftBackBtn',true
     console.log('layoutId ' + this.displayId)
     postId = this.displayId
     scrollTop = $(window).scrollTop()
