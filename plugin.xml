@@ -46,6 +46,6 @@
 			</feature>
 		</config-file>
 
-		<source-file src="src/Android/com/raananw/ImageResizer/ImageResizePlugin.java" target-dir="src/com/raananws" />
+		<source-file src="src/Android/com/raananw/ImageResizer/ImageResizePlugin.java" target-dir="src/com/raananw" />
 	</platform>
 </plugin>
