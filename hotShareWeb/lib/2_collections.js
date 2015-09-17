@@ -1688,6 +1688,7 @@ if(Meteor.isClient){
   var MYPOSTS_ITEMS_INCREMENT = 15;
   var MOMENTS_ITEMS_INCREMENT = 10;
   var POSTFRIENDS_ITEMS_INCREMENT = 10;
+  var SUGGEST_POSTS_INCREMENT = 15;
   var POST_ID = null;
   Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
   Session.setDefault('feedsitemsLimit', FEEDS_ITEMS_INCREMENT);
@@ -1697,6 +1698,7 @@ if(Meteor.isClient){
   Session.setDefault('momentsitemsLimit', MOMENTS_ITEMS_INCREMENT);
   Session.setDefault('postfriendsitemsLimit', POSTFRIENDS_ITEMS_INCREMENT);
   Session.setDefault("momentsitemsLimit",MOMENTS_ITEMS_INCREMENT);
+  Session.setDefault("suggestpostsLimit",SUGGEST_POSTS_INCREMENT);
   Session.set('followPostsCollection','loading');
   Session.set('feedsCollection','loading');
   Session.set('followersCollection','loading');
@@ -1785,9 +1787,13 @@ if(Meteor.isClient){
   }
   Tracker.autorun(function(){
       if (Meteor.userId()){
-          Meteor.subscribe('suggestPosts', MOMENTS_ITEMS_INCREMENT, {
+          Meteor.subscribe('suggestPosts', Session.get("suggestpostsLimit"), {
               onReady: function(){
-                  Session.set('momentsCollection','loaded');
+                  var scount = SuggestPosts.find({}).count()
+                  if(scount<SUGGEST_POSTS_INCREMENT)
+                    Session.set("suggestpostsLimit",Session.get("suggestpostsLimit")+SUGGEST_POSTS_INCREMENT);
+                  else
+                    Session.set('momentsCollection','loaded');
               }
           });
       }
