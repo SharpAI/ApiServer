@@ -227,6 +227,16 @@ removeFragments = (node) ->
     jn.find("object,h1,script,iframe,link").remove()
   jn.find("h2").remove() if jn.find("h2").length == 1
   node.innerHTML = node.innerHTML.replace(/<br[^>]*>\s*<p/gi, '<p')
+removeUnwanted = (node) ->
+  jn = $(node)
+  jn.html(jn.html().replace(REGEXPS.killBreaks,'<br />'))
+  if removeStyle
+    jn.find("*").removeAttr("style")
+  if removeStyle
+    jn.find("object,h1,script,link,style").remove()
+  else
+    jn.find("object,h1,script,link").remove()
+  node.innerHTML = node.innerHTML.replace(/<br[^>]*>\s*<p/gi, '<p')
 asTop = (page) ->
   Log.log("not found. using page element")
   page.score = new Score(page)
@@ -279,6 +289,7 @@ collectSiblings = (top) ->
             newRoot.appendChild(node)
       console.log('node length ' + nodeList.length)
       newRoot.id = 'hotshare_special_tag_will_not_hit_other'
+      removeUnwanted(newRoot)
       return newRoot
   top = scoreAndSelectTop(parified) or asTop(page)
   root = collectSiblings(top)
