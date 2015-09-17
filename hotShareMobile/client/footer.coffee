@@ -90,6 +90,8 @@ if Meteor.isClient
           handleAddedLink(text)
         else
           handleAddedLink(null)
+      ,()->
+        handleAddedLink(null)
     'click #photo-select':(e)->
       Meteor.defer ()->
         $('.modal-backdrop.in').remove()
