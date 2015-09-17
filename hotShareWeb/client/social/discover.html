@@ -58,7 +58,9 @@
                 {{#newLayoutContainer columnWidth=getWidth gutter=0 layoutId=onPostId }}
                     {{#each suggestPosts}}
                         {{#newLayoutElement layoutId=onPostId displayId=_id}}
-                            <img class="mainImage" src="{{mainImage}}" />
+                            <div class="img_placeholder">
+                                <img class="mainImage" src="{{mainImage}}" />
+                            </div>
 <!--                                <header>
                               <p class="title">{{title}}</p>
                               <p class="addontitle">{{addontitle}}</p>
@@ -75,7 +77,9 @@
                     {{/each}}
                     {{#each moments}}
                         {{#newLayoutElement layoutId=onPostId displayId=readPostId}}
-                            <img class="mainImage" src="{{mainImage}}" />
+                            <div class="img_placeholder">
+                                <img class="mainImage" src="{{mainImage}}" />
+                            </div>
 <!--                                <header>
                               <p class="title">{{title}}</p>
                               <p class="addontitle">{{addontitle}}</p>
