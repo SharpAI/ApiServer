@@ -197,7 +197,7 @@
 
   // Main wookmark plugin class
   // --------------------------
-  function Wookmark(container, options) {
+  function Wookmark(container, options, noInitItems) {
     options = options || {};
 
     if (typeof container === 'string') {
@@ -228,9 +228,14 @@
     this.refreshPlaceholders = __bind(this.refreshPlaceholders, this);
     this.sortElements = __bind(this.sortElements, this);
     this.updateFilterClasses = __bind(this.updateFilterClasses, this);
-
+    this.appendItem = __bind(this.appendItem, this);
+    this.layoutOneItem = __bind(this.layoutOneItem, this);
     // Initialize children of the container
-    this.initItems();
+    if(!noInitItems){
+      this.initItems();
+    } else {
+      this.items = [];
+    }
 
     // Initial update and layout
     this.container.style.display = 'block';
@@ -621,7 +626,138 @@
       callback();
     }
   };
+  // Perform a single item layout update.
+  Wookmark.prototype.layoutOneItem = function (columnWidth, columns, item, offset) {
+    var k = 0, i = 0, activeItems, activeItemCount, shortest = null, shortestIndex = null,
+        sideOffset, heights = [], itemCSS = {}, leftAligned = this.align === 'left';
 
+    var shortestColumn = {onColumn:0,height:-1,itemIndex:0};
+    var maxHeight = 0;
+    // find out the shortest column to append item
+    for (i = columns -1;i >=0;i--){
+      var column = this.columns[i];
+      var columnHeight = 0;
+      var columnLastOne = 0;
+      for(k=column.length -1; k>=0;k--){
+        var toTop = getData(column[k], 'top', true) + getData(column[k], 'height', true);
+        if (toTop>columnHeight) {
+          columnHeight = toTop;
+          columnLastOne = k;
+        }
+        if (toTop>maxHeight) {
+          maxHeight = toTop + this.verticalOffset;
+        }
+      }
+      if(shortestColumn.height === -1){
+        shortestColumn.onColumn = i;
+        shortestColumn.height = columnHeight;
+        shortestColumn.itemIndex = columnLastOne;
+      } else if (columnHeight < shortestColumn.height) {
+        shortestColumn.onColumn = i;
+        shortestColumn.height = columnHeight;
+        shortestColumn.itemIndex = columnLastOne;
+      }
+    }
+    if (shortestColumn.height === -1) {
+      shortestColumn.height = 0;
+    }
+      // Find the shortest column.
+    shortest = shortestColumn.height + this.verticalOffset;
+    shortestIndex = shortestColumn.onColumn;
+    setData(item, 'top', shortest);
+
+    // stick to left side if alignment is left and this is the first column
+    sideOffset = offset;
+    if (shortestIndex > 0 || !leftAligned) {
+      sideOffset += shortestIndex * columnWidth;
+    }
+
+    // Position the item.
+    itemCSS = {
+      position: 'absolute',
+      top: shortest + 'px'
+    };
+    itemCSS[this.direction] = sideOffset + 'px';
+    this.columns[shortestIndex].push(item);
+
+    executeNextFrame(function () {
+      setCSS(item, itemCSS);
+    });
+    // Return longest column height
+    return Math.max(maxHeight, item.offsetHeight + shortest);
+  };
+// Append One item.
+  Wookmark.prototype.appendItem = function (item, callback) {
+    // Do nothing if container isn't visible
+    if (isHidden(this.container)) { return; }
+    if ($.isNumeric(getData(item, 'top', true))){
+      console.log('Already processed');
+      if (typeof callback === 'function') {
+        callback(new Error('Duplicated'));
+      }
+      return;
+    }
+    // Calculate basic layout parameters.
+    var calculatedItemWidth = this.getItemWidth(),
+        columnWidth = calculatedItemWidth + this.offset,
+        containerWidth = getWidth(this.container),
+        innerWidth = containerWidth - 2 * this.outerOffset,
+        calculatedColumns = Math.floor((innerWidth + this.offset) / columnWidth),
+        columns,
+        offset,
+        maxHeight;
+    if (!this.columns) {
+      this.columns = [];
+      for(var i = calculatedColumns-1;i >= 0;i--){
+        this.columns.push([]);
+      }
+      columns = calculatedColumns;
+    } else {
+      columns = this.columns.length;
+    }
+    if (calculatedColumns !== this.columns.length) {
+      this.initItems();
+      this.layout(true,callback);
+      return;
+    }
+    // Cache item heights
+    if (this.flexibleWidth) {
+      // Stretch items to fill calculated width
+      item.style.width = calculatedItemWidth + 'px';
+    }
+    setData(item, 'height', item.offsetHeight);
+    //this.itemHeightsDirty = false;
+    //this.itemHeightsInitialized = true;
+    // Calculate the offset based on the alignment of columns to the parent container
+    offset = this.outerOffset;
+    if (this.align === 'center') {
+      offset += Math.floor(0.5 + (innerWidth - (columns * columnWidth - this.offset)) >> 1);
+    }
+
+    // Get direction for positioning
+    this.direction = this.direction || (this.align === 'right' ? 'right' : 'left');
+
+    maxHeight = this.layoutOneItem(columnWidth, columns,item, offset);
+
+    this.activeItemCount ++;
+
+    // Set container height to height of the grid.
+    this.container.style.height = maxHeight + 'px';
+
+    // Update placeholders
+    if (this.fillEmptySpace) {
+      this.refreshPlaceholders(columnWidth, offset);
+    }
+
+    if (this.onLayoutChanged !== undefined && typeof this.onLayoutChanged === 'function') {
+      this.onLayoutChanged();
+    }
+
+    // Run optional callback
+    if (typeof callback === 'function') {
+      callback();
+    }
+  };
   // Sort elements with configurable comparator
   Wookmark.prototype.sortElements = function (elements) {
     return typeof this.comparator === 'function' ? elements.sort(this.comparator) : elements;

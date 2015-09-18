@@ -17,7 +17,7 @@ if Meteor.isClient
       $(window).scroll (event)->
         if Session.get("Social.LevelOne.Menu") is 'discover'
           MOMENTS_ITEMS_INCREMENT = 10;
-          console.log("moments window scroll event: "+event);
+          #console.log("moments window scroll event: "+event);
           if withNewLayoutMoment
             if window.innerHeight
               winHeight = window.innerHeight

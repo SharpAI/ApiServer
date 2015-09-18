@@ -54,17 +54,19 @@ class newLayout
       console.log('Got element ' + $elements.length)
       console.log('Initializing layout engine for id ' + layoutId);
       newInstance = new Wookmark(container, {
+        autoResize: false,
         itemSelector: '.newLayout_element.loaded',
         itemWidth: 400, # Optional, the width of a grid item
         flexibleWidth: '48%',
         direction: 'left',
         align: 'center'
-      })
+      },true)
       window.newLayoutInstances[layoutId] = newInstance
-      Meteor.defer ()->
-        $elements.each((index,element)->
+      $elements.each((index,element)->
+        $(document).queue (next)->
           newLayout.processElement(element,$container,newInstance)
-        )
+          next();
+      )
   @reduceDownloadingNumber = ()->
     window.newLayoutImageInDownloading--;
     #To protect the exception which should never happened. But if so, the refresh maybe never triggered.
@@ -82,19 +84,28 @@ class newLayout
       newLayout.reduceDownloadingNumber()
       element.style.display = ""
       $element.css('opacity',0)
-      $element.addClass('loaded')
-      $container.append($element)
-      Meteor.defer ()->
-        layoutInstence.initItems();
-        layoutInstence.layout(true,()->
-          console.log('Layout in Element success');
+
+      $(document).queue (next)->
+        $element.addClass('loaded')
+        $container.append($element)
+        #layoutInstence.initItems();
+        layoutInstence.appendItem(element,(err)->
+          ###
+          if err
+            console.log('error ' + err);
+            if $element.css('opacity') is 0
+              $element.css('opacity',1);
+            next();
+            return
+          ###
+          console.log('Append Element success');
+          id = $element.attr('id')
           if !window.newLayoutWatchIdList[id]
             $img = $element.find('img')
             src = $img.attr('src')
-            id = $element.attr('id')
             $parent = $img.parent()
             newLayout.setRandomlyBackgroundColor($parent)
-            watcher = scrollMonitor.create( $img, {top: 300, bottom: 100})
+            watcher = scrollMonitor.create( $img, {top: 1600, bottom: 1600})
             window.newLayoutWatchIdList[id] = watcher
             watcher.enterViewport ()->
               console.log( 'I have entered the viewport ' + id + ' src: ' + src )
@@ -118,6 +129,8 @@ class newLayout
                 $img.height(height)
                 $img.hide()
           $element.css('opacity',1)
+          console.log('Do it in queue')
+          next()
         );
     );
     imgLoad.on( 'fail', ()->
