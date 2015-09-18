@@ -115,8 +115,8 @@ class newLayout
                 if $parent.width() and $parent.width() isnt ''
                   $img.attr('src',src)
                   $img.show()
-                  $parent[0].style.width=''
-                  $parent[0].style.height=''
+                  #$parent[0].style.width=''
+                  #$parent[0].style.height=''
             watcher.exitViewport ()->
               console.log( 'I have left the viewport ' + id + ' src: ' + src );
               if $img.hasClass('entered') and $img.is(':visible')
