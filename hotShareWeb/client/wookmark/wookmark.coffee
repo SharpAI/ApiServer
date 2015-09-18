@@ -87,9 +87,9 @@ class newLayout
         unless $img.hasClass('entered')
           $img.addClass('entered')
         unless $img.is(':visible')
-          if $parent.width() and $parent.width() isnt ''
-            $img.attr('src',src)
-            $img.show()
+          #if $parent.width() and $parent.width() isnt ''
+            #$img.attr('src',src)
+          $img.show()
       #$parent[0].style.width=''
       #$parent[0].style.height=''
       watcher.exitViewport ()->
@@ -99,9 +99,9 @@ class newLayout
           height = $img.height()
           $parent.width(width)
           $parent.height(height)
-          $img.attr('src',"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=")
-          $img.width(width)
-          $img.height(height)
+          #$img.attr('src',"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=")
+          #$img.width(width)
+          #$img.height(height)
           $img.hide()
     $element.css('opacity',1)
   @processElement = (element,$container,layoutInstence)->
@@ -183,6 +183,7 @@ Template.newLayoutContainer.onRendered ()->
 Template.newLayoutContainer.onDestroyed ()->
   console.log('newLayoutContainer onDestroyed ' + JSON.stringify(this.data))
   delete window.newLayoutInstances[this.data.layoutId]
+  $('.newLayout_element_'+this.data.layoutId).remove()
 
 Template.newLayoutElement.onRendered ()->
   console.log('newLayoutElement onRendered ' + JSON.stringify(this.data))
