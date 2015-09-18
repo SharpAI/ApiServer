@@ -243,11 +243,10 @@ if Meteor.isClient
         Post=Posts.findOne({_id: Session.get("postContent")._id})
         if Post
           #ClientPosts.update({_id: Post._id},{"$set":Post}, (error, result)->
-          Meteor.defer ()->
-            ClientPosts.update({_id: Post._id},{$set:{pub:Post.pub}}, (error, result)->
-              if error
-                console.log(error.reason);
-            )
+          ClientPosts.update({_id: Post._id},{$set:{pub:Post.pub}}, (error, result)->
+            if error
+              console.log(error.reason);
+          )
           Session.set('postContent',Post)
           Post.pub
         else
