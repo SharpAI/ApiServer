@@ -47,15 +47,11 @@ if Meteor.isClient
         if (event.clientY + $('.home #footer').height()) >=  $(window).height()
           console.log 'should be triggered in scrolling'
           return false
-      postId = this.postId
-      post = ClientPosts.findOne({_id: postId})
       $('.home').addClass('animated ' + animateOutLowerEffect);
-      if post
-        PUB.page '/post/'+postId
-      else
-        Meteor.setTimeout ()->
-          PUB.page '/posts/'+postId
-        ,animatePageTrasitionTimeout
+      postId = this.postId
+      Meteor.setTimeout ()->
+        PUB.page '/posts/'+postId
+      ,animatePageTrasitionTimeout
       console.log this.postId
       Session.set 'FollowPostsId',this._id
       console.log this._id
