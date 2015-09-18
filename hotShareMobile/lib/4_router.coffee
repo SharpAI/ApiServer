@@ -2,56 +2,55 @@ if Meteor.isClient
   SyncPostToClient = (postId)->
     post = Posts.findOne({_id: postId})
     if post
-      Meteor.defer ()->
-        try
-          if ClientPosts.find({_id:postId}).count() is 0
-            ClientPosts.insert( {
-              _id:post._id,
-              pub:post.pub,
-              title:post.title,
-              browse:post.browse,
-              heart:post.heart,  #点赞
-              retweet:post.retweet,#转发
-              comment:post.comment, #评论
-              commentsCount:post.commentsCount,
-              addontitle:post.addontitle,
-              mainImage: post.mainImage,
-              mainImageStyle:post.mainImageStyle,
-              mainText: post.mainText,
-              fromUrl: post.fromUrl,
-              owner:post.owner,
-              ownerName:post.ownerName,
-              ownerIcon:post.ownerIcon,
-              createdAt: post.createdAt
-            })
-            #ClientPosts.insert post
-          else
-            ClientPosts.update(
-              {
-                _id:post._id
-              },
-              {
-                $set:{
-                  pub:post.pub,
-                  title:post.title,
-                  heart:post.heart,  #点赞
-                  retweet:post.retweet,#转发
-                  comment:post.comment, #评论
-                  addontitle:post.addontitle,
-                  mainImage: post.mainImage,
-                  mainImageStyle:post.mainImageStyle,
-                  mainText: post.mainText,
-                  fromUrl: post.fromUrl,
-                  owner:post.owner,
-                  ownerName:post.ownerName,
-                  ownerIcon:post.ownerIcon,
-                  createdAt:post.createdAt
-                }
+      try
+        if ClientPosts.find({_id:postId}).count() is 0
+          ClientPosts.insert( {
+            _id:post._id,
+            pub:post.pub,
+            title:post.title,
+            browse:post.browse,
+            heart:post.heart,  #点赞
+            retweet:post.retweet,#转发
+            comment:post.comment, #评论
+            commentsCount:post.commentsCount,
+            addontitle:post.addontitle,
+            mainImage: post.mainImage,
+            mainImageStyle:post.mainImageStyle,
+            mainText: post.mainText,
+            fromUrl: post.fromUrl,
+            owner:post.owner,
+            ownerName:post.ownerName,
+            ownerIcon:post.ownerIcon,
+            createdAt: post.createdAt
+          })
+          #ClientPosts.insert post
+        else
+          ClientPosts.update(
+            {
+              _id:post._id
+            },
+            {
+              $set:{
+                pub:post.pub,
+                title:post.title,
+                heart:post.heart,  #点赞
+                retweet:post.retweet,#转发
+                comment:post.comment, #评论
+                addontitle:post.addontitle,
+                mainImage: post.mainImage,
+                mainImageStyle:post.mainImageStyle,
+                mainText: post.mainText,
+                fromUrl: post.fromUrl,
+                owner:post.owner,
+                ownerName:post.ownerName,
+                ownerIcon:post.ownerIcon,
+                createdAt:post.createdAt
               }
-            )
-            #ClientPosts.update {_id: post._id},{$set:post}
-        catch error
-          console.log("Insert ClientPosts error!");
+            }
+          )
+          #ClientPosts.update {_id: post._id},{$set:post}
+      catch error
+        console.log("Insert ClientPosts error!");
   PostRender = (self,postId)->
     post = ClientPosts.findOne({_id: postId})
     if post
