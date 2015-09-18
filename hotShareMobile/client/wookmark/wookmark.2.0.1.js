@@ -739,6 +739,7 @@
 
     maxHeight = this.layoutOneItem(columnWidth, columns,item, offset);
 
+    console.log('Added ' + this.activeItemCount + ' height ' + item.offsetHeight + ' top ' + getData(item,'top') + ' container height ' + maxHeight);
     this.activeItemCount ++;
 
     // Set container height to height of the grid.
@@ -755,7 +756,9 @@
 
     // Run optional callback
     if (typeof callback === 'function') {
-      callback();
+      executeNextFrame(function () {
+          callback();
+      });
     }
   };
   // Sort elements with configurable comparator
