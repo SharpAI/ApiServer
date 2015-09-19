@@ -33,7 +33,13 @@
         <key>NSAllowsArbitraryLoads</key><true/>
       </dict>
     </config-file>
-
+    <config-file target="*-Info.plist" parent="LSApplicationQueriesSchemes">
+      <array>
+        <string>weixin</string>
+        <string>wechat</string>
+        <string>mqq</string>
+      </array>
+    </config-file>
 
     <config-file target="config.xml" parent="/*">
       <feature name="HotShareAppSetup">
