@@ -24,7 +24,7 @@ if Meteor.isClient
             else
               winHeight = $(window).height() # iphone fix
             closeToBottom = ($(window).scrollTop() + winHeight > $(document).height() - 100);
-            console.log('Close to bottom: '+closeToBottom)
+            #console.log('Close to bottom: '+closeToBottom)
             if (closeToBottom and hasMoreResult())
               if window.momentsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
                 console.log('Triggered data source refresh');
