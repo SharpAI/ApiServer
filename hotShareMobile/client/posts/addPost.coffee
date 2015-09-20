@@ -1019,6 +1019,37 @@ if Meteor.isClient
       Session.set("TopicMainImage", mainImage)
       Router.go('addTopicComment')
   Template.addPost.helpers
+    getImagePath: (path,uri)->
+      if path.indexOf('cdvfile://') > -1 and window.wkwebview
+        unless Session.get(path)
+          Session.set(path,'')
+          fileExtension = uri.replace(/^.*\./, '')
+          console.log('Path need to be replaced ' + path + ' this URI ' + uri + ' extension ' + fileExtension)
+          `
+            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function() {
+                window.resolveLocalFileSystemURL(uri, function (fileEntry) {
+                    fileEntry.file(function (file) {
+                        var reader = new FileReader();
+                        reader.onloadend = function (event) {
+                            var localURL = event.target._localURL;
+                            //retCount++;
+                            var smallImage = event.target.result;
+                            console.log('got small image ');
+                            Session.set(path, smallImage)
+                        };
+                        reader.readAsDataURL(file);
+                    }, function (e) {
+                        console.log('fileEntry.file Error = ' + e);
+                    });
+                }, function (e) {
+                    console.log('resolveLocalFileSystemURL Error = ' + e);
+                });
+            },function(){
+                console.log('Request file system error');
+            });
+          `
+        return Session.get(path)
+      path
     isIOS:->
       if withMusicSharing
         isIOS
