@@ -18,5 +18,5 @@ org.apache.cordova.dialogs@0.2.10
 org.apache.cordova.file@1.3.1
 org.apache.cordova.inappbrowser@https://github.com/leonzhang1109/cordova-plugin-inappbrowser/tarball/aeffd5ce7b180dcef22e27cc35cb6af87ed96e5c
 org.apache.cordova.network-information@0.2.15
-org.hotshare.everywhere.appsetup@https://github.com/solderzzc/HotShareAppSetup/tarball/697eb80e19cd9e5488c4d17bde2bb87231dc8c7c
+org.hotshare.everywhere.appsetup@https://github.com/solderzzc/HotShareAppSetup/tarball/9ca79c6bcef06c9d1f0ff269aee0957b19348933
 org.zy.yuancheng.qq@https://github.com/leonzhang1109/Cordova_QQ/tarball/07a334f395a684141aa1825831f85bd731627b67
