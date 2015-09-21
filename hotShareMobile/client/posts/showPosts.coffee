@@ -41,6 +41,7 @@ if Meteor.isClient
   Template.showPosts.onDestroyed ()->
     if gridster
       gridster.destroy()
+    Session.set('postfriendsitemsLimit', 10)
   Template.showPosts.rendered=->
     Session.setDefault "toasted",false
     Session.set('postfriendsitemsLimit', 10);

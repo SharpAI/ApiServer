@@ -13,7 +13,6 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu",'chatContent')
       Session.set("SocialOnButton",'chatContent')
     'click .contactsBtn':->
-      Session.set('postfriendsitemsLimit', 10);
       Session.set("Social.LevelOne.Menu",'contactsList')
       Session.set("SocialOnButton",'contactsList')
       document.body.scrollTop = $(".showPostsBox").height()
