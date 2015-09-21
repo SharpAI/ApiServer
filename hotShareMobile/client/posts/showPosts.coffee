@@ -38,6 +38,9 @@ if Meteor.isClient
       Meteor.setTimeout ()->
           document.body.scrollTop = Session.get("postPageScrollTop")
         , 280
+  Template.showPosts.onDestroyed ()->
+    if gridster
+      gridster.destroy()
   Template.showPosts.rendered=->
     Session.setDefault "toasted",false
     Session.set('postfriendsitemsLimit', 10);

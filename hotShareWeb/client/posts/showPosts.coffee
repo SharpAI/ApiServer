@@ -68,6 +68,9 @@ if Meteor.isClient
       Meteor.setTimeout ()->
           document.body.scrollTop = Session.get("postPageScrollTop")
         , 280
+  Template.showPosts.onDestroyed ()->
+    if gridster
+      gridster.destroy()
   Template.showPosts.rendered=->
     if isWeiXinFunc() is true
       console.log("in wechat")
