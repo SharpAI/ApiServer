@@ -216,6 +216,7 @@ if Meteor.isClient
         PUB.page('/allDrafts')
       ,animatePageTrasitionTimeout
     'click .postImages ul li':(e)->
+      Session.set("postPageScrollTop", 0)
       postId = e.currentTarget.id
       $('.user').addClass('animated ' + animateOutLowerEffect);
       Meteor.setTimeout ()->

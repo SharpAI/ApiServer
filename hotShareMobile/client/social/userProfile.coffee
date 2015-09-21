@@ -133,6 +133,7 @@ if Meteor.isClient
     Swiper: -> UserProfilesSwiper
   Template.userProfile.rendered = ->
     # starting page
+    Session.set("postPageScrollTop", 0)
     console.log 'Showing userProfile'
     UserProfilesSwiper.setInitialPage 'userProfilePage1'
     if window.userProfileTrackerHandler
