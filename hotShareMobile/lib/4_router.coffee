@@ -98,6 +98,7 @@ if Meteor.isClient
         action: ->
           post = Posts.findOne({_id: this.params._id})
           Session.set('postContent',post)
+          Session.set('focusedIndex',undefined)
           if post.addontitle and (post.addontitle isnt '')
             documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
           else
@@ -106,6 +107,23 @@ if Meteor.isClient
           this.render 'showPosts', {data: post}
           Session.set 'channel','posts/'+this.params._id
       }
+    Router.route '/posts/:_id/:_index', {
+      waitOn: ->
+        [Meteor.subscribe("publicPosts",this.params._id),
+         Meteor.subscribe "pcomments"]
+      loadingTemplate: 'loadingPost'
+      action: ->
+        post = Posts.findOne({_id: this.params._id})
+        Session.set('postContent',post)
+        Session.set('focusedIndex',this.params._index)
+        if post.addontitle and (post.addontitle isnt '')
+          documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
+        else
+          documentTitle = "『故事贴』" + post.title
+        Session.set("DocumentTitle",documentTitle)
+        this.render 'showPosts', {data: post}
+        Session.set('channel','posts/'+this.params._id+'/'+this.params._index)
+    }
     Router.route '/allDrafts',()->
       if Meteor.isCordova is true
         this.render 'allDrafts'

@@ -7,3 +7,6 @@
 @withPostSuggestionToUser = false
 @withNewLayoutMoment = true
 @withMusicSharing = true
+@withSectionMenu = true
+@withSectionShare = true
+@withPostTTS = true
