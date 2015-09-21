@@ -151,7 +151,7 @@ Template.newLayoutContainer.events =
     $(window).children().off()
     $(window).unbind('scroll')
     id = Session.get("postContent")._id
-    PUB.postPage(id,scrollTop)
+    #PUB.postPage(id,scrollTop)
     Meteor.setTimeout ()->
       Session.set("Social.LevelOne.Menu",'contactsList')
       Router.go '/redirect/'+postId

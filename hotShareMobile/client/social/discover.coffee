@@ -85,7 +85,7 @@ if Meteor.isClient
         $(window).children().off()
         $(window).unbind('scroll')
         id = Session.get("postContent")._id
-        PUB.postPage(id,scrollTop)
+        #PUB.postPage(id,scrollTop)
         Meteor.setTimeout ()->
           Session.set("Social.LevelOne.Menu",'contactsList')
           Router.go '/redirect/'+postId
@@ -98,7 +98,7 @@ if Meteor.isClient
         $(window).children().off()
         $(window).unbind('scroll')
         id = Session.get("postContent")._id
-        PUB.postPage(id,scrollTop)
+        #PUB.postPage(id,scrollTop)
         Meteor.setTimeout ()->
           Session.set("Social.LevelOne.Menu",'contactsList')
           Router.go '/redirect/'+postId
@@ -125,7 +125,7 @@ if Meteor.isClient
         if postId isnt id
           $(window).children().off()
           $(window).unbind('scroll')
-          PUB.postPage(id,scrollTop)
+          #PUB.postPage(id,scrollTop)
           Meteor.setTimeout ()->
             Session.set("Social.LevelOne.Menu",'contactsList')
             Router.go '/redirect/'+postId
