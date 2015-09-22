@@ -36,6 +36,7 @@ if Meteor.isClient
   Template.showPosts.onDestroyed ->
     $('.tool-container').remove()
   Template.showPosts.onRendered ->
+    calcPostSignature(window.location.href.split('#')[0]);
     if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
       Meteor.setTimeout ()->
           document.body.scrollTop = Session.get("postPageScrollTop")
@@ -548,7 +549,7 @@ if Meteor.isClient
           console.log('Err ' + err + ' Result ' + result);
         );
       else
-        window.plugins.toast.showShortCenter("并为选中可读的段落");
+        window.plugins.toast.showShortCenter("并未选中可读的段落");
   Template.showPosts.events
     'click .textdiv' :(e)->
       if withSectionMenu
