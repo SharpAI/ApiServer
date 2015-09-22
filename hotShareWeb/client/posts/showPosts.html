@@ -199,18 +199,18 @@
     </form>
   </div>
   {{/if}}
-  {{> userProfileBox}}
-  </div>
   {{#if withSectionMenu}}
       <div class="section-toolbar" id="{{_id}}" style='visibility: hidden;'>
-        {{#if withSectionShare}}
-            <a href="#" class='section-forward' action="section-forward"><i>转发本段</i></a>
-        {{/if}}
-        {{#if withPostTTS}}
-            <a href="#" class='post-tts' action="post-tts"><i>朗读</i></a>
-        {{/if}}
+          {{#if withSectionShare}}
+              <a href="#" class='section-forward' action="section-forward"><i>转发本段</i></a>
+          {{/if}}
+          {{#if withPostTTS}}
+              <a href="#" class='post-tts' action="post-tts"><i>朗读</i></a>
+          {{/if}}
       </div>
   {{/if}}
+  {{> userProfileBox}}
+  </div>
 </template>
 <template name="postFooter">
   <div id="postFooter" class="showPostsFooter">
