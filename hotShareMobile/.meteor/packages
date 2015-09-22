@@ -31,3 +31,5 @@ meteorhacks:cluster
 tmeasday:publish-counts
 u2622:persistent-session
 raix:md5
+http
+percolate:synced-cron

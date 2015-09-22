@@ -25,3 +25,5 @@ meteorhacks:inject-initial
 email
 meteorhacks:cluster
 tmeasday:publish-counts
+http
+percolate:synced-cron
