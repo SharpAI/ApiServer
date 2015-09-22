@@ -7,6 +7,8 @@ com.phonegap.JPushPlugin@https://github.com/leonzhang1109/jpush-phonegap-plugin/
 com.raananw.imageResizer@https://github.com/solderzzc/PhoneGap-Image-Resizer/tarball/c2b22b372029278c5845ece38ff87903bd91f54a
 com.synconset.imagepicker@https://github.com/leonzhang1109/cordova-imagePicker/tarball/9015d2cc889391697deb1dd4b044632ecbf5600b
 com.verso.cordova.clipboard@https://github.com/leonzhang1109/CordovaClipboard/tarball/83d0b659724f0f821a18b3cb900d56ce045972b3
+com.wordsbaking.cordova.tts@0.2.1
+cordova-plugin-actionsheet@https://github.com/solderzzc/cordova-plugin-actionsheet/tarball/0a8e3c0ce181e48e8454624515f7f0149c0205c6
 cordova-plugin-media@https://github.com/leonzhang1109/cordova-plugin-media/tarball/83b172a2aa1a469189c6150cdf52e2ae4dc673ac
 me.rahul.plugins.audio-picker@https://github.com/solderzzc/ios-audio-picker/tarball/21ea2a491be1bb576d5334c48ef3f83cc0c4d780
 nl.x-services.plugins.backgroundaudio@https://github.com/solderzzc/cordova-plugin-backgroundaudio/tarball/c5478bec71c99e9eb1722f77fb73d356fd770737

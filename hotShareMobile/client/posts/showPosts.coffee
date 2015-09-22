@@ -522,10 +522,10 @@ if Meteor.isClient
       }
       window.plugins.actionsheet.show(options, (buttonIndex)->
         switch buttonIndex
-          when 1 then shareTo('WXSession',self)
-          when 2 then shareTo('WXTimeline',self)
-          when 3 then shareTo('QQShare',self)
-          when 4 then shareTo('System',self)
+          when 1 then shareTo('WXSession',Blaze.getData($('.showPosts')[0]),self.index)
+          when 2 then shareTo('WXTimeLine',Blaze.getData($('.showPosts')[0]),self.index)
+          when 3 then shareTo('QQShare',Blaze.getData($('.showPosts')[0]),self.index)
+          when 4 then shareTo('System',Blaze.getData($('.showPosts')[0]),self.index)
       );
 
   Template.showPosts.events
