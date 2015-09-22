@@ -87,6 +87,9 @@
         }
       }
     },
+    "jssha": {
+      "version": "2.0.1"
+    },
     "seedrandom": {
       "version": "2.3.11"
     }
