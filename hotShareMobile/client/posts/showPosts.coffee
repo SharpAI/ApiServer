@@ -523,7 +523,28 @@ if Meteor.isClient
           when 3 then shareTo('QQShare',Blaze.getData($('.showPosts')[0]),self.index)
           when 4 then shareTo('System',Blaze.getData($('.showPosts')[0]),self.index)
       );
-
+    else if action is 'post-tts'
+      pub = Session.get("postContent").pub
+      toRead = []
+      for i in [self.index..(pub.length-1)]
+        if pub[i].type is 'text' and pub[i].text and pub[i].text isnt ''
+          toRead.push(pub[i].text )
+      if toRead.length > 0
+        async.mapLimit(toRead,1,(item,callback)->
+          TTS.speak {
+              text: item,
+              locale: 'zh-CN',
+              rate: 1.5
+            }
+          ,()->
+            callback(null,item)
+          ,(reason)->
+            callback(new Error(reason),item)
+        ,(err,result)->
+          console.log('Err ' + err + ' Result ' + result);
+        );
+      else
+        window.plugins.toast.showShortCenter("并为选中可读的段落");
   Template.showPosts.events
     'click .textdiv' :(e)->
       if withSectionMenu
