@@ -125,9 +125,20 @@ shareToSystem = function(title,description,thumbData,url) {
 };
 // To could be
 // WXTimeLine, WXSession, QQShare, System
-shareTo = function(to,self){
+shareTo = function(to,self,index){
     var url = getPostSharingPath();
     var title = getSharingTitle(self);
+    var description = null;
+    if(index !== undefined) {
+        var text =Session.get('postContent').pub[index].text;
+        url = url + '/' + index;
+        description = text;
+        if(!description || description ===''){
+            description = undefined;
+        } else {
+            description = description.substring(0, 100);
+        }
+    }
     window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等");
 
     var height = $('.showPosts').height();
@@ -136,7 +147,11 @@ shareTo = function(to,self){
     if (to ==='QQShare'){
         $('#blur_overlay').css('height','');
         $('#blur_overlay').css('z-index', -1);
-        shareToQQ('故事贴',"『故事贴』 "+ title,self.mainImage,url);
+        if(description){
+            shareToQQ("分享『故事贴』中的一段文字：",description,self.mainImage,url);
+        } else{
+            shareToQQ('故事贴',"『故事贴』 "+ title,self.mainImage,url);
+        }
         return;
     }
     downloadFromBCS(self.mainImage, function(result){
@@ -146,11 +161,23 @@ shareTo = function(to,self){
 
         if (result) {
             if(to ==='WXTimeLine'){
-                shareToWXTimeLine("『故事贴』 "+ title,"『故事贴』 "+ title,result,url);
+                if (description){
+                    shareToWXTimeLine(description,description,result,url);
+                } else {
+                    shareToWXTimeLine("『故事贴』 "+ title,"『故事贴』 "+ title,result,url);
+                }
             } else if (to ==='WXSession'){
-                shareToWXSession("『故事贴』",title,result,url);
+                if(description){
+                    shareToWXSession("分享『故事贴』中的一段文字：",description,result,url);
+                } else {
+                    shareToWXSession("『故事贴』",title,result,url);
+                }
             } else if (to ==='System'){
-                shareToSystem("『故事贴』 "+title, '', result, url)
+                if(description){
+                    shareToSystem("分享『故事贴』中的一段文字：", description, result, url)
+                } else {
+                    shareToSystem("『故事贴』 "+title, null, result, url)
+                }
             }
         } else {
             PUB.toast("无法获取故事标题图片，请稍后重试！");
