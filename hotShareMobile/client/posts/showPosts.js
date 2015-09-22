@@ -135,7 +135,7 @@ shareTo = function(to,self,index){
         description = text;
         if(!description || description ===''){
             description = undefined;
-        } else {
+        } else if(description.length > 100){
             description = description.substring(0, 100);
         }
     }
