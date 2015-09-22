@@ -150,7 +150,7 @@ shareTo = function(to,self,index){
         if(description){
             shareToQQ("分享『故事贴』中的一段文字：",description,self.mainImage,url);
         } else{
-            shareToQQ('故事贴',"『故事贴』 "+ title,self.mainImage,url);
+            shareToQQ("分享『故事贴』中的一篇文章：",title,self.mainImage,url);
         }
         return;
     }
@@ -170,7 +170,7 @@ shareTo = function(to,self,index){
                 if(description){
                     shareToWXSession("分享『故事贴』中的一段文字：",description,result,url);
                 } else {
-                    shareToWXSession("『故事贴』",title,result,url);
+                    shareToWXSession("分享『故事贴』中的一篇文章：",title,result,url);
                 }
             } else if (to ==='System'){
                 if(description){

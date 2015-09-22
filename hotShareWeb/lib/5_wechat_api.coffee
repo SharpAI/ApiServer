@@ -26,9 +26,9 @@ if Meteor.isClient
         wx.ready ()->
           if Session.get('focusedIndex') isnt undefined
             description =Session.get('postContent').pub[Session.get('focusedIndex')].text;
-            if description || description is ''
+            if !description || description is ''
               description = Session.get("DocumentTitle").replace('『故事贴』','');
-             else if(description.length > 100)
+            else if(description.length > 100)
               description = description.substring(0, 100)
             timelineData = {
               title: description,
