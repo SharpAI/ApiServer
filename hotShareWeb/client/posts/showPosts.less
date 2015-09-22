@@ -24,6 +24,65 @@
 .showPosts .content .gridster .textdiv .textDiv1{display: inline-block; padding-left:4px; padding-right:4px; font-size:large; color: black;white-space: pre-wrap;word-wrap: break-word;background :none; line-height:30px;border:0px dotted #00c4ff;resize:vertical;width:100%;box-sizing:border-box;}
 
 .showPosts .content .gridster {padding-left:5%; padding-right:5%;}
+
+.showPosts .content .post_header{
+  overflow: hidden;
+  padding: 40px 0 10px;
+  background: #f6f6f6
+}
+.showPosts .content .post_abstract {
+  position: relative;
+  padding: 32px 33px 48px 40px;
+  margin: 30px 32px;
+  border: 1px solid #dbdbdb;
+}
+.showPosts .content .post_abstract:before{
+  content: "";
+  position:absolute;
+  top: 3px;
+  right: 3px;
+  bottom:3px;
+  left: 3px;
+  border: 1px solid #dbdbdb
+}
+.showPosts .content .post_abstract .abstract_sentence{
+  position: relative;
+  margin-bottom: 14px;
+  font-size: 16px;
+  color: #000;
+  line-height: 26px
+}
+.showPosts .content .post_abstract .abstract_sentence:before{
+  position: absolute;
+  font-size: 0;
+  color: #797979;
+  width: 9px;
+  height: 8px;
+  background: no-repeat;
+  background-size: 100%;
+  content: "";
+  top: 3px;
+  left: -20px;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAOBAMAAAA7w+qHAAAALVBMVEUAAAA/Pz8/Pz8/Pz9AQEA/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz9AQEBAQEBAQECjVS6AAAAADnRSTlMAUOXdDu111cK3poJYPFYfJCwAAAA/SURBVAjXY2BgcCuAEjxBAlBi3xIGCMH2ggFK3HsII+Y9gRFx7x4LQIh3794pwIkHxBB6794ZQAjhd48EwAQAOew9Z9cQjFEAAAAASUVORK5CYII=");
+}
+.showPosts .content .post_abstract .abstract_sentence:after{
+  position: absolute;
+  font-size: 0;
+  color: #797979;
+  width: 9px;
+  height: 8px;
+  background: no-repeat;
+  background-size: 100%;
+  content: "";
+  bottom: 3px;
+  right: -14px;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAOBAMAAAA7w+qHAAAAKlBMVEUAAAA/Pz8/Pz8/Pz8+Pj4/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz9AQEBAQEDWzkgUAAAADXRSTlMAUeXdD+111cK3poI8ZYuCQgAAAEBJREFUCNdjELp7WQBC2N69qwAh7t69e4EYQhdOCN+9GwAhGFjuToASjHcPQAmOawwQgmXtBighFMgAJcocoAQAAgc5gXBc0bQAAAAASUVORK5CYII=");
+}
+.showPosts .content .abstract_chapter{
+  text-align: right;
+  font-size: 14px;
+  color: #9a9a9a;
+}
 .popUpBox { display:none; min-width: 100%;height:100%;position: absolute;background-color: #fff;top:0;left:0;}
 .commentInputBox { min-width: 100%;height:100%;position: absolute;background-color: #fff;top:0;left:0;}
 .userProfileBox { min-width: 100%;height:100%;position: absolute;background-color: #fff;top:0;left:0;}

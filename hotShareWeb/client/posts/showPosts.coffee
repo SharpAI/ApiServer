@@ -238,6 +238,22 @@ if Meteor.isClient
     #PUB.toast("render finish");
 
   Template.showPosts.helpers
+    withSectionMenu: withSectionMenu
+    withSectionShare: withSectionShare
+    withPostTTS: withPostTTS
+    getAbstractSentence:->
+      if Session.get('focusedIndex') isnt undefined
+        Session.get('postContent').pub[Session.get('focusedIndex')].text
+      else
+        null
+    getAbstractSentenceIndex:->
+      pub = Session.get('postContent').pub
+      index = Session.get('focusedIndex')
+      count = 0
+      for i in [0..index]
+        if pub[i].type is 'text'
+          count++
+      count
     displayBackBtn:->
       if Session.get('displayShowPostLeftBackBtn') is true
         true
@@ -350,7 +366,225 @@ if Meteor.isClient
         0
       else
         this.pcomments.length
+  thumbsUpHandler=(e,self)->
+    if e.target.className is "fa fa-thumbs-up thumbsUp"
+      e.target.className="fa fa-thumbs-o-up thumbsUp"
+      e.target.textContent=e.target.textContent-1
+    else
+      e.target.className="fa fa-thumbs-up thumbsUp"
+      e.target.textContent=e.target.textContent-0+1
+      if e.target.nextElementSibling.className is "fa fa-thumbs-down thumbsDown"
+        e.target.nextElementSibling.className = "fa fa-thumbs-o-down thumbsDown"
+        e.target.nextElementSibling.textContent=e.target.nextElementSibling.textContent-1
+    Meteor.defer ()->
+      i = self.index
+      postId = Session.get("postContent")._id
+      post = Session.get("postContent").pub
+      userId = Meteor.userId()
+      if not post[i].likeUserId
+        likeUserId = {}
+        post[i].likeUserId = likeUserId
+      if not post[i].likeSum
+        likeSum = 0
+        post[i].likeSum = likeSum
+      if not post[i].dislikeUserId
+        dislikeUserId = {}
+        post[i].dislikeUserId = dislikeUserId
+      if not post[i].dislikeSum
+        dislikeSum = 0
+        post[i].dislikeSum = dislikeSum
+      if post[i].likeUserId.hasOwnProperty(userId) isnt true
+        post[i].likeUserId[Meteor.userId()] = false
+      if  post[i].dislikeUserId.hasOwnProperty(userId) isnt true
+        post[i].dislikeUserId[userId] = false
+      if post[i].likeUserId[userId] isnt true  and post[i].dislikeUserId[userId] isnt true
+        post[i].likeSum += 1
+        post[i].likeUserId[userId] = true
+        pclength=0
+        if(post[i].pcomments)
+          pclength=post[i].pcomments.length
+        if post[i].dislikeSum + post[i].likeSum + pclength is 0
+          if post[i].style and post[i].style.length>100
+            post[i].style=post[i].style.replace("#F30B44","grey")
+          else
+            post[i].style=""
+        Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
+          triggerToolbarShowOnThumb($(e.target))
+          if error
+            console.log(error.reason);
+          else
+            console.log("success");
+        )
+      else if  post[i].dislikeUserId[userId] is true and  post[i].likeUserId[userId] isnt true
+        post[i].likeSum += 1
+        post[i].likeUserId[userId] = true
+        post[i].dislikeSum -= 1
+        post[i].dislikeUserId[Meteor.userId()] = false
+        pclength=0
+        if(post[i].pcomments)
+          pclength=post[i].pcomments.length
+        if post[i].dislikeSum + post[i].likeSum + pclength is 0
+          if post[i].style and post[i].style.length>100
+            post[i].style=post[i].style.replace("#F30B44","grey")
+          else
+            post[i].style=""
+        Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
+          triggerToolbarShowOnThumb($(e.target))
+          if error
+            console.log(error.reason);
+          else
+            console.log("success");
+        )
+      else if post[i].likeUserId[userId] is true and  post[i].dislikeUserId[userId] isnt true
+        post[i].likeSum -= 1
+        post[i].likeUserId[userId] = false
+        pclength=0
+        if(post[i].pcomments)
+          pclength=post[i].pcomments.length
+        if post[i].dislikeSum + post[i].likeSum + pclength is 0
+          if post[i].style and post[i].style.length>100
+            post[i].style=post[i].style.replace("#F30B44","grey")
+          else
+            post[i].style=""
+        Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
+          triggerToolbarShowOnThumb($(e.target))
+          if error
+            console.log(error.reason);
+          else
+            console.log("success");
+        )
+      else
+        triggerToolbarShowOnThumb($(e.target))
+        return
+  thumbsDownHandler = (e,self)->
+    if e.target.className is "fa fa-thumbs-down thumbsDown"
+      e.target.className="fa fa-thumbs-o-down thumbsDown"
+      e.target.textContent=e.target.textContent-1
+    else
+      e.target.className="fa fa-thumbs-down thumbsDown"
+      e.target.textContent=e.target.textContent-0+1
+      if e.target.previousElementSibling.className is "fa fa-thumbs-up thumbsUp"
+        e.target.previousElementSibling.className = "fa fa-thumbs-o-up thumbsUp"
+        e.target.previousElementSibling.textContent=e.target.previousElementSibling.textContent-1
+    Meteor.defer ()->
+      i = self.index
+      postId = Session.get("postContent")._id
+      post = Session.get("postContent").pub
+      userId = Meteor.userId()
+      if not post[i].likeUserId
+        likeUserId = {}
+        post[i].likeUserId = likeUserId
+      if not post[i].likeSum
+        likeSum = 0
+        post[i].likeSum = likeSum
+      if not post[i].dislikeUserId
+        dislikeUserId = {}
+        post[i].dislikeUserId = dislikeUserId
+      if not post[i].dislikeSum
+        dislikeSum = 0
+        post[i].dislikeSum = dislikeSum
+      if post[i].likeUserId.hasOwnProperty(userId) isnt true
+        post[i].likeUserId[Meteor.userId()] = false
+      if  post[i].dislikeUserId.hasOwnProperty(userId) isnt true
+        post[i].dislikeUserId[userId] = false
+      if post[i].likeUserId[userId] isnt true  and post[i].dislikeUserId[userId] isnt true
+        post[i].dislikeSum += 1
+        post[i].dislikeUserId[userId] = true
+        pclength=0
+        if(post[i].pcomments)
+          pclength=post[i].pcomments.length
+        if post[i].dislikeSum + post[i].likeSum + pclength is 0
+          if post[i].style and post[i].style.length>100
+            post[i].style=post[i].style.replace("#F30B44","grey")
+          else
+            post[i].style=""
+        Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
+          triggerToolbarShowOnThumb($(e.target))
+          if error
+            console.log(error.reason);
+          else
+            console.log("success");
+        )
+      else if  post[i].dislikeUserId[userId] isnt true and  post[i].likeUserId[userId] is true
+        post[i].dislikeSum += 1
+        post[i].dislikeUserId[userId] = true
+        post[i].likeSum -= 1
+        post[i].likeUserId[Meteor.userId()] = false
+        pclength=0
+        if(post[i].pcomments)
+          pclength=post[i].pcomments.length
+        if post[i].dislikeSum + post[i].likeSum + pclength is 0
+          if post[i].style and post[i].style.length>100
+            post[i].style=post[i].style.replace("#F30B44","grey")
+          else
+            post[i].style=""
+        Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
+          triggerToolbarShowOnThumb($(e.target))
+          if error
+            console.log(error.reason);
+          else
+            console.log("success");
+        )
+      else if post[i].likeUserId[userId] isnt true and  post[i].dislikeUserId[userId] is true
+        post[i].dislikeSum -= 1
+        post[i].dislikeUserId[userId] = false
+        pclength=0
+        if(post[i].pcomments)
+          pclength=post[i].pcomments.length
+        if post[i].dislikeSum + post[i].likeSum + pclength is 0
+          if post[i].style and post[i].style.length>100
+            post[i].style=post[i].style.replace("#F30B44","grey")
+          else
+            post[i].style=""
+        Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
+          triggerToolbarShowOnThumb($(e.target))
+          if error
+            console.log(error.reason);
+          else
+            console.log("success");
+        )
+      else
+        triggerToolbarShowOnThumb($(e.target))
+        return
+      #addDynamicTemp()
+  triggerToolbarShowOnThumb = ($node)->
+    $node.parent().click()
+  sectionToolbarClickHandler = (self,event,node)->
+    console.log('Index ' + self.index + ' Action ' + $(node).attr('action') )
+    action = $(node).attr('action')
+    if action is 'section-forward'
+      options = {
+        'androidTheme': window.plugins.actionsheet.ANDROID_THEMES.THEME_HOLO_LIGHT, # default is THEME_TRADITIONAL
+        'title': '分享',
+        'buttonLabels': ['分享给微信好友', '分享到微信朋友圈','分享到QQ','分享到更多应用'],
+        'androidEnableCancelButton' : true, #default false
+        'winphoneEnableCancelButton' : true, #default false
+        'addCancelButtonWithLabel': '取消',
+        #'position': [20, 40] # for iPad pass in the [x, y] position of the popover
+      }
+      window.plugins.actionsheet.show(options, (buttonIndex)->
+        switch buttonIndex
+          when 1 then shareTo('WXSession',Blaze.getData($('.showPosts')[0]),self.index)
+          when 2 then shareTo('WXTimeLine',Blaze.getData($('.showPosts')[0]),self.index)
+          when 3 then shareTo('QQShare',Blaze.getData($('.showPosts')[0]),self.index)
+          when 4 then shareTo('System',Blaze.getData($('.showPosts')[0]),self.index)
+      );
+
   Template.showPosts.events
+    'click .textdiv' :(e)->
+      if withSectionMenu
+        console.log('clicked on textdiv ' + this._id)
+        $self = $('#'+this._id)
+        toolbar = $self.data('toolbarObj')
+        unless toolbar
+          self = this
+          $self.toolbar
+            content: '.section-toolbar'
+            position: 'bottom'
+            hideOnClick: true
+          $self.on 'toolbarItemClick',(event,buttonClicked)->
+            sectionToolbarClickHandler(self,event,buttonClicked)
+          $self.data('toolbarObj').show()
     'click #ViewOnWeb' :->
       if Session.get("postContent").fromUrl
         if Meteor.isCordova
@@ -511,37 +745,6 @@ if Meteor.isClient
 
     'click #report': (event)->
       Router.go('reportPost')
-    'click #socialShare': (event)->
-      current = Router.current();
-      url = current.url;
-      if url.indexOf("http") > -1
-        `url = url.replace("meteor.local", server_domain_name);`
-      else
-        `url = "http://" + server_domain_name +url;`
-      title = this.title;
-      addontitle = this.addontitle;
-      console.log "socialsharing: this.mainImage="+this.mainImage
-
-      window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等")
-
-      height = $('.showPosts').height()
-      $('#blur_overlay').css('height',height)
-      $('#blur_overlay').css('z-index', 10000)
-
-
-      downloadFromBCS(this.mainImage, (result)->
-        $('#blur_overlay').css('height','')
-        $('#blur_overlay').css('z-index', -1)
-        if result is null
-          console.log("downloadFromBCS failed!")
-          PUB.toast("准备故事的主题图片失败，请稍后尝试。");
-          return
-        console.log("downloadFromBCS suc! Prepare socialsharing...")
-        if addontitle and addontitle isnt ''
-          window.plugins.socialsharing.share("『故事贴』 "+title+'：'+addontitle, null, result, url)
-        else
-          window.plugins.socialsharing.share("『故事贴』 "+title, null, result, url)
-      )
     'click .imgdiv': (e)->
       images = []
       swipedata = []
@@ -564,180 +767,9 @@ if Meteor.isClient
 
       }
     'click .thumbsUp': (e)->
-      if e.target.className is "fa fa-thumbs-up thumbsUp"
-        e.target.className="fa fa-thumbs-o-up thumbsUp"
-        e.target.textContent=e.target.textContent-1
-      else
-        e.target.className="fa fa-thumbs-up thumbsUp"
-        e.target.textContent=e.target.textContent-0+1
-        if e.target.nextElementSibling.className is "fa fa-thumbs-down thumbsDown"
-          e.target.nextElementSibling.className = "fa fa-thumbs-o-down thumbsDown"
-          e.target.nextElementSibling.textContent=e.target.nextElementSibling.textContent-1
-      self=this
-      Meteor.defer ()->
-        i = self.index
-        postId = Session.get("postContent")._id
-        post = Session.get("postContent").pub
-        userId = Meteor.userId()
-        if not post[i].likeUserId
-          likeUserId = {}
-          post[i].likeUserId = likeUserId
-        if not post[i].likeSum
-          likeSum = 0
-          post[i].likeSum = likeSum
-        if not post[i].dislikeUserId
-          dislikeUserId = {}
-          post[i].dislikeUserId = dislikeUserId
-        if not post[i].dislikeSum
-          dislikeSum = 0
-          post[i].dislikeSum = dislikeSum
-        if post[i].likeUserId.hasOwnProperty(userId) isnt true
-          post[i].likeUserId[Meteor.userId()] = false
-        if  post[i].dislikeUserId.hasOwnProperty(userId) isnt true
-          post[i].dislikeUserId[userId] = false
-        if post[i].likeUserId[userId] isnt true  and post[i].dislikeUserId[userId] isnt true
-          post[i].likeSum += 1
-          post[i].likeUserId[userId] = true
-          pclength=0
-          if(post[i].pcomments)
-            pclength=post[i].pcomments.length
-          if post[i].dislikeSum + post[i].likeSum + pclength is 0
-            if post[i].style and post[i].style.length>100
-              post[i].style=post[i].style.replace("#F30B44","grey")
-            else
-              post[i].style=""
-          Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
-            if error
-              console.log(error.reason);
-            else
-              console.log("success");
-           )
-        else if  post[i].dislikeUserId[userId] is true and  post[i].likeUserId[userId] isnt true
-          post[i].likeSum += 1
-          post[i].likeUserId[userId] = true
-          post[i].dislikeSum -= 1
-          post[i].dislikeUserId[Meteor.userId()] = false
-          pclength=0
-          if(post[i].pcomments)
-            pclength=post[i].pcomments.length
-          if post[i].dislikeSum + post[i].likeSum + pclength is 0
-            if post[i].style and post[i].style.length>100
-              post[i].style=post[i].style.replace("#F30B44","grey")
-            else
-              post[i].style=""
-          Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
-            if error
-              console.log(error.reason);
-            else
-              console.log("success");
-          )
-        else if post[i].likeUserId[userId] is true and  post[i].dislikeUserId[userId] isnt true
-          post[i].likeSum -= 1
-          post[i].likeUserId[userId] = false
-          pclength=0
-          if(post[i].pcomments)
-            pclength=post[i].pcomments.length
-          if post[i].dislikeSum + post[i].likeSum + pclength is 0
-            if post[i].style and post[i].style.length>100
-              post[i].style=post[i].style.replace("#F30B44","grey")
-            else
-              post[i].style=""
-          Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
-            if error
-              console.log(error.reason);
-            else
-              console.log("success");
-          )
-        else
-          return
+      thumbsUpHandler(e,this)
     'click .thumbsDown': (e)->
-      if e.target.className is "fa fa-thumbs-down thumbsDown"
-        e.target.className="fa fa-thumbs-o-down thumbsDown"
-        e.target.textContent=e.target.textContent-1
-      else
-        e.target.className="fa fa-thumbs-down thumbsDown"
-        e.target.textContent=e.target.textContent-0+1
-        if e.target.previousElementSibling.className is "fa fa-thumbs-up thumbsUp"
-          e.target.previousElementSibling.className = "fa fa-thumbs-o-up thumbsUp"
-          e.target.previousElementSibling.textContent=e.target.previousElementSibling.textContent-1
-      self=this
-      Meteor.defer ()->
-        i = self.index
-        postId = Session.get("postContent")._id
-        post = Session.get("postContent").pub
-        userId = Meteor.userId()
-        if not post[i].likeUserId
-          likeUserId = {}
-          post[i].likeUserId = likeUserId
-        if not post[i].likeSum
-          likeSum = 0
-          post[i].likeSum = likeSum
-        if not post[i].dislikeUserId
-          dislikeUserId = {}
-          post[i].dislikeUserId = dislikeUserId
-        if not post[i].dislikeSum
-          dislikeSum = 0
-          post[i].dislikeSum = dislikeSum
-        if post[i].likeUserId.hasOwnProperty(userId) isnt true
-          post[i].likeUserId[Meteor.userId()] = false
-        if  post[i].dislikeUserId.hasOwnProperty(userId) isnt true
-          post[i].dislikeUserId[userId] = false
-        if post[i].likeUserId[userId] isnt true  and post[i].dislikeUserId[userId] isnt true
-          post[i].dislikeSum += 1
-          post[i].dislikeUserId[userId] = true
-          pclength=0
-          if(post[i].pcomments)
-            pclength=post[i].pcomments.length
-          if post[i].dislikeSum + post[i].likeSum + pclength is 0
-            if post[i].style and post[i].style.length>100
-              post[i].style=post[i].style.replace("#F30B44","grey")
-            else
-              post[i].style=""
-          Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
-            if error
-              console.log(error.reason);
-            else
-              console.log("success");
-           )
-        else if  post[i].dislikeUserId[userId] isnt true and  post[i].likeUserId[userId] is true
-          post[i].dislikeSum += 1
-          post[i].dislikeUserId[userId] = true
-          post[i].likeSum -= 1
-          post[i].likeUserId[Meteor.userId()] = false
-          pclength=0
-          if(post[i].pcomments)
-            pclength=post[i].pcomments.length
-          if post[i].dislikeSum + post[i].likeSum + pclength is 0
-            if post[i].style and post[i].style.length>100
-              post[i].style=post[i].style.replace("#F30B44","grey")
-            else
-              post[i].style=""
-          Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
-            if error
-              console.log(error.reason);
-            else
-              console.log("success");
-          )
-        else if post[i].likeUserId[userId] isnt true and  post[i].dislikeUserId[userId] is true
-          post[i].dislikeSum -= 1
-          post[i].dislikeUserId[userId] = false
-          pclength=0
-          if(post[i].pcomments)
-            pclength=post[i].pcomments.length
-          if post[i].dislikeSum + post[i].likeSum + pclength is 0
-            if post[i].style and post[i].style.length>100
-              post[i].style=post[i].style.replace("#F30B44","grey")
-            else
-              post[i].style=""
-          Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
-            if error
-              console.log(error.reason);
-            else
-              console.log("success");
-          )
-        else
-          return
-        #addDynamicTemp()
+      thumbsDownHandler(e,this)
     'click .pcomments': (e)->
       backgroundTop = 0-$(window).scrollTop()
       Session.set('backgroundTop', backgroundTop);
