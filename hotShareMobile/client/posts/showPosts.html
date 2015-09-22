@@ -42,6 +42,14 @@
         {{/if}}
       </div>
       <div class="content">
+          {{#if getAbstractSentence}}
+              <div class="post_header">
+                  <div class="post_abstract">
+                      <div class="abstract_sentence"><span>{{getAbstractSentence}}</span></div>
+                      <div class="abstract_chapter">――节选自 第{{getAbstractSentenceIndex}}段 {{title}}{{#if addontitle}}：{{addontitle}}{{/if}}</div>
+                  </div>
+              </div>
+          {{/if}}
         <div id="wrapper">
           <div class="mainImage" id="{{_id}}">
             {{>padding noRandomBackgroundColor=true}}
@@ -192,6 +200,16 @@
   {{/if}}
   {{> userProfileBox}}
   </div>
+  {{#if withSectionMenu}}
+      <div class="section-toolbar" id="{{_id}}" style='visibility: hidden;'>
+        {{#if withSectionShare}}
+            <a href="#" class='section-forward' action="section-forward"><i>转发本段</i></a>
+        {{/if}}
+        {{#if withPostTTS}}
+            <a href="#" class='post-tts' action="post-tts"><i>朗读</i></a>
+        {{/if}}
+      </div>
+  {{/if}}
 </template>
 <template name="postFooter">
   <div id="postFooter" class="showPostsFooter">

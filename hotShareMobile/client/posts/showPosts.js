@@ -67,128 +67,109 @@ Template.showPosts.helpers({
 //       $('#commitMsg').focus();
 //    }
 // });
-Template.showPosts.events({
-    'click #WXTimelineShare':function(e, t){
-      current = Router.current();
-      url = current.url;
-      if(url.indexOf("http") > -1)
-        url = url.replace("meteor.local", server_domain_name);
-      else
-        url = "http://" + server_domain_name +url;
-      var title = this.title;
-      var addontitle = this.addontitle;
-      if (this.addontitle && (this.addontitle !=='')){
-        title = title + '：' + this.addontitle;
-      }
-      window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等");
+getSharingTitle = function(self){
+    var title = self.title;
+    if (self.addontitle && (self.addontitle !=='')){
+        title = title + '：' + self.addontitle;
+    }
+    return title;
+};
+getPostSharingPath = function(){
+    var url = "http://" + server_domain_name +'/'+Session.get('channel');
+    return url;
+};
 
-      height = $('.showPosts').height();
-      $('#blur_overlay').css('height',height);
-      $('#blur_overlay').css('z-index', 10000);
+shareToWXTimeLine = function(title,description,thumbData,url){
+    shareToWechat(title,description,thumbData,url,WeChat.Scene.timeline);
+};
+shareToWXSession = function(title,description,thumbData,url) {
+    shareToWechat(title,description,thumbData,url,WeChat.Scene.session);
+};
+shareToWechat = function(title,description,thumbData,url,type) {
+    WeChat.share({
+        title: title,
+        description: description,
+        thumbData: thumbData,
+        url: url
+    }, type, function () {
+        console.log('分享成功~');
+    }, function (reason) {
+        // 分享失败
+        if (reason === 'ERR_WECHAT_NOT_INSTALLED') {
+            PUB.toast("未安装微信客户端，分享失败");
+        } else {
+            PUB.toast("分享失败");
+        }
+        console.log(reason);
+    });
+};
+shareToQQ = function (title,description,imageUrl,url){
+    var args = {};
+    args.url = url;
+    args.title = title;
+    args.description = description;
+    args.imageUrl = imageUrl;
+    args.appName = "故事贴";
+    YCQQ.shareToQQ(function(){
+        console.log("share success");
+    },function(reason){
+        if (reason ==='QQ Client is not installed') {
+            PUB.toast("未安装QQ客户端，分享失败");
+        } else {
+            PUB.toast("分享失败");
+        }
+    },args);
+};
+shareToSystem = function(title,description,thumbData,url) {
+    window.plugins.socialsharing.share(title, description, thumbData, url);
+};
+// To could be
+// WXTimeLine, WXSession, QQShare, System
+shareTo = function(to,self){
+    var url = getPostSharingPath();
+    var title = getSharingTitle(self);
+    window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等");
 
-      downloadFromBCS(this.mainImage, function(result){
+    var height = $('.showPosts').height();
+    $('#blur_overlay').css('height',height);
+    $('#blur_overlay').css('z-index', 10000);
+    if (to ==='QQShare'){
+        $('#blur_overlay').css('height','');
+        $('#blur_overlay').css('z-index', -1);
+        shareToQQ('故事贴',"『故事贴』 "+ title,self.mainImage,url);
+        return;
+    }
+    downloadFromBCS(self.mainImage, function(result){
         console.log("url = "+url);
         $('#blur_overlay').css('height','');
         $('#blur_overlay').css('z-index', -1);
 
         if (result) {
-            WeChat.share({
-                title: "『故事贴』 "+ title,
-                description: "『故事贴』 "+ title,
-                thumbData: result,
-                url: url
-              }, WeChat.Scene.timeline, function () {
-                PUB.toast("已成功分享~");
-                console.log('分享成功~');
-              }, function (reason) {
-                // 分享失败
-                console.log(reason);
-                if (reason ==='ERR_WECHAT_NOT_INSTALLED') {
-                    PUB.toast("未安装微信客户端，分享失败");
-                } else {
-                    PUB.toast("分享失败");
-                }
-              });
+            if(to ==='WXTimeLine'){
+                shareToWXTimeLine("『故事贴』 "+ title,"『故事贴』 "+ title,result,url);
+            } else if (to ==='WXSession'){
+                shareToWXSession("『故事贴』",title,result,url);
+            } else if (to ==='System'){
+                shareToSystem("『故事贴』 "+title, '', result, url)
+            }
         } else {
             PUB.toast("无法获取故事标题图片，请稍后重试！");
         }
-      })
+    })
+};
+Template.showPosts.events({
+    'click #WXTimelineShare':function(e, t){
+        shareTo('WXTimeLine',this);
     },
     'click #WXSessionShare':function(e, t){
-      current = Router.current();
-      url = current.url;
-      if(url.indexOf("http") > -1)
-        url = url.replace("meteor.local", server_domain_name);
-      else
-        url = "http://" + server_domain_name +url;
-      var title = this.title;
-      var addontitle = this.addontitle;
-      if (this.addontitle && (this.addontitle !=='')){
-        title = title + '：' + this.addontitle;
-      }
-      window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等");
-      height = $('.showPosts').height();
-      $('#blur_overlay').css('height',height);
-      $('#blur_overlay').css('z-index', 10000);
-
-      downloadFromBCS(this.mainImage, function(result){
-
-        $('#blur_overlay').css('height','');
-        $('#blur_overlay').css('z-index', -1);
-        if (result) {
-          WeChat.share({
-            title: "故事贴",
-            description: "『故事贴』 "+ title,
-            thumbData: result,
-            url: url
-          }, WeChat.Scene.session, function () {
-            console.log('分享成功~');
-          }, function (reason) {
-            // 分享失败
-            if (reason ==='ERR_WECHAT_NOT_INSTALLED') {
-              PUB.toast("未安装微信客户端，分享失败");
-            } else {
-              PUB.toast("分享失败");
-            }
-            console.log(reason);
-          });
-        } else {
-            PUB.toast("无法获取故事标题图片，请稍后重试！");
-        }
-      })
+        shareTo('WXSession',this);
     },
     'click #QQShare':function(e, t){
-        var current = Router.current();
-        var url = current.url;
-        var postUrl;
-        if(url.indexOf("http") > -1)
-            postUrl = url.replace("meteor.local", server_domain_name);
-        else
-            postUrl = "http://" + server_domain_name +url;
-        var title = this.title;
-        console.log("URL is " + postUrl);
-        var addontitle = this.addontitle;
-        if (this.addontitle && (this.addontitle !=='')){
-            title = title + '：' + this.addontitle;
-        }
-        window.plugins.toast.showShortCenter("分享中，请稍等");
-        var args = {};
-        args.url = postUrl;
-        args.title = '故事贴';
-        args.description = "『故事贴』 "+ title;
-        args.imageUrl = this.mainImage;
-        args.appName = "故事贴";
-        YCQQ.shareToQQ(function(){
-            console.log("share success");
-        },function(reason){
-            if (reason ==='QQ Client is not installed') {
-                PUB.toast("未安装QQ客户端，分享失败");
-            } else {
-                PUB.toast("分享失败");
-            }
-        },args);
+        shareTo('QQShare',this);
     },
-
+    'click #socialShare':function(e, t){
+        shareTo('System',this);
+    },
     'click  .like_img' : function(e){
            if (Meteor.user()) {
               post = Session.get('postContent');
