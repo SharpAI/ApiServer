@@ -1,4 +1,4 @@
-com.clone.phonegap.plugins.PushPlugin@https://github.com/solderzzc/PushPlugin.git#4e652b9a6dce02ad58f4812cdd10f742f5a3b981
+com.phonegap.pushplugin@file://../cordova-plugins/pushplugin
 com.file-transfer.baidu.bcs@https://github.com/solderzzc/cordova-plugin-file-transfer.git#88764d4cf9d35b8df264bfd0dfeedd8c4f4e6e6a
 com.ionic.keyboard@https://github.com/driftyco/ionic-plugins-keyboard.git#4682535c92f81557d64fa8b438339fdb043d07ef
 com.leon.cordova.wechat@https://github.com/leonzhang1109/wechat-cordova-plugin.git#30f0072735153aabd9e2b6ea351909fda6313b61
