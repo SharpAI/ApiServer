@@ -202,3 +202,12 @@ Template.newLayoutElement.onDestroyed ()->
     watcher = window.newLayoutWatchIdList[id]
     watcher.destroy()
     delete window.newLayoutWatchIdList[id]
+  if this.data and this.data.layoutId
+    instance = window.newLayoutInstances[this.data.layoutId]
+    if instance
+      console.log('Need remove item');
+      $('#'+id).remove();
+      Meteor.setTimeout ()->
+        instance.initItems();
+        instance.layout(true);
+      ,1000

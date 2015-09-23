@@ -686,6 +686,48 @@
     // Return longest column height
     return Math.max(maxHeight, item.offsetHeight + shortest);
   };
+  Wookmark.prototype.isItemAlreadyThere = function(item){
+    if (!this.columns) { return false; }
+    var columns = this.columns.length;
+    var i,k;
+    for (i = columns -1;i >=0;i--){
+      var column = this.columns[i];
+      for(k=column.length -1; k>=0;k--){
+        if ( column[k] == item ) {
+          console.log('Same ITEM');
+          return true;
+        }
+      }
+    }
+    console.log('Not sameitem');
+    return false;
+  };
+  Wookmark.prototype.needRelayout = function(){
+    if (isHidden(this.container)) { return; }
+    if (!this.columns) { return; }
+    var columns = this.columns.length;
+    var i,k;
+    for (i = columns -1;i >=0;i--){
+      var column = this.columns[i];
+      var columnHeight = 0;
+      var columnLastOne = 0;
+      var calcTotalHeight = 0;
+      for(k=column.length -1; k>=0;k--){
+        var toTop = getData(column[k], 'top', true) + getData(column[k], 'height', true);
+        if (toTop>columnHeight) {
+          columnHeight = toTop;
+          columnLastOne = k;
+        }
+        calcTotalHeight = calcTotalHeight + getData(column[k], 'height', true) +  this.verticalOffset;
+      }
+      console.log( 'calcTotalHeight: ' + calcTotalHeight + ' columnHeight: ' + (columnHeight+this.verticalOffset));
+      if (calcTotalHeight !== columnHeight+this.verticalOffset) {
+        console.log('Got white block on display');
+        return true;
+      }
+    }
+    return false;
+  };
 // Append One item.
   Wookmark.prototype.appendItem = function (item, callback) {
     // Do nothing if container isn't visible
@@ -697,6 +739,10 @@
       }
       return;
     }
+    /*if (this.isItemAlreadyThere(item)){
+      console.log('ALready there, not need append again');
+      return;
+    }*/
     // Calculate basic layout parameters.
     var calculatedItemWidth = this.getItemWidth(),
         columnWidth = calculatedItemWidth + this.offset,
@@ -754,6 +800,11 @@
       this.onLayoutChanged();
     }
 
+    /*if (this.needRelayout()) {
+      this.initItems();
+      this.layout(true,callback);
+      return;
+    }*/
     // Run optional callback
     if (typeof callback === 'function') {
       executeNextFrame(function () {
