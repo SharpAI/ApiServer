@@ -10,3 +10,4 @@
 @withSectionMenu = false
 @withSectionShare = false
 @withPostTTS = false
+@withWeChatSignatureServer = false
