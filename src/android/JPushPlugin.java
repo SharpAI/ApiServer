@@ -1,5 +1,6 @@
 package cn.jpush.phonegap;
 
+import android.app.Notification;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -310,6 +311,7 @@ public class JPushPlugin extends CordovaPlugin {
 		BasicPushNotificationBuilder builder = new BasicPushNotificationBuilder(
 				this.cordova.getActivity());
 		builder.developerArg0 = "Basic builder 1";
+		builder.notificationDefaults = Notification.DEFAULT_SOUND;
 		JPushInterface.setPushNotificationBuilder(1, builder);
 		JSONObject obj = new JSONObject();
 		try {
