@@ -28,7 +28,7 @@ if (Meteor.isCordova){
             };
             options.headers = headers;
 
-            var ft = new FileTransferBCS();
+            var ft = new FileTransfer();
             ft.onprogress = function(progressEvent) {
                 if (progressEvent && progressEvent.lengthComputable) {
                     if (callback){
@@ -78,7 +78,7 @@ if (Meteor.isCordova){
         };
         options.headers = headers;
 
-        var ft = new FileTransferBCS();
+        var ft = new FileTransfer();
         ft.onprogress = function(progressEvent) {
           if (progressEvent.lengthComputable) {
             showDebug && console.log('Loaded ' + progressEvent.loaded + ' Total ' + progressEvent.total);
@@ -182,7 +182,7 @@ if (Meteor.isCordova){
         };
         options.headers = headers;
 
-        var ft = new FileTransferBCS();
+        var ft = new FileTransfer();
         ft.onprogress = function(progressEvent) {
           if (progressEvent.lengthComputable) {
             computeProgressBar(filename, 100*(progressEvent.loaded/progressEvent.total));
@@ -236,7 +236,7 @@ if (Meteor.isCordova){
                       //"Authorization": "Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA=="
                     };
                     options.headers = headers;
-                    var ft = new FileTransferBCS();
+                    var ft = new FileTransfer();
                     ft.download(source, target, function(theFile){
                         //showDebug && console.log('download suc, theFile.toURL='+theFile.toURL());
                         if(callback){
