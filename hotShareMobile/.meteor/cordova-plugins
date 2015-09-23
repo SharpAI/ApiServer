@@ -15,7 +15,7 @@ cordova-plugin-file@1.3.1
 cordova-plugin-inappbrowser@https://github.com/leonzhang1109/cordova-plugin-inappbrowser.git#aeffd5ce7b180dcef22e27cc35cb6af87ed96e5c
 cordova-plugin-media@https://github.com/leonzhang1109/cordova-plugin-media.git#83b172a2aa1a469189c6150cdf52e2ae4dc673ac
 cordova-plugin-network-information@0.2.15
-cordova-plugin-x-toast@2.0.2
+nl.x-services.plugins.toast@2.1.1
 me.rahul.plugins.audio-picker@https://github.com/solderzzc/ios-audio-picker.git#21ea2a491be1bb576d5334c48ef3f83cc0c4d780
 nl.x-services.plugins.backgroundaudio@file://../cordova-plugins/backgroundaudio
 nl.x-services.plugins.socialsharing@https://github.com/yunhaia/SocialSharing-PhoneGap-Plugin.git#75d3661cc9bac4510b79a17b826981014c0bf96d
