@@ -697,7 +697,8 @@ if Meteor.isClient
       navigator.notification.confirm('取消发表的故事将会被转换为草稿。', (r)->
         if r isnt 2
           return
-        PUB.page('/user')
+        #PUB.page('/user')
+        Router.go('/user')
         fromUrl = ''
         if self.fromUrl and self.fromUrl isnt ''
           fromUrl = self.fromUrl
