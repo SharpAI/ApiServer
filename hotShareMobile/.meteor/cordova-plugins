@@ -20,5 +20,5 @@ me.rahul.plugins.audio-picker@https://github.com/solderzzc/ios-audio-picker.git#
 nl.x-services.plugins.backgroundaudio@file://../cordova-plugins/backgroundaudio
 nl.x-services.plugins.socialsharing@file://../cordova-plugins/socialsharing
 org.apache.cordova.plugin.tts@file://../cordova-plugins/tts
-org.hotshare.everywhere.appsetup@https://github.com/solderzzc/HotShareAppSetup.git#9ca79c6bcef06c9d1f0ff269aee0957b19348933
+org.hotshare.everywhere.appsetup@file://../cordova-plugins/appsetup
 org.zy.yuancheng.qq@https://github.com/leonzhang1109/Cordova_QQ.git#07a334f395a684141aa1825831f85bd731627b67
