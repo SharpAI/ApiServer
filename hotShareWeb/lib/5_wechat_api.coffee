@@ -84,6 +84,8 @@ if Meteor.isClient
         else
           setupWeichat(url)
 if Meteor.isServer
+  unless withWeChatSignatureServer
+    return;
   token = ''
   ticket = ''
   jsSHA = Meteor.npmRequire('jssha')
