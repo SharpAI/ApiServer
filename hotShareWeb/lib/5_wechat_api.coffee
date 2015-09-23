@@ -62,8 +62,8 @@ if Meteor.isClient
                 console.log('Share cancled');
             }
             chatShareData = {
-              title: '故事贴',
-              desc: Session.get("DocumentTitle"),
+              title: '分享『故事贴』中的一篇文章：',
+              desc: Session.get("DocumentTitle").replace('『故事贴』',''),
               link: window.location.href,
               imgUrl: Session.get('postContent').mainImage,
               success: () ->
