@@ -3,7 +3,7 @@ com.ionic.keyboard@https://github.com/driftyco/ionic-plugins-keyboard.git#468253
 com.leon.cordova.wechat@file://../cordova-plugins/wechat
 com.moya.imagebase64@file://../cordova-plugins/imagebase64
 com.phonegap.JPushPlugin@file://../cordova-plugins/jpush
-com.raananw.imageResizer@https://github.com/solderzzc/PhoneGap-Image-Resizer.git#c2b22b372029278c5845ece38ff87903bd91f54a
+com.raananw.imageResizer@file://../cordova-plugins/imageresizer
 com.synconset.imagepicker@file://../cordova-plugins/imagepicker
 com.verso.cordova.clipboard@https://github.com/leonzhang1109/CordovaClipboard.git#83d0b659724f0f821a18b3cb900d56ce045972b3
 com.wordsbaking.cordova.tts@0.2.1
