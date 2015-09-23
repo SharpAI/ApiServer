@@ -5,7 +5,7 @@ com.moya.imagebase64@file://../cordova-plugins/imagebase64
 com.phonegap.JPushPlugin@file://../cordova-plugins/jpush
 com.raananw.imageResizer@file://../cordova-plugins/imageresizer
 com.synconset.imagepicker@file://../cordova-plugins/imagepicker
-com.verso.cordova.clipboard@https://github.com/leonzhang1109/CordovaClipboard.git#83d0b659724f0f821a18b3cb900d56ce045972b3
+com.verso.cordova.clipboard@file://../cordova-plugins/clipboard
 com.wordsbaking.cordova.tts@0.2.1
 cordova-plugin-actionsheet@https://github.com/solderzzc/cordova-plugin-actionsheet.git#0a8e3c0ce181e48e8454624515f7f0149c0205c6
 cordova-plugin-device@0.2.12
