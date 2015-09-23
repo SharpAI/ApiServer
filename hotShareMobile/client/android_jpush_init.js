@@ -99,6 +99,7 @@ if (Meteor.isCordova) {
           window.plugins.jPushPlugin.receiveMessageInAndroidCallback = pushNotificationCallback;
           window.plugins.jPushPlugin.openNotificationInAndroidCallback = openNotificationInAndroidCallback;
           window.plugins.jPushPlugin.init();
+          window.plugins.jPushPlugin.setBasicPushNotificationBuilder();
           var registerInterval = window.setInterval( function(){
               updateRegistrationID(function(got,registrationID){
               if(got===true){
