@@ -207,7 +207,7 @@ Template.newLayoutElement.onDestroyed ()->
     instance = window.newLayoutInstances[this.data.layoutId]
     if instance
       console.log('Need remove item');
-      $('#'+id).remove();
+      $('.newLayout_element #'+id).remove();
       Meteor.setTimeout ()->
         instance.initItems();
         instance.layout(true);
