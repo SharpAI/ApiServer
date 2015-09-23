@@ -1,5 +1,4 @@
 com.phonegap.pushplugin@file://../cordova-plugins/pushplugin
-com.file-transfer.baidu.bcs@https://github.com/solderzzc/cordova-plugin-file-transfer.git#88764d4cf9d35b8df264bfd0dfeedd8c4f4e6e6a
 com.ionic.keyboard@https://github.com/driftyco/ionic-plugins-keyboard.git#4682535c92f81557d64fa8b438339fdb043d07ef
 com.leon.cordova.wechat@https://github.com/leonzhang1109/wechat-cordova-plugin.git#30f0072735153aabd9e2b6ea351909fda6313b61
 com.moya.imagebase64@https://github.com/solderzzc/cordova-plugin-image-base64.git#dc260d34cbd150f8fdf762699f9c3862d17fd807
