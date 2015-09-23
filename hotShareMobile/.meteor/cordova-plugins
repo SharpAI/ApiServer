@@ -18,7 +18,7 @@ cordova-plugin-network-information@0.2.15
 nl.x-services.plugins.toast@2.1.1
 me.rahul.plugins.audio-picker@https://github.com/solderzzc/ios-audio-picker.git#21ea2a491be1bb576d5334c48ef3f83cc0c4d780
 nl.x-services.plugins.backgroundaudio@file://../cordova-plugins/backgroundaudio
-nl.x-services.plugins.socialsharing@https://github.com/yunhaia/SocialSharing-PhoneGap-Plugin.git#75d3661cc9bac4510b79a17b826981014c0bf96d
+nl.x-services.plugins.socialsharing@file://../cordova-plugins/socialsharing
 org.apache.cordova.plugin.tts@https://github.com/solderzzc/org.apache.cordova.plugin.tts.git#0d7c3d9b6ec3780440864a74e0a477ba8f416d4e
 org.hotshare.everywhere.appsetup@https://github.com/solderzzc/HotShareAppSetup.git#9ca79c6bcef06c9d1f0ff269aee0957b19348933
 org.zy.yuancheng.qq@https://github.com/leonzhang1109/Cordova_QQ.git#07a334f395a684141aa1825831f85bd731627b67
