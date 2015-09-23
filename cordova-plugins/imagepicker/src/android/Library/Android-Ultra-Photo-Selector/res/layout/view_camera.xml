@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tv_camera_vc"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_dark_selector"
+    android:clickable="true"
+    android:drawablePadding="0dp"
+    android:drawableTop="@drawable/btn_camera_selector"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingTop="15dp"
+    android:text="@string/taking_pictures"
+    android:textColor="@android:color/white" />
