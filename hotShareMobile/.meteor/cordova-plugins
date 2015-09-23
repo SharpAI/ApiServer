@@ -4,7 +4,7 @@ com.leon.cordova.wechat@https://github.com/leonzhang1109/wechat-cordova-plugin.g
 com.moya.imagebase64@https://github.com/solderzzc/cordova-plugin-image-base64.git#dc260d34cbd150f8fdf762699f9c3862d17fd807
 com.phonegap.JPushPlugin@https://github.com/leonzhang1109/jpush-phonegap-plugin.git#b20fc5a75ff5affd907c5a935834c3680f7b8078
 com.raananw.imageResizer@https://github.com/solderzzc/PhoneGap-Image-Resizer.git#c2b22b372029278c5845ece38ff87903bd91f54a
-com.synconset.imagepicker@https://github.com/leonzhang1109/cordova-imagePicker.git#9015d2cc889391697deb1dd4b044632ecbf5600b
+com.synconset.imagepicker@file://../cordova-plugins/imagepicker
 com.verso.cordova.clipboard@https://github.com/leonzhang1109/CordovaClipboard.git#83d0b659724f0f821a18b3cb900d56ce045972b3
 com.wordsbaking.cordova.tts@0.2.1
 cordova-plugin-actionsheet@https://github.com/solderzzc/cordova-plugin-actionsheet.git#0a8e3c0ce181e48e8454624515f7f0149c0205c6
