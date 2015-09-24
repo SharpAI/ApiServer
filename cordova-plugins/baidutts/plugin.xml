@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        id="org.hotshare.baidutts"
+        version="0.1.0">
+
+    <name>Baidu TTS Plugin</name>
+    <description>Baidu TTS for cordova Plugin</description>
+    <author>Simba Zhang</author>
+    <keywords>Baidu,TTS</keywords>
+    <license>Apache 2.0 License</license>
+
+    <engines>
+        <engine name="cordova" version=">=3.0"/>
+    </engines>
+
+    <js-module src="www/BaiduTTS.js" name="BaiduTTS">
+        <clobbers target="BaiduTTS"/>
+    </js-module>
+
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="BaiduTTS">
+                <param name="ios-package" value="BaiduTTS"/>
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/SDK/header/BDTTSSynthesizer.h"/>
+        <header-file src="src/ios/SDK/header/BDTTSSynthesizerDefine.h"/>
+        <header-file src="src/ios/SDK/header/BDTTSSynthesizerDelegate.h"/>
+
+        <source-file src="src/ios/SDK/lib/libbdtts.a" framework="true" />
+
+        <framework src="AudioToolbox.framework" weak="true" />
+        <framework src="CoreData.framework" weak="true" />
+        <framework src="SystemConfiguration.framework" weak="true" />
+        <framework src="AVFoundation.framework" weak="true" />
+        <framework src="libz.dylib" weak="true" />
+        <framework src="libstdc++.6.dylib" weak="true" />
+    </platform>
+
+</plugin>
