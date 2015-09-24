@@ -179,6 +179,11 @@
         {{> socialContent}}
       {{/if}}
     </div>
+    {{#if isTTPlaying}}
+      <div class="tts-stoper">
+        <img src="/stop_play.png" width="54" height="54">
+      </div>
+    {{/if}}
 <!--    {{> postFooter}}-->
   <div class="popUpBox">
   {{#if displayCommentInputBox}}

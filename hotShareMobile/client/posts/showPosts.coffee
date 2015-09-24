@@ -33,8 +33,19 @@ if Meteor.isClient
         Session.set('displayUserProfileBox',false)
       onOpen: ->
         Session.set('displayUserProfileBox',true)
+  Session.setDefault('ttsPlaying',false);
   Template.showPosts.onDestroyed ->
     $('.tool-container').remove()
+
+    if Session.get('ttsPlaying')
+      Session.set('ttsPlaying',false);
+      TTS.speak {
+          text: ''
+        }
+      ,()->
+        console.log('Stopped');
+      ,(reason)->
+        console.log('Stopped');
   Template.showPosts.onRendered ->
     calcPostSignature(window.location.href.split('#')[0]);
     if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
@@ -205,6 +216,8 @@ if Meteor.isClient
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
+    isTTPlaying: ->
+      Session.equals('ttsPlaying',true)
     getAbstractSentence:->
       if Session.get('focusedIndex') isnt undefined
         Session.get('postContent').pub[Session.get('focusedIndex')].text
@@ -535,22 +548,36 @@ if Meteor.isClient
         if pub[i].type is 'text' and pub[i].text and pub[i].text isnt ''
           toRead.push(pub[i].text )
       if toRead.length > 0
+        Session.set('ttsPlaying',true);
         async.mapLimit(toRead,1,(item,callback)->
-          TTS.speak {
-              text: item,
-              locale: 'zh-CN',
-              rate: 1.5
-            }
-          ,()->
-            callback(null,item)
-          ,(reason)->
-            callback(new Error(reason),item)
+          if Session.get('ttsPlaying')
+            TTS.speak {
+                text: item,
+                locale: 'zh-CN',
+                rate: 1.5
+              }
+            ,()->
+              Session.set('ttsPlaying',false);
+              callback(null,item)
+            ,(reason)->
+              Session.set('ttsPlaying',false);
+              callback(new Error(reason),item)
         ,(err,result)->
           console.log('Err ' + err + ' Result ' + result);
+          Session.set('ttsPlaying',false);
         );
       else
         window.plugins.toast.showShortCenter("并未选中可读的段落");
   Template.showPosts.events
+    'click .tts-stoper' : ()->
+      Session.set('ttsPlaying',false);
+      TTS.speak {
+          text: ''
+        }
+      ,()->
+        console.log('Stopped');
+      ,(reason)->
+        console.log('Stopped');
     'click .textdiv' :(e)->
       if withSectionMenu
         console.log('clicked on textdiv ' + this._id)
