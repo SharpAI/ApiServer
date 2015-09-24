@@ -1052,7 +1052,7 @@ if Meteor.isClient
       Router.go('addTopicComment')
   Template.addPost.helpers
     getImagePath: (path,uri)->
-      if path.indexOf('cdvfile://') > -1 and window.wkwebview
+      if path.indexOf('cdvfile://') > -1 and (window.wkwebview or withLocalBase64)
         unless Session.get(path)
           Session.set(path,'')
           fileExtension = uri.replace(/^.*\./, '')

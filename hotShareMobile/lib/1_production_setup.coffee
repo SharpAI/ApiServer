@@ -11,3 +11,4 @@
 @withSectionShare = true
 @withPostTTS = true
 @withWeChatSignatureServer = false
+@withLocalBase64 = true
