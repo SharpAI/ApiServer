@@ -58,3 +58,9 @@ App.configurePlugin('com.leon.cordova.wechat', {
 App.configurePlugin('org.zy.yuancheng.qq', {
     QQ_APP_ID: '1104127289'
 });
+
+App.configurePlugin('org.hotshare.baidutts', {
+  API_KEY: 'iepMQqCsCil8uvGT2fPIP8lGMQDObIVi',
+  API_SECRET: 'BlTv4N92QQb9F28vGXLkODdc3sOsXoUl',
+  APP_ID: '6092105'
+});

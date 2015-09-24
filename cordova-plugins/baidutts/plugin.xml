@@ -10,6 +10,10 @@
     <keywords>Baidu,TTS</keywords>
     <license>Apache 2.0 License</license>
 
+    <preference name="API_KEY" />
+    <preference name="API_SECRET" />
+    <preference name="APP_ID" />
+
     <engines>
         <engine name="cordova" version=">=3.0"/>
     </engines>
@@ -23,11 +27,21 @@
             <feature name="BaiduTTS">
                 <param name="ios-package" value="BaiduTTS"/>
             </feature>
+            <preference name="API_KEY" value="$API_KEY" />
+            <preference name="API_SECRET" value="$API_SECRET" />
+            <preference name="APP_ID" value="$APP_ID" />
         </config-file>
+
+        <header-file src="src/ios/CDVBaiduTTS.h"/>
+        <source-file src="src/ios/CDVBaiduTTS.m"/>
 
         <header-file src="src/ios/SDK/header/BDTTSSynthesizer.h"/>
         <header-file src="src/ios/SDK/header/BDTTSSynthesizerDefine.h"/>
         <header-file src="src/ios/SDK/header/BDTTSSynthesizerDelegate.h"/>
+
+        <resource-file src="resource/bd_etts_ch_speech_female.dat" />
+        <resource-file src="resource/bd_etts_ch_text.dat" />
+        <resource-file src="resource/temp_license_2015-09-23.dat" />
 
         <source-file src="src/ios/SDK/lib/libbdtts.a" framework="true" />
 
