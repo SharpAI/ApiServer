@@ -245,6 +245,31 @@ if Meteor.isClient
       console.log('error ' + err)
       processTitleOfPost(data)
     )
+  @showPopupProgressBar = ()->
+    Session.set('importProcedure',1)
+    Session.set('cancelImport',false)
+    window.popupProgressBar = $('.importProgressBar').bPopup
+      positionStyle: 'absolute'
+      position: [0, 0]
+      onOpen: ()->
+        $(this).find('#cancelImport').on('click',()->
+          console.log('Clicked on cancelImport button')
+          Session.set('cancelImport',true)
+          popupProgressBar.close()
+          $('.modal-backdrop.in').remove()
+          if Drafts.find().count() < 1
+            Router.go('/')
+        )
+      onClose: ()->
+        window.popupProgressBar = undefined
+        Session.set('importProcedure',0)
+        $(this).find('#cancelImport').off('click')
+        $(this).find('.progress-bar').css('width', '0%').attr('aria-valuenow', 0);
+    Tracker.autorun (handler)->
+      $('.importProgressBar').find('.progress-bar').css('width', Session.get('importProcedure')+'%').attr('aria-valuenow', Session.get('importProcedure'));
+      if Session.equals('importProcedure',100)
+        popupProgressBar.close()
+        handler.stop()
   @getURL = (e) ->
     inputUrl = e.url
     console.log "input url: " + inputUrl
@@ -253,29 +278,8 @@ if Meteor.isClient
       if Session.get("channel") isnt 'addPost'
         prepareToEditorMode()
         PUB.page '/add'
-      Session.set('importProcedure',1)
-      Session.set('cancelImport',false)
-      popupProgressBar = $('.importProgressBar').bPopup
-        positionStyle: 'absolute'
-        position: [0, 0]
-        onOpen: ()->
-          $(this).find('#cancelImport').on('click',()->
-            console.log('Clicked on cancelImport button')
-            Session.set('cancelImport',true)
-            popupProgressBar.close()
-            $('.modal-backdrop.in').remove()
-            if Drafts.find().count() < 1
-              Router.go('/')
-          )
-        onClose: ()->
-          Session.set('importProcedure',0)
-          $(this).find('#cancelImport').off('click')
-          $(this).find('.progress-bar').css('width', '0%').attr('aria-valuenow', 0);
-      Tracker.autorun (handler)->
-        $('.importProgressBar').find('.progress-bar').css('width', Session.get('importProcedure')+'%').attr('aria-valuenow', Session.get('importProcedure'));
-        if Session.equals('importProcedure',100)
-          popupProgressBar.close()
-          handler.stop()
+      unless window.popupProgressBar
+        showPopupProgressBar()
       getContentListsFromUrl iabHandle,inputUrl,(data)->
         if data is null
           console.log('AnalyseUrl error, need add error notification')
@@ -306,6 +310,34 @@ if Meteor.isClient
   @handleHideBrowser = ()->
     if Session.get("channel") is 'addPost' and Drafts.find().count() is 0
       Router.go '/'
+  @handlerLoadStartEvent = (e)->
+    console.log('Load Start ' + JSON.stringify(e))
+    Session.set('importProcedure',3)
+  @handlerLoadErrorEvent = (e)->
+    iabHandle.removeEventListener 'loadstop',getURL
+    iabHandle.addEventListener 'hide',handleHideBrowser
+    console.log('Load Error' + JSON.stringify(e))
+    window.plugins.toast.showShortCenter("导入过程出现异常，请检查网络连接");
+    Meteor.setTimeout ()->
+      iabHandle.show()
+    ,500
+
+  @handleDirectLinkImport = (url)->
+    showPopupProgressBar()
+    if iabHandle
+      iabHandle.removeEventListener 'import',getURL
+      #iabHandle.removeEventListener 'exit',handleExitBrowser
+      iabHandle.removeEventListener 'hide',handleHideBrowser
+      iabHandle.removeEventListener 'loadstart',handlerLoadStartEvent
+      iabHandle.removeEventListener 'loadstop',getURL
+      iabHandle.removeEventListener 'loaderror',handlerLoadErrorEvent
+    window.iabHandle = window.open(url, '_blank', 'hidden=yes,toolbarposition=top')
+    if Session.get('isReviewMode') isnt '1'
+      iabHandle.addEventListener 'import',getURL
+      iabHandle.addEventListener 'loadstart',handlerLoadStartEvent
+      iabHandle.addEventListener 'loadstop',getURL
+      iabHandle.addEventListener 'loaderror',handlerLoadErrorEvent
+
   @handleAddedLink = (url)->
     if iabHandle
       iabHandle.removeEventListener 'import',getURL
