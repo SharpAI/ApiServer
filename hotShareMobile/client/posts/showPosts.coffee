@@ -37,13 +37,7 @@ if Meteor.isClient
     $('.tool-container').remove()
     if $('.tts-stoper').is(':visible')
       $('.tts-stoper').hide()
-      TTS.speak {
-          text: ''
-        }
-      ,()->
-        console.log('Stopped');
-      ,(reason)->
-        console.log('Stopped');
+      TTS.stop()
   Template.showPosts.onRendered ->
     calcPostSignature(window.location.href.split('#')[0]);
     if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
@@ -568,13 +562,7 @@ if Meteor.isClient
     'click .tts-stoper' : ()->
       Meteor.defer ()->
         $('.tts-stoper').hide()
-        TTS.speak {
-            text: ''
-          }
-        ,()->
-          console.log('Stopped in succ');
-        ,(reason)->
-          console.log('Stopped in error');
+        TTS.stop()
     'click .textdiv' :(e)->
       if withSectionMenu
         console.log('clicked on textdiv ' + this._id)
