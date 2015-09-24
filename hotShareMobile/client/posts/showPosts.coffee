@@ -33,12 +33,10 @@ if Meteor.isClient
         Session.set('displayUserProfileBox',false)
       onOpen: ->
         Session.set('displayUserProfileBox',true)
-  Session.setDefault('ttsPlaying',false);
   Template.showPosts.onDestroyed ->
     $('.tool-container').remove()
-
-    if Session.get('ttsPlaying')
-      Session.set('ttsPlaying',false);
+    if $('.tts-stoper').is(':visible')
+      $('.tts-stoper').hide()
       TTS.speak {
           text: ''
         }
@@ -216,8 +214,6 @@ if Meteor.isClient
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
-    isTTPlaying: ->
-      Session.equals('ttsPlaying',true)
     getAbstractSentence:->
       if Session.get('focusedIndex') isnt undefined
         Session.get('postContent').pub[Session.get('focusedIndex')].text
@@ -548,16 +544,15 @@ if Meteor.isClient
         if pub[i].type is 'text' and pub[i].text and pub[i].text isnt ''
           toRead.push(pub[i].text )
       if toRead.length > 0
-        Session.set('ttsPlaying',true);
+        $('.tts-stoper').show()
         async.mapLimit(toRead,1,(item,callback)->
-          if Session.get('ttsPlaying')
             TTS.speak {
                 text: item,
                 locale: 'zh-CN',
                 rate: 1.5
               }
             ,()->
-              if Session.get('ttsPlaying')
+              if $('.tts-stoper').is(':visible')
                 callback(null,item)
               else
                 callback(new Error('Stopped'),item)
@@ -565,20 +560,21 @@ if Meteor.isClient
               callback(new Error(reason),item)
         ,(err,result)->
           console.log('Err ' + err + ' Result ' + result);
-          Session.set('ttsPlaying',false);
+          $('.tts-stoper').hide()
         );
       else
         window.plugins.toast.showShortCenter("并未选中可读的段落");
   Template.showPosts.events
     'click .tts-stoper' : ()->
-      Session.set('ttsPlaying',false);
-      TTS.speak {
-          text: ''
-        }
-      ,()->
-        console.log('Stopped');
-      ,(reason)->
-        console.log('Stopped');
+      Meteor.defer ()->
+        $('.tts-stoper').hide()
+        TTS.speak {
+            text: ''
+          }
+        ,()->
+          console.log('Stopped in succ');
+        ,(reason)->
+          console.log('Stopped in error');
     'click .textdiv' :(e)->
       if withSectionMenu
         console.log('clicked on textdiv ' + this._id)
