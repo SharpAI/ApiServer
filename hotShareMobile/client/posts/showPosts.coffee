@@ -557,10 +557,11 @@ if Meteor.isClient
                 rate: 1.5
               }
             ,()->
-              Session.set('ttsPlaying',false);
-              callback(null,item)
+              if Session.get('ttsPlaying')
+                callback(null,item)
+              else
+                callback(new Error('Stopped'),item)
             ,(reason)->
-              Session.set('ttsPlaying',false);
               callback(new Error(reason),item)
         ,(err,result)->
           console.log('Err ' + err + ' Result ' + result);
