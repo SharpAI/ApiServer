@@ -130,6 +130,10 @@
     color: #ffffff;
 }
 
+.newLayout_container .newLayout_element .img_placeholder{
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
 .newLayout_container .newLayout_element .mainImage
 {
     /*display: none;*/
@@ -137,26 +141,28 @@
     width: 100%;
     height: auto !important;
     opacity:1;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
 }
 .newLayout_container {
     width: 100%;
     display: block;
     position: absolute;
     margin-bottom: 50px;
-    background-color: white;
+    background-color: rgb(231,231,231);
 }
 
 .newLayout_container .newLayout_element .icon { position:absolute;}
 .newLayout_container .newLayout_element header{position: absolute;bottom: 44px;color: #fff;left: 0;width: 100%;background: -webkit-linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5));background: -o-linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5));background: -moz-linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5));background: linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.5));}
-.newLayout_container .newLayout_element p{margin: 0;padding: 2% 1% 1% 5%;}
-.newLayout_container .newLayout_element .title{font-size: 16px;font-weight: normal;white-space: pre-line;word-wrap: break-word;}
+.newLayout_container .newLayout_element p{margin: 0;padding: 2% 1% 2% 5%;}
+.newLayout_container .newLayout_element .title{font-size: 16px;font-weight: bold;white-space: pre-line;word-wrap: break-word;}
 .newLayout_container .newLayout_element .addontitle{font-size: 11px;white-space: pre-line; word-wrap: break-word;}
 /*.newLayout_container .newLayout_element .title{font-size: 16px;text-shadow: 0 1px 0 black;color: white;font-weight: normal;white-space: pre-line;word-wrap: break-word;}
 .newLayout_container .newLayout_element .addontitle{font-size: 11px;text-shadow: 0 1px 0 black;color: white;white-space: pre-line; word-wrap: break-word;}*/
 .newLayout_container .newLayout_element .userIcon{border-radius: 5px;margin: 2%;}
 .newLayout_container .newLayout_element .pin_content{position: relative;border-top: 1px solid #ebebeb;}
-.newLayout_container .newLayout_element h2{margin: 0;padding: 2% 1% 1% 5%;font-size: 12px;top: 26px;color: #999999;font-weight: normal;}
-.newLayout_container .newLayout_element h1{margin: 0;padding: 2% 1% 1% 5%;font-size: 12px;top: 8px;color: #07519a;letter-spacing: 1px;font-weight: normal;}
+.newLayout_container .newLayout_element h2{margin: 0;padding: 4% 1% 4% 5%;font-size: 12px;top: 26px;color: #999999;font-weight: normal;}
+.newLayout_container .newLayout_element h1{margin: 0;padding: 4% 1% 4% 5%;font-size: 12px;top: 8px;color: #07519a;letter-spacing: 1px;font-weight: normal;border-top: 1px solid #ddd;}
 .newLayout_container .newLayout_element h1 span{color: #999;}
 .newLayout_container .newLayout_element b{position: absolute;right: 7px;top: 6px;font-size: 11px;font-weight: normal;color: #999999;}
 
