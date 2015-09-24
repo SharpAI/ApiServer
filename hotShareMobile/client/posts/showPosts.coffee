@@ -540,18 +540,20 @@ if Meteor.isClient
       if toRead.length > 0
         $('.tts-stoper').show()
         async.mapLimit(toRead,1,(item,callback)->
-            TTS.speak {
-                text: item,
-                locale: 'zh-CN',
-                rate: 1.5
-              }
+          console.log('TTS: ' + item)
+          TTS.speak({
+              text: item,
+              locale: 'zh-CN',
+              rate: 1.5
+            }
             ,()->
               if $('.tts-stoper').is(':visible')
-                callback(null,item)
+                callback(null,'succ')
               else
-                callback(new Error('Stopped'),item)
+                callback(new Error('Stopped'),'err')
             ,(reason)->
-              callback(new Error(reason),item)
+              callback(new Error(reason),'err')
+          )
         ,(err,result)->
           console.log('Err ' + err + ' Result ' + result);
           $('.tts-stoper').hide()

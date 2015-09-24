@@ -23,7 +23,7 @@
     if (lastCallbackId) {
         [self.commandDelegate sendPluginResult:result callbackId:lastCallbackId];
         lastCallbackId = nil;
-    } else {
+    } else if(callbackId){
         [self.commandDelegate sendPluginResult:result callbackId:callbackId];
         callbackId = nil;
     }
@@ -61,5 +61,14 @@
 
 - (void)stop:(CDVInvokedUrlCommand*)command {
     [synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
+    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    if (lastCallbackId) {
+        [self.commandDelegate sendPluginResult:result callbackId:lastCallbackId];
+        lastCallbackId = nil;
+    }
+    if(callbackId){
+        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+        callbackId = nil;
+    }
 }
 @end

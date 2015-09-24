@@ -10,23 +10,13 @@
 
 */
 
-exports.speak = function (text, onfulfilled, onrejected) {
+exports.speak = function (options, onfulfilled, onrejected) {
     var ThenFail = window.ThenFail;
     var promise;
 
     if (ThenFail && !onfulfilled && !onrejected) {
         promise = new ThenFail();
     }
-    
-    var options = {};
-
-    if (typeof text == 'string') {
-        options.text = text;
-
-    } else {
-        options = text;
-    }
-
     cordova
         .exec(function () {
             if (promise) {
@@ -49,19 +39,9 @@ exports.stop = function () {
     var ThenFail = window.ThenFail;
     var promise;
 
-    if (ThenFail && !onfulfilled && !onrejected) {
+    if (ThenFail) {
         promise = new ThenFail();
     }
-
-    var options = {};
-
-    if (typeof text == 'string') {
-        options.text = text;
-
-    } else {
-        options = text;
-    }
-
     cordova
         .exec(function () {
             if (promise) {
