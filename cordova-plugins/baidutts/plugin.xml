@@ -4,7 +4,7 @@
         id="org.hotshare.baidutts"
         version="0.1.0">
 
-    <name>Baidu TTS Plugin</name>
+    <name>BaiduTTS</name>
     <description>Baidu TTS for cordova Plugin</description>
     <author>Simba Zhang</author>
     <keywords>Baidu,TTS</keywords>
@@ -18,14 +18,14 @@
         <engine name="cordova" version=">=3.0"/>
     </engines>
 
-    <js-module src="www/BaiduTTS.js" name="BaiduTTS">
+    <js-module src="www/baidutts.js" name="baidutts">
         <clobbers target="BaiduTTS"/>
     </js-module>
 
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
             <feature name="BaiduTTS">
-                <param name="ios-package" value="BaiduTTS"/>
+                <param name="ios-package" value="CDVBaiduTTS"/>
             </feature>
             <preference name="API_KEY" value="$API_KEY" />
             <preference name="API_SECRET" value="$API_SECRET" />
