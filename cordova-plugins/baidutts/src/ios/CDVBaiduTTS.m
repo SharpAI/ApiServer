@@ -31,7 +31,7 @@
     
     // 在线相关设置
     [[BDTTSSynthesizer sharedInstance] setApiKey:apiKey withSecretKey:apiSecret];
-    [[BDTTSSynthesizer sharedInstance] setTTSServerTimeOut:10];
+    [[BDTTSSynthesizer sharedInstance] setTTSServerTimeOut:1];
     
     // 离线相关设置
     NSString *textDataFile =[[NSBundle mainBundle] pathForResource:@"bd_etts_ch_text" ofType:@"dat"];
