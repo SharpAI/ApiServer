@@ -89,11 +89,11 @@ if Meteor.isClient
         if link and link isnt '' and link.indexOf('http') > -1
           handleDirectLinkImport(link)
         else
-          window.plugins.toast.showLongCenter("粘贴板内容并非有效连接，请手动粘贴\n浏览器内容加载后，点击地址栏右侧\"导入\"按钮");
           handleAddedLink(link)
+          window.plugins.toast.showLongCenter("粘贴板内容并非有效连接，请手动粘贴\n浏览器内容加载后，点击地址栏右侧\"导入\"按钮");
       ,()->
-        window.plugins.toast.showLongCenter("无法获得粘贴板数据，请手动粘贴\n浏览器内容加载后，点击地址栏右侧\"导入\"按钮");
         handleAddedLink(null)
+        window.plugins.toast.showLongCenter("无法获得粘贴板数据，请手动粘贴\n浏览器内容加载后，点击地址栏右侧\"导入\"按钮");
     'click #photo-select':(e)->
       Meteor.defer ()->
         $('.modal-backdrop.in').remove()
