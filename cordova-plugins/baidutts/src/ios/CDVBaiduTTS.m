@@ -24,7 +24,7 @@
     NSString* appId = [[self.commandDelegate settings] objectForKey:@"app_id"];
     NSString* apiKey = [[self.commandDelegate settings] objectForKey:@"api_key"];
     NSString* apiSecret = [[self.commandDelegate settings] objectForKey:@"api_secret"];
-    [BDTTSSynthesizer setLogLevel:BDS_LOG_VERBOSE];
+    [BDTTSSynthesizer setLogLevel:BDS_LOG_OFF];
     
     // 设置合成器代理
     [[BDTTSSynthesizer sharedInstance] setSynthesizerDelegate: self];
