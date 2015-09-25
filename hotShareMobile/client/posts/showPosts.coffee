@@ -37,7 +37,7 @@ if Meteor.isClient
     $('.tool-container').remove()
     if $('.tts-stoper').is(':visible')
       $('.tts-stoper').hide()
-      BaiduTTS.stop()
+      window.currentTTS.stop()
   Template.showPosts.onRendered ->
     calcPostSignature(window.location.href.split('#')[0]);
     if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
@@ -511,6 +511,14 @@ if Meteor.isClient
       #addDynamicTemp()
   triggerToolbarShowOnThumb = ($node)->
     $node.parent().click()
+  isASCII = (str)->
+    /^[\x00-\x7F]*$/.test(str)
+  countASCII = (string)->
+    count = 0;
+    for i in [0..(string.length-1)]
+      if (isASCII(string.charAt(i)))
+        count+=1
+    return count
   sectionToolbarClickHandler = (self,event,node)->
     console.log('Index ' + self.index + ' Action ' + $(node).attr('action') )
     action = $(node).attr('action')
@@ -543,12 +551,22 @@ if Meteor.isClient
           else
             toRead.push(pub[i].text)
       if toRead.length > 0
+        totalExaminated = 0
+        totalAscii = 0
+        for text in toRead
+          totalExaminated += text.length
+          totalAscii += countASCII(text)
+          if totalExaminated > 200
+            break
+        if totalAscii > (totalExaminated * 0.8)
+          window.currentTTS = TTS
+        else
+          window.currentTTS = BaiduTTS
         $('.tts-stoper').show()
         async.mapLimit(toRead,1,(item,callback)->
           console.log('TTS: ' + item)
-          BaiduTTS.speak({
+          window.currentTTS.speak({
               text: item,
-              locale: 'zh-CN',
               rate: 1.5
             }
             ,()->
@@ -569,7 +587,7 @@ if Meteor.isClient
     'click .tts-stoper' : ()->
       Meteor.defer ()->
         $('.tts-stoper').hide()
-        BaiduTTS.stop()
+        window.currentTTS.stop()
     'click .textdiv' :(e)->
       if withSectionMenu
         console.log('clicked on textdiv ' + this._id)
