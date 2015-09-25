@@ -537,7 +537,7 @@ if Meteor.isClient
       for i in [self.index..(pub.length-1)]
         if pub[i].type is 'text' and pub[i].text and pub[i].text isnt ''
           if pub[i].text.length > 999
-            strArray =  pub[i].match(/.{1,999}/g);
+            strArray =  pub[i].text.match(/.{1,999}/g);
             for subStr in strArray
               toRead.push(subStr)
           else
