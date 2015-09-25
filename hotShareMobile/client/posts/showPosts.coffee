@@ -536,7 +536,12 @@ if Meteor.isClient
       toRead = []
       for i in [self.index..(pub.length-1)]
         if pub[i].type is 'text' and pub[i].text and pub[i].text isnt ''
-          toRead.push(pub[i].text )
+          if pub[i].text.length > 999
+            strArray =  pub[i].match(/.{1,999}/g);
+            for subStr in strArray
+              toRead.push(subStr)
+          else
+            toRead.push(pub[i].text)
       if toRead.length > 0
         $('.tts-stoper').show()
         async.mapLimit(toRead,1,(item,callback)->
