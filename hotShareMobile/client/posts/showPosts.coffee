@@ -37,7 +37,7 @@ if Meteor.isClient
     $('.tool-container').remove()
     if $('.tts-stoper').is(':visible')
       $('.tts-stoper').hide()
-      TTS.stop()
+      BaiduTTS.stop()
   Template.showPosts.onRendered ->
     calcPostSignature(window.location.href.split('#')[0]);
     if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
@@ -541,7 +541,7 @@ if Meteor.isClient
         $('.tts-stoper').show()
         async.mapLimit(toRead,1,(item,callback)->
           console.log('TTS: ' + item)
-          TTS.speak({
+          BaiduTTS.speak({
               text: item,
               locale: 'zh-CN',
               rate: 1.5
@@ -564,7 +564,7 @@ if Meteor.isClient
     'click .tts-stoper' : ()->
       Meteor.defer ()->
         $('.tts-stoper').hide()
-        TTS.stop()
+        BaiduTTS.stop()
     'click .textdiv' :(e)->
       if withSectionMenu
         console.log('clicked on textdiv ' + this._id)
