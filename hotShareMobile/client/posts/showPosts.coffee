@@ -562,6 +562,7 @@ if Meteor.isClient
           window.currentTTS = TTS
         else
           window.currentTTS = BaiduTTS
+          toRead.push('故事贴，"'+ Session.get('postContent').title + '"，全文朗读结束，感谢您的使用。')
         $('.tts-stoper').show()
         async.mapLimit(toRead,1,(item,callback)->
           console.log('TTS: ' + item)
