@@ -33,6 +33,33 @@ if Meteor.isClient
         Session.set('displayUserProfileBox',false)
       onOpen: ->
         Session.set('displayUserProfileBox',true)
+  @toNextPost = ->
+    id = $('.newLayout_element').attr('id')
+    console.log( 'ID' + id);
+    toGo = '/posts/' + id
+    Deps.autorun (handler)->
+      if Session.equals('channel','posts/' + id)
+        handler.stop()
+        $('.tts-stoper').show()
+        BaiduTTS.speak({
+            text: '正在为您准备下一篇文章：'+Session.get('postContent').title,
+            rate: 1.5
+          }
+        ,()->
+          $('.tts-stoper').show()
+          startPostTTS(0)
+        ,(reason)->
+          $('.tts-stoper').show()
+          startPostTTS(0)
+        )
+    Router.go(toGo)
+  @remoteEventHandler = (e)->
+    console.log('Event from remote event is '+e)
+    if e is 'nextTrack'
+      toNextPost()
+  hookRemoteEvent = ()->
+    if Meteor.isCorodva and device.platform is 'iOS'
+      remoteControls.receiveRemoteEvent = remoteEventHandler
   Template.showPosts.onDestroyed ->
     $('.tool-container').remove()
     if $('.tts-stoper').is(':visible')
@@ -519,6 +546,65 @@ if Meteor.isClient
       if (isASCII(string.charAt(i)))
         count+=1
     return count
+
+  startPostTTS = (fromIndex)->
+    pub = Session.get("postContent").pub
+    toRead = []
+    for i in [fromIndex..(pub.length-1)]
+      if pub[i].type is 'text' and pub[i].text and pub[i].text isnt ''
+        if pub[i].text.length > 999
+          strArray =  pub[i].text.match(/.{1,999}/g);
+          for subStr in strArray
+            toRead.push(subStr)
+        else
+          toRead.push(pub[i].text)
+    if toRead.length > 0
+      totalExaminated = 0
+      totalAscii = 0
+      for text in toRead
+        totalExaminated += text.length
+        totalAscii += countASCII(text)
+        if totalExaminated > 200
+          break
+      if totalAscii > (totalExaminated * 0.8)
+        window.currentTTS = TTS
+      else
+        window.currentTTS = BaiduTTS
+        toRead.push('故事贴，"'+ Session.get('postContent').title + '"，全文朗读结束，感谢您的使用。')
+      $('.tts-stoper').show()
+      if Meteor.isCordova and device.platform is 'iOS'
+        if window.remoteControls.updateMetas
+          post = Session.get('postContent')
+          params = [post.ownerName, post.title, '故事贴', post.mainImage,0,0];
+          window.remoteControls.updateMetas( (success)->
+            console.log(success)
+            hookRemoteEvent()
+          , (fail)->
+            console.log(fail)
+            hookRemoteEvent()
+          , params);
+      async.mapLimit(toRead,1,(item,callback)->
+        console.log('TTS: ' + item)
+        window.currentTTS.speak({
+            text: item,
+            rate: 1.5
+          }
+        ,()->
+          if $('.tts-stoper').is(':visible')
+            callback(null,'succ')
+          else
+            callback(new Error('Stopped'),'err')
+        ,(reason)->
+          callback(new Error(reason),'err')
+        )
+      ,(err,result)->
+        console.log('Err ' + err + ' Result ' + result);
+        $('.tts-stoper').hide()
+        unless err
+          toNextPost()
+      );
+    else
+      window.plugins.toast.showShortCenter("并未选中可读的段落");
   sectionToolbarClickHandler = (self,event,node)->
     console.log('Index ' + self.index + ' Action ' + $(node).attr('action') )
     action = $(node).attr('action')
@@ -540,50 +626,7 @@ if Meteor.isClient
           when 4 then shareTo('System',Blaze.getData($('.showPosts')[0]),self.index)
       );
     else if action is 'post-tts'
-      pub = Session.get("postContent").pub
-      toRead = []
-      for i in [self.index..(pub.length-1)]
-        if pub[i].type is 'text' and pub[i].text and pub[i].text isnt ''
-          if pub[i].text.length > 999
-            strArray =  pub[i].text.match(/.{1,999}/g);
-            for subStr in strArray
-              toRead.push(subStr)
-          else
-            toRead.push(pub[i].text)
-      if toRead.length > 0
-        totalExaminated = 0
-        totalAscii = 0
-        for text in toRead
-          totalExaminated += text.length
-          totalAscii += countASCII(text)
-          if totalExaminated > 200
-            break
-        if totalAscii > (totalExaminated * 0.8)
-          window.currentTTS = TTS
-        else
-          window.currentTTS = BaiduTTS
-          toRead.push('故事贴，"'+ Session.get('postContent').title + '"，全文朗读结束，感谢您的使用。')
-        $('.tts-stoper').show()
-        async.mapLimit(toRead,1,(item,callback)->
-          console.log('TTS: ' + item)
-          window.currentTTS.speak({
-              text: item,
-              rate: 1.5
-            }
-            ,()->
-              if $('.tts-stoper').is(':visible')
-                callback(null,'succ')
-              else
-                callback(new Error('Stopped'),'err')
-            ,(reason)->
-              callback(new Error(reason),'err')
-          )
-        ,(err,result)->
-          console.log('Err ' + err + ' Result ' + result);
-          $('.tts-stoper').hide()
-        );
-      else
-        window.plugins.toast.showShortCenter("并未选中可读的段落");
+      startPostTTS(self.index)
   Template.showPosts.events
     'click .tts-stoper' : ()->
       Meteor.defer ()->
