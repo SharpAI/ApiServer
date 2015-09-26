@@ -14,7 +14,7 @@ if Meteor.isClient
     draftId = draftData[0]._id;
     for i in [0..(draftData.length-1)]
       if i is 0
-        if draftData[i].URI isnt '' and device.platform is 'Android'
+        if draftData[i].URI isnt ''
           mainImage = draftData[i].URI
         else
           mainImage = draftData[i].imgUrl

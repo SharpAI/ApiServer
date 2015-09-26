@@ -92,14 +92,14 @@ if Meteor.isClient
     getmainImage:()->
       mImg = this.mainImage
       if (mImg.indexOf('file:///') >= 0)
-        selector = "draftImg_"+this._id
-        ProcessImage = (URI,smallImage)->
-          if smallImage
-            $(selector).attr('style',"background-image:url("+smallImage+")")
-          else
-            $(selector).attr('style',"background-image:url('/noimage.png')")
-        getBase64OfImage('','',mImg,ProcessImage)
-        return ''
+        if Session.get(mImg) is undefined
+          ProcessImage = (URI,smallImage)->
+            if smallImage
+              Session.set(mImg, smallImage)
+            else
+              Session.set(mImg, '/noimage.png')
+          getBase64OfImage('','',mImg,ProcessImage)
+        Session.get(mImg)
       else
         this.mainImage
   Template.user.events
@@ -155,7 +155,7 @@ if Meteor.isClient
         .forEach (drafts)->
           Drafts.remove drafts._id
       #Prepare data
-      savedDraftData = SavedDrafts.find({_id: this._id}).fetch()[0]
+      savedDraftData = SavedDrafts.find({_id: e.currentTarget.id}).fetch()[0]
       TempDrafts.insert {
         _id:savedDraftData._id,
         pub:savedDraftData.pub,
