@@ -7,7 +7,7 @@ if Meteor.isClient
         SavedDrafts.find({},{sort: {createdAt: -1}}).fetch()[i]
     getmainImage:()->
       mImg = this.mainImage
-      if (mImg.indexOf('file:///') >= 0) and device.platform is 'Android'
+      if (mImg.indexOf('file:///') >= 0)
         if Session.get(mImg) is undefined
           ProcessImage = (URI,smallImage)->
             if smallImage
