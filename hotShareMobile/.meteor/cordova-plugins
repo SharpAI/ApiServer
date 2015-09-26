@@ -22,4 +22,4 @@ nl.x-services.plugins.socialsharing@file://../cordova-plugins/socialsharing
 org.apache.cordova.plugin.tts@file://../cordova-plugins/tts
 org.hotshare.everywhere.appsetup@file://../cordova-plugins/appsetup
 org.zy.yuancheng.qq@file://../cordova-plugins/qq
-org.hotshare.baidutts@file://../cordova-plugins/baidutts
+com.tiegushi.cordova.tts@file://../cordova-plugins/baidutts

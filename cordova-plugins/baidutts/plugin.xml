@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        id="org.hotshare.baidutts"
+        id="com.tiegushi.cordova.tts"
         version="0.1.0">
 
     <name>BaiduTTS</name>
@@ -9,10 +9,6 @@
     <author>Simba Zhang</author>
     <keywords>Baidu,TTS</keywords>
     <license>Apache 2.0 License</license>
-
-    <preference name="API_KEY" />
-    <preference name="API_SECRET" />
-    <preference name="APP_ID" />
 
     <engines>
         <engine name="cordova" version=">=3.0"/>
@@ -53,4 +49,31 @@
         <framework src="libstdc++.6.dylib" weak="true" />
     </platform>
 
+    <!-- android -->
+    <platform name="android">
+        <config-file target="config.xml" parent="/*">
+            <feature name="BaiduTTS">
+                <param name="android-package" value="com.tiegushi.cordova.tts.TTS" />
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+        <!--permission for Baidu TTS SDK -->
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.INTERNET"/>
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+            <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+            <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+        </config-file>
+        <source-file src="src/android/com.baidu.speechsynthesizer_1.1.1.jar" target-dir="libs"/>
+        <source-file src="src/android/galaxy_lite.jar" target-dir="libs"/>
+        <source-file src="src/android/armeabi/libbd_etts.so" target-dir="libs/armeabi-v7a"/>
+        <source-file src="src/android/armeabi/libbd_etts_speech_female.dat.so" target-dir="libs/armeabi-v7a"/>
+        <source-file src="src/android/armeabi/libbd_etts_speech_male.dat.so" target-dir="libs/armeabi-v7a"/>
+        <source-file src="src/android/armeabi/libbd_etts_text.dat.so" target-dir="libs/armeabi-v7a"/>
+        <source-file src="src/android/armeabi/libBDSpeechDecoder_V1.so" target-dir="libs/armeabi-v7a"/>
+        <source-file src="src/android/armeabi/libbds.so" target-dir="libs/armeabi-v7a"/>
+        <source-file src="src/android/armeabi/libgnustl_shared.so" target-dir="libs/armeabi-v7a"/>
+        <source-file src="src/android/TTS.java" target-dir="src/com/tiegushi/cordova/tts" />
+    </platform>
 </plugin>
