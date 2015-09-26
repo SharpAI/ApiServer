@@ -4,6 +4,7 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +35,8 @@ public class TTS extends CordovaPlugin implements SpeechSynthesizerListener{
 	}
 	private SpeechSynthesizer speechSynthesizer;
 	private Context context;
-
+	private CallbackContext callbackContext;
+	private PluginResult.Status status = PluginResult.Status.OK;
     public static final String ERR_INVALID_OPTIONS = "ERR_INVALID_OPTIONS";
 
     @Override
@@ -46,6 +48,7 @@ public class TTS extends CordovaPlugin implements SpeechSynthesizerListener{
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext)
             throws JSONException {
+        this.callbackContext = callbackContext;
         if (action.equals("speak")) {
             speak(args, callbackContext);
         } else if (action.equals("stop")) {
@@ -176,6 +179,7 @@ public class TTS extends CordovaPlugin implements SpeechSynthesizerListener{
 	public void onSpeechFinish(SpeechSynthesizer synthesizer) {
 		// TODO Auto-generated method stub
 		//"朗读已停止"
+		callbackContext.sendPluginResult(new PluginResult(status, "succ"));
 		
 	}
 
