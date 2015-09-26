@@ -37,21 +37,32 @@ if Meteor.isClient
     id = $('.newLayout_element').attr('id')
     console.log( 'ID' + id);
     toGo = '/posts/' + id
-    Deps.autorun (handler)->
-      if Session.equals('channel','posts/' + id)
-        handler.stop()
-        $('.tts-stoper').show()
-        BaiduTTS.speak({
-            text: '正在为您准备下一篇文章：'+Session.get('postContent').title,
-            rate: 1.5
-          }
-        ,()->
-          $('.tts-stoper').show()
-          startPostTTS(0)
-        ,(reason)->
-          $('.tts-stoper').show()
-          startPostTTS(0)
-        )
+    Meteor.defer ()->
+      BaiduTTS.speak({
+          text: '正在为您准备下一篇文章',
+          rate: 1.5
+        }
+      ,()->
+        Deps.autorun (handler)->
+          if Session.equals('channel','posts/' + id)
+            handler.stop()
+            $('.tts-stoper').show()
+            BaiduTTS.speak({
+                text: Session.get('postContent').title,
+                rate: 1.5
+              }
+            ,()->
+              startPostTTS(0)
+            ,(error)->
+              startPostTTS(0)
+            )
+      ,(reason)->
+        Deps.autorun (handler)->
+          if Session.equals('channel','posts/' + id)
+            handler.stop()
+            $('.tts-stoper').show()
+            startPostTTS(0)
+      )
     Router.go(toGo)
   @remoteEventHandler = (e)->
     console.log('Event from remote event is '+e)
