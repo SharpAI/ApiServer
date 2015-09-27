@@ -129,6 +129,7 @@ if Meteor.isClient
     )
 
     $('.showBgColor').css('min-height',$(window).height())
+    ###
     base_size=Math.floor($('#test').width()/6 - baseGap*2);
 
     test = $("#test");
@@ -154,6 +155,7 @@ if Meteor.isClient
       $(itemElem).css("line-height", height+'px')
       $(itemElem).css("height", height+'px')
     )
+    ###
     hidePostBar = ()->
       if $('.showPostsFooter').is(':visible')
         $('.showPostsFooter').fadeOut 300
@@ -259,6 +261,15 @@ if Meteor.isClient
         if pub[i].type is 'text'
           count++
       count
+    getWidth: (data_sizex)->
+      base_size=Math.floor($('#test').width()/6)
+      (base_size*data_sizex)+'px'
+    getHeight: (data_sizey)->
+      base_size=Math.floor($('#test').width()/6)
+      (base_size*data_sizey)+'px'
+    getLeft: (data_col)->
+      base_size=Math.floor($('#test').width()/6)
+      (base_size*data_col)+'px'
     getStyle:->
       self=this
       pclength=0
@@ -643,7 +654,7 @@ if Meteor.isClient
       Meteor.defer ()->
         $('.tts-stoper').hide()
         window.currentTTS.stop()
-    'click .textdiv' :(e)->
+    'click .postTextItem' :(e)->
       if withSectionMenu
         console.log('clicked on textdiv ' + this._id)
         $self = $('#'+this._id)
