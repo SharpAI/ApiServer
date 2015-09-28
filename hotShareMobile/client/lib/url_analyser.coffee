@@ -24,13 +24,26 @@ if Meteor.isClient
       musicImgAttr:'src',
       musicSongNameSelector:'.qqmusic_area .qqmusic_songname',
       musicSingerNameSelector:'.qqmusic_area .qqmusic_singername'
+    },
+    {
+      musicClass:'mpvoice',
+      musicUrlSelector:'mpvoice',
+      musicUrlAttr:'voice_encode_fileid',
+      prefixToMusicUrl:'http://res.wx.qq.com/voice/getvoice?mediaid=',
+      musicImgSelector:'',
+      musicImgAttr:'',
+      musicSongNameSelector:'.audio_area .audio_info_area .audio_title',
+      musicSingerNameSelector:'.audio_area .audio_info_area .audio_source'
     }
   ]
   getMusicFromPage = (page) ->
     for s in musicExtactorMapping
       if $(page).find(s.musicClass).length > 0
         playUrl = $(page).find(s.musicUrlSelector).attr(s.musicUrlAttr)
-        image = $(page).find(s.musicImgSelector).attr(s.musicImgAttr)
+        if s.prefixToMusicUrl and s.prefixToMusicUrl isnt ''
+          playUrl = s.prefixToMusicUrl + playUrl
+        if s.musicImgSelector and s.musicImgSelector isnt ''
+          image = $(page).find(s.musicImgSelector).attr(s.musicImgAttr)
         songName = $(page).find(s.musicSongNameSelector).text()
         singerName = $(page).find(s.musicSingerNameSelector).text()
         console.log('found music element ' + playUrl + ' image ' + image + ' song name ' + songName + ' singer ' + singerName)
@@ -382,22 +395,6 @@ if Meteor.isClient
             else
               resortedArticle.push {type:'text',text:toBeInsertedText}
               toBeInsertedText = text;
-        ###
-        Since we traversal the dom tree and record only node w/o children, so the iframe will be the node.
-        if iframeNumber > 0
-          console.log('iframe number is ' + iframeNumber)
-          $(node).find('iframe').each (index,iframe)->
-            iframe.width = '100%'
-            iframe.height = '100%'
-            iframe.src = removeURLParameter(iframe.src,'width')
-            iframe.src = removeURLParameter(iframe.src,'height')
-            iframe.src.replace(/https:\/\//g, 'http://')
-          showDebug&&console.log($(node).html())
-          if toBeInsertedText and toBeInsertedText isnt ''
-            resortedArticle.push {type:'text',text:toBeInsertedText}
-            toBeInsertedText = ''
-          resortedArticle.push {type:'iframe',iframe:$(node).html()}
-        else ###
         if node.tagName == 'IFRAME'
           node.width = '100%'
           node.height = '100%'
