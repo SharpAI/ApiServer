@@ -245,7 +245,9 @@ if Meteor.isClient
         else
           self.style.replace("grey",scolor).replace("rgb(128, 128, 128)",scolor).replace("rgb(0, 0, 0)",scolor).replace("#F30B44",scolor)
     isTextLength:(text)->
-      if(text.trim().length>0)
+      if(text.trim().length>40)
+        return true
+      else if  text.split(/\r\n|\r|\n/).length > 1
         return true
       else
         return false
