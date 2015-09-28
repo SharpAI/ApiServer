@@ -1,6 +1,4 @@
 if Meteor.isClient
-  @baseGap = 2
-  @baseFont = 18
   @isIOS = (navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false)
   @isWeiXinFunc = ()->
     ua = window.navigator.userAgent.toLowerCase()
@@ -33,36 +31,6 @@ if Meteor.isClient
         Session.set('displayUserProfileBox',false)
       onOpen: ->
         Session.set('displayUserProfileBox',true)
-  reRender = ()->
-    base_size=Math.floor($('#test').width()/6 - baseGap * 2)
-    $("#test").find('.hastextarea').each( ( i, itemElem )->
-      textdiv = $(itemElem).children('.textdiv')
-      textarea = $(textdiv).children('.textDiv1')
-
-      $(textarea).css('height', 'auto')
-      height = $(textarea).height()
-
-      min_widget_height = (baseGap * 2) + base_size;
-
-      scrollHeight = $(textarea).prop('scrollHeight') - baseFont*2
-      sizey = Math.ceil((scrollHeight + baseGap * 2)/min_widget_height)
-
-      $(textarea).css('height', '')
-      sizex = $(itemElem).attr("data-sizex")
-      sizey_orig = parseInt($(itemElem).attr("data-sizey"))
-
-      if sizey isnt sizey_orig
-        $(itemElem).attr("data-sizey", sizey)
-        gridster.resize_widget($(itemElem), sizex,sizey)
-      height = sizey*min_widget_height - baseGap * 2
-      $(itemElem).css("line-height", height+'px')
-      $(itemElem).css("height", height+'px')
-    )
-  onFontResize = (e,args)->
-    #msg = "\nThe base font size in pixels: " + args[0].iBase;
-    #msg +="\nThe current font size in pixels: " + args[0].iSize;
-    #msg += "\nThe change in pixels from the last size:" + args[0].iDelta;
-    reRender()
   Template.showPosts.onRendered ->
     #Calc Wechat token after post rendered.
     calcPostSignature(window.location.href.split('#')[0]);
@@ -71,11 +39,6 @@ if Meteor.isClient
           document.body.scrollTop = Session.get("postPageScrollTop")
         , 280
   Template.showPosts.rendered=->
-    if isWeiXinFunc() is true
-      console.log("in wechat")
-      TextResizeDetector.TARGET_ELEMENT_ID = 'fontresizedetector'
-      TextResizeDetector.addEventListener(onFontResize,null)
-      TextResizeDetector.init()
     Session.setDefault "toasted",false
     Session.set('postfriendsitemsLimit', 10);
     $('.mainImage').css('height',$(window).height()*0.55)
@@ -106,7 +69,6 @@ if Meteor.isClient
     $('.textDiv1Link').linkify();
     $("a[target='_blank']").click((e)->
       e.preventDefault();
-      #window.open($(e.currentTarget).attr('href'), '_system', '');
       if Meteor.isCordova
         Session.set("isReviewMode","undefined")
         prepareToEditorMode()
@@ -117,51 +79,6 @@ if Meteor.isClient
     )
 
     $('.showBgColor').css('min-height',$(window).height())
-    ###
-    base_size=Math.floor($('#test').width()/6 - baseGap*2);
-
-    min_widget_height = (baseGap * 2) + base_size;
-    console.log('min_widget_height ' + min_widget_height)
-    test = $("#test");
-    `gridster = test.gridster({widget_base_dimensions: [base_size, base_size],widget_margins: [baseGap, baseGap], min_cols: 3, max_cols:6, resize: {enabled: false },draggable:{long_press:false}}).data('gridster');`
-    gridster.disable()
-
-    $("#test").find('.hastextarea').each( ( i, itemElem )->
-      textdiv = $(itemElem).children('.textdiv')
-      textarea = $(textdiv).children('.textDiv1')
-
-      $(textarea).css('height', 'auto')
-      height = $(textarea).height()
-
-      scrollHeight = $(textarea).prop('offsetHeight') - baseFont*2
-      sizey = Math.ceil((scrollHeight + baseGap * 2)/min_widget_height)
-
-      #$(textarea).css('width', '')
-      $(textarea).css('height', '')
-      sizex = $(itemElem).attr("data-sizex")
-      sizey_orig = parseInt($(itemElem).attr("data-sizey"))
-
-      if sizey isnt sizey_orig
-        $(itemElem).attr("data-sizey", sizey)
-        gridster.resize_widget($(itemElem), sizex,sizey)
-      height = sizey*min_widget_height - baseGap * 2
-      $(itemElem).css("line-height", height+'px')
-      $(itemElem).css("height", height+'px')
-      offsetHeight =  $(textarea).prop('offsetHeight')
-      console.log(i + ' sizey:' + offsetHeight + ' height:' + height + ' scrollHeight:' + scrollHeight + ' gap ' + (height - scrollHeight))
-    )
-    ###
-    hidePostBar = ()->
-      if $('.showPostsFooter').is(':visible')
-        $('.showPostsFooter').fadeOut 300
-#      if $('.showPosts .head').is(':visible')
-#        $('.showPosts .head').fadeOut 300
-    showPostBar = ()->
-      unless $('.showPostsFooter').is(':visible')
-        $('.showPostsFooter').fadeIn 300
-#      unless $('.showPosts .head').is(':visible')
-#        $('.showPosts .head').fadeIn 300
-
     showSocialBar = ()->
       displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
       if displaySocialBar
@@ -174,11 +91,6 @@ if Meteor.isClient
     hideSocialBar = ()->
       if $('.contactsList .head').is(':visible')
         $('.contactsList .head').fadeOut 300
-
-      # comment these two lines to show head on userProfile page
-      # if $('.userProfile .head').is(':visible')
-        # $('.userProfile .head').fadeOut 300
-
       if $('.socialContent .chatFooter').is(':visible')
         $('.socialContent .chatFooter').fadeOut 300
     scrollEventCallback = ()->
@@ -186,8 +98,6 @@ if Meteor.isClient
       st = $(window).scrollTop()
       if st is 0
         showSocialBar()
-#        hideSocialBar()
-#        showPostBar()
         unless $('.showPosts .head').is(':visible')
           $('.showPosts .head').fadeIn 300
         window.lastScroll = st
@@ -204,7 +114,6 @@ if Meteor.isClient
         else
           hideSocialBar()
       if(st + $(window).height()) is window.getDocHeight()
-#        hidePostBar()
         showSocialBar()
         window.lastScroll = st
         return
@@ -219,26 +128,16 @@ if Meteor.isClient
           Session.set("SocialOnButton",'discover')
         if Session.equals("Social.LevelOne.Menu",'contactsList')
           Session.set("SocialOnButton",'contactsList')
-#        hidePostBar()
       else
-        #showSocialBar()
         if $('.contactsList .head').is(':visible')
           $('.contactsList .head').fadeOut 300
         Session.set("SocialOnButton",'postBtn')
-#        hideSocialBar()
-#        showPostBar()
       #Updates scroll position
       window.lastScroll = st
     window.lastScroll = 0;
-#    $('.socialContent .chatFooter').css('display', 'none')
-    #hideSocialBar()
-    #showPostBar()
 
     if withSocialBar
       $(window).scroll(scrollEventCallback)
-    #if !$('body').isSupportObjectFit()
-    #  PUB.toast("您的手机版本过低，部分图片可能产生变形。");
-    #PUB.toast("render finish");
 
   Template.showPosts.helpers
     withSectionMenu: withSectionMenu
@@ -553,7 +452,6 @@ if Meteor.isClient
       else
         triggerToolbarShowOnThumb($(e.target))
         return
-      #addDynamicTemp()
   triggerToolbarShowOnThumb = ($node)->
     $node.parent().click()
   sectionToolbarClickHandler = (self,event,node)->
@@ -607,7 +505,6 @@ if Meteor.isClient
       Meteor.subscribe("userinfo", this.owner)
       Meteor.subscribe("recentPostsViewByUser", this.owner)
       onUserProfile()
-      #Session.set("Social.LevelOne.Menu", 'userProfile')
     "click .showPostsFollowMe span a":->
       if Meteor.isCordova
         cordova.plugins.clipboard.copy('故事贴')
@@ -622,9 +519,6 @@ if Meteor.isClient
       if RC>7
          RC=0
       Session.set("RC", RC)
-      #setTimeout(()->
-      #  $('#comment').trigger("keyup")
-      #,300)
     'click #finish':->
       if PopUpBox
         PopUpBox.close()
@@ -693,15 +587,10 @@ if Meteor.isClient
       Session.set("pcommentsName","")
       $(window).children().off()
       $(window).unbind('scroll')
-#      $('.showPosts').addClass('animated ' + animateOutUpperEffect)
-#      $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect)
-#      Meteor.setTimeout ()->
-        #PUB.back()
       PUB.postPageBack()
       if Session.get("Social.LevelOne.Menu") is 'userProfile'
         Session.set("Social.LevelOne.Menu",'contactsList')
         return
-#      ,animatePageTrasitionTimeout
     'click #edit': (event)->
       #Clear draft first
       Drafts.remove({})
@@ -717,7 +606,6 @@ if Meteor.isClient
           Drafts.insert(pub[i])
       Session.set 'isReviewMode','2'
       #Don't push showPost page into history. Because when save posted story, it will use Router.go to access published story directly. But in history, there is a duplicate record pointing to this published story.
-      #PUB.page('/add')
       Router.go('/add')
     'click #unpublish': (event)->
       self = this
@@ -753,9 +641,7 @@ if Meteor.isClient
     'click #report': (event)->
       Router.go('reportPost')
     'click .postImageItem': (e)->
-      images = []
       swipedata = []
-
       i = 0
       selected = 0
       console.log "=============click on image index is: " + this.index
@@ -771,7 +657,6 @@ if Meteor.isClient
         initialIndexOnArray: selected
         hideCloseButtonOnMobile : true
         loopAtEnd: false
-
       }
     'click .thumbsUp': (e)->
       thumbsUpHandler(e,this)
@@ -923,8 +808,6 @@ if Meteor.isClient
            return ''
 
   Template.pCommentsList.events
-#      'click .alertBackground':->
-#        $('.pcommentsList,.alertBackground').fadeOut 300
       'click #pcommitReportBtn':(e, t)->
         i = Session.get "pcommentIndexNum"
         content = t.find('#pcommitReport').value
@@ -943,7 +826,6 @@ if Meteor.isClient
           username = '匿名'
           userId = 0
           userIcon = ''
-
         if not post[i].pcomments
           pcomments = []
           post[i].pcomments = pcomments
@@ -963,5 +845,4 @@ if Meteor.isClient
         )
         t.find('#pcommitReport').value = ""
         $("#pcommitReport").attr("placeholder", "说点什么")
-#        $('.pcommentsList,.alertBackground').fadeOut 300
         false
