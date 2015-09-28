@@ -905,6 +905,13 @@ if Meteor.isClient
   Template.pCommentsList.helpers
       time_diff: (created)->
         GetTime0(new Date() - created)
+      hasPcomments: ->
+         i = Session.get "pcommentIndexNum"
+         post = Session.get("postContent").pub
+         if post[i].pcomments isnt undefined
+           return true
+         else
+           return false
       pcomments:->
          i = Session.get "pcommentIndexNum"
          post = Session.get("postContent").pub

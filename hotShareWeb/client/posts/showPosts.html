@@ -66,7 +66,7 @@
           {{/if}}
         </div>
 
-        <div class="gridster" >
+        <div class="gridster">
           <ul id="test">
               {{#each getPub}}
                   {{#if isImage}}
@@ -233,6 +233,7 @@
 <template name="pCommentsList">
   <div class="pcommentsList" style="display:none;">
       <div class="pcomment">
+        {{#if hasPcomments}}                      
          {{#each pcomments}}
           <div class="eachComment">
             <div class="bubble">
@@ -242,9 +243,12 @@
             <span class="time round">{{time_diff createdAt}}</span>
           </div>
          {{/each}}
+       {{else}}
+         <div class="banner">快来抢沙发～～(￣▽￣)"</div>
+       {{/if}}
       </div>
       <div class="input-group">
-        <input type="text" id="pcommitReport" class="form-control" maxlength="180" placeholder="说点什么" />
+        <input type="text" id="pcommitReport" class="form-control" maxlength="180" placeholder="快来吐槽吧..." />
         <input type="submit" value="发表" id="pcommitReportBtn">
       </div>
   </div>

@@ -19,7 +19,6 @@
 .showPosts .contentList{position:relative;}
 .showPosts .content .img{clear: both; display: block; margin:auto;}
 .showPosts .content .text{word-break: break-all;white-space: pre-line;width: 65%;text-align: center;margin:5% auto;font-size: 20px;font-weight:bold;background:none;border:none;height:20px}
-.showPosts .content .gridster #test{}
 .showPosts .content .gridster .imgdiv{width: 100%;height: 100%;position: absolute;overflow: hidden;}
 .showPosts .content .gridster .textdiv{height:100%; width:100%}
 .showPosts .content .gridster .textdiv textarea{font-size:large; margin: 0;color: black;white-space: pre-line;word-wrap: break-word;background :none; line-height: 30px; border:0px dotted #00c4ff;overflow-y: hidden; resize:vertical;height:100%;width:100%;box-sizing:border-box;}
@@ -155,7 +154,7 @@
 #ViewOnWeb .fa-globe{font-size: 20px;}
 
 /*Mobile*/
-@media screen 
+@media screen
   and (max-width: 768px)  {
 	.like_img{width:25px;}
 	.like_div{width:32px;}
@@ -168,7 +167,7 @@
 }
 
 /*Pad*/
-@media screen 
+@media screen
   and (min-width: 768px)  {
 	  .like_img{width:60px;}
 	  .like_div{width:76px;}
@@ -185,7 +184,8 @@
 .count{position:fixed;z-index:99999 !important;min-width: 1% !important;}
 .pcommentsList{
   position: fixed;
-  top: 20%;
+  max-height: 90%;
+//  top: 20%;
   background-color: #f2f2f2;
   color: black;
   right: 2%;
@@ -197,6 +197,11 @@
   border: 1px #fff solid;
   bottom: 40px;
   -webkit-overflow-scrolling: touch;
+}
+.pcommentsList .pcomment .banner{
+    text-align: center;
+    padding-bottom: 25px;
+    color: #aaa;
 }
 .pcommentsList .pcomment{
   position: relative;
@@ -265,19 +270,23 @@
   font-size: larger;
   border: none;
   border-radius: 5px;
-  padding: 0 10px;
+//  padding: 0 10px;
   bottom: 40px;
   position: fixed;
-  width: 100%;
+  width: 91%;
   }
   .pcommentsList .input-group #pcommitReport{
     width: 80%;
     float: left;
+    padding: 6px 12px;
   }
   .pcommentsList .input-group #pcommitReportBtn{
     width: 18%;
+    height: 30px;
+    float: right;
+    margin-top: 2px;
   }
- .pcommentsList  .accountIcon{  
+ .pcommentsList  .accountIcon{
     width: 30px;
     position: relative;
     top: 5px;
