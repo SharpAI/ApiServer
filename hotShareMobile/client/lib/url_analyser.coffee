@@ -375,7 +375,11 @@ if Meteor.isClient
         nodeColor = $(node).css('color')
         nodeBackgroundColor = $(node).css('background-color')
         #iframeNumber = $(node).find('iframe').length
-        #showDebug&&console.log('    Node['+index+'] tagName '+node.tagName+ ' text ' + node.textContent)
+        console.log('    Node['+index+'] tagName '+node.tagName+' text '+node.textContent)
+        if node.tagName is 'BR'
+          if toBeInsertedText.length > 0
+            resortedArticle.push {type:'text',text:toBeInsertedText}
+            toBeInsertedText = '';
         text = $(node).text().toString().replace(/\s\s\s+/g, '')
         if text and text isnt ''
           previousIsImage = false
@@ -388,7 +392,7 @@ if Meteor.isClient
               toBeInsertedText = ''
             resortedArticle.push {type:'text',text:text,color:nodeColor,backgroundColor:nodeBackgroundColor}
           else
-            if toBeInsertedText.length < 50
+            if toBeInsertedText.length < 1000
               if toBeInsertedText.length > 0
                 toBeInsertedText += '\n'
               toBeInsertedText += text

@@ -236,7 +236,7 @@ removeUnwanted = (node) ->
     jn.find("object,h1,script,link,style").remove()
   else
     jn.find("object,h1,script,link").remove()
-  node.innerHTML = node.innerHTML.replace(/<br[^>]*>\s*<p/gi, '<p')
+  #node.innerHTML = node.innerHTML.replace(/<br[^>]*>\s*<p/gi, '<p')
 asTop = (page) ->
   Log.log("not found. using page element")
   page.score = new Score(page)
