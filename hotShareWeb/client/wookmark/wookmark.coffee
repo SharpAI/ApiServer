@@ -40,7 +40,7 @@ predefineColors = [
 colorLength = predefineColors.length
 colorIndex = 0
 
-class newLayout
+class @newLayout
   @setRandomlyBackgroundColor = ($node)->
     $node.css("background-color",predefineColors[colorIndex])
     if ++colorIndex >= colorLength

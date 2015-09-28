@@ -36,16 +36,14 @@ if Meteor.isClient
   colorLength = predefineColors.length
   colorIndex = 0
   Template.padding.rendered=->
-    unless @data.noRandomBackgroundColor
-      this.$('.padding-overlay').css( "background-color",predefineColors[colorIndex] )
-      if ++colorIndex >= colorLength
-        colorIndex = 0
-    this.$('.padding-overlay').parent().find("img.lazy").lazyload {
+    $lazyitem = this.$('.padding-overlay').parent().find('img.lazy')
+    $lazyitem.lazyload {
       effect : "fadeIn"
       effectspeed: 600
       threshold: 800
+      placeholder: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII="
       load:->
-        $(this).parent().find('.padding-overlay').fadeOut(400, ()-> $(this).remove())
         console.log "Frank: style =  "+$(this).attr('style')
         $(this).parent().actImageFitCover('style')
     }
+    newLayout.setRandomlyBackgroundColor($lazyitem)
