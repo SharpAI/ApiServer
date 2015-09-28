@@ -64,15 +64,12 @@ if Meteor.isClient
     #msg += "\nThe change in pixels from the last size:" + args[0].iDelta;
     reRender()
   Template.showPosts.onRendered ->
+    #Calc Wechat token after post rendered.
     calcPostSignature(window.location.href.split('#')[0]);
     if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
       Meteor.setTimeout ()->
           document.body.scrollTop = Session.get("postPageScrollTop")
         , 280
-  Template.showPosts.onDestroyed ()->
-    if gridster
-      gridster.destroy()
-    Session.set('postfriendsitemsLimit', 10)
   Template.showPosts.rendered=->
     if isWeiXinFunc() is true
       console.log("in wechat")
