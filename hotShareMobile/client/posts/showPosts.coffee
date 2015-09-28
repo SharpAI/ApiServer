@@ -919,7 +919,7 @@ if Meteor.isClient
       hasPcomments: ->
          i = Session.get "pcommentIndexNum"
          post = Session.get("postContent").pub
-         if post[i].pcomments isnt undefined
+         if post and post[i] and post[i].pcomments isnt undefined
            return true
          else
            return false
