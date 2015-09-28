@@ -120,7 +120,8 @@ if Meteor.isClient
     )
 
     $('.showBgColor').css('min-height',$(window).height())
-    base_size=Math.floor($('#test').width()/6 - baseGap * 2);
+    ###
+    base_size=Math.floor($('#test').width()/6 - baseGap*2);
 
     min_widget_height = (baseGap * 2) + base_size;
     console.log('min_widget_height ' + min_widget_height)
@@ -152,7 +153,7 @@ if Meteor.isClient
       offsetHeight =  $(textarea).prop('offsetHeight')
       console.log(i + ' sizey:' + offsetHeight + ' height:' + height + ' scrollHeight:' + scrollHeight + ' gap ' + (height - scrollHeight))
     )
-
+    ###
     hidePostBar = ()->
       if $('.showPostsFooter').is(':visible')
         $('.showPostsFooter').fadeOut 300
@@ -259,11 +260,15 @@ if Meteor.isClient
         if pub[i].type is 'text'
           count++
       count
-    displayBackBtn:->
-      if Session.get('displayShowPostLeftBackBtn') is true
-        true
-      else
-        false
+    getWidth: (data_sizex)->
+      base_size=Math.floor($('#test').width()/6)
+      (base_size*data_sizex)+'px'
+    getHeight: (data_sizey)->
+      base_size=Math.floor($('#test').width()/6)
+      (base_size*data_sizey)+'px'
+    getLeft: (data_col)->
+      base_size=Math.floor($('#test').width()/6)
+      (base_size*data_col)+'px'
     getStyle:->
       self=this
       pclength=0

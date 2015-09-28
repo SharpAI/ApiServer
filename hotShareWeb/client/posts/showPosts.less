@@ -19,11 +19,16 @@
 .showPosts .contentList{position:relative;}
 .showPosts .content .img{clear: both; display: block; margin:auto;}
 .showPosts .content .text{word-break: break-all;white-space: pre-line;width: 65%;text-align: center;margin:5% auto;font-size: 20px;font-weight:bold;background:none;border:none;height:20px}
-.showPosts .content .gridster .imgdiv{width: 100%;height: 100%;position: absolute;overflow: hidden;}
+.showPosts .content .gridster img.lazy{position:relative !important;}
+.showPosts .content .gridster .imgdiv{width: 100%;height: 100%;overflow: hidden;}
 .showPosts .content .gridster .textdiv{height:100%; width:100%}
-.showPosts .content .gridster .textdiv .textDiv1{display: inline-block; padding-left:4px; padding-right:4px; font-size:large; color: black;white-space: pre-wrap;word-wrap: break-word;background :none; line-height:30px;border:0px dotted #00c4ff;resize:vertical;width:100%;box-sizing:border-box;}
-
+.showPosts .content .gridster textarea{font-size:large; margin: 0;color: black;white-space: pre-line;word-wrap: break-word;background :none; line-height: 30px; border:0px dotted #00c4ff;overflow-y: hidden; resize:vertical;height:100%;width:100%;box-sizing:border-box;}
+.showPosts .content .gridster p{vertical-align: middle; display: inline-block; padding-left:4px; padding-right:4px; font-size:large; color: black;white-space: pre-wrap;word-wrap: break-word;background :none; line-height: 30px; border:0px dotted #00c4ff;resize:vertical;height:100%;width:100%;box-sizing:border-box;}
+.showPosts .content .gridster .textDiv1{vertical-align: middle; display: inline-block; padding:5px; font-size:large; color: black;white-space: pre-line;word-wrap: break-word;background :none;border:0px dotted #00c4ff;resize:vertical;height:100%;width:100%;box-sizing:border-box;}
 .showPosts .content .gridster {padding-left:5%; padding-right:5%;}
+
+
+.showPosts .content .gridster .postTextItem{color:black;height:auto;}
 
 .showPosts .content .post_header{
   overflow: hidden;

@@ -243,6 +243,7 @@ if Meteor.isClient
       $(window).scroll(scrollEventCallback)
     #if !$('body').isSupportObjectFit()
     #  PUB.toast("您的手机版本过低，部分图片可能产生变形。");
+    #PUB.toast("render finish");
 
   Template.showPosts.helpers
     withSectionMenu: withSectionMenu
