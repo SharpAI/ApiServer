@@ -152,11 +152,9 @@ Template.newLayoutContainer.events =
     $(window).children().off()
     $(window).unbind('scroll')
     id = Session.get("postContent")._id
-    PUB.postPage(id,scrollTop)
-    Meteor.setTimeout ()->
-      Session.set("Social.LevelOne.Menu",'contactsList')
-      Router.go '/redirect/'+postId
-    ,300
+    #PUB.postPage(id,scrollTop)
+    #Session.set("Social.LevelOne.Menu",'contactsList')
+    Router.go '/redirect/'+postId
 Template.newLayoutContainer.helpers =
   displayId:()->
     if this.data and this.data.displayId
@@ -183,7 +181,7 @@ Template.newLayoutContainer.onRendered ()->
 Template.newLayoutContainer.onDestroyed ()->
   console.log('newLayoutContainer onDestroyed ' + JSON.stringify(this.data))
   delete window.newLayoutInstances[this.data.layoutId]
-  $('.newLayout_element_'+this.data.layoutId).remove()
+  $('.newLayout_element_'+this.data.layoutId).removeClass('loaded')
 
 Template.newLayoutElement.onRendered ()->
   console.log('newLayoutElement onRendered ' + JSON.stringify(this.data))
@@ -207,7 +205,7 @@ Template.newLayoutElement.onDestroyed ()->
     instance = window.newLayoutInstances[this.data.layoutId]
     if instance
       console.log('Need remove item');
-      $('.newLayout_element #'+id).remove();
+      $('.newLayout_element #'+id).removeClass('loaded');
       Meteor.setTimeout ()->
         instance.initItems();
         instance.layout(true);

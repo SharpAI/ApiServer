@@ -581,7 +581,7 @@ if Meteor.isClient
       );
 
   Template.showPosts.events
-    'click .textdiv' :(e)->
+    'click .postTextItem' :(e)->
       if withSectionMenu
         console.log('clicked on textdiv ' + this._id)
         $self = $('#'+this._id)
@@ -755,7 +755,7 @@ if Meteor.isClient
 
     'click #report': (event)->
       Router.go('reportPost')
-    'click .imgdiv': (e)->
+    'click .postImageItem': (e)->
       images = []
       swipedata = []
 

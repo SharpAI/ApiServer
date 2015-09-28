@@ -77,15 +77,12 @@ if Meteor.isClient
       $('.tts-stoper').hide()
       window.currentTTS.stop()
   Template.showPosts.onRendered ->
+    #Calc Wechat token after post rendered.
     calcPostSignature(window.location.href.split('#')[0]);
     if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
       Meteor.setTimeout ()->
           document.body.scrollTop = Session.get("postPageScrollTop")
         , 280
-  Template.showPosts.onDestroyed ()->
-    if gridster
-      gridster.destroy()
-    Session.set('postfriendsitemsLimit', 10)
   Template.showPosts.rendered=->
     Session.setDefault "toasted",false
     Session.set('postfriendsitemsLimit', 10);
@@ -830,7 +827,7 @@ if Meteor.isClient
 
     'click #report': (event)->
       Router.go('reportPost')
-    'click .imgdiv': (e)->
+    'click .postImageItem': (e)->
       images = []
       swipedata = []
 
