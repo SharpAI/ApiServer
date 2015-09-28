@@ -11,11 +11,13 @@ if Meteor.isClient
   ###
     Information View
   ###
+  ###
   Template.information.rendered=->
     document.body.scrollTop = document.body.scrollHeight
     document.ontouchmove = (e) ->
       e.preventDefault()
       return
+  ###
   Template.information.destroyed=->
     document.ontouchmove = (e) ->
       true

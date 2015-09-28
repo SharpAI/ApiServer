@@ -124,10 +124,12 @@ if Meteor.isClient
       displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
       if displaySocialBar
         #showSocialBar()
-        if Session.equals("Social.LevelOne.Menu",'discover')
+        if $(".div_discover").css("display") is "block"
           Session.set("SocialOnButton",'discover')
-        if Session.equals("Social.LevelOne.Menu",'contactsList')
+        if $(".div_contactsList").css("display") is "block"
           Session.set("SocialOnButton",'contactsList')
+        if $(".div_me").css("display") is "block"
+          Session.set("SocialOnButton",'me')
       else
         if $('.contactsList .head').is(':visible')
           $('.contactsList .head').fadeOut 300

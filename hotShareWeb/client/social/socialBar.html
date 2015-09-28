@@ -4,7 +4,15 @@
     <div class="content">
       <div class="chatBox">
         <div class="chatBoxContent">
-          {{> Template.dynamic template=whichOne}}
+            <div class="div_contactsList" style="display:none">
+              {{>contactsList}}
+            </div>
+            <div class="div_discover" style="display:block">
+              {{>discover}}
+            </div>
+            <div class="div_me" style="display:none">
+              {{>me}}
+            </div>
         </div>
         <div class="chatFooter">
           <!--
