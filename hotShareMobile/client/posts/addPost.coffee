@@ -458,6 +458,21 @@ if Meteor.isClient
         $(node).data('toolbarObj').options.content= '#text-toolbar-options'
         $(node).data('toolbarObj').reInitializeToolbar()
       ,500
+  reCaculateAndSetItemHeight = (node,textarea)->
+    #Compute the new scrollHeight
+    grid_size=Math.floor(getDisplayElementWidth()/6 - baseGap*2);
+    min_widget_height = (baseGap * 2) + grid_size;
+    scrollHeight = document.getElementById(node.id+"TextArea").scrollHeight
+    $(textarea).css('height', 'auto').css('height', scrollHeight);
+    sizey = Math.ceil((scrollHeight+baseGap*2)/min_widget_height)
+    resizeItem = $('#'+node.id)
+    orig_sizey = parseInt(resizeItem.attr("data-sizey"))
+    if sizey isnt orig_sizey
+      height = sizey*min_widget_height - baseGap*2
+      resizeItem.css("height", height)
+      $(node).css('height', "")
+      sizex = parseInt(resizeItem.attr("data-sizex"))
+      gridster.resize_widget(resizeItem, sizex,sizey)
   toolbarMainMenuClickHandle = (event, buttonClicked,node,grid)->
     $(node).data('toolbarObj').hide()
     textdiv = $(event.target).children('.textdiv')
@@ -548,21 +563,7 @@ if Meteor.isClient
       console.log 'Need font-normal'
       style = 'font-family:;font-size:large' + ';text-align:' + textarea.css('text-align')+';'
       textarea.attr('style', style)
-      #Compute the new scrollHeight
-      grid_size=Math.floor(getDisplayElementWidth()/6 - baseGap*2);
-      min_widget_height = (baseGap * 2) + grid_size;
-      $(textarea).css('height', 'auto');
-      scrollHeight = document.getElementById(node.id+"TextArea").scrollHeight
-      $(textarea).css('height', scrollHeight);
-      sizey = Math.ceil((scrollHeight+baseGap*2)/min_widget_height)
-      resizeItem = $('#'+node.id)
-      orig_sizey = parseInt(resizeItem.attr("data-sizey"))
-      if sizey isnt orig_sizey
-        height = sizey*min_widget_height - baseGap*2
-        resizeItem.css("height", height)
-        $(node).css('height', "")
-        sizex = parseInt(resizeItem.attr("data-sizex"))
-        gridster.resize_widget(resizeItem, sizex,sizey)
+      reCaculateAndSetItemHeight(node,textarea)
       Drafts.update({_id: doc_id}, {$set: {style: style}})
     else if buttonClicked.id is "font-quato"
       console.log 'Need font-quato'
@@ -571,24 +572,9 @@ if Meteor.isClient
         ';background: #F5F5F5;padding-left:3%;padding-right:3%;color:grey;height:'+
         textarea.css('height')+";"
       textarea.attr('style', style)
-      #Compute the new scrollHeight
-      grid_size=Math.floor(getDisplayElementWidth()/6 - baseGap*2);
-      min_widget_height = (baseGap * 2) + grid_size;
-      scrollHeight = document.getElementById(node.id+"TextArea").scrollHeight
-      $(textarea).css('height', 'auto').css('height', scrollHeight);
-      sizey = Math.ceil((scrollHeight+baseGap*2)/min_widget_height)
-      resizeItem = $('#'+node.id)
-      orig_sizey = parseInt(resizeItem.attr("data-sizey"))
-      if sizey isnt orig_sizey
-        height = sizey*min_widget_height - baseGap*2
-        resizeItem.css("height", height)
-        $(node).css('height', "")
-        sizex = parseInt(resizeItem.attr("data-sizex"))
-        gridster.resize_widget(resizeItem, sizex,sizey)
+      reCaculateAndSetItemHeight(node,textarea)
       Drafts.update({_id: doc_id}, {$set: {style: style}});
     return
-
-
   initToolBar = (node, grid)->
 #console.log 'Added node id is ' + node.id
     insertedObj = Blaze.getData(node)
