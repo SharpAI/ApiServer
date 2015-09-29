@@ -538,45 +538,29 @@ if Meteor.isClient
         $(node).data('toolbarObj').reInitializeToolbar()
         $(node).data('toolbarObj').show()
       ,500
-    else if buttonClicked.id is "aligntoleft"
-      console.log 'Need aligntoleft'
-      style = "font-family:" + textarea.css("font-family") + ";font-size:" + textarea.css("font-size") +
-        ";text-align:left"+";background: " + textarea.css("background") + ";padding-left:" + textarea.css("padding-left") + ";padding-right:" + textarea.css("padding-right") + ";color:" + textarea.css("color") + ";height:"+
-        textarea.css('height')+";"
-      Drafts.update({_id: doc_id}, {$set: {style: style}});
-      textarea.attr('style', style)
-    else if buttonClicked.id is "aligntocenter"
-      console.log 'Need aligntocenter'
-      style = "font-family:" + textarea.css("font-family") + ";font-size:" + textarea.css("font-size") +
-        ";text-align:center"+";background: " + textarea.css("background") + ";padding-left:" + textarea.css("padding-left") + ";padding-right:" + textarea.css("padding-right") + ";color:" + textarea.css("color") + ";height:"+
-        textarea.css('height')+";"
-      Drafts.update({_id: doc_id}, {$set: {style: style}});
-      textarea.attr('style', style)
-    else if buttonClicked.id is "aligntoright"
-      console.log 'Need aligntoright'
-      style = "font-family:" + textarea.css("font-family") + ";font-size:" + textarea.css("font-size") +
-        ";text-align:right"+";background: " + textarea.css("background") + ";padding-left:" + textarea.css("padding-left") + ";padding-right:" + textarea.css("padding-right") + ";color:" + textarea.css("color") + ";height:"+
-        textarea.css('height')+";"
-      Drafts.update({_id: doc_id}, {$set: {style: style}});
-      textarea.attr('style', style)
+    else if buttonClicked.id is "align-to-left"
+      console.log 'Need align to left'
+      textarea.css("text-align","left");
+      Drafts.update({_id: doc_id}, {$set: {layout: {align:'left'}}});
+    else if buttonClicked.id is "align-to-center"
+      console.log 'Need align to center'
+      textarea.css('text-align','center')
+      Drafts.update({_id: doc_id}, {$set: {layout: {align:'center'}}});
+    else if buttonClicked.id is "align-to-right"
+      console.log 'Need align to right'
+      textarea.css('text-align','right')
+      Drafts.update({_id: doc_id}, {$set: {layout: {align:'right'}}});
     else if buttonClicked.id is "font-normal"
       console.log 'Need font-normal'
-      style = 'font-family:;font-size:large' + ';text-align:' + textarea.css('text-align')+';'
-      textarea.attr('style', style)
       reCaculateAndSetItemHeight(node,textarea)
-      Drafts.update({_id: doc_id}, {$set: {style: style}})
-    else if buttonClicked.id is "font-quato"
-      console.log 'Need font-quato'
-      style = "font-family:Times New Roman, Times, serif" + ';font-size:15px' +
-        ';text-align:'+ textarea.css('text-align')+
-        ';background: #F5F5F5;padding-left:3%;padding-right:3%;color:grey;height:'+
-        textarea.css('height')+";"
-      textarea.attr('style', style)
+      Drafts.update({_id: doc_id}, {$set: {layout: {font:'normal'}}});
+    else if buttonClicked.id is "font-quota"
+      console.log 'Need font-quota'
       reCaculateAndSetItemHeight(node,textarea)
-      Drafts.update({_id: doc_id}, {$set: {style: style}});
+      Drafts.update({_id: doc_id}, {$set: {layout: {font:'quota'}}});
     return
   initToolBar = (node, grid)->
-#console.log 'Added node id is ' + node.id
+    #console.log 'Added node id is ' + node.id
     insertedObj = Blaze.getData(node)
     type = insertedObj.type
     if type == "text"
@@ -608,7 +592,7 @@ if Meteor.isClient
         hideOnClick: true
       $(node)
       .on 'toolbarItemClick', (event, buttonClicked)=>
-#console.log("toolbarItemClick on " + buttonClicked.id)
+        #console.log("toolbarItemClick on " + buttonClicked.id)
         toolbarMainMenuClickHandle(event, buttonClicked,node,grid)
       .on 'toolbarHidden', (event)=>
         console.log("toolbarHidden")
@@ -653,7 +637,7 @@ if Meteor.isClient
         if insertedObj.inIframe and insertedObj.iframe
           console.log('to insert iframe')
           grid.add_widget(node, parseInt(insertedObj.data_sizex,baseGap*2), parseInt(insertedObj.data_sizey,baseGap*2))
-# Images loaded during rendering
+        # Images loaded during rendering
         else if Session.get('NewImgAdd') is 'true'
           if (window.imageCounter2 % 3) is 0
             grid.add_widget(node, 6, 3,1,window.insertRow)
@@ -664,7 +648,7 @@ if Meteor.isClient
             grid.add_widget(node, 3, 3,4,window.insertRow)
             window.insertRow +=3
           window.imageCounter2++
-# Images to be inserted before the element
+        # Images to be inserted before the element
         else if window.unSelectedElem
           currentCount = insertedObj.currentCount
           totalCount = insertedObj.totalCount
@@ -696,10 +680,10 @@ if Meteor.isClient
           if currentCount >= totalCount
             window.unSelectedElem = undefined
           grid.add_widget(node, insert_sizex, insert_sizey, insert_col, insert_row)
-# To be inserted at the end of the screen.
+        # To be inserted at the end of the screen.
         else if insertedObj.toTheEnd
           grid.add_widget(node, parseInt(insertedObj.data_sizex,baseGap*2), parseInt(insertedObj.data_sizey,baseGap*2))
-# To be inserted on the middle of screen.
+        # To be inserted on the middle of screen.
         else
           max_row = 1
           middle = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)/2
@@ -822,19 +806,20 @@ if Meteor.isClient
           )
         return
     return
-  Template.addPost.destroyed = ->
+  Template.addPost.onDestroyed ()->
     $('.tool-container').remove();
     $(window).children().off();
+    if gridster
+      gridster.destroy()
+      gridster = null
   # the only document I found here https://github.com/percolatestudio/transition-helper/blob/master/transition-helper.js#L4
-  Template.addPost.rendered=->
+  Template.addPost.onRendered ()->
     Meteor.subscribe("saveddrafts");
     window.imageCounter2 = 1
     window.insertRow = 1
     `global_toolbar_hidden = false`
     $('.addPost').css('min-height',$(window).height())
     $('.addPost').css('width',$(window).width())
-    $('.mainImage').css('height',$(window).height()*0.55)
-
     title = document.getElementById("title")
     if title?
       $('#title').css("height", "auto");
@@ -847,9 +832,6 @@ if Meteor.isClient
       scrollHeight = addontitle.scrollHeight
       $('#addontitle').css('height', scrollHeight);
 
-#    Meteor.setTimeout ->
-#      $('#wrapper img').css('height',$(window).height()*0.55)
-#    ,200
     console.log 'addPost rendered rev=37'
     #testMenu will be main/font/align. It's for controlling the icon on text menu
     Session.set('textMenu','main')
@@ -1037,9 +1019,19 @@ if Meteor.isClient
       Session.set("TopicMainImage", mainImage)
       Router.go('addTopicComment')
   Template.addPost.helpers
+    getMainImageHeight:()->
+      $(window).height()*0.55
+    calcStyle: ()->
+      # For backforward compatible. Only older version set style directly
+      if this.style and this.style isnt ''
+        ''
+      else
+        calcTextItemStyle(this.layout)
     getImagePath: (path,uri,id)->
-      selector = ".image_"+id
+      $selector = $(".image_"+id)
       if path.indexOf('cdvfile://') > -1 and (window.wkwebview or withLocalBase64)
+        if $selector and $selector.attr('src') and $selector.attr('src') isnt '' and $selector.attr('src').indexOf('data:') is 0
+          return $selector.attr('src')
         fileExtension = uri.replace(/^.*\./, '')
         console.log('Path need to be replaced ' + path + ' this URI ' + uri + ' extension ' + fileExtension)
         `
@@ -1052,7 +1044,7 @@ if Meteor.isClient
                           //retCount++;
                           var smallImage = event.target.result;
                           console.log('got small image ');
-                          $(selector).attr('src',smallImage);
+                          $(".image_"+id).attr('src',smallImage);
                       };
                       reader.readAsDataURL(file);
                   }, function (e) {
@@ -1087,7 +1079,7 @@ if Meteor.isClient
         return
       TempDraftData = TempDrafts.find({}).fetch()[0]
       try
-        if SavedDrafts.find({_id:draftId}).count() > 0
+        if SavedDrafts.find({_id:TempDraftData._id}).count() > 0
           SavedDrafts.update(
             {_id:TempDraftData._id},
             {$set:{
@@ -1167,11 +1159,9 @@ if Meteor.isClient
       else
         false
     draftTitles:->
-      if Drafts.find().count() > 0
-        draftData = Drafts.find().fetch()
-        draftId = draftData[0]._id;
+      draftId = $('.mainImage').attr('id')
+      if draftId and draftId isnt ''
         if Session.get('isReviewMode') is '2'
-          #Posts.find({_id:draftId}).fetch()[0]
           post = Session.get("postContent")
           draftTitles = {}
           if post?
@@ -1179,23 +1169,17 @@ if Meteor.isClient
             draftTitles.addontitle = post.addontitle
           draftTitles
         else if Session.get('isReviewMode') is '1' or Session.get('isReviewMode') is '0' or Session.get('isReviewMode') is '3'
-          draftTitles = SavedDrafts.find({_id:draftId}).fetch()[0]
+          draftTitles = SavedDrafts.findOne({_id:draftId})
           if !draftTitles?
             draftTitles = {}
-            #draftTitles.title = Session.get 'draftTitle'
-            #draftTitles.addontitle = Session.get 'draftAddontitle'
             draftTitles.title = $("#title").val()
             draftTitles.addontitle = $("#addontitle").val()
             console.log("draftTitles.title="+draftTitles.title+", draftTitles.addontitle="+draftTitles.addontitle);
-          draftTitles
-    mainImage:->
-      Meteor.setTimeout ->
-        $('.mainImage').css('height',$(window).height()*0.55)
-      ,0
-      if Drafts.find({type:'image'}).count() > 0
-        Drafts.find({type:'image'}).fetch()[0]
+            draftTitles
       else
-        null
+        draftTitles = {'title':'','addontitle':''}
+    mainImage:->
+      Drafts.findOne({type:'image'})
     pub:()->
       if Drafts.find().count() > 1
         for i in [1..(Drafts.find({}).count()-1)]

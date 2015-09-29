@@ -33,7 +33,7 @@
         <div class="content">
         {{#if mainImage}}
           <div id="wrapper">
-            <div class="mainImage" id="{{mainImage._id}}">
+            <div class="mainImage" id="{{mainImage._id}}" style="height:{{getMainImageHeight}}px;">
               <img id="mainImage{{mainImage._id}}" class="scale item image_{{mainImage._id}}" src="{{getImagePath mainImage.imgUrl mainImage.URI mainImage._id}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImage.style}}" onload="$(this).parent().actImageFitCover('cropStyle');" >
               <header>
                 <textarea id="title" name="textareatitle" rows="1" class="title" placeholder="主标题"  oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'; ">{{draftTitles.title}}</textarea>
@@ -96,7 +96,7 @@
                         {{else}}
                             <li class='resortitem hastextarea' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
                                 <div class="textdiv">
-                                    <textarea data-autoresize rows="1" id="{{_id}}TextArea" text={{_id}} name="textarea" readOnly="true" style="font-size:large;{{style}}" >{{text}}</textarea>
+                                    <textarea data-autoresize rows="1" id="{{_id}}TextArea" text={{_id}} name="textarea" readOnly="true" style="{{calcStyle}};{{style}}" >{{text}}</textarea>
                                 </div>
                             </li>
                         {{/if}}
@@ -129,13 +129,13 @@
         <a href="#" id='del'><i class="fa fa-trash"></i></a>
       </div>
       <div id="text-align-toolbar-options" style='visibility: hidden;'>
-        <a href="#" id='aligntoleft'><i class="fa fa-align-left"></i></a>
-        <a href="#" id='aligntocenter'><i class="fa fa-align-center"></i></a>
-        <a href="#" id='aligntoright'><i class="fa fa-align-right"></i></a>
+        <a href="#" id='align-to-left'><i class="fa fa-align-left"></i></a>
+        <a href="#" id='align-to-center'><i class="fa fa-align-center"></i></a>
+        <a href="#" id='align-to-right'><i class="fa fa-align-right"></i></a>
       </div>
       <div id="text-font-toolbar-options" style='visibility: hidden;'>
         <a href="#" id='font-normal' style="font-family: Copernicus-Book, serif;font-size: 120%;font-style: normal;color:white;font-variant: normal;font-weight: normal;">正常</a>
-        <a href="#" id='font-quato' style="font-family: MarkWeb-ExtraLight, sans-serif;font-style: normal;font-variant: normal;color:white;font-weight: normal;font-size:120%">引用</a>
+        <a href="#" id='font-quota' style="font-family: MarkWeb-ExtraLight, sans-serif;font-style: normal;font-variant: normal;color:white;font-weight: normal;font-size:120%">引用</a>
       </div>
       <div class="importProgressBar" style="display:none">
           <div class="progressBarBg">
