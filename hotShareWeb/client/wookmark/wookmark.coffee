@@ -152,9 +152,9 @@ Template.newLayoutContainer.events =
     $(window).children().off()
     $(window).unbind('scroll')
     id = Session.get("postContent")._id
-    #PUB.postPage(id,scrollTop)
+    PUB.postPage(id,scrollTop)
     #Session.set("Social.LevelOne.Menu",'contactsList')
-    Router.go '/redirect/'+postId
+    Router.go '/posts/'+postId
 Template.newLayoutContainer.helpers =
   displayId:()->
     if this.data and this.data.displayId

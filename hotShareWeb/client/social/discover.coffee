@@ -86,10 +86,11 @@ if Meteor.isClient
         $(window).children().off()
         $(window).unbind('scroll')
         id = Session.get("postContent")._id
+        Session.set 'displayShowPostLeftBackBtn',true
         PUB.postPage(id,scrollTop)
         Meteor.setTimeout ()->
           Session.set("Social.LevelOne.Menu",'contactsList')
-          Router.go '/redirect/'+postId
+          Router.go '/posts/'+postId
         ,300
       'click .masonry_element':(e)->
         Session.set 'displayShowPostLeftBackBtn',true
@@ -100,10 +101,11 @@ if Meteor.isClient
         $(window).children().off()
         $(window).unbind('scroll')
         id = Session.get("postContent")._id
+        Session.set 'displayShowPostLeftBackBtn',true
         PUB.postPage(id,scrollTop)
         Meteor.setTimeout ()->
           Session.set("Social.LevelOne.Menu",'contactsList')
-          Router.go '/redirect/'+postId
+          Router.go '/posts/'+postId
         ,300
     Template.lpcomments.helpers
       description:->
@@ -128,10 +130,11 @@ if Meteor.isClient
         if postId isnt id
           $(window).children().off()
           $(window).unbind('scroll')
+          Session.set 'displayShowPostLeftBackBtn',true
           PUB.postPage(id,scrollTop)
           Meteor.setTimeout ()->
             Session.set("Social.LevelOne.Menu",'contactsList')
-            Router.go '/redirect/'+postId
+            Router.go '/posts/'+postId
           ,300
         else
           document.body.scrollTop = 0
