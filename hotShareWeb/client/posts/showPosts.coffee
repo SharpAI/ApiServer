@@ -158,6 +158,12 @@ if Meteor.isClient
         if pub[i].type is 'text'
           count++
       count
+    calcStyle: ()->
+      # For backforward compatible. Only older version set style directly
+      if this.style and this.style isnt ''
+        ''
+      else
+        calcTextItemStyle(this.layout)
     getWidth: (data_sizex)->
       base_size=Math.floor($('#test').width()/6)
       (base_size*data_sizex)+'px'
