@@ -294,14 +294,17 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
       postId = e.currentTarget.id
-      $(window).children().off()
-      $(window).unbind('scroll')
       if PopUpBox
         PopUpBox.close()
-      Meteor.setTimeout ()->
-        Session.set("Social.LevelOne.Menu",'contactsList')
-        Router.go '/redirect/'+postId
-      ,300
+      if postId isnt Session.get('postContent')._id
+        Session.set 'displayShowPostLeftBackBtn',true
+        id = Session.get("postContent")._id
+        PUB.postPage(id,0)
+        $(window).children().off()
+        $(window).unbind('scroll')
+        Meteor.setTimeout ()->
+          Router.go '/posts/'+postId
+        ,300
     'click #addToContactList': ()->
       addToContactList("ProfileUserId1")
   Template.userProfilePage2.rendered=->
@@ -360,14 +363,17 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
       postId = e.currentTarget.id
-      $(window).children().off()
-      $(window).unbind('scroll')
       if PopUpBox
         PopUpBox.close()
-      Meteor.setTimeout ()->
-        Session.set("Social.LevelOne.Menu",'contactsList')
-        Router.go '/redirect/'+postId
-      ,300
+      if postId isnt Session.get('postContent')._id
+        Session.set 'displayShowPostLeftBackBtn',true
+        id = Session.get("postContent")._id
+        PUB.postPage(id,0)
+        $(window).children().off()
+        $(window).unbind('scroll')
+        Meteor.setTimeout ()->
+          Router.go '/posts/'+postId
+        ,300
     'click #addToContactList': ()->
       addToContactList("ProfileUserId2")
 
@@ -417,7 +423,6 @@ if Meteor.isClient
       if window.userProfileTrackerHandler
         window.userProfileTrackerHandler.stop()
         window.userProfileTrackerHandler = null
-      Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
         PopUpBox.close()
     'click #suggestCurrentPost': ()->
@@ -427,13 +432,16 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
       postId = e.currentTarget.id
-      $(window).children().off()
-      $(window).unbind('scroll')
       if PopUpBox
         PopUpBox.close()
-      Meteor.setTimeout ()->
-        Session.set("Social.LevelOne.Menu",'contactsList')
-        Router.go '/redirect/'+postId
-      ,300
+      if postId isnt Session.get('postContent')._id
+        Session.set 'displayShowPostLeftBackBtn',true
+        id = Session.get("postContent")._id
+        PUB.postPage(id,0)
+        $(window).children().off()
+        $(window).unbind('scroll')
+        Meteor.setTimeout ()->
+          Router.go '/posts/'+postId
+        ,300
     'click #addToContactList': ()->
       addToContactList("ProfileUserId3")

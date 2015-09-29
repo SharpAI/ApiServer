@@ -167,6 +167,11 @@ if Meteor.isClient
     getLeft: (data_col)->
       base_size=Math.floor($('#test').width()/6)
       (base_size*data_col)+'px'
+    displayBackBtn:->
+      if isAndroidFunc() and Session.get('displayShowPostLeftBackBtn') is true
+        true
+      else
+        false
     getStyle:->
       self=this
       pclength=0
