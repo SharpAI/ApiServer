@@ -232,6 +232,8 @@ if Meteor.isClient
               break
       if scolor is "#304EF5" and Session.get("toasted") is false
         Session.set "toasted",true
+        Session.set("postPageScrollTop", 0)
+        document.body.scrollTop = Session.get("postPageScrollTop")
         PUB.toast(userName+"点评过的段落将为您用蓝色标注！")
       dislikeSum = 0
       if self.dislikeSum

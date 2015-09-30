@@ -465,6 +465,11 @@ if(Meteor.isServer){
         Meteor.defer(function(){
             try{
                 var userinfo = Meteor.users.findOne({_id: userId },{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
+                var needRemove = false;
+                if(ptype ==="like" && doc.pub[pindex].likeUserId[userId] === true)
+                    needRemove = true;
+                if(ptype ==="dislike" && doc.pub[pindex].dislikeUserId[userId] === true)
+                    needRemove = true;
                 PComments.insert({
                     postId:doc._id,
                     pindex:pindex,
@@ -478,9 +483,11 @@ if(Meteor.isServer){
                 {
                     //有人点评了您点评过的帖子
                     pcs.forEach(function(data){
-                        var pfeeds=Feeds.findOne({followby:data.commentUserId,checked:false,postId:data.postId});
-                        if(pfeeds){
+                        var pfeeds=Feeds.findOne({followby:data.commentUserId,checked:false,postId:data.postId,pindex:pindex});
+                        if(pfeeds || needRemove){
                             //console.log("==================already have feed==========");
+                            if(pfeeds)
+                                Feeds.remove(pfeeds);
                         }else{
                             if(userinfo){
                                 Feeds.insert({
@@ -507,9 +514,11 @@ if(Meteor.isServer){
                 //有人点评了您发表的帖子
                 if(doc.owner !== userId)
                 {
-                    var pfeeds=Feeds.findOne({followby:doc.owner,checked:false,postId:doc._id});
-                    if(pfeeds){
+                    var pfeeds=Feeds.findOne({followby:doc.owner,checked:false,postId:doc._id,pindex:pindex});
+                    if(pfeeds || needRemove){
                         //console.log("==================already have feed==========");
+                        if(pfeeds)
+                            Feeds.remove(pfeeds);
                     }else {
                         if (userinfo) {
                             Feeds.insert({
@@ -519,6 +528,8 @@ if(Meteor.isServer){
                                 eventType: 'pcommentowner',
                                 postId: doc._id,
                                 postTitle: doc.title,
+                                addontitle:doc.addontitle,
+                                pindex:pindex,
                                 mainImage: doc.mainImage,
                                 createdAt: new Date(),
                                 heart: 0,
