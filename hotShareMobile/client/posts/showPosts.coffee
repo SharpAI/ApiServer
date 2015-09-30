@@ -81,7 +81,7 @@ if Meteor.isClient
       Meteor.setTimeout ()->
           document.body.scrollTop = Session.get("postPageScrollTop")
         , 280
-  Template.showPosts.rendered=->
+  Template.showPosts.onRendered ->
     Session.setDefault "toasted",false
     Session.set('postfriendsitemsLimit', 10);
     $('.mainImage').css('height',$(window).height()*0.55)
@@ -90,25 +90,16 @@ if Meteor.isClient
     browseTimes = 0
     Session.set("Social.LevelOne.Menu",'discover')
     Session.set("SocialOnButton",'postBtn')
-    if (postContent.browse != undefined)
-      browseTimes = postContent.browse + 1
-    else
-      browseTimes = 1
     if not Meteor.isCordova
       favicon = document.createElement('link');
       favicon.id = 'icon';
       favicon.rel = 'icon';
       favicon.href = postContent.mainImage;
       document.head.appendChild(favicon);
-    Meteor.setTimeout ()->
-        Posts.update(
-          {_id:postContent._id},
-          {$set:{
-              browse:browseTimes,
-            }
-          }
-        )
-      ,1000
+    Deps.autorun (h)->
+      if Meteor.userId() and Meteor.userId() isnt ''
+        h.stop()
+        Meteor.call('readPostReport',postContent._id,Meteor.userId())
     $('.textDiv1Link').linkify();
     $("a[target='_blank']").click((e)->
       e.preventDefault();
@@ -188,6 +179,8 @@ if Meteor.isClient
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
+    getMainImageHeight:()->
+      $(window).height()*0.55
     getAbstractSentence:->
       if Session.get('focusedIndex') isnt undefined
         Session.get('postContent').pub[Session.get('focusedIndex')].text

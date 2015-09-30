@@ -1,3 +1,10 @@
+subs = new SubsManager({
+  #maximum number of cache subscriptions
+  cacheLimit: 999,
+  # any subscription will be expire after 30 days, if it's not subscribed again
+  expireIn: 60*24*30
+});
+
 if Meteor.isClient
   Router.route '/redirect/:_id',()->
     Session.set('nextPostID',this.params._id)
@@ -5,8 +12,8 @@ if Meteor.isClient
     return
   Router.route '/posts/:_id', {
       waitOn: ->
-          [Meteor.subscribe("publicPosts",this.params._id),
-          Meteor.subscribe "pcomments"]
+          [subs.subscribe("publicPosts",this.params._id),
+           subs.subscribe "pcomments"]
       loadingTemplate: 'loadingPost'
       action: ->
         post = Posts.findOne({_id: this.params._id})
@@ -15,12 +22,6 @@ if Meteor.isClient
           this.render 'postNotFound'
           return
         Session.set("refComment",[''])
-        Meteor.subscribe "refcomments",()->
-          Meteor.setTimeout ()->
-            refComment = RefComments.find()
-            if refComment.count() > 0
-              Session.set("refComment",refComment.fetch())
-          ,2000
         Session.set('postContent',post)
         Session.set('focusedIndex',undefined)
         if post.addontitle and (post.addontitle isnt '')
@@ -50,12 +51,14 @@ if Meteor.isClient
         this.render 'postNotFound'
         return
       Session.set("refComment",[''])
+      ###
       Meteor.subscribe "refcomments",()->
         Meteor.setTimeout ()->
           refComment = RefComments.find()
           if refComment.count() > 0
             Session.set("refComment",refComment.fetch())
         ,2000
+      ###
       Session.set('postContent',post)
       Session.set('focusedIndex',this.params._index)
       if post.addontitle and (post.addontitle isnt '')
@@ -70,7 +73,7 @@ if Meteor.isClient
       document.head.appendChild(favicon)
 
       this.render 'showPosts', {data: post}
-      Session.set 'channel','posts/'+this.params._id
+      Session.set('channel','posts/'+this.params._id+'/'+this.params._index)
     fastRender: true
   }
   Router.route '/',()->
@@ -91,7 +94,7 @@ if Meteor.isClient
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->
-          [Meteor.subscribe("publicPosts",this.params._id),
-          Meteor.subscribe "pcomments"]
+          [subs.subscribe("publicPosts",this.params._id),
+           subs.subscribe "pcomments"]
       fastRender: true
     }

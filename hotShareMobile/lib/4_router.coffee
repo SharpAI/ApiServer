@@ -1,3 +1,10 @@
+subs = new SubsManager({
+  #maximum number of cache subscriptions
+  cacheLimit: 999,
+  # any subscription will be expire after 30 days, if it's not subscribed again
+  expireIn: 60*24*30
+});
+
 if Meteor.isClient
   Meteor.startup ()->
     Tracker.autorun ()->
@@ -92,8 +99,8 @@ if Meteor.isClient
       return
     Router.route '/posts/:_id', {
         waitOn: ->
-          [Meteor.subscribe("publicPosts",this.params._id),
-           Meteor.subscribe "pcomments"]
+          [subs.subscribe("publicPosts",this.params._id),
+           subs.subscribe "pcomments"]
         loadingTemplate: 'loadingPost'
         action: ->
           post = Posts.findOne({_id: this.params._id})

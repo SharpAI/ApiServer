@@ -2,6 +2,21 @@ if Meteor.isServer
   myCrypto = Meteor.npmRequire "crypto"
   Meteor.startup ()->
     Meteor.methods
+      "readPostReport": (postId,userId)->
+        if(!Match.test(postId, String) || !Match.test(userId, String))
+          return
+        try
+          post = Posts.findOne({_id:postId})
+          browseTimes = 1;
+          if post
+            if post.browse isnt undefined
+              browseTimes = post.browse + 1
+            Meteor.defer ()->
+              pushnotification("read",post,userId)
+          Posts.update({_id:postId},{$set:{browse:browseTimes}})
+        catch error
+          console.log('Error on RedpostReport' + error)
+
       "getS3WritePolicy": (filename, URI)->
         MAXIMUM_MB = 10
         SECONDS_BEFORE_TIMEOUT = 600
