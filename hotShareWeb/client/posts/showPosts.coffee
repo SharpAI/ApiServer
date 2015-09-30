@@ -169,6 +169,11 @@ if Meteor.isClient
       base_size=Math.floor($('#test').width()/6)
       left = (base_size*data_col)+'px'
       document.getElementById(this._id + "img").style.left = left
+    displayForwardBtn:()->
+      if history.length>1 and Session.get("historyForwardDisplay") is true
+        true
+      else
+        false
     displayBackBtn:()->
       if history.length>1
         postId=Session.get("postContent")._id
@@ -609,6 +614,7 @@ if Meteor.isClient
     'click .showPosts .back' :->
       Session.set("pcommetsId","")
       Session.set("pcommentsName","")
+      Session.set("historyForwardDisplay", true)
       $(window).children().off()
       $(window).unbind('scroll')
       history.back()

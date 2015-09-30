@@ -78,6 +78,7 @@ if Meteor.isClient
         Session.equals('momentsCollection','error')
     Template.moments.events
       'click .readpost':(e)->
+        Session.set("historyForwardDisplay", false)
         postId = this.readPostId
         if postId is undefined
           postId = this._id
@@ -87,6 +88,7 @@ if Meteor.isClient
           Router.go '/posts/'+postId
         ,300
       'click .masonry_element':(e)->
+        Session.set("historyForwardDisplay", false)
         postId = $(e.currentTarget).find('.readPost')[0].id
         if postId is undefined
           postId = this._id
@@ -109,6 +111,7 @@ if Meteor.isClient
       'click .readpost':(e)->
         postId = this.postId
         scrollTop = $(window).scrollTop()
+        Session.set("historyForwardDisplay", false)
         Session.set("pcommetsId",this.owner)
         Session.set("pcommentsName",this.ownerName)
         Session.set "toasted",false
