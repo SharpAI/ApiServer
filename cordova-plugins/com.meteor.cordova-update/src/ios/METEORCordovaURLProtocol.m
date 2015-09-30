@@ -37,6 +37,13 @@ NSDictionary *MimeTypeMappings = nil;
 
   NSString *filePath = [self filePathForURI:path allowDirectory:NO];
 
+  // Hack needed because we don't respect the URL-path mappings in program.json
+  // and these actually differ after the 1.2 build tool changes.
+  // So for now we just try again with /app in front of the path.
+  if (!filePath || ![[NSFileManager defaultManager] fileExistsAtPath:filePath isDirectory:NULL]) {
+    filePath = [self filePathForURI:[@"/app" stringByAppendingPathComponent:path] allowDirectory:NO];
+  }
+
   BOOL isDir = NO;
 
   // XXX HACKHACK if the file not found, return the root page
@@ -178,4 +185,3 @@ NSDictionary *MimeTypeMappings = nil;
 }
 
 @end
-
