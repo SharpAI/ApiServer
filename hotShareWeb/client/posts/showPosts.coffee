@@ -605,6 +605,12 @@ if Meteor.isClient
       Session.set("pcommentsName","")
       $(window).children().off()
       $(window).unbind('scroll')
+      history.forward()
+    'click .showPosts .back' :->
+      Session.set("pcommetsId","")
+      Session.set("pcommentsName","")
+      $(window).children().off()
+      $(window).unbind('scroll')
       history.back()
     'click #edit': (event)->
       #Clear draft first
