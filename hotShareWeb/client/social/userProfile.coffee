@@ -297,9 +297,6 @@ if Meteor.isClient
       if PopUpBox
         PopUpBox.close()
       if postId isnt Session.get('postContent')._id
-        Session.set 'displayShowPostLeftBackBtn',true
-        id = Session.get("postContent")._id
-        PUB.postPage(id,0)
         $(window).children().off()
         $(window).unbind('scroll')
         Meteor.setTimeout ()->
@@ -366,9 +363,6 @@ if Meteor.isClient
       if PopUpBox
         PopUpBox.close()
       if postId isnt Session.get('postContent')._id
-        Session.set 'displayShowPostLeftBackBtn',true
-        id = Session.get("postContent")._id
-        PUB.postPage(id,0)
         $(window).children().off()
         $(window).unbind('scroll')
         Meteor.setTimeout ()->
@@ -435,9 +429,6 @@ if Meteor.isClient
       if PopUpBox
         PopUpBox.close()
       if postId isnt Session.get('postContent')._id
-        Session.set 'displayShowPostLeftBackBtn',true
-        id = Session.get("postContent")._id
-        PUB.postPage(id,0)
         $(window).children().off()
         $(window).unbind('scroll')
         Meteor.setTimeout ()->

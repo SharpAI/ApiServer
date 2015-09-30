@@ -167,10 +167,17 @@ if Meteor.isClient
     getLeft: (data_col)->
       base_size=Math.floor($('#test').width()/6)
       (base_size*data_col)+'px'
-    displayBackBtn:->
-      if isAndroidFunc() and Session.get('displayShowPostLeftBackBtn') is true
-        true
+    displayBackBtn:()->
+      if history.length>1
+        postId=Session.get("postContent")._id
+        firstId=Session.get("firstPost")
+        if postId isnt firstId
+          true
+        else
+          false
       else
+        postId=Session.get("postContent")._id
+        Session.set("firstPost",postId)
         false
     getStyle:->
       self=this
@@ -596,10 +603,7 @@ if Meteor.isClient
       Session.set("pcommentsName","")
       $(window).children().off()
       $(window).unbind('scroll')
-      PUB.postPageBack()
-      if Session.get("Social.LevelOne.Menu") is 'userProfile'
-        Session.set("Social.LevelOne.Menu",'contactsList')
-        return
+      history.back()
     'click #edit': (event)->
       #Clear draft first
       Drafts.remove({})

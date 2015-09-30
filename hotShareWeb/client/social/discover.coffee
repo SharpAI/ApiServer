@@ -78,33 +78,21 @@ if Meteor.isClient
         Session.equals('momentsCollection','error')
     Template.moments.events
       'click .readpost':(e)->
-        Session.set 'displayShowPostLeftBackBtn',true
         postId = this.readPostId
-        scrollTop = $(window).scrollTop()
         if postId is undefined
           postId = this._id
         $(window).children().off()
         $(window).unbind('scroll')
-        id = Session.get("postContent")._id
-        Session.set 'displayShowPostLeftBackBtn',true
-        PUB.postPage(id,scrollTop)
         Meteor.setTimeout ()->
-          Session.set("Social.LevelOne.Menu",'contactsList')
           Router.go '/posts/'+postId
         ,300
       'click .masonry_element':(e)->
-        Session.set 'displayShowPostLeftBackBtn',true
         postId = $(e.currentTarget).find('.readPost')[0].id
-        scrollTop = $(window).scrollTop()
         if postId is undefined
           postId = this._id
         $(window).children().off()
         $(window).unbind('scroll')
-        id = Session.get("postContent")._id
-        Session.set 'displayShowPostLeftBackBtn',true
-        PUB.postPage(id,scrollTop)
         Meteor.setTimeout ()->
-          Session.set("Social.LevelOne.Menu",'contactsList')
           Router.go '/posts/'+postId
         ,300
     Template.lpcomments.helpers
@@ -119,7 +107,6 @@ if Meteor.isClient
         GetTime0(new Date() - created)
     Template.lpcomments.events
       'click .readpost':(e)->
-        Session.set 'displayShowPostLeftBackBtn',true
         postId = this.postId
         scrollTop = $(window).scrollTop()
         Session.set("pcommetsId",this.owner)
@@ -130,10 +117,7 @@ if Meteor.isClient
         if postId isnt id
           $(window).children().off()
           $(window).unbind('scroll')
-          Session.set 'displayShowPostLeftBackBtn',true
-          PUB.postPage(id,scrollTop)
           Meteor.setTimeout ()->
-            Session.set("Social.LevelOne.Menu",'contactsList')
             Router.go '/posts/'+postId
           ,300
         else

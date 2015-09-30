@@ -143,7 +143,6 @@ class @newLayout
     );
 Template.newLayoutContainer.events =
   'click .newLayout_element':(e)->
-    Session.set 'displayShowPostLeftBackBtn',true
     console.log('layoutId ' + this.displayId)
     postId = this.displayId
     scrollTop = $(window).scrollTop()
@@ -151,9 +150,6 @@ Template.newLayoutContainer.events =
       postId = this._id
     $(window).children().off()
     $(window).unbind('scroll')
-    id = Session.get("postContent")._id
-    PUB.postPage(id,scrollTop)
-    #Session.set("Social.LevelOne.Menu",'contactsList')
     Router.go '/posts/'+postId
 Template.newLayoutContainer.helpers =
   displayId:()->
