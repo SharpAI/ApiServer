@@ -159,13 +159,16 @@ if Meteor.isClient
         calcTextItemStyle(this.layout)
     getWidth: (data_sizex)->
       base_size=Math.floor($('#test').width()/6)
-      (base_size*data_sizex)+'px'
+      width = (base_size*data_sizex)+'px'
+      document.getElementById(this._id + "img").style.width = width
     getHeight: (data_sizey)->
       base_size=Math.floor($('#test').width()/6)
-      (base_size*data_sizey)+'px'
+      height = (base_size*data_sizey)+'px'
+      document.getElementById(this._id + "img").style.height = height
     getLeft: (data_col)->
       base_size=Math.floor($('#test').width()/6)
-      (base_size*data_col)+'px'
+      left = (base_size*data_col)+'px'
+      document.getElementById(this._id + "img").style.left = left
     displayBackBtn:()->
       if history.length>1
         postId=Session.get("postContent")._id

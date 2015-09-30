@@ -19,7 +19,11 @@
 .showPosts .contentList{position:relative;}
 .showPosts .content .img{clear: both; display: block; margin:auto;}
 .showPosts .content .text{word-break: break-all;white-space: pre-line;width: 65%;text-align: center;margin:5% auto;font-size: 20px;font-weight:bold;background:none;border:none;height:20px}
-.showPosts .content .gridster img.lazy{position:relative !important;}
+.showPosts .content .gridster img.lazy{
+//  position:relative !important;
+  object-fit:cover;width:100%;height:100%;
+//  display:inline-block;
+  z-index:1;}
 .showPosts .content .gridster .imgdiv{width: 100%;height: 100%;overflow: hidden;}
 .showPosts .content .gridster .textdiv{height:100%; width:100%}
 .showPosts .content .gridster textarea{font-size:large; margin: 0;color: black;white-space: pre-line;word-wrap: break-word;background :none; line-height: 30px; border:0px dotted #00c4ff;overflow-y: hidden; resize:vertical;height:100%;width:100%;box-sizing:border-box;}
