@@ -392,12 +392,13 @@ if Meteor.isClient
               toBeInsertedText = ''
             resortedArticle.push {type:'text',text:text,color:nodeColor,backgroundColor:nodeBackgroundColor}
           else
-            if toBeInsertedText.length < 1000
+            if text.length <80 and toBeInsertedText.length < 400
               if toBeInsertedText.length > 0
                 toBeInsertedText += '\n'
               toBeInsertedText += text
             else
-              resortedArticle.push {type:'text',text:toBeInsertedText}
+              if toBeInsertedText.length > 0
+                resortedArticle.push {type:'text',text:toBeInsertedText}
               toBeInsertedText = text;
         if node.tagName == 'IFRAME'
           node.width = '100%'
