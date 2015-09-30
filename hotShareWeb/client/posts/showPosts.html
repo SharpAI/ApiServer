@@ -8,15 +8,20 @@
       </div>
       <div class="head">
         {{#if displayBackBtn}}
-          <div class="leftButton back"><li class="fa fa-angle-left fa-fw"></li>上一篇</div>
+          <div class="leftButton" style="left: 0;margin: 0;">
+            <i class="fa fa-angle-left fa-fw forward" style="padding: 0;margin-top: 3px;width: auto;padding-left: 10px;"></i>
+            <i class="fa fa-angle-right fa-fw back" style="padding: 0;margin-top: 3px;width: auto;font-size: 2em;float: right;"></i>
+            <div class="back" style="float: right;font-size: 14px;margin-left: 10px;">后退</div>
+            <div class="forward" style="float: right;font-size: 14px;">前进</div>
+          </div>
         {{/if}}
           <div class="rightButton" style="font-weight:bold; color: red;" onclick="window.open('http://cdn.tiegushi.com', '_system');">点我创作</div>
         <div class="user">
           {{#if isMobile}}
             <img class="icon" src="{{ownerIcon}}" width='25' height='25'>
           {{/if}}
-          <span class="name">{{ownerName}}</span>
-          <div class="createAt">{{time_diff createdAt}}</div>
+          <span class="name userDashboard">{{ownerName}}</span>
+          <div class="createAt userDashboard">{{time_diff createdAt}}</div>
         </div>
 
         {{#if isMobile}}

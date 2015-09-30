@@ -517,7 +517,7 @@ if Meteor.isClient
           handleAddedLink(Session.get("postContent").fromUrl)
         else
           window.location.href=Session.get("postContent").fromUrl
-    'click .user':->
+    'click .userDashboard':->
       Session.set("ProfileUserId1", this.owner)
       Session.set("currentPageIndex",-1)
       Meteor.subscribe("userinfo", this.owner)
@@ -600,7 +600,7 @@ if Meteor.isClient
       console.log("#comment lost focus");
       if Meteor.isCordova and isIOS
         cordova.plugins.Keyboard.disableScroll(false)
-    'click .showPosts .back' :->
+    'click .showPosts .forward' :->
       Session.set("pcommetsId","")
       Session.set("pcommentsName","")
       $(window).children().off()
