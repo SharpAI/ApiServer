@@ -111,6 +111,7 @@ if Meteor.isClient
       'click .readpost':(e)->
         postId = this.postId
         scrollTop = $(window).scrollTop()
+        Session.set("pcurrentIndex",this.pindex)
         Session.set("historyForwardDisplay", false)
         Session.set("pcommetsId",this.owner)
         Session.set("pcommentsName",this.ownerName)

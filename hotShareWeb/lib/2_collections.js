@@ -486,7 +486,7 @@ if(Meteor.isServer){
                         var pfeeds=Feeds.findOne({followby:data.commentUserId,checked:false,postId:data.postId,pindex:pindex});
                         if(pfeeds || needRemove){
                             //console.log("==================already have feed==========");
-                            if(pfeeds)
+                            if(pfeeds && needRemove)
                                 Feeds.remove(pfeeds);
                         }else{
                             if(userinfo){
@@ -517,7 +517,7 @@ if(Meteor.isServer){
                     var pfeeds=Feeds.findOne({followby:doc.owner,checked:false,postId:doc._id,pindex:pindex});
                     if(pfeeds || needRemove){
                         //console.log("==================already have feed==========");
-                        if(pfeeds)
+                        if(pfeeds && needRemove)
                             Feeds.remove(pfeeds);
                     }else {
                         if (userinfo) {

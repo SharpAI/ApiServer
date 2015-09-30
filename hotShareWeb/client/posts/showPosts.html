@@ -118,7 +118,7 @@
                               </li>
                       {{else}}
                           <li class="postTextItem" id="{{_id}}">
-                                  <div class="textDiv1" text={{_id}} name="textarea" style="{{calcStyle}};{{getStyle}}"><span class="textDiv1Link">{{text}}</span> {{#if isTextLength text}}<div class='inlineScoring'>{{#if myselfClickedUp}}<i class="fa fa-thumbs-up thumbsUp" style="color:red;">{{plike}}</i>{{else}}<i class="fa fa-thumbs-o-up thumbsUp" style="color:red;">{{plike}}</i>{{/if}}  {{#if myselfClickedDown}}<i class="fa fa-thumbs-down thumbsDown" style="color:blue;">{{pdislike}}</i>{{else}}<i class="fa fa-thumbs-o-down thumbsDown" style="color:blue;">{{pdislike}}</i>{{/if}}  <i class="fa fa-comment-o pcomments" style="color:black;">{{pcomments}}</i></div>{{/if}}
+                                  <div class="textDiv1  {{pcIndex}}" text={{_id}} name="textarea" style="{{calcStyle}};{{getStyle}}"><span class="textDiv1Link">{{text}}</span> {{#if isTextLength text}}<div class='inlineScoring'>{{#if myselfClickedUp}}<i class="fa fa-thumbs-up thumbsUp" style="color:red;">{{plike}}</i>{{else}}<i class="fa fa-thumbs-o-up thumbsUp" style="color:red;">{{plike}}</i>{{/if}}  {{#if myselfClickedDown}}<i class="fa fa-thumbs-down thumbsDown" style="color:blue;">{{pdislike}}</i>{{else}}<i class="fa fa-thumbs-o-down thumbsDown" style="color:blue;">{{pdislike}}</i>{{/if}}  <i class="fa fa-comment-o pcomments" style="color:black;">{{pcomments}}</i></div>{{/if}}
                                   </div>
                           </li>
                       {{/if}}

@@ -206,6 +206,12 @@ if Meteor.isClient
       base_size=Math.floor($('#test').width()/6)
       height = (base_size*data_sizey)+'px'
       height
+    pcIndex:->
+      pcindex = Session.get("pcurrentIndex")
+      if this.index is pcindex
+        'dCurrent'
+      else
+        ''
     getStyle:->
       self=this
       pclength=0
@@ -224,11 +230,15 @@ if Meteor.isClient
             if icomment["userId"] is userId
               scolor="#304EF5"
               break
-      if scolor is "#304EF5" and Session.get("toasted") is false
-        Session.set "toasted",true
-        Session.set("postPageScrollTop", 0)
-        document.body.scrollTop = Session.get("postPageScrollTop")
-        PUB.toast(userName+"点评过的段落将为您用蓝色标注！")
+      if scolor is "#304EF5"
+        scrolltop = 0
+        if $('.dCurrent').length
+          scrolltop=$('.dCurrent').offset().top
+          Session.set("postPageScrollTop", scrolltop)
+          document.body.scrollTop = Session.get("postPageScrollTop")
+        if Session.get("toasted") is false
+          Session.set "toasted",true
+          PUB.toast(userName+"点评过的段落将为您用蓝色标注！")
       dislikeSum = 0
       if self.dislikeSum
         dislikeSum=self.dislikeSum
