@@ -201,17 +201,11 @@ if Meteor.isClient
       else
         calcTextItemStyle(this.layout)
     getWidth: (data_sizex)->
-      base_size=Math.floor($('#test').width()/6)
-      width = (base_size*data_sizex)+'px'
-      document.getElementById(this._id + "img").style.width = width
+      ((data_sizex/6)*100-1)+'%'
     getHeight: (data_sizey)->
       base_size=Math.floor($('#test').width()/6)
       height = (base_size*data_sizey)+'px'
-      document.getElementById(this._id + "img").style.height = height
-    getLeft: (data_col)->
-      base_size=Math.floor($('#test').width()/6)
-      left = (base_size*data_col)+'px'
-      document.getElementById(this._id + "img").style.left = left
+      height
     getStyle:->
       self=this
       pclength=0
