@@ -144,7 +144,6 @@ class @newLayout
 Template.newLayoutContainer.events =
   'click .newLayout_element':(e)->
     console.log('layoutId ' + this.displayId)
-    Session.set("postPageScrollTop",0)
     Session.set("historyForwardDisplay", false)
     postId = this.displayId
     scrollTop = $(window).scrollTop()

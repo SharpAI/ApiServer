@@ -31,6 +31,8 @@ if Meteor.isClient
         Session.set('displayUserProfileBox',false)
       onOpen: ->
         Session.set('displayUserProfileBox',true)
+  Template.showPosts.onDestroyed ->
+    Session.set("postPageScrollTop", 0)
   Template.showPosts.onRendered ->
     #Calc Wechat token after post rendered.
     calcPostSignature(window.location.href.split('#')[0]);
