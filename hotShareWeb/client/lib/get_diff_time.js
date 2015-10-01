@@ -17,16 +17,16 @@ GetTime0 = function(dateM){
     
     var prefix;
     if(dateM > DyMilli)
-        prefix = days+"天 前";
+        prefix = days+"天前";
     else if (dateM > HrMilli)
-        prefix = hours+"小时 前";
+        prefix = hours+"小时前";
     else if (dateM > MinMilli)                         
-        prefix = minutes+"分钟 前";
+        prefix = minutes+"分钟前";
     else if (dateM <= MinMilli){
         if (seconds <= 0)
             prefix = "刚刚";
         else
-            prefix = seconds+"秒 前";
+            prefix = seconds+"秒前";
     } else
         prefix = "";
     return prefix
