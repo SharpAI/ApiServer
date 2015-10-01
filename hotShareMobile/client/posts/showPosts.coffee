@@ -70,6 +70,7 @@ if Meteor.isClient
     if Meteor.isCorodva and device.platform is 'iOS'
       remoteControls.receiveRemoteEvent = remoteEventHandler
   Template.showPosts.onDestroyed ->
+    document.body.scrollTop = 0
     Session.set("postPageScrollTop", 0)
     $('.tool-container').remove()
     if $('.tts-stoper').is(':visible')
