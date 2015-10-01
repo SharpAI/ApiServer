@@ -119,8 +119,8 @@ if Meteor.isClient
         Feeds.update({_id:this._id},{$set: {checked:true}})
         id = Session.get("postContent")._id
         if postId isnt id
-          $(window).children().off()
-          $(window).unbind('scroll')
+          #$(window).children().off()
+          #$(window).unbind('scroll')
           Meteor.setTimeout ()->
             Router.go '/posts/'+postId
           ,300
