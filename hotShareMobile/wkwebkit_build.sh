@@ -1,5 +1,5 @@
 #!/bin/bash
-meteor add cordova:com.meteor.cordova-update@file://../cordova-plugins/com.meteor.cordova-update
+meteor add cordova:com.meteor.cordova-update@file://../cordova-plugins/cordova-update
 meteor add practicalmeteor:wkwebview
 
 sh ./build.sh

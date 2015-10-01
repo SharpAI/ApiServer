@@ -63,14 +63,6 @@ public class CordovaUpdatePlugin extends CordovaPlugin {
 
         Remapped remapped = remap(uri);
 
-        // Hack needed because we don't respect the URL-path mappings in program.json
-        // and these actually differ after the 1.2 build tool changes.
-        // So for now we just try again with /app in front of the path.
-        if (remapped == null) {
-          Uri altUri = uri.buildUpon().path("app" + uri.getPath()).build();
-          remapped = remap(altUri);
-        }
-
         if (remapped == null) {
             // If e.g. /lists/doesnotexist is not found, we will try to serve /index.html
             // XXX: This needs a double-check, to make sure it works the same as ./packages/webapp/webapp_server.js
@@ -216,7 +208,7 @@ public class CordovaUpdatePlugin extends CordovaPlugin {
                     Log.w(TAG, "Could not find asset: " + wwwRoot + ", default to asset root");
                     wwwAsset = getAssetRoot();
                 }
-                appRemapper = new AssetUriRemapper(wwwAsset, false);
+                appRemapper = new AssetUriRemapper(wwwAsset, true);
             }
 
             // XXX HACKHACK serve cordova.js from the containing folder
