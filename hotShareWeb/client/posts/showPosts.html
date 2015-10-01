@@ -76,53 +76,7 @@
         <div class="gridster">
           <ul id="test">
               {{#each getPub}}
-                  {{#if isImage}}
-                      {{#if inIframe}}
-                          <li class='postItem' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
-                              <div class="imgdiv">
-                                  {{{iframe}}}
-                              </div>
-                          </li>
-                      {{else}}
-                          <li class='postImageItem' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}"
-                              style="width:{{getWidth data_sizex}};height:{{getHeight data_sizey}};margin-top:2%;margin-bottom: 2%;">
-                              {{>padding}}
-                              <img id="{{_id}}img" class="lazy" data-original="{{imgUrl}}" style="object-fit:cover;width:100%;height:100%;position:absolute;{{style}};z-index=1;" >
-                              <!--
-                              <div class="like_div" style="position:absolute;z-index=2;  right: 5px;bottom: 10px;">
-                                    {{#if  isMyLike pub_Heart}}
-                                      <img class ="like_img" src="/img/like.png" style="display:block">
-                                    {{else}}
-                                      <img class ="like_img" src="/img/unlike.png" style="display:block">
-                                    {{/if}}
-                              </div>
-                              <div class="count_div" style="position:absolute;z-index=2; ">
-                                  {{like_Count}}
-                              </div>
-                              -->
-                          </li>
-                      {{/if}}
-                  {{else}}
-                      {{#if musicInfo}}
-                              <li class='postItem' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
-                                    <span class="play_area">
-                                        <img src="{{musicInfo.image}}">
-                                    </span>
-
-                                    <audio autoplay="autoplay" controls="controls">
-                                        <source src="{{musicInfo.playUrl}}">
-                                        您的浏览器并不支持音频播放，请在微信中打开
-                                    </audio>
-                                    <span class="songname">{{musicInfo.songName}}</span>
-                                    <span class="singername">{{musicInfo.singerName}}</span>
-                              </li>
-                      {{else}}
-                          <li class="postTextItem" id="{{_id}}">
-                                  <div class="textDiv1  {{pcIndex}}" text={{_id}} name="textarea" style="{{calcStyle}};{{getStyle}}"><span class="textDiv1Link">{{text}}</span> {{#if isTextLength text}}<div class='inlineScoring'>{{#if myselfClickedUp}}<i class="fa fa-thumbs-up thumbsUp" style="color:red;">{{plike}}</i>{{else}}<i class="fa fa-thumbs-o-up thumbsUp" style="color:red;">{{plike}}</i>{{/if}}  {{#if myselfClickedDown}}<i class="fa fa-thumbs-down thumbsDown" style="color:blue;">{{pdislike}}</i>{{else}}<i class="fa fa-thumbs-o-down thumbsDown" style="color:blue;">{{pdislike}}</i>{{/if}}  <i class="fa fa-comment-o pcomments" style="color:black;">{{pcomments}}</i></div>{{/if}}
-                                  </div>
-                          </li>
-                      {{/if}}
-                  {{/if}}
+                  {{>postItem}}
               {{/each}}
           </ul>
         </div>
