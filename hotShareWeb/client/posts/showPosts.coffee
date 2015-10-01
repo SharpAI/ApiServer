@@ -32,6 +32,7 @@ if Meteor.isClient
       onOpen: ->
         Session.set('displayUserProfileBox',true)
   Template.showPosts.onDestroyed ->
+    document.body.scrollTop = 0
     Session.set("postPageScrollTop", 0)
   Template.showPosts.onRendered ->
     #Calc Wechat token after post rendered.
