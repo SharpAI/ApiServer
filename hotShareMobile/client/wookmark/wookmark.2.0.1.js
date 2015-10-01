@@ -694,12 +694,12 @@
       var column = this.columns[i];
       for(k=column.length -1; k>=0;k--){
         if ( column[k] == item ) {
-          console.log('Same ITEM');
+          wookmark_debug&&console.log('Same ITEM');
           return true;
         }
       }
     }
-    console.log('Not sameitem');
+    wookmark_debug&&console.log('Not sameitem');
     return false;
   };
   Wookmark.prototype.needRelayout = function(){
@@ -720,9 +720,9 @@
         }
         calcTotalHeight = calcTotalHeight + getData(column[k], 'height', true) +  this.verticalOffset;
       }
-      console.log( 'calcTotalHeight: ' + calcTotalHeight + ' columnHeight: ' + (columnHeight+this.verticalOffset));
+      wookmark_debug&&console.log( 'calcTotalHeight: ' + calcTotalHeight + ' columnHeight: ' + (columnHeight+this.verticalOffset));
       if (calcTotalHeight !== columnHeight+this.verticalOffset) {
-        console.log('Got white block on display');
+        wookmark_debug&&console.log('Got white block on display');
         return true;
       }
     }
@@ -733,14 +733,14 @@
     // Do nothing if container isn't visible
     if (isHidden(this.container)) { return; }
     if ($.isNumeric(getData(item, 'top', true))){
-      console.log('Already processed');
+      wookmark_debug&&console.log('Already processed');
       if (typeof callback === 'function') {
         callback(new Error('Duplicated'));
       }
       return;
     }
     /*if (this.isItemAlreadyThere(item)){
-      console.log('ALready there, not need append again');
+      wookmark_debug&&console.log('ALready there, not need append again');
       return;
     }*/
     // Calculate basic layout parameters.
@@ -785,7 +785,7 @@
 
     maxHeight = this.layoutOneItem(columnWidth, columns,item, offset);
 
-    console.log('Added ' + this.activeItemCount + ' height ' + item.offsetHeight + ' top ' + getData(item,'top') + ' container height ' + maxHeight);
+    wookmark_debug&&console.log('Added ' + this.activeItemCount + ' height ' + item.offsetHeight + ' top ' + getData(item,'top') + ' container height ' + maxHeight);
     this.activeItemCount ++;
 
     // Set container height to height of the grid.
