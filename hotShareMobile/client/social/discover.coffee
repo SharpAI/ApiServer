@@ -56,9 +56,6 @@ if Meteor.isClient
         Session.get("postContent")._id
       newLayoutMoment:()->
         withNewLayoutMoment
-      getWidth:()->
-        console.log('width is ' + Math.round(document.width*0.49))
-        Math.round(document.width*0.49)
       NoMoments:()->
         if DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
           false

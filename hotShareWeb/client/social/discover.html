@@ -55,7 +55,7 @@
                 <div>加载失败，请检查网络设置或稍后重试</div>
             {{/if}}
             {{#if newLayoutMoment}}
-                {{#newLayoutContainer columnWidth=getWidth gutter=0 layoutId=onPostId }}
+                {{#newLayoutContainer layoutId=onPostId }}
                     {{#each suggestPosts}}
                         {{#newLayoutElement layoutId=onPostId displayId=_id}}
                             <div class="img_placeholder">
