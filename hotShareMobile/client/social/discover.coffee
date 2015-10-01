@@ -88,7 +88,7 @@ if Meteor.isClient
         #PUB.postPage(id,scrollTop)
         Meteor.setTimeout ()->
           Session.set("Social.LevelOne.Menu",'contactsList')
-          Router.go '/redirect/'+postId
+          Router.go '/posts/'+postId
         ,300
       'click .masonry_element':(e)->
         postId = $(e.currentTarget).find('.readPost')[0].id
@@ -101,7 +101,7 @@ if Meteor.isClient
         #PUB.postPage(id,scrollTop)
         Meteor.setTimeout ()->
           Session.set("Social.LevelOne.Menu",'contactsList')
-          Router.go '/redirect/'+postId
+          Router.go '/posts/'+postId
         ,300
     Template.lpcomments.helpers
       description:->
@@ -129,7 +129,7 @@ if Meteor.isClient
           #PUB.postPage(id,scrollTop)
           Meteor.setTimeout ()->
             Session.set("Social.LevelOne.Menu",'contactsList')
-            Router.go '/redirect/'+postId
+            Router.go '/posts/'+postId
           ,300
         else
           document.body.scrollTop = 0

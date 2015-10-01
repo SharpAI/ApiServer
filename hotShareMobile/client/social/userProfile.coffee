@@ -301,7 +301,7 @@ if Meteor.isClient
         PopUpBox.close()
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
-        Router.go '/redirect/'+postId
+        Router.go '/posts/'+postId
       ,300
     'click #addToContactList': ()->
       addToContactList("ProfileUserId1")
@@ -367,7 +367,7 @@ if Meteor.isClient
         PopUpBox.close()
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
-        Router.go '/redirect/'+postId
+        Router.go '/posts/'+postId
       ,300
     'click #addToContactList': ()->
       addToContactList("ProfileUserId2")
@@ -434,7 +434,7 @@ if Meteor.isClient
         PopUpBox.close()
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
-        Router.go '/redirect/'+postId
+        Router.go '/posts/'+postId
       ,300
     'click #addToContactList': ()->
       addToContactList("ProfileUserId3")
