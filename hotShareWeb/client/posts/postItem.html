@@ -1,26 +1,23 @@
 <template name="postItem">
     {{#if isImage}}
         {{#if inIframe}}
-            <div class='postItem element' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
+            <div class='postItem element' id="{{_id}}">
                 <div class="imgdiv">
                     {{{iframe}}}
                 </div>
             </div>
         {{else}}
-            <!--<div class='postImageItem' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}"
-                 style="width:{{getWidth data_sizex}};height:{{getHeight data_sizey}};margin-top:2%;margin-bottom: 2%;">
+            <div class='postImageItem element' id="{{_id}}">
                 {{>padding}}
-            -->
-            <img id="{{_id}}img" class="lazy postImageItem element" data-original="{{imgUrl}}" style="{{style}};" >
-            <!--</div>-->
+                <img id="{{_id}}img" class="lazy" data-original="{{imgUrl}}" style="{{style}};" >
+            </div>
         {{/if}}
     {{else}}
         {{#if musicInfo}}
-            <div class='element' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
-                                    <span class="play_area">
-                                        <img src="{{musicInfo.image}}">
-                                    </span>
-
+            <div class='element' id="{{_id}}">
+                <span class="play_area">
+                    <img src="{{musicInfo.image}}">
+                </span>
                 <audio autoplay="autoplay" controls="controls">
                     <source src="{{musicInfo.playUrl}}">
                     您的浏览器并不支持音频播放，请在微信中打开

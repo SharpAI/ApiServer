@@ -22,33 +22,28 @@ if Meteor.isClient
       #Initial the layoutHelper
       updateLayoutData(layoutHelper,1,6,parentNode.offsetTop)
     element.style.top=getLayoutTop(layoutHelper,myData.data_col,myData.data_sizex)+imageMarginPixel+'px'
-    if myData.type is 'image' and !myData.inIframe
-      img=this.find('img')
-      img.height=myData.data_sizey*getBaseHeight()-imageMarginPixel
+    if myData.type is 'image'
+      element.style.height=myData.data_sizey*getBaseHeight()+'px'
       if myData.data_col isnt 1
-        img.style.left=(parentNode.offsetLeft+(myData.data_col-1)*getBaseWidth()+imageMarginPixel)+'px'
-        img.width=myData.data_sizex*getBaseWidth()-imageMarginPixel
+        element.style.left=(parentNode.offsetLeft+(myData.data_col-1)*getBaseWidth()+imageMarginPixel)+'px'
+        element.style.width=(myData.data_sizex*getBaseWidth()-imageMarginPixel)+'px'
       else
-        img.width=myData.data_sizex*getBaseWidth()
-        img.style.left=parentNode.offsetLeft+(myData.data_col-1)*getBaseWidth()+'px'
+        element.style.left=parentNode.offsetLeft+(myData.data_col-1)*getBaseWidth()+'px'
+        element.style.width=myData.data_sizex*getBaseWidth()+'px'
+      img=this.find('img')
       $(img).lazyload()
     else if myData.type is 'text'
       element.style.width=parentNode.offsetWidth+'px'
-    else if myData.inIframe
-      element.style.width=myData.data_sizex*getBaseWidth()+'px'
-      element.style.height=myData.data_sizey*getBaseHeight()+'px'
     else if myData.type is 'music'
       element.style.width=myData.data_sizex*getBaseWidth()+'px'
       element.style.height=2*getBaseHeight()+'px'
     elementBottom=element.offsetTop+element.offsetHeight
     updateLayoutData(layoutHelper,myData.data_col,myData.data_sizex,elementBottom)
-
     console.log('['+this.data.index+']'+' '+myData.type+' col '+myData.data_col+
         ' row '+myData.data_row+' h '+myData.data_sizey+' w '+myData.data_sizex+
         ' H '+element.offsetHeight+'/'+element.clientHeight+' W '+element.offsetWidth+' Top '+element.offsetTop
     )
     parentNode.style.height=getLayoutTop(layoutHelper,1,6)-parentNode.offsetTop+'px'
-    return
   Template.postItem.events
     'click .thumbsUp': (e)->
       thumbsUpHandler(e,this)
