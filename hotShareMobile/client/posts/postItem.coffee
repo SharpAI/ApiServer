@@ -33,10 +33,10 @@ if Meteor.isClient
     elementBottom=element.offsetTop+element.offsetHeight
     updateLayoutData(layoutHelper,myData.data_col,myData.data_sizex,elementBottom)
     parentNode.style.height=getLayoutTop(layoutHelper,1,6)-parentNode.offsetTop+'px'
-    console.log('['+this.data.index+']'+' '+myData.type+' col '+myData.data_col+
-        ' row '+myData.data_row+' h '+myData.data_sizey+' w '+myData.data_sizex+
-        ' H '+element.offsetHeight+'/'+element.clientHeight+' W '+element.offsetWidth+' Top '+element.offsetTop
-    )
+    #console.log('['+this.data.index+']'+' '+myData.type+' col '+myData.data_col+
+    #    ' row '+myData.data_row+' h '+myData.data_sizey+' w '+myData.data_sizex+
+    #    ' H '+element.offsetHeight+'/'+element.clientHeight+' W '+element.offsetWidth+' Top '+element.offsetTop
+    #)
   Template.postItem.events
     'click .thumbsUp': (e)->
       thumbsUpHandler(e,this)

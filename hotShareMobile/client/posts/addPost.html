@@ -81,17 +81,23 @@
                         {{/if}}
                     {{else}}
                         {{#if musicInfo}}
-                            <li class='resortitem hastextarea' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
-                                <span class="play_area">
-                                    <img src="{{musicInfo.image}}">
+                            <li class='resortitem postAudioItem element' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
+                                <span class="musicContainer">
+                                    <span class="music_bd">
+                                        <span class="play_area">
+                                            <i class="icon_music_switch"></i>
+                                            <img src="/music_pic_default.png" alt="" class="pic_music_default">
+                                            <img src="{{musicInfo.image}}" class="music_thumb" alt="">
+                                            <audio preload="auto">
+                                                <source src="{{musicInfo.playUrl}}">
+                                            </audio>
+                                        </span>
+                                        <a class="description">
+                                            <span class="songname">{{musicInfo.songName}}</span>
+                                            <span class="singername">{{musicInfo.singerName}}</span>
+                                        </a>
+                                    </span>
                                 </span>
-
-                                <audio controls="controls">
-                                    <source src="{{musicInfo.playUrl}}">
-                                    您的浏览器并不支持音频播放，请在微信中打开
-                                </audio>
-                                <span class="songname">{{musicInfo.songName}}</span>
-                                <span class="singername">{{musicInfo.singerName}}</span>
                             </li>
                         {{else}}
                             <li class='resortitem hastextarea' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
