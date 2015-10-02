@@ -8,12 +8,12 @@ if Meteor.isClient
   imageMarginPixel=5
   getLayoutTop=(helper,col,sizeX)->
     max=0
-    for i in [(col-1)..sizeX]
-      max=Math.max(max,helper[i])
+    for i in [col..(col+sizeX-1)]
+      max=Math.max(max,helper[(i-1)])
     max
   updateLayoutData=(helper,col,sizeX,bottom)->
-    for i in [(col-1)..sizeX]
-      helper[i]=bottom
+    for i in [col..(col+sizeX-1)]
+      helper[(i-1)]=bottom
   Template.postItem.onRendered ()->
     element=this.find('.element')
     myData=this.data
