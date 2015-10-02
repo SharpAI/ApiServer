@@ -1,10 +1,8 @@
 <template name="postItem">
     {{#if isImage}}
         {{#if inIframe}}
-            <div class='postItem element' id="{{_id}}">
-                <div class="imgdiv">
-                    {{{iframe}}}
-                </div>
+            <div class='postIframeItem element' id="{{_id}}">
+                {{{iframe}}}
             </div>
         {{else}}
             <div class='postImageItem element' id="{{_id}}">
@@ -14,7 +12,7 @@
         {{/if}}
     {{else}}
         {{#if musicInfo}}
-            <div class='element' id="{{_id}}">
+            <div class='postAudioItem element' id="{{_id}}">
                 <span class="play_area">
                     <img src="{{musicInfo.image}}">
                 </span>
