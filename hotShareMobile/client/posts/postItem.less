@@ -11,6 +11,97 @@
   margin-left: 0;
   margin-right: 0;
 }
+.showPosts .content .gridster .postAudioItem{
+  display: block;
+  width: 100%;
+  margin: 17px 1px 16px 0;
+  font-weight: 400;
+  text-decoration: none;
+  font-size: 0;
+  line-height: 0;
+  text-align: left;
+}
+.postAudioItem .musicContainer{
+  border: 1px solid #ebebeb;
+  line-height: 1.6;
+  display:block;
+}
+.musicContainer .music_bd{
+  position: relative;
+  background-color: #fcfcfc;
+  overflow: hidden;
+  display:block;
+}
+.music_bd .play_area{
+  float: left;
+  width: 60px;
+  height: 60px;
+  margin-right: 12px;
+  position: relative;
+}
+.music_bd .description{
+  display: block;
+  color: #8c8c8c;
+  min-height: 60px;
+  overflow: hidden;
+  margin-right: 10px;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  outline: 0;
+}
+.description .songname,.singername{
+  display: block;
+  width: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: normal
+}
+.description .songname{
+  padding: 7px 0 3px;
+  margin-bottom: -4px;
+  font-size: 16px;
+  color: #3e3e3e
+}
+.description .singername{
+  font-size: 14px;
+  margin-right: 20px
+}
+.music_playing .icon_music_switch {
+  background-image: url('/play_sprite.png') !important;
+  background-position: 0 -42px !important;
+}
+.play_area .icon_music_switch{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -18.5px;
+  margin-left: -18.5px;
+  line-height: 200px;
+  overflow: hidden;
+  cursor: pointer;
+  width: 37px;
+  height: 37px;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  outline: 0;
+  background: transparent url('/play_sprite.png') no-repeat 0 0;
+  -webkit-background-size: 37px auto;
+  background-size: 37px auto;
+}
+.play_area .pic_music_default{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -18.5px;
+  margin-left: -18.5px;
+  width: 37px;
+  height: 37px;
+  display: none;
+}
+.play_area .music_thumb{
+  display: block;
+  width: 60px;
+  height: 60px !important
+}
 .showPosts .content .gridster .postImageItem img{
   width:100%;
   height:100%;
