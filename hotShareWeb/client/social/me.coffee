@@ -17,10 +17,10 @@ if Meteor.isClient
     document.ontouchmove = (e) ->
       e.preventDefault()
       return
-  ###
   Template.information.destroyed=->
     document.ontouchmove = (e) ->
       true
+  ###
   Template.information.helpers
     nickname:()->
       if Meteor.user()
