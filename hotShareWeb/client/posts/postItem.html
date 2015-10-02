@@ -19,11 +19,10 @@
                             <i class="icon_music_switch"></i>
                             <img src="/music_pic_default.png" alt="" class="pic_music_default">
                             <img src="{{musicInfo.image}}" class="music_thumb" alt="">
+                            <audio preload="auto">
+                                <source src="{{musicInfo.playUrl}}">
+                            </audio>
                         </span>
-                        <!--<audio>
-                            <source src="{{musicInfo.playUrl}}">
-                            您的浏览器并不支持音频播放，请在微信中打开
-                        </audio>-->
                         <a class="description">
                             <span class="songname">{{musicInfo.songName}}</span>
                             <span class="singername">{{musicInfo.singerName}}</span>

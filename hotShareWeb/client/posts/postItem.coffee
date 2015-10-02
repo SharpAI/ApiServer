@@ -50,10 +50,22 @@ if Meteor.isClient
         $('#pcommitReport').focus()
       Session.set "pcommentIndexNum", this.index
     'click .play_area': (e)->
-      if $(e.currentTarget).hasClass('music_playing')
-        $(e.currentTarget).removeClass('music_playing')
+      $node=$(e.currentTarget)
+      $audio=$node.find('audio')
+      if $node.hasClass('music_playing')
+        $node.removeClass('music_playing')
+        $audio.trigger('pause')
       else
-        $(e.currentTarget).addClass('music_playing')
+        $node.addClass('music_playing')
+        $audio.trigger('play')
+    'pause audio':()->
+      console.log('Audio Paused')
+    'playing audio':()->
+      console.log('Audio playing')
+    'ended audio': (e)->
+      console.log('audio end')
+      if $(e.currentTarget).parent().hasClass('music_playing')
+        $(e.currentTarget).parent().removeClass('music_playing')
   Template.postItem.helpers
     calcStyle: ()->
       # For backforward compatible. Only older version set style directly
