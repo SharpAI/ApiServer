@@ -63,9 +63,14 @@ if Meteor.isClient
     'playing audio':()->
       console.log('Audio playing')
     'ended audio': (e)->
-      console.log('audio end')
+      console.log('Audio End')
       if $(e.currentTarget).parent().hasClass('music_playing')
         $(e.currentTarget).parent().removeClass('music_playing')
+    'error audio': (e)->
+      console.log('Audio Error')
+      if $(e.currentTarget).parent().hasClass('music_playing')
+        $(e.currentTarget).parent().removeClass('music_playing')
+
   Template.postItem.helpers
     calcStyle: ()->
       # For backforward compatible. Only older version set style directly
