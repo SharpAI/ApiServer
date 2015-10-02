@@ -30,8 +30,6 @@ if Meteor.isClient
       else
         element.style.left=parentNode.offsetLeft+(myData.data_col-1)*getBaseWidth()+'px'
         element.style.width=myData.data_sizex*getBaseWidth()+'px'
-      img=this.find('img')
-      $(img).lazyload()
     else if myData.type is 'text'
       element.style.width=parentNode.offsetWidth+'px'
     else if myData.type is 'music'
