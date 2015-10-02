@@ -1,5 +1,66 @@
 
 if Meteor.isClient
+  getBaseWidth=()->
+    ($('.showPosts').width()-30)/6
+  getBaseHeight=()->
+    ($('.showPosts').width()-30)/6
+  layoutHelper=[0,0,0,0,0,0]
+  imageMarginPixel=5
+  getLayoutTop=(helper,col,sizeX)->
+    max=0
+    for i in [(col-1)..sizeX]
+      max=Math.max(max,helper[i])
+    max
+  updateLayoutData=(helper,col,sizeX,bottom)->
+    for i in [(col-1)..sizeX]
+      helper[i]=bottom
+  Template.postItem.onRendered ()->
+    element=this.find('.element')
+    myData=this.data
+    parentNode=element.parentNode
+    if myData.index is 0
+      #Initial the layoutHelper
+      updateLayoutData(layoutHelper,1,6,parentNode.offsetTop)
+    element.style.top=getLayoutTop(layoutHelper,myData.data_col,myData.data_sizex)+imageMarginPixel+'px'
+    if myData.type is 'image' and !myData.inIframe
+      img=this.find('img')
+      img.height=myData.data_sizey*getBaseHeight()-imageMarginPixel
+      if myData.data_col isnt 1
+        img.style.left=(parentNode.offsetLeft+(myData.data_col-1)*getBaseWidth()+imageMarginPixel)+'px'
+        img.width=myData.data_sizex*getBaseWidth()-imageMarginPixel
+      else
+        img.width=myData.data_sizex*getBaseWidth()
+        img.style.left=parentNode.offsetLeft+(myData.data_col-1)*getBaseWidth()+'px'
+      $(img).lazyload()
+    else if myData.type is 'text'
+      element.style.width=parentNode.offsetWidth+'px'
+    else if myData.inIframe
+      element.style.width=myData.data_sizex*getBaseWidth()+'px'
+      element.style.height=myData.data_sizey*getBaseHeight()+'px'
+    else if myData.type is 'music'
+      element.style.width=myData.data_sizex*getBaseWidth()+'px'
+      element.style.height=2*getBaseHeight()+'px'
+    elementBottom=element.offsetTop+element.offsetHeight
+    updateLayoutData(layoutHelper,myData.data_col,myData.data_sizex,elementBottom)
+
+    console.log('['+this.data.index+']'+' '+myData.type+' col '+myData.data_col+
+        ' row '+myData.data_row+' h '+myData.data_sizey+' w '+myData.data_sizex+
+        ' H '+element.offsetHeight+'/'+element.clientHeight+' W '+element.offsetWidth+' Top '+element.offsetTop
+    )
+    parentNode.style.height=getLayoutTop(layoutHelper,1,6)-parentNode.offsetTop+'px'
+    return
+  Template.postItem.events
+    'click .thumbsUp': (e)->
+      thumbsUpHandler(e,this)
+    'click .thumbsDown': (e)->
+      thumbsDownHandler(e,this)
+    'click .pcomments': (e)->
+      backgroundTop = 0-$(window).scrollTop()
+      Session.set('backgroundTop', backgroundTop);
+      $('.showBgColor').attr('style','position:fixed;top:'+Session.get('backgroundTop')+'px')
+      $('.pcommentsList,.alertBackground').fadeIn 300, ()->
+        $('#pcommitReport').focus()
+      Session.set "pcommentIndexNum", this.index
   Template.postItem.helpers
     calcStyle: ()->
       # For backforward compatible. Only older version set style directly
@@ -20,6 +81,21 @@ if Meteor.isClient
         'dCurrent'
       else
         ''
+    plike:->
+      if this.likeSum is undefined
+        0
+      else
+        this.likeSum
+    pdislike:->
+      if this.dislikeSum is undefined
+        0
+      else
+        this.dislikeSum
+    pcomments:->
+      if this.pcomments is undefined
+        0
+      else
+        this.pcomments.length
     getStyle:->
       self=this
       pclength=0
@@ -60,9 +136,3 @@ if Meteor.isClient
           "color: "+scolor+";"
         else
           self.style.replace("grey",scolor).replace("rgb(128, 128, 128)",scolor).replace("rgb(0, 0, 0)",scolor).replace("#F30B44",scolor)
-    getWidth: (data_sizex)->
-      ((data_sizex/6)*100-1)+'%'
-    getHeight: (data_sizey)->
-      base_size=Math.floor($('#test').width()/6)
-      height = (base_size*data_sizey)+'px'
-      height
