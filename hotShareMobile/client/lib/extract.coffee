@@ -254,7 +254,36 @@ collectSiblings = (top) ->
       root.appendChild(s) if isAcceptableSibling(top, s)
       root),
     document.createElement("div"))
-
+collectNodeSibling=(node)->
+  el=node.nextSibling
+  count=0
+  while (el)
+    console.log(count+' Self.nextSibling Tag is '+el.tagName+' my text '+
+        textContentFor(node)+' siblingNode text'+textContentFor(el)+
+        ' siblingNode is text node '+(el.nodeType is Node.TEXT_NODE))
+    next=el.nextSibling
+    if el.tagName is 'BR'
+      console.log('Has BR')
+      node.textContent=node.textContent+'\n'
+      node.parentNode.removeChild(el)
+    else if el.tagName is 'SPAN'
+      text=textContentFor(el)
+      if text
+        console.log('Hit SPAN'+text)
+        node.textContent=node.textContent+text
+      node.parentNode.removeChild(el)
+    else if el.nodeType is Node.TEXT_NODE
+      text=textContentFor(el)
+      console.log('Hit TEXT_NODE'+text)
+      if text
+        node.textContent=node.textContent+text
+        node.parentNode.removeChild(el)
+    else
+      console.log('Stop processing')
+      return false
+    el = next;
+    count++
+  return true
 @extract = (page) ->
   parified = _.map($(page).find('*'), parify)
   for tag in specialClassNameForPopularMobileSite
@@ -269,39 +298,14 @@ collectSiblings = (top) ->
                 return NodeFilter.FILTER_REJECT
               unless node.hasChildNodes()
                 if node.nodeType is Node.TEXT_NODE
-                  el=node.nextSibling
-                  count=0
-                  while (el)
-                    console.log(count+' Self.nextSibling Tag is '+el.tagName+' my text '+
-                        textContentFor(node)+' siblingNode text'+textContentFor(el)+
-                        ' siblingNode is text node '+(el.nodeType is Node.TEXT_NODE))
-                    next=el.nextSibling
-                    if el.tagName is 'BR'
-                      console.log('Has BR')
-                      node.textContent=node.textContent+'\n'
-                      node.parentNode.removeChild(el)
-                    else if el.tagName is 'SPAN'
-                      text=textContentFor(el)
-                      if text
-                        console.log('Hit SPAN'+text)
-                        node.textContent=node.textContent+text
-                      node.parentNode.removeChild(el)
-                    else if el.nodeType is Node.TEXT_NODE
-                      text=textContentFor(el)
-                      console.log('Hit TEXT_NODE'+text)
-                      if text
-                        node.textContent=node.textContent+text
-                        node.parentNode.removeChild(el)
-                    else
-                      console.log('Stop processing')
-                      return NodeFilter.FILTER_ACCEPT
-                    el = next;
-                    count++
-                  if node.parentNode
-                    if node.parentNode.nextSibling
-                      console.log('Parent nextSibling is '+node.parentNode.nextSibling.tagName+' my text '+
-                          textContentFor(node)+' next text'+textContentFor(node.parentNode.nextSibling)+
-                          ' next is text node '+(node.parentNode.nextSibling.nodeType is Node.TEXT_NODE))
+                  if collectNodeSibling(node) is false
+                    return NodeFilter.FILTER_ACCEPT
+                  #if node.parentNode and node.parentNode.tagName is 'SPAN'
+                    #if node.parentNode.nextSibling
+                    #  console.log('Parent nextSibling is '+node.parentNode.nextSibling.tagName+' my text '+
+                    #      textContentFor(node)+' next text'+textContentFor(node.parentNode.nextSibling)+
+                    #      ' next is text node '+(node.parentNode.nextSibling.nodeType is Node.TEXT_NODE))
+                  #  collectNodeSibling(node.parentNode)
               return NodeFilter.FILTER_ACCEPT
             catch e
               return NodeFilter.FILTER_REJECT
