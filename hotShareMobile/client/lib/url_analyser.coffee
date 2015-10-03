@@ -380,6 +380,7 @@ if Meteor.isClient
           if toBeInsertedText.length > 0
             resortedArticle.push {type:'text',text:toBeInsertedText}
             toBeInsertedText = '';
+            return true
         text = $(node).text().toString().replace(/\s\s\s+/g, '')
         if text and text isnt ''
           previousIsImage = false
