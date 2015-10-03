@@ -259,7 +259,6 @@ collectSiblings = (top) ->
   parified = _.map($(page).find('*'), parify)
   for tag in specialClassNameForPopularMobileSite
     if $(parified).find(tag).length > 0
-
       treeWalker = document.createTreeWalker(
         $(parified).find(tag)[0],
         NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT,
@@ -268,10 +267,45 @@ collectSiblings = (top) ->
             try
               if $(node).css("display") is 'none'
                 return NodeFilter.FILTER_REJECT
-              else
-                return NodeFilter.FILTER_ACCEPT
-            catch e
+              unless node.hasChildNodes()
+                if node.nodeType is Node.TEXT_NODE
+                  el=node.nextSibling
+                  count=0
+                  while (el)
+                    console.log(count+' Self.nextSibling Tag is '+el.tagName+' my text '+
+                        textContentFor(node)+' siblingNode text'+textContentFor(el)+
+                        ' siblingNode is text node '+(el.nodeType is Node.TEXT_NODE))
+                    next=el.nextSibling
+                    if el.tagName is 'BR'
+                      console.log('Has BR')
+                      node.textContent=node.textContent+'\n'
+                      node.parentNode.removeChild(el)
+                    else if el.tagName is 'SPAN'
+                      text=textContentFor(el)
+                      if text
+                        console.log('Hit SPAN'+text)
+                        node.textContent=node.textContent+text
+                      node.parentNode.removeChild(el)
+                    else if el.nodeType is Node.TEXT_NODE
+                      text=textContentFor(el)
+                      console.log('Hit TEXT_NODE'+text)
+                      if text
+                        node.textContent=node.textContent+text
+                        node.parentNode.removeChild(el)
+                    else
+                      console.log('Stop processing')
+                      return NodeFilter.FILTER_ACCEPT
+                    el = next;
+                    count++
+                  if node.parentNode
+                    if node.parentNode.nextSibling
+                      console.log('Parent nextSibling is '+node.parentNode.nextSibling.tagName+' my text '+
+                          textContentFor(node)+' next text'+textContentFor(node.parentNode.nextSibling)+
+                          ' next is text node '+(node.parentNode.nextSibling.nodeType is Node.TEXT_NODE))
               return NodeFilter.FILTER_ACCEPT
+            catch e
+              return NodeFilter.FILTER_REJECT
+            return NodeFilter.FILTER_REJECT
         },
         false
       )
@@ -282,14 +316,16 @@ collectSiblings = (top) ->
       for node in nodeList
         unless node.hasChildNodes()
           if node.nodeType is Node.TEXT_NODE
-            p = document.createElement("P")
-            p.appendChild(node)
-            newRoot.appendChild(p)
+            if node.parentNode
+              newRoot.appendChild(node.parentNode)
+            else
+              p = document.createElement("P")
+              p.appendChild(node)
           else
             newRoot.appendChild(node)
       console.log('node length ' + nodeList.length)
-      newRoot.id = 'hotshare_special_tag_will_not_hit_other'
       removeUnwanted(newRoot)
+      newRoot.id = 'hotshare_special_tag_will_not_hit_other'
       return newRoot
   top = scoreAndSelectTop(parified) or asTop(page)
   root = collectSiblings(top)
