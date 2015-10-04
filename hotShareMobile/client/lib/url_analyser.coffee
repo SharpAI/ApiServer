@@ -426,6 +426,7 @@ if Meteor.isClient
               dataSrc = removeURLParameter(dataSrc,'height')
               dataSrc = dataSrc.replace(/https:\/\//g, 'http://')
               node.setAttribute('data-src',dataSrc)
+              node.src = dataSrc
             showDebug&&console.log(node.outerHTML)
             if toBeInsertedText and toBeInsertedText isnt ''
               resortedArticle.push {type:'text',text:toBeInsertedText}
