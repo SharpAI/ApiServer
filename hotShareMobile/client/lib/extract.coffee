@@ -285,12 +285,15 @@ collectNodeSibling=(node)->
     count++
   return true
 getCalculatedStyle=(node,prop)->
-  $node=$(node)
-  while($node.parent().length>0)
-    attr=$node.parent().css(prop)
-    if attr and attr isnt ''
-      return attr
-    $node=$node.parent()
+  try
+    $node=$(node)
+    while($node.parent().length>0)
+      attr=$node.parent().css(prop)
+      if attr and attr isnt ''
+        return attr
+      $node=$node.parent()
+  catch error
+    return null
   return null
 @extract = (page) ->
   parified = _.map($(page).find('*'), parify)
@@ -306,10 +309,11 @@ getCalculatedStyle=(node,prop)->
                 return NodeFilter.FILTER_REJECT
               unless node.hasChildNodes()
                 if node.nodeType is Node.TEXT_NODE
-                  alignstyle=getCalculatedStyle(node,'text-align')
-                  console.log('Get parent style '+alignstyle);
-                  if alignstyle and alignstyle isnt ''
-                    $(node).parent().css('text-align',alignstyle)
+                  if $(node).parent().length > 0
+                    alignstyle=getCalculatedStyle(node,'text-align')
+                    console.log('Get parent style '+alignstyle);
+                    if alignstyle and alignstyle isnt ''
+                      $(node).parent().css('text-align',alignstyle)
                   if collectNodeSibling(node) is false
                     return NodeFilter.FILTER_ACCEPT
                   #if node.parentNode and node.parentNode.tagName is 'SPAN'
