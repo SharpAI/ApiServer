@@ -203,12 +203,8 @@ if Meteor.isClient
       return callback(new Error('Cancled'),item)
     if item.type is 'text'
       console.log('Processing Text')
-      if item.color and item.color isnt ''
-        Drafts.insert {type:'text', toTheEnd:true ,noKeyboardPopup:true,isImage:false, color:item.color,\
-          backgroundColor:item.backgroundColor,owner: Meteor.userId(), text:item.text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
-      else
-        Drafts.insert {type:'text', toTheEnd:true ,noKeyboardPopup:true,isImage:false, owner: Meteor.userId(),\
-          text:item.text, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+      Drafts.insert {type:'text', toTheEnd:true ,noKeyboardPopup:true,isImage:false, owner: Meteor.userId(),\
+        text:item.text, style:'',layout:item.layout, data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
     else if item.type is 'image'
       console.log('Processing Image ' + item.imageUrl)
       self = this
