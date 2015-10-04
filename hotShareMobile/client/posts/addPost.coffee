@@ -204,7 +204,7 @@ if Meteor.isClient
     if item.type is 'text'
       console.log('Processing Text')
       Drafts.insert {type:'text', toTheEnd:true ,noKeyboardPopup:true,isImage:false, owner: Meteor.userId(),\
-        text:item.text, style:'',layout:item.layout, data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+          text:item.text, style:'',layout:item.layout, data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
     else if item.type is 'image'
       console.log('Processing Image ' + item.imageUrl)
       self = this
@@ -367,6 +367,7 @@ if Meteor.isClient
               console.log 'image url is ' + result.smallImage
               if Drafts.find({type:'image'}).count() > 0
                 mainImageDoc = Drafts.find({type:'image'}).fetch()[0]
+                $('#mainImage'+mainImageDoc._id).attr('src','')
                 Drafts.update({_id: mainImageDoc._id}, {$set: {imgUrl:result.smallImage,filename:result.filename, URI:result.URI }});
         else if buttonClicked.id == "crop"
           console.log("crop "+ event.currentTarget.id)
