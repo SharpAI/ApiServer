@@ -6,7 +6,7 @@
 # Copyright (c) 2011 MORITA Hajime
 # This software is licensed under the Apache License, Version 2.0.
 #
-removeStyle = true
+removeStyle = false
 class Log
   this.print = (message) -> console.log(message)
   this.error = (message) -> console.log(message)
@@ -284,6 +284,14 @@ collectNodeSibling=(node)->
     el = next;
     count++
   return true
+getCalculatedStyle=(node,prop)->
+  $node=$(node)
+  while($node.parent().length>0)
+    attr=$node.parent().css(prop)
+    if attr and attr isnt ''
+      return attr
+    $node=$node.parent()
+  return null
 @extract = (page) ->
   parified = _.map($(page).find('*'), parify)
   for tag in specialClassNameForPopularMobileSite
@@ -298,6 +306,10 @@ collectNodeSibling=(node)->
                 return NodeFilter.FILTER_REJECT
               unless node.hasChildNodes()
                 if node.nodeType is Node.TEXT_NODE
+                  alignstyle=getCalculatedStyle(node,'text-align')
+                  console.log('Get parent style '+alignstyle);
+                  if alignstyle and alignstyle isnt ''
+                    $(node).parent().css('text-align',alignstyle)
                   if collectNodeSibling(node) is false
                     return NodeFilter.FILTER_ACCEPT
                   #if node.parentNode and node.parentNode.tagName is 'SPAN'

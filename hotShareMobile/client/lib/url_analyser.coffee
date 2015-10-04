@@ -335,153 +335,165 @@ if Meteor.isClient
           returnJson;
       '}
     ,(data)->
-      if data[0]
-        showDebug&&console.log 'data0 is ' + JSON.stringify(data[0])
-        data = data[0]
-      data.bgArray = []
-      data.imageArray = []
-      documentBody = $.parseHTML( data.body )
-      documentBody.innerHTML = data.body
+      Meteor.defer ()->
+        if data[0]
+          showDebug&&console.log 'data0 is ' + JSON.stringify(data[0])
+          data = data[0]
+        data.bgArray = []
+        data.imageArray = []
+        documentBody = $.parseHTML( data.body )
+        documentBody.innerHTML = data.body
 
-      for titleRule in titleRules
-        if url.indexOf(titleRule.prefix) > -1
-          realTitle = $(documentBody).find('.'+titleRule.titleClass).text()
-          if realTitle and realTitle isnt ''
-            data.host = data.title
-            data.title = realTitle
+        for titleRule in titleRules
+          if url.indexOf(titleRule.prefix) > -1
+            realTitle = $(documentBody).find('.'+titleRule.titleClass).text()
+            if realTitle and realTitle isnt ''
+              data.host = data.title
+              data.title = realTitle
+              break
+        for item  in hostnameMapping
+          if data.host is item.hostname
+            data.host = '摘自 ' + item.displayName
             break
-      for item  in hostnameMapping
-        if data.host is item.hostname
-          data.host = '摘自 ' + item.displayName
-          break
-      musicInfo = getMusicFromPage documentBody
-      extracted = extract(documentBody)
-      toBeInsertedText = ''
-      previousIsImage = false
-      resortedArticle = []
-      sortedImages = 0
+        musicInfo = getMusicFromPage documentBody
+        extracted = extract(documentBody)
+        toBeInsertedText = ''
+        toBeInsertedStyleAlign=''
+        previousIsImage = false
+        resortedArticle = []
+        sortedImages = 0
 
-      if musicInfo
-        resortedArticle.push {type:'music', musicInfo: musicInfo}
-      if extracted.id is 'hotshare_special_tag_will_not_hit_other'
-        toBeProcessed = extracted
-      else
-        toBeProcessed = extracted.innerHTML
-      $(toBeProcessed).children().each (index,node)->
-        info = {}
-        info.bgArray = []
-        info.imageArray = []
-        info.body = node.innerHTML
-        nodeColor = $(node).css('color')
-        nodeBackgroundColor = $(node).css('background-color')
-        #iframeNumber = $(node).find('iframe').length
-        console.log('    Node['+index+'] tagName '+node.tagName+' text '+node.textContent)
-        if node.tagName is 'BR'
-          if toBeInsertedText.length > 0
-            resortedArticle.push {type:'text',text:toBeInsertedText}
-            toBeInsertedText = '';
-            return true
-        text = $(node).text().toString().replace(/\s\s\s+/g, '')
-        if text and text isnt ''
-          previousIsImage = false
-          showDebug&&console.log '    Got text in this element('+toBeInsertedText.length+') '+text
-          showDebug&&console.log 'Text  ['+text+'] color is '+nodeColor+' nodeBackgroundColor is '+nodeBackgroundColor
-          if importColor and nodeColor and nodeColor isnt ''
+        if musicInfo
+          resortedArticle.push {type:'music', musicInfo: musicInfo}
+        if extracted.id is 'hotshare_special_tag_will_not_hit_other'
+          toBeProcessed = extracted
+        else
+          toBeProcessed = extracted.innerHTML
+        $(toBeProcessed).children().each (index,node)->
+          info = {}
+          info.bgArray = []
+          info.imageArray = []
+          info.body = node.innerHTML
+          nodeColor = $(node).css('color')
+          nodeBackgroundColor = $(node).css('background-color')
+          #iframeNumber = $(node).find('iframe').length
+          console.log('    Node['+index+'] tagName '+node.tagName+' text '+node.textContent)
+          console.log('    Get style '+$(node).css('text-align'));
+          styleAlign=$(node).css('text-align')
+          if node.tagName is 'BR'
             if toBeInsertedText.length > 0
-              toBeInsertedText += '\n'
-              resortedArticle.push {type:'text',text:toBeInsertedText}
-              toBeInsertedText = ''
-            resortedArticle.push {type:'text',text:text,color:nodeColor,backgroundColor:nodeBackgroundColor}
-          else
-            if text.length <80 and toBeInsertedText.length < 400
+              resortedArticle.push {type:'text',text:toBeInsertedText,layout:{align:toBeInsertedStyleAlign}}
+              toBeInsertedText = '';
+              toBeInsertedStyleAlign = '';
+              return true
+          text = $(node).text().toString().replace(/\s\s\s+/g, '')
+          if text and text isnt ''
+            previousIsImage = false
+            showDebug&&console.log '    Got text in this element('+toBeInsertedText.length+') '+text
+            showDebug&&console.log 'Text  ['+text+'] color is '+nodeColor+' nodeBackgroundColor is '+nodeBackgroundColor
+            ###
+            if importColor and nodeColor and nodeColor isnt ''
+              if toBeInsertedText.length > 0
+                toBeInsertedText += '\n'
+                resortedArticle.push {type:'text',text:toBeInsertedText}
+                toBeInsertedText = ''
+              resortedArticle.push {type:'text',text:text,color:nodeColor,backgroundColor:nodeBackgroundColor}
+            else
+            ###
+            #console.log('Get style '+$(node).attr('style'));
+            if toBeInsertedText.length is 0
+              toBeInsertedStyleAlign = styleAlign
+            if text.length <80 and toBeInsertedText.length < 400 and styleAlign is toBeInsertedStyleAlign
               if toBeInsertedText.length > 0
                 toBeInsertedText += '\n'
               toBeInsertedText += text
             else
               if toBeInsertedText.length > 0
-                resortedArticle.push {type:'text',text:toBeInsertedText}
+                resortedArticle.push {type:'text',text:toBeInsertedText,layout:{align:toBeInsertedStyleAlign}}
               toBeInsertedText = text;
-        if node.tagName == 'IFRAME'
-          node.width = '100%'
-          node.height = '100%'
-          node.src = removeURLParameter(node.src,'width')
-          node.src = removeURLParameter(node.src,'height')
-          node.src = node.src.replace(/https:\/\//g, 'http://')
-          node.removeAttribute("style")
-          dataSrc = node.getAttribute('data-src')
-          if dataSrc
-            dataSrc = removeURLParameter(dataSrc,'width')
-            dataSrc = removeURLParameter(dataSrc,'height')
-            dataSrc = dataSrc.replace(/https:\/\//g, 'http://')
-            node.setAttribute('data-src',dataSrc)
-          showDebug&&console.log(node.outerHTML)
-          if toBeInsertedText and toBeInsertedText isnt ''
-            resortedArticle.push {type:'text',text:toBeInsertedText}
-            toBeInsertedText = ''
-          resortedArticle.push {type:'iframe',iframe:node.outerHTML}
-        else if node.tagName == 'IMG'
-          dataSrc = $(node).attr('data-src')
-          if dataSrc and dataSrc isnt ''
-            src = dataSrc
-          else
-            src = $(node).attr('src')
-          if src and src isnt ''
-            src = src.replace(/&amp;/g, '&').replace("tp=webp","tp=jpeg")
-            unless src.startsWith('http')
-              if src.startsWith('//')
-                src = data.protocol + src
-              else if src.startsWith('/')
-                src = data.protocol + '//' + data.host + '/' + src
-            showDebug&&console.log 'Image Src: ' + src
-            previousIsImage = true
+              toBeInsertedStyleAlign = styleAlign;
+          if node.tagName == 'IFRAME'
+            node.width = '100%'
+            node.width = '100%'
+            node.height = '100%'
+            node.src = removeURLParameter(node.src,'width')
+            node.src = removeURLParameter(node.src,'height')
+            node.src = node.src.replace(/https:\/\//g, 'http://')
+            node.removeAttribute("style")
+            dataSrc = node.getAttribute('data-src')
+            if dataSrc
+              dataSrc = removeURLParameter(dataSrc,'width')
+              dataSrc = removeURLParameter(dataSrc,'height')
+              dataSrc = dataSrc.replace(/https:\/\//g, 'http://')
+              node.setAttribute('data-src',dataSrc)
+            showDebug&&console.log(node.outerHTML)
             if toBeInsertedText and toBeInsertedText isnt ''
               resortedArticle.push {type:'text',text:toBeInsertedText}
-            toBeInsertedText = ''
-            sortedImages++;
-            resortedArticle.push {type:'image',imageUrl:src}
-            data.imageArray.push src
-        else if info.body
-          grabImagesInHTMLString(info)
-          if info.imageArray.length > 0
-            showDebug&&console.log('    Got image')
-            previousIsImage = true
-            if toBeInsertedText and toBeInsertedText isnt ''
-              resortedArticle.push {type:'text',text:toBeInsertedText}
-            toBeInsertedText = ''
-            for imageUrl in info.imageArray
+              toBeInsertedText = ''
+            resortedArticle.push {type:'iframe',iframe:node.outerHTML}
+          else if node.tagName == 'IMG'
+            dataSrc = $(node).attr('data-src')
+            if dataSrc and dataSrc isnt ''
+              src = dataSrc
+            else
+              src = $(node).attr('src')
+            if src and src isnt ''
+              src = src.replace(/&amp;/g, '&').replace("tp=webp","tp=jpeg")
+              unless src.startsWith('http')
+                if src.startsWith('//')
+                  src = data.protocol + src
+                else if src.startsWith('/')
+                  src = data.protocol + '//' + data.host + '/' + src
+              showDebug&&console.log 'Image Src: ' + src
+              previousIsImage = true
+              if toBeInsertedText and toBeInsertedText isnt ''
+                resortedArticle.push {type:'text',text:toBeInsertedText}
+              toBeInsertedText = ''
+              sortedImages++;
+              resortedArticle.push {type:'image',imageUrl:src}
+              data.imageArray.push src
+          else if info.body
+            grabImagesInHTMLString(info)
+            if info.imageArray.length > 0
+              showDebug&&console.log('    Got image')
+              previousIsImage = true
+              if toBeInsertedText and toBeInsertedText isnt ''
+                resortedArticle.push {type:'text',text:toBeInsertedText}
+              toBeInsertedText = ''
+              for imageUrl in info.imageArray
+                if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
+                  showDebug&&console.log('    save imageUrl ' + imageUrl)
+                  sortedImages++;
+                  resortedArticle.push {type:'image',imageUrl:imageUrl}
+                  data.imageArray.push imageUrl
+            else if info.bgArray.length > 0
+              showDebug&&console.log('    Got Background image')
+              previousIsImage = true
+              if toBeInsertedText and toBeInsertedText isnt ''
+                resortedArticle.push {type:'text',text:toBeInsertedText}
+              toBeInsertedText = ''
+              for imageUrl in info.bgArray
+                if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
+                  showDebug&&console.log('    save background imageUrl ' + imageUrl)
+                  sortedImages++
+                  resortedArticle.push {type:'image',imageUrl:imageUrl}
+                  data.imageArray.push imageUrl
+        if toBeInsertedText and toBeInsertedText isnt ''
+          resortedArticle.push {type:'text',text:toBeInsertedText}
+        if sortedImages < 1
+          grabImagesInHTMLString(data)
+          if data.imageArray.length > 0
+            for imageUrl in data.imageArray
               if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
                 showDebug&&console.log('    save imageUrl ' + imageUrl)
-                sortedImages++;
                 resortedArticle.push {type:'image',imageUrl:imageUrl}
-                data.imageArray.push imageUrl
-          else if info.bgArray.length > 0
-            showDebug&&console.log('    Got Background image')
-            previousIsImage = true
-            if toBeInsertedText and toBeInsertedText isnt ''
-              resortedArticle.push {type:'text',text:toBeInsertedText}
-            toBeInsertedText = ''
-            for imageUrl in info.bgArray
+          else if data.bgArray.length > 0
+            for imageUrl in data.bgArray
               if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
                 showDebug&&console.log('    save background imageUrl ' + imageUrl)
-                sortedImages++
                 resortedArticle.push {type:'image',imageUrl:imageUrl}
-                data.imageArray.push imageUrl
-      if toBeInsertedText and toBeInsertedText isnt ''
-        resortedArticle.push {type:'text',text:toBeInsertedText}
-      if sortedImages < 1
-        grabImagesInHTMLString(data)
-        if data.imageArray.length > 0
-          for imageUrl in data.imageArray
-            if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
-              showDebug&&console.log('    save imageUrl ' + imageUrl)
-              resortedArticle.push {type:'image',imageUrl:imageUrl}
-        else if data.bgArray.length > 0
-          for imageUrl in data.bgArray
-            if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
-              showDebug&&console.log('    save background imageUrl ' + imageUrl)
-              resortedArticle.push {type:'image',imageUrl:imageUrl}
-      if musicInfo
-        data.musicInfo = musicInfo
-      data.resortedArticle = resortedArticle
-      showDebug&&console.log('Resorted Article is ' + data.resortedArticle)
-      callback data
+        if musicInfo
+          data.musicInfo = musicInfo
+        data.resortedArticle = resortedArticle
+        showDebug&&console.log('Resorted Article is ' + data.resortedArticle)
+        callback data
