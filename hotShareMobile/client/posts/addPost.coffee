@@ -317,7 +317,11 @@ if Meteor.isClient
     Meteor.setTimeout ()->
       iabHandle.show()
     ,500
-
+  @handlerLoadStopEvent = (e)->
+    Session.set('importProcedure',4)
+    Meteor.setTimeout ()->
+      getURL(e)
+    ,1200
   @handleDirectLinkImport = (url)->
     showPopupProgressBar()
     if iabHandle
@@ -325,13 +329,13 @@ if Meteor.isClient
       #iabHandle.removeEventListener 'exit',handleExitBrowser
       iabHandle.removeEventListener 'hide',handleHideBrowser
       iabHandle.removeEventListener 'loadstart',handlerLoadStartEvent
-      iabHandle.removeEventListener 'loadstop',getURL
+      iabHandle.removeEventListener 'loadstop',handlerLoadStopEvent
       iabHandle.removeEventListener 'loaderror',handlerLoadErrorEvent
     window.iabHandle = window.open(url, '_blank', 'hidden=yes,toolbarposition=top')
     if Session.get('isReviewMode') isnt '1'
       iabHandle.addEventListener 'import',getURL
       iabHandle.addEventListener 'loadstart',handlerLoadStartEvent
-      iabHandle.addEventListener 'loadstop',getURL
+      iabHandle.addEventListener 'loadstop',handlerLoadStopEvent
       iabHandle.addEventListener 'loaderror',handlerLoadErrorEvent
 
   @handleAddedLink = (url)->
