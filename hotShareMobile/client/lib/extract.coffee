@@ -6,7 +6,7 @@
 # Copyright (c) 2011 MORITA Hajime
 # This software is licensed under the Apache License, Version 2.0.
 #
-removeStyle = false
+removeStyle = true
 class Log
   this.print = (message) -> console.log(message)
   this.error = (message) -> console.log(message)
@@ -313,7 +313,7 @@ getCalculatedStyle=(node,prop)->
                     alignstyle=getCalculatedStyle(node,'text-align')
                     console.log('Get parent style '+alignstyle);
                     if alignstyle and alignstyle isnt ''
-                      $(node).parent().css('text-align',alignstyle)
+                      storeStyleInItem(node.parentNode,'textAlign',alignstyle)
                   if collectNodeSibling(node) is false
                     return NodeFilter.FILTER_ACCEPT
                   #if node.parentNode and node.parentNode.tagName is 'SPAN'

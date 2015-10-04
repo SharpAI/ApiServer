@@ -21,3 +21,7 @@ postFontStyleQuota='font-size:15px;background:#F5F5F5;padding-left:3%;padding-ri
       else if layoutObj.align is 'center'
         alignStyle = "text-align:center;"
   fontStyle+alignStyle
+@storeStyleInItem = (node,type,value)->
+  $(node).attr('hotshare-'+type,value)
+@getStyleInItem = (node,type,value)->
+  $(node).attr('hotshare-'+type)
