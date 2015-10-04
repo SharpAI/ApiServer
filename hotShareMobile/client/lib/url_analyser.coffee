@@ -378,8 +378,8 @@ if Meteor.isClient
           nodeBackgroundColor = $(node).css('background-color')
           #iframeNumber = $(node).find('iframe').length
           console.log('    Node['+index+'] tagName '+node.tagName+' text '+node.textContent)
-          console.log('    Get style '+$(node).css('text-align'));
           styleAlign=getStyleInItem(node,'textAlign')
+          console.log('    Got style '+styleAlign);
           if node.tagName is 'BR'
             if toBeInsertedText.length > 0
               resortedArticle.push {type:'text',text:toBeInsertedText,layout:{align:toBeInsertedStyleAlign}}
