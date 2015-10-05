@@ -47,66 +47,8 @@
         {{/if}}
         <div class="gridster">
             <ul id="display">
-
                 {{#each pub}}
-                    {{#if isImage}}
-                        {{#if inIframe}}
-                            <li class='resortitem' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
-                                <div id="isImage{{_id}}" class="isImage" style="width:100%; height:100%;">
-                                    <div class="imgContainer">
-                                        {{{iframe}}}
-                                    </div>
-                                    <i class="fa fa-circle" style="position: absolute;bottom: -10px;left: 50%;opacity: 0;"></i>
-                                    <i class="fa fa-circle" style="position: absolute;bottom: -10px;right: -7px;opacity: 0;"></i>
-                                    <i class="fa fa-circle" style="position: absolute;right: -7px;top: 50%;opacity: 0;"></i>
-                                </div>
-                                <div id="crop{{_id}}" class="crop" style="display:none">
-                                    <div id="default{{_id}}" class="default"></div>
-                                </div>
-                            </li>
-                        {{else}}
-                            <li class='resortitem' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
-                              <div id="isImage{{_id}}" class="isImage" style="width:100%; height:100%;">
-                                <div class="imgContainer">
-                                  <img class="image_{{_id}}" src="{{getImagePath imgUrl URI _id}}" style="object-fit: cover; width:100%; height:100%;position:absolute;{{style}}" cropStyle="{{style}}" onload="$(this).parent().actImageFitCover('cropStyle');" >
-                                </div>
-                                <i class="fa fa-circle" style="position: absolute;bottom: -10px;left: 50%;opacity: 0;"></i>
-                                <i class="fa fa-circle" style="position: absolute;bottom: -10px;right: -7px;opacity: 0;"></i>
-                                <i class="fa fa-circle" style="position: absolute;right: -7px;top: 50%;opacity: 0;"></i>
-                              </div>
-                              <div id="crop{{_id}}" class="crop" style="display:none">
-                                <div id="default{{_id}}" class="default"></div>
-                              </div>
-                            </li>
-                        {{/if}}
-                    {{else}}
-                        {{#if musicInfo}}
-                            <li class='resortitem postAudioItem element' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
-                                <span class="musicContainer">
-                                    <span class="music_bd">
-                                        <span class="play_area">
-                                            <i class="icon_music_switch"></i>
-                                            <img src="/music_pic_default.png" alt="" class="pic_music_default">
-                                            <img src="{{musicInfo.image}}" class="music_thumb" alt="">
-                                            <audio preload="auto">
-                                                <source src="{{musicInfo.playUrl}}">
-                                            </audio>
-                                        </span>
-                                        <a class="description">
-                                            <span class="songname">{{musicInfo.songName}}</span>
-                                            <span class="singername">{{musicInfo.singerName}}</span>
-                                        </a>
-                                    </span>
-                                </span>
-                            </li>
-                        {{else}}
-                            <li class='resortitem hastextarea' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
-                                <div class="textdiv">
-                                    <textarea data-autoresize rows="1" id="{{_id}}TextArea" text={{_id}} name="textarea" readOnly="true" style="{{calcStyle}};{{style}}" >{{text}}</textarea>
-                                </div>
-                            </li>
-                        {{/if}}
-                    {{/if}}
+                    {{>addPostItem}}
                 {{/each}}
             </ul>
         </div>
