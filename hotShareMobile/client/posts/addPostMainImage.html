@@ -1,0 +1,16 @@
+<template name="addPostMainImage">
+    {{#if mainImage}}
+        <div id="wrapper">
+            <div class="mainImage" id="{{mainImage._id}}" style="height:{{getMainImageHeight}}px;">
+                <img id="mainImage{{mainImage._id}}" class="scale item image_{{mainImage._id}}" src="{{getImagePath mainImage.imgUrl mainImage.URI mainImage._id}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImage.style}}" onload="$(this).parent().actImageFitCover('cropStyle');" >
+                <header>
+                    <textarea id="title" name="textareatitle" rows="1" class="title" placeholder="主标题"  oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'; ">{{draftTitles.title}}</textarea>
+                    <textarea id="addontitle" name="textareatitle" rows="1" class="addontitle" placeholder="副标题" oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'; ">{{draftTitles.addontitle}}</textarea>
+                </header>
+            </div>
+            <div id="crop{{mainImage._id}}" class="crop" style="z-index: 12; display:none">
+                <div id="default{{mainImage._id}}" class="default"></div>
+            </div>
+        </div>
+    {{/if}}
+</template>
