@@ -305,6 +305,8 @@ getCalculatedStyle=(node,prop)->
         {
           acceptNode : (node)->
             try
+              if node.nodeType is Node.TEXT_NODE
+                return NodeFilter.FILTER_ACCEPT
               if $(node).css("display") is 'none'
                 return NodeFilter.FILTER_REJECT
               unless node.hasChildNodes()
