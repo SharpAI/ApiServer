@@ -351,107 +351,6 @@ if Meteor.isClient
       iabHandle.addEventListener 'import',getURL
       #iabHandle.addEventListener 'exit',handleExitBrowser
       iabHandle.addEventListener 'hide',handleHideBrowser
-
-  initMainImageToolBar = ()->
-    $('.mainImage').toolbar
-      content: '#mainImage-toolbar-options'
-      position: 'bottom'
-      hideOnClick: true
-      $('.mainImage').on 'toolbarItemClick',(event,buttonClicked)->
-        console.log $(buttonClicked).attr('id')
-        console.log event.currentTarget.id
-        if buttonClicked.id == "modify"
-          console.log("modify")
-          selectMediaFromAblum 1,(cancel, result)->
-            if cancel
-              if Drafts.find().count() is 0
-                PUB.back()
-              return
-            if result
-              console.log 'image url is ' + result.smallImage
-              if Drafts.find({type:'image'}).count() > 0
-                mainImageDoc = Drafts.find({type:'image'}).fetch()[0]
-                $('#mainImage'+mainImageDoc._id).attr('src','')
-                Drafts.update({_id: mainImageDoc._id}, {$set: {imgUrl:result.smallImage,filename:result.filename, URI:result.URI }});
-        else if buttonClicked.id == "crop"
-          console.log("crop "+ event.currentTarget.id)
-          Session.set 'isReviewMode','3'
-          Session.set 'cropDraftId',event.currentTarget.id
-
-          mainImageId = event.currentTarget.id
-          imgWidth = document.getElementById(mainImageId).offsetWidth
-          imgHeight = document.getElementById(mainImageId).offsetHeight
-
-          #            $('#mainImage'+mainImageId).css('display',"none")
-          $('#'+mainImageId).css('display',"none")
-          $('#crop'+mainImageId).css('display',"block")
-          $('#'+mainImageId).css('z-index',"12")
-          image = $(this).find('img').attr("src")
-          #style = Drafts.findOne({_id:mainImageId}).style
-          style = $('#'+mainImageId).getStyleProp();
-          if style is undefined
-            style = ''
-          scale = Drafts.findOne({_id:mainImageId}).scale
-          if scale is undefined
-            scale = 1
-          console.log "imgUrl is "+image
-          console.log "imgWidth is "+imgWidth
-          console.log "imgHeight is "+imgHeight
-          containerId= "#default"+mainImageId
-          console.log "containerId is "+containerId
-          crop = new CROP()
-          crop.init {
-            container: containerId,
-            image: image,
-            style: style,
-            width: imgWidth,
-            height: imgHeight,
-            mask: false,
-            zoom: {steps: 0.01,min: 1,max: 3,value: scale},
-            callback: ()->
-              Session.set 'imgSizeW',$("#default"+event.currentTarget.id+" .crop-img").width()/scale
-              Session.set 'imgSizeH',$("#default"+event.currentTarget.id+" .crop-img").height()/scale
-          }
-          if window.device.model is "iPhone7,1"
-            height = $('#'+mainImageId).height()
-            bottomTop = height
-            $('#blur_bottom').css('top',bottomTop)
-            docHeight = window.getDocHeight()
-            bottomHeight = docHeight - bottomTop
-            $('#blur_bottom').css('height',bottomHeight)
-
-          cropimg = $(containerId).find('.crop-overlay')[0]
-          hammertime = new Hammer(cropimg)
-          pinch = new Hammer.Pinch();
-          rotate = new Hammer.Rotate();
-          pinch.recognizeWith(rotate);
-          hammertime.add([pinch, rotate]);
-          initScale = 1
-          pinchStatus = 0;
-          hammertime.on("pinchstart pinchin pinchout pinchend", (e)->
-            e.preventDefault();
-            zoom = $(containerId).find('input')
-            if e.type is 'pinchstart'
-              initScale = zoom.val()
-              pinchStatus = 1
-            else if e.type is 'pinchend'
-              initScale = zoom.val()
-              pinchStatus = 0
-            else if e.type is 'pinchin' or e.type is 'pinchout'
-              if pinchStatus is 0
-                return
-              scale = initScale * e.scale;
-              if scale > 3
-                scale = 3
-              else if scale < 1
-                scale = 1
-              crop.slider(scale);
-              #apply background color to range progress
-              zoom.val(scale)
-          )
-        return
-    return
-
   toolbarHiddenHandle = (event,node)->
     if Session.get('textMenu') isnt 'main'
       setTimeout ()->
@@ -845,18 +744,6 @@ if Meteor.isClient
         if buttonClicked.id is "del"
           if Drafts.find({type:'image'}).count() > 0
             Drafts.update({_id:Drafts.find({type:'image'}).fetch()[0]._id},{$set:{url:''}})
-
-    #init
-    this.find('.content')._uihooks = {
-      insertElement: (node, next)->
-        $(node)
-          .insertBefore(next)
-        Deps.afterFlush ->
-          initMainImageToolBar()
-    }
-
-    #when click to edit stored draft, the uihook will not be called again, so need reinitiate here.
-    initMainImageToolBar()
 
     this.find('#display')._uihooks = {
       insertElement: (node, next)->
