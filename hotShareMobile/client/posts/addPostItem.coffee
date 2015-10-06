@@ -1,6 +1,8 @@
 
 if Meteor.isClient
   @getImagePath=(path,uri,id)->
+    if !path or !id
+      return ''
     $selector = $(".image_"+id)
     if path.indexOf('cdvfile://') > -1 and (window.wkwebview or withLocalBase64)
       if $selector and $selector.attr('src') and $selector.attr('src') isnt '' and $selector.attr('src').indexOf('data:') is 0
