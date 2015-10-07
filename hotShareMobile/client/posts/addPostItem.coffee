@@ -331,6 +331,26 @@ if Meteor.isClient
         #apply background color to range progress
         zoom.val(scale)
     )
+  adjustTextAreaHeight = (id,node)->
+    grid_size=Math.floor(getDisplayElementWidth()/6 - baseGap*2)
+    console.log('#display width is '+getDisplayElementWidth()+' .addPost width is '+$('.addPost').width())
+    min_widget_height =  grid_size + baseGap*2;
+    #offset = this.offsetHeight - this.clientHeight;
+    $(node).css('height', 'auto').css('height', node.scrollHeight)
+
+    sizey = Math.ceil((node.scrollHeight+baseGap*2)/min_widget_height)
+
+    resizeItem = $('#'+id)
+    #resizeItem.css("height", this.scrollHeight)
+    orig_sizey = parseInt(resizeItem.attr("data-sizey"))
+    console.log('sizey '+sizey+' this.scrollHeight '+node.scrollHeight+' min_widget_height'+min_widget_height)
+    if gridster? and sizey isnt orig_sizey
+      $(this).css('height', "")
+      sizex = parseInt(resizeItem.attr("data-sizex"))
+      gridster.resize_widget(resizeItem, sizex,sizey)
+      console.log('propertychange sizey:'+ sizey + 'height:' +height + 'scrollHeight:'+node.scrollHeight)
+    height = sizey*min_widget_height - baseGap*2
+    resizeItem.css("line-height", height+'px')
   initToolBar = (node,insertedObj,grid,trigger)->
     #console.log 'Added node id is ' + node.id
     type = insertedObj.type
@@ -350,25 +370,7 @@ if Meteor.isClient
       $('#'+node.id+'TextArea').on('keyup input',(e)->
         e.preventDefault()
         id = this.id.replace("TextArea", "")
-        grid_size=Math.floor(getDisplayElementWidth()/6 - baseGap*2)
-        console.log('#display width is '+getDisplayElementWidth()+' .addPost width is '+$('.addPost').width())
-        min_widget_height =  grid_size + baseGap*2;
-        #offset = this.offsetHeight - this.clientHeight;
-        $(this).css('height', 'auto').css('height', this.scrollHeight)
-
-        sizey = Math.ceil((this.scrollHeight+baseGap*2)/min_widget_height)
-
-        resizeItem = $('#'+id)
-        #resizeItem.css("height", this.scrollHeight)
-        orig_sizey = parseInt(resizeItem.attr("data-sizey"))
-        console.log('sizey '+sizey+' this.scrollHeight '+this.scrollHeight+' min_widget_height'+min_widget_height)
-        if gridster? and sizey isnt orig_sizey
-          $(this).css('height', "")
-          sizex = parseInt(resizeItem.attr("data-sizex"))
-          gridster.resize_widget(resizeItem, sizex,sizey)
-          console.log('propertychange sizey:'+ sizey + 'height:' +height + 'scrollHeight:'+this.scrollHeight)
-        height = sizey*min_widget_height - baseGap*2
-        resizeItem.css("line-height", height+'px')
+        adjustTextAreaHeight(id,this)
       )
       text = insertedObj.text
       if text and text isnt ''
@@ -401,9 +403,12 @@ if Meteor.isClient
       initGridster()
     appendNodeToLayoutEngine(node,data,gridster)
     console.log('Type '+type)
-    if type is "text" and (!data.noKeyboardPopup)
-      initToolBar(node,data,gridster,false)
-      $(node).trigger("toolbarItemClick", {id:"modify"})
+    if type is "text"
+      unless data.noKeyboardPopup
+        initToolBar(node,data,gridster,false)
+        $(node).trigger("toolbarItemClick", {id:"modify"})
+      if data.text and data.text.length > 0
+        adjustTextAreaHeight(data._id,this.find('textarea'))
   Template.addPostItem.helpers
     calcStyle: ()->
       # For backforward compatible. Only older version set style directly
