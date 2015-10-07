@@ -34,12 +34,14 @@
             {{>addPostMainImage}}
             <div class="gridster">
                 <ul id="display">
-                    {{#each pub}}
-                        {{>addPostItem}}
-                    {{/each}}
+                    {{#if showContent}}
+                        {{#each pub}}
+                            {{>addPostItem}}
+                        {{/each}}
+                    {{/if}}
                 </ul>
             </div>
-      </div>
+        </div>
       <div id="ViewOnWeb" style="{{displayUrl}}"><i class="fa fa-globe"></i>     阅读原文</div>
       <div class="linkInputBox">
         <input type="text" class="form-control form-group-material-light-blue" id="linkToBeInserted">
