@@ -331,10 +331,10 @@ if Meteor.isClient
         #apply background color to range progress
         zoom.val(scale)
     )
-  initToolBar = (node,insertedObj,grid)->
+  initToolBar = (node,insertedObj,grid,trigger)->
     #console.log 'Added node id is ' + node.id
     type = insertedObj.type
-    if type == "text"
+    if type is "text"
       $(node).toolbar
         content: '#text-toolbar-options'
         position: 'top'
@@ -390,6 +390,8 @@ if Meteor.isClient
           console.log("crop "+ node.id)
           cropHandlerOnImage(node)
         return
+    if trigger
+      $(node).trigger('click')
     return
   Template.addPostItem.onRendered ()->
     data=this.data
@@ -398,11 +400,10 @@ if Meteor.isClient
     unless gridster
       initGridster()
     appendNodeToLayoutEngine(node,data,gridster)
-    initToolBar(node,data,gridster)
     console.log('Type '+type)
     if type is "text" and (!data.noKeyboardPopup)
+      initToolBar(node,data,gridster,false)
       $(node).trigger("toolbarItemClick", {id:"modify"})
-
   Template.addPostItem.helpers
     calcStyle: ()->
       # For backforward compatible. Only older version set style directly
@@ -413,3 +414,9 @@ if Meteor.isClient
     getImagePath: (path,uri,id)->
       getImagePath(path,uri,id)
   Template.addPostItem.events
+    'click .resortitem': (e,t)->
+      toolbarObj=$(e.currentTarget).data('toolbarObj')
+      data=t.data
+      console.log('ToolbarObj '+toolbarObj+' Clicked on '+e.currentTarget+' target '+t)
+      unless toolbarObj
+        initToolBar(e.currentTarget,data,gridster,true)
