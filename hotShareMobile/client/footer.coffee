@@ -92,7 +92,9 @@ if Meteor.isClient
           importLink = matchArray[0]
           if matchArray[0].indexOf('http') is -1
             importLink = "http://"+matchArray[0]
-          handleDirectLinkImport(importLink)
+          Meteor.setTimeout(()->
+            handleDirectLinkImport(importLink)
+          ,100)
         else
           handleAddedLink(null)
           window.plugins.toast.showLongCenter("粘贴板内容并非有效连接，请手动粘贴\n浏览器内容加载后，点击地址栏右侧\"导入\"按钮");
