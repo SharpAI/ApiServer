@@ -34,7 +34,7 @@ if (Meteor.isCordova) {
     function eventPause(){
       if(withAutoSavedOnPaused) {
           if (location.pathname === '/add') {
-              Template.addPost.__helpers.get('saveDraft')()
+              handleSaveDraft()
           }
       }
     }
@@ -43,7 +43,7 @@ if (Meteor.isCordova) {
       // 编辑post时回退
         if(withAutoSavedOnPaused) {
             if (location.pathname === '/add') {
-                Template.addPost.__helpers.get('saveDraft')()
+                handleSaveDraft()
             }
         }
       

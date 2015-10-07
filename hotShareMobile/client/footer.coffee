@@ -77,7 +77,7 @@ if Meteor.isClient
               Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
               if currentCount >= totalCount
                 Meteor.setTimeout(()->
-                  Template.addPost.__helpers.get('saveDraft')()
+                  handleSaveDraft()
                 ,100)
           )
     'click #web-import':(e)->
@@ -113,7 +113,7 @@ if Meteor.isClient
             if result
               Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
               Meteor.setTimeout(()->
-                Template.addPost.__helpers.get('saveDraft')()
+                handleSaveDraft()
               ,100)
             else
               PUB.back()

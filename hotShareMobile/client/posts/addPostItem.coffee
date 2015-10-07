@@ -96,7 +96,7 @@ if Meteor.isClient
         $('#blur_overlay').css('height','')
         $(node).css('z-index', '')
         $(node).removeClass("edit");
-        Template.addPost.__helpers.get('saveDraft')()
+        handleSaveDraft()
 
         $(textarea).off('focusout')
         $(".head").css 'position','fixed'

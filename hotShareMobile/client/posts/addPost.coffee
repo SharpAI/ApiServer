@@ -4,7 +4,7 @@ if Meteor.isClient
   Session.set('lastImportedUrl','')
   @getDisplayElementWidth=()->
     $('.addPost').width()*0.9
-  handleSaveDraft = ()->
+  @handleSaveDraft = ()->
     layout = JSON.stringify(gridster.serialize())
     pub=[]
     title = $("#title").val()
@@ -740,7 +740,7 @@ if Meteor.isClient
           Drafts.insert {type:'image', currentCount:currentCount, totalCount:totalCount,isImage:true, owner: Meteor.userId(),imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
           if (currentCount >= totalCount)
             Meteor.setTimeout ()->
-              Template.addPost.__helpers.get('saveDraft')()
+              handleSaveDraft()
             ,100
       )
       return
@@ -918,7 +918,7 @@ if Meteor.isClient
         Session.set 'isReviewMode','0'
 
     'click #saveDraft':->
-      Template.addPost.__helpers.get('saveDraft')()
+      handleSaveDraft()
       Drafts.remove {owner: Meteor.userId()}
       TempDrafts.remove {owner: Meteor.userId()}
       history.back()
