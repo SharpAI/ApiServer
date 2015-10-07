@@ -142,19 +142,23 @@ if Meteor.isClient
       reCaculateAndSetItemHeight(node,textarea)
       Drafts.update({_id: doc_id}, {$set: {layout: {font:'quota'}}});
     return
-  appendNodeToLayoutEngine = (node,insertedObj,grid)->
+  appendNodeToLayoutEngine = (node,insertedObj,grid,sizeY)->
     #console.log 'Added node id is ' + node.id
     unless grid
       return
     type = insertedObj.type
     if type is "text"
+      if sizeY
+        size_y = sizeY
+      else
+        size_y = 1
       if window.unSelectedElem
         insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
         window.unSelectedElem = undefined
         console.log('Selected data-row is ' + insert_row)
-        grid.add_widget(node, 6, 1, 1, insert_row)
+        grid.add_widget(node, 6, size_y, 1, insert_row)
       else if insertedObj.toTheEnd
-        grid.add_widget(node, 6, 1, 1)
+        grid.add_widget(node, 6, size_y, 1)
       else
         max_row = 1
         middle = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)/2
@@ -168,7 +172,7 @@ if Meteor.isClient
             max_row = cur_row
         )
         console.log("max_row " + max_row)
-        grid.add_widget(node, 6, 1, 1, max_row)
+        grid.add_widget(node, 6, size_y, 1, max_row)
     else if type is 'music'
       grid.add_widget(node, 6, 1, 1)
     else if type is "image"
@@ -331,7 +335,7 @@ if Meteor.isClient
         #apply background color to range progress
         zoom.val(scale)
     )
-  adjustTextAreaHeight = (id,node)->
+  adjustTextAreaHeightAndResizeInTheLayoutEngine = (id,node)->
     grid_size=Math.floor(getDisplayElementWidth()/6 - baseGap*2)
     console.log('#display width is '+getDisplayElementWidth()+' .addPost width is '+$('.addPost').width())
     min_widget_height =  grid_size + baseGap*2;
@@ -351,6 +355,17 @@ if Meteor.isClient
       console.log('propertychange sizey:'+ sizey + 'height:' +height + 'scrollHeight:'+node.scrollHeight)
     height = sizey*min_widget_height - baseGap*2
     resizeItem.css("line-height", height+'px')
+  adjustTextAreaHeightAndGetTheLayoutEngineSizeY = (id,node)->
+    grid_size=Math.floor(getDisplayElementWidth()/6 - baseGap*2)
+    console.log('#display width is '+getDisplayElementWidth()+' .addPost width is '+$('.addPost').width())
+    min_widget_height =  grid_size + baseGap*2;
+    $(node).css('height', 'auto').css('height', node.scrollHeight)
+    sizey = Math.ceil((node.scrollHeight+baseGap*2)/min_widget_height)
+    resizeItem = $('#'+id)
+    console.log('sizey '+sizey+' this.scrollHeight '+node.scrollHeight+' min_widget_height'+min_widget_height)
+    height = sizey*min_widget_height - baseGap*2
+    resizeItem.css("line-height", height+'px')
+    return sizey
   initToolBar = (node,insertedObj,grid,trigger)->
     #console.log 'Added node id is ' + node.id
     type = insertedObj.type
@@ -370,7 +385,7 @@ if Meteor.isClient
       $('#'+node.id+'TextArea').on('keyup input',(e)->
         e.preventDefault()
         id = this.id.replace("TextArea", "")
-        adjustTextAreaHeight(id,this)
+        adjustTextAreaHeightAndResizeInTheLayoutEngine(id,this)
       )
       text = insertedObj.text
       ###
@@ -402,17 +417,18 @@ if Meteor.isClient
     data=self.data
     type = data.type
     node=self.find('.resortitem')
+    sizeY=null
     unless gridster
       initGridster()
-    appendNodeToLayoutEngine(node,data,gridster)
     console.log('Type '+type)
     if type is "text"
       if data.text and data.text.length > 0
-        adjustTextAreaHeight(data._id,self.find('textarea'))
-      unless data.noKeyboardPopup
-        initToolBar(node,data,gridster,false)
-        $(node).trigger("toolbarItemClick", {id:"modify"})
-        return
+        sizeY=adjustTextAreaHeightAndGetTheLayoutEngineSizeY(data._id,self.find('textarea'))
+    appendNodeToLayoutEngine(node,data,gridster,sizeY)
+    if type is "text" and !data.noKeyboardPopup
+      initToolBar(node,data,gridster,false)
+      $(node).trigger("toolbarItemClick", {id:"modify"})
+      return
     $(node).one('click',()->
       toolbarObj=$(node).data('toolbarObj')
       console.log('ToolbarObj '+toolbarObj+' Clicked on '+node)
