@@ -345,7 +345,7 @@ if Meteor.isClient
     orig_sizey = parseInt(resizeItem.attr("data-sizey"))
     console.log('sizey '+sizey+' this.scrollHeight '+node.scrollHeight+' min_widget_height'+min_widget_height)
     if gridster? and sizey isnt orig_sizey
-      $(this).css('height', "")
+      $(node).css('height', "")
       sizex = parseInt(resizeItem.attr("data-sizex"))
       gridster.resize_widget(resizeItem, sizex,sizey)
       console.log('propertychange sizey:'+ sizey + 'height:' +height + 'scrollHeight:'+node.scrollHeight)
@@ -373,9 +373,11 @@ if Meteor.isClient
         adjustTextAreaHeight(id,this)
       )
       text = insertedObj.text
+      ###
       if text and text isnt ''
         Meteor.defer ()->
           $('#'+node.id+'TextArea').trigger('keyup')
+      ###
     else if type is "image"
       $(node).toolbar
         content: '#image-toolbar-options'
@@ -396,19 +398,27 @@ if Meteor.isClient
       $(node).trigger('click')
     return
   Template.addPostItem.onRendered ()->
-    data=this.data
+    self=this
+    data=self.data
     type = data.type
-    node=this.find('.resortitem')
+    node=self.find('.resortitem')
     unless gridster
       initGridster()
     appendNodeToLayoutEngine(node,data,gridster)
     console.log('Type '+type)
     if type is "text"
+      if data.text and data.text.length > 0
+        adjustTextAreaHeight(data._id,self.find('textarea'))
       unless data.noKeyboardPopup
         initToolBar(node,data,gridster,false)
         $(node).trigger("toolbarItemClick", {id:"modify"})
-      if data.text and data.text.length > 0
-        adjustTextAreaHeight(data._id,this.find('textarea'))
+        return
+    $(node).one('click',()->
+      toolbarObj=$(node).data('toolbarObj')
+      console.log('ToolbarObj '+toolbarObj+' Clicked on '+node)
+      unless toolbarObj
+        initToolBar(node,data,gridster,true)
+    )
   Template.addPostItem.helpers
     calcStyle: ()->
       # For backforward compatible. Only older version set style directly
@@ -419,9 +429,3 @@ if Meteor.isClient
     getImagePath: (path,uri,id)->
       getImagePath(path,uri,id)
   Template.addPostItem.events
-    'click .resortitem': (e,t)->
-      toolbarObj=$(e.currentTarget).data('toolbarObj')
-      data=t.data
-      console.log('ToolbarObj '+toolbarObj+' Clicked on '+e.currentTarget+' target '+t)
-      unless toolbarObj
-        initToolBar(e.currentTarget,data,gridster,true)
