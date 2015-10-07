@@ -352,6 +352,7 @@ if Meteor.isClient
       #iabHandle.addEventListener 'exit',handleExitBrowser
       iabHandle.addEventListener 'hide',handleHideBrowser
   Template.addPost.onDestroyed ()->
+    Session.set('showContentInAddPost',false)
     $('.tool-container').remove();
     $(window).children().off();
     if gridster
@@ -432,6 +433,7 @@ if Meteor.isClient
         $("#title").attr("disabled", false)
         $("#addontitle").attr('disabled',false)
         `global_toolbar_hidden = false`
+    Session.set('showContentInAddPost',true)
     return
   publishPostHandle = ()->
     layout = JSON.stringify(gridster.serialize())
@@ -538,6 +540,8 @@ if Meteor.isClient
       Session.set("TopicMainImage", mainImage)
       Router.go('addTopicComment')
   Template.addPost.helpers
+    showContent:->
+      Session.get('showContentInAddPost')
     mainImage:->
       Drafts.findOne({type:'image'})
     isIOS:->
