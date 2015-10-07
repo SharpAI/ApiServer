@@ -427,7 +427,7 @@ if (Meteor.isCordova){
           }
         };
 
-        multiThreadUploadFile_new(draftData, 2, multiThreadUploadFileCallback);
+        multiThreadUploadFile_new(draftData, 1, multiThreadUploadFileCallback);
         return;
     };
 
