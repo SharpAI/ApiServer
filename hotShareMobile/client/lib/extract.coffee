@@ -305,8 +305,11 @@ getCalculatedStyle=(node,prop)->
         {
           acceptNode : (node)->
             try
-              if $(node).css("display") is 'none'
-                return NodeFilter.FILTER_REJECT
+              try
+                if $(node).css("display") is 'none'
+                  return NodeFilter.FILTER_REJECT
+              catch error
+                console.log('Get Display Exception')
               unless node.hasChildNodes()
                 if node.nodeType is Node.TEXT_NODE
                   if $(node).parent().length > 0
