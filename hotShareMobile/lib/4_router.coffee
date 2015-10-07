@@ -17,6 +17,7 @@ if Meteor.isClient
     Tracker.autorun ()->
       if Session.get('channel') isnt 'addPost' and (Session.get('focusOn') is 'addPost')
         console.log('Leaving addPost mode')
+        Session.set('showContentInAddPost',false)
         if window.iabHandle
           window.iabHandle.close()
           window.iabHandle = null
