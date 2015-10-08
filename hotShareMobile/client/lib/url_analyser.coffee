@@ -403,7 +403,7 @@ if Meteor.isClient
             #console.log('Get style '+$(node).attr('style'));
             if toBeInsertedText.length is 0
               toBeInsertedStyleAlign = styleAlign
-            if text.length <80 and toBeInsertedText.length < 400 and styleAlign is toBeInsertedStyleAlign
+            if toBeInsertedText.length < 20 and styleAlign is toBeInsertedStyleAlign
               if toBeInsertedText.length > 0
                 toBeInsertedText += '\n'
               toBeInsertedText += text
