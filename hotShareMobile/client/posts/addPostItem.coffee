@@ -157,7 +157,7 @@ if Meteor.isClient
         window.unSelectedElem = undefined
         console.log('Selected data-row is ' + insert_row)
         grid.add_widget(node, 6, size_y, 1, insert_row)
-      else if insertedObj.toTheEnd
+      else if insertedObj.toTheEnd or insertedObj.respectLayout
         grid.add_widget(node, 6, size_y, 1)
       else
         max_row = 1
@@ -180,6 +180,8 @@ if Meteor.isClient
         console.log('to insert iframe')
         grid.add_widget(node, parseInt(insertedObj.data_sizex,baseGap*2), parseInt(insertedObj.data_sizey,baseGap*2))
       # Images loaded during rendering
+      else if insertedObj.respectLayout
+        grid.add_widget(node, parseInt(insertedObj.data_sizex,baseGap*2), parseInt(insertedObj.data_sizey,baseGap*2),parseInt(insertedObj.data_col),parseInt(insertedObj.data_row))
       else if Session.get('NewImgAdd') is 'true'
         if (window.imageCounter2 % 3) is 0
           grid.add_widget(node, 6, 3,1,window.insertRow)

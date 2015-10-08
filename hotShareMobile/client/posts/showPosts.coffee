@@ -475,6 +475,7 @@ if Meteor.isClient
       pub = this.pub;
       if pub.length > 0
         for i in [0..(pub.length-1)]
+          pub[i].respectLayout=true
           Drafts.insert(pub[i])
       Session.set 'isReviewMode','2'
       #Don't push showPost page into history. Because when save posted story, it will use Router.go to access published story directly. But in history, there is a duplicate record pointing to this published story.
