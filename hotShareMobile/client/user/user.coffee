@@ -190,16 +190,18 @@ if Meteor.isClient
 
         ProcessText = ()->
           # must text
+          pub[pub.index].noKeyboardPopup=true
+          pub[pub.index].respectLayout=true
           Drafts.insert(pub[pub.index])
           Dispatch()
 
         ProcessImage = (URI,smallImage)->
           if smallImage
             pub[pub.index].imgUrl = smallImage
-            Drafts.insert(pub[pub.index])
           else
             pub[pub.index].imgUrl = '/noimage.png'
-            Drafts.insert(pub[pub.index])
+          pub[pub.index].respectLayout=true
+          Drafts.insert(pub[pub.index])
             #it was deleted
           Dispatch()
 
