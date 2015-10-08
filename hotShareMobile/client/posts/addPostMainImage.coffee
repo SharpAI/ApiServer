@@ -105,23 +105,25 @@ if Meteor.isClient
     initMainImageToolBar()
   Template.addPostMainImage.helpers
     draftTitles:->
-      draftId = Drafts.findOne({type:'image'})._id
-      draftTitles = {}
-      if draftId and draftId isnt ''
-        if Session.get('isReviewMode') is '2'
-          post = Session.get("postContent")
-          if post?
-            draftTitles.title = post.title
-            draftTitles.addontitle = post.addontitle
-          draftTitles
-        else if Session.get('isReviewMode') is '1' or Session.get('isReviewMode') is '0' or Session.get('isReviewMode') is '3'
-          draftTitles = SavedDrafts.findOne({_id:draftId})
-          if !draftTitles?
-            draftTitles = {}
-            draftTitles.title = $("#title").val()
-            draftTitles.addontitle = $("#addontitle").val()
-            console.log("draftTitles.title="+draftTitles.title+", draftTitles.addontitle="+draftTitles.addontitle);
+      mainImage= Drafts.findOne({type:'image'})
+      if mainImage
+        draftId = mainImage._id
+        draftTitles = {}
+        if draftId and draftId isnt ''
+          if Session.get('isReviewMode') is '2'
+            post = Session.get("postContent")
+            if post?
+              draftTitles.title = post.title
+              draftTitles.addontitle = post.addontitle
             draftTitles
+          else if Session.get('isReviewMode') is '1' or Session.get('isReviewMode') is '0' or Session.get('isReviewMode') is '3'
+            draftTitles = SavedDrafts.findOne({_id:draftId})
+            if !draftTitles?
+              draftTitles = {}
+              draftTitles.title = $("#title").val()
+              draftTitles.addontitle = $("#addontitle").val()
+              console.log("draftTitles.title="+draftTitles.title+", draftTitles.addontitle="+draftTitles.addontitle);
+              draftTitles
       else
         draftTitles = {'title':'','addontitle':''}
       draftTitles
