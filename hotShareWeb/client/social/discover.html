@@ -56,6 +56,7 @@
             {{/if}}
             {{#if newLayoutMoment}}
                 {{#newLayoutContainer layoutId=onPostId }}
+                    {{#if showSuggestPosts}}
                     {{#each suggestPosts}}
                         {{#newLayoutElement layoutId=onPostId displayId=_id}}
                             <div class="img_placeholder">
@@ -75,6 +76,7 @@
                             </div>
                         {{/newLayoutElement}}
                     {{/each}}
+                    {{/if}}
                     {{#each moments}}
                         {{#newLayoutElement layoutId=onPostId displayId=readPostId}}
                             <div class="img_placeholder">

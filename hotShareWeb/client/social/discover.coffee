@@ -56,6 +56,14 @@ if Meteor.isClient
         Session.get("postContent")._id
       newLayoutMoment:()->
         withNewLayoutMoment
+      showSuggestPosts:()->
+        if Session.get("showSuggestPosts") is true
+          if DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
+            false
+          else
+            true
+        else
+          false
       NoMoments:()->
         if DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
           false

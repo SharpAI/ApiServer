@@ -72,6 +72,7 @@ if Meteor.isClient
   Template.showPosts.onDestroyed ->
     document.body.scrollTop = 0
     Session.set("postPageScrollTop", 0)
+    Session.set("showSuggestPosts",false)
     $('.tool-container').remove()
     if $('.tts-stoper').is(':visible')
       $('.tts-stoper').hide()
@@ -85,7 +86,8 @@ if Meteor.isClient
         , 280
   Template.showPosts.onRendered ->
     Session.setDefault "toasted",false
-    Session.set('postfriendsitemsLimit', 10);
+    Session.set('postfriendsitemsLimit', 10)
+    Session.set("showSuggestPosts",false)
     $('.mainImage').css('height',$(window).height()*0.55)
     postContent = Session.get("postContent")
     subscribeCommentAndViewers()
@@ -146,6 +148,7 @@ if Meteor.isClient
         $('.showPosts .head').fadeOut 300
         displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
         if displaySocialBar
+          Session.set("showSuggestPosts",true)
           showSocialBar()
         else
           hideSocialBar()
