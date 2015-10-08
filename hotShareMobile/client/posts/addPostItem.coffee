@@ -340,8 +340,8 @@ if Meteor.isClient
     console.log('#display width is '+getDisplayElementWidth()+' .addPost width is '+$('.addPost').width())
     min_widget_height =  grid_size + baseGap*2;
     #offset = this.offsetHeight - this.clientHeight;
-    $(node).css('height', 'auto').css('height', node.scrollHeight)
-
+    node.style.height='auto'
+    node.style.height=node.scrollHeight+'px'
     sizey = Math.ceil((node.scrollHeight+baseGap*2)/min_widget_height)
 
     resizeItem = $('#'+id)
@@ -349,22 +349,32 @@ if Meteor.isClient
     orig_sizey = parseInt(resizeItem.attr("data-sizey"))
     console.log('sizey '+sizey+' this.scrollHeight '+node.scrollHeight+' min_widget_height'+min_widget_height)
     if gridster? and sizey isnt orig_sizey
-      $(node).css('height', "")
+      node.style.height=''
       sizex = parseInt(resizeItem.attr("data-sizex"))
       gridster.resize_widget(resizeItem, sizex,sizey)
       console.log('propertychange sizey:'+ sizey + 'height:' +height + 'scrollHeight:'+node.scrollHeight)
     height = sizey*min_widget_height - baseGap*2
-    resizeItem.css("line-height", height+'px')
+    if node.parentNode
+      layoutItem = node.parentNode.parentNode
+      if layoutItem
+        layoutItem.style.lineHeight=height+'px'
+    #resizeItem.css("line-height", height+'px')
   adjustTextAreaHeightAndGetTheLayoutEngineSizeY = (id,node)->
-    grid_size=Math.floor(getDisplayElementWidth()/6 - baseGap*2)
-    console.log('#display width is '+getDisplayElementWidth()+' .addPost width is '+$('.addPost').width())
-    min_widget_height =  grid_size + baseGap*2;
-    $(node).css('height', 'auto').css('height', node.scrollHeight)
+    grid_size=Math.floor(getDisplayElementWidth()/6-baseGap*2)
+    #console.log('#display width is '+getDisplayElementWidth()+' .addPost width is '+$('.addPost').width())
+    min_widget_height = grid_size+baseGap*2;
+    node.style.height='auto'
+    node.style.height=node.scrollHeight+'px'
+    #$(node).css('height', 'auto').css('height', node.scrollHeight)
     sizey = Math.ceil((node.scrollHeight+baseGap*2)/min_widget_height)
-    resizeItem = $('#'+id)
+    #resizeItem = $('#'+id)
     console.log('sizey '+sizey+' this.scrollHeight '+node.scrollHeight+' min_widget_height'+min_widget_height)
-    height = sizey*min_widget_height - baseGap*2
-    resizeItem.css("line-height", height+'px')
+    height = sizey*min_widget_height-baseGap*2
+    if node.parentNode
+      layoutItem = node.parentNode.parentNode
+      if layoutItem
+        layoutItem.style.lineHeight=height+'px'
+    #resizeItem.css("line-height", height+'px')
     return sizey
   initToolBar = (node,insertedObj,grid,trigger)->
     #console.log 'Added node id is ' + node.id
