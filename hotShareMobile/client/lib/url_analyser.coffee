@@ -3,17 +3,19 @@ if Meteor.isClient
   importColor=false
   titleRules = [
     # link string, class name
-    {'prefix':'view.inews.qq.com','titleClass':'title'},
-    {'prefix':'buluo.qq.com','titleClass':'post-title'}
+    {prefix:'view.inews.qq.com',titleClass:'title'},
+    {prefix:'buluo.qq.com',titleClass:'post-title'},
+    {prefix:'wap.koudaitong.com',titleClass:'custom-title.wx_template .title'}
   ]
   hostnameMapping = [
-    {'hostname':'mp.weixin.qq.com',displayName:'微信公众号'},
-    {'hostname':'m.toutiao.com',displayName:'头条'},
-    {'hostname':'news.shou.com',displayName:'搜狐新闻'},
-    {'hostname':'m.shou.com',displayName:'搜狐'},
-    {'hostname':'www.zhihu.com',displayName:'知乎'},
-    {'hostname':'card.weibo.com',displayName:'微博'},
-    {'hostname':'mil.sohu.com',displayName:'搜狐军事'}
+    {hostname:'mp.weixin.qq.com',displayName:'微信公众号'},
+    {hostname:'m.toutiao.com',displayName:'头条'},
+    {hostname:'news.shou.com',displayName:'搜狐新闻'},
+    {hostname:'m.shou.com',displayName:'搜狐'},
+    {hostname:'www.zhihu.com',displayName:'知乎'},
+    {hostname:'card.weibo.com',displayName:'微博'},
+    {hostname:'mil.sohu.com',displayName:'搜狐军事'},
+    {hostname:'wap.koudaitong.com',displayName:'罗辑思维'}
   ]
   musicExtactorMapping = [
     {
@@ -346,9 +348,9 @@ if Meteor.isClient
 
         for titleRule in titleRules
           if url.indexOf(titleRule.prefix) > -1
-            realTitle = $(documentBody).find('.'+titleRule.titleClass).text()
+            realTitle = $(documentBody).find('.'+titleRule.titleClass).text().replace(/^\s+|\s+$/g, "")
             if realTitle and realTitle isnt ''
-              data.host = data.title
+              #data.host = data.title
               data.title = realTitle
               break
         for item  in hostnameMapping
