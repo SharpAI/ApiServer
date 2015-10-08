@@ -103,6 +103,8 @@ if Meteor.isClient
 
   Template.addPostMainImage.onRendered ()->
     initMainImageToolBar()
+    $("#title").textareaAutoSize()
+    $("#addontitle").textareaAutoSize()
   Template.addPostMainImage.helpers
     draftTitles:->
       mainImage= Drafts.findOne({type:'image'})
@@ -126,6 +128,8 @@ if Meteor.isClient
               draftTitles
       else
         draftTitles = {'title':'','addontitle':''}
+      $("#title").trigger('input')
+      $("#addontitle").trigger('input')
       draftTitles
     mainImage:->
       Drafts.findOne({type:'image'})
