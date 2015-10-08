@@ -24,6 +24,9 @@ Template.webHome.helpers({
     versions: function(){
         return Versions.findOne();
     },
+    buildVersion: function(){
+        return version_of_build;
+    },
     helpPost: function(){
         return Posts.findOne({_id: 'StynhCAjeAdBrZTff'})
     }

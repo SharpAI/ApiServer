@@ -103,6 +103,19 @@ if Meteor.isClient
   Template.my_notice.events
     'click #about_btn_back' :->
       Router.go '/dashboard'
+  Template.my_about.helpers
+    version:->
+      if Meteor.isCordova and isIOS and window.plugins.appsetup
+        window.plugins.appsetup.getVersion((version)->
+          if version and version isnt ''
+            Session.set('AppVersion',version)
+          else
+            Session.set('AppVersion',version_of_build)
+        ()->
+          Session.set('AppVersion',version_of_build)
+        )
+        return Session.get('AppVersion')
+      version_of_build
   Template.my_about.rendered=->
     $('.dashboard').css 'min-height', $(window).height()
     return
