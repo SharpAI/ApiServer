@@ -105,11 +105,11 @@ if Meteor.isClient
     initMainImageToolBar()
   Template.addPostMainImage.helpers
     draftTitles:->
-      draftId = $('.mainImage').attr('id')
+      draftId = Drafts.findOne({type:'image'})._id
+      draftTitles = {}
       if draftId and draftId isnt ''
         if Session.get('isReviewMode') is '2'
           post = Session.get("postContent")
-          draftTitles = {}
           if post?
             draftTitles.title = post.title
             draftTitles.addontitle = post.addontitle
@@ -124,6 +124,7 @@ if Meteor.isClient
             draftTitles
       else
         draftTitles = {'title':'','addontitle':''}
+      draftTitles
     mainImage:->
       Drafts.findOne({type:'image'})
     getImagePath: (path,uri,id)->
