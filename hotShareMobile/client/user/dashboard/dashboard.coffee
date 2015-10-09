@@ -105,6 +105,8 @@ if Meteor.isClient
       Router.go '/dashboard'
   Template.my_about.helpers
     version:->
+      if isIOS.true is false
+        return version_of_build
       if Meteor.isCordova and isIOS and window.plugins.appsetup
         window.plugins.appsetup.getVersion((version)->
           if version and version isnt ''
