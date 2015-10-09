@@ -7,7 +7,7 @@
 @withPostSuggestionToUser = false
 @withNewLayoutMoment = true
 @withMusicSharing = true
-@withSectionMenu = false
-@withSectionShare = false
+@withSectionMenu = true
+@withSectionShare = true
 @withPostTTS = false
 @withWeChatSignatureServer = false
