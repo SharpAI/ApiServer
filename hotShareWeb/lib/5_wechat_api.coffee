@@ -25,7 +25,7 @@ if Meteor.isClient
         }
         wx.ready ()->
           if Session.get('focusedIndex') isnt undefined
-            description =Session.get('postContent').pub[Session.get('focusedIndex')].text;
+            description =Session.get('postContent').pub[Session.get('focusedIndex')].text.replace(/\s\s\s+/g, '');
             if !description || description is ''
               description = Session.get("DocumentTitle").replace('『故事贴』','');
             else if(description.length > 100)

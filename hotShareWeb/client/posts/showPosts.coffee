@@ -231,23 +231,27 @@ if Meteor.isClient
     console.log('Index ' + self.index + ' Action ' + $(node).attr('action') )
     action = $(node).attr('action')
     if action is 'section-forward'
-      options = {
-        'androidTheme': window.plugins.actionsheet.ANDROID_THEMES.THEME_HOLO_LIGHT, # default is THEME_TRADITIONAL
-        'title': '分享',
-        'buttonLabels': ['分享给微信好友', '分享到微信朋友圈','分享到QQ','分享到更多应用'],
-        'androidEnableCancelButton' : true, #default false
-        'winphoneEnableCancelButton' : true, #default false
-        'addCancelButtonWithLabel': '取消',
-        #'position': [20, 40] # for iPad pass in the [x, y] position of the popover
-      }
-      window.plugins.actionsheet.show(options, (buttonIndex)->
-        switch buttonIndex
-          when 1 then shareTo('WXSession',Blaze.getData($('.showPosts')[0]),self.index)
-          when 2 then shareTo('WXTimeLine',Blaze.getData($('.showPosts')[0]),self.index)
-          when 3 then shareTo('QQShare',Blaze.getData($('.showPosts')[0]),self.index)
-          when 4 then shareTo('System',Blaze.getData($('.showPosts')[0]),self.index)
-      );
-
+      if Meteor.isCordova
+        options = {
+          'androidTheme': window.plugins.actionsheet.ANDROID_THEMES.THEME_HOLO_LIGHT, # default is THEME_TRADITIONAL
+          'title': '分享',
+          'buttonLabels': ['分享给微信好友', '分享到微信朋友圈','分享到QQ','分享到更多应用'],
+          'androidEnableCancelButton' : true, #default false
+          'winphoneEnableCancelButton' : true, #default false
+          'addCancelButtonWithLabel': '取消',
+          #'position': [20, 40] # for iPad pass in the [x, y] position of the popover
+        }
+        window.plugins.actionsheet.show(options, (buttonIndex)->
+          switch buttonIndex
+            when 1 then shareTo('WXSession',Blaze.getData($('.showPosts')[0]),self.index)
+            when 2 then shareTo('WXTimeLine',Blaze.getData($('.showPosts')[0]),self.index)
+            when 3 then shareTo('QQShare',Blaze.getData($('.showPosts')[0]),self.index)
+            when 4 then shareTo('System',Blaze.getData($('.showPosts')[0]),self.index)
+        );
+      else
+        toastr.success('将在微信分享时引用本段内容', '您选定了本段文字')
+        console.log('Selected index '+self.index)
+        Session.set('selectedIndex',self.index)
   Template.showPosts.events
     'click .postTextItem' :(e)->
       if withSectionMenu
