@@ -477,9 +477,12 @@ if Meteor.isClient
       Drafts.insert(draft0)
       pub = this.pub;
       if pub.length > 0
-        for i in [0..(pub.length-1)]
-          pub[i].respectLayout=true
-          Drafts.insert(pub[i])
+        ###
+        Router.go('/add') will trigger addPost onRendered first, then defer function run.
+        The Drafts.insert will trigger addPostItem OnRendered function run, then do the layout thing. The 2nd defer function
+        will run after then. The final callback will be called after all item layout done, so closePreEditingPopup run.
+        ###
+        deferedProcessAddPostItemsWithEditingProcessBar(pub)
       Session.set 'isReviewMode','2'
       #Don't push showPost page into history. Because when save posted story, it will use Router.go to access published story directly. But in history, there is a duplicate record pointing to this published story.
       Router.go('/add')
