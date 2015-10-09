@@ -159,7 +159,12 @@ if Meteor.isClient
       count
     displayForwardBtn:()->
       if history.length>1 and Session.get("historyForwardDisplay") is true
-        true
+        postId=Session.get("postContent")._id
+        lastId=Session.get("lastPost")
+        if postId isnt lastId
+          true
+        else
+          false
       else
         false
     displayBackBtn:()->

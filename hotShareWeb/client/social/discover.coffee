@@ -90,6 +90,7 @@ if Meteor.isClient
         $(window).children().off()
         $(window).unbind('scroll')
         Meteor.setTimeout ()->
+          Session.set("lastPost",postId)
           Router.go '/posts/'+postId
         ,300
       'click .masonry_element':(e)->
@@ -100,6 +101,7 @@ if Meteor.isClient
         $(window).children().off()
         $(window).unbind('scroll')
         Meteor.setTimeout ()->
+          Session.set("lastPost",postId)
           Router.go '/posts/'+postId
         ,300
     Template.lpcomments.helpers
@@ -127,6 +129,7 @@ if Meteor.isClient
           #$(window).children().off()
           #$(window).unbind('scroll')
           Meteor.setTimeout ()->
+            Session.set("lastPost",postId)
             Router.go '/posts/'+postId
           ,300
         else

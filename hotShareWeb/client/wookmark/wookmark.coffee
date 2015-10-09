@@ -151,6 +151,7 @@ Template.newLayoutContainer.events =
       postId = this._id
     $(window).children().off()
     $(window).unbind('scroll')
+    Session.set("lastPost",postId)
     Router.go '/posts/'+postId
 Template.newLayoutContainer.helpers =
   displayId:()->
