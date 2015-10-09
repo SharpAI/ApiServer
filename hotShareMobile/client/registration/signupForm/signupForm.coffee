@@ -9,16 +9,24 @@ Template.signupForm.helpers
      Session.get("signUpMail")
    else
      ''
+  pwd:->
+   if Session.get("signUpPwd")
+     Session.get("signUpPwd")
+   else
+     ''
 Template.signupForm.events
   'click .term_notice' :(e,t)->
     names = t.find('#signup-username').value
     email = t.find('#signup-email').value.toLowerCase()
+    pwd = t.find('#signup-password').value
     Session.set("signUpName", names)
     Session.set("signUpMail", email)
+    Session.set("signUpPwd", pwd)
     Router.go '/deal_page'
   'click #btn_back' :->
     Session.set("signUpName", '')
     Session.set("signUpMail", '')
+    Session.set("signUpPwd", '')
     $('.register').css('display',"none")
     $('#login').css('display',"block")
     $('#weibo').css('display',"block")
