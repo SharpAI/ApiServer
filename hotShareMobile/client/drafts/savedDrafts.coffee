@@ -62,10 +62,7 @@ if Meteor.isClient
         createdAt: savedDraftData.createdAt,
       }
       #console.log "savedDraftData ="+JSON.stringify(savedDraftData)
-      pub = savedDraftData.pub;
-      for i in [0..(pub.length-1)]
-        pub[i].noKeyboardPopup=true
-        pub[i].respectLayout=true
-        Drafts.insert(pub[i])
+      pub = savedDraftData.pub
+      deferedProcessAddPostItemsWithEditingProcessBar(pub)
       Session.set 'isReviewMode','1'
       PUB.page('/add')
