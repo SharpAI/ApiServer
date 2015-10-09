@@ -289,6 +289,7 @@ if Meteor.isClient
     Session.set('itemInAddPostPending',pub.length)
     Meteor.defer ()->
       async.mapLimit(pub,3,(item,callback)->
+        item.noKeyboardPopup=true
         item.respectLayout=true
         Drafts.insert(item)
         Meteor.defer ()->
