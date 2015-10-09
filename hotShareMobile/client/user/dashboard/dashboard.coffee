@@ -83,7 +83,7 @@ if Meteor.isClient
           else
             navigator.notification.confirm('请重新登录!', (r)->
               if r is 1
-                Router.go '/'
+                Router.go '/authOverlay'
             , '修改密码成功', ['确定']);
           return
       else
