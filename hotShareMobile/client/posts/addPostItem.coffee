@@ -125,23 +125,48 @@ if Meteor.isClient
     else if buttonClicked.id is "align-to-left"
       console.log 'Need align to left'
       textarea.css("text-align","left");
-      Drafts.update({_id: doc_id}, {$set: {layout: {align:'left'}}});
+      layout = Drafts.findOne({_id: doc_id}).layout
+      if layout
+        layout.align = 'left'
+      else
+        layout = {align:'left'}
+      Drafts.update({_id: doc_id}, {$set: {layout: layout}});
     else if buttonClicked.id is "align-to-center"
       console.log 'Need align to center'
       textarea.css('text-align','center')
-      Drafts.update({_id: doc_id}, {$set: {layout: {align:'center'}}});
+      layout = Drafts.findOne({_id: doc_id}).layout
+      if layout
+        layout.align = 'center'
+      else
+        layout = {align:'center'}
+      Drafts.update({_id: doc_id}, {$set: {layout: layout}});
     else if buttonClicked.id is "align-to-right"
       console.log 'Need align to right'
       textarea.css('text-align','right')
-      Drafts.update({_id: doc_id}, {$set: {layout: {align:'right'}}});
+      layout = Drafts.findOne({_id: doc_id}).layout
+      if layout
+        layout.align = 'right'
+      else
+        layout = {align:'right'}
+      Drafts.update({_id: doc_id}, {$set: {layout: layout}});
     else if buttonClicked.id is "font-normal"
       console.log 'Need font-normal'
       reCaculateAndSetItemHeight(node,textarea)
-      Drafts.update({_id: doc_id}, {$set: {layout: {font:'normal'}}});
+      layout = Drafts.findOne({_id: doc_id}).layout
+      if layout
+        layout.font = 'normal'
+      else
+        layout = {font:'normal'}
+      Drafts.update({_id: doc_id}, {$set: {layout: layout}});
     else if buttonClicked.id is "font-quota"
       console.log 'Need font-quota'
       reCaculateAndSetItemHeight(node,textarea)
-      Drafts.update({_id: doc_id}, {$set: {layout: {font:'quota'}}});
+      layout = Drafts.findOne({_id: doc_id}).layout
+      if layout
+        layout.font = 'quota'
+      else
+        layout = {font:'quota'}
+      Drafts.update({_id: doc_id}, {$set: {layout: layout}});
     return
   appendNodeToLayoutEngine = (node,insertedObj,grid,sizeY)->
     #console.log 'Added node id is ' + node.id
