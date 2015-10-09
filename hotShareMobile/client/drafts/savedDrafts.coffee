@@ -63,47 +63,9 @@ if Meteor.isClient
       }
       #console.log "savedDraftData ="+JSON.stringify(savedDraftData)
       pub = savedDraftData.pub;
-      if device.platform is 'Android'
-        pub.index = -1
-
-        FinalProcess = () ->
-          Session.set 'isReviewMode','1'
-          $('.user').addClass('animated ' + animateOutLowerEffect);
-          Meteor.setTimeout ()->
-            PUB.page('/add')
-          ,animatePageTrasitionTimeout
-
-        Dispatch = ()->
-          if ++pub.index >= pub.length
-            return FinalProcess()
-          if pub[pub.index].type is 'image' && (pub[pub.index].URI.indexOf('file:///') >= 0)
-            filename = pub[pub.index].filename
-            URI = pub[pub.index].URI
-            getBase64OfImage(filename,'',URI,ProcessImage)
-          else
-            ProcessText()
-
-        ProcessText = ()->
-          # must text
-          pub[pub.index].noKeyboardPopup=true
-          pub[pub.index].respectLayout=true
-          Drafts.insert(pub[pub.index])
-          Dispatch()
-
-        ProcessImage = (URI,smallImage)->
-          if smallImage
-            pub[pub.index].imgUrl = smallImage
-          else
-            pub[pub.index].imgUrl = '/noimage.png'
-          pub[pub.index].respectLayout=true
-          Drafts.insert(pub[pub.index])
-          #it was deleted
-          Dispatch()
-
-        Dispatch()
-      else
-        for i in [0..(pub.length-1)]
-          Drafts.insert(pub[i])
-        Session.set 'isReviewMode','1'
-        PUB.page('/add')
-      return
+      for i in [0..(pub.length-1)]
+        pub[i].noKeyboardPopup=true
+        pub[i].respectLayout=true
+        Drafts.insert(pub[i])
+      Session.set 'isReviewMode','1'
+      PUB.page('/add')
