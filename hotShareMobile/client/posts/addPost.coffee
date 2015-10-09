@@ -232,7 +232,9 @@ if Meteor.isClient
         data_sizey:'4'}
     else if item.type is 'music'
       insertMusicInfo(item.musicInfo)
-    callback(null,item)
+    Meteor.setTimeout ()->
+      callback(null,item)
+    ,10
   renderResortedArticleAsync = (data,inputUrl,resortedObj)->
     resortedObj.itemProcessor = itemProcessor
     resortedObj.data = data
