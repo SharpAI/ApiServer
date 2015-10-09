@@ -268,6 +268,39 @@ if Meteor.isClient
       if Session.equals('importProcedure',100)
         popupProgressBar.close()
         handler.stop()
+  showEditingPopupProgressBar = ()->
+    console.log('showEditingPopupProgressBar')
+    preEditingBar = $('.toEditingProgressBar').bPopup
+      positionStyle: 'absolute'
+      position: [0, 0]
+      onOpen: ()->
+        updateShowEditPopupProgressBarPercentage(0,0,0)
+      onClose: ()->
+        updateShowEditPopupProgressBarPercentage(0,0,0)
+    preEditingBar
+  updateShowEditPopupProgressBarPercentage=(percentage,i,n)->
+    $('.toEditingProgressBar').find('.progress-bar').css('width', percentage+'%').attr('aria-valuenow', percentage).text(percentage+'%');
+    $('.toEditingProgressBar').find('.processed').text(i);
+    $('.toEditingProgressBar').find('.total').text(n);
+  closePreEditingPopup = ()->
+    $('.toEditingProgressBar').bPopup().close()
+  @deferedProcessAddPostItemsWithEditingProcessBar = (pub)->
+    pub.processed=0
+    Session.set('itemInAddPostPending',pub.length)
+    Meteor.defer ()->
+      async.mapLimit(pub,3,(item,callback)->
+        item.respectLayout=true
+        Drafts.insert(item)
+        Meteor.defer ()->
+          pub.processed++
+          updateShowEditPopupProgressBarPercentage(Math.round(100*pub.processed/pub.length),pub.processed,pub.length)
+          callback(null,item)
+      ,(error,result)->
+        closePreEditingPopup()
+        Session.set('itemInAddPostPending',0)
+        unless error
+          console.log('no error')
+      )
   @getURL = (e) ->
     inputUrl = e.url
     console.log "input url: " + inputUrl
@@ -387,6 +420,8 @@ if Meteor.isClient
     }}).data('gridster');`
   # the only document I found here https://github.com/percolatestudio/transition-helper/blob/master/transition-helper.js#L4
   Template.addPost.onRendered ()->
+    if Session.get('itemInAddPostPending') > 0
+      showEditingPopupProgressBar()
     Meteor.subscribe("saveddrafts");
     window.imageCounter2 = 1
     window.insertRow = 1
