@@ -421,6 +421,7 @@ if Meteor.isClient
         $widget.actImageFitCover('cropStyle');
     }
     }}).data('gridster');`
+  window.imageCounter2 = 1
   # the only document I found here https://github.com/percolatestudio/transition-helper/blob/master/transition-helper.js#L4
   Template.addPost.onRendered ()->
     if Session.get('itemInAddPostPending') > 0

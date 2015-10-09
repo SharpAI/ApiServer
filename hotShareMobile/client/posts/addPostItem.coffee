@@ -158,22 +158,8 @@ if Meteor.isClient
         window.unSelectedElem = undefined
         console.log('Selected data-row is ' + insert_row)
         grid.add_widget(node, 6, size_y, 1, insert_row)
-      else if insertedObj.toTheEnd or insertedObj.respectLayout
-        grid.add_widget(node, 6, size_y, 1)
       else
-        max_row = 1
-        middle = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)/2
-        middle = 150 if middle is 0
-        $('.resortitem:near-viewport(-'+ middle+')').each( ( i, itemElem )->
-          if i == 0
-            max_row = parseInt($(itemElem).attr("data-row"))
-          cur_row = parseInt($(itemElem).attr("data-row"))
-          console.log("near-viewport id:"+ itemElem.id + " data-row:"+ cur_row)
-          if max_row < cur_row
-            max_row = cur_row
-        )
-        console.log("max_row " + max_row)
-        grid.add_widget(node, 6, size_y, 1, max_row)
+        grid.add_widget(node, 6, size_y, 1)
     else if type is 'music'
       grid.add_widget(node, 6, 1, 1)
     else if type is "image"
@@ -185,8 +171,8 @@ if Meteor.isClient
         grid.add_widget(node, parseInt(insertedObj.data_sizex,baseGap*2), parseInt(insertedObj.data_sizey,baseGap*2),parseInt(insertedObj.data_col),parseInt(insertedObj.data_row))
       else if Session.get('NewImgAdd') is 'true'
         if (window.imageCounter2 % 3) is 0
-          grid.add_widget(node, 6, 3,1,window.insertRow)
-          window.insertRow +=3
+          grid.add_widget(node, 6, 6,1,window.insertRow)
+          window.insertRow +=6
         else if (window.imageCounter2 % 3) is 1
           grid.add_widget(node, 3, 3,1,window.insertRow)
         else
@@ -203,51 +189,22 @@ if Meteor.isClient
           insert_col = parseInt($(window.unSelectedElem).attr('data-col'))
           insert_sizex = parseInt($(window.unSelectedElem).attr('data-sizex'))
           insert_sizey = parseInt($(window.unSelectedElem).attr('data-sizey'))
-          if insert_col is 1
-            window.nextCol = 4
-            insert_sizex = 3
-            insert_sizey = 3
-            window.nextRow = insert_row
-          else
-            window.nextCol = 1
-            insert_sizey = 3
-            window.nextRow = insert_row + 3
+          window.nextRow = insert_row + insert_sizey
         else
-          insert_sizex = 3
-          insert_sizey = 3
-          insert_col = window.nextCol
+          insert_sizex = 6
+          insert_sizey = 6
+          insert_col = 1
           insert_row = window.nextRow
-          if insert_col is 1
-            window.nextCol = 4
-          else
-            window.nextCol = 1
-            window.nextRow = insert_row + 3
+          window.nextRow = insert_row + 6
         if currentCount >= totalCount
           window.unSelectedElem = undefined
         grid.add_widget(node, insert_sizex, insert_sizey, insert_col, insert_row)
       # To be inserted at the end of the screen.
       else if insertedObj.toTheEnd
         grid.add_widget(node, parseInt(insertedObj.data_sizex,baseGap*2), parseInt(insertedObj.data_sizey,baseGap*2))
-      # To be inserted on the middle of screen.
+      # To be inserted at the end of screen.
       else
-        max_row = 1
-        middle = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)/2
-        middle = 150 if middle is 0
-        $('.resortitem:near-viewport(-'+ middle+')').each( ( i, itemElem )->
-          if i == 0
-            max_row = parseInt($(itemElem).attr("data-row"))
-          cur_row = parseInt($(itemElem).attr("data-row"))
-          console.log("near-viewport id:"+ itemElem.id + " data-row:"+ cur_row)
-          if max_row < cur_row
-            max_row = cur_row
-        )
-        console.log("max_row " + max_row)
-        if window.add_image_to_right
-          window.add_image_to_right = false
-          grid.add_widget(node, 3, 3,4,max_row)
-        else
-          window.add_image_to_right = true
-          grid.add_widget(node, 3, 3,1,max_row)
+        grid.add_widget(node, 6, 6,1)
       return
     return
   cropHandlerOnImage = (node)->
