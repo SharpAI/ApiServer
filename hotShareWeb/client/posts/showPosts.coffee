@@ -256,7 +256,7 @@ if Meteor.isClient
       else
         toastr.success('将在微信分享时引用本段内容', '您选定了本段文字')
         console.log('Selected index '+self.index)
-        Session.set('selectedIndex',self.index)
+        Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
   Template.showPosts.events
     'click .postTextItem' :(e)->
       if withSectionMenu
