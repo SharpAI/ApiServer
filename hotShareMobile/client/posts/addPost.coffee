@@ -2,6 +2,7 @@ if Meteor.isClient
   @baseGap = 5
   window.iabHandle = null
   Session.set('lastImportedUrl','')
+  Session.setDefault('itemInAddPostPending',0)
   @getDisplayElementWidth=()->
     $('.addPost').width()*0.9
   handleSaveDraft = ()->
@@ -275,6 +276,7 @@ if Meteor.isClient
       position: [0, 0]
       onOpen: ()->
         updateShowEditPopupProgressBarPercentage(0,0,0)
+        Session.set('itemInAddPostPending',0)
       onClose: ()->
         updateShowEditPopupProgressBarPercentage(0,0,0)
     preEditingBar
