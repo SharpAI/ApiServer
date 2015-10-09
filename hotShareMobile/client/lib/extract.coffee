@@ -306,6 +306,13 @@ getCalculatedStyle=(node,prop)->
           acceptNode : (node)->
             try
               try
+                if (node.nodeType isnt Node.TEXT_NODE)
+                  musicInfo = getMusicFromNode(node)
+                  if musicInfo
+                    return NodeFilter.FILTER_ACCEPT
+              catch error
+                console.log('getMusicFromNode Exception')
+              try
                 if $(node).css("display") is 'none'
                   return NodeFilter.FILTER_REJECT
               catch error
@@ -314,7 +321,7 @@ getCalculatedStyle=(node,prop)->
                 if node.nodeType is Node.TEXT_NODE
                   if $(node).parent().length > 0
                     alignstyle=getCalculatedStyle(node,'text-align')
-                    console.log('Get parent style '+alignstyle);
+                    #console.log('Get parent style '+alignstyle);
                     if alignstyle and alignstyle isnt ''
                       storeStyleInItem(node.parentNode,'textAlign',alignstyle)
                   if collectNodeSibling(node) is false

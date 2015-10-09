@@ -38,6 +38,92 @@ if Meteor.isClient
       musicSingerNameSelector:'.audio_area .audio_info_area .audio_source'
     }
   ]
+  musicExtactorMappingV2 = [
+    {
+      tagName:'QQMUSIC',
+      musicClass:'',
+      getMusicUrl:(node)->
+        if node and node.parentNode
+          playUrl=$(node.parentNode).find('.qqmusic_area .qqmusic_thumb').attr('data-autourl')
+          console.log('getMusicUrl '+playUrl)
+          return playUrl
+        ''
+      getMusicThumbImageURL:(node)->
+        console.log('getMusicThumbImageURL')
+        if node and node.parentNode
+          return $(node.parentNode).find('.qqmusic_area .qqmusic_thumb').attr('src')
+        ''
+      getMusicSongName:(node)->
+        console.log('GetMusicSongName')
+        if node and node.parentNode
+          return $(node.parentNode).find('.qqmusic_area .qqmusic_songname').text()
+        ''
+      getMusicSingerName:(node)->
+        console.log('getMusicSingerName')
+        if node and node.parentNode
+          return $(node.parentNode).find('.qqmusic_area .qqmusic_singername').text()
+        ''
+      cleanUp:(node)->
+        if node and node.parentNode
+          return $(node.parentNode).remove('.qqmusic_area')
+    },
+    {
+      tagName:'MPVOICE',
+      musicClass:'',
+      getMusicUrl:(node)->
+        playUrl = node.getAttribute('voice_encode_fileid');
+        if playUrl and playUrl isnt ''
+          playUrl = 'http://res.wx.qq.com/voice/getvoice?mediaid='+playUrl
+          console.log('getMusicUrl '+playUrl)
+          return playUrl
+        ''
+      getMusicThumbImageURL:(node)->
+        console.log('getMusicThumbImageURL None')
+        ''
+      getMusicSongName:(node)->
+        console.log('GetMusicSongName')
+        if node and node.parentNode
+          return $(node.parentNode).find('.audio_area .audio_info_area .audio_title').text()
+        ''
+      getMusicSingerName:(node)->
+        console.log('getMusicSingerName')
+        if node and node.parentNode
+          return $(node.parentNode).find('.audio_area .audio_info_area .audio_source').text()
+        ''
+      cleanUp:(node)->
+        if node and node.parentNode
+          return $(node.parentNode).remove('.audio_area')
+    }
+  ]
+  @getMusicFromNode = (node) ->
+    for s in musicExtactorMappingV2
+      if ((s.tagName and s.tagName isnt '' and node.tagName is s.tagName) or (s.className and (s.className isnt '') and (node.className is s.className)))
+        if typeof(s.getMusicUrl) is 'function'
+          playUrl = s.getMusicUrl(node)
+        if typeof(s.getMusicThumbImageURL) is 'function'
+          image = s.getMusicThumbImageURL(node)
+        if typeof(s.getMusicSongName) is 'function'
+          songName = s.getMusicSongName(node)
+        if typeof(s.getMusicSingerName) is 'function'
+          singerName = s.getMusicSingerName(node)
+        if typeof(s.cleanUp) is 'function'
+          s.cleanUp(node)
+        if playUrl
+          musicElement = document.createElement("musicExtracted")
+          musicElement.setAttribute('playUrl',playUrl)
+          musicElement.setAttribute('image',image)
+          musicElement.setAttribute('songName',songName)
+          musicElement.setAttribute('singerName',singerName)
+          node.appendChild(musicElement)
+          musicInfo = {
+            playUrl : playUrl,
+            image : image,
+            songName : songName,
+            singerName: singerName
+          }
+          console.log('Got Music Info '+JSON.stringify(musicInfo))
+          return musicInfo
+    return null
   getMusicFromPage = (page) ->
     for s in musicExtactorMapping
       if $(page).find(s.musicClass).length > 0
@@ -357,7 +443,7 @@ if Meteor.isClient
           if data.host is item.hostname
             data.host = '摘自 ' + item.displayName
             break
-        musicInfo = getMusicFromPage documentBody
+        #musicInfo = getMusicFromPage documentBody
         extracted = extract(documentBody)
         toBeInsertedText = ''
         toBeInsertedStyleAlign=''
@@ -365,8 +451,8 @@ if Meteor.isClient
         resortedArticle = []
         sortedImages = 0
 
-        if musicInfo
-          resortedArticle.push {type:'music', musicInfo: musicInfo}
+        #if musicInfo
+        #  resortedArticle.push {type:'music', musicInfo: musicInfo}
         if extracted.id is 'hotshare_special_tag_will_not_hit_other'
           toBeProcessed = extracted
         else
@@ -388,7 +474,26 @@ if Meteor.isClient
               toBeInsertedText = '';
               toBeInsertedStyleAlign = '';
               return true
-          text = $(node).text().toString().replace(/\s\s\s+/g, '')
+          else if node.tagName is 'MUSICEXTRACTED'
+            if toBeInsertedText and toBeInsertedText isnt ''
+              resortedArticle.push {type:'text',text:toBeInsertedText}
+              toBeInsertedText = ''
+
+            playUrl=node.getAttribute('playUrl')
+            image=node.getAttribute('image')
+            songName=node.getAttribute('songName')
+            singerName=node.getAttribute('singerName')
+            resortedArticle.push {type:'music', musicInfo: {
+              playUrl:playUrl
+              image:image
+              songName:songName
+              singerName:singerName
+            }}
+            return true
+          text = $(node).text()
+          if text and text isnt ''
+            text = text.replace(/\s\s\s+/g, '')
+          console.log('text '+text)
           if text and text isnt ''
             previousIsImage = false
             showDebug&&console.log '    Got text in this element('+toBeInsertedText.length+') '+text
@@ -484,6 +589,7 @@ if Meteor.isClient
         if toBeInsertedText and toBeInsertedText isnt ''
           resortedArticle.push {type:'text',text:toBeInsertedText}
         if sortedImages < 1
+          console.log('no image ?')
           grabImagesInHTMLString(data)
           if data.imageArray.length > 0
             for imageUrl in data.imageArray
@@ -495,8 +601,6 @@ if Meteor.isClient
               if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
                 showDebug&&console.log('    save background imageUrl ' + imageUrl)
                 resortedArticle.push {type:'image',imageUrl:imageUrl}
-        if musicInfo
-          data.musicInfo = musicInfo
         data.resortedArticle = resortedArticle
         showDebug&&console.log('Resorted Article is ' + data.resortedArticle)
         callback data
