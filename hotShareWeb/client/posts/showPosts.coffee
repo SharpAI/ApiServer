@@ -266,6 +266,8 @@ if Meteor.isClient
         Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
         Meteor.setTimeout ()->
           Session.set("displayPostContent",true)
+          calcPostSignature(window.location.href.split('#')[0])
+          console.log('link is '+window.location.href.split('#')[0])
         ,300
   Template.showPosts.events
     'click .postTextItem' :(e)->
