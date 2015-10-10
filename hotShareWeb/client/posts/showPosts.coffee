@@ -32,15 +32,12 @@ if Meteor.isClient
       onOpen: ->
         Session.set('displayUserProfileBox',true)
 
-  Session.setDefault("displayPostContent",false)
   Template.showPosts.onDestroyed ->
     document.body.scrollTop = 0
     Session.set("postPageScrollTop", 0)
     Session.set("showSuggestPosts",false)
-    Session.set("displayPostContent",false)
   Template.showPosts.onRendered ->
     #Calc Wechat token after post rendered.
-    calcPostSignature(window.location.href.split('#')[0]);
     if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
       Meteor.setTimeout ()->
           document.body.scrollTop = Session.get("postPageScrollTop")
@@ -55,7 +52,6 @@ if Meteor.isClient
     browseTimes = 0
     Session.set("Social.LevelOne.Menu",'discover')
     Session.set("SocialOnButton",'postBtn')
-    Session.set("displayPostContent",true)
     if not Meteor.isCordova
       favicon = document.createElement('link');
       favicon.id = 'icon';
@@ -262,13 +258,7 @@ if Meteor.isClient
       else
         toastr.success('将在微信分享时引用本段内容', '您选定了本段文字')
         console.log('Selected index '+self.index)
-        Session.set("displayPostContent",false)
         Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
-        Meteor.setTimeout ()->
-          Session.set("displayPostContent",true)
-          calcPostSignature(window.location.href.split('#')[0])
-          console.log('link is '+window.location.href.split('#')[0])
-        ,300
   Template.showPosts.events
     'click .postTextItem' :(e)->
       if withSectionMenu
@@ -381,22 +371,14 @@ if Meteor.isClient
       Session.set("pcommentsName","")
       $(window).children().off()
       $(window).unbind('scroll')
-      Session.set("displayPostContent",false)
       history.forward()
-      Meteor.setTimeout ()->
-        Session.set("displayPostContent",true)
-      ,300
     'click .showPosts .back' :->
       Session.set("pcommetsId","")
       Session.set("pcommentsName","")
       Session.set("historyForwardDisplay", true)
       $(window).children().off()
       $(window).unbind('scroll')
-      Session.set("displayPostContent",false)
       history.back()
-      Meteor.setTimeout ()->
-        Session.set("displayPostContent",true)
-      ,300
     'click #edit': (event)->
       #Clear draft first
       Drafts.remove({})

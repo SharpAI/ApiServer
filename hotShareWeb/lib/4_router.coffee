@@ -6,6 +6,12 @@ subs = new SubsManager({
 });
 
 if Meteor.isClient
+  refreshPostContent=()->
+    Session.set("displayPostContent",false)
+    Meteor.setTimeout ()->
+      Session.set("displayPostContent",true)
+      calcPostSignature(window.location.href.split('#')[0])
+    ,300
   Router.route '/redirect/:_id',()->
     Session.set('nextPostID',this.params._id)
     this.render 'redirect'
@@ -35,6 +41,7 @@ if Meteor.isClient
         favicon.href = post.mainImage
         document.head.appendChild(favicon)
 
+        refreshPostContent()
         this.render 'showPosts', {data: post}
         Session.set 'channel','posts/'+this.params._id
       fastRender: true
@@ -72,6 +79,7 @@ if Meteor.isClient
       favicon.href = post.mainImage
       document.head.appendChild(favicon)
 
+      refreshPostContent()
       this.render 'showPosts', {data: post}
       Session.set('channel','posts/'+this.params._id+'/'+this.params._index)
     fastRender: true
