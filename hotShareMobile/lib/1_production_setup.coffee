@@ -9,6 +9,6 @@
 @withMusicSharing = true
 @withSectionMenu = true
 @withSectionShare = true
-@withPostTTS = true
+@withPostTTS = false
 @withWeChatSignatureServer = false
 @withLocalBase64 = true
