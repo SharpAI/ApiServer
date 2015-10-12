@@ -12,3 +12,4 @@
 @withPostTTS = false
 @withWeChatSignatureServer = false
 @withLocalBase64 = true
+@withSuggestAlreadyRead = false
