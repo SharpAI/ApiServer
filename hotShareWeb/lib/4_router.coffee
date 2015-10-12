@@ -41,7 +41,8 @@ if Meteor.isClient
         favicon.href = post.mainImage
         document.head.appendChild(favicon)
 
-        refreshPostContent()
+        unless Session.equals('channel','posts/'+this.params._id)
+          refreshPostContent()
         this.render 'showPosts', {data: post}
         Session.set 'channel','posts/'+this.params._id
       fastRender: true
@@ -79,7 +80,8 @@ if Meteor.isClient
       favicon.href = post.mainImage
       document.head.appendChild(favicon)
 
-      refreshPostContent()
+      unless Session.equals('channel','posts/'+this.params._id+'/'+this.params._index)
+        refreshPostContent()
       this.render 'showPosts', {data: post}
       Session.set('channel','posts/'+this.params._id+'/'+this.params._index)
     fastRender: true
