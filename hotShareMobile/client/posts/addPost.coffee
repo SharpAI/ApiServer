@@ -831,6 +831,9 @@ if Meteor.isClient
         #Delete it from SavedDrafts
         draftData = Drafts.find().fetch()
         draftId = draftData[0]._id
+        if SavedDrafts.find().count() is 1
+          Session.setPersistent('mySavedDraftsCount',0)
+          Session.setPersistent('persistentMySavedDrafts',null)
         SavedDrafts.remove draftId
         #Clear Drafts
         Drafts.remove {owner: Meteor.userId()}
