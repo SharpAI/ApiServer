@@ -181,22 +181,6 @@ if Meteor.isClient
         postId=Session.get("postContent")._id
         Session.set("firstPost",postId)
         false
-    myselfClickedUp:->
-      i = this.index
-      userId = Meteor.userId()
-      post = Session.get("postContent").pub
-      if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].likeUserId[userId] is true
-        return true
-      else
-        return false
-    myselfClickedDown:->
-      i = this.index
-      userId = Meteor.userId()
-      post = Session.get("postContent").pub
-      if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].dislikeUserId[userId] is true
-        return true
-      else
-        return false
     getPub:->
       self = this
       self.pub = self.pub || []

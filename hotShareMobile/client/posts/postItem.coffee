@@ -72,6 +72,22 @@ if Meteor.isClient
         $(e.currentTarget).parent().removeClass('music_playing')
 
   Template.postItem.helpers
+    myselfClickedUp:->
+      i = this.index
+      userId = Meteor.userId()
+      post = Session.get("postContent").pub
+      if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].likeUserId[userId] is true
+        return true
+      else
+        return false
+    myselfClickedDown:->
+      i = this.index
+      userId = Meteor.userId()
+      post = Session.get("postContent").pub
+      if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].dislikeUserId[userId] is true
+        return true
+      else
+        return false
     calcStyle: ()->
       # For backforward compatible. Only older version set style directly
       if this.style and this.style isnt ''
