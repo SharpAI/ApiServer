@@ -56,6 +56,8 @@ if Meteor.isClient
         Session.get("postContent")._id
       newLayoutMoment:()->
         withNewLayoutMoment
+      withSuggestAlreadyRead:()->
+        withSuggestAlreadyRead
       showSuggestPosts:()->
         if Session.get("showSuggestPosts") is true
           if DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
@@ -109,6 +111,8 @@ if Meteor.isClient
           Router.go '/posts/'+postId
         ,300
     Template.lpcomments.helpers
+      withSuggestAlreadyRead:()->
+        withSuggestAlreadyRead
       description:->
         if this.eventType is "pcommentowner"
           "点评了您的故事"
