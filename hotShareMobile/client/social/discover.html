@@ -38,7 +38,8 @@
                                 <dd>{{postTitle}}  {{addontitle}}</dd>
                             </dl>
                         </div>
-                        <p>{{time_diff createdAt}}</p>
+                        <span style="margin:0;">{{time_diff createdAt}}</span>
+                          <button class="lpAlreadyRead" style="float: right;border: none;background-color: #fff;color: rgb(7, 81, 154);">已读过</button>
                     </div>
                     <div class="clear"></div>
                 </div>
@@ -70,7 +71,7 @@
 <!--                                  <span><img class="userIcon" src="{{userIcon}}" width="35" height="35" /></span>-->
                               <p class="title">{{title}}</p>
                               <p class="addontitle">{{addontitle}}</p>
-                              <h1 class="username">{{ownerName}}  <span>发布</span></h1>
+                              <h1 class="username">{{ownerName}}  <span>发布</span><button name="suggestAlreadyRead" style="float: right; margin-right: 10px;border: none; background-color: #fff;">已读过</button></h1>
 <!--                                  <h2>发布了一个故事</h2>-->
 <!--                                  <b>{{time_diff createdAt}}</b>-->
                             </div>
@@ -90,10 +91,10 @@
                               <p class="title">{{title}}</p>
                               <p class="addontitle">{{addontitle}}</p>
 <!--                                  <span><img class="userIcon" src="{{userIcon}}" width="35" height="35" /></span>-->
-                              <h1 class="username">{{username}}  <span>读过</span></h1>
 <!--                                  <h2>阅读了一个故事</h2>-->
 <!--                                  <b>{{time_diff createdAt}}</b>-->
                             </div>
+                            <h1 class="username">{{username}}  <span>读过</span><button name="postAlreadyRead" style="float: right; margin-right: 10px;border: none; background-color: #fff;">已读过</button></h1>
                         {{/newLayoutElement}}
                     {{/each}}
                 {{/newLayoutContainer}}

@@ -146,13 +146,20 @@ Template.newLayoutContainer.events =
     wookmark_debug&&console.log('layoutId ' + this.displayId)
     Session.set("historyForwardDisplay", false)
     postId = this.displayId
-    scrollTop = $(window).scrollTop()
     if postId is undefined
       postId = this._id
-    $(window).children().off()
-    $(window).unbind('scroll')
-    Session.set("lastPost",postId)
-    Router.go '/posts/'+postId
+    if e.target.name is "postAlreadyRead"
+      DynamicMoments.findOne({currentPostId:Session.get("postContent")._id,readPostId:postId})._id
+      console.log "Do something..."
+    else if e.target.name is "suggestAlreadyRead"
+      SuggestPosts.find({},limit:10)
+      console.log "Do something..."
+    else
+      scrollTop = $(window).scrollTop()
+      Session.set("lastPost",postId)
+      $(window).children().off()
+      $(window).unbind('scroll')
+      Router.go '/posts/'+postId
 Template.newLayoutContainer.helpers =
   displayId:()->
     if this.data and this.data.displayId

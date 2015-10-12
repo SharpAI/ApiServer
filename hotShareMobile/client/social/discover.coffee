@@ -119,6 +119,9 @@ if Meteor.isClient
       time_diff: (created)->
         GetTime0(new Date() - created)
     Template.lpcomments.events
+      'click .lpAlreadyRead':(e)->
+        console.log this._id
+        Feeds.update({_id:this._id},{$set: {checked:true}})
       'click .readpost':(e)->
         postId = this.postId
         scrollTop = $(window).scrollTop()
