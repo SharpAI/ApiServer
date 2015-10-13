@@ -568,6 +568,9 @@ if Meteor.isClient
         createdAt: new Date(),
       })
     #Delete from SavedDrafts if it is a saved draft.
+    if SavedDrafts.find().count() is 1
+      Session.setPersistent('mySavedDraftsCount',0)
+      Session.setPersistent('persistentMySavedDrafts',null)
     SavedDrafts.remove({_id:postId})
     #Delete the Drafts
     Drafts.remove({})
