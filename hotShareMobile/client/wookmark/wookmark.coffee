@@ -114,7 +114,6 @@ class @newLayout
       wookmark_debug&&console.log('DONE  - all images have been successfully loaded, total ' + DynamicMoments.find().count())
       newLayout.reduceDownloadingNumber()
       element.style.display = ""
-#      $element.css('display','')
       $element.css('opacity',0)
       $element.addClass('loaded')
       $container.append($element)
@@ -145,26 +144,12 @@ class @newLayout
 Template.newLayoutContainer.events =
   'click .newLayout_element':(e)->
     wookmark_debug&&console.log('layoutId ' + this.displayId)
-    layoutId = Session.get("postContent")._id
     postId = this.displayId
     if postId is undefined
       postId = this._id
     if e.target.name is "postAlreadyRead"
-      delete window.newLayoutWatchIdList[postId]
-      $('.newLayout_element_'+layoutId).removeClass('loaded')
-      
-      elementId = DynamicMoments.findOne({currentPostId:Session.get("postContent")._id,readPostId:postId})._id
-      instance = window.newLayoutInstances[layoutId]
-      container = '.newLayout_container_' + layoutId
-      console.log container
-      $container = $(container)
-      $element = $('#' + elementId)
-      if instance and $container.length > 0
-        newLayout.processElement($element,$container,instance)
-      else
-        newLayout.initContainer(layoutId)
-      console.log postId
-      console.log "Do something... "
+      DynamicMoments.findOne({currentPostId:Session.get("postContent")._id,readPostId:postId})._id
+      console.log "Do something..."
     else if e.target.name is "suggestAlreadyRead"
       SuggestPosts.find({},limit:10)
       console.log "Do something..."
