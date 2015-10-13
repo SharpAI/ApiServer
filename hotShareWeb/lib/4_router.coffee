@@ -53,6 +53,7 @@ if Meteor.isClient
        Meteor.subscribe "pcomments"]
     loadingTemplate: 'loadingPost'
     action: ->
+      document.body.scrollTop = 0
       post = Posts.findOne({_id: this.params._id})
       unless post
         console.log "Cant find the request post"

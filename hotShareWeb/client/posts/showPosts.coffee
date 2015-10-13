@@ -98,7 +98,15 @@ if Meteor.isClient
           $('.showPosts .head').fadeIn 300
         window.lastScroll = st
         return
-
+      if withForcePopupSectionReview
+        if Session.get('focusedIndex') isnt undefined and  $(".showPosts .gridster").isAboveViewPortBottom() and !amplify.store('section_'+Session.get('channel')) and !$('.commentOverlay').data('bPopup')
+          top = $(window).height()/2
+          left = $(window).width()/10
+          $('.commentOverlay').bPopup
+            positionStyle: 'absolute'
+            position: [left, top]
+            onClose: ->
+              amplify.store('section_'+Session.get('channel'),true)
       if window.lastScroll - st > 5
         $('.showPosts .head').fadeIn 300
         showSocialBar()
@@ -244,6 +252,10 @@ if Meteor.isClient
         console.log('Selected index '+self.index)
         Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
   Template.showPosts.events
+    'click .commentOverlay .thumbsUp' :(e)->
+      toastr.success('您对本段文字引用的评价已生效')
+      $('.commentOverlay').bPopup().close()
+      amplify.store('section_'+Session.get('channel'),true)
     'click .postTextItem' :(e)->
       if withSectionMenu
         console.log('clicked on textdiv ' + this._id)
