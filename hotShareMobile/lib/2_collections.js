@@ -466,9 +466,9 @@ if(Meteor.isServer){
             try{
                 var userinfo = Meteor.users.findOne({_id: userId },{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
                 var needRemove = false;
-                if(ptype ==="like" && doc.pub[pindex].likeUserId[userId] === true)
+                if(ptype ==="like" && doc.pub[pindex].likeUserId && doc.pub[pindex].likeUserId[userId] === true)
                     needRemove = true;
-                if(ptype ==="dislike" && doc.pub[pindex].dislikeUserId[userId] === true)
+                if(ptype ==="dislike" && doc.pub[pindex].dislikeUserId && doc.pub[pindex].dislikeUserId[userId] === true)
                     needRemove = true;
                 PComments.insert({
                     postId:doc._id,
