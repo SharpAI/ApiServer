@@ -103,7 +103,7 @@ if Meteor.isClient
           top = $(window).height()/2
           left = $(window).width()/10
           $('.commentOverlay').bPopup
-            positionStyle: 'absolute'
+            positionStyle: 'fixed'
             position: [left, top]
             onClose: ->
               amplify.store('section_'+Session.get('channel'),true)
