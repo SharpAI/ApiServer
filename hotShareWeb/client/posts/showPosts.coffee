@@ -100,11 +100,13 @@ if Meteor.isClient
         return
       if withForcePopupSectionReview
         if Session.get('focusedIndex') isnt undefined and  $(".showPosts .gridster").isAboveViewPortBottom() and !amplify.store('section_'+Session.get('channel')) and !$('.commentOverlay').data('bPopup')
-          top = $(window).height()/2
+          $("body").css("overflow","hidden");
+          top = 2 * $(window).height()/5
           left = $(window).width()/10
           $('.commentOverlay').bPopup
             positionStyle: 'fixed'
             position: [left, top]
+            modalClose: false
             onClose: ->
               amplify.store('section_'+Session.get('channel'),true)
       if window.lastScroll - st > 5
@@ -252,8 +254,18 @@ if Meteor.isClient
         console.log('Selected index '+self.index)
         Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
   Template.showPosts.events
+    'click .commentOverlay .later' :(e)->
+      $("body").css("overflow","visible");
+      $('.commentOverlay').bPopup().close()
+      amplify.store('section_'+Session.get('channel'),true)
     'click .commentOverlay .thumbsUp' :(e)->
       toastr.success('您对本段文字引用的评价已生效')
+      $("body").css("overflow","visible");
+      $('.commentOverlay').bPopup().close()
+      amplify.store('section_'+Session.get('channel'),true)
+    'click .commentOverlay .thumbsDown' :(e)->
+      toastr.success('您对本段文字引用的评价已生效')
+      $("body").css("overflow","visible");
       $('.commentOverlay').bPopup().close()
       amplify.store('section_'+Session.get('channel'),true)
     'click .postTextItem' :(e)->

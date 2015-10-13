@@ -171,10 +171,13 @@
   {{/if}}
   {{> userProfileBox}}
   </div>
-    <div class="commentOverlay" style="display:none">
-        请问您是否赞成Ta转发的这段文字
-        <i class="fa fa-thumbs-o-up thumbsUp" style="color:red;">0</i>
-        <i class="fa fa-thumbs-o-down thumbsDown" style="color:blue;">0</i>
+    <div class="commentOverlay" style="display:none"  data-dismissible="false">
+        <div class="banner">您对TA转发的这段文章有什么看法？</div>
+        <div class="commentOverlayBtn">
+          <span class="later" style="color: #CACDD1;font-weight: bold;">稍后再评</span>
+            <img style="margin:0 20%" class="thumbsUp" src="/thumbsUpGray.png" width="16" height="16">
+            <img class="thumbsDown" src="/thumbsDownGray.png" width="16" height="16">
+        </div>
     </div>
 </template>
 <template name="postFooter">
