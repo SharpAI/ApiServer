@@ -33,6 +33,12 @@ if Meteor.isClient
     elementBottom=element.offsetTop+element.offsetHeight
     updateLayoutData(layoutHelper,myData.data_col,myData.data_sizex,elementBottom)
     parentNode.style.height=getLayoutTop(layoutHelper,1,6)-parentNode.offsetTop+'px'
+    if Session.get("needToast") is true
+      Session.set("needToast",false)
+      Meteor.setTimeout ()->
+        userName=Session.get("pcommentsName")
+        PUB.toast(userName+"点评过的段落已为您用蓝色标注！")
+      ,500
     #console.log('['+this.data.index+']'+' '+myData.type+' col '+myData.data_col+
     #    ' row '+myData.data_row+' h '+myData.data_sizey+' w '+myData.data_sizex+
     #    ' H '+element.offsetHeight+'/'+element.clientHeight+' W '+element.offsetWidth+' Top '+element.offsetTop
@@ -128,7 +134,6 @@ if Meteor.isClient
       if self.pcomments
         pclength=self.pcomments.length
       userId=Session.get("pcommetsId")
-      userName=Session.get("pcommentsName")
       scolor="#F30B44"
       if userId and userId isnt ""
         if self.likeUserId and self.likeUserId[userId] is true
@@ -148,7 +153,7 @@ if Meteor.isClient
           document.body.scrollTop = Session.get("postPageScrollTop")
         if Session.get("toasted") is false
           Session.set "toasted",true
-          PUB.toast(userName+"点评过的段落将为您用蓝色标注！")
+          Session.set("needToast",true)
       dislikeSum = 0
       if self.dislikeSum
         dislikeSum=self.dislikeSum
