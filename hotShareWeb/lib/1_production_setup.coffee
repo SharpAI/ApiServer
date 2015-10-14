@@ -12,4 +12,4 @@
 @withPostTTS = false
 @withWeChatSignatureServer = false
 @withSuggestAlreadyRead = true
-@withForcePopupSectionReview = true
+@withForcePopupSectionReview = false
