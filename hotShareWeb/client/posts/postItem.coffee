@@ -45,10 +45,13 @@ if Meteor.isClient
     #)
   Template.postItem.events
     'click .thumbsUp': (e)->
+      Session.set("pcommetsId","")
       thumbsUpHandler(e,this)
     'click .thumbsDown': (e)->
+      Session.set("pcommetsId","")
       thumbsDownHandler(e,this)
     'click .pcomments': (e)->
+      Session.set("pcommetsId","")
       backgroundTop = 0-$(window).scrollTop()
       Session.set('backgroundTop', backgroundTop);
       $('.showBgColor').attr('style','position:fixed;top:'+Session.get('backgroundTop')+'px')
