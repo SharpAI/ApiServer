@@ -610,7 +610,7 @@
     this.activeItemCount = activeItemsLength;
 
     // Set container height to height of the grid.
-    this.container.style.height = maxHeight + 'px';
+    this.container.style.height = maxHeight + 60 + 'px';
 
     // Update placeholders
     if (this.fillEmptySpace) {
