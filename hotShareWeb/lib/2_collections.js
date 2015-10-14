@@ -793,11 +793,19 @@ if(Meteor.isServer){
             added: function (id,fields) {
                 if(self.count<limit)
                 {
-                    postsAddForSuggestPostsDeferHandle(self,id,fields,self.userId);
+                    try{
+                        postsAddForSuggestPostsDeferHandle(self,id,fields,self.userId);
+                    } catch (e){
+
+                    }
                 }
             },
             changed:function(id,fields){
+                try{
                     postsChangeForSuggestPostsDeferHandle(self,id,fields,self.userId);
+                } catch (e){
+                    
+                }
             }
         });
         self.ready();
