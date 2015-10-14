@@ -21,6 +21,7 @@ if Meteor.isServer
     Meets._ensureIndex({me: 1, ta: 1})
     Meets._ensureIndex({me: 1, meetOnPostId: 1, createdAt: -1})
     Posts._ensureIndex({owner: 1, createdAt: -1})
+    Posts._ensureIndex({createdAt: -1})
     FollowPosts._ensureIndex({followby: 1, createdAt: -1})
     SavedDrafts._ensureIndex({owner: 1, createdAt: -1})
     Feeds._ensureIndex({followby: 1, createdAt: -1})
