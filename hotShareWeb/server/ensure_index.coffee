@@ -16,6 +16,7 @@ if Meteor.isServer
     ReComment._ensureIndex({postId: 1, commentUserId: 1})
     ReComment._ensureIndex({postId: 1})
     Meets._ensureIndex({me: 1, count: -1, createdAt: -1})
+    Meets._ensureIndex({me: 1, createdAt: -1})
     #This one need to be deleted in mongodb.
     #Meets._ensureIndex({me: 1, ta: 1, meetOnPostId: 1, count: -1, createdAt: -1})
     Meets._ensureIndex({me: 1, ta: 1})

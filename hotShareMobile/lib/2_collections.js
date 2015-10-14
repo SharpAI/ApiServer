@@ -793,11 +793,19 @@ if(Meteor.isServer){
             added: function (id,fields) {
                 if(self.count<limit)
                 {
-                    postsAddForSuggestPostsDeferHandle(self,id,fields,self.userId);
+                    try{
+                        postsAddForSuggestPostsDeferHandle(self,id,fields,self.userId);
+                    } catch (e){
+
+                    }
                 }
             },
             changed:function(id,fields){
+                try{
                     postsChangeForSuggestPostsDeferHandle(self,id,fields,self.userId);
+                } catch (e){
+                    
+                }
             }
         });
         self.ready();
@@ -914,7 +922,7 @@ if(Meteor.isServer){
     else{
       var self = this;
       this.count = 0;
-      var handle = Meets.find({me: userId},{sort:{count:-1,createdAt:-1},limit:40}).observeChanges({
+      var handle = Meets.find({me: userId},{sort:{createdAt:-1},limit:40}).observeChanges({
         added: function (id,fields) {
           if (self.count<20)
           {
