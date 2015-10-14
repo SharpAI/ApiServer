@@ -145,19 +145,10 @@ Template.newLayoutContainer.events =
   'click .newLayout_element':(e)->
     wookmark_debug&&console.log('layoutId ' + this.displayId)
     postId = this.displayId
-    if postId is undefined
-      postId = this._id
-    if e.target.name is "postAlreadyRead"
-      DynamicMoments.findOne({currentPostId:Session.get("postContent")._id,readPostId:postId})._id
-      console.log "Do something..."
-    else if e.target.name is "suggestAlreadyRead"
-      SuggestPosts.find({},limit:10)
-      console.log "Do something..."
-    else
-      scrollTop = $(window).scrollTop()
-      $(window).children().off()
-      $(window).unbind('scroll')
-      Router.go '/posts/'+postId
+    scrollTop = $(window).scrollTop()
+    $(window).children().off()
+    $(window).unbind('scroll')
+    Router.go '/posts/'+postId
 Template.newLayoutContainer.helpers =
   displayId:()->
     if this.data and this.data.displayId
@@ -213,3 +204,12 @@ Template.newLayoutElement.onDestroyed ()->
         instance.initItems();
         instance.layout(true);
       ,1000
+Template.newLayoutElement.events
+  'click .postAlreadyRead':(e)->
+     console.log('Click on lpAlreadyRead '+this._id)
+     Session.setPersistent('hideSuggestPost_'+this._id,true)
+     return false
+  'click .suggestAlreadyRead':(e)->
+    console.log('Click on suggestAlreadyRead')
+    Session.setPersistent('hideSuggestPost_'+this._id,true)
+    return false

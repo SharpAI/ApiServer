@@ -11,5 +11,5 @@
 @withSectionShare = true
 @withPostTTS = false
 @withWeChatSignatureServer = false
-@withSuggestAlreadyRead = false
+@withSuggestAlreadyRead = true
 @withForcePopupSectionReview = true

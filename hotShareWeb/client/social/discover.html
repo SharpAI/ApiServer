@@ -39,7 +39,6 @@
                             </dl>
                         </div>
                         <span style="margin:0;">{{time_diff createdAt}}</span>
-                            {{#if withSuggestAlreadyRead}}<img style="background-color: #fff;float: right;margin-top: 3px;" class="lpAlreadyRead" src="/closeBtn.png" width="16" height="16">{{/if}}
                     </div>
                     <div class="clear"></div>
                 </div>
@@ -59,54 +58,47 @@
                 {{#newLayoutContainer layoutId=onPostId }}
                     {{#if showSuggestPosts}}
                     {{#each suggestPosts}}
-                        {{#newLayoutElement layoutId=onPostId displayId=_id}}
-                            <div class="img_placeholder">
-                                <img class="mainImage" src="{{mainImage}}" />
-                            </div>
-<!--                                <header>
-                              <p class="title">{{title}}</p>
-                              <p class="addontitle">{{addontitle}}</p>
-                            </header>-->
-                            <div class="pin_content">
-<!--                                  <span><img class="userIcon" src="{{userIcon}}" width="35" height="35" /></span>-->
-                              <p class="title">{{title}}</p>
-                              <p class="addontitle">{{addontitle}}</p>
-                              <h1 class="username">{{ownerName}}  <span>发布</span>
-                                {{#if withSuggestAlreadyRead}}
-                                <div name="suggestAlreadyRead" class="alreadyReadBtn" style="bottom: 1px;float: right;margin-right: 10px;border: none;position: relative;height: 16px;width: 16px;">
-                                  <img style="background-color: #fff;" class="icon" name="suggestAlreadyRead" src="/closeBtn.png" width="16" height="16">
+                        {{#unless hideSuggestPost}}
+                            {{#newLayoutElement layoutId=onPostId displayId=_id}}
+                                <div class="img_placeholder">
+                                    <img class="mainImage" src="{{mainImage}}" />
                                 </div>
-                                {{/if}}</h1>
-<!--                                  <h2>发布了一个故事</h2>-->
-<!--                                  <b>{{time_diff createdAt}}</b>-->
-                            </div>
-                        {{/newLayoutElement}}
+    <!--                                <header>
+                                  <p class="title">{{title}}</p>
+                                  <p class="addontitle">{{addontitle}}</p>
+                                </header>-->
+                                <div class="pin_content">
+    <!--                                  <span><img class="userIcon" src="{{userIcon}}" width="35" height="35" /></span>-->
+                                  <p class="title">{{title}}</p>
+                                  <p class="addontitle">{{addontitle}}</p>
+                                  <h1 class="username">{{ownerName}}  <span>发布</span>{{#if withSuggestAlreadyRead}}<button class="suggestAlreadyRead"><i class="fa fa-times"></i></button>{{/if}}</h1>
+    <!--                                  <h2>发布了一个故事</h2>-->
+    <!--                                  <b>{{time_diff createdAt}}</b>-->
+                                </div>
+                            {{/newLayoutElement}}
+                        {{/unless}}
                     {{/each}}
                     {{/if}}
                     {{#each moments}}
-                        {{#newLayoutElement layoutId=onPostId displayId=readPostId}}
-                            <div class="img_placeholder">
-                                <img class="mainImage" src="{{mainImage}}" />
-                            </div>
-<!--                                <header>
-                              <p class="title">{{title}}</p>
-                              <p class="addontitle">{{addontitle}}</p>
-                            </header>-->
-                            <div class="pin_content">
-                              <p class="title">{{title}}</p>
-                              <p class="addontitle">{{addontitle}}</p>
-<!--                                  <span><img class="userIcon" src="{{userIcon}}" width="35" height="35" /></span>-->
-<!--                                  <h2>阅读了一个故事</h2>-->
-<!--                                  <b>{{time_diff createdAt}}</b>-->
-                            </div>
-                            <h1 class="username">{{username}}  <span>读过</span>
-                              {{#if withSuggestAlreadyRead}}
-                              <div name="postAlreadyRead" class="alreadyReadBtn" style="bottom: 1px;float: right;margin-right: 10px;border: none;position: relative;height: 16px;width: 16px;">
-                                <img style="background-color: #fff;" name="postAlreadyRead" class="icon" src="/closeBtn.png" width="16" height="16">
-                              </div>
-                              {{/if}}
-                            </h1>
-                        {{/newLayoutElement}}
+                        {{#unless hidePost}}
+                            {{#newLayoutElement layoutId=onPostId displayId=readPostId}}
+                                <div class="img_placeholder">
+                                    <img class="mainImage" src="{{mainImage}}" />
+                                </div>
+    <!--                                <header>
+                                  <p class="title">{{title}}</p>
+                                  <p class="addontitle">{{addontitle}}</p>
+                                </header>-->
+                                <div class="pin_content">
+                                  <p class="title">{{title}}</p>
+                                  <p class="addontitle">{{addontitle}}</p>
+    <!--                                  <span><img class="userIcon" src="{{userIcon}}" width="35" height="35" /></span>-->
+    <!--                                  <h2>阅读了一个故事</h2>-->
+    <!--                                  <b>{{time_diff createdAt}}</b>-->
+                                </div>
+                                <h1 class="username">{{username}}  <span>读过</span>{{#if withSuggestAlreadyRead}}<button class="postAlreadyRead"><i class="fa fa-times"></i></button>{{/if}}</h1>
+                            {{/newLayoutElement}}
+                        {{/unless}}
                     {{/each}}
                 {{/newLayoutContainer}}
                 {{#if isLoading}}
@@ -133,24 +125,24 @@
                 <div id="wrapper">
                     {{#if NoMoments}}
                         {{#each suggestPosts}}
-                            <div id="list">
-                                <div class="icon">
-                                    <img src="{{ownerIcon}}" width="40" height="40"/>
-                                </div>
-                                <div class="user_name">
-                                    <h2>{{ownerName}}&nbsp;<span>发布了一个故事</span></h2>
-                                    <div class="readpost">
-                                        <dl>
-                                            <dt>
-                                                <img class="post_pic" src="{{mainImage}}" width="40" height="40"/>
-                                            </dt>
-                                            <dd>{{title}}  {{addontitle}}</dd>
-                                        </dl>
+                                <div id="list">
+                                    <div class="icon">
+                                        <img src="{{ownerIcon}}" width="40" height="40"/>
                                     </div>
-                                    <p>{{time_diff createdAt}}</p>
+                                    <div class="user_name">
+                                        <h2>{{ownerName}}&nbsp;<span>发布了一个故事</span></h2>
+                                        <div class="readpost">
+                                            <dl>
+                                                <dt>
+                                                    <img class="post_pic" src="{{mainImage}}" width="40" height="40"/>
+                                                </dt>
+                                                <dd>{{title}}  {{addontitle}}</dd>
+                                            </dl>
+                                        </div>
+                                        <p>{{time_diff createdAt}}</p>
+                                    </div>
+                                    <div class="clear"></div>
                                 </div>
-                                <div class="clear"></div>
-                            </div>
                         {{/each}}
                     {{else}}
                         {{#each moments}}
