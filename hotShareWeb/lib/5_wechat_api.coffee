@@ -89,8 +89,8 @@ if Meteor.isServer
   token = ''
   ticket = ''
   jsSHA = Meteor.npmRequire('jssha')
-  appId = 'wx2dbd5095a2666e8f'
-  appSecret = '323a3a67b453ff8e5d6f6cdaa4704ce2'
+  appId = ''
+  appSecret = ''
   requestUrl = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='+appId+'&secret='+appSecret
   `
       // 随机字符串产生函数
@@ -129,16 +129,19 @@ if Meteor.isServer
       var updateTicket = function (access_token) {
           HTTP.get('https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token='+ access_token +'&type=jsapi', function(error,result){
               if(!error) {
-                  resp = result.data
-                  ticket = resp.ticket;
-                  console.log('Ticket is ' + ticket);
+                  var resp = result.data
+                  console.log('Result is '+JSON.stringify(result));
+                  if(resp && resp.ticket){
+                      ticket = resp.ticket;
+                  }
+                  console.log('Ticket is ' + resp.ticket);
               }
           });
       }
       var updateTokenAndTicket = function(){
           HTTP.get(requestUrl, function(error,result) {
               if (!error){
-                  //console.log('return access_token:  ' + JSON.stringify(result.data));
+                  console.log('return access_token:  ' + JSON.stringify(result.data));
                   token = result.data.access_token;
                   updateTicket(token);
               }

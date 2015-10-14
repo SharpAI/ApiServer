@@ -89,8 +89,8 @@ if Meteor.isServer
   token = ''
   ticket = ''
   jsSHA = Meteor.npmRequire('jssha')
-  appId = 'wx2dbd5095a2666e8f'
-  appSecret = '323a3a67b453ff8e5d6f6cdaa4704ce2'
+  appId = ''
+  appSecret = ''
   requestUrl = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='+appId+'&secret='+appSecret
   `
       // 随机字符串产生函数
