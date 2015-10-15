@@ -862,7 +862,7 @@ if(Meteor.isServer){
         });
     };
     Meteor.publish("suggestPosts", function (limit) {
-        return FollowPosts.find({followby: suggestPostsUserId},{sort: {createdAt: -1},limit:15})
+        return FollowPosts.find({followby: suggestPostsUserId},{sort: {createdAt: -1},limit:limit})
     });
   Meteor.publish("dynamicMoments", function (postId,limit) {
       if(!Match.test(postId, String) ){
