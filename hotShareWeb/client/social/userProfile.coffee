@@ -131,7 +131,7 @@ if Meteor.isClient
     @UserProfilesSwiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
   Template.userProfile.helpers
     Swiper: -> UserProfilesSwiper
-  Template.userProfile.rendered = ->
+  Template.userProfile.onRendered ->
     # starting page
     console.log 'Showing userProfile'
     UserProfilesSwiper.setInitialPage 'userProfilePage1'
@@ -299,9 +299,9 @@ if Meteor.isClient
       if postId isnt Session.get('postContent')._id
         $(window).children().off()
         $(window).unbind('scroll')
-        Meteor.setTimeout ()->
-          Router.go '/posts/'+postId
-        ,300
+        #Meteor.setTimeout ()->
+        Router.go '/posts/'+postId
+        #,300
     'click #addToContactList': ()->
       addToContactList("ProfileUserId1")
   Template.userProfilePage2.rendered=->
@@ -365,9 +365,9 @@ if Meteor.isClient
       if postId isnt Session.get('postContent')._id
         $(window).children().off()
         $(window).unbind('scroll')
-        Meteor.setTimeout ()->
-          Router.go '/posts/'+postId
-        ,300
+        #Meteor.setTimeout ()->
+        Router.go '/posts/'+postId
+        #,300
     'click #addToContactList': ()->
       addToContactList("ProfileUserId2")
 
@@ -431,8 +431,8 @@ if Meteor.isClient
       if postId isnt Session.get('postContent')._id
         $(window).children().off()
         $(window).unbind('scroll')
-        Meteor.setTimeout ()->
-          Router.go '/posts/'+postId
-        ,300
+        #Meteor.setTimeout ()->
+        Router.go '/posts/'+postId
+        #,300
     'click #addToContactList': ()->
       addToContactList("ProfileUserId3")
