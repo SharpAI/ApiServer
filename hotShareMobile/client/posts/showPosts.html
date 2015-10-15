@@ -67,9 +67,11 @@
 
         <div class="gridster">
           <div id="test">
-              {{#each getPub}}
-                  {{>postItem}}
-              {{/each}}
+              {{#if displayPostContent}}
+                  {{#each getPub}}
+                      {{>postItem}}
+                  {{/each}}
+              {{/if}}
           </div>
         </div>
       </div>

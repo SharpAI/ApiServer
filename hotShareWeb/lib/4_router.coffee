@@ -28,7 +28,12 @@ if Meteor.isClient
           this.render 'postNotFound'
           return
         Session.set("refComment",[''])
-        Session.set('postContent',post)
+        if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
+          Session.set('postContent',post)
+          refreshPostContent()
+          PUB.toast('作者修改了帖子内容.')
+        else
+          Session.set('postContent',post)
         Session.set('focusedIndex',undefined)
         if post.addontitle and (post.addontitle isnt '')
           documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
@@ -68,7 +73,12 @@ if Meteor.isClient
             Session.set("refComment",refComment.fetch())
         ,2000
       ###
-      Session.set('postContent',post)
+      if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
+        Session.set('postContent',post)
+        refreshPostContent()
+        PUB.toast('作者修改了帖子内容.')
+      else
+        Session.set('postContent',post)
       Session.set('focusedIndex',this.params._index)
       if post.addontitle and (post.addontitle isnt '')
         documentTitle = "『故事贴』" + post.title + "：" + post.addontitle

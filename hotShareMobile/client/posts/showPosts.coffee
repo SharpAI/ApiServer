@@ -85,6 +85,7 @@ if Meteor.isClient
           document.body.scrollTop = Session.get("postPageScrollTop")
         , 280
   Template.showPosts.onRendered ->
+    Session.setDefault "displayPostContent",true
     Session.setDefault "toasted",false
     Session.set('postfriendsitemsLimit', 10)
     Session.set("showSuggestPosts",false)
@@ -184,6 +185,8 @@ if Meteor.isClient
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
+    displayPostContent:()->
+      Session.get('displayPostContent')
     getMainImageHeight:()->
       $(window).height()*0.55
     getAbstractSentence:->
