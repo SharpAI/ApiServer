@@ -862,31 +862,7 @@ if(Meteor.isServer){
         });
     };
     Meteor.publish("suggestPosts", function (limit) {
-        var self = this;
-        self.count = 0;
-        var handle = FollowPosts.find({followby: suggestPostsUserId},{sort: {createdAt: -1},limit:limit + 20}).observeChanges({
-            added: function (id,fields) {
-                if(self.count<limit)
-                {
-                    try{
-                        postsAddForSuggestPostsDeferHandle(self,id,fields,self.userId);
-                    } catch (e){
-
-                    }
-                }
-            },
-            changed:function(id,fields){
-                try{
-                    postsChangeForSuggestPostsDeferHandle(self,id,fields,self.userId);
-                } catch (e){
-
-                }
-            }
-        });
-        self.ready();
-        self.onStop(function () {
-            handle.stop();
-        });
+        return FollowPosts.find({followby: suggestPostsUserId},{sort: {createdAt: -1},limit:15})
     });
   Meteor.publish("dynamicMoments", function (postId,limit) {
       if(!Match.test(postId, String) ){
@@ -1880,13 +1856,9 @@ if(Meteor.isClient){
   }
   Tracker.autorun(function(){
       if (Meteor.userId()){
-          Meteor.subscribe('suggestPosts', Session.get("suggestpostsLimit"), {
+          Meteor.subscribe('suggestPosts', 15, {
               onReady: function(){
-                  var scount = SuggestPosts.find({}).count()
-                  if(scount<SUGGEST_POSTS_INCREMENT && Session.get("suggestpostsLimit")<SUGGEST_POSTS_INCREMENT*SUGGEST_POSTS_INCREMENT)
-                      Session.set("suggestpostsLimit",Session.get("suggestpostsLimit")+SUGGEST_POSTS_INCREMENT);
-                  else
-                      Session.set('momentsCollection','loaded');
+                  Session.set('momentsCollection','loaded');
               }
           });
       }
