@@ -38,6 +38,35 @@ if Meteor.isClient
       musicSingerNameSelector:'.audio_area .audio_info_area .audio_source'
     }
   ]
+  musicExtactorMappingUrl = [
+    {
+      url: 'http://douban.fm'
+      getMusic: (url, script)->
+        text = script.innerText
+        if text.indexOf('window.__bootstrap_data') isnt -1
+          eval(text)
+          if(window.__bootstrap_data.song)
+            musicInfo = {
+              playUrl : window.__bootstrap_data.song.url
+              image : window.__bootstrap_data.song.picture
+              songName : window.__bootstrap_data.song.title
+              singerName: window.__bootstrap_data.song.artist
+            }
+            console.log('Got Music Info '+JSON.stringify(musicInfo))
+            return [musicInfo]
+        return []
+    }
+#    {
+#      url: 'http://fm.qzone.qq.com/'
+#      getMusic: (url, script)->
+#        text = script.innerText
+#        if text.indexOf('showData:{"') isnt -1
+#          text = text.substr(text.indexOf('showData:{"'))
+#          text = text.substring(0, text.indexOf('"}},'))
+#          console.log(text)
+#        return []
+#    }
+  ]
   musicExtactorMappingV2 = [
     {
       tagName:'QQMUSIC',
@@ -124,6 +153,15 @@ if Meteor.isClient
           console.log('Got Music Info '+JSON.stringify(musicInfo))
           return musicInfo
     return null
+  @getMusicFromUrl = (url, page)->
+    for node in $(page)
+      if node.tagName is 'SCRIPT'
+        for s in musicExtactorMappingUrl
+          if url.toLowerCase().indexOf(s.url) isnt -1
+            musics = s.getMusic(url, node)
+            if musics.length > 0
+              return musics
+    return []
   getMusicFromPage = (page) ->
     for s in musicExtactorMapping
       if $(page).find(s.musicClass).length > 0
@@ -424,7 +462,8 @@ if Meteor.isClient
         if data.host is item.hostname
           data.host = '摘自 ' + item.displayName
           break
-      musicInfo = getMusicFromPage documentBody
+
+      #musicInfo = getMusicFromPage documentBody
       extracted = extract(documentBody)
       toBeInsertedText = ''
       toBeInsertedStyleAlign=''
@@ -432,8 +471,11 @@ if Meteor.isClient
       resortedArticle = []
       sortedImages = 0
 
-      if musicInfo
-        resortedArticle.push {type:'music', musicInfo: musicInfo}
+      musics = getMusicFromUrl(url, data.body)
+      if(musics.length > 0)
+        for musicInfo in musics
+          resortedArticle.push {type:'music', musicInfo: musicInfo}
+
       if extracted.id is 'hotshare_special_tag_will_not_hit_other'
         toBeProcessed = extracted
       else
@@ -583,7 +625,7 @@ if Meteor.isClient
               showDebug&&console.log('    save background imageUrl ' + imageUrl)
               resortedArticle.push {type:'image',imageUrl:imageUrl}
       data.resortedArticle = resortedArticle
-      showDebug&&console.log('Resorted Article is ' + data.resortedArticle)
+      showDebug&&console.log('Resorted Article is ' + JSON.stringify(data.resortedArticle))
       callback data
   @getContentListsFromUrl = (inappBrowser,url,callback)->
     inappBrowser.executeScript {
