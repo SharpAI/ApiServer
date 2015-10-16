@@ -256,6 +256,7 @@ if Meteor.isClient
             when 4 then shareTo('System',Blaze.getData($('.showPosts')[0]),self.index)
         );
       else
+        Session.set("postPageScrollTop",0)
         toastr.success('将在微信分享时引用本段内容', '您选定了本段文字')
         console.log('Selected index '+self.index)
         Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
