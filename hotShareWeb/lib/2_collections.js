@@ -1097,7 +1097,7 @@ if(Meteor.isServer){
           return [];
       }
       else {
-          return Follower.find({followerId:this.userId},{limit:limit});
+          return Follower.find({followerId:this.userId},{sort: {createAt: -1},limit:limit});
       }
   });
   Meteor.publish("followToWithLimit", function(limit) {
@@ -1106,7 +1106,7 @@ if(Meteor.isServer){
           return [];
       }
       else {
-          return Follower.find({userId:this.userId},{limit:limit});
+          return Follower.find({userId:this.userId},{sort: {createAt: -1},limit:limit});
       }
   });
   Meteor.publish("momentsWithLimit", function(postId,limit) {
@@ -1179,7 +1179,7 @@ if(Meteor.isServer){
     if(this.userId === null || !Match.test(friendId, String) || !Match.test(userId, String) || this.userId !== userId)
       return [];
     else
-      return Follower.find({"userId":userId,"followerId":friendId},{sort: {createdAt: -1}, limit:2})
+      return Follower.find({"userId":userId,"followerId":friendId},{sort: {createAt: -1}, limit:2})
   });
   Meteor.publish("userinfo", function(id) {
     if(!Match.test(id, String))
