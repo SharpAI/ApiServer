@@ -862,7 +862,20 @@ if(Meteor.isServer){
         });
     };
     Meteor.publish("suggestPosts", function (limit) {
-        return FollowPosts.find({followby: suggestPostsUserId},{sort: {createdAt: -1},limit:15})
+        var self = this;
+        var handle = FollowPosts.find({followby: suggestPostsUserId},{sort: {createdAt: -1},limit:limit}).observeChanges({
+            added: function (id,fields) {
+              try{
+                  self.added("suggestposts", id, fields);
+                } catch (e){
+                }
+            }
+        });
+        self.ready();
+        self.onStop(function () {
+            handle.stop();
+        });
+
     });
   Meteor.publish("dynamicMoments", function (postId,limit) {
       if(!Match.test(postId, String) ){
