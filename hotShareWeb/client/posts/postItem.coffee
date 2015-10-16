@@ -42,9 +42,11 @@ if Meteor.isClient
     'click .thumbsUp': (e)->
       Session.set("pcommetsId","")
       thumbsUpHandler(e,this)
+      Session.set('postPageScrollTop',document.body.scrollTop)
     'click .thumbsDown': (e)->
       Session.set("pcommetsId","")
       thumbsDownHandler(e,this)
+      Session.set('postPageScrollTop',document.body.scrollTop)
     'click .pcomments': (e)->
       Session.set("pcommetsId","")
       backgroundTop = 0-$(window).scrollTop()

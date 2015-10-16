@@ -6,6 +6,7 @@ subs = new SubsManager({
 });
 
 if Meteor.isClient
+  Session.setDefault("postPageScrollTop", 0)
   refreshPostContent=()->
     Session.set("displayPostContent",false)
     Meteor.setTimeout ()->
@@ -58,7 +59,7 @@ if Meteor.isClient
        Meteor.subscribe "pcomments"]
     loadingTemplate: 'loadingPost'
     action: ->
-      document.body.scrollTop = 0
+      document.body.scrollTop = Session.get("postPageScrollTop")
       post = Posts.findOne({_id: this.params._id})
       unless post
         console.log "Cant find the request post"
