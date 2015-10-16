@@ -31,7 +31,13 @@ if Meteor.isClient
         Session.set('displayUserProfileBox',false)
       onOpen: ->
         Session.set('displayUserProfileBox',true)
-
+  Tracker.autorun ()->
+    if Session.get("needToast") is true
+      Session.set("needToast",false)
+      Meteor.setTimeout ()->
+        userName=Session.get("pcommentsName")
+        toastr.info(userName+"点评过的段落已为您用蓝色标注！")
+      ,300
   Template.showPosts.onDestroyed ->
     document.body.scrollTop = 0
     Session.set("postPageScrollTop", 0)

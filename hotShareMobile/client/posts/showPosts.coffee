@@ -69,6 +69,13 @@ if Meteor.isClient
   hookRemoteEvent = ()->
     if Meteor.isCorodva and device.platform is 'iOS'
       remoteControls.receiveRemoteEvent = remoteEventHandler
+  Tracker.autorun ()->
+    if Session.get("needToast") is true
+      Session.set("needToast",false)
+      Meteor.setTimeout ()->
+        userName=Session.get("pcommentsName")
+        toastr.info(userName+"点评过的段落已为您用蓝色标注！")
+      ,300
   Template.showPosts.onDestroyed ->
     document.body.scrollTop = 0
     Session.set("postPageScrollTop", 0)
