@@ -200,6 +200,9 @@ if Meteor.isClient
     getPub:->
       self = this
       self.pub = self.pub || []
+      if withSponserLinkAds
+        position = 1+(self.pub.length/2)
+        self.pub.splice(position,0,{adv:true,type:'insertedLink',data_col:1,data_sizex:6,urlinfo:'http://cdn.tiegushi.com/posts/qwWdWJPMAbyeo8tiJ'})
       _.map self.pub, (doc, index, cursor)->
         _.extend(doc, {index: index})
     displayCommentInputBox:()->
@@ -275,6 +278,8 @@ if Meteor.isClient
       $("body").css("overflow","visible");
       $('.commentOverlay').bPopup().close()
       amplify.store('section_'+Session.get('channel'),true)
+    'click .postLinkItem' :(e)->
+      window.location.href=this.urlinfo
     'click .postTextItem' :(e)->
       if withSectionMenu
         console.log('clicked on textdiv ' + this._id)

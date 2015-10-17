@@ -13,3 +13,4 @@
 @withWeChatSignatureServer = false
 @withSuggestAlreadyRead = true
 @withForcePopupSectionReview = false
+@withSponserLinkAds = true
