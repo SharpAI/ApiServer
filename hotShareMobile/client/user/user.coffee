@@ -19,12 +19,38 @@ if Meteor.isClient
 
     Tracker.autorun ()->
       if Meteor.user() and Session.equals('channel','user')
-        Meteor.subscribe("myCounter")
-        Meteor.subscribe("postsWithLimit",4)
-        Meteor.subscribe("savedDraftsWithLimit",2)
-        Meteor.subscribe("followedByWithLimit",10)
-        Meteor.subscribe("followToWithLimit",10)
+        Session.set('myCounterCollection','loading')
+        Session.set('postsWithLimitCollection','loading')
+        Session.set('savedDraftsWithLimitCollection','loading')
+        Session.set('followedByWithLimitCollection','loading')
+        Session.set('followToWithLimitCollection','loading')
+        Meteor.subscribe "myCounter",{
+          onReady:()->
+            Session.set('myCounterCollection','loaded')
+        }
+        Meteor.subscribe("postsWithLimit",4,{
+          onReady:()->
+            Session.set('postsWithLimitCollection','loaded')
+        })
+        Meteor.subscribe("savedDraftsWithLimit",2,{
+          onReady:()->
+            Session.set('savedDraftsWithLimitCollection','loaded')
+        })
+        Meteor.subscribe("followedByWithLimit",10,{
+          onReady:()->
+            Session.set('followedByWithLimitCollection','loaded')
+        })
+        Meteor.subscribe("followToWithLimit",10,{
+          onReady:()->
+            Session.set('followToWithLimitCollection','loaded')
+        })
   Template.user.helpers
+    isLoading:->
+      Session.get('myCounterCollection') is 'loading' or
+      Session.get('postsWithLimitCollection') is 'loading' or
+      Session.get('savedDraftsWithLimitCollection') is 'loading' or
+      Session.get('followedByWithLimitCollection') is 'loading' or
+      Session.get('followToWithLimitCollection') is 'loading'
     myProfileIcon:->
       me = Meteor.user()
       if me and me.profile and me.profile.icon

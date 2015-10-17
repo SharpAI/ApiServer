@@ -30,13 +30,18 @@
     <div class="line">
       <span></span>
     </div>
-    <!--
-    <div class="good">
-      <div class="praise">0 个赞</div>
-      <div class="dot">&#8226;</div>
-      <div class="forward">0 次转发</div>
+    {{#if isLoading}}
+    <div id="loader">
+        <div align="center">正在加载中...</div>
     </div>
-    -->
+    {{/if}}
+      <!--
+      <div class="good">
+        <div class="praise">0 个赞</div>
+        <div class="dot">&#8226;</div>
+        <div class="forward">0 次转发</div>
+      </div>
+      -->
     <div class="draft">
       {{#if compareDraftsCount 0}}
         <div class="draftLeft">{{draftsCount}} 份草稿</div>
