@@ -270,6 +270,8 @@
   width: 91%;
   }
   .pcommentsList .input-group #pcommitReport{
+    border-radius: 4px !important;
+    padding-left: 10px !important;
     width: 80%;
     float: left;
     padding: 6px 12px;
@@ -279,8 +281,121 @@
     height: 30px;
     float: right;
     margin-top: 2px;
+    color: black;
   }
  .pcommentsList  .accountIcon{
+    width: 30px;
+    position: relative;
+    top: 5px;
+ }
+ 
+ 
+ 
+.pcommentInput{
+  position: fixed;
+  z-index: 99999;
+}
+.pcommentInput .pcomment .banner{
+    text-align: center;
+    padding-bottom: 25px;
+    color: #aaa;
+}
+.pcommentInput .pcomment{
+  position: relative;
+  background-color: #f2f2f2;
+  padding-top: 10px;
+  padding-bottom: 30px;
+}
+
+.pcommentInput .pcomment .eachComment {
+  min-height: 90px;
+  display: inline-block;
+  width: 100%;
+}
+
+.pcommentInput .pcomment .eachComment .icon{border-radius: 50%;margin: 10px;margin-top: 20px;}
+.pcommentInput .pcomment .eachComment .userName{display: inline-block;font-weight: bold;color: #000}
+.pcommentInput .pcomment .eachComment .createAt{display: inline-block;position:relative; color: #000;margin-right:-100px;}
+.pcommentInput .pcomment .eachComment .commentDetail{margin-right: 20px;margin-bottom: 5px;margin-left: 50px;white-space: normal;word-break: break-all;}
+.pcommentInput .pcomment .eachComment .personName {  padding-left:0px; color:black; font-weight:600;}
+.pcommentInput .pcomment .eachComment .personSay {   padding-left:0px; color:#000; font-weight:300;word-wrap: break-word;}
+.pcommentInput .pcomment .eachComment .round { -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; }
+.pcommentInput .pcomment .eachComment .time { color:#000; font-weight:300;position: absolute;right:5px;vertical-align: top;}
+.pcommentInput .pcomment .eachComment .bubble{
+    background-color: #FFFFFF;
+    border-radius: 5px;
+    box-shadow: 0 0 6px #B2B2B2;
+    display: inline-block;
+    padding: 10px 18px;
+    position: relative;
+    vertical-align: top;
+    float: left;
+    margin: 5px 45px 5px 20px;
+    border-color: #cdecb0;
+}
+.pcommentInput .pcomment .eachComment .bubble::before {
+    background-color: #FFFFFF;
+    content: "\00a0";
+    display: block;
+    height: 16px;
+    position: absolute;
+    top: 11px;
+    transform:             rotate( 29deg ) skew( -35deg );
+        -moz-transform:    rotate( 29deg ) skew( -35deg );
+        -ms-transform:     rotate( 29deg ) skew( -35deg );
+        -o-transform:      rotate( 29deg ) skew( -35deg );
+        -webkit-transform: rotate( 29deg ) skew( -35deg );
+    width:  20px;
+    box-shadow: -2px 2px 2px 0 rgba( 178, 178, 178, .4 );
+    left: -9px;
+	}
+.pcommentInput .pcomment .eachComment .bubble{
+		background-color: #FFFFFF;
+		border-radius: 5px;
+		box-shadow: 0 0 6px #B2B2B2;
+		display: inline-block;
+		padding: 10px 18px;
+		position: relative;
+		vertical-align: top;
+		margin: 10px 10px;
+		border-color: #cdecb0;
+		width: 75%;
+	}
+
+.pcommentInput .input-group{
+  font-size: larger;
+  bottom: 0px;
+  z-index: 999999;
+  position: fixed;
+  width: 100%;
+  left: 0;
+  height: 50px;
+  border: 1px solid #bfbfbf !important;
+  background-color: #fafafa !important;
+  }
+  .pcommentInput .input-group #pcommitReport{
+    border-radius: 4px !important;
+    padding-left: 10px !important;
+    width: 80%;
+    float: left;
+    margin-left: 10px;
+    margin-top: 5px;
+    border: 1px solid #9b9b9b;
+  }
+  .pcommentInput .input-group #pcommitReportBtn{
+    color: black;
+    text-align: center;
+    padding-top: 3px;
+    margin-top: 6px;
+    background-color: #9b9b9b;
+    margin-right: 5px;
+    width: 15%;
+    height: 30px;
+    float: right;
+    border: 1px solid #9b9b9b;
+    border-radius: 5px !important;
+  }
+ .pcommentInput  .accountIcon{
     width: 30px;
     position: relative;
     top: 5px;
@@ -294,6 +409,5 @@
   left:0px;
   z-index: 99998;
   display:none;
-//  background: rgba(130,130,130,0.5);
   background: rgba(130,130,130,0);
 }

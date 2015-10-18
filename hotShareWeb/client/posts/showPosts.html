@@ -1,5 +1,5 @@
 <template name="showPosts">
-  {{> pCommentsList}}
+  {{> pcommentInput}}
   <div class="showBgColor">
     <div class="showPostsBox">
     <div class="showPosts">
@@ -200,7 +200,7 @@
 
 <template name="pCommentsList">
   <div class="pcommentsList" style="display:none;">
-<!--      <div class="pcomment">
+      <div class="pcomment">
         {{#if hasPcomments}}                      
          {{#each pcomments}}
           <div class="eachComment">
@@ -214,7 +214,7 @@
        {{else}}
          <div class="banner">快来抢沙发～～(￣▽￣)"</div>
        {{/if}}
-      </div>-->
+      </div>
       <div class="input-group">
         <input type="text" id="pcommitReport" autofocus="autofocus" class="form-control" maxlength="180" placeholder="评论" />
         <input type="submit" value="发表" id="pcommitReportBtn">
@@ -228,5 +228,91 @@
          $('.pcommentsList,.alertBackground').fadeOut(300);
          Session.set('backgroundTop','')
        }
+    </script>
+</template>
+
+<template name="pcommentInput">
+  <div class="pcommentInput" style="display:none;">
+      <div class="input-group">
+        <input type="text" id="pcommitReport" autofocus="autofocus" class="form-control" maxlength="180" placeholder="评论" />
+        <div onclick="pcommitReport()" id="pcommitReportBtn">发送</div>
+      </div>
+  </div>
+  <div onclick="hidePcomments()" class="alertBackground"></div>
+    <script>
+       function hidePcomments(){
+         $('.showBgColor').removeAttr('style')
+         $(window).scrollTop(0-Session.get('backgroundTop'))
+         $('.pcommentInput,.alertBackground').fadeOut(300);
+         Session.set('backgroundTop','')
+       }
+       function pcommitReport(e, t) {
+          var content, i, pcommentJson, pcomments, position, post, postId, userIcon, userId, username;
+          i = Session.get("pcommentIndexNum");
+          content = t.find('#pcommitReport').value;
+          postId = Session.get("postContent")._id;
+          post = Session.get("postContent").pub;
+          if (withSponserLinkAds) {
+            position = 1 + (post.length / 2);
+          }
+          if (i > position) {
+            i -= 1;
+          } else {
+            i = i;
+          }
+          if (content === "") {
+            $('.showBgColor').removeAttr('style');
+            $(window).scrollTop(0 - Session.get('backgroundTop'));
+            $('.pcommentInput,.alertBackground').fadeOut(300);
+            return false;
+          }
+          if (Meteor.user()) {
+            if (Meteor.user().profile.fullname) {
+              username = Meteor.user().profile.fullname;
+            } else {
+              username = Meteor.user().username;
+            }
+            userId = Meteor.user()._id;
+            userIcon = Meteor.user().profile.icon;
+          } else {
+            username = '匿名';
+            userId = 0;
+            userIcon = '';
+          }
+          if (!post[i].pcomments || post[i].pcomments === void 0) {
+            pcomments = [];
+            post[i].pcomments = pcomments;
+          }
+          pcommentJson = {
+            content: content,
+            username: username,
+            userId: userId,
+            userIcon: userIcon,
+            createdAt: new Date()
+          };
+          post[i].pcomments.push(pcommentJson);
+          Posts.update({
+            _id: postId
+          }, {
+            "$set": {
+              "pub": post,
+              "ptype": "pcomments",
+              "pindex": i
+            }
+          }, function(error, result) {
+            if (error) {
+              return console.log(error.reason);
+            } else {
+              return console.log("success");
+            }
+          });
+          t.find('#pcommitReport').value = "";
+          $("#pcommitReport").attr("placeholder", "评论");
+          $('.showBgColor').removeAttr('style');
+          $(window).scrollTop(0 - Session.get('backgroundTop'));
+          $('.pcommentInput,.alertBackground').fadeOut(300);
+          return false;
+        }
+       
     </script>
 </template>

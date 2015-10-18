@@ -652,3 +652,71 @@ if Meteor.isClient
         $(window).scrollTop(0-Session.get('backgroundTop'))
         $('.pcommentsList,.alertBackground').fadeOut 300
         false
+
+
+  Template.pcommentInput.helpers
+      time_diff: (created)->
+        GetTime0(new Date() - created)
+      hasPcomments: ->
+         i = Session.get "pcommentIndexNum"
+         post = Session.get("postContent").pub
+         if post and post[i] and post[i].pcomments isnt undefined
+           return true
+         else
+           return false
+      pcomments:->
+         i = Session.get "pcommentIndexNum"
+         post = Session.get("postContent").pub
+         if post[i] isnt undefined
+           return post[i].pcomments
+         else
+           return ''
+
+  Template.pcommentInput.events
+      'click #pcommitReportBtn':(e, t)->
+        i = Session.get "pcommentIndexNum"
+        content = t.find('#pcommitReport').value
+        postId = Session.get("postContent")._id
+        post = Session.get("postContent").pub
+        if withSponserLinkAds
+          position = 1+(post.length/2)
+        if i > position then i -= 1 else i = i
+        if content is ""
+          $('.showBgColor').removeAttr('style')
+          $(window).scrollTop(0-Session.get('backgroundTop'))
+          $('.pcommentInput,.alertBackground').fadeOut 300
+          return false
+        if Meteor.user()
+          if Meteor.user().profile.fullname
+            username = Meteor.user().profile.fullname
+          else
+            username = Meteor.user().username
+          userId = Meteor.user()._id
+          userIcon = Meteor.user().profile.icon
+        else
+          username = '匿名'
+          userId = 0
+          userIcon = ''
+        if not post[i].pcomments or post[i].pcomments is undefined
+          pcomments = []
+          post[i].pcomments = pcomments
+        pcommentJson = {
+          content:content
+          username:username
+          userId:userId
+          userIcon:userIcon
+          createdAt: new Date()
+        }
+        post[i].pcomments.push(pcommentJson)
+        Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"pcomments","pindex":i}}, (error, result)->
+          if error
+            console.log(error.reason);
+          else
+            console.log("success");
+        )
+        t.find('#pcommitReport').value = ""
+        $("#pcommitReport").attr("placeholder", "评论")
+        $('.showBgColor').removeAttr('style')
+        $(window).scrollTop(0-Session.get('backgroundTop'))
+        $('.pcommentInput,.alertBackground').fadeOut 300
+        false

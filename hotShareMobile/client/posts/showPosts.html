@@ -1,5 +1,5 @@
 <template name="showPosts">
-  {{> pCommentsList}}
+  {{> pcommentInput}}
   <div class="showBgColor">
     <div class="showPostsBox">
     <div class="showPosts">
@@ -204,7 +204,7 @@
 
 <template name="pCommentsList">
   <div class="pcommentsList" style="display:none;">
-<!--      <div class="pcomment">
+      <div class="pcomment">
         {{#if hasPcomments}}                      
          {{#each pcomments}}
           <div class="eachComment">
@@ -218,10 +218,20 @@
        {{else}}
          <div class="banner">快来抢沙发～～(￣▽￣)"</div>
        {{/if}}
-      </div>-->
+      </div>
       <div class="input-group">
         <input type="text" id="pcommitReport" autofocus="autofocus" class="form-control" maxlength="180" placeholder="评论" />
         <input type="submit" value="发表" id="pcommitReportBtn">
+      </div>
+  </div>
+  <div class="alertBackground"></div>
+</template>
+
+<template name="pcommentInput">
+  <div class="pcommentInput" style="display:none;">
+      <div class="input-group">
+        <input type="text" id="pcommitReport" autofocus="autofocus" class="form-control" maxlength="180" placeholder="评论" />
+        <div id="pcommitReportBtn">发送</div>
       </div>
   </div>
   <div class="alertBackground"></div>
