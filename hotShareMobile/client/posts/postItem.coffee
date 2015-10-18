@@ -33,6 +33,7 @@ if Meteor.isClient
     elementBottom=element.offsetTop+element.offsetHeight
     updateLayoutData(layoutHelper,myData.data_col,myData.data_sizex,elementBottom)
     parentNode.style.height=getLayoutTop(layoutHelper,1,6)-parentNode.offsetTop+'px'
+
     #console.log('['+this.data.index+']'+' '+myData.type+' col '+myData.data_col+
     #    ' row '+myData.data_row+' h '+myData.data_sizey+' w '+myData.data_sizex+
     #    ' H '+element.offsetHeight+'/'+element.clientHeight+' W '+element.offsetWidth+' Top '+element.offsetTop
@@ -115,6 +116,22 @@ if Meteor.isClient
         0
       else
         this.likeSum
+    hasPcomments: ->
+      i = this.index
+      post = Session.get("postContent").pub
+      if post and post[i] and post[i].pcomments isnt undefined
+        return true
+      else
+        return false
+    pcomment:->
+      i = this.index
+      post = Session.get("postContent").pub
+      console.log this.index
+      console.log post[i]
+      if post[i] isnt undefined
+        return post[i].pcomments
+      else
+        return ''
     pdislike:->
       if this.dislikeSum is undefined
         0

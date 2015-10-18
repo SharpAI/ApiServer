@@ -118,6 +118,28 @@ if Meteor.isClient
         0
       else
         this.likeSum
+    hasPcomments: ->
+      i = this.index
+      post = Session.get("postContent").pub
+      position = 1+(post.length/2)
+      if i > position and  withSponserLinkAds then i -= 1 else i = i
+      if post and post[i] and post[i].pcomments isnt undefined
+        return true
+      else
+        return false
+    pcomment:->
+      i = this.index
+      post = Session.get("postContent").pub
+      position = 1+(post.length/2)
+#      if withSponserLinkAds
+#        position = 1+(post.length/2)
+      if i > position and withSponserLinkAds
+        i -= 1
+        return post[i].pcomments 
+      else if post[i] isnt undefined
+        return post[i].pcomments
+      else
+        return ''
     pdislike:->
       if this.dislikeSum is undefined
         0

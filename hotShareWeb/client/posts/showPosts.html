@@ -200,8 +200,8 @@
 
 <template name="pCommentsList">
   <div class="pcommentsList" style="display:none;">
-      <div class="pcomment">
-        {{#if hasPcomments}}
+<!--      <div class="pcomment">
+        {{#if hasPcomments}}                      
          {{#each pcomments}}
           <div class="eachComment">
             <div class="bubble">
@@ -214,9 +214,9 @@
        {{else}}
          <div class="banner">快来抢沙发～～(￣▽￣)"</div>
        {{/if}}
-      </div>
+      </div>-->
       <div class="input-group">
-        <input type="text" id="pcommitReport" class="form-control" maxlength="180" placeholder="快来吐槽吧..." />
+        <input type="text" id="pcommitReport" autofocus="autofocus" class="form-control" maxlength="180" placeholder="评论" />
         <input type="submit" value="发表" id="pcommitReportBtn">
       </div>
   </div>

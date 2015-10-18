@@ -681,6 +681,9 @@ if Meteor.isClient
         i = Session.get "pcommentIndexNum"
         content = t.find('#pcommitReport').value
         if content is ""
+          $('.showBgColor').removeAttr('style')
+          $(window).scrollTop(0-Session.get('backgroundTop'))
+          $('.pcommentsList,.alertBackground').fadeOut 300
           return false
         postId = Session.get("postContent")._id
         post = Session.get("postContent").pub
@@ -695,7 +698,7 @@ if Meteor.isClient
           username = '匿名'
           userId = 0
           userIcon = ''
-        if not post[i].pcomments
+        if not post[i].pcomments or post[i].pcomments is undefined
           pcomments = []
           post[i].pcomments = pcomments
         pcommentJson = {
@@ -713,5 +716,8 @@ if Meteor.isClient
             console.log("success");
         )
         t.find('#pcommitReport').value = ""
-        $("#pcommitReport").attr("placeholder", "说点什么")
+        $("#pcommitReport").attr("placeholder", "评论")
+        $('.showBgColor').removeAttr('style')
+        $(window).scrollTop(0-Session.get('backgroundTop'))
+        $('.pcommentsList,.alertBackground').fadeOut 300
         false
