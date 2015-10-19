@@ -51,7 +51,7 @@ if Meteor.isClient
       Session.set("pcommetsId","")
       backgroundTop = 0-$(window).scrollTop()
       Session.set('backgroundTop', backgroundTop);
-      $('.showBgColor').attr('style','position:fixed;top:'+Session.get('backgroundTop')+'px')
+      $('body').attr('style','position:fixed;top:'+Session.get('backgroundTop')+'px;')
       $('.pcommentInput,.alertBackground').fadeIn 300, ()->
         $('#pcommitReport').focus()
       $('#pcommitReport').focus()
