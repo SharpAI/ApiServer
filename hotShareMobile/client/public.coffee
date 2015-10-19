@@ -57,7 +57,7 @@ postPageArr = []
     # 返回上一页
     'back':->
         try
-          if PopUpBox
+          if typeof PopUpBox isnt "undefined"
              PopUpBox.close()
         catch error
           console.log error
