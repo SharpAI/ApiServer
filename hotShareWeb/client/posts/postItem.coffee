@@ -51,10 +51,12 @@ if Meteor.isClient
       Session.set("pcommetsId","")
       backgroundTop = 0-$(window).scrollTop()
       Session.set('backgroundTop', backgroundTop);
-      $('body').attr('style','position:fixed;top:'+Session.get('backgroundTop')+'px;')
+      #$('body').attr('style','position:fixed;top:'+Session.get('backgroundTop')+'px;')
       $('.pcommentInput,.alertBackground').fadeIn 300, ()->
         $('#pcommitReport').focus()
       $('#pcommitReport').focus()
+
+      $('.showBgColor').css('min-width',$(window).width())
       Session.set "pcommentIndexNum", this.index
     'click .play_area': (e)->
       $node=$(e.currentTarget)

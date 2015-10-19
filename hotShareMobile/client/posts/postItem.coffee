@@ -49,10 +49,12 @@ if Meteor.isClient
       Session.set("pcommetsId","")
       backgroundTop = 0-$(window).scrollTop()
       Session.set('backgroundTop', backgroundTop);
-      $('body').attr('style','position:fixed;top:'+Session.get('backgroundTop')+'px;')
+      #$('body').attr('style','position:fixed;top:'+Session.get('backgroundTop')+'px;')
       $('.pcommentInput,.alertBackground').fadeIn 300, ()->
         $('#pcommitReport').focus()
       $('#pcommitReport').focus()
+
+      $('.showBgColor').css('min-width',$(window).width())
       Session.set "pcommentIndexNum", this.index
     'click .play_area': (e)->
       $node=$(e.currentTarget)
@@ -120,6 +122,8 @@ if Meteor.isClient
     hasPcomments: ->
       i = this.index
       post = Session.get("postContent").pub
+      position = 1+(post.length/2)
+      if i > position and  withSponserLinkAds then i -= 1 else i = i
       if post and post[i] and post[i].pcomments isnt undefined
         return true
       else
@@ -127,9 +131,13 @@ if Meteor.isClient
     pcomment:->
       i = this.index
       post = Session.get("postContent").pub
-      console.log this.index
-      console.log post[i]
-      if post[i] isnt undefined
+      position = 1+(post.length/2)
+#      if withSponserLinkAds
+#        position = 1+(post.length/2)
+      if i > position and withSponserLinkAds
+        i -= 1
+        return post[i].pcomments 
+      else if post[i] isnt undefined
         return post[i].pcomments
       else
         return ''

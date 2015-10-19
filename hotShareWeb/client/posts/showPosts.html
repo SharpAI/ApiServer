@@ -249,7 +249,7 @@
        function pcommitReport(e, t) {
           var content, i, pcommentJson, pcomments, position, post, postId, userIcon, userId, username;
           i = Session.get("pcommentIndexNum");
-          content = t.find('#pcommitReport').value;
+          content = $('#pcommitReport').val();
           postId = Session.get("postContent")._id;
           post = Session.get("postContent").pub;
           if (withSponserLinkAds) {
@@ -306,13 +306,14 @@
               return console.log("success");
             }
           });
-          t.find('#pcommitReport').value = "";
+          $('#pcommitReport').val('');
           $("#pcommitReport").attr("placeholder", "评论");
           $('body').removeAttr('style');
           $(window).scrollTop(0 - Session.get('backgroundTop'));
           $('.pcommentInput,.alertBackground').fadeOut(300);
+          refreshPostContent()
           return false;
         }
-       
+
     </script>
 </template>

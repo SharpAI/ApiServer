@@ -7,7 +7,7 @@ subs = new SubsManager({
 
 if Meteor.isClient
   Session.setDefault("postPageScrollTop", 0)
-  refreshPostContent=()->
+  @refreshPostContent=()->
     Session.set("displayPostContent",false)
     Meteor.setTimeout ()->
       Session.set("displayPostContent",true)

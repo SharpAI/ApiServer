@@ -679,14 +679,18 @@ if Meteor.isClient
         Session.set('backgroundTop','')
       'click #pcommitReportBtn':(e, t)->
         i = Session.get "pcommentIndexNum"
-        content = t.find('#pcommitReport').value
+        content = $('#pcommitReport').val()
+        postId = Session.get("postContent")._id
+        post = Session.get("postContent").pub
+        if withSponserLinkAds
+          position = 1+(post.length/2)
+        if i > position then i -= 1 else i = i
         if content is ""
           $('.showBgColor').removeAttr('style')
+          $('.showBgColor').css('min-width',$(window).width())
           $(window).scrollTop(0-Session.get('backgroundTop'))
           $('.pcommentsList,.alertBackground').fadeOut 300
           return false
-        postId = Session.get("postContent")._id
-        post = Session.get("postContent").pub
         if Meteor.user()
           if Meteor.user().profile.fullname
             username = Meteor.user().profile.fullname
@@ -715,9 +719,9 @@ if Meteor.isClient
           else
             console.log("success");
         )
-        t.find('#pcommitReport').value = ""
+        $('#pcommitReport').val('')
         $("#pcommitReport").attr("placeholder", "评论")
-        $('.showBgColor').removeAttr('style')
+        #$('.showBgColor').removeAttr('style')
         $(window).scrollTop(0-Session.get('backgroundTop'))
         $('.pcommentsList,.alertBackground').fadeOut 300
         false
@@ -749,7 +753,7 @@ if Meteor.isClient
         Session.set('backgroundTop','')
       'click #pcommitReportBtn':(e, t)->
         i = Session.get "pcommentIndexNum"
-        content = t.find('#pcommitReport').value
+        content = $('#pcommitReport').val()
         postId = Session.get("postContent")._id
         post = Session.get("postContent").pub
 #        if withSponserLinkAds
@@ -788,9 +792,9 @@ if Meteor.isClient
           else
             console.log("success");
         )
-        t.find('#pcommitReport').value = ""
+        $('#pcommitReport').val("")
         $("#pcommitReport").attr("placeholder", "评论")
-        $('body').removeAttr('style')
+        #$('body').removeAttr('style')
         $(window).scrollTop(0-Session.get('backgroundTop'))
         $('.pcommentInput,.alertBackground').fadeOut 300
         refreshPostContent()
