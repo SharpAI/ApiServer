@@ -148,6 +148,8 @@ Template.newLayoutContainer.events =
     scrollTop = $(window).scrollTop()
     $(window).children().off()
     $(window).unbind('scroll')
+    Session.set("needBindScroll", true)
+    document.body.scrollTop = 0
     Router.go '/posts/'+postId
 Template.newLayoutContainer.helpers =
   displayId:()->

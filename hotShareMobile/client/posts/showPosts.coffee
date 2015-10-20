@@ -69,10 +69,81 @@ if Meteor.isClient
   hookRemoteEvent = ()->
     if Meteor.isCorodva and device.platform is 'iOS'
       remoteControls.receiveRemoteEvent = remoteEventHandler
+  showSocialBar = ()->
+    displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
+    if displaySocialBar
+      unless $('.contactsList .head').is(':visible')
+        $('.contactsList .head').fadeIn 300
+      unless $('.userProfile .head').is(':visible')
+        $('.userProfile .head').fadeIn 300
+    unless $('.socialContent .chatFooter').is(':visible')
+      $('.socialContent .chatFooter').fadeIn 300
+  hideSocialBar = ()->
+    if $('.contactsList .head').is(':visible')
+      $('.contactsList .head').fadeOut 300
+    if $('.socialContent .chatFooter').is(':visible')
+      $('.socialContent .chatFooter').fadeOut 300
+  scrollEventCallback = ()->
+#Sets the current scroll position
+    st = $(window).scrollTop()
+    if st is 0
+      showSocialBar()
+      unless $('.showPosts .head').is(':visible')
+        $('.showPosts .head').fadeIn 300
+      window.lastScroll = st
+      return
+
+    if window.lastScroll - st > 5
+      $('.showPosts .head').fadeIn 300
+      showSocialBar()
+    if window.lastScroll - st < -5
+      $('.showPosts .head').fadeOut 300
+      displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
+      if displaySocialBar
+        Session.set("showSuggestPosts",true)
+        showSocialBar()
+      else
+        hideSocialBar()
+    if(st + $(window).height()) is window.getDocHeight()
+      showSocialBar()
+      window.lastScroll = st
+      return
+    # Changed is too small
+    if Math.abs(window.lastScroll - st) < 5
+      return
+    #Determines up-or-down scrolling
+    displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
+    if displaySocialBar
+#showSocialBar()
+      if $(".div_discover").css("display") is "block"
+        Session.set("SocialOnButton",'discover')
+      if $(".div_contactsList").css("display") is "block"
+        Session.set("SocialOnButton",'contactsList')
+      if $(".div_me").css("display") is "block"
+        Session.set("SocialOnButton",'me')
+    else
+      if $('.contactsList .head').is(':visible')
+        $('.contactsList .head').fadeOut 300
+      Session.set("SocialOnButton",'postBtn')
+    #Updates scroll position
+    window.lastScroll = st
+
+  Tracker.autorun ()->
+    if Session.get("needBindScroll") is true
+      Session.set("needBindScroll", false)
+      Meteor.setTimeout ()->
+        if withSocialBar
+          $(window).scroll(scrollEventCallback)
+      ,1000
   Tracker.autorun ()->
     if Session.get("needToast") is true
       Session.set("needToast",false)
       Meteor.setTimeout ()->
+        scrolltop = 0
+        if $('.dCurrent').length
+          scrolltop=$('.dCurrent').offset().top
+          Session.set("postPageScrollTop", scrolltop)
+          document.body.scrollTop = Session.get("postPageScrollTop")
         userName=Session.get("pcommentsName")
         toastr.info(userName+"点评过的段落已为您用蓝色标注！")
       ,300
@@ -125,66 +196,8 @@ if Meteor.isClient
     )
 
     $('.showBgColor').css('min-height',$(window).height())
-    showSocialBar = ()->
-      displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
-      if displaySocialBar
-        unless $('.contactsList .head').is(':visible')
-          $('.contactsList .head').fadeIn 300
-        unless $('.userProfile .head').is(':visible')
-          $('.userProfile .head').fadeIn 300
-      unless $('.socialContent .chatFooter').is(':visible')
-        $('.socialContent .chatFooter').fadeIn 300
-    hideSocialBar = ()->
-      if $('.contactsList .head').is(':visible')
-        $('.contactsList .head').fadeOut 300
-      if $('.socialContent .chatFooter').is(':visible')
-        $('.socialContent .chatFooter').fadeOut 300
-    scrollEventCallback = ()->
-      #Sets the current scroll position
-      st = $(window).scrollTop()
-      if st is 0
-        showSocialBar()
-        unless $('.showPosts .head').is(':visible')
-          $('.showPosts .head').fadeIn 300
-        window.lastScroll = st
-        return
-
-      if window.lastScroll - st > 5
-        $('.showPosts .head').fadeIn 300
-        showSocialBar()
-      if window.lastScroll - st < -5
-        $('.showPosts .head').fadeOut 300
-        displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
-        if displaySocialBar
-          Session.set("showSuggestPosts",true)
-          showSocialBar()
-        else
-          hideSocialBar()
-      if(st + $(window).height()) is window.getDocHeight()
-        showSocialBar()
-        window.lastScroll = st
-        return
-      # Changed is too small
-      if Math.abs(window.lastScroll - st) < 5
-        return
-      #Determines up-or-down scrolling
-      displaySocialBar = $(".socialContent #socialContentDivider").isAboveViewPortBottom();
-      if displaySocialBar
-        #showSocialBar()
-        if $(".div_discover").css("display") is "block"
-          Session.set("SocialOnButton",'discover')
-        if $(".div_contactsList").css("display") is "block"
-          Session.set("SocialOnButton",'contactsList')
-        if $(".div_me").css("display") is "block"
-          Session.set("SocialOnButton",'me')
-      else
-        if $('.contactsList .head').is(':visible')
-          $('.contactsList .head').fadeOut 300
-        Session.set("SocialOnButton",'postBtn')
-      #Updates scroll position
-      window.lastScroll = st
     window.lastScroll = 0;
-
+    Session.set("needBindScroll", false)
     if withSocialBar
       $(window).scroll(scrollEventCallback)
 
