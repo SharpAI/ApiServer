@@ -59,7 +59,10 @@ if Meteor.isClient
        Meteor.subscribe "pcomments"]
     loadingTemplate: 'loadingPost'
     action: ->
-      document.body.scrollTop = Session.get("postPageScrollTop")
+      if Session.get("doSectionForward") is true
+        Session.set("doSectionForward",false)
+        Session.set("postPageScrollTop",0)
+        document.body.scrollTop = 0
       post = Posts.findOne({_id: this.params._id})
       unless post
         console.log "Cant find the request post"
