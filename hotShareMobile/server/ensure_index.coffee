@@ -36,7 +36,7 @@ if Meteor.isServer
     MsgGroup._ensureIndex({"users.userId": 1})
     Feeds._ensureIndex({recommanderId: 1, recommander: 1, postId: 1, followby: 1})
     Feeds._ensureIndex({requesteeId: 1, requesterId: 1, followby: 1})
-    Feeds._ensureIndex({followby: 1, checked: 1, postId: 1, pindex: 1})
+    Feeds._ensureIndex({owner:1,followby: 1, checked: 1, postId: 1, pindex: 1})
     PComments._ensureIndex({postId:1,commentUserId:1})
     PComments._ensureIndex({ptype:1})
     # this one do not need index

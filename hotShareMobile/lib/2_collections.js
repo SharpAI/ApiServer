@@ -546,7 +546,7 @@ if(Meteor.isServer){
                 {
                     //有人点评了您点评过的帖子
                     pcs.forEach(function(data){
-                        var pfeeds=Feeds.findOne({followby:data.commentUserId,checked:false,postId:data.postId,pindex:pindex});
+                        var pfeeds=Feeds.findOne({owner:userId,followby:data.commentUserId,checked:false,postId:data.postId,pindex:pindex});
                         if(pfeeds || needRemove){
                             //console.log("==================already have feed==========");
                             if(pfeeds && needRemove)
@@ -577,7 +577,7 @@ if(Meteor.isServer){
                 //有人点评了您发表的帖子
                 if(doc.owner !== userId)
                 {
-                    var pfeeds=Feeds.findOne({followby:doc.owner,checked:false,postId:doc._id,pindex:pindex});
+                    var pfeeds=Feeds.findOne({owner:userId,followby:doc.owner,checked:false,postId:doc._id,pindex:pindex});
                     if(pfeeds || needRemove){
                         //console.log("==================already have feed==========");
                         if(pfeeds && needRemove)
