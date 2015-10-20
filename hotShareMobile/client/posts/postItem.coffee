@@ -102,7 +102,7 @@ if Meteor.isClient
       else
         calcTextItemStyle(this.layout)
     isTextLength:(text)->
-      if(text.trim().length>40)
+      if(text.trim().length>20)
         return true
       else if  text.split(/\r\n|\r|\n/).length > 1
         return true
