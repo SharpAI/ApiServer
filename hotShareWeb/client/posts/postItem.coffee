@@ -169,11 +169,6 @@ if Meteor.isClient
               scolor="#304EF5"
               break
       if scolor is "#304EF5"
-        scrolltop = 0
-        if $('.dCurrent').length
-          scrolltop=$('.dCurrent').offset().top
-          Session.set("postPageScrollTop", scrolltop)
-          document.body.scrollTop = Session.get("postPageScrollTop")
         if Session.get("toasted") is false
           Session.set "toasted",true
           Session.set("needToast",true)

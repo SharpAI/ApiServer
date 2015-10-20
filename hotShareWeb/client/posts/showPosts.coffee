@@ -34,7 +34,12 @@ if Meteor.isClient
   Tracker.autorun ()->
     if Session.get("needToast") is true
       Session.set("needToast",false)
+      scrolltop = 0
       Meteor.setTimeout ()->
+        if $('.dCurrent').length
+          scrolltop=$('.dCurrent').offset().top
+          Session.set("postPageScrollTop", scrolltop)
+          document.body.scrollTop = Session.get("postPageScrollTop")
         userName=Session.get("pcommentsName")
         toastr.info(userName+"点评过的段落已为您用蓝色标注！")
       ,300
