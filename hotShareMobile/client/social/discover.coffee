@@ -145,6 +145,7 @@ if Meteor.isClient
           #PUB.postPage(id,scrollTop)
           Meteor.setTimeout ()->
             Session.set("Social.LevelOne.Menu",'contactsList')
+            Session.set("needBindScroll", true)
             Router.go '/posts/'+postId
           ,300
         else
