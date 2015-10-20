@@ -35,7 +35,7 @@ if Meteor.isClient
         Session.setPersistent('persistentMySavedDrafts',null)
         Session.setPersistent('persistentMyOwnPosts',null)
         console.log msg
-      Router.go '/authOverlay'
+        Router.go '/authOverlay'
   Template.my_email.rendered=->
     $('.dashboard').css 'min-height', $(window).height()
     return
