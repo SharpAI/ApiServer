@@ -209,8 +209,14 @@ if Meteor.isClient
       if withSponserLinkAds
         position = 1+(self.pub.length/2)
         self.pub.splice(position,0,{adv:true,type:'insertedLink',data_col:1,data_sizex:6,urlinfo:'http://cdn.tiegushi.com/posts/qwWdWJPMAbyeo8tiJ'})
-      _.map self.pub, (doc, index, cursor)->
-        _.extend(doc, {index: index})
+        _.map self.pub, (doc, index, cursor)->
+          if position < index
+            _.extend(doc, {index: index-1})
+          else
+            _.extend(doc, {index: index})
+      else
+        _.map self.pub, (doc, index, cursor)->
+          _.extend(doc, {index: index})
     displayCommentInputBox:()->
       Session.get('displayCommentInputBox')
     inWeiXin: ()->
