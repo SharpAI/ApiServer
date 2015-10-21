@@ -27,7 +27,8 @@ if Meteor.isClient
       Router.go '/my_about'
     'click .back' :->
       Router.go '/user'
-    'click .logout':->
+    'click .logout':(e)->
+      e.target.innerText="正在退出登录..."
       Meteor.logout (msg)->
         Session.setPersistent('persistentLoginStatus',false)
         Session.setPersistent('persistentFeedsForMe',null)
@@ -40,7 +41,7 @@ if Meteor.isClient
         Session.setPersistent('persistentProfileName',null)
         Session.setPersistent('persistentMySavedDrafts',null)
         Session.setPersistent('persistentMyOwnPosts',null)
-        console.log msg
+        #console.log msg
         Router.go '/authOverlay'
   Template.my_email.rendered=->
     $('.dashboard').css 'min-height', $(window).height()
