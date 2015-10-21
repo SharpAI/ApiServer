@@ -7,9 +7,15 @@ if Meteor.isClient
     return
   Template.dashboard.helpers
     userEmail :->
-      Meteor.user().emails[0].address
+      if Meteor.user()
+        Meteor.user().emails[0].address
+      else
+        ''
     anonymous :->
-      Meteor.user().profile.anonymous
+      if Meteor.user()
+        Meteor.user().profile.anonymous
+      else
+        ''
   Template.dashboard.events
     'click .email' :->
       Router.go '/my_email'
