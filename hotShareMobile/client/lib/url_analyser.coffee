@@ -38,39 +38,45 @@ if Meteor.isClient
       musicSingerNameSelector:'.audio_area .audio_info_area .audio_source'
     }
   ]
-  musicExtactorMappingUrl = [
+  musicExtactorScriptMapping = [
     {
-      url: 'http://douban.fm'
-      getMusic: (url, script)->
-        text = script.innerText
+      url: 'http://douban.fm/?start='
+      getMusic: (node)->
+        text = node.innerHTML
         if text.indexOf('window.__bootstrap_data') isnt -1
           eval(text)
-          if(window.__bootstrap_data.song)
-            musicInfo = {
-              playUrl : window.__bootstrap_data.song.url
-              image : window.__bootstrap_data.song.picture
-              songName : window.__bootstrap_data.song.title
+          if window.__bootstrap_data.song
+            return {
+              playUrl: window.__bootstrap_data.song.url
+              image: window.__bootstrap_data.song.picture
+              songName: window.__bootstrap_data.song.title
               singerName: window.__bootstrap_data.song.artist
             }
-            console.log('Got Music Info '+JSON.stringify(musicInfo))
-            return [musicInfo]
-        return []
+        
+        return null
     }
-#    {
-#      url: 'http://fm.qzone.qq.com/'
-#      getMusic: (url, script)->
-#        text = script.innerText
-#        if text.indexOf('showData:{"') isnt -1
-#          text = text.substr(text.indexOf('showData:{"'))
-#          text = text.substring(0, text.indexOf('"}},'))
-#          console.log(text)
-#        return []
-#    }
+    {
+      url: 'http://fm.qzone.qq.com/luobo/radio?_wv=1&showid='
+      getMusic: (node)->
+        text = node.innerHTML
+        if text.indexOf('showData:{"') isnt -1
+          text = text.substr(text.indexOf('showData:{"') + 'showData:'.length)
+          text = text.substring(0, text.indexOf('"}},')+3)
+          obj = JSON.parse(text)
+          return {
+            playUrl: obj.data.url
+            image: obj.data.cover
+            songName: obj.data.name
+            singerName: obj.data.ownername
+          }
+        return null
+    }
   ]
   musicExtactorMappingV2 = [
     {
       tagName:'QQMUSIC',
       musicClass:'',
+      musicId: '',
       getMusicUrl:(node)->
         if node and node.parentNode
           playUrl=$(node.parentNode).find('.qqmusic_area .qqmusic_thumb').attr('data-autourl')
@@ -99,6 +105,7 @@ if Meteor.isClient
     {
       tagName:'MPVOICE',
       musicClass:'',
+      musicId: '',
       getMusicUrl:(node)->
         playUrl = node.getAttribute('voice_encode_fileid');
         if playUrl and playUrl isnt ''
@@ -122,11 +129,44 @@ if Meteor.isClient
       cleanUp:(node)->
         if node and node.parentNode
           return $(node.parentNode).remove('.audio_area')
+    },
+    {
+      tagName:'',
+      musicClass:'',
+      musicId: 'jp_container_1',
+      getMusicUrl:(node)->
+        if node and node.parentNode
+          for item in $(node.parentNode)
+            if item.tagName is 'SCRIPT'
+              text = item.innerHTML
+              if text.indexOf('mp3:"/') isnt -1
+                text = text.substr(text.indexOf('mp3:"/')+5)
+                text = text.substring(0, text.indexOf('.mp3"') + 4)
+                return 'http://yuedu.fm' + text
+        ''
+      getMusicThumbImageURL:(node)->
+        if node and node.parentNode
+          return $(node).find('.cover img').attr('src')
+        ''
+      getMusicSongName:(node)->
+        console.log('GetMusicSongName')
+        if node and node.parentNode
+          return $(node).find('.item-title h1').text()
+        ''
+      getMusicSingerName:(node)->
+        console.log('getMusicSingerName')
+        if node and node.parentNode
+          return $(node).find('.item-title p').text()
+        ''
+      cleanUp:(node)->
+        if node and node.parentNode
+          return $(node.parentNode).remove('#jp_container_1')
     }
   ]
   @getMusicFromNode = (node) ->
+    console.log(node)
     for s in musicExtactorMappingV2
-      if ((s.tagName and s.tagName isnt '' and node.tagName is s.tagName) or (s.className and (s.className isnt '') and (node.className is s.className)))
+      if ((s.tagName and s.tagName isnt '' and node.tagName is s.tagName) or (s.musicId and s.musicId isnt '' and node.id is s.musicId) or (s.className and (s.className isnt '') and (node.className is s.className)))
         if typeof(s.getMusicUrl) is 'function'
           playUrl = s.getMusicUrl(node)
         if typeof(s.getMusicThumbImageURL) is 'function'
@@ -153,15 +193,12 @@ if Meteor.isClient
           console.log('Got Music Info '+JSON.stringify(musicInfo))
           return musicInfo
     return null
-  @getMusicFromUrl = (url, page)->
-    for node in $(page)
-      if node.tagName is 'SCRIPT'
-        for s in musicExtactorMappingUrl
-          if url.toLowerCase().indexOf(s.url) isnt -1
-            musics = s.getMusic(url, node)
-            if musics.length > 0
-              return musics
-    return []
+  @getMusicFromScript = (url, page)->
+    for mapping in musicExtactorScriptMapping
+      if (url.toLowerCase().indexOf(mapping.url) is 0)
+        return extractScript(page, mapping.getMusic)
+
+    return null
   getMusicFromPage = (page) ->
     for s in musicExtactorMapping
       if $(page).find(s.musicClass).length > 0
@@ -464,22 +501,25 @@ if Meteor.isClient
           break
 
       #musicInfo = getMusicFromPage documentBody
-      extracted = extract(documentBody)
+      extracted = getMusicFromScript(url, documentBody)
+      if (extracted is null)
+        extracted = extract(documentBody)
       toBeInsertedText = ''
       toBeInsertedStyleAlign=''
       previousIsImage = false
       resortedArticle = []
       sortedImages = 0
 
-      musics = getMusicFromUrl(url, data.body)
-      if(musics.length > 0)
-        for musicInfo in musics
-          resortedArticle.push {type:'music', musicInfo: musicInfo}
+#      musics = getMusicFromScript(url, documentBody)
+#      if(musics.length > 0)
+#        for musicInfo in musics
+#          resortedArticle.push {type:'music', musicInfo: musicInfo}
 
       if extracted.id is 'hotshare_special_tag_will_not_hit_other'
         toBeProcessed = extracted
       else
         toBeProcessed = extracted.innerHTML
+      console.log($(toBeProcessed))
       $(toBeProcessed).children().each (index,node)->
         info = {}
         info.bgArray = []
@@ -668,4 +708,13 @@ if Meteor.isClient
           returnJson["body"] = html.getElementsByTagName('body')[0].innerHTML
           returnJson["bodyLength"] = returnJson["body"].length
         showDebug && console.log(returnJson)
+#        treeWalker = document.createTreeWalker(
+#          html, NodeFilter.SHOW_TEXT
+#          {
+#            acceptNode : (node)->
+#              console.log(node)
+#              return NodeFilter.FILTER_REJECT
+#          }
+#          false
+#        )
         _html2data(url, returnJson, callback)

@@ -52,9 +52,10 @@ REGEXPS =
   specialClass:     /note-content|rich_media_content|WBA_content/i
 
 specialClassNameForPopularMobileSite = [
-  '.note-content', # Douban
-  '.rich_media_content', # Wechat
+  '.note-content' # Douban
+  '.rich_media_content' # Wechat
   '.WBA_content' # Weibo
+  '#jp_container_1' # 悦读FM 
 ]
 
 textContentFor = (node, normalizeWs = true) ->
@@ -295,9 +296,31 @@ getCalculatedStyle=(node,prop)->
   catch error
     return null
   return null
+@extractScript = (page, getMusic)->
+  parified = _.map($('<div>'+page.innerHTML+'</div>').find('*'), parify)
+  for item in $(parified)
+    if(item.tagName is 'SCRIPT')
+      musicInfo = getMusic(item)
+      if musicInfo
+        console.log('Got Music Info '+JSON.stringify(musicInfo))
+        musicElement = document.createElement("musicExtracted")
+        musicElement.setAttribute('playUrl', musicInfo.playUrl)
+        musicElement.setAttribute('image', musicInfo.image)
+        musicElement.setAttribute('songName', musicInfo.songName)
+        musicElement.setAttribute('singerName', musicInfo.singerName)
+          
+        newRoot = document.createElement("div")
+        newRoot.appendChild(musicElement)
+        newRoot.id = 'hotshare_special_tag_will_not_hit_other'
+        return newRoot
+  
+  newRoot = document.createElement("div")
+  newRoot.id = 'hotshare_special_tag_will_not_hit_other'
+  return newRoot
 @extract = (page) ->
   parified = _.map($(page).find('*'), parify)
   for tag in specialClassNameForPopularMobileSite
+    #console.log($(parified).find(tag))
     if $(parified).find(tag).length > 0
       treeWalker = document.createTreeWalker(
         $(parified).find(tag)[0],
