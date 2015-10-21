@@ -695,9 +695,9 @@ if Meteor.isClient
         content = $('#pcommitReport').val()
         postId = Session.get("postContent")._id
         post = Session.get("postContent").pub
-        if withSponserLinkAds
-          position = 1+(post.length/2)
-        if i > position then i -= 1 else i = i
+#        if withSponserLinkAds
+#          position = 1+(post.length/2)
+#        if i > position then i -= 1 else i = i
         if content is ""
           $('.showBgColor').removeAttr('style')
           $('.showBgColor').css('min-width',$(window).width())

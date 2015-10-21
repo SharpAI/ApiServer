@@ -122,8 +122,8 @@ if Meteor.isClient
     hasPcomments: ->
       i = this.index
       post = Session.get("postContent").pub
-      position = 1+(post.length/2)
-      if i > position and  withSponserLinkAds then i -= 1 else i = i
+#      position = 1+(post.length/2)
+#      if i > position and  withSponserLinkAds then i -= 1 else i = i
       if post and post[i] and post[i].pcomments isnt undefined
         return true
       else
