@@ -61,7 +61,7 @@ if Meteor.isClient
     $('.mainImage').css('height',$(window).height()*0.55)
     postContent = Session.get("postContent")
     subscribeCommentAndViewers()
-    browseTimes = 0
+    trackPage('http://www.tiegushi.com/posts/'+postContent._id)
     Session.set("Social.LevelOne.Menu",'discover')
     Session.set("SocialOnButton",'postBtn')
     if not Meteor.isCordova
