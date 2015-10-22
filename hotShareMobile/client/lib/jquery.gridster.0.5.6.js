@@ -806,6 +806,11 @@
         if (this.disabled || e.which !== 1 && !isTouch) {
             return;
         }
+        if ($(e.currentTarget).parent()) {
+            if (!$(e.currentTarget).parent().hasClass('pressed')) {
+                return;
+            }
+        }
 
         if (this.ignore_drag(e)) {
             return;
