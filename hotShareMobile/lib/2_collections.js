@@ -1791,30 +1791,36 @@ if(Meteor.isClient){
   var subscribeFollowPostsOnStop = function(err){
       console.log('followPostsCollection ' + err);
       Session.set('followPostsCollection','error');
-      Meteor.setTimeout(function(){
-          Session.set('followPostsCollection','loading');
-          Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'), {
-              onStop: subscribeFollowPostsOnStop,
-              onReady: function(){
-                  console.log('followPostsCollection loaded');
-                  Session.set('followPostsCollection','loaded');
-              }
-          });
-      },2000);
+      if(Meteor.user())
+      {
+          Meteor.setTimeout(function(){
+              Session.set('followPostsCollection','loading');
+              Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'), {
+                  onStop: subscribeFollowPostsOnStop,
+                  onReady: function(){
+                      console.log('followPostsCollection loaded');
+                      Session.set('followPostsCollection','loaded');
+                  }
+              });
+          },2000);
+      }
   };
   var subscribeFeedsOnStop = function(err){
       console.log('feedsCollection ' + err);
       Session.set('feedsCollection','error');
-      Meteor.setTimeout(function(){
-          Session.set('feedsCollection','loading');
-          Meteor.subscribe('feeds', Session.get('feedsitemsLimit'), {
-              onStop: subscribeFeedsOnStop,
-              onReady: function(){
-                  console.log('feedsCollection loaded');
-                  Session.set('feedsCollection','loaded');
-              }
-          });
-      },2000);
+      if(Meteor.user())
+      {
+          Meteor.setTimeout(function(){
+              Session.set('feedsCollection','loading');
+              Meteor.subscribe('feeds', Session.get('feedsitemsLimit'), {
+                  onStop: subscribeFeedsOnStop,
+                  onReady: function(){
+                      console.log('feedsCollection loaded');
+                      Session.set('feedsCollection','loaded');
+                  }
+              });
+          },2000);
+      }
   };
   window.refreshMainDataSource = function(){
       Meteor.subscribe('waitreadcount');
