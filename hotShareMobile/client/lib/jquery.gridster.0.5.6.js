@@ -807,7 +807,8 @@
             return;
         }
         if ($(e.currentTarget).parent()) {
-            if (!$(e.currentTarget).parent().hasClass('pressed')) {
+            if ($(e.currentTarget).hasClass('gs-resize-handle')
+                && !$(e.currentTarget).parent().hasClass('pressed')) {
                 return;
             }
         }
