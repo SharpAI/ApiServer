@@ -900,12 +900,14 @@ if(Meteor.isServer){
       else{
           var self = this;
           self.count = 0;
-          var handle = Moments.find({currentPostId: postId,userId:{$ne:self.userId}},{sort: {createdAt: -1},limit:limit}).observeChanges({
+          var handle = Moments.find({currentPostId: postId},{sort: {createdAt: -1},limit:limit}).observeChanges({
               added: function (id,fields) {
-                  momentsAddForDynamicMomentsDeferHandle(self,id,fields,self.userId);
+                  if(fields.userId !== self.userId)
+                    momentsAddForDynamicMomentsDeferHandle(self,id,fields,self.userId);
               },
               changed:function (id,fields){
-                  momentsChangeForDynamicMomentsDeferHandle(self,id,fields,self.userId);
+                  if(fields.userId !== self.userId)
+                    momentsChangeForDynamicMomentsDeferHandle(self,id,fields,self.userId);
               }
           });
           self.ready();
