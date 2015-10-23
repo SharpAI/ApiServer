@@ -46,11 +46,25 @@ if Meteor.isClient
         })
   Template.user.helpers
     isLoading:->
-      Session.get('myCounterCollection') is 'loading' or
-      Session.get('postsWithLimitCollection') is 'loading' or
-      Session.get('savedDraftsWithLimitCollection') is 'loading' or
-      Session.get('followedByWithLimitCollection') is 'loading' or
-      Session.get('followToWithLimitCollection') is 'loading'
+      if (
+        Session.get('persistentProfileIcon') is undefined or
+        Session.get('persistentProfileName') is undefined or
+        Session.get('myFollowedByCount') is undefined or
+        Session.get('mySavedDraftsCount') is undefined or
+        Session.get('persistentMySavedDrafts') is undefined or
+        Session.get('myPostsCount') is undefined or
+        Session.get('persistentMyOwnPosts') is undefined or
+        Session.get('myFollowToCount') is undefined
+        ) and (
+        Session.get('myCounterCollection') is 'loading' or
+        Session.get('postsWithLimitCollection') is 'loading' or
+        Session.get('savedDraftsWithLimitCollection') is 'loading' or
+        Session.get('followedByWithLimitCollection') is 'loading' or
+        Session.get('followToWithLimitCollection') is 'loading'
+        )
+          return true
+      else
+          return false
     myProfileIcon:->
       me = Meteor.user()
       if me and me.profile and me.profile.icon
