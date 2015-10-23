@@ -540,36 +540,45 @@ if(Meteor.isServer){
                     commentUserId: userId,
                     createdAt: new Date()
                 });
-                var pcs=PComments.find({postId:doc._id,$and:[{commentUserId:{$ne:userId}},{commentUserId:{$ne:doc.owner}}]});
+                var pcs=PComments.find({postId:doc._id});
                 //console.log("=======pcs.count=="+pcs.count()+"======================");
                 if(pcs.count()>0)
                 {
                     //有人点评了您点评过的帖子
-                    pcs.forEach(function(data){
-                        var pfeeds=Feeds.findOne({owner:userId,followby:data.commentUserId,checked:false,postId:data.postId,pindex:pindex});
-                        if(pfeeds || needRemove){
-                            //console.log("==================already have feed==========");
-                            if(pfeeds && needRemove)
-                                Feeds.remove(pfeeds);
-                        }else{
-                            if(userinfo){
-                                Feeds.insert({
-                                    owner: userId,
-                                    ownerName: userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
-                                    ownerIcon: userinfo.profile.icon,
-                                    eventType: 'pcomment',
-                                    postId: data.postId,
-                                    postTitle: doc.title,
-                                    addontitle:doc.addontitle,
-                                    pindex:pindex,
-                                    mainImage: doc.mainImage,
-                                    createdAt: new Date(),
-                                    heart: 0,
-                                    retweet: 0,
-                                    comment: 0,
-                                    followby: data.commentUserId,
-                                    checked:false
-                                });
+                    pcs.forEach(function(data) {
+                        if(data.commentUserId !== userId && data.commentUserId !== doc.owner)
+                        {
+                            var pfeeds = Feeds.findOne({
+                                owner: userId,
+                                followby: data.commentUserId,
+                                checked: false,
+                                postId: data.postId,
+                                pindex: pindex
+                            });
+                            if (pfeeds || needRemove) {
+                                //console.log("==================already have feed==========");
+                                if (pfeeds && needRemove)
+                                    Feeds.remove(pfeeds);
+                            } else {
+                                if (userinfo) {
+                                    Feeds.insert({
+                                        owner: userId,
+                                        ownerName: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
+                                        ownerIcon: userinfo.profile.icon,
+                                        eventType: 'pcomment',
+                                        postId: data.postId,
+                                        postTitle: doc.title,
+                                        addontitle: doc.addontitle,
+                                        pindex: pindex,
+                                        mainImage: doc.mainImage,
+                                        createdAt: new Date(),
+                                        heart: 0,
+                                        retweet: 0,
+                                        comment: 0,
+                                        followby: data.commentUserId,
+                                        checked: false
+                                    });
+                                }
                             }
                         }
                     });
