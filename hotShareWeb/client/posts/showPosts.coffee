@@ -685,52 +685,49 @@ if Meteor.isClient
          else
            return ''
 
-  Template.pcommentInput.events
-      'click #pcommitReportBtn':(e, t)->
-        i = Session.get "pcommentIndexNum"
-        content = $('#pcommitReport').val()
-        postId = Session.get("postContent")._id
-        post = Session.get("postContent").pub
-#        if withSponserLinkAds
-#          position = 1+(post.length/2)
-#        if i > position then i -= 1 else i = i
-        if content is ""
-          $('body').removeAttr('style')
-          $(window).scrollTop(0-Session.get('backgroundTop'))
-          $('.pcommentInput,.alertBackground').fadeOut 300
-          return false
-        if Meteor.user()
-          if Meteor.user().profile.fullname
-            username = Meteor.user().profile.fullname
-          else
-            username = Meteor.user().username
-          userId = Meteor.user()._id
-          userIcon = Meteor.user().profile.icon
-        else
-          username = '匿名'
-          userId = 0
-          userIcon = ''
-        if not post[i].pcomments or post[i].pcomments is undefined
-          pcomments = []
-          post[i].pcomments = pcomments
-        pcommentJson = {
-          content:content
-          username:username
-          userId:userId
-          userIcon:userIcon
-          createdAt: new Date()
-        }
-        post[i].pcomments.push(pcommentJson)
-        Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"pcomments","pindex":i}}, (error, result)->
-          if error
-            console.log(error.reason);
-          else
-            console.log("success");
-        )
-        $('#pcommitReport').val("")
-        $("#pcommitReport").attr("placeholder", "评论")
-        #$('body').removeAttr('style')
-        $(window).scrollTop(0-Session.get('backgroundTop'))
-        $('.pcommentInput,.alertBackground').fadeOut 300
-        refreshPostContent()
-        false
+#  Template.pcommentInput.events
+#      'click #pcommitReportBtn':(e, t)->
+#        i = Session.get "pcommentIndexNum"
+#        content = $('#pcommitReport').val()
+#        postId = Session.get("postContent")._id
+#        post = Session.get("postContent").pub
+#        if content is ""
+#          $('body').removeAttr('style')
+#          $(window).scrollTop(0-Session.get('backgroundTop'))
+#          $('.pcommentInput,.alertBackground').fadeOut 300
+#          return false
+#        if Meteor.user()
+#          if Meteor.user().profile.fullname
+#            username = Meteor.user().profile.fullname
+#          else
+#            username = Meteor.user().username
+#          userId = Meteor.user()._id
+#          userIcon = Meteor.user().profile.icon
+#        else
+#          username = '匿名'
+#          userId = 0
+#          userIcon = ''
+#        if not post[i].pcomments or post[i].pcomments is undefined
+#          pcomments = []
+#          post[i].pcomments = pcomments
+#        pcommentJson = {
+#          content:content
+#          username:username
+#          userId:userId
+#          userIcon:userIcon
+#          createdAt: new Date()
+#        }
+#        post[i].pcomments.push(pcommentJson)
+#        Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"pcomments","pindex":i}}, (error, result)->
+#          if error
+#            console.log(error.reason);
+#          else
+#            console.log("success");
+#        )
+#        $('#pcommitReport').val("")
+#        $("#pcommitReport").attr("placeholder", "评论")
+#        #$('body').removeAttr('style')
+#        $(window).scrollTop(0-Session.get('backgroundTop'))
+#        $('.pcommentInput,.alertBackground').fadeOut 300
+#        refreshPostContent()
+#        false
