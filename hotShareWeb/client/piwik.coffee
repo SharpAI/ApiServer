@@ -1,3 +1,10 @@
+window.trackEvent=(category, action)->
+  try
+    console.log('Track Event')
+    unless typeof(piwik) is 'undefined'
+      piwik.trackEvent(category, action)
+  catch error
+    console.log('trackevent exception')
 
 window.trackPage=(url)->
   try
