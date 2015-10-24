@@ -4,6 +4,7 @@ if Meteor.isClient
   Template.socialContent.events
     'click .postBtn':->
       #PUB.postPageBack()
+      trackEvent("socialBar","Post")
       Session.set("SocialOnButton",'postBtn')
       Session.set("Social.LevelOne.Menu",'discover')
       if $('.contactsList .head').is(':visible')
@@ -13,6 +14,7 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu",'chatContent')
       Session.set("SocialOnButton",'chatContent')
     'click .contactsBtn':->
+      trackEvent("socialBar","Newfrineds")
       Session.set("Social.LevelOne.Menu",'contactsList')
       Session.set("SocialOnButton",'contactsList')
       $('.div_contactsList').css('display',"block")
@@ -20,6 +22,7 @@ if Meteor.isClient
       $('.div_me').css('display',"none")
       document.body.scrollTop = $(".showPostsBox").height()
     'click .discoverBtn':->
+      trackEvent("socialBar","Discover")
       Session.set("SocialOnButton",'discover')
       Session.set('momentsitemsLimit', 10);
       Session.set("Social.LevelOne.Menu",'discover')
@@ -28,6 +31,7 @@ if Meteor.isClient
       $('.div_me').css('display',"none")
       document.body.scrollTop = $(".showPostsBox").height()
     'click .meBtn':->
+      trackEvent("socialBar","Me")
       Session.set("SocialOnButton",'me')
       Session.set("Social.LevelOne.Menu",'me')
       $('.div_contactsList').css('display',"none")
