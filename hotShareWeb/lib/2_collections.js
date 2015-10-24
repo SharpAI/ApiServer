@@ -900,7 +900,8 @@ if(Meteor.isServer){
       else{
           var self = this;
           self.count = 0;
-          var handle = Moments.find({currentPostId: postId},{sort: {createdAt: -1},limit:limit}).observeChanges({
+          var count = Moments.find({currentPostId: postId,userId:self.userId}).count();
+          var handle = Moments.find({currentPostId: postId},{sort: {createdAt: -1},limit:limit+count}).observeChanges({
               added: function (id,fields) {
                   if(fields.userId !== self.userId)
                     momentsAddForDynamicMomentsDeferHandle(self,id,fields,self.userId);
