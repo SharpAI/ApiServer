@@ -36,6 +36,7 @@ if Meteor.isClient
               link: window.location.href,
               imgUrl: Session.get('postContent').mainImage,
               success: () ->
+                trackEvent("Share","Section to Wechat Timeline")
                 console.log('Share success');
               cancel: ()->
                 console.log('Share cancled');
@@ -46,6 +47,7 @@ if Meteor.isClient
               link: window.location.href,
               imgUrl: Session.get('postContent').mainImage,
               success: () ->
+                trackEvent("Share","Section to Wechat Chat")
                 console.log('Share success');
               cancel: ()->
                 console.log('Share cancled');
@@ -57,6 +59,7 @@ if Meteor.isClient
               link: window.location.href,
               imgUrl: Session.get('postContent').mainImage,
               success: () ->
+                trackEvent("Share","Post to Wechat Timeline")
                 console.log('Share success');
               cancel: ()->
                 console.log('Share cancled');
@@ -67,6 +70,7 @@ if Meteor.isClient
               link: window.location.href,
               imgUrl: Session.get('postContent').mainImage,
               success: () ->
+                trackEvent("Share","Post to Wechat Chat")
                 console.log('Share success');
               cancel: ()->
                 console.log('Share cancled');
