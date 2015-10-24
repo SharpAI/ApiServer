@@ -2,7 +2,6 @@ if Meteor.isServer
   Meteor.startup ()->
     Moments._ensureIndex({currentPostId:1, readPostId:1})
     Moments._ensureIndex({currentPostId:1, createdAt: -1})
-    Moments._ensureIndex({currentPostId:1, userId: 1})
     Viewers._ensureIndex({userId: 1, createdAt: -1})
     # {postId: 1, userId: 1, createdAt: -1} will create 3 indexs,
     # {postId: 1},{postId: 1,userId: 1},{postId: 1, userId: 1, createdAt: -1}
