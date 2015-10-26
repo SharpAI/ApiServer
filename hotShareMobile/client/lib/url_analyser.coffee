@@ -520,7 +520,7 @@ if Meteor.isClient
       else
         toBeProcessed = extracted.innerHTML
       console.log($(toBeProcessed))
-      previousIsSpan = false
+      #================================previousIsSpan = false
       $(toBeProcessed).children().each (index,node)->
         info = {}
         info.bgArray = []
@@ -537,7 +537,7 @@ if Meteor.isClient
             resortedArticle.push {type:'text',text:toBeInsertedText,layout:{align:toBeInsertedStyleAlign}}
             toBeInsertedText = ''
             toBeInsertedStyleAlign = ''
-            previousIsSpan = false
+            #================================previousIsSpan = false
             return true
         else if node.tagName is 'MUSICEXTRACTED'
           if toBeInsertedText and toBeInsertedText isnt ''
@@ -554,14 +554,50 @@ if Meteor.isClient
             songName:songName
             singerName:singerName
           }}
-          previousIsSpan = false
+          #================================previousIsSpan = false
           return true
         text = $(node).text()
         if text and text isnt ''
           text = text.replace(/\s\s\s+/g, '')
         console.log('text '+text)
+        
+        
+        if text and text isnt ''
+          previousIsImage = false
+          showDebug&&console.log '    Got text in this element('+toBeInsertedText.length+') '+text
+          showDebug&&console.log 'Text  ['+text+'] color is '+nodeColor+' nodeBackgroundColor is '+nodeBackgroundColor
+          ###
+          if importColor and nodeColor and nodeColor isnt ''
+            if toBeInsertedText.length > 0
+              toBeInsertedText += '\n'
+              resortedArticle.push {type:'text',text:toBeInsertedText}
+              toBeInsertedText = ''
+            resortedArticle.push {type:'text',text:text,color:nodeColor,backgroundColor:nodeBackgroundColor}
+          else
+          ###
+          #console.log('Get style '+$(node).attr('style'));
+          if toBeInsertedText.length is 0
+            toBeInsertedStyleAlign = styleAlign
+#          if node.tagName is 'SPAN'
+#            toBeInsertedText +=text
+#            previousIsSpan = true
+#          else if previousIsSpan is true
+#            toBeInsertedText += text
+#            previousIsSpan = false
+#            text = ''
+          if toBeInsertedText.length < 20 and styleAlign is toBeInsertedStyleAlign
+            if toBeInsertedText.length > 0
+              toBeInsertedText += '\n'
+            toBeInsertedText += text
+          else
+            if toBeInsertedText.length > 0
+              resortedArticle.push {type:'text',text:toBeInsertedText,layout:{align:toBeInsertedStyleAlign}}
+            toBeInsertedText = text;
+            toBeInsertedStyleAlign = styleAlign;
+            
+            
         if node.tagName == 'IFRAME'
-          previousIsSpan = false
+          #================================previousIsSpan = false
           node.width = '100%'
           node.width = '100%'
           node.height = '100%'
@@ -582,7 +618,7 @@ if Meteor.isClient
             toBeInsertedText = ''
           resortedArticle.push {type:'iframe',iframe:node.outerHTML}
         else if node.tagName == 'IMG'
-          previousIsSpan = false
+          #================================previousIsSpan = false
           dataSrc = $(node).attr('data-src')
           if dataSrc and dataSrc isnt ''
             src = dataSrc
@@ -608,7 +644,7 @@ if Meteor.isClient
           if info.imageArray.length > 0
             showDebug&&console.log('    Got image')
             previousIsImage = true
-            previousIsSpan = false
+            #================================previousIsSpan = false
             if toBeInsertedText and toBeInsertedText isnt ''
               resortedArticle.push {type:'text',text:toBeInsertedText}
             toBeInsertedText = ''
@@ -621,7 +657,7 @@ if Meteor.isClient
           else if info.bgArray.length > 0
             showDebug&&console.log('    Got Background image')
             previousIsImage = true
-            previousIsSpan = false
+            #================================previousIsSpan = false
             if toBeInsertedText and toBeInsertedText isnt ''
               resortedArticle.push {type:'text',text:toBeInsertedText}
             toBeInsertedText = ''
@@ -631,38 +667,38 @@ if Meteor.isClient
                 sortedImages++
                 resortedArticle.push {type:'image',imageUrl:imageUrl}
                 data.imageArray.push imageUrl
-        if text and text isnt ''
-          previousIsImage = false
-          showDebug&&console.log '    Got text in this element('+toBeInsertedText.length+') '+text
-          showDebug&&console.log 'Text  ['+text+'] color is '+nodeColor+' nodeBackgroundColor is '+nodeBackgroundColor
-          ###
-          if importColor and nodeColor and nodeColor isnt ''
-            if toBeInsertedText.length > 0
-              toBeInsertedText += '\n'
-              resortedArticle.push {type:'text',text:toBeInsertedText}
-              toBeInsertedText = ''
-            resortedArticle.push {type:'text',text:text,color:nodeColor,backgroundColor:nodeBackgroundColor}
-          else
-          ###
-          #console.log('Get style '+$(node).attr('style'));
-          if toBeInsertedText.length is 0
-            toBeInsertedStyleAlign = styleAlign
-          if node.tagName is 'SPAN'
-            toBeInsertedText +=text
-            previousIsSpan = true
-          else if previousIsSpan is true
-            toBeInsertedText += text
-            previousIsSpan = false
-            text = ''
-          else if toBeInsertedText.length < 20 and styleAlign is toBeInsertedStyleAlign
-            if toBeInsertedText.length > 0
-              toBeInsertedText += '\n'
-            toBeInsertedText += text
-          else
-            if toBeInsertedText.length > 0
-              resortedArticle.push {type:'text',text:toBeInsertedText,layout:{align:toBeInsertedStyleAlign}}
-            toBeInsertedText = text;
-            toBeInsertedStyleAlign = styleAlign;
+#        if text and text isnt ''
+#          previousIsImage = false
+#          showDebug&&console.log '    Got text in this element('+toBeInsertedText.length+') '+text
+#          showDebug&&console.log 'Text  ['+text+'] color is '+nodeColor+' nodeBackgroundColor is '+nodeBackgroundColor
+#          ###
+#          if importColor and nodeColor and nodeColor isnt ''
+#            if toBeInsertedText.length > 0
+#              toBeInsertedText += '\n'
+#              resortedArticle.push {type:'text',text:toBeInsertedText}
+#              toBeInsertedText = ''
+#            resortedArticle.push {type:'text',text:text,color:nodeColor,backgroundColor:nodeBackgroundColor}
+#          else
+#          ###
+#          #console.log('Get style '+$(node).attr('style'));
+#          if toBeInsertedText.length is 0
+#            toBeInsertedStyleAlign = styleAlign
+#          if node.tagName is 'SPAN'
+#            toBeInsertedText +=text
+#            previousIsSpan = true
+#          else if previousIsSpan is true
+#            toBeInsertedText += text
+#            previousIsSpan = false
+#            text = ''
+#          else if toBeInsertedText.length < 20 and styleAlign is toBeInsertedStyleAlign
+#            if toBeInsertedText.length > 0
+#              toBeInsertedText += '\n'
+#            toBeInsertedText += text
+#          else
+#            if toBeInsertedText.length > 0
+#              resortedArticle.push {type:'text',text:toBeInsertedText,layout:{align:toBeInsertedStyleAlign}}
+#            toBeInsertedText = text;
+#            toBeInsertedStyleAlign = styleAlign;
       if toBeInsertedText and toBeInsertedText isnt ''
         resortedArticle.push {type:'text',text:toBeInsertedText}
       if sortedImages < 1
