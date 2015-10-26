@@ -76,7 +76,7 @@ if Meteor.isClient
       suggestPosts:()->
         SuggestPosts.find({},{sort: {createdAt: -1}},limit:10)
       hidePost:()->
-        Session.get('hideSuggestPost_'+this._id)
+        Session.get('hideSuggestPost_'+this._id) || this.userId is Meteor.userId()
       hideSuggestPost:()->
         Session.get('hideSuggestPost_'+this._id)
       time_diff: (created)->
