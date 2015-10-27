@@ -1492,6 +1492,12 @@ if(Meteor.isServer){
         }
         return (doc.postId !== null && doc.followby !== null && doc.recommander !== null)
       }
+      else if(doc.eventType==='share'){
+          if(Feeds.findOne({followby:doc.followby,postId:doc.postId,eventType: 'share'})){
+              return false;
+          }
+          return true;
+      }
       else{  /*eventType === 'sendrequest' || eventType === 'getrequest'*/
         if(doc.requesterId !== userId) {
             return false;

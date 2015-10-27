@@ -2,7 +2,7 @@ if Meteor.isServer
   myCrypto = Meteor.npmRequire "crypto"
   Meteor.startup ()->
     Meteor.methods
-      "readPostReport": (postId,userId)->
+      "readPostReport": (postId,userId,NoUpdateShare)->
         if(!Match.test(postId, String) || !Match.test(userId, String))
           return
         try
@@ -13,6 +13,11 @@ if Meteor.isServer
               browseTimes = post.browse + 1
             Meteor.defer ()->
               pushnotification("read",post,userId)
+              unless NoUpdateShare
+                Feeds.update({postId:postId,eventType: 'share'},{
+                  $inc: { ReadAfterShare: 1 },
+                  $set:{checked:false}
+                });
           Posts.update({_id:postId},{$set:{browse:browseTimes}})
         catch error
           console.log('Error on RedpostReport' + error)

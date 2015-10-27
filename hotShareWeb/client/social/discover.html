@@ -23,6 +23,27 @@
     <div class="lpcomments">
         <div id="wrapper">
             {{#each lpcomments}}
+                {{#if isShareFeed}}
+                    <div id="list">
+                        <div class="icon">
+                            <img src="{{ownerIcon}}" width="40" height="40"/>
+                        </div>
+                        <div class="user_name">
+                            <h2>{{ownerName}}:&nbsp;<span>{{ReadAfterShare}}人读过您的转发</span></h2>
+                            <div class="readpost">
+                                <dl>
+                                    <dt>
+                                        <img class="post_pic" src="{{mainImage}}" width="40" height="40"/>
+                                    <div class="red_spot"></div>
+                                    </dt>
+                                    <dd>{{postTitle}}  {{addontitle}}</dd>
+                                </dl>
+                            </div>
+                            <span style="margin:0;">{{time_diff createdAt}}</span>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                {{else}}
                 <div id="list">
                     <div class="icon">
                         <img src="{{ownerIcon}}" width="40" height="40"/>
@@ -42,6 +63,7 @@
                     </div>
                     <div class="clear"></div>
                 </div>
+                {{/if}}
             {{/each}}
         </div>
     </div>

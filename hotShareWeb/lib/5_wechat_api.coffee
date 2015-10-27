@@ -7,8 +7,29 @@ if Meteor.isClient
           success: callback,
           async: true
         });
+    window.FeedAfterShare=(postContent)->
+      unless Feeds.findOne({followby:Meteor.userId(),postId:postContent._id,eventType: 'share'})
+        me = Meteor.user()
+        username = me.username
+        if me.profile.fullname
+          username = me.profile.fullname
+        Feeds.insert({
+          owner: Meteor.userId()
+          ownerName: username,
+          ownerIcon: Meteor.user().profile.icon,
+          eventType: 'share',
+          postId: postContent._id,
+          postTitle: postContent.title,
+          addontitle: postContent.addontitle,
+          mainImage: postContent.mainImage,
+          createdAt: new Date(),
+          ReadAfterShare:0,
+          followby: Meteor.userId(),
+          checked: true
+        });
     setupWeichat = (url)->
       Meteor.call 'getSignatureFromServer',url,(error,result)->
+        #FeedAfterShare(Session.get('postContent'))
         console.log('Got Post signature ' + JSON.stringify(result));
         wx.config {
             debug: false,
@@ -37,6 +58,7 @@ if Meteor.isClient
               imgUrl: Session.get('postContent').mainImage,
               success: () ->
                 trackEvent("Share","Section to Wechat Timeline")
+                FeedAfterShare(Session.get('postContent'))
                 console.log('Share success');
               cancel: ()->
                 console.log('Share cancled');
@@ -48,6 +70,7 @@ if Meteor.isClient
               imgUrl: Session.get('postContent').mainImage,
               success: () ->
                 trackEvent("Share","Section to Wechat Chat")
+                FeedAfterShare(Session.get('postContent'))
                 console.log('Share success');
               cancel: ()->
                 console.log('Share cancled');
@@ -60,6 +83,7 @@ if Meteor.isClient
               imgUrl: Session.get('postContent').mainImage,
               success: () ->
                 trackEvent("Share","Post to Wechat Timeline")
+                FeedAfterShare(Session.get('postContent'))
                 console.log('Share success');
               cancel: ()->
                 console.log('Share cancled');
@@ -71,6 +95,7 @@ if Meteor.isClient
               imgUrl: Session.get('postContent').mainImage,
               success: () ->
                 trackEvent("Share","Post to Wechat Chat")
+                FeedAfterShare(Session.get('postContent'))
                 console.log('Share success');
               cancel: ()->
                 console.log('Share cancled');
