@@ -1,13 +1,13 @@
 if Meteor.isClient
   Meteor.startup ()->
     hasMoreResult = ()->
-      if DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
-        !(DynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() < Session.get("momentsitemsLimit"))
+      if NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
+        !(NewDynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() < Session.get("momentsitemsLimit"))
       else
         false
     Template.discover.helpers
       NoMoments:()->
-        if DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
+        if NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
           false
         else
           true
@@ -60,19 +60,19 @@ if Meteor.isClient
         withSuggestAlreadyRead
       showSuggestPosts:()->
         if Session.get("showSuggestPosts") is true
-          if DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
+          if NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
             false
           else
             true
         else
           false
       NoMoments:()->
-        if DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
+        if NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
           false
         else
           true
       moments:()->
-        DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}})
+        NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}})
       suggestPosts:()->
         SuggestPosts.find({},{sort: {createdAt: -1}},limit:10)
       hidePost:()->

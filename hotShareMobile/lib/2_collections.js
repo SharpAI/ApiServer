@@ -25,6 +25,7 @@ if(Meteor.isClient){
   ViewLists = new Meteor.Collection("viewlists");
   UserDetail = new Meteor.Collection("userDetail");
   DynamicMoments = new Meteor.Collection('dynamicmoments');
+  NewDynamicMoments = new Meteor.Collection('newdynamicmoments');
   SuggestPosts = new Meteor.Collection('suggestposts');
 }
 if(Meteor.isServer){
@@ -892,6 +893,44 @@ if(Meteor.isServer){
             handle.stop();
         });
 
+    });
+    var momentsAddForNewDynamicMomentsDeferHandle = function(self,id,fields) {
+        Meteor.defer(function(){
+                try{
+                    self.added("newdynamicmoments", id, fields);
+                    self.count++;
+                }catch(error){
+                }
+        });
+    };
+    var momentsChangeForNewDynamicMomentsDeferHandle = function(self,id,fields) {
+        Meteor.defer(function(){
+                try{
+                    self.changed("newdynamicmoments", id, fields);
+                }catch(error){
+                }
+        });
+    };
+    Meteor.publish("newDynamicMoments", function (postId,limit) {
+        if(!Match.test(postId, String) ){
+            return [];
+        }
+        else{
+            var self = this;
+            self.count = 0;
+            var handle = Moments.find({currentPostId: postId},{sort: {createdAt: -1},limit:limit}).observeChanges({
+                added: function (id,fields) {
+                    momentsAddForNewDynamicMomentsDeferHandle(self,id,fields);
+                },
+                changed:function (id,fields){
+                    momentsChangeForNewDynamicMomentsDeferHandle(self,id,fields);
+                }
+            });
+            self.ready();
+            self.onStop(function () {
+                handle.stop();
+            });
+        }
     });
   Meteor.publish("dynamicMoments", function (postId,limit) {
       if(!Match.test(postId, String) ){
@@ -1923,7 +1962,7 @@ if(Meteor.isClient){
                 POST_ID = Session.get("postContent")._id;
                 Session.set('momentsitemsLimit', MOMENTS_ITEMS_INCREMENT);
             }
-            Meteor.subscribe('dynamicMoments', Session.get("postContent")._id, Session.get('momentsitemsLimit'), {
+            Meteor.subscribe('newDynamicMoments', Session.get("postContent")._id, Session.get('momentsitemsLimit'), {
                 onReady: function(){
                     console.log('momentsCollection loaded');
                     window.momentsCollection_getmore = 'done';

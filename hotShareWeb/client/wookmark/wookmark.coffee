@@ -111,7 +111,7 @@ class @newLayout
     window.newLayoutImageInDownloading++;
     Session.set('newLayoutImageDownloading',true)
     imgLoad.on( 'done', ()->
-      wookmark_debug&&console.log('DONE  - all images have been successfully loaded, total ' + DynamicMoments.find().count())
+      wookmark_debug&&console.log('DONE  - all images have been successfully loaded, total ' + NewDynamicMoments.find().count())
       newLayout.reduceDownloadingNumber()
       element.style.display = ""
       $element.css('opacity',0)
@@ -165,8 +165,8 @@ Template.newLayoutContainer.helpers =
     else
       ''
   moreResults:()->
-    if DynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
-      !(DynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() < Session.get("momentsitemsLimit"))
+    if NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
+      !(NewDynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() < Session.get("momentsitemsLimit"))
     else
       false
 Template.newLayoutContainer.onRendered ()->
