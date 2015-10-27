@@ -574,6 +574,7 @@ if Meteor.isClient
             dataSrc = removeURLParameter(dataSrc,'width')
             dataSrc = removeURLParameter(dataSrc,'height')
             dataSrc = dataSrc.replace(/https:\/\//g, 'http://')
+            dataSrc = dataSrc.replace(/v.qq.com\/iframe\/preview.html/g, 'v.qq.com/iframe/player.html')
             node.setAttribute('data-src',dataSrc)
             node.src = dataSrc
           showDebug&&console.log(node.outerHTML)
