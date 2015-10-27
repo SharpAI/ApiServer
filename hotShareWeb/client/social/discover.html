@@ -168,6 +168,7 @@
                         {{/each}}
                     {{else}}
                         {{#each moments}}
+                            {{#unless hidePost}}
                             <div id="list">
                                 <div class="icon">
                                     <img src="{{userIcon}}" width="40" height="40"/>
@@ -186,6 +187,7 @@
                                 </div>
                                 <div class="clear"></div>
                             </div>
+                            {{/unless}}
                         {{/each}}
                     {{/if}}
                     {{#if moreResults}}
