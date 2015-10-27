@@ -6,11 +6,16 @@ if Meteor.isClient
       else
         false
     Template.discover.helpers
-      NoMoments:()->
-        if NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
-          false
+      showSuggestPosts:()->
+        if Session.get("showSuggestPosts") is true
+          allmoments = NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count()
+          mymoments = NewDynamicMoments.find({currentPostId:Session.get("postContent")._id,userId:Meteor.userId()},{sort: {createdAt: -1}}).count()
+          if allmoments-mymoments > 0
+            false
+          else
+            true
         else
-          true
+          false
       hasDiscover: ()->
         withDiscover
     Template.moments.rendered=->
@@ -60,17 +65,14 @@ if Meteor.isClient
         withSuggestAlreadyRead
       showSuggestPosts:()->
         if Session.get("showSuggestPosts") is true
-          if NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
+          allmoments = NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count()
+          mymoments = NewDynamicMoments.find({currentPostId:Session.get("postContent")._id,userId:Meteor.userId()},{sort: {createdAt: -1}}).count()
+          if allmoments-mymoments > 0
             false
           else
             true
         else
           false
-      NoMoments:()->
-        if NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
-          false
-        else
-          true
       moments:()->
         NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}})
       suggestPosts:()->

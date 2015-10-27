@@ -6,7 +6,7 @@
         <div class="disBg"></div>
         <div class="disLeft">
           <p class="disname">朋友圈</p>
-          {{#if NoMoments}}
+          {{#if showSuggestPosts}}
               <p class="disdesc">看过当前帖子的朋友看过的帖子，您都看过了，特意为您推荐以下您没看过帖子...</p>
           {{else}}
               <p class="disdesc">看过当前帖子的朋友，还看过...</p>
@@ -123,7 +123,7 @@
                 {{/if}}
             {{else}}
                 <div id="wrapper">
-                    {{#if NoMoments}}
+                    {{#if showSuggestPosts}}
                         {{#each suggestPosts}}
                                 <div id="list">
                                     <div class="icon">
