@@ -55,7 +55,10 @@ specialClassNameForPopularMobileSite = [
   '.note-content' # Douban
   '.rich_media_content' # Wechat
   '.WBA_content' # Weibo
-  '#jp_container_1' # 悦读FM 
+  '#cont-wrapper' # 豆瓣FM
+  '#j-body' # 企鹅FM 
+  '.article' # 悦读FM 
+  '.main_box' # QQ 音乐
 ]
 
 textContentFor = (node, normalizeWs = true) ->
@@ -319,22 +322,53 @@ getCalculatedStyle=(node,prop)->
   return newRoot
 @extract = (page) ->
   parified = _.map($(page).find('*'), parify)
+  documentBody = document.createElement('body')
+  documentBody.innerHTML = page.innerHTML
+  bodyParified = _.map($(documentBody).find('*'), parify) # -> body
+
   for tag in specialClassNameForPopularMobileSite
-    #console.log($(parified).find(tag))
-    if $(parified).find(tag).length > 0
+    rootNode = null
+    
+    if($(bodyParified).find(tag).length > 0) # 无法查找body下的第一层
+      rootNode = $(bodyParified).find(tag)[0]
+    else
+      for item in bodyParified
+        if tag.indexOf('#') is 0
+          if item.id is tag.substr(1)
+            rootNode = item
+            break
+          else if item.parentNode.id is tag.substr(1)
+            rootNode = item.parentNode
+            break
+        else if tag.indexOf('.') is 0
+          if item.className is tag.substr(1)
+            rootNode = item
+            break
+          else if item.parentNode.className is tag.substr(1)
+            rootNode = item.parentNode
+            break
+        else
+          if item.tagName is tag.toUpperCase()
+            rootNode = item
+            break
+          else if item.tagName is tag.toUpperCase()
+            rootNode = item.parentNode
+            break
+
+    if rootNode isnt null
       treeWalker = document.createTreeWalker(
-        $(parified).find(tag)[0],
+        rootNode,
         NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT,
         {
           acceptNode : (node)->
             try
               try
-                if (node.nodeType isnt Node.TEXT_NODE)
-                  musicInfo = getMusicFromNode(node)
-                  if musicInfo
-                    return NodeFilter.FILTER_ACCEPT
+                #if (node.nodeType isnt Node.TEXT_NODE)
+                musicInfo = getMusicFromNode(node, documentBody)
+                if musicInfo
+                  return NodeFilter.FILTER_ACCEPT
               catch error
-                console.log('getMusicFromNode Exception')
+                console.log('getMusicFromNode Exception: ' + error)
               try
                 if $(node).css("display") is 'none'
                   return NodeFilter.FILTER_REJECT

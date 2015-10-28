@@ -38,74 +38,24 @@ if Meteor.isClient
       musicSingerNameSelector:'.audio_area .audio_info_area .audio_source'
     }
   ]
-  musicExtactorScriptMapping = [
-    {
-      url: 'http://douban.fm/?start='
-      getMusic: (node)->
-        text = node.innerHTML
-        if text.indexOf('window.__bootstrap_data') isnt -1
-          eval(text)
-          if window.__bootstrap_data.song
-            return {
-              playUrl: window.__bootstrap_data.song.url
-              image: window.__bootstrap_data.song.picture
-              songName: window.__bootstrap_data.song.title
-              singerName: window.__bootstrap_data.song.artist
-            }
-        
-        return null
-    }
-    {
-      url: 'http://fm.qzone.qq.com/luobo/radio?_wv=1&showid='
-      getMusic: (node)->
-        text = node.innerHTML
-        if text.indexOf('showData:{"') isnt -1
-          text = text.substr(text.indexOf('showData:{"') + 'showData:'.length)
-          text = text.substring(0, text.indexOf('"}},')+3)
-          obj = JSON.parse(text)
-          return {
-            playUrl: obj.data.url
-            image: obj.data.cover
-            songName: obj.data.name
-            singerName: obj.data.ownername
-          }
-        return null
-    }
-  ]
   musicExtactorMappingV2 = [
     {
-      tagName:'QQMUSIC',
-      musicClass:'',
-      musicId: '',
-      getMusicUrl:(node)->
-        if node and node.parentNode
-          playUrl=$(node.parentNode).find('.qqmusic_area .qqmusic_thumb').attr('data-autourl')
-          console.log('getMusicUrl '+playUrl)
-          return playUrl
-        ''
-      getMusicThumbImageURL:(node)->
-        console.log('getMusicThumbImageURL')
-        if node and node.parentNode
-          return $(node.parentNode).find('.qqmusic_area .qqmusic_thumb').attr('src')
-        ''
-      getMusicSongName:(node)->
-        console.log('GetMusicSongName')
-        if node and node.parentNode
-          return $(node.parentNode).find('.qqmusic_area .qqmusic_songname').text()
-        ''
-      getMusicSingerName:(node)->
-        console.log('getMusicSingerName')
-        if node and node.parentNode
-          return $(node.parentNode).find('.qqmusic_area .qqmusic_singername').text()
-        ''
-      cleanUp:(node)->
-        if node and node.parentNode
-          return $(node.parentNode).remove('.qqmusic_area')
+      nodeSelector: 'QQMUSIC'
+      parentSelector: ''
+      getMusicUrl:(node, body)->
+        return $(node).attr('audiourl')
+      getMusicThumbImageURL:(node, body)->
+        return $(node.parentNode).find('.qqmusic_area .play_area img')[1].attr('src')
+      getMusicSongName:(node, body)->
+        return $(body).find('.qqmusic_area .qqmusic_songname').text()
+      getMusicSingerName:(node, body)->
+        return $(body).find('.qqmusic_area .qqmusic_singername').text()
+      cleanUp:(node, body)->
+        $(node.parentNode).remove('.qqmusic_area')
     },
     {
-      tagName:'MPVOICE',
-      musicClass:'',
-      musicId: '',
+      nodeSelector: 'MPVOICE'
+      parentSelector: ''
       getMusicUrl:(node)->
         playUrl = node.getAttribute('voice_encode_fileid');
         if playUrl and playUrl isnt ''
@@ -131,67 +81,140 @@ if Meteor.isClient
           return $(node.parentNode).remove('.audio_area')
     },
     {
-      tagName:'',
-      musicClass:'',
-      musicId: 'jp_container_1',
-      getMusicUrl:(node)->
-        if node and node.parentNode
-          for item in $(node.parentNode)
-            if item.tagName is 'SCRIPT'
-              text = item.innerHTML
-              if text.indexOf('mp3:"/') isnt -1
-                text = text.substr(text.indexOf('mp3:"/')+5)
-                text = text.substring(0, text.indexOf('.mp3"') + 4)
-                return 'http://yuedu.fm' + text
-        ''
-      getMusicThumbImageURL:(node)->
-        if node and node.parentNode
-          return $(node).find('.cover img').attr('src')
-        ''
-      getMusicSongName:(node)->
-        console.log('GetMusicSongName')
-        if node and node.parentNode
-          return $(node).find('.item-title h1').text()
-        ''
-      getMusicSingerName:(node)->
-        console.log('getMusicSingerName')
-        if node and node.parentNode
-          return $(node).find('.item-title p').text()
-        ''
+      nodeSelector: '#playerbox'
+      parentSelector: ''
+      getMusicInfo:(node, body)->
+        for item in $(body).find('script')
+          text = item.innerText
+          if text.indexOf('window.__bootstrap_data') isnt -1
+            eval(text)
+            if window.__bootstrap_data.song
+              return {
+                playUrl: window.__bootstrap_data.song.url
+                image: window.__bootstrap_data.song.picture
+                songName: window.__bootstrap_data.song.title
+                singerName: window.__bootstrap_data.song.artist
+              }
+          return {}
       cleanUp:(node)->
         if node and node.parentNode
-          return $(node.parentNode).remove('#jp_container_1')
+          return $(node).html('')
+    }
+    {
+      nodeSelector: '.j-orientation-0'
+      parentSelector: ''
+      getMusicInfo:(node, body)->
+        console.log(node)
+        for item in $(body).find('#j-body script')
+          text = item.innerText
+          if text.indexOf('showData:{"') isnt -1
+            text = text.substr(text.indexOf('showData:{"') + 'showData:'.length)
+            text = text.substring(0, text.indexOf('"}},')+3)
+            obj = JSON.parse(text)
+            return {
+              playUrl: obj.data.url
+              image: obj.data.cover
+              songName: obj.data.name
+              singerName: obj.data.ownername
+            }
+        return {}
+      cleanUp:(node)->
+    }
+    {
+      nodeSelector: ''
+      parentSelector: '.article'
+      getMusicInfo:(node, body)->
+        for item in $(body).find('script')
+          text = item.innerText
+          if text.indexOf('mp3:"/') isnt -1
+            text = text.substr(text.indexOf('mp3:"/') + 'mp3:"/'.length)
+            text = text.substring(0, text.indexOf('.mp3"')+4)
+            player = $(body).find('#jp_container_1')
+            
+            return {
+              playUrl: 'http://yuedu.fm' + text
+              image: 'http://yuedu.fm' + player.find('.cover img').attr('src')
+              songName: player.find('.item-title h1').text()
+              singerName: player.find('.item-title p').text()
+            }
+        return {}
+      cleanUp:(node)->
+    }
+    {
+      nodeSelector: '.song_infosong_info' # QQ 音乐
+      parentSelector: ''
+      getMusicInfo:(node, body)->
+        return {
+          playUrl: $(body).find('#h5audio_media').attr('src')
+          image: $(node).find('.album_cover__img').attr('src')
+          songName: $(node).find('.song_name__text').text()
+          singerName: $(node).find('.singer_name__text').text()
+        }
+      cleanUp:(node)->
+        $(node).html()
     }
   ]
-  @getMusicFromNode = (node) ->
-    console.log(node)
+  @getMusicFromNode = (node, body) ->
     for s in musicExtactorMappingV2
-      if ((s.tagName and s.tagName isnt '' and node.tagName is s.tagName) or (s.musicId and s.musicId isnt '' and node.id is s.musicId) or (s.className and (s.className isnt '') and (node.className is s.className)))
-        if typeof(s.getMusicUrl) is 'function'
-          playUrl = s.getMusicUrl(node)
-        if typeof(s.getMusicThumbImageURL) is 'function'
-          image = s.getMusicThumbImageURL(node)
-        if typeof(s.getMusicSongName) is 'function'
-          songName = s.getMusicSongName(node)
-        if typeof(s.getMusicSingerName) is 'function'
-          singerName = s.getMusicSingerName(node)
+      isExist = false
+      findNone = node
+      
+      if s.nodeSelector isnt '' and node.nodeType isnt Node.TEXT_NODE
+        if s.nodeSelector.indexOf('#') is 0
+          if node.id is s.nodeSelector.substr(1)
+            isExist = true
+        else if s.nodeSelector.indexOf('.') is 0
+          if node.className is s.nodeSelector.substr(1)
+            isExist = true
+        else
+          if node.tagName is s.nodeSelector.toUpperCase()
+            isExist = true
+      else if s.parentSelector isnt '' and $(node.parentNode).find('musicExtracted').length <= 0
+        if s.parentSelector.indexOf('#') is 0
+          if node.parentNode.id is s.parentSelector.substr(1)
+            findNone = node.parentNode
+            isExist = true
+        else if s.parentSelector.indexOf('.') is 0
+          if node.parentNode.className is s.parentSelector.substr(1)
+            findNone = node.parentNode
+            isExist = true
+        else
+          if node.parentNode.tagName is s.parentSelector.toUpperCase()
+            findNone = node.parentNode
+            isExist = true
+            
+      if isExist is true
+        musicInfo = {}
+        if s.getMusicInfo
+          musicInfo = s.getMusicInfo(findNone, body)
+        else
+          if typeof(s.getMusicUrl) is 'function'
+            musicInfo.playUrl = s.getMusicUrl(findNone, body)
+          if typeof(s.getMusicThumbImageURL) is 'function'
+            musicInfo.image = s.getMusicThumbImageURL(findNone, body)
+          if typeof(s.getMusicSongName) is 'function'
+            musicInfo.songName = s.getMusicSongName(findNone, body)
+          if typeof(s.getMusicSingerName) is 'function'
+            musicInfo.singerName = s.getMusicSingerName(findNone, body)
         if typeof(s.cleanUp) is 'function'
-          s.cleanUp(node)
-        if playUrl
+            s.cleanUp(findNone, body)
+        if musicInfo.playUrl
           musicElement = document.createElement("musicExtracted")
-          musicElement.setAttribute('playUrl',playUrl)
-          musicElement.setAttribute('image',image)
-          musicElement.setAttribute('songName',songName)
-          musicElement.setAttribute('singerName',singerName)
-          node.appendChild(musicElement)
-          musicInfo = {
-            playUrl : playUrl,
-            image : image,
-            songName : songName,
-            singerName: singerName
-          }
+          musicElement.setAttribute('playUrl', musicInfo.playUrl)
+          musicElement.setAttribute('image', musicInfo.image)
+          musicElement.setAttribute('songName', musicInfo.songName)
+          musicElement.setAttribute('singerName', musicInfo.singerName)
+          
+          findNone.appendChild(musicElement)
           console.log('Got Music Info '+JSON.stringify(musicInfo))
           return musicInfo
+      else if s.parentSelector isnt '' and $(node.parentNode).find('musicExtracted').length > 0
+        musicInfo = {}
+        musicInfo.playUrl = $(node.parentNode).find('musicExtracted').attr('playUrl')
+        musicInfo.image = $(node.parentNode).find('musicExtracted').attr('image')
+        musicInfo.songName = $(node.parentNode).find('musicExtracted').attr('songName')
+        musicInfo.singerName = $(node.parentNode).find('musicExtracted').attr('singerName')
+        return musicInfo
     return null
   @getMusicFromScript = (url, page)->
     for mapping in musicExtactorScriptMapping
@@ -501,9 +524,10 @@ if Meteor.isClient
           break
 
       #musicInfo = getMusicFromPage documentBody
-      extracted = getMusicFromScript(url, documentBody)
-      if (extracted is null)
-        extracted = extract(documentBody)
+      extracted = extract(documentBody)
+      console.log('extracted:')
+      console.log(extracted)
+      
       toBeInsertedText = ''
       toBeInsertedStyleAlign=''
       previousIsImage = false
