@@ -3,6 +3,15 @@
 <div class="content">
   <div id="title">您的故事已发表</div>
   <div><textarea id="comment" placeholder="添加#话题#或评论" maxlength="150"></textarea></div>
+  <div id="topics">热门话题:
+      {{#each topics}}
+          &nbsp;
+          <span id="topic">
+          #{{text}}#
+          </span>
+          &nbsp;
+      {{/each}}
+  </div>
   <div id="save">完成</div>
 </div>
 </div>
