@@ -169,7 +169,10 @@ if Meteor.isClient
     Session.set("showSuggestPosts",false)
     $('.mainImage').css('height',$(window).height()*0.55)
     postContent = Session.get("postContent")
-    trackPage('http://cdn.tiegushi.com/posts/'+postContent._id)
+    title=postContent.title
+    if postContent.addontitle
+      title=title+":"+postContent.addontitle
+    trackPage('http://cdn.tiegushi.com/posts/'+postContent._id,title)
     subscribeCommentAndViewers()
     browseTimes = 0
     Session.set("Social.LevelOne.Menu",'discover')
