@@ -4,7 +4,7 @@ if Meteor.isClient
     Meteor.subscribe("topics")
   Template.search.helpers
     theme:()->
-      themes = Topics.find({type:"theme"}, {sort: {createdAt: -1}})
+      themes = Topics.find({type:"theme"}, {sort: {posts: -1}})
       if themes.count() > 0
         Meteor.defer ()->
           Session.setPersistent('persistentThemes',themes.fetch())
@@ -12,7 +12,7 @@ if Meteor.isClient
       else
         Session.get('persistentThemes')
     topic:()->
-      topics = Topics.find({type:"topic"}, {sort: {createdAt: -1}})
+      topics = Topics.find({type:"topic"}, {sort: {posts: -1}})
       if topics.count() > 0
         Meteor.defer ()->
           Session.setPersistent('persistentTopics',topics.fetch())
