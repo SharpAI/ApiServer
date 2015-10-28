@@ -171,6 +171,16 @@ if Meteor.isClient
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
+    clickedCommentOverlayThumbsUp:()->
+      if Session.get("clickedCommentOverlayThumbsUp") is true
+        true
+      else
+        false
+    clickedCommentOverlayThumbsDown:()->
+      if Session.get("clickedCommentOverlayThumbsDown") is true
+        true
+      else
+        false
     displayPostContent:()->
       Session.get('displayPostContent')
     getMainImageHeight:()->
@@ -283,20 +293,21 @@ if Meteor.isClient
         console.log('Selected index '+self.index)
         Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
   Template.showPosts.events
-    'click .commentOverlay .later' :(e)->
-      $("body").css("overflow","visible");
-      $('.commentOverlay').bPopup().close()
-      amplify.store('section_'+Session.get('channel'),true)
-    'click .commentOverlay .thumbsUp' :(e)->
-      toastr.success('您对本段文字引用的评价已生效')
-      $("body").css("overflow","visible");
-      $('.commentOverlay').bPopup().close()
-      amplify.store('section_'+Session.get('channel'),true)
-    'click .commentOverlay .thumbsDown' :(e)->
-      toastr.success('您对本段文字引用的评价已生效')
-      $("body").css("overflow","visible");
-      $('.commentOverlay').bPopup().close()
-      amplify.store('section_'+Session.get('channel'),true)
+#    'click .commentOverlay .commentOverlayLater' :(e)->
+#      console.log "hehe"
+#      $("body").css("overflow","visible");
+#      $('.commentOverlay').bPopup().close()
+#      amplify.store('section_'+Session.get('channel'),true)
+#    'click .commentOverlay .thumbsUp' :(e)->
+#      toastr.success('您对本段文字引用的评价已生效')
+#      $("body").css("overflow","visible");
+#      $('.commentOverlay').bPopup().close()
+#      amplify.store('section_'+Session.get('channel'),true)
+#    'click .commentOverlay .thumbsDown' :(e)->
+#      toastr.success('您对本段文字引用的评价已生效')
+#      $("body").css("overflow","visible");
+#      $('.commentOverlay').bPopup().close()
+#      amplify.store('section_'+Session.get('channel'),true)
     'click .postLinkItem' :(e)->
       window.location.href=this.urlinfo
     'click .postTextItem' :(e)->

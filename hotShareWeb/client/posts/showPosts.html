@@ -170,21 +170,67 @@
       </div>
   {{/if}}
   {{> userProfileBox}}
-    <div class="commentOverlay" style="display:none"  data-dismissible="false">
+    <div class="commentOverlay" style="display:none">
         <div class="banner">您对TA转发的这段文章有什么看法？</div>
         <div class="commentOverlayInputGroup">
           <div class="input-group">
             <input type="text" id="overlayPcommitReport" autofocus="autofocus" class="form-control" maxlength="180" placeholder="输入您的评论" />
-            <div  id="overlayPcommitReportBtn">点评</div>
+            <div  id="overlayPcommitReportBtn"  onclick="clickOverlayPcommitReportBtn()">点评</div>
           </div>
         </div>
         <div class="commentOverlayBtn">
-          <span class="later" style="color: #CACDD1;font-weight: bold;">稍后再评</span>
-            <img style="margin:0 20%" class="thumbsUp" src="/thumbsUpGray.png" width="16" height="16">
-            <img class="thumbsDown" src="/thumbsDownGray.png" width="16" height="16">
+          <span class="commentOverlayLater" onclick="clickCommentOverlayLater()" style="color: #CACDD1;font-weight: bold;">稍后再评</span>
+            {{#if clickedCommentOverlayThumbsUp}}
+            <img style="margin:0 20%" class="thumbsUp" onclick="clickThumbsUpPink()" src="/thumbsUpPink.png" width="16" height="16">
+            {{else}}
+            <img style="margin:0 20%" class="thumbsUp" onclick="clickThumbsUpGray()" src="/thumbsUpGray.png" width="16" height="16">
+            {{/if}}
+            {{#if clickedCommentOverlayThumbsDown}}
+            <img class="thumbsDown" onclick="clickThumbsDownBlue()" src="/thumbsDownBlue.png" width="16" height="16">
+            {{else}}
+            <img class="thumbsDown" onclick="clickThumbsDownGray()" src="/thumbsDownGray.png" width="16" height="16">
+            {{/if}}
         </div>
     </div>
   </div>
+  <script>
+       function clickOverlayPcommitReportBtn(){
+         $("body").css("overflow","visible");
+        $('.commentOverlay').bPopup().close();
+        amplify.store('section_'+Session.get('channel'),true);
+        Session.set("clickedCommentOverlayThumbsUp",false);
+        Session.set("clickedCommentOverlayThumbsDown",false);
+       }
+       function clickCommentOverlayLater(){
+         $("body").css("overflow","visible");
+        $('.commentOverlay').bPopup().close();
+        amplify.store('section_'+Session.get('channel'),true);
+        Session.set("clickedCommentOverlayThumbsUp",false);
+        Session.set("clickedCommentOverlayThumbsDown",false);
+       }
+       function clickThumbsUpPink(){
+         Session.set("clickedCommentOverlayThumbsUp",false);
+       }
+       function clickThumbsUpGray(){
+         if (Session.get("clickedCommentOverlayThumbsDown") == true) {
+            Session.set("clickedCommentOverlayThumbsUp",true);
+            Session.set("clickedCommentOverlayThumbsDown",false);
+         }else{
+           Session.set("clickedCommentOverlayThumbsUp",true);
+         }
+       }
+       function clickThumbsDownBlue(){
+         Session.set("clickedCommentOverlayThumbsDown",false);
+       }
+       function clickThumbsDownGray(){
+         if (Session.get("clickedCommentOverlayThumbsUp") == true) {
+           Session.set("clickedCommentOverlayThumbsUp",false);
+           Session.set("clickedCommentOverlayThumbsDown",true);
+         }else{
+           Session.set("clickedCommentOverlayThumbsDown",true);
+         }
+       }
+    </script>
 </template>
 <template name="postFooter">
   <div id="postFooter" class="showPostsFooter">
