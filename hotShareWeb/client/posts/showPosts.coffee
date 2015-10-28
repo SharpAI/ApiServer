@@ -119,7 +119,8 @@ if Meteor.isClient
         return
       if withForcePopupSectionReview
         if Session.get('focusedIndex') isnt undefined and  $(".showPosts .gridster").isAboveViewPortBottom() and !amplify.store('section_'+Session.get('channel')) and !$('.commentOverlay').data('bPopup')
-          $("body").css("overflow","hidden");
+          $('body').attr('style','position:fixed;')
+#          $("body").css("overflow","hidden");
           top = 2 * $(window).height()/5
           left = $(window).width()/10
           $('.commentOverlay').bPopup

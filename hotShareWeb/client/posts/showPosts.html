@@ -195,14 +195,36 @@
   </div>
   <script>
        function clickOverlayPcommitReportBtn(){
-         $("body").css("overflow","visible");
-        $('.commentOverlay').bPopup().close();
-        amplify.store('section_'+Session.get('channel'),true);
-        Session.set("clickedCommentOverlayThumbsUp",false);
-        Session.set("clickedCommentOverlayThumbsDown",false);
+         var i, content, clickUp, clickDown;
+         i = Session.get('focusedIndex');
+         content = $('#overlayPcommitReport').val();
+         clickUp = Session.get("clickedCommentOverlayThumbsUp");
+         clickDown = Session.get("clickedCommentOverlayThumbsDown");
+         
+         if (content !== "" || clickUp == true || clickDown == true) {
+           if (clickUp == true) {
+             commentOverlayThumbsUpHandler(i);
+           }
+           if (clickDown == true) {
+             commentOverlayThumbsDownHandler(i);
+           }
+           if (content !== "") {
+             pcommentReportHandler(i,content);
+           }
+          $('body').removeAttr('style');
+          $('.commentOverlay').bPopup().close();
+          $('#overlayPcommitReport').val("");
+          amplify.store('section_'+Session.get('channel'),true);
+          Session.set("clickedCommentOverlayThumbsUp",false);
+          Session.set("clickedCommentOverlayThumbsDown",false);
+          refreshPostContent();
+          toastr.success('您对本段文字引用的评价已生效');
+         }else{
+           toastr.success('请对此段文字进行评价');
+         }
        }
        function clickCommentOverlayLater(){
-         $("body").css("overflow","visible");
+        $('body').removeAttr('style');
         $('.commentOverlay').bPopup().close();
         amplify.store('section_'+Session.get('channel'),true);
         Session.set("clickedCommentOverlayThumbsUp",false);
