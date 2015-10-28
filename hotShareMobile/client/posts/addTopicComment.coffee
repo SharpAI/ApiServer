@@ -1,7 +1,13 @@
 if Meteor.isClient
   Template.addTopicComment.rendered=->
     Meteor.subscribe "topics"
+  Template.addTopicComment.helpers
+    topics:()->
+       Topics.find({type:"topic"}, {sort: {posts: -1}, limit:20})
   Template.addTopicComment.events
+    "click #topic":(event)->
+       comment = $('#comment').val()+"#"+this.text+"#"
+       $('#comment').text(comment)
     "click #save":(event)->
        topicPostId = Session.get("TopicPostId")
        TopicTitle = Session.get("TopicTitle")
@@ -65,19 +71,20 @@ if Meteor.isClient
                username = '匿名'
                userId = 0
                userIcon = ''
-             TopicPosts.insert {
-               postId:topicPostId,
-               title:TopicTitle,
-               addontitle:TopicAddonTitle,
-               mainImage:TopicMainImage,
-               heart:0,
-               retweet:0,
-               comment:1,
-               owner:userId,
-               ownerName:username,
-               ownerIcon:userIcon,
-               createdAt: new Date(),
-               topicId: topicId
-             }
+             unless TopicPosts.findOne({postId:topicPostId,topicId: topicId})
+               TopicPosts.insert {
+                 postId:topicPostId,
+                 title:TopicTitle,
+                 addontitle:TopicAddonTitle,
+                 mainImage:TopicMainImage,
+                 heart:0,
+                 retweet:0,
+                 comment:1,
+                 owner:userId,
+                 ownerName:username,
+                 ownerIcon:userIcon,
+                 createdAt: new Date(),
+                 topicId: topicId
+               }
        Router.go('/posts/'+topicPostId)
        false
