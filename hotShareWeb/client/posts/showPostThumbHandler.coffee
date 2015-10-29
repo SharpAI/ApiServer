@@ -34,12 +34,15 @@ if Meteor.isClient
         post[i].pcomments.push(pcommentJson)
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"pcomments","pindex":i}}, (error, result)->
           if error
-            console.log(error.reason);
+            console.log(error.reason)
           else
-            console.log i
-            console.log postId
-            console.log pcommentJson
-            console.log("success");
+            console.log("success")
+            if Session.get("clickedCommentOverlayThumbsUp") is true
+              commentOverlayThumbsUpHandler(i)
+              console.log "up is true"
+            if Session.get("clickedCommentOverlayThumbsDown") is true
+              commentOverlayThumbsDownHandler(i)
+              console.log "down is true"
         )
   @commentOverlayThumbsUpHandler=(i)->
     Meteor.defer ()->

@@ -202,21 +202,30 @@
          clickDown = Session.get("clickedCommentOverlayThumbsDown");
          
          if (content !== "" || clickUp == true || clickDown == true) {
-           if (clickUp == true) {
+           if (clickUp == true && content == "" ) {
              commentOverlayThumbsUpHandler(i);
            }
-           if (clickDown == true) {
+           if (clickDown == true && content == "" ) {
              commentOverlayThumbsDownHandler(i);
            }
-           if (content !== "") {
+           if (content !== "" && clickUp == false && clickDown == false) {
              pcommentReportHandler(i,content);
            }
+           if (content !== "" && clickUp == true){
+             pcommentReportHandler(i,content);
+           }
+           if (content !== "" && clickDown == true){
+             pcommentReportHandler(i,content);
+           }
+           
           $('body').removeAttr('style');
           $('.commentOverlay').bPopup().close();
           $('#overlayPcommitReport').val("");
           amplify.store('section_'+Session.get('channel'),true);
-          Session.set("clickedCommentOverlayThumbsUp",false);
-          Session.set("clickedCommentOverlayThumbsDown",false);
+          Meteor.setTimeout(function(){
+            Session.set("clickedCommentOverlayThumbsUp",false);
+            Session.set("clickedCommentOverlayThumbsDown",false);
+          },3000);
           refreshPostContent();
           toastr.success('您对本段文字引用的评价已生效');
          }else{
