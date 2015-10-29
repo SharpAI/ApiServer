@@ -1125,10 +1125,13 @@ if(Meteor.isServer){
           return Feeds.find({followby:this.userId,checked:false});
   });
   Meteor.publish("myCounter",function(){
-      Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId}), {nonReactive: true });
-      Counts.publish(this, 'mySavedDraftsCount', SavedDrafts.find({owner: this.userId}), {nonReactive: true });
-      Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { nonReactive: true });
-      Counts.publish(this, 'myFollowToCount', Follower.find({userId:this.userId}), {nonReactive: true });
+      if(this.userId !== null)
+      {
+          Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId}), {nonReactive: true });
+          Counts.publish(this, 'mySavedDraftsCount', SavedDrafts.find({owner: this.userId}), {nonReactive: true });
+          Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { nonReactive: true });
+          Counts.publish(this, 'myFollowToCount', Follower.find({userId:this.userId}), {nonReactive: true });
+      }
   });
   Meteor.publish("postsWithLimit", function(limit) {
       if(this.userId === null|| !Match.test(limit, Number)) {
