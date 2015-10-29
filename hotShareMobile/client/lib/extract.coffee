@@ -94,7 +94,7 @@ fishy = (node) ->
     return false
   weight = classWeight(node)
   contentScore = if node.score then node.score.value else 0
-  #return true if weight + contentScore < 0
+  return true if weight + contentScore < 0
   return false if 10 <= countChars(node, ',')
   nj = $(node)
   p      = nj.find("p").length
@@ -104,8 +104,6 @@ fishy = (node) ->
   embed  = nj.find("embed").length
   linkDensity   = linkDensityFor(node)
   contentLength = textContentFor(node).length
-  return false if img > 0
-  return true if weight + contentScore < 0
 
   #return true if img > p
   return true if li > p and node.tagName != "ul" and node.tagName != "ol"
@@ -216,13 +214,7 @@ removeFragments = (node) ->
     (n) -> classWeight(n) < 0 #or linkDensityFor(n) > 0.33
   ).remove()
   if removeStyle
-    #jn.find("*").removeAttr("style")
-    jn.find("*").each(->
-      textAlign = this.style.textAlign
-      $(this).removeAttr("style");
-      if (textAlign)
-        $(this).attr('hotshare-textAlign',textAlign)
-    )
+    jn.find("*").removeAttr("style")
   jn.find("p").filter(-> \
     0 == $(this).find("img").length and \
     0 == $(this).find("embed").length and \
@@ -330,7 +322,6 @@ getCalculatedStyle=(node,prop)->
   return newRoot
 @extract = (page) ->
   parified = _.map($(page).find('*'), parify)
-  ###
   documentBody = document.createElement('body')
   documentBody.innerHTML = page.innerHTML
   bodyParified = _.map($(documentBody).find('*'), parify) # -> body
@@ -423,7 +414,6 @@ getCalculatedStyle=(node,prop)->
       removeUnwanted(newRoot)
       newRoot.id = 'hotshare_special_tag_will_not_hit_other'
       return newRoot
-  ###
   top = scoreAndSelectTop(parified) or asTop(page)
   root = collectSiblings(top)
   removeFragments(root)
