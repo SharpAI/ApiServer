@@ -1,19 +1,24 @@
 if Meteor.isClient
   Template.addTopicComment.rendered=->
     Meteor.subscribe "topics"
+    Session.set("comment","")
   Template.addTopicComment.helpers
+    comment:()->
+      Session.get("comment")
     topics:()->
        Topics.find({type:"topic"}, {sort: {posts: -1}, limit:20})
   Template.addTopicComment.events
+    "change #comment":()->
+       Session.set("comment",$('#comment').val())
     "click #topic":(event)->
-       comment = $('#comment').val()+"#"+this.text+"#"
-       $('#comment').text(comment)
+       comment = Session.get("comment")+"#"+this.text+"#"
+       Session.set("comment",comment)
     "click #save":(event)->
        topicPostId = Session.get("TopicPostId")
        TopicTitle = Session.get("TopicTitle")
        TopicAddonTitle = Session.get("TopicAddonTitle")
        TopicMainImage = Session.get("TopicMainImage")
-       comment = $('#comment').val()
+       comment = Session.get("comment")
        if comment != ''
          if Meteor.user()
            if Meteor.user().profile.fullname
