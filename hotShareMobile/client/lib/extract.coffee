@@ -94,7 +94,6 @@ fishy = (node) ->
     return false
   weight = classWeight(node)
   contentScore = if node.score then node.score.value else 0
-  return true if weight + contentScore < 0
   return false if 10 <= countChars(node, ',')
   nj = $(node)
   p      = nj.find("p").length
@@ -105,6 +104,8 @@ fishy = (node) ->
   linkDensity   = linkDensityFor(node)
   contentLength = textContentFor(node).length
 
+  return false if img > 0
+  return true if weight + contentScore < 0
   #return true if img > p
   return true if li > p and node.tagName != "ul" and node.tagName != "ol"
   return true if input > Math.floor(p/3)
