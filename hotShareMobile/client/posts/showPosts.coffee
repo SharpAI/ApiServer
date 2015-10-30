@@ -509,7 +509,9 @@ if Meteor.isClient
           fromUrl = self.fromUrl
         draft0 = {_id:self._id, type:'image', isImage:true, url:fromUrl ,owner: Meteor.userId(), imgUrl:self.mainImage, filename:self.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0}
         self.pub.splice(0, 0, draft0);
-
+        if Posts.find({owner: Meteor.userId()}).count() is 1
+          Session.setPersistent('persistentMyOwnPosts',null)
+          Session.setPersistent('myPostsCount',0)
         Posts.remove {
           _id:self._id
         }
