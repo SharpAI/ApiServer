@@ -992,7 +992,7 @@ if Meteor.isClient
         draftMusicData = Drafts.find({type:'music'}).fetch()
         draftToBeUploadedImageData = []
         for i in [0..(draftImageData.length-1)]
-            if draftImageData[i].imgUrl.toLowerCase().indexOf("http://")>= 0 or draftImageData[i].imgUrl.toLowerCase().indexOf("https://")>= 0
+            if draftImageData[i].imgUrl is undefined or draftImageData[i].imgUrl.toLowerCase().indexOf("http://")>= 0 or draftImageData[i].imgUrl.toLowerCase().indexOf("https://")>= 0
                 continue
             draftToBeUploadedImageData.push(draftImageData[i])
         for music in draftMusicData
