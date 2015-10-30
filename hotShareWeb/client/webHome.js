@@ -27,14 +27,16 @@ Template.webHome.events({
 Template.webHome.helpers({
     resetPassword: function(){
         return Session.get('resetPassword');
-    }
+    },
     /*,
     versions: function(){
         return Versions.findOne();
     },
+    */
     buildVersion: function(){
         return version_of_build;
-    },
+    }
+    /*
     helpPost: function(){
         return Posts.findOne({_id: 'StynhCAjeAdBrZTff'})
     }
