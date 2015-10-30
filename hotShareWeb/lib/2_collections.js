@@ -879,20 +879,27 @@ if(Meteor.isServer){
         });
     };
     Meteor.publish("suggestPosts", function (limit) {
-        var self = this;
-        var handle = FollowPosts.find({followby: suggestPostsUserId},{sort: {createdAt: -1},limit:limit}).observeChanges({
-            added: function (id,fields) {
-              try{
-                  self.added("suggestposts", id, fields);
-                } catch (e){
+        if(this.userId === null){
+            return [];
+        }
+        else {
+            var self = this;
+            var handle = FollowPosts.find({followby: suggestPostsUserId}, {
+                sort: {createdAt: -1},
+                limit: limit
+            }).observeChanges({
+                added: function (id, fields) {
+                    try {
+                        self.added("suggestposts", id, fields);
+                    } catch (e) {
+                    }
                 }
-            }
-        });
-        self.ready();
-        self.onStop(function () {
-            handle.stop();
-        });
-
+            });
+            self.ready();
+            self.onStop(function () {
+                handle.stop();
+            });
+        }
     });
     var momentsAddForNewDynamicMomentsDeferHandle = function(self,id,fields) {
         Meteor.defer(function(){
@@ -912,7 +919,7 @@ if(Meteor.isServer){
         });
     };
     Meteor.publish("newDynamicMoments", function (postId,limit) {
-        if(!Match.test(postId, String) ){
+        if(this.userId === null || !Match.test(postId, String) ){
             return [];
         }
         else{
@@ -933,7 +940,7 @@ if(Meteor.isServer){
         }
     });
   Meteor.publish("dynamicMoments", function (postId,limit) {
-      if(!Match.test(postId, String) ){
+      if(this.userId === null || !Match.test(postId, String) ){
           return [];
       }
       else{
@@ -1107,10 +1114,16 @@ if(Meteor.isServer){
     return RefComments.find({},{fields: {text:1},skip:Rnd,limit:8});
   });
   Meteor.publish("topicposts", function() {
-    return TopicPosts.find({});
+      if(this.userId === null)
+        return [];
+      else
+        return TopicPosts.find({});
   });
   Meteor.publish("topics", function() {
-    return Topics.find({});
+      if(this.userId === null)
+        return [];
+      else
+        return Topics.find({});
   });
   Meteor.publish("posts", function() {
     if(this.userId === null)
@@ -1125,8 +1138,9 @@ if(Meteor.isServer){
           return Feeds.find({followby:this.userId,checked:false});
   });
   Meteor.publish("myCounter",function(){
-      if(this.userId !== null)
-      {
+      if(this.userId === null)
+          return [];
+      else {
           Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId}), {nonReactive: true });
           Counts.publish(this, 'mySavedDraftsCount', SavedDrafts.find({owner: this.userId}), {nonReactive: true });
           Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { nonReactive: true });
@@ -1240,7 +1254,7 @@ if(Meteor.isServer){
       return Follower.find({"userId":userId,"followerId":friendId},{sort: {createAt: -1}, limit:2})
   });
   Meteor.publish("userinfo", function(id) {
-    if(!Match.test(id, String))
+    if(this.userId === null || !Match.test(id, String))
       return [];
     else {
         try {
@@ -1269,10 +1283,14 @@ if(Meteor.isServer){
     }
   });
   Meteor.publish("comment", function(postId) {
-    if(!Match.test(postId, String))
-      return [];
+    if(this.userId === null || !Match.test(postId, String))
+    {
+        return [];
+    }
     else
-      return Comment.find({postId: postId});
+    {
+        return Comment.find({postId: postId});
+    }
   });
   Meteor.publish("userViewers", function(postId,userId) {
     if(!Match.test(postId, String) || !Match.test(userId, String))
