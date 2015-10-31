@@ -45,7 +45,11 @@ if Meteor.isClient
       getMusicUrl:(node, body)->
         return $(node).attr('audiourl')
       getMusicThumbImageURL:(node, body)->
-        return $(node.parentNode).find('.qqmusic_area .play_area img')[1].attr('src')
+        nodes = $(node.parentNode).find('.qqmusic_area .play_area img')
+        if (nodes.length > 1)
+          return $(nodes[1]).attr('src')
+        else
+          return $(nodes[0]).attr('src')
       getMusicSongName:(node, body)->
         return $(body).find('.qqmusic_area .qqmusic_songname').text()
       getMusicSingerName:(node, body)->
@@ -706,6 +710,264 @@ if Meteor.isClient
       data.resortedArticle = resortedArticle
       showDebug&&console.log('Resorted Article is ' + JSON.stringify(data.resortedArticle))
       callback data
+  _html2data2 = (url, data, callback)->
+    Meteor.defer ()->
+      #Paragraphs spliting
+      pageInnerText = ''
+      previousParagraph = ''
+      paragraphArray = []
+      paragraphArrayTmp = []
+      initParagraphArray = (extracted)->
+          divElement = document.createElement("div");
+          divElement.style.display = ''
+          divElement.style.height = 0
+          divElement.style.width = 0
+          divElement.style.left = -100;
+          divElement.style.position = 'absolute'
+          divElement.appendChild(extracted);
+          document.body.appendChild(divElement);
+          pageInnerText = divElement.innerText
+          console.log("pageInnerText = "+pageInnerText)
+          console.log("divElement.innerHTML = "+divElement.innerHTML)
+          paragraphArrayTmp = pageInnerText.split('\n')
+          document.body.removeChild(divElement)
+          if paragraphArrayTmp.length > 0
+            for i in [0..paragraphArrayTmp.length-1]
+              unless (paragraphArrayTmp[i].length == 0 or paragraphArrayTmp[i] == ' ')
+                paragraphArray.push(paragraphArrayTmp[i])
+          if paragraphArray.length > 0
+            console.log("paragraphArray.length="+paragraphArray.length)
+            for i in [0..paragraphArray.length-1]
+              console.log('paragraphArray['+i+']='+paragraphArray[i])
+      findInParagraphsArray = (text)->
+        outputParagraphs = []
+        if paragraphArray.length > 0
+          for i in [0..paragraphArray.length-1]
+              curParagraph = paragraphArray[i]
+              if curParagraph.length > 0 and curParagraph.length >= text.length
+                comparelen = Math.min(text.length, 30)
+                if curParagraph.substr(0, comparelen).indexOf(text.substr(0, comparelen)) >= 0
+                  for j in [0..i]
+                    outputParagraphs.push(paragraphArray[j])
+                  paragraphArray.splice(0, i+1)
+                  previousParagraph = ''
+                  break;
+        return outputParagraphs;
+      getOutputParagraphs = (text)->
+        if text.length is 0
+          return []
+        if previousParagraph.length > 0 and previousParagraph.length >= text.length
+          index = previousParagraph.indexOf(text)
+          if index >= 0
+            previousParagraph = previousParagraph.substr(index+text.length)
+            return []
+          else
+            return findInParagraphsArray(text)
+        else
+          return findInParagraphsArray(text)
+      appendParagraph = (resortedArticle, text, styleAlign)->
+        appendTextWithStyleAlign = ()->
+          if styleAlign is undefined
+            resortedArticle.push {type:'text',text:text}
+          else
+            resortedArticle.push {type:'text',text:text,layout:{align:styleAlign}}
+        if resortedArticle.length > 0
+          lastArtical = resortedArticle[resortedArticle.length-1]
+          if lastArtical.type is 'text'
+            textArray = lastArtical.text.split('\n')
+            if textArray[textArray.length-1].length < 30 and styleAlign is (if lastArtical.layout then lastArtical.layout.align else undefined)
+              lastArtical.text += '\n' + text
+            else
+              appendTextWithStyleAlign()
+          else
+            appendTextWithStyleAlign()
+        else
+          appendTextWithStyleAlign()
+
+
+      if data[0]
+        showDebug&&console.log 'data0 is ' + JSON.stringify(data[0])
+        data = data[0]
+      data.bgArray = []
+      data.imageArray = []
+      documentBody = $.parseHTML( data.body )
+      documentBody.innerHTML = data.body
+
+      for titleRule in titleRules
+        if url.indexOf(titleRule.prefix) > -1
+          realTitle = $(documentBody).find('.'+titleRule.titleClass).text().replace(/^\s+|\s+$/g, "")
+          if realTitle and realTitle isnt ''
+            #data.host = data.title
+            data.title = realTitle
+            break
+      for item  in hostnameMapping
+        if data.host is item.hostname
+          data.host = '摘自 ' + item.displayName
+          break
+
+      #musicInfo = getMusicFromPage documentBody
+      extracted = extract(documentBody)
+      initParagraphArray(extracted)
+      toBeInsertedText = ''
+      toBeInsertedStyleAlign=''
+      previousIsImage = false
+      resortedArticle = []
+      sortedImages = 0
+
+#      musics = getMusicFromScript(url, documentBody)
+#      if(musics.length > 0)
+#        for musicInfo in musics
+#          resortedArticle.push {type:'music', musicInfo: musicInfo}
+
+      if extracted.id is 'hotshare_special_tag_will_not_hit_other'
+        toBeProcessed = extracted
+      else
+        toBeProcessed = extracted.innerHTML
+      console.log($(toBeProcessed))
+      $(toBeProcessed).children().each (index,node)->
+        info = {}
+        info.bgArray = []
+        info.imageArray = []
+        info.body = node.innerHTML
+        nodeColor = $(node).css('color')
+        nodeBackgroundColor = $(node).css('background-color')
+        #iframeNumber = $(node).find('iframe').length
+        console.log('    Node['+index+'] tagName '+node.tagName+' text '+node.textContent)
+        styleAlign=getStyleInItem(node,'textAlign')
+        console.log('    Got style '+styleAlign);
+        if node.tagName is 'BR'
+          if toBeInsertedText.length > 0
+            #resortedArticle.push {type:'text',text:toBeInsertedText,layout:{align:toBeInsertedStyleAlign}}
+            toBeInsertedText = '';
+            toBeInsertedStyleAlign = '';
+            return true
+        else if node.tagName is 'MUSICEXTRACTED'
+          if toBeInsertedText and toBeInsertedText isnt ''
+            #resortedArticle.push {type:'text',text:toBeInsertedText}
+            toBeInsertedText = ''
+
+          playUrl=node.getAttribute('playUrl')
+          image=node.getAttribute('image')
+          songName=node.getAttribute('songName')
+          singerName=node.getAttribute('singerName')
+          resortedArticle.push {type:'music', musicInfo: {
+            playUrl:playUrl
+            image:image
+            songName:songName
+            singerName:singerName
+          }}
+          return true
+        text = $(node).text()
+        if text and text isnt ''
+          text = text.replace(/\s\s\s+/g, '')
+
+        if node.tagName == 'IFRAME'
+          node.width = '100%'
+          node.width = '100%'
+          node.height = '100%'
+          node.src = removeURLParameter(node.src,'width')
+          node.src = removeURLParameter(node.src,'height')
+          node.src = node.src.replace(/https:\/\//g, 'http://')
+          node.removeAttribute("style")
+          dataSrc = node.getAttribute('data-src')
+          if dataSrc
+            dataSrc = removeURLParameter(dataSrc,'width')
+            dataSrc = removeURLParameter(dataSrc,'height')
+            dataSrc = dataSrc.replace(/https:\/\//g, 'http://')
+            node.setAttribute('data-src',dataSrc)
+            node.src = dataSrc
+          showDebug&&console.log(node.outerHTML)
+          if toBeInsertedText and toBeInsertedText isnt ''
+            #resortedArticle.push {type:'text',text:toBeInsertedText}
+            toBeInsertedText = ''
+          resortedArticle.push {type:'iframe',iframe:node.outerHTML}
+        else if node.tagName == 'IMG'
+          dataSrc = $(node).attr('data-src')
+          if dataSrc and dataSrc isnt ''
+            src = dataSrc
+          else
+            src = $(node).attr('src')
+          if src and src isnt ''
+            src = src.replace(/&amp;/g, '&').replace("tp=webp","tp=jpeg")
+            unless src.startsWith('http')
+              if src.startsWith('//')
+                src = data.protocol + src
+              else if src.startsWith('/')
+                src = data.protocol + '//' + data.host + '/' + src
+            showDebug&&console.log 'Image Src: ' + src
+            previousIsImage = true
+            #if toBeInsertedText and toBeInsertedText isnt ''
+            #  resortedArticle.push {type:'text',text:toBeInsertedText}
+            toBeInsertedText = ''
+            sortedImages++;
+            resortedArticle.push {type:'image',imageUrl:src}
+            data.imageArray.push src
+        else if info.body
+          grabImagesInHTMLString(info)
+          if info.imageArray.length > 0
+            showDebug&&console.log('    Got image')
+            previousIsImage = true
+            #if toBeInsertedText and toBeInsertedText isnt ''
+            #  resortedArticle.push {type:'text',text:toBeInsertedText}
+            toBeInsertedText = ''
+            for imageUrl in info.imageArray
+              if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
+                showDebug&&console.log('    save imageUrl ' + imageUrl)
+                sortedImages++;
+                resortedArticle.push {type:'image',imageUrl:imageUrl}
+                data.imageArray.push imageUrl
+          else if info.bgArray.length > 0
+            showDebug&&console.log('    Got Background image')
+            previousIsImage = true
+            #if toBeInsertedText and toBeInsertedText isnt ''
+            #  resortedArticle.push {type:'text',text:toBeInsertedText}
+            toBeInsertedText = ''
+            for imageUrl in info.bgArray
+              if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
+                showDebug&&console.log('    save background imageUrl ' + imageUrl)
+                sortedImages++
+                resortedArticle.push {type:'image',imageUrl:imageUrl}
+                data.imageArray.push imageUrl
+        if text and text isnt ''
+          previousIsImage = false
+          showDebug&&console.log '    Got text in this element('+toBeInsertedText.length+') '+text
+          showDebug&&console.log 'Text  ['+text+'] color is '+nodeColor+' nodeBackgroundColor is '+nodeBackgroundColor
+          outputParagraphs = getOutputParagraphs(text.trim())
+          if outputParagraphs.length > 0
+            console.log("    outputParagraphs.length = "+outputParagraphs.length);
+            for i in [0..outputParagraphs.length-1]
+              if i is outputParagraphs.length-1
+                #if styleAlign is undefined
+                #  resortedArticle.push {type:'text',text:outputParagraphs[i]}
+                #else
+                #  resortedArticle.push {type:'text',text:outputParagraphs[i],layout:{align:styleAlign}}
+                appendParagraph(resortedArticle, outputParagraphs[i], styleAlign)
+              else
+                #toBeInsertedStyleAlign = ''
+                #resortedArticle.push {type:'text',text:outputParagraphs[i]}
+                appendParagraph(resortedArticle, outputParagraphs[i], undefined)
+      #Added by Frank
+      outputParagraphs = paragraphArray
+      if outputParagraphs.length > 0
+        for i in [0..outputParagraphs.length-1]
+          appendParagraph(resortedArticle, outputParagraphs[i], undefined)
+          #resortedArticle.push {type:'text',text:outputParagraphs[i]}
+      if sortedImages < 1
+        console.log('no image ?')
+        grabImagesInHTMLString(data)
+        if data.imageArray.length > 0
+          for imageUrl in data.imageArray
+            if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
+              showDebug&&console.log('    save imageUrl ' + imageUrl)
+              resortedArticle.push {type:'image',imageUrl:imageUrl}
+        else if data.bgArray.length > 0
+          for imageUrl in data.bgArray
+            if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
+              showDebug&&console.log('    save background imageUrl ' + imageUrl)
+              resortedArticle.push {type:'image',imageUrl:imageUrl}
+      data.resortedArticle = resortedArticle
+      showDebug&&console.log('Resorted Article is ' + JSON.stringify(data.resortedArticle))
+      callback data
   @getContentListsFromUrl = (inappBrowser,url,callback)->
     inappBrowser.executeScript {
         code: '
@@ -726,7 +988,7 @@ if Meteor.isClient
           returnJson;
       '}
     ,(data)->
-      _html2data(url, data, callback)
+      _html2data2(url, data, callback)
   @_getContentListsFromUrl_test = (url, callback)->
     headers = {
       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
@@ -756,4 +1018,4 @@ if Meteor.isClient
 #          }
 #          false
 #        )
-        _html2data(url, returnJson, callback)
+        _html2data2(url, returnJson, callback)
