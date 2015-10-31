@@ -132,6 +132,7 @@ if Meteor.isClient
     if Session.get("needBindScroll") is true
       Session.set("needBindScroll", false)
       Meteor.setTimeout ()->
+        Session.set('displayDiscoverContent',true)
         if withSocialBar
           $(window).scroll(scrollEventCallback)
       ,1000
