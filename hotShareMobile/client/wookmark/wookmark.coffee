@@ -145,6 +145,7 @@ Template.newLayoutContainer.events =
   'click .newLayout_element':(e)->
     wookmark_debug&&console.log('layoutId ' + this.displayId)
     postId = this.displayId
+    Session.set('displayDiscoverContent',false)
     scrollTop = $(window).scrollTop()
     $(window).children().off()
     $(window).unbind('scroll')

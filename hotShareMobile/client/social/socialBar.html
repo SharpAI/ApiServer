@@ -8,7 +8,9 @@
               {{>contactsList}}
             </div>
             <div class="div_discover" style="display:block">
+              {{#if displayDiscoverContent}}
               {{>discover}}
+              {{/if}}
             </div>
             <div class="div_me" style="display:none">
               {{>me}}

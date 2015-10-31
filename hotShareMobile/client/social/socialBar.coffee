@@ -1,6 +1,7 @@
 if Meteor.isClient
   Session.setDefault("Social.LevelOne.Menu",'discover')
   Session.setDefault("SocialOnButton",'postBtn')
+  Session.setDefault "displayDiscoverContent",true
   Template.socialContent.events
     'click .postBtn':->
       #PUB.postPageBack()
@@ -41,6 +42,8 @@ if Meteor.isClient
   Template.socialContent.rendered=->
     $('.chatBoxContent').css('min-height',$(window).height()-90)
   Template.socialContent.helpers
+    displayDiscoverContent:()->
+      Session.get('displayDiscoverContent')
     newcount:()->
       PostFriends.find({meetOnPostId:Session.get("postContent")._id,count:1,ta:{$ne:null}},{sort: {createdAt: -1}}).count()
     feedscount:()->
