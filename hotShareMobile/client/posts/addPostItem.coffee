@@ -186,7 +186,7 @@ if Meteor.isClient
       else
         grid.add_widget(node, 6, size_y, 1)
     else if type is 'music'
-      grid.add_widget(node, 6, 1, 1)
+      grid.add_widget(node, 6, 2, 1)
     else if type is "image"
       if insertedObj.inIframe and insertedObj.iframe
         console.log('to insert iframe')
