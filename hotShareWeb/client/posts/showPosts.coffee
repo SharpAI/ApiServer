@@ -32,9 +32,15 @@ if Meteor.isClient
       onOpen: ->
         Session.set('displayUserProfileBox',true)
   Meteor.startup ()->
-    $(document).bind "fontresize",(event, data)->
-      #alert('Font Resized '+data+'px')
-      refreshPostContent()
+    $(document).bind("fontresize",$.debounce(250,(event, data)->
+        #alert('Font Resized '+data+'px')
+        refreshPostContent()
+      )
+    )
+    $(window).on('resize',$.debounce(250,()->
+        refreshPostContent()
+      )
+    )
   Tracker.autorun ()->
     if Session.get("needToast") is true
       Session.set("needToast",false)
