@@ -37,10 +37,15 @@ if Meteor.isClient
         refreshPostContent()
       )
     )
+    ###
+    show big picture will trigger this event
+    this code purpose only for width resize
+    we need new solution for it
     $(window).on('resize',$.debounce(250,()->
         refreshPostContent()
       )
     )
+    ###
   Tracker.autorun ()->
     if Session.get("needToast") is true
       Session.set("needToast",false)
