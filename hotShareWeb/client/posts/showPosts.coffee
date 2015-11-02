@@ -319,6 +319,10 @@ if Meteor.isClient
 #      $("body").css("overflow","visible");
 #      $('.commentOverlay').bPopup().close()
 #      amplify.store('section_'+Session.get('channel'),true)
+    'click .post_header .post_abstract .abstract_chapter a' :(e)->
+      if $('.sCurrent').length
+        scrolltop=$('.sCurrent').offset().top
+        document.body.scrollTop = scrolltop
     'click .postLinkItem' :(e)->
       window.location.href=this.urlinfo
     'click .postTextItem' :(e)->

@@ -45,7 +45,7 @@
             </div>
         {{else}}
             <div class="postTextItem element" id="{{_id}}">
-                <div class="textDiv1  {{pcIndex}}" text={{_id}} name="textarea" style="{{calcStyle}};{{getStyle}}">
+                <div class="textDiv1 {{pcIndex}} {{scIndex}}" text={{_id}} name="textarea" style="{{calcStyle}};{{getStyle}}">
                   <span class="textDiv1Link">{{{text}}}</span> {{#if isTextLength text}}<div class='inlineScoring'>{{#if myselfClickedUp}}<i class="fa fa-thumbs-up thumbsUp" style="color:red;font-size: larger;">{{plike}}&nbsp;&nbsp;</i>{{else}}<i class="fa fa-thumbs-o-up thumbsUp" style="font-size: small;">{{plike}}&nbsp;&nbsp;</i>{{/if}}{{#if myselfClickedDown}}<i class="fa fa-thumbs-down thumbsDown" style="color:blue;font-size: small;">{{pdislike}}&nbsp;&nbsp;</i>{{else}}<i class="fa fa-thumbs-o-down thumbsDown" style="font-size: small;">{{pdislike}}&nbsp;&nbsp;</i>{{/if}}<i class="fa fa-comment-o pcomments" style="color:black;font-size: larger;">&nbsp;&nbsp;&nbsp;</i></div>{{/if}}
                 </div>
                 {{#if hasPcomments}}

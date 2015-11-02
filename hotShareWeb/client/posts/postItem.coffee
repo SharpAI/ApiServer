@@ -111,9 +111,17 @@ if Meteor.isClient
       else
         return false
     pcIndex:->
-      pcindex = Session.get("pcurrentIndex")
-      if this.index is pcindex
+      pcindex = parseInt(Session.get("pcurrentIndex"))
+      index = parseInt(this.index)
+      if index is pcindex
         'dCurrent'
+      else
+        ''
+    scIndex:->
+      scindex = parseInt(Session.get('focusedIndex'))
+      index = parseInt(this.index)
+      if index is scindex
+        'sCurrent'
       else
         ''
     plike:->
