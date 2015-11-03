@@ -21,10 +21,14 @@
 </template>
 <template name="lpcomments">
     <div class="lpcomments">
-        <div id="wrapper">
+        <ul id="wrapper"  class="swipe-delete">
             {{#each lpcomments}}
                 {{#if isShareFeed}}
-                    <div id="list">
+                    <li class="elementBox">
+                      <div class="behind">
+                        <a href="#" class="swipeElement ui-btn delete-btn" id="{{_id}}">删除</a>
+                      </div>
+                      <a id="list" class="swipeElement">
                         <div class="icon">
                             <img src="{{ownerIcon}}" width="40" height="40"/>
                         </div>
@@ -42,9 +46,14 @@
                             <span style="margin:0;">{{time_diff createdAt}}</span>
                         </div>
                         <div class="clear"></div>
-                    </div>
+                    </a>
+                  </li>
                 {{else}}
-                <div id="list">
+            <li class="elementBox">
+                <div class="behind">
+                  <a href="#" class="swipeElement ui-btn delete-btn" id="{{_id}}">删除</a>
+                </div>
+                <a id="list" class="swipeElement">
                     <div class="icon">
                         <img src="{{ownerIcon}}" width="40" height="40"/>
                     </div>
@@ -62,11 +71,63 @@
                         <span style="margin:0;">{{time_diff createdAt}}</span>
                     </div>
                     <div class="clear"></div>
-                </div>
+                </a>
+              </li>
                 {{/if}}
             {{/each}}
-        </div>
+        </ul>
     </div>
+    <script src="http://code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.js"></script>
+    <script>
+      $(function() {
+        function prevent_default(e) {
+            e.preventDefault();
+        }
+        function disable_scroll() {
+            $(document).on('touchmove', prevent_default);
+        }
+        function enable_scroll() {
+            $(document).unbind('touchmove', prevent_default)
+        }
+        var x, elementId;
+        $('.swipe-delete li > a')
+            .on('touchstart', function(e) {
+                console.log(e.originalEvent.pageX)
+                $('.swipe-delete li > a.open').css('left', '0px').removeClass('open') // close em all
+                $(e.currentTarget).addClass('open')
+                x = e.originalEvent.targetTouches[0].pageX // anchor point
+            })
+            .on('touchmove', function(e) {
+                var change = e.originalEvent.targetTouches[0].pageX - x
+                change = Math.min(Math.max(-100, change), 0) // restrict to -100px left, 0px right
+                e.currentTarget.style.left = change + 'px'
+                if (change < -10) disable_scroll() // disable scroll once we hit 10px horizontal slide
+            })
+            .on('touchend', function(e) {
+                var left = parseInt(e.currentTarget.style.left)
+                var new_left;
+                if (left < -35) {
+                    new_left = '-100px'
+                } else if (left > 35) {
+                    new_left = '0px' //右滑动
+                } else {
+                    new_left = '0px'
+                }
+                // e.currentTarget.style.left = new_left
+                $(e.currentTarget).animate({left: new_left}, 200)
+                enable_scroll()
+            });
+        $('.swipe-delete .delete-btn').on('touchend', function(e) {
+            e.preventDefault()
+            console.log(e.currentTarget.id);
+            elementId = e.currentTarget.id;
+            $(this).parents('li').slideUp('fast', function() {
+                $(this).remove()
+                Feeds.update({_id:elementId},{$set: {checked:true}})
+            })
+        })
+    });
+    </script>
 </template>
 <template name="moments">
       <div class="moments">
