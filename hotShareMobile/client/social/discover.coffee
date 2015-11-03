@@ -142,6 +142,7 @@ if Meteor.isClient
         Feeds.update({_id:this._id},{$set: {checked:true}})
         id = Session.get("postContent")._id
         if postId isnt id
+          Session.set('displayDiscoverContent',false)
           $(window).children().off()
           $(window).unbind('scroll')
           #PUB.postPage(id,scrollTop)
