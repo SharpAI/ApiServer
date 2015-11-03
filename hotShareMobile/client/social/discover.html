@@ -93,9 +93,9 @@
             e.preventDefault()
             console.log(e.currentTarget.id);
             elementId = e.currentTarget.id;
-            Feeds.update({_id:elementId},{$set: {checked:true}})
             $(this).parents('li').slideUp('fast', function() {
                 $(this).remove()
+                Feeds.update({_id:elementId},{$set: {checked:true}})
             })
         })
     });
