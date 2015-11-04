@@ -170,28 +170,7 @@
       </div>
   {{/if}}
   {{> userProfileBox}}
-    <div class="commentOverlay" style="display:none">
-        <div class="banner">您对TA转发的这段文章有什么看法？</div>
-        <div class="commentOverlayInputGroup">
-          <div class="input-group">
-            <input type="text" id="overlayPcommitReport" autofocus="autofocus" class="form-control" maxlength="180" placeholder="输入您的评论" />
-            <div  id="overlayPcommitReportBtn"  onclick="clickOverlayPcommitReportBtn()">点评</div>
-          </div>
-        </div>
-        <div class="commentOverlayBtn">
-          <span class="commentOverlayLater" onclick="clickCommentOverlayLater()" style="color: #CACDD1;font-weight: bold;">稍后再评</span>
-            {{#if clickedCommentOverlayThumbsUp}}
-            <img style="margin:0 20%" class="thumbsUp" onclick="clickThumbsUpPink()" src="/thumbsUpPink.png" width="16" height="16">
-            {{else}}
-            <img style="margin:0 20%" class="thumbsUp" onclick="clickThumbsUpGray()" src="/thumbsUpGray.png" width="16" height="16">
-            {{/if}}
-            {{#if clickedCommentOverlayThumbsDown}}
-            <img class="thumbsDown" onclick="clickThumbsDownBlue()" src="/thumbsDownBlue.png" width="16" height="16">
-            {{else}}
-            <img class="thumbsDown" onclick="clickThumbsDownGray()" src="/thumbsDownGray.png" width="16" height="16">
-            {{/if}}
-        </div>
-    </div>
+  {{> SectionReviewBox}}
   </div>
 </template>
 <template name="postFooter">
@@ -331,3 +310,30 @@
 
     </script>
 </template>
+<template name="SectionReviewBox">
+    {{#if displaySectionReviewBox}}
+    <div class="commentOverlay">
+        <div class="banner">您对TA转发的这段文章有什么看法？</div>
+        <div class="commentOverlayInputGroup">
+          <div class="input-group">
+            <input type="text" id="overlayPcommitReport" autofocus="autofocus" class="form-control" maxlength="180" placeholder="输入您的评论" />
+            <div  id="overlayPcommitReportBtn">点评</div>
+          </div>
+        </div>
+        <div class="commentOverlayBtn">
+          <span class="commentOverlayLater" style="color: #CACDD1;font-weight: bold;">稍后再评</span>
+            {{#if clickedCommentOverlayThumbsUp}}
+            <img style="margin:0 20%" class="thumbsUp" src="/thumbsUpPink.png" width="16" height="16">
+            {{else}}
+            <img style="margin:0 20%" class="thumbsUp" src="/thumbsUpGray.png" width="16" height="16">
+            {{/if}}
+            {{#if clickedCommentOverlayThumbsDown}}
+            <img class="thumbsDown" src="/thumbsDownBlue.png" width="16" height="16">
+            {{else}}
+            <img class="thumbsDown" src="/thumbsDownGray.png" width="16" height="16">
+            {{/if}}
+        </div>
+    </div>
+    {{/if}}
+</template>
+

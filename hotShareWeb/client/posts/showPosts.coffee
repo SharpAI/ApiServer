@@ -133,16 +133,21 @@ if Meteor.isClient
         window.lastScroll = st
         return
       if withForcePopupSectionReview
+        #amplify.store('section_'+Session.get('channel'),false)
         if Session.get('focusedIndex') isnt undefined and  $(".showPosts .gridster").isAboveViewPortBottom() and !amplify.store('section_'+Session.get('channel')) and !$('.commentOverlay').data('bPopup')
           $('body').attr('style','position:fixed;')
 #          $("body").css("overflow","hidden");
           top = 2 * $(window).height()/5
           left = $(window).width()/10
-          $('.commentOverlay').bPopup
+          #$('.commentOverlay').bPopup
+          @PopUpBox = $('.popUpBox').bPopup
             positionStyle: 'fixed'
             position: [left, top]
             modalClose: false
+            onOpen:->
+              Session.set("displaySectionReviewBox", true)
             onClose: ->
+              Session.set("displaySectionReviewBox", false)
               amplify.store('section_'+Session.get('channel'),true)
       if window.lastScroll - st > 5
         $('.showPosts .head').fadeIn 300
@@ -187,16 +192,6 @@ if Meteor.isClient
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
-    clickedCommentOverlayThumbsUp:()->
-      if Session.get("clickedCommentOverlayThumbsUp") is true
-        true
-      else
-        false
-    clickedCommentOverlayThumbsDown:()->
-      if Session.get("clickedCommentOverlayThumbsDown") is true
-        true
-      else
-        false
     displayPostContent:()->
       Session.get('displayPostContent')
     getMainImageHeight:()->
@@ -769,3 +764,49 @@ if Meteor.isClient
 #        $('.pcommentInput,.alertBackground').fadeOut 300
 #        refreshPostContent()
 #        false
+  Template.SectionReviewBox.helpers
+    clickedCommentOverlayThumbsUp:()->
+      if Session.get("clickedCommentOverlayThumbsUp") is true
+        true
+      else
+        false
+    clickedCommentOverlayThumbsDown:()->
+      if Session.get("clickedCommentOverlayThumbsDown") is true
+        true
+      else
+        false
+    displaySectionReviewBox:()->
+      Session.get('displaySectionReviewBox')
+  Template.SectionReviewBox.events
+    'click #overlayPcommitReportBtn' :(e)->
+      console.log "=============clickOverlayPcommitReportBtn()=========================="
+    'click .commentOverlayLater' :(e)->
+      console.log "===============clickCommentOverlayLater()========================"
+      amplify.store('section_'+Session.get('channel'),true)
+      $('body').removeAttr('style')
+      if PopUpBox
+        PopUpBox.close()
+    'click .thumbsUp' :(e)->
+      if Session.get("clickedCommentOverlayThumbsUp") is true
+        console.log "=================clickThumbsUpPink()====================="
+        Session.set("clickedCommentOverlayThumbsUp",false)
+      else
+        console.log "=================clickThumbsUpGray()====================="
+        if Session.get("clickedCommentOverlayThumbsDown") is true
+          Session.set("clickedCommentOverlayThumbsUp",true)
+          Session.set("clickedCommentOverlayThumbsDown",false)
+        else
+          Session.set("clickedCommentOverlayThumbsUp",true)
+    'click .thumbsDown' :(e)->
+      if Session.get("clickedCommentOverlayThumbsDown") is true
+        console.log "=================clickThumbsDownBlue()====================="
+        Session.set("clickedCommentOverlayThumbsDown",false)
+      else
+        console.log "=================clickThumbsDownGray()====================="
+        if Session.get("clickedCommentOverlayThumbsUp") is true
+          Session.set("clickedCommentOverlayThumbsUp",false)
+          Session.set("clickedCommentOverlayThumbsDown",true)
+        else
+          Session.set("clickedCommentOverlayThumbsDown",true)
+       
+
