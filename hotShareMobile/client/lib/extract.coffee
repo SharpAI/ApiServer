@@ -6,6 +6,7 @@
 # Copyright (c) 2011 MORITA Hajime
 # This software is licensed under the Apache License, Version 2.0.
 #
+keepImagesForSpecialMobileSite = false
 removeStyle = true
 class Log
   this.print = (message) -> console.log(message)
@@ -61,6 +62,15 @@ specialClassNameForPopularMobileSite = [
   '.main_box' # QQ 音乐
 ]
 
+specialClassNameExcludeMobileSites = [
+  'techcrunch.com'
+]
+
+specialMobileSiteForImages = [
+  'medium.com'
+  'techcrunch.com'
+]
+
 textContentFor = (node, normalizeWs = true) ->
   return "" unless node.textContent
   text = node.textContent.replace(REGEXPS.trim, "")
@@ -104,7 +114,8 @@ fishy = (node) ->
   linkDensity   = linkDensityFor(node)
   contentLength = textContentFor(node).length
 
-  return false if img > 0
+  if keepImagesForSpecialMobileSite
+    return false if img > 0
   return true if weight + contentScore < 0
   #return true if img > p
   return true if li > p and node.tagName != "ul" and node.tagName != "ol"
@@ -226,6 +237,7 @@ removeFragments = (node) ->
   jn.find("table").filter(-> fishy(this)).remove()
   jn.find("ul").filter(-> fishy(this)).remove()
   jn.find("div").filter(-> fishy(this)).remove()
+  jn.find("noscript").filter(-> fishy(this)).remove()
   if removeStyle
     jn.find("object,h1,script,link,iframe,style").remove()
   else
@@ -327,7 +339,14 @@ getCalculatedStyle=(node,prop)->
   documentBody.innerHTML = page.innerHTML
   bodyParified = _.map($(documentBody).find('*'), parify) # -> body
 
+  keepImagesForSpecialMobileSite = false
+  console.log('  page.host = '+page.host)
+  if page.host is specialMobileSiteForImages
+    keepImagesForSpecialMobileSite = true
+
   for tag in specialClassNameForPopularMobileSite
+    if page.host in specialClassNameExcludeMobileSites
+      break
     rootNode = null
     
     if($(bodyParified).find(tag).length > 0) # 无法查找body下的第一层
@@ -373,6 +392,8 @@ getCalculatedStyle=(node,prop)->
               try
                 if $(node).css("display") is 'none'
                   return NodeFilter.FILTER_REJECT
+                if $(node).parent() and $(node).parent().css("display") is 'none'
+                  return NodeFilter.FILTER_REJECT
               catch error
                 console.log('Get Display Exception')
               unless node.hasChildNodes()
@@ -401,16 +422,56 @@ getCalculatedStyle=(node,prop)->
       nodeList = []
       while(treeWalker.nextNode())
         nodeList.push(treeWalker.currentNode)
+      parentPNode = null;
       for node in nodeList
         unless node.hasChildNodes()
           if node.nodeType is Node.TEXT_NODE
+            flag = 0
+            level = 0
+            tmpNode = node.parentNode;
+            if parentPNode
+              while level < 6 and tmpNode
+                if tmpNode is parentPNode
+                  flag = 1
+                  break
+                tmpNode = tmpNode.parentNode
+                level++
+            if flag
+              if node.parentNode
+                  alignstyle=$(node).parent().attr('hotshare-textAlign')
+                  if alignstyle and alignstyle isnt ''
+                    storeStyleInItem(parentPNode,'textAlign',alignstyle)
+              if !node.parentNode or node.parentNode is parentPNode
+                parentPNode.appendChild(node)
+              else
+                  parentPNode.appendChild(node.parentNode)
+            else
+              if node.parentNode
+                newRoot.appendChild(node.parentNode)
+              else
+                p = document.createElement("P")
+                p.appendChild(node)
+            ###
             if node.parentNode
-              newRoot.appendChild(node.parentNode)
+              if node.parentNode.tagName is 'P'
+                span = document.createElement("SPAN")
+                span.appendChild(node)
+                alignstyle=getCalculatedStyle(node.parentNode,'text-align')
+                if alignstyle and alignstyle isnt ''
+                  storeStyleInItem(span, 'textAlign', alignstyle)
+                newRoot.appendChild(span)
+              else
+                newRoot.appendChild(node.parentNode)
             else
               p = document.createElement("P")
               p.appendChild(node)
+            ###
           else
             newRoot.appendChild(node)
+        else if node.tagName is 'P'
+          #p = document.createElement("P");
+          newRoot.appendChild(node);
+          parentPNode = node
       console.log('node length ' + nodeList.length)
       removeUnwanted(newRoot)
       newRoot.id = 'hotshare_special_tag_will_not_hit_other'

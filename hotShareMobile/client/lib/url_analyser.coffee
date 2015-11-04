@@ -712,7 +712,6 @@ if Meteor.isClient
       callback data
   _html2data2 = (url, data, callback)->
     Meteor.defer ()->
-      #Paragraphs spliting
       pageInnerText = ''
       previousParagraph = ''
       paragraphArray = []
@@ -739,32 +738,6 @@ if Meteor.isClient
             console.log("paragraphArray.length="+paragraphArray.length)
             for i in [0..paragraphArray.length-1]
               console.log('paragraphArray['+i+']='+paragraphArray[i])
-      findInParagraphsArray = (text)->
-        outputParagraphs = []
-        if paragraphArray.length > 0
-          for i in [0..paragraphArray.length-1]
-              curParagraph = paragraphArray[i]
-              if curParagraph.length > 0 and curParagraph.length >= text.length
-                comparelen = Math.min(text.length, 30)
-                if curParagraph.substr(0, comparelen).indexOf(text.substr(0, comparelen)) >= 0
-                  for j in [0..i]
-                    outputParagraphs.push(paragraphArray[j])
-                  paragraphArray.splice(0, i+1)
-                  previousParagraph = ''
-                  break;
-        return outputParagraphs;
-      getOutputParagraphs = (text)->
-        if text.length is 0
-          return []
-        if previousParagraph.length > 0 and previousParagraph.length >= text.length
-          index = previousParagraph.indexOf(text)
-          if index >= 0
-            previousParagraph = previousParagraph.substr(index+text.length)
-            return []
-          else
-            return findInParagraphsArray(text)
-        else
-          return findInParagraphsArray(text)
       appendParagraph = (resortedArticle, text, styleAlign)->
         appendTextWithStyleAlign = ()->
           if styleAlign is undefined
@@ -775,7 +748,7 @@ if Meteor.isClient
           lastArtical = resortedArticle[resortedArticle.length-1]
           if lastArtical.type is 'text'
             textArray = lastArtical.text.split('\n')
-            if textArray[textArray.length-1].length < 30 and styleAlign is (if lastArtical.layout then lastArtical.layout.align else undefined)
+            if textArray[textArray.length-1].length < 35 and styleAlign is (if lastArtical.layout then lastArtical.layout.align else undefined)
               lastArtical.text += '\n' + text
             else
               appendTextWithStyleAlign()
@@ -784,7 +757,6 @@ if Meteor.isClient
         else
           appendTextWithStyleAlign()
 
-
       if data[0]
         showDebug&&console.log 'data0 is ' + JSON.stringify(data[0])
         data = data[0]
@@ -792,6 +764,8 @@ if Meteor.isClient
       data.imageArray = []
       documentBody = $.parseHTML( data.body )
       documentBody.innerHTML = data.body
+      documentBody.host = data.host
+      console.log('documentBody.host = '+documentBody.host)
 
       for titleRule in titleRules
         if url.indexOf(titleRule.prefix) > -1
@@ -808,6 +782,9 @@ if Meteor.isClient
       #musicInfo = getMusicFromPage documentBody
       extracted = extract(documentBody)
       initParagraphArray(extracted)
+      console.log('extracted:')
+      console.log(extracted)
+      
       toBeInsertedText = ''
       toBeInsertedStyleAlign=''
       previousIsImage = false
@@ -824,11 +801,12 @@ if Meteor.isClient
       else
         toBeProcessed = extracted.innerHTML
       console.log($(toBeProcessed))
+      previousIsSpan = false
       $(toBeProcessed).children().each (index,node)->
         info = {}
         info.bgArray = []
         info.imageArray = []
-        info.body = node.innerHTML
+        info.body = node.outerHTML
         nodeColor = $(node).css('color')
         nodeBackgroundColor = $(node).css('background-color')
         #iframeNumber = $(node).find('iframe').length
@@ -837,13 +815,14 @@ if Meteor.isClient
         console.log('    Got style '+styleAlign);
         if node.tagName is 'BR'
           if toBeInsertedText.length > 0
-            #resortedArticle.push {type:'text',text:toBeInsertedText,layout:{align:toBeInsertedStyleAlign}}
-            toBeInsertedText = '';
-            toBeInsertedStyleAlign = '';
+            appendParagraph(resortedArticle, toBeInsertedText, toBeInsertedStyleAlign)
+            toBeInsertedText = ''
+            toBeInsertedStyleAlign = ''
+            previousIsSpan = false
             return true
         else if node.tagName is 'MUSICEXTRACTED'
           if toBeInsertedText and toBeInsertedText isnt ''
-            #resortedArticle.push {type:'text',text:toBeInsertedText}
+            appendParagraph(resortedArticle, toBeInsertedText, undefined)
             toBeInsertedText = ''
 
           playUrl=node.getAttribute('playUrl')
@@ -856,12 +835,14 @@ if Meteor.isClient
             songName:songName
             singerName:singerName
           }}
+          previousIsSpan = false
           return true
         text = $(node).text()
         if text and text isnt ''
           text = text.replace(/\s\s\s+/g, '')
-
+        console.log('text '+text)
         if node.tagName == 'IFRAME'
+          previousIsSpan = false
           node.width = '100%'
           node.width = '100%'
           node.height = '100%'
@@ -874,14 +855,16 @@ if Meteor.isClient
             dataSrc = removeURLParameter(dataSrc,'width')
             dataSrc = removeURLParameter(dataSrc,'height')
             dataSrc = dataSrc.replace(/https:\/\//g, 'http://')
+            dataSrc = dataSrc.replace(/v.qq.com\/iframe\/preview.html/g, 'v.qq.com/iframe/player.html')
             node.setAttribute('data-src',dataSrc)
             node.src = dataSrc
           showDebug&&console.log(node.outerHTML)
           if toBeInsertedText and toBeInsertedText isnt ''
-            #resortedArticle.push {type:'text',text:toBeInsertedText}
+            appendParagraph(resortedArticle, toBeInsertedText, undefined)
             toBeInsertedText = ''
           resortedArticle.push {type:'iframe',iframe:node.outerHTML}
         else if node.tagName == 'IMG'
+          previousIsSpan = false
           dataSrc = $(node).attr('data-src')
           if dataSrc and dataSrc isnt ''
             src = dataSrc
@@ -896,8 +879,8 @@ if Meteor.isClient
                 src = data.protocol + '//' + data.host + '/' + src
             showDebug&&console.log 'Image Src: ' + src
             previousIsImage = true
-            #if toBeInsertedText and toBeInsertedText isnt ''
-            #  resortedArticle.push {type:'text',text:toBeInsertedText}
+            if toBeInsertedText and toBeInsertedText isnt ''
+              appendParagraph(resortedArticle, toBeInsertedText, undefined)
             toBeInsertedText = ''
             sortedImages++;
             resortedArticle.push {type:'image',imageUrl:src}
@@ -907,8 +890,9 @@ if Meteor.isClient
           if info.imageArray.length > 0
             showDebug&&console.log('    Got image')
             previousIsImage = true
-            #if toBeInsertedText and toBeInsertedText isnt ''
-            #  resortedArticle.push {type:'text',text:toBeInsertedText}
+            previousIsSpan = false
+            if toBeInsertedText and toBeInsertedText isnt ''
+              appendParagraph(resortedArticle, toBeInsertedText, undefined)
             toBeInsertedText = ''
             for imageUrl in info.imageArray
               if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
@@ -919,8 +903,9 @@ if Meteor.isClient
           else if info.bgArray.length > 0
             showDebug&&console.log('    Got Background image')
             previousIsImage = true
-            #if toBeInsertedText and toBeInsertedText isnt ''
-            #  resortedArticle.push {type:'text',text:toBeInsertedText}
+            previousIsSpan = false
+            if toBeInsertedText and toBeInsertedText isnt ''
+              appendParagraph(resortedArticle, toBeInsertedText, undefined)
             toBeInsertedText = ''
             for imageUrl in info.bgArray
               if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
@@ -928,30 +913,49 @@ if Meteor.isClient
                 sortedImages++
                 resortedArticle.push {type:'image',imageUrl:imageUrl}
                 data.imageArray.push imageUrl
-        if text and text isnt ''
+        if node.tagName is 'P'
+            previousIsSpan = false
+            if toBeInsertedText.length > 0
+              appendParagraph(resortedArticle, toBeInsertedText, toBeInsertedStyleAlign)
+            if text and text isnt ''
+              toBeInsertedText = text
+            else
+              toBeInsertedText = ''
+            toBeInsertedStyleAlign = styleAlign
+        else if text and text.trim() isnt ''
           previousIsImage = false
           showDebug&&console.log '    Got text in this element('+toBeInsertedText.length+') '+text
           showDebug&&console.log 'Text  ['+text+'] color is '+nodeColor+' nodeBackgroundColor is '+nodeBackgroundColor
-          outputParagraphs = getOutputParagraphs(text.trim())
-          if outputParagraphs.length > 0
-            console.log("    outputParagraphs.length = "+outputParagraphs.length);
-            for i in [0..outputParagraphs.length-1]
-              if i is outputParagraphs.length-1
-                #if styleAlign is undefined
-                #  resortedArticle.push {type:'text',text:outputParagraphs[i]}
-                #else
-                #  resortedArticle.push {type:'text',text:outputParagraphs[i],layout:{align:styleAlign}}
-                appendParagraph(resortedArticle, outputParagraphs[i], styleAlign)
-              else
-                #toBeInsertedStyleAlign = ''
-                #resortedArticle.push {type:'text',text:outputParagraphs[i]}
-                appendParagraph(resortedArticle, outputParagraphs[i], undefined)
-      #Added by Frank
-      outputParagraphs = paragraphArray
-      if outputParagraphs.length > 0
-        for i in [0..outputParagraphs.length-1]
-          appendParagraph(resortedArticle, outputParagraphs[i], undefined)
-          #resortedArticle.push {type:'text',text:outputParagraphs[i]}
+          ###
+          if importColor and nodeColor and nodeColor isnt ''
+            if toBeInsertedText.length > 0
+              toBeInsertedText += '\n'
+              resortedArticle.push {type:'text',text:toBeInsertedText}
+              toBeInsertedText = ''
+            resortedArticle.push {type:'text',text:text,color:nodeColor,backgroundColor:nodeBackgroundColor}
+          else
+          ###
+          #console.log('Get style '+$(node).attr('style'));
+          if toBeInsertedText.length is 0
+            toBeInsertedStyleAlign = styleAlign
+          if node.tagName is 'SPAN' or node.tagName is 'STRONG'
+            toBeInsertedText +=text
+            previousIsSpan = true
+          else if previousIsSpan is true
+            toBeInsertedText += text
+            previousIsSpan = false
+            text = ''
+          else if toBeInsertedText.length < 20 and styleAlign is toBeInsertedStyleAlign
+            if toBeInsertedText.length > 0
+              toBeInsertedText += '\n'
+            toBeInsertedText += text
+          else
+            if toBeInsertedText.length > 0
+              appendParagraph(resortedArticle, toBeInsertedText, toBeInsertedStyleAlign)
+            toBeInsertedText = text;
+            toBeInsertedStyleAlign = styleAlign;
+      if toBeInsertedText and toBeInsertedText isnt ''
+        appendParagraph(resortedArticle, toBeInsertedText, undefined)
       if sortedImages < 1
         console.log('no image ?')
         grabImagesInHTMLString(data)
