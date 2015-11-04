@@ -149,7 +149,6 @@ if Meteor.isClient
             onClose: ->
               Session.set("displaySectionReviewBox", false)
               amplify.store('section_'+Session.get('channel'),true)
-          $('.popUpBox').attr('id','commentOverlayBox')
       if window.lastScroll - st > 5
         $('.showPosts .head').fadeIn 300
         showSocialBar()
@@ -193,6 +192,11 @@ if Meteor.isClient
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
+    popUpBoxStyle:()->
+      if Session.get('displaySectionReviewBox') is true
+        "height: auto;width: 80%;min-width: 80%;"
+      else
+        "height: auto;width: 100%;min-width: 100%;"
     displayPostContent:()->
       Session.get('displayPostContent')
     getMainImageHeight:()->
@@ -780,7 +784,6 @@ if Meteor.isClient
       Session.get('displaySectionReviewBox')
   Template.SectionReviewBox.events
     'click #overlayPcommitReportBtn' :(e)->
-      console.log "=============clickOverlayPcommitReportBtn()=========================="
       i = Session.get('focusedIndex')
       content = $('#overlayPcommitReport').val()
       clickUp = Session.get("clickedCommentOverlayThumbsUp")
@@ -797,7 +800,6 @@ if Meteor.isClient
         if content isnt "" and clickDown is true
           pcommentReportHandler(i,content)
         $('body').removeAttr('style')
-        $('.popUpBox').removeAttr('id')
         if PopUpBox
           PopUpBox.close()
         $('#overlayPcommitReport').val("")
@@ -811,18 +813,14 @@ if Meteor.isClient
       else
         toastr.success('请对此段文字进行评价')
     'click .commentOverlayLater' :(e)->
-      console.log "===============clickCommentOverlayLater()========================"
       amplify.store('section_'+Session.get('channel'),true)
       $('body').removeAttr('style')
-      $('.popUpBox').removeAttr('id')
       if PopUpBox
         PopUpBox.close()
     'click .thumbsUp' :(e)->
       if Session.get("clickedCommentOverlayThumbsUp") is true
-        console.log "=================clickThumbsUpPink()====================="
         Session.set("clickedCommentOverlayThumbsUp",false)
       else
-        console.log "=================clickThumbsUpGray()====================="
         if Session.get("clickedCommentOverlayThumbsDown") is true
           Session.set("clickedCommentOverlayThumbsUp",true)
           Session.set("clickedCommentOverlayThumbsDown",false)
@@ -830,10 +828,8 @@ if Meteor.isClient
           Session.set("clickedCommentOverlayThumbsUp",true)
     'click .thumbsDown' :(e)->
       if Session.get("clickedCommentOverlayThumbsDown") is true
-        console.log "=================clickThumbsDownBlue()====================="
         Session.set("clickedCommentOverlayThumbsDown",false)
       else
-        console.log "=================clickThumbsDownGray()====================="
         if Session.get("clickedCommentOverlayThumbsUp") is true
           Session.set("clickedCommentOverlayThumbsUp",false)
           Session.set("clickedCommentOverlayThumbsDown",true)
