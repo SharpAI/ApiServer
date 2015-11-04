@@ -194,7 +194,7 @@ if Meteor.isClient
     withPostTTS: withPostTTS
     popUpBoxStyle:()->
       if Session.get('displaySectionReviewBox') is true
-        "height: auto;width: 80%;min-width: 80%;"
+        "height: auto;width: 80%;min-width: 80%;border-radius: 5px;"
       else
         "height: auto;width: 100%;min-width: 100%;"
     displayPostContent:()->
