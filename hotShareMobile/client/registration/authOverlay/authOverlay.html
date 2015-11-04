@@ -3,27 +3,27 @@
   <div class="authOverlay">
 <!--    <div class="agreeDeal">-->
   <div class="agreeDeal" style="display:none">
-    <span>匿名使用表示已经同意</span>&nbsp;&nbsp;&nbsp;<a href="/deal_page">故事贴服务告知</a>&nbsp;&nbsp;&nbsp;
+    <span>{{_ "anonymousAgree"}}</span>&nbsp;&nbsp;&nbsp;<a href="/deal_page">{{_ "gstServiceSpec"}}</a>&nbsp;&nbsp;&nbsp;
       <br>
       <br>
-      <span>友情提示:匿名账户的数据在程序卸载后可能会无法继续使用，如需永久保存数据，请注册或登陆使用。</span>
+      <span>{{_ "anonymousWarn"}}</span>
       <br>
-      <button id="agree" style="border: 1px solid #e7e7e7;margin: 0 15px;" class="leftButton btn btn-default">知道了</button>
+      <button id="agree" style="border: 1px solid #e7e7e7;margin: 0 15px;" class="leftButton btn btn-default">{{_ "kownIt"}}</button>
     </div>
     {{#if isLoggingIn}}
       <div>{{>spinner}}</div>
-      <div id="loggingIn">很卖萌的登录中~~~</div>
+      <div id="loggingIn">{{_ "funnyLogin"}}</div>
     {{else}}
-    <div id="register"><i class="fa fa-envelope"></i>&nbsp;使用电子邮件注册</div>
+    <div id="register"><i class="fa fa-envelope"></i>&nbsp;{{_ "regWithEmail"}}</div>
     <div id="anonymous"><i class="fa fa-user"></i>&nbsp;{{_ "anonymous"}}</div>
     <!--
     <div id="weibo"><i class="fa fa-weibo"></i>&nbsp;使用新浪微博登录</div>
     <div id="wechat"><i class="fa fa-weixin"></i>&nbsp;使用微信登录</div>
     <div id="qq"><i class="fa fa-qq"></i>&nbsp;使用QQ登录</div>
     -->
-    <div id="login">已经有帐户？登录</div>
+    <div id="login">{{_ "loginWithAccount"}}</div>
     {{/if}}
-    <div class="company">昆明讯动科技有限公司</div>
+    <div class="company">{{_ "kmxdkj"}}</div>
   </div>
   <div class="register" style="display:none">
     {{> signupForm}}
@@ -40,11 +40,11 @@
   <div class="webHome">
   {{#if resetPassword}}
     <div class="resetPwdTopbar">
-      故事贴 - 安全
+      {{_ "gstSecurity"}}
     </div>
     <div class="resetPwddiv">
           <div style="width:100%;height:40px;background:#f0f0f0;padding-left: 5%;padding-top: 2px;">
-              <h4>重设密码</h4>
+              <h4>{{_ "resetPassword"}}</h4>
           </div>
         <form id="new-password" action="action">
           <div class="row">
@@ -59,26 +59,26 @@
                           </div>
                       </div>
                       <div class="col-md-8 col-lg-8" style="padding:20px;">
-                          <div><label>你的故事贴密码已经重置成功</label></div>
-                          <div>现在可以用新密码登录你的故事贴帐号。</div>
+                          <div><label>{{_ "resetPasswordSuc"}}</label></div>
+                          <div>{{_ "loginWithNewPassword"}}</div>
                       </div>
                       <div class="col-md-1 col-lg-1"></div>
                   </div>
                 {{else}}
-                  <div>现在你可以重新设定您的故事贴密码</div>
+                  <div>{{_ "canSetNewPassword"}}</div>
                   <br>
                   <div class="errorInfo" style="color:red;display:none;"><i class="fa fa-exclamation-circle"></i>  {{pwdErrorInfo}}</div>
                   <br>
                   <p>
-                  <label>新密码：</label>
+                  <label>{{_ "newPassword"}}</label>
                   <input type="password" class="form-control" id="new-password-password" />
-                  <label style="color:grey;">6到16个字符。</label>
+                  <label style="color:grey;">{{_ "sixToSixteenCh"}}</label>
                   </p>
                   <br>
                   <p>
-                  <label>重复输入新密码：</label>
+                  <label>{{_ "inputPasswordAgain"}}</label>
                   <input type="password" class="form-control" id="new-password-repeat" />
-                  <label style="color:grey;">6到16个字符。</label>
+                  <label style="color:grey;">{{_ "sixToSixteenCh"}}</label>
                   </p>
                 {{/if}}
             </div>
@@ -97,26 +97,26 @@
     <br>
     <br>
     <br>
-    <center><h2>故事贴</h2></center>
+    <center><h2>{{_ "gst"}}</h2></center>
     <br>
-    <center><h4>一帖 一故事，分享 朋友圈</h4></center>
+    <center><h4>{{_ "gstAdWord"}}</h4></center>
     <br>
     <br>
     <br>
     <div class="downloadBtn">
-        <a href="http://www.pgyer.com/Yp07/" target="_blank" class="iosBtn download"><i class="fa fa-apple"></i> Iphone用户下载</a>
-        <a href="http://www.pgyer.com/tiegushi/" target="_blank" class="androidBtn download"><i class="fa fa-android"></i> Android用户下载</a>
+        <a href="http://www.pgyer.com/Yp07/" target="_blank" class="iosBtn download"><i class="fa fa-apple"></i> {{_ "linkDownloadIPhone"}}</a>
+        <a href="http://www.pgyer.com/tiegushi/" target="_blank" class="androidBtn download"><i class="fa fa-android"></i> {{_ "linkDownloadAndroid"}}</a>
     </div>
   {{/if}}
     <div class="webFooter">
       <div class="companyInfo">
         <div class="company">
-          <span>© 2015 故事贴</span>
+          <span>{{_ "gstPrivacy"}}</span>
           <span class="dot">·</span>
-          <span>昆明讯动科技有限公司</span>
+          <span>{{_ "kmxdkj"}}</span>
         </div>
         <div class="miibeian">
-          <a href="http://www.miibeian.gov.cn/" target="_blank">滇 ICP 备 14007324号</a>
+          <a href="http://www.miibeian.gov.cn/" target="_blank">{{_ "gstProductSerial"}}</a>
         </div>
       </div>
     </div>
