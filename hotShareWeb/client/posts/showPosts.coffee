@@ -149,6 +149,7 @@ if Meteor.isClient
             onClose: ->
               Session.set("displaySectionReviewBox", false)
               amplify.store('section_'+Session.get('channel'),true)
+          $('.popUpBox').attr('id','commentOverlayBox')
       if window.lastScroll - st > 5
         $('.showPosts .head').fadeIn 300
         showSocialBar()
@@ -780,10 +781,40 @@ if Meteor.isClient
   Template.SectionReviewBox.events
     'click #overlayPcommitReportBtn' :(e)->
       console.log "=============clickOverlayPcommitReportBtn()=========================="
+      i = Session.get('focusedIndex')
+      content = $('#overlayPcommitReport').val()
+      clickUp = Session.get("clickedCommentOverlayThumbsUp")
+      clickDown = Session.get("clickedCommentOverlayThumbsDown")
+      if content isnt "" or clickUp is true or clickDown is true
+        if clickUp is true and content is ""
+          commentOverlayThumbsUpHandler(i)
+        if clickDown is true and content is ""
+          commentOverlayThumbsDownHandler(i)
+        if content isnt "" and clickUp is false and clickDown is false
+          pcommentReportHandler(i,content)
+        if content isnt "" and clickUp is true
+          pcommentReportHandler(i,content)
+        if content isnt "" and clickDown is true
+          pcommentReportHandler(i,content)
+        $('body').removeAttr('style')
+        $('.popUpBox').removeAttr('id')
+        if PopUpBox
+          PopUpBox.close()
+        $('#overlayPcommitReport').val("")
+        amplify.store('section_'+Session.get('channel'),true)
+        Meteor.setTimeout ->
+            Session.set("clickedCommentOverlayThumbsUp",false)
+            Session.set("clickedCommentOverlayThumbsDown",false)
+          ,3000
+        refreshPostContent()
+        toastr.success('您对本段文字引用的评价已生效')
+      else
+        toastr.success('请对此段文字进行评价')
     'click .commentOverlayLater' :(e)->
       console.log "===============clickCommentOverlayLater()========================"
       amplify.store('section_'+Session.get('channel'),true)
       $('body').removeAttr('style')
+      $('.popUpBox').removeAttr('id')
       if PopUpBox
         PopUpBox.close()
     'click .thumbsUp' :(e)->
