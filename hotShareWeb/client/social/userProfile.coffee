@@ -126,9 +126,24 @@ if Meteor.isClient
       requesterIcon:Meteor.user().profile.icon
       requesterId:Meteor.userId()
     }
+  openPostbyPostId = (postId)->
+    if PopUpBox
+      PopUpBox.close()
+    if postId isnt Session.get('postContent')._id
+      $(window).children().off()
+      $(window).unbind('scroll')
+      #Meteor.setTimeout ()->
+      Router.go '/posts/'+postId
+      #,300
   # Initialize the Swiper
   Meteor.startup ()->
     @UserProfilesSwiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
+    UserProfilesSwiper.click 'userProfilePage1','.postImages ul li',(e,t)->
+      openPostbyPostId(e.currentTarget.id)
+    UserProfilesSwiper.click 'userProfilePage2','.postImages ul li',(e,t)->
+      openPostbyPostId(e.currentTarget.id)
+    UserProfilesSwiper.click 'userProfilePage3','.postImages ul li',(e,t)->
+      openPostbyPostId(e.currentTarget.id)
   Template.userProfile.helpers
     Swiper: -> UserProfilesSwiper
   Template.userProfile.onRendered ->
@@ -292,6 +307,7 @@ if Meteor.isClient
     'click #sendChatMessage': ()->
       Session.set("messageDialog_to", {id: Session.get("ProfileUserId1"), type: 'user'})
       Session.set("Social.LevelOne.Menu", 'messageDialog')
+    ###
     'click .postImages ul li':(e)->
       postId = e.currentTarget.id
       if PopUpBox
@@ -302,6 +318,7 @@ if Meteor.isClient
         #Meteor.setTimeout ()->
         Router.go '/posts/'+postId
         #,300
+    ###
     'click #addToContactList': ()->
       addToContactList("ProfileUserId1")
   Template.userProfilePage2.rendered=->
@@ -358,6 +375,7 @@ if Meteor.isClient
     'click #sendChatMessage': ()->
       Session.set("messageDialog_to", {id: Session.get("ProfileUserId2"), type: 'user'})
       Session.set("Social.LevelOne.Menu", 'messageDialog')
+    ###
     'click .postImages ul li':(e)->
       postId = e.currentTarget.id
       if PopUpBox
@@ -368,6 +386,7 @@ if Meteor.isClient
         #Meteor.setTimeout ()->
         Router.go '/posts/'+postId
         #,300
+    ###
     'click #addToContactList': ()->
       addToContactList("ProfileUserId2")
 
@@ -424,6 +443,7 @@ if Meteor.isClient
     'click #sendChatMessage': ()->
       Session.set("messageDialog_to", {id: Session.get("ProfileUserId3"), type: 'user'})
       Session.set("Social.LevelOne.Menu", 'messageDialog')
+    ###
     'click .postImages ul li':(e)->
       postId = e.currentTarget.id
       if PopUpBox
@@ -434,5 +454,6 @@ if Meteor.isClient
         #Meteor.setTimeout ()->
         Router.go '/posts/'+postId
         #,300
+    ###
     'click #addToContactList': ()->
       addToContactList("ProfileUserId3")
