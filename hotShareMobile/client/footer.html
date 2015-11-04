@@ -5,13 +5,13 @@
             <div class="btn-group">
               <a id="home" class="foot-btn btn btn-default {{focus_style 'home'}}">
                 <i class="fa fa-home" style="font-size: 26px;"></i>
-                <div class="footerName">首页</div>
+                <div class="footerName">{{_ "homePage"}}</div>
               </a>
             </div>
             <div class="btn-group">
               <a id="search" class="foot-btn btn btn-default {{focus_style 'search'}}">
                 <i class="fa fa-search" style="font-size: 24px;"></i>
-                <div class="footerName">探索</div>
+                <div class="footerName">{{_ "discovery"}}</div>
               </a>
             </div>
             <div class="btn-group">
@@ -22,7 +22,7 @@
             <div class="btn-group">
               <a id="bell" class="foot-btn btn btn-default {{focus_style 'bell'}}">
                 <i class="fa fa-bell" style="font-size: 22px;"></i>
-                <div class="footerName">消息</div>
+                <div class="footerName">{{_ "message"}}</div>
                 {{#if is_wait_read_count wait_read_count}}
                 <div class="msg_count">{{wait_read_count}}</div>
                 {{/if}}
@@ -31,7 +31,7 @@
             <div class="btn-group">
               <a id="user" class="foot-btn btn btn-default {{focus_style 'user'}}">
                 <i class="fa fa-user" style="font-size: 24px;"></i>
-                <div class="footerName">我</div>
+                <div class="footerName">{{_ "me"}}</div>
               </a>
             </div>
         </div>
@@ -43,9 +43,9 @@
                 <div class="modal-header">
                     <h4 class="modal-title">Dialog</h4>
                 </div>-->
-                <button type="button" id="album-select" class="btn btn-default">从相册选取照片</button>
-                <button type="button" id="web-import" class="btn btn-default">从粘贴板导入链接</button>
-                <button type="button" id="photo-select" class="btn btn-default">拍照</button>
+                <button type="button" id="album-select" class="btn btn-default">{{_ "selectPicFromGallery"}}</button>
+                <button type="button" id="web-import" class="btn btn-default">{{_ "importFromPaster"}}</button>
+                <button type="button" id="photo-select" class="btn btn-default">{{_ "takePicture"}}</button>
             </div>
         </div>
     </div>

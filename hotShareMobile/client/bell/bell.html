@@ -2,9 +2,9 @@
   <div class="bell">
     <div class="head">
       {{#if loading}}
-        <img class="icon" src="/swiper.gif" width='16' height='16'> <strong>收取中...</strong>
+        <img class="icon" src="/swiper.gif" width='16' height='16'> <strong>{{_ "receiving"}}</strong>
       {{else}}
-        <strong>动态</strong>
+        <strong>{{_ "newInfo"}}</strong>
       {{/if}}
       <div id="follow" class="leftButton"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
     </div>
@@ -15,13 +15,13 @@
       {{/if}}
       -->
       {{#if loadError}}
-          <div>加载失败，请检查网络设置或稍后重试</div>
+          <div>{{_ "loadFailNotification"}}</div>
       {{/if}}
       {{#each eventFeeds}}
         {{#if isPcommentOwner eventType}}
             <a href="/posts/{{postId}}" class="contentList">
                 <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
-                <div id="{{postId}}" class="alarm">{{ownerName}} 点评了您的故事 《{{postTitle}}》</div>
+                <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "commentYourStory"}} 《{{postTitle}}》</div>
                 <div class="createAt">{{time_diff createdAt}}</div>
             </a>
             <div class="line">
@@ -31,7 +31,7 @@
         {{#if isReComment eventType}}
           <a href="/posts/{{postId}}" class="contentList">
             <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
-            <div id="{{postId}}" class="alarm">{{ownerName}} 回复了您参与讨论的故事 《{{postTitle}}》</div>
+            <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "replyStoryYouJoin"}} 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
           </a>
           <div class="line">
@@ -41,7 +41,7 @@
         {{#if isComment eventType}}
           <a href="/posts/{{postId}}" class="contentList">
             <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
-            <div id="{{postId}}" class="alarm">{{ownerName}} 回复了您的故事 《{{postTitle}}》</div>
+            <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "replyYourStory"}} 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
           </a>
           <div class="line">
@@ -51,7 +51,7 @@
         {{#if selfPosted eventType}}
           <a href="/posts/{{postId}}" class="contentList">
             <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
-            <div id="{{postId}}" class="alarm">{{ownerName}} 发布了新故事 《{{postTitle}}》</div>
+            <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "publishNewStory"}} 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
           </a>
           <div class="line">
@@ -61,7 +61,7 @@
         {{#if isRecommand eventType}}
           <a href="/posts/{{postId}}" class="contentList">
             <img class="icon" src="{{recommanderIcon}}" width='30' height='30'>
-            <div id="{{postId}}" class="alarm">{{recommander}} 推荐您一个新故事 《{{postTitle}}》</div>
+            <div id="{{postId}}" class="alarm">{{recommander}} {{_ "recommendAStory"}} 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
           </a>
           <div class="line">
@@ -71,12 +71,12 @@
         {{#if isGetRequest eventType}}
           <div id="{{requesterId}}" class="contentList">
             <img class="icon" src="{{requesterIcon}}" width='30' height='30'>
-            <div id="{{requesterId}}" class="alarm">{{requester}}邀请您加为好友!</div>
+            <div id="{{requesterId}}" class="alarm">{{requester}}{{_ "askFriends"}}</div>
             <div class="createAt">{{time_diff createdAt}}</div>
             {{#if isFriend requesterId}}
-            <div class='button'>已添加</div>
+            <div class='button'>{{_ "alreadyAdded"}}</div>
             {{else}}
-            <div class='button acceptrequest'>接受邀请</div>
+            <div class='button acceptrequest'>{{_ "acceptInvitation"}}</div>
             {{/if}}
           </div>
           <div class="line">
@@ -89,9 +89,9 @@
             <div id="{{requesteeId}}" class="alarm">{{requestee}}</div>
             <div class="createAt">{{time_diff createdAt}}</div>
             {{#if isFriend requesteeId}}
-            <div class='button'>已添加</div>
+            <div class='button'>{{_ "alreadyAdded"}}</div>
             {{else}}
-            <div class='button'>已发送邀请</div>
+            <div class='button'>{{_ "alreadySendInvitation"}}</div>
             {{/if}}
           </div>
           <div class="line">
@@ -101,7 +101,7 @@
       {{/each}}
       {{#if moreResults}}
       <div id="showMoreFeedsResults" style="margin-left: 25px;">
-        <span class="loading">加载中...</span>
+        <span class="loading">{{_ "loading"}}</span>
       </div>
       {{/if}}
     </div>
