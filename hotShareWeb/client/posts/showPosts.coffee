@@ -196,7 +196,7 @@ if Meteor.isClient
       if Session.get('displaySectionReviewBox') is true
         "height: auto;width: 80%;min-width: 80%;border-radius: 5px;"
       else
-        "height: auto;width: 100%;min-width: 100%;"
+        "height: 100%;width: 100%;min-width: 100%;"
     displayPostContent:()->
       Session.get('displayPostContent')
     getMainImageHeight:()->
