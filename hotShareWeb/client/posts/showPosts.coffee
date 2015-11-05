@@ -192,6 +192,22 @@ if Meteor.isClient
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
+    clickedCommentOverlayThumbsUp:()->
+      i = Session.get('focusedIndex')
+      userId = Meteor.userId()
+      post = Session.get("postContent").pub
+      if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].likeUserId[userId] is true
+        return true
+      else
+        return false
+    clickedCommentOverlayThumbsDown:()->
+      i = Session.get('focusedIndex')
+      userId = Meteor.userId()
+      post = Session.get("postContent").pub
+      if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].dislikeUserId[userId] is true
+        return true
+      else
+        return false
     popUpBoxStyle:()->
       if Session.get('displaySectionReviewBox') is true
         "height: auto;width: 80%;min-width: 80%;border-radius: 5px;"
@@ -324,6 +340,22 @@ if Meteor.isClient
 #      $("body").css("overflow","visible");
 #      $('.commentOverlay').bPopup().close()
 #      amplify.store('section_'+Session.get('channel'),true)
+    'click .thumbsUp': (e)->
+      i = Session.get('focusedIndex')
+      commentOverlayThumbsUpHandler(i)
+    'click .thumbsDown': (e)->
+      i = Session.get('focusedIndex')
+      commentOverlayThumbsDownHandler(i)
+    'click .commentGray': (e)->
+      Session.set("pcommetsId","")
+      backgroundTop = 0-$(window).scrollTop()
+      Session.set('backgroundTop', backgroundTop);
+      $('.pcommentInput,.alertBackground').fadeIn 300, ()->
+        $('#pcommitReport').focus()
+      $('#pcommitReport').focus()
+
+      $('.showBgColor').css('min-width',$(window).width())
+      Session.set "pcommentIndexNum", Session.get('focusedIndex')
     'click .post_header .post_abstract .abstract_chapter a' :(e)->
       if $('.sCurrent').length
         scrolltop=$('.sCurrent').offset().top
