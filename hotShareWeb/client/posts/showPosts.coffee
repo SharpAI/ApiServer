@@ -325,21 +325,6 @@ if Meteor.isClient
         console.log('Selected index '+self.index)
         Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
   Template.showPosts.events
-#    'click .commentOverlay .commentOverlayLater' :(e)->
-#      console.log "hehe"
-#      $("body").css("overflow","visible");
-#      $('.commentOverlay').bPopup().close()
-#      amplify.store('section_'+Session.get('channel'),true)
-#    'click .commentOverlay .thumbsUp' :(e)->
-#      toastr.success('您对本段文字引用的评价已生效')
-#      $("body").css("overflow","visible");
-#      $('.commentOverlay').bPopup().close()
-#      amplify.store('section_'+Session.get('channel'),true)
-#    'click .commentOverlay .thumbsDown' :(e)->
-#      toastr.success('您对本段文字引用的评价已生效')
-#      $("body").css("overflow","visible");
-#      $('.commentOverlay').bPopup().close()
-#      amplify.store('section_'+Session.get('channel'),true)
     'click .thumbsUp': (e)->
       i = Session.get('focusedIndex')
       commentOverlayThumbsUpHandler(i)
