@@ -43,5 +43,33 @@
   "alreadyAdded": "已添加",
   "acceptInvitation": "接受邀请",
   "alreadySendInvitation": "已发送邀请",
-  "loading": "加载中..."
+  "loading": "加载中...",
+  //signupForm.html
+  "createAccount": "创建账户",
+  "signUpMeansWhat": "如果注册就意味着同意了用户协议",
+  "userName": "用户名",
+  "passWord": "密码",
+  "emailAddress": "邮箱",
+  //end
+  //loginForm.html
+  "logIn": "登陆",
+  "forgotPassword": "忘了密码?",
+  //end
+  //registerFollow.html
+  "followPeople": "关注您喜欢的人",
+  "knowActivity": "及时了解对方的动态",
+  "chooseAtLeast": "至少再关注",
+  "toFollow": "个讲故事者可以继续",
+  "conTinue": "继续",
+  //end
+  //user.html
+  "mySelf": "个人信息",
+  "uploadFigure": "上传头像",
+  "followers": " 名关注者",
+  "ppl": "人",
+  "followin": "正在关注",
+  "draft": " 份草稿",
+  "checkAll": "查看全部 ",
+  "numOfStory": " 个故事"
+  //end
 }

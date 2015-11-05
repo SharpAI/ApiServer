@@ -6,7 +6,7 @@
   "kownIt": "Accept",
   "funnyLogin": "Logging in",
   "regWithEmail": "Sign up with Email",
-  "loginWithAccount": "Have an account?Log in",
+  "loginWithAccount": "Have an account? Log in",
   "kmxdkj": "Kunming Xundong",
   "gstSecurity": "HotShare - Terms and Privacy",
   "resetPassword": "Reset Password",
@@ -15,7 +15,7 @@
   "canSetNewPassword": "Now you can reset your new password.",
   "newPassword": "New Password: ",
   "sixToSixteenCh": "6 to 16 digits ",
-  "inputPasswordAgain": "Enter new password again: ",
+  "inputPasswordAgain": "Confirm password: ",
   "OK": "Complete",
   "confirm": "Confirm",
   "gst": "HotShare",
@@ -43,5 +43,37 @@
   "alreadyAdded": "Already Added",
   "acceptInvitation": "Accept",
   "alreadySendInvitation": "Already Sent",
-  "loading": "Loading..."
+  "loading": "Loading...",
+  //signupForm.html
+  "createAccount": "Sign up",
+  "signUpMeansWhat": "Sign up means you accept our terms and privacy.",
+  "userName": "Username",
+  "passWord": "Password",
+  "emailAddress": "Email",
+  //end
+  //loginForm.html
+  "logIn": "Log in",
+  "forgotPassword": "Forgot your password?",
+  //end
+   //registerFollow.html
+  "chooseAtLeast": "Choose at least ",
+  "toFollow": " story tellers to follow.",
+  //end
+   //registerFollow.html
+  "followPeople": "Follow people",
+  "knowActivity": "Read their latest stories",
+  "chooseAtLeast": "Follow at least ",
+  "toFollow": " story tellers to continue.",
+  "conTinue": "Continue",
+  //end
+   //user.html
+  "mySelf": "Me",
+  "uploadFigure": "Figure image",
+  "followers": " followers",
+  "ppl": "",
+  "followin": "Following ",
+  "draft": " drafts",
+   "checkAll": "Read all ",
+  "numOfStory": " stories"
+  //end
 }
