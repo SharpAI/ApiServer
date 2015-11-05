@@ -7,27 +7,27 @@
     <div class="head">
       {{#if mainImage}}
         {{#if isReviewMode '3'}}
-            <div class="leftButton cancleCrop" style="color: #00c4ff;margin-top:0px;">取消</div>
-            <div>缩放和裁剪</div>
-            <div id="cropDone" class="rightButton" style="color: #00c4ff;margin-top:0px;">完成</div>
+            <div class="leftButton cancleCrop" style="color: #00c4ff;margin-top:0px;">{{_ "cancel"}}</div>
+            <div>{{_ "inflateAndDeflate"}}</div>
+            <div id="cropDone" class="rightButton" style="color: #00c4ff;margin-top:0px;">{{_ "OK"}}</div>
         {{/if}}
         {{#if isReviewMode '2'}}
             <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
-            <div id="publish" class="rightButton">存储</div>
+            <div id="publish" class="rightButton">{{_ "store"}}</div>
         {{/if}}
         {{#if isReviewMode '1'}}
             <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
-            <div id="edit" class="secondRightButton" style="color: #00c4ff;margin-top:0px;">编辑</div>
-            <div id="delete" class="rightButton" style="color: #00c4ff;margin-top:0px;">删除</div>
+            <div id="edit" class="secondRightButton" style="color: #00c4ff;margin-top:0px;">{{_ "edit"}}</div>
+            <div id="delete" class="rightButton" style="color: #00c4ff;margin-top:0px;">{{_ "delete"}}</div>
         {{/if}}
         {{#if isReviewMode '0'}}
-            <div class="leftButton cancle" style="color: #00c4ff;margin-top:0px;">取消</div>
-            <div id="saveDraft" class="secondRightButton" style="color: #00c4ff;margin-top:0px;">存储草稿</div>
-            <div id="publish" class="rightButton" style="font-weight:bold;color: #00c4ff;margin-top:0px;">发表</div>
+            <div class="leftButton cancle" style="color: #00c4ff;margin-top:0px;">{{_ "cancel"}}</div>
+            <div id="saveDraft" class="secondRightButton" style="color: #00c4ff;margin-top:0px;">{{_ "saveDraft"}}</div>
+            <div id="publish" class="rightButton" style="font-weight:bold;color: #00c4ff;margin-top:0px;">{{_ "publish"}}</div>
         {{/if}}
       {{else}}
         <div class="leftButton cancle"><i class="fa fa-times"></i></div>
-        <div>请添加图文</div>
+        <div>{{_ "plsAddImageAndText"}}</div>
       {{/if}}
     </div>
         <div class="content">
@@ -42,11 +42,11 @@
                 </ul>
             </div>
         </div>
-      <div id="ViewOnWeb" style="{{displayUrl}}"><i class="fa fa-globe"></i>     阅读原文</div>
+      <div id="ViewOnWeb" style="{{displayUrl}}"><i class="fa fa-globe"></i>{{_ "readOriginalText"}}</div>
       <div class="linkInputBox">
         <input type="text" class="form-control form-group-material-light-blue" id="linkToBeInserted">
-        <button class="btn btn-material-light-blue btn-lg" id="pasteLink">黏贴链接</button>
-        <button class="btn btn-material-light-blue btn-lg" id="insertLink">插入链接</button>
+        <button class="btn btn-material-light-blue btn-lg" id="pasteLink">{{_ "pasteLink"}}</button>
+        <button class="btn btn-material-light-blue btn-lg" id="insertLink">{{_ "insertLink"}}</button>
       </div>
       <div id="linkOption-toolbar-options" style='visibility: hidden;'>
           <a href="#" id='del'><i class="fa fa-trash"></i></a>
@@ -71,20 +71,20 @@
         <a href="#" id='align-to-right'><i class="fa fa-align-right"></i></a>
       </div>
       <div id="text-font-toolbar-options" style='visibility: hidden;'>
-        <a href="#" id='font-normal' style="font-family: Copernicus-Book, serif;font-size: 120%;font-style: normal;color:white;font-variant: normal;font-weight: normal;">正常</a>
-        <a href="#" id='font-quota' style="font-family: MarkWeb-ExtraLight, sans-serif;font-style: normal;font-variant: normal;color:white;font-weight: normal;font-size:120%">引用</a>
+        <a href="#" id='font-normal' style="font-family: Copernicus-Book, serif;font-size: 120%;font-style: normal;color:white;font-variant: normal;font-weight: normal;">{{_ "normal"}}</a>
+        <a href="#" id='font-quota' style="font-family: MarkWeb-ExtraLight, sans-serif;font-style: normal;font-variant: normal;color:white;font-weight: normal;font-size:120%">{{_ "reference"}}</a>
       </div>
       <div class="importProgressBar" style="display:none">
           <div class="progressBarBg">
               <div class="progressBar">
-                  <div style="text-align: center;color:black"><p>帖子那么大，让我分析下</p></div>
-                  <div style="text-align: center;color:black"><p>请稍候...</p></div>
+                  <div style="text-align: center;color:black"><p>{{_ "tooBigAndWait"}}</p></div>
+                  <div style="text-align: center;color:black"><p>{{_ "plsWait"}}</p></div>
                   <div class="progress progress-striped active">
                       <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                         {{progressBarWidth}}%
                       </div>
                       <div class="btnDelayPublish">
-                          <div style="text-align: center;"><button id="cancelImport" class="btn btn-material-light-blue">中断,跳过未导入内容</button></div>
+                          <div style="text-align: center;"><button id="cancelImport" class="btn btn-material-light-blue">{{_ "interruptAndIgnore"}}</button></div>
                       </div>
                   </div>
               </div>
@@ -94,7 +94,7 @@
       <div class="toEditingProgressBar" style="display:none">
           <div class="progressBarBg">
               <div class="progressBar">
-                  <div style="text-align: center;color:black"><p>总计 <span class="total">0</span> 段内容，<span class="processed">0</span> 段已处理，请稍候...</p></div>
+                  <div style="text-align: center;color:black"><p>{{_ "total"}}<span class="total">0</span>{{_ "numOfContent"}}<span class="processed">0</span>{{_ "numOfProcessed"}}</p></div>
                   <div class="progress progress-striped active">
                       <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                           0%

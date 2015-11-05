@@ -1,4 +1,5 @@
 { 
+  //authOverlay.html
   "anonymous": "匿名使用",
   "anonymousAgree": "匿名使用表示已经同意",
   "gstServiceSpec": "故事贴服务告知",
@@ -24,6 +25,8 @@
   "linkDownloadAndroid": "Android用户下载",
   "gstPrivacy": "© 2015 故事贴",
   "gstProductSerial": "滇 ICP 备 14007324号",
+  //end
+  //footer.html
   "homePage": "首页",
   "discovery": "探索",
   "message": "消息",
@@ -31,6 +34,8 @@
   "selectPicFromGallery": "从相册选取照片",
   "importFromPaster": "从粘贴板导入链接",
   "takePicture": "拍照",
+  //end
+  //bell.html
   "receiving": "收取中...",
   "newInfo": "动态",
   "loadFailNotification": "加载失败，请检查网络设置或稍后重试",
@@ -44,6 +49,7 @@
   "acceptInvitation": "接受邀请",
   "alreadySendInvitation": "已发送邀请",
   "loading": "加载中...",
+  //end
   //signupForm.html
   "createAccount": "创建账户",
   "signUpMeansWhat": "如果注册就意味着同意了用户协议",
@@ -70,6 +76,35 @@
   "followin": "正在关注",
   "draft": " 份草稿",
   "checkAll": "查看全部 ",
-  "numOfStory": " 个故事"
+  "numOfStory": " 个故事",
+  //end
+  //savedDrafts.html
+  "draftTxt": "草稿",
+  "clearDraftBox": "清空草稿箱",
+  //end
+  //home.html
+  //"draftTxt": "故事贴", duplicate with authOverlay.html
+  //end
+  //addPost.html
+  "cancel": "取消",
+  //"OK": "完成", duplicate
+  "inflateAndDeflate": "缩放和裁剪",
+  "store": "存储",
+  "edit": "编辑",
+  "delete": "删除",
+  "saveDraft": "存储草稿",
+  "publish": "发表",
+  "plsAddImageAndText": "请添加图文",
+  "readOriginalText": "     阅读原文",
+  "pasteLink": "黏贴链接",
+  "insertLink": "插入链接",
+  "normal": "正常",
+  "reference": "引用",
+  "tooBigAndWait": "帖子那么大，让我分析下",
+  "plsWait": "请稍候...",
+  "interruptAndIgnore": "中断,跳过未导入内容",
+  "total": "总计 ",
+  "numOfContent": " 段内容，",
+  "numOfProcessed": " 段已处理，请稍候..."
   //end
 }
