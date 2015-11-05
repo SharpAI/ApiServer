@@ -27,7 +27,7 @@
 }
 .showPosts .content .post_abstract {
   position: relative;
-  padding: 32px 33px 48px 40px;
+  padding: 32px 16px 55px 16px;
   margin: 30px 32px;
   border: 1px solid #dbdbdb;
 }
@@ -38,14 +38,15 @@
   right: 3px;
   bottom:3px;
   left: 3px;
-  border: 1px solid #dbdbdb
+  border: 1px solid #dbdbdb;
 }
 .showPosts .content .post_abstract .abstract_sentence{
   position: relative;
+  padding-right: 33px;
   margin-bottom: 14px;
   font-size: 16px;
   color: #000;
-  line-height: 26px
+  line-height: 26px;
 }
 .showPosts .content .post_abstract .abstract_sentence:before{
   position: absolute;
@@ -57,8 +58,12 @@
   background-size: 100%;
   content: "";
   top: 3px;
-  left: -20px;
+//  left: -20px;
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAOBAMAAAA7w+qHAAAALVBMVEUAAAA/Pz8/Pz8/Pz9AQEA/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz9AQEBAQEBAQECjVS6AAAAADnRSTlMAUOXdDu111cK3poJYPFYfJCwAAAA/SURBVAjXY2BgcCuAEjxBAlBi3xIGCMH2ggFK3HsII+Y9gRFx7x4LQIh3794pwIkHxBB6794ZQAjhd48EwAQAOew9Z9cQjFEAAAAASUVORK5CYII=");
+}
+.showPosts .content .post_abstract .abstract_sentence span{
+    position: relative;
+    left: 20px;
 }
 .showPosts .content .post_abstract .abstract_sentence:after{
   position: absolute;
@@ -70,7 +75,8 @@
   background-size: 100%;
   content: "";
   bottom: 3px;
-  right: -14px;
+  right: 0px;
+//  right: -14px;
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAOBAMAAAA7w+qHAAAAKlBMVEUAAAA/Pz8/Pz8/Pz8+Pj4/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz9AQEBAQEDWzkgUAAAADXRSTlMAUeXdD+111cK3poI8ZYuCQgAAAEBJREFUCNdjELp7WQBC2N69qwAh7t69e4EYQhdOCN+9GwAhGFjuToASjHcPQAmOawwQgmXtBighFMgAJcocoAQAAgc5gXBc0bQAAAAASUVORK5CYII=");
 }
 .showPosts .content .abstract_chapter{
@@ -411,3 +417,7 @@
   display:none;
   background: rgba(130,130,130,0);
 }
+.showPosts .content .abstract_comment {float: right;margin-top: 10px;font-size: 20px;text-align: center;width: 100%;border-top: 1px solid #ebebeb;}
+.showPosts .content .abstract_comment .thumbsDown{position: relative;top: 8px;}
+.showPosts .content .abstract_comment .thumbsUp{margin: 0 25%; position: relative; top: 3px;}
+.showPosts .content .abstract_comment .commentGray{position: relative;top: 8px;}

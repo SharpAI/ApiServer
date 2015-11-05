@@ -47,6 +47,19 @@
                   <div class="post_abstract">
                       <div class="abstract_sentence"><span>{{getAbstractSentence}}</span></div>
                       <div class="abstract_chapter">――节选自 第{{getAbstractSentenceIndex}}段 {{title}}{{#if addontitle}}：{{addontitle}}{{/if}}</div>
+                      <div class="abstract_comment">
+                        {{#if clickedCommentOverlayThumbsDown}}
+                          <img class="thumbsDown" src="/thumbsDownBlue.png" width="20" height="20">
+                        {{else}}
+                          <img class="thumbsDown" src="/thumbsDownGray.png" width="20" height="20">
+                        {{/if}}
+                        {{#if clickedCommentOverlayThumbsUp}}
+                          <img class="thumbsUp" src="/thumbsUpPink.png" width="20" height="20">
+                        {{else}}
+                          <img class="thumbsUp" src="/thumbsUpGray.png" width="20" height="20">
+                        {{/if}}
+                          <img class="commentGray" src="/commentGray.png" width="20" height="20">
+                    </div>
                   </div>
               </div>
           {{/if}}
