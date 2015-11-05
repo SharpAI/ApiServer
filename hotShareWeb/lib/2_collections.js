@@ -307,35 +307,34 @@ if(Meteor.isServer){
             }
         });
     }
-    var publicPostsPublisherDeferHandle = function(self,postId) {
+    var publicPostsPublisherDeferHandle = function(userId,postId) {
         Meteor.defer(function(){
             var needUpdateMeetCount = false;
             try {
-                if(self.userId && postId ){
-                    if( Viewers.find({postId:postId,userId:self.userId}).count() === 0 ){
+                if(userId && postId ){
+                    if( Viewers.find({postId:postId,userId:userId}).count() === 0 ){
                         needUpdateMeetCount = true;
-                        var userinfo = Meteor.users.findOne({_id: self.userId },{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
+                        var userinfo = Meteor.users.findOne({_id: userId },{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
                         if(userinfo){
                             Viewers.insert({
                                 postId:postId,
                                 username:userinfo.profile.fullname? userinfo.profile.fullname: userinfo.username,
-                                userId:self.userId,
+                                userId:userId,
                                 userIcon: userinfo.profile.icon,
                                 anonymous: userinfo.profile.anonymous,
                                 createdAt: new Date()
                             });
                         }
                     } else {
-                        userinfo = Meteor.users.findOne({_id: self.userId},{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
+                        userinfo = Meteor.users.findOne({_id: userId},{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
                         if(userinfo) {
-                            Viewers.update({userId: self.userId, postId: postId}, {$set: {createdAt: new Date()}});
+                            Viewers.update({userId: userId, postId: postId}, {$set: {createdAt: new Date()}});
                         }
                     }
                 }
             } catch (error){
             }
             try{
-                var userId = self.userId;
                 var views=Viewers.find({postId:postId});
                 if(views.count()>0){
                     views.forEach(function(data){
@@ -994,6 +993,7 @@ if(Meteor.isServer){
         else{
             var self = this;
             self.count = 0;
+            publicPostsPublisherDeferHandle(userId,postId);
             var handle = Meets.find({me: userId,meetOnPostId:postId},{sort: {createdAt: -1},limit:limit}).observeChanges({
                 added: function (id,fields) {
                     var taId = fields.ta;
@@ -1178,7 +1178,7 @@ if(Meteor.isServer){
         return [];
       else{
         var self = this;
-        publicPostsPublisherDeferHandle(self,postId);
+        //publicPostsPublisherDeferHandle(self.userId,postId);
         updateMomentsDeferHandle(self,postId);
         return Posts.find({_id: postId});
       }
