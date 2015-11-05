@@ -4,15 +4,15 @@
     <div class="content">
       <header class="bottomBorder">
         {{#if currentUser}}
-          <div class="title">闲聊</div>
+          <div class="title">{{_ "gossip"}}</div>
         {{else}}
-          <div class="title">匿名闲聊</div>
+          <div class="title">{{_ "gossipAnonymous"}}</div>
         {{/if}}
-        <div id="finish" class="leftButton">取消</div>
-        <div id="submit" class="rightButton">发送</div>
+        <div id="finish" class="leftButton">{{_ "cancel"}}</div>
+        <div id="submit" class="rightButton">{{_ "send"}}</div>
       </header>
       <form id="new-reply" name="new-reply" class="new-reply">
-      <textarea name="comment" id="comment" placeholder="说点什么..." type="text" value="{{refcomment}}" autofocus></textarea>
+      <textarea name="comment" id="comment" placeholder="{{_ 'saySomething'}}" type="text" value="{{refcomment}}" autofocus></textarea>
 <!--
         {{#if currentUser}}
           <textarea name="comment" id="comment" placeholder="说点什么..." type="text" value="{{refcomment}}"></textarea>
@@ -20,7 +20,7 @@
           <textarea name="comment" id="comment" placeholder="说点什么..." type="text" value="{{refcomment}}"></textarea>
         {{/if}}
 -->
-        <span class="change">换</span>
+        <span class="change">{{_ "exchange"}}</span>
 <!--        <span class="submit">发送</span>-->
       </form>
     </div>

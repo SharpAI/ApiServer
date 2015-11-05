@@ -1,9 +1,9 @@
 <template name="addTopicComment">
 <div class="addTopicComment">
 <div class="content">
-  <div id="title">您的故事已发表</div>
-  <div><textarea id="comment" placeholder="添加#话题#或评论" maxlength="150">{{comment}}</textarea></div>
-  <div id="topics">热门话题:
+  <div id="title">{{_ "yourStoryPublished"}}</div>
+  <div><textarea id="comment" placeholder="{{_ 'addTopicOrComment'}}" maxlength="150">{{comment}}</textarea></div>
+  <div id="topics">{{_ "hotTopics"}}
       {{#each topics}}
           <span id="topic">
           &nbsp;
@@ -12,7 +12,7 @@
           </span>
       {{/each}}
   </div>
-  <div id="save">完成</div>
+  <div id="save">{{_ "OK"}}</div>
 </div>
 </div>
 </template>

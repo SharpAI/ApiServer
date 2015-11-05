@@ -105,6 +105,36 @@
   "interruptAndIgnore": "中断,跳过未导入内容",
   "total": "总计 ",
   "numOfContent": " 段内容，",
-  "numOfProcessed": " 段已处理，请稍候..."
+  "numOfProcessed": " 段已处理，请稍候...",
+  //end
+  //addPostMainImage.html
+  "mainTitle": "主标题",
+  "subTitle": "副标题",
+  //end
+  //addTopicComment.html
+  "yourStoryPublished": "您的故事已发表",
+  "hotTopics": "热门话题:",
+  "addTopicOrComment": "添加#话题#或评论",
+  //"OK": "完成", duplicate
+  //end
+  //commentBar.html
+  "gossip": "闲聊",
+  "gossipAnonymous": "匿名闲聊:",
+  "send": "发送",
+  "saySomething": "说点什么...",
+  "exchange": "换",
+  //end
+  //help.html
+  "useTips": "故事贴使用攻略",
+  "howToRegister": "如何注册故事贴?",
+  "howToPublish": "如何发帖",
+  "changePicture": "图片调整",
+  "addTextAndEdit": "添加文字&排版",
+  "oneKeyImport": "一键导入",
+  "shareFrindField": "分享朋友圈?",
+  "forwardInWechat": "微信中使用段落转发",
+  "howToResetPassword": "如何找回密码",
+  "welcomeContactUs": "如果您对使用攻略有任何建议或问题，随时欢迎联系我们",
+  "adminEmail": "联系邮箱：admin@tiegushi.com"
   //end
 }
