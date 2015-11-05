@@ -347,15 +347,21 @@ if(Meteor.isServer){
                             if ( needUpdateMeetCount ){
                                 meetCount = meetCount+1;
                             }
-                            Meets.update({me:userId,ta:data.userId},{$set:{count:meetCount,meetOnPostId:postId}});
+                            if(data.userId === userId)
+                                Meets.remove({_id:meetItemOne._id});
+                            else
+                                Meets.update({me:userId,ta:data.userId},{$set:{count:meetCount,meetOnPostId:postId}});
                         }else{
-                            Meets.insert({
-                                me:userId,
-                                ta:data.userId,
-                                count:1,
-                                meetOnPostId:postId,
-                                createdAt: new Date()
-                            });
+                            if(userId !== data.userId)
+                            {
+                                Meets.insert({
+                                    me:userId,
+                                    ta:data.userId,
+                                    count:1,
+                                    meetOnPostId:postId,
+                                    createdAt: new Date()
+                                });
+                            }
                         }
 
                         var meetItemTwo = Meets.findOne({me:data.userId,ta:userId});
@@ -365,16 +371,21 @@ if(Meteor.isServer){
                                 meetCount = 0;
                             if ( needUpdateMeetCount ){
                                 meetCount = meetCount+1;
-                                Meets.update({me:data.userId,ta:userId},{$set:{count:meetCount,meetOnPostId:postId,createdAt: new Date()}});
+                                if(data.userId === userId)
+                                    Meets.remove({_id:meetItemTwo._id});
+                                else
+                                    Meets.update({me:data.userId,ta:userId},{$set:{count:meetCount,meetOnPostId:postId,createdAt: new Date()}});
                             }
                         }else{
-                            Meets.insert({
-                                me:data.userId,
-                                ta:userId,
-                                count:1,
-                                meetOnPostId:postId,
-                                createdAt: new Date()
-                            });
+                            if(userId !== data.userId) {
+                                Meets.insert({
+                                    me: data.userId,
+                                    ta: userId,
+                                    count: 1,
+                                    meetOnPostId: postId,
+                                    createdAt: new Date()
+                                });
+                            }
                         }
                     });
                 }
@@ -790,45 +801,6 @@ if(Meteor.isServer){
             }
             catch (error) {
             }
-        });
-    };
-    var viewersInsertHookDeferHook = function(userId,doc){
-        Meteor.defer(function(){
-            try{
-                var views=Viewers.find({postId:doc.postId});
-                if(views.count()>0){
-                    views.forEach(function(data){
-                        var meetItemOne = Meets.findOne({me:doc.userId,ta:data.userId});
-                        if(meetItemOne){
-                            var meetCount = meetItemOne.count;
-                            if(meetCount === undefined || isNaN(meetCount))
-                                meetCount = 0;
-                            Meets.update({me:doc.userId,ta:data.userId},{$set:{count:meetCount+1}});
-                        }else{
-                            Meets.insert({
-                                me:doc.userId,
-                                ta:data.userId,
-                                count:1
-                            });
-                        }
-
-                        var meetItemTwo = Meets.findOne({me:data.userId,ta:doc.userId});
-                        if(meetItemTwo){
-                            var meetCount = meetItemTwo.count;
-                            if(meetCount === undefined || isNaN(meetCount))
-                                meetCount = 0;
-                            Meets.update({me:data.userId,ta:doc.userId},{$set:{count:meetCount+1}});
-                        }else{
-                            Meets.insert({
-                                me:data.userId,
-                                ta:doc.userId,
-                                count:1
-                            });
-                        }
-                    });
-                }
-            }
-            catch(error){}
         });
     };
     var momentsAddForDynamicMomentsDeferHandle = function(self,id,fields,userId) {
@@ -1585,9 +1557,6 @@ if(Meteor.isServer){
       }
       if( Viewers.findOne({postId:doc.postId,userId:doc.userId})){
           return false;
-      }
-      if(doc.username !== null) {
-        viewersInsertHookDeferHook(userId,doc);
       }
       return doc.username !== null;
     },
