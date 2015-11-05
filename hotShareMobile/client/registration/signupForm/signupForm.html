@@ -3,26 +3,26 @@
 <div class="signupForm">
     <div class="signupHeader">
         <div id="btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
-        <span>创建帐户</span>
+        <span>{{_ "createAccount"}}</span>
     </div>
     <form  class="signupBody" id="signup-form">
         <div class="input-group margin-bottom-sm">
             <span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>
-            <input type="text" id="signup-username" class="form-control" placeholder="用户名" value="{{names}}"/><br />
+            <input type="text" id="signup-username" class="form-control" placeholder={{_ "userName"}} value="{{names}}"/><br />
         </div>
         <div class="input-group">
             <span class="input-group-addon"><i class="fa fa-envelope fa-fw"></i></span>
-            <input type="text" id="signup-email" class="form-control" placeholder="电子邮件" value="{{email}}"/><br />
+            <input type="text" id="signup-email" class="form-control" placeholder={{_ "emailAddress"}} value="{{email}}"/><br />
         </div>
         <div class="input-group">
             <span class="input-group-addon"><i class="fa fa-lock fa-fw"></i></span>
-            <input type="password" id="signup-password" class="form-control" placeholder="密码"  value="{{pwd}}"/><br />
+            <input type="password" id="signup-password" class="form-control" placeholder={{_ "passWord"}}  value="{{pwd}}"/><br />
         </div>
         <div class="term_notice_block">
-        	<div class="term_notice">故事贴服务告知</div>
-        	<span>如果注册就意味着同意了用户协议</span>
+        	<div class="term_notice">{{_ "gstServiceSpec"}}</div>
+        	<span>{{_ "signUpMeansWhat"}}</span>
         </div>
-        <input type="submit" value="创建帐户" id="sub-registered">
+        <input type="submit" value={{_ "createAccount"}} id="sub-registered">
     </form>
 <!--    <div class="deal">创建帐户即代表您同意<br>用户条款和隐私政策</div>-->
 </div>

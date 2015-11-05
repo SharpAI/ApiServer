@@ -1,15 +1,15 @@
 <template name="registerFollow">
 <div class="registerFollow">
-  <center><h3>关注您喜欢的人</h3></center>
-  <center><h5>及时了解对方的动态</h5></center>
+  <center><h3>{{_ "followPeople"}}</h3></center>
+  <center><h5>{{_ "knowActivity"}}</h5></center>
   <hr>
   {{> follow_user}}
   <hr>
   <div class="container navbar navbar-default navbar-fixed-bottom">
   {{#if larger followCount 3}}
-    <input type="submit" value="继续" id="continue">
+    <input type="submit" value={{_ "conTinue"}} id="continue">
   {{else}}
-    <center><h4>至少再关注{{NeedMoreCount}}个才可以继续</h4></center>
+    <center><h4>{{_ "chooseAtLeast"}}{{NeedMoreCount}}{{_ "toFollow"}}</h4></center>
   {{/if}}
   </div>
 </div>

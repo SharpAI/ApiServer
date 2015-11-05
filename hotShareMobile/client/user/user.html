@@ -4,7 +4,7 @@
       <div id="follow" class="leftButton">
           <span class="fa fa-plus"></span><i class="fa fa-user"></i>
       </div>
-      <div>个人信息</div>
+      <div>{{_ "mySelf"}}</div>
       <div id="setting" class="rightButton"><i class="fa fa-cog"></i></div>
     </div>
     <div class="top">
@@ -12,7 +12,7 @@
         {{#if myProfileIcon}}
           <img src="{{myProfileIcon}}" width='80' height='80'>
         {{else}}
-          <i class="fa fa-camera"></i>上传头像
+          <i class="fa fa-camera"></i>{{_ "uploadFigure"}}
         {{/if}}
       </div>
         <span class="userName">{{myProfileName}}</span>
@@ -21,18 +21,18 @@
       <span></span>
     </div>
     <div class="follow">
-      <div class="follower">{{followers}} 名关注者</div>
+      <div class="follower">{{followers}} {{_ "followers"}}</div>
       <div class="vertical">
         <span></span>
       </div>
-      <div class="following">正在关注 {{followCount}} 人</div>
+      <div class="following">{{_ "following"}} {{followCount}} {{_ "ppl"}}</div>
     </div>
     <div class="line">
       <span></span>
     </div>
     {{#if isLoading}}
     <div id="loader">
-        <div align="center">正在加载中...</div>
+        <div align="center">{{_ "loading"}}</div>
     </div>
     {{/if}}
       <!--
@@ -44,10 +44,10 @@
       -->
     <div class="draft">
       {{#if compareDraftsCount 0}}
-        <div class="draftLeft">{{draftsCount}} 份草稿</div>
+        <div class="draftLeft">{{draftsCount}}{{_ "draft"}}</div>
       {{/if}}
       {{#if compareDraftsCount 2}}
-        <div class="draftRight">查看全部 ></div>
+        <div class="draftRight">{{_ "checkAll"}}></div>
       {{/if}}
     </div>
     {{#if compareDraftsCount 0}}
@@ -68,10 +68,10 @@
     {{/if}}
     <div class="post">
       {{#if comparePostsCount 0}}
-        <div class="postLeft">{{postsCount}} 个故事</div>
+        <div class="postLeft">{{postsCount}}{{_ "numOfStory"}}</div>
       {{/if}}
       {{#if comparePostsCount 0}}
-        <div class="postRight">查看全部 ></div>
+        <div class="postRight">{{_ "checkAll"}}></div>
       {{/if}}
     </div>
     {{#if comparePostsCount 0}}

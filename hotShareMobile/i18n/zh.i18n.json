@@ -135,6 +135,15 @@
   "forwardInWechat": "微信中使用段落转发",
   "howToResetPassword": "如何找回密码",
   "welcomeContactUs": "如果您对使用攻略有任何建议或问题，随时欢迎联系我们",
-  "adminEmail": "联系邮箱：admin@tiegushi.com"
+  "adminEmail": "联系邮箱：admin@tiegushi.com",
+  //end
+    //search.html
+  "searchTopic": "探索",
+  "popTopics" :"流行话题",
+  "searchPeople": "搜索人和#话题#",
+  "plainTopic": "话题",
+  "discoverPeople": "查找值得关注的人",
+  "plainPeople": "人",
+  "recommandUser": "建议用户"
   //end
 }

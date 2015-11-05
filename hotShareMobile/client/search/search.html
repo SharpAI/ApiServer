@@ -1,13 +1,13 @@
 <template name="search">
   <div class="search">
     <div class="head">
-      <strong>探索</strong>
+      <strong>{{_ "searchTopic"}}</strong>
       <div id="follow" class="leftButton"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
     </div>
     <div class="content">
       <div class="searchForm">
           <i class="fa fa-search"></i>
-          <label><input id="search-box" type="text" placeholder="搜索人和#话题#"></label>
+          <label><input id="search-box" type="text" placeholder={{_ "searchPeople"}}></label>
       </div>
       <div id="themeList">
         {{#each theme}}
@@ -17,7 +17,7 @@
         </div>
         {{/each}}
       </div>
-      <div id="topic">流行话题</div>
+      <div id="topic">{{_ "popTopics"}}</div>
       <ul id="topicList">
         {{#each topic}}
         <li class="topic" id="{{_id}}">#{{text}}#</li>
@@ -39,14 +39,14 @@
                </div>
              </td>
              <td style="width: 40px;text-align:center;">
-               <div class="back">取消</div>
+               <div class="back">{{_ "cancel"}}</div>
              </td>
           </tr>
         </table>
         {{#if is_people}}
         <ul class="my_btns my_btn2">
           <li id="search_people" class="on">人</li>
-          <li id="search_topic">#话题#</li>
+          <li id="search_topic">#{{_ "plainTopic"}}#</li>
         </ul>
         <div id="peopleList">
         {{#each getFollowUsers}}
@@ -73,12 +73,12 @@
         </div>
         {{else}}
         <ul class="my_btns my_btn2">
-          <li id="search_people">人</li>
-          <li id="search_topic" class="on">#话题#</li>
+          <li id="search_people">{{_ "plainPeople"}}</li>
+          <li id="search_topic" class="on">#{{_ "plainTopic"}}#</li>
         </ul>
         <div id="topicList">
         {{#each getTopics}}
-          <div id="{{_id}}" class='topicTitle'>#{{text}}#<span>{{posts}}个故事<i class="fa fa-angle-right fa-fw"></i></span></div>
+          <div id="{{_id}}" class='topicTitle'>#{{text}}#<span>{{posts}}{{_ "numOfStory"}}<i class="fa fa-angle-right fa-fw"></i></span></div>
           <div class="line">
             <span></span>
           </div>
@@ -92,13 +92,13 @@
 <template name="searchFollow">
   <div class="searchFollow">
     <div class="head">
-      <strong>查找值得关注的人</strong>
+      <strong>{{_ "discoverPeople"}}</strong>
       <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
     </div>
     <div class="content">
       <div class="searchForm">
           <i class="fa fa-search"></i>
-          <label><input id="search-box" type="text" placeholder="搜索人"></label>
+          <label><input id="search-box" type="text" placeholder={{_ "searchTopic"}}{{_ "plainPeople"}}></label>
       </div>
       <div id="followList">
       {{#if isSearching}}
@@ -124,7 +124,7 @@
           </div>
       {{/each}}
       {{else}}
-       <div class="stitle">建议用户</div>
+       <div class="stitle">{{_ "recommandUser"}}</div>
       {{#each follows}}
           <a href="" id="{{userId}}" class="contentList">
           <img class="icon" src="{{icon}}" width='30' height='30'>

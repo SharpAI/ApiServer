@@ -74,6 +74,74 @@
   "followin": "Following ",
   "draft": " drafts",
    "checkAll": "Read all ",
-  "numOfStory": " stories"
+  "numOfStory": " stories",
+  //end
+  //savedDrafts.html
+  "draftTxt": "Draft",
+  "clearDraftBox": "Clean draft box",
+  //end
+  //home.html
+  //"draftTxt": "故事贴", duplicate with authOverlay.html
+  //end
+  //addPost.html
+  "cancel": "Cancel",
+  //"OK": "完成", duplicate
+  "inflateAndDeflate": "Resize and trim",
+  "store": "Save",
+  "edit": "Edit",
+  "delete": "Delete",
+  "saveDraft": "Save",
+  "publish": "Publish",
+  "plsAddImageAndText": "Please add contents.",
+  "readOriginalText": "     Read it",
+  "pasteLink": "Paste link",
+  "insertLink": "Insert link",
+  "normal": "Normal",
+  "reference": "Quote",
+  "tooBigAndWait": "Wait wait, let me processing it ...",
+  "plsWait": "Loading ...",
+  "interruptAndIgnore": "Skip unimported contents",
+  "total": "Total ",
+  "numOfContent": " of total contents,",
+  "numOfProcessed": " of total contents have been imported，please wait ...",
+  //end
+  //addPostMainImage.html
+  "mainTitle": "Title",
+  "subTitle": "Subtitle",
+  //end
+  //addTopicComment.html
+  "yourStoryPublished": "Your story has been published",
+  "hotTopics": "Topics you may interest",
+  "addTopicOrComment": "Add #Topics# or comments",
+  //"OK": "完成", duplicate
+  //end
+  //commentBar.html
+  "gossip": "Chat",
+  "gossipAnonymous": "Chat to anonymous",
+  "send": "Send",
+  "saySomething": "Write a comment...",
+  "exchange": "Change",
+  //end
+  //help.html
+  "useTips": "Help and Support",
+  "howToRegister": "How to register?",
+  "howToPublish": "How to write a story?",
+  "changePicture": "Change photo",
+  "addTextAndEdit": "Edit texts and photos",
+  "oneKeyImport": "Import",
+  "shareFrindField": "Share to WeChat moments",
+  "forwardInWechat": "Quote and share through WeChat",
+  "howToResetPassword": "Forgot your password?",
+  "welcomeContactUs": "Contact us if you have any questions and suggestions.",
+  "adminEmail": "Contact us：admin@tiegushi.com",
+  //end
+  //search.html
+  "searchTopic": "Discover",
+  "popTopics" :"Topics you may interest",
+  "searchPeople": "Discover people and #Topics#",
+  "plainTopic": "Topics",
+  "discoverPeople": "Discover interesting people",
+  "plainPeople": "People",
+  "recommandUser": "Recommand users"
   //end
 }

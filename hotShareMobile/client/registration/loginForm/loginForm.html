@@ -3,19 +3,19 @@
 <div class="loginForm">
     <div class="signupHeader">
         <div id="btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
-        <span>登录</span>
+        <span>{{_ "logIn"}}</span>
     </div>
     <form  class="loginBody" id="login-form">
         <div class="input-group margin-bottom-sm">
             <span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>
-            <input type="text" id="login-username" class="form-control" placeholder="用户名" /><br />
+            <input type="text" id="login-username" class="form-control" placeholder={{_ "userName"}} /><br />
         </div>
         <div class="input-group">
             <span class="input-group-addon"><i class="fa fa-lock fa-fw"></i></span>
-            <input type="password" id="login-password" class="form-control" placeholder="密码" /><br />
+            <input type="password" id="login-password" class="form-control" placeholder={{_ "passWord"}} /><br />
         </div>
-        <input type="submit" value="登 录" id="sub-login">
-        <div class="forgetPassword">忘记您的密码?</div>
+        <input type="submit" value={{_ "logIn"}} id="sub-login">
+        <div class="forgetPassword">{{_ "forgotPassword"}}</div>
     </form>
 </div>
 </template>
@@ -23,14 +23,14 @@
 <div class="recoveryForm">
     <div class="signupHeader">
         <div id="btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
-        <span>重设密码</span>
+        <span>{{_ "resetPassword"}}</span>
     </div>
     <form class="recoveryBody" id="recovery-form">
         <div class="input-group">
             <span class="input-group-addon"><i class="fa fa-envelope fa-fw"></i></span>
-            <input type="text" id="recovery-email" class="form-control" placeholder="电子邮件" /><br />
+            <input type="text" id="recovery-email" class="form-control" placeholder={{_ "emailAddress"}} /><br />
         </div>
-        <input type="submit" value="重设" id="sub-recovery">
+        <input type="submit" value={{_ "confirm"}} id="sub-recovery">
     </form>
 </div>
 </template>
