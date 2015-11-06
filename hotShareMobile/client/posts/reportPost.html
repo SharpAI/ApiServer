@@ -1,13 +1,13 @@
 <template name="reportPost">
 <div class="reportPost">
     <div class="head">
-      <strong>举报</strong>
+      <strong>{{_ "report"}}</strong>
       <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
     </div>
     <div class="content">
-      <div id="title">举报@{{postOwner}}的故事《{{postTitle}}》</div>
-      <div><textarea id="reason" placeholder="添加举报理由" maxlength="150"></textarea></div>
-      <div id="save">举报</div>
+      <div id="title">{{_ "reportAt"}}{{postOwner}}{{_ "storyRef1"}}{{postTitle}}{{_ "storyRef2"}}</div>
+      <div><textarea id="reason" placeholder="{{_ 'addReportContent'}}" maxlength="150"></textarea></div>
+      <div id="save">{{_ "report"}}</div>
     </div>
 </div>
 </template>

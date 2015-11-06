@@ -3,10 +3,10 @@
   <div id="wrapper">
     <div id="list">
       {{#if loading}}
-        <div>正在加载中...</div>
+        <div>{{_ "isLoading"}}</div>
       {{/if}}
       {{#if loadError}}
-          <div>加载失败，请检查网络设置或稍后重试</div>
+          <div>{{_ "loadFailNotification"}}</div>
       {{/if}}
       {{#each myPosts}}
       <div  id="{{_id}}" class="mainImage">
@@ -41,7 +41,7 @@
       {{/each}}
       {{#if moreResults}}
       <div id="showMoreResults" style="margin-left: 25px;">
-        <span class="loading">加载中...</span>
+        <span class="loading">{{_ "loading"}}</span>
       </div>
       {{/if}}
     </div>

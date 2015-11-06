@@ -10,7 +10,7 @@
         {{#if isMobile}}
           <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
         {{else}}
-          <div class="rightButton" style="font-weight:bold; color: red;" onclick="window.open('http://cdn.tiegushi.com', '_system');">点我创作</div>
+          <div class="rightButton" style="font-weight:bold; color: red;" onclick="window.open('http://cdn.tiegushi.com', '_system');">{{_ "clickMeToCreate"}}</div>
         {{/if}}
         <div class="user">
           {{#if isMobile}}
@@ -23,20 +23,20 @@
         {{#if isMobile}}
           <div class="rightDropMenu dropdown">
             {{#if isMyPost}}
-              <button class="dropdown-toggle btn btn-flat" id="menu1" data-toggle="dropdown" style="padding-right: 5px;">操作</button>
+              <button class="dropdown-toggle btn btn-flat" id="menu1" data-toggle="dropdown" style="padding-right: 5px;">{{_ "operate"}}</button>
             {{else}}
-              <button class="dropdown-toggle btn btn-flat" id="menu1" data-toggle="dropdown" style="padding-right: 5px;">分享</button>
+              <button class="dropdown-toggle btn btn-flat" id="menu1" data-toggle="dropdown" style="padding-right: 5px;">{{_ "share"}}</button>
             {{/if}}
             <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
               {{#if isMyPost}}
-                <li role="presentation"><a id="unpublish" role="menuitem" tabindex="-1" ><i class="fa fa-file-o"></i>&nbsp;取消发表</a></li>
-                <li role="presentation"><a id="edit" role="menuitem" tabindex="-1" ><i class="fa fa-pencil fa-fw"></i>编辑</a></li>
+                <li role="presentation"><a id="unpublish" role="menuitem" tabindex="-1" ><i class="fa fa-file-o"></i>&nbsp;{{_ "cancelPublish"}}</a></li>
+                <li role="presentation"><a id="edit" role="menuitem" tabindex="-1" ><i class="fa fa-pencil fa-fw"></i>{{_ "edit"}}</a></li>
                 <li role="presentation" class="divider"></li>
               {{/if}}
-              <li role="presentation"><a id="WXSessionShare" role="menuitem" tabindex="-1" ><i class="fa fa-weixin fa-fw"></i>分享给微信好友</a></li>
-              <li role="presentation"><a id="WXTimelineShare" role="menuitem" tabindex="-1" ><i class="fa fa-weixin fa-fw"></i>分享到微信朋友圈</a></li>
-              <li role="presentation"><a id="QQShare" role="menuitem" tabindex="-1" ><i class="fa fa-qq fa-fw"></i>分享到QQ</a></li>
-              <li role="presentation"><a id="socialShare" role="menuitem" tabindex="-1" ><i class="fa fa-share-alt fa-fw"></i>分享到更多应用</a></li>
+              <li role="presentation"><a id="WXSessionShare" role="menuitem" tabindex="-1" ><i class="fa fa-weixin fa-fw"></i>{{_ "shareWechatFriend"}}</a></li>
+              <li role="presentation"><a id="WXTimelineShare" role="menuitem" tabindex="-1" ><i class="fa fa-weixin fa-fw"></i>{{_ "shareWechatFriendField"}}</a></li>
+              <li role="presentation"><a id="QQShare" role="menuitem" tabindex="-1" ><i class="fa fa-qq fa-fw"></i>{{_ "shareQQ"}}</a></li>
+              <li role="presentation"><a id="socialShare" role="menuitem" tabindex="-1" ><i class="fa fa-share-alt fa-fw"></i>{{_ "shareMore"}}</a></li>
             </ul>
           </div>
         {{/if}}
@@ -46,7 +46,7 @@
               <div class="post_header">
                   <div class="post_abstract">
                       <div class="abstract_sentence"><span>{{getAbstractSentence}}</span></div>
-                      <div class="abstract_chapter">――节选自 第{{getAbstractSentenceIndex}}段 {{title}}{{#if addontitle}}：{{addontitle}}{{/if}}</div>
+                      <div class="abstract_chapter">{{_ "fromNumOf"}}{{getAbstractSentenceIndex}}{{_ "segment"}}{{title}}{{#if addontitle}}：{{addontitle}}{{/if}}</div>
                       <div class="abstract_comment">
                         {{#if clickedCommentOverlayThumbsDown}}
                           <img class="thumbsDown" src="/thumbsDownBlue.png" width="20" height="20">
@@ -90,7 +90,7 @@
       </div>
     </div>
     {{#if haveUrl}}
-    <div id="ViewOnWeb"><i class="fa fa-globe"></i>     阅读原文</div>
+    <div id="ViewOnWeb"><i class="fa fa-globe"></i>{{_ "readOriginalText"}}</div>
     {{/if}}
     {{#if withAfterPostIntroduce}}
       <div class="write">
@@ -99,39 +99,39 @@
       </div>
       <div class="nav"></div>
       <div class="hotitle">
-        <h2>热门文章<span>（下载“故事贴”查看更多精彩内容）</span></h2>
+        <h2>{{_ "hotStores"}}<span>{{_ "downloadGSTAndReadMore"}}</span></h2>
       </div>
       <div class="hotcont">
         <dl>
           <dt><img src="/img/demo-1.jpg" width="100" height="100"> </dt>
-          <dd>哪些年，我们在一起</dd>
+          <dd>{{_ "weTogetherThatYears"}}</dd>
         </dl>
         <dl>
           <dt><img src="/img/demo-1.jpg" width="100" height="100"> </dt>
-          <dd>哪些年，我们在一起</dd>
+          <dd>{{_ "weTogetherThatYears"}}</dd>
         </dl>
         <dl>
           <dt><img src="/img/demo-1.jpg" width="100" height="100"> </dt>
-          <dd>哪些年，我们在一起</dd>
+          <dd>{{_ "weTogetherThatYears"}}</dd>
         </dl>
       </div>
       <a href="#" class="button-1"><img src="/img/icon-2.jpg" width="300"></a>
       <div class="writeBottom">
-        <p>本文由史上最好用的图文排版APP<span>故事贴</span>支持创作</p>
+        <p>{{_ "fromBestAPP"}}<span>{{_ "gst"}}</span>{{_ "supportCreate"}}</p>
       </div>
     {{/if}}
     {{#unless isMyPost}}
       <div class="showPostsFollowMe">
         {{#if inWeiXin}}
-        <p>更多精彩内容，敬请点击关注<span><a><i class="fa fa-weixin"></i>故事贴</a></span>微信公众号</p>
+        <p>{{_ "forMorePayAttentionTo"}}<span><a><i class="fa fa-weixin"></i>{{_ "gst"}}</a></span>{{_ "wechatPublicAccount"}}</p>
         {{else}}
-        <p>更多精彩内容，请搜索关注<span><a><i class="fa fa-weixin"></i>故事贴</a></span>微信公众号</p>
+        <p>{{_ "forMoreSearch"}}<span><a><i class="fa fa-weixin"></i>{{_ "gst"}}</a></span>{{_ "wechatPublicAccount"}}</p>
         {{/if}}
       </div>
     {{/unless}}
     {{#if isCordova}}
     {{#unless isMyPost}}
-    <div id="report">举报</div>
+    <div id="report">{{_ "report"}}</div>
     {{/unless}}
     {{/if}}
     <div class="showPostsLine"></div>
@@ -139,7 +139,7 @@
       </div>
       {{#if withSocialBar}}
         <div class="superChatIntroduce">
-            <p>故事贴无法获得微信信息，请放心使用</p>
+            <p>{{_ "noPrivacyExposed"}}</p>
         </div>
         {{> socialContent}}
       {{/if}}
@@ -153,26 +153,26 @@
   <div class="commentInputBox">
     <header class="bottomBorder">
       {{#if currentUser}}
-        <div class="title">评论</div>
+        <div class="title">{{_ "comment"}}</div>
       {{else}}
-        <div class="title">匿名评论</div>
+        <div class="title">{{_ "commentAnonymous"}}</div>
       {{/if}}
-      <div id="finish" class="leftButton">取消</div>
-      <div id="submit" class="rightButton">发送</div>
+      <div id="finish" class="leftButton">{{_ "cancel"}}</div>
+      <div id="submit" class="rightButton">{{_ "send"}}</div>
     </header>
     <form id="new-reply" name="new-reply" class="new-reply">
       <textarea name="comment" class="commentArea" placeholder="说点什么..." type="text" value="{{refcomment}}"></textarea>
-      <div class="footer"><span class="change">换</span></div>
+      <div class="footer"><span class="change">{{_ "exchange"}}</span></div>
     </form>
   </div>
   {{/if}}
   {{#if withSectionMenu}}
       <div class="section-toolbar" id="{{_id}}" style='visibility: hidden;'>
           {{#if withSectionShare}}
-              <a href="#" class='section-forward' action="section-forward"><i>转发本段</i></a>
+              <a href="#" class='section-forward' action="section-forward"><i>{{_ "forwardSegment"}}</i></a>
           {{/if}}
           {{#if withPostTTS}}
-              <a href="#" class='post-tts' action="post-tts"><i>朗读</i></a>
+              <a href="#" class='post-tts' action="post-tts"><i>{{_ "readLoudly"}}</i></a>
           {{/if}}
       </div>
   {{/if}}
@@ -197,7 +197,7 @@
             <span class="toWarning"><i class="fa fa-exclamation-triangle" style="color:#00c4ff;"></i></span>
             <span class="toCommit comment">
                 <i class="fa fa-pencil-square-o" style="color:#00c4ff;">
-                     <span style="font-size: 15px;">写评论</span>
+                     <span style="font-size: 15px;">{{_ "writeComment"}}</span>
                 </i>
             </span>
         </div>
@@ -229,7 +229,7 @@
           </div>
          {{/each}}
        {{else}}
-         <div class="banner">快来抢沙发～～(￣▽￣)"</div>
+         <div class="banner">{{_ "comeon"}}</div>
        {{/if}}
       </div>
       <div class="input-group">
@@ -244,7 +244,7 @@
   <div class="pcommentInput" style="display:none;">
       <div class="input-group">
         <input type="text" id="pcommitReport" autofocus="autofocus" class="form-control" maxlength="180" placeholder="评论" />
-        <div id="pcommitReportBtn">发送</div>
+        <div id="pcommitReportBtn">{{_ "send"}}</div>
       </div>
   </div>
   <div class="alertBackground"></div>
