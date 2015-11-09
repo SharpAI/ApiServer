@@ -102,3 +102,8 @@ clear: both;
 padding-bottom: 5px;
 }
 }
+
+/*.totalStatistics tr { float:right; -webkit-transform:rotate(90deg); -moz-transform:rotate(90deg);}*/
+.totalStatistics th { padding-bottom: 1em;}
+.totalStatistics td { padding-bottom: 1em;font-weight: bold;}
+/*.totalStatistics td { -webkit-transform: rotate(-90deg); -moz-transform:rotate(-90deg);}*/

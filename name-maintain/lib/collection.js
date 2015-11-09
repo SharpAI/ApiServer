@@ -1,7 +1,7 @@
 RefNames = new Mongo.Collection("refnames");
+Posts = new Meteor.Collection('posts');
 
 if (Meteor.isServer){
-    Posts = new Meteor.Collection('posts');
     FollowPosts = new Meteor.Collection('followposts');
     Feeds = new Meteor.Collection('feeds');
     Drafts = new Meteor.Collection(null);
@@ -23,6 +23,14 @@ if (Meteor.isServer){
     PComments = new Meteor.Collection("pcomments")
     Meteor.publish('refnames',function(){
         return RefNames.find({})
+    });
+    Meteor.publish('createAtPosts',function(){
+      return Posts.find({},{sort:{createdAt: -1},limit:100});
+//      return Posts.find({}, { title: 1, browse: 1, ownerName: 1, owner:1,createdAt: 1 }).sort({ createdAt: -1 }).limit(100);
+    });
+    Meteor.publish('top100',function(){
+      return Posts.find({},{sort:{browse: -1},limit:100});
+//      return Posts.find({},{title:1,browse:1,ownerName:1,owner:1,createdAt:1}).sort({browse: -1}).limit(100);
     });
     Meteor.publish('posts-visits-count', function() {
         Counts.publish(this, 'posts-visits', Posts.find(), { countFromField: 'browse' });

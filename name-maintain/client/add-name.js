@@ -24,6 +24,14 @@ if (Meteor.isClient) {
     });
   };
   Template.body.helpers({
+    createAtPosts: function () {
+      Meteor.subscribe('createAtPosts');
+      return Posts.find({}, { sort: { createdAt: -1 } }, { limit: 100});
+    },
+    top100: function () {
+      Meteor.subscribe('top100');
+      return Posts.find({}, { sort: { browse: -1 } }, { limit: 100});
+    },
     total_ups: function(){
       return Session.get("statics_data").total_ups;
     },

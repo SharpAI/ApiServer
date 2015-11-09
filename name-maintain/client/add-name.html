@@ -4,7 +4,108 @@
 <body>
   <div class="container">
   <header>
-    <h3>总帖子数     : {{total_posts}}</h3>
+    <div style="position:relative;">
+    <table class="totalStatistics">
+      <tbody>
+        <tr>
+          <th>总帖子数 :</th>
+        </tr>
+        <tr>
+          <th>总浏览数 :</th>
+        </tr>
+        <tr>
+          <th>总评论数 :</th>
+        </tr>
+        <tr>
+          <th>总已存草稿数 :</th>
+        </tr>
+        <tr>
+          <th>总相遇数 :</th>
+        </tr>
+        <tr>
+          <th>总用户数 :</th>
+        </tr>
+        <tr>
+          <th>浏览器用户数 :</th>
+        </tr>
+        <tr>
+          <th>应用注册用户数 :</th>
+        </tr>
+        <tr>
+          <th>有名用户数 :</th>
+        </tr>
+        <tr>
+          <th>好友请求数 :</th>
+        </tr>
+        <tr>
+          <th>推荐阅读数 :</th>
+        </tr>
+        <tr>
+          <th>总点击数 :</th>
+        </tr>
+        <tr>
+          <th>总顶数 :</th>
+        </tr>
+        <tr>
+          <th>总踩数 :</th>
+        </tr>
+        <tr>
+          <th>总点评数 :</th>
+        </tr>
+      </tbody>
+    </table>
+    <table class="totalStatistics" style="position:absolute;top:0;left:150px">
+      <tbody>
+        <tr>
+          <td>{{total_posts}}</td>
+        </tr>
+        <tr>
+          <td>{{total_views}}</td>
+        </tr>
+        <tr>
+          <td>{{total_comments}}</td>
+        </tr>
+        <tr>
+          <td>{{total_saved_draft}}</td>
+        </tr>
+        <tr>
+          <td>{{total_meets}}</td>
+        </tr>
+        <tr>
+          <td>{{total_users}}</td>
+        </tr>
+        <tr>
+          <td>{{browser_users}}</td>
+        </tr>
+        <tr>
+          <td>{{app_users}}</td>
+        </tr>
+        <tr>
+          <td>{{named_users}}</td>
+        </tr>
+        <tr>
+          <td>{{friends_request}}</td>
+        </tr>
+        <tr>
+          <td>{{suggest_read}}</td>
+        </tr>
+        <tr>
+          <td>{{total_browse}}</td>
+        </tr>
+        <tr>
+          <td>{{total_ups}}</td>
+        </tr>
+        <tr>
+          <td>{{total_dns}}</td>
+        </tr>
+        <tr>
+          <td>{{total_pcs}}</td>
+        </tr>
+      </tbody>
+    </table>
+    
+  </div>
+<!--    <h3>总帖子数     : {{total_posts}}</h3>
     <h3>总浏览数     : {{total_views}}</h3>
     <h3>总评论数     : {{total_comments}}</h3>
     <h3>总已存草稿数  : {{total_saved_draft}}</h3>
@@ -18,7 +119,7 @@
     <h3>总点击数   : {{total_browse}}</h3>
     <h3>总顶数   : {{total_ups}}</h3>
     <h3>总踩数   : {{total_dns}}</h3>
-    <h3>总点评数   : {{total_pcs}}</h3>
+    <h3>总点评数   : {{total_pcs}}</h3>-->
 
     <input type="checkbox" checked="{{changeName}}" class="toggle-checked" id="changeName"/>
     <span class="text">改名字</span>
@@ -37,6 +138,18 @@
     </ul>
   {{/if}}
   </div>
+  <table>
+    <tr><th>标题</th><th>浏览量</th><th>作者</th><th>发帖时间</th></tr>
+    {{#each createAtPosts}}
+  <tr><td>{{title}}</td><td>{{browse}}</td><td>{{ownerName}}</td>{{createdAt}}<td>1</td></tr>
+  {{/each}}
+  </table>
+  <table>
+    <tr><th>标题</th><th>浏览量</th><th>作者</th><th>发帖时间</th></tr>
+    {{#each top100}}
+  <tr><td>{{title}}</td><td>{{browse}}</td><td>{{ownerName}}</td>{{createdAt}}<td>1</td></tr>
+  {{/each}}
+  </table>
 </body>
 
 <template name="comment">
