@@ -370,13 +370,13 @@ if Meteor.isClient
     else if action is 'post-tts'
       startPostTTS(self.index)
   Template.showPosts.events
-    'click .thumbsUp': (e)->
+    'click .abstract_thumbsUp': (e)->
       i = Session.get('focusedIndex')
       commentOverlayThumbsUpHandler(i)
-    'click .thumbsDown': (e)->
+    'click .abstract_thumbsDown': (e)->
       i = Session.get('focusedIndex')
       commentOverlayThumbsDownHandler(i)
-    'click .commentGray': (e)->
+    'click .abstract_commentGray': (e)->
       Session.set("pcommetsId","")
       backgroundTop = 0-$(window).scrollTop()
       Session.set('backgroundTop', backgroundTop);
