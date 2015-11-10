@@ -3,7 +3,7 @@
   "anonymous": "匿名使用",
   "anonymousAgree": "匿名使用表示已经同意",
   "gstServiceSpec": "故事贴服务告知",
-  "anonymousWarn": "友情提示:匿名账户的数据在程序卸载后可能会无法继续使用，如需永久保存数据，请注册或登陆使用。",
+  "anonymousWarn": "友情提示:匿名账户的数据在程序卸载后可能会无法继续使用，如需永久保存数据，请注册或登录使用。",
   "kownIt": "知道了",
   "funnyLogin": "很卖萌的登录中~~~",
   "regWithEmail": "使用电子邮件注册",
@@ -58,7 +58,7 @@
   "emailAddress": "邮箱",
   //end
   //loginForm.html
-  "logIn": "登陆",
+  "logIn": "登录",
   "forgotPassword": "忘了密码?",
   //end
   //registerFollow.html
