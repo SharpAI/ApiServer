@@ -137,14 +137,16 @@
       {{/each}}
     </ul>
   {{/if}}
+  <center><h1>前100最新帖子列表</h1></center>
   <table>
-    <tr><th>标题</th><th>浏览量</th><th>作者</th><th>发帖时间</th></tr>
+    <tr><th>标题</th><th style="width:8%;">浏览量</th><th style="width:10%;">作者</th><th style="width:30%;">发帖时间</th></tr>
     {{#each createAtPosts}}
   <tr><td>{{title}}</td><td>{{browse}}</td><td>{{ownerName}}</td><td>{{format createdAt}}</td></tr>
   {{/each}}
   </table>
+  <center><h1>最热帖子列表top100</h1></center>
   <table>
-    <tr><th>标题</th><th>浏览量</th><th>作者</th><th>发帖时间</th></tr>
+    <tr><th>标题</th><th style="width:8%;">浏览量</th><th style="width:10%;">作者</th><th style="width:30%;">发帖时间</th></tr>
     {{#each top100}}
   <tr><td>{{title}}</td><td>{{browse}}</td><td>{{ownerName}}</td><td>{{format createdAt}}</td></tr>
   {{/each}}
