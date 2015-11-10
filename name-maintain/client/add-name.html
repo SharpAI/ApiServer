@@ -103,7 +103,7 @@
         </tr>
       </tbody>
     </table>
-    
+    <button class="clickCopy" data-clipboard-text="{{today}},{{total_posts}},{{total_views}},{{total_comments}},{{total_saved_draft}},{{total_meets}},{{total_users}},{{browser_users}},{{app_users}},{{named_users}},{{friends_request}},{{suggest_read}},{{total_browse}},{{total_ups}},{{total_dns}},{{total_pcs}}">复制</button>
   </div>
 <!--    <h3>总帖子数     : {{total_posts}}</h3>
     <h3>总浏览数     : {{total_views}}</h3>
@@ -137,19 +137,19 @@
       {{/each}}
     </ul>
   {{/if}}
-  </div>
   <table>
     <tr><th>标题</th><th>浏览量</th><th>作者</th><th>发帖时间</th></tr>
     {{#each createAtPosts}}
-  <tr><td>{{title}}</td><td>{{browse}}</td><td>{{ownerName}}</td>{{createdAt}}<td>1</td></tr>
+  <tr><td>{{title}}</td><td>{{browse}}</td><td>{{ownerName}}</td><td>{{format createdAt}}</td></tr>
   {{/each}}
   </table>
   <table>
     <tr><th>标题</th><th>浏览量</th><th>作者</th><th>发帖时间</th></tr>
     {{#each top100}}
-  <tr><td>{{title}}</td><td>{{browse}}</td><td>{{ownerName}}</td>{{createdAt}}<td>1</td></tr>
+  <tr><td>{{title}}</td><td>{{browse}}</td><td>{{ownerName}}</td><td>{{format createdAt}}</td></tr>
   {{/each}}
   </table>
+  </div>
 </body>
 
 <template name="comment">

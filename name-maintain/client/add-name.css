@@ -17,11 +17,12 @@ font-size: 14px;
 max-width: 600px;
 margin: 0 auto;
 min-height: 100%;
-background: white;
-}
-header {
 background: #d2edf4;
 background-image: linear-gradient(to bottom, #d0edf5, #e1e5f0 100%);
+}
+header {
+/*background: #d2edf4;
+background-image: linear-gradient(to bottom, #d0edf5, #e1e5f0 100%);*/
 padding: 20px 15px 15px 15px;
 position: relative;
 }
@@ -106,4 +107,5 @@ padding-bottom: 5px;
 /*.totalStatistics tr { float:right; -webkit-transform:rotate(90deg); -moz-transform:rotate(90deg);}*/
 .totalStatistics th { padding-bottom: 1em;}
 .totalStatistics td { padding-bottom: 1em;font-weight: bold;}
+.clickCopy { position: absolute;top: 0;right: 20px;}
 /*.totalStatistics td { -webkit-transform: rotate(-90deg); -moz-transform:rotate(-90deg);}*/

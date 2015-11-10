@@ -22,8 +22,22 @@ if (Meteor.isClient) {
       Session.set('statics_data',data);
       console.log("Got data " + JSON.stringify(data));
     });
+    var clickCopy = new Clipboard('.clickCopy');
+    clickCopy.on('success', function (e) {
+      alert('复制成功！');
+    });
+    clickCopy.on('error', function (e) {
+      alert('失败！');
+    });
   };
   Template.body.helpers({
+    format: function (day) {
+      return moment(day).format(); 
+    },
+    today: function () {
+      today = moment().format("YYYY/MM/DD");
+      return today 
+    },
     createAtPosts: function () {
       Meteor.subscribe('createAtPosts');
       return Posts.find({}, { sort: { createdAt: -1 } }, { limit: 100});
