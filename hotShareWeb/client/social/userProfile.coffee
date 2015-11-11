@@ -133,6 +133,7 @@ if Meteor.isClient
       $(window).children().off()
       $(window).unbind('scroll')
       #Meteor.setTimeout ()->
+      Session.set("lastPost",postId)
       Router.go '/posts/'+postId
       #,300
   # Initialize the Swiper
