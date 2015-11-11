@@ -344,6 +344,8 @@ if Meteor.isClient
   @handleHideBrowser = ()->
     if Session.get("channel") is 'addPost' and Drafts.find().count() is 0
       Router.go '/'
+    else
+      PUB.postPageBack()
   @handlerLoadStartEvent = (e)->
     console.log('Load Start ' + JSON.stringify(e))
     Session.set('importProcedure',3)
