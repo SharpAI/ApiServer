@@ -8,6 +8,10 @@
       <div id="setting" class="rightButton"><i class="fa fa-cog"></i></div>
     </div>
     <div class="top">
+      <div class="searchForm">
+          <i class="fa fa-search"></i>
+          <label><input id="search-box" type="text" placeholder={{_ "searchMyPosts"}}></label>
+      </div>
       <div class="icon">
         {{#if myProfileIcon}}
           <img src="{{myProfileIcon}}" width='80' height='80'>
@@ -90,6 +94,72 @@
         </ul>
     </div>
     {{/if}}
+  </div>
+  {{> footer}}
+</template>
+
+<template name="searchMyPosts">
+  <div class="searchMyPosts">
+    <div class="home">
+    <div class="content" style="margin: 0;padding: 0;background-color: #111;">
+         <table style="margin-top: 10px;">
+           <tr>
+             <td>
+               <div class="searchForm">
+                 <i class="fa fa-search"></i>
+                   <label><input id="search-box" type="text" placeholder="{{_ 'searchMyPosts'}}"></label>
+               </div>
+             </td>
+             <td style="width: 40px;text-align:center;">
+               <div class="back">{{_ "cancel"}}</div>
+             </td>
+          </tr>
+        </table>
+<!--        {{#if loading}}
+            <div>{{_ "isLoading"}}</div>
+        {{/if}}
+        {{#if loadError}}
+            <div>{{_ "loadFailNotification"}}</div>
+        {{/if}}-->
+        <div id="wrapper" style="margin-top: 70px; margin-bottom: 50px;">
+            <div id="list">
+                {{#each items}}
+                    {{#if showBigImage}}
+                         <div  id="{{_id}}" class="mainImage">
+                            {{#if mainImage}}
+                              {{>padding noRandomBackgroundColor=true}}
+                            {{/if}}
+                            <img class="scale item lazy" data-original="{{mainImage}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImageStyle}}" >
+                            <header>
+                                <h1 class="title">{{title}}</h1>
+                                <h3 class="addontitle">{{addontitle}}</h3>
+                            </header>
+                        </div>
+                        <div class="footer">
+                            <span><img class="icon" src="{{ownerIcon}}" width='25' height='25' style="margin-top: 0px;"></span>
+                            <span class="name">{{ownerName}}</span>
+                            <span class="right">
+                              {{_ "browse"}}{{getBrowseCount browse}}{{_ "times"}}
+                            </span>
+                        </div> 
+                    {{else}}
+                            <div id="{{_id}}" class="mainImage" style="font-size:15px;width: 100%;float: left;margin-right: 2%; height: 56px; overflow: hidden;">
+                                <dl style='background: grey;padding: 5px; margin-top: 6px;min-height: 50px;margin-bottom: 1px;'>
+                                    <dd style="font-size: 18px;overflow: hidden;word-wrap: break-word;white-space: nowrap;text-overflow: ellipsis;">{{title}}</dd>
+                                    <dd style="font-size: 15px;overflow: hidden;word-wrap: break-word;white-space: nowrap;text-overflow: ellipsis;color: #ccc">{{addontitle}}</dd>
+                                </dl>
+                            </div>
+                    {{/if}}
+                {{/each}}
+            </div>
+        </div>
+<!--        {{#if moreResults}}
+        <div id="showMoreMyPostsResults" style="margin-left: 25px;">
+            <span class="loading">{{_ "loading"}}</span>
+        </div>
+        {{/if}}-->
+   </div>
+  </div>
   </div>
   {{> footer}}
 </template>

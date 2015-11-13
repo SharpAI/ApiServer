@@ -116,6 +116,9 @@ if Meteor.isClient
   Router.route 'userProfilePage3',
     template: 'userProfile'
     path: '/userProfilePage3'
+  Router.route 'searchMyPosts',
+    template: 'searchMyPosts'
+    path: '/searchMyPosts'
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->

@@ -1,8 +1,13 @@
 .top{padding-top:80px; }
-.top .icon{clear: both; display: block; margin:auto;width: 80px;height: 80px;border-radius:50%;box-shadow: 0 0 15px #fff, 0 0 3px #fff}
+.top .icon{clear: both; display: block; margin:auto;width: 80px;height: 80px;border-radius:50%;box-shadow: 0 0 15px #fff, 0 0 3px #fff; margin-top: 50px;}
 .top .icon img{border: none;border-radius:50%;}
 .top .icon i{display: block; text-align: center; font-size:24px; color: #939f3e;padding:10px 0 0 0;}
 .top .userName{white-space: nowrap;clear: both; display: table; margin:auto;margin-top: 20px;margin-bottom: 20px;font-weight: bold;font-size: 24px;}
+.top .searchForm{position:fixed;z-index:11;margin:0;padding:0;top:55px;left:10px;right:10px;color:#fff; font-weight: normal;border: solid;border-radius: 20px;border-color: #888;border-width: thin;padding: auto;padding-top: 5px;}
+.top .searchForm label{display:block;width:72%;float: left; overflow: hidden}
+.top .searchForm input{border:none; background-color:transparent;color:#fff;width:100%}
+.top .searchForm input:focus{outline:none;}
+.top .searchForm i{float:left;padding: 5px 15px;font-size: 12px;}
 .user .line{text-align:center;width: 100%; height: 1px; padding: 5px 25px;}
 .user .line span{background: #888; width: 100%; height: 1px; display: block;}
 .user .follow,.good{display: block;text-align: center}
@@ -34,3 +39,33 @@
 .user .postImages ul li .addontitle{margin-left:10px;}
 .user .rightButton #login-buttons a{text-decoration: blink}
 .user .rightButton #login-buttons #login-dropdown-list{background-color: #333;color: #fff;}
+
+
+.searchMyPosts .content {position:relative;margin-top: 5px;margin-bottom: 55px;}
+.searchMyPosts .content .searchForm{position:relative; margin:0; padding:0; margin-top:5px; margin-left:10px;margin-right:0px;color:#fff; font-weight: normal;border: solid;border-radius: 20px;border-color: #444;border-width: thin;padding: auto;padding-top: 5px; min-height: 35px;}
+.searchMyPosts .content .searchForm label{display:block;width:72%;float: left; overflow: hidden}
+.searchMyPosts .content .searchForm input{border:none; background-color:transparent;color:#fff;width:100%}
+.searchMyPosts .content .searchForm input:focus{outline:none;}
+.searchMyPosts .content .searchForm i{float:left;padding: 5px 15px;font-size: 12px;}
+.searchMyPosts .content table{width: 100%; top: 10px;position: fixed;z-index: 9999;}
+.searchMyPosts .content table td{text-align: center; vertical-align: middle; padding: 0 3px;}
+
+.searchMyPosts .content .contentList{display: block;position:relative;min-height: 50px;}
+.searchMyPosts .content .icon{position: relative; left:0px; margin: 10px;border: none;border-radius:50%;}
+.searchMyPosts .content .userName{position: absolute;top:15px;left: 50px;color: #FFF}
+.searchMyPosts .content .follow{position: absolute;top: 10px;right: 10px;width: 30px;height: 30px;text-align: center; display: table;border-radius: 50%;border: thin solid #fff;background-color: #fff;color: #000;}
+.searchMyPosts .content .follow span{position: relative;bottom: 8px;font-size:8px;padding-top: 12px}
+.searchMyPosts .content .desc{padding: 0 15px;}
+.searchMyPosts .line{text-align:center;width: 100%; height: 1px; padding: 5px 0px;}
+.searchMyPosts .line span{background: #444; width: 100%; height: 1px; display: block;}
+.searchMyPosts .content a,a:hover,a:focus{text-decoration: none;color: #bbb;}
+.searchMyPosts .content .stitle{position: relative;margin-top:10px; margin-left:10px;color: #bbb}
+
+.searchMyPosts .content .my_btns{margin: 0; margin-top:5px; margin-bottom:5px; padding:0; list-style-type: none; overflow: hidden;border-top: 1px solid #444;border-bottom: 1px solid #444; background-color: #000}
+.searchMyPosts .content .my_btns li{float: left; padding:10px 0;width:33%; text-align: center; color:#444}
+.searchMyPosts .content .my_btns li.on{background-color: #444; color:#fff}
+.searchMyPosts .content .my_btn2 li{width: 50%}
+
+.searchMyPosts .content .topicTitle{position: relative;padding: 8px 15px;}
+.searchMyPosts .content .topicTitle span{position: absolute;right: 10px; color: #bbb;}
+.searchMyPosts .content .topicTitle span i{margin-left: 5px; color:#ffffff;}
