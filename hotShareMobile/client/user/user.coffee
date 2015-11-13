@@ -257,6 +257,11 @@ if Meteor.isClient
         else
             if (target.data("visible"))
                 target.data("visible", false);
+    $('#search-box').bind('propertychange input',(e)->
+       text = $(e.target).val().trim()
+       PostsSearch.search text
+    )
+    $('#search-box').trigger('focus')
   Template.searchMyPosts.helpers
     showBigImage:()->
       return Session.get("showBigImage")
@@ -265,8 +270,8 @@ if Meteor.isClient
         return "fa fa-list fa-fw"
       else
         return "fa fa-th-large"
-    items:()->
-      Posts.find({owner:Meteor.userId()}, {sort: {createdAt: -1}}, {limit:Session.get("mypostsitemsLimit")})
+#    items:()->
+#      Posts.find({owner:Meteor.userId()}, {sort: {createdAt: -1}}, {limit:Session.get("mypostsitemsLimit")})
     getBrowseCount:(browse)->
       if (browse)
         browse

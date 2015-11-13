@@ -1806,6 +1806,18 @@ if(Meteor.isServer){
       //return Meteor.users.find({}, options).fetch();
     }
   });
+  
+  SearchSource.defineSource('posts', function(searchText, options) {
+    var options = {sort: {createdAt: -1}, limit: 20};
+
+    if(searchText) {
+      var regExp = buildRegExp(searchText);
+      var selector = { owner: this.userId,'title': regExp };
+      return Posts.find(selector, options).fetch();
+    } else {
+      return [];
+    }
+  });
 
   function buildRegExp(searchText) {
     // this is a dumb implementation
@@ -1885,6 +1897,8 @@ if(Meteor.isClient){
       FollowUsersSearch = new SearchSource('followusers', fields, options);
       var topicsfields = ['text'];
       TopicsSearch = new SearchSource('topics', topicsfields, options);
+      var postsfields = ['title'];
+      PostsSearch = new SearchSource('posts', postsfields, options);
       Tracker.autorun(function(){
           if (Meteor.userId()) {
               Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'), {
