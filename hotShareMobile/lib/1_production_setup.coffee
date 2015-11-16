@@ -14,3 +14,4 @@
 @withLocalBase64 = true
 @withSuggestAlreadyRead = true
 @withSponserLinkAds = false
+@isMIUI = false

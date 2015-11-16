@@ -18,3 +18,9 @@ Template.splashScreen.events({
                         Session.set('isFlag', false);
 	}
 });
+
+Template.splashScreen.helpers({
+  isMIUI: function () {
+    return isMIUI;
+  }
+});
