@@ -265,7 +265,8 @@ if ( typeof Object.create !== 'function' ) {
                 }
             }
             self.$elem.addClass('pressed').trigger('beSelected');
-            //console.log("click toobar pressed :" + self.$elem.attr("id") + " visible:" + self.toolbar.is(":visible"));
+//            console.log("click toobar pressed :" + self.$elem.attr("id") + " visible:" + self.toolbar.is(":visible"));
+            $("#"+self.$elem.attr("id")+"TextArea").attr("placeholder", "点击笔添加文字")
             self.calculatePosition();
 
             switch(self.options.position) {
