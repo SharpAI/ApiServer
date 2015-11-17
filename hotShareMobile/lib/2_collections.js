@@ -335,7 +335,7 @@ if(Meteor.isServer){
             } catch (error){
             }
             try{
-                var views=Viewers.find({postId:postId});
+                var views=Viewers.find({postId:postId},{limit:100});
                 if(views.count()>0){
                     views.forEach(function(data){
                         var meetItemOne = Meets.findOne({me:userId,ta:data.userId});
