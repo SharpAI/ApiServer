@@ -20,7 +20,7 @@ Template.splashScreen.events({
 });
 
 Template.splashScreen.helpers({
-  isMIUI: function () {
-    return isMIUI;
+  isIOS: function () {
+    return isIOS;
   }
 });
