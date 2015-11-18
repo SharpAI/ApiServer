@@ -21,6 +21,10 @@ Template.splashScreen.events({
 
 Template.splashScreen.helpers({
   isIOS: function () {
-    return isIOS;
+    if (device.platform == 'iOS') {
+      return true;
+    } else {
+      return false;
+    }
   }
 });
