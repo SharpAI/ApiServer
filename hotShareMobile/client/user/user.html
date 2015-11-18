@@ -123,6 +123,9 @@
         {{/if}}-->
         <div id="wrapper" style="margin-top: 70px; margin-bottom: 50px;">
             <div id="list">
+                {{#if noSearchResult}}
+                  <center style="color: gray;">查无结果</center>
+                {{/if}}
                 {{#each items}}
                     {{#if showBigImage}}
                          <div  id="{{_id}}" class="mainImage">
