@@ -227,7 +227,6 @@ if Meteor.isClient
         Router.go '/posts/'+postId
       ,animatePageTrasitionTimeout
     'click .postRight':(e)->
-      #Session.set("mypostsitemsLimit", 15)
       $('.user').addClass('animated ' + animateOutLowerEffect);
       Meteor.setTimeout ()->
         PUB.page('/myPosts')
@@ -237,6 +236,8 @@ if Meteor.isClient
     $('.content').css 'min-height',$(window).height()
     if(Session.get("showBigImage") == undefined)
       Session.set("showBigImage",true)
+    if($("#search-box").val() is "")
+      Session.set("noSearchResult", false)
     $(window).scroll (event)->
         console.log "myPosts window scroll event: "+event
         target = $("#showMoreMyPostsResults");
@@ -259,10 +260,14 @@ if Meteor.isClient
                 target.data("visible", false);
     $('#search-box').bind('propertychange input',(e)->
        text = $(e.target).val().trim()
+       if text is ""
+         return Session.set("noSearchResult", false)
        PostsSearch.search text
     )
     $('#search-box').trigger('focus')
   Template.searchMyPosts.helpers
+    noSearchResult:()->
+      return Session.get('noSearchResult')
     showBigImage:()->
       return Session.get("showBigImage")
     showRightIcon:()->
@@ -270,8 +275,6 @@ if Meteor.isClient
         return "fa fa-list fa-fw"
       else
         return "fa fa-th-large"
-#    items:()->
-#      Posts.find({owner:Meteor.userId()}, {sort: {createdAt: -1}}, {limit:Session.get("mypostsitemsLimit")})
     getBrowseCount:(browse)->
       if (browse)
         browse
