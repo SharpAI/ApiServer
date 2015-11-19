@@ -233,7 +233,7 @@ if Meteor.isClient
       ,animatePageTrasitionTimeout
 
   Template.searchMyPosts.rendered=->
-    $('.content').css 'min-height',$(window).height()
+#    $('.content').css 'min-height',$(window).height()
     if(Session.get("showBigImage") == undefined)
       Session.set("showBigImage",true)
     if($("#search-box").val() is "")
