@@ -260,12 +260,19 @@ if Meteor.isClient
                 target.data("visible", false);
     $('#search-box').bind('propertychange input',(e)->
        text = $(e.target).val().trim()
+       Session.set("searchLoading", true)
        if text is ""
-         return Session.set("noSearchResult", false)
+         Session.set("searchLoading", false)
+         Session.set("noSearchResult", false)
+         return
        PostsSearch.search text
     )
+#    if PostsSearch.getStatus().loaded is true
+#      Session.set("searchLoading", false)
     $('#search-box').trigger('focus')
   Template.searchMyPosts.helpers
+    searchLoading:()->
+      return Session.get('searchLoading')
     noSearchResult:()->
       return Session.get('noSearchResult')
     showBigImage:()->

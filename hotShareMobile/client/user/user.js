@@ -7,11 +7,15 @@ Template.searchMyPosts.helpers({
       },
       sort: {createdAt: -1}
     });
-    if (postsSearchData.length == 0) {
-      Session.set("noSearchResult", true);
-    } else {
-      Session.set("noSearchResult", false);
+    if (PostsSearch.getStatus().loaded == true) {
+      Session.set("searchLoading", false)
+      if (postsSearchData.length == 0) {
+        Session.set("noSearchResult", true);
+      } else {
+        Session.set("noSearchResult", false);
+      }
     }
+    
     return postsSearchData;
   }
 });
