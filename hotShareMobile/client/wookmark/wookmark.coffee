@@ -210,7 +210,8 @@ Template.newLayoutElement.onDestroyed ()->
 Template.newLayoutElement.events
   'click .postAlreadyRead':(e)->
      console.log('Click on lpAlreadyRead '+this._id)
-     Session.setPersistent('hideSuggestPost_'+this._id,true)
+     console.log('Click on lpAlreadyRead '+this.readPostId)
+     Session.setPersistent('hideSuggestPost_'+this.readPostId,true)
      return false
   'click .suggestAlreadyRead':(e)->
     console.log('Click on suggestAlreadyRead')

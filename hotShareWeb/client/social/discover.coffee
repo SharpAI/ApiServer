@@ -76,11 +76,12 @@ if Meteor.isClient
       moments:()->
         NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}})
       suggestPosts:()->
-        SuggestPosts.find({},{sort: {createdAt: -1}},limit:10)
+        SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
       hidePost:()->
-        Session.get('hideSuggestPost_'+this._id) || this.userId is Meteor.userId()
+        Session.get('hideSuggestPost_'+this.readPostId) or this.userId is Meteor.userId()
       hideSuggestPost:()->
-        Session.get('hideSuggestPost_'+this._id)
+        console.log this._id
+        Session.get('hideSuggestPost_'+this._id) or this.owner is Meteor.userId()
       time_diff: (created)->
         GetTime0(new Date() - created)
       moreResults:()->
