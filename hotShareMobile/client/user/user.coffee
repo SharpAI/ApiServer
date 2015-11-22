@@ -236,7 +236,10 @@ if Meteor.isClient
 #    $('.content').css 'min-height',$(window).height()
     if(Session.get("showBigImage") == undefined)
       Session.set("showBigImage",true)
+    if Session.get("noSearchResult") is true
+      Session.set("searchLoading", false)
     if($("#search-box").val() is "")
+      Session.set("showSearchStatus", false)
       Session.set("noSearchResult", false)
     $(window).scroll (event)->
         console.log "myPosts window scroll event: "+event
@@ -260,8 +263,11 @@ if Meteor.isClient
                 target.data("visible", false);
     $('#search-box').bind('propertychange input',(e)->
        text = $(e.target).val().trim()
+       Session.set("showSearchStatus", true)
        Session.set("searchLoading", true)
+       Session.set("noSearchResult", false)
        if text is ""
+         Session.set("showSearchStatus", false)
          Session.set("searchLoading", false)
          Session.set("noSearchResult", false)
          return
@@ -271,6 +277,8 @@ if Meteor.isClient
 #      Session.set("searchLoading", false)
     $('#search-box').trigger('focus')
   Template.searchMyPosts.helpers
+    showSearchStatus:()->
+      return Session.get('showSearchStatus')
     searchLoading:()->
       return Session.get('searchLoading')
     noSearchResult:()->

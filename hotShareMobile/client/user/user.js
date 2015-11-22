@@ -8,10 +8,13 @@ Template.searchMyPosts.helpers({
       sort: {createdAt: -1}
     });
     if (PostsSearch.getStatus().loaded == true) {
-      Session.set("searchLoading", false)
       if (postsSearchData.length == 0) {
-        Session.set("noSearchResult", true);
+        Meteor.setTimeout (function(){
+          Session.set("searchLoading", false)
+          Session.set("noSearchResult", true);
+        },2000);
       } else {
+        Session.set("searchLoading", false)
         Session.set("noSearchResult", false);
       }
     }
