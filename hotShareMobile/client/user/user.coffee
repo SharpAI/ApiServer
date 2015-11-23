@@ -223,6 +223,12 @@ if Meteor.isClient
       Session.set("postPageScrollTop", 0)
       postId = e.currentTarget.id
       $('.user').addClass('animated ' + animateOutLowerEffect);
+      history = []
+      history.push {
+          view: 'user'
+          scrollTop: document.body.scrollTop
+      }
+      Session.set "history_view", history
       Meteor.setTimeout ()->
         Router.go '/posts/'+postId
       ,animatePageTrasitionTimeout
@@ -308,7 +314,8 @@ if Meteor.isClient
     'click .back':(event)->
         $('.home').addClass('animated ' + animateOutUpperEffect);
         Meteor.setTimeout ()->
-          PUB.back()
+#          PUB.back()
+          Router.go('/user')
         ,animatePageTrasitionTimeout
     'click .mainImage':(e)->
         Session.set("postPageScrollTop", 0)
@@ -320,6 +327,12 @@ if Meteor.isClient
         $('.home').addClass('animated ' + animateOutUpperEffect);
         Meteor.setTimeout ()->
           PUB.page '/posts/'+postId
+          history = []
+          history.push {
+              view: 'searchMyPosts'
+              scrollTop: document.body.scrollTop
+          }
+          Session.set "history_view", history
         ,animatePageTrasitionTimeout
         Session.set 'FollowPostsId',this._id
         return
