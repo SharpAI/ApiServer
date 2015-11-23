@@ -12,7 +12,7 @@ if Meteor.isClient
       else
         Session.get('persistentThemes')
     topic:()->
-      topics = Topics.find({type:"topic"}, {sort: {posts: -1}})
+      topics = Topics.find({type:"topic"}, {sort: {posts: -1},limit:20})
       if topics.count() > 0
         Meteor.defer ()->
           Session.setPersistent('persistentTopics',topics.fetch())
