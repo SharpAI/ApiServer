@@ -10,11 +10,12 @@ Template.searchMyPosts.helpers({
     if (PostsSearch.getStatus().loaded == true) {
       if (postsSearchData.length == 0) {
         Meteor.setTimeout (function(){
-          Session.set("searchLoading", false)
+          Session.set("searchLoading", false);
           Session.set("noSearchResult", true);
         },2000);
       } else {
-        Session.set("searchLoading", false)
+        Session.set("showSearchStatus", false);
+        Session.set("searchLoading", false);
         Session.set("noSearchResult", false);
       }
     }
