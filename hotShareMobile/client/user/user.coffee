@@ -240,6 +240,8 @@ if Meteor.isClient
 
   Template.searchMyPosts.rendered=->
 #    $('.content').css 'min-height',$(window).height()
+    if(Session.get("searchContent") isnt undefined)
+      $("#search-box").val(Session.get("searchContent"))
     if(Session.get("showBigImage") == undefined)
       Session.set("showBigImage",true)
     if Session.get("noSearchResult") is true
@@ -320,9 +322,12 @@ if Meteor.isClient
         $('.home').addClass('animated ' + animateOutUpperEffect);
         Meteor.setTimeout ()->
 #          PUB.back()
+          Session.set("searchContent","")
           Router.go('/user')
         ,animatePageTrasitionTimeout
     'click .mainImage':(e)->
+        content = $("#search-box").val()
+        Session.set("searchContent",content)
         Session.set("postPageScrollTop", 0)
         if isIOS
           if (event.clientY + $('#footer').height()) >=  $(window).height()
