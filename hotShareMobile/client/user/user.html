@@ -125,6 +125,7 @@
                   <center style="color: gray;">查找中  <i class="fa fa-spinner fa-pulse"></i></center>
                 {{/if}}
               {{/if}}
+              {{#if showSearchItems}}
                 {{#each items}}
                     {{#if showBigImage}}
                          <div  id="{{_id}}" class="mainImage">
@@ -153,6 +154,7 @@
                             </div>
                     {{/if}}
                 {{/each}}
+              {{/if}}
             </div>
         </div>
    </div>

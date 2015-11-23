@@ -30,6 +30,7 @@ if Meteor.isClient
     'click .logout':(e)->
       e.target.innerText="正在退出登录..."
       Meteor.logout (msg)->
+        PostsSearch.cleanHistory()
         Session.setPersistent('persistentLoginStatus',false)
         Session.setPersistent('persistentFeedsForMe',null)
         Session.setPersistent('persistentMyFollowedPosts',null)
