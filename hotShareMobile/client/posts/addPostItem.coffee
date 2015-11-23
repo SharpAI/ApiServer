@@ -375,7 +375,7 @@ if Meteor.isClient
         toolbarMainMenuClickHandle(event, buttonClicked,node,grid)
       .on 'toolbarHidden', (event)=>
         console.log("toolbarHidden")
-        $("#"+event.currentTarget.id+"TextArea").attr("placeholder", "")
+        $("#"+event.currentTarget.id+"TextArea").attr("placeholder", "请编辑文字")
         toolbarHiddenHandle(event,node)
 
       $('#'+node.id+'TextArea').on('keyup input',(e)->
