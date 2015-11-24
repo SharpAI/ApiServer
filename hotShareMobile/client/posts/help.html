@@ -15,7 +15,11 @@
         <h3 class="open col_bj">{{_ "howToRegister"}}</h3>
         <div class="custom_bk">
           <p>
+            {{#if isUSVersion}}
+            <img src="/helpImgs/dr_01en.jpg">
+            {{else}}
             <img src="/helpImgs/dr_01.jpg">
+            {{/if}}
           </p>
         </div>
         <h3 class="col_bj">{{_ "howToPublish"}}</h3>
@@ -39,7 +43,11 @@
         <h3 class="col_bj">{{_ "oneKeyImport"}}</h3>
         <div class="custom_bk">
           <p>
+            {{#if isUSVersion}}
+            <img src="/helpImgs/dr_05en.jpg">
+            {{else}}
             <img src="/helpImgs/dr_05.jpg">
+            {{/if}}
           </p>
         </div>
         <h3 class="col_bj">{{_ "shareFrindField"}}</h3>

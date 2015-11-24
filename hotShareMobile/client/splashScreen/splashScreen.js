@@ -26,5 +26,8 @@ Template.splashScreen.helpers({
     } else {
       return false;
     }
+  },
+  isUSVersion: function () {
+    return isUSVersion;
   }
 });

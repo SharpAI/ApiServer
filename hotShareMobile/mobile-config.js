@@ -32,19 +32,32 @@ App.icons({
   'android_xhdpi': 'resource/icon.png'
 });
 
-App.launchScreens({
-  'iphone': 'resource/splash_768_1024.png',
-  'iphone_2x': 'resource/splash_640_960.png',
-  'iphone5': 'resource/splash_640_1136.png',
-  'iphone6': 'resource/splash_750_1334.png',
-  'iphone6p_portrait': 'resource/splash_1242_2208.png',
-  'ipad_portrait': 'resource/splash_768_1024.png',
-  'ipad_portrait_2x': 'resource/splash_1536_2048.png',
-  'android_ldpi_portrait': 'resource/splash.png',
-  'android_mdpi_portrait': 'resource/splash.png',
-  'android_hdpi_portrait': 'resource/splash.png',
-  'android_xhdpi_portrait': 'resource/splash.png'
-});
+//  App.launchScreens({
+//    'iphone': 'resource/splashEN_768_1024.jpg',
+//    'iphone_2x': 'resource/splashEN_640_960.jpg',
+//    'iphone5': 'resource/splashEN_640_1136.jpg',
+//    'iphone6': 'resource/splashEN_750_1334.jpg',
+//    'iphone6p_portrait': 'resource/splashEN_1242_2208.jpg',
+//    'ipad_portrait': 'resource/splashEN_768_1014.jpg',
+//    'ipad_portrait_2x': 'resource/splashEN_1536_2048.jpg',
+//    'android_ldpi_portrait': 'resource/splashEN.jpg',
+//    'android_mdpi_portrait': 'resource/splashEN.jpg',
+//    'android_hdpi_portrait': 'resource/splashEN.jpg',
+//    'android_xhdpi_portrait': 'resource/splashEN.jpg'
+//  });
+  App.launchScreens({
+    'iphone': 'resource/splash_768_1024.png',
+    'iphone_2x': 'resource/splash_640_960.png',
+    'iphone5': 'resource/splash_640_1136.png',
+    'iphone6': 'resource/splash_750_1334.png',
+    'iphone6p_portrait': 'resource/splash_1242_2208.png',
+    'ipad_portrait': 'resource/splash_768_1024.png',
+    'ipad_portrait_2x': 'resource/splash_1536_2048.png',
+    'android_ldpi_portrait': 'resource/splash.png',
+    'android_mdpi_portrait': 'resource/splash.png',
+    'android_hdpi_portrait': 'resource/splash.png',
+    'android_xhdpi_portrait': 'resource/splash.png'
+  });
 
 App.configurePlugin('nl.x-services.plugins.socialsharing', {
     APP_ID: 'wxcfcf19c225a36351'

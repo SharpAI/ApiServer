@@ -7,6 +7,9 @@ Template.help.rendered=->
       this.slideUp 150
       return
      )
+Template.help.helpers
+  isUSVersion:()->
+    return isUSVersion
 Template.help.events
    'click .back':(event)->
       history.back()
