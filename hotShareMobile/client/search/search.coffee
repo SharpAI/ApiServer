@@ -1,5 +1,5 @@
 if Meteor.isClient
-  Template.search.onCreated ()->
+  Template.search.rendered=->
     Meteor.subscribe("topicposts")
     Meteor.subscribe("topics")
   Template.search.helpers
