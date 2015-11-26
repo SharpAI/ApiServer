@@ -4,20 +4,18 @@ if Meteor.isServer
     Meteor.methods
       "unpublishPosts":(postId,userId,drafts)->
         Posts.remove {_id:postId}
-        try
-          Moments.remove({$or:[{currentPostId:postId},{readPostId:doc.postId}]})
-          FollowPosts.remove({postId:postId})
-          Feeds.remove({owner:userId,eventType:'SelfPosted',postId:postId})
-          TPs=TopicPosts.find({postId:doc._id})
-          if TPs.count()>0
-              TPs.forEach (data)->
-                  PostsCount = Topics.findOne({_id:data.topicId}).posts
-                  if PostsCount is 1
-                    Topics.remove({_id:data.topicId})
-                  else if PostsCount > 1
-                    Topics.update({_id: data.topicId}, {$set: {'posts': PostsCount-1}})
-          TopicPosts.remove({postId:postId})
-        catch error
+        FollowPosts.remove({postId:postId})
+        Moments.remove({$or:[{currentPostId:postId},{readPostId:postId}]})
+        Feeds.remove({owner:userId,eventType:'SelfPosted',postId:postId})
+        TPs=TopicPosts.find({postId:postId})
+        if TPs.count()>0
+            TPs.forEach (data)->
+                PostsCount = Topics.findOne({_id:data.topicId}).posts
+                if PostsCount is 1
+                  Topics.remove({_id:data.topicId})
+                else if PostsCount > 1
+                  Topics.update({_id: data.topicId}, {$set: {'posts': PostsCount-1}})
+        TopicPosts.remove({postId:postId})
         SavedDrafts.insert drafts
       "readPostReport": (postId,userId)->
         if(!Match.test(postId, String) || !Match.test(userId, String))
