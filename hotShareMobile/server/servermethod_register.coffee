@@ -7,17 +7,19 @@ if Meteor.isServer
         FollowPosts.remove({postId:postId})
         SavedDrafts.insert drafts
         Meteor.defer ()->
-          Moments.remove({$or:[{currentPostId:postId},{readPostId:postId}]})
-          Feeds.remove({owner:userId,eventType:'SelfPosted',postId:postId})
-          TPs=TopicPosts.find({postId:postId})
-          if TPs.count()>0
-              TPs.forEach (data)->
-                  PostsCount = Topics.findOne({_id:data.topicId}).posts
-                  if PostsCount is 1
-                    Topics.remove({_id:data.topicId})
-                  else if PostsCount > 1
-                    Topics.update({_id: data.topicId}, {$set: {'posts': PostsCount-1}})
-          TopicPosts.remove({postId:postId})
+          try
+            Moments.remove({$or:[{currentPostId:postId},{readPostId:postId}]})
+            Feeds.remove({owner:userId,eventType:'SelfPosted',postId:postId})
+            TPs=TopicPosts.find({postId:postId})
+            if TPs.count()>0
+                TPs.forEach (data)->
+                    PostsCount = Topics.findOne({_id:data.topicId}).posts
+                    if PostsCount is 1
+                      Topics.remove({_id:data.topicId})
+                    else if PostsCount > 1
+                      Topics.update({_id: data.topicId}, {$set: {'posts': PostsCount-1}})
+            TopicPosts.remove({postId:postId})
+          catch error
       "readPostReport": (postId,userId)->
         if(!Match.test(postId, String) || !Match.test(userId, String))
           return
