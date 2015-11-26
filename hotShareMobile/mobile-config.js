@@ -38,7 +38,7 @@ App.icons({
 //    'iphone5': 'resource/splashEN_640_1136.jpg',
 //    'iphone6': 'resource/splashEN_750_1334.jpg',
 //    'iphone6p_portrait': 'resource/splashEN_1242_2208.jpg',
-//    'ipad_portrait': 'resource/splashEN_768_1014.jpg',
+//    'ipad_portrait': 'resource/splashEN_768_1024.jpg',
 //    'ipad_portrait_2x': 'resource/splashEN_1536_2048.jpg',
 //    'android_ldpi_portrait': 'resource/splashEN.jpg',
 //    'android_mdpi_portrait': 'resource/splashEN.jpg',
