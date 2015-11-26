@@ -21,6 +21,24 @@ Template.webHome.events({
     },
     'click .helpPost':function(){
       PUB.page('/help')
+    },
+    'click .banner .btn.up': function(e){
+      e.stopPropagation();
+      localStorage.setItem('travel-box--banner-show', 'true');
+      $('.banner img').attr('src', '/banner_02.jpg');
+      $('.banner img').removeClass();
+      $('.banner img').addClass('down');
+      $(e.currentTarget).removeClass('up').addClass('down');
+    },
+    'click .banner .btn.down': function(e){
+      e.stopPropagation();
+      $('.banner img').attr('src', '/banner_01.jpg');
+      $('.banner img').removeClass();
+      $('.banner img').addClass('up');
+      $(e.currentTarget).removeClass('down').addClass('up');
+    },
+    'click .banner img': function(){
+      location = 'http://travelbox.duapp.com/'; 
     }
 });
 
@@ -35,6 +53,9 @@ Template.webHome.helpers({
     */
     buildVersion: function(){
         return version_of_build;
+    },
+    isShowBanner: function(){
+      return !(localStorage.getItem('travel-box--banner-show') === 'true');
     }
     /*
     helpPost: function(){
