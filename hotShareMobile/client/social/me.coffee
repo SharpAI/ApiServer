@@ -34,7 +34,8 @@ if Meteor.isClient
       return '[未知]'
   Template.information.events
     'click .nickname':(e)->
-      Session.set("Social.LevelTwo.Me.Menu","setNickname")
+      Session.set("changeNameBckScroll",$(".showPostsBox").height())
+      Router.go '/setNickname'
     'click .sex':(e)->
       Session.set("Social.LevelTwo.Me.Menu","setSex")
   ###
@@ -57,32 +58,33 @@ if Meteor.isClient
     'focus .text':->
       console.log("#comment get focus");
       $('.contactsList .head').css('display' ,'block')
-      if Meteor.isCordova and device.platform is 'iOS'
-        $('.me .setNickname .head').css('position', 'relative')
-        Meteor.setTimeout(()->
-          distance = $('.me .setNickname .head').offset().top - ($(window).scrollTop())
-          distance = '-' + distance + 'px'
-          $('.me .setNickname .head').css 'margin-top', distance
-          return
-        ,5)
-        cordova.plugins.Keyboard.disableScroll(true)
+#      if Meteor.isCordova and device.platform is 'iOS'
+#        $('.me .setNickname .head').css('position', 'relative')
+#        Meteor.setTimeout(()->
+#          distance = $('.me .setNickname .head').offset().top - ($(window).scrollTop())
+#          distance = '-' + distance + 'px'
+#          $('.me .setNickname .head').css 'margin-top', distance
+#          return
+#        ,5)
+#        cordova.plugins.Keyboard.disableScroll(true)
     'blur .text':->
       console.log("#comment lost focus");
       $('.contactsList .head').css('display' ,'block')
-      if Meteor.isCordova and device.platform is 'iOS'
-        $('.me .setNickname .head').css('position', 'fixed').css('margin-top', 0)
-        cordova.plugins.Keyboard.disableScroll(false)
+#      if Meteor.isCordova and device.platform is 'iOS'
+#        $('.me .setNickname .head').css('position', 'fixed').css('margin-top', 0)
+#        cordova.plugins.Keyboard.disableScroll(false)
     'click .left-btn':(e)->
-      Session.set("Social.LevelTwo.Me.Menu","information")
+      Session.set('changeUserNameBck', true)
+      history.back()
     'click .right-btn':(e)->
       $('.setNickname-form').submit()
     'submit .setNickname-form': (e)->
       if Meteor.user()
         if e.target.text.value isnt ''
-          console.log 'Change Nick Name to ' + $('#my_edit_nickname').val()
+          console.log 'Change Nick Name to ' + e.target.text.value
           Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.fullname': e.target.text.value}})
-          Session.set("Social.LevelTwo.Me.Menu","information")
-          
+          Session.set('changeUserNameBck', true)
+          history.back()
       false
   ###
     Set Sex View

@@ -205,7 +205,18 @@ if Meteor.isClient
     Session.set("needBindScroll", false)
     if withSocialBar
       $(window).scroll(scrollEventCallback)
-
+    if Session.get('changeUserNameBck') is true
+      trackEvent("socialBar","Me")
+      Session.set("SocialOnButton",'me')
+      Session.set("Social.LevelOne.Menu",'me')
+      $('.div_contactsList').css('display',"none")
+      $('.div_discover').css('display',"none")
+      $('.div_me').css('display',"block")
+      Session.set('changeUserNameBck', false)
+      Meteor.setTimeout ()->
+          console.log "sssdsdds"
+          document.body.scrollTop = Session.get("changeNameBckScroll")
+        , 450
   Template.showPosts.helpers
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare

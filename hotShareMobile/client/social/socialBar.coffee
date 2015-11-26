@@ -25,7 +25,7 @@ if Meteor.isClient
     'click .discoverBtn':->
       trackEvent("socialBar","Discover")
       Session.set("SocialOnButton",'discover')
-      Session.set('momentsitemsLimit', 10);
+      Session.set('momentsitemsLimit', 10)
       Session.set("Social.LevelOne.Menu",'discover')
       $('.div_contactsList').css('display',"none")
       $('.div_discover').css('display',"block")
