@@ -3,10 +3,10 @@ if Meteor.isServer
   Meteor.startup ()->
     Meteor.methods
       "unpublishPosts":(postId,userId,drafts)->
-        Posts.remove {_id:postId}
-        FollowPosts.remove({postId:postId})
-        SavedDrafts.insert drafts
         Meteor.defer ()->
+          Posts.remove {_id:postId}
+          FollowPosts.remove({postId:postId})
+          SavedDrafts.insert drafts
           try
             Moments.remove({$or:[{currentPostId:postId},{readPostId:postId}]})
             Feeds.remove({owner:userId,eventType:'SelfPosted',postId:postId})
