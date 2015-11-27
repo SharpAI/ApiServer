@@ -4,11 +4,16 @@ if (Meteor.isClient) {
           Session.set('resetPassword', Accounts._resetPasswordToken);
       }
   });
-  Template.authOverlay.rendered = function() {
-      $('.authOverlay').css('height', $(window).height());
-      if(Meteor.user())
-        Meteor.subscribe("follows");
-    };
+  Template.authOverlay.onRendered(function () {
+    $('.authOverlay').css('height', $(window).height());
+    if (Meteor.user())
+      Meteor.subscribe("follows");
+    if (isUSVersion == true) {
+      document.getElementById("authOverlaybg").style.backgroundImage = "url(loginbg1en.jpg)";
+    } else {
+      document.getElementById("authOverlaybg").style.backgroundImage = "url(loginbg1.png)";
+    }  
+  });
   Template.authOverlay.helpers({
       isLoggingIn:function() {
           return Meteor.loggingIn();

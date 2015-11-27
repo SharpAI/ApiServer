@@ -25,19 +25,31 @@
         <h3 class="col_bj">{{_ "howToPublish"}}</h3>
         <div class="custom_bk">
           <p>
-            <img src="/helpImgs/dr_02.jpg">
+              {{#if isUSVersion}}
+              <img src="/helpImgs/dr_02en.jpg">
+              {{else}}
+              <img src="/helpImgs/dr_02.jpg">
+              {{/if}}
           </p>
         </div>
         <h3 class="col_bj">{{_ "changePicture"}}</h3>
         <div class="custom_bk">
           <p>
-            <img src="/helpImgs/dr_03.jpg">
+              {{#if isUSVersion}}
+              <img src="/helpImgs/dr_03en.jpg">
+              {{else}}
+              <img src="/helpImgs/dr_03.jpg">
+              {{/if}}
           </p>
         </div>
         <h3 class="col_bj">{{_ "addTextAndEdit"}}</h3>
         <div class="custom_bk">
           <p>
-            <img src="/helpImgs/dr_04.jpg">
+             {{#if isUSVersion}}
+              <img src="/helpImgs/dr_04en.jpg">
+              {{else}}
+              <img src="/helpImgs/dr_04.jpg">
+              {{/if}}
           </p>
         </div>
         <h3 class="col_bj">{{_ "oneKeyImport"}}</h3>
@@ -53,20 +65,32 @@
         <h3 class="col_bj">{{_ "shareFrindField"}}</h3>
         <div class="custom_bk">
           <p>
+            {{#if isUSVersion}}
+            <img src="/helpImgs/dr_06en.jpg">
+            {{else}}
             <img src="/helpImgs/dr_06.jpg">
+            {{/if}}
           </p>
         </div>
         <h3 class="col_bj">{{_ "forwardInWechat"}}</h3>
         <div class="custom_bk">
           <p>
+            {{#if isUSVersion}}
+            <img src="/helpImgs/dr_07en.jpg">
+            {{else}}
             <img src="/helpImgs/dr_07.jpg">
+            {{/if}}
           </p>
         </div>
         
         <h3 class="col_bj">{{_ "howToResetPassword"}}</h3>
         <div class="custom_bk">
           <p>
+            {{#if isUSVersion}}
+            <img src="/helpImgs/dr_08en.jpg">
+            {{else}}
             <img src="/helpImgs/dr_08.jpg">
+            {{/if}}
           </p>
         </div>
       </div>
