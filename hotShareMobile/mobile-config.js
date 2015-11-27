@@ -1,3 +1,12 @@
+// App.info({
+//   id: 'org.hotshare.everywhere',
+//   version: '0.0.2',
+//   name: 'PosTag',
+//   description: 'Share everything with everyone',
+//   author: 'hotShare Design Team',
+//   email: '',
+//   website: ''
+// });
 App.info({
   id: 'org.hotshare.everywhere',
   version: '1.0.55',
