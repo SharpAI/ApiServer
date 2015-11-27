@@ -1,5 +1,5 @@
 // App.info({
-//   id: 'org.hotshare.everywhere',
+//   id: 'org.hotshare.storeboard',
 //   version: '0.0.2',
 //   name: 'PosTag',
 //   description: 'Share everything with everyone',
