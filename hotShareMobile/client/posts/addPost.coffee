@@ -191,7 +191,7 @@ if Meteor.isClient
           $('#title').val(data.title)
           $('#title').trigger('keyup')
         unless ($('#addontitle').val() and $('#addontitle').val() isnt '')
-          $('#addontitle').val(data.host)
+          $('#addontitle').val("")
       ,1000
   itemProcessor = (item,callback)->
     this.index++
