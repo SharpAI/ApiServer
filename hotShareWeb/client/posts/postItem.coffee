@@ -15,6 +15,7 @@ if Meteor.isClient
     for i in [col..(col+sizeX-1)]
       helper[(i-1)]=bottom
   Template.postItem.onRendered ()->
+    $('.textDiv1Link').linkify()
     element=this.find('.element')
     myData=this.data
     parentNode=element.parentNode
