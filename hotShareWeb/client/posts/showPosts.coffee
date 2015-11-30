@@ -96,7 +96,7 @@ if Meteor.isClient
           Meteor.call('readPostReport',postContent._id,Meteor.userId(),true)
         else
           Meteor.call('readPostReport',postContent._id,Meteor.userId(),false)
-    $('.textDiv1Link').linkify();
+#    $('.textDiv1Link').linkify();
     $("a[target='_blank']").click((e)->
       e.preventDefault();
       if Meteor.isCordova
