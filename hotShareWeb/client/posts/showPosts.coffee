@@ -77,6 +77,8 @@ if Meteor.isClient
     postContent = Session.get("postContent")
     subscribeCommentAndViewers()
     title=postContent.title.replace(/([\uE000-\uF8FF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDDFF])/g, '')
+    if postContent.publish is false
+      Router.go('/unpublish')
     if postContent.addontitle
       title=title+":"+postContent.addontitle
     trackPage('http://cdn.tiegushi.com/posts/'+postContent._id,title)

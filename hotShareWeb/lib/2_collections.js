@@ -410,7 +410,8 @@ if(Meteor.isServer){
                                 heart:0,
                                 retweet:0,
                                 comment:0,
-                                browse:0,
+                                browse: 0,
+                                publish: doc.publish,
                                 owner:doc.owner,
                                 ownerName:doc.ownerName,
                                 ownerIcon:doc.ownerIcon,
@@ -429,7 +430,8 @@ if(Meteor.isServer){
                                 heart:0,
                                 retweet:0,
                                 comment:0,
-                                browse:0,
+                                browse: 0,
+                                publish: doc.publish,
                                 owner:doc.owner,
                                 ownerName:doc.ownerName,
                                 ownerIcon:doc.ownerIcon,
@@ -473,7 +475,8 @@ if(Meteor.isServer){
                         heart:0,
                         retweet:0,
                         comment:0,
-                        browse:0,
+                        browse: 0,
+                        publish: doc.publish,
                         owner:doc.owner,
                         ownerName:doc.ownerName,
                         ownerIcon:doc.ownerIcon,
@@ -492,7 +495,8 @@ if(Meteor.isServer){
                         heart:0,
                         retweet:0,
                         comment:0,
-                        browse:0,
+                        browse: 0,
+                        publish: doc.publish,
                         owner:doc.owner,
                         ownerName:doc.ownerName,
                         ownerIcon:doc.ownerIcon,
@@ -654,7 +658,8 @@ if(Meteor.isServer){
                                 title:modifier.$set.title,
                                 addontitle:modifier.$set.addontitle,
                                 mainImage: modifier.$set.mainImage,
-                                mainImageStyle:modifier.$set.mainImageStyle
+                                mainImageStyle: modifier.$set.mainImageStyle,
+                                publish: modifier.$set.publish
                             }
                             }
                         );
@@ -666,7 +671,8 @@ if(Meteor.isServer){
                         title:modifier.$set.title,
                         addontitle:modifier.$set.addontitle,
                         mainImage: modifier.$set.mainImage,
-                        mainImageStyle:modifier.$set.mainImageStyle
+                        mainImageStyle: modifier.$set.mainImageStyle,
+                        publish: modifier.$set.publish
                     }
                     }
                 );
@@ -692,7 +698,8 @@ if(Meteor.isServer){
                                 title:data.title,
                                 addontitle:data.addontitle,
                                 mainImage: data.mainImage,
-                                mainImageStyle:data.mainImageStyle,
+                                mainImageStyle: data.mainImageStyle,
+                                publish: data.publish,
                                 owner:data.owner,
                                 ownerName:data.ownerName,
                                 ownerIcon:data.ownerIcon,
@@ -708,7 +715,8 @@ if(Meteor.isServer){
                                 addontitle:data.addontitle,
                                 mainImage: data.mainImage,
                                 mainImageStyle:data.mainImageStyle,
-                                owner:data.owner,
+                                owner: data.owner,
+                                publish: data.publish,
                                 ownerName:data.ownerName,
                                 ownerIcon:data.ownerIcon,
                                 createdAt: data.createdAt,
@@ -1458,11 +1466,11 @@ if(Meteor.isServer){
   });
   FollowPosts.allow({
     update: function (userId, doc, fieldNames, modifier) {
-      if (fieldNames.toString() === 'browse' || fieldNames.toString() === 'heart' || fieldNames.toString() === 'retweet' || fieldNames.toString() === 'comment' && modifier.$inc !== void 0) {
+      if (fieldNames.toString() === 'browse' || fieldNames.toString() === 'heart' || fieldNames.toString() === 'publish' || fieldNames.toString() === 'retweet' || fieldNames.toString() === 'comment' && modifier.$inc !== void 0) {
         return true;
       }
       if(doc.owner === userId){
-        return true
+        return true;
       }
       return false;
     }

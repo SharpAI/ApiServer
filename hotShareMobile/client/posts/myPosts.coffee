@@ -35,7 +35,7 @@ if Meteor.isClient
       else
         return "fa fa-th-large"
     items:()->
-      Posts.find({owner:Meteor.userId()}, {sort: {createdAt: -1}}, {limit:Session.get("mypostsitemsLimit")})
+      Posts.find({owner:Meteor.userId(),publish:{"$ne":false}}, {sort: {createdAt: -1}}, {limit:Session.get("mypostsitemsLimit")})
       #for i in [0..Posts.find({owner:Meteor.userId()}, {sort: {createdAt: -1}}).count()-1]
       #  Posts.find({owner:Meteor.userId()}, {sort: {createdAt: -1}}).fetch()[i]
     getBrowseCount:(browse)->

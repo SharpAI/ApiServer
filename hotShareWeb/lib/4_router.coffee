@@ -119,6 +119,12 @@ if Meteor.isClient
   Router.route 'searchMyPosts',
     template: 'searchMyPosts'
     path: '/searchMyPosts'
+  Router.route 'unpublish',
+    template: 'unpublish'
+    path: '/unpublish'
+  Router.route 'setNickname',
+    template: 'setNickname'
+    path: '/setNickname'
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->

@@ -171,6 +171,8 @@ if Meteor.isClient
     $('.mainImage').css('height',$(window).height()*0.55)
     postContent = Session.get("postContent")
     title=postContent.title.replace(/([\uE000-\uF8FF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDDFF])/g, '')
+    if postContent.publish is false
+      Router.go('/unpublish')
     if postContent.addontitle
       title=title+":"+postContent.addontitle
     trackPage('http://cdn.tiegushi.com/posts/'+postContent._id,title)
@@ -568,7 +570,7 @@ if Meteor.isClient
           owner:userId,
           createdAt: new Date(),
         }
-        Meteor.call 'unpublishPosts',postId,userId,drafts
+        Meteor.call 'unpublish',postId,userId,drafts
         Router.go('/user')
         return
       , '取消发表故事', ['取消','取消发表']);

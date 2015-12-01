@@ -116,7 +116,7 @@ if Meteor.isClient
       else
         false
     postItems:()->
-      myOwnPosts = Posts.find({owner: Meteor.userId()}, {sort: {createdAt: -1},limit:4})
+      myOwnPosts = Posts.find({owner: Meteor.userId(),publish:{"$ne":false}}, {sort: {createdAt: -1},limit:4})
       if myOwnPosts.count() > 0
         Meteor.defer ()->
           Session.setPersistent('persistentMyOwnPosts',myOwnPosts.fetch())
