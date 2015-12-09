@@ -164,7 +164,8 @@ shareTo = function(to,self,index){
                 if (description){
                     shareToWXTimeLine(description,description,result,url);
                 } else {
-                    shareToWXTimeLine("『故事贴』 "+ title,"『故事贴』 "+ title,result,url);
+//                    shareToWXTimeLine("『故事贴』 "+ title,"『故事贴』 "+ title,result,url);
+                    shareToWXTimeLine( title, title,result,url);
                 }
             } else if (to ==='WXSession'){
                 if(description){
@@ -176,7 +177,8 @@ shareTo = function(to,self,index){
                 if(description){
                     shareToSystem("分享『故事贴』中的一段文字：", description, result, url)
                 } else {
-                    shareToSystem("『故事贴』 "+title, null, result, url)
+//                    shareToSystem("『故事贴』 "+title, null, result, url)
+                    shareToSystem(title, null, result, url)
                 }
             }
         } else {
