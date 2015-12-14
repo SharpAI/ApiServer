@@ -17,23 +17,6 @@ App.info({
   website: ''
 });
 
-var customLocale = {};
-customLocale.title = "评价 %@";
-customLocale.message = "如果您喜欢 %@, 请对它进行评价。 谢谢您的支持!";
-customLocale.cancelButtonLabel = "不再提示";
-customLocale.laterButtonLabel = "下次再评";
-customLocale.rateButtonLabel = "现在评价";
-
-AppRate.preferences.openStoreInApp = true;
-AppRate.preferences.storeAppURL.ios = '957024953';
-AppRate.preferences.storeAppURL.android = 'market://details?id=org.hotshare.everywhere';
-AppRate.preferences.customLocale = customLocale;
-AppRate.preferences.displayAppName = '故事贴';
-AppRate.preferences.usesUntilPrompt = 5;
-AppRate.preferences.promptAgainForEachNewVersion = false;
-AppRate.promptForRating();
-
-
 App.setPreference('KeyboardDisplayRequiresUserAction', false);
 App.setPreference('StatusBarOverlaysWebView', false);
 App.setPreference('orientation', 'portrait');
