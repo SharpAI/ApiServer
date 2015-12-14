@@ -7,6 +7,7 @@ com.raananw.imageResizer@file://../cordova-plugins/imageresizer
 com.synconset.imagepicker@file://../cordova-plugins/imagepicker
 com.verso.cordova.clipboard@file://../cordova-plugins/clipboard
 cordova-plugin-actionsheet@file://../cordova-plugins/actionsheet
+org.pushandplay.cordova.apprate@file://../cordova-plugins/cordova-plugin-apprate
 com.wordsbaking.cordova.tts@file://../cordova-plugins/cordova-plugin-tts
 cordova-plugin-device@1.0.1
 cordova-plugin-device-motion@1.1.1
