@@ -3,7 +3,7 @@ if Meteor.isServer
   Meteor.startup ()->
     Meteor.methods
       'sendEmailToAdmin':(from, subject, text)->
-        to = 'zhzhang@actiontec.com'
+        to = 'admin@tiegushi.com'
         check([from, subject, text], [String])
         this.unblock()
         Email.send ({
