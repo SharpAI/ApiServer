@@ -10,10 +10,14 @@
 
 #import "AppDelegate.h"
 
-@interface ShareViewController ()
+@interface ShareViewController ()<UIWebViewDelegate>
 
 {
-    UIWebView *webView;
+    //UIWebView *webView;
+    NSUserDefaults *mySharedDefults;
+    
+    NSMutableDictionary *myDictionary;
+    
 }
 
 @end
@@ -29,9 +33,7 @@ static NSInteger const maxCharactersAllowed = 140;  //手动设置字符数上�
     
     [super viewDidLoad];
     
-     webView = [[UIWebView alloc] initWithFrame:CGRectZero];
-    
-    [self.view addSubview:webView];
+    //
 }
 
 
@@ -58,43 +60,70 @@ static NSInteger const maxCharactersAllowed = 140;  //手动设置字符数上�
     
     // Inform the host that we're done, so it un-blocks its UI. Note: Alternatively you could call super's -didSelectPost, which will similarly complete the extension context.
     
-    //提取数据
-   // [self fetchItemDataAtBackground];
     
     NSArray *inputItems = self.extensionContext.inputItems;
     NSExtensionItem *item = inputItems.firstObject;//无论多少数据，实际上只有一个 NSExtensionItem 对象
+    
+    //数据共享
+    if (!mySharedDefults) {
+        
+        mySharedDefults = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.hotsharetest"];
+        
+        myDictionary = [[NSMutableDictionary alloc] init];
+    }
+    
     for (NSItemProvider *provider in item.attachments) {
         //completionHandler 是异步运行的
         NSString *dataType = provider.registeredTypeIdentifiers.firstObject;//实际上一个NSItemProvider里也只有一种数据类型
         
-        /*if ([dataType isEqualToString:@"public.image"]) {
+        if ([dataType isEqualToString:@"public.jpeg"]) {
          [provider loadItemForTypeIdentifier:dataType options:nil completionHandler:^(UIImage *image, NSError *error){
          //collect image...
          
-         
-         //数据共享
-         NSUserDefaults *mySharedDefults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.hotShare"];
-         
-         [mySharedDefults setObject:image forKey:@"shareExtensionItem"];
+             if(image) {
+                 dispatch_async(dispatch_get_main_queue(), ^{
+                     //photo = image;
+                     [myDictionary setObject:UIImageJPEGRepresentation(image, 0.8) forKey:@"image"];
+                     
+                     [mySharedDefults setObject:myDictionary forKey:@"shareExtensionItem"];
+                     
+                     [mySharedDefults synchronize];
+                     
+                 });
+             }
          }];
-         }else*/
-        
-        //数据共享
-        NSUserDefaults *mySharedDefults = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.hotsharetest"];
-        
-        
-        if ([dataType isEqualToString:@"public.plain-text"]){
+         
+            
+         }else if ([dataType isEqualToString:@"public.plain-text"]){
             [provider loadItemForTypeIdentifier:dataType options:nil completionHandler:^(NSString *contentText, NSError *error){
                 //collect image...
                 
-                [mySharedDefults setObject:contentText forKey:@"shareExtensionItem"];
+                if(contentText) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        //photo = image;
+                        [myDictionary setObject:contentText forKey:@"text"];
+                        
+                        [mySharedDefults setObject:myDictionary forKey:@"shareExtensionItem"];
+                        
+                        [mySharedDefults synchronize];
+                    });
+                }
+                
                 
             }];
         }else if ([dataType isEqualToString:@"public.url"]){
             [provider loadItemForTypeIdentifier:dataType options:nil completionHandler:^(NSURL *url, NSError *error){
                 //collect url...
-                
-                [mySharedDefults setObject:url.absoluteString forKey:@"shareExtensionItem"];
+                if(url) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        //photo = image;
+                        [myDictionary setObject:url.absoluteString forKey:@"url"];
+                        
+                        [mySharedDefults setObject:myDictionary forKey:@"shareExtensionItem"];
+                        
+                        [mySharedDefults synchronize];
+                    });
+                }
                 
             }];
         }else{
@@ -102,27 +131,49 @@ static NSInteger const maxCharactersAllowed = 140;  //手动设置字符数上�
             NSLog(@"don't support data type: %@", dataType);
         }
         
+        [myDictionary setObject:self.contentText forKey:@"contentText"];
         
-        [mySharedDefults synchronize];
+        
+        
         
         
     }
-    
-    NSExtensionItem * outputItem = [item copy];
-    
-    outputItem.attributedContentText = [[NSAttributedString alloc] initWithString:self.contentText attributes:nil];
-    
-    NSArray * outPutitems= @[outputItem];
+//    
+//    NSExtensionItem * outputItem = [item copy];
+//    
+//    outputItem.attributedContentText = [[NSAttributedString alloc] initWithString:self.contentText attributes:nil];
+//    
+//    NSArray * outPutitems= @[outputItem];
     
     //自定义的URLScheme
-    NSString *customURL = @"hotShareApp://";
-    
-    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:customURL]]];
-    
-    [self.extensionContext completeRequestReturningItems:outPutitems completionHandler:nil];
+    NSString *customURL = @"hotshare://";
     
     
-    //[self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
+    /*UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectZero];
+    
+    [self.view addSubview:webView];
+    
+    //refresh
+    NSString * content = [NSString stringWithFormat : @"<head><meta http-equiv='com.actiontec.hotshare' content='0; URL=%@'></head>", customURL];
+    
+    [webView loadHTMLString:content baseURL:nil];
+    
+    [webView performSelector:@selector(removeFromSuperview) withObject:nil afterDelay:2.0];*/
+    
+    //[webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:customURL]]];
+    
+    UIResponder* responder = self;
+    while ((responder = [responder nextResponder]) != nil)
+    {
+        NSLog(@"responder = %@", responder);
+        if([responder respondsToSelector:@selector(openURL:)] == YES)
+        {
+            [responder performSelector:@selector(openURL:) withObject:[NSURL URLWithString:customURL]];
+        }
+    }
+ 
+    
+    [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
     
 }
 
@@ -138,76 +189,5 @@ static NSInteger const maxCharactersAllowed = 140;  //手动设置字符数上�
     return @[];
 }
 
-
-- (void)fetchItemDataAtBackground
-{
-    //后台获取
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        
-        
-        
-    });
-}
-
-
--(void)upLoadItemDataAtBackground{
-    
-    //上传数据
-    NSExtensionItem *Item = [self.extensionContext.inputItems firstObject];
-    
-    //完成一些自己的操作 保存，添加 http请求
-    NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@"xxx.backgroundsession"];
-    // To access the shared container you set up, use the sharedContainerIdentifier property on your configuration object.
-    config.sharedContainerIdentifier = @"group.xxx";
-    
-    NSURLSession *mySession = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
-    
-    
-    NSURL *url = [NSURL URLWithString:@"http:xxxx"];
-    
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
-    
-    request.HTTPMethod = @"POST";
-    
-    
-    NSDictionary *dic = @{@"item":Item};
-    
-    NSError *error = nil;
-    
-    NSData *data = [NSJSONSerialization dataWithJSONObject:dic options:kNilOptions error:&error];
-    
-    if (!error) {
-        
-        NSURLSessionUploadTask *uploadTask = [mySession uploadTaskWithRequest:request fromData:data completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-            
-            if ([response respondsToSelector:@selector(statusCode)]) {
-                
-                if ([(NSHTTPURLResponse *)response statusCode] == 401) {
-                    
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        
-                        
-                        NSLog(@"上传成功！");
-                        
-                        return;
-                        
-                        
-                    });
-                }
-                
-            }
-            
-        }];
-        
-        
-        [uploadTask resume];
-        
-    }
-}
-
--(void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session{
-    
-    
-}
 
 @end
