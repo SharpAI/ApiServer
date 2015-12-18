@@ -55,7 +55,7 @@ if Meteor.isClient
       onUserProfile()
       #PUB.page('userProfilePage1')
     'click .messageGroup': ()->
-      Session.set("Social.LevelOne.Menu", 'messageGroup')      
+      Session.set("Social.LevelOne.Menu", 'messageGroup')
   Template.addNewFriends.rendered=->
     $(window).scroll (event)->
       if Session.get("Social.LevelOne.Menu") is 'contactsList'
@@ -76,6 +76,11 @@ if Meteor.isClient
         else
           if (target.data("visible"))
             target.data("visible", false);
+  Template.addNewFriends.onDestroyed ()->
+    meeter = Template.addNewFriends.__helpers.get('meeter')()
+    meeter.forEach (person)->
+      if person.count is 1
+        Meets.update({_id: person._id}, {$set: {count: 2}})
   Template.addNewFriends.helpers
     hasFriendMeet:()->
     meeter:()->
