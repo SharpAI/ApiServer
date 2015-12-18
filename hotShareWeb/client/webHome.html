@@ -3,43 +3,205 @@
   {{#if resetPassword}}
     {{>ResetPassword}}
   {{else}}
-      {{#if isShowBanner}}
-      <div class="banner"><img class="up" src="/banner_01.jpg" /><div class="btn up"></div></div>
-      {{else}}
-      <div class="banner"><img class="down" src="/banner_02.jpg" /><div class="btn down"></div></div>
-      {{/if}}
-      <div class="title" style="padding:2%">
-      <center><h2>故事贴</h2></center>
-      </div>
-      <div class="subtitle">
-      <center><h4>一帖 一故事，分享 朋友圈</h4></center>
-      </div>
-      <div class="AppleDownloadBtn">
-          <a href="https://itunes.apple.com/app/gu-shi-tie/id957024953" target="_blank" class="iosBtn download"><i class="fa fa-apple"></i> Iphone&nbsp;1.0.50&nbsp;下载</a>
-      </div>
-      <div class="AndroidDownloadBtn">
-          <a href="http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere" target="_blank" class="androidBtn download"><i class="fa fa-android"></i>Android&nbsp;1.0.56&nbsp;下载</a>
-      </div>
-      <div class="helpPost">
-          <!-- <a href="http://cdn.tiegushi.com/posts/{{helpPost._id}}" target="_blank"> -->
-              <span>
-                  <img class="post_pic" src="http://data.tiegushi.com/AsK6G8FvBn525bgEC_1435290146572_Temp_CYKHHMSQTOH64D1399591567.png" width="40" height="40"/>
-                  故事贴使用手册&常见问题解答
-              </span>
-          <!-- </a> -->
-      </div>
-  {{/if}}
-      <div class="webFooter">
-        <div class="companyInfo">
-          <div class="company">
-            <span>© 2015 故事贴 v{{buildVersion}}</span>
-            <span class="dot">·</span>
-            <span>昆明讯动科技有限公司</span>
-          </div>
-          <div class="miibeian">
-            <a href="http://www.miibeian.gov.cn/" target="_blank">滇 ICP 备 14007324号</a>
-          </div>
+        <div class="site-bg"></div>
+        <div class="site-bg-overlay"></div>
+        <div class="top-header">
+            <div class="container">
+                <div class="row">
+                
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <p class="phone-info">Call us: <a>0871 1651 34197</a></p>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <div class="social-icons">
+                            <ul class="main-menu">
+                                <li><a href="#"><i class="fa fa-weixin"></i></a></li>
+                                <li><a href="#"><i class="fa fa-weibo"></i></a></li>
+                                <li><a href="#"><i class="fa fa-qq"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div> 
+
+        <div class="visible-xs visible-sm responsive-menu">
+            <a href="#" class="toggle-menu">
+                <i class="fa fa-bars"></i> 显示菜单
+            </a>
+            <div class="show-menu">
+                <ul class="main-menu">
+                    <li>
+                        <a class="show-1 active homebutton" href="#"><i class="fa fa-home"></i>网站首页</a>
+                    </li>
+                    <li>
+                        <a class="show-2 aboutbutton" href="#"><i class="fa fa-random"></i>使用指南</a>
+                    </li>
+                    
+                    <li>
+                        <a class="show-5 contactbutton" href="#"><i class="fa fa-envelope"></i>留言反馈</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-      </div>
+        
+        
+        <div class="container" id="page-content">
+            <div class="row">
+                <div class="col-md-9 col-sm-12 content-holder">
+                    <div id="menu-container">
+                        
+                        <div class="logo-holder logo-top-margin">
+                            <a class="site-brand"><img src="images/logo.png" width="100px" height="100px"></a>
+                        </div>
+                        <div id="menu-1" class="homepage home-section text-center">
+                            <div class="welcome-text">
+                                <h2>一贴一故事，分享朋友圈</h2>    
+                                <p>故事贴是一款半透明社交APP，他提倡兴趣共享，国内首创"偶遇"功能，让拥有共同兴趣，关注相似话题的用户能相互关注、聚集成朋友圈。</p>
+                                <form action="#" method="get" class="subscribe-form">
+                                    <div class="row">
+ 										<div class="download">
+                                            <a href="https://itunes.apple.com/app/gu-shi-tie/id957024953" target="_blank"><i class="fa fa-apple app-dow"></i> Iphone 1.0.57</a>
+                                            <a href="http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere" target="_blank"><i class="fa fa-android android-dow"></i> Android 1.0.56</a> 
+                                         </div>
+                                    </div>
+                                   
+                                </form>
+                                
+                                
+                            </div>
+                        </div>
+                        
+                        <div id="menu-2" class="content about-section">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12">
+                                        <div class="strategy" id="custom-show-hide-example">
+                                   
+                                            <h3 class="open">如何注册故事贴</h3>
+                                            <p>
+                                            <img src="images/zn_q_01.jpg">
+                                            <img src="images/zn_q_02.jpg">
+                                            </p>
+                                     
+                                            <h3>如何发帖</h3>
+                                            <p>
+                                            <img src="images/zn_w_01.jpg">
+                                            <img src="images/zn_w_02.jpg">
+                                            </p>
+                                            
+                                            <h3>图片调整</h3>
+                                            <p>
+                                            <img src="images/zn_e_01.jpg">
+                                            <img src="images/zn_e_02.jpg">
+                                            </p>
+                                      		
+                                            <h3>添加文字&排版</h3>
+                                            <p>
+                                            <img src="images/zn_r_01.jpg">
+                                            <img src="images/zn_r_02.jpg">
+                                            <img src="images/zn_r_03.jpg">
+                                            </p>
+                                            
+                                            <h3>一键导入</h3>
+                                            <p>
+                                            <img src="images/zn_t_01.jpg">
+                                            <img src="images/zn_t_02.jpg">
+                                            </p>
+                                            
+                                            <h3>分享朋友圈</h3>
+                                            <p>
+                                            <img src="images/zn_y_01.jpg">
+                                            </p>
+                                        
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div id="menu-3" class="content contact-section">
+                            <div class="row">
+                                <div class="col-md-8 col-sm-8">
+                                    <div class="box-content">
+                                        <h3 class="widget-title">请你留下最诚恳的建议</h3>
+                                        <form class="contact-form">
+                                            <fieldset>
+                                                <input type="text" class="name" id="name" placeholder="姓名...">
+                                            </fieldset> 
+                                            <fieldset>
+                                                <input type="email" class="email" id="email" placeholder="邮箱...">
+                                            </fieldset> 
+                                            <fieldset>
+                                                <input type="text" class="subject" id="subject" placeholder="主题...">
+                                            </fieldset>
+                                            <fieldset>
+                                                <textarea name="message" id="message" cols="30" rows="4" placeholder="留言.."></textarea>                                   </fieldset>
+                                            <fieldset>
+                                                <input type="submit" class="button" id="button" value="提交">
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <div class="box-content">
+                                        <h3 class="widget-title">您好 HELLO!</h3>
+                                        <p>感谢您来到故事贴APP下载官网<br><br>
+										点击下载扫描，体验后如果有什么好的宝贵意见，请您为我们留言或使用以下方式联系我们，我们将尽快给你回复，谢谢。 </p>
+                                        <div class="about-social">
+                                            <ul>
+                                                <li><i class="fa fa-fax"></i>0871 6513 4197</li>
+                                                <li><i class="fa fa-envelope"></i>kmxundong@qq.com</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+
+                    </div>
+                </div>
+
+                <div class="col-md-3 hidden-sm">
+                    
+                    <nav id="nav" class="main-navigation hidden-xs hidden-sm">
+                        <ul class="main-menu">
+                            <li>
+                                <a class="show-1 active homebutton" href="#"><i class="fa fa-home"></i>网站首页</a>
+                            </li>
+                            <li>
+                                <a class="show-2 aboutbutton" href="#"><i class="fa fa-random"></i>使用指南</a>
+                            </li>
+                            <li>
+                                <a class="show-5 contactbutton" href="#"><i class="fa fa-envelope"></i>留言反馈</a>
+                            </li>  
+                        </ul>
+                    </nav>
+
+                </div>
+            </div>
+        </div>
+  {{/if}}
+      <div class="site-footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <p>Copyright &copy; 2015故事贴<span>昆明讯动科技有限公司</span>滇ICP 备14007324号</p>
+                    </div>
+                </div>
+            </div>
+        </div> 
+
+       <script>
+        new jQueryCollapse($("#custom-show-hide-example"), {
+          open: function() {
+            this.slideDown(150);
+          },
+          closes: function() {
+            this.slideUp(150);
+          }
+        });
+       </script>
     </div>
 </template>
