@@ -2,6 +2,16 @@ if Meteor.isServer
   myCrypto = Meteor.npmRequire "crypto"
   Meteor.startup ()->
     Meteor.methods
+      'sendEmailToAdmin':(from, subject, text)->
+        to = 'zhzhang@actiontec.com'
+        check([from, subject, text], [String])
+        this.unblock()
+        Email.send ({
+            to: to,
+            from: from,
+            subject: subject,
+            text: text
+        })
       "unpublish":(postId,userId,drafts)->
         Meteor.defer ()->
           Posts.update({_id:postId},{$set:{publish:false}})

@@ -1,6 +1,7 @@
 Template.webHome.rendered = function () {
   //    $('.webHome').css('height', $(window).height());
   //    $('.webFooter').css('left', $(window).width()*0.5-105);
+  $('.sendAlert').css('display', "none");
   trackPage('http://www.tiegushi.com/');
   /*
   Meteor.subscribe("versions");
@@ -8,50 +9,73 @@ Template.webHome.rendered = function () {
   */
 };
 Template.webHome.events({
+  'click #sendAlert': function (events) {
+    $('.sendAlert').css('display', "none");
+  },
+  'click #sendEmailbtn': function (events) {
+    name = $("#sendEmailname").val();
+    email = $("#sendEmailemail").val();
+    subject = $("#sendEmailsubject").val();
+    text = $("#sendEmailmessage").val();
+    if (name === "" || email === "" || subject === "" || text === "") {
+      $('.sendAlert').css('display', "");
+    } else {
+//      Meteor.call('sendEmailToAdmin', email, subject, text + name);
+      $("#sendEmailname").val('');
+      $("#sendEmailemail").val('');
+      $("#sendEmailsubject").val('');
+      $("#sendEmailmessage").val('');
+      $("#menu-container .content").slideUp('slow');
+      $("#menu-container .homepage").slideDown('slow');
+      $(".logo-top-margin").animate({ marginLeft: '45%' }, "slow");
+      $(".logo-top-margin").animate({ marginTop: '80px' }, "slow");
+      return false;
+    }
+  },
   'click .main-menu a': function (events) {
     var id = $(events.currentTarget).attr('class');
     console.log(id);
-		id = id.split('-');
-		$('a.active').removeClass('active');
-  	$(events.currentTarget).addClass('active');
-		$("#menu-container .content").slideUp('slow');
-		$("#menu-container #menu-"+id[1]).slideDown('slow');		
-		$("#menu-container .homepage").slideUp('slow');
-		return false;
+    id = id.split('-');
+    $('a.active').removeClass('active');
+    $(events.currentTarget).addClass('active');
+    $("#menu-container .content").slideUp('slow');
+    $("#menu-container #menu-" + id[1]).slideDown('slow');
+    $("#menu-container .homepage").slideUp('slow');
+    return false;
   },
   'click .main-menu a.homebutton': function () {
     $("#menu-container .content").slideUp('slow');
-		$("#menu-container .homepage").slideDown('slow');
-		$(".logo-top-margin").animate({marginLeft:'45%'}, "slow");
-		$(".logo-top-margin").animate({marginTop:'80px'}, "slow");
-		return false;
-  },
-  'click .main-menu a.aboutbutton': function () { 
-    $("#menu-container .content").slideUp('slow');
-		$("#menu-container .about-section").slideDown('slow');
-		$(".logo-top-margin").animate({marginTop:'0'}, "slow");
-		$(".logo-top-margin").animate({marginLeft:'0'}, "slow");
-		return false;
-  },
-  'click .main-menu a.projectbutton': function () { 
-    $("#menu-container .content").slideUp('slow');
-		$("#menu-container .gallery-section").slideDown('slow');
-		$(".logo-top-margin").animate({marginTop:'0'}, "slow");
-		$(".logo-top-margin").animate({marginLeft:'0'}, "slow");
-		return false;
-  },
-  'click .main-menu a.contactbutton': function () { 
-    $("#menu-container .content").fadeOut();
-		$("#menu-container .contact-section").slideDown('slow');
-		$(".logo-top-margin").animate({marginTop:'0'}, "slow");
-		$(".logo-top-margin").animate({marginLeft:'0'}, "slow");
-		return false;
-  },
-  'click .toggle-menu': function () { 
-    $('.show-menu').stop(true,true).slideToggle();
+    $("#menu-container .homepage").slideDown('slow');
+    $(".logo-top-margin").animate({ marginLeft: '45%' }, "slow");
+    $(".logo-top-margin").animate({ marginTop: '80px' }, "slow");
     return false;
   },
-  'click .show-menu a': function () { 
+  'click .main-menu a.aboutbutton': function () {
+    $("#menu-container .content").slideUp('slow');
+    $("#menu-container .about-section").slideDown('slow');
+    $(".logo-top-margin").animate({ marginTop: '0' }, "slow");
+    $(".logo-top-margin").animate({ marginLeft: '0' }, "slow");
+    return false;
+  },
+  'click .main-menu a.projectbutton': function () {
+    $("#menu-container .content").slideUp('slow');
+    $("#menu-container .gallery-section").slideDown('slow');
+    $(".logo-top-margin").animate({ marginTop: '0' }, "slow");
+    $(".logo-top-margin").animate({ marginLeft: '0' }, "slow");
+    return false;
+  },
+  'click .main-menu a.contactbutton': function () {
+    $("#menu-container .content").fadeOut();
+    $("#menu-container .contact-section").slideDown('slow');
+    $(".logo-top-margin").animate({ marginTop: '0' }, "slow");
+    $(".logo-top-margin").animate({ marginLeft: '0' }, "slow");
+    return false;
+  },
+  'click .toggle-menu': function () {
+    $('.show-menu').stop(true, true).slideToggle();
+    return false;
+  },
+  'click .show-menu a': function () {
     $('.show-menu').fadeOut('slow');
   },
   'click .iosBtn': function () {

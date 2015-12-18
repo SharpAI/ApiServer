@@ -3,6 +3,10 @@
   {{#if resetPassword}}
     {{>ResetPassword}}
   {{else}}
+        <div class="sendAlert">
+          <div>您填写的内容不全！ </div>
+          <div id="sendAlert">知道了</div>
+        </div>
         <div class="site-bg"></div>
         <div class="site-bg-overlay"></div>
         <div class="top-header">
@@ -126,18 +130,18 @@
                                         <h3 class="widget-title">请你留下最诚恳的建议</h3>
                                         <form class="contact-form">
                                             <fieldset>
-                                                <input type="text" class="name" id="name" placeholder="姓名...">
+                                                <input type="text" class="name" id="sendEmailname" placeholder="姓名...">
                                             </fieldset> 
                                             <fieldset>
-                                                <input type="email" class="email" id="email" placeholder="邮箱...">
+                                                <input type="email" class="email" id="sendEmailemail" placeholder="邮箱...">
                                             </fieldset> 
                                             <fieldset>
-                                                <input type="text" class="subject" id="subject" placeholder="主题...">
+                                                <input type="text" class="subject" id="sendEmailsubject" placeholder="主题...">
                                             </fieldset>
                                             <fieldset>
-                                                <textarea name="message" id="message" cols="30" rows="4" placeholder="留言.."></textarea>                                   </fieldset>
+                                                <textarea name="message" id="sendEmailmessage" cols="30" rows="4" placeholder="留言.."></textarea>                                   </fieldset>
                                             <fieldset>
-                                                <input type="submit" class="button" id="button" value="提交">
+                                                <input type="button" class="button" id="sendEmailbtn" value="提交">
                                             </fieldset>
                                         </form>
                                     </div>
@@ -150,7 +154,7 @@
                                         <div class="about-social">
                                             <ul>
                                                 <li><i class="fa fa-fax"></i>0871 6513 4197</li>
-                                                <li><i class="fa fa-envelope"></i>kmxundong@qq.com</li>
+                                                <li><i class="fa fa-envelope"></i>admin@tiegushi.com</li>
                                             </ul>
                                         </div>
                                     </div>
