@@ -72,6 +72,8 @@ static NSInteger const maxCharactersAllowed = 140;  //手动设置字符数上�
         myDictionary = [[NSMutableDictionary alloc] init];
     }
     
+    [myDictionary setObject:self.contentText forKey:@"contentText"];
+    
     for (NSItemProvider *provider in item.attachments) {
         //completionHandler 是异步运行的
         NSString *dataType = provider.registeredTypeIdentifiers.firstObject;//实际上一个NSItemProvider里也只有一种数据类型
@@ -130,13 +132,7 @@ static NSInteger const maxCharactersAllowed = 140;  //手动设置字符数上�
             
             NSLog(@"don't support data type: %@", dataType);
         }
-        
-        [myDictionary setObject:self.contentText forKey:@"contentText"];
-        
-        
-        
-        
-        
+       
     }
 //    
 //    NSExtensionItem * outputItem = [item copy];
