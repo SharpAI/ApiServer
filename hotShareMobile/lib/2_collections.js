@@ -19,6 +19,9 @@ MsgGroup = new Meteor.Collection('msggroup');
 Meets = new Meteor.Collection('meets');
 Versions = new Meteor.Collection('versions');
 Moments = new Meteor.Collection('moments');
+
+ReaderPopularPosts = new Meteor.Collection('readerpopularposts');
+
 if(Meteor.isClient){
   PostFriends = new Meteor.Collection("postfriends")
   Newfriends = new Meteor.Collection("newfriends");
@@ -1368,6 +1371,17 @@ if(Meteor.isServer){
   Meteor.publish('versions', function() {
     return Versions.find({});
   });
+
+  Meteor.publish('readerpopularposts', function() {
+    if(this.userId) {
+        return ReaderPopularPosts.find({userId: this.userId});
+    }
+    else {
+        return this.ready();
+    }
+  });
+
+
   Meets.allow({
       update: function (userId,doc) {
           return doc.me===userId;
@@ -1951,6 +1965,12 @@ if(Meteor.isClient){
           Meteor.subscribe('suggestPosts', 15, {
               onReady: function(){
                   Session.set('momentsCollection','loaded');
+              }
+          });
+
+          Meteor.subscribe('readerpopularposts', {
+              onReady: function(){
+                  //Session.set('momentsCollection','loaded');
               }
           });
       }

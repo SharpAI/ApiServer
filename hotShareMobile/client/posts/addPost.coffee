@@ -426,6 +426,9 @@ if Meteor.isClient
   window.imageCounter2 = 1
   # the only document I found here https://github.com/percolatestudio/transition-helper/blob/master/transition-helper.js#L4
   Template.addPost.onRendered ()->
+    if Meteor.userId() and ReaderPopularPosts.find({userId: Meteor.userId()}).count() is 0
+      Meteor.call('initReaderPopularPosts')
+
     if Session.get('itemInAddPostPending') > 0
       showEditingPopupProgressBar()
     Meteor.subscribe("saveddrafts");

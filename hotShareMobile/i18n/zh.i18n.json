@@ -49,6 +49,8 @@
   "acceptInvitation": "接受邀请",
   "alreadySendInvitation": "已发送邀请",
   "loading": "加载中...",
+  "publishTo": "把故事推荐给这些读者们",
+  "readerUnit": "位读者",  
   //end
   //signupForm.html
   "createAccount": "创建账户",

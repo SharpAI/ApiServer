@@ -7,7 +7,11 @@ if Meteor.isClient
       Session.get("comment")
     topics:()->
        Topics.find({type:"topic"}, {sort: {posts: -1}, limit:20})
+    groups: ()->
+      ReaderPopularPosts.find({userId: Meteor.userId()})
   Template.addTopicComment.events
+    "change .publish-reader-group input[type='checkbox']": (e, t)->
+      $(e.target.parentNode).toggleClass('selected')
     "change #comment":()->
        Session.set("comment",$('#comment').val())
     "click #topic":(event)->
@@ -91,5 +95,29 @@ if Meteor.isClient
                  createdAt: new Date(),
                  topicId: topicId
                }
+       #added for reader group
+       postItem = Posts.findOne({_id: topicPostId})
+       feedItem = {
+          owner: Meteor.userId(),
+          ownerName: postItem.ownerName,
+          ownerIcon: postItem.ownerIcon,
+          eventType:'SelfPosted',
+          postId: postItem._id,
+          postTitle: postItem.title,
+          mainImage: postItem.mainImage,
+          createdAt: postItem.createdAt,
+          heart: 0,
+          retweet: 0,
+          comment: 0
+       }
+
+       groups = []
+       $(".publish-reader-group").find("input:checked").each(()->
+          groups.push $(this).attr("id")
+       )
+
+       if groups.length isnt 0
+         Meteor.call('pushPostToReaderGroups', feedItem, groups)
+
        Router.go('/posts/'+topicPostId)
        false

@@ -1,4 +1,44 @@
 <template name="addTopicComment">
+<style type="text/css">
+  #publishto {
+    position: absolute;
+    top: 420px;
+    left: 2%;
+    right: 2%;
+  }
+
+  #publishto .publish-readers-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  #publishto .publish-reader-group {
+    border-bottom: 1px solid #ededed;
+  }
+
+  #publishto .publish-reader-group label.selected {
+    color: #d9d9d9;
+  }  
+
+  #publishto .publish-reader-group input[type='checkbox']{
+    background: none;
+    border: none;
+    -webkit-appearance: none;
+    appearance: none;
+    margin-right: 10px;
+    position: relative;
+    bottom: -5px;
+  }
+
+  #publishto .publish-reader-group input[type='checkbox']:checked:after{
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#bddad5" stroke-width="3"/><path fill="#5dc2af" d="M72 25L42 71 27 56l-4 4 20 20 34-52z"/></svg>');
+  }
+
+  #publishto .publish-reader-group input[type='checkbox']:after{
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#bddad5" stroke-width="3"/></svg>');
+  }    
+</style>
+
 <div class="addTopicComment">
 <div class="content">
   <div id="title">{{_ "yourStoryPublished"}}</div>
@@ -13,6 +53,18 @@
       {{/each}}
   </div>
   <div id="save">{{_ "OK"}}</div>
+
+
+  <div id="publishto">
+    <h4>{{_ "publishTo"}}</h4>
+    <ul class="publish-readers-list">
+      {{#each groups}}
+        <li class="publish-reader-group">
+          <label><input id="{{postId}}" type="checkbox">{{title}} ({{browse}} {{_ "readerUnit"}})</label>
+        </li>      
+      {{/each}}
+    </ul>
+  </div>
 </div>
 </div>
 </template>
