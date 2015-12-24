@@ -1377,7 +1377,7 @@ if(Meteor.isServer){
         return ReaderPopularPosts.find({userId: this.userId});
     }
     else {
-        return this.ready();
+        return [];
     }
   });
 

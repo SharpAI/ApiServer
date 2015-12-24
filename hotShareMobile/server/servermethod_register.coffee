@@ -106,34 +106,38 @@ if Meteor.isServer
         if userId is undefined or userId is null
           return false
 
-        if ReaderPopularPosts.find({userId: userId}).count() > 0
-          return false
+        Meteor.defer ()->          
+          ReaderPopularPosts.find({userId: userId}).forEach((item)->
+            ReaderPopularPosts.remove({_id: item._id})
+          )
 
-        postIds = []
-        Viewers.find({userId: userId}, {sort: {createdAt: -1}, limit: 200}).forEach((item)->
-          postIds.push(item.postId)
-        )
-        console.log(postIds)
-        Posts.find({_id: {$in: postIds}, browse: {$gte: 10}}, {sort: {browse: -1}, limit: 9}).forEach((item)->
-          ReaderPopularPosts.insert({userId: userId, postId: item._id, title: item.title, browse: item.browse, createdAt: new Date()})
-        )
+          postIds = []
+          Viewers.find({userId: userId}, {sort: {createdAt: -1}, limit: 200}).forEach((item)->
+            postIds.push(item.postId)
+          )
+
+          Posts.find({_id: {$in: postIds}, browse: {$gte: 10}}, {sort: {browse: -1}, limit: 9}).forEach((item)->
+            ReaderPopularPosts.insert({userId: userId, postId: item._id, title: item.title, browse: item.browse, createdAt: new Date()})
+          )
         true
       'pushPostToReaderGroups': (feed, groups)->
         if this.userId is null or feed is undefined or feed is null or groups is undefined or groups is null or groups.length is 0
           return false
+        self = this
         this.unblock()
-        feeds = []
-        readers = []
-        Viewers.find({postId: {$in: groups}}).forEach((item)->
-          if !~readers.indexOf(item.userId) and item.userId isnt this.userId
-            readers.push(item.userId)
-            feedItem = _.extend(feed, {followby: item.userId})
-            #feeds.push(feedItem)
-            Feeds.insert(feedItem)
+        Meteor.defer ()->          
+          feeds = []
+          readers = []
+          Viewers.find({postId: {$in: groups}}).forEach((item)->
+            if !~readers.indexOf(item.userId) and item.userId isnt self.userId
+              readers.push(item.userId)
+              feedItem = _.extend(feed, {followby: item.userId})
+              #feeds.push(feedItem)
+              Feeds.insert(feedItem)
 
-            Meteor.users.update({_id: item.userId}, {$inc: {'profile.waitReadCount': 1}})
- 
-        )
+              Meteor.users.update({_id: item.userId}, {$inc: {'profile.waitReadCount': 1}})
+              pushnotification("newpost", {_id: feedItem.postId, ownerName: feedItem.ownerName, title: feedItem.postTitle}, item.userId)
+          )
         true
 
 

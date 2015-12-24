@@ -1,10 +1,10 @@
 <template name="addTopicComment">
 <style type="text/css">
   #publishto {
-    position: absolute;
-    top: 420px;
-    left: 2%;
-    right: 2%;
+    /*position: absolute;*/
+    /*top: 420px;*/
+    /*left: 2%;*/
+    /*right: 2%;*/
   }
 
   #publishto .publish-readers-list {
@@ -51,20 +51,21 @@
           &nbsp;
           </span>
       {{/each}}
+
+      {{#if isShowPublish}}
+      <div id="publishto">
+        <h4>{{_ "publishTo"}}</h4>
+        <ul class="publish-readers-list">
+          {{#each groups}}
+            <li class="publish-reader-group">
+              <label><input id="{{postId}}" type="checkbox">{{title}} ({{browse}} {{_ "readerUnit"}})</label>
+            </li>      
+          {{/each}}
+        </ul>
+      </div>
+      {{/if}}      
   </div>
   <div id="save">{{_ "OK"}}</div>
-
-
-  <div id="publishto">
-    <h4>{{_ "publishTo"}}</h4>
-    <ul class="publish-readers-list">
-      {{#each groups}}
-        <li class="publish-reader-group">
-          <label><input id="{{postId}}" type="checkbox">{{title}} ({{browse}} {{_ "readerUnit"}})</label>
-        </li>      
-      {{/each}}
-    </ul>
-  </div>
 </div>
 </div>
 </template>

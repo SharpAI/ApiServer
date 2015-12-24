@@ -9,6 +9,9 @@ if Meteor.isClient
        Topics.find({type:"topic"}, {sort: {posts: -1}, limit:20})
     groups: ()->
       ReaderPopularPosts.find({userId: Meteor.userId()})
+    isShowPublish: ()->
+      return ReaderPopularPosts.find({userId: Meteor.userId()}).count()
+
   Template.addTopicComment.events
     "change .publish-reader-group input[type='checkbox']": (e, t)->
       $(e.target.parentNode).toggleClass('selected')
