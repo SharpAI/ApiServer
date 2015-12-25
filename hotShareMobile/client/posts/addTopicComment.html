@@ -13,11 +13,12 @@
   }
 
   #publishto .publish-reader-group {
-    border-bottom: 1px solid #ededed;
+    /*border-bottom: 1px solid #ededed;*/
+    /*margin-bottom: 10px;*/
   }
 
   #publishto .publish-reader-group label.selected {
-    color: #d9d9d9;
+    color: #A6A4A4;
   }  
 
   #publishto .publish-reader-group input[type='checkbox']{
@@ -31,12 +32,29 @@
   }
 
   #publishto .publish-reader-group input[type='checkbox']:checked:after{
-    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#bddad5" stroke-width="3"/><path fill="#5dc2af" d="M72 25L42 71 27 56l-4 4 20 20 34-52z"/></svg>');
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#bddad5" stroke-width="10"/><path fill="#5dc2af" d="M72 25L42 71 27 56l-4 4 20 20 34-52z"/></svg>');
   }
 
   #publishto .publish-reader-group input[type='checkbox']:after{
-    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#bddad5" stroke-width="3"/></svg>');
-  }    
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#bddad5" stroke-width="10"/></svg>');
+  }
+
+  #publishto .publish-reader-group label label {
+    display: inline-block;
+    max-width: 65%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #pubdivide {
+    margin-top: 8px;
+    margin-left: -3%;
+    margin-right: -3%;
+    height: 10px;
+    border: 1px solid #E9E9ED;
+    background-color: #EFEFF4; 
+  }
 </style>
 
 <div class="addTopicComment">
@@ -53,12 +71,13 @@
       {{/each}}
 
       {{#if isShowPublish}}
+      <div id="pubdivide"></div> 
       <div id="publishto">
         <h4>{{_ "publishTo"}}</h4>
         <ul class="publish-readers-list">
           {{#each groups}}
             <li class="publish-reader-group">
-              <label><input id="{{postId}}" type="checkbox">{{title}} ({{browse}} {{_ "readerUnit"}})</label>
+              <label><input id="{{postId}}" type="checkbox"><label for="{{postId}}">{{title}}</label> ({{browse}} {{_ "readerUnit"}})</label>
             </li>      
           {{/each}}
         </ul>
