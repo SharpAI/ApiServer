@@ -129,6 +129,16 @@ shareTo = function(to,self,index){
     var url = getPostSharingPath();
     var title = getSharingTitle(self);
     var description = null;
+    var firstParagraph = null;
+    var patagraphLength = Session.get('postContent').pub.length
+    if (patagraphLength > 0) {
+      var textArr = Session.get('postContent').pub;
+      for (var i = 0; i < patagraphLength; i++){
+        if(textArr[i].text) {
+          return firstParagraph = textArr[i].text;
+        }
+      }
+    }
     if(index !== undefined) {
         var text =Session.get('postContent').pub[index].text;
         url = url + '/' + index;
@@ -149,10 +159,12 @@ shareTo = function(to,self,index){
         $('#blur_overlay').css('z-index', -1);
         if(description){
 //            shareToQQ("分享『故事贴』中的一段文字：",description,self.mainImage,url);
-            shareToQQ("分享一段文字：",description,self.mainImage,url);
-        } else{
+            shareToQQ(title,description,self.mainImage,url);
+        } else if(firstParagraph){
 //            shareToQQ("分享『故事贴』中的一篇文章：",title,self.mainImage,url);
-            shareToQQ("分享一篇文章：",title,self.mainImage,url);
+            shareToQQ(title,firstParagraph,self.mainImage,url);
+        } else {
+          shareToQQ(title,title,self.mainImage,url);
         }
         return;
     }
@@ -163,23 +175,27 @@ shareTo = function(to,self,index){
 
         if (result) {
             if(to ==='WXTimeLine'){
-                if (description){
-                    shareToWXTimeLine(description,description,result,url);
-                } else {
+              if (description) {
+                shareToWXTimeLine(description, description, result, url);
+              } else if (firstParagraph) {
+                    shareToWXTimeLine( title, firstParagraph,result,url);
+               } else{
 //                    shareToWXTimeLine("『故事贴』 "+ title,"『故事贴』 "+ title,result,url);
                     shareToWXTimeLine( title, title,result,url);
                 }
             } else if (to ==='WXSession'){
                 if(description){
 //                    shareToWXSession("分享『故事贴』中的一段文字：",description,result,url);
-                    shareToWXSession("分享一段文字：",description,result,url);
-                } else {
-                    shareToWXSession("分享一篇文章：",title,result,url);
+                    shareToWXSession(title,description,result,url);
+                } else if (firstParagraph) {
+                    shareToWXSession( title, firstParagraph,result,url);
+               }  else {
+                    shareToWXSession(title,title,result,url);
 //                    shareToWXSession("分享『故事贴』中的一篇文章：",title,result,url);
                 }
             } else if (to ==='System'){
                 if(description){
-                    shareToSystem("分享一段文字：", description, result, url)
+                    shareToSystem(title, description, result, url)
 //                    shareToSystem("分享『故事贴』中的一段文字：", description, result, url)
                 } else {
 //                    shareToSystem("『故事贴』 "+title, null, result, url)
