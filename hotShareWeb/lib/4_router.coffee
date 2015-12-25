@@ -37,9 +37,9 @@ if Meteor.isClient
           Session.set('postContent',post)
         Session.set('focusedIndex',undefined)
         if post.addontitle and (post.addontitle isnt '')
-          documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
+          documentTitle = post.title + "：" + post.addontitle
         else
-          documentTitle = "『故事贴』" + post.title
+          documentTitle = post.title
         Session.set("DocumentTitle",documentTitle)
         favicon = document.createElement('link')
         favicon.id = 'icon'
@@ -85,9 +85,9 @@ if Meteor.isClient
         Session.set('postContent',post)
       Session.set('focusedIndex',this.params._index)
       if post.addontitle and (post.addontitle isnt '')
-        documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
+        documentTitle = post.title + "：" + post.addontitle
       else
-        documentTitle = "『故事贴』" + post.title
+        documentTitle = post.title
       Session.set("DocumentTitle",documentTitle)
       favicon = document.createElement('link')
       favicon.id = 'icon'
