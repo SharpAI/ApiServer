@@ -148,9 +148,11 @@ shareTo = function(to,self,index){
         $('#blur_overlay').css('height','');
         $('#blur_overlay').css('z-index', -1);
         if(description){
-            shareToQQ("分享『故事贴』中的一段文字：",description,self.mainImage,url);
+//            shareToQQ("分享『故事贴』中的一段文字：",description,self.mainImage,url);
+            shareToQQ("分享一段文字：",description,self.mainImage,url);
         } else{
-            shareToQQ("分享『故事贴』中的一篇文章：",title,self.mainImage,url);
+//            shareToQQ("分享『故事贴』中的一篇文章：",title,self.mainImage,url);
+            shareToQQ("分享一篇文章：",title,self.mainImage,url);
         }
         return;
     }
@@ -169,13 +171,16 @@ shareTo = function(to,self,index){
                 }
             } else if (to ==='WXSession'){
                 if(description){
-                    shareToWXSession("分享『故事贴』中的一段文字：",description,result,url);
+//                    shareToWXSession("分享『故事贴』中的一段文字：",description,result,url);
+                    shareToWXSession("分享一段文字：",description,result,url);
                 } else {
-                    shareToWXSession("分享『故事贴』中的一篇文章：",title,result,url);
+                    shareToWXSession("分享一篇文章：",title,result,url);
+//                    shareToWXSession("分享『故事贴』中的一篇文章：",title,result,url);
                 }
             } else if (to ==='System'){
                 if(description){
-                    shareToSystem("分享『故事贴』中的一段文字：", description, result, url)
+                    shareToSystem("分享一段文字：", description, result, url)
+//                    shareToSystem("分享『故事贴』中的一段文字：", description, result, url)
                 } else {
 //                    shareToSystem("『故事贴』 "+title, null, result, url)
                     shareToSystem(title, null, result, url)
