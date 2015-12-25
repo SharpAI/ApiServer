@@ -78,6 +78,20 @@ getPostSharingPath = function(){
     var url = "http://" + server_domain_name +'/'+Session.get('channel');
     return url;
 };
+getFirstParagraph = function(){
+    var patagraphLength = Session.get('postContent').pub.length
+    if (patagraphLength > 0) {
+      var textArr = Session.get('postContent').pub;
+      for (var i = 0; i < patagraphLength; i++){
+        if(textArr[i].text) {
+          console.log(textArr[i].text);
+          return textArr[i].text;
+        }
+      }
+    }else{
+      return null;
+    }
+};
 
 shareToWXTimeLine = function(title,description,thumbData,url){
     shareToWechat(title,description,thumbData,url,WeChat.Scene.timeline);
@@ -129,16 +143,8 @@ shareTo = function(to,self,index){
     var url = getPostSharingPath();
     var title = getSharingTitle(self);
     var description = null;
-    var firstParagraph = null;
-    var patagraphLength = Session.get('postContent').pub.length
-    if (patagraphLength > 0) {
-      var textArr = Session.get('postContent').pub;
-      for (var i = 0; i < patagraphLength; i++){
-        if(textArr[i].text) {
-          return firstParagraph = textArr[i].text;
-        }
-      }
-    }
+    var firstParagraph = getFirstParagraph();
+    console.log(firstParagraph);
     if(index !== undefined) {
         var text =Session.get('postContent').pub[index].text;
         url = url + '/' + index;
