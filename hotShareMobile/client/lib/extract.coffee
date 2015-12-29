@@ -444,7 +444,7 @@ getCalculatedStyle=(node,prop)->
               if !node.parentNode or node.parentNode is parentPNode
                 parentPNode.appendChild(node)
               else
-                  parentPNode.appendChild(node.parentNode)
+                parentPNode.appendChild(node.parentNode)
             else
               if node.parentNode
                 newRoot.appendChild(node.parentNode)

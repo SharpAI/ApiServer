@@ -514,6 +514,7 @@ if Meteor.isClient
       data.imageArray = []
       documentBody = $.parseHTML( data.body )
       documentBody.innerHTML = data.body
+      documentBody.host = data.host
 
       for titleRule in titleRules
         if url.indexOf(titleRule.prefix) > -1
@@ -623,7 +624,7 @@ if Meteor.isClient
               if src.startsWith('//')
                 src = data.protocol + src
               else if src.startsWith('/')
-                src = data.protocol + '//' + data.host + '/' + src
+                src = data.protocol + '//' + documentBody.host + '/' + src
             showDebug&&console.log 'Image Src: ' + src
             previousIsImage = true
             if toBeInsertedText and toBeInsertedText isnt ''
@@ -739,7 +740,11 @@ if Meteor.isClient
             for i in [0..paragraphArray.length-1]
               console.log('paragraphArray['+i+']='+paragraphArray[i])
       appendParagraph = (resortedArticle, text, styleAlign)->
+        isShortParagraph = false
         appendTextWithStyleAlign = ()->
+          if !isShortParagraph
+            if text.trim() is '' or text.trim() is '\n'
+              return
           if styleAlign is undefined
             resortedArticle.push {type:'text',text:text}
           else
@@ -750,6 +755,8 @@ if Meteor.isClient
             textArray = lastArtical.text.split('\n')
             if textArray[textArray.length-1].length < 35 and styleAlign is (if lastArtical.layout then lastArtical.layout.align else undefined)
               lastArtical.text += '\n' + text
+              if textArray[textArray.length-1].trim() isnt '' and textArray[textArray.length-1].trim() isnt '\n'
+                isShortParagraph = true
             else
               appendTextWithStyleAlign()
           else
@@ -854,6 +861,8 @@ if Meteor.isClient
           if dataSrc
             dataSrc = removeURLParameter(dataSrc,'width')
             dataSrc = removeURLParameter(dataSrc,'height')
+            if dataSrc.indexOf('/') is 0
+              dataSrc = data.protocol + '//' + documentBody.host + dataSrc
             dataSrc = dataSrc.replace(/https:\/\//g, 'http://')
             dataSrc = dataSrc.replace(/v.qq.com\/iframe\/preview.html/g, 'v.qq.com/iframe/player.html')
             node.setAttribute('data-src',dataSrc)
@@ -862,6 +871,7 @@ if Meteor.isClient
           if toBeInsertedText and toBeInsertedText isnt ''
             appendParagraph(resortedArticle, toBeInsertedText, undefined)
             toBeInsertedText = ''
+          console.log("Frank.iframe: node.outerHTML="+node.outerHTML);
           resortedArticle.push {type:'iframe',iframe:node.outerHTML}
         else if node.tagName == 'IMG'
           previousIsSpan = false
@@ -876,7 +886,7 @@ if Meteor.isClient
               if src.startsWith('//')
                 src = data.protocol + src
               else if src.startsWith('/')
-                src = data.protocol + '//' + data.host + '/' + src
+                src = data.protocol + '//' + documentBody.host + '/' + src
             showDebug&&console.log 'Image Src: ' + src
             previousIsImage = true
             if toBeInsertedText and toBeInsertedText isnt ''
@@ -922,7 +932,7 @@ if Meteor.isClient
             else
               toBeInsertedText = ''
             toBeInsertedStyleAlign = styleAlign
-        else if text and text.trim() isnt ''
+        else if text and text isnt ''
           previousIsImage = false
           showDebug&&console.log '    Got text in this element('+toBeInsertedText.length+') '+text
           showDebug&&console.log 'Text  ['+text+'] color is '+nodeColor+' nodeBackgroundColor is '+nodeBackgroundColor
