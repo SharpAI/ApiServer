@@ -131,7 +131,7 @@ if Meteor.isServer
             postIds.push(item.postId)
           )
 
-          Posts.find({_id: {$in: postIds}, browse: {$gte: 10}}, {sort: {browse: -1}, limit: 9}).forEach((item)->
+          Posts.find({_id: {$in: postIds}, browse: {$gte: 5}}, {sort: {browse: -1}, limit: 9}).forEach((item)->
             ReaderPopularPosts.insert({userId: userId, postId: item._id, title: item.title, browse: item.browse, createdAt: new Date()})
           )
         true
