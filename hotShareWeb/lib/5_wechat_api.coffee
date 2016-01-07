@@ -79,7 +79,7 @@ if Meteor.isClient
             patagraphLength = Session.get('postContent').pub.length
             if  patagraphLength > 0
               textArr = Session.get('postContent').pub
-              for i in [0..patagraphLength - 1]
+              for i in [patagraphLength - 1..0]
                 if textArr[i].text
                   console.log(textArr[i].text)
                   descriptionFirstParagraph = textArr[i].text
