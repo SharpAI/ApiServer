@@ -44,17 +44,6 @@ if Meteor.isClient
                         'onMenuShareWeibo',
                         'onMenuShareQZone']
         }
-        getFirstParagraph ()->
-            patagraphLength = Session.get('postContent').pub.length
-            if  patagraphLength > 0
-              textArr = Session.get('postContent').pub
-              for i in [0..patagraphLength - 1]
-                if textArr[i].text
-                  console.log(textArr[i].text)
-                  alert('find2' + textArr[i].text)
-                  return textArr[i].text
-            else
-              return Session.get("DocumentTitle")
         wx.ready ()->
           if Session.get('focusedIndex') isnt undefined
             description =Session.get('postContent').pub[Session.get('focusedIndex')].text.replace(/\s\s\s+/g, '');
@@ -87,7 +76,15 @@ if Meteor.isClient
                 console.log('Share cancled');
             }
           else
-            descriptionFirstParagraph = getFirstParagraph()
+            patagraphLength = Session.get('postContent').pub.length
+            if  patagraphLength > 0
+              textArr = Session.get('postContent').pub
+              for i in [0..patagraphLength - 1]
+                if textArr[i].text
+                  console.log(textArr[i].text)
+                  descriptionFirstParagraph = textArr[i].text
+            else
+              descriptionFirstParagraph = Session.get("DocumentTitle")
             timelineData = {
               title: Session.get("DocumentTitle"),
               desc: Session.get("DocumentTitle"),
