@@ -30,7 +30,7 @@ if Meteor.isClient
     setupWeichat = (url)->
       Meteor.call 'getSignatureFromServer',url,(error,result)->
         #FeedAfterShare(Session.get('postContent'))
-        console.log('Got Post signature ' + JSON.stringify(result));
+        console.log('Got Post signature ' + JSON.stringify(result))
         wx.config {
             debug: false,
             appId: result.appid,
@@ -44,6 +44,17 @@ if Meteor.isClient
                         'onMenuShareWeibo',
                         'onMenuShareQZone']
         }
+        getFirstParagraph ()->
+            patagraphLength = Session.get('postContent').pub.length
+            if  patagraphLength > 0
+              textArr = Session.get('postContent').pub
+              for i in [0..patagraphLength - 1]
+                if textArr[i].text
+                  console.log(textArr[i].text)
+                  alert('find2' + textArr[i].text)
+                  return textArr[i].text
+            else
+              return Session.get("DocumentTitle")
         wx.ready ()->
           if Session.get('focusedIndex') isnt undefined
             description =Session.get('postContent').pub[Session.get('focusedIndex')].text.replace(/\s\s\s+/g, '');
@@ -76,6 +87,7 @@ if Meteor.isClient
                 console.log('Share cancled');
             }
           else
+            descriptionFirstParagraph = getFirstParagraph()
             timelineData = {
               title: Session.get("DocumentTitle"),
               desc: Session.get("DocumentTitle"),
@@ -90,7 +102,7 @@ if Meteor.isClient
             }
             chatShareData = {
               title: Session.get("DocumentTitle"),
-              desc: Session.get("DocumentTitle").replace('『故事贴』',''),
+              desc: descriptionFirstParagraph,
               link: window.location.href,
               imgUrl: Session.get('postContent').mainImage,
               success: () ->
