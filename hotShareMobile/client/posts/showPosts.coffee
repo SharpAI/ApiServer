@@ -573,7 +573,7 @@ if Meteor.isClient
         Meteor.call 'unpublish',postId,userId,drafts
         Router.go('/user')
         return
-      , '取消发表故事', ['取消','取消发表']);
+      , '取消发表故事', ['依然发表','存为草稿']);
 
 
     'click #report': (event)->
