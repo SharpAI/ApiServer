@@ -20,6 +20,7 @@
       <div class="value">{{sex}}<i class="fa fa-angle-right"></i></div>
     </li>
   </ul>
+  {{> myFavouritePosts}}
 </template>
 <template name="setNickname">
   <div class="setNickname comFadeIn">
@@ -59,4 +60,22 @@
       <div class="value select">{{#if isFemale}}<i class="fa fa-check"></i>{{/if}}</div>
     </li>
   </ul>
+</template>
+
+<template name="myFavouritePosts">
+  <p style="background-color: white; padding-left: 10px; font-size: 16px; padding-top: 10px; border-top: 1px solid #D9D9D9; margin-bottom: 7px;">喜欢的故事</p>
+  {{#newLayoutContainer layoutId=onPostId }}
+    {{#each favposts}}
+      {{#newLayoutElement layoutId=onPostId displayId=_id}}
+        <div class="img_placeholder">
+          <img class="mainImage" src="{{mainImage}}" />
+        </div>
+        <div class="pin_content">
+          <p class="title">{{title}}</p>
+          <p class="addontitle">{{addontitle}}</p>
+          <h1 class="username">{{ownerName}}  <span>发布</span>{{#if withSuggestAlreadyRead}}<button class="suggestAlreadyRead"><i class="fa fa-times"></i></button>{{/if}}</h1>
+        </div>
+      {{/newLayoutElement}}
+    {{/each}}
+  {{/newLayoutContainer}}
 </template>

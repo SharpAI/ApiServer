@@ -32,6 +32,8 @@ if Meteor.isClient
         else if Meteor.user().profile.sex is 'female'
           return '女'
       return '[未知]'
+    favposts: ()->
+      return []
   Template.information.events
     'click .nickname':(e)->
       Session.set("Social.LevelTwo.Me.Menu","setNickname")
@@ -115,3 +117,17 @@ if Meteor.isClient
         Session.set("Social.LevelTwo.Me.Menu","information")
     'click .left-btn': (e)->
       Session.set("Social.LevelTwo.Me.Menu","information")
+  
+  Template.myFavouritePosts.helpers
+    onPostId:()->
+      '23AeJMXpgJSWPRttai'
+    withSuggestAlreadyRead:()->
+      withSuggestAlreadyRead      
+    favposts: ()->
+      postIds = []
+      FavouritePosts.find({userId: Meteor.userId()}).forEach((item) ->
+          if !~postIds.indexOf(item.postId)
+            postIds.push(item.postId)
+      )
+      Posts.find({_id: {$in: postIds}})
+      #SuggestPosts.find({},{sort: {createdAt: -1},limit:10})

@@ -682,6 +682,12 @@ if Meteor.isClient
         content = $('#pcommitReport').val()
         postId = Session.get("postContent")._id
         post = Session.get("postContent").pub
+
+        if (favp = FavouritePosts.findOne({postId: postId, userId: Meteor.userId()}))
+          FavouritePosts.update({_id: favp._id}, {$set: {updateAt: new Date()}})
+        else
+          FavouritePosts.insert({postId: postId, userId: Meteor.userId(), createdAt: new Date(), updateAt: new Date()})
+
 #        if withSponserLinkAds
 #          position = 1+(post.length/2)
 #        if i > position then i -= 1 else i = i
