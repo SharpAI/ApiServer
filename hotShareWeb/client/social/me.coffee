@@ -1,4 +1,11 @@
 if Meteor.isClient
+  hasMoreFavouritePosts = ()->
+    #if FavouritePosts.find({userId: Meteor.userId()}).count() > 0
+    #  !(FavouritePosts.find({userId: Meteor.userId()}).count() < Session.get("favouritepostsLimit"))
+    #else
+    #  false
+    !(FavouritePosts.find({userId: Meteor.userId()}).count() < Session.get("favouritepostsLimit"))
+
   Session.setDefault("Social.LevelTwo.Me.Menu",'information')
   ###
     me views
@@ -117,10 +124,29 @@ if Meteor.isClient
         Session.set("Social.LevelTwo.Me.Menu","information")
     'click .left-btn': (e)->
       Session.set("Social.LevelTwo.Me.Menu","information")
-  
+
+  Template.myFavouritePosts.rendered=->
+    $(window).scroll (event)->
+      if Session.get("Social.LevelOne.Menu") is 'me'
+        FAVOURITE_POSTS_INCREMENT = 10
+        if window.innerHeight
+          winHeight = window.innerHeight
+        else
+          winHeight = $(window).height() # iphone fix
+        closeToBottom = ($(window).scrollTop() + winHeight > $(document).height() - 100);
+        console.log('Close to bottom: '+closeToBottom)
+        if (closeToBottom and hasMoreFavouritePosts())
+          if window.favouritepostsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
+            console.log('Triggered data source refresh');
+            window.favouritepostsCollection_getmore = 'inprogress'
+            Session.set("favouritepostsLimit",Session.get("favouritepostsLimit") + FAVOURITE_POSTS_INCREMENT);      
+
   Template.myFavouritePosts.helpers
+    isLoading:()->
+      (Session.equals('newLayoutImageDownloading',true) or
+        !Session.equals('favouritepostsCollection_getmore','done'))
     onPostId:()->
-      '23AeJMXpgJSWPRttai'
+      Session.get("postContent")._id
     withSuggestAlreadyRead:()->
       withSuggestAlreadyRead      
     favposts: ()->
@@ -131,3 +157,13 @@ if Meteor.isClient
       )
       Posts.find({_id: {$in: postIds}})
       #SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
+  Template.myFavouritePosts.events
+    'click .removefavp': (e, t) ->
+      e.preventDefault()
+      e.stopPropagation()
+      postId = $(e.currentTarget).data('id')
+      userId = Meteor.userId()
+      favp = FavouritePosts.findOne({postId: postId, userId: userId})
+      if favp isnt undefined and favp isnt null
+        FavouritePosts.remove({_id: favp._id})
+      return

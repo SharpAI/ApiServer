@@ -34,10 +34,14 @@ if Meteor.isClient
       trackEvent("socialBar","Me")
       Session.set("SocialOnButton",'me')
       Session.set("Social.LevelOne.Menu",'me')
+      #Session.set('favouritepostsLimit', 0);
       $('.div_contactsList').css('display',"none")
       $('.div_discover').css('display',"none")
       $('.div_me').css('display',"block")
       document.body.scrollTop = $(".showPostsBox").height()
+      triggerScroll=()->
+        $(window).trigger('scroll')
+      setTimeout(triggerScroll, 500)
   Template.socialContent.rendered=->
     $('.chatBoxContent').css('min-height',$(window).height()-90)
   Template.socialContent.helpers

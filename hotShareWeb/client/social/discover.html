@@ -137,11 +137,11 @@
                 <div>加载失败，请检查网络设置或稍后重试</div>
             {{/if}}
             {{#if newLayoutMoment}}
-                {{#newLayoutContainer layoutId=onPostId }}
+                {{#newLayoutContainer layoutId=onPostId src="moments" container=".moments"}}
                     {{#if showSuggestPosts}}
                     {{#each suggestPosts}}
                         {{#unless hideSuggestPost}}
-                            {{#newLayoutElement layoutId=onPostId displayId=_id}}
+                            {{#newLayoutElement layoutId=onPostId displayId=_id src="moments" container=".moments"}}
                                 <div class="img_placeholder">
                                     <img class="mainImage" src="{{mainImage}}" />
                                 </div>
@@ -163,7 +163,7 @@
                     {{/if}}
                     {{#each moments}}
                         {{#unless hidePost}}
-                            {{#newLayoutElement layoutId=onPostId displayId=readPostId}}
+                            {{#newLayoutElement layoutId=onPostId displayId=readPostId src="moments" container=".moments"}}
                                 <div class="img_placeholder">
                                     <img class="mainImage" src="{{mainImage}}" />
                                 </div>
