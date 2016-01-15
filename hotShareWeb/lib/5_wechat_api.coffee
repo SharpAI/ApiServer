@@ -27,6 +27,13 @@ if Meteor.isClient
           followby: Meteor.userId(),
           checked: true
         });
+    window.addToFavouriteAfterShare=(postContent)->
+      postId = postContent._id
+
+      if (favp = FavouritePosts.findOne({postId: postId, userId: Meteor.userId()}))
+        FavouritePosts.update({_id: favp._id}, {$set: {updateAt: new Date()}})
+      else
+        FavouritePosts.insert({postId: postId, userId: Meteor.userId(), createdAt: new Date(), updateAt: new Date()})      
     setupWeichat = (url)->
       Meteor.call 'getSignatureFromServer',url,(error,result)->
         #FeedAfterShare(Session.get('postContent'))
@@ -59,6 +66,7 @@ if Meteor.isClient
               success: () ->
                 trackEvent("Share","Section to Wechat Timeline")
                 FeedAfterShare(Session.get('postContent'))
+                addToFavouriteAfterShare(Session.get('postContent'))
                 console.log('Share success');
               cancel: ()->
                 console.log('Share cancled');
@@ -71,6 +79,7 @@ if Meteor.isClient
               success: () ->
                 trackEvent("Share","Section to Wechat Chat")
                 FeedAfterShare(Session.get('postContent'))
+                addToFavouriteAfterShare(Session.get('postContent'))
                 console.log('Share success');
               cancel: ()->
                 console.log('Share cancled');
@@ -93,6 +102,7 @@ if Meteor.isClient
               success: () ->
                 trackEvent("Share","Post to Wechat Timeline")
                 FeedAfterShare(Session.get('postContent'))
+                addToFavouriteAfterShare(Session.get('postContent'))
                 console.log('Share success');
               cancel: ()->
                 console.log('Share cancled');
@@ -105,6 +115,7 @@ if Meteor.isClient
               success: () ->
                 trackEvent("Share","Post to Wechat Chat")
                 FeedAfterShare(Session.get('postContent'))
+                addToFavouriteAfterShare(Session.get('postContent'))
                 console.log('Share success');
               cancel: ()->
                 console.log('Share cancled');
