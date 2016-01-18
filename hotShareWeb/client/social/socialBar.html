@@ -11,7 +11,7 @@
               {{>discover}}
             </div>
             <div class="div_me" style="display:none">
-              {{>me}}
+              {{> Template.dynamic template=dynamicMe}}
             </div>
         </div>
         <div class="chatFooter">
@@ -50,4 +50,8 @@
       </div>
     </div>
   </div>
+</template>
+
+<template name="emptyMe">
+  
 </template>

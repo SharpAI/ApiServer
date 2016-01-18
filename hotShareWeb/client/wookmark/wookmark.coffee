@@ -111,6 +111,7 @@ class @newLayout
     imgLoad = imagesLoaded(element)
     window.newLayoutImageInDownloading++;
     Session.set('newLayoutImageDownloading',true)
+    elemClass = $element.attr('class')
     imgLoad.on( 'done', ()->
       wookmark_debug&&console.log('DONE  - all images have been successfully loaded, total ' + NewDynamicMoments.find().count())
       newLayout.reduceDownloadingNumber()

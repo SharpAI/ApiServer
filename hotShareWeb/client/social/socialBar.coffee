@@ -69,3 +69,8 @@ if Meteor.isClient
         ""
     isWaitRead: ()->
       MsgSession.find({userId: Meteor.userId(), waitRead: {$gt: 0}}).count() > 0
+    dynamicMe: ()->
+      if Session.equals("SocialOnButton",'me')
+        return 'me'
+      else
+        return 'emptyMe'
