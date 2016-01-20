@@ -353,7 +353,7 @@ if Meteor.isClient
     iabHandle.removeEventListener 'loadstop',getURL
     iabHandle.addEventListener 'hide',handleHideBrowser
     console.log('Load Error' + JSON.stringify(e))
-    window.plugins.toast.showShortCenter("导入过程出现异常，请检查网络连接");
+    window.plugins.toast.showShortCenter("访问导入链接超时，请点击右上角\"导入\"再试一次。");
     Meteor.setTimeout ()->
       iabHandle.show()
     ,500
