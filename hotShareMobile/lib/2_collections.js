@@ -603,6 +603,20 @@ if(Meteor.isServer){
                                         followby: data.commentUserId,
                                         checked: false
                                     });
+                                    var notifyUser = Meteor.users.findOne({_id: data.commentUserId})
+                                    var waitReadCount = notifyUser.profile.waitReadCount;
+                                    var broswerUser = notifyUser.profile.browser;
+                                    if(broswerUser === undefined || isNaN(broswerUser)){
+                                        broswerUser = false;
+                                    }
+                                    if (waitReadCount === undefined || isNaN(waitReadCount)) {
+                                        waitReadCount = 0;
+                                    }
+                                    if(broswerUser === false)
+                                    {
+                                        Meteor.users.update({_id: data.commentUserId}, {$set: {'profile.waitReadCount': waitReadCount + 1}});
+                                        pushnotification("palsocomment", doc, data.commentUserId);
+                                    }
                                 }
                             }
                         }
