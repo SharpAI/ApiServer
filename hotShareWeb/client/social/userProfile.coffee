@@ -284,6 +284,14 @@ if Meteor.isClient
         false
     viewLists:()->
       ViewLists.find({userId:Session.get("ProfileUserId1")},{sort: {createdAt: -1}, limit:3})
+    favouriteList: ()->
+      Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), 3)
+      postIds = []
+      FavouritePosts.find({userId: Session.get("ProfileUserId1")}).forEach((item) ->
+          if !~postIds.indexOf(item.postId)
+            postIds.push(item.postId)
+      )
+      Posts.find({_id: {$in: postIds}})
     compareViewsCount:(value)->
       if (ViewLists.find({userId:Session.get("ProfileUserId1")}, {sort: {createdAt: -1}, limit:3}).count() > value)
         true
