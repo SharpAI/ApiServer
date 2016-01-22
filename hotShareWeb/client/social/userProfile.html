@@ -32,8 +32,10 @@
         <span class="desc">{{profile.profile.desc}}</span>
     </div>
     <div class="showPostsLine"></div>
-    <div class="post">
+    <div id="custom-show-hide-example">
+    <div class="post close">
       <span class="postLeft">最近浏览的故事</span>
+      <span class="postRight" style="color:#000;"><i class="fa {{upOrDown}} fa-fw"></i></span>
     </div>
       {{#if compareViewsCount 0}}
         <div class="postImages">
@@ -51,8 +53,9 @@
           </ul>
         </div>
       {{/if}}
-    <div class="post">
+    <div class="post close">
       <span class="postLeft">喜欢的故事</span>
+      <span class="postRight" style="color:#000;"><i class="fa {{upOrDown1}} fa-fw"></i></span>
     </div>
 
         <div class="postImages">
@@ -68,7 +71,8 @@
               {{/if}}
           {{/each}}
           </ul>
-        </div>    
+        </div>   
+    </div>     
     <div class="showPostsLine"></div>
     {{#if showPostSuggestionToUser}}
       {{#if isSuggested}}
@@ -117,8 +121,10 @@
         <span class="desc">{{profile.profile.desc}}</span>
     </div>
     <div class="showPostsLine"></div>
+    <div id="custom-show-hide-example2">
     <div class="post">
-      <span class="postLeft">最近浏览的故事</span>
+      <span class="postLeft close">最近浏览的故事</span>
+      <span class="postRight" style="color:#000;"><i class="fa {{upOrDown}} fa-fw"></i></span>
     </div>
       {{#if compareViewsCount 0}}
         <div class="postImages">
@@ -136,6 +142,26 @@
           </ul>
         </div>
       {{/if}}
+      <div class="post close">
+      <span class="postLeft">喜欢的故事</span>
+      <span class="postRight" style="color:#000;"><i class="fa {{upOrDown1}} fa-fw"></i></span>
+    </div>
+
+        <div class="postImages">
+          <ul>
+            {{#each favouriteList}}
+              {{#if _id}}
+                <li id="{{_id}}">
+                  <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
+                  <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
+                     {{title}}
+                  </h6>
+                </li>
+              {{/if}}
+          {{/each}}
+          </ul>
+        </div>   
+    </div>
     <div class="showPostsLine"></div>
     {{#if showPostSuggestionToUser}}
       {{#if isSuggested}}
@@ -184,8 +210,10 @@
         <span class="desc">{{profile.profile.desc}}</span>
     </div>
     <div class="showPostsLine"></div>
-    <div class="post">
+    <div id="custom-show-hide-example3">
+    <div class="post close">
       <span class="postLeft">最近浏览的故事</span>
+      <span class="postRight" style="color:#000;"><i class="fa {{upOrDown}} fa-fw"></i></span>
     </div>
       {{#if compareViewsCount 0}}
         <div class="postImages">
@@ -203,6 +231,26 @@
           </ul>
         </div>
       {{/if}}
+      <div class="post close">
+      <span class="postLeft">喜欢的故事</span>
+      <span class="postRight" style="color:#000;"><i class="fa {{upOrDown1}} fa-fw"></i></span>
+    </div>
+
+        <div class="postImages">
+          <ul>
+            {{#each favouriteList}}
+              {{#if _id}}
+                <li id="{{_id}}">
+                  <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
+                  <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
+                     {{title}}
+                  </h6>
+                </li>
+              {{/if}}
+          {{/each}}
+          </ul>
+        </div>   
+      </div>
     <div class="showPostsLine"></div>
     {{#if showPostSuggestionToUser}}
       {{#if isSuggested}}
