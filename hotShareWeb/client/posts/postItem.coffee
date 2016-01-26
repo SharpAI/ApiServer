@@ -49,6 +49,9 @@ if Meteor.isClient
       thumbsDownHandler(e,this)
       Session.set('postPageScrollTop',document.body.scrollTop)
     'click .pcomments': (e)->
+      bgheight = $(window).height() + $(window).scrollTop() + 10
+      # $('.showBgColor').css('overflow','hidden')
+      $('.showBgColor').attr('style','overflow:hidden;min-width:' + $(window).width() + 'px;' + 'height:' + bgheight + 'px;')
       Session.set("pcommetsId","")
       backgroundTop = 0-$(window).scrollTop()
       Session.set('backgroundTop', backgroundTop);
@@ -57,7 +60,7 @@ if Meteor.isClient
         $('#pcommitReport').focus()
       $('#pcommitReport').focus()
 
-      $('.showBgColor').css('min-width',$(window).width())
+      # $('.showBgColor').css('min-width',$(window).width())
       Session.set "pcommentIndexNum", this.index
     'click .play_area': (e)->
       $node=$(e.currentTarget)

@@ -250,8 +250,8 @@
   <div onclick="hidePcomments()" class="alertBackground"></div>
     <script>
        function hidePcomments(){
-         $('body').removeAttr('style')
-         $(window).scrollTop(0-Session.get('backgroundTop'))
+         $('.showBgColor').removeAttr('style');
+         $(window).scrollTop(0-Session.get('backgroundTop'));
          $('.pcommentInput,.alertBackground').fadeOut(300);
          Session.set('backgroundTop','')
        }
@@ -277,7 +277,7 @@
 //            i = i;
 //          }
           if (content === "") {
-            $('body').removeAttr('style');
+            $('.showBgColor').removeAttr('style');
             $(window).scrollTop(0 - Session.get('backgroundTop'));
             $('.pcommentInput,.alertBackground').fadeOut(300);
             return false;
@@ -324,7 +324,7 @@
           });
           $('#pcommitReport').val('');
           $("#pcommitReport").attr("placeholder", "评论");
-          $('body').removeAttr('style');
+          $('.showBgColor').removeAttr('style');
           $(window).scrollTop(0 - Session.get('backgroundTop'));
           $('.pcommentInput,.alertBackground').fadeOut(300);
           refreshPostContent()

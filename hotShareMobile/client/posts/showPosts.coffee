@@ -785,7 +785,7 @@ if Meteor.isClient
         )
         $('#pcommitReport').val('')
         $("#pcommitReport").attr("placeholder", "评论")
-        #$('.showBgColor').removeAttr('style')
+        $('.showBgColor').removeAttr('style')
         $(window).scrollTop(0-Session.get('backgroundTop'))
         $('.pcommentsList,.alertBackground').fadeOut 300
         false
@@ -811,6 +811,7 @@ if Meteor.isClient
 
   Template.pcommentInput.events
       'click .alertBackground':->
+        $('.showBgColor').removeAttr('style')
         $('body').removeAttr('style')
         $(window).scrollTop(0-Session.get('backgroundTop'))
         $('.pcommentInput,.alertBackground').fadeOut 300
@@ -825,6 +826,7 @@ if Meteor.isClient
 #        if i > position then i -= 1 else i = i
         if content is ""
           $('body').removeAttr('style')
+          $('.showBgColor').removeAttr('style')
           $(window).scrollTop(0-Session.get('backgroundTop'))
           $('.pcommentInput,.alertBackground').fadeOut 300
           return false
@@ -859,6 +861,7 @@ if Meteor.isClient
         $('#pcommitReport').val("")
         $("#pcommitReport").attr("placeholder", "评论")
         #$('body').removeAttr('style')
+        $('.showBgColor').removeAttr('style')
         $(window).scrollTop(0-Session.get('backgroundTop'))
         $('.pcommentInput,.alertBackground').fadeOut 300
         refreshPostContent()
