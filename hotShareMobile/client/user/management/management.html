@@ -1,0 +1,27 @@
+<template name="accounts_management">
+    <div class="dashboard page-accounts-management">
+        <div class="head">
+            <div>帐号管理</div>
+            <div class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+        </div>
+        <div class="content">
+            <div class="box accounts-list">
+                {{#each accountList}}
+                    {{> accounts_management_item}}
+                {{/each}}
+                <dl class="add-new">
+                    <dt><i class="fa fa-plus"></i></dt>
+                    <dd>添加帐号</dd>
+                </dl>                
+            </div>
+            <div class="logout box boxTitle boxCenter">退出当前帐号</div>
+        </div>
+    </div>
+</template>
+
+<template name="accounts_management_item">
+    <dl>
+        <dt class="active"><img src="{{icon}}" alt="Avatar"></dt>
+        <dd>{{username}}</dd>
+    </dl>
+</template>

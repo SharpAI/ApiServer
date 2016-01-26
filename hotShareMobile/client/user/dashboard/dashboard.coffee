@@ -19,6 +19,8 @@ if Meteor.isClient
   Template.dashboard.events
     'click .email' :->
       Router.go '/my_email'
+    'click .accounts-management' :->
+      Router.go '/my_accounts_management'
     'click .changePasswd' :->
       Router.go '/my_password'
     'click .notice' :->
