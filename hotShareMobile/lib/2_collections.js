@@ -620,8 +620,59 @@ if(Meteor.isServer){
                                 }
                             }
                         }
+                        //别人赞了你评论的帖子
+                        if(doc.pub[pindex].likeUserId !== userId && doc.pub[pindex].likeUserId !== doc.owner)
+                        {
+                            var pfeeds = Feeds.findOne({
+                                owner: userId,
+                                followby: doc.pub[pindex].likeUserId,
+                                checked: false,
+                                postId: data.postId,
+                                pindex: pindex
+                            });
+                            if (pfeeds || needRemove) {
+                                //console.log("==================already have feed==========");
+                                if (pfeeds && needRemove)
+                                    Feeds.remove(pfeeds);
+                            } else {
+                                if (userinfo) {
+                                    Feeds.insert({
+                                        owner: userId,
+                                        ownerName: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
+                                        ownerIcon: userinfo.profile.icon,
+                                        eventType: 'pfavourite',
+                                        postId: data.postId,
+                                        postTitle: doc.title,
+                                        addontitle: doc.addontitle,
+                                        pindex: pindex,
+                                        mainImage: doc.mainImage,
+                                        createdAt: new Date(),
+                                        heart: 0,
+                                        retweet: 0,
+                                        comment: 0,
+                                        followby: doc.pub[pindex].likeUserId,
+                                        checked: false
+                                    });
+                                    var notifyThumbhandUpUser = Meteor.users.findOne({_id: doc.pub[pindex].likeUserId})
+                                    var waitThumbhandUpReadCount = notifyThumbhandUpUser.profile.waitReadCount;
+                                    var broswerThumbhandUpUser = notifyThumbhandUpUser.profile.browser;
+                                    if(notifyThumbhandUpUser === undefined || isNaN(notifyThumbhandUpUser)){
+                                        notifyThumbhandUpUser = false;
+                                    }
+                                    if (waitThumbhandUpReadCount === undefined || isNaN(waitThumbhandUpReadCount)) {
+                                        waitThumbhandUpReadCount = 0;
+                                    }
+                                    if(notifyThumbhandUpUser === false)
+                                    {
+                                        Meteor.users.update({_id: doc.pub[pindex].likeUserId}, {$set: {'profile.waitReadCount': waitReadCount + 1}});
+                                        pushnotification("palsofavourite", doc, doc.pub[pindex].likeUserId);
+                                    }
+                                }
+                            }
+                        }
                     });
                 }
+
                 //有人点评了您发表的帖子
                 if(doc.owner !== userId)
                 {

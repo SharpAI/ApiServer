@@ -4,7 +4,14 @@ if Meteor.isServer
     @client = JPush.buildClient '50e8f00890be941f05784e6f', 'ec9940bbc7fcc646fc492ed8'
   @pushnotification = (type, doc, userId)->
     console.log "type:"+type
-    if type is "palsocomment"
+    if type is "palsofavourite"
+      content = '有人也赞了此故事:\n《' + doc.title + '》'
+      extras = {
+        type: "palsofavourite"
+        postId: doc._id
+      }
+      toUserId = userId
+    else if type is "palsocomment"
       content = '有人也点评了此故事:\n《' + doc.title + '》'
       extras = {
         type: "palsocomment"
