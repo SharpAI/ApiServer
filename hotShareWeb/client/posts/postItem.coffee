@@ -49,7 +49,7 @@ if Meteor.isClient
       thumbsDownHandler(e,this)
       Session.set('postPageScrollTop',document.body.scrollTop)
     'click .pcomments': (e)->
-      bgheight = $(window).height() + $(window).scrollTop() + 10
+      bgheight = $(window).height() + $(window).scrollTop()
       # $('.showBgColor').css('overflow','hidden')
       $('.showBgColor').attr('style','overflow:hidden;min-width:' + $(window).width() + 'px;' + 'height:' + bgheight + 'px;')
       Session.set("pcommetsId","")
