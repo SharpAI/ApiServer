@@ -30,10 +30,6 @@ if(Meteor.isClient){
   DynamicMoments = new Meteor.Collection('dynamicmoments');
   NewDynamicMoments = new Meteor.Collection('newdynamicmoments');
   SuggestPosts = new Meteor.Collection('suggestposts');
-
-  LocalAccounts = new Meteor.Collection('localaccounts', {connection: null});
-  LocalAccountsObserver = new PersistentMinimongo(LocalAccounts);
-
 }
 if(Meteor.isServer){
   RefNames = new Meteor.Collection("refnames");
