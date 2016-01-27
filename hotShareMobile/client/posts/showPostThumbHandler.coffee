@@ -212,6 +212,11 @@ if Meteor.isClient
       postId = Session.get("postContent")._id
       post = Session.get("postContent").pub
       userId = Meteor.userId()
+      if (favp = FavouritePosts.findOne({postId: postId, userId: userId}))
+        FavouritePosts.update({_id: favp._id}, {$set: {updateAt: new Date()}})
+      else
+        FavouritePosts.insert({postId: postId, userId: userId, createdAt: new Date(), updateAt: new Date()})
+        
       if not post[i].likeUserId
         likeUserId = {}
         post[i].likeUserId = likeUserId

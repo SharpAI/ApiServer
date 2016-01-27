@@ -7,6 +7,13 @@ if Meteor.isClient
           success: callback,
           async: true
         });
+    window.addToFavouriteAfterShare=(postContent)->
+      postId = postContent._id
+
+      if (favp = FavouritePosts.findOne({postId: postId, userId: Meteor.userId()}))
+        FavouritePosts.update({_id: favp._id}, {$set: {updateAt: new Date()}})
+      else
+        FavouritePosts.insert({postId: postId, userId: Meteor.userId(), createdAt: new Date(), updateAt: new Date()})
     setupWeichat = (url)->
       Meteor.call 'getSignatureFromServer',url,(error,result)->
         console.log('Got Post signature ' + JSON.stringify(result));
@@ -37,6 +44,7 @@ if Meteor.isClient
               imgUrl: Session.get('postContent').mainImage,
               success: () ->
                 console.log('Share success');
+                addToFavouriteAfterShare(Session.get('postContent'))
               cancel: ()->
                 console.log('Share cancled');
             }
@@ -47,6 +55,7 @@ if Meteor.isClient
               imgUrl: Session.get('postContent').mainImage,
               success: () ->
                 console.log('Share success');
+                addToFavouriteAfterShare(Session.get('postContent'))
               cancel: ()->
                 console.log('Share cancled');
             }
@@ -58,6 +67,7 @@ if Meteor.isClient
               imgUrl: Session.get('postContent').mainImage,
               success: () ->
                 console.log('Share success');
+                addToFavouriteAfterShare(Session.get('postContent'))
               cancel: ()->
                 console.log('Share cancled');
             }
@@ -68,6 +78,7 @@ if Meteor.isClient
               imgUrl: Session.get('postContent').mainImage,
               success: () ->
                 console.log('Share success');
+                addToFavouriteAfterShare(Session.get('postContent'))
               cancel: ()->
                 console.log('Share cancled');
             }

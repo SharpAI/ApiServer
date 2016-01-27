@@ -41,7 +41,7 @@
             {{#each viewLists}}
               {{#if postId}}
                 <li id="{{postId}}">
-                  <div class="postMainImage no-swipe" style="background-image:url({{mainImage}})"></div>
+                  <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
                   <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
                      {{title}}
                   </h6>
@@ -51,6 +51,23 @@
           </ul>
         </div>
       {{/if}}
+    <div class="post">
+      <span class="postLeft">喜欢的故事</span>
+    </div>
+    <div class="postImages">
+      <ul>
+        {{#each favouriteList}}
+          {{#if _id}}
+            <li id="{{_id}}">
+              <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
+              <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
+                 {{title}}
+              </h6>
+            </li>
+          {{/if}}
+      {{/each}}
+      </ul>
+    </div>   
     <div class="showPostsLine"></div>
     {{#if showPostSuggestionToUser}}
       {{#if isSuggested}}
@@ -118,6 +135,23 @@
           </ul>
         </div>
       {{/if}}
+    <div class="post">
+      <span class="postLeft">喜欢的故事</span>
+    </div>
+    <div class="postImages">
+      <ul>
+        {{#each favouriteList}}
+          {{#if _id}}
+            <li id="{{_id}}">
+              <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
+              <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
+                 {{title}}
+              </h6>
+            </li>
+          {{/if}}
+      {{/each}}
+      </ul>
+    </div>  
     <div class="showPostsLine"></div>
     {{#if showPostSuggestionToUser}}
       {{#if isSuggested}}
@@ -185,6 +219,23 @@
           </ul>
         </div>
       {{/if}}
+    <div class="post">
+      <span class="postLeft">喜欢的故事</span>
+    </div>
+    <div class="postImages">
+      <ul>
+        {{#each favouriteList}}
+          {{#if _id}}
+            <li id="{{_id}}">
+              <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
+              <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
+                 {{title}}
+              </h6>
+            </li>
+          {{/if}}
+      {{/each}}
+      </ul>
+    </div>  
     <div class="showPostsLine"></div>
     {{#if showPostSuggestionToUser}}
       {{#if isSuggested}}

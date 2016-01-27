@@ -240,7 +240,29 @@ if Meteor.isClient
   Template.userProfilePage1.rendered=->
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
+    Session.set('upanddown','fa-angle-down')
+    Session.set('upanddown1','fa-angle-down')
+    new jQueryCollapse($('#custom-show-hide-example'),
+     open: ->
+      this.slideDown 150
+      if $('.page1Updonw').parent().parent().hasClass('close')
+        Session.set('upanddown','fa-angle-up')
+      if $('.page1Updonw1').parent().parent().hasClass('close')
+        Session.set('upanddown1','fa-angle-up')
+      return
+     close: ->
+      this.slideUp 150
+      if $('.page1Updonw').parent().parent().hasClass('open')
+        Session.set('upanddown','fa-angle-down')
+      if $('.page1Updonw1').parent().parent().hasClass('open')
+        Session.set('upanddown1','fa-angle-down')
+      return
+     )
   Template.userProfilePage1.helpers
+    upOrDown: ()->
+      Session.get('upanddown')
+    upOrDown1: ()->
+      Session.get('upanddown1')
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
     isMale:(sex)->
@@ -269,6 +291,14 @@ if Meteor.isClient
         false
     viewLists:()->
       ViewLists.find({userId:Session.get("ProfileUserId1")},{sort: {createdAt: -1}, limit:3})
+    favouriteList: ()->
+      Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), 3)
+      postIds = []
+      FavouritePosts.find({userId: Session.get("ProfileUserId1")}).forEach((item) ->
+          if !~postIds.indexOf(item.postId)
+            postIds.push(item.postId)
+      )
+      Posts.find({_id: {$in: postIds}})
     compareViewsCount:(value)->
       if (ViewLists.find({userId:Session.get("ProfileUserId1")}, {sort: {createdAt: -1}, limit:3}).count() > value)
         true
@@ -335,6 +365,14 @@ if Meteor.isClient
         false
     viewLists:()->
       ViewLists.find({userId:Session.get("ProfileUserId2")},{sort: {createdAt: -1}, limit:3})
+    favouriteList: ()->
+      Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), 3)
+      postIds = []
+      FavouritePosts.find({userId: Session.get("ProfileUserId1")}).forEach((item) ->
+          if !~postIds.indexOf(item.postId)
+            postIds.push(item.postId)
+      )
+      Posts.find({_id: {$in: postIds}})
     compareViewsCount:(value)->
       if (ViewLists.find({userId:Session.get("ProfileUserId2")}, {sort: {createdAt: -1}, limit:3}).count() > value)
         true
@@ -402,6 +440,14 @@ if Meteor.isClient
         false
     viewLists:()->
       ViewLists.find({userId:Session.get("ProfileUserId3")},{sort: {createdAt: -1}, limit:3})
+    favouriteList: ()->
+      Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), 3)
+      postIds = []
+      FavouritePosts.find({userId: Session.get("ProfileUserId1")}).forEach((item) ->
+          if !~postIds.indexOf(item.postId)
+            postIds.push(item.postId)
+      )
+      Posts.find({_id: {$in: postIds}})
     compareViewsCount:(value)->
       if (ViewLists.find({userId:Session.get("ProfileUserId3")}, {sort: {createdAt: -1}, limit:3}).count() > value)
         true

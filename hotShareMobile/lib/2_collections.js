@@ -22,6 +22,8 @@ Moments = new Meteor.Collection('moments');
 
 ReaderPopularPosts = new Meteor.Collection('readerpopularposts');
 
+FavouritePosts = new Meteor.Collection('favouriteposts');
+
 if(Meteor.isClient){
   PostFriends = new Meteor.Collection("postfriends")
   Newfriends = new Meteor.Collection("newfriends");
@@ -1445,7 +1447,51 @@ if(Meteor.isServer){
         return [];
     }
   });
+  Meteor.publish('favouriteposts', function(limit) {
+    if(this.userId && limit) {
+        var postIds = [];
 
+        FavouritePosts.find({userId: this.userId}, {limit: limit}).forEach(function(item) {
+            if(!~postIds.indexOf(item.postId)) postIds.push(item.postId); 
+        });
+        return [
+            FavouritePosts.find({userId: this.userId}, {limit: limit}),
+            Posts.find({_id: {$in: postIds}})
+        ];
+    }
+    else {
+        return [];
+    }
+  });
+
+  Meteor.publish('userfavouriteposts', function(userId, limit) {
+    if(userId && limit) {
+        var postIds = [];
+
+        FavouritePosts.find({userId: userId}, {limit: limit}).forEach(function(item) {
+            if(!~postIds.indexOf(item.postId)) postIds.push(item.postId); 
+        });
+        return [
+            FavouritePosts.find({userId: userId}, {limit: limit}),
+            Posts.find({_id: {$in: postIds}})
+        ];
+    }
+    else {
+        return [];
+    }
+  });
+
+  FavouritePosts.allow({
+    insert: function(userId, doc) {
+        return doc.userId === userId;
+    },
+    update: function(userId, doc) {
+        return doc.userId === userId;
+    },
+    remove: function(userId, doc) {
+        return doc.userId === userId;
+    }
+  });
 
   Meets.allow({
       update: function (userId,doc) {
@@ -1919,6 +1965,7 @@ if(Meteor.isClient){
   var FOLLOWS_ITEMS_INCREMENT = 10;
   var MYPOSTS_ITEMS_INCREMENT = 15;
   var MOMENTS_ITEMS_INCREMENT = 10;
+  var FAVOURITE_POSTS_INCREMENT = 10;
   var POSTFRIENDS_ITEMS_INCREMENT = 10;
   var SUGGEST_POSTS_INCREMENT = 15;
   var POST_ID = null;
@@ -1928,6 +1975,7 @@ if(Meteor.isClient){
   Session.setDefault('followeesitemsLimit', FOLLOWS_ITEMS_INCREMENT);
   Session.setDefault('mypostsitemsLimit', MYPOSTS_ITEMS_INCREMENT);
   Session.setDefault('momentsitemsLimit', MOMENTS_ITEMS_INCREMENT);
+  Session.setDefault('favouritepostsLimit', FAVOURITE_POSTS_INCREMENT);
   Session.setDefault('postfriendsitemsLimit', POSTFRIENDS_ITEMS_INCREMENT);
   Session.setDefault("momentsitemsLimit",MOMENTS_ITEMS_INCREMENT);
   Session.setDefault("suggestpostsLimit",SUGGEST_POSTS_INCREMENT);
@@ -2080,6 +2128,26 @@ if(Meteor.isClient){
                 }
             });
         }
+    }
+  });
+
+
+  Tracker.autorun(function() {
+    if (Meteor.userId()) {
+        Meteor.subscribe('favouriteposts', Session.get('favouritepostsLimit'), {
+            onReady: function(){
+                console.log('Favourite Posts Collection loaded');
+                window.favouritepostsCollection_getmore = 'done';
+                Session.set('favouritepostsCollection','loaded');
+                Session.set('favouritepostsCollection_getmore','done');
+            },
+            onError: function(){
+                console.log('Favourite Posts Collection Error');
+                window.favouritepostsCollection_getmore = 'done';
+                Session.set('favouritepostsCollection','loaded');
+                Session.set('favouritepostsCollection_getmore','done');
+            }
+        });
     }
   });
 }
