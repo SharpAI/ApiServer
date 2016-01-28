@@ -20,6 +20,7 @@
       <div class="value">{{sex}}<i class="fa fa-angle-right"></i></div>
     </li>
   </ul>
+  {{> myFavouritePosts}}
 </template>
 <template name="setNickname">
   <div class="setNickname comFadeIn">
@@ -30,12 +31,13 @@
         <div class="right-btn">保存</div>
       </div>
     </div>
-    <ul class="setup">
-      <li>
-        <div class="input"><form class="setNickname-form"><input maxlength="10" class="text" type="text" id="text" placeholder="输入新昵称" value="{{nickname}}"/></form></div>
-      </li>
-    </ul>
   </div>
+
+  <ul class="set-up">
+    <li>
+      <div class="input"><form class="setNickname-form"><input maxlength="10" class="text" type="text" id="text" placeholder="输入新昵称" value="{{nickname}}"/></form></div>
+    </li>
+  </ul>
 </template>
 
 <template name="setSex">

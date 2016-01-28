@@ -45,23 +45,23 @@ class @newLayout
     $node.css("background-color",predefineColors[colorIndex])
     if ++colorIndex >= colorLength
       colorIndex = 0
-  @initContainer = (layoutId)->
-    container = '.newLayout_container_' + layoutId
+  @initContainer = (src, layoutId)->
+    container = '.newLayout_container_' + src + '_' + layoutId
     $container = $(container)
-    elements = '.newLayout_element_'+layoutId
+    elements = '.newLayout_element_' + src + '_' + layoutId
     $elements = $(elements)
     if $elements.length > 0 and $container.length > 0
       wookmark_debug&&console.log('Got element ' + $elements.length)
       wookmark_debug&&console.log('Initializing layout engine for id ' + layoutId);
       newInstance = new Wookmark(container, {
         autoResize: false,
-        itemSelector: '.newLayout_element.loaded',
+        itemSelector: '.newLayout_element_' +src+'_' + layoutId + '.loaded',
         itemWidth: 400, # Optional, the width of a grid item
         flexibleWidth: '48%',
         direction: 'left',
         align: 'center'
       },true)
-      window.newLayoutInstances[layoutId] = newInstance
+      window.newLayoutInstances[src+'_'+layoutId] = newInstance
       $elements.each((index,element)->
         $(document).queue (next)->
           newLayout.processElement(element,$container,newInstance)
@@ -75,13 +75,14 @@ class @newLayout
       Session.set('newLayoutImageDownloading',false)
   @appendedItemCallback = ($element)->
     id = $element.attr('id')
-    if !window.newLayoutWatchIdList[id]
+    source = $element.attr('source')
+    if !window.newLayoutWatchIdList[source+'_'+id]
       $img = $element.find('img')
       src = $img.attr('src')
       $parent = $img.parent()
       newLayout.setRandomlyBackgroundColor($parent)
       watcher = scrollMonitor.create( $img, {top: 1600, bottom: 1600})
-      window.newLayoutWatchIdList[id] = watcher
+      window.newLayoutWatchIdList[source+'_'+id] = watcher
       watcher.enterViewport ()->
         wookmark_debug&&console.log( 'I have entered the viewport ' + id + ' src: ' + src )
         unless $img.hasClass('entered')
@@ -110,6 +111,7 @@ class @newLayout
     imgLoad = imagesLoaded(element)
     window.newLayoutImageInDownloading++;
     Session.set('newLayoutImageDownloading',true)
+    elemClass = $element.attr('class')
     imgLoad.on( 'done', ()->
       wookmark_debug&&console.log('DONE  - all images have been successfully loaded, total ' + NewDynamicMoments.find().count())
       newLayout.reduceDownloadingNumber()
@@ -118,6 +120,7 @@ class @newLayout
       $element.addClass('loaded')
       $container.append($element)
       img = $element.find('img')[0]
+
       wookmark_debug&&console.log('image outside width is ' + img.offsetHeight)
       if img.offsetHeight is 0
         Meteor.setTimeout ()->
@@ -144,13 +147,14 @@ class @newLayout
 Template.newLayoutContainer.events =
   'click .newLayout_element':(e)->
     wookmark_debug&&console.log('layoutId ' + this.displayId)
+    Session.set("historyForwardDisplay", false)
     postId = this.displayId
-    Session.set('displayDiscoverContent',false)
+    if postId is undefined
+      postId = this._id
     scrollTop = $(window).scrollTop()
+    Session.set("lastPost",postId)
     $(window).children().off()
     $(window).unbind('scroll')
-    Session.set("needBindScroll", true)
-    document.body.scrollTop = 0
     Router.go '/posts/'+postId
 Template.newLayoutContainer.helpers =
   displayId:()->
@@ -168,41 +172,50 @@ Template.newLayoutContainer.helpers =
       !(NewDynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() < Session.get("momentsitemsLimit"))
     else
       false
+  src: ()->
+    if this.data and this.data.src
+      this.data.src
+    else
+
 Template.newLayoutContainer.onRendered ()->
   wookmark_debug&&console.log('newLayoutContainer onRendered ' + JSON.stringify(this.data))
   if this.data and this.data.layoutId
     this.layoutId = this.data.layoutId
-  unless window.newLayoutInstances[this.layoutId]
-    newLayout.initContainer(this.layoutId)
+  if this.data and this.data.src
+    this.src = this.data.src
+  unless window.newLayoutInstances[this.src+ '_' +this.layoutId]
+    newLayout.initContainer(this.src, this.layoutId)
 
 Template.newLayoutContainer.onDestroyed ()->
   wookmark_debug&&console.log('newLayoutContainer onDestroyed ' + JSON.stringify(this.data))
-  delete window.newLayoutInstances[this.data.layoutId]
-  $('.newLayout_element_'+this.data.layoutId).removeClass('loaded')
+  delete window.newLayoutInstances[this.data.src+ '_' +this.data.layoutId]
+  $('.newLayout_element_'+this.data.src+'_'+this.data.layoutId).removeClass('loaded')
 
 Template.newLayoutElement.onRendered ()->
   wookmark_debug&&console.log('newLayoutElement onRendered ' + JSON.stringify(this.data))
   if this.data and this.data.layoutId
     this.layoutId = this.data.layoutId
-  instance = window.newLayoutInstances[this.layoutId]
-  container = '.newLayout_container_' + this.layoutId
+  if this.data and this.data.src
+    this.src = this.data.src
+  instance = window.newLayoutInstances[this.src+'_'+this.layoutId]
+  container = '.newLayout_container_' + this.src + '_' + this.layoutId
   $container = $(container)
   if instance and $container.length > 0
     newLayout.processElement(this.firstNode,$container,instance)
   else
-    newLayout.initContainer(this.layoutId)
+    newLayout.initContainer(this.src, this.layoutId)
 Template.newLayoutElement.onDestroyed ()->
   wookmark_debug&&console.log('newLayoutElement onDestroyed ' + this.data.displayId + ' data: ' + JSON.stringify(this.data))
-  id = this.data.displayId
+  id = this.data.src + '_' +this.data.displayId
   if window.newLayoutWatchIdList[id]
     watcher = window.newLayoutWatchIdList[id]
     watcher.destroy()
     delete window.newLayoutWatchIdList[id]
   if this.data and this.data.layoutId
-    instance = window.newLayoutInstances[this.data.layoutId]
+    instance = window.newLayoutInstances[this.data.src + '_' + this.data.layoutId]
     if instance
       wookmark_debug&&console.log('Need remove item');
-      $('.newLayout_element #'+id).removeClass('loaded');
+      $('.newLayout_element_'+ this.data.src + '_' + this.data.layoutId + '#' + this.data.displayId).removeClass('loaded');
       Meteor.setTimeout ()->
         instance.initItems();
         instance.layout(true);

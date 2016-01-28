@@ -8,12 +8,10 @@
               {{>contactsList}}
             </div>
             <div class="div_discover" style="display:block">
-              {{#if displayDiscoverContent}}
               {{>discover}}
-              {{/if}}
             </div>
             <div class="div_me" style="display:none">
-              {{>me}}
+              {{> Template.dynamic template=dynamicMe}}
             </div>
         </div>
         <div class="chatFooter">
@@ -52,4 +50,8 @@
       </div>
     </div>
   </div>
+</template>
+
+<template name="emptyMe">
+  
 </template>

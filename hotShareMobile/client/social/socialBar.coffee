@@ -1,7 +1,6 @@
 if Meteor.isClient
   Session.setDefault("Social.LevelOne.Menu",'discover')
   Session.setDefault("SocialOnButton",'postBtn')
-  Session.setDefault "displayDiscoverContent",true
   Template.socialContent.events
     'click .postBtn':->
       #PUB.postPageBack()
@@ -25,7 +24,7 @@ if Meteor.isClient
     'click .discoverBtn':->
       trackEvent("socialBar","Discover")
       Session.set("SocialOnButton",'discover')
-      Session.set('momentsitemsLimit', 10)
+      Session.set('momentsitemsLimit', 10);
       Session.set("Social.LevelOne.Menu",'discover')
       $('.div_contactsList').css('display',"none")
       $('.div_discover').css('display',"block")
@@ -35,15 +34,17 @@ if Meteor.isClient
       trackEvent("socialBar","Me")
       Session.set("SocialOnButton",'me')
       Session.set("Social.LevelOne.Menu",'me')
+      #Session.set('favouritepostsLimit', 0);
       $('.div_contactsList').css('display',"none")
       $('.div_discover').css('display',"none")
       $('.div_me').css('display',"block")
       document.body.scrollTop = $(".showPostsBox").height()
+      triggerScroll=()->
+        $(window).trigger('scroll')
+      setTimeout(triggerScroll, 500)
   Template.socialContent.rendered=->
     $('.chatBoxContent').css('min-height',$(window).height()-90)
   Template.socialContent.helpers
-    displayDiscoverContent:()->
-      Session.get('displayDiscoverContent')
     newcount:()->
       PostFriends.find({meetOnPostId:Session.get("postContent")._id,count:1,ta:{$ne:null}},{sort: {createdAt: -1}}).count()
     feedscount:()->
@@ -68,3 +69,8 @@ if Meteor.isClient
         ""
     isWaitRead: ()->
       MsgSession.find({userId: Meteor.userId(), waitRead: {$gt: 0}}).count() > 0
+    dynamicMe: ()->
+      if Session.equals("SocialOnButton",'me')
+        return 'me'
+      else
+        return 'emptyMe'

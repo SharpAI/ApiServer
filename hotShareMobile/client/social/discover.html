@@ -23,6 +23,32 @@
     <div class="lpcomments">
         <ul id="wrapper"  class="swipe-delete">
             {{#each lpcomments}}
+                {{#if isShareFeed}}
+                    <li class="elementBox">
+                      <div class="behind">
+                        <a href="#" class="swipeElement ui-btn delete-btn" id="{{_id}}">删除</a>
+                      </div>
+                      <a id="list" class="swipeElement">
+                        <div class="icon">
+                            <img src="{{ownerIcon}}" width="40" height="40"/>
+                        </div>
+                        <div class="user_name">
+                            <h2>{{ownerName}}:&nbsp;<span>{{ReadAfterShare}}人读过您的转发</span></h2>
+                            <div class="readpost">
+                                <dl>
+                                    <dt>
+                                        <img class="post_pic" src="{{mainImage}}" width="40" height="40"/>
+                                    <div class="red_spot"></div>
+                                    </dt>
+                                    <dd>{{postTitle}}  {{addontitle}}</dd>
+                                </dl>
+                            </div>
+                            <span style="margin:0;">{{time_diff createdAt}}</span>
+                        </div>
+                        <div class="clear"></div>
+                    </a>
+                  </li>
+                {{else}}
             <li class="elementBox">
                 <div class="behind">
                   <a href="#" class="swipeElement ui-btn delete-btn" id="{{_id}}">删除</a>
@@ -32,7 +58,7 @@
                         <img src="{{ownerIcon}}" width="40" height="40"/>
                     </div>
                     <div class="user_name">
-                        <h2>{{ownerName}}&nbsp;<span>{{description}}</span></h2>
+                        <h2>{{ownerName}}&nbsp;<span>也点评了此故事</span></h2>
                         <div class="readpost">
                             <dl>
                                 <dt>
@@ -47,6 +73,7 @@
                     <div class="clear"></div>
                 </a>
               </li>
+                {{/if}}
             {{/each}}
         </ul>
     </div>
@@ -110,11 +137,11 @@
                 <div>加载失败，请检查网络设置或稍后重试</div>
             {{/if}}
             {{#if newLayoutMoment}}
-                {{#newLayoutContainer layoutId=onPostId }}
+                {{#newLayoutContainer layoutId=onPostId src="moments" container=".moments"}}
                     {{#if showSuggestPosts}}
                     {{#each suggestPosts}}
                         {{#unless hideSuggestPost}}
-                            {{#newLayoutElement layoutId=onPostId displayId=_id}}
+                            {{#newLayoutElement layoutId=onPostId displayId=_id src="moments" container=".moments"}}
                                 <div class="img_placeholder">
                                     <img class="mainImage" src="{{mainImage}}" />
                                 </div>
@@ -136,7 +163,7 @@
                     {{/if}}
                     {{#each moments}}
                         {{#unless hidePost}}
-                            {{#newLayoutElement layoutId=onPostId displayId=readPostId}}
+                            {{#newLayoutElement layoutId=onPostId displayId=readPostId src="moments" container=".moments"}}
                                 <div class="img_placeholder">
                                     <img class="mainImage" src="{{mainImage}}" />
                                 </div>
