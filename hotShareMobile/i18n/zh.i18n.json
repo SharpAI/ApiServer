@@ -207,6 +207,11 @@
   //thanksReport.html
   "thanksReport": "感谢举报",
   "reportSuccess": "举报成功",
-  "reportDeclaration": "谢谢您！故事贴坚决反对色情、暴力、欺诈信息，我们会认真处理您的举报，维护绿色、健康的网络环境。"
+  "reportDeclaration": "谢谢您！故事贴坚决反对色情、暴力、欺诈信息，我们会认真处理您的举报，维护绿色、健康的网络环境。",
   //end
+  
+  // language
+  "language": "语言",
+  "lang": "English"
+  // end
 }

@@ -4,6 +4,8 @@ if Meteor.isClient
     if Session.get('dashboardHeight') is undefined
       Session.set('dashboardHeight', $(window).height())
     $('.dashboard').css 'min-height', Session.get('dashboardHeight')
+    if Session.get('display-lang') is undefined
+      Session.set('display-lang',getUserLanguage())
     return
   Template.dashboard.helpers
     userEmail :->
@@ -23,6 +25,13 @@ if Meteor.isClient
       Router.go '/my_password'
     'click .notice' :->
       Router.go '/my_notice'
+    'click .language' :->
+      if Session.equals('display-lang','en')
+        TAPi18n.setLanguage('zh')
+        Session.set('display-lang','zh')
+      else 
+        TAPi18n.setLanguage('en')
+        Session.set('display-lang','en')
     'click .about' :->
       Router.go '/my_about'
     'click .back' :->

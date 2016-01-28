@@ -16,18 +16,35 @@ GetTime0 = function(dateM){
     var seconds=Math.round(leave3/1000);
     
     var prefix;
-    if(dateM > DyMilli)
-        prefix = days+"天 前";
-    else if (dateM > HrMilli)
-        prefix = hours+"小时 前";
-    else if (dateM > MinMilli)                         
-        prefix = minutes+"分钟 前";
-    else if (dateM <= MinMilli){
-        if (seconds <= 0)
-            prefix = "刚刚";
-        else
-            prefix = seconds+"秒 前";
-    } else
-        prefix = "";
-    return prefix
+    if(Session.equals('display-lang','en')){
+      if(dateM > DyMilli)
+          prefix = days+" Days";
+      else if (dateM > HrMilli)
+          prefix = hours+" Hours";
+      else if (dateM > MinMilli)                         
+          prefix = minutes+" Minutes";
+      else if (dateM <= MinMilli){
+          if (seconds <= 0)
+              prefix = " Now";
+          else
+              prefix = seconds+" Seconds";
+      } else
+          prefix = "";
+      return prefix
+    } else {
+      if(dateM > DyMilli)
+          prefix = days+"天 前";
+      else if (dateM > HrMilli)
+          prefix = hours+"小时 前";
+      else if (dateM > MinMilli)                         
+          prefix = minutes+"分钟 前";
+      else if (dateM <= MinMilli){
+          if (seconds <= 0)
+              prefix = "刚刚";
+          else
+              prefix = seconds+"秒 前";
+      } else
+          prefix = "";
+      return prefix
+    }
 }
