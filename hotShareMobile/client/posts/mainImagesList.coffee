@@ -15,6 +15,22 @@ if Meteor.isClient
       'click .mainImagesListback' :(e)->
         $('.addPost').show()
         $('.mainImagesList').hide()
+      'click .mainImagesListImport' :(e)->
+        drafts = Drafts.find().fetch()
+        mainImageId = drafts[0]._id
+        mainImgUrl = ''
+        mainFileName = ''
+        $('input[class="mainImageListInput"]').each( ()->
+          if true is $(this).prop('checked')
+            mainImgUrl = $(this).attr('value')
+            mainFileName = $(this).attr('name')
+        )
+        if mainImgUrl isnt '' and mainFileName isnt ''
+          Drafts.update({_id:mainImageId},{$set: {imgUrl:mainImgUrl,filename: mainFileName}})
+          $('.addPost').show()
+          $('.mainImagesList').hide()
+        else
+          PUB.toast '请选择图片！'
       'click .mainImageListInput' :(e)->
         $('.mainImageListInput').prop('checked',false)
         Meteor.setTimeout ()->
