@@ -37,11 +37,11 @@ if Meteor.isClient
     path
   reCaculateAndSetItemHeight = (node,textarea)->
     #Compute the new scrollHeight
-    grid_size=Math.floor(getDisplayElementWidth()/6 - baseGap*2);
+    grid_size=Math.floor(getDisplayElementWidth() / 6 - baseGap*2);
     min_widget_height = (baseGap * 2) + grid_size;
     scrollHeight = document.getElementById(node.id+"TextArea").scrollHeight
     $(textarea).css('height', 'auto').css('height', scrollHeight);
-    sizey = Math.ceil((scrollHeight+baseGap*2)/min_widget_height)
+    sizey = Math.ceil((scrollHeight+baseGap*2) / min_widget_height)
     resizeItem = $('#'+node.id)
     orig_sizey = parseInt(resizeItem.attr("data-sizey"))
     if sizey isnt orig_sizey
@@ -265,8 +265,8 @@ if Meteor.isClient
       callback: ()->
         console.log("crop-img width="+$("#default"+node.id+" .crop-img").width()+", scale="+scale)
         console.log("crop-img height="+$("#default"+node.id+" .crop-img").height())
-        Session.set 'imgSizeW',$("#default"+node.id+" .crop-img").width()/scale
-        Session.set 'imgSizeH',$("#default"+node.id+" .crop-img").height()/scale
+        Session.set 'imgSizeW',$("#default"+node.id+" .crop-img").width() / scale
+        Session.set 'imgSizeH',$("#default"+node.id+" .crop-img").height() / scale
     }
     if window.device.model is "iPhone7,1"
       top = $('#'+node.id).offset().top
@@ -321,13 +321,13 @@ if Meteor.isClient
         zoom.val(scale)
     )
   adjustTextAreaHeightAndResizeInTheLayoutEngine = (id,node)->
-    grid_size=Math.floor(getDisplayElementWidth()/6 - baseGap*2)
+    grid_size=Math.floor(getDisplayElementWidth() / 6 - baseGap*2)
     console.log('#display width is '+getDisplayElementWidth()+' .addPost width is '+$('.addPost').width())
     min_widget_height =  grid_size + baseGap*2;
     #offset = this.offsetHeight - this.clientHeight;
     node.style.height='auto'
     node.style.height=node.scrollHeight+'px'
-    sizey = Math.ceil((node.scrollHeight+baseGap*2)/min_widget_height)
+    sizey = Math.ceil((node.scrollHeight+baseGap*2) / min_widget_height)
 
     resizeItem = $('#'+id)
     #resizeItem.css("height", this.scrollHeight)
@@ -345,13 +345,13 @@ if Meteor.isClient
         layoutItem.style.lineHeight=height+'px'
     #resizeItem.css("line-height", height+'px')
   adjustTextAreaHeightAndGetTheLayoutEngineSizeY = (id,node)->
-    grid_size=Math.floor(getDisplayElementWidth()/6-baseGap*2)
+    grid_size=Math.floor(getDisplayElementWidth() / 6-baseGap*2)
     #console.log('#display width is '+getDisplayElementWidth()+' .addPost width is '+$('.addPost').width())
     min_widget_height = grid_size+baseGap*2;
     node.style.height='auto'
     node.style.height=node.scrollHeight+'px'
     #$(node).css('height', 'auto').css('height', node.scrollHeight)
-    sizey = Math.ceil((node.scrollHeight+baseGap*2)/min_widget_height)
+    sizey = Math.ceil((node.scrollHeight+baseGap*2) / min_widget_height)
     #resizeItem = $('#'+id)
     console.log('sizey '+sizey+' this.scrollHeight '+node.scrollHeight+' min_widget_height'+min_widget_height)
     height = sizey*min_widget_height-baseGap*2

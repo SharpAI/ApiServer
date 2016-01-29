@@ -1,0 +1,20 @@
+<template name="mainImagesList">
+  <div class="mainImagesList">
+    <div class="head">
+    <div class="leftButton mainImagesListback"><span style="bottom:auto; font-size:16px;">取消</span></div>
+    <div class="rightButton"><span>导入</span></div>
+    </div>
+    <div class="content">
+      <ul class="mainImageListUl">
+        {{#each images}}
+        <li style="background-image:url('{{imgUrl}}');">
+          <!--<img class="" src="{{imgUrl}}" draggable="false" >-->
+          <input class="mainImageListInput" type="checkbox" name="{{filename}}" value="{{imgUrl}}" />
+        </li>
+        {{/each}}
+      </ul>
+    </div>
+    <div class="contentList">
+    </div>
+  </div>
+</template>

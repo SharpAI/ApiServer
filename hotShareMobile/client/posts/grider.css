@@ -19,9 +19,9 @@ ul {
 /* gridster
 /*/
 
-.gridster ul {
+/*.gridster ul {
     background-color: #black;
-}
+}*/
 
 .gridster li {
    /* font-size: 2em;
@@ -44,7 +44,7 @@ ul {
 }
 
 .gridster .gs-w {
-    background: #black;
+    /*background: #black;*/
     cursor: pointer;
 }
 

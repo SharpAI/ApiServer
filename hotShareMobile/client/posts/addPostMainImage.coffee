@@ -9,7 +9,12 @@ if Meteor.isClient
       $('.mainImage').on 'toolbarItemClick',(event,buttonClicked)->
         console.log $(buttonClicked).attr('id')
         console.log event.currentTarget.id
-        if buttonClicked.id == "modify"
+        if buttonClicked.id == "mainImageToolBar"
+          console.log('mainImageToolBar')
+          $('.addPost').hide()
+          $('.mainImagesList').show()
+          
+        else if buttonClicked.id == "modify"
           console.log("modify")
           selectMediaFromAblum 1,(cancel, result)->
             if cancel

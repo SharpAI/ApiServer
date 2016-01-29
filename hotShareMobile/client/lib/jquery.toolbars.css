@@ -13,7 +13,7 @@
 }
 
 .tool-container {background:#00c4ff;border:none;}
-.tool-item i{width: 100%;margin-left:auto;margin-right: auto ;margin-top:auto;margin-bottom:auto ;color: white;font-size:150%;}
+.tool-item i{width: 100%;margin-left:auto;margin-right: auto ;margin-top:5px;margin-bottom:auto ;color: white;font-size:150%;}
 
 .tool-container.tool-top, .tool-container.tool-bottom, .tool-container.tool-center,{
 	height: 34px;
