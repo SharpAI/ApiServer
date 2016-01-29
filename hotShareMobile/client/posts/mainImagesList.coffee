@@ -15,13 +15,11 @@ if Meteor.isClient
       'click .mainImagesListback' :(e)->
         $('.addPost').show()
         $('.mainImagesList').hide()
-      # 'click .mainImageListInput' :->
-      #   $('.mainImageListInput').prop('checked',false)
-      #   setTimeout ()->
-      #     $(this).prop('checked',true)
-      #   ,500
-      #   console.log('###')
-      #   console.log(this)
+      'click .mainImageListInput' :(e)->
+        $('.mainImageListInput').prop('checked',false)
+        Meteor.setTimeout ()->
+          $(e.currentTarget).prop('checked',true)
+        ,50
     Template.mainImagesList.helpers
       images:->
         Session.get('pubImages')
