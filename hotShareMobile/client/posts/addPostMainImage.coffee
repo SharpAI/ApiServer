@@ -10,7 +10,16 @@ if Meteor.isClient
         console.log $(buttonClicked).attr('id')
         console.log event.currentTarget.id
         if buttonClicked.id == "mainImageToolBar"
-          console.log('mainImageToolBar')
+          pubImages=[]
+          draftData = Drafts.find().fetch()
+          for i in [0..(draftData.length-1)]
+            if draftData[i].isImage is true
+              doc = {
+                imgUrl: draftData[i].imgUrl,
+                filename: draftData[i].filename
+              }
+              pubImages.push(doc)
+          Session.set('pubImages',pubImages)
           $('.addPost').hide()
           $('.mainImagesList').show()
           
