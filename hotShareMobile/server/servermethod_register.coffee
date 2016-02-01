@@ -7,6 +7,15 @@ if Meteor.isServer
           Posts.update({_id:postId},{$set:{publish:false}})
           SavedDrafts.insert drafts
           FollowPosts.update({postId:postId},{$set:{publish:false}},{multi: true},{upsert:true})
+          TPs=TopicPosts.find({postId:postId})
+          if TPs.count()>0
+              TPs.forEach (data)->
+                  PostsCount = Topics.findOne({_id:data.topicId}).posts
+                  if PostsCount is 1
+                    Topics.remove({_id:data.topicId})
+                  else if PostsCount > 1
+                    Topics.update({_id: data.topicId}, {$set: {'posts': PostsCount-1}})
+          TopicPosts.remove({postId:postId})
       "unpublishPosts":(postId,userId,drafts)->
         Meteor.defer ()->
           Posts.remove {_id:postId}
