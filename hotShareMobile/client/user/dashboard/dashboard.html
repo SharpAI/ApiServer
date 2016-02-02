@@ -1,14 +1,14 @@
 <template name="dashboard">
   <div class="dashboard">
     <div class="head">
-      <div>设置</div>
-      <div class="rightButton back" style="margin-top:0px;">完成</div>
+      <div>{{_ "setting"}}</div>
+      <div class="rightButton back" style="margin-top:0px;">{{_ "done"}}</div>
     </div>
     <div class="content">
       {{#unless anonymous}}
           <div class="emailPasswd box">
-            <div class='email bottomBorder boxTitle'>电子邮件<span>{{userEmail}}<i class="fa fa-angle-right fa-fw"></i></span></div>
-            <div class='changePasswd boxTitle'>修改密码<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+            <div class='email bottomBorder boxTitle'>{{_ "email"}}<span>{{userEmail}}<i class="fa fa-angle-right fa-fw"></i></span></div>
+            <div class='changePasswd boxTitle'>{{_ "changePass"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
           </div>
       {{/unless}}
       <div class="userinfo box">
@@ -16,25 +16,32 @@
         <div class='info bottomBorder boxTitle'>编辑个人资料<span><i class="fa fa-angle-right fa-fw"></i></span></div>
         <div class='accounts bottomBorder boxTitle'>已连接的账户<span><i class="fa fa-angle-right fa-fw"></i></span></div>
         -->
-        <div class='notice boxTitle'>通知<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+        <div class='notice boxTitle'>{{_ "notification"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
       </div>
-      <div class="language box boxTitle">{{_ "language"}}<span class="right" style="margin-right: 28px;margin-top: 2px;color: #a1a1a1;">{{_ "lang"}}</span><span><i class="fa fa-angle-right fa-fw"></i></span></div>
-      <div class="about box boxTitle"><div class='about'>关于故事贴<span><i class="fa fa-angle-right fa-fw"></i></span></div></div>
+      <div class="language box boxTitle">{{_ "language"}}
+        {{#if isEnglish}}
+          <span class="right" style="margin-right: 28px;margin-top: 2px;color: #a1a1a1;">English</span>
+        {{else}}
+          <span class="right" style="margin-right: 28px;margin-top: 2px;color: #a1a1a1;">中文</span>
+        {{/if}}
+        <span><i class="fa fa-angle-right fa-fw"></i></span>
+      </div>
+      <div class="about box boxTitle"><div class='about'>{{_ "about"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div></div>
       <!--<div class="clear box boxTitle boxCenter">清除缓存</div>-->
-      <div class="logout box boxTitle boxCenter">退出登录</div>
+      <div class="logout box boxTitle boxCenter">{{_ "logOut"}}</div>
     </div>
   </div>
 </template>
 <template name="my_email">
   <div class="dashboard">
     <div class="head">
-      <div>电子邮件</div>
+      <div>{{_ "email"}}</div>
       <div id="btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
-      <div id="btn_save" class="rightButton" style="margin-top:0px;">存储</div>
+      <div id="btn_save" class="rightButton" style="margin-top:0px;">{{_ "save"}}</div>
     </div>
     <div class="content">
       <div class="box">
-        <div class='boxTitle'>电子邮件<span class="input"><input type="text" id="my_edit_email" placeholder="输入电子邮件" value="{{userEmail}}"/></span></div>
+        <div class='boxTitle'>{{_ "email"}}<span class="input"><input type="text" id="my_edit_email" placeholder="{{_ 'enterEmail'}}" value="{{userEmail}}"/></span></div>
         
         <!--input type="password" id="my_edit_password" placeholder="输入密码" style="width:95%;border-top:0px;margin-left:5px;height:25px;"/-->
       </div>
@@ -44,14 +51,14 @@
 <template name="my_password">
   <div class="dashboard">
     <div class="head">
-      <div>修改密码</div>
+      <div>{{_ "changePass"}}</div>
       <div id="pass_btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
-      <div id="pass_btn_save" class="rightButton" style="margin-top:0px;">存储</div>
+      <div id="pass_btn_save" class="rightButton" style="margin-top:0px;">{{_ "save"}}</div>
     </div>
     <div class="content">
       <div class="box">
-        <div class='boxTitle bottomBorder'>新密码<span class="input"><input autofocus="autofocus" type="password" id="my_edit_password" placeholder="新密码" value=""/></span></div>
-        <div class='boxTitle'>确认<span class="input"><input type="password" id="my_edit_password_confirm" placeholder="确认" value=""/></span></div>
+        <div class='boxTitle bottomBorder'>{{_ "newPass"}}<span class="input"><input autofocus="autofocus" type="password" id="my_edit_password" placeholder="{{_ "newPass"}}" value=""/></span></div>
+        <div class='boxTitle'>{{_ "confirmPass"}}<span class="input"><input type="password" id="my_edit_password_confirm" placeholder="{{_ "confirmPass"}}" value=""/></span></div>
       <!--input type="password" id="my_edit_password" placeholder="输入密码" style="width:95%;border-top:0px;margin-left:5px;height:25px;"/-->
       </div>
     </div>
@@ -60,15 +67,15 @@
 <template name="my_notice">
   <div class="dashboard">
     <div class="head">
-      <div>通知</div>
+      <div>{{_ "notification"}}</div>
       <div id="about_btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
     </div>
     <div class="content">
       {{#if isIOS}}
         <div class="box">
-          <div class='boxTitle'>接收新消息通知</div>
+          <div class='boxTitle'>{{_ "notifiButton"}}</div>
         </div>
-        <div class="smallcontent">如果你要关闭或开启故事贴的新消息通知，请在“设置”-“通知”功能中，找到应用程序“故事贴”更改。</div>
+        <div class="smallcontent">{{_ "notifiTipsIos"}}</div>
         <!--
         <div class="box">
           <div class='boxTitle'>通知显示消息详情
@@ -82,9 +89,9 @@
         -->
       {{else}}
         <div class="box">
-            <div class='boxTitle'>接收新消息通知</div>
+            <div class='boxTitle'>{{_ "notifiButton"}}</div>
         </div>
-        <div class="smallcontent">如果你要关闭或开启故事贴的新消息通知，请在系统设置中，找到应用程序“故事贴”更改。</div>
+        <div class="smallcontent">{{_ "notifiTips"}}</div>
         <!--
         <div class="box">
           <div class='bottomBorder boxTitle'>接收新消息通知
@@ -109,7 +116,7 @@
 <template name="my_about">
   <div class="dashboard">
     <div class="head">
-      <div>关于 故事贴</div>
+      <div>{{_ "aboutTitle"}}</div>
       <div id="about_btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
     </div>
     <div class="content">
@@ -125,7 +132,28 @@
         <div class='boxTitle'>版权争议政策<span><i class="fa fa-angle-right fa-fw"></i></span></div>
       </div>
       -->
-      <div class="ver">版本 {{version}}</div>
+      <div class="ver">{{_ "ver"}} {{version}}</div>
     </div>
   </div>
+</template>
+
+<template name="display_lang">
+  <div class="dashboard">
+    <div class="head">
+      <div>{{_ "language"}}</div>
+      <div id="about_btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+    </div>
+    <div class="content" style="position: absolute; top:0; right:0; bottom:0; left:0; background:#fff;">
+      <div class="box">
+        {{#if isEnglish}}
+          <div class="boxTitle bottomBorder" id="english" >{{_ "English"}}<span class="value"><i class="fa fa-check"></i></span></div>
+          <div class="boxTitle bottomBorder" id="chinese">{{_ "Chinese"}}<span class="value"></span></div>
+        {{else}}
+          <div class="boxTitle bottomBorder" id="english">{{_ "English"}}<span class="value"></span></div>
+          <div class="boxTitle bottomBorder" id="chinese">{{_ "Chinese"}}<span class="value"><i class="fa fa-check"></i></span></div>
+        {{/if}}
+      </div>
+       <div class="ver"></div>
+    </div>
+  </div>    
 </template>

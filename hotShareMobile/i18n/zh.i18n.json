@@ -210,8 +210,28 @@
   "reportDeclaration": "谢谢您！故事贴坚决反对色情、暴力、欺诈信息，我们会认真处理您的举报，维护绿色、健康的网络环境。",
   //end
   
-  // language
+  // dashboard.html
+  "setting": "设置",
+  "done": "完成",
+  "save": "存储",
+  "email": "电子邮件",
+  "enterEmail": "输入电子邮件",
+  "notification": "通知",
+  "notifiButton": "接收新消息通知",
+  "notifiTips": "如果你要关闭或开启故事贴的新消息通知，请在系统设置中，找到应用程序“故事贴”更改",
+  "notifiTipsIos": "如果你要关闭或开启故事贴的新消息通知，请在“设置”-“通知”功能中，找到应用程序“故事贴”更改。",
+  "changePass": "修改密码",
+  "newPass": "新密码",
+  "confirmPass": "确认",
   "language": "语言",
-  "lang": "English"
+  "English": "English",
+  "Chinese": "中文",
+  "about": "关于故事贴",
+  "aboutTitle": "关于 故事贴",
+  "ver": "版本",
+  "logOut": "退出登录"
   // end
+  
+  
 }
+

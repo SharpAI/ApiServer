@@ -4,9 +4,6 @@ if Meteor.isClient
     if Session.get('dashboardHeight') is undefined
       Session.set('dashboardHeight', $(window).height())
     $('.dashboard').css 'min-height', Session.get('dashboardHeight')
-    if Session.get('display-lang') is undefined
-      Session.set('display-lang',getUserLanguage())
-    return
   Template.dashboard.helpers
     userEmail :->
       if Meteor.user()
@@ -18,6 +15,11 @@ if Meteor.isClient
         Meteor.user().profile.anonymous
       else
         ''
+    isEnglish: ->
+      if Cookies.check("display-lang")
+        return Cookies.get("display-lang") is 'en'
+      else 
+        return getUserLanguage() is 'en'
   Template.dashboard.events
     'click .email' :->
       Router.go '/my_email'
@@ -26,6 +28,7 @@ if Meteor.isClient
     'click .notice' :->
       Router.go '/my_notice'
     'click .language' :->
+      Router.go '/display_lang'
       if Session.equals('display-lang','en')
         TAPi18n.setLanguage('zh')
         Session.set('display-lang','zh')
@@ -141,4 +144,24 @@ if Meteor.isClient
     return
   Template.my_about.events
     'click #about_btn_back' :->
+      Router.go '/dashboard'
+   
+  Template.display_lang.helpers
+    isEnglish: ->
+      if Cookies.check("display-lang")
+        return Cookies.get("display-lang") is 'en'
+      else 
+        return getUserLanguage() is 'en'
+  Template.display_lang.events
+    'click #about_btn_back' :->
+      Router.go '/dashboard'
+    'click #english': ->
+      Session.set("display_lang","en")
+      Cookies.set("display-lang","en",360)
+      TAPi18n.setLanguage("en")
+      Router.go '/dashboard'
+    'click #chinese': ->
+      Session.set("display_lang","zh")
+      Cookies.set("display-lang","zh",360)
+      TAPi18n.setLanguage("zh")
       Router.go '/dashboard'
