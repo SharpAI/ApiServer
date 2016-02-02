@@ -15,6 +15,7 @@ if Meteor.isClient
           for i in [0..(draftData.length-1)]
             if draftData[i].isImage is true
               doc = {
+                imageId: draftData[i]._id,
                 imgUrl: draftData[i].imgUrl,
                 filename: draftData[i].filename
               }
@@ -146,7 +147,7 @@ if Meteor.isClient
       $("#addontitle").trigger('input')
       draftTitles
     mainImage:->
-      Drafts.findOne({type:'image'})
+      ReactiveVar(Drafts.findOne({type:'image'})).get()
     getImagePath: (path,uri,id)->
       getImagePath(path,uri,id)
     getMainImageHeight:()->
