@@ -16,19 +16,28 @@ if Meteor.isClient
         $('.addPost').show()
         $('.mainImagesList').hide()
       'click .mainImagesListImport' :(e)->
-        drafts = Drafts.find().fetch()
-        mainImageId = drafts[0]._id
+        drafts = Drafts.findOne({type:'image'})
+        mainImageId = drafts._id
+        imageId = ''
         mainImgUrl = ''
         mainFileName = ''
+        imageSrc = ''
         $('input[class="mainImageListInput"]').each( ()->
           if true is $(this).prop('checked')
+            imageId = $(this).attr('id')
             mainImgUrl = $(this).attr('value')
             mainFileName = $(this).attr('name')
+            imageSrc = $('.image_' + imageId).attr('src')
         )
         if mainImgUrl isnt '' and mainFileName isnt ''
-          Drafts.update({_id:mainImageId},{$set: {imgUrl:mainImgUrl,filename: mainFileName}})
-          $('.addPost').show()
-          $('.mainImagesList').hide()
+          Drafts.update({_id:mainImageId},{$set: {imgUrl:mainImgUrl,filename: mainFileName}}, (error, result)->
+            if error
+              PUB.toast('修改失败，请重试！')
+            else
+              $('#mainImage' + mainImageId).attr('src',imageSrc)
+              $('.addPost').show()
+              $('.mainImagesList').hide()
+          )
         else
           PUB.toast '请选择图片！'
       'click .mainImageListInput' :(e)->
