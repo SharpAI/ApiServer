@@ -173,6 +173,11 @@ if Meteor.isClient
         this.render 'my_notice'
         Session.set 'channel','my_notice'
         return
+    Router.route '/display_lang',()->
+      if Meteor.isCordova is true
+        this.render 'display_lang'
+        Session.set 'channel','display_lang'
+        return
     Router.route '/my_about',()->
       if Meteor.isCordova is true
         this.render 'my_about'

@@ -124,15 +124,15 @@
   "exchange": "Change",
   //end
   //help.html
-  "useTips": "Help and Support",
-  "howToRegister": "How to register?",
+  "useTips": "How to use",
+  "howToRegister": "How to sign up?",
   "howToPublish": "How to write a story?",
-  "changePicture": "Change photo",
-  "addTextAndEdit": "Edit texts and photos",
-  "oneKeyImport": "Import",
-  "shareFrindField": "Share to WeChat moments",
-  "forwardInWechat": "Quote and share through WeChat",
-  "howToResetPassword": "Forgot your password?",
+  "changePicture": "Change layout of an image",
+  "addTextAndEdit": "Add text and change layout",
+  "oneKeyImport": "Import link",
+  "shareFrindField": "Share a story to WeChat Moment",
+  "forwardInWechat": "Share a paragraph of the story in WeChat Moment",
+  "howToResetPassword": "If you forgot the password",
   "welcomeContactUs": "Contact us if you have any questions and suggestions.",
   "adminEmail": "Contact us：admin@tiegushi.com",
   //end
@@ -143,6 +143,11 @@
   "plainTopic": "Topics",
   "discoverPeople": "Discover interesting people",
   "plainPeople": "People",
-  "recommandUser": "Recommand users"
+  "recommandUser": "Recommand users",
   //end
+  
+  // language
+  "language": "Language",
+  "lang": "English"
+  // end
 }

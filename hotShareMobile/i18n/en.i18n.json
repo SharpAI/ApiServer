@@ -146,8 +146,25 @@
   "recommandUser": "Recommand users",
   //end
   
-  // language
+  // dashboard.html
+  "setting": "Settings",
+  "done": "Done",
+  "save": "Save",
+  "email": "Email",
+  "enterEmail": "Enter Email Address",
+  "notification": "Notification",
+  "notifiButton": "Get new Notification",
+  "notifiTips": "如果你要关闭或开启故事贴的新消息通知，请在系统设置中，找到应用程序“故事贴”更改",
+  "notifiTipsIos": "如果你要关闭或开启故事贴的新消息通知，请在“设置”-“通知”功能中，找到应用程序“故事贴”更改。",
+  "changePass": "Change PassWord",
+  "newPass": "New PassWord",
+  "confirmPass": "Confirm",
   "language": "Language",
-  "lang": "中文"
+  "English": "English",
+  "Chinese": "中文",
+  "about": "About",
+  "aboutTitle": "About hotShare",
+  "ver": "Ver.",
+  "logOut": "Logout"
   // end
 }
