@@ -318,6 +318,8 @@ if Meteor.isClient
     loadError:->
       Session.equals('myPostsCollection','error')
   Template.searchMyPosts.events
+    'click #search-box':()->
+        PostsSearch.cleanHistory()
     'click .back':(event)->
         $('.home').addClass('animated ' + animateOutUpperEffect);
         Meteor.setTimeout ()->
