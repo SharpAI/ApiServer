@@ -255,24 +255,24 @@ if Meteor.isClient
   Template.userProfilePage1.rendered=->
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
-    Session.set('upanddown','fa-angle-down')
-    Session.set('upanddown1','fa-angle-down')
-    new jQueryCollapse($('#custom-show-hide-example'),
-     open: ->
-      this.slideDown 150
-      if $('.page1Updonw').parent().parent().hasClass('close')
-        Session.set('upanddown','fa-angle-up')
-      if $('.page1Updonw1').parent().parent().hasClass('close')
-        Session.set('upanddown1','fa-angle-up')
-      return
-     close: ->
-      this.slideUp 150
-      if $('.page1Updonw').parent().parent().hasClass('open')
-        Session.set('upanddown','fa-angle-down')
-      if $('.page1Updonw1').parent().parent().hasClass('open')
-        Session.set('upanddown1','fa-angle-down')
-      return
-     )
+    # Session.set('upanddown','fa-angle-down')
+    # Session.set('upanddown1','fa-angle-down')
+    # new jQueryCollapse($('#custom-show-hide-example'),
+    #  open: ->
+    #   this.slideDown 150
+    #   if $('.page1Updonw').parent().parent().hasClass('close')
+    #     Session.set('upanddown','fa-angle-up')
+    #   if $('.page1Updonw1').parent().parent().hasClass('close')
+    #     Session.set('upanddown1','fa-angle-up')
+    #   return
+    #  close: ->
+    #   this.slideUp 150
+    #   if $('.page1Updonw').parent().parent().hasClass('open')
+    #     Session.set('upanddown','fa-angle-down')
+    #   if $('.page1Updonw1').parent().parent().hasClass('open')
+    #     Session.set('upanddown1','fa-angle-down')
+    #   return
+    #  )
   Template.userProfilePage1.helpers
     upOrDown: ()->
       Session.get('upanddown')
@@ -355,24 +355,24 @@ if Meteor.isClient
   Template.userProfilePage2.rendered=->
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
-    Session.set('upanddown','fa-angle-down')
-    Session.set('upanddown1','fa-angle-down')
-    new jQueryCollapse($('#custom-show-hide-example2'),
-     open: ->
-      this.slideDown 150
-      if $('.page1Updonw').parent().parent().hasClass('close')
-        Session.set('upanddown','fa-angle-up')
-      if $('.page1Updonw1').parent().parent().hasClass('close')
-        Session.set('upanddown1','fa-angle-up')
-      return
-     close: ->
-      this.slideUp 150
-      if $('.page1Updonw').parent().parent().hasClass('open')
-        Session.set('upanddown','fa-angle-down')
-      if $('.page1Updonw1').parent().parent().hasClass('open')
-        Session.set('upanddown1','fa-angle-down')
-      return
-     )
+    # Session.set('upanddown','fa-angle-down')
+    # Session.set('upanddown1','fa-angle-down')
+    # new jQueryCollapse($('#custom-show-hide-example2'),
+    #  open: ->
+    #   this.slideDown 150
+    #   if $('.page1Updonw').parent().parent().hasClass('close')
+    #     Session.set('upanddown','fa-angle-up')
+    #   if $('.page1Updonw1').parent().parent().hasClass('close')
+    #     Session.set('upanddown1','fa-angle-up')
+    #   return
+    #  close: ->
+    #   this.slideUp 150
+    #   if $('.page1Updonw').parent().parent().hasClass('open')
+    #     Session.set('upanddown','fa-angle-down')
+    #   if $('.page1Updonw1').parent().parent().hasClass('open')
+    #     Session.set('upanddown1','fa-angle-down')
+    #   return
+    #  )
   Template.userProfilePage2.helpers
     upOrDown: ()->
       Session.get('upanddown')
@@ -454,24 +454,24 @@ if Meteor.isClient
   Template.userProfilePage3.rendered=->
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
-    Session.set('upanddown','fa-angle-down')
-    Session.set('upanddown1','fa-angle-down')
-    new jQueryCollapse($('#custom-show-hide-example3'),
-     open: ->
-      this.slideDown 150
-      if $('.page1Updonw').parent().parent().hasClass('close')
-        Session.set('upanddown','fa-angle-up')
-      if $('.page1Updonw1').parent().parent().hasClass('close')
-        Session.set('upanddown1','fa-angle-up')
-      return
-     close: ->
-      this.slideUp 150
-      if $('.page1Updonw').parent().parent().hasClass('open')
-        Session.set('upanddown','fa-angle-down')
-      if $('.page1Updonw1').parent().parent().hasClass('open')
-        Session.set('upanddown1','fa-angle-down')
-      return
-     )
+    # Session.set('upanddown','fa-angle-down')
+    # Session.set('upanddown1','fa-angle-down')
+    # new jQueryCollapse($('#custom-show-hide-example3'),
+    #  open: ->
+    #   this.slideDown 150
+    #   if $('.page1Updonw').parent().parent().hasClass('close')
+    #     Session.set('upanddown','fa-angle-up')
+    #   if $('.page1Updonw1').parent().parent().hasClass('close')
+    #     Session.set('upanddown1','fa-angle-up')
+    #   return
+    #  close: ->
+    #   this.slideUp 150
+    #   if $('.page1Updonw').parent().parent().hasClass('open')
+    #     Session.set('upanddown','fa-angle-down')
+    #   if $('.page1Updonw1').parent().parent().hasClass('open')
+    #     Session.set('upanddown1','fa-angle-down')
+    #   return
+    #  )
   Template.userProfilePage3.helpers
     upOrDown: ()->
       Session.get('upanddown')
