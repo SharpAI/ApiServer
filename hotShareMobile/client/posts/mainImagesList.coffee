@@ -35,7 +35,21 @@ if Meteor.isClient
               PUB.toast('修改失败，请重试！')
             else
               $('#mainImage' + mainImageId).attr('src',imageSrc)
+
               $('.addPost').show()
+
+              title = $('#mainImage' + mainImageId).parent().find("textarea#title").get(0)
+              if title?
+                title.style.height = 'auto'
+                scrollHeight = title.scrollHeight + 2;
+                title.style.height = scrollHeight + 'px'
+
+              addontitle = $('#mainImage' + mainImageId).parent().find("textarea#addontitle").get(0)
+              if addontitle?
+                addontitle.style.height = 'auto'
+                scrollHeight = addontitle.scrollHeight + 2;
+                addontitle.style.height = scrollHeight + 'px'
+
               $('.mainImagesList').hide()
           )
         else
