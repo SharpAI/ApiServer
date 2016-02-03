@@ -255,6 +255,7 @@ if Meteor.isClient
   Template.userProfilePage1.rendered=->
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
+    $('.page').addClass('scrollable')
     # Session.set('upanddown','fa-angle-down')
     # Session.set('upanddown1','fa-angle-down')
     # new jQueryCollapse($('#custom-show-hide-example'),
