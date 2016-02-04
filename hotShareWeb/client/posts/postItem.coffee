@@ -31,6 +31,8 @@ if Meteor.isClient
       element.style.width=myData.data_sizex*getBaseWidth()+'px'
     if myData.type is 'image'
       element.style.height=myData.data_sizey*getBaseHeight()+'px'
+    if myData.type is 'video'
+      element.style.height=myData.data_sizey*getBaseHeight()+'px'
     elementBottom=element.offsetTop+element.offsetHeight
     updateLayoutData(layoutHelper,myData.data_col,myData.data_sizex,elementBottom)
     parentNode.style.height=getLayoutTop(layoutHelper,1,6)-parentNode.offsetTop+'px'
@@ -71,6 +73,15 @@ if Meteor.isClient
       else
         $node.addClass('music_playing')
         $audio.trigger('play')
+
+      $video = $node.find("video")
+      if $video.get(0)
+        $video.siblings('.video_thumb').fadeOut(100)
+        if $video.get(0).paused
+          $video.get(0).play()
+        else
+          $video.get(0).pause()
+      return     
     'pause audio':()->
       console.log('Audio Paused')
     'playing audio':()->

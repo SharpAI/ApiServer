@@ -71,6 +71,15 @@ if Meteor.isClient
       else
         $node.addClass('music_playing')
         $audio.trigger('play')
+
+      $video = $node.find("video")
+      if $video.get(0)
+        $video.siblings('.video_thumb').fadeOut(100)
+        if $video.get(0).paused
+          $video.get(0).play()
+        else
+          $video.get(0).pause()
+      return   
     'pause audio':()->
       console.log('Audio Paused')
     'playing audio':()->
