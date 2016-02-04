@@ -15,3 +15,4 @@
 @withSuggestAlreadyRead = true
 @withSponserLinkAds = false
 @isUSVersion = false
+@withZhiFaCDN = false

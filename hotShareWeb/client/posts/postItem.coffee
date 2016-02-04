@@ -31,7 +31,7 @@ if Meteor.isClient
       element.style.width=myData.data_sizex*getBaseWidth()+'px'
     if myData.type is 'image'
       element.style.height=myData.data_sizey*getBaseHeight()+'px'
-    if myData.type is 'video'
+    else if myData.type is 'video'
       element.style.height=myData.data_sizey*getBaseHeight()+'px'
     elementBottom=element.offsetTop+element.offsetHeight
     updateLayoutData(layoutHelper,myData.data_col,myData.data_sizex,elementBottom)
