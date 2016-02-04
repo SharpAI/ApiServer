@@ -187,6 +187,12 @@ if Meteor.isClient
         grid.add_widget(node, 6, size_y, 1)
     else if type is 'music'
       grid.add_widget(node, 6, 2, 1)
+    else if type is 'video'
+      if sizeY
+        size_y = sizeY
+      else
+        size_y = 4
+      grid.add_widget(node, 6, size_y, 1)
     else if type is "image"
       if insertedObj.inIframe and insertedObj.iframe
         console.log('to insert iframe')
@@ -420,6 +426,9 @@ if Meteor.isClient
     if type is "text"
       if data.text and data.text.length > 0
         sizeY=adjustTextAreaHeightAndGetTheLayoutEngineSizeY(data._id,self.find('textarea'))
+    else if type is "video"
+      if data.data_sizey
+        sizeY=parseInt(data.data_sizey, 10)
     appendNodeToLayoutEngine(node,data,gridster,sizeY)
     if type is "text" and !data.noKeyboardPopup
       initToolBar(node,data,gridster,false)

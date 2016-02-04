@@ -135,6 +135,12 @@ if Meteor.isClient
         data_col:'3',
         data_sizex:'6',
         data_sizey:sizey.toString()}
+  insertVideoWithDownloadedImage = (videoInfo, linkInfo,imageExternalURL,found,inputUrl,file,width,height)->
+    if file
+      sizey = Math.round( 6 * height / width )
+      if sizey <= 0
+        sizey = 1
+      insertVideoInfo(videoInfo, sizey.toString())
   insertDefaultImage = (linkInfo,mainImageUrl,found,inputUrl)->
     if mainImageUrl
       timestamp = new Date().getTime()
@@ -166,6 +172,22 @@ if Meteor.isClient
       data_col:'3',
       data_sizex:'6',
       data_sizey:'1'}
+  insertVideoInfo = (videoInfo, sizey)->
+    if sizey
+      data_sizey = sizey
+    else
+      data_sizey = '4'
+    console.log("data_sizey is "+data_sizey);
+    Drafts.insert {
+      type:'video',
+      owner: Meteor.userId(),
+      toTheEnd: true,
+      text:'您当前程序不支持视频播放，请分享到微信中欣赏',
+      videoInfo: videoInfo
+      data_row:'1',
+      data_col:'3',
+      data_sizex:'6',
+      data_sizey:data_sizey}
   processReadableText=(data)->
     fullText = ''
     if data.fullText
@@ -233,6 +255,23 @@ if Meteor.isClient
         data_sizey:'4'}
     else if item.type is 'music'
       insertMusicInfo(item.musicInfo)
+    else if item.type is 'video'
+      self = this
+      if item.videoInfo.imageUrl
+        imageArray = []
+        imageArray.push(item.videoInfo.imageUrl)
+        return seekSuitableImageFromArrayAndDownloadToLocal imageArray,(file,w,h,found,index,total,source)->
+          if file
+            item.videoInfo.imageUrl = 'cdvfile://localhost/persistent/'+file.name
+            item.videoInfo.filename = file.name
+            item.videoInfo.URI = file.toURL()
+            insertVideoWithDownloadedImage(item.videoInfo, self.data,source,found,self.inputUrl,file,w,h)
+          else
+            insertVideoInfo(item.videoInfo)
+          callback(null,item)
+        ,1,true
+      else
+        insertVideoInfo(item.videoInfo)
     Meteor.setTimeout ()->
       callback(null,item)
     ,10
@@ -997,6 +1036,7 @@ if Meteor.isClient
         #get the images to be uploaded
         draftImageData = Drafts.find({type:'image'}).fetch()
         draftMusicData = Drafts.find({type:'music'}).fetch()
+        draftVideoData = Drafts.find({type:'video'}).fetch()
         draftToBeUploadedImageData = []
         for i in [0..(draftImageData.length-1)]
             if draftImageData[i].imgUrl is undefined or draftImageData[i].imgUrl.toLowerCase().indexOf("http://")>= 0 or draftImageData[i].imgUrl.toLowerCase().indexOf("https://")>= 0
@@ -1006,6 +1046,10 @@ if Meteor.isClient
           if music.musicInfo.playUrl.toLowerCase().indexOf("http://")>= 0 or music.musicInfo.playUrl.toLowerCase().indexOf("https://")>= 0
             continue
           draftToBeUploadedImageData.push(music)
+        for video in draftVideoData
+          if video.videoInfo.imageUrl.toLowerCase().indexOf("http://")>= 0 or video.videoInfo.imageUrl.toLowerCase().indexOf("https://")>= 0
+            continue
+          draftToBeUploadedImageData.push(video)
         #uploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId)
         #Don't add addpost page into history
         Session.set('terminateUpload', false)
@@ -1023,6 +1067,8 @@ if Meteor.isClient
                   Drafts.update({_id: item._id}, {$set: {imgUrl:item.imgUrl}});
                 else if item.type is 'music' and item.musicInfo and item.musicInfo.playUrl
                   Drafts.update({_id: item._id}, {$set: {"musicInfo.playUrl":item.musicInfo.playUrl}});
+                else if item.type is 'video' and item.videoInfo and item.videoInfo.imageUrl
+                  Drafts.update({_id: item._id}, {$set: {"videoInfo.imageUrl":item.videoInfo.imageUrl}});
             if err
               window.plugins.toast.showShortBottom('上传失败，请稍后重试')
               return

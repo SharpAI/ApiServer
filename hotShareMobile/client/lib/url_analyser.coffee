@@ -246,6 +246,29 @@ if Meteor.isClient
             singerName: singerName
           }
     return null
+  videoExtactorMapping = [
+    {
+      videoClass: '.f-video',
+      videoUrlSelector: '#mediaPlayer',
+      videoUrlAttr: 'data-video',
+      videoImgSelector: '#fVideoImg',
+      videoImgAttr: 'src'
+    }
+  ]
+  getPossibleVideo = (elem)->
+    for s in videoExtactorMapping
+      if '#'+elem.id is s.videoUrlSelector
+        node = if elem.parentNode then elem.parentNode else elem
+      if $(node).find(s.videoClass).length > 0
+        playUrl = $(node).find(s.videoUrlSelector).attr(s.videoUrlAttr)
+        if s.videoImgSelector and s.videoImgSelector isnt ''
+          imageUrl = $(node).find(s.videoImgSelector).attr(s.videoImgAttr)
+        console.log('found video element:' + playUrl + ', imageUrl=' + imageUrl)
+        $(node).find(s.videoUrlSelector).remove()
+        if playUrl
+          return {playUrl: playUrl, imageUrl: imageUrl}
+    return null
+
   ###
   http://stackoverflow.com/a/1634841/3380894
   To remove the width/height parameter in url, center the video play icon
@@ -336,7 +359,6 @@ if Meteor.isClient
       else
         callback null,0,0,foundImages,imageCounter,imageArray.length,null,source
     downloadFromBCS(imageArray[imageCounter],downloadHandler)
-
   @analyseUrl = (url,callback)->
     @iabRef = window.open(url, '_blank', 'hidden=yes')
     iabRef.addEventListener 'loadstop', ()->
@@ -844,6 +866,11 @@ if Meteor.isClient
           }}
           previousIsSpan = false
           return true
+        else
+          videoInfo = getPossibleVideo(node)
+          if videoInfo
+            resortedArticle.push({type:'video', videoInfo:videoInfo})
+            return true
         text = $(node).text()
         if text and text isnt ''
           text = text.replace(/\s\s\s+/g, '')

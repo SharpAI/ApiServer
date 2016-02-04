@@ -31,24 +31,45 @@
                 </span>
             </div>
         {{else}}
-            <div class="postTextItem element" id="{{_id}}">
-                <div class="textDiv1  {{pcIndex}}" text={{_id}} name="textarea" style="{{calcStyle}};{{getStyle}}">
-                  <span class="textDiv1Link">{{{text}}}</span> {{#if isTextLength text}}<div class='inlineScoring'>{{#if myselfClickedUp}}<i class="fa fa-thumbs-up thumbsUp" style="color:red;font-size: larger;">{{plike}}&nbsp;&nbsp;</i>{{else}}<i class="fa fa-thumbs-o-up thumbsUp" style="font-size: small;">{{plike}}&nbsp;&nbsp;</i>{{/if}}  {{#if myselfClickedDown}}<i class="fa fa-thumbs-down thumbsDown" style="color:blue;font-size: small;">{{pdislike}}&nbsp;&nbsp;</i>{{else}}<i class="fa fa-thumbs-o-down thumbsDown" style="font-size: small;">{{pdislike}}&nbsp;&nbsp;</i>{{/if}}  <i class="fa fa-comment-o pcomments" style="color:black;font-size: larger;">&nbsp;&nbsp;&nbsp;</i></div>{{/if}}
-                </div>
-                {{#if hasPcomments}}
-                <div class="pcomment">
-                   {{#each pcomment}}
-                    <div class="eachComment">
-                      <div class="bubble">
-                        <span class="personName">{{username}}</span>:
-                        <span class="personSay">{{content}}</span>
-                      </div>
-<!--                      <span class="time round">{{time_diff createdAt}}</span>-->
+            {{#if videoInfo}}
+                <li class='resortitem postVideoItem element' id="{{_id}}">
+                    <span class="videoContainer">
+                        <span class="video_bd">
+                            <!--<a class="description">
+                                <span class="videoName">{{videoInfo.videoName}}</span>
+                            </a>-->
+                            <span class="play_area">
+                                <i class="icon_video_switch"></i>
+                                <!--<img src="/music_pic_default.png" alt="" class="pic_video_default">-->
+                                <div id="cdn_stats" class="speed below_controls" style="position: absolute; width: 100%;" data-collecting="true"></div>
+                                <img src="{{videoInfo.imageUrl}}" class="video_thumb" alt="">
+                                <video class="video" controls>
+                                    <source src="{{videoInfo.playUrl}}">
+                                </video>
+                            </span>
+                        </span>
+                    </span>
+                </li>
+            {{else}}
+                <div class="postTextItem element" id="{{_id}}">
+                    <div class="textDiv1  {{pcIndex}}" text={{_id}} name="textarea" style="{{calcStyle}};{{getStyle}}">
+                      <span class="textDiv1Link">{{{text}}}</span> {{#if isTextLength text}}<div class='inlineScoring'>{{#if myselfClickedUp}}<i class="fa fa-thumbs-up thumbsUp" style="color:red;font-size: larger;">{{plike}}&nbsp;&nbsp;</i>{{else}}<i class="fa fa-thumbs-o-up thumbsUp" style="font-size: small;">{{plike}}&nbsp;&nbsp;</i>{{/if}}  {{#if myselfClickedDown}}<i class="fa fa-thumbs-down thumbsDown" style="color:blue;font-size: small;">{{pdislike}}&nbsp;&nbsp;</i>{{else}}<i class="fa fa-thumbs-o-down thumbsDown" style="font-size: small;">{{pdislike}}&nbsp;&nbsp;</i>{{/if}}  <i class="fa fa-comment-o pcomments" style="color:black;font-size: larger;">&nbsp;&nbsp;&nbsp;</i></div>{{/if}}
                     </div>
-                   {{/each}}
+                    {{#if hasPcomments}}
+                    <div class="pcomment">
+                       {{#each pcomment}}
+                        <div class="eachComment">
+                          <div class="bubble">
+                            <span class="personName">{{username}}</span>:
+                            <span class="personSay">{{content}}</span>
+                          </div>
+    <!--                      <span class="time round">{{time_diff createdAt}}</span>-->
+                        </div>
+                       {{/each}}
+                    </div>
+                   {{/if}}
                 </div>
-               {{/if}}
-            </div>
+            {{/if}}
         {{/if}}
     {{/if}}
 </template>

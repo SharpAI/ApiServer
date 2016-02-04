@@ -351,6 +351,9 @@ if (Meteor.isCordova){
         if (item.type === 'music') {
             filename = item.musicInfo.filename
             URI = item.musicInfo.URI
+        } else if (item.type === 'video') {
+            filename = item.videoInfo.filename
+            URI = item.videoInfo.URI
         } else {
             filename = item.filename;
             URI = item.URI
@@ -366,6 +369,8 @@ if (Meteor.isCordova){
                 Session.set('progressBarWidth', parseInt(100*self.uploaded/self.total));
                 if ( item.type === 'music'){
                     item.musicInfo.playUrl = param;
+                } else if ( item.type === 'video'){
+                    item.videoInfo.imageUrl = param;
                 } else {
                     item.imgUrl = param;
                 }

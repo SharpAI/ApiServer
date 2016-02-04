@@ -49,7 +49,7 @@ REGEXPS =
   nextLink:         /(next|weiter|continue|>([^\|]|$)|ﾂｻ([^\|]|$))/i, # Match: next, continue, >, >>, ﾂｻ but not >|, ﾂｻ| as those usually mean last.
   prevLink:         /(prev|earl|old|new|<|ﾂｫ)/i,
   specialTags:      /blockquote|section/i,
-  possibleVideoTags: /iframe/i,
+  possibleVideoTags: /iframe|data-video/i,
   specialClass:     /note-content|rich_media_content|WBA_content/i
 
 specialClassNameForPopularMobileSite = [
@@ -101,6 +101,10 @@ classWeight = (node) ->
 fishy = (node) ->
   if node.tagName == 'iframe' || $(node).find('iframe').length > 0
     console.log('fishy on iframe')
+    return false
+  theNode = if $(node).parent() then $(node).parent() else $(node)
+  if (node.id is 'mediaPlayer' and node.getAttribute('data-video') isnt null) or theNode.find('#mediaPlayer').length > 0
+    console.log('fishy on mediaPlayer')
     return false
   weight = classWeight(node)
   contentScore = if node.score then node.score.value else 0
@@ -266,7 +270,7 @@ scoreAndSelectTop = (nodes) ->
 
 collectSiblings = (top) ->
   _.reduce(
-    $(top.parentNode).children(),
+    if top.parentNode then $(top.parentNode).children() else $(top).children()
     ((root, s) =>
       root.appendChild(s) if isAcceptableSibling(top, s)
       root),

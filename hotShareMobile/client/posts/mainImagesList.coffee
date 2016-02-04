@@ -3,13 +3,14 @@ if Meteor.isClient
       $('.mainImagesList').css 'min-height',$(window).height()
       pubImages=[]
       draftData = Drafts.find().fetch()
-      for i in [0..(draftData.length-1)]
-        if draftData[i].isImage is true
-          doc = {
-            imgUrl: draftData[i].imgUrl,
-            filename: draftData[i].filename
-          }
-          pubImages.push(doc)
+      if draftData.length > 0
+        for i in [0..(draftData.length-1)]
+          if draftData[i].isImage is true
+            doc = {
+              imgUrl: draftData[i].imgUrl,
+              filename: draftData[i].filename
+            }
+            pubImages.push(doc)
       Session.set('pubImages',pubImages)
     Template.mainImagesList.events
       'click .mainImagesListback' :(e)->

@@ -50,11 +50,32 @@
                 </span>
             </li>
         {{else}}
-            <li class='resortitem hastextarea' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
-                <div class="textdiv">
-                    <textarea data-autoresize rows="1" id="{{_id}}TextArea" text={{_id}} name="textarea" readOnly="true" style="{{calcStyle}};{{style}}" >{{text}}</textarea>
-                </div>
-            </li>
+            {{#if videoInfo}}
+                <li class='resortitem postVideoItem element' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
+                    <span class="videoContainer">
+                        <span class="video_bd">
+                            <!--<a class="description">
+                                <span class="videoName">{{videoInfo.videoName}}</span>
+                            </a>-->
+                            <span class="play_area">
+                                <i class="icon_video_switch"></i>
+                                <!--<img src="/music_pic_default.png" alt="" class="pic_video_default">-->
+                                <div id="cdn_stats" class="speed below_controls" style="position: absolute; width: 100%;" data-collecting="true"></div>
+                                <img src="{{videoInfo.imageUrl}}" class="video_thumb" alt="">
+                                <video class="video" controls>
+                                    <source src="{{videoInfo.playUrl}}">
+                                </video>
+                            </span>
+                        </span>
+                    </span>
+                </li>
+            {{else}}
+                <li class='resortitem hastextarea' id="{{_id}}" data-row="{{data_row}}" data-col="{{data_col}}" data-sizex="{{data_sizex}}" data-sizey="{{data_sizey}}">
+                    <div class="textdiv">
+                        <textarea data-autoresize rows="1" id="{{_id}}TextArea" text={{_id}} name="textarea" readOnly="true" style="{{calcStyle}};{{style}}" >{{text}}</textarea>
+                    </div>
+                </li>
+            {{/if}}
         {{/if}}
     {{/if}}
 </template>
