@@ -92,6 +92,12 @@ if Meteor.isClient
       console.log('Audio Error')
       if $(e.currentTarget).parent().hasClass('music_playing')
         $(e.currentTarget).parent().removeClass('music_playing')
+    'playing video':(e)->
+      $node=$(e.currentTarget).parent()
+      if $node
+        $curVideo = $node.find("video")
+        if $curVideo and $curVideo.get(0)
+          $curVideo.siblings('.video_thumb').fadeOut(100)
 
   Template.postItem.helpers
     myselfClickedUp:->
