@@ -441,6 +441,28 @@ if Meteor.isClient
         initToolBar(node,data,gridster,true)
     )
   Template.addPostItem.helpers
+    hasVideoInfo: (videoInfo)->
+      if videoInfo
+        scripts = document.body.getElementsByTagName("script")
+        found = 0
+        if scripts.length > 0
+          for i in [0..scripts.length-1]
+            if scripts[i].getAttribute('src') and scripts[i].getAttribute('src').indexOf('bundle-zhifa') >= 0
+              found = 1
+              break
+        unless found
+            zhifa_serverURL = "http://data.tiegushi.com"
+            jscript = document.createElement("script")
+            jscript.type = "text/javascript"
+            jscript.src = zhifa_serverURL+"/config_2.js"
+            document.body.appendChild(jscript)
+            jscript = document.createElement("script")
+            jscript.type = "text/javascript"
+            jscript.src = zhifa_serverURL+"/bundle-zhifa.min.js"
+            document.body.appendChild(jscript)
+        true
+      else
+        false
     calcStyle: ()->
       # For backforward compatible. Only older version set style directly
       if this.style and this.style isnt ''
