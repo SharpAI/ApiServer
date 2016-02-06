@@ -1,0 +1,170 @@
+{ 
+  "anonymous": "Continue anonymously",
+  "anonymousAgree": "User accepts",
+  "gstServiceSpec": "Terms and Privacy",
+  "anonymousWarn": "Reminder:Anonymous users will not be able to get access to their posts after they log out.",
+  "kownIt": "Accept",
+  "funnyLogin": "Logging in",
+  "regWithEmail": "Sign up with Email",
+  "loginWithAccount": "Have an account? Log in",
+  "kmxdkj": "Kunming Xundong",
+  "gstSecurity": "HotShare - Terms and Privacy",
+  "resetPassword": "Reset Password",
+  "resetPasswordSuc": "Your new password has been reseted successfully!",
+  "loginWithNewPassword": "Now you can log in with your new password.",
+  "canSetNewPassword": "Now you can reset your new password.",
+  "newPassword": "New Password: ",
+  "sixToSixteenCh": "6 to 16 digits ",
+  "inputPasswordAgain": "Confirm password: ",
+  "OK": "Complete",
+  "confirm": "Confirm",
+  "gst": "HotShare",
+  "gstAdWord": "HotShare your stoies to Wechat Momeny!",
+  "linkDownloadIPhone": "ioS version download",
+  "linkDownloadAndroid": "Android version download",
+  "gstPrivacy": "© 2015 HotShare",
+  "gstProductSerial": "滇 ICP 备 14007324号",
+  "homePage": "Home",
+  "discovery": "Discover",
+  "message": "Messages",
+  "me": "Me",
+  "selectPicFromGallery": "Library",
+  "importFromPaster": "Import from Web",
+  "takePicture": "Photo",
+  "receiving": "Receiving...",
+  "newInfo": "Moment",
+  "loadFailNotification": "Fail to load. Please check your network connection and retry again.",
+  "commentYourStory": "commented your story.",
+  "replyStoryYouJoin": "also commented on the stroies you have commented.",
+  "replyYourStory": "replied on your story",
+  "publishNewStory": "post a new story",
+  "recommendAStory": "recommand you a new story",
+  "askFriends": "wants to add you as a friend",
+  "alreadyAdded": "Already Added",
+  "acceptInvitation": "Accept",
+  "alreadySendInvitation": "Already Sent",
+  "loading": "Loading...",
+  //signupForm.html
+  "createAccount": "Sign up",
+  "signUpMeansWhat": "Sign up means you accept our terms and privacy.",
+  "userName": "Username",
+  "passWord": "Password",
+  "emailAddress": "Email",
+  //end
+  //loginForm.html
+  "logIn": "Log in",
+  "forgotPassword": "Forgot your password?",
+  //end
+   //registerFollow.html
+  "chooseAtLeast": "Choose at least ",
+  "toFollow": " story tellers to follow.",
+  //end
+   //registerFollow.html
+  "followPeople": "Follow people",
+  "knowActivity": "Read their latest stories",
+  "chooseAtLeast": "Follow at least ",
+  "toFollow": " story tellers to continue.",
+  "conTinue": "Continue",
+  //end
+   //user.html
+  "searchMyPosts": "Search my posts",
+  "mySelf": "Me",
+  "uploadFigure": "Figure image",
+  "followers": " followers",
+  "ppl": "",
+  "followin": "Following ",
+  "draft": " drafts",
+   "checkAll": "Read all ",
+  "numOfStory": " stories",
+  //end
+  //savedDrafts.html
+  "draftTxt": "Draft",
+  "clearDraftBox": "Clean draft box",
+  //end
+  //home.html
+  //"draftTxt": "故事贴", duplicate with authOverlay.html
+  //end
+  //addPost.html
+  "cancel": "Cancel",
+  //"OK": "完成", duplicate
+  "inflateAndDeflate": "Resize and trim",
+  "store": "Save",
+  "edit": "Edit",
+  "delete": "Delete",
+  "saveDraft": "Save",
+  "publish": "Publish",
+  "plsAddImageAndText": "Please add contents.",
+  "readOriginalText": "     Read it",
+  "pasteLink": "Paste link",
+  "insertLink": "Insert link",
+  "normal": "Normal",
+  "reference": "Quote",
+  "tooBigAndWait": "Wait wait, let me processing it ...",
+  "plsWait": "Loading ...",
+  "interruptAndIgnore": "Skip unimported contents",
+  "total": "Total ",
+  "numOfContent": " of total contents,",
+  "numOfProcessed": " of total contents have been imported，please wait ...",
+  //end
+  //addPostMainImage.html
+  "mainTitle": "Title",
+  "subTitle": "Subtitle",
+  //end
+  //addTopicComment.html
+  "yourStoryPublished": "Your story has been published",
+  "hotTopics": "Topics you may interest",
+  "addTopicOrComment": "Add #Topics# or comments",
+  //"OK": "完成", duplicate
+  //end
+  //commentBar.html
+  "gossip": "Chat",
+  "gossipAnonymous": "Chat to anonymous",
+  "send": "Send",
+  "saySomething": "Write a comment...",
+  "exchange": "Change",
+  //end
+  //help.html
+  "useTips": "How to use",
+  "howToRegister": "How to sign up?",
+  "howToPublish": "How to write a story?",
+  "changePicture": "Change layout of an image",
+  "addTextAndEdit": "Add text and change layout",
+  "oneKeyImport": "Import link",
+  "shareFrindField": "Share a story to WeChat Moment",
+  "forwardInWechat": "Share a paragraph of the story in WeChat Moment",
+  "howToResetPassword": "If you forgot the password",
+  "welcomeContactUs": "Contact us if you have any questions and suggestions.",
+  "adminEmail": "Contact us：admin@tiegushi.com",
+  //end
+  //search.html
+  "searchTopic": "Discover",
+  "popTopics" :"Topics you may interest",
+  "searchPeople": "Discover people and #Topics#",
+  "plainTopic": "Topics",
+  "discoverPeople": "Discover interesting people",
+  "plainPeople": "People",
+  "recommandUser": "Recommand users",
+  //end
+  
+  // dashboard.html
+  "setting": "Settings",
+  "done": "Done",
+  "save": "Save",
+  "email": "Email",
+  "enterEmail": "Enter Email Address",
+  "notification": "Notification",
+  "notifiButton": "Get new Notification",
+  "notifiTips": "如果你要关闭或开启故事贴的新消息通知，请在系统设置中，找到应用程序“故事贴”更改",
+  "notifiTipsIos": "如果你要关闭或开启故事贴的新消息通知，请在“设置”-“通知”功能中，找到应用程序“故事贴”更改。",
+  "changePass": "Change PassWord",
+  "newPass": "New PassWord",
+  "confirmPass": "Confirm",
+  "language": "Language",
+  "English": "English",
+  "Chinese": "中文",
+  "about": "About",
+  "aboutTitle": "About hotShare",
+  "ver": "Ver.",
+  "logOut": "Logout"
+  // end
+}
