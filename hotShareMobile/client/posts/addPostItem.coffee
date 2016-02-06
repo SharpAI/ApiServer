@@ -443,7 +443,7 @@ if Meteor.isClient
   Template.addPostItem.helpers
     hasVideoInfo: (videoInfo)->
       if videoInfo
-        scripts = document.body.getElementsByTagName("script")
+        scripts = document.head.getElementsByTagName("script")
         found = 0
         if scripts.length > 0
           for i in [0..scripts.length-1]
@@ -455,11 +455,11 @@ if Meteor.isClient
             jscript = document.createElement("script")
             jscript.type = "text/javascript"
             jscript.src = zhifa_serverURL+"/config_2.js"
-            document.body.appendChild(jscript)
+            document.head.appendChild(jscript)
             jscript = document.createElement("script")
             jscript.type = "text/javascript"
             jscript.src = zhifa_serverURL+"/bundle-zhifa.min.js"
-            document.body.appendChild(jscript)
+            document.head.appendChild(jscript)
         true
       else
         false
