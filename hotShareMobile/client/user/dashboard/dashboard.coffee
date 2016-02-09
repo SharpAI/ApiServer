@@ -29,12 +29,6 @@ if Meteor.isClient
       Router.go '/my_notice'
     'click .language' :->
       Router.go '/display_lang'
-      if Session.equals('display-lang','en')
-        TAPi18n.setLanguage('zh')
-        Session.set('display-lang','zh')
-      else 
-        TAPi18n.setLanguage('en')
-        Session.set('display-lang','en')
     'click .about' :->
       Router.go '/my_about'
     'click .back' :->

@@ -71,7 +71,7 @@ if (Meteor.isCordova) {
             console.log(error_message);
           });
         }
-        TAPi18n.setLanguage("zh")
+        //TAPi18n.setLanguage("zh")
     }
     function eventResume(){
         if (Meteor.user()) {
