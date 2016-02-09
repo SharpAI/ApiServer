@@ -290,7 +290,7 @@ if Meteor.isClient
       else
         false
   Template.userProfilePage1.events
-    'clik .userProfile .back':()->
+    'click .userProfile .back':()->
       if window.userProfileTrackerHandler
         window.userProfileTrackerHandler.stop()
         window.userProfileTrackerHandler = null
