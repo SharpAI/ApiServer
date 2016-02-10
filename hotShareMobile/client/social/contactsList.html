@@ -3,12 +3,12 @@
     <div class="head">
         <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
         <div class="socialTitle">
-          <span class="Contacts">联系人</span>
+          <span class="Contacts">{{_ "Contacts"}}</span>
         </div>
     </div>
     <div id="addNewFriends" class="eachViewer">
       <img class="icon" src="/userPlus.png" width="30" height="30">
-      <span class="userName">新的朋友</span>
+      <span class="userName">{{_ "NewFriendsList"}}</span>
     </div>
     <div class="chatContentLine"></div>
       {{> addNewFriends}}
@@ -60,10 +60,10 @@
 <template name="addNewFriends">
   <div class="addNewFriends">
     {{#if loading}}
-        <div>正在加载中...</div>
+        <div>{{_ "isLoading"}}</div>
     {{/if}}
     {{#if loadError}}
-        <div>加载失败，请检查网络设置或稍后重试</div>
+        <div>{{_ "FailToLoad"}}</div>
     {{/if}}
       <div id="wrapper">
         {{#each meeter}}
@@ -72,7 +72,7 @@
                 <!--列出浏览人-->
                 <img class="icon" src="{{userIcon}}" width="30" height="30">
                 <span class="userName">{{displayName}}</span>
-                <div class="meet_count">缘分啊，我们已偶遇{{count}}次了!</div>
+                <div class="meet_count">{{_ "FateAh"}}{{count}}{{_ "times"}}</div>
                 {{#if showRedSpot}}
                 <div class="red_spot"></div>
                 {{/if}}
@@ -82,7 +82,7 @@
         {{/each}}
         {{#if moreResults}}
             <div id="showMorePostFriendsResults" style="margin-left: 25px;">
-                <span class="loading">加载中...</span>
+                <span class="loading">{{_ "loading"}}</span>
             </div>
         {{/if}}
       </div>

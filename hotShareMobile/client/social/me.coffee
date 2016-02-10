@@ -31,14 +31,31 @@ if Meteor.isClient
   Template.information.helpers
     nickname:()->
       if Meteor.user()
-        Meteor.user().profile.fullname || '[无]'
+        if Cookies.check("display-lang")
+          if Cookies.get("display-lang") is 'en'
+            Meteor.user().profile.fullname || '[N/A]'
+          else
+            Meteor.user().profile.fullname || '[无]'
+        else
+          Meteor.user().profile.fullname || '[无]'
     sex:()->
       if Meteor.user() and Meteor.user().profile.sex
-        if Meteor.user().profile.sex is 'male'
-          return '男'
-        else if Meteor.user().profile.sex is 'female'
-          return '女'
-      return '[未知]'
+        if Cookies.check("display-lang")
+          if Cookies.get("display-lang") is 'en'
+            if Meteor.user().profile.sex is 'male'
+              return 'Male'
+            else if Meteor.user().profile.sex is 'female'
+              return 'Female'
+          else
+            if Meteor.user().profile.sex is 'male'
+              return '男'
+            else if Meteor.user().profile.sex is 'female'
+              return '女'
+        else #zh
+          if Meteor.user().profile.sex is 'male'
+              return '男'
+          else if Meteor.user().profile.sex is 'female'
+              return '女'
     favposts: ()->
       return []
   Template.information.events

@@ -61,8 +61,8 @@ if (Meteor.isCordova) {
             console.log(error_message);
           });
         } else {
-          Session.set("display_lang",getUserLanguage())
-          TAPi18n.setLanguage(getUserLanguage())
+          Session.set("display_lang","zh")
+          TAPi18n.setLanguage("zh")
           .done(function () {
             console.log("en");
           })

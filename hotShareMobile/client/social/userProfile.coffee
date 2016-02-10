@@ -253,8 +253,22 @@ if Meteor.isClient
     AddFriend:->
       Meteor.subscribe("friendFeeds", Session.get("ProfileUserId1"),Meteor.userId())
       addstr = '添加'
+      if Cookies.check("display-lang")
+        if Cookies.get("display-lang") is 'en'
+          addstr = 'Add'
+        else
+          addstr = '添加'
+      else
+        addstr = '添加'
       if Feeds.find({requesteeId:Session.get("ProfileUserId1"),requesterId:Meteor.userId()}).count()>0
         addstr = '已发送邀请'
+        if Cookies.check("display-lang")
+          if Cookies.get("display-lang") is 'en'
+            addstr = 'Invitation has been sent'
+          else
+            addstr = '已发送邀请'
+        else
+          addstr = '已发送邀请'
       addstr
     withChat:->
       withChat
@@ -327,8 +341,23 @@ if Meteor.isClient
     AddFriend:->
       Meteor.subscribe("friendFeeds", Session.get("ProfileUserId1"),Meteor.userId())
       addstr = '添加'
+      if Cookies.check("display-lang")
+        if Cookies.get("display-lang") is 'en'
+          addstr = 'Add'
+        else
+          addstr = '添加'
+      else
+        addstr = '添加'
       if Feeds.find({requesteeId:Session.get("ProfileUserId2"),requesterId:Meteor.userId()}).count()>0
         addstr = '已发送邀请'
+        if Cookies.check("display-lang")
+          if Cookies.get("display-lang") is 'en'
+            addstr = 'Invitation has been sent'
+          else
+            addstr = '已发送邀请'
+        else
+          addstr = '已发送邀请'
+
       addstr
     withChat:->
       withChat
@@ -402,8 +431,22 @@ if Meteor.isClient
     AddFriend:->
       Meteor.subscribe("friendFeeds", Session.get("ProfileUserId1"),Meteor.userId())
       addstr = '添加'
+      if Cookies.check("display-lang")
+        if Cookies.get("display-lang") is 'en'
+          addstr = 'Add'
+        else
+          addstr = '添加'
+      else
+        addstr = '添加'
       if Feeds.find({requesteeId:Session.get("ProfileUserId3"),requesterId:Meteor.userId()}).count()>0
         addstr = '已发送邀请'
+        if Cookies.check("display-lang")
+          if Cookies.get("display-lang") is 'en'
+            addstr = 'Invitation has been sent'
+          else
+            addstr = '已发送邀请'
+        else
+          addstr = '已发送邀请'
       addstr
     withChat:->
       withChat

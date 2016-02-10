@@ -229,7 +229,32 @@
   "about": "关于故事贴",
   "aboutTitle": "关于 故事贴",
   "ver": "版本",
-  "logOut": "退出登录"
+  "logOut": "退出登录",
+  "NewFriends": "新朋友",
+  "NickName": "昵称",
+  "Gender": "性别",
+  "Save": "保存",
+  "Male": "男",
+  "Female": "女",
+  "enteranewnickname": "输入新昵称",
+  "FavoriteStory": "喜欢的故事",
+  "Publish": "发布",
+  "NoSearchResults": "查无结果",
+  "Searching": "查找中...",
+  "Contacts": "联系人",
+  "NewFriendsList": "新的朋友",
+  "FailToLoad": "加载失败，请检查网络设置或稍后重试",
+  "FateAh": "缘分啊，我们已偶遇",
+  "times": "次了!",
+  "Moments": "朋友圈",
+  "RecommendPosts": "看过当前帖子的朋友看过的帖子，您都看过了，特意为您推荐以下您没看过帖子...",
+  "AlsoRead": "看过当前帖子的朋友，还看过...",
+  "PersonReadYourForward": "人读过您的转发",
+  "AlsoComment": "也点评了此故事",
+  "readed": "读过",
+  "postedastory": "发布了一个故事",
+  "readedastory": "阅读了一个故事",
+  "recentlyviewedstories": "最近浏览的故事"
   // end
   
   

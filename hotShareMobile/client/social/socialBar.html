@@ -26,25 +26,25 @@
           -->
           <div class="postBtn  {{isFocus 'postBtn'}}">
             <i class="fa fa-file-image-o"></i>
-            <div>故事贴</div>
+            <div>{{_ "gst"}}</div>
           </div>
           <div class="contactsBtn {{isFocus 'contactsList'}}">
             <i class="fa fa-list"></i>
-            <div>新朋友</div>
+            <div>{{_ "NewFriends"}}</div>
             {{#if haveNewFriends}}
             <div class="red_spot">{{newcount}}</div>
             {{/if}}
           </div>
           <div class="discoverBtn {{isFocus 'discover'}}">
             <i class="fa fa-compass"></i>
-            <div>动态</div>
+            <div>{{_ "newInfo"}}</div>
             {{#if haveFeeds}}
                 <div class="red_spot">{{feedscount}}</div>
             {{/if}}
           </div>
           <div class="meBtn {{isFocus 'me'}}">
             <i class="fa fa-user"></i>
-            <div>我</div>
+            <div>{{_ "me"}}</div>
           </div>
         </div>
       </div>

@@ -19,7 +19,7 @@ if Meteor.isClient
       if Cookies.check("display-lang")
         return Cookies.get("display-lang") is 'en'
       else 
-        return getUserLanguage() is 'en'
+        return false
   Template.dashboard.events
     'click .email' :->
       Router.go '/my_email'
@@ -145,7 +145,7 @@ if Meteor.isClient
       if Cookies.check("display-lang")
         return Cookies.get("display-lang") is 'en'
       else 
-        return getUserLanguage() is 'en'
+        return false
   Template.display_lang.events
     'click #about_btn_back' :->
       Router.go '/dashboard'
