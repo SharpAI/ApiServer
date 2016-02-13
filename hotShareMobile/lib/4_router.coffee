@@ -231,6 +231,9 @@ if Meteor.isClient
     Router.route 'setNickname',
       template: 'setNickname'
       path: '/setNickname'
+    Router.route '/userProfilePage',()->
+      this.render 'userProfilePage'
+      return
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->

@@ -155,6 +155,8 @@ Template.newLayoutContainer.events =
     Session.set("lastPost",postId)
     $(window).children().off()
     $(window).unbind('scroll')
+    if PopUpBox
+      PopUpBox.close()
     Router.go '/posts/'+postId
 Template.newLayoutContainer.helpers =
   displayId:()->
