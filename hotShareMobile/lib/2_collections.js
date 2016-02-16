@@ -1447,6 +1447,7 @@ if(Meteor.isServer){
         return [];
     }
   });
+
   Meteor.publish('favouriteposts', function(limit) {
     if(this.userId && limit) {
         var postIds = [];

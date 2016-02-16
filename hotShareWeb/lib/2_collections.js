@@ -78,7 +78,7 @@ if(Meteor.isServer){
                 }
             }
             self.added("postfriends", id, fields);
-            getViewLists(self,taId,3);
+            getViewLists(self,taId,4);
             self.count++;
         });
     };
@@ -110,7 +110,7 @@ if(Meteor.isServer){
                     }
                 }
                 self.added("newfriends", id, fields);
-                getViewLists(self,taId,3);
+                getViewLists(self,taId,4);
                 self.count++;
             }
         });
@@ -145,7 +145,7 @@ if(Meteor.isServer){
                             }
                         }
                         self.added("newfriends", id, fields);
-                        getViewLists(self,meetItem.ta,3);
+                        getViewLists(self,meetItem.ta,4);
                         self.count++;
                     }
                 }
@@ -185,7 +185,7 @@ if(Meteor.isServer){
                                 }
                             }
                             self.added("newfriends", id, fields);
-                            getViewLists(self,meetItem.ta,3);
+                            getViewLists(self,meetItem.ta,4);
                             self.count++;
                         }
                     }
@@ -231,7 +231,7 @@ if(Meteor.isServer){
                 'profile.lastLogonIP':1}});
             if (info) {
                 self.added("userDetail", info._id, info);
-                getViewLists(self,info._id,3);
+                getViewLists(self,info._id,4);
             }
         });
     };
@@ -605,11 +605,76 @@ if(Meteor.isServer){
                                         followby: data.commentUserId,
                                         checked: false
                                     });
+                                    var notifyUser = Meteor.users.findOne({_id: data.commentUserId})
+                                    var waitReadCount = notifyUser.profile.waitReadCount;
+                                    var broswerUser = notifyUser.profile.browser;
+                                    if(broswerUser === undefined || isNaN(broswerUser)){
+                                        broswerUser = false;
+                                    }
+                                    if (waitReadCount === undefined || isNaN(waitReadCount)) {
+                                        waitReadCount = 0;
+                                    }
+                                    if(broswerUser === false)
+                                    {
+                                        Meteor.users.update({_id: data.commentUserId}, {$set: {'profile.waitReadCount': waitReadCount + 1}});
+                                        pushnotification("palsocomment", doc, data.commentUserId);
+                                    }
+                                }
+                            }
+                        }
+                        //别人赞了你评论的帖子
+                        if(doc.pub[pindex].likeUserId !== userId && doc.pub[pindex].likeUserId !== doc.owner)
+                        {
+                            var pfeeds = Feeds.findOne({
+                                owner: userId,
+                                followby: doc.pub[pindex].likeUserId,
+                                checked: false,
+                                postId: data.postId,
+                                pindex: pindex
+                            });
+                            if (pfeeds || needRemove) {
+                                //console.log("==================already have feed==========");
+                                if (pfeeds && needRemove)
+                                    Feeds.remove(pfeeds);
+                            } else {
+                                if (userinfo) {
+                                    Feeds.insert({
+                                        owner: userId,
+                                        ownerName: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
+                                        ownerIcon: userinfo.profile.icon,
+                                        eventType: 'pfavourite',
+                                        postId: data.postId,
+                                        postTitle: doc.title,
+                                        addontitle: doc.addontitle,
+                                        pindex: pindex,
+                                        mainImage: doc.mainImage,
+                                        createdAt: new Date(),
+                                        heart: 0,
+                                        retweet: 0,
+                                        comment: 0,
+                                        followby: doc.pub[pindex].likeUserId,
+                                        checked: false
+                                    });
+                                    var notifyThumbhandUpUser = Meteor.users.findOne({_id: doc.pub[pindex].likeUserId})
+                                    var waitThumbhandUpReadCount = notifyThumbhandUpUser.profile.waitReadCount;
+                                    var broswerThumbhandUpUser = notifyThumbhandUpUser.profile.browser;
+                                    if(notifyThumbhandUpUser === undefined || isNaN(notifyThumbhandUpUser)){
+                                        notifyThumbhandUpUser = false;
+                                    }
+                                    if (waitThumbhandUpReadCount === undefined || isNaN(waitThumbhandUpReadCount)) {
+                                        waitThumbhandUpReadCount = 0;
+                                    }
+                                    if(notifyThumbhandUpUser === false)
+                                    {
+                                        Meteor.users.update({_id: doc.pub[pindex].likeUserId}, {$set: {'profile.waitReadCount': waitReadCount + 1}});
+                                        pushnotification("palsofavourite", doc, doc.pub[pindex].likeUserId);
+                                    }
                                 }
                             }
                         }
                     });
                 }
+
                 //有人点评了您发表的帖子
                 if(doc.owner !== userId)
                 {
@@ -2021,7 +2086,7 @@ if(Meteor.isClient){
               onReady: function(){
                   //Session.set('momentsCollection','loaded');
               }
-          });         
+          });
       }
   });
 
@@ -2066,6 +2131,7 @@ if(Meteor.isClient){
         }
     }
   });
+
 
   Tracker.autorun(function() {
     if (Meteor.userId()) {
