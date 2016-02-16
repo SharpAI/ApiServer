@@ -7,7 +7,7 @@
     <div class="content">
       <ul class="mainImageListUl">
         {{#each images}}
-        <li style="background-image:url('{{imgUrl}}');">
+        <li style="background-image:url('{{getImagePath imgUrl URI imageId}}');">
           <input id="{{imageId}}" class="mainImageListInput" type="checkbox" name="{{filename}}" value="{{imgUrl}}" />
         </li>
         {{/each}}

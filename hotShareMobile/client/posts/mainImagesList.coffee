@@ -2,11 +2,13 @@ if Meteor.isClient
     Template.mainImagesList.onRendered ()->
       $('.mainImagesList').css 'min-height',$(window).height()
       pubImages=[]
-      draftData = Drafts.find().fetch()
+      draftData = Drafts.find({}).fetch()
       if draftData.length > 0
         for i in [0..(draftData.length-1)]
           if draftData[i].isImage is true
             doc = {
+              URI: draftData[i].URI,
+              imageId: draftData[i]._id,
               imgUrl: draftData[i].imgUrl,
               filename: draftData[i].filename
             }
@@ -61,5 +63,7 @@ if Meteor.isClient
           $(e.currentTarget).prop('checked',true)
         ,50
     Template.mainImagesList.helpers
+      getImagePath: (path,uri,id)->
+        getImagePath(path,uri,id)
       images:->
         Session.get('pubImages')

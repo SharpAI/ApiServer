@@ -16,6 +16,7 @@ if Meteor.isClient
             if draftData[i].isImage is true
               doc = {
                 imageId: draftData[i]._id,
+                URI: draftData[i].URI,
                 imgUrl: draftData[i].imgUrl,
                 filename: draftData[i].filename
               }
