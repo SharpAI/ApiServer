@@ -21,6 +21,7 @@ if Meteor.isClient
       'click .mainImagesListImport' :(e)->
         drafts = Drafts.findOne({type:'image'})
         mainImageId = drafts._id
+        URI = ''
         imageId = ''
         mainImgUrl = ''
         mainFileName = ''
@@ -28,12 +29,13 @@ if Meteor.isClient
         $('input[class="mainImageListInput"]').each( ()->
           if true is $(this).prop('checked')
             imageId = $(this).attr('id')
+            URI = $(this).attr('uri')
             mainImgUrl = $(this).attr('value')
             mainFileName = $(this).attr('name')
             imageSrc = $('.image_' + imageId).attr('src')
         )
         if mainImgUrl isnt '' and mainFileName isnt ''
-          Drafts.update({_id:mainImageId},{$set: {imgUrl:mainImgUrl,filename: mainFileName}}, (error, result)->
+          Drafts.update({_id:mainImageId},{$set: {imgUrl:mainImgUrl,filename: mainFileName,URI:URI}}, (error, result)->
             if error
               PUB.toast('修改失败，请重试！')
             else
