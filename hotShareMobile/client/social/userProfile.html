@@ -36,37 +36,60 @@
       <span class="postLeft">{{_ "recentlyviewedstories"}}</span>
     </div>
       {{#if compareViewsCount 0}}
+        <div class="grid" id="grid_01">
+          <div class="grid-sizer"></div>
+          {{#each viewLists}}
+            {{#if postId}}
+            <div class="grid-item">
+              <div class="box"><img src="{{mainImage}}" /><div class="title">{{title}}</div></div>
+            </div>
+            {{/if}}
+        {{/each}}
+       </div>
+      {{/if}}
+      <!--{{#if compareViewsCount 0}}
         <div class="postImages swipe-control">
-          <ul>
+          <ul class="grid1">
             {{#each viewLists}}
               {{#if postId}}
-                <li id="{{postId}}">
-                  <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
+                <li class="grid-item" id="{{postId}}">
+                  <img class="postMainImage" src="{{mainImage}}" />
                   <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
                      {{title}}
                   </h6>
                 </li>
               {{/if}}
           {{/each}}
+          <li class="grid-item" id="{{postId}}">
+            <img class="postMainImage" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/82/drizzle.jpg" />
+            <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
+                fssdfdsfsdf
+            </h6>
+          </li>
+          <li class="grid-item" id="{{postId}}">
+            <img class="postMainImage" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/82/cat-nose.jpg" />
+            <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
+                fssdfdsfsdf
+            </h6>
+          </li>
           </ul>
         </div>
-      {{/if}}
+      {{/if}}-->
     <div class="post">
       <span class="postLeft">{{_ "FavoriteStory"}}</span>
     </div>
-    <div class="postImages">
-      <ul>
+    <!--<div class="postImages">
+      <ul>-->
+        <div class="grid" id="grid_02">
+          <div class="grid-sizer"></div>
         {{#each favouriteList}}
           {{#if _id}}
-            <li id="{{_id}}">
-              <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
-              <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
-                 {{title}}
-              </h6>
-            </li>
+            <div class="grid-item">
+              <div class="box"><img src="{{mainImage}}" /><div class="title">{{title}}</div></div>
+            </div>
           {{/if}}
       {{/each}}
-      </ul>
+      <!--</ul>-->
     </div>   
     <div class="showPostsLine"></div>
     {{#if showPostSuggestionToUser}}
@@ -120,37 +143,30 @@
       <span class="postLeft">{{_ "recentlyviewedstories"}}</span>
     </div>
       {{#if compareViewsCount 0}}
-        <div class="postImages swipe-control">
-          <ul>
+       <div class="grid" id="grid_03">
+          <div class="grid-sizer"></div>
             {{#each viewLists}}
               {{#if postId}}
-                <li id="{{postId}}">
-                  <div class="postMainImage no-swipe" style="background-image:url({{mainImage}})"></div>
-                  <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
-                     {{title}}
-                  </h6>
-                </li>
+                <div class="grid-item">
+                  <div class="box"><img src="{{mainImage}}" /><div class="title">{{title}}</div></div>
+                </div>
               {{/if}}
           {{/each}}
-          </ul>
+          <!--</ul>-->
         </div>
       {{/if}}
     <div class="post">
       <span class="postLeft">{{_ "FavoriteStory"}}</span>
     </div>
-    <div class="postImages">
-      <ul>
+    <div class="grid" id="grid_04">
+          <div class="grid-sizer"></div>
         {{#each favouriteList}}
           {{#if _id}}
-            <li id="{{_id}}">
-              <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
-              <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
-                 {{title}}
-              </h6>
-            </li>
+            <div class="grid-item">
+              <div class="box"><img src="{{mainImage}}" /><div class="title">{{title}}</div></div>
+            </div>
           {{/if}}
       {{/each}}
-      </ul>
     </div>  
     <div class="showPostsLine"></div>
     {{#if showPostSuggestionToUser}}
@@ -204,37 +220,29 @@
       <span class="postLeft">{{_ "recentlyviewedstories"}}</span>
     </div>
       {{#if compareViewsCount 0}}
-        <div class="postImages swipe-control">
-          <ul>
+        <div class="grid" id="grid_05">
+          <div class="grid-sizer"></div>
             {{#each viewLists}}
               {{#if postId}}
-                <li id="{{postId}}">
-                  <div class="postMainImage no-swipe" style="background-image:url({{mainImage}})"></div>
-                  <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
-                     {{title}}
-                  </h6>
-              </li>
+                <div class="grid-item">
+                  <div class="box"><img src="{{mainImage}}" /><div class="title">{{title}}</div></div>
+                </div>
             {{/if}}
           {{/each}}
-          </ul>
         </div>
       {{/if}}
     <div class="post">
       <span class="postLeft">{{_ "FavoriteStory"}}</span>
     </div>
-    <div class="postImages">
-      <ul>
+    <div class="grid" id="grid_06">
+          <div class="grid-sizer"></div>
         {{#each favouriteList}}
           {{#if _id}}
-            <li id="{{_id}}">
-              <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
-              <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
-                 {{title}}
-              </h6>
-            </li>
+            <div class="grid-item">
+              <div class="box"><img src="{{mainImage}}" /><div class="title">{{title}}</div></div>
+            </div>
           {{/if}}
       {{/each}}
-      </ul>
     </div>  
     <div class="showPostsLine"></div>
     {{#if showPostSuggestionToUser}}

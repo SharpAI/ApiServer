@@ -241,6 +241,13 @@ if Meteor.isClient
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
     $('.page').addClass('scrollable')
+    
+    $grid = $('#grid_01').masonry({itemSelector: '.grid-item', percentPosition: true, columnWidth: '.grid-sizer'})
+    $grid.imagesLoaded().progress ()->
+      $grid.masonry()
+    $grid1 = $('#grid_02').masonry({itemSelector: '.grid-item', percentPosition: true, columnWidth: '.grid-sizer'})
+    $grid1.imagesLoaded().progress ()->
+      $grid1.masonry()
   Template.userProfilePage1.helpers
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
@@ -283,9 +290,9 @@ if Meteor.isClient
       else
         false
     viewLists:()->
-      ViewLists.find({userId:Session.get("ProfileUserId1")},{sort: {createdAt: -1}, limit:3})
+      ViewLists.find({userId:Session.get("ProfileUserId1")},{sort: {createdAt: -1}, limit:4})
     favouriteList: ()->
-      Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), 3)
+      Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), 4)
       postIds = []
       FavouritePosts.find({userId: Session.get("ProfileUserId1")}).forEach((item) ->
           if !~postIds.indexOf(item.postId)
@@ -293,7 +300,7 @@ if Meteor.isClient
       )
       Posts.find({_id: {$in: postIds}})
     compareViewsCount:(value)->
-      if (ViewLists.find({userId:Session.get("ProfileUserId1")}, {sort: {createdAt: -1}, limit:3}).count() > value)
+      if (ViewLists.find({userId:Session.get("ProfileUserId1")}, {sort: {createdAt: -1}, limit:4}).count() > value)
         true
       else
         false
@@ -316,7 +323,7 @@ if Meteor.isClient
     'click #sendChatMessage': ()->
       Session.set("messageDialog_to", {id: Session.get("ProfileUserId1"), type: 'user'})
       Session.set("Social.LevelOne.Menu", 'messageDialog')
-    'click .postImages ul li':(e)->
+    'click .grid-item':(e)->
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
@@ -331,6 +338,13 @@ if Meteor.isClient
   Template.userProfilePage2.rendered=->
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
+    
+    $grid = $('#grid_03').masonry({itemSelector: '.grid-item', percentPosition: true, columnWidth: '.grid-sizer'})
+    $grid.imagesLoaded().progress ()->
+      $grid.masonry()
+    $grid1 = $('#grid_04').masonry({itemSelector: '.grid-item', percentPosition: true, columnWidth: '.grid-sizer'})
+    $grid1.imagesLoaded().progress ()->
+      $grid1.masonry()
   Template.userProfilePage2.helpers
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
@@ -372,9 +386,9 @@ if Meteor.isClient
       else
         false
     viewLists:()->
-      ViewLists.find({userId:Session.get("ProfileUserId2")},{sort: {createdAt: -1}, limit:3})
+      ViewLists.find({userId:Session.get("ProfileUserId2")},{sort: {createdAt: -1}, limit:4})
     favouriteList: ()->
-      Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), 3)
+      Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), 4)
       postIds = []
       FavouritePosts.find({userId: Session.get("ProfileUserId1")}).forEach((item) ->
           if !~postIds.indexOf(item.postId)
@@ -382,7 +396,7 @@ if Meteor.isClient
       )
       Posts.find({_id: {$in: postIds}})
     compareViewsCount:(value)->
-      if (ViewLists.find({userId:Session.get("ProfileUserId2")}, {sort: {createdAt: -1}, limit:3}).count() > value)
+      if (ViewLists.find({userId:Session.get("ProfileUserId2")}, {sort: {createdAt: -1}, limit:4}).count() > value)
         true
       else
         false
@@ -405,7 +419,7 @@ if Meteor.isClient
     'click #sendChatMessage': ()->
       Session.set("messageDialog_to", {id: Session.get("ProfileUserId2"), type: 'user'})
       Session.set("Social.LevelOne.Menu", 'messageDialog')
-    'click .postImages ul li':(e)->
+    'click .grid-item':(e)->
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
@@ -421,6 +435,13 @@ if Meteor.isClient
   Template.userProfilePage3.rendered=->
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
+    
+    $grid = $('#grid_05').masonry({itemSelector: '.grid-item', percentPosition: true, columnWidth: '.grid-sizer'})
+    $grid.imagesLoaded().progress ()->
+      $grid.masonry()
+    $grid1 = $('#grid_06').masonry({itemSelector: '.grid-item', percentPosition: true, columnWidth: '.grid-sizer'})
+    $grid1.imagesLoaded().progress ()->
+      $grid1.masonry()
   Template.userProfilePage3.helpers
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
@@ -461,9 +482,9 @@ if Meteor.isClient
       else
         false
     viewLists:()->
-      ViewLists.find({userId:Session.get("ProfileUserId3")},{sort: {createdAt: -1}, limit:3})
+      ViewLists.find({userId:Session.get("ProfileUserId3")},{sort: {createdAt: -1}, limit:4})
     favouriteList: ()->
-      Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), 3)
+      Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), 4)
       postIds = []
       FavouritePosts.find({userId: Session.get("ProfileUserId1")}).forEach((item) ->
           if !~postIds.indexOf(item.postId)
@@ -471,7 +492,7 @@ if Meteor.isClient
       )
       Posts.find({_id: {$in: postIds}})
     compareViewsCount:(value)->
-      if (ViewLists.find({userId:Session.get("ProfileUserId3")}, {sort: {createdAt: -1}, limit:3}).count() > value)
+      if (ViewLists.find({userId:Session.get("ProfileUserId3")}, {sort: {createdAt: -1}, limit:4}).count() > value)
         true
       else
         false
@@ -494,7 +515,7 @@ if Meteor.isClient
     'click #sendChatMessage': ()->
       Session.set("messageDialog_to", {id: Session.get("ProfileUserId3"), type: 'user'})
       Session.set("Social.LevelOne.Menu", 'messageDialog')
-    'click .postImages ul li':(e)->
+    'click .grid-item':(e)->
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
