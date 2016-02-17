@@ -27,6 +27,8 @@ if Meteor.isClient
       Router.go '/my_accounts_management'      
     'click .changePasswd' :->
       Router.go '/my_password'
+    'click .blacklist' :->
+      Router.go '/my_blacklist'
     'click .notice' :->
       Router.go '/my_notice'
     'click .language' :->
@@ -118,6 +120,36 @@ if Meteor.isClient
       else
         false
   Template.my_notice.events
+    'click #about_btn_back' :->
+      Router.go '/dashboard'
+
+  Template.my_blacklist.rendered=->
+    $('.dashboard').css 'min-height', $(window).height()
+    Meteor.subscribe("allBlackList")
+    Meteor.subscribe('allUsers')
+    return
+  Template.my_blacklist.helpers
+    myBlackers :->
+      blackList = BlackList.findOne({blackBy: Meteor.userId()}) || {}
+      if blackList
+        blackList.blacker
+  Template.my_blacklist_item.helpers
+    profile :->
+      id = this.toString()
+      return Meteor.users.findOne({_id: id}).profile
+  Template.my_blacklist_item.events
+    'click .remove' :(e)->
+      id = this.toString()
+      blackId = BlackList.findOne({blackBy: Meteor.userId()})._id
+      menus = ['从黑名单中移除']
+      menuTitle = ''
+      callback = (buttonIndex)->
+        if buttonIndex is 1
+          BlackList.update({_id: blackId}, {$pull: {blacker: id}})
+      PUB.actionSheet(menus, menuTitle, callback)
+      e.preventDefault()
+      e.stopPropagation()
+  Template.my_blacklist.events
     'click #about_btn_back' :->
       Router.go '/dashboard'
   Template.my_about.helpers

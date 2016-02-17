@@ -19,7 +19,7 @@ MsgGroup = new Meteor.Collection('msggroup');
 Meets = new Meteor.Collection('meets');
 Versions = new Meteor.Collection('versions');
 Moments = new Meteor.Collection('moments');
-
+BlackList = new Meteor.Collection('blackList');
 AssociatedUsers = new Meteor.Collection('associatedusers');
 
 ReaderPopularPosts = new Meteor.Collection('readerpopularposts');
@@ -1159,6 +1159,9 @@ if(Meteor.isServer){
           { field: {'profile.waitReadCount':1}}
       );
   });
+  Meteor.publish('allBlackList', function () {
+    return BlackList.find({});
+  });
   Meteor.publish("refcomments", function() {
     Max = RefComments.find().count()-8;
     Rnd = Rnd + 1;
@@ -1522,6 +1525,18 @@ if(Meteor.isServer){
     },
     remove: function(userId, doc) {
         return doc.userId === userId;
+    }
+  });
+
+  BlackList.allow({
+    insert: function(userId) {
+      return !! userId;
+    },
+    update: function (userId) {
+      return !! userId;
+    },
+    remove: function (userId) {
+      return !! userId;
     }
   });
 

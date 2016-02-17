@@ -192,4 +192,5 @@ if Meteor.isServer
           AssociatedUsers.remove($or: [{userIdA: userId, userIdB: self.userId}, {userIdA: self.userId, userIdB: userId}])
           return
         return
-
+      'addBlackList': (blacker, blackBy)->
+        BlackList.insert({blacker: [blacker],blackBy: blackBy})

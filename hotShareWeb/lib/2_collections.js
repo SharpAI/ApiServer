@@ -19,7 +19,7 @@ MsgGroup = new Meteor.Collection('msggroup');
 Meets = new Meteor.Collection('meets');
 Versions = new Meteor.Collection('versions');
 Moments = new Meteor.Collection('moments');
-
+BlackList = new Meteor.Collection('blackList');
 AssociatedUsers = new Meteor.Collection('associatedusers');
 
 ReaderPopularPosts = new Meteor.Collection('readerpopularposts');
@@ -80,7 +80,7 @@ if(Meteor.isServer){
                 }
             }
             self.added("postfriends", id, fields);
-            getViewLists(self,taId,4);
+            getViewLists(self,taId,3);
             self.count++;
         });
     };
@@ -112,7 +112,7 @@ if(Meteor.isServer){
                     }
                 }
                 self.added("newfriends", id, fields);
-                getViewLists(self,taId,4);
+                getViewLists(self,taId,3);
                 self.count++;
             }
         });
@@ -147,7 +147,7 @@ if(Meteor.isServer){
                             }
                         }
                         self.added("newfriends", id, fields);
-                        getViewLists(self,meetItem.ta,4);
+                        getViewLists(self,meetItem.ta,3);
                         self.count++;
                     }
                 }
@@ -187,7 +187,7 @@ if(Meteor.isServer){
                                 }
                             }
                             self.added("newfriends", id, fields);
-                            getViewLists(self,meetItem.ta,4);
+                            getViewLists(self,meetItem.ta,3);
                             self.count++;
                         }
                     }
@@ -233,7 +233,7 @@ if(Meteor.isServer){
                 'profile.lastLogonIP':1}});
             if (info) {
                 self.added("userDetail", info._id, info);
-                getViewLists(self,info._id,4);
+                getViewLists(self,info._id,3);
             }
         });
     };
@@ -1159,6 +1159,9 @@ if(Meteor.isServer){
           { field: {'profile.waitReadCount':1}}
       );
   });
+  Meteor.publish('allBlackList', function () {
+    return BlackList.find({});
+  });
   Meteor.publish("refcomments", function() {
     Max = RefComments.find().count()-8;
     Rnd = Rnd + 1;
@@ -1477,7 +1480,7 @@ if(Meteor.isServer){
     else {
         return [];
     }
-  });   
+  });  
 
   Meteor.publish('favouriteposts', function(limit) {
     if(this.userId && limit) {
@@ -1522,6 +1525,18 @@ if(Meteor.isServer){
     },
     remove: function(userId, doc) {
         return doc.userId === userId;
+    }
+  });
+
+  BlackList.allow({
+    insert: function(userId) {
+      return !! userId;
+    },
+    update: function (userId) {
+      return !! userId;
+    },
+    remove: function (userId) {
+      return !! userId;
     }
   });
 
@@ -2136,7 +2151,7 @@ if(Meteor.isClient){
             onReady: function() {
 
             }
-          });           
+          });          
       }
   });
 

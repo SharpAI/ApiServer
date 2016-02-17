@@ -180,6 +180,8 @@ if Meteor.isClient
     browseTimes = 0
     Session.set("Social.LevelOne.Menu",'discover')
     Session.set("SocialOnButton",'postBtn')
+    Meteor.subscribe("follower")
+    Meteor.subscribe("allBlackList")
     if not Meteor.isCordova
       favicon = document.createElement('link');
       favicon.id = 'icon';
@@ -576,8 +578,33 @@ if Meteor.isClient
       , '取消发表故事', ['依然发表','存为草稿']);
 
 
-    'click #report': (event)->
-      Router.go('reportPost')
+    'click #report': (e)->
+      # Router.go('reportPost')
+      blackerId = Session.get("postContent").owner
+      FollowerId = Follower.findOne({userId: Meteor.userId(),followerId: blackerId})
+      if BlackList.find({blackBy: Meteor.userId(), blacker:{$in: [blackerId]}}).count() > 0
+        menus = ['举报','从黑名单中移除']
+      else
+        menus = ['举报','拉黑']
+      menuTitle = ''
+      callback = (buttonIndex)->
+        if buttonIndex is 1
+          Router.go('reportPost')
+        else if buttonIndex is 2
+          if BlackList.find({blackBy: Meteor.userId(), blacker:{$in: [blackerId]}}).count() is 0
+            if BlackList.find({blackBy: Meteor.userId()}).count() is 0
+              Meteor.call('addBlackList', blackerId, Meteor.userId())
+              if FollowerId
+                Follower.remove(FollowerId._id)
+            else
+              id = BlackList.findOne({blackBy: Meteor.userId()})._id
+              BlackList.update({_id: id}, {$addToSet: {blacker: blackerId}})
+              if FollowerId
+                Follower.remove(FollowerId._id)
+          else
+            id = BlackList.findOne({blackBy: Meteor.userId()})._id
+            BlackList.update({_id: id}, {$pull: {blacker: blackerId}})
+      PUB.actionSheet(menus, menuTitle, callback)
     'click .postImageItem': (e)->
       swipedata = []
       i = 0

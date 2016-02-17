@@ -211,6 +211,7 @@
   //end
   
   // dashboard.html
+  "blacklist": "黑名单",
   "setting": "设置",
   "done": "完成",
   "save": "存储",

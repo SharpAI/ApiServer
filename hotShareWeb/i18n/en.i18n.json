@@ -147,6 +147,7 @@
   //end
   
   // dashboard.html
+  "blacklist": "Blacklist",
   "setting": "Settings",
   "done": "Done",
   "save": "Save",

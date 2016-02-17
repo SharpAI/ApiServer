@@ -161,4 +161,25 @@ postPageArr = []
               postPageScrollTop = post.scrollTop
             Session.set("postPageScrollTop", postPageScrollTop)
             Router.go '/posts/'+postId
-
+      "actionSheet": (menuArray, title, callback)->
+          if Meteor.isCordova
+            if title
+              options = {
+                  'androidTheme': window.plugins.actionsheet.ANDROID_THEMES.THEME_HOLO_LIGHT,
+                  'title': title,
+                  'buttonLabels': menuArray,
+                  'androidEnableCancelButton' : true, 
+                  'winphoneEnableCancelButton' : true, 
+                  'addCancelButtonWithLabel': '取消',
+                  'position': [20, 40] 
+              }
+            else
+              options = {
+                  'androidTheme': window.plugins.actionsheet.ANDROID_THEMES.THEME_HOLO_LIGHT,
+                  'buttonLabels': menuArray,
+                  'androidEnableCancelButton' : true,
+                  'winphoneEnableCancelButton' : true,
+                  'addCancelButtonWithLabel': '取消',
+                  'position': [20, 40]
+              }
+            window.plugins.actionsheet.show(options,callback)
