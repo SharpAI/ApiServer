@@ -154,3 +154,47 @@ if Meteor.isServer
               pushnotification("newpost", {_id: feedItem.postId, ownerName: feedItem.ownerName, title: feedItem.postTitle}, item.userId)
           )
         true
+      'addAssociatedUser': (userInfo)->
+        if this.userId is undefined or this.userId is null or userInfo is undefined or userInfo is null
+          return false
+
+        if userInfo.username is undefined or userInfo.username is null or userInfo.password is undefined or userInfo.password is null
+          return false
+
+        #this.unblock()
+
+        self = this
+
+        #Meteor.defer ()->
+        userTarget = Accounts.findUserByUsername(userInfo.username)
+
+        if userTarget is undefined or userTarget is null
+          userTarget = Accounts.findUserByEmail(userInfo.username)
+        #userTarget = Meteor.users.findOne({username: userInfo.username});
+
+        if userTarget is undefined or userTarget is null
+          return {status: 'ERROR', message: 'Invalid Username'}
+
+        if AssociatedUsers.findOne($or: [{userIdA: userTarget._id, userIdB: self.userId}, {userIdA: self.userId, userIdB: userTarget._id}])
+          return {status: 'ERROR', message: 'Exist Associate User'}
+
+        isMatch = false
+        if userTarget isnt undefined and userTarget isnt null
+          passwordTarget = {digest: userInfo.password, algorithm: 'sha-256'};
+          result = Accounts._checkPassword(userTarget, passwordTarget)
+          isMatch = (result.error is undefined)
+          isMatch && AssociatedUsers.insert({userIdA: self.userId, userIdB: userTarget._id, createdAt: Date.now()})
+        #  return
+        if isMatch
+        #throw new Meteor.Error 404, "value should be 1, bro" 
+          return {status: 'SUCCESS'}
+        else
+          return {status: 'ERROR', message: 'Invalid Password'}
+      'removeAssociatedUser': (userId)->
+        if this.userId is undefined or this.userId is null or userId is undefined or userId is null
+          return false
+        self = this
+        Meteor.defer ()->
+          AssociatedUsers.remove($or: [{userIdA: userId, userIdB: self.userId}, {userIdA: self.userId, userIdB: userId}])
+          return
+        return        

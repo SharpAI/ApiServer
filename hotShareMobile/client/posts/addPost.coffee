@@ -525,17 +525,31 @@ if Meteor.isClient
     pub=[]
     addontitle = $("#addontitle").val()
     title = $("#title").val()
+
+    modalUserId = $('#chooseAssociatedUser .modal-body dt.active').attr('userId')
+    ownerUser = null
+
+    if modalUserId isnt undefined or modalUserId isnt null
+      ownerUser = Meteor.users.findOne({_id: modalUserId})
+
+    if ownerUser is undefined or ownerUser is null
+      ownerUser = Meteor.user()
+
     try
-      ownerIcon = Meteor.user().profile.icon
+      #ownerIcon = Meteor.user().profile.icon
+      ownerIcon = ownerUser.profile.icon
     catch
       ownerIcon = '/userPicture.png'
     Session.set 'draftTitle',''
     Session.set 'draftAddontitle',''
     console.log 'Full name is ' + Meteor.user().profile.fullname
-    if Meteor.user().profile.fullname && (Meteor.user().profile.fullname isnt '')
-      ownerName = Meteor.user().profile.fullname
+    #if Meteor.user().profile.fullname && (Meteor.user().profile.fullname isnt '')
+    #  ownerName = Meteor.user().profile.fullname
+    if ownerUser.profile.fullname && (ownerUser.profile.fullname isnt '')
+      ownerName = ownerUser.profile.fullname
     else
-      ownerName = Meteor.user().username
+      #ownerName = Meteor.user().username
+      ownerName = ownerUser.username
 
     draftData = Drafts.find().fetch()
     postId = draftData[0]._id;
@@ -585,7 +599,8 @@ if Meteor.isClient
             mainText: mainText,
             fromUrl: fromUrl,
             publish:true,
-            owner:Meteor.userId(),
+            #owner:Meteor.userId(),
+            owner:ownerUser._id,
             ownerName:ownerName,
             ownerIcon:ownerIcon,
             createdAt: new Date(),
@@ -608,7 +623,8 @@ if Meteor.isClient
         mainText: mainText,
         fromUrl: fromUrl,
         publish:true,
-        owner:Meteor.userId(),
+        #owner:Meteor.userId(),
+        owner:ownerUser._id,
         ownerName:ownerName,
         ownerIcon:ownerIcon,
         createdAt: new Date(),
@@ -737,6 +753,8 @@ if Meteor.isClient
       if Drafts.find().count() > 1
         for i in [1..(Drafts.find({}).count()-1)]
           Drafts.find({}).fetch()[i]
+    hasAssocaitedUsers: ()->
+      AssociatedUsers.find({}).count() > 0          
   Template.addPost.events
     'click #ViewOnWeb' :->
       if Meteor.isCordova and Session.get('isReviewMode') is '1'
@@ -1022,7 +1040,13 @@ if Meteor.isClient
       #PUB.back()
 
 
-    'click #publish':->
+    'click #publish, click #modalPublish': (e)->
+      if Session.get('isReviewMode') is '0' and e.currentTarget.id is "publish" and Template.addPost.__helpers.get('hasAssocaitedUsers')()
+        return
+
+      Meteor.defer ()->
+        $('.modal-backdrop.fade.in').remove()
+
       if Meteor.user() is null
         window.plugins.toast.showShortBottom('请登录后发表您的故事')
         Router.go('/user')
@@ -1097,3 +1121,32 @@ if Meteor.isClient
         hideCloseButtonOnMobile : true
         loopAtEnd: false
       }
+  Template.chooseAssociatedUser.onRendered ()->
+    userIds = []
+    AssociatedUsers.find({}).forEach((item)->
+        if Meteor.userId() isnt item.userIdA and !~ userIds.indexOf(item.userIdA)
+            userIds.push(item.userIdA)
+
+        if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
+            userIds.push(item.userIdB)
+    )
+    
+    Meteor.subscribe('associateduserdetails', userIds)
+
+  Template.chooseAssociatedUser.helpers
+    accountList :->
+      userIds = []
+      AssociatedUsers.find({}).forEach((item)->
+          if Meteor.userId() isnt item.userIdA and !~ userIds.indexOf(item.userIdA)
+              userIds.push(item.userIdA)
+
+          if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
+              userIds.push(item.userIdB)
+      )
+      
+      return Meteor.users.find({_id: {'$in': userIds}})
+
+  Template.chooseAssociatedUser.events
+    "click .modal-body dl": (e, t)->
+      t.$("dt.active").removeClass("active")
+      $(e.currentTarget).find("dt").addClass('active')

@@ -1,6 +1,7 @@
 if Meteor.isClient
   Template.addTopicComment.rendered=->
     Meteor.subscribe "topics"
+    Meteor.subscribe "ViewPostsList", Session.get("TopicPostId")    
     Session.set("comment","")
   Template.addTopicComment.helpers
     comment:()->

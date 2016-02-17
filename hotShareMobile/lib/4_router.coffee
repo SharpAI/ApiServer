@@ -163,6 +163,16 @@ if Meteor.isClient
         this.render 'my_email'
         Session.set 'channel','my_email'
         return
+    Router.route '/my_accounts_management',()->
+      if Meteor.isCordova is true
+        this.render 'accounts_management'
+        Session.set 'channel','my_accounts_management'
+        return
+    Router.route '/my_accounts_management_addnew',()->
+      if Meteor.isCordova is true
+        this.render 'accounts_management_addnew'
+        Session.set 'channel','my_accounts_management_addnew'
+        return        
     Router.route '/my_password',()->
       if Meteor.isCordova is true
         this.render 'my_password'

@@ -1,0 +1,56 @@
+<template name="accounts_management">
+    <div class="dashboard page-accounts-management">
+        <div class="head">
+            <div>帐号管理</div>
+            <div class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+        </div>
+        <div class="content">
+            <div class="box accounts-list">
+                <dl>
+                    <dt class="active"><img src="{{currentUser.profile.icon}}" alt="Avatar"><i class="fa fa-check-circle"></i></dt>
+                    <dd>{{currentUser.username}}</dd>
+                </dl>            
+                {{#each accountList}}
+                    {{> accounts_management_item}}
+                {{/each}}
+                <dl class="add-new">
+                    <dt><i class="fa fa-plus"></i></dt>
+                    <dd>添加帐号</dd>
+                </dl>                
+            </div>
+            <div class="logout box boxTitle boxCenter">退出当前帐号</div>
+        </div>
+    </div>
+</template>
+
+<template name="accounts_management_item">
+    <dl>
+        <dt><img src="{{profile.icon}}" alt="Avatar"><i class="fa fa-check-circle"></i></dt>
+        <dd>{{username}}<span class="remove"><i class="fa fa-times"></i></span></dd>
+    </dl>
+</template>
+
+<template name="accounts_management_addnew">
+    <div class="dashboard page-accounts-management-addnew">
+        <div class="head">
+            <div>添加新帐号</div>
+            <div class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+        </div>
+        <div class="content">
+            <form id="form-addnew">
+                <div class="box form-addnew">
+                    <dl class="add-new">
+                        <dt><label for="username">用户名/邮箱</label></dt>
+                        <dd><input id="username" name="username" type="text" autofocus="autofocus" required /></dd>
+                    </dl>
+                    <dl class="add-new">
+                        <dt><label for="password">密码</label></dt>
+                        <dd><input id="password" name="password" type="password" required /></dd>
+                    </dl>                                       
+                </div>                
+
+                <div class="logout box boxTitle boxCenter"><input type="submit" value="添加" /></div>
+            </form>
+        </div>
+    </div>   
+</template>

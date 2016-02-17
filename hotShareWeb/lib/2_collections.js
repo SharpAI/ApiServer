@@ -20,6 +20,8 @@ Meets = new Meteor.Collection('meets');
 Versions = new Meteor.Collection('versions');
 Moments = new Meteor.Collection('moments');
 
+AssociatedUsers = new Meteor.Collection('associatedusers');
+
 ReaderPopularPosts = new Meteor.Collection('readerpopularposts');
 
 FavouritePosts = new Meteor.Collection('favouriteposts');
@@ -1448,6 +1450,35 @@ if(Meteor.isServer){
     }
   });
 
+  Meteor.publish('associatedusers', function() {
+    if(this.userId) {
+        var self = this;
+        var userIds = []
+
+        AssociatedUsers.find({$or: [{userIdA: this.userId}, {userIdB: this.userId}]}).forEach(function(item) {
+            if(self.userId !== item.userIdA && !~ userIds.indexOf(item.userIdA)) userIds.push(item.userIdA);
+            if(self.userId !== item.userIdB && !~ userIds.indexOf(item.userIdB)) userIds.push(item.userIdB);
+        });
+
+        return [
+            AssociatedUsers.find({$or: [{userIdA: this.userId}, {userIdB: this.userId}]}),
+            Meteor.users.find({_id: {"$in": userIds}}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}})
+        ];
+    }
+    else {
+        return [];
+    }
+  });
+
+  Meteor.publish('associateduserdetails', function(userIds) {
+    if(userIds) {
+        return Meteor.users.find({_id: {"$in": userIds}}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}});
+    }
+    else {
+        return [];
+    }
+  });   
+
   Meteor.publish('favouriteposts', function(limit) {
     if(this.userId && limit) {
         var postIds = [];
@@ -1507,8 +1538,21 @@ if(Meteor.isServer){
   });
   Posts.allow({
     insert: function (userId, doc) {
-      if(doc.owner === userId){
-        postsInsertHookDeferHandle(userId,doc);
+      var userIds = [];
+
+      AssociatedUsers.find({}).forEach(function(item) {
+        if (!~userIds.indexOf(item.userIdA)) {
+          userIds.push(item.userIdA);
+        }
+        if (!~userIds.indexOf(item.userIdB)) {
+          userIds.push(item.userIdB);
+        }
+      });
+
+      //if(doc.owner === userId){
+      if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
+        //postsInsertHookDeferHandle(userId,doc);
+        postsInsertHookDeferHandle(doc.owner,doc);
         return true;
       }
       return false;
@@ -2087,6 +2131,12 @@ if(Meteor.isClient){
                   //Session.set('momentsCollection','loaded');
               }
           });
+
+          Meteor.subscribe('associatedusers', {
+            onReady: function() {
+
+            }
+          });           
       }
   });
 
