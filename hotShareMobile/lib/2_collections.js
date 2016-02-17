@@ -78,7 +78,7 @@ if(Meteor.isServer){
                 }
             }
             self.added("postfriends", id, fields);
-            getViewLists(self,taId,4);
+            getViewLists(self,taId,3);
             self.count++;
         });
     };
@@ -110,7 +110,7 @@ if(Meteor.isServer){
                     }
                 }
                 self.added("newfriends", id, fields);
-                getViewLists(self,taId,4);
+                getViewLists(self,taId,3);
                 self.count++;
             }
         });
@@ -145,7 +145,7 @@ if(Meteor.isServer){
                             }
                         }
                         self.added("newfriends", id, fields);
-                        getViewLists(self,meetItem.ta,4);
+                        getViewLists(self,meetItem.ta,3);
                         self.count++;
                     }
                 }
@@ -185,7 +185,7 @@ if(Meteor.isServer){
                                 }
                             }
                             self.added("newfriends", id, fields);
-                            getViewLists(self,meetItem.ta,4);
+                            getViewLists(self,meetItem.ta,3);
                             self.count++;
                         }
                     }
@@ -231,7 +231,7 @@ if(Meteor.isServer){
                 'profile.lastLogonIP':1}});
             if (info) {
                 self.added("userDetail", info._id, info);
-                getViewLists(self,info._id,4);
+                getViewLists(self,info._id,3);
             }
         });
     };
