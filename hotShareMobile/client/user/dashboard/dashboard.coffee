@@ -137,6 +137,12 @@ if Meteor.isClient
     profile :->
       id = this.toString()
       return Meteor.users.findOne({_id: id}).profile
+    thisUserName:->
+      id = this.toString()
+      if Meteor.users.findOne({_id: id}).profile.fullname
+        return username = Meteor.users.findOne({_id: id}).profile.fullname
+      else
+        return username = Meteor.users.findOne({_id: id}).username
   Template.my_blacklist_item.events
     'click .remove' :(e)->
       id = this.toString()
