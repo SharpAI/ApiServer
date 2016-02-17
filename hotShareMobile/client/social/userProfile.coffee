@@ -128,14 +128,15 @@ if Meteor.isClient
     }
   # Initialize the Swiper
   Meteor.startup ()->
-    @UserProfilesSwiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
+    #@UserProfilesSwiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
+    @UserProfilesSwiper = new Swipe(['userProfilePage'])
   Template.userProfile.helpers
     Swiper: -> UserProfilesSwiper
   Template.userProfile.rendered = ->
     # starting page
     Session.set("postPageScrollTop", 0)
     console.log 'Showing userProfile'
-    UserProfilesSwiper.setInitialPage 'userProfilePage1'
+    UserProfilesSwiper.setInitialPage 'userProfilePage'
     if window.userProfileTrackerHandler
       window.userProfileTrackerHandler.stop()
       window.userProfileTrackerHandler = null
@@ -506,3 +507,172 @@ if Meteor.isClient
       ,300
     'click #addToContactList': ()->
       addToContactList("ProfileUserId3")
+
+
+  Template.userProfilePage.rendered=->
+    $('.userProfile').css('min-height', $(window).height() - 40)
+    $('.viewPostImages ul li').css('height',$(window).width()*0.168)
+    $('.page').addClass('scrollable')
+  Template.userProfilePage.helpers
+    showPostSuggestionToUser: ()->
+      withPostSuggestionToUser
+    isMale:(sex)->
+      sex is 'male'
+    isFemale:(sex)->
+      sex is 'female'
+    AddFriend:->
+      Meteor.subscribe("friendFeeds", Session.get("ProfileUserId1"),Meteor.userId())
+      addstr = '添加'
+      if Cookies.check("display-lang")
+        if Cookies.get("display-lang") is 'en'
+          addstr = 'Add'
+        else
+          addstr = '添加'
+      else
+        addstr = '添加'
+      if Feeds.find({requesteeId:Session.get("ProfileUserId3"),requesterId:Meteor.userId()}).count()>0
+        addstr = '已发送邀请'
+        if Cookies.check("display-lang")
+          if Cookies.get("display-lang") is 'en'
+            addstr = 'Invitation has been sent'
+          else
+            addstr = '已发送邀请'
+        else
+          addstr = '已发送邀请'
+      addstr
+    withChat:->
+      withChat
+    profile:->
+      UserDetail.findOne {_id: Session.get("ProfileUserId")}
+    location:->
+      getLocation(Session.get("ProfileUserId"))
+    isFollowed:()->
+      fcount = Follower.find({"followerId":Session.get("ProfileUserId")}).count()
+      if fcount > 0
+        true
+      else
+        false
+    viewLists:()->
+      ViewLists.find({userId:Session.get("ProfileUserId")},{sort: {createdAt: -1}, limit:3})
+    favouriteList: ()->
+      Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), 3)
+      postIds = []
+      FavouritePosts.find({userId: Session.get("ProfileUserId1")}).forEach((item) ->
+        if !~postIds.indexOf(item.postId)
+          postIds.push(item.postId)
+      )
+      Posts.find({_id: {$in: postIds}})
+    compareViewsCount:(value)->
+      if (ViewLists.find({userId:Session.get("ProfileUserId")}, {sort: {createdAt: -1}, limit:3}).count() > value)
+        true
+      else
+        false
+    isSuggested:()->
+      Meteor.subscribe("userFeeds", Session.get("ProfileUserId"),Session.get("postContent")._id)
+      if Feeds.find({followby: Session.get("ProfileUserId"),postId: Session.get("postContent")._id,recommanderId:Meteor.userId()}).count()>0
+        true
+      else
+        false
+  Template.userProfilePage.events
+    'click .userProfile .back':()->
+      if window.userProfileTrackerHandler
+        window.userProfileTrackerHandler.stop()
+        window.userProfileTrackerHandler = null
+      Session.set("Social.LevelOne.Menu",'contactsList')
+      if PopUpBox
+        PopUpBox.close()
+    'click #suggestCurrentPost': ()->
+      suggestCurrentPost("ProfileUserId")
+    'click #sendChatMessage': ()->
+      Session.set("messageDialog_to", {id: Session.get("ProfileUserId"), type: 'user'})
+      Session.set("Social.LevelOne.Menu", 'messageDialog')
+    'click .postImages ul li':(e)->
+      postId = e.currentTarget.id
+      $(window).children().off()
+      $(window).unbind('scroll')
+      if PopUpBox
+        PopUpBox.close()
+      Meteor.setTimeout ()->
+        Session.set("Social.LevelOne.Menu",'contactsList')
+        Router.go '/posts/'+postId
+      ,300
+    'click #addToContactList': ()->
+      addToContactList("ProfileUserId")
+  Template.favoritePosts.rendered=->
+    $(window).scroll (event)->
+      if Session.get("Social.LevelOne.Menu") is 'discover'
+        MOMENTS_ITEMS_INCREMENT = 10;
+        #console.log("moments window scroll event: "+event);
+        if withNewLayoutMoment
+          if window.innerHeight
+            winHeight = window.innerHeight
+          else
+            winHeight = $(window).height() # iphone fix
+          closeToBottom = ($(window).scrollTop() + winHeight > $(document).height() - 100);
+          #console.log('Close to bottom: '+closeToBottom)
+          if (closeToBottom and hasMoreResult())
+            if window.momentsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
+              console.log('Triggered data source refresh');
+              window.momentsCollection_getmore = 'inprogress'
+              Session.set("momentsitemsLimit",Session.get("momentsitemsLimit") + MOMENTS_ITEMS_INCREMENT);
+        else
+          target = $("#showMoreMomentsResults");
+          console.log "target.length: " + target.length
+          if (!target.length)
+            return;
+          threshold = $(window).scrollTop() + $(window).height() - target.height();
+          console.log "threshold: " + threshold
+          console.log "target.top: " + target.offset().top
+          if target.offset().top < threshold
+            if window.momentsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
+              if (!target.data("visible"))
+                target.data("visible", true);
+                window.momentsCollection_getmore = 'inprogress'
+                Session.set("momentsitemsLimit",Session.get("momentsitemsLimit") + MOMENTS_ITEMS_INCREMENT);
+          else
+            if (target.data("visible"))
+              target.data("visible", false);
+  Template.favoritePosts.helpers
+    isLoading:()->
+      (Session.equals('newLayoutImageDownloading',true) or
+        !Session.equals('momentsCollection_getmore','done')) and
+        Session.equals("SocialOnButton",'discover')
+    onPostId:()->
+      Session.get("postContent")._id
+    newLayoutMoment:()->
+      withNewLayoutMoment
+    withSuggestAlreadyRead:()->
+      withSuggestAlreadyRead
+    showSuggestPosts:()->
+      if Session.get("showSuggestPosts") is true
+        allmoments = NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count()
+        mymoments = NewDynamicMoments.find({currentPostId:Session.get("postContent")._id,userId:Meteor.userId()},{sort: {createdAt: -1}}).count()
+        if allmoments-mymoments > 0
+          false
+        else
+          true
+      else
+        false
+    favoritePosts:()->
+      #NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}})
+      postIds = []
+      FavouritePosts.find({userId: Session.get("ProfileUserId")}).forEach((item) ->
+        if !~postIds.indexOf(item.postId)
+          postIds.push(item.postId)
+      )
+      Posts.find({_id: {$in: postIds}})
+    suggestPosts:()->
+      SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
+    hidePost:()->
+      Session.get('hideSuggestPost_'+this.readPostId) or this.userId is Meteor.userId()
+    hideSuggestPost:()->
+      console.log this._id
+      Session.get('hideSuggestPost_'+this._id) or this.owner is Meteor.userId()
+    time_diff: (created)->
+      GetTime0(new Date() - created)
+    moreResults:()->
+      hasMoreResult()
+    loading:()->
+      Session.equals('momentsCollection','loading')
+    loadError:()->
+      Session.equals('momentsCollection','error')
