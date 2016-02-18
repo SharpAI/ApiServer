@@ -11,7 +11,8 @@ if Meteor.isClient
     ###
   onUserProfile = ->
     #Router.go '/userProfilePage'
-    Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId"), 10)
+    Session.setDefault("momentsitemsLimit", 10)
+    Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId"), Session.get("momentsitemsLimit"))
     @PopUpBox = $('.popUpBox').bPopup
       positionStyle: 'fixed'
       position: [0, 0]

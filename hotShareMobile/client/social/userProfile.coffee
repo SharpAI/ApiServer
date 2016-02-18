@@ -626,6 +626,7 @@ if Meteor.isClient
         if !~postIds.indexOf(item.postId)
           postIds.push(item.postId)
       )
+      console.log(postIds)
       Posts.find({_id: {$in: postIds}})
     suggestPosts:()->
       SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
