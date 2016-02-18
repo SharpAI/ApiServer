@@ -22,6 +22,7 @@ if Meteor.isClient
               }
               pubImages.push(doc)
           Session.set('pubImages',pubImages)
+          $('body').attr('style', 'background-color:#fff;')
           $('.addPost').hide()
           $('.mainImagesList').show()
           

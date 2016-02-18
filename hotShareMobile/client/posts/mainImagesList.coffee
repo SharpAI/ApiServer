@@ -16,6 +16,7 @@ if Meteor.isClient
       Session.set('pubImages',pubImages)
     Template.mainImagesList.events
       'click .mainImagesListback' :(e)->
+        $('body').removeAttr('style')
         $('.addPost').show()
         $('.mainImagesList').hide()
       'click .mainImagesListImport' :(e)->
@@ -40,7 +41,7 @@ if Meteor.isClient
               PUB.toast('修改失败，请重试！')
             else
               $('#mainImage' + mainImageId).attr('src',imageSrc)
-
+              $('body').removeAttr('style')
               $('.addPost').show()
 
               title = $('#mainImage' + mainImageId).parent().find("textarea#title").get(0)
