@@ -1,4 +1,9 @@
 if Meteor.isClient
+  hasMoreResult = ()->
+    if NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
+      !(NewDynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() < Session.get("momentsitemsLimit"))
+    else
+      false
   updateMeetsCount = (userId)->
     meetInfo = PostFriends.findOne({me:Meteor.userId(),ta:userId})
     if(meetInfo)
@@ -581,11 +586,6 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
         PopUpBox.close()
-    'click #suggestCurrentPost': ()->
-      suggestCurrentPost("ProfileUserId")
-    'click #sendChatMessage': ()->
-      Session.set("messageDialog_to", {id: Session.get("ProfileUserId"), type: 'user'})
-      Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
       postId = e.currentTarget.id
       $(window).children().off()
@@ -596,63 +596,29 @@ if Meteor.isClient
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/posts/'+postId
       ,300
-    'click #addToContactList': ()->
-      addToContactList("ProfileUserId")
   Template.favoritePosts.rendered=->
     $(window).scroll (event)->
-      if Session.get("Social.LevelOne.Menu") is 'discover'
+      if Session.get("Social.LevelOne.Menu") is 'contactsList'
         MOMENTS_ITEMS_INCREMENT = 10;
         #console.log("moments window scroll event: "+event);
-        if withNewLayoutMoment
-          if window.innerHeight
-            winHeight = window.innerHeight
-          else
-            winHeight = $(window).height() # iphone fix
-          closeToBottom = ($(window).scrollTop() + winHeight > $(document).height() - 100);
-          #console.log('Close to bottom: '+closeToBottom)
-          if (closeToBottom and hasMoreResult())
-            if window.momentsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
-              console.log('Triggered data source refresh');
-              window.momentsCollection_getmore = 'inprogress'
-              Session.set("momentsitemsLimit",Session.get("momentsitemsLimit") + MOMENTS_ITEMS_INCREMENT);
+        if window.innerHeight
+          winHeight = window.innerHeight
         else
-          target = $("#showMoreMomentsResults");
-          console.log "target.length: " + target.length
-          if (!target.length)
-            return;
-          threshold = $(window).scrollTop() + $(window).height() - target.height();
-          console.log "threshold: " + threshold
-          console.log "target.top: " + target.offset().top
-          if target.offset().top < threshold
-            if window.momentsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
-              if (!target.data("visible"))
-                target.data("visible", true);
-                window.momentsCollection_getmore = 'inprogress'
-                Session.set("momentsitemsLimit",Session.get("momentsitemsLimit") + MOMENTS_ITEMS_INCREMENT);
-          else
-            if (target.data("visible"))
-              target.data("visible", false);
+          winHeight = $(window).height() # iphone fix
+        closeToBottom = ($(window).scrollTop() + winHeight > $(document).height() - 100);
+        #console.log('Close to bottom: '+closeToBottom)
+        if (closeToBottom and hasMoreResult())
+          if window.momentsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
+            console.log('Triggered data source refresh');
+            window.momentsCollection_getmore = 'inprogress'
+            Session.set("momentsitemsLimit",Session.get("momentsitemsLimit") + MOMENTS_ITEMS_INCREMENT);
   Template.favoritePosts.helpers
     isLoading:()->
       (Session.equals('newLayoutImageDownloading',true) or
         !Session.equals('momentsCollection_getmore','done')) and
-        Session.equals("SocialOnButton",'discover')
+        Session.equals("SocialOnButton",'contactsList')
     onPostId:()->
       Session.get("postContent")._id
-    newLayoutMoment:()->
-      withNewLayoutMoment
-    withSuggestAlreadyRead:()->
-      withSuggestAlreadyRead
-    showSuggestPosts:()->
-      if Session.get("showSuggestPosts") is true
-        allmoments = NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count()
-        mymoments = NewDynamicMoments.find({currentPostId:Session.get("postContent")._id,userId:Meteor.userId()},{sort: {createdAt: -1}}).count()
-        if allmoments-mymoments > 0
-          false
-        else
-          true
-      else
-        false
     favoritePosts:()->
       #NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}})
       postIds = []
@@ -663,15 +629,6 @@ if Meteor.isClient
       Posts.find({_id: {$in: postIds}})
     suggestPosts:()->
       SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
-    hidePost:()->
-      Session.get('hideSuggestPost_'+this.readPostId) or this.userId is Meteor.userId()
-    hideSuggestPost:()->
-      console.log this._id
-      Session.get('hideSuggestPost_'+this._id) or this.owner is Meteor.userId()
-    time_diff: (created)->
-      GetTime0(new Date() - created)
-    moreResults:()->
-      hasMoreResult()
     loading:()->
       Session.equals('momentsCollection','loading')
     loadError:()->

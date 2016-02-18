@@ -10,6 +10,7 @@ if Meteor.isClient
         Meteor.subscribe 'followToWithLimit', 9999
     ###
   onUserProfile = ->
+    Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId"), 10)
     @PopUpBox = $('.popUpBox').bPopup
       positionStyle: 'fixed'
       position: [0, 0]
@@ -43,6 +44,7 @@ if Meteor.isClient
          prevProfileIndex = userProfileList.length-1
       if nextProfileIndex > userProfileList.length-1
          nextProfileIndex = 0
+      Session.set("ProfileUserId", this.followerId)
       Session.set("ProfileUserId1", this.followerId)
       Session.set("ProfileUserId3", userProfileList[prevProfileIndex].followerId)
       Session.set("ProfileUserId2", userProfileList[nextProfileIndex].followerId)
@@ -122,6 +124,7 @@ if Meteor.isClient
          prevProfileIndex = userProfileList.length-1
       if nextProfileIndex > userProfileList.length-1
          nextProfileIndex = 0
+      Session.set("ProfileUserId", this.ta)
       Session.set("ProfileUserId1", this.ta)
       Session.set("ProfileUserId3", userProfileList[prevProfileIndex].ta)
       Session.set("ProfileUserId2", userProfileList[nextProfileIndex].ta)

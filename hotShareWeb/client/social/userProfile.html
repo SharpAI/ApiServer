@@ -257,3 +257,101 @@
     {{/if}}
   </div>
 </template>
+<template name="userProfilePage">
+    <div class="userProfile userProfileMarginTop">
+        <div class="head">
+            <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+          {{#if profile.profile.fullname}}
+              <div>{{profile.profile.fullname}}</div>
+          {{else}}
+              <div>{{profile.username}}</div>
+          {{/if}}
+        </div>
+        <div class="userProfileTop">
+            <img class="icon" src="{{profile.profile.icon}}" width='70' height='70'>
+          <span class="userName">
+          {{#if profile.profile.fullname}}
+            {{profile.profile.fullname}}
+          {{else}}
+            {{profile.username}}
+          {{/if}}
+            {{#if isMale profile.profile.sex}}
+                <img src="/male.png" width='20' height='20'>
+            {{/if}}
+            {{#if isFemale profile.profile.sex}}
+                <img src="/female.png" width='20' height='20'>
+            {{/if}}
+          </span>
+            <span class="location">{{location}}</span>
+            <span class="desc">{{profile.profile.desc}}</span>
+        </div>
+        <div class="showPostsLine"></div>
+        <div class="post">
+            <span class="postLeft">最近浏览的故事</span>
+        </div>
+      {{#if compareViewsCount 0}}
+          <div class="postImages swipe-control">
+              <ul>
+                {{#each viewLists}}
+                  {{#if postId}}
+                      <li id="{{postId}}">
+                          <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
+                          <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
+                            {{title}}
+                          </h6>
+                      </li>
+                  {{/if}}
+                {{/each}}
+              </ul>
+          </div>
+      {{/if}}
+        <div class="showPostsLine"></div>
+        <div class="post">
+            <span class="postLeft">喜欢的故事</span>
+        </div>
+      {{>favoritePosts}}
+    </div>
+</template>
+<template name="favoritePosts">
+    <div class="favoritePosts">
+      {{#if loading}}
+          <div>{{_ "isLoading"}}</div>
+      {{/if}}
+      {{#if loadError}}
+          <div>{{_ "FailToLoad"}}</div>
+      {{/if}}
+      {{#newLayoutContainer layoutId=onPostId src="favoritePosts" container=".favoritePosts"}}
+        {{#each favoritePosts}}
+          {{#newLayoutElement layoutId=onPostId displayId=readPostId src="favoritePosts" container=".favoritePosts"}}
+              <div class="img_placeholder">
+                  <img class="mainImage" src="{{mainImage}}" />
+              </div>
+              <div class="pin_content">
+                  <p class="title">{{title}}</p>
+                  <p class="addontitle">{{addontitle}}</p>
+              </div>
+          {{/newLayoutElement}}
+        {{/each}}
+      {{/newLayoutContainer}}
+      {{#if isLoading}}
+          <div class="loading-spinner">
+              <div class='spinner-overlay'>
+                  <div class='spinner center'>
+                      <div class='spinner-blade'></div>
+                      <div class='spinner-blade'></div>
+                      <div class='spinner-blade'></div>
+                      <div class='spinner-blade'></div>
+                      <div class='spinner-blade'></div>
+                      <div class='spinner-blade'></div>
+                      <div class='spinner-blade'></div>
+                      <div class='spinner-blade'></div>
+                      <div class='spinner-blade'></div>
+                      <div class='spinner-blade'></div>
+                      <div class='spinner-blade'></div>
+                      <div class='spinner-blade'></div>
+                  </div>
+              </div>
+          </div>
+      {{/if}}
+    </div>
+</template>

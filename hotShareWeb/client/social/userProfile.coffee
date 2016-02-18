@@ -1,4 +1,9 @@
 if Meteor.isClient
+  hasMoreResult = ()->
+    if NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
+      !(NewDynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() < Session.get("momentsitemsLimit"))
+    else
+      false
   updateMeetsCount = (userId)->
     meetInfo = PostFriends.findOne({me:Meteor.userId(),ta:userId})
     if(meetInfo)
@@ -138,7 +143,10 @@ if Meteor.isClient
       #,300
   # Initialize the Swiper
   Meteor.startup ()->
-    @UserProfilesSwiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
+    #@UserProfilesSwiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
+    @UserProfilesSwiper = new Swipe(['userProfilePage'])
+    UserProfilesSwiper.click 'userProfilePage','.postImages ul li',(e,t)->
+      openPostbyPostId(e.currentTarget.id)
     UserProfilesSwiper.click 'userProfilePage1','.postImages ul li',(e,t)->
       openPostbyPostId(e.currentTarget.id)
     UserProfilesSwiper.click 'userProfilePage2','.postImages ul li',(e,t)->
@@ -150,7 +158,7 @@ if Meteor.isClient
   Template.userProfile.onRendered ->
     # starting page
     console.log 'Showing userProfile'
-    UserProfilesSwiper.setInitialPage 'userProfilePage1'
+    UserProfilesSwiper.setInitialPage 'userProfilePage'
     if window.userProfileTrackerHandler
       window.userProfileTrackerHandler.stop()
       window.userProfileTrackerHandler = null
@@ -549,3 +557,114 @@ if Meteor.isClient
     ###
     'click #addToContactList': ()->
       addToContactList("ProfileUserId3")
+
+
+  Template.userProfilePage.rendered=->
+    $('.userProfile').css('min-height', $(window).height() - 40)
+    $('.viewPostImages ul li').css('height',$(window).width()*0.168)
+    $('.page').addClass('scrollable')
+  Template.userProfilePage.helpers
+    showPostSuggestionToUser: ()->
+      withPostSuggestionToUser
+    isMale:(sex)->
+      sex is 'male'
+    isFemale:(sex)->
+      sex is 'female'
+    AddFriend:->
+      Meteor.subscribe("friendFeeds", Session.get("ProfileUserId1"),Meteor.userId())
+      addstr = '添加'
+      if Cookies.check("display-lang")
+        if Cookies.get("display-lang") is 'en'
+          addstr = 'Add'
+        else
+          addstr = '添加'
+      else
+        addstr = '添加'
+      if Feeds.find({requesteeId:Session.get("ProfileUserId3"),requesterId:Meteor.userId()}).count()>0
+        addstr = '已发送邀请'
+        if Cookies.check("display-lang")
+          if Cookies.get("display-lang") is 'en'
+            addstr = 'Invitation has been sent'
+          else
+            addstr = '已发送邀请'
+        else
+          addstr = '已发送邀请'
+      addstr
+    withChat:->
+      withChat
+    profile:->
+      UserDetail.findOne {_id: Session.get("ProfileUserId")}
+    location:->
+      getLocation(Session.get("ProfileUserId"))
+    isFollowed:()->
+      fcount = Follower.find({"followerId":Session.get("ProfileUserId")}).count()
+      if fcount > 0
+        true
+      else
+        false
+    viewLists:()->
+      ViewLists.find({userId:Session.get("ProfileUserId")},{sort: {createdAt: -1}, limit:3})
+    favouriteList: ()->
+      Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), 3)
+      postIds = []
+      FavouritePosts.find({userId: Session.get("ProfileUserId1")}).forEach((item) ->
+        if !~postIds.indexOf(item.postId)
+          postIds.push(item.postId)
+      )
+      Posts.find({_id: {$in: postIds}})
+    compareViewsCount:(value)->
+      if (ViewLists.find({userId:Session.get("ProfileUserId")}, {sort: {createdAt: -1}, limit:3}).count() > value)
+        true
+      else
+        false
+    isSuggested:()->
+      Meteor.subscribe("userFeeds", Session.get("ProfileUserId"),Session.get("postContent")._id)
+      if Feeds.find({followby: Session.get("ProfileUserId"),postId: Session.get("postContent")._id,recommanderId:Meteor.userId()}).count()>0
+        true
+      else
+        false
+  Template.userProfilePage.events
+    'click .userProfile .back':()->
+      if window.userProfileTrackerHandler
+        window.userProfileTrackerHandler.stop()
+        window.userProfileTrackerHandler = null
+      Session.set("Social.LevelOne.Menu",'contactsList')
+      if PopUpBox
+        PopUpBox.close()
+  Template.favoritePosts.rendered=->
+    $(window).scroll (event)->
+      if Session.get("Social.LevelOne.Menu") is 'contactsList'
+        MOMENTS_ITEMS_INCREMENT = 10;
+        #console.log("moments window scroll event: "+event);
+        if window.innerHeight
+          winHeight = window.innerHeight
+        else
+          winHeight = $(window).height() # iphone fix
+        closeToBottom = ($(window).scrollTop() + winHeight > $(document).height() - 100);
+        #console.log('Close to bottom: '+closeToBottom)
+        if (closeToBottom and hasMoreResult())
+          if window.momentsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
+            console.log('Triggered data source refresh');
+            window.momentsCollection_getmore = 'inprogress'
+            Session.set("momentsitemsLimit",Session.get("momentsitemsLimit") + MOMENTS_ITEMS_INCREMENT);
+  Template.favoritePosts.helpers
+    isLoading:()->
+      (Session.equals('newLayoutImageDownloading',true) or
+        !Session.equals('momentsCollection_getmore','done')) and
+        Session.equals("SocialOnButton",'contactsList')
+    onPostId:()->
+      Session.get("postContent")._id
+    favoritePosts:()->
+      #NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}})
+      postIds = []
+      FavouritePosts.find({userId: Session.get("ProfileUserId")}).forEach((item) ->
+        if !~postIds.indexOf(item.postId)
+          postIds.push(item.postId)
+      )
+      Posts.find({_id: {$in: postIds}})
+    suggestPosts:()->
+      SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
+    loading:()->
+      Session.equals('momentsCollection','loading')
+    loadError:()->
+      Session.equals('momentsCollection','error')
