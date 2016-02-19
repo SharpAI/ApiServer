@@ -155,7 +155,7 @@ Template.newLayoutContainer.events =
     Session.set("lastPost",postId)
     $(window).children().off()
     $(window).unbind('scroll')
-    if PopUpBox
+    if typeof PopUpBox isnt "undefined"
       PopUpBox.close()
     Router.go '/posts/'+postId
 Template.newLayoutContainer.helpers =
