@@ -133,15 +133,15 @@ if Meteor.isClient
     }
   # Initialize the Swiper
   Meteor.startup ()->
-    #@UserProfilesSwiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
-    @UserProfilesSwiper = new Swipe(['userProfilePage'])
+    @UserProfilesSwiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
+    #@UserProfilesSwiper = new Swipe(['userProfilePage'])
   Template.userProfile.helpers
     Swiper: -> UserProfilesSwiper
   Template.userProfile.rendered = ->
     # starting page
     Session.set("postPageScrollTop", 0)
     console.log 'Showing userProfile'
-    UserProfilesSwiper.setInitialPage 'userProfilePage'
+    UserProfilesSwiper.setInitialPage 'userProfilePage1'
     if window.userProfileTrackerHandler
       window.userProfileTrackerHandler.stop()
       window.userProfileTrackerHandler = null
@@ -151,6 +151,7 @@ if Meteor.isClient
         if Session.get("currentPageIndex") isnt 1 and Session.get("currentPageIndex") isnt -1
           updateMeetsCount Session.get("ProfileUserId1")
           userProfileList = Session.get("userProfileList")
+          Session.set("momentsitemsLimit", 10)
           if Session.get("currentPageIndex") is 2
             currentProfileIndex = Session.get("currentProfileIndex")-1
             if currentProfileIndex < 0
@@ -163,6 +164,7 @@ if Meteor.isClient
               Session.set("ProfileUserId3", userProfileList[nextProfileIndex].ta)
             else
               Session.set("ProfileUserId3", userProfileList[nextProfileIndex].followerId)
+            Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId3"), Session.get("momentsitemsLimit"))
           if Session.get("currentPageIndex") is 3
             currentProfileIndex = Session.get("currentProfileIndex")+1
             if currentProfileIndex >  userProfileList.length-1
@@ -175,6 +177,7 @@ if Meteor.isClient
               Session.set("ProfileUserId2", userProfileList[nextProfileIndex].ta)
             else
               Session.set("ProfileUserId2", userProfileList[nextProfileIndex].followerId)
+            Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId2"), Session.get("momentsitemsLimit"))
           Session.set("currentPageIndex", 1)
         if Session.get("currentPageIndex") is -1
           UserProfilesSwiper.leftRight(null, null)
@@ -185,6 +188,7 @@ if Meteor.isClient
         if Session.get("currentPageIndex") isnt 2
           updateMeetsCount Session.get("ProfileUserId2")
           userProfileList = Session.get("userProfileList")
+          Session.set("momentsitemsLimit", 10)
           if Session.get("currentPageIndex") is 1
             currentProfileIndex = Session.get("currentProfileIndex")+1
             if currentProfileIndex >  userProfileList.length-1
@@ -197,6 +201,7 @@ if Meteor.isClient
               Session.set("ProfileUserId3", userProfileList[nextProfileIndex].ta)
             else
               Session.set("ProfileUserId3", userProfileList[nextProfileIndex].followerId)
+            Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId3"), Session.get("momentsitemsLimit"))
           if Session.get("currentPageIndex") is 3
             currentProfileIndex = Session.get("currentProfileIndex")-1
             if currentProfileIndex < 0
@@ -209,6 +214,7 @@ if Meteor.isClient
               Session.set("ProfileUserId1", userProfileList[nextProfileIndex].ta)
             else
               Session.set("ProfileUserId1", userProfileList[nextProfileIndex].followerId)
+            Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), Session.get("momentsitemsLimit"))
           Session.set("currentPageIndex", 2)
         UserProfilesSwiper.leftRight('userProfilePage1', 'userProfilePage3')
 
@@ -216,6 +222,7 @@ if Meteor.isClient
         if Session.get("currentPageIndex") isnt 3
           updateMeetsCount Session.get("ProfileUserId3")
           userProfileList = Session.get("userProfileList")
+          Session.set("momentsitemsLimit", 10)
           if Session.get("currentPageIndex") is 1
             currentProfileIndex = Session.get("currentProfileIndex")-1
             if currentProfileIndex < 0
@@ -228,6 +235,7 @@ if Meteor.isClient
               Session.set("ProfileUserId2", userProfileList[nextProfileIndex].ta)
             else
               Session.set("ProfileUserId2", userProfileList[nextProfileIndex].followerId)
+            Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId2"), Session.get("momentsitemsLimit"))
           if Session.get("currentPageIndex") is 2
             currentProfileIndex = Session.get("currentProfileIndex")+1
             if currentProfileIndex >  userProfileList.length-1
@@ -240,6 +248,7 @@ if Meteor.isClient
               Session.set("ProfileUserId1", userProfileList[nextProfileIndex].ta)
             else
               Session.set("ProfileUserId1", userProfileList[nextProfileIndex].followerId)
+            Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), Session.get("momentsitemsLimit"))
           Session.set("currentPageIndex", 3)
         UserProfilesSwiper.leftRight('userProfilePage2', 'userProfilePage1')
 
@@ -623,6 +632,121 @@ if Meteor.isClient
       #NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}})
       postIds = []
       FavouritePosts.find({userId: Session.get("ProfileUserId")}).forEach((item) ->
+        if !~postIds.indexOf(item.postId)
+          postIds.push(item.postId)
+      )
+      console.log(postIds)
+      Posts.find({_id: {$in: postIds}})
+    suggestPosts:()->
+      SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
+    loading:()->
+      Session.equals('momentsCollection','loading')
+    loadError:()->
+      Session.equals('momentsCollection','error')
+
+  Template.favoritePosts1.rendered=->
+    $(window).scroll (event)->
+      if Session.get("Social.LevelOne.Menu") is 'contactsList'
+        MOMENTS_ITEMS_INCREMENT = 10;
+        #console.log("moments window scroll event: "+event);
+        if window.innerHeight
+          winHeight = window.innerHeight
+        else
+          winHeight = $(window).height() # iphone fix
+        closeToBottom = ($(window).scrollTop() + winHeight > $(document).height() - 100);
+        #console.log('Close to bottom: '+closeToBottom)
+        if (closeToBottom and hasMoreResult())
+          if window.momentsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
+            console.log('Triggered data source refresh');
+            window.momentsCollection_getmore = 'inprogress'
+            Session.set("momentsitemsLimit",Session.get("momentsitemsLimit") + MOMENTS_ITEMS_INCREMENT);
+  Template.favoritePosts1.helpers
+    isLoading:()->
+      (Session.equals('newLayoutImageDownloading',true) or
+        !Session.equals('momentsCollection_getmore','done')) and
+        Session.equals("SocialOnButton",'contactsList')
+    onPostId:()->
+      Session.get("postContent")._id
+    favoritePosts1:()->
+      #NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}})
+      postIds = []
+      FavouritePosts.find({userId: Session.get("ProfileUserId1")}).forEach((item) ->
+        if !~postIds.indexOf(item.postId)
+          postIds.push(item.postId)
+      )
+      console.log(postIds)
+      Posts.find({_id: {$in: postIds}})
+    suggestPosts:()->
+      SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
+    loading:()->
+      Session.equals('momentsCollection','loading')
+    loadError:()->
+      Session.equals('momentsCollection','error')
+  Template.favoritePosts2.rendered=->
+    $(window).scroll (event)->
+      if Session.get("Social.LevelOne.Menu") is 'contactsList'
+        MOMENTS_ITEMS_INCREMENT = 10;
+        #console.log("moments window scroll event: "+event);
+        if window.innerHeight
+          winHeight = window.innerHeight
+        else
+          winHeight = $(window).height() # iphone fix
+        closeToBottom = ($(window).scrollTop() + winHeight > $(document).height() - 100);
+        #console.log('Close to bottom: '+closeToBottom)
+        if (closeToBottom and hasMoreResult())
+          if window.momentsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
+            console.log('Triggered data source refresh');
+            window.momentsCollection_getmore = 'inprogress'
+            Session.set("momentsitemsLimit",Session.get("momentsitemsLimit") + MOMENTS_ITEMS_INCREMENT);
+  Template.favoritePosts2.helpers
+    isLoading:()->
+      (Session.equals('newLayoutImageDownloading',true) or
+        !Session.equals('momentsCollection_getmore','done')) and
+        Session.equals("SocialOnButton",'contactsList')
+    onPostId:()->
+      Session.get("postContent")._id
+    favoritePosts2:()->
+      #NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}})
+      postIds = []
+      FavouritePosts.find({userId: Session.get("ProfileUserId2")}).forEach((item) ->
+        if !~postIds.indexOf(item.postId)
+          postIds.push(item.postId)
+      )
+      console.log(postIds)
+      Posts.find({_id: {$in: postIds}})
+    suggestPosts:()->
+      SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
+    loading:()->
+      Session.equals('momentsCollection','loading')
+    loadError:()->
+      Session.equals('momentsCollection','error')
+  Template.favoritePosts3.rendered=->
+    $(window).scroll (event)->
+      if Session.get("Social.LevelOne.Menu") is 'contactsList'
+        MOMENTS_ITEMS_INCREMENT = 10;
+        #console.log("moments window scroll event: "+event);
+        if window.innerHeight
+          winHeight = window.innerHeight
+        else
+          winHeight = $(window).height() # iphone fix
+        closeToBottom = ($(window).scrollTop() + winHeight > $(document).height() - 100);
+        #console.log('Close to bottom: '+closeToBottom)
+        if (closeToBottom and hasMoreResult())
+          if window.momentsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
+            console.log('Triggered data source refresh');
+            window.momentsCollection_getmore = 'inprogress'
+            Session.set("momentsitemsLimit",Session.get("momentsitemsLimit") + MOMENTS_ITEMS_INCREMENT);
+  Template.favoritePosts3.helpers
+    isLoading:()->
+      (Session.equals('newLayoutImageDownloading',true) or
+        !Session.equals('momentsCollection_getmore','done')) and
+        Session.equals("SocialOnButton",'contactsList')
+    onPostId:()->
+      Session.get("postContent")._id
+    favoritePosts3:()->
+      #NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}})
+      postIds = []
+      FavouritePosts.find({userId: Session.get("ProfileUserId3")}).forEach((item) ->
         if !~postIds.indexOf(item.postId)
           postIds.push(item.postId)
       )

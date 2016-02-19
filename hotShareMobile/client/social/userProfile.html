@@ -51,40 +51,11 @@
           </ul>
         </div>
       {{/if}}
-    <div class="post">
-      <span class="postLeft">{{_ "FavoriteStory"}}</span>
-    </div>
-    <div class="postImages">
-      <ul>
-        {{#each favouriteList}}
-          {{#if _id}}
-            <li id="{{_id}}">
-              <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
-              <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
-                 {{title}}
-              </h6>
-            </li>
-          {{/if}}
-      {{/each}}
-      </ul>
-    </div>   
-    <div class="showPostsLine"></div>
-    {{#if showPostSuggestionToUser}}
-      {{#if isSuggested}}
-        <div class="no-swipe" id="suggestedCurrentPost">已推荐</div>
-      {{else}}
-        <div class="no-swipe" id="suggestCurrentPost">推荐本文</div>
-      {{/if}}
-    {{/if}}
-    {{#if isFollowed}}
-      {{#if withChat}}
-        <div class="no-swipe" id="sendChatMessage">发消息</div>
-      {{/if}}
-    {{else}}
-      {{#unless isMyself}}
-        <div class="no-swipe" id="addToContactList">{{AddFriend}}</div>
-      {{/unless}}
-    {{/if}}
+      <div class="showPostsLine"></div>
+      <div class="post">
+          <span class="postLeft">{{_ "FavoriteStory"}}</span>
+      </div>
+      {{>favoritePosts1}}
   </div>
 </template>
 <template name="userProfilePage2">
@@ -135,40 +106,11 @@
           </ul>
         </div>
       {{/if}}
-    <div class="post">
-      <span class="postLeft">{{_ "FavoriteStory"}}</span>
-    </div>
-    <div class="postImages">
-      <ul>
-        {{#each favouriteList}}
-          {{#if _id}}
-            <li id="{{_id}}">
-              <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
-              <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
-                 {{title}}
-              </h6>
-            </li>
-          {{/if}}
-      {{/each}}
-      </ul>
-    </div>  
-    <div class="showPostsLine"></div>
-    {{#if showPostSuggestionToUser}}
-      {{#if isSuggested}}
-        <div class="no-swipe" id="suggestedCurrentPost">已推荐</div>
-      {{else}}
-        <div class="no-swipe" id="suggestCurrentPost">推荐本文</div>
-      {{/if}}
-    {{/if}}
-    {{#if isFollowed}}
-      {{#if withChat}}
-        <div class="no-swipe" id="sendChatMessage">发消息</div>
-      {{/if}}
-    {{else}}
-      {{#unless isMyself}}
-        <div class="no-swipe" id="addToContactList">{{AddFriend}}</div>
-      {{/unless}}
-    {{/if}}
+      <div class="showPostsLine"></div>
+      <div class="post">
+          <span class="postLeft">{{_ "FavoriteStory"}}</span>
+      </div>
+      {{>favoritePosts2}}
   </div>
 </template>
 <template name="userProfilePage3">
@@ -219,40 +161,11 @@
           </ul>
         </div>
       {{/if}}
-    <div class="post">
-      <span class="postLeft">{{_ "FavoriteStory"}}</span>
-    </div>
-    <div class="postImages">
-      <ul>
-        {{#each favouriteList}}
-          {{#if _id}}
-            <li id="{{_id}}">
-              <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
-              <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
-                 {{title}}
-              </h6>
-            </li>
-          {{/if}}
-      {{/each}}
-      </ul>
-    </div>  
-    <div class="showPostsLine"></div>
-    {{#if showPostSuggestionToUser}}
-      {{#if isSuggested}}
-        <div class="no-swipe" id="suggestedCurrentPost">已推荐</div>
-      {{else}}
-        <div class="no-swipe" id="suggestCurrentPost">推荐本文</div>
-      {{/if}}
-    {{/if}}
-    {{#if isFollowed}}
-      {{#if withChat}}
-        <div class="no-swipe" id="sendChatMessage">发消息</div>
-      {{/if}}
-    {{else}}
-      {{#unless isMyself}}
-        <div class="no-swipe" id="addToContactList">{{AddFriend}}</div>
-      {{/unless}}
-    {{/if}}
+      <div class="showPostsLine"></div>
+      <div class="post">
+          <span class="postLeft">{{_ "FavoriteStory"}}</span>
+      </div>
+      {{>favoritePosts3}}
   </div>
 </template>
 <template name="userProfilePage">
@@ -312,15 +225,58 @@
 </template>
 <template name="favoritePosts">
     <div class="favoritePosts">
+        {{#if loading}}
+            <div>{{_ "isLoading"}}</div>
+        {{/if}}
+        {{#if loadError}}
+            <div>{{_ "FailToLoad"}}</div>
+        {{/if}}
+        {{#newLayoutContainer layoutId=onPostId src="favoritePosts" container=".favoritePosts"}}
+            {{#each favoritePosts}}
+                {{#newLayoutElement layoutId=onPostId displayId=readPostId src="favoritePosts" container=".favoritePosts"}}
+                    <div class="img_placeholder">
+                        <img class="mainImage" src="{{mainImage}}" />
+                    </div>
+                    <div class="pin_content">
+                        <p class="title">{{title}}</p>
+                        <p class="addontitle">{{addontitle}}</p>
+                    </div>
+                {{/newLayoutElement}}
+            {{/each}}
+        {{/newLayoutContainer}}
+        {{#if isLoading}}
+            <div class="loading-spinner">
+                <div class='spinner-overlay'>
+                    <div class='spinner center'>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                    </div>
+                </div>
+            </div>
+        {{/if}}
+    </div>
+</template>
+<template name="favoritePosts1">
+    <div class="favoritePosts1">
       {{#if loading}}
           <div>{{_ "isLoading"}}</div>
       {{/if}}
       {{#if loadError}}
           <div>{{_ "FailToLoad"}}</div>
       {{/if}}
-      {{#newLayoutContainer layoutId=onPostId src="favoritePosts" container=".favoritePosts"}}
-        {{#each favoritePosts}}
-          {{#newLayoutElement layoutId=onPostId displayId=readPostId src="favoritePosts" container=".favoritePosts"}}
+      {{#newLayoutContainer layoutId=onPostId src="favoritePosts1" container=".favoritePosts1"}}
+        {{#each favoritePosts1}}
+          {{#newLayoutElement layoutId=onPostId displayId=readPostId src="favoritePosts1" container=".favoritePosts1"}}
               <div class="img_placeholder">
                   <img class="mainImage" src="{{mainImage}}" />
               </div>
@@ -351,5 +307,91 @@
               </div>
           </div>
       {{/if}}
+    </div>
+</template>
+<template name="favoritePosts2">
+    <div class="favoritePosts2">
+        {{#if loading}}
+            <div>{{_ "isLoading"}}</div>
+        {{/if}}
+        {{#if loadError}}
+            <div>{{_ "FailToLoad"}}</div>
+        {{/if}}
+        {{#newLayoutContainer layoutId=onPostId src="favoritePosts2" container=".favoritePosts2"}}
+            {{#each favoritePosts2}}
+                {{#newLayoutElement layoutId=onPostId displayId=readPostId src="favoritePosts2" container=".favoritePosts2"}}
+                    <div class="img_placeholder">
+                        <img class="mainImage" src="{{mainImage}}" />
+                    </div>
+                    <div class="pin_content">
+                        <p class="title">{{title}}</p>
+                        <p class="addontitle">{{addontitle}}</p>
+                    </div>
+                {{/newLayoutElement}}
+            {{/each}}
+        {{/newLayoutContainer}}
+        {{#if isLoading}}
+            <div class="loading-spinner">
+                <div class='spinner-overlay'>
+                    <div class='spinner center'>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                    </div>
+                </div>
+            </div>
+        {{/if}}
+    </div>
+</template>
+<template name="favoritePosts3">
+    <div class="favoritePosts3">
+        {{#if loading}}
+            <div>{{_ "isLoading"}}</div>
+        {{/if}}
+        {{#if loadError}}
+            <div>{{_ "FailToLoad"}}</div>
+        {{/if}}
+        {{#newLayoutContainer layoutId=onPostId src="favoritePosts3" container=".favoritePosts3"}}
+            {{#each favoritePosts3}}
+                {{#newLayoutElement layoutId=onPostId displayId=readPostId src="favoritePosts3" container=".favoritePosts3"}}
+                    <div class="img_placeholder">
+                        <img class="mainImage" src="{{mainImage}}" />
+                    </div>
+                    <div class="pin_content">
+                        <p class="title">{{title}}</p>
+                        <p class="addontitle">{{addontitle}}</p>
+                    </div>
+                {{/newLayoutElement}}
+            {{/each}}
+        {{/newLayoutContainer}}
+        {{#if isLoading}}
+            <div class="loading-spinner">
+                <div class='spinner-overlay'>
+                    <div class='spinner center'>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                        <div class='spinner-blade'></div>
+                    </div>
+                </div>
+            </div>
+        {{/if}}
     </div>
 </template>
