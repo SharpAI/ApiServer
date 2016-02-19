@@ -134,11 +134,31 @@ shareToQQ = function (title,description,imageUrl,url){
         }
     },args);
 };
+shareToQQZone = function (title,description,imageUrl,url){
+    var p = {
+      url:url,
+      showcount:'1',/*是否显示分享总数,显示：'1'，不显示：'0' */
+      desc:'故事贴共享QQ空间',/*默认分享理由(可选)*/
+      summary:'故事贴共享QQ空间',/*分享摘要(可选)*/
+      title:title,/*分享标题(可选)*/
+      site:'gushitie',/*分享来源 如：腾讯网(可选)*/
+      pics:imageUrl, /*分享图片的路径(可选)*/
+      style:'203',
+      width:98,
+      height:22
+    };
+    var s = [];
+    for(var i in p) {
+      s.push(i + '=' + encodeURIComponent(p[i]||''));
+    }
+    var zoneURL = "http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?" + s.join('&');
+    cordova.InAppBrowser.open(zoneURL, '_blank', 'closebuttoncaption=Done,toolbarposition=top');
+};
 shareToSystem = function(title,description,thumbData,url) {
     window.plugins.socialsharing.share(title, description, thumbData, url);
 };
 // To could be
-// WXTimeLine, WXSession, QQShare, System
+// WXTimeLine, WXSession, QQShare, QQZoneShare, System
 shareTo = function(to,self,index){
     var url = getPostSharingPath();
     var title = getSharingTitle(self);
@@ -154,6 +174,10 @@ shareTo = function(to,self,index){
         } else if(description.length > 100){
             description = description.substring(0, 100);
         }
+    }
+    if (to ==='QQZoneShare'){
+      shareToQQZone(title,description,self.mainImage,url);
+      return;
     }
     window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等");
 
@@ -222,6 +246,9 @@ Template.showPosts.events({
     },
     'click #QQShare':function(e, t){
         shareTo('QQShare',this);
+    },
+    'click #QQZoneShare':function(e, t){
+        shareTo('QQZoneShare',this);
     },
     'click #socialShare':function(e, t){
         shareTo('System',this);

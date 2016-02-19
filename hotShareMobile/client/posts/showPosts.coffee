@@ -380,7 +380,8 @@ if Meteor.isClient
           when 1 then shareTo('WXSession',Blaze.getData($('.showPosts')[0]),self.index)
           when 2 then shareTo('WXTimeLine',Blaze.getData($('.showPosts')[0]),self.index)
           when 3 then shareTo('QQShare',Blaze.getData($('.showPosts')[0]),self.index)
-          when 4 then shareTo('System',Blaze.getData($('.showPosts')[0]),self.index)
+          when 4 then shareTo('QQZoneShare',Blaze.getData($('.showPosts')[0]),self.index)
+          when 5 then shareTo('System',Blaze.getData($('.showPosts')[0]),self.index)
       );
     else if action is 'post-tts'
       startPostTTS(self.index)
