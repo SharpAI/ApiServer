@@ -322,7 +322,7 @@
       {{/if}}
       {{#newLayoutContainer layoutId=onPostId src="favoritePosts" container=".favoritePosts"}}
         {{#each favoritePosts}}
-          {{#newLayoutElement layoutId=onPostId displayId=readPostId src="favoritePosts" container=".favoritePosts"}}
+          {{#newLayoutElement layoutId=onPostId displayId=_id src="favoritePosts" container=".favoritePosts"}}
               <div class="img_placeholder">
                   <img class="mainImage" src="{{mainImage}}" />
               </div>
