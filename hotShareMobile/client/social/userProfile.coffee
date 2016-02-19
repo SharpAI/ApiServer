@@ -4,6 +4,12 @@ if Meteor.isClient
       !(NewDynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() < Session.get("momentsitemsLimit"))
     else
       false
+  hasMoreResult1 = ()->
+    !(FavouritePosts.find({userId: Session.get("ProfileUserId1")}).count() < Session.get("favouritepostsLimit1"))
+  hasMoreResult2 = ()->
+    !(FavouritePosts.find({userId: Session.get("ProfileUserId2")}).count() < Session.get("favouritepostsLimit2"))
+  hasMoreResult3 = ()->
+    !(FavouritePosts.find({userId: Session.get("ProfileUserId3")}).count() < Session.get("favouritepostsLimit3"))     
   updateMeetsCount = (userId)->
     meetInfo = PostFriends.findOne({me:Meteor.userId(),ta:userId})
     if(meetInfo)
@@ -141,12 +147,18 @@ if Meteor.isClient
     # starting page
     Session.set("postPageScrollTop", 0)
     console.log 'Showing userProfile'
+    Session.set('favouritepostsLimit1', 10)
+    Session.set('favouritepostsLimit2', 10)
+    Session.set('favouritepostsLimit3', 10)
     UserProfilesSwiper.setInitialPage 'userProfilePage1'
     if window.userProfileTrackerHandler
       window.userProfileTrackerHandler.stop()
       window.userProfileTrackerHandler = null
     Tracker.autorun (handler)->
       window.userProfileTrackerHandler = handler
+      Session.set('favouritepostsLimit1', 10)
+      Session.set('favouritepostsLimit2', 10)
+      Session.set('favouritepostsLimit3', 10)
       if UserProfilesSwiper.pageIs('userProfilePage1')
         if Session.get("currentPageIndex") isnt 1 and Session.get("currentPageIndex") isnt -1
           updateMeetsCount Session.get("ProfileUserId1")
@@ -164,7 +176,7 @@ if Meteor.isClient
               Session.set("ProfileUserId3", userProfileList[nextProfileIndex].ta)
             else
               Session.set("ProfileUserId3", userProfileList[nextProfileIndex].followerId)
-            Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId3"), Session.get("momentsitemsLimit"))
+            #Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId3"), Session.get("momentsitemsLimit"))
           if Session.get("currentPageIndex") is 3
             currentProfileIndex = Session.get("currentProfileIndex")+1
             if currentProfileIndex >  userProfileList.length-1
@@ -177,7 +189,7 @@ if Meteor.isClient
               Session.set("ProfileUserId2", userProfileList[nextProfileIndex].ta)
             else
               Session.set("ProfileUserId2", userProfileList[nextProfileIndex].followerId)
-            Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId2"), Session.get("momentsitemsLimit"))
+            #Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId2"), Session.get("momentsitemsLimit"))
           Session.set("currentPageIndex", 1)
         if Session.get("currentPageIndex") is -1
           UserProfilesSwiper.leftRight(null, null)
@@ -201,7 +213,7 @@ if Meteor.isClient
               Session.set("ProfileUserId3", userProfileList[nextProfileIndex].ta)
             else
               Session.set("ProfileUserId3", userProfileList[nextProfileIndex].followerId)
-            Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId3"), Session.get("momentsitemsLimit"))
+            #Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId3"), Session.get("momentsitemsLimit"))
           if Session.get("currentPageIndex") is 3
             currentProfileIndex = Session.get("currentProfileIndex")-1
             if currentProfileIndex < 0
@@ -214,7 +226,7 @@ if Meteor.isClient
               Session.set("ProfileUserId1", userProfileList[nextProfileIndex].ta)
             else
               Session.set("ProfileUserId1", userProfileList[nextProfileIndex].followerId)
-            Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), Session.get("momentsitemsLimit"))
+            #Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), Session.get("momentsitemsLimit"))
           Session.set("currentPageIndex", 2)
         UserProfilesSwiper.leftRight('userProfilePage1', 'userProfilePage3')
 
@@ -235,7 +247,7 @@ if Meteor.isClient
               Session.set("ProfileUserId2", userProfileList[nextProfileIndex].ta)
             else
               Session.set("ProfileUserId2", userProfileList[nextProfileIndex].followerId)
-            Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId2"), Session.get("momentsitemsLimit"))
+            #Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId2"), Session.get("momentsitemsLimit"))
           if Session.get("currentPageIndex") is 2
             currentProfileIndex = Session.get("currentProfileIndex")+1
             if currentProfileIndex >  userProfileList.length-1
@@ -248,7 +260,7 @@ if Meteor.isClient
               Session.set("ProfileUserId1", userProfileList[nextProfileIndex].ta)
             else
               Session.set("ProfileUserId1", userProfileList[nextProfileIndex].followerId)
-            Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), Session.get("momentsitemsLimit"))
+            #Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), Session.get("momentsitemsLimit"))
           Session.set("currentPageIndex", 3)
         UserProfilesSwiper.leftRight('userProfilePage2', 'userProfilePage1')
 
@@ -646,20 +658,21 @@ if Meteor.isClient
 
   Template.favoritePosts1.rendered=->
     $(window).scroll (event)->
-      if Session.get("Social.LevelOne.Menu") is 'contactsList'
+      if Session.get("Social.LevelOne.Menu") is 'contactsList' and UserProfilesSwiper.getPage() is 'userProfilePage1'
         MOMENTS_ITEMS_INCREMENT = 10;
-        #console.log("moments window scroll event: "+event);
+        console.log("moments window scroll event: "+event);
         if window.innerHeight
           winHeight = window.innerHeight
         else
           winHeight = $(window).height() # iphone fix
         closeToBottom = ($(window).scrollTop() + winHeight > $(document).height() - 100);
         #console.log('Close to bottom: '+closeToBottom)
-        if (closeToBottom and hasMoreResult())
-          if window.momentsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
+        if (closeToBottom and hasMoreResult1())
+          #if window.momentsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
+          if window.favouritepostsCollection1_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
             console.log('Triggered data source refresh');
-            window.momentsCollection_getmore = 'inprogress'
-            Session.set("momentsitemsLimit",Session.get("momentsitemsLimit") + MOMENTS_ITEMS_INCREMENT);
+            window.favouritepostsCollection1_getmore = 'inprogress'
+            Session.set("favouritepostsLimit1",Session.get("favouritepostsLimit1") + MOMENTS_ITEMS_INCREMENT);
   Template.favoritePosts1.helpers
     isLoading:()->
       (Session.equals('newLayoutImageDownloading',true) or
@@ -684,7 +697,7 @@ if Meteor.isClient
       Session.equals('momentsCollection','error')
   Template.favoritePosts2.rendered=->
     $(window).scroll (event)->
-      if Session.get("Social.LevelOne.Menu") is 'contactsList'
+      if Session.get("Social.LevelOne.Menu") is 'contactsList' and UserProfilesSwiper.getPage() is 'userProfilePage2'
         MOMENTS_ITEMS_INCREMENT = 10;
         #console.log("moments window scroll event: "+event);
         if window.innerHeight
@@ -693,11 +706,11 @@ if Meteor.isClient
           winHeight = $(window).height() # iphone fix
         closeToBottom = ($(window).scrollTop() + winHeight > $(document).height() - 100);
         #console.log('Close to bottom: '+closeToBottom)
-        if (closeToBottom and hasMoreResult())
-          if window.momentsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
+        if (closeToBottom and hasMoreResult2())
+          if window.favouritepostsCollection2_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
             console.log('Triggered data source refresh');
-            window.momentsCollection_getmore = 'inprogress'
-            Session.set("momentsitemsLimit",Session.get("momentsitemsLimit") + MOMENTS_ITEMS_INCREMENT);
+            window.favouritepostsCollection2_getmore = 'inprogress'
+            Session.set("favouritepostsLimit2",Session.get("favouritepostsLimit2") + MOMENTS_ITEMS_INCREMENT);
   Template.favoritePosts2.helpers
     isLoading:()->
       (Session.equals('newLayoutImageDownloading',true) or
@@ -722,7 +735,7 @@ if Meteor.isClient
       Session.equals('momentsCollection','error')
   Template.favoritePosts3.rendered=->
     $(window).scroll (event)->
-      if Session.get("Social.LevelOne.Menu") is 'contactsList'
+      if Session.get("Social.LevelOne.Menu") is 'contactsList' and UserProfilesSwiper.getPage() is 'userProfilePage3'
         MOMENTS_ITEMS_INCREMENT = 10;
         #console.log("moments window scroll event: "+event);
         if window.innerHeight
@@ -731,11 +744,12 @@ if Meteor.isClient
           winHeight = $(window).height() # iphone fix
         closeToBottom = ($(window).scrollTop() + winHeight > $(document).height() - 100);
         #console.log('Close to bottom: '+closeToBottom)
-        if (closeToBottom and hasMoreResult())
-          if window.momentsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
+        if (closeToBottom and hasMoreResult3())
+          if window.favouritepostsCollection3_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
             console.log('Triggered data source refresh');
-            window.momentsCollection_getmore = 'inprogress'
-            Session.set("momentsitemsLimit",Session.get("momentsitemsLimit") + MOMENTS_ITEMS_INCREMENT);
+            window.favouritepostsCollection2_getmore = 'inprogress'
+            #Session.set("momentsitemsLimit",Session.get("momentsitemsLimit") + MOMENTS_ITEMS_INCREMENT);
+            Session.set("favouritepostsLimit3",Session.get("favouritepostsLimit3") + MOMENTS_ITEMS_INCREMENT);
   Template.favoritePosts3.helpers
     isLoading:()->
       (Session.equals('newLayoutImageDownloading',true) or

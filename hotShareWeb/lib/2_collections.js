@@ -2045,6 +2045,9 @@ if(Meteor.isClient){
   Session.setDefault('mypostsitemsLimit', MYPOSTS_ITEMS_INCREMENT);
   Session.setDefault('momentsitemsLimit', MOMENTS_ITEMS_INCREMENT);
   Session.setDefault('favouritepostsLimit', FAVOURITE_POSTS_INCREMENT);
+  Session.setDefault('favouritepostsLimit1', FAVOURITE_POSTS_INCREMENT);
+  Session.setDefault('favouritepostsLimit2', FAVOURITE_POSTS_INCREMENT);
+  Session.setDefault('favouritepostsLimit3', FAVOURITE_POSTS_INCREMENT);
   Session.setDefault('postfriendsitemsLimit', POSTFRIENDS_ITEMS_INCREMENT);
   Session.setDefault("momentsitemsLimit",MOMENTS_ITEMS_INCREMENT);
   Session.setDefault("suggestpostsLimit",SUGGEST_POSTS_INCREMENT);
@@ -2225,4 +2228,61 @@ if(Meteor.isClient){
         });
     }
   });
+
+  Tracker.autorun(function() {
+    if (Session.get("ProfileUserId1")) {
+        Meteor.subscribe('userfavouriteposts', Session.get("ProfileUserId1"), Session.get('favouritepostsLimit1'), {
+            onReady: function(){
+                console.log('Favourite Posts Collection loaded');
+                window.favouritepostsCollection1_getmore = 'done';
+                Session.set('favouritepostsCollection1','loaded');
+                Session.set('favouritepostsCollection1_getmore','done');
+            },
+            onError: function(){
+                console.log('Favourite Posts Collection Error');
+                window.favouritepostsCollection1_getmore = 'done';
+                Session.set('favouritepostsCollection1','loaded');
+                Session.set('favouritepostsCollection1_getmore','done');
+            }
+        });
+    }
+  });
+
+  Tracker.autorun(function() {
+    if (Session.get("ProfileUserId2")) {
+        Meteor.subscribe('userfavouriteposts', Session.get("ProfileUserId2"), Session.get('favouritepostsLimit2'), {
+            onReady: function(){
+                console.log('Favourite Posts Collection loaded');
+                window.favouritepostsCollection2_getmore = 'done';
+                Session.set('favouritepostsCollection2','loaded');
+                Session.set('favouritepostsCollection2_getmore','done');
+            },
+            onError: function(){
+                console.log('Favourite Posts Collection Error');
+                window.favouritepostsCollection2_getmore = 'done';
+                Session.set('favouritepostsCollection2','loaded');
+                Session.set('favouritepostsCollection2_getmore','done');
+            }
+        });
+    }
+  });
+
+  Tracker.autorun(function() {
+    if (Session.get("ProfileUserId3")) {
+        Meteor.subscribe('userfavouriteposts', Session.get("ProfileUserId3"), Session.get('favouritepostsLimit3'), {
+            onReady: function(){
+                console.log('Favourite Posts Collection loaded');
+                window.favouritepostsCollection3_getmore = 'done';
+                Session.set('favouritepostsCollection3','loaded');
+                Session.set('favouritepostsCollection3_getmore','done');
+            },
+            onError: function(){
+                console.log('Favourite Posts Collection Error');
+                window.favouritepostsCollection3_getmore = 'done';
+                Session.set('favouritepostsCollection3','loaded');
+                Session.set('favouritepostsCollection3_getmore','done');
+            }
+        });
+    }
+  });    
 }
