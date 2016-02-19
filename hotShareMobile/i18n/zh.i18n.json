@@ -1,4 +1,4 @@
-{ 
+{
   //authOverlay.html
   "anonymous": "匿名使用",
   "anonymousAgree": "匿名使用表示已经同意",
@@ -52,7 +52,7 @@
   "alreadySendInvitation": "已发送邀请",
   "loading": "加载中...",
   "publishTo": "把故事推荐给这些读者们",
-  "readerUnit": "位读者",  
+  "readerUnit": "位读者",
   //end
   //signupForm.html
   "createAccount": "创建账户",
@@ -141,7 +141,7 @@
   "howToResetPassword": "如何找回密码",
   "howToSearchMyPost": "如何搜索自己的文章",
   "howToPostAnonymous": "如何匿名发帖",
-  "howToPutPostInFavourite": "如何收藏喜欢的文章",    
+  "howToPutPostInFavourite": "如何收藏喜欢的文章",
   "welcomeContactUs": "如果您对使用攻略有任何建议或问题，随时欢迎联系我们",
   "adminEmail": "联系邮箱：admin@tiegushi.com",
   //end
@@ -184,6 +184,7 @@
   "shareWechatFriend": "分享给微信好友",
   "shareWechatFriendField": "分享到微信朋友圈",
   "shareQQ": "分享到QQ",
+  "shareQQZone": "分享到QQ空间",
   "shareMore": "分享到更多应用",
   "fromNumOf": "――节选自 第",
   "segment": "段 ",
@@ -209,7 +210,7 @@
   "reportSuccess": "举报成功",
   "reportDeclaration": "谢谢您！故事贴坚决反对色情、暴力、欺诈信息，我们会认真处理您的举报，维护绿色、健康的网络环境。",
   //end
-  
+
   // dashboard.html
   "blacklist": "黑名单",
   "setting": "设置",
@@ -258,6 +259,5 @@
   "recentlyviewedstories": "最近浏览的故事"
   // end
 
-  
-}
 
+}
