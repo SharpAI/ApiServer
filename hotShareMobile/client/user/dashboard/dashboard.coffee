@@ -126,7 +126,7 @@ if Meteor.isClient
   Template.my_blacklist.rendered=->
     $('.dashboard').css 'min-height', $(window).height()
     Meteor.subscribe("allBlackList")
-    Meteor.subscribe('allUsers')
+    # Meteor.subscribe('allUsers')
     return
   Template.my_blacklist.helpers
     myBlackers :->
@@ -136,6 +136,7 @@ if Meteor.isClient
   Template.my_blacklist_item.helpers
     profile :->
       id = this.toString()
+      Meteor.subscribe('usersById', id)
       return Meteor.users.findOne({_id: id}).profile
     thisUserName:->
       id = this.toString()

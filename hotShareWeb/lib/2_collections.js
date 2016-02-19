@@ -1337,6 +1337,15 @@ if(Meteor.isServer){
         });
     }
   });
+  Meteor.publish("usersById", function (userId) {
+      return Meteor.users.find({_id: userId}, {
+            fields: {
+                'username': 1,
+                'profile.fullname': 1,
+                'profile.icon': 1
+            }
+        });
+  });
   Meteor.publish("comment", function(postId) {
     if(this.userId === null || !Match.test(postId, String))
     {
