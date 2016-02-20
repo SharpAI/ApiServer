@@ -85,7 +85,7 @@ getFirstParagraph = function(){
       for (var i = 0; i < patagraphLength; i++){
         if(textArr[i].text) {
           console.log(textArr[i].text);
-          return textArr[i].text;
+          return textArr[i].text.substring(0, 100);
         }
       }
     }else{
