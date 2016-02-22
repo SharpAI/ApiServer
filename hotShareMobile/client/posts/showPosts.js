@@ -135,24 +135,18 @@ shareToQQ = function (title,description,imageUrl,url){
     },args);
 };
 shareToQQZone = function (title,description,imageUrl,url){
-    var p = {
-      url:url,
-      showcount:'1',/*是否显示分享总数,显示：'1'，不显示：'0' */
-      desc:'故事贴共享QQ空间',/*默认分享理由(可选)*/
-      summary:'故事贴共享QQ空间',/*分享摘要(可选)*/
-      title:title,/*分享标题(可选)*/
-      site:'gushitie',/*分享来源 如：腾讯网(可选)*/
-      pics:imageUrl, /*分享图片的路径(可选)*/
-      style:'203',
-      width:98,
-      height:22
-    };
-    var s = [];
-    for(var i in p) {
-      s.push(i + '=' + encodeURIComponent(p[i]||''));
-    }
-    var zoneURL = "http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?" + s.join('&');
-    cordova.InAppBrowser.open(zoneURL, '_blank', 'closebuttoncaption=Done,toolbarposition=top');
+  var args = {};
+  args.url = url;
+  args.title = title;
+  args.description = "故事贴分享QQ空间";
+  var imgs =[];
+  imgs.push(imageUrl);
+  args.imageUrl = imgs;
+  YCQQ.shareToQzone(function () {
+    console.log("share success");
+  }, function (failReason) {
+    console.log(failReason);
+  }, args);
 };
 shareToSystem = function(title,description,thumbData,url) {
     window.plugins.socialsharing.share(title, description, thumbData, url);
@@ -175,15 +169,23 @@ shareTo = function(to,self,index){
             description = description.substring(0, 100);
         }
     }
-    if (to ==='QQZoneShare'){
-      shareToQQZone(title,description,self.mainImage,url);
-      return;
-    }
     window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等");
 
     var height = $('.showPosts').height();
     $('#blur_overlay').css('height',height);
     $('#blur_overlay').css('z-index', 10000);
+    if (to ==='QQZoneShare'){
+        $('#blur_overlay').css('height','');
+        $('#blur_overlay').css('z-index', -1);
+        if(description){
+            shareToQQZone(title,description,self.mainImage,url);
+        } else if(firstParagraph){
+            shareToQQZone(title,firstParagraph,self.mainImage,url);
+        } else {
+            shareToQQZone(title,title,self.mainImage,url);
+        }
+        return;
+    }
     if (to ==='QQShare'){
         $('#blur_overlay').css('height','');
         $('#blur_overlay').css('z-index', -1);

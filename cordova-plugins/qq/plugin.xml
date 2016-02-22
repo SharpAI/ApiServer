@@ -125,7 +125,7 @@
   </config-file>
   <source-file src="src/android/YCQQ.java" target-dir="src/org/zy/yuancheng/qq" />
   <!--QQ SDK version 2.9.1-->
-  <source-file src="src/android/open_sdk_r5043.jar" target-dir="libs/" />
+  <source-file src="src/android/open_sdk_r5509.jar" target-dir="libs/" />
     <source-file src="src/android/mta-sdk-1.6.2.jar" target-dir="libs/" />
   </platform>
 </plugin>
