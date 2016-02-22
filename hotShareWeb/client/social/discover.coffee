@@ -5,6 +5,11 @@ if Meteor.isClient
         !(NewDynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() < Session.get("momentsitemsLimit"))
       else
         false
+    Template.discover.rendered=->
+      if withDiscover
+        spanOuterWidth = $(".discover .discover-top .discover-con span").outerWidth() || 0
+        $(".discover .discover-top .discover-con").css({'width': (spanOuterWidth + 40) + 'px'});
+        
     Template.discover.helpers
       showSuggestPosts:()->
         if Session.get("showSuggestPosts") is true
