@@ -556,7 +556,7 @@ if(Meteor.isServer){
     var updateServerSidePcommentsHookDeferHandle = function(userId,doc,ptype,pindex){
         Meteor.defer(function(){
             try{
-                var userinfo = Meteor.users.findOne({_id: userId },{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
+                var userinfo = Meteor.users.findOne({_id: userId },{'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1});
                 var needRemove = false;
                 if(ptype ==="like" && doc.pub[pindex].likeUserId && doc.pub[pindex].likeUserId[userId] === true)
                     needRemove = true;
