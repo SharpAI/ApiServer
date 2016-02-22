@@ -676,7 +676,8 @@ if Meteor.isClient
   Template.favoritePosts1.helpers
     isLoading:()->
       (Session.equals('newLayoutImageDownloading',true) or
-        !Session.equals('momentsCollection_getmore','done')) and
+        #!Session.equals('momentsCollection_getmore','done')) and
+        !Session.equals('favouritepostsCollection1_getmore','done')) and
         Session.equals("SocialOnButton",'contactsList')
     onPostId:()->
       Session.get("postContent")._id
@@ -714,7 +715,8 @@ if Meteor.isClient
   Template.favoritePosts2.helpers
     isLoading:()->
       (Session.equals('newLayoutImageDownloading',true) or
-        !Session.equals('momentsCollection_getmore','done')) and
+        #!Session.equals('momentsCollection_getmore','done')) and
+        !Session.equals('favouritepostsCollection2_getmore','done')) and
         Session.equals("SocialOnButton",'contactsList')
     onPostId:()->
       Session.get("postContent")._id
@@ -747,13 +749,14 @@ if Meteor.isClient
         if (closeToBottom and hasMoreResult3())
           if window.favouritepostsCollection3_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
             console.log('Triggered data source refresh');
-            window.favouritepostsCollection2_getmore = 'inprogress'
+            window.favouritepostsCollection3_getmore = 'inprogress'
             #Session.set("momentsitemsLimit",Session.get("momentsitemsLimit") + MOMENTS_ITEMS_INCREMENT);
             Session.set("favouritepostsLimit3",Session.get("favouritepostsLimit3") + MOMENTS_ITEMS_INCREMENT);
   Template.favoritePosts3.helpers
     isLoading:()->
       (Session.equals('newLayoutImageDownloading',true) or
-        !Session.equals('momentsCollection_getmore','done')) and
+        #!Session.equals('momentsCollection_getmore','done')) and
+        !Session.equals('favouritepostsCollection3_getmore','done')) and
         Session.equals("SocialOnButton",'contactsList')
     onPostId:()->
       Session.get("postContent")._id
