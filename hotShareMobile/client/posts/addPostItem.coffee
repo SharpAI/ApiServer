@@ -109,6 +109,7 @@ if Meteor.isClient
         gridster.remove_widget2(node, false)
       Drafts.remove node.id
     else if buttonClicked.id == "delEnd"
+      console.log("node "+ node)
       console.log("delEnd "+ node.id)
       draftsArr = Drafts.find({}).fetch()
       if draftsArr.length > 0
@@ -116,6 +117,10 @@ if Meteor.isClient
           if draftsArr[i]._id is node.id
             indexNum = i
         for i in [indexNum..draftsArr.length - 1]
+          thisNode = document.getElementById(draftsArr[i]._id)
+          console.log("thisNode "+ thisNode)
+          if gridster?
+            gridster.remove_widget2(thisNode, false)
           Drafts.remove draftsArr[i]._id
         # Drafts.find({}).fetch().splice(indexNum,draftsArr.length + 1 - indexNum)
     else if buttonClicked.id is "font"
