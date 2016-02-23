@@ -1,7 +1,6 @@
 com.phonegap.pushplugin@file://../cordova-plugins/pushplugin
 com.ionic.keyboard@file://../cordova-plugins/ionickeyboard
 com.leon.cordova.wechat@file://../cordova-plugins/wechat
-com.oauth.wechat@https://github.com/Zhangzhiyue/phoneGap-wechat-oauth/tarball/f4aba45b9f839e7ea42e17f812d088ef614bb704
 com.moya.imagebase64@file://../cordova-plugins/imagebase64
 com.phonegap.JPushPlugin@file://../cordova-plugins/jpush
 com.raananw.imageResizer@file://../cordova-plugins/imageresizer
