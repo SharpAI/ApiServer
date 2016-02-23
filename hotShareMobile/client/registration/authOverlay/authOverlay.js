@@ -92,13 +92,18 @@ if (Meteor.isClient) {
         console.log('in call back', arguments);
       });
     },
-    'click #wechat': function () {
-      Meteor.loginWithWechat({
-        loginStyle: 'popup'
-        //loginStyle: 'redirect'
-        //loginStyle: 'redirect'  you can use redirect for mobile web app
-      }, function () {
-        console.log('in call back', arguments);
+    'click #wechat': function (e,t) {
+      if (Meteor.status().connected !== true) {
+        PUB.toast('当前为离线状态,请检查网络连接');
+        return;
+      }
+      Meteor.loginWithWeixin(function(err, result) {
+        if (err) {
+          PUB.toast('微信登陆失败');
+          return console.log(err);
+        } else {
+          return Router.go('/');
+        }
       });
     },
     'click #qq': function () {
