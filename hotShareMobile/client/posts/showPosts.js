@@ -110,9 +110,9 @@ shareToWechat = function(title,description,thumbData,url,type) {
     }, function (reason) {
         // 分享失败
         if (reason === 'ERR_WECHAT_NOT_INSTALLED') {
-            PUB.toast("未安装微信客户端，分享失败");
+            PUB.toast(TAPi18n.__("wechatNotInstalled"));
         } else {
-            PUB.toast("分享失败");
+            PUB.toast(TAPi18n.__("failToShare"));
         }
         console.log(reason);
     });
@@ -123,14 +123,14 @@ shareToQQ = function (title,description,imageUrl,url){
     args.title = title;
     args.description = description;
     args.imageUrl = imageUrl;
-    args.appName = "故事贴";
+    args.appName = TAPi18n.__("gst");
     YCQQ.shareToQQ(function(){
         console.log("share success");
     },function(reason){
         if (reason ==='QQ Client is not installed') {
-            PUB.toast("未安装QQ客户端，分享失败");
+            PUB.toast(TAPi18n.__("qqNotInstalled"));
         } else {
-            PUB.toast("分享失败");
+            PUB.toast(TAPi18n.__("failToShare"));
         }
     },args);
 };
@@ -138,7 +138,7 @@ shareToQQZone = function (title,description,imageUrl,url){
   var args = {};
   args.url = url;
   args.title = title;
-  args.description = "故事贴分享QQ空间";
+  args.description = TAPi18n.__("hotShareQQZoneShare");
   var imgs =[];
   imgs.push(imageUrl);
   args.imageUrl = imgs;
@@ -169,7 +169,7 @@ shareTo = function(to,self,index){
             description = description.substring(0, 100);
         }
     }
-    window.plugins.toast.showShortCenter("准备故事的主题图片，请稍等");
+    window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
 
     var height = $('.showPosts').height();
     $('#blur_overlay').css('height',height);
@@ -235,7 +235,7 @@ shareTo = function(to,self,index){
                 }
             }
         } else {
-            PUB.toast("无法获取故事标题图片，请稍后重试！");
+            PUB.toast(TAPi18n.__("failToGetPicAndTryAgain"));
         }
     })
 };
