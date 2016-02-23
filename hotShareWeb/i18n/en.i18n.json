@@ -1,4 +1,5 @@
-{ 
+{
+  //authOverlay.html
   "anonymous": "Continue anonymously",
   "anonymousAgree": "User accepts",
   "gstServiceSpec": "Terms and Privacy",
@@ -24,6 +25,8 @@
   "linkDownloadAndroid": "Android version download",
   "gstPrivacy": "© 2015 HotShare",
   "gstProductSerial": "滇 ICP 备 14007324号",
+  //end
+  //footer.html
   "homePage": "Home",
   "discovery": "Discover",
   "message": "Messages",
@@ -31,6 +34,8 @@
   "selectPicFromGallery": "Library",
   "importFromPaster": "Import from Web",
   "takePicture": "Photo",
+  //end
+  //bell.html
   "receiving": "Receiving...",
   "newInfo": "Moment",
   "loadFailNotification": "Fail to load. Please check your network connection and retry again.",
@@ -44,6 +49,9 @@
   "acceptInvitation": "Accept",
   "alreadySendInvitation": "Already Sent",
   "loading": "Loading...",
+  "publishTo": "recommend HotShare to these readers",
+  "readerUnit": "readers",
+  //end
   //signupForm.html
   "createAccount": "Sign up",
   "signUpMeansWhat": "Sign up means you accept our terms and privacy.",
@@ -145,7 +153,64 @@
   "plainPeople": "People",
   "recommandUser": "Recommand users",
   //end
-  
+
+  //listPosts.html
+  "isLoading": "Loading...",
+  //"loadFailNotification" :"加载失败，请检查网络设置或稍后重试", duplicate
+  //end
+  //myPosts.html
+  "story": "story",
+  "browse" :"browse",
+  "times": "times",
+  //end
+  //postNotFound.html
+  "storyNotFound": "This story does not exist or was deleted",
+  //end
+  //progressBar.html
+  "publishLater": "publish later",
+  //end
+  //reportPost.html
+  "report": "complain",
+  "reportAt": "complain@",
+  "storyRef1": "story《",
+  "storyRef2": "》",
+  "addReportContent": "add complaints",
+  //end
+  //showPosts.html
+  "clickMeToCreate": "click me to create",
+  "operate": "operate",
+  "share": "share",
+  "cancelPublish": "cancel publishing",
+  "shareWechatFriend": "shareWechatFriend",
+  "shareWechatFriendField": "shareWechatFriendField",
+  "shareQQ": "shareQQ",
+  "shareQQZone": "shareQQZone",
+  "shareMore": "shareMore",
+  "fromNumOf": "――from paragraph",
+  "segment": " ",
+  //"readOriginalText": "     阅读原文", duplicate
+  "hotStores": "hot stories",
+  "downloadGSTAndReadMore": "（download HotShare and read more stories）",
+  "weTogetherThatYears": "we are together those days",
+  "fromBestAPP": "this story is edited by the excellent App",
+  "supportCreate": "",
+  "forMorePayAttentionTo": "for more, click following",
+  "wechatPublicAccount": "wechat public account",
+  "forMoreSearch": "for more, please search and follow",
+  "noPrivacyExposed": "HotShare has no access to your wechat information",
+  "comment": "comment",
+  "commentAnonymous": "comment anonymously",
+  "forwardSegment": "forward this paragraph",
+  "readLoudly": "read",
+  "writeComment": "write comment",
+  "comeon": "come and take a position～～(￣▽￣)",
+  //end
+  //thanksReport.html
+  "thanksReport": "Thanks",
+  "reportSuccess": "complaint is submitted",
+  "reportDeclaration": "Thank you！ HotShare resists pornography, violence and cheating, we will take your complaints seriously, and maintain a green network environment.",
+  //end
+
   // dashboard.html
   "blacklist": "Blacklist",
   "setting": "Settings",
@@ -186,7 +251,7 @@
   "Moments": "Moments",
   "RecommendPosts": "Read the current posts ago friend posts, you have seen, specially recommended for you that you did not read the following posts ...",
   "AlsoRead": "Read the current post friends, also read ...",
-  "RecommendReadMore": "Read the current post friends also read ...",  
+  "RecommendReadMore": "Read the current post friends also read ...",
   "PersonReadYourForward": " persons read your forwarding",
   "AlsoComment": "also commented on this story",
   "readed": "readed",
