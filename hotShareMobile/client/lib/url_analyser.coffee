@@ -1,5 +1,5 @@
 if Meteor.isClient
-  showDebug=false
+  showDebug=true
   importColor=false
   titleRules = [
     # link string, class name
@@ -529,6 +529,13 @@ if Meteor.isClient
       callback data
   _html2data = (url, data, callback)->
     Meteor.defer ()->
+      if(url.indexOf('http://xueqiu.com') isnt -1)
+        _readability = new Readability()
+        _documentBody = document.createElement("body")
+        _documentBody.innerHTML = data["body"]
+        data["body"] = (_readability.execute(_documentBody)).innerHTML
+        data["bodyLength"] = data["body"].length
+        
       if data[0]
         showDebug&&console.log 'data0 is ' + JSON.stringify(data[0])
         data = data[0]
@@ -735,6 +742,13 @@ if Meteor.isClient
       callback data
   _html2data2 = (url, data, callback)->
     Meteor.defer ()->
+      if(url.indexOf('http://xueqiu.com') isnt -1)
+        _readability = new Readability()
+        _documentBody = document.createElement("body")
+        _documentBody.innerHTML = data["body"]
+        data["body"] = (_readability.execute(_documentBody)).innerHTML
+        data["bodyLength"] = data["body"].length
+            
       pageInnerText = ''
       previousParagraph = ''
       paragraphArray = []
@@ -1059,4 +1073,4 @@ if Meteor.isClient
 #          }
 #          false
 #        )
-        _html2data2(url, returnJson, callback)
+        _html2data2(url, returnJson, (if callback then callback else ()->))
