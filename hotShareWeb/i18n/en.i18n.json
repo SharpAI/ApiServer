@@ -43,7 +43,7 @@
   "replyStoryYouJoin": "also commented on the stroies you have commented.",
   "replyYourStory": "replied on your story",
   "publishNewStory": "post a new story",
-  "recommendAStory": "recommand you a new story",
+  "recommendAStory": "recommend you a new story",
   "askFriends": "wants to add you as a friend",
   "alreadyAdded": "Already Added",
   "acceptInvitation": "Accept",
@@ -151,7 +151,7 @@
   "plainTopic": "Topics",
   "discoverPeople": "Discover interesting people",
   "plainPeople": "People",
-  "recommandUser": "Recommand users",
+  "recommandUser": "Recommend users",
   //end
 
   //listPosts.html
@@ -180,7 +180,7 @@
   "clickMeToCreate": "click me to create",
   "operate": "operate",
   "share": "share",
-  "cancelPublish": "cancel publishing",
+  "cancelPublish": "Cancel publishing",
   "shareWechatFriend": "shareWechatFriend",
   "shareWechatFriendField": "shareWechatFriendField",
   "shareQQ": "shareQQ",
@@ -196,7 +196,7 @@
   "supportCreate": "",
   "forMorePayAttentionTo": "for more, click following",
   "wechatPublicAccount": "wechat public account",
-  "forMoreSearch": "for more, please search and follow",
+  "forMoreSearch": "For more, please search and follow",
   "noPrivacyExposed": "HotShare has no access to your wechat information",
   "comment": "comment",
   "commentAnonymous": "comment anonymously",
@@ -250,13 +250,22 @@
   "times": " times.",
   "Moments": "Moments",
   "RecommendPosts": "Read the current posts ago friend posts, you have seen, specially recommended for you that you did not read the following posts ...",
-  "AlsoRead": "Read the current post friends, also read ...",
-  "RecommendReadMore": "Read the current post friends also read ...",
+  "AlsoRead": "friends who read the current post, also read ...",
+  "RecommendReadMore": "Friends who read the current post also read ...",
   "PersonReadYourForward": " persons read your forwarding",
   "AlsoComment": "also commented on this story",
-  "readed": "readed",
+  "readed": "read",
   "postedastory": "posted a story",
   "readedastory": "readed a story",
-  "recentlyviewedstories": "Recently viewed stories"
+  "recentlyviewedstories": "Recently viewed stories",
   // end
+
+  //dynamic js file contents
+  "hotShareQQZoneShare": "Share to QQZone from hotShare",
+  "wechatNotInstalled": "wechat not installed, fail to share",
+  "failToShare": "fail to share",
+  "qqNotInstalled": "QQ not installed, fail to share",
+  "preparePicAndWait": "preparing topic picture, please wait",
+  "failToGetPicAndTryAgain": "could not get topic picture, try later please!"
+  //end
 }

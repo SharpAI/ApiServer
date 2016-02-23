@@ -257,6 +257,15 @@
   "readed": "read",
   "postedastory": "posted a story",
   "readedastory": "readed a story",
-  "recentlyviewedstories": "Recently viewed stories"
+  "recentlyviewedstories": "Recently viewed stories",
   // end
+
+  //dynamic js file contents
+  "hotShareQQZoneShare": "Share to QQZone from hotShare",
+  "wechatNotInstalled": "wechat not installed, fail to share",
+  "failToShare": "fail to share",
+  "qqNotInstalled": "QQ not installed, fail to share",
+  "preparePicAndWait": "preparing topic picture, please wait",
+  "failToGetPicAndTryAgain": "could not get topic picture, try later please!"
+  //end
 }

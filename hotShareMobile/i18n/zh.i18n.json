@@ -257,8 +257,16 @@
   "readed": "读过",
   "postedastory": "发布了一个故事",
   "readedastory": "阅读了一个故事",
-  "recentlyviewedstories": "最近浏览的故事"
+  "recentlyviewedstories": "最近浏览的故事",
   // end
 
+  //dynamic js file contents
+  "hotShareQQZoneShare": "故事贴分享QQ空间",
+  "wechatNotInstalled": "未安装微信客户端，分享失败",
+  "failToShare": "分享失败",
+  "qqNotInstalled": "未安装QQ客户端，分享失败",
+  "preparePicAndWait": "准备故事的主题图片，请稍等",
+  "failToGetPicAndTryAgain": "无法获取故事标题图片，请稍后重试！"
+  //end
 
 }
