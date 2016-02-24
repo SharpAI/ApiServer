@@ -1,7 +1,8 @@
 if (Meteor.isClient) {
   Meteor.loginWithWeixin = function(callback) {
-    return WechatOauth.getUserInfo({}, function(e) {
+    return WeChat.getUserInfo({}, function(e) {
       var options;
+      console.log('获取微信用户信息的结果为'+e.nickname);
       options = {
         device: {
           time: new Date()
