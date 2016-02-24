@@ -1,0 +1,1 @@
+请先增加phonegap插件：https://github.com/nickzhanglv/phoneGap-wechat-oauth
