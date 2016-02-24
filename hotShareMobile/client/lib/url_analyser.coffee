@@ -1,5 +1,5 @@
 if Meteor.isClient
-  showDebug=true
+  showDebug=false
   importColor=false
   titleRules = [
     # link string, class name
@@ -529,12 +529,38 @@ if Meteor.isClient
       callback data
   _html2data = (url, data, callback)->
     Meteor.defer ()->
+      __img_title = []
+      __main_title = ''
       if(url.indexOf('http://xueqiu.com') isnt -1)
         _readability = new Readability()
         _documentBody = document.createElement("body")
         _documentBody.innerHTML = data["body"]
         data["body"] = (_readability.execute(_documentBody)).innerHTML
         data["bodyLength"] = data["body"].length
+      else if(data["body"].indexOf('id="BODYCON"') isnt -1)
+        _readability = new Readability()
+        _documentBody = document.createElement("body")
+        _documentBody.innerHTML = data["body"]
+        if($(_documentBody).find('#BODYCON').length > 0)
+          $bodycon = $(_documentBody).find('#BODYCON')
+          $body = $('<body></body>')
+          #$body.append('<h1>' + $bodycon.find('#TCTOP .laurelhdr').text() + '</h1>')
+          __main_title = $bodycon.find('#TCTOP .laurelhdr').text()
+          
+          $ul = $('<ul></ul>')
+          $bodycon.find('#TCLISTRD #WINNERVIEWER .posRel').each (i)->
+            _title = $(this).find('.posn_inner').text() + '、'
+            _title += $(this).find('.winnerName .mainName a').text() + '('
+            _title += $(this).find('.winnerName .smaller a').text() + ')'
+            _img = '<img src="'+$(this).find('ul.tcphotos li.firstone img').attr('src')+'" />'
+            #$ul.append('<li><h1>'+_title+'</h1>'+_img+'</li>')
+            $ul.append('<li>'+_img+'</li>')
+            __img_title.push(_title)
+          $body.append('<ul>' + $ul.html() + '</ul>')
+          
+          data["body"] = $body.html()
+          data["bodyLength"] = data["body"].length
+          console.log(data["body"])
         
       if data[0]
         showDebug&&console.log 'data0 is ' + JSON.stringify(data[0])
@@ -737,17 +763,51 @@ if Meteor.isClient
             if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
               showDebug&&console.log('    save background imageUrl ' + imageUrl)
               resortedArticle.push {type:'image',imageUrl:imageUrl}
-      data.resortedArticle = resortedArticle
+              
+      if(__img_title.length > 0)
+        data.resortedArticle = []
+        data.resortedArticle.push({"type":"text","text":__main_title})
+        for i in [0..resortedArticle.length-1]
+          data.resortedArticle.push({"type":"text","text":__img_title[i]})
+          data.resortedArticle.push(resortedArticle[i])
+         
+      #data.resortedArticle = resortedArticle
       showDebug&&console.log('Resorted Article is ' + JSON.stringify(data.resortedArticle))
       callback data
   _html2data2 = (url, data, callback)->
     Meteor.defer ()->
+      __img_title = []
+      __main_title = ''
       if(url.indexOf('http://xueqiu.com') isnt -1)
         _readability = new Readability()
         _documentBody = document.createElement("body")
         _documentBody.innerHTML = data["body"]
         data["body"] = (_readability.execute(_documentBody)).innerHTML
         data["bodyLength"] = data["body"].length
+      else if(data["body"].indexOf('id="BODYCON"') isnt -1)
+        _readability = new Readability()
+        _documentBody = document.createElement("body")
+        _documentBody.innerHTML = data["body"]
+        if($(_documentBody).find('#BODYCON').length > 0)
+          $bodycon = $(_documentBody).find('#BODYCON')
+          $body = $('<body></body>')
+          #$body.append('<h1>' + $bodycon.find('#TCTOP .laurelhdr').text() + '</h1>')
+          __main_title = $bodycon.find('#TCTOP .laurelhdr').text()
+          
+          $ul = $('<ul></ul>')
+          $bodycon.find('#TCLISTRD #WINNERVIEWER .posRel').each (i)->
+            _title = $(this).find('.posn_inner').text() + '、'
+            _title += $(this).find('.winnerName .mainName a').text() + '('
+            _title += $(this).find('.winnerName .smaller a').text() + ')'
+            _img = '<img src="'+$(this).find('ul.tcphotos li.firstone img').attr('src')+'" />'
+            #$ul.append('<li><h1>'+_title+'</h1>'+_img+'</li>')
+            $ul.append('<li>'+_img+'</li>')
+            __img_title.push(_title)
+          $body.append('<ul>' + $ul.html() + '</ul>')
+          
+          data["body"] = $body.html()
+          data["bodyLength"] = data["body"].length
+          console.log(data["body"])
             
       pageInnerText = ''
       previousParagraph = ''
@@ -1020,7 +1080,15 @@ if Meteor.isClient
             if imageUrl.startsWith('http://') or imageUrl.startsWith('https://')
               showDebug&&console.log('    save background imageUrl ' + imageUrl)
               resortedArticle.push {type:'image',imageUrl:imageUrl}
-      data.resortedArticle = resortedArticle
+              
+      if(__img_title.length > 0)
+        data.resortedArticle = []
+        data.resortedArticle.push({"type":"text","text":__main_title})
+        for i in [0..resortedArticle.length-1]
+          data.resortedArticle.push({"type":"text","text":__img_title[i]})
+          data.resortedArticle.push(resortedArticle[i])
+         
+      #data.resortedArticle = resortedArticle
       showDebug&&console.log('Resorted Article is ' + JSON.stringify(data.resortedArticle))
       callback data
   @getContentListsFromUrl = (inappBrowser,url,callback)->
