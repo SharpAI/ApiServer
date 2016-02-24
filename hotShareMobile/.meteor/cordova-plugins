@@ -1,3 +1,4 @@
+com.oauth.wechat@file://../cordova-plugins/wechatOauth
 com.phonegap.pushplugin@file://../cordova-plugins/pushplugin
 com.ionic.keyboard@file://../cordova-plugins/ionickeyboard
 com.leon.cordova.wechat@file://../cordova-plugins/wechat
