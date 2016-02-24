@@ -51,3 +51,5 @@ crosswalk
 meteorhacks:subs-manager
 tap:i18n
 reactive-var
+accounts-ui
+accounts-base
