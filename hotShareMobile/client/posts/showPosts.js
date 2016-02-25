@@ -93,6 +93,67 @@ getFirstParagraph = function(){
     }
 };
 
+shareToWechatSession = function (title, description, thumbData, url) {
+  var param = {
+      "title": title,
+      "summary":  description,
+      "image_url": thumbData,
+      "target_url": url
+    }
+  if (device.platform === 'Android') {
+      return WechatShare.shareToSession(param, function(e) {
+        return window.PUB.toast('分享成功!');
+      }, function(e) {
+        return window.PUB.toast('分享失败!你安装微信了吗？');
+      });
+    } else {
+      return WechatShare.share({
+        scene: 1,
+        message: {
+          title: param.title,
+          description: param.summary,
+          thumbData: param.image_url,
+          url: param.target_url
+        }
+      }, function() {
+        window.PUB.toast('分享成功!');
+      }, function() {
+        window.PUB.toast('分享失败!你安装微信了吗？');
+      });
+    }
+}
+
+shareToWechatTimeLine = function (title, description, thumbData, url) {
+    var param = {
+      "title": title,
+      "summary":  description,
+      "image_url": thumbData,
+      "target_url": url
+    }
+    if (device.platform === 'Android') {
+      WechatShare.shareToMoment(param, function(e) {
+        window.PUB.toast('分享成功!');
+      });
+      return function(e) {
+        window.PUB.toast('分享失败!你安装微信了吗？');
+      };
+    } else {
+      return WechatShare.share({
+        scene: 2,
+        message: {
+          title: param.title,
+          description: param.summary,
+          thumbData: param.image_url,
+          url: param.target_url
+        }
+      }, function() {
+        window.PUB.toast('分享成功!');
+      }, function() {
+        window.PUB.toast('分享失败!你安装微信了吗？');
+      });
+    }
+ }
+
 shareToWXTimeLine = function(title,description,thumbData,url){
     shareToWechat(title,description,thumbData,url,WeChat.Scene.timeline);
 };
@@ -208,21 +269,21 @@ shareTo = function(to,self,index){
         if (result) {
             if(to ==='WXTimeLine'){
               if (description) {
-                shareToWXTimeLine(description, description, result, url);
+                shareToWechatTimeLine(description, description, result, url);
               } else if (firstParagraph) {
-                    shareToWXTimeLine( title, firstParagraph,result,url);
+                    shareToWechatTimeLine( title, firstParagraph,result,url);
                } else{
 //                    shareToWXTimeLine("『故事贴』 "+ title,"『故事贴』 "+ title,result,url);
-                    shareToWXTimeLine( title, title,result,url);
+                    shareToWechatTimeLine( title, title,result,url);
                 }
             } else if (to ==='WXSession'){
                 if(description){
 //                    shareToWXSession("分享『故事贴』中的一段文字：",description,result,url);
-                    shareToWXSession(title,description,result,url);
+                    shareToWechatSession(title,description,result,url);
                 } else if (firstParagraph) {
-                    shareToWXSession( title, firstParagraph,result,url);
+                    shareToWechatSession( title, firstParagraph,result,url);
                }  else {
-                    shareToWXSession(title,title,result,url);
+                    shareToWechatSession(title,title,result,url);
 //                    shareToWXSession("分享『故事贴』中的一篇文章：",title,result,url);
                 }
             } else if (to ==='System'){
