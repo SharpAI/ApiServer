@@ -20,10 +20,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.oauth.wechat.WechatOauth;
-import com.tencent.mm.sdk.openapi.ConstantsAPI;
-import com.tencent.mm.sdk.openapi.BaseReq;
-import com.tencent.mm.sdk.openapi.BaseResp;
-import com.tencent.mm.sdk.openapi.SendAuth;
+import com.tencent.mm.sdk.constants.ConstantsAPI;
+import com.tencent.mm.sdk.modelbase.BaseReq;
+import com.tencent.mm.sdk.modelbase.BaseResp;
+import com.tencent.mm.sdk.modelmsg.SendAuth;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
@@ -49,7 +49,7 @@ public class WXEntryOauthActivity extends Activity implements IWXAPIEventHandler
 		api.handleIntent(getIntent(), this);
 	}
 
-  @Override
+
 	public void getOauthToken(String code) {
 		String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + APP_ID + "&secret=dbafa3cb0167bbb80bb201ba10127da4&code=" + code + "&grant_type=authorization_code";
 		RequestQueue mQueue = Volley.newRequestQueue(getApplicationContext());

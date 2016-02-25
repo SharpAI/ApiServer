@@ -8,7 +8,7 @@ import org.json.JSONException;
 import android.content.Context;
 import android.widget.Toast;
 
-import com.tencent.mm.sdk.openapi.SendAuth;
+import com.tencent.mm.sdk.modelmsg.SendAuth;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
