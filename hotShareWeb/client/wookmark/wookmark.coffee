@@ -59,7 +59,10 @@ class @newLayout
         itemWidth: 400, # Optional, the width of a grid item
         flexibleWidth: '48%',
         direction: 'left',
-        align: 'center'
+        align: 'center',
+        onLayoutChanged: ()->
+          if this.container and this.container.childElementCount is 0
+            $(this.container).css({height: '0px'})
       },true)
       window.newLayoutInstances[src+'_'+layoutId] = newInstance
       $elements.each((index,element)->

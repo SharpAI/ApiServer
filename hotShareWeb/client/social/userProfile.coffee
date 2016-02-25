@@ -4,6 +4,12 @@ if Meteor.isClient
       !(NewDynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() < Session.get("momentsitemsLimit"))
     else
       false
+  hasMoreResult1 = ()->
+    !(FavouritePosts.find({userId: Session.get("ProfileUserId1")}).count() < Session.get("favouritepostsLimit1"))
+  hasMoreResult2 = ()->
+    !(FavouritePosts.find({userId: Session.get("ProfileUserId2")}).count() < Session.get("favouritepostsLimit2"))
+  hasMoreResult3 = ()->
+    !(FavouritePosts.find({userId: Session.get("ProfileUserId3")}).count() < Session.get("favouritepostsLimit3"))
   updateMeetsCount = (userId)->
     meetInfo = PostFriends.findOne({me:Meteor.userId(),ta:userId})
     if(meetInfo)
@@ -131,6 +137,7 @@ if Meteor.isClient
       requesterIcon:Meteor.user().profile.icon
       requesterId:Meteor.userId()
     }
+  ###  
   openPostbyPostId = (postId)->
     if PopUpBox
       PopUpBox.close()
@@ -141,10 +148,12 @@ if Meteor.isClient
       Session.set("lastPost",postId)
       Router.go '/posts/'+postId
       #,300
+  ###
   # Initialize the Swiper
   Meteor.startup ()->
-    #@UserProfilesSwiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
-    @UserProfilesSwiper = new Swipe(['userProfilePage'])
+    @UserProfilesSwiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
+    #@UserProfilesSwiper = new Swipe(['userProfilePage'])
+    ###
     UserProfilesSwiper.click 'userProfilePage','.postImages ul li',(e,t)->
       openPostbyPostId(e.currentTarget.id)
     UserProfilesSwiper.click 'userProfilePage1','.postImages ul li',(e,t)->
@@ -153,21 +162,30 @@ if Meteor.isClient
       openPostbyPostId(e.currentTarget.id)
     UserProfilesSwiper.click 'userProfilePage3','.postImages ul li',(e,t)->
       openPostbyPostId(e.currentTarget.id)
+    ###
   Template.userProfile.helpers
     Swiper: -> UserProfilesSwiper
   Template.userProfile.onRendered ->
     # starting page
+    Session.set("postPageScrollTop", 0)
     console.log 'Showing userProfile'
-    UserProfilesSwiper.setInitialPage 'userProfilePage'
+    Session.set('favouritepostsLimit1', 10)
+    Session.set('favouritepostsLimit2', 10)
+    Session.set('favouritepostsLimit3', 10)
+    UserProfilesSwiper.setInitialPage 'userProfilePage1'
     if window.userProfileTrackerHandler
       window.userProfileTrackerHandler.stop()
       window.userProfileTrackerHandler = null
     Tracker.autorun (handler)->
       window.userProfileTrackerHandler = handler
+      Session.set('favouritepostsLimit1', 10)
+      Session.set('favouritepostsLimit2', 10)
+      Session.set('favouritepostsLimit3', 10)
       if UserProfilesSwiper.pageIs('userProfilePage1')
         if Session.get("currentPageIndex") isnt 1 and Session.get("currentPageIndex") isnt -1
           updateMeetsCount Session.get("ProfileUserId1")
           userProfileList = Session.get("userProfileList")
+          Session.set("momentsitemsLimit", 10)
           if Session.get("currentPageIndex") is 2
             currentProfileIndex = Session.get("currentProfileIndex")-1
             if currentProfileIndex < 0
@@ -202,6 +220,7 @@ if Meteor.isClient
         if Session.get("currentPageIndex") isnt 2
           updateMeetsCount Session.get("ProfileUserId2")
           userProfileList = Session.get("userProfileList")
+          Session.set("momentsitemsLimit", 10)
           if Session.get("currentPageIndex") is 1
             currentProfileIndex = Session.get("currentProfileIndex")+1
             if currentProfileIndex >  userProfileList.length-1
@@ -233,6 +252,7 @@ if Meteor.isClient
         if Session.get("currentPageIndex") isnt 3
           updateMeetsCount Session.get("ProfileUserId3")
           userProfileList = Session.get("userProfileList")
+          Session.set("momentsitemsLimit", 10)
           if Session.get("currentPageIndex") is 1
             currentProfileIndex = Session.get("currentProfileIndex")-1
             if currentProfileIndex < 0
@@ -298,8 +318,22 @@ if Meteor.isClient
     AddFriend:->
       Meteor.subscribe("friendFeeds", Session.get("ProfileUserId1"),Meteor.userId())
       addstr = '添加'
+      if Cookies.check("display-lang")
+        if Cookies.get("display-lang") is 'en'
+          addstr = 'Add'
+        else
+          addstr = '添加'
+      else
+        addstr = '添加'
       if Feeds.find({requesteeId:Session.get("ProfileUserId1"),requesterId:Meteor.userId()}).count()>0
         addstr = '已发送邀请'
+        if Cookies.check("display-lang")
+          if Cookies.get("display-lang") is 'en'
+            addstr = 'Invitation has been sent'
+          else
+            addstr = '已发送邀请'
+        else
+          addstr = '已发送邀请'
       addstr
     withChat:->
       withChat
@@ -359,6 +393,16 @@ if Meteor.isClient
         Router.go '/posts/'+postId
         #,300
     ###
+    'click .postImages ul li':(e)->
+      postId = e.currentTarget.id
+      $(window).children().off()
+      $(window).unbind('scroll')
+      if PopUpBox
+        PopUpBox.close()
+      Meteor.setTimeout ()->
+        Session.set("Social.LevelOne.Menu",'contactsList')
+        Router.go '/posts/'+postId
+      ,300
     'click #addToContactList': ()->
       addToContactList("ProfileUserId1")
   Template.userProfilePage2.rendered=->
@@ -396,8 +440,22 @@ if Meteor.isClient
     AddFriend:->
       Meteor.subscribe("friendFeeds", Session.get("ProfileUserId1"),Meteor.userId())
       addstr = '添加'
+      if Cookies.check("display-lang")
+        if Cookies.get("display-lang") is 'en'
+          addstr = 'Add'
+        else
+          addstr = '添加'
+      else
+        addstr = '添加'
       if Feeds.find({requesteeId:Session.get("ProfileUserId2"),requesterId:Meteor.userId()}).count()>0
         addstr = '已发送邀请'
+        if Cookies.check("display-lang")
+          if Cookies.get("display-lang") is 'en'
+            addstr = 'Invitation has been sent'
+          else
+            addstr = '已发送邀请'
+        else
+          addstr = '已发送邀请'
       addstr
     withChat:->
       withChat
@@ -457,6 +515,16 @@ if Meteor.isClient
         Router.go '/posts/'+postId
         #,300
     ###
+    'click .postImages ul li':(e)->
+      postId = e.currentTarget.id
+      $(window).children().off()
+      $(window).unbind('scroll')
+      if PopUpBox
+        PopUpBox.close()
+      Meteor.setTimeout ()->
+        Session.set("Social.LevelOne.Menu",'contactsList')
+        Router.go '/posts/'+postId
+      ,300    
     'click #addToContactList': ()->
       addToContactList("ProfileUserId2")
 
@@ -495,8 +563,22 @@ if Meteor.isClient
     AddFriend:->
       Meteor.subscribe("friendFeeds", Session.get("ProfileUserId1"),Meteor.userId())
       addstr = '添加'
+      if Cookies.check("display-lang")
+        if Cookies.get("display-lang") is 'en'
+          addstr = 'Add'
+        else
+          addstr = '添加'
+      else
+        addstr = '添加'
       if Feeds.find({requesteeId:Session.get("ProfileUserId3"),requesterId:Meteor.userId()}).count()>0
         addstr = '已发送邀请'
+        if Cookies.check("display-lang")
+          if Cookies.get("display-lang") is 'en'
+            addstr = 'Invitation has been sent'
+          else
+            addstr = '已发送邀请'
+        else
+          addstr = '已发送邀请'
       addstr
     withChat:->
       withChat
@@ -536,6 +618,7 @@ if Meteor.isClient
       if window.userProfileTrackerHandler
         window.userProfileTrackerHandler.stop()
         window.userProfileTrackerHandler = null
+      Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
         PopUpBox.close()
     'click #suggestCurrentPost': ()->
@@ -555,6 +638,16 @@ if Meteor.isClient
         Router.go '/posts/'+postId
         #,300
     ###
+    'click .postImages ul li':(e)->
+      postId = e.currentTarget.id
+      $(window).children().off()
+      $(window).unbind('scroll')
+      if PopUpBox
+        PopUpBox.close()
+      Meteor.setTimeout ()->
+        Session.set("Social.LevelOne.Menu",'contactsList')
+        Router.go '/posts/'+postId
+      ,300
     'click #addToContactList': ()->
       addToContactList("ProfileUserId3")
 
@@ -631,6 +724,16 @@ if Meteor.isClient
       Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
         PopUpBox.close()
+    'click .postImages ul li':(e)->
+      postId = e.currentTarget.id
+      $(window).children().off()
+      $(window).unbind('scroll')
+      if PopUpBox
+        PopUpBox.close()
+      Meteor.setTimeout ()->
+        Session.set("Social.LevelOne.Menu",'contactsList')
+        Router.go '/posts/'+postId
+      ,300
   Template.favoritePosts.rendered=->
     $(window).scroll (event)->
       if Session.get("Social.LevelOne.Menu") is 'contactsList'
@@ -661,6 +764,126 @@ if Meteor.isClient
         if !~postIds.indexOf(item.postId)
           postIds.push(item.postId)
       )
+      Posts.find({_id: {$in: postIds}})
+    suggestPosts:()->
+      SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
+    loading:()->
+      Session.equals('momentsCollection','loading')
+    loadError:()->
+      Session.equals('momentsCollection','error')
+
+  Template.favoritePosts1.rendered=->
+    $(window).scroll (event)->
+      if Session.get("Social.LevelOne.Menu") is 'contactsList' and UserProfilesSwiper.getPage() is 'userProfilePage1'
+        MOMENTS_ITEMS_INCREMENT = 10;
+        console.log("moments window scroll event: "+event);
+        if window.innerHeight
+          winHeight = window.innerHeight
+        else
+          winHeight = $(window).height() # iphone fix
+        closeToBottom = ($(window).scrollTop() + winHeight > $(document).height() - 100);
+        #console.log('Close to bottom: '+closeToBottom)
+        if (closeToBottom and hasMoreResult1())
+          #if window.momentsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
+          if window.favouritepostsCollection1_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
+            console.log('Triggered data source refresh');
+            window.favouritepostsCollection1_getmore = 'inprogress'
+            Session.set("favouritepostsLimit1",Session.get("favouritepostsLimit1") + MOMENTS_ITEMS_INCREMENT);
+  Template.favoritePosts1.helpers
+    isLoading:()->
+      (Session.equals('newLayoutImageDownloading',true) or
+        #!Session.equals('momentsCollection_getmore','done')) and
+        !Session.equals('favouritepostsCollection1_getmore','done')) and
+        Session.equals("SocialOnButton",'contactsList')
+    onPostId:()->
+      Session.get("postContent")._id
+    favoritePosts1:()->
+      #NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}})
+      postIds = []
+      FavouritePosts.find({userId: Session.get("ProfileUserId1")}).forEach((item) ->
+        if !~postIds.indexOf(item.postId)
+          postIds.push(item.postId)
+      )
+      console.log(postIds)
+      Posts.find({_id: {$in: postIds}})
+    suggestPosts:()->
+      SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
+    loading:()->
+      Session.equals('momentsCollection','loading')
+    loadError:()->
+      Session.equals('momentsCollection','error')
+  Template.favoritePosts2.rendered=->
+    $(window).scroll (event)->
+      if Session.get("Social.LevelOne.Menu") is 'contactsList' and UserProfilesSwiper.getPage() is 'userProfilePage2'
+        MOMENTS_ITEMS_INCREMENT = 10;
+        #console.log("moments window scroll event: "+event);
+        if window.innerHeight
+          winHeight = window.innerHeight
+        else
+          winHeight = $(window).height() # iphone fix
+        closeToBottom = ($(window).scrollTop() + winHeight > $(document).height() - 100);
+        #console.log('Close to bottom: '+closeToBottom)
+        if (closeToBottom and hasMoreResult2())
+          if window.favouritepostsCollection2_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
+            console.log('Triggered data source refresh');
+            window.favouritepostsCollection2_getmore = 'inprogress'
+            Session.set("favouritepostsLimit2",Session.get("favouritepostsLimit2") + MOMENTS_ITEMS_INCREMENT);
+  Template.favoritePosts2.helpers
+    isLoading:()->
+      (Session.equals('newLayoutImageDownloading',true) or
+        #!Session.equals('momentsCollection_getmore','done')) and
+        !Session.equals('favouritepostsCollection2_getmore','done')) and
+        Session.equals("SocialOnButton",'contactsList')
+    onPostId:()->
+      Session.get("postContent")._id
+    favoritePosts2:()->
+      #NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}})
+      postIds = []
+      FavouritePosts.find({userId: Session.get("ProfileUserId2")}).forEach((item) ->
+        if !~postIds.indexOf(item.postId)
+          postIds.push(item.postId)
+      )
+      console.log(postIds)
+      Posts.find({_id: {$in: postIds}})
+    suggestPosts:()->
+      SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
+    loading:()->
+      Session.equals('momentsCollection','loading')
+    loadError:()->
+      Session.equals('momentsCollection','error')
+  Template.favoritePosts3.rendered=->
+    $(window).scroll (event)->
+      if Session.get("Social.LevelOne.Menu") is 'contactsList' and UserProfilesSwiper.getPage() is 'userProfilePage3'
+        MOMENTS_ITEMS_INCREMENT = 10;
+        #console.log("moments window scroll event: "+event);
+        if window.innerHeight
+          winHeight = window.innerHeight
+        else
+          winHeight = $(window).height() # iphone fix
+        closeToBottom = ($(window).scrollTop() + winHeight > $(document).height() - 100);
+        #console.log('Close to bottom: '+closeToBottom)
+        if (closeToBottom and hasMoreResult3())
+          if window.favouritepostsCollection3_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
+            console.log('Triggered data source refresh');
+            window.favouritepostsCollection3_getmore = 'inprogress'
+            #Session.set("momentsitemsLimit",Session.get("momentsitemsLimit") + MOMENTS_ITEMS_INCREMENT);
+            Session.set("favouritepostsLimit3",Session.get("favouritepostsLimit3") + MOMENTS_ITEMS_INCREMENT);
+  Template.favoritePosts3.helpers
+    isLoading:()->
+      (Session.equals('newLayoutImageDownloading',true) or
+        #!Session.equals('momentsCollection_getmore','done')) and
+        !Session.equals('favouritepostsCollection3_getmore','done')) and
+        Session.equals("SocialOnButton",'contactsList')
+    onPostId:()->
+      Session.get("postContent")._id
+    favoritePosts3:()->
+      #NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}})
+      postIds = []
+      FavouritePosts.find({userId: Session.get("ProfileUserId3")}).forEach((item) ->
+        if !~postIds.indexOf(item.postId)
+          postIds.push(item.postId)
+      )
+      console.log(postIds)
       Posts.find({_id: {$in: postIds}})
     suggestPosts:()->
       SuggestPosts.find({},{sort: {createdAt: -1},limit:10})

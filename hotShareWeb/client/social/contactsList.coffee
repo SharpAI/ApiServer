@@ -10,7 +10,7 @@ if Meteor.isClient
         Meteor.subscribe 'followToWithLimit', 9999
     ###
   onUserProfile = ->
-    Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId"), 10)
+    #Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId"), 10)
     @PopUpBox = $('.popUpBox').bPopup
       positionStyle: 'fixed'
       position: [0, 0]
