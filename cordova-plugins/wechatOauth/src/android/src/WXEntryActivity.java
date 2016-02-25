@@ -28,9 +28,9 @@ import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
-public class WXEntryOauthActivity extends Activity implements IWXAPIEventHandler {
+public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 
-	final String TAG = "WXEntryOauthActivity";
+	final String TAG = "WXEntryActivity";
 
 	final String APP_ID = "wxcfcf19c225a36351";
 	private IWXAPI api;
@@ -50,7 +50,7 @@ public class WXEntryOauthActivity extends Activity implements IWXAPIEventHandler
 	}
 
 
-	public void getOauthToken(String code) {
+	public void getToken(String code) {
 		String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + APP_ID + "&secret=dbafa3cb0167bbb80bb201ba10127da4&code=" + code + "&grant_type=authorization_code";
 		RequestQueue mQueue = Volley.newRequestQueue(getApplicationContext());
 		mQueue.add(new JsonObjectRequest(Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -71,7 +71,7 @@ public class WXEntryOauthActivity extends Activity implements IWXAPIEventHandler
 			public void onErrorResponse(VolleyError response) {
 				response.printStackTrace();
 				WechatOauth.wechat.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
-				WXEntryOauthActivity.this.finish();
+				WXEntryActivity.this.finish();
 			}
 		}));
 		mQueue.start();
@@ -100,7 +100,7 @@ public class WXEntryOauthActivity extends Activity implements IWXAPIEventHandler
 					e.printStackTrace();
 				}
 				WechatOauth.wechat.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, response));
-				WXEntryOauthActivity.this.finish();
+				WXEntryActivity.this.finish();
 			}
 
 		}, new Response.ErrorListener() {
@@ -109,7 +109,7 @@ public class WXEntryOauthActivity extends Activity implements IWXAPIEventHandler
 			public void onErrorResponse(VolleyError response) {
 				response.printStackTrace();
 				WechatOauth.wechat.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
-				WXEntryOauthActivity.this.finish();
+				WXEntryActivity.this.finish();
 			}
 		}) {
 			@Override
@@ -133,7 +133,7 @@ public class WXEntryOauthActivity extends Activity implements IWXAPIEventHandler
 			public void onResponse(JSONObject response) {
 				Log.d(TAG, response.toString());
 				WechatOauth.wechat.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
-				WXEntryOauthActivity.this.finish();
+				WXEntryActivity.this.finish();
 			}
 
 		}, new Response.ErrorListener() {
@@ -142,7 +142,7 @@ public class WXEntryOauthActivity extends Activity implements IWXAPIEventHandler
 			public void onErrorResponse(VolleyError response) {
 				response.printStackTrace();
 				WechatOauth.wechat.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
-				WXEntryOauthActivity.this.finish();
+				WXEntryActivity.this.finish();
 			}
 		}));
 		mQueue.start();
@@ -160,11 +160,11 @@ public class WXEntryOauthActivity extends Activity implements IWXAPIEventHandler
 			switch (resp.getType()) {
 			case ConstantsAPI.COMMAND_SENDAUTH: {
 				SendAuth.Resp r = (SendAuth.Resp) resp;
-				getOauthToken(r.code);
+				getToken(r.code);
 				break;
 			}
 			default: {
-				WXEntryOauthActivity.this.finish();
+				WXEntryActivity.this.finish();
 				break;
 			}
 			}
@@ -172,15 +172,15 @@ public class WXEntryOauthActivity extends Activity implements IWXAPIEventHandler
 		}
 		case BaseResp.ErrCode.ERR_USER_CANCEL:
 			WechatOauth.wechat.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR));
-			WXEntryOauthActivity.this.finish();
+			WXEntryActivity.this.finish();
 			break;
 		case BaseResp.ErrCode.ERR_AUTH_DENIED:
 			WechatOauth.wechat.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR));
-			WXEntryOauthActivity.this.finish();
+			WXEntryActivity.this.finish();
 			break;
 		default:
 			WechatOauth.wechat.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR));
-			WXEntryOauthActivity.this.finish();
+			WXEntryActivity.this.finish();
 			break;
 		}
 

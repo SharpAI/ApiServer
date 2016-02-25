@@ -13,7 +13,7 @@ import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 public class WechatOauth extends CordovaPlugin {
-  public static String TAG = "WechatOauth";
+  public static String TAG = "Wechat";
   public CallbackContext callbackContext;
 
   private IWXAPI api;
