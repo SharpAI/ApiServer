@@ -369,7 +369,7 @@ if Meteor.isClient
       options = {
         'androidTheme': window.plugins.actionsheet.ANDROID_THEMES.THEME_HOLO_LIGHT, # default is THEME_TRADITIONAL
         'title': '分享',
-        'buttonLabels': ['分享给微信好友', '分享到微信朋友圈','分享到QQ','分享到更多应用'],
+        'buttonLabels': ['分享给微信好友', '分享到微信朋友圈','分享到QQ','分享到QQ空间','分享到更多应用'],
         'androidEnableCancelButton' : true, #default false
         'winphoneEnableCancelButton' : true, #default false
         'addCancelButtonWithLabel': '取消',
