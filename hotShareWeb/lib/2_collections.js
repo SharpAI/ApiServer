@@ -1323,19 +1323,32 @@ if(Meteor.isServer){
     else {
         try {
             var self = this;
-            var info = Meteor.users.findOne({_id: id}, {
-                fields: {
+            var handle = Meteor.users.find({_id: id},
+                {
                     'username': 1,
                     'email': 1, 'profile.fullname': 1, 'profile.icon': 1, 'profile.desc': 1, 'profile.location': 1,
                     'profile.lastLogonIP': 1
                 }
+            ).observeChanges({
+                added: function (id,fields) {
+                    self.added("userDetail", id, fields);
+                },
+                changed: function (id,fields) {
+                    try{
+                        self.changed("userDetail", id, fields);
+                    }catch(error){
+                    }
+                }
             });
-            self.added("userDetail", info._id, info);
-            getViewLists(self, info._id, 3);
+            getViewLists(self, id, 3);
+            self.ready();
+            self.onStop(function () {
+                handle.stop();
+            });
         } catch (error) {
         }
-        return Meteor.users.find({_id: id}, {
-            fields: {
+        return Meteor.users.find({_id: id},
+            {
                 'username': 1,
                 'email': 1,
                 'profile.fullname': 1,
@@ -1343,7 +1356,7 @@ if(Meteor.isServer){
                 'profile.desc': 1,
                 'profile.location': 1
             }
-        });
+        );
     }
   });
   Meteor.publish("usersById", function (userId) {
@@ -1807,6 +1820,24 @@ if(Meteor.isServer){
     update: function (userId, doc) {
       return doc.userId === userId;
     }
+  });
+  Meteor.users.deny({
+      //A profile object that is completely writeable by default, even after you return false in Meteor.users.allow().
+      update: function (userId, doc, fieldNames, modifier) {
+          if(fieldNames.toString() === 'profile' && doc._id === userId && modifier.$set["profile.fullname"] !== undefined && doc.profile.fullname !== modifier.$set["profile.fullname"])
+          {
+              Meteor.defer(function(){
+                  try{
+                      Posts.update({owner: userId}, {$set: {'ownerName': modifier.$set["profile.fullname"]}});
+                      FollowPosts.update({owner: userId}, {$set: {'ownerName': modifier.$set["profile.fullname"]}});
+                  }
+                  catch(error){
+                      //console.log("update Posts and FollowPost get error:"+error);
+                  }
+              });
+          }
+          return doc._id !== userId
+      }
   });
   Meteor.users.allow({
     update: function (userId, doc, fieldNames, modifier) {
