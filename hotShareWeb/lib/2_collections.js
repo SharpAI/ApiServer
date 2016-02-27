@@ -686,6 +686,57 @@ if(Meteor.isServer){
                     });
                 }
 
+                //有人点评了您的转发，只支持Web端转发。--begin
+                //1.查谁转发了这个帖子
+                var fds=Feeds.find({postId:doc._id,eventType:"share"})
+                if(fds.count()>0)
+                {
+                    fds.forEach(function(data){
+                        //不是点评的人转发的，不是作者转发的
+                        if(data.followby !== userId && data.followby !== doc.owner)
+                        {
+                            var pfeeds = Feeds.findOne({
+                                owner: userId,
+                                followby: data.commentUserId,
+                                checked: false,
+                                postId: data.postId,
+                                pindex: pindex
+                            });
+                            if (pfeeds || needRemove) {
+                                //console.log("==================already have feed==========");
+                                if (pfeeds && needRemove)
+                                    Feeds.remove(pfeeds);
+                            } else {
+                                if (userinfo) {
+                                    //是否已经有消息提醒
+                                    if(Feeds.find({owner: userId,postId:doc._id,eventType:"pcomment",followby: data.followby,checked: false}).count()===0)
+                                    {
+                                        Feeds.insert({
+                                            owner: userId,
+                                            ownerName: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
+                                            ownerIcon: userinfo.profile.icon,
+                                            eventType: 'pcommentShare',
+                                            postId: data.postId,
+                                            postTitle: doc.title,
+                                            addontitle: doc.addontitle,
+                                            pindex: pindex,
+                                            mainImage: doc.mainImage,
+                                            createdAt: new Date(),
+                                            heart: 0,
+                                            retweet: 0,
+                                            comment: 0,
+                                            followby: data.followby,
+                                            checked: false
+                                        });
+                                    }
+                                }
+                            }
+
+                        }
+                    })
+                }
+                //有人点评了您的转发，只支持Web端转发。--end
+
                 //有人点评了您发表的帖子
                 if(doc.owner !== userId)
                 {

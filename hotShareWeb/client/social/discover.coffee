@@ -119,6 +119,11 @@ if Meteor.isClient
           Router.go '/posts/'+postId
         ,300
     Template.lpcomments.helpers
+     isCommentShare:->
+       if this.eventType is "pcommentShare"
+         true
+       else
+         false
      isShareFeed:->
         if this.eventType is "share"
           true
