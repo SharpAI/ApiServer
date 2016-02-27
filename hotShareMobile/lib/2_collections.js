@@ -686,6 +686,57 @@ if(Meteor.isServer){
                     });
                 }
 
+                //有人点评了您的转发，只支持Web端转发。--begin
+                //1.查谁转发了这个帖子
+                var fds=Feeds.find({postId:doc._id,eventType:"share"})
+                if(fds.count()>0)
+                {
+                    fds.forEach(function(data){
+                        //不是点评的人转发的，不是作者转发的
+                        if(data.followby !== userId && data.followby !== doc.owner)
+                        {
+                            var pfeeds = Feeds.findOne({
+                                owner: userId,
+                                followby: data.commentUserId,
+                                checked: false,
+                                postId: data.postId,
+                                pindex: pindex
+                            });
+                            if (pfeeds || needRemove) {
+                                //console.log("==================already have feed==========");
+                                if (pfeeds && needRemove)
+                                    Feeds.remove(pfeeds);
+                            } else {
+                                if (userinfo) {
+                                    //是否已经有消息提醒
+                                    if(Feeds.find({owner: userId,postId:doc._id,eventType:"pcomment",followby: data.followby,checked: false}).count()===0)
+                                    {
+                                        Feeds.insert({
+                                            owner: userId,
+                                            ownerName: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
+                                            ownerIcon: userinfo.profile.icon,
+                                            eventType: 'pcommentShare',
+                                            postId: data.postId,
+                                            postTitle: doc.title,
+                                            addontitle: doc.addontitle,
+                                            pindex: pindex,
+                                            mainImage: doc.mainImage,
+                                            createdAt: new Date(),
+                                            heart: 0,
+                                            retweet: 0,
+                                            comment: 0,
+                                            followby: data.followby,
+                                            checked: false
+                                        });
+                                    }
+                                }
+                            }
+
+                        }
+                    })
+                }
+                //有人点评了您的转发，只支持Web端转发。--end
+
                 //有人点评了您发表的帖子
                 if(doc.owner !== userId)
                 {
@@ -1323,19 +1374,32 @@ if(Meteor.isServer){
     else {
         try {
             var self = this;
-            var info = Meteor.users.findOne({_id: id}, {
-                fields: {
+            var handle = Meteor.users.find({_id: id},
+                {
                     'username': 1,
                     'email': 1, 'profile.fullname': 1, 'profile.icon': 1, 'profile.desc': 1, 'profile.location': 1,
                     'profile.lastLogonIP': 1
                 }
+            ).observeChanges({
+                added: function (id,fields) {
+                    self.added("userDetail", id, fields);
+                },
+                changed: function (id,fields) {
+                    try{
+                        self.changed("userDetail", id, fields);
+                    }catch(error){
+                    }
+                }
             });
-            self.added("userDetail", info._id, info);
-            getViewLists(self, info._id, 3);
+            getViewLists(self, id, 3);
+            self.ready();
+            self.onStop(function () {
+                handle.stop();
+            });
         } catch (error) {
         }
-        return Meteor.users.find({_id: id}, {
-            fields: {
+        return Meteor.users.find({_id: id},
+            {
                 'username': 1,
                 'email': 1,
                 'profile.fullname': 1,
@@ -1343,7 +1407,7 @@ if(Meteor.isServer){
                 'profile.desc': 1,
                 'profile.location': 1
             }
-        });
+        );
     }
   });
   Meteor.publish("usersById", function (userId) {
@@ -1807,6 +1871,24 @@ if(Meteor.isServer){
     update: function (userId, doc) {
       return doc.userId === userId;
     }
+  });
+  Meteor.users.deny({
+      //A profile object that is completely writeable by default, even after you return false in Meteor.users.allow().
+      update: function (userId, doc, fieldNames, modifier) {
+          if(fieldNames.toString() === 'profile' && doc._id === userId && modifier.$set["profile.fullname"] !== undefined && doc.profile.fullname !== modifier.$set["profile.fullname"])
+          {
+              Meteor.defer(function(){
+                  try{
+                      Posts.update({owner: userId}, {$set: {'ownerName': modifier.$set["profile.fullname"]}});
+                      FollowPosts.update({owner: userId}, {$set: {'ownerName': modifier.$set["profile.fullname"]}});
+                  }
+                  catch(error){
+                      //console.log("update Posts and FollowPost get error:"+error);
+                  }
+              });
+          }
+          return doc._id !== userId
+      }
   });
   Meteor.users.allow({
     update: function (userId, doc, fieldNames, modifier) {
