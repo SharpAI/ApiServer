@@ -8,7 +8,13 @@
             <div class="box accounts-list">
                 <dl>
                     <dt class="active"><img src="{{currentUser.profile.icon}}" alt="Avatar"><i class="fa fa-check-circle"></i></dt>
-                    <dd>{{currentUser.username}}</dd>
+                    <dd>
+                        {{#if currentUser.profile.fullname}}
+                            {{currentUser.profile.fullname}}
+                        {{else}}
+                            {{currentUser.username}}
+                        {{/if}}
+                    </dd>
                 </dl>            
                 {{#each accountList}}
                     {{> accounts_management_item}}
@@ -26,7 +32,14 @@
 <template name="accounts_management_item">
     <dl>
         <dt><img src="{{profile.icon}}" alt="Avatar"><i class="fa fa-check-circle"></i></dt>
-        <dd>{{username}}<span class="remove"><i class="fa fa-times"></i></span></dd>
+        <dd>
+            {{#if profile.fullname}}
+                {{profile.fullname}}
+            {{else}}
+                {{username}}
+            {{/if}}
+            <span class="remove"><i class="fa fa-times"></i></span>
+        </dd>
     </dl>
 </template>
 
