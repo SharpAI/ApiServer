@@ -155,7 +155,12 @@ if Meteor.isClient
           if !~postIds.indexOf(item.postId)
             postIds.push(item.postId)
       )
-      Posts.find({_id: {$in: postIds}})
+      #Posts.find({_id: {$in: postIds}})
+      posts = Posts.find({_id: {$in: postIds}}).fetch()
+      posts.sort((p1, p2)->
+        return -(FavouritePosts.findOne({postId: p1._id, userId: Meteor.userId()}).createdAt - FavouritePosts.findOne({postId: p2._id, userId: Meteor.userId()}).createdAt)
+      )
+      posts
       #SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
   Template.myFavouritePosts.events
     'click .removefavp': (e, t) ->

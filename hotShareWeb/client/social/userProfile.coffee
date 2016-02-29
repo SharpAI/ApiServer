@@ -805,7 +805,12 @@ if Meteor.isClient
           postIds.push(item.postId)
       )
       console.log(postIds)
-      Posts.find({_id: {$in: postIds}})
+      #Posts.find({_id: {$in: postIds}})
+      posts = Posts.find({_id: {$in: postIds}}).fetch()
+      posts.sort((p1, p2)->
+        return -(FavouritePosts.findOne({postId: p1._id, userId: Session.get("ProfileUserId1")}).createdAt - FavouritePosts.findOne({postId: p2._id, userId: Session.get("ProfileUserId1")}).createdAt)
+      )
+      posts
     suggestPosts:()->
       SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
     loading:()->
@@ -844,7 +849,12 @@ if Meteor.isClient
           postIds.push(item.postId)
       )
       console.log(postIds)
-      Posts.find({_id: {$in: postIds}})
+      #Posts.find({_id: {$in: postIds}})
+      posts = Posts.find({_id: {$in: postIds}}).fetch()
+      posts.sort((p1, p2)->
+        return -(FavouritePosts.findOne({postId: p1._id, userId: Session.get("ProfileUserId2")}).createdAt - FavouritePosts.findOne({postId: p2._id, userId: Session.get("ProfileUserId2")}).createdAt)
+      )
+      posts
     suggestPosts:()->
       SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
     loading:()->
@@ -884,7 +894,12 @@ if Meteor.isClient
           postIds.push(item.postId)
       )
       console.log(postIds)
-      Posts.find({_id: {$in: postIds}})
+      #Posts.find({_id: {$in: postIds}})
+      posts = Posts.find({_id: {$in: postIds}}).fetch()
+      posts.sort((p1, p2)->
+        return -(FavouritePosts.findOne({postId: p1._id, userId: Session.get("ProfileUserId3")}).createdAt - FavouritePosts.findOne({postId: p2._id, userId: Session.get("ProfileUserId3")}).createdAt)
+      )
+      posts      
     suggestPosts:()->
       SuggestPosts.find({},{sort: {createdAt: -1},limit:10})
     loading:()->
