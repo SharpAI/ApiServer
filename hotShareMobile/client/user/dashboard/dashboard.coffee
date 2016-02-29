@@ -4,6 +4,9 @@ if Meteor.isClient
     if Session.get('dashboardHeight') is undefined
       Session.set('dashboardHeight', $(window).height())
     $('.dashboard').css 'min-height', Session.get('dashboardHeight')
+    $('body').css('height', 'auto')
+  Template.dashboard.onDestroyed ()->
+    $('body').css('height', '100%')
   Template.dashboard.helpers
     userEmail :->
       if Meteor.user()
