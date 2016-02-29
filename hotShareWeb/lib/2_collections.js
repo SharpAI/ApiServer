@@ -741,7 +741,8 @@ if(Meteor.isServer){
                 if(doc.owner !== userId)
                 {
                     var pfeeds=Feeds.findOne({owner:userId,followby:doc.owner,checked:false,postId:doc._id,pindex:pindex});
-                    if(pfeeds || needRemove){
+                    //if(pfeeds || needRemove){
+                    if(needRemove){
                         //console.log("==================already have feed==========");
                         if(pfeeds && needRemove)
                             Feeds.remove(pfeeds);
