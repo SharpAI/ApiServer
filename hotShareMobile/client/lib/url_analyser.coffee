@@ -770,12 +770,19 @@ if Meteor.isClient
           if styleAlign is undefined
             resortedArticle.push {type:'text',text:text}
           else
-            resortedArticle.push {type:'text',text:text,layout:{align:styleAlign}}
+            if styleAlign.textAlign and styleAlign.fontWeight
+              resortedArticle.push {type:'text',text:text,layout:{align:styleAlign.textAlign, weight:styleAlign.fontWeight}}
+            else if styleAlign.textAlign
+              resortedArticle.push {type:'text',text:text,layout:{align:styleAlign.textAlign}}
+            else if styleAlign.fontWeight
+              resortedArticle.push {type:'text',text:text,layout:{weight:styleAlign.fontWeight}}
+            else
+              resortedArticle.push {type:'text',text:text}
         if resortedArticle.length > 0
           lastArtical = resortedArticle[resortedArticle.length-1]
           if lastArtical.type is 'text'
             textArray = lastArtical.text.split('\n')
-            if textArray[textArray.length-1].length < 35 and styleAlign is (if lastArtical.layout then lastArtical.layout.align else undefined)
+            if textArray[textArray.length-1].length < 20 and styleAlign is (if lastArtical.layout then lastArtical.layout else undefined)
               lastArtical.text += '\n' + text
               if textArray[textArray.length-1].trim() isnt '' and textArray[textArray.length-1].trim() isnt '\n'
                 isShortParagraph = true
@@ -815,7 +822,7 @@ if Meteor.isClient
       console.log(extracted)
       
       toBeInsertedText = ''
-      toBeInsertedStyleAlign=''
+      toBeInsertedStyleAlign={}
       previousIsImage = false
       resortedArticle = []
       sortedImages = 0
@@ -840,13 +847,13 @@ if Meteor.isClient
         nodeBackgroundColor = $(node).css('background-color')
         #iframeNumber = $(node).find('iframe').length
         console.log('    Node['+index+'] tagName '+node.tagName+' text '+node.textContent)
-        styleAlign=getStyleInItem(node,'textAlign')
-        console.log('    Got style '+styleAlign);
+        styleAlign={textAlign:getStyleInItem(node,'textAlign'), fontWeight:getStyleInItem(node,'fontWeight')}
+        console.log('    Got style '+JSON.stringify(styleAlign));
         if node.tagName is 'BR'
           if toBeInsertedText.length > 0
             appendParagraph(resortedArticle, toBeInsertedText, toBeInsertedStyleAlign)
             toBeInsertedText = ''
-            toBeInsertedStyleAlign = ''
+            toBeInsertedStyleAlign = {}
             previousIsSpan = false
             return true
         else if node.tagName is 'MUSICEXTRACTED'

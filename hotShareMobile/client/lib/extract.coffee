@@ -60,6 +60,7 @@ specialClassNameForPopularMobileSite = [
   '#j-body' # 企鹅FM 
   '.article' # 悦读FM 
   '.main_box' # QQ 音乐
+  '#page-content'   #xueqiu
 ]
 
 specialClassNameExcludeMobileSites = [
@@ -316,6 +317,24 @@ getCalculatedStyle=(node,prop)->
   catch error
     return null
   return null
+getSpecialTag=(node,specialTagName)->
+  try
+    $node=$(node)
+    while($node.parent().length>0)
+      tagName=$node.parent().get(0).tagName
+      if tagName and tagName isnt '' and tagName.toLowerCase() is specialTagName
+        return true
+      $node=$node.parent()
+  catch error
+    return false
+  return false
+cloneWithoutSibling=(parentNode, node)->
+  if parentNode is null or parentNode is undefined
+    return null
+  $parentNode=$(parentNode)
+  $cloneParent=$parentNode.clone().empty()
+  $cloneParent.append($(node).clone())
+  return $cloneParent.get(0)
 @extractScript = (page, getMusic)->
   parified = _.map($('<div>'+page.innerHTML+'</div>').find('*'), parify)
   for item in $(parified)
@@ -451,7 +470,11 @@ getCalculatedStyle=(node,prop)->
                 parentPNode.appendChild(node.parentNode)
             else
               if node.parentNode
-                newRoot.appendChild(node.parentNode)
+                #newRoot.appendChild(node.parentNode)
+                tmpParentNode = cloneWithoutSibling(node.parentNode, node)
+                if getSpecialTag(node, "strong") or getSpecialTag(node, "h1") or getSpecialTag(node, "h2") or getSpecialTag(node, "h3")
+                  storeStyleInItem(tmpParentNode, 'fontWeight', "bold")
+                newRoot.appendChild(tmpParentNode)
               else
                 p = document.createElement("P")
                 p.appendChild(node)
