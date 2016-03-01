@@ -155,12 +155,17 @@ Template.newLayoutContainer.events =
     if postId is undefined
       postId = this._id
     scrollTop = $(window).scrollTop()
+    currentPostId = Session.get("postContent")._id
+    postBack = Session.get("postBack")
+    postBack.push(currentPostId)
+    Session.set("postForward",[])
+    Session.set("postBack",postBack)
     Session.set("lastPost",postId)
     $(window).children().off()
     $(window).unbind('scroll')
     if typeof PopUpBox isnt "undefined"
       PopUpBox.close()
-    Router.go '/posts/'+postId
+    Router.go '/posts/' + postId
 Template.newLayoutContainer.helpers =
   displayId:()->
     if this.data and this.data.displayId

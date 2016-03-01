@@ -37,6 +37,9 @@ if Meteor.isClient
         refreshPostContent()
       )
     )
+    Session.set("postForward",[])
+    Session.set("postBack",[])
+    
     ###
     show big picture will trigger this event
     this code purpose only for width resize
@@ -140,8 +143,8 @@ if Meteor.isClient
         if Session.get('focusedIndex') isnt undefined and  $(".showPosts .gridster").isAboveViewPortBottom() and !amplify.store('section_'+Session.get('channel')) and !$('.commentOverlay').data('bPopup')
           $('body').attr('style','position:fixed;')
 #          $("body").css("overflow","hidden");
-          top = 2 * $(window).height()/5
-          left = $(window).width()/10
+          top = 2 * $(window).height()/ 5
+          left = $(window).width()/ 10
           #$('.commentOverlay').bPopup
           @PopUpBox = $('.popUpBox').bPopup
             positionStyle: 'fixed'
@@ -234,32 +237,42 @@ if Meteor.isClient
           count++
       count
     displayForwardBtn:()->
-      if history.length>1 and Session.get("historyForwardDisplay") is true
-        postId=Session.get("postContent")._id
-        lastId=Session.get("lastPost")
-        if postId isnt lastId
-          true
-        else
-          false
-      else
+      postForward = Session.get("postForward")
+      if postForward is undefined or postForward.length is 0
         false
+      else
+        true
+      # if history.length>1 and Session.get("historyForwardDisplay") is true
+      #   postId=Session.get("postContent")._id
+      #   lastId=Session.get("lastPost")
+      #   if postId isnt lastId
+      #     true
+      #   else
+      #     false
+      # else
+      #   false
     displayBackBtn:()->
-      if history.length>1
-        postId=Session.get("postContent")._id
-        firstId=Session.get("firstPost")
-        if postId isnt firstId
-          true
-        else
-          false
-      else
-        postId=Session.get("postContent")._id
-        Session.set("firstPost",postId)
+      postBack = Session.get("postBack")
+      if postBack is undefined or postBack.length is 0
         false
+      else
+        true
+      # if history.length>1
+      #   postId=Session.get("postContent")._id
+      #   firstId=Session.get("firstPost")
+      #   if postId isnt firstId
+      #     true
+      #   else
+      #     false
+      # else
+      #   postId=Session.get("postContent")._id
+      #   Session.set("firstPost",postId)
+      #   false
     getPub:->
       self = this
       self.pub = self.pub || []
       if withSponserLinkAds
-        position = 1+(self.pub.length/2)
+        position = 1+(self.pub.length / 2)
         self.pub.splice(position,0,{adv:true,type:'insertedLink',data_col:1,data_sizex:6,urlinfo:'http://cdn.tiegushi.com/posts/qwWdWJPMAbyeo8tiJ'})
         _.map self.pub, (doc, index, cursor)->
           if position < index
@@ -457,18 +470,39 @@ if Meteor.isClient
       if Meteor.isCordova and isIOS
         cordova.plugins.Keyboard.disableScroll(false)
     'click .showPosts .forward' :->
+      postId = Session.get("postContent")._id
+      postBack = Session.get("postBack")
+      postForward = Session.get("postForward")
+      postForwardId = postForward.pop()
+      postBack.push(postId)
+      console.log 'postForwardId' + postForwardId
+      Session.set("postForward",postForward)
+      Session.set("postBack",postBack)
+      
       Session.set("pcommetsId","")
       Session.set("pcommentsName","")
       $(window).children().off()
       $(window).unbind('scroll')
-      history.forward()
+      console.log 'postForwardId' + postBack
+      Router.go '/posts/' + postForwardId
+      # history.forward()
     'click .showPosts .back' :->
+      postId = Session.get("postContent")._id
+      postBack = Session.get("postBack")
+      postForward = Session.get("postForward")
+      postBackId = postBack.pop()
+      postForward.push(postId)
+      console.log 'postBackId' + postBackId
+      Session.set("postForward",postForward)
+      Session.set("postBack",postBack)
       Session.set("pcommetsId","")
       Session.set("pcommentsName","")
-      Session.set("historyForwardDisplay", true)
+      # Session.set("historyForwardDisplay", true)
       $(window).children().off()
       $(window).unbind('scroll')
-      history.back()
+      console.log 'postBackId' + postBackId
+      Router.go '/posts/' + postBackId
+      # history.back()
     'click #edit': (event)->
       #Clear draft first
       Drafts.remove({})

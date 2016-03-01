@@ -103,6 +103,11 @@ if Meteor.isClient
           postId = this._id
         $(window).children().off()
         $(window).unbind('scroll')
+        currentPostId = Session.get("postContent")._id
+        postBack = Session.get("postBack")
+        postBack.push(currentPostId)
+        Session.set("postForward",[])
+        Session.set("postBack",postBack)
         Meteor.setTimeout ()->
           Session.set("lastPost",postId)
           Router.go '/posts/'+postId
@@ -114,6 +119,11 @@ if Meteor.isClient
           postId = this._id
         $(window).children().off()
         $(window).unbind('scroll')
+        currentPostId = Session.get("postContent")._id
+        postBack = Session.get("postBack")
+        postBack.push(currentPostId)
+        Session.set("postForward",[])
+        Session.set("postBack",postBack)
         Meteor.setTimeout ()->
           Session.set("lastPost",postId)
           Router.go '/posts/'+postId
@@ -158,6 +168,10 @@ if Meteor.isClient
         if postId isnt id
           #$(window).children().off()
           #$(window).unbind('scroll')
+          postBack = Session.get("postBack")
+          postBack.push(id)
+          Session.set("postForward",[])
+          Session.set("postBack",postBack)
           Meteor.setTimeout ()->
             Session.set("lastPost",postId)
             Router.go '/posts/'+postId

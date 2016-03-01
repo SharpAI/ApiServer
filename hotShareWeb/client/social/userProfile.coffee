@@ -397,6 +397,11 @@ if Meteor.isClient
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
+      currentPostId = Session.get("postContent")._id
+      postBack = Session.get("postBack")
+      postBack.push(currentPostId)
+      Session.set("postForward",[])
+      Session.set("postBack",postBack)
       if PopUpBox
         PopUpBox.close()
       Meteor.setTimeout ()->
@@ -519,6 +524,11 @@ if Meteor.isClient
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
+      currentPostId = Session.get("postContent")._id
+      postBack = Session.get("postBack")
+      postBack.push(currentPostId)
+      Session.set("postForward",[])
+      Session.set("postBack",postBack)
       if PopUpBox
         PopUpBox.close()
       Meteor.setTimeout ()->
@@ -642,6 +652,11 @@ if Meteor.isClient
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
+      currentPostId = Session.get("postContent")._id
+      postBack = Session.get("postBack")
+      postBack.push(currentPostId)
+      Session.set("postForward",[])
+      Session.set("postBack",postBack)
       if PopUpBox
         PopUpBox.close()
       Meteor.setTimeout ()->
@@ -728,6 +743,11 @@ if Meteor.isClient
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
+      currentPostId = Session.get("postContent")._id
+      postBack = Session.get("postBack")
+      postBack.push(currentPostId)
+      Session.set("postForward",[])
+      Session.set("postBack",postBack)
       if PopUpBox
         PopUpBox.close()
       Meteor.setTimeout ()->
