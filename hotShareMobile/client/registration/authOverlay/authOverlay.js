@@ -102,9 +102,9 @@ if (Meteor.isClient) {
           PUB.toast('微信登陆失败');
           return console.log(err);
         } else {
-          if(Meteor.user().profile.new === undefined)
+          if(Meteor.user().profile.new === undefined || Meteor.user().profile.new === true)
           {
-              Meteor.users.update({_id: Meteor.userId()}, {$set: {"profile.new": false}});
+              Meteor.users.update({_id: Meteor.userId()}, {$set: {"profile.new": true}});
               return Router.go('/registerFollow');
           }
           else

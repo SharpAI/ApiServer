@@ -5,7 +5,10 @@ if Meteor.isClient
       # https://atmospherejs.com/u2622/persistent-session
       # Session.setAuth(key, value)
       # stores a authenticated session variable (persistent + automatic deletion)
-      Session.setPersistent('persistentLoginStatus',true)
+      if Meteor.user().profile.new is true
+        Session.setPersistent('persistentLoginStatus',false)
+      else
+        Session.setPersistent('persistentLoginStatus',true)
       Meteor.setTimeout ()->
         console.log("Accounts.onLogin")
         window.updateMyOwnLocationAddress();
