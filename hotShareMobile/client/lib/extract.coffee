@@ -61,6 +61,7 @@ specialClassNameForPopularMobileSite = [
   '.article' # 悦读FM 
   '.main_box' # QQ 音乐
   '#page-content'   #xueqiu
+  '#BODYCON'        #tripadvisor
 ]
 
 specialClassNameExcludeMobileSites = [
