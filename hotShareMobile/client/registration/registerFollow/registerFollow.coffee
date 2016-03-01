@@ -24,7 +24,10 @@ Template.registerFollow.helpers
       false
 Template.registerFollow.events
   'click #continue':->
-    Router.go('/') 
+    if Meteor.user().profile.new isnt undefined and Meteor.user().profile.new is true
+      Meteor.users.update({_id: Meteor.userId()}, {$set: {"profile.new": false}})
+      Session.setPersistent('persistentLoginStatus',true)
+    Router.go('/')
   'click .layer':(e)->
     fcount = Follower.find({"userId":Meteor.userId(),"followerId":@userId}).count()
     if fcount > 0
