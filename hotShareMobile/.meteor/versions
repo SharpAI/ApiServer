@@ -109,6 +109,7 @@ spacebars-compiler@1.0.7
 srp@1.0.4
 standard-minifiers@1.0.2
 tap:i18n@1.7.0
+tap:i18n-bundler@0.3.0
 templating@1.1.5
 templating-tools@1.0.0
 tmeasday:publish-counts@0.7.2
