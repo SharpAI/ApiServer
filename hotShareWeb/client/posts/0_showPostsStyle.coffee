@@ -20,4 +20,6 @@ postFontStyleQuota='font-size:15px;background:#F5F5F5;padding-left:3%;padding-ri
         alignStyle = "text-align:right;"
       else if layoutObj.align is 'center'
         alignStyle = "text-align:center;"
+    if layoutObj.weight
+      alignStyle = "font-weight:"+layoutObj.weight+";"
   fontStyle+alignStyle
