@@ -6,6 +6,11 @@
     </div>
     <div class="content">
       <ul class="mainImageListUl">
+        {{#each officialImages}}
+        <li style="background-image:url('http://data.tiegushi.com/ocmainimages/mainimage{{num}}.jpg');">
+          <input id="" uri="" class="mainImageListInput" type="checkbox" name="mainimage{{num}}.jpg" value="http://data.tiegushi.com/ocmainimages/mainimage{{num}}.jpg" />
+        </li>
+        {{/each}}
         {{#each images}}
         <li style="background-image:url('{{getImagePath imgUrl URI imageId}}');">
           <input id="{{imageId}}" uri="{{URI}}" class="mainImageListInput" type="checkbox" name="{{filename}}" value="{{imgUrl}}" />
