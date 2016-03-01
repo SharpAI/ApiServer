@@ -267,6 +267,7 @@
   "qqNotInstalled": "QQ not installed, fail to share",
   "preparePicAndWait": "preparing topic picture, please wait",
   "failToGetPicAndTryAgain": "could not get topic picture, try later please!",
-  "loginByWechat": "Login by Wechat"
+  "loginByWechat": "Login by Wechat",
+  "Account": "Account"
   //end
 }

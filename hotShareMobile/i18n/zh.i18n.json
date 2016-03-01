@@ -267,7 +267,8 @@
   "qqNotInstalled": "未安装QQ客户端，分享失败",
   "preparePicAndWait": "准备故事的主题图片，请稍等",
   "failToGetPicAndTryAgain": "无法获取故事标题图片，请稍后重试！",
-  "loginByWechat": "使用微信登录"
+  "loginByWechat": "使用微信登录",
+  "Account": "帐号管理"
   //end
 
 }
