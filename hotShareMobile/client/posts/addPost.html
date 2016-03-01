@@ -158,12 +158,24 @@
         <div class="modal-body">
           <dl>
             <dt class="active" userId="{{currentUser._id}}"><img src="{{currentUser.profile.icon}}" alt="Avatar"><i class="fa fa-check-circle"></i></dt>
-            <dd>{{currentUser.username}}</dd>
+            <dd>
+                {{#if currentUser.profile.fullname}}
+                    {{currentUser.profile.fullname}}
+                {{else}}
+                    {{currentUser.username}}
+                {{/if}}
+            </dd>
           </dl>
           {{#each accountList}}
             <dl>
               <dt userId="{{_id}}"><img src="{{profile.icon}}" alt="Avatar"><i class="fa fa-check-circle"></i></dt>
-              <dd>{{username}}</dd>
+              <dd>
+                  {{#if profile.fullname}}
+                      {{profile.fullname}}
+                  {{else}}
+                      {{username}}
+                  {{/if}}
+              </dd>
             </dl>
           {{/each}}          
         </div>
