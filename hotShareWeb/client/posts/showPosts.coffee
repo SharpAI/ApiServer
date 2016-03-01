@@ -341,6 +341,17 @@ if Meteor.isClient
         console.log('Selected index '+self.index)
         Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
   Template.showPosts.events
+    'click .unpublishWebPage': (e)->
+      postBack = Session.get("postBack")
+      postBackId = postBack.pop()
+      Session.set("postForward",[])
+      Session.set("postBack",postBack)
+      Session.set("pcommetsId","")
+      Session.set("pcommentsName","")
+      $(window).children().off()
+      $(window).unbind('scroll')
+      if postBackId isnt undefined
+        Router.go '/posts/' + postBackId
     'click .abstract_thumbsUp': (e)->
       i = Session.get('focusedIndex')
       commentOverlayThumbsUpHandler(i)
@@ -475,7 +486,6 @@ if Meteor.isClient
       postForward = Session.get("postForward")
       postForwardId = postForward.pop()
       postBack.push(postId)
-      console.log 'postForwardId' + postForwardId
       Session.set("postForward",postForward)
       Session.set("postBack",postBack)
       
@@ -483,8 +493,8 @@ if Meteor.isClient
       Session.set("pcommentsName","")
       $(window).children().off()
       $(window).unbind('scroll')
-      console.log 'postForwardId' + postBack
-      Router.go '/posts/' + postForwardId
+      if postForwardId isnt undefined
+        Router.go '/posts/' + postForwardId
       # history.forward()
     'click .showPosts .back' :->
       postId = Session.get("postContent")._id
@@ -492,7 +502,6 @@ if Meteor.isClient
       postForward = Session.get("postForward")
       postBackId = postBack.pop()
       postForward.push(postId)
-      console.log 'postBackId' + postBackId
       Session.set("postForward",postForward)
       Session.set("postBack",postBack)
       Session.set("pcommetsId","")
@@ -500,8 +509,8 @@ if Meteor.isClient
       # Session.set("historyForwardDisplay", true)
       $(window).children().off()
       $(window).unbind('scroll')
-      console.log 'postBackId' + postBackId
-      Router.go '/posts/' + postBackId
+      if postBackId isnt undefined
+        Router.go '/posts/' + postBackId
       # history.back()
     'click #edit': (event)->
       #Clear draft first
