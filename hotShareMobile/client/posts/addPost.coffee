@@ -1052,6 +1052,9 @@ if Meteor.isClient
         Router.go('/user')
         false
       else
+        if(!Meteor.status().connected and Meteor.status().status isnt 'connecting')
+          Meteor.reconnect()
+        
         title = $("#title").val()
         if title is '' or title is '[空标题]'
           $("#title").val('')
