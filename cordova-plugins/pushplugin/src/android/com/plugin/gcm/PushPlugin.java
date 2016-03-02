@@ -22,7 +22,7 @@ import java.util.Iterator;
 public class PushPlugin extends CordovaPlugin {
 	public static final String TAG = "PushPlugin";
 
-	public static final String REGISTER = "register";
+	public static final String REGISTER = "registered";
 	public static final String UNREGISTER = "unregister";
 	public static final String EXIT = "exit";
 

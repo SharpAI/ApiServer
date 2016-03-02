@@ -53,7 +53,7 @@ public class PushPlugin extends CordovaPlugin {
     private static Bundle gCachedExtras = null;
    
     
-    public static final String REGISTER = "register";
+    public static final String REGISTER = "registered";
     public static final String UNREGISTER = "unregister";
     public static final String REGISTER_EVENT = "registered";
     public static final String UNREGISTER_EVENT = "unregistered";

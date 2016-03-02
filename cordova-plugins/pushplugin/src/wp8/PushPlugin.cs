@@ -17,7 +17,7 @@ namespace WPCordovaClassLib.Cordova.Commands
         private const string MissingChannelError = "Couldn't find a channel with the specified name.";
         private Options pushOptions;
 
-        public void register(string options)
+        public void registered(string options)
         {
             if (!TryDeserializeOptions(options, out this.pushOptions))
             {

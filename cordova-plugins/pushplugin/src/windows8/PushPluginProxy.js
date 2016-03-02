@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Open Technologies, Inc.  Licensed under the MIT license. 
 
 module.exports = {
-    register: function (success, fail, args) {
+    registered: function (success, fail, args) {
         try {
             var onNotificationReceived = window[args[0].ecb];
 

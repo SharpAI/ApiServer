@@ -43,7 +43,7 @@
     [self successWithMessage:@"unregistered"];
 }
 
-- (void)register:(CDVInvokedUrlCommand*)command;
+- (void)registered:(CDVInvokedUrlCommand*)command;
 {
 	self.callbackId = command.callbackId;
 
