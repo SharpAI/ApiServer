@@ -72,6 +72,17 @@ if Meteor.isClient
       Meteor.setTimeout ()->
           document.body.scrollTop = Session.get("postPageScrollTop")
         , 280
+
+    Meteor.setTimeout ()->
+      $showPosts = $('.showPosts')
+      $test = $('.showPosts').find('.content .gridster #test')
+
+      if $test and $test.height() > 1000
+        $('.showPosts').get(0).style.overflow = 'hidden'
+        $('.showPosts').get(0).style.maxHeight = '1500px'
+        $('.showPosts').get(0).style.position = 'relative'
+        $showPosts.after('<div class="readmore">继续阅读<i class="fa fa-angle-double-down"></i><div>')
+    , 600        
   Template.showPosts.onRendered ->
     Session.setDefault "toasted",false
     Session.set('postfriendsitemsLimit', 10)
@@ -341,6 +352,13 @@ if Meteor.isClient
         console.log('Selected index '+self.index)
         Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
   Template.showPosts.events
+    'click .readmore': (e, t)->
+      if e.target is e.currentTarget
+        $showPosts = $('.showPosts')
+        $('.showPosts').get(0).style.overflow = ''
+        $('.showPosts').get(0).style.maxHeight = ''
+        $('.showPosts').get(0).style.position = ''
+        $(e.currentTarget).remove()  
     'click .unpublishWebPage': (e)->
       postBack = Session.get("postBack")
       postBackId = postBack.pop()

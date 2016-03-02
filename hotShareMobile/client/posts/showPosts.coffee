@@ -221,6 +221,19 @@ if Meteor.isClient
           console.log "sssdsdds"
           document.body.scrollTop = Session.get("changeNameBckScroll")
         , 450
+    
+
+    Meteor.setTimeout ()->
+      $showPosts = $('.showPosts')
+      $test = $('.showPosts').find('.content .gridster #test')
+
+      if $test and $test.height() > 1000
+        $('.showPosts').get(0).style.overflow = 'hidden'
+        $('.showPosts').get(0).style.maxHeight = '1500px'
+        $('.showPosts').get(0).style.position = 'relative'
+        $showPosts.after('<div class="readmore">' + (TAPi18n.__('readMore')) + '<i class="fa fa-angle-double-down"></i><div>')
+    , 600
+
   Template.showPosts.helpers
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
@@ -386,6 +399,13 @@ if Meteor.isClient
     else if action is 'post-tts'
       startPostTTS(self.index)
   Template.showPosts.events
+    'click .readmore': (e, t)->
+      if e.target is e.currentTarget
+        $showPosts = $('.showPosts')
+        $('.showPosts').get(0).style.overflow = ''
+        $('.showPosts').get(0).style.maxHeight = ''
+        $('.showPosts').get(0).style.position = ''
+        $(e.currentTarget).remove()
     'click .abstract_thumbsUp': (e)->
       i = Session.get('focusedIndex')
       commentOverlayThumbsUpHandler(i)
