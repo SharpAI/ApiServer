@@ -13,7 +13,7 @@ if Meteor.isServer
     apnsProductionCert = Assets.getText 'ios/apn-production/HotShare_PN_Production_Cert.pem'
     apnsProductionKey = Assets.getText 'ios/apn-production/HotShare_PN_Production_Key.pem'
     optionsProduction =
-        passphrase: '1234'
+        passphrase: '123456'
         certData: apnsProductionCert
         keyData: apnsProductionKey
         gateway: 'gateway.push.apple.com'
