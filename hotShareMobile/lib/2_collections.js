@@ -1880,8 +1880,8 @@ if(Meteor.isServer){
           {
               Meteor.defer(function(){
                   try{
-                      Posts.update({owner: userId}, {$set: {'ownerName': modifier.$set["profile.fullname"]}});
-                      FollowPosts.update({owner: userId}, {$set: {'ownerName': modifier.$set["profile.fullname"]}});
+                      Posts.update({owner: userId}, {$set: {'ownerName': modifier.$set["profile.fullname"]}},{ multi: true});
+                      FollowPosts.update({owner: userId}, {$set: {'ownerName': modifier.$set["profile.fullname"]}},{ multi: true});
                   }
                   catch(error){
                       //console.log("update Posts and FollowPost get error:"+error);
