@@ -49,6 +49,7 @@ if (Meteor.isCordova) {
         document.addEventListener("backbutton", eventBackButton, false); // 返回键
         document.addEventListener("pause", eventPause, false);//挂起
         document.addEventListener("resume", eventResume, false);
+        TAPi18n.precacheBundle = true;
         if(Cookies.check("display-lang")){
           var displayLang = Cookies.get("display-lang");
           Session.set("display_lang",displayLang)
