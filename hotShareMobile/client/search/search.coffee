@@ -1,24 +1,20 @@
 if Meteor.isClient
-  Template.search.rendered=->
-    Meteor.subscribe("topicposts")
+  Template.search.onRendered ()->
     Meteor.subscribe("topics")
+    Meteor.subscribe("topicposts")
+    topics = Topics.find({type:"topic"}, {sort: {posts: -1},limit:20})
+    themes = Topics.find({type:"theme"}, {sort: {posts: -1},limit:5})
+    if topics.count() > 0
+      Meteor.defer ()->
+        Session.setPersistent('persistentTopics',topics.fetch())
+    if themes.count() > 0
+      Meteor.defer ()->
+        Session.setPersistent('persistentThemes',themes.fetch())
   Template.search.helpers
     theme:()->
-      themes = Topics.find({type:"theme"}, {sort: {posts: -1}})
-      if themes.count() > 0
-        Meteor.defer ()->
-          Session.setPersistent('persistentThemes',themes.fetch())
-        return themes
-      else
-        Session.get('persistentThemes')
+      Session.get('persistentThemes')
     topic:()->
-      topics = Topics.find({type:"topic"}, {sort: {posts: -1},limit:20})
-      if topics.count() > 0
-        Meteor.defer ()->
-          Session.setPersistent('persistentTopics',topics.fetch())
-        return topics
-      else
-        Session.get('persistentTopics')
+      Session.get('persistentTopics')
   Template.search.events
     'focus #search-box': (event)->
        PUB.page '/searchPeopleAndTopic'
@@ -32,7 +28,7 @@ if Meteor.isClient
        Session.set "topicId", @_id
        Session.set "topicTitle", "#"+ @text + "#"
        PUB.page '/topicPosts'
-  Template.searchFollow.rendered=->
+  Template.searchFollow.onRendered ()->
     Session.set('isSearching', false)
     Meteor.subscribe 'follows'
     $('#search-box').bind('propertychange input',(e)->
@@ -138,9 +134,9 @@ if Meteor.isClient
       else
         true
   Template.searchPeopleAndTopic.onCreated ()->
-    Meteor.subscribe("topicposts")
     Meteor.subscribe("topics")
-  Template.searchPeopleAndTopic.rendered=->
+    Meteor.subscribe("topicposts")
+  Template.searchPeopleAndTopic.onRendered ()->
     Session.setDefault('is_people', true)
     $('#search-box').bind('propertychange input',(e)->
        text = $(e.target).val().trim()
