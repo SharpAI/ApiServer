@@ -1,6 +1,16 @@
 
 if Meteor.isClient
 
+  titleBorderColor = ()->
+    if $("#title").is(':focus') is true and $("#title").css('border-color') is 'rgb(255, 255, 255)'
+      $("#title").css('border-color', '#00c4ff')
+    if $("#title").is(':focus') is false and $("#title").css('border-color') isnt 'rgb(255, 255, 255)'
+      $("#title").css('border-color', 'rgb(255, 255, 255)')
+    if $("#addontitle").is(':focus') is true and $("#addontitle").css('border-color') is 'rgb(255, 255, 255)'
+      $("#addontitle").css('border-color', '#00c4ff')
+    if $("#addontitle").is(':focus') is false and $("#addontitle").css('border-color') isnt 'rgb(255, 255, 255)'
+      $("#addontitle").css('border-color', "rgb(255, 255, 255)")
+    
   initMainImageToolBar = ()->
     $('.mainImage').toolbar
       content: '#mainImage-toolbar-options'
@@ -120,6 +130,9 @@ if Meteor.isClient
 
   Template.addPostMainImage.onRendered ()->
     initMainImageToolBar()
+    Meteor.setInterval ()->
+        titleBorderColor()
+      ,50
     $("#title").textareaAutoSize()
     $("#addontitle").textareaAutoSize()
   Template.addPostMainImage.helpers
