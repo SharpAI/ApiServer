@@ -58,6 +58,11 @@ if Meteor.isClient
       Session.equals('feedsCollection','loading')
     loadError:->
       Session.equals('feedsCollection','error')
+    noMessages:->
+      if Feeds.find().count() > 0 or Session.equals('feedsCollection','loading')
+         return false
+      else 
+         return true
   Template.bell.events
     'click .acceptrequest': (event)->
        Follower.insert {

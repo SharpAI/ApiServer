@@ -16,6 +16,10 @@
       -->
       {{#if loadError}}
           <div>{{_ "loadFailNotification"}}</div>
+      {{else}}
+        {{#if noMessages}}
+          <div>{{_ "noMessages"}}</div>
+        {{/if}}
       {{/if}}
       {{#each eventFeeds}}
         {{#if isAlsoComment eventType}}
