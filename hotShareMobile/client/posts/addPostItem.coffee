@@ -88,6 +88,7 @@ if Meteor.isClient
       $(textarea).focus()
 
       $(textarea).focusout(()->
+        window.unSelectedElem = undefined
         console.log("focusout")
         $(this).attr("readOnly", true)
         `global_disable_longpress = false`

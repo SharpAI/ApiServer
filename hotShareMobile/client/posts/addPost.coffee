@@ -767,6 +767,8 @@ if Meteor.isClient
       if window.footbarOppration
         window.unSelectedElem = e.currentTarget
         window.footbarOppration = false
+      else
+        window.unSelectedElem = undefined
     'focus [name=textareatitle]':->
       Session.set('textareaFocused', true)
       $(".head").css 'position','absolute'
