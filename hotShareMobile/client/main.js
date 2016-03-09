@@ -53,6 +53,13 @@ if (Meteor.isCordova) {
         if(Cookies.check("display-lang")){
           var displayLang = Cookies.get("display-lang");
           Session.set("display_lang",displayLang)
+          if(displayLang === 'en'){
+              AppRate.preferences.useLanguage = 'en';
+          }
+          else if(displayLang ==='zh')
+          {
+              AppRate.preferences.useLanguage = 'zh-Hans';
+          }
           TAPi18n.setLanguage(displayLang)
           .done(function () {
              console.log("zh");
@@ -63,6 +70,7 @@ if (Meteor.isCordova) {
           });
         } else {
           Session.set("display_lang","zh")
+          AppRate.preferences.useLanguage = 'zh-Hans';
           TAPi18n.setLanguage("zh")
           .done(function () {
             console.log("en");
@@ -73,6 +81,12 @@ if (Meteor.isCordova) {
           });
         }
         //TAPi18n.setLanguage("zh")
+         //当用户第三次使用该软件时提示评价app
+        AppRate.preferences.usesUntilPrompt = 2;
+        AppRate.preferences.storeAppURL.ios = '957024953';
+        AppRate.preferences.storeAppURL.android = 'http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere';
+        AppRate.promptForRating(false);
+        
     }
     function eventResume(){
         if (Meteor.user()) {

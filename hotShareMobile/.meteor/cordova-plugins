@@ -25,3 +25,4 @@ org.hotshare.everywhere.appsetup@file://../cordova-plugins/appsetup
 org.zy.yuancheng.qq@file://../cordova-plugins/qq
 com.tiegushi.cordova.tts@file://../cordova-plugins/baidutts
 com.rd11.remote-controls@file://../cordova-plugins/ios-control-bar
+cordova-plugin-apprate@file://../cordova-plugins/apprate
