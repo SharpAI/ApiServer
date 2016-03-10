@@ -55,7 +55,7 @@
 
 
   <!-- android -->
-  <platform name="android">
+  <!--<platform name="android">
     <preference name="APP_ID" />
     <config-file target="res/xml/config.xml" parent="/*">
       <feature name="WechatShare">
@@ -72,5 +72,5 @@
 
     <source-file src="src/android/libs/libammsdk.jar" target-dir="libs"/>
     <source-file src="src/android/src/WechatShare.java" target-dir="src/com/share/wechatShare" />
-  </platform>
+  </platform>-->
 </plugin>

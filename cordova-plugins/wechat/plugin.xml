@@ -18,7 +18,7 @@
   </js-module>
 
   <!-- ios -->
-  <platform name="ios">
+  <!--<platform name="ios">
     <preference name="APP_ID" />
     <preference name="QQ_APP_ID" />
 
@@ -68,10 +68,10 @@
 注意: 内置的 iOS SDK 在发布应用时应该替换
 src/ios/libWeChatSDK.a 这个文件有两个版本, 一个是 iPhone Only 的, 要小一些, 应该是最后生产环境用的. 我放进去的是完整版本, 要大一倍 (应该是包含了 x86 架构方便模拟器 debug), 可以自己去下载官方 SDK 然后替换掉 platforms/ios/应用名称/Plugins 目录下的 libWeChatSDK.a.
     </info>
-  </platform>
+  </platform>-->
 
   <!-- windows phone 8 -->
-  <platform name="wp8">
+  <!--<platform name="wp8">
     <preference name="APP_ID" />
     
     <hook type="after_plugin_install" src="scripts/wp-install.js" />
@@ -101,7 +101,7 @@ src/ios/libWeChatSDK.a 这个文件有两个版本, 一个是 iPhone Only 的, �
     <source-file src="src/wp/WeChat.cs" />
     <source-file src="src/wp/WeChatCallbackPage.xaml" target-dir="../../" />
     <source-file src="src/wp/WeChatCallbackPage.xaml.cs" target-dir="../../" />
-  </platform>
+  </platform>-->
 
   <!-- android -->
   <platform name="android">
@@ -115,6 +115,10 @@ src/ios/libWeChatSDK.a 这个文件有两个版本, 一个是 iPhone Only 的, �
         <param name="android-package" value="com.wordsbaking.cordova.wechat.WeChat"/>
       </feature>
       <preference name="wechatappid" value="$APP_ID" />
+    </config-file>
+    
+    <config-file target="AndroidManifest.xml" parent="/manifest">
+      <uses-permission android:name="android.permission.INTERNET"/>
     </config-file>
 
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
@@ -131,7 +135,6 @@ src/ios/libWeChatSDK.a 这个文件有两个版本, 一个是 iPhone Only 的, �
     </config-file>
 
     <source-file src="src/android/libammsdk.jar" target-dir="libs" />
-
     <source-file src="src/android/WeChat.java" target-dir="src/com/wordsbaking/cordova/wechat" />
     <source-file src="src/android/WXEntryActivity.java" target-dir="src/org/hotshare/everywhere/wxapi" />
     <!--

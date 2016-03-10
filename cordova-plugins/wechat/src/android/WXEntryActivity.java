@@ -1,12 +1,35 @@
 package org.hotshare.everywhere.wxapi;
 
-import com.tencent.mm.sdk.openapi.BaseReq;
-import com.tencent.mm.sdk.openapi.BaseResp;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+import java.io.BufferedReader;  
+import java.io.DataOutputStream;  
+import java.io.InputStreamReader;  
+import java.net.HttpURLConnection;  
+import java.net.URL;  
+import java.net.URLEncoder; 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import com.tencent.mm.sdk.modelbase.BaseReq;
+import com.tencent.mm.sdk.modelbase.BaseResp;
+import com.tencent.mm.sdk.modelmsg.SendAuth;
 import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
+import com.tencent.mm.sdk.constants.ConstantsAPI;
+
+import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.PluginResult;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.wordsbaking.cordova.wechat.WeChat;
 
@@ -44,7 +67,27 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler{
     public void onResp(BaseResp resp) {
         switch (resp.errCode) {
             case BaseResp.ErrCode.ERR_OK:
-                WeChat.currentCallbackContext.success();
+                Log.d(WeChat.TAG, resp.toString());
+                switch (resp.getType()) {
+                  case ConstantsAPI.COMMAND_SENDAUTH:
+                    SendAuth.Resp res = ((SendAuth.Resp) resp);
+                    Log.i(WeChat.TAG, res.code);
+                    JSONObject response = new JSONObject();
+                    try {
+                      response.put("code", res.code);
+                      response.put("state", res.state);
+                      response.put("country", res.country);
+                      response.put("lang", res.lang);
+                    } catch (JSONException e) {
+                      Log.e(WeChat.TAG, e.getMessage());
+                    }
+                    WeChat.currentCallbackContext.success(response);
+                    Log.d(WeChat.TAG, res.code);
+                    finish();
+                  default:
+                    WeChat.currentCallbackContext.success();
+                    finish();
+                }
                 break;
             case BaseResp.ErrCode.ERR_USER_CANCEL:
                 WeChat.currentCallbackContext.error(WeChat.ERR_USER_CANCEL);
@@ -65,7 +108,8 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler{
                 WeChat.currentCallbackContext.error(WeChat.ERR_UNKNOWN);
                 break;
         }
-        finish();
+        
+        if(resp.errCode != BaseResp.ErrCode.ERR_OK)
+          finish();
     }
-
 }

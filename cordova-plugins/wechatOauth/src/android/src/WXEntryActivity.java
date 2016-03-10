@@ -1,4 +1,4 @@
-package org.hotshare.everywhere.wxapi;
+package org.hotshare.everywhere.wxapi1;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -30,7 +30,7 @@ import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 
-	final String TAG = "WXEntryActivity";
+	final String TAG = "com.oauth.wechat";
 
 	final String APP_ID = "wxcfcf19c225a36351";
 	private IWXAPI api;
@@ -160,6 +160,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 			switch (resp.getType()) {
 			case ConstantsAPI.COMMAND_SENDAUTH: {
 				SendAuth.Resp r = (SendAuth.Resp) resp;
+        Log.d(TAG, r.code);
 				getToken(r.code);
 				break;
 			}

@@ -15,6 +15,7 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,14 +23,19 @@ import org.json.JSONObject;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
+import android.util.Log;
+import android.view.Gravity;
+import android.widget.Toast;
+import android.content.Context;
 
 import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mm.sdk.openapi.SendMessageToWX;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
-import com.tencent.mm.sdk.openapi.WXMediaMessage;
-import com.tencent.mm.sdk.openapi.WXTextObject;
-import com.tencent.mm.sdk.openapi.WXImageObject;
-import com.tencent.mm.sdk.openapi.WXWebpageObject;
+import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.sdk.modelmsg.WXTextObject;
+import com.tencent.mm.sdk.modelmsg.WXImageObject;
+import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
+import com.tencent.mm.sdk.modelmsg.SendAuth;
 
 /*
     Cordova WeChat Plugin
@@ -44,8 +50,9 @@ import com.tencent.mm.sdk.openapi.WXWebpageObject;
 public class WeChat extends CordovaPlugin {
 
     public static final String WECHAT_APPID_KEY = "wechatappid";
-    private static final String TAG = "SDK_Sample.Util";
+    public static final String TAG = "SDK_Sample.Util";
 
+    public static final String ERROR_SEND_REQUEST_FAILED = "发送请求失败";
     public static final String ERR_WECHAT_NOT_INSTALLED = "ERR_WECHAT_NOT_INSTALLED";
     public static final String ERR_INVALID_OPTIONS = "ERR_INVALID_OPTIONS";
     public static final String ERR_UNSUPPORTED_MEDIA_TYPE = "ERR_UNSUPPORTED_MEDIA_TYPE";
@@ -82,12 +89,62 @@ public class WeChat extends CordovaPlugin {
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext)
             throws JSONException {
+              
+        currentCallbackContext = callbackContext;
+        final Context context = this.cordova.getActivity().getApplicationContext();
+        
         if (action.equals("share")) {
             share(args, callbackContext);
+        } else if (action.equals("getUserInfo")) {
+          if (!api.isWXAppInstalled()) {
+            cordova.getActivity().runOnUiThread(new Runnable() {
+              public void run() {
+                Toast toast = Toast.makeText(context, "您还未安装微信客户端", Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();                 
+              }
+            });
+          }else{
+            cordova.getActivity().runOnUiThread(new Runnable() {
+              public void run() {
+                Toast toast = Toast.makeText(context, "跳转中，请稍候...", Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();                 
+              }
+            });
+            sendAuthRequest(args, callbackContext);
+          }
         } else {
             return false;
         }
         return true;
+    }
+    
+    private void sendAuthRequest(JSONArray args, CallbackContext callbackContext)
+            throws JSONException, NullPointerException {
+        if (!api.isWXAppInstalled()) {
+            callbackContext.error(ERR_WECHAT_NOT_INSTALLED);
+            return;
+        }     
+        
+        final SendAuth.Req req = new SendAuth.Req();
+        req.scope = "snsapi_userinfo";
+        req.state = "wechat";
+
+        if (api.sendReq(req)) {
+            Log.i(TAG, "Auth request has been sent successfully.");
+
+            // send no result
+            currentCallbackContext = callbackContext;
+            // PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+            // result.setKeepCallback(true);
+            // callbackContext.sendPluginResult(result);
+        } else {
+            Log.i(TAG, "Auth request has been sent unsuccessfully.");
+
+            // send error
+            callbackContext.error(ERROR_SEND_REQUEST_FAILED);
+        }   
     }
 
     private void share(JSONArray args, CallbackContext callbackContext)
