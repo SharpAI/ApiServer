@@ -800,23 +800,23 @@ if Meteor.isClient
               musicInfo = {}
               if item.image and item.image isnt ''
                 console.log('has image')
-              if item.exportedurl and  item.exportedurl isnt ''
-                originalFilename = item.exportedurl.replace(/^.*[\\\/]/, '')
-                musicInfo.playUrl = 'cdvfile://localhost/persistent/files/' + originalFilename
-                musicInfo.URI = item.exportedurl
-                musicInfo.filename = Meteor.userId()+'_'+new Date().getTime()+ '_' + MD5(originalFilename)+'.'+originalFilename.split('.').pop();
-                musicInfo.songName = item.title
-                musicInfo.singerName = item.artist
-                console.log('Image ')
-                window.imageResizer.resizeImage( (data)->
-                    musicInfo.image = "data:image/png;base64," + data.imageData;
-                    console.log('Got image data ' + musicInfo.image);
-                    insertMusicInfo(musicInfo)
-                  ,(error)->
-                    console.log("Error : \r\n" + error);
-                    insertMusicInfo(musicInfo)
-                  ,item.image
-                  ,64, 64, {imageDataType:ImageResizer.IMAGE_DATA_TYPE_BASE64,format:'png'});
+                if item.exportedurl and  item.exportedurl isnt ''
+                  originalFilename = item.exportedurl.replace(/^.*[\\\/]/, '')
+                  musicInfo.playUrl = 'cdvfile://localhost/persistent/files/' + originalFilename
+                  musicInfo.URI = item.exportedurl
+                  musicInfo.filename = Meteor.userId()+'_'+new Date().getTime()+ '_' + MD5(originalFilename)+'.'+originalFilename.split('.').pop();
+                  musicInfo.songName = item.title
+                  musicInfo.singerName = item.artist
+                  console.log('Image ')
+                  window.imageResizer.resizeImage( (data)->
+                      musicInfo.image = "data:image/png;base64," + data.imageData;
+                      console.log('Got image data ' + musicInfo.image);
+                      insertMusicInfo(musicInfo)
+                    ,(error)->
+                      console.log("Error : \r\n" + error);
+                      insertMusicInfo(musicInfo)
+                    ,item.image
+                    ,64, 64, {imageDataType:ImageResizer.IMAGE_DATA_TYPE_BASE64,format:'png'});
 
         ,()->
           console.log('Got error')

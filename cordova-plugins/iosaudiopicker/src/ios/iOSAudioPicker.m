@@ -106,9 +106,9 @@
 
             AVURLAsset *songURL = [AVURLAsset URLAssetWithURL:songurl options:nil];
 
-            NSArray *path = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+            NSArray *path = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 
-            NSString *libraryDir = [path objectAtIndex:0];
+            NSString *documentDir = [path objectAtIndex:0];
 
             //NSLog(@"Compatible Preset for selected Song = %@", [AVAssetExportSession exportPresetsCompatibleWithAsset:songURL]);
 
@@ -116,9 +116,9 @@
 
             exporter.outputFileType = @"com.apple.m4a-audio";
 
-            NSString *filename = [NSString stringWithFormat:@"/files/%@.m4a",title];
+            NSString *filename = [NSString stringWithFormat:@"%@.m4a",title];
 
-            NSString *outputfile = [libraryDir stringByAppendingPathComponent:filename];
+            NSString *outputfile = [documentDir stringByAppendingPathComponent:filename];
 
             [self delSingleSong:outputfile];
 
