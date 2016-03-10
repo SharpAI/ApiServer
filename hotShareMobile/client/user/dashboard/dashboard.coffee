@@ -42,6 +42,8 @@ if Meteor.isClient
       Router.go '/user'
     'click .logout':(e)->
       e.target.innerText="正在退出登录..."
+      thisUser = Meteor.user()
+      Meteor.users.update({_id: thisUser._id}, {$set: {type: '', token: ''}})
       Meteor.logout (msg)->
         Session.set("searchContent","")
         PostsSearch.cleanHistory()
