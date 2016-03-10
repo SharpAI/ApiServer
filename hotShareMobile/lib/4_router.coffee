@@ -118,12 +118,15 @@ if Meteor.isClient
           else
             Session.set('postContent',post)
           Session.set('focusedIndex',undefined)
-          if post.addontitle and (post.addontitle isnt '')
+          if post and post.addontitle and (post.addontitle isnt '')
             documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
-          else
+          else if post
             documentTitle = "『故事贴』" + post.title
           Session.set("DocumentTitle",documentTitle)
-          this.render 'showPosts', {data: post}
+          if post
+            this.render 'showPosts', {data: post}
+          else
+            this.render 'unpublish'
           Session.set 'channel','posts/'+this.params._id
       }
     Router.route '/posts/:_id/:_index', {

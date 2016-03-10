@@ -16,7 +16,7 @@ if Meteor.isServer
         Meteor.defer ()->
           Posts.update({_id:postId},{$set:{publish:false}})
           SavedDrafts.insert drafts
-          FollowPosts.update({postId:postId},{$set:{publish:false}},{multi: true},{upsert:true})
+          FollowPosts.update({postId:postId},{$set:{publish:false}},{multi: true, upsert:true})
       "unpublishPosts":(postId,userId,drafts)->
         Meteor.defer ()->
           Posts.remove {_id:postId}

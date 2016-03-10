@@ -6,7 +6,7 @@ if Meteor.isServer
         Meteor.defer ()->
           Posts.update({_id:postId},{$set:{publish:false}})
           SavedDrafts.insert drafts
-          FollowPosts.update({postId:postId},{$set:{publish:false}},{multi: true},{upsert:true})
+          FollowPosts.update({postId:postId},{$set:{publish:false}},{multi: true, upsert:true})
           TPs=TopicPosts.find({postId:postId})
           if TPs.count()>0
               TPs.forEach (data)->
