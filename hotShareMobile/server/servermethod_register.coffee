@@ -16,6 +16,7 @@ if Meteor.isServer
                   else if PostsCount > 1
                     Topics.update({_id: data.topicId}, {$set: {'posts': PostsCount-1}})
           TopicPosts.remove({postId:postId})
+          FavouritePosts.remove({postId:postId})
       "unpublishPosts":(postId,userId,drafts)->
         Meteor.defer ()->
           Posts.remove {_id:postId}
@@ -33,6 +34,7 @@ if Meteor.isServer
                     else if PostsCount > 1
                       Topics.update({_id: data.topicId}, {$set: {'posts': PostsCount-1}})
             TopicPosts.remove({postId:postId})
+            FavouritePosts.remove({postId:postId})
           catch error
       "readPostReport": (postId,userId)->
         if(!Match.test(postId, String) || !Match.test(userId, String))
