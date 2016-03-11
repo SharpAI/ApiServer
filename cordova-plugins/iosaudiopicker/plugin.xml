@@ -27,6 +27,7 @@
 
             <header-file src="src/ios/iOSAudioPicker.h" />
             <source-file src="src/ios/iOSAudioPicker.m" />
+            <resource-file src="src/ios/default_music.png" />
 
             <framework src="MediaPlayer.framework" weak="true" />
 

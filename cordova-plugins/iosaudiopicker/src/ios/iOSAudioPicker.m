@@ -163,7 +163,9 @@
                         if (artImageFound) {
                             [songInfo setObject:[imgData base64EncodedString] forKey:@"image"];
                         } else {
-                            [songInfo setObject:@"No Image" forKey:@"image"];
+                            UIImage *defImg = [UIImage imageNamed:@"default_music.png"];
+                            [songInfo setObject:[UIImagePNGRepresentation(defImg) base64EncodedString]forKey:@"image"];
+                            //[songInfo setObject:@"No Image" forKey:@"image"];
                         }
 
                         [songInfo setObject:duration forKey:@"duration"];
