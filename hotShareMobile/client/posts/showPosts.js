@@ -101,11 +101,12 @@ shareToWechatSession = function (title, description, thumbData, url) {
       "target_url": url
     }
   if (device.platform === 'Android') {
-      return WechatShare.shareToSession(param, function(e) {
-        return window.PUB.toast('分享成功!');
-      }, function(e) {
-        return window.PUB.toast('分享失败!你安装微信了吗？');
-      });
+      shareToWechat(title,description,thumbData,url,WeChat.Scene.session);
+    //   return WechatShare.shareToSession(param, function(e) {
+    //     return window.PUB.toast('分享成功!');
+    //   }, function(e) {
+    //     return window.PUB.toast('分享失败!你安装微信了吗？');
+    //   });
     } else {
       return WechatShare.share({
         scene: 1,
@@ -131,12 +132,13 @@ shareToWechatTimeLine = function (title, description, thumbData, url) {
       "target_url": url
     }
     if (device.platform === 'Android') {
-      WechatShare.shareToMoment(param, function(e) {
-        window.PUB.toast('分享成功!');
-      });
-      return function(e) {
-        window.PUB.toast('分享失败!你安装微信了吗？');
-      };
+        shareToWechat(title,description,thumbData,url,WeChat.Scene.timeline);
+    //   WechatShare.shareToMoment(param, function(e) {
+    //     window.PUB.toast('分享成功!');
+    //   });
+    //   return function(e) {
+    //     window.PUB.toast('分享失败!你安装微信了吗？');
+    //   };
     } else {
       return WechatShare.share({
         scene: 2,
