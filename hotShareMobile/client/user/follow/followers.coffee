@@ -39,9 +39,11 @@ if Meteor.isClient
     page_title:->
       #true 列出偶像列表，false 列出粉丝列表
       if Session.get('followers_tag')
-         '正在关注'
+         #'正在关注'
+         TAPi18n.__("following")
       else
-         '关注者'
+         #'关注者'
+         TAPi18n.__("follower")
     isFollowed:(follow)->
       if Session.get('followers_tag')
          #follow.userId是自己
