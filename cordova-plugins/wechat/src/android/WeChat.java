@@ -95,6 +95,15 @@ public class WeChat extends CordovaPlugin {
         
         if (action.equals("share")) {
             share(args, callbackContext);
+        } else if (action.equals("isWXAppInstalled")) {
+            JSONObject response = new JSONObject();
+            try {
+              response.put("result", api.isWXAppInstalled());
+            } catch (JSONException e) {
+              Log.e(WeChat.TAG, e.getMessage());
+            }
+            callbackContext.success(response);
+            return true;
         } else if (action.equals("getUserInfo")) {
           if (!api.isWXAppInstalled()) {
             cordova.getActivity().runOnUiThread(new Runnable() {
