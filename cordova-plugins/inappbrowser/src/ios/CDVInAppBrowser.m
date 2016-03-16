@@ -117,6 +117,11 @@
         } else { // _blank or anything else
             [self openInInAppBrowser:absoluteUrl withOptions:options];
         }
+        
+        CDVInAppBrowserOptions* browserOptions = [CDVInAppBrowserOptions parseOptions:options];
+        if (browserOptions.hiddenimport) {
+          [self.inAppBrowserViewController.importButton setTitle:@"返回" forState: UIControlStateNormal];
+        }
 
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     } else {

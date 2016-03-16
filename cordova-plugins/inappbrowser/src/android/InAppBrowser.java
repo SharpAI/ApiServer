@@ -458,7 +458,7 @@ public class InAppBrowser extends CordovaPlugin {
      * @param url           The url to load.
      * @param jsonObject
      */
-    public String showWebPage(final String url, HashMap<String, Boolean> features) {
+    public String showWebPage(final String url, final HashMap<String, Boolean> features) {
         // Determine if we should hide the location bar.
         showLocationBar = true;
         openWindowHidden = false;
@@ -656,15 +656,15 @@ public class InAppBrowser extends CordovaPlugin {
                 importBtn.setEnabled(false);
                 importBtn.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
-                    	if(canImport)
-                    	{
-                    		importUrl();
-                    	}
-                    	else
-                    	{
-                    		needImport=true;
-                    		navigate(edittext.getText().toString());
-                    	}
+                      if(canImport)
+                      {
+                        importUrl();
+                      }
+                      else
+                      {
+                        needImport=true;
+                        navigate(edittext.getText().toString());
+                      }
                     }
                 });
 
@@ -714,7 +714,9 @@ public class InAppBrowser extends CordovaPlugin {
                 toolbarBottom.addView(actionButtonContainer);
                 toolbarTop.addView(edittext);
                 toolbarTop.addView(close);
-                toolbarTop.addView(importBtn);
+                if(features.get("hiddenimport") == null || features.get("hiddenimport") != true){
+                  toolbarTop.addView(importBtn);
+                }
 
                 // Don't add the toolbar if its been disabled
                 if (getShowLocationBar()) {

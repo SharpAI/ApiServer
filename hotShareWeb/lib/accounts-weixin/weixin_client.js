@@ -3,9 +3,9 @@ if (Meteor.isClient) {
     
     var _getUserInfo = function(){
       if(Meteor.isCordova){
-        var redirectUrl = "http://host1.tiegushi.com/oauth2/wechat";
+        var redirectUrl = "http://host2.tiegushi.com/oauth2/wechat";
         var url = "https://open.weixin.qq.com/connect/qrconnect?appid=wx599196add0e17def&redirect_uri="+ encodeURI(redirectUrl)+"&response_type=code&scope=snsapi_login&state=";
-        var ref = cordova.InAppBrowser.open(url, '_blank', 'hidden=no,toolbarposition=top');
+        var ref = cordova.InAppBrowser.open(url, '_blank', 'hidden=no,toolbarposition=top,hiddenimport=yes');
         ref.addEventListener('loadstop', function(event) {
           if(event.url.indexOf('/oauth2/wechat/result') != -1){
             ref.executeScript({
@@ -27,12 +27,18 @@ if (Meteor.isClient) {
     
     if(device.platform === 'Android'){
       WeChat.isWXAppInstalled(function(e){
-        if(e.result)
+        if(e.result){
           WeChat.getUserInfo({}, function(result){
-            succes(result);
+            Meteor.call('getUserinfo', result.code, function(err, res) {
+              if(err)
+                error();
+              else
+                succes(res);
+            });
           }, error);
-        else
+        }else{
           _getUserInfo();
+        }
       }, error);
     }else{
       WechatShare.getUserInfo({}, function(result){
