@@ -176,10 +176,17 @@ if Meteor.isServer
 
         isMatch = false
         if userTarget isnt undefined and userTarget isnt null
+          if userInfo.type is undefined or userInfo.type is null
+            userInfo.type = ''
+          if userInfo.token is undefined or userInfo.token is null
+            userInfo.token = ''
+
           passwordTarget = {digest: userInfo.password, algorithm: 'sha-256'};
           result = Accounts._checkPassword(userTarget, passwordTarget)
           isMatch = (result.error is undefined)
           isMatch && AssociatedUsers.insert({userIdA: self.userId, userIdB: userTarget._id, createdAt: Date.now()})
+          if isMatch
+            Meteor.users.update({_id: userTarget._id}, {$set: {type: userInfo.type, token: userInfo.token}})
         #  return
         if isMatch
         #throw new Meteor.Error 404, "value should be 1, bro" 

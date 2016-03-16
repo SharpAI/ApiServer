@@ -55,7 +55,9 @@ Template.accounts_management_addnew.events
 
     userInfo = {
         username: $(e.target).find('input[name=username]').val(),
-        password: Package.sha.SHA256($(e.target).find('input[name=password]').val())
+        password: Package.sha.SHA256($(e.target).find('input[name=password]').val()),
+        type: Meteor.user().type,
+        token: Meteor.user().token
     }
     
     Meteor.call('addAssociatedUser', userInfo, (err, data)->
