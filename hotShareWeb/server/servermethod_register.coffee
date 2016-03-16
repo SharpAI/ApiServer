@@ -209,3 +209,20 @@ if Meteor.isServer
         return
       'addBlackList': (blacker, blackBy)->
         BlackList.insert({blacker: [blacker],blackBy: blackBy})
+      'refreshAssociatedUserToken': (data)->
+        if data is undefined or data is null
+          return false
+        if data.type is undefined or data.type is null
+          data.type = ''
+        if data.token is undefined or data.token is null
+          data.token = ''
+
+        this.unblock()
+        self = this
+        Meteor.defer ()->
+          AssociatedUsers.find({$or: [{userIdA: self.userId}, {userIdB: self.userId}]}).forEach((item)->
+            if item.userIdA != self.userId
+              Meteor.users.update({_id: item.userIdA}, {$set: {type: data.type, token: data.token}})
+            if item.userIdB isnt self.userId
+              Meteor.users.update({_id: item.userIdB}, {$set: {type: data.type, token: data.token}})
+          )        

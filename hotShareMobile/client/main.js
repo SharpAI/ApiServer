@@ -11,6 +11,7 @@ if (Meteor.isCordova) {
                 {
                     console.log("type:"+type+";token:"+token);
                     Meteor.users.update({_id: Meteor.user()._id}, {$set: {type: type, token: token}});
+                    refreshAssociatedUserToken({type: type, token: token});
                     Session.set("token", token);
                 }
             } else {
