@@ -1259,8 +1259,10 @@ if(Meteor.isServer){
       else {
           Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId}), {nonReactive: true });
           Counts.publish(this, 'mySavedDraftsCount', SavedDrafts.find({owner: this.userId}), {nonReactive: true });
-          Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { nonReactive: true });
-          Counts.publish(this, 'myFollowToCount', Follower.find({userId:this.userId}), {nonReactive: true });
+          //Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { nonReactive: true });
+          Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { reactive: true });
+          //Counts.publish(this, 'myFollowToCount', Follower.find({userId:this.userId}), {nonReactive: true });
+          Counts.publish(this, 'myFollowToCount', Follower.find({userId:this.userId}), {reactive: true });
       }
   });
   Meteor.publish("postsWithLimit", function(limit) {

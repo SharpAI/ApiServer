@@ -1,7 +1,7 @@
 <template name="accounts_management">
     <div class="dashboard page-accounts-management">
         <div class="head">
-            <div>帐号管理</div>
+            <div>{{_ "Account"}}</div>
             <div class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
         </div>
         <div class="content">
@@ -21,7 +21,7 @@
                 {{/each}}
                 <dl class="add-new">
                     <dt><i class="fa fa-plus"></i></dt>
-                    <dd>添加帐号</dd>
+                    <dd>{{_ "addAccount"}}</dd>
                 </dl>                
             </div>
             <div class="logout box boxTitle boxCenter">退出当前帐号</div>
@@ -46,23 +46,23 @@
 <template name="accounts_management_addnew">
     <div class="dashboard page-accounts-management-addnew">
         <div class="head">
-            <div>添加新帐号</div>
+            <div>{{_ "addAccount"}}</div>
             <div class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
         </div>
         <div class="content">
             <form id="form-addnew">
                 <div class="box form-addnew">
                     <dl class="add-new">
-                        <dt><label for="username">用户名/邮箱</label></dt>
+                        <dt><label for="username">{{_ "userName"}}</label></dt>
                         <dd><input id="username" name="username" type="text" autofocus="autofocus" required /></dd>
                     </dl>
                     <dl class="add-new">
-                        <dt><label for="password">密码</label></dt>
+                        <dt><label for="password">{{_ "passWord"}}</label></dt>
                         <dd><input id="password" name="password" type="password" required /></dd>
                     </dl>                                       
                 </div>                
 
-                <div class="logout box boxTitle boxCenter"><input type="submit" value="添加" /></div>
+                <div class="logout box boxTitle boxCenter"><input type="submit" value="{{_ 'add'}}" /></div>
             </form>
         </div>
     </div>   

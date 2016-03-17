@@ -270,6 +270,8 @@
   "failToGetPicAndTryAgain": "could not get topic picture, try later please!",
   "loginByWechat": "Login by Wechat",
   "Account": "Account",
+  "addAccount": "Add Account",
+  "add": "Add",
   //end
 
   "readMore": "Read More"

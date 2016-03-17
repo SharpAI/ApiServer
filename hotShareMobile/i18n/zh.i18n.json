@@ -271,6 +271,8 @@
   "failToGetPicAndTryAgain": "无法获取故事标题图片，请稍后重试！",
   "loginByWechat": "使用微信登录",
   "Account": "帐号管理",
+  "addAccount": "添加帐号",
+  "add": "添加",
   //end
 
   "readMore": "继续阅读"
