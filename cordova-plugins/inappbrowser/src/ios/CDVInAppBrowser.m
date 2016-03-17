@@ -120,7 +120,8 @@
         
         CDVInAppBrowserOptions* browserOptions = [CDVInAppBrowserOptions parseOptions:options];
         if (browserOptions.hiddenimport) {
-          [self.inAppBrowserViewController.importButton setTitle:@"返回" forState: UIControlStateNormal];
+          //[self.inAppBrowserViewController.importButton setTitle:@"返回" forState: UIControlStateNormal];
+          [self.inAppBrowserViewController.importButton setTitleTextAttributes:@"返回" forState:UIControlStateNormal];
         }
 
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
