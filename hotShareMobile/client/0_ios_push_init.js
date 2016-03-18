@@ -1,7 +1,7 @@
 if (Meteor.isClient) {
   console.log('on isCordova');
   Meteor.startup(function() {
-    var onDeviceReady;
+    var onDeviceReady2;
     console.log('on startup');
     if (device.platform === 'iOS') {
       console.log('on IOS');
