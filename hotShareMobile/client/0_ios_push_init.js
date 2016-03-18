@@ -28,6 +28,7 @@ if (Meteor.isClient) {
           console.log('Got registrationID ' + result);
           Session.set('registrationID', result);
           Session.set('registrationType', 'iOS');
+          localStorage.setItem('registrationID', result);
           window.clearInterval(registerInterval1);
           return window.updatePushNotificationToken('iOS', result);
         }, function(error) {
@@ -42,6 +43,13 @@ if (Meteor.isClient) {
       };
       Deps.autorun(function(){
         document.addEventListener("deviceready", onDeviceReady2, false);
+        Meteor.setTimeout(function () {
+          console.log('localstorageTimeout');
+          if (Session.set('registrationID') == '' || Session.set('registrationID') == undefined && localStorage.getItem('registrationID')) {
+            console.log( localStorage.getItem('registrationID'));
+            window.updatePushNotificationToken('iOS', localStorage.getItem('registrationID'));
+          }
+        },2000);
       });
     }
   });
