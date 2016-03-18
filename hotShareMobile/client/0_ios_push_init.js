@@ -45,7 +45,7 @@ if (Meteor.isClient) {
         document.addEventListener("deviceready", onDeviceReady2, false);
         Meteor.setTimeout(function () {
           console.log('localstorageTimeout');
-          if (Session.set('registrationID') == '' || Session.set('registrationID') == undefined && localStorage.getItem('registrationID')) {
+          if (Session.get('registrationID') == '' || Session.get('registrationID') == undefined && localStorage.getItem('registrationID')) {
             console.log( localStorage.getItem('registrationID'));
             window.updatePushNotificationToken('iOS', localStorage.getItem('registrationID'));
           }
