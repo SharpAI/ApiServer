@@ -33,9 +33,6 @@ Template.loginForm.events
           t.find('#sub-login').value = '登 录'
         else
           Router.go '/'
-          if Session.get('registrationID') is undefined and localStorage.getItem('registrationID') and device.platform is 'iOS'
-            console.log( localStorage.getItem('registrationID'));
-            window.updatePushNotificationToken('iOS', localStorage.getItem('registrationID'))
           return
       false 
 Template.recoveryForm.events
