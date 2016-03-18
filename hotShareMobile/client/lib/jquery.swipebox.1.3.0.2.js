@@ -1,6 +1,10 @@
 /*! Swipebox v1.3.0.2 | Constantin Saguin csag.co | MIT License | github.com/brutaldesign/swipebox */
 
 ;( function ( window, document, $, undefined ) {
+  
+  var isScale = function (obj) {
+    return $(obj).find('.current')[0].style['-webkit-transform'] != 'scale(1)' && $(obj).find('.current')[0].style['-webkit-transform'] != '';
+  }
 
 	$.swipebox = function( elem, options ) {
 
@@ -334,7 +338,8 @@
 								var opacity = 0.75 - Math.abs(vDistance) / slider.height();
 
 								slider.css( { 'top': vDistance + 'px' } );
-								slider.css( { 'opacity': opacity } );
+								if(!isScale(this))
+                  slider.css( { 'opacity': opacity } );
 
 								vSwipe = true;
 							}
@@ -428,14 +433,14 @@
 					// Swipe to bottom to close
 					if ( vSwipe ) {
 						vSwipe = false;
-						if ( Math.abs( vDistance ) >= 2 * vSwipMinDistance && Math.abs( vDistance ) > Math.abs( vDistanceLast ) ) {
+						if ( Math.abs( vDistance ) >= 2 * vSwipMinDistance && Math.abs( vDistance ) > Math.abs( vDistanceLast ) && !isScale(this)) {
 							var vOffset = vDistance > 0 ? slider.height() : - slider.height();
 							slider.animate( { top: vOffset + 'px', 'opacity': 0 },
 								300,
 								function () {
 									$this.closeSlide();
 								} );
-						} else {
+						} else if(!isScale(this)){
 							slider.animate( { top: 0, 'opacity': 1 }, 300 );
 						}
 
@@ -444,20 +449,20 @@
 						hSwipe = false;
 						if(Session.get('longTouch')){
 							// swipeLeft
-							if(hDistancePercent>=50) {
+							if(hDistancePercent>=50 && !isScale(this)) {
 								$this.getPrev();
 
 							// swipeRight
-							}else if ( hDistancePercent<=-50) {
+							}else if ( hDistancePercent<=-50 && !isScale(this)) {
 								$this.getNext();
 							}
 						}else{
 							// swipeLeft
-							if( hDistance >= hSwipMinDistance && hDistance >= hDistanceLast) {
+							if( hDistance >= hSwipMinDistance && hDistance >= hDistanceLast && !isScale(this)) {
 								$this.getPrev();
 
 							// swipeRight
-							} else if ( hDistance <= -hSwipMinDistance && hDistance <= hDistanceLast) {
+							} else if ( hDistance <= -hSwipMinDistance && hDistance <= hDistanceLast && !isScale(this)) {
 								$this.getNext();
 							}
 						}
@@ -465,11 +470,21 @@
 					} else { // Top and bottom bars have been removed on touchable devices
 						// tap
                         if($( this ).hasClass( 'touching' ) && typeof($("#isClicked").attr('value')) == "undefined"){
-                            slider.animate( { 'opacity': 0 },
-                                300,
-                                function () {
-                                    $this.closeSlide();
-                                } );
+                            if(isScale(this)){
+                              var size = ($( window ).width() * currentX/100);
+                              $( '#swipebox-slider' ).css( {
+                                      '-webkit-transform' : 'translate3d(' + size +'px, 0, 0)',
+                                      'transform' : 'translate3d(' + size +'px, 0, 0)'
+                              } );
+                              $( '#swipebox-slider' ).css( {'top': '0px'});
+                              $(this).find('.current').css('-webkit-transform', '')
+                            }else{
+                              slider.animate( { 'opacity': 0 },
+                                  300,
+                                  function () {
+                                      $this.closeSlide();
+                                  } );
+                            }
                         }
 						if ( ! bars.hasClass( 'visible-bars' ) ) {
 							$this.showBars();
@@ -478,14 +493,15 @@
 							$this.clearTimeout();
 							$this.hideBars();
                             }
-						}
+				  }
 
-                    var size = ($( window ).width() * currentX/100);
-
-                    $( '#swipebox-slider' ).css( {
-                            '-webkit-transform' : 'translate3d(' + size +'px, 0, 0)',
-                            'transform' : 'translate3d(' + size +'px, 0, 0)'
-                    } );
+          if(!isScale(this)){
+            var size = ($( window ).width() * currentX/100);
+            $( '#swipebox-slider' ).css( {
+                    '-webkit-transform' : 'translate3d(' + size +'px, 0, 0)',
+                    'transform' : 'translate3d(' + size +'px, 0, 0)'
+            } );
+          }
 
 					//$( '#swipebox-slider' ).css( {
 					//	'-webkit-transform' : 'translate3d(' + currentX + '%, 0, 0)',
