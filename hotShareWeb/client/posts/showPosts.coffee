@@ -90,6 +90,7 @@ if Meteor.isClient
     $('.mainImage').css('height',$(window).height()*0.55)
     postContent = Session.get("postContent")
     subscribeCommentAndViewers()
+    calcPostSignature(window.location.href.split('#')[0])
     title=postContent.title.replace(/([\uE000-\uF8FF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDDFF])/g, '')
     if postContent.publish is false
 #      Router.go('/unpublish')
@@ -230,6 +231,8 @@ if Meteor.isClient
         "height: auto;width: 80%;min-width: 80%;border-radius: 5px;"
       else
         "height: 100%;width: 100%;min-width: 100%;"
+    calcPostSignature:()->
+      calcPostSignature(window.location.href.split('#')[0])
     displayPostContent:()->
       Session.get('displayPostContent')
     getMainImageHeight:()->
