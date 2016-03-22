@@ -4,7 +4,7 @@
   
   var isScale = function (obj) {
     return $(obj).find('.current')[0].style['-webkit-transform'] != 'scale(1)' && $(obj).find('.current')[0].style['-webkit-transform'] != '';
-  }
+  };
 
 	$.swipebox = function( elem, options ) {
 
@@ -38,6 +38,7 @@
 			currentX = 0,
 			/* jshint multistr: true */
 			html = '<div id="swipebox-overlay">\
+          <div id="swipebox-console" style="top: 0;right: 0;position: absolute;z-index:99999999999999;"></div>\
 					<div id="swipebox-container">\
 						<div id="swipebox-slider"></div>\
 						<div id="swipebox-top-bar">\
@@ -289,29 +290,51 @@
 					vSwipMinDistance = 50,
 					startCoords = {},
 					endCoords = {},
+          lastCoords = [],
+          isClick = false;
 					bars = $( '#swipebox-top-bar, #swipebox-bottom-bar' ),
 					slider = $( '#swipebox-slider' );
 
 				bars.addClass( 'visible-bars' );
 				$this.setTimeout();
 
+        $('#swipebox-scale-close').bind('click', function (event) {
+          $(this).hide();
+          var size = ($( window ).width() * (currentX)/100);
+          $( '#swipebox-slider .current' ).css( {
+              '-webkit-transform' : ''
+          } );
+          $( '#swipebox-slider' ).css( {
+              '-webkit-transform' : 'translate3d(' + size +'px, 0, 0)',
+              'transform' : 'translate3d(' + size +'px, 0, 0)'
+          } );
+        });
 				$( '#swipebox-slider' ).bind( 'touchstart', function( event ) {
 					if(typeof StartZoom != 'undefined' && StartZoom>0)
 					{
 						return false;
 					}
+          
 					$( this ).addClass( 'touching' );
 					index = $( '#swipebox-slider .slide' ).index( $( '#swipebox-slider .slide.current' ) );
 					endCoords = event.originalEvent.targetTouches[0];
+          
+          //var $slider = $( this );
+          // lastCoords.sliderX = parseInt($slider[0].style['transform'].split(',')[0].split('(')[1].replace('px', ''));
+          // lastCoords.sliderY = parseInt($slider[0].style['transform'].split(',')[1].replace('px', ''));
+          // lastCoords.pageX = event.originalEvent.targetTouches[0].pageX;
+          // lastCoords.pageY = event.originalEvent.targetTouches[0].pageY;
+          
 					startCoords.pageX = event.originalEvent.targetTouches[0].pageX;
 					startCoords.pageY = event.originalEvent.targetTouches[0].pageY;
 
                     var size = ($( window ).width() * (currentX)/100);
-
+                    if(!isScale(this)){
                     $( '#swipebox-slider' ).css( {
                         '-webkit-transform' : 'translate3d(' + size +'px, 0, 0)',
                         'transform' : 'translate3d(' + size +'px, 0, 0)'
                     } );
+                    }
 
 					//$( '#swipebox-slider' ).css( {
 					//	'-webkit-transform' : 'translate3d(' + currentX +'%, 0, 0)',
@@ -322,9 +345,37 @@
 					       setTimeout(function() {
 					            Session.set('longTouch', true);
 					        }, 500);
+                  
+            lastCoords.pageX = 0;
+            lastCoords.pageY = 0;
+            isClick = true;
+            $('#swipebox-console').html('');
 					}).bind( 'touchmove',function( event ) {
 						event.preventDefault();
 						event.stopPropagation();
+            isClick = false;
+            
+            var $slider = $( this );
+            if(isScale(this)){
+              if(lastCoords.pageX === 0){
+                lastCoords.pageX = event.originalEvent.targetTouches[0].pageX;
+                lastCoords.pageY = event.originalEvent.targetTouches[0].pageY;
+                return false;
+              }
+              
+              var pageX = (event.originalEvent.targetTouches[0].pageX - lastCoords.pageX) + parseInt($slider[0].style['transform'].split(',')[0].split('(')[1].replace('px', ''));
+              var pageY = (event.originalEvent.targetTouches[0].pageY - lastCoords.pageY) + parseInt($slider[0].style['transform'].split(',')[1].replace('px', ''));
+              //$('#swipebox-console').html(parseInt($slider[0].style['transform'].split(',')[0].split('(')[1].replace('px', '')));
+              $slider.css( { 
+                  '-webkit-transform' : 'translate3d(' + pageX +'px, '+pageY+'px, 0)',
+                  'transform' : 'translate3d(' + pageX +'px, '+pageY+'px, 0)',
+              });
+              
+              lastCoords.pageX = event.originalEvent.targetTouches[0].pageX;
+              lastCoords.pageY = event.originalEvent.targetTouches[0].pageY;
+              return false;
+            }
+            
 						if(typeof StartZoom != 'undefined' && StartZoom>0)
 						{
 							return false;
@@ -414,6 +465,22 @@
 				} ).bind( 'touchend',function( event ) {
 					event.preventDefault();
 					event.stopPropagation();
+          
+          if(isScale(this)){
+            if(isClick){
+              //$('#swipebox-console').html('click');
+              $(this).find('.current').css('-webkit-transform', '');
+              var size = ($( window ).width() * currentX/100);
+              $(this).css( {
+                '-webkit-transform' : 'translate3d(' + size +'px, 0, 0)',
+                'transform' : 'translate3d(' + size +'px, 0, 0)'
+              });
+              StartZoom = 0;
+              $(this).css( {'top': '0px'});
+            }
+            return false;
+          }
+          
 					if(typeof StartZoom != 'undefined' && StartZoom>0)
 					{
 						StartZoom--;
@@ -744,6 +811,7 @@
 						if(scale<1 || scale>3)
 							return;
 						// redraw
+            //$('#swipebox-scale-close').css('display', 'block');
 						currentSlide.css('-webkit-transform', 'scale(' + scale + ')');
 					}
 				});
