@@ -231,8 +231,11 @@ if Meteor.isClient
         "height: auto;width: 80%;min-width: 80%;border-radius: 5px;"
       else
         "height: 100%;width: 100%;min-width: 100%;"
-    calcPostSignature:()->
-      calcPostSignature(window.location.href.split('#')[0])
+    turnOnRandom:()->
+      if Session.get('turnOnRandom') is true
+        return true
+      else
+        return false
     displayPostContent:()->
       Session.get('displayPostContent')
     getMainImageHeight:()->

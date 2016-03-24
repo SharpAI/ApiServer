@@ -33,7 +33,7 @@ if Meteor.isClient
       if (favp = FavouritePosts.findOne({postId: postId, userId: Meteor.userId()}))
         FavouritePosts.update({_id: favp._id}, {$set: {updateAt: new Date()}})
       else
-        FavouritePosts.insert({postId: postId, userId: Meteor.userId(), createdAt: new Date(), updateAt: new Date()})      
+        FavouritePosts.insert({postId: postId, userId: Meteor.userId(), createdAt: new Date(), updateAt: new Date()})
     setupWeichat = (url)->
       Meteor.call 'getSignatureFromServer',url,(error,result)->
         #FeedAfterShare(Session.get('postContent'))
@@ -52,6 +52,7 @@ if Meteor.isClient
                         'onMenuShareQZone']
         }
         wx.ready ()->
+          Session.set('turnOnRandom',false)
           if Session.get('focusedIndex') isnt undefined
             description =Session.get('postContent').pub[Session.get('focusedIndex')].text.replace(/\s\s\s+/g, '');
             if !description || description is ''
@@ -127,6 +128,7 @@ if Meteor.isClient
           wx.onMenuShareQZone(chatShareData);
     @calcPostSignature = (url)->
       if isWeiXinFunc()
+        Session.set('turnOnRandom',true)
         if (typeof wx is 'undefined')
           $.loadScript 'http://res.wx.qq.com/open/js/jweixin-1.0.0.js', ()->
             setupWeichat(url)

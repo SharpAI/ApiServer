@@ -2,6 +2,11 @@
   <center class="unpublishWebPage" style="position: fixed;top: 0;color: grey;background-color: #111;bottom: 0;z-index: 3000;left: 0;right: 0;padding-top: 50%;display:none;">
 		抱歉，您访问的帖子已被删除。
 	</center>
+  {{#if turnOnRandom}}
+  <center class="turnOnRandom" style="position: fixed;top: 0;color: grey;background-color: #eee;bottom: 0;z-index: 3000;left: 0;right: 0;padding-top: 50%;">
+		<i class="fa fa-spinner fa-spin"></i>玩命加载中...
+	</center>
+  {{/if}}
   {{> pcommentInput}}
   <div class="showBgColor">
     <div class="showPostsBox">
