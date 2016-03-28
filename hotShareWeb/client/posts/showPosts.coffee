@@ -393,6 +393,11 @@ if Meteor.isClient
       $('.showBgColor').css('min-width',$(window).width())
       Session.set "pcommentIndexNum", Session.get('focusedIndex')
     'click .post_header .post_abstract .abstract_chapter a' :(e)->
+      $showPosts = $('.showPosts')
+      $('.showPosts').get(0).style.overflow = ''
+      $('.showPosts').get(0).style.maxHeight = ''
+      $('.showPosts').get(0).style.position = ''
+      $('.readmore').remove()
       if $('.sCurrent').length
         scrolltop=$('.sCurrent').offset().top
         document.body.scrollTop = scrolltop
