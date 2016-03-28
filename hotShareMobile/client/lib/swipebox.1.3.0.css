@@ -27,6 +27,11 @@ html.swipebox-html.swipebox-touch {
   height: 100%;
 }
 
+#swipebox-console{
+  position: fixed; right: 10px; top: 10px; z-index: 9999999999999999999; text-align: center; display: none;
+}
+#swipebox-console i{width: 45px; height: 45px; line-height: 45px; font-size: 28px; color: #fff; background-color: #ccc; border-radius: 50%;}
+
 #swipebox-slider {
 
   height: 100%;
@@ -45,6 +50,11 @@ html.swipebox-html.swipebox-touch {
   text-align: center;
   vertical-align: top;
   display: inline-block;
+  padding: 0px 10px;
+  overflow: hidden;
+}
+#swipebox-slider .slide.current {
+  padding: 0px;
 }
 #swipebox-slider .slide:before {
   content: "";
