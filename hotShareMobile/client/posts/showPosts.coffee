@@ -542,6 +542,7 @@ if Meteor.isClient
       Meteor.setTimeout ()->
         #PUB.back()
         if Session.get("backtoMyPosts") is true
+          Session.set("backtoMyPosts",false)
           PUB.page('/myPosts')
         else
           PUB.postPageBack()
