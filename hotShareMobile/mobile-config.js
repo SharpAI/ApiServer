@@ -9,7 +9,7 @@
 // });
 App.info({
   id: 'org.hotshare.everywhere',
-  version: '1.0.95',
+  version: '1.0.96',
   name: 'hotShare',
   description: 'Share everything with everyone',
   author: 'hotShare Design Team',
