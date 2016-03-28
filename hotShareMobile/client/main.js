@@ -82,8 +82,8 @@ if (Meteor.isCordova) {
           });
         }
         //TAPi18n.setLanguage("zh")
-         //当用户第三次使用该软件时提示评价app
-        AppRate.preferences.usesUntilPrompt = 2;
+         //当用户第八次使用该软件时提示评价app
+        AppRate.preferences.usesUntilPrompt = 7;
         AppRate.preferences.storeAppURL.ios = '957024953';
         AppRate.preferences.storeAppURL.android = 'http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere';
         AppRate.promptForRating(false);
