@@ -541,7 +541,10 @@ if Meteor.isClient
       $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect)
       Meteor.setTimeout ()->
         #PUB.back()
-        PUB.postPageBack()
+        if Session.get("backtoMyPosts") is true
+          PUB.page('/myPosts')
+        else
+          PUB.postPageBack()
         if Session.get("Social.LevelOne.Menu") is 'userProfile'
           Session.set("Social.LevelOne.Menu",'contactsList')
           return

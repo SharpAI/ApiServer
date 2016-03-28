@@ -71,6 +71,7 @@ if Meteor.isClient
           PUB.page '/posts/'+postId
         ,animatePageTrasitionTimeout
         Session.set 'FollowPostsId',this._id
+        Session.set 'backtoMyPosts', true
         return
     'click .listView':()->
       if(Session.get("showBigImage"))
