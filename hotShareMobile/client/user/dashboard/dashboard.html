@@ -55,7 +55,11 @@
     <div class="head">
       <div>{{_ "changePass"}}</div>
       <div id="pass_btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+      {{#if showSaveBtn}}
       <div id="pass_btn_save" class="rightButton" style="margin-top:0px;">{{_ "save"}}</div>
+      {{else}}
+      <div class="rightButton" style="margin-top:0px;color:#ccc;">{{_ "save"}}</div>
+      {{/if}}
     </div>
     <div class="content">
       <div class="box">
