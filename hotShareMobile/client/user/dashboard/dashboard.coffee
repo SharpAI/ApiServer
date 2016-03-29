@@ -90,29 +90,42 @@ if Meteor.isClient
   Template.my_password.rendered=->
     $('.dashboard').css 'min-height', $(window).height()
     return
+  Template.my_password.helpers
+    showSaveBtn :->
+      if Session.get('changePasswordSaveBtnClicked') is true
+        false
+      else
+        true
   Template.my_password.events
     'click #pass_btn_save' :->
+      Session.set('changePasswordSaveBtnClicked', true)
       new_pass = $("#my_edit_password").val()
       new_pass_confirm = $("#my_edit_password_confirm").val()
       if new_pass != new_pass_confirm
+        Session.set('changePasswordSaveBtnClicked', false)
         PUB.toast "两次填写的密码不一致!"
         return
       else if new_pass.length<6
+        Session.set('changePasswordSaveBtnClicked', false)
         PUB.toast "密码至少要6位";
         return
       if new_pass
         Meteor.call "changeMyPassword", new_pass, (error, result) ->
           if error
+            Session.set('changePasswordSaveBtnClicked', false)
             PUB.toast '修改密码失败!'
           else
+            Session.set('changePasswordSaveBtnClicked', false)
             navigator.notification.confirm('请重新登录!', (r)->
               if r is 1
                 Router.go '/authOverlay'
             , '修改密码成功', ['确定']);
           return
       else
+        Session.set('changePasswordSaveBtnClicked', false)
         PUB.toast "密码不能为空!"
     'click #pass_btn_back' :->
+      Session.set('changePasswordSaveBtnClicked', false)
       Router.go '/dashboard'
 
   Template.my_notice.rendered=->
