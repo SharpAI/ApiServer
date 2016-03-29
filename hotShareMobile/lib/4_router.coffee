@@ -151,11 +151,20 @@ if Meteor.isClient
         this.render 'showPosts', {data: post}
         Session.set('channel','posts/'+this.params._id+'/'+this.params._index)
     }
-    Router.route '/allDrafts',()->
-      if Meteor.isCordova is true
-        this.render 'allDrafts'
-        Session.set 'channel','allDrafts'
-        return
+    # Router.route '/allDrafts',()->
+    #   if Meteor.isCordova is true
+    #     this.render 'allDrafts'
+    #     Session.set 'channel','allDrafts'
+    #     return
+    Router.route '/allDrafts', {
+      waitOn: ->
+        [Meteor.subscribe("saveddrafts")]
+      loadingTemplate: 'loadingPost'
+      action: ->
+        if Meteor.isCordova is true
+          this.render 'allDrafts'
+          Session.set 'channel','allDrafts'
+    }
     Router.route '/myPosts',()->
       if Meteor.isCordova is true
         this.render 'myPosts'
