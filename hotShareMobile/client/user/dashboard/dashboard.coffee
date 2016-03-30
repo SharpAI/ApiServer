@@ -112,12 +112,14 @@ if Meteor.isClient
       if new_pass
         Meteor.call "changeMyPassword", new_pass, (error, result) ->
           if error
-            Session.set('changePasswordSaveBtnClicked', false)
+            Meteor.setTimeout ()->
+              Session.set('changePasswordSaveBtnClicked', false)
+            ,5000
             PUB.toast '修改密码失败!'
           else
-            Session.set('changePasswordSaveBtnClicked', false)
             navigator.notification.confirm('请重新登录!', (r)->
               if r is 1
+                Session.set('changePasswordSaveBtnClicked', false)
                 Router.go '/authOverlay'
             , '修改密码成功', ['确定']);
           return
