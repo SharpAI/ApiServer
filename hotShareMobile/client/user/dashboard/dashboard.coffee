@@ -110,19 +110,20 @@ if Meteor.isClient
         PUB.toast "密码至少要6位";
         return
       if new_pass
-        Meteor.call "changeMyPassword", new_pass, (error, result) ->
-          if error
-            Meteor.setTimeout ()->
-              Session.set('changePasswordSaveBtnClicked', false)
-            ,5000
-            PUB.toast '修改密码失败!'
-          else
-            navigator.notification.confirm('请重新登录!', (r)->
-              if r is 1
+        navigator.notification.confirm('', (r)->
+          if r is 1
+            Meteor.call "changeMyPassword", new_pass, (error, result) ->
+              if error
+                Meteor.setTimeout ()->
+                  Session.set('changePasswordSaveBtnClicked', false)
+                ,5000
+                PUB.toast '修改密码失败，请重试!'
+              else
                 Session.set('changePasswordSaveBtnClicked', false)
+                PUB.toast '修改密码成功!'
                 Router.go '/authOverlay'
-            , '修改密码成功', ['确定']);
-          return
+              return
+        , '修改密码并重新登录!', ['确定']);
       else
         Session.set('changePasswordSaveBtnClicked', false)
         PUB.toast "密码不能为空!"
