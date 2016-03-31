@@ -298,6 +298,7 @@
         $('#swipebox-console').click(function (event) {
           event.preventDefault();
 					event.stopPropagation();
+          var _index = $( '#swipebox-slider .slide' ).index( $( '#swipebox-slider .slide.current' ) );
           
           $('#swipebox-slider .current .img-box').css({
             '-webkit-transition' : '-webkit-transform 0.4s ease',
@@ -311,6 +312,8 @@
             '-webkit-transform' : ''
           });
           $(this).css('display', 'none');
+          
+          $this.setSlide(_index, _index <= 0);
         });
 				$( '#swipebox-slider' ).bind( 'touchstart', function( event ) {
           //$('#swipebox-console').html(event.originalEvent.targetTouches[0].pageX + ',' + event.originalEvent.targetTouches[0].pageY);
