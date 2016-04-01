@@ -45,6 +45,19 @@ if (Meteor.isCordova) {
     document.addEventListener("deviceready", onDeviceReady, false);
     // PhoneGap加载完毕
     function onDeviceReady() {
+        // added for message from rocket chat iframe
+        window.addEventListener('message', function(e) {
+          if(e.data === 'closekeyboard') {
+            cordova.plugins.Keyboard.close();
+          }
+          else if(e.data === 'closechatpage') {
+            cordova.plugins.Keyboard.close();
+            $("#rocketChat").fadeOut(400);
+            $(".showBgColor").fadeIn(400);
+            $("#chatSwitch").show()
+          }
+        }, false);
+
         // 按钮事件
         navigator.splashscreen.hide();
         document.addEventListener("backbutton", eventBackButton, false); // 返回键
