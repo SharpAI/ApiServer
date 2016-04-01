@@ -231,7 +231,7 @@ if Meteor.isClient
         $('.showPosts').get(0).style.overflow = 'hidden'
         $('.showPosts').get(0).style.maxHeight = '1500px'
         $('.showPosts').get(0).style.position = 'relative'
-        $showPosts.after('<div class="readmore">' + (TAPi18n.__('readMore')) + '<i class="fa fa-angle-double-down"></i><div>')
+        $showPosts.after('<div class="readmore"><div class="readMoreContent"><i class="fa fa-plus-circle"></i>' + (TAPi18n.__('readMore')) + '</div></div>')
     , 600
 
   Template.showPosts.helpers
@@ -400,12 +400,12 @@ if Meteor.isClient
       startPostTTS(self.index)
   Template.showPosts.events
     'click .readmore': (e, t)->
-      if e.target is e.currentTarget
-        $showPosts = $('.showPosts')
-        $('.showPosts').get(0).style.overflow = ''
-        $('.showPosts').get(0).style.maxHeight = ''
-        $('.showPosts').get(0).style.position = ''
-        $(e.currentTarget).remove()
+      # if e.target is e.currentTarget
+      $showPosts = $('.showPosts')
+      $('.showPosts').get(0).style.overflow = ''
+      $('.showPosts').get(0).style.maxHeight = ''
+      $('.showPosts').get(0).style.position = ''
+      $('.readmore').remove()
     'click .abstract_thumbsUp': (e)->
       i = Session.get('focusedIndex')
       commentOverlayThumbsUpHandler(i)

@@ -428,14 +428,23 @@
 .showPosts .content .abstract_comment .abstract_commentGray{position: relative;top: 8px;}
 
 .showPostsBox .readmore {
+  position: relative;
+  z-index: 100;
   padding: 5px;
   color: rgba(8, 101, 255, 0.93);
-  width: 90%;
-  margin: 5px auto;
+  box-shadow: 0px -12px 25px 12px rgba(255, 255, 255, 1);
+  width: 100%;
+  margin: 0px auto;
   text-align: center;
   letter-spacing: 1px;
-
-  i.fa {
-    margin-left: 3px;
-  }  
+  .readMoreContent{
+    border: 1px solid #dbdbdb;
+    width:50%;
+    text-align: center;
+    margin:auto;
+    i.fa {
+      margin-left: 3px;
+      padding: 10px;
+    }
+  }
 }
