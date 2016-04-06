@@ -1,7 +1,7 @@
 ![Rocket.Chat logo](https://rocket.chat/images/logo/logo-dark.svg?v3)
 
 ##Note
-	运行 Rocket.Chat 前，请先设置环境变量 ROOT_URL, 不然 sokcet 请求地址会有问题
+	运行 Rocket.Chat 前，请先设置环境变量 ROOT_URL, 不然 socket 请求地址会有问题
     比如: export ROOT_URL=http://127.0.0.1:4000
 
 ******
