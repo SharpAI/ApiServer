@@ -1,189 +1,380 @@
 //
 //  ShareViewController.m
-//  ShareExtension
+//  shareTest
 //
-//  Created by aei on 12/9/15.
+//  Created by Lokesh Patel on 27/10/15.
 //
 //
 
 #import "ShareViewController.h"
 
-#import "AppDelegate.h"
-
-@interface ShareViewController ()<UIWebViewDelegate>
-
+#import <MobileCoreServices/UTCoreTypes.h>
+#import <Cordova/CDVViewController.h>
+#import "NetWork.h"
+#import "MBProgressHUD.h"
+@interface ShareViewController ()
 {
-    //UIWebView *webView;
     NSUserDefaults *mySharedDefults;
     
-    NSMutableDictionary *myDictionary;
-    
+    NSString  *userId;
 }
 
 @end
 
+static ShareViewController* shareVaribleHandle =nil;
 @implementation ShareViewController
 
+- (id)initWithNibName:(NSString*)nibNameOrNil bundle:(NSBundle*)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        // Uncomment to override the CDVCommandDelegateImpl used
+        // _commandDelegate = [[MainCommandDelegate alloc] initWithViewController:self];
+        // Uncomment to override the CDVCommandQueue used
+        // _commandQueue = [[MainCommandQueue alloc] initWithViewController:self];
+    }
+    return self;
+}
 
-
-static NSInteger const maxCharactersAllowed = 140;  //手动设置字符数上限
-
-
--(void)viewDidLoad{
-    
-    [super viewDidLoad];
-    
-    //
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        // Uncomment to override the CDVCommandDelegateImpl used
+        // _commandDelegate = [[MainCommandDelegate alloc] initWithViewController:self];
+        // Uncomment to override the CDVCommandQueue used
+        // _commandQueue = [[MainCommandQueue alloc] initWithViewController:self];
+    }
+    return self;
 }
 
 
-#pragma mark-检查输入内容
-- (BOOL)isContentValid {
-    // Do validation of contentText and/or NSExtensionContext attachments here
-    
-    NSInteger length = self.contentText.length;
-    
-    self.charactersRemaining = @(maxCharactersAllowed - length);
-    
-    
-    if (self.charactersRemaining.integerValue < 0) {
-        
-        return NO;
+-(void)doSomeWorkWithProgress{
+     self.isFinish = NO;
+    // This just increases the progress indicator in a loop.
+    float progress = 0.0f;
+    while (progress < 0.8f) {
+        if (self.isFinish) break;
+        if (![NetWork isEnable]) {
+            
+            break;
+        }
+        progress += 0.01f;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // Instead we could have also passed a reference to the HUD
+            // to the HUD to myProgressTask as a method parameter.
+            [MBProgressHUD HUDForView:self.view].progress = progress;
+        });
+        usleep(50000);
     }
     
-    return YES;
+    while (progress < 1.0f) {
+        if (![NetWork isEnable]) {
+            
+            break;
+        }
+        progress += 0.01f;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // Instead we could have also passed a reference to the HUD
+            // to the HUD to myProgressTask as a method parameter.
+            [MBProgressHUD HUDForView:self.view].progress = progress;
+        });
+        usleep(5000);
+    }
 
 }
 
-- (void)didSelectPost {
-    // This is called after the user selects Post. Do the upload of contentText and/or NSExtensionContext attachments.
+-(void)sendFinish{
     
-    // Inform the host that we're done, so it un-blocks its UI. Note: Alternatively you could call super's -didSelectPost, which will similarly complete the extension context.
+    [[MBProgressHUD HUDForView:self.view] removeFromSuperview];
+    
+    NSString *title;
+    
+    NSString *message;
+    
+    if ([NetWork isEnable]) {
+        
+       title = @"分享成功";
+       message= @"可打开故事贴查看";
+        
+       [mySharedDefults setObject:self.entensionUrl forKey:@"shareUrl"];
+        
+       [mySharedDefults synchronize];
+    
+        
+    }
+    else{
+        
+        title = @"分享失败";
+        message= @"请检查网络连接是否可用";
+    }
     
     
-    NSArray *inputItems = self.extensionContext.inputItems;
-    NSExtensionItem *item = inputItems.firstObject;//无论多少数据，实际上只有一个 NSExtensionItem 对象
+    //提示框
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
     
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"我知道了" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        if ([self.webView isLoading]) {
+            
+            [self.webView stopLoading];
+        }
+        
+        self.returnPostBlock(nil);
+        
+    }];
+    
+    [alertController addAction:okAction];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+
+-(void)loadError{
+    
+    [self.view removeFromSuperview];
+    
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"连接超时" message:@"请查看网络链接是否正常" preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"我知道了" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        if ([self.webView isLoading]) {
+            
+            [self.webView stopLoading];
+        }
+       
+        
+        [self.extensionContext completeRequestReturningItems:nil completionHandler:nil];
+        
+    }];
+    
+    [alertController addAction:okAction];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
++ (void) setShareVaribleHandle:(ShareViewController *)responder{
+    shareVaribleHandle = responder;
+}
+
+//Getter method
++ (ShareViewController*) getShareVaribleHandle {
+    return shareVaribleHandle;
+}
+
++ (void) shareResult:(NSString *)error Handle:(ShareViewController *)responder
+{
+    if(!error || [error isEqualToString:@""]){
+        
+        responder.isFinish = YES;
+        
+    }
+    else{
+        
+        //提示框
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"分享失败" message:error preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"我知道了" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+            if ([responder.webView isLoading]) {
+                
+                [responder.webView stopLoading];
+            }
+            responder.returnPostBlock(nil);
+            
+        }];
+        
+        [alertController addAction:okAction];
+        
+        [responder presentViewController:alertController animated:YES completion:nil];
+        
+    }
+    
+}
+
+- (void)didReceiveMemoryWarning
+{
+    // Releases the view if it doesn't have a superview.
+    [super didReceiveMemoryWarning];
+    
+    // Release any cached data, images, etc that aren't in use.
+}
+
+#pragma mark View lifecycle
+
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    [self.webView removeFromSuperview];
     //数据共享
     if (!mySharedDefults) {
         
         mySharedDefults = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.hotsharetest"];
+    }
+    
+    userId = [mySharedDefults objectForKey:@"userId"];
+    
+    [self checkNetWork];
+    
+    [self performSelector:@selector(returnToJavaScriptFunction) withObject:nil afterDelay:3.0];
+    
+}
+
+-(void)checkNetWork{
+    
+    if ([NetWork isEnable]) {
         
-        myDictionary = [[NSMutableDictionary alloc] init];
+        [self createView];
+        [ShareViewController setShareVaribleHandle:self];
     }
-    
-    [myDictionary setObject:self.contentText forKey:@"contentText"];
-    
-    for (NSItemProvider *provider in item.attachments) {
-        //completionHandler 是异步运行的
-        NSString *dataType = provider.registeredTypeIdentifiers.firstObject;//实际上一个NSItemProvider里也只有一种数据类型
+    else{
         
-        if ([dataType isEqualToString:@"public.jpeg"]) {
-         [provider loadItemForTypeIdentifier:dataType options:nil completionHandler:^(UIImage *image, NSError *error){
-         //collect image...
-         
-             if(image) {
-                 dispatch_async(dispatch_get_main_queue(), ^{
-                     //photo = image;
-                     [myDictionary setObject:UIImageJPEGRepresentation(image, 0.8) forKey:@"image"];
-                     
-                     [mySharedDefults setObject:myDictionary forKey:@"shareExtensionItem"];
-                     
-                     [mySharedDefults synchronize];
-                     
-                 });
-             }
-         }];
-         
+        //提示框
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"故事贴" message:@"网络连接异常，请检查网络连接是否可用" preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"我知道了" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             
-         }else if ([dataType isEqualToString:@"public.plain-text"]){
-            [provider loadItemForTypeIdentifier:dataType options:nil completionHandler:^(NSString *contentText, NSError *error){
-                //collect image...
+            if ([self.webView isLoading]) {
                 
-                if(contentText) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        //photo = image;
-                        [myDictionary setObject:contentText forKey:@"text"];
-                        
-                        [mySharedDefults setObject:myDictionary forKey:@"shareExtensionItem"];
-                        
-                        [mySharedDefults synchronize];
-                    });
-                }
-                
-                
-            }];
-        }else if ([dataType isEqualToString:@"public.url"]){
-            [provider loadItemForTypeIdentifier:dataType options:nil completionHandler:^(NSURL *url, NSError *error){
-                //collect url...
-                if(url) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        //photo = image;
-                        [myDictionary setObject:url.absoluteString forKey:@"url"];
-                        
-                        [mySharedDefults setObject:myDictionary forKey:@"shareExtensionItem"];
-                        
-                        [mySharedDefults synchronize];
-                    });
-                }
-                
-            }];
-        }else{
+                [self.webView stopLoading];
+            }
             
-            NSLog(@"don't support data type: %@", dataType);
-        }
-       
+            self.returnPostBlock(nil);
+            
+        }];
+        
+        [alertController addAction:okAction];
+        
+        [self presentViewController:alertController animated:YES completion:nil];
     }
-//    
-//    NSExtensionItem * outputItem = [item copy];
-//    
-//    outputItem.attributedContentText = [[NSAttributedString alloc] initWithString:self.contentText attributes:nil];
-//    
-//    NSArray * outPutitems= @[outputItem];
+}
+
+-(void)createView{
     
-    //自定义的URLScheme
-    NSString *customURL = @"hotshare://";
+    self.view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.3];
     
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
-    /*UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectZero];
+    //hud.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     
-    [self.view addSubview:webView];
+    hud.bezelView.backgroundColor = [UIColor whiteColor];
     
-    //refresh
-    NSString * content = [NSString stringWithFormat : @"<head><meta http-equiv='com.actiontec.hotshare' content='0; URL=%@'></head>", customURL];
+    hud.contentColor = [UIColor colorWithRed:30/255.0 green:144/255.0  blue:255/255.0 alpha:1];
     
-    [webView loadHTMLString:content baseURL:nil];
+    // Set the bar determinate mode to show task progress.
+    hud.mode = MBProgressHUDModeDeterminateHorizontalBar;
+    hud.label.text = NSLocalizedString(@" 发送中...", @"HUD loading title");
     
-    [webView performSelector:@selector(removeFromSuperview) withObject:nil afterDelay:2.0];*/
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        // Do something useful in the background and update the HUD periodically.
+        [self doSomeWorkWithProgress];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [self sendFinish];
+            
+        });
+    });
     
-    //[webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:customURL]]];
+}
+
+
+-(void) returnToJavaScriptFunction
+{
+    NSString *scriptCall = [NSString stringWithFormat:@"getShareData('%@','%@','%@')",userId,self.entensionUrl,self.contentText];
+    [self.webView stringByEvaluatingJavaScriptFromString:scriptCall];
     
-    UIResponder* responder = self;
-    while ((responder = [responder nextResponder]) != nil)
-    {
-        NSLog(@"responder = %@", responder);
-        if([responder respondsToSelector:@selector(openURL:)] == YES)
-        {
-            [responder performSelector:@selector(openURL:) withObject:[NSURL URLWithString:customURL]];
-        }
-    }
+}
+
+
+- (void)viewDidUnload
+{
+    [super viewDidUnload];
+    // Release any retained subviews of the main view.
+    // e.g. self.myOutlet = nil;
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    // Return YES for supported orientations
+    return [super shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+}
+
+/* Comment out the block below to over-ride */
+
+/*
+ - (UIWebView*) newCordovaViewWithFrame:(CGRect)bounds
+ {
+ return[super newCordovaViewWithFrame:bounds];
+ }
+ */
+
+#pragma mark UIWebDelegate implementation
+
+- (void)webViewDidFinishLoad:(UIWebView*)theWebView
+{
+    NSLog(@"webViewDidFinishLoad!!!");
+    
+    return [super webViewDidFinishLoad:theWebView];
+   
+}
+
+/* Comment out the block below to over-ride */
  
-    
-    [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
-    
-}
-
-
-
-- (NSArray *)configurationItems {
-    // To add configuration options via table cells at the bottom of the sheet, return an array of SLComposeSheetConfigurationItem here.
-    SLComposeSheetConfigurationItem * oneItem = [[SLComposeSheetConfigurationItem alloc]init];
-    oneItem.title = @"故事贴";
-    oneItem.valuePending = NO;
-    //return @[oneItem];
-    
-    return @[];
-}
-
+ - (void) webViewDidStartLoad:(UIWebView*)theWebView
+ {
+    return [super webViewDidStartLoad:theWebView];
+ }
+ 
+ - (void) webView:(UIWebView*)theWebView didFailLoadWithError:(NSError*)error
+ {
+     
+     [self loadError];
+     
+     return [super webView:theWebView didFailLoadWithError:error];
+     
+ }
+ 
+ /*- (BOOL) webView:(UIWebView*)theWebView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType
+ {
+ return [super webView:theWebView shouldStartLoadWithRequest:request navigationType:navigationType];
+ }
+ */
 
 @end
+
+@implementation ShareViewCommandDelegate
+
+/* To override the methods, uncomment the line in the init function(s)
+ in MainViewController.m
+ */
+
+#pragma mark CDVCommandDelegate implementation
+
+- (id)getCommandInstance:(NSString*)className
+{
+    return [super getCommandInstance:className];
+}
+
+- (NSString*)pathForResource:(NSString*)resourcepath
+{
+    return [super pathForResource:resourcepath];
+}
+
+@end
+
+@implementation ShareViewCommandQueue
+
+/* To override, uncomment the line in the init function(s)
+ in MainViewController.m
+ */
+- (BOOL)execute:(CDVInvokedUrlCommand*)command
+{
+    return [super execute:command];
+}
+
+@end
+

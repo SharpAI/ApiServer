@@ -1,1 +1,1 @@
-# HotShareAppSetup
+# HotShare

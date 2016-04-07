@@ -28,6 +28,20 @@ Template.accounts_management.helpers
     return Meteor.users.find({_id: {'$in': userIds}})
 
 Template.accounts_management.events
+  'click dd.other-user': ->
+    $title = $('.head > div')
+    title = $title.html()
+    $title.text('切换帐号中...')
+    
+    Meteor.loginWithUserId(
+      @_id
+      (err)->
+        $title.html(title)
+        if(!err)
+          PUB.toast('切换帐号成功~')
+        else
+          PUB.toast('切换帐号失败~')
+    )
   'click .add-new' :->
     Router.go '/my_accounts_management_addnew'
 
