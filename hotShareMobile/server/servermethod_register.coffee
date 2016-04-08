@@ -171,8 +171,19 @@ if Meteor.isServer
         if userTarget is undefined or userTarget is null
           return {status: 'ERROR', message: 'Invalid Username'}
 
-        if AssociatedUsers.findOne($or: [{userIdA: userTarget._id, userIdB: self.userId}, {userIdA: self.userId, userIdB: userTarget._id}])
-          return {status: 'ERROR', message: 'Exist Associate User'}
+        auser = AssociatedUsers.findOne({$or: [{userIdA: self.userId}, {userIdB: self.userId}]})
+        mainUserId = self.userId
+        if(auser)
+          if(auser.userIdA is self.userId)
+            if(AssociatedUsers.find({userIdB: userTarget._id}).count() > 0)
+              return {status: 'ERROR', message: 'Exist Associate User'}
+          else
+            if(AssociatedUsers.find({userIdA: auser.userIdA, userIdB: userTarget._id}).count() > 0)
+              return {status: 'ERROR', message: 'Exist Associate User'}
+            mainUserId = auser.userIdA;
+            
+        # if AssociatedUsers.findOne($or: [{userIdA: userTarget._id, userIdB: self.userId}, {userIdA: self.userId, userIdB: userTarget._id}])
+        #   return {status: 'ERROR', message: 'Exist Associate User'}
 
         isMatch = false
         if userTarget isnt undefined and userTarget isnt null
@@ -184,7 +195,7 @@ if Meteor.isServer
           passwordTarget = {digest: userInfo.password, algorithm: 'sha-256'};
           result = Accounts._checkPassword(userTarget, passwordTarget)
           isMatch = (result.error is undefined)
-          isMatch && AssociatedUsers.insert({userIdA: self.userId, userIdB: userTarget._id, createdAt: Date.now()})
+          isMatch && AssociatedUsers.insert({userIdA: mainUserId, userIdB: userTarget._id, createdAt: Date.now()})
           if isMatch
             Meteor.users.update({_id: userTarget._id}, {$set: {type: userInfo.type, token: userInfo.token}})
         #  return
@@ -194,13 +205,22 @@ if Meteor.isServer
         else
           return {status: 'ERROR', message: 'Invalid Password'}
       'removeAssociatedUser': (userId)->
-        if this.userId is undefined or this.userId is null or userId is undefined or userId is null
+        auser = AssociatedUsers.findOne({$or: [{userIdA: this.userId}, {userIdB: this.userId}]})
+        mainUserId = this.userId
+        
+        if(!auser)
           return false
-        self = this
-        Meteor.defer ()->
-          AssociatedUsers.remove($or: [{userIdA: userId, userIdB: self.userId}, {userIdA: self.userId, userIdB: userId}])
-          return
-        return
+
+        if(auser.userIdA is this.userId)
+          if(AssociatedUsers.find({userIdA: this.userId, userIdB: userId}).count() > 0)
+            AssociatedUsers.remove({userIdA: this.userId, userIdB: userId})
+            return true
+        else
+          if(AssociatedUsers.find({userIdA: auser.userIdA, userIdB: userId}).count() > 0)
+            AssociatedUsers.remove({userIdA: this.userId, userIdB: userId})
+            return true
+        
+        return false
       'addBlackList': (blacker, blackBy)->
         BlackList.insert({blacker: [blacker],blackBy: blackBy})
       'refreshAssociatedUserToken': (data)->
