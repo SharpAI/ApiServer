@@ -1,0 +1,2 @@
+# HotShareAppShareExtensionPlugin
+

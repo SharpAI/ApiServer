@@ -1,0 +1,103 @@
+//
+//  CustomDialogView.m
+//  test
+//
+//  Created by aei on 4/8/16.
+//  Copyright © 2016 actiontec. All rights reserved.
+//
+
+#import "CustomDialogView.h"
+
+static CustomDialogView* _instance = nil;
+
+@implementation CustomDialogView
+
+/*
+// Only override drawRect: if you perform custom drawing.
+// An empty implementation adversely affects performance during animation.
+- (void)drawRect:(CGRect)rect {
+    // Drawing code
+}
+*/
+
++(instancetype) shareInstance
+{
+    static dispatch_once_t onceToken ;
+    dispatch_once(&onceToken, ^{
+        _instance = [[self alloc] initWithFrame:[[UIScreen mainScreen] bounds]] ;
+    }) ;
+    
+    return _instance ;
+}
+
+-(instancetype)initWithFrame:(CGRect)frame{
+    
+    if (self = [super initWithFrame:frame]) {
+        
+        self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.3];
+        
+        [self createSubView];
+    }
+    return self;
+}
+
+-(void)createSubView{
+    
+    UIView *backGround = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 250, 150)];
+    
+    backGround.backgroundColor = [UIColor whiteColor];
+    
+    backGround.layer.cornerRadius = 10;
+    
+    backGround.layer.masksToBounds = YES;
+    
+    backGround.center = self.center;
+    
+    [self addSubview:backGround];
+    
+    UINavigationBar *customNavBar = [[UINavigationBar alloc] initWithFrame:CGRectMake(0, 0, backGround.frame.size.width, 40)];
+    
+    UINavigationItem *newItem = [[UINavigationItem alloc] init];
+    UIBarButtonItem *waitBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"稍后",nil)  style:UIBarButtonItemStylePlain target:self action:@selector(waitButtonTapped:)];
+    UIBarButtonItem *startBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"开始",nil)  style:UIBarButtonItemStyleDone target:self action:@selector(startButtonTapped:)];
+    newItem.title = @"现在开始导入吗";
+    newItem.leftBarButtonItem = waitBarButtonItem;
+    newItem.rightBarButtonItem = startBarButtonItem;
+    [customNavBar setItems:@[newItem]];
+    
+    [backGround addSubview:customNavBar];
+    
+    self.contentText = [[UITextView alloc] initWithFrame:CGRectMake(0, 45, 180, 100)];
+    //是否支持滚动
+    self.contentText.scrollEnabled = YES;
+    //确保静态文本不可编辑
+    self.contentText.editable = NO;
+    //self.contentText.backgroundColor = [UIColor yellowColor];
+    [backGround addSubview:self.contentText];
+    
+    self.imageView = [[UIImageView alloc] initWithFrame:CGRectMake(185, 65, 60, 60)];
+    //self.imageView.backgroundColor = [UIColor redColor];
+    [backGround addSubview:self.imageView];
+}
+
+-(void)waitButtonTapped:(UIBarButtonItem *)sender{
+    
+    [self removeFromSuperview];
+}
+
+
+-(void)startButtonTapped:(UIBarButtonItem *)sender{
+    
+    if ([self.superview isKindOfClass:[UIWebView class]]) {
+        
+        UIWebView *webView = (UIWebView *)self.superview;
+        
+        NSString *scriptCall = [NSString stringWithFormat:@"editFromShare('%@')",self.url];
+        
+        [webView stringByEvaluatingJavaScriptFromString:scriptCall];
+    }
+    
+    [self removeFromSuperview];
+}
+
+@end

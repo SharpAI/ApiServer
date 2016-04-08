@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="org.hotshare.userinfo"
+        version="1.0.0">
+
+  <name>HotShareUserInfo</name>
+
+  <description>
+    Share HotShare Application User info To ShareExtension.
+  </description>
+
+  <license>MIT</license>
+
+  <engines>
+    <engine name="cordova" version=">=3.0.0"/>
+  </engines>
+  <js-module src="www/UserInfo.js" name="UserInfo">
+      <clobbers target="cordova.plugins.userInfo" />
+  </js-module>
+
+  <!-- ios -->
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*">
+      <feature name="UserInfo">
+        <param name="ios-package" value="UserInfo"/>
+      </feature>
+    </config-file>
+    <header-file src="src/ios/UserInfo.h"/>
+    <source-file src="src/ios/UserInfo.m"/>
+
+  </platform>
+
+</plugin>

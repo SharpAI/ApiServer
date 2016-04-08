@@ -16,8 +16,9 @@ typedef void (^ReturnPostBlock)(NSString *result);
 
 @interface ShareViewController : CDVViewController
 
-@property (assign, nonatomic) NSString *entensionUrl;
-@property (assign, nonatomic) NSString *contentText;
+@property (copy, nonatomic) NSString *entensionUrl;
+@property (copy, nonatomic) NSString *contentText;
+@property (copy, nonatomic) NSString *imagePath;
 @property (nonatomic, copy) ReturnPostBlock returnPostBlock;
 
 
