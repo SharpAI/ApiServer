@@ -21,12 +21,14 @@ if Meteor.isClient
               console.log('Registration Success, now logging on '+ uuid)
               Meteor.loginWithPassword(uuid,'123456',(error)->
                 unless error
+                  checkShareUrl()
                   if window.updateMyOwnLocationAddress
                     window.updateMyOwnLocationAddress()
               )
         if amplify.store('uuid')
           Meteor.loginWithPassword(amplify.store('uuid'),'123456',(error)->
             unless error
+              checkShareUrl()
               if window.updateMyOwnLocationAddress
                 window.updateMyOwnLocationAddress()
             else

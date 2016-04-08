@@ -30,6 +30,7 @@
   "me": "Me",
   "selectPicFromGallery": "Library",
   "importFromPaster": "Import from Web",
+  "importFromShareExtension":"Import from Share",
   "takePicture": "Photo",
   "receiving": "Receiving...",
   "newInfo": "Moment",

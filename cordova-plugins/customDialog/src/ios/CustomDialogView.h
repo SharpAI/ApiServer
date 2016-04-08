@@ -16,6 +16,8 @@
 
 @property(strong,nonatomic)NSString *url;
 
+@property(strong,nonatomic)NSString *ID;
+
 +(instancetype) shareInstance ; 
 
 @end

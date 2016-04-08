@@ -26,3 +26,7 @@ org.zy.yuancheng.qq@file://../cordova-plugins/qq
 com.tiegushi.cordova.tts@file://../cordova-plugins/baidutts
 com.rd11.remote-controls@file://../cordova-plugins/ios-control-bar
 cordova-plugin-apprate@file://../cordova-plugins/apprate
+
+org.hotshare.shareExtension@file://../cordova-plugins/share-extension
+org.hotshare.userinfo@file://../cordova-plugins/userinfo
+org.hotshare.customDialog@file://../cordova-plugins/customDialog

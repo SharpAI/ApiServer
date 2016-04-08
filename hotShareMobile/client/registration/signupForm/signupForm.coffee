@@ -68,6 +68,12 @@ Template.signupForm.events
             t.find('#sub-registered').disabled = false
             t.find('#sub-registered').value = '创建帐户'
           else
+            window.plugins.userinfo.setUserInfo Meteor.user()._id, ->
+                console.log 'setUserInfo was succeed!'
+                return
+              , ->
+                console.log 'setUserInfo was Error!'
+                return
             Router.go '/registerFollow'
             return
     false

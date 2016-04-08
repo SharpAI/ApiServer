@@ -13,21 +13,38 @@
     NSString *url  = [options objectForKey:@"url"];
     NSString *title = [options objectForKey:@"title"];
     NSString *imagePath = [options objectForKey:@"imagePath"];
+    NSString *ID = [options objectForKey:@"_id"];
     
     CustomDialogView *dialog = [CustomDialogView shareInstance];
     
     dialog.url = url;
+    dialog.ID = ID;
     
-    dialog.contentText.text = title;
+    if (!imagePath) {
+        [dialog.imageView removeFromSuperview];
+        
+        dialog.contentText.frame = CGRectMake(0, 45, 250, 100);
+    }
     
-    NSURL *imageUrl = [NSURL URLWithString:imagePath];
+    dialog.contentText.text = title?title:url;
     
-    UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:imageUrl]];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        // 多线程中下载图像
+        NSData * imageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:imagePath]];
+        
+        // 回到主线程完成UI设置
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            UIImage * image = [UIImage imageWithData:imageData];
+            dialog.imageView.image = image;
+            
+        });
+        
+    });
     
-    dialog.imageView.image = image;
-    
-    [[[[[UIApplication sharedApplication] keyWindow] subviews] lastObject] addSubview:dialog];
-    //[self.webView addSubview:dialog];
+    //[[[[[UIApplication sharedApplication] keyWindow] subviews] lastObject] addSubview:dialog];
+    [self.webView addSubview:dialog];
     
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     
