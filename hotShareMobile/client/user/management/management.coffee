@@ -25,7 +25,7 @@ Template.accounts_management.helpers
           userIds.push(item.userIdB)
     else
       AssociatedUsers.find({userIdA: auser.userIdA}).forEach (item)->
-        if(userIds.indexOf(item.userIdB) is -1)
+        if(userIds.indexOf(item.userIdB) is -1 and item.userIdB isnt Meteor.userId())
           userIds.push(item.userIdB)
     
     return Meteor.users.find({_id: {'$in': userIds}})
