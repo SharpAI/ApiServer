@@ -8,6 +8,7 @@ if (Meteor.isClient) {
       }
       return Meteor.setTimeout(function() {
         console.log("Accounts.onLogin");
+	checkShareUrl();
         window.updateMyOwnLocationAddress();
         if (device.platform === 'iOS' && localStorage.getItem('registrationID') == null ) {
           var registerInterval1 = window.setInterval( function(){

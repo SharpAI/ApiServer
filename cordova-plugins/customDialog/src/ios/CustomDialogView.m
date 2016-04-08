@@ -57,17 +57,39 @@ static CustomDialogView* _instance = nil;
     
     UINavigationBar *customNavBar = [[UINavigationBar alloc] initWithFrame:CGRectMake(0, 0, backGround.frame.size.width, 40)];
     
+    [customNavBar setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                         
+                                         [UIFont fontWithName:@"Helvetica" size:15.0], NSFontAttributeName,
+                                         
+                                          nil]];
+    
     UINavigationItem *newItem = [[UINavigationItem alloc] init];
     UIBarButtonItem *waitBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"稍后",nil)  style:UIBarButtonItemStylePlain target:self action:@selector(waitButtonTapped:)];
+    [waitBarButtonItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                        
+                                        [UIFont fontWithName:@"Helvetica" size:15.0], NSFontAttributeName,
+                                        
+                                        nil] 
+     
+                              forState:UIControlStateNormal];
     UIBarButtonItem *startBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"开始",nil)  style:UIBarButtonItemStyleDone target:self action:@selector(startButtonTapped:)];
+    [startBarButtonItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                        
+                                        [UIFont fontWithName:@"Helvetica" size:15.0], NSFontAttributeName,
+                                        
+                                        nil] 
+     
+                              forState:UIControlStateNormal];
     newItem.title = @"现在开始导入吗";
+    
     newItem.leftBarButtonItem = waitBarButtonItem;
     newItem.rightBarButtonItem = startBarButtonItem;
     [customNavBar setItems:@[newItem]];
     
     [backGround addSubview:customNavBar];
     
-    self.contentText = [[UITextView alloc] initWithFrame:CGRectMake(0, 45, 180, 100)];
+    self.contentText = [[UITextView alloc] initWithFrame:CGRectMake(0, 45, 165, 100)];
+    self.contentText.font = [UIFont systemFontOfSize:15.0];
     //是否支持滚动
     self.contentText.scrollEnabled = YES;
     //确保静态文本不可编辑
@@ -75,8 +97,8 @@ static CustomDialogView* _instance = nil;
     //self.contentText.backgroundColor = [UIColor yellowColor];
     [backGround addSubview:self.contentText];
     
-    self.imageView = [[UIImageView alloc] initWithFrame:CGRectMake(185, 65, 60, 60)];
-    //self.imageView.backgroundColor = [UIColor redColor];
+    self.imageView = [[UIImageView alloc] initWithFrame:CGRectMake(170, 58, 70, 70)];
+    self.imageView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.1];
     [backGround addSubview:self.imageView];
 }
 
@@ -92,7 +114,7 @@ static CustomDialogView* _instance = nil;
         
         UIWebView *webView = (UIWebView *)self.superview;
         
-        NSString *scriptCall = [NSString stringWithFormat:@"editFromShare('%@')",self.url];
+        NSString *scriptCall = [NSString stringWithFormat:@"editFromShare('%@','%@')",self.url,self.ID];
         
         [webView stringByEvaluatingJavaScriptFromString:scriptCall];
     }
