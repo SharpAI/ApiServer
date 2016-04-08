@@ -52,7 +52,7 @@ if Meteor.isClient
                         'onMenuShareQZone']
         }
         wx.ready ()->
-          Session.set('turnOnRandom',false)
+          # Session.set('turnOnRandom',false)
           if Session.get('focusedIndex') isnt undefined
             description =Session.get('postContent').pub[Session.get('focusedIndex')].text.replace(/\s\s\s+/g, '');
             if !description || description is ''
@@ -128,7 +128,7 @@ if Meteor.isClient
           wx.onMenuShareQZone(chatShareData);
     @calcPostSignature = (url)->
       if isWeiXinFunc()
-        Session.set('turnOnRandom',true)
+        # Session.set('turnOnRandom',true)
         if (typeof wx is 'undefined')
           $.loadScript 'http://res.wx.qq.com/open/js/jweixin-1.0.0.js', ()->
             setupWeichat(url)
