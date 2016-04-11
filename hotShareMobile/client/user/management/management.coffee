@@ -1,32 +1,29 @@
 Template.accounts_management.rendered=->
   $('.dashboard').css 'min-height', $(window).height()
 
-  # userIds = []
-  # AssociatedUsers.find({}).forEach((item)->
-  #     if Meteor.userId() isnt item.userIdA and !~ userIds.indexOf(item.userIdA)
-  #         userIds.push(item.userIdA)
+  userIds = []
+  AssociatedUsers.find({}).forEach((item)->
+      if Meteor.userId() isnt item.userIdA and !~ userIds.indexOf(item.userIdA)
+          userIds.push(item.userIdA)
 
-  #     if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
-  #         userIds.push(item.userIdB)
-  # )
+      if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
+          userIds.push(item.userIdB)
+  )
   
-  # Meteor.subscribe('associateduserdetails', userIds)
+  Meteor.subscribe('associateduserdetails', userIds)
 
-  # return
+  return
 
 Template.accounts_management.helpers
   accountList :->
     userIds = []
-    auser = AssociatedUsers.findOne({$or: [{userIdA: Meteor.userId()}, {userIdB: Meteor.userId()}]})
+    AssociatedUsers.find({}).forEach((item)->
+        if Meteor.userId() isnt item.userIdA and !~ userIds.indexOf(item.userIdA)
+            userIds.push(item.userIdA)
 
-    if(auser.userIdA is Meteor.userId())
-      AssociatedUsers.find({userIdA: Meteor.userId()}).forEach (item)->
-        if(userIds.indexOf(item.userIdB) is -1)
-          userIds.push(item.userIdB)
-    else
-      AssociatedUsers.find({userIdA: auser.userIdA}).forEach (item)->
-        if(userIds.indexOf(item.userIdB) is -1 and item.userIdB isnt Meteor.userId())
-          userIds.push(item.userIdB)
+        if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
+            userIds.push(item.userIdB)
+    )
     
     return Meteor.users.find({_id: {'$in': userIds}})
 
@@ -60,10 +57,6 @@ Template.accounts_management.events
         Meteor.call(
           'removeAssociatedUser'
           id
-          (err, result)->
-            if(err or !result)
-              return PUB.toast('删除失败~')
-            PUB.toast('删除成功~')
         )
     )
       

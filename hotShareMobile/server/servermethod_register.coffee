@@ -152,10 +152,10 @@ if Meteor.isServer
         true
       'addAssociatedUser': (userInfo)->
         if this.userId is undefined or this.userId is null or userInfo is undefined or userInfo is null
-          return {status: 'ERROR', message: 'Invalid Username'}
+          return false
 
         if userInfo.username is undefined or userInfo.username is null or userInfo.password is undefined or userInfo.password is null
-          return {status: 'ERROR', message: 'Invalid Username'}
+          return false
 
         #this.unblock()
 
@@ -170,47 +170,37 @@ if Meteor.isServer
 
         if userTarget is undefined or userTarget is null
           return {status: 'ERROR', message: 'Invalid Username'}
-          
-        if (userTarget._id is this.userId)
-          return {status: 'ERROR', message: 'Exist Associate User'}
-          
-        userInfo.type =  userInfo.type || ''
-        userInfo.token = userInfo.token || ''
-        passwordTarget = {digest: userInfo.password, algorithm: 'sha-256'};
-        
-        if(Accounts._checkPassword(userTarget, passwordTarget).error)
-          return {status: 'ERROR', message: 'Invalid Password'}
-          
-        # 已存在
-        auser = AssociatedUsers.findOne({$or: [{userIdA: userTarget._id}, {userIdB: userTarget._id}]});
-        if(auser)
-          return {status: 'ERROR', message: 'Exist Associate User'}
-          
-        # 登录帐号是否主帐号
-        auser = AssociatedUsers.findOne({$or: [{userIdA: this.userId}, {userIdB: this.userId}]});
-        if(!auser)
-          mastUserId = this.userId
-        else if(auser.userIdA is this.userId) # yes
-          mastUserId = this.userId
-        else # no
-          mastUserId = auser.userIdA
-        
-        AssociatedUsers.insert({userIdA: mastUserId, userIdB: userTarget._id, createdAt: Date.now()})
-        Meteor.users.update({_id: userTarget._id}, {$set: {type: userInfo.type, token: userInfo.token}})
 
-        return {status: 'SUCCESS'}
+        if AssociatedUsers.findOne($or: [{userIdA: userTarget._id, userIdB: self.userId}, {userIdA: self.userId, userIdB: userTarget._id}])
+          return {status: 'ERROR', message: 'Exist Associate User'}
+
+        isMatch = false
+        if userTarget isnt undefined and userTarget isnt null
+          if userInfo.type is undefined or userInfo.type is null
+            userInfo.type = ''
+          if userInfo.token is undefined or userInfo.token is null
+            userInfo.token = ''
+
+          passwordTarget = {digest: userInfo.password, algorithm: 'sha-256'};
+          result = Accounts._checkPassword(userTarget, passwordTarget)
+          isMatch = (result.error is undefined)
+          isMatch && AssociatedUsers.insert({userIdA: self.userId, userIdB: userTarget._id, createdAt: Date.now()})
+          if isMatch
+            Meteor.users.update({_id: userTarget._id}, {$set: {type: userInfo.type, token: userInfo.token}})
+        #  return
+        if isMatch
+        #throw new Meteor.Error 404, "value should be 1, bro" 
+          return {status: 'SUCCESS'}
+        else
+          return {status: 'ERROR', message: 'Invalid Password'}
       'removeAssociatedUser': (userId)->
-        console.log(userId)
-        auser = AssociatedUsers.findOne({$or: [{userIdA: userId}, {userIdB: userId}]});
-        if(!auser)
-          return false;
-          
-        # 要删除的帐号是主帐号
-        if(auser.userIdA is userId)
-          AssociatedUsers.update({userIdA: userId},{$set: {userIdA: this.userId}}, {upsert:true})
-        AssociatedUsers.remove({_id: auser._id})
-        
-        return true
+        if this.userId is undefined or this.userId is null or userId is undefined or userId is null
+          return false
+        self = this
+        Meteor.defer ()->
+          AssociatedUsers.remove($or: [{userIdA: userId, userIdB: self.userId}, {userIdA: self.userId, userIdB: userId}])
+          return
+        return
       'addBlackList': (blacker, blackBy)->
         BlackList.insert({blacker: [blacker],blackBy: blackBy})
       'refreshAssociatedUserToken': (data)->

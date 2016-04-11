@@ -1552,33 +1552,18 @@ if(Meteor.isServer){
 
   Meteor.publish('associatedusers', function() {
     if(this.userId) {
-        var self = this;
-        var userIds = [];
-        var ausers;
-        
-        var auser = AssociatedUsers.findOne({$or: [{userIdA: this.userId}, {userIdB: this.userId}]});
-        if(!auser)
-          return [];
-        
-        if(auser.userIdA === this.userId){
-          AssociatedUsers.find({userIdA: this.userId}).forEach(function(item) {
-            if(!~ userIds.indexOf(item.userIdB)) {userIds.push(item.userIdB)};
-          });
-          ausers = AssociatedUsers.find({userIdA: this.userId});
-        }else{
-          AssociatedUsers.find({userIdA: auser.userIdA}).forEach(function(item) {
-            if(!~ userIds.indexOf(item.userIdB)) {userIds.push(item.userIdB)};
-          });
-          ausers = AssociatedUsers.find({userIdA: auser.userIdA})
-        }
-
-        return [
-            ausers,
-            Meteor.users.find({_id: {"$in": userIds}}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}})
-        ];
-    }
-    else {
-        return [];
+      var self = this;
+      var userIds = []
+      
+      AssociatedUsers.find({$or: [{userIdA: this.userId}, {userIdB: this.userId}]}).forEach(function(item) {
+        if(self.userId !== item.userIdA && !~ userIds.indexOf(item.userIdA)) userIds.push(item.userIdA);
+        if(self.userId !== item.userIdB && !~ userIds.indexOf(item.userIdB)) userIds.push(item.userIdB);
+      });
+      
+      return [
+        AssociatedUsers.find({$or: [{userIdA: this.userId}, {userIdB: this.userId}]}),
+        Meteor.users.find({_id: {"$in": userIds}}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}})
+      ];
     }
   });
 
