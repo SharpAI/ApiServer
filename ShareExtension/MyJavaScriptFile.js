@@ -4,7 +4,7 @@ MyExtensionJavaScriptClass.prototype = {
 
     run: function(arguments) {
 
-        arguments.completionFunction({"imagePath": document.getElementsByTagName('img')[0].src});
+        arguments.completionFunction({"baseURI": document.baseURI,"title": document.title,"imagePath": document.getElementsByTagName('img')[0].src});
 
     },
 
