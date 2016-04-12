@@ -176,6 +176,9 @@ if Meteor.isServer
 
         if userTarget is undefined or userTarget is null
           return {status: 'ERROR', message: 'Invalid Username'}
+          
+        if userTarget._id is this.userId
+          return {status: 'ERROR', message: 'Can not add their own'}
 
         if AssociatedUsers.findOne($or: [{userIdA: userTarget._id, userIdB: self.userId}, {userIdA: self.userId, userIdB: userTarget._id}])
           return {status: 'ERROR', message: 'Exist Associate User'}
