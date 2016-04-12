@@ -124,9 +124,9 @@ if (Meteor.isCordova) {
     function eventResume(){
         if (Meteor.user()) {
             console.log('Refresh Main Data Source when resume');
-            checkShareUrl();
             if (Meteor.isCordova) {
                 window.refreshMainDataSource();
+                checkShareUrl();
             }
         }
     }
@@ -173,7 +173,6 @@ if (Meteor.isClient) {
   Session.set("DocumentTitle",'故事贴');
   Meteor.subscribe("topics")
   Meteor.subscribe("topicposts")
-  Meteor.subscribe("shareURLs");
   Deps.autorun(function(){
     document.title = Session.get("DocumentTitle");
   });
