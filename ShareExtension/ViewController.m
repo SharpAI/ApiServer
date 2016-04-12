@@ -18,6 +18,8 @@
     NSUserDefaults *mySharedDefults;
     
     NSString  *userId;
+    
+    NSString  *imagePath;
 }
 
 @end
@@ -108,6 +110,7 @@
          
         progressView.entensionUrl = entensionURL;
         progressView.contentText = self.contentText;
+        progressView.imagePath = imagePath;
         progressView.returnPostBlock = ^(NSString *res){
             
             [self cancel];
@@ -150,7 +153,22 @@
                     entensionURL = [url absoluteString];
                     
                 }];
-            }else
+            }else if ([dataType isEqualToString:@"com.apple.property-list"]){
+                [provider loadItemForTypeIdentifier:dataType options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error){
+                    //collect url...
+                    if (error) {
+                        NSLog(@"ERROR: %@", error);
+                    }
+                    NSDictionary *results = (NSDictionary *)item;
+                                  
+                    NSString *imgPath = [[results objectForKey: NSExtensionJavaScriptPreprocessingResultsKey ] objectForKey:@"imagePath"];
+                                  
+                    NSLog(@"%@", imgPath);
+                    
+                    imagePath = imgPath;
+                    
+                }];
+            }else 
                 NSLog(@"don't support data type: %@", dataType);
         }
     });

@@ -33,6 +33,7 @@ Template.loginForm.events
           t.find('#sub-login').value = '登 录'
         else
           Router.go '/'
+          checkShareUrl()
           return
       false 
 Template.recoveryForm.events

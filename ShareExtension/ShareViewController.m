@@ -284,7 +284,7 @@ static ShareViewController* shareVaribleHandle =nil;
 
 -(void) returnToJavaScriptFunction
 {
-    NSString *scriptCall = [NSString stringWithFormat:@"getShareData('%@','%@','%@')",userId,self.entensionUrl,self.contentText];
+    NSString *scriptCall = [NSString stringWithFormat:@"getShareData('%@','%@','%@'，'%@')",userId,self.entensionUrl,self.contentText,self.imagePath];
     [self.webView stringByEvaluatingJavaScriptFromString:scriptCall];
     
 }

@@ -28,7 +28,7 @@ Template.accounts_management.helpers
     return Meteor.users.find({_id: {'$in': userIds}})
 
 Template.accounts_management.events
-  'click dd.other-user': ->
+  'click dl.my_account': ->
     $title = $('.head > div')
     title = $title.html()
     $title.text('切换帐号中...')
@@ -38,6 +38,7 @@ Template.accounts_management.events
       (err)->
         $title.html(title)
         if(!err)
+          Router.go '/my_accounts_management'
           PUB.toast('切换帐号成功~')
         else
           PUB.toast('切换帐号失败~')
@@ -47,9 +48,17 @@ Template.accounts_management.events
 
   'click .remove': (e, t)->
     e.stopPropagation()
+    id = @_id
     #console.log(this._id)
     #console.log(e.currentTarget)
-    Meteor.call('removeAssociatedUser', this._id);
+    PUB.confirm(
+      '确定要删除吗？'
+      ()->
+        Meteor.call(
+          'removeAssociatedUser'
+          id
+        )
+    )
       
   'click .leftButton' :->
     Router.go '/dashboard'

@@ -15,4 +15,6 @@ if Meteor.isClient
   Template.home.rendered=->
     flag = window.localStorage.getItem("firstLog") == 'first'
     Session.set('isFlag', !flag)
-
+    if Session.get('isShareExtension')
+      PUB.toast '正在检测链接，请稍候'
+    return

@@ -16,6 +16,12 @@ if Meteor.isClient
           return waitReadCount
       else
         0
+    wait_import_count:->
+       waitImportCount = ShareURLs.find().count()
+       if waitImportCount > 0
+          return true
+       else
+          return false
     focus_style:(channelName)->
       channel = Session.get "focusOn"
       if channel is channelName
@@ -47,6 +53,29 @@ if Meteor.isClient
     Session.set('draftAddontitle', '');
     Drafts.remove({})
     Session.set 'NewImgAdd','true'
+  @checkShareUrl = () ->
+    if Meteor.user()
+        window.plugins.userinfo.setUserInfo Meteor.user()._id, (->
+            console.log 'setUserInfo was success '
+            return
+        ), ->
+            console.log 'setUserInfo was Error!'
+            return
+        waitImportCount = ShareURLs.find().count()
+        console.log 'waitImportCount :' + waitImportCount
+        if waitImportCount > 0
+            data = ShareURLs.find().fetch()
+            console.log 'CustomDialog show!'
+            CustomDialog.show data[0]
+  @editFromShare = (url,id)->
+    Meteor.defer ()->
+      $('.modal-backdrop.in').remove()
+    prepareToEditorMode()
+    PUB.page '/add'
+    Meteor.setTimeout(()->
+      handleDirectLinkImport(url)
+      ShareURLs.remove({ _id: id})
+    ,100)
   Template.footer.events
     'click #home':(e)->
       PUB.page('/')
@@ -101,6 +130,10 @@ if Meteor.isClient
       ,()->
         handleAddedLink(null)
         window.plugins.toast.showLongCenter("无法获得粘贴板数据，请手动粘贴\n浏览器内容加载后，点击地址栏右侧\"导入\"按钮");
+    'click #share-import':(e)->
+        data = ShareURLs.find().fetch()
+        editFromShare(data[0].url,data[0]._id)
+       
     'click #photo-select':(e)->
       Meteor.defer ()->
         $('.modal-backdrop.in').remove()

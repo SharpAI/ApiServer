@@ -45,6 +45,9 @@
                 </div>-->
                 <button type="button" id="album-select" class="btn btn-default">{{_ "selectPicFromGallery"}}</button>
                 <button type="button" id="web-import" class="btn btn-default">{{_ "importFromPaster"}}</button>
+                {{#if wait_import_count}}
+                <button type="button" id="share-import" class="btn btn-default">{{_ "importFromShareExtension"}}</button>
+                {{/if}}
                 <button type="button" id="photo-select" class="btn btn-default">{{_ "takePicture"}}</button>
             </div>
         </div>

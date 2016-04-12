@@ -33,6 +33,7 @@
   "me": "我",
   "selectPicFromGallery": "从相册选取照片",
   "importFromPaster": "从粘贴板导入链接",
+  "importFromShareExtension":"从系统分享导入链接",
   "takePicture": "拍照",
   //end
   //bell.html

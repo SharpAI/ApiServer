@@ -162,7 +162,8 @@ if Meteor.isClient
       $("#addontitle").trigger('input')
       draftTitles
     mainImage:->
-      ReactiveVar(Drafts.findOne({type:'image'})).get()
+      Drafts.findOne({type:'image'})
+      # ReactiveVar(Drafts.findOne({type:'image'})).get()
     getImagePath: (path,uri,id)->
       getImagePath(path,uri,id)
     getMainImageHeight:()->

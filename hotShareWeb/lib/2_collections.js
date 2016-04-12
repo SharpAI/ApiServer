@@ -26,6 +26,8 @@ ReaderPopularPosts = new Meteor.Collection('readerpopularposts');
 
 FavouritePosts = new Meteor.Collection('favouriteposts');
 
+ShareURLs = new Meteor.Collection('shareURLs');
+
 if(Meteor.isClient){
   PostFriends = new Meteor.Collection("postfriends")
   Newfriends = new Meteor.Collection("newfriends");
@@ -1241,6 +1243,12 @@ if(Meteor.isServer){
       else
         return Topics.find({});
   });
+  Meteor.publish("shareURLs", function() {
+      if(this.userId === null)
+        return [];
+      else
+        return ShareURLs.find({userId:this.userId});
+  });
   Meteor.publish("posts", function() {
     if(this.userId === null)
       return [];
@@ -1612,7 +1620,21 @@ if(Meteor.isServer){
         return doc.userId === userId;
     }
   });
-
+  
+  ShareURLs.allow({
+    insert: function(userId, doc) {
+        // if(ShareURLs.findOne({userId:doc.userId,url:doc.url})){
+        //     return false;
+        // }
+        return true;
+    },
+    update: function(userId, doc) {
+        return true;
+    },
+    remove: function(userId, doc) {
+        return true;
+    }
+  })
   BlackList.allow({
     insert: function(userId) {
       return !! userId;

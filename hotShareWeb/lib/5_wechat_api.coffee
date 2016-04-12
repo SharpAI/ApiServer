@@ -37,13 +37,22 @@ if Meteor.isClient
     setupWeichat = (url)->
       Meteor.call 'getSignatureFromServer',url,(error,result)->
         #FeedAfterShare(Session.get('postContent'))
-        console.log('Got Post signature ' + JSON.stringify(result))
+        if error
+          if localStorage.getItem('wechatSignatureFromServer')
+            signatureResult = localStorage.getItem('wechatSignatureFromServer')
+            # console.log('Got Post signature Result from localStorage ' + signatureResult)
+        else
+          signatureResult = result
+          # console.log('Got Post signature signatureResult1 ' + signatureResult)
+        localStorage.setItem('wechatSignatureFromServer', result);
+        # console.log('Got Post signature ' + JSON.stringify(result))
+        # console.log('Got Post signature signatureResult ' + JSON.stringify(signatureResult) + "####" + signatureResult)
         wx.config {
             debug: false,
-            appId: result.appid,
-            timestamp: result.timestamp,
-            nonceStr: result.nonceStr,
-            signature: result.signature,
+            appId: signatureResult.appid,
+            timestamp: signatureResult.timestamp,
+            nonceStr: signatureResult.nonceStr,
+            signature: signatureResult.signature,
             jsApiList: ['checkJsApi',
                         'onMenuShareTimeline',
                         'onMenuShareAppMessage',
