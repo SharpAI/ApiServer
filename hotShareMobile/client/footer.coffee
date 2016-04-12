@@ -61,20 +61,22 @@ if Meteor.isClient
         ), ->
             console.log 'setUserInfo was Error!'
             return
-        waitImportCount = ShareURLs.find().count()
-        console.log 'waitImportCount :' + waitImportCount
-        if waitImportCount > 0
-            data = ShareURLs.find().fetch()
-            console.log 'CustomDialog show!'
-            CustomDialog.show data[0]
-  @editFromShare = (url,id)->
+        Meteor.setTimeout(()->
+            waitImportCount = ShareURLs.find().count()
+            console.log 'waitImportCount :' + waitImportCount
+            if waitImportCount > 0
+              data = ShareURLs.find().fetch()
+              console.log 'CustomDialog show!'
+              CustomDialog.show data[0]
+        ,100)
+        
+  @editFromShare = (url)->
     Meteor.defer ()->
       $('.modal-backdrop.in').remove()
     prepareToEditorMode()
     PUB.page '/add'
     Meteor.setTimeout(()->
       handleDirectLinkImport(url)
-      ShareURLs.remove({ _id: id})
     ,100)
   Template.footer.events
     'click #home':(e)->
@@ -132,8 +134,8 @@ if Meteor.isClient
         window.plugins.toast.showLongCenter("无法获得粘贴板数据，请手动粘贴\n浏览器内容加载后，点击地址栏右侧\"导入\"按钮");
     'click #share-import':(e)->
         data = ShareURLs.find().fetch()
-        editFromShare(data[0].url,data[0]._id)
-       
+        editFromShare(data[0].url)
+        ShareURLs.remove({ _id:data[0]._id})
     'click #photo-select':(e)->
       Meteor.defer ()->
         $('.modal-backdrop.in').remove()
