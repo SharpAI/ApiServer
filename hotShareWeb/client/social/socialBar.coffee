@@ -10,9 +10,11 @@ if Meteor.isClient
       if $('.contactsList .head').is(':visible')
         $('.contactsList .head').fadeOut 300
       document.body.scrollTop = 0
-    'click .chatBtn':->
-      Session.set("Social.LevelOne.Menu",'chatContent')
-      Session.set("SocialOnButton",'chatContent')
+    'click .chatBtn': (e)->
+      e.stopPropagation()
+      window.location.href = 'http://172.16.10.34:4000/channel/'+ Session.get('postContent')._id;
+      #Session.set("Social.LevelOne.Menu",'chatContent')
+      #Session.set("SocialOnButton",'chatContent')
     'click .contactsBtn':->
       trackEvent("socialBar","Newfrineds")
       Session.set("Social.LevelOne.Menu",'contactsList')

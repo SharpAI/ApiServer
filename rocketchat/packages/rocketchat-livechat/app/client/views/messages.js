@@ -22,6 +22,7 @@ Template.messages.events({
 		return instance.chatMessages.keydown(visitor.getRoom(), event, instance);
 	},
 	'click .send-button': function(event, instance) {
+		console.log('11111111');
 		let input = instance.find('.input-message');
 		let sent = instance.chatMessages.send(visitor.getRoom(), input);
 		input.focus();

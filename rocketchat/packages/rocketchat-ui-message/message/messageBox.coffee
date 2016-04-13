@@ -74,6 +74,13 @@ Template.messageBox.events
 		KonchatNotification.removeRoomNotification @_id
 
 	'click .send-button': (event, instance) ->
+		postId = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1)
+		mqtt_msg = {"type": "newmessage", "counter": ''}
+
+		mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80')
+		mqtt_connection.on('connect',()->
+			mqtt_connection.publish(postId, JSON.stringify(mqtt_msg))
+		)
 		input = instance.find('.input-message')
 		chatMessages[@_id].send(@_id, input)
 		input.focus()

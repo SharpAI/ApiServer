@@ -20,7 +20,8 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'underscore',
 		'tracker',
-		'rocketchat:lib'
+		'rocketchat:lib',
+		'mkarliner:mqtt'
 	]);
 
 	api.addFiles('message/message.html', 'client');

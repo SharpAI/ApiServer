@@ -111,6 +111,16 @@ Template.body.onRendered ->
 	if Meteor.isCordova
 		$(document.body).addClass 'is-cordova'
 
+	postId = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1)
+
+	if postId and postId isnt ''
+		mqtt_msg = {"type": "newmember", "counter": 1}
+
+		mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80')
+		mqtt_connection.on('connect',()->
+			mqtt_connection.publish(postId, JSON.stringify(mqtt_msg))
+		)
+
 
 Template.main.helpers
 
@@ -162,7 +172,8 @@ Template.main.helpers
 Template.main.events
 
 	"click .burger": ->
-		window.parent.postMessage('closechatpage', '*')
+		history.back()
+		#window.parent.postMessage('closechatpage', '*')
 		#console.log 'room click .burger' if window.rocketDebug
 		#chatContainer = $("#rocket-chat")
 		#menu.toggle()
