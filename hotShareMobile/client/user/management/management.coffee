@@ -29,7 +29,7 @@ Template.accounts_management.helpers
 
 Template.accounts_management.events
   'click dl.my_account': ->
-    $title = $('.head > div')
+    $title = $('.managementTitle')
     title = $title.html()
     $title.text('切换帐号中...')
     
