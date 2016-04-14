@@ -38,6 +38,13 @@ Template.accounts_management.events
       (err)->
         $title.html(title)
         if(!err)
+          window.plugins.userinfo.setUserInfo(
+            Meteor.userId()
+            ()->
+              console.log("setUserInfo was success ")
+            ()->
+              console.log("setUserInfo was Error!")
+          )
           Router.go '/my_accounts_management'
           PUB.toast('切换帐号成功~')
         else
