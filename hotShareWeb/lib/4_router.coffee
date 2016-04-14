@@ -135,3 +135,9 @@ if Meteor.isServer
            subs.subscribe "pcomments"]
       fastRender: true
     }
+  Router.route '/posts/:_id/:_index', {
+      waitOn: ->
+        [subs.subscribe("publicPosts",this.params._id),
+         subs.subscribe "pcomments"]
+      fastRender: true
+    }
