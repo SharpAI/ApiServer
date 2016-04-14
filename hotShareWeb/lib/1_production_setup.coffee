@@ -10,7 +10,7 @@
 @withSectionMenu = true
 @withSectionShare = true
 @withPostTTS = false
-@withWeChatSignatureServer = true
+@withWeChatSignatureServer = process.env.ENABLE_WECHAT_SIGN_SERVER || false
 @withSuggestAlreadyRead = true
 @withForcePopupSectionReview = false
 @withSponserLinkAds = false
