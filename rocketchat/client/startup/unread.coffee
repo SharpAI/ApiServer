@@ -56,4 +56,4 @@ Meteor.startup ->
 		unread = Session.get 'unread'
 		fireGlobalEvent 'unread-changed', unread
 		favico?.badge unread, bgColor: if typeof unread isnt 'number' then '#3d8a3a' else '#ac1b1b'
-		document.title = if unread == '' then siteName else '(' + unread + ') '+ siteName
+		document.title = if unread == '' then 'Group Chat' else '(' + unread + ') '+ 'Group Chat'
