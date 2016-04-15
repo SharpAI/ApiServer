@@ -4,7 +4,7 @@ Template.livechatWindow.helpers({
 		if (!Template.instance().subscriptionsReady()) {
 			return '';
 		}
-		return ((ref = Settings.findOne('Livechat_title')) != null ? ref.value : void 0) || 'Rocket.Chat';
+		return ((ref = Settings.findOne('Livechat_title')) != null ? ref.value : void 0) || 'Group Chat';
 	},
 	color() {
 		var ref;
