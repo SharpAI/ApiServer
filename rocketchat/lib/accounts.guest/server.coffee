@@ -3,12 +3,12 @@ if Meteor.isServer
   refNameCount = refNames.find({}).count()
   
   # test data
-  if refNameCount <= 0
-    refNames.insert({text: '李白'})
-    # refNames.insert({text: '赵云'})
-    # refNames.insert({text: '大白'})
-    # refNames.insert({text: '曹操'})
-    # refNames.insert({text: '林冲'})
+  # if refNameCount <= 0
+  #   refNames.insert({text: '李白'})
+  #   refNames.insert({text: '赵云'})
+  #   refNames.insert({text: '大白'})
+  #   refNames.insert({text: '曹操'})
+  #   refNames.insert({text: '林冲'})
   
   Accounts.registerLoginHandler('anonymous', (options)->
     unless options.uuid
