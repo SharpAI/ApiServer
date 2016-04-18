@@ -176,6 +176,9 @@ if Meteor.isServer
 
         if userTarget is undefined or userTarget is null
           return {status: 'ERROR', message: 'Invalid Username'}
+          
+        if userTarget._id is this.userId
+          return {status: 'ERROR', message: 'Can not add their own'}
 
         if AssociatedUsers.findOne($or: [{userIdA: userTarget._id, userIdB: self.userId}, {userIdA: self.userId, userIdB: userTarget._id}])
           return {status: 'ERROR', message: 'Exist Associate User'}
@@ -192,7 +195,7 @@ if Meteor.isServer
           isMatch = (result.error is undefined)
           isMatch && AssociatedUsers.insert({userIdA: self.userId, userIdB: userTarget._id, createdAt: Date.now()})
           if isMatch
-            Meteor.users.update({_id: userTarget._id}, {$set: {type: userInfo.type, token: userInfo.token}})        
+            Meteor.users.update({_id: userTarget._id}, {$set: {type: userInfo.type, token: userInfo.token}})
         #  return
         if isMatch
         #throw new Meteor.Error 404, "value should be 1, bro" 
@@ -225,4 +228,5 @@ if Meteor.isServer
               Meteor.users.update({_id: item.userIdA}, {$set: {type: data.type, token: data.token}})
             if item.userIdB isnt self.userId
               Meteor.users.update({_id: item.userIdB}, {$set: {type: data.type, token: data.token}})
-          )        
+          )
+

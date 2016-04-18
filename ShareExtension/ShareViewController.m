@@ -10,19 +10,22 @@
 
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <Cordova/CDVViewController.h>
-#import "NetWork.h"
-#import "MBProgressHUD.h"
+#import "ViewController.h"
 @interface ShareViewController ()
-{
-    NSUserDefaults *mySharedDefults;
+{  
+    NSString  *userId;  
+    NSString *imagePath;
+    NSString *entensionTitle;
     
-    NSString  *userId;
 }
-
+@property (copy, nonatomic)NSString *entensionURL;
+@property (strong, nonatomic) ViewController *myView;
+@property (strong, nonatomic)NSUserDefaults *mySharedDefults;
 @end
 
 static ShareViewController* shareVaribleHandle =nil;
 @implementation ShareViewController
+
 
 - (id)initWithNibName:(NSString*)nibNameOrNil bundle:(NSBundle*)nibBundleOrNil
 {
@@ -48,85 +51,46 @@ static ShareViewController* shareVaribleHandle =nil;
     return self;
 }
 
-
--(void)doSomeWorkWithProgress{
-     self.isFinish = NO;
-    // This just increases the progress indicator in a loop.
-    float progress = 0.0f;
-    while (progress < 0.8f) {
-        if (self.isFinish) break;
-        if (![NetWork isEnable]) {
-            
-            break;
-        }
-        progress += 0.01f;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            // Instead we could have also passed a reference to the HUD
-            // to the HUD to myProgressTask as a method parameter.
-            [MBProgressHUD HUDForView:self.view].progress = progress;
-        });
-        usleep(50000);
+//Setter method
+- (IBAction)cancel:(UIBarButtonItem *)sender {
+    
+    if ([self.webView isLoading]) {
+        
+        [self.webView stopLoading];
     }
     
-    while (progress < 1.0f) {
-        if (![NetWork isEnable]) {
-            
-            break;
-        }
-        progress += 0.01f;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            // Instead we could have also passed a reference to the HUD
-            // to the HUD to myProgressTask as a method parameter.
-            [MBProgressHUD HUDForView:self.view].progress = progress;
-        });
-        usleep(5000);
-    }
-
+    [self.extensionContext completeRequestReturningItems:nil completionHandler:nil];
+    
 }
 
--(void)sendFinish{
+- (IBAction)share:(UIBarButtonItem *)sender {
+    //sender.tintColor = [UIColor grayColor];
     
-    [[MBProgressHUD HUDForView:self.view] removeFromSuperview];
-    
-    NSString *title;
-    
-    NSString *message;
-    
-    if ([NetWork isEnable]) {
+    //[self.backGroundView removeFromSuperview];
+    if (_entensionURL) {
         
-       title = @"分享成功";
-       message= @"可打开故事贴查看";
+        sender.enabled = false;
         
-       [mySharedDefults setObject:self.entensionUrl forKey:@"shareUrl"];
+        [self performSelector:@selector(returnToJavaScriptFunction) withObject:nil afterDelay:3.0];
         
-       [mySharedDefults synchronize];
-    
+        self.myView = [[ViewController alloc] init];
         
-    }
-    else{
-        
-        title = @"分享失败";
-        message= @"请检查网络连接是否可用";
-    }
-    
-    
-    //提示框
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-    
-    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"我知道了" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        
-        if ([self.webView isLoading]) {
+        self.myView.returnPostBlock = ^(NSString *res){
             
-            [self.webView stopLoading];
-        }
+            ShareViewController *shareView = [ShareViewController getShareVaribleHandle];
+            
+            [shareView.mySharedDefults setObject:shareView.entensionURL forKey:@"shareUrl"];
+            
+            [shareView.mySharedDefults synchronize];
+            
+            //[shareView.myView dismissViewControllerAnimated:YES completion:nil];
+            
+            [shareView.extensionContext completeRequestReturningItems:nil completionHandler:nil];
+        };
         
-        self.returnPostBlock(nil);
-        
-    }];
+        [self presentViewController:self.myView animated:NO completion:nil];
+    }
     
-    [alertController addAction:okAction];
-    
-    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 
@@ -166,29 +130,11 @@ static ShareViewController* shareVaribleHandle =nil;
 {
     if(!error || [error isEqualToString:@""]){
         
-        responder.isFinish = YES;
+        responder.myView.isFinish = YES;
         
     }
     else{
-        
-        //提示框
-        
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"分享失败" message:error preferredStyle:UIAlertControllerStyleAlert];
-        
-        UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"我知道了" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            
-            if ([responder.webView isLoading]) {
-                
-                [responder.webView stopLoading];
-            }
-            responder.returnPostBlock(nil);
-            
-        }];
-        
-        [alertController addAction:okAction];
-        
-        [responder presentViewController:alertController animated:YES completion:nil];
-        
+        responder.myView.isFinish = NO;
     }
     
 }
@@ -203,6 +149,63 @@ static ShareViewController* shareVaribleHandle =nil;
 
 #pragma mark View lifecycle
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    // View defaults to full size.  If you want to customize the view's size, or its subviews (e.g. webView),
+    // you can do so here.
+    [super viewWillAppear:animated];
+    
+    if (userId && ![userId isEqualToString:@""] && [NetWork isEnable])
+    {
+        
+        self.view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.3];
+        
+        for (NSLayoutConstraint *constraint in self.textView.superview.constraints) {
+            if (constraint.secondItem == self.textView && constraint.firstAttribute == NSLayoutAttributeTrailing) {
+                constraint.constant = 5;
+            }
+        }
+        
+        //[self.backGroundView removeFromSuperview];
+        [self replacePickerContainerViewConstraintWithConstant:self.view.frame.size.height/2+self.backGroundView.frame.size.height/2];
+        
+        self.backGroundView.alpha = 0;
+        
+    }
+    
+}
+
+-(void)viewDidAppear:(BOOL)animated{
+    
+    [super viewDidAppear:animated];
+    
+    if (userId && ![userId isEqualToString:@""] && [NetWork isEnable]) {
+    
+        CGRect bounds = self.backGroundView.bounds;
+        
+        [self replacePickerContainerViewConstraintWithConstant:0];
+        
+        [UIView animateWithDuration:1 animations:^{
+            
+            //self.backGroundView.center= self.view.center;
+            self.backGroundView.bounds = bounds;
+            [self.backGroundView layoutIfNeeded];
+            self.backGroundView.alpha = 1;
+        }];
+        
+    }
+
+
+}
+
+- (void)replacePickerContainerViewConstraintWithConstant:(CGFloat)constant
+{
+    for (NSLayoutConstraint *constraint in self.backGroundView.superview.constraints) {
+        if (constraint.firstItem == self.backGroundView && constraint.firstAttribute == NSLayoutAttributeCenterY) {
+            constraint.constant = constant;
+        }
+    }
+}
 
 - (void)viewDidLoad
 {
@@ -210,16 +213,45 @@ static ShareViewController* shareVaribleHandle =nil;
     
     [self.webView removeFromSuperview];
     //数据共享
-    if (!mySharedDefults) {
+    if (!_mySharedDefults) {
         
-        mySharedDefults = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.hotsharetest"];
+        _mySharedDefults = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.hotsharetest"];
     }
     
-    userId = [mySharedDefults objectForKey:@"userId"];
+    userId = [_mySharedDefults objectForKey:@"userId"];
     
-    [self checkNetWork];
-    
-    [self performSelector:@selector(returnToJavaScriptFunction) withObject:nil afterDelay:3.0];
+    if (!userId || [userId isEqualToString:@""]) {
+        
+        self.view.backgroundColor = [UIColor clearColor];
+       
+        self.backGroundView.alpha = 0;
+
+        //提示框
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"故事贴" message:@"抱歉，请先打开故事贴，并登录，才可以使用分享功能。" preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"我知道了" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+            if ([self.webView isLoading]) {
+                
+                [self.webView stopLoading];
+            }
+            
+            [self.extensionContext completeRequestReturningItems:nil completionHandler:nil];
+            
+        }];
+        
+        [alertController addAction:okAction];
+        
+        [self presentViewController:alertController animated:YES completion:nil];
+
+    }
+    else{
+        
+        [self checkNetWork];
+        
+        //[self.webView setFrame:CGRectMake(self.webView.bounds.origin.x,self.webView.bounds.origin.y + 20,self.webView.bounds.size.width,self.webView.bounds.size.height - 20)];
+        
+    }
     
 }
 
@@ -227,10 +259,14 @@ static ShareViewController* shareVaribleHandle =nil;
     
     if ([NetWork isEnable]) {
         
-        [self createView];
+        [self fetchItemDataAtBackground];
         [ShareViewController setShareVaribleHandle:self];
     }
     else{
+        
+        self.view.backgroundColor = [UIColor clearColor];
+        
+        self.backGroundView.alpha = 0;
         
         //提示框
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"故事贴" message:@"网络连接异常，请检查网络连接是否可用" preferredStyle:UIAlertControllerStyleAlert];
@@ -242,7 +278,7 @@ static ShareViewController* shareVaribleHandle =nil;
                 [self.webView stopLoading];
             }
             
-            self.returnPostBlock(nil);
+            [self.extensionContext completeRequestReturningItems:nil completionHandler:nil];
             
         }];
         
@@ -252,31 +288,97 @@ static ShareViewController* shareVaribleHandle =nil;
     }
 }
 
--(void)createView{
+
+-(void)fetchItemDataAtBackground{
     
-    self.view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.3];
-    
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    
-    //hud.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
-    
-    hud.bezelView.backgroundColor = [UIColor whiteColor];
-    
-    hud.contentColor = [UIColor colorWithRed:30/255.0 green:144/255.0  blue:255/255.0 alpha:1];
-    
-    // Set the bar determinate mode to show task progress.
-    hud.mode = MBProgressHUDModeDeterminateHorizontalBar;
-    hud.label.text = NSLocalizedString(@" 发送中...", @"HUD loading title");
-    
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-        // Do something useful in the background and update the HUD periodically.
-        [self doSomeWorkWithProgress];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            [self sendFinish];
-            
-        });
+    //后台获取
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSArray *inputItems = self.extensionContext.inputItems;
+        NSExtensionItem *item = inputItems.firstObject;//无论多少数据，实际上只有一个 NSExtensionItem 对象
+        for (NSItemProvider *provider in item.attachments) {
+            //completionHandler 是异步运行的
+            NSString *dataType = provider.registeredTypeIdentifiers.firstObject;//实际上一个NSItemProvider里也只有一种数据类型
+            if ([dataType isEqualToString:@"public.image"]) {
+                [provider loadItemForTypeIdentifier:dataType options:nil completionHandler:^(UIImage *image, NSError *error){
+                    //collect image...
+                    
+                }];
+            }else if ([dataType isEqualToString:@"public.plain-text"]){
+                [provider loadItemForTypeIdentifier:dataType options:nil completionHandler:^(NSString *contentText, NSError *error){
+                    //collect image...
+                    
+                }];
+            }else if ([dataType isEqualToString:@"public.url"]){
+                [provider loadItemForTypeIdentifier:dataType options:nil completionHandler:^(NSURL *url, NSError *error){
+                    //collect url...
+                    if (error) {
+                        NSLog(@"ERROR: %@", error);
+                    }
+                    
+                    _entensionURL = [url absoluteString];
+                    
+                    NSLog(@"entensionURL:%@", _entensionURL);
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        self.textView.text = _entensionURL;
+                        
+                        self.postButton.enabled = YES;
+                            
+                        [self.postButton setTintColor:[UIColor colorWithRed:30/255.0 green:144/255.0  blue:255/255.0 alpha:1]];
+                        
+                    });
+                    
+                }];
+            }else if ([dataType isEqualToString:@"com.apple.property-list"]){
+                [provider loadItemForTypeIdentifier:dataType options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error){
+                    //collect url...
+                    if (error) {
+                        NSLog(@"ERROR: %@", error);
+                    }
+                    NSDictionary *results = (NSDictionary *)item;
+                    
+                    imagePath = [[results objectForKey: NSExtensionJavaScriptPreprocessingResultsKey ] objectForKey:@"imagePath"];
+                    
+                    _entensionURL = [[results objectForKey: NSExtensionJavaScriptPreprocessingResultsKey ] objectForKey:@"baseURI"];
+                    
+                    entensionTitle = [[results objectForKey: NSExtensionJavaScriptPreprocessingResultsKey ] objectForKey:@"title"];
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        self.textView.text = entensionTitle;
+                        
+                    });
+                    
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                        
+                        // 多线程中下载图像
+                        NSData * imageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:imagePath]];
+                        
+                        // 回到主线程完成UI设置
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            
+                            for (NSLayoutConstraint *constraint in self.textView.superview.constraints) {
+                                if (constraint.secondItem == self.textView && constraint.firstAttribute == NSLayoutAttributeTrailing) {
+                                    constraint.constant = 90;
+                                }
+                            }
+                            UIImage * image = [UIImage imageWithData:imageData];
+                            self.ImageView.image = image;
+                            
+                            self.postButton.enabled = YES;
+                            
+                            [self.postButton setTintColor:[UIColor colorWithRed:30/255.0 green:144/255.0  blue:255/255.0 alpha:1]];
+                            
+                        });
+                        
+                    });
+                    
+                    
+                }];
+            }else
+                NSLog(@"don't support data type: %@", dataType);
+        }
     });
     
 }
@@ -284,7 +386,8 @@ static ShareViewController* shareVaribleHandle =nil;
 
 -(void) returnToJavaScriptFunction
 {
-    NSString *scriptCall = [NSString stringWithFormat:@"getShareData('%@','%@','%@'，'%@')",userId,self.entensionUrl,self.contentText,self.imagePath];
+    NSString *scriptCall = [NSString stringWithFormat:@"getShareData('%@','%@','%@','%@')",userId,_entensionURL,entensionTitle,imagePath];
+    
     [self.webView stringByEvaluatingJavaScriptFromString:scriptCall];
     
 }
@@ -311,6 +414,7 @@ static ShareViewController* shareVaribleHandle =nil;
  return[super newCordovaViewWithFrame:bounds];
  }
  */
+
 
 #pragma mark UIWebDelegate implementation
 

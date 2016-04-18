@@ -2213,6 +2213,7 @@ if(Meteor.isClient){
   };
   window.refreshMainDataSource = function(){
       Meteor.subscribe('waitreadcount');
+      Meteor.subscribe('shareURLs');
   };
   if(Meteor.isCordova){
       var options = {

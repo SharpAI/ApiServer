@@ -105,6 +105,7 @@ if Meteor.isClient
   Template.my_password.events
     'click #pass_btn_save' :->
       Session.set('changePasswordSaveBtnClicked', true)
+      old_pass = $("#my_old_password").val()
       new_pass = $("#my_edit_password").val()
       new_pass_confirm = $("#my_edit_password_confirm").val()
       if new_pass != new_pass_confirm
@@ -118,17 +119,31 @@ if Meteor.isClient
       if new_pass
         navigator.notification.confirm('', (r)->
           if r is 1
-            Meteor.call "changeMyPassword", new_pass, (error, result) ->
+            console.log 'changePassword !!'
+            Accounts.changePassword old_pass, new_pass, (error) ->
+              # console.log 'changePassword Result ' + result
+              console.log 'changePassword error ' + error
               if error
                 Meteor.setTimeout ()->
                   Session.set('changePasswordSaveBtnClicked', false)
                 ,5000
-                PUB.toast '修改密码失败，请重试!'
+                PUB.toast '输入密码有误，请重试!'
               else
                 Session.set('changePasswordSaveBtnClicked', false)
                 PUB.toast '修改密码成功!'
                 Router.go '/authOverlay'
               return
+            # Meteor.call "changeMyPassword", new_pass, (error, result) ->
+            #   if error
+            #     Meteor.setTimeout ()->
+            #       Session.set('changePasswordSaveBtnClicked', false)
+            #     ,5000
+            #     PUB.toast '修改密码失败，请重试!'
+            #   else
+            #     Session.set('changePasswordSaveBtnClicked', false)
+            #     PUB.toast '修改密码成功!'
+            #     Router.go '/authOverlay'
+            #   return
         , '修改密码并重新登录!', ['确定']);
       else
         Session.set('changePasswordSaveBtnClicked', false)

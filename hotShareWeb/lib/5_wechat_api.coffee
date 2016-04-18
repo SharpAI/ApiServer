@@ -38,13 +38,13 @@ if Meteor.isClient
       Meteor.call 'getSignatureFromServer',url,(error,result)->
         #FeedAfterShare(Session.get('postContent'))
         if error
-          if localStorage.getItem('wechatSignatureFromServer')
-            signatureResult = localStorage.getItem('wechatSignatureFromServer')
+          if localStorage.getItem('savedsignature'+url)
+            signatureResult = localStorage.getItem('savedsignature'+url)
             # console.log('Got Post signature Result from localStorage ' + signatureResult)
         else
           signatureResult = result
           # console.log('Got Post signature signatureResult1 ' + signatureResult)
-        localStorage.setItem('wechatSignatureFromServer', result);
+        localStorage.setItem('savedsignature'+url, result);
         # console.log('Got Post signature ' + JSON.stringify(result))
         # console.log('Got Post signature signatureResult ' + JSON.stringify(signatureResult) + "####" + signatureResult)
         wx.config {
@@ -149,8 +149,8 @@ if Meteor.isServer
   token = ''
   ticket = ''
   jsSHA = Meteor.npmRequire('jssha')
-  appId = ''
-  appSecret = ''
+  appId = process.env.WECHATAPI_APP_ID || ''
+  appSecret = process.env.WECHATAPI_APP_SECRET || ''
   requestUrl = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='+appId+'&secret='+appSecret
   `
       // 随机字符串产生函数

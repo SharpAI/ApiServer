@@ -1548,21 +1548,18 @@ if(Meteor.isServer){
 
   Meteor.publish('associatedusers', function() {
     if(this.userId) {
-        var self = this;
-        var userIds = []
-
-        AssociatedUsers.find({$or: [{userIdA: this.userId}, {userIdB: this.userId}]}).forEach(function(item) {
-            if(self.userId !== item.userIdA && !~ userIds.indexOf(item.userIdA)) userIds.push(item.userIdA);
-            if(self.userId !== item.userIdB && !~ userIds.indexOf(item.userIdB)) userIds.push(item.userIdB);
-        });
-
-        return [
-            AssociatedUsers.find({$or: [{userIdA: this.userId}, {userIdB: this.userId}]}),
-            Meteor.users.find({_id: {"$in": userIds}}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}})
-        ];
-    }
-    else {
-        return [];
+      var self = this;
+      var userIds = []
+      
+      AssociatedUsers.find({$or: [{userIdA: this.userId}, {userIdB: this.userId}]}).forEach(function(item) {
+        if(self.userId !== item.userIdA && !~ userIds.indexOf(item.userIdA)) userIds.push(item.userIdA);
+        if(self.userId !== item.userIdB && !~ userIds.indexOf(item.userIdB)) userIds.push(item.userIdB);
+      });
+      
+      return [
+        AssociatedUsers.find({$or: [{userIdA: this.userId}, {userIdB: this.userId}]}),
+        Meteor.users.find({_id: {"$in": userIds}}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}})
+      ];
     }
   });
 

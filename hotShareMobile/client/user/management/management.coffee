@@ -29,7 +29,7 @@ Template.accounts_management.helpers
 
 Template.accounts_management.events
   'click dl.my_account': ->
-    $title = $('.head > div')
+    $title = $('.managementTitle')
     title = $title.html()
     $title.text('切换帐号中...')
     
@@ -38,6 +38,13 @@ Template.accounts_management.events
       (err)->
         $title.html(title)
         if(!err)
+          window.plugins.userinfo.setUserInfo(
+            Meteor.userId()
+            ()->
+              console.log("setUserInfo was success ")
+            ()->
+              console.log("setUserInfo was Error!")
+          )
           Router.go '/my_accounts_management'
           PUB.toast('切换帐号成功~')
         else
@@ -87,6 +94,8 @@ Template.accounts_management_addnew.events
       if data and data.status is 'ERROR'
         if data.message is 'Invalid Username'
           PUB.toast('用户不存在')
+        else if data.message is 'Can not add their own'
+          PUB.toast('不能添加自己')
         else if data.message is 'Exist Associate User'
           PUB.toast('该用户已关联')
         else if data.message is 'Invalid Password'

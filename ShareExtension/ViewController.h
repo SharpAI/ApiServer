@@ -2,14 +2,19 @@
 //  ViewController.h
 //  hotShare
 //
-//  Created by aei on 4/5/16.
+//  Created by aei on 4/11/16.
 //
 //
 
-#import <Social/Social.h>
+#import <UIKit/UIKit.h>
+#import "NetWork.h"
 
-@interface ViewController : SLComposeServiceViewController
+typedef void (^ReturnPostBlock)(NSString *result);
 
-@property (strong, nonatomic) UINavigationBar *customNavBar;
+@interface ViewController : UIViewController
+
+@property (assign, nonatomic) BOOL isFinish;
+@property (nonatomic, copy) ReturnPostBlock returnPostBlock;
+
 
 @end
