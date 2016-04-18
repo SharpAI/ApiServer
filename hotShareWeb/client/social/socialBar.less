@@ -49,11 +49,34 @@
 
 @-webkit-keyframes twinkling{
     0% {
-        opacity:0.6;
+        opacity:0.4;
     }
     100%{
        opacity:1;
     }
+}
+
+.socialContent .content .chatBox .chatFooter .chatBtn {
+  .chat-icon-wrap {
+    position: relative;
+    top: -16px;
+    width: 60px;
+    margin-left: auto;
+    marigin-right: auto;
+    background-color: white;
+    padding: 6px 6px 0px 6px;
+    border-top: 2px #ccc solid;
+    border-top-left-radius: 50px;
+    border-top-right-radius: 50px;
+  }
+
+  .chat-icon-img {
+    height: 43px;
+  }
+
+  .chat-icon-img.twinkling {
+    animation: twinkling 0.5s infinite ease-in-out;
+  }  
 }
 
 .socialContent .content .chatBox .chatFooter .chatBtn.twinking {

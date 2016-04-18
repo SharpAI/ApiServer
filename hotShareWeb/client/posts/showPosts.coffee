@@ -76,11 +76,18 @@ if Meteor.isClient
     mqtt_connection.on 'message',(topic, message)->
       mqtt_msg = JSON.parse(message.toString())
       console.log(message.toString())
-      if mqtt_msg.type and (mqtt_msg.type is 'newmessage' or mqtt_msg.type is 'newmember')
-        $(".chatBtn").addClass('twinking')
-        $(".chatBtn i").removeClass('fa-comment-o').addClass('fa-commenting-o')
-        mqtt_msg_num = 
+      if mqtt_msg.type and mqtt_msg.type is 'newmessage'
+        #$(".chatBtn").addClass('twinking')
+        #$(".chatBtn i").removeClass('fa-comment-o').addClass('fa-commenting-o')
+        #mqtt_msg_num = 
         $(".chatBtn .red_spot").show().html(parseInt($(".chatBtn .red_spot").html()) + 1)
+
+      if mqtt_msg.type and mqtt_msg.type is 'newmember'
+        $(".chatBtn .chat-icon-img").addClass('twinkling')
+        setTimeout(() ->
+          $(".chatBtn .chat-icon-img").removeClass('twinkling')
+        , 1000);
+
 
     #Calc Wechat token after post rendered.
     if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
