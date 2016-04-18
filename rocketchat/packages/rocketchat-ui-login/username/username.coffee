@@ -46,5 +46,7 @@ Template.username.events
 			instance.username.set(username)
 
 			if not err?
+        url = 'http://data.tiegushi.com/anonymousIcon/anonymous_' + parseInt(Random.fraction()*33+1) + '.png'
+        Meteor.call 'setAvatarFromService', url, '', 'url'
 				Meteor.call 'joinDefaultChannels'
 
