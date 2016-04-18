@@ -2,7 +2,15 @@ Template.flexTabBar.helpers
 	active: ->
 		return 'active' if @template is RocketChat.TabBar.getTemplate() and RocketChat.TabBar.isFlexOpen()
 	buttons: ->
-		return RocketChat.TabBar.getButtons()
+    btns = []
+    _.map(
+      RocketChat.TabBar.getButtons()
+      (item)->
+        if(item.id is 'visitor-info' or item.id is 'message-search' or item.id is 'user-info' or item.id is 'members-list')
+          btns.push(item)
+    )
+      
+    return btns
 	title: ->
 		return t(@i18nTitle) or @title
 	visible: ->
