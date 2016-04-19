@@ -1,5 +1,6 @@
 if Meteor.isServer
-  refNames = new Meteor.Collection("refnames")
+  # ddp = DDP.connect 'http://host1.tiegushi.com'
+  refNames = new Meteor.Collection("refnames")#, {connection: ddp})
   refNameCount = refNames.find({}).count()
   
   # test data
@@ -15,7 +16,7 @@ if Meteor.isServer
       throw new Meteor.Error(403, 'Missing parameter: UUID');
     
     skip = Math.ceil(Random.fraction()*(refNameCount-1))
-    name = refNames.findOne({}, {skip: skip, limit: 1}).text
+    name = refNames.find({}, {skip: skip, limit: 1}).fetch()[0].text
     username = Random.id()
     update = Meteor.users.findOne({'services.anonymous.id': options.uuid})
     result = Accounts.updateOrCreateUserFromExternalService('anonymous', {id: options.uuid, _OAuthCustom: true}, {})
