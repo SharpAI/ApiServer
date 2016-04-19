@@ -10,9 +10,11 @@ Meteor.methods
 			message.u =
 				_id: Meteor.userId()
 				username: Meteor.user().username
+				name: Meteor.user().name
 
 			message.temp = true
 
+			console.log message
 			message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
 			RocketChat.promises.run('onClientMessageReceived', message).then (message) ->

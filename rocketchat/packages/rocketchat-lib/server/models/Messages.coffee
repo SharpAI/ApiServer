@@ -267,6 +267,7 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 			u:
 				_id: user._id
 				username: user.username
+				name: user.name
 			groupable: false
 
 		_.extend record, extraData

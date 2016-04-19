@@ -5,10 +5,12 @@ RocketChat.sendMessage = (user, message, room, options) ->
 	unless message.ts?
 		message.ts = new Date()
 
-	message.u = _.pick user, ['_id','username']
+	message.u = _.pick user, ['_id','username', 'name']
+	message.u.name = Meteor.users.findOne({_id: user._id}).name
 
 	message.rid = room._id
 
+	console.log user
 	if not room.usernames?
 		room = RocketChat.models.Rooms.findOneById(room._id)
 

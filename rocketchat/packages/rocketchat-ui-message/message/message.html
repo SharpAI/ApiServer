@@ -22,9 +22,9 @@
 			{{/if}}
 		{{/if}}
 		{{#if alias}}
-			<a class="user user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias">@{{u.username}}</span></a>
+			<a class="user user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{alias}} <span class="message-alias">@{{u.name}}</span></a>
 		{{else}}
-			<a class="user user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{u.username}}</a>
+			<a class="user user-card-message" href="#" data-username="{{u.username}}" tabindex="1">{{u.name}}</a>
 		{{/if}}
 		<span class="info">
 			{{#if isBot}}

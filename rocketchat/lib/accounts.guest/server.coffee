@@ -3,12 +3,12 @@ if Meteor.isServer
   refNameCount = refNames.find({}).count()
   
   # test data
-  # if refNameCount <= 0
-  #   refNames.insert({text: '李白'})
-  #   refNames.insert({text: '赵云'})
-  #   refNames.insert({text: '大白'})
-  #   refNames.insert({text: '曹操'})
-  #   refNames.insert({text: '林冲'})
+  if refNameCount <= 0
+    refNames.insert({text: '李白'})
+    refNames.insert({text: '赵云'})
+    refNames.insert({text: '大白'})
+    refNames.insert({text: '曹操'})
+    refNames.insert({text: '林冲'})
   
   Accounts.registerLoginHandler('anonymous', (options)->
     unless options.uuid
@@ -20,8 +20,8 @@ if Meteor.isServer
     update = Meteor.users.findOne({'services.anonymous.id': options.uuid})
     result = Accounts.updateOrCreateUserFromExternalService('anonymous', {id: options.uuid, _OAuthCustom: true}, {})
     
-    # unless update
-    #   Meteor.users.update({_id: result.userId}, {$set: {username: username, name: name}})
+    unless update
+      Meteor.users.update({_id: result.userId}, {$set: {username: username, name: name}})
     
     return result
   )

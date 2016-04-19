@@ -1,3 +1,6 @@
+Meteor.publish 'userinfo', (id) ->
+	return Meteor.users.find({_id: id})
+
 Meteor.publish 'messages', (rid, start) ->
 	unless this.userId
 		return this.ready()
