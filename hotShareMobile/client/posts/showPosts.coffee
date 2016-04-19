@@ -247,7 +247,7 @@ if Meteor.isClient
     initRocketChat = () ->
       ifr = document.createElement('iframe')
       ifr.id = 'rocketChat';
-      ifr.src = 'http://testchat.tiegushi.com:8080/channel/'+  (Session.get('postContent'))._id;
+      ifr.src = 'http://testchat.tiegushi.com/channel/'+  (Session.get('postContent'))._id;
       ifr.style.position = 'fiexed';
       ifr.display = 'none';
       ifr.style.top = '0';
