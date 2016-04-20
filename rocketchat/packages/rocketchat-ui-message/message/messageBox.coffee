@@ -54,15 +54,17 @@ Template.messageBox.helpers
 		return RocketChat.settings.get('FileUpload_MediaTypeWhiteList')
 
 	showMic: ->
-		if not Template.instance().isMessageFieldEmpty.get()
-			return
+		#if not Template.instance().isMessageFieldEmpty.get()
+		#	return
 
-		if Template.instance().showMicButton.get()
-			return 'show-mic'
+		#if Template.instance().showMicButton.get()
+		#	return 'show-mic'
+		return
 
 	showSend: ->
-		if not Template.instance().isMessageFieldEmpty.get() or not Template.instance().showMicButton.get()
-			return 'show-send'
+		#if not Template.instance().isMessageFieldEmpty.get() or not Template.instance().showMicButton.get()
+		#	return 'show-send'
+		return 'show-send'
 
 Template.messageBox.events
 	'click .join': (event) ->
@@ -74,13 +76,6 @@ Template.messageBox.events
 		KonchatNotification.removeRoomNotification @_id
 
 	'click .send-button': (event, instance) ->
-		postId = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1)
-		mqtt_msg = {"type": "newmessage", "counter": ''}
-
-		mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80')
-		mqtt_connection.on('connect',()->
-			mqtt_connection.publish(postId, JSON.stringify(mqtt_msg))
-		)
 		input = instance.find('.input-message')
 		chatMessages[@_id].send(@_id, input)
 		input.focus()
