@@ -187,7 +187,7 @@ Template.messagePopup.events
 	'click .popup-item': (e) ->
 		template = Template.instance()
 
-		template.value.set this._id
+		template.value.set this.name#this._id
 
 		template.enterValue()
 
