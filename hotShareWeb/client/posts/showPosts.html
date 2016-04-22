@@ -266,6 +266,13 @@
           content = $('#pcommitReport').val();
           postId = Session.get("postContent")._id;
           post = Session.get("postContent").pub;
+
+          var mqtt_msg = {"type": "postcomment", "message": "hello from hotshare", "postid": Session.get('postContent')._id};
+          mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80');
+          mqtt_connection.on('connect',function() {
+            mqtt_connection.publish('all', JSON.stringify(mqtt_msg));
+          });   
+
           if (favp = FavouritePosts.findOne({postId: postId, userId: Meteor.userId()})) {
             FavouritePosts.update({_id: favp._id}, {$set: {updateAt: new Date()}});
           }
