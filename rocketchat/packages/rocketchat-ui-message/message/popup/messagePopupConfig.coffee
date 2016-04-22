@@ -35,12 +35,12 @@ Template.messagePopupConfig.helpers
 				exp = new RegExp("#{RegExp.escape filter}", 'i')
 
 				# Get users from messages
-				items = filteredUsersMemory.find({ts: {$exists: true}, username: exp}, {limit: 5, sort: {ts: -1}}).fetch()
+				items = filteredUsersMemory.find({ts: {$exists: true}, name: exp}, {limit: 5, sort: {ts: -1}}).fetch()
 
 				# Get online users
 				if items.length < 5 and filter?.trim() isnt ''
-					messageUsers = _.pluck(items, 'username')
-					Meteor.users.find({$and: [{username: exp}, {username: {$nin: [Meteor.user().username].concat(messageUsers)}}]}, {limit: 5 - messageUsers.length}).fetch().forEach (item) ->
+					messageUsers = _.pluck(items, 'name')
+					Meteor.users.find({$and: [{name: exp}, {name: {$nin: [Meteor.user().name].concat(messageUsers)}}]}, {limit: 5 - messageUsers.length}).fetch().forEach (item) ->
 						items.push
 							_id: item.username
 							username: item.username
@@ -52,25 +52,32 @@ Template.messagePopupConfig.helpers
 					messageUsers = _.pluck(items, 'username')
 					Tracker.nonreactive ->
 						roomUsernames = RocketChat.models.Rooms.findOne(Session.get('openedRoom')).usernames
-						for roomUsername in roomUsernames
-							if messageUsers.indexOf(roomUsername) is -1 and exp.test(roomUsername)
-								items.push
-									_id: roomUsername
-									username: roomUsername
-									status: Session.get('user_' + roomUsername + '_status') or 'offline'
+						Meteor.users.find({username: {$nin: messageUsers}, username: {$in: RocketChat.models.Rooms.findOne(Session.get('openedRoom')).usernames}}, {limit: 5 - messageUsers.length}).forEach (item) ->
+							items.push
+								_id: item.username
+								username: item.username
+								name: item.name
+								status: item.status					
+            
+            # for roomUsername in roomUsernames
+						# 	if messageUsers.indexOf(roomUsername) is -1 and exp.test(roomUsername)
+						# 		items.push
+						# 			_id: roomUsername
+						# 			username: roomUsername
+						# 			status: Session.get('user_' + roomUsername + '_status') or 'offline'
 
-								if items.length >= 5
-									break
+								# if items.length >= 5
+								# 	break
 
-				# Get users from db
+				# # Get users from db
 				if items.length < 5 and filter?.trim() isnt ''
-					messageUsers = _.pluck(items, 'username')
+					messageUsers = _.pluck(items, 'name')
 					template.userFilter.set
 						name: filter
 						except: messageUsers
 
 					if template.subscriptionsReady()
-						filteredUsers.find({username: exp}, {limit: 5 - messageUsers.length}).fetch().forEach (item) ->
+						filteredUsers.find({name: exp}, {limit: 5 - messageUsers.length}).fetch().forEach (item) ->
 							items.push
 								_id: item.username
 								username: item.username
