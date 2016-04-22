@@ -149,14 +149,6 @@ if Meteor.isClient
         toastr.info(userName+"点评过的段落已为您用蓝色标注！")
       ,300
   Template.showPosts.onDestroyed ->
-    instance = @
-
-    if $("#rocketChat").length > 0 and instance.doms and instance.doms.ifr
-      document.body.removeChild(instance.doms.ifr)
-
-    if $("#chatSwitch").length > 0 and instance.doms and instance.doms.icon
-      document.body.removeChild(instance.doms.icon)
-
     document.body.scrollTop = 0
     Session.set("postPageScrollTop", 0)
     Session.set("showSuggestPosts",false)
@@ -258,54 +250,6 @@ if Meteor.isClient
         $('.showPosts').get(0).style.position = 'relative'
         $showPosts.after('<div class="readmore"><div class="readMoreContent"><i class="fa fa-plus-circle"></i>' + (TAPi18n.__('readMore')) + '</div></div>')
     , 600
-
-    instance = @
-
-    initRocketChat = () ->
-      ifr = document.createElement('iframe')
-      ifr.id = 'rocketChat';
-      ifr.src = 'http://testchat.tiegushi.com/channel/'+  (Session.get('postContent'))._id;
-      ifr.style.position = 'fiexed';
-      ifr.display = 'none';
-      ifr.style.top = '0';
-      ifr.style.right = '0';
-      ifr.style.left = '0';
-      ifr.style.bottom = '0';
-      ifr.style.height = '100%';
-      ifr.style.width = '100%';
-      ifr.style.zIndex = '9999';
-      ifr.style.border = 'none';
-      document.body.appendChild(ifr);
-
-      icon = document.createElement('div')
-      icon.id = 'chatSwitch'
-      icon.style.position = 'fixed'
-      icon.style.height = '30px'
-      icon.style.width = '30px'
-      icon.style.zIndex = '10000'
-      icon.style.backgroundColor = 'rgba(228, 0, 0, 0.4)'
-      icon.style.top = '400px'
-      icon.style.right = '10px'
-      icon.style.borderRadius = '50px'
-      icon.style.textAlign = 'center'
-      icon.style.fontSize = '20px'
-      icon.innerHTML = 'R'
-      icon.addEventListener('click', () ->
-        $("#chatSwitch").hide()
-        $(".showBgColor").fadeOut(400)
-        $(ifr).fadeIn(400)
-        cordova.plugins.Keyboard.close()
-        return
-      , false)
-
-      document.body.appendChild(icon)
-
-      instance.doms = {}
-      instance.doms.ifr = ifr
-      instance.doms.icon = icon
-      return
-
-    initRocketChat()
 
   Template.showPosts.helpers
     withSectionMenu: withSectionMenu
