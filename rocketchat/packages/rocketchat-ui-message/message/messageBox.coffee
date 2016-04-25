@@ -32,18 +32,23 @@ Template.messageBox.helpers
 		users = MsgTyping.get @_id
 		if users.length is 0
 			return
-		if users.length is 1
+      
+		_users = []
+		Meteor.users.find({username: {$in: users}}).forEach (item) ->
+			_users.push item.name
+
+		if _users.length is 1
 			return {
 				multi: false
 				selfTyping: MsgTyping.selfTyping.get()
-				users: users[0]
+				users: _users[0]
 			}
 		# usernames = _.map messages, (message) -> return message.u.username
-		last = users.pop()
-		if users.length > 4
+		last = _users.pop()
+		if _users.length > 4
 			last = t('others')
 		# else
-		usernames = users.join(', ')
+		usernames = _users.join(', ')
 		usernames = [usernames, last]
 		return {
 			multi: true
