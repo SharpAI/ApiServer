@@ -157,23 +157,6 @@ if Meteor.isClient
       $('.tts-stoper').hide()
       window.currentTTS.stop()
   Template.showPosts.onRendered ->
-    mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80')
-    mqtt_connection.on('connect',()->
-      console.log('Connected to server')
-      mqtt_connection.subscribe(Session.get('postContent')._id)
-    )
-    mqtt_connection.on 'message',(topic, message)->
-      mqtt_msg = JSON.parse(message.toString())
-      console.log(message.toString())
-      if mqtt_msg.type and mqtt_msg.type is 'newmessage'
-        $(".chatBtn .red_spot").show().html(parseInt($(".chatBtn .red_spot").html()) + 1)
-
-      if mqtt_msg.type and mqtt_msg.type is 'newmember'
-        $(".chatBtn .chat-icon-img").addClass('twinkling')
-        setTimeout(() ->
-          $(".chatBtn .chat-icon-img").removeClass('twinkling')
-        , 1000);
-
     #Calc Wechat token after post rendered.
     calcPostSignature(window.location.href.split('#')[0]);
     if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
