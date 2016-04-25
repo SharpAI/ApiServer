@@ -11,7 +11,7 @@ if Meteor.isClient
     Session.set("displayPostContent",false)
     Meteor.setTimeout ()->
       Session.set("displayPostContent",true)
-      calcPostSignature(window.location.href.split('#')[0])
+      # calcPostSignature(window.location.href.split('#')[0])
     ,300
   Router.route '/redirect/:_id',()->
     Session.set('nextPostID',this.params._id)
@@ -29,6 +29,20 @@ if Meteor.isClient
           this.render 'postNotFound'
           return
         Session.set("refComment",[''])
+        if isWeiXinFunc()
+          if (typeof wx is 'undefined')
+            $.loadScript 'http://res.wx.qq.com/open/js/jweixin-1.0.0.js'
+          nonceStr = Math.random().toString(36).substr(2, 15)
+          ts = parseInt(new Date().getTime() / 1000) + ''
+          thisurl = window.location.href.split('#')[0]
+          Meteor.call 'getSignatureFromServerNew' ,nonceStr ,ts ,thisurl, (error,result)->
+            if error
+              if localStorage.getItem('savedsignature'+url)
+                signatureResult = localStorage.getItem('savedsignature'+url)
+            else
+              signatureResult = result
+            localStorage.setItem('savedsignature'+url, result)
+            setupWeichatNew(signatureResult)
         if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
           Session.set('postContent',post)
           refreshPostContent()
@@ -69,6 +83,20 @@ if Meteor.isClient
         this.render 'postNotFound'
         return
       Session.set("refComment",[''])
+      if isWeiXinFunc()
+        if (typeof wx is 'undefined')
+          $.loadScript 'http://res.wx.qq.com/open/js/jweixin-1.0.0.js'
+        nonceStr = Math.random().toString(36).substr(2, 15)
+        ts = parseInt(new Date().getTime() / 1000) + ''
+        thisurl = window.location.href.split('#')[0]
+        Meteor.call 'getSignatureFromServerNew' ,nonceStr ,ts ,thisurl, (error,result)->
+          if error
+            if localStorage.getItem('savedsignature'+url)
+              signatureResult = localStorage.getItem('savedsignature'+url)
+          else
+            signatureResult = result
+          localStorage.setItem('savedsignature'+url, result)
+          setupWeichatNew(signatureResult)
       ###
       Meteor.subscribe "refcomments",()->
         Meteor.setTimeout ()->
