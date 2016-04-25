@@ -18,11 +18,13 @@ if Meteor.isServer
     skip = Math.ceil(Random.fraction()*(refNameCount-1))
     name = refNames.find({}, {skip: skip, limit: 1}).fetch()[0].text
     username = Random.id()
-    update = Meteor.users.findOne({'services.anonymous.id': options.uuid})
+    user = Meteor.users.findOne({'services.anonymous.id': options.uuid})
     result = Accounts.updateOrCreateUserFromExternalService('anonymous', {id: options.uuid, _OAuthCustom: true}, {})
     
-    unless update
+    if !user or !user.name
       Meteor.users.update({_id: result.userId}, {$set: {username: username, name: name}})
+    # unless user.name
+    #   Meteor.users.update({_id: result.userId}, {$set: {username: username, name: name}})
     
     return result
   )
