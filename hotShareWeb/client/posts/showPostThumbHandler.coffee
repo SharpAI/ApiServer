@@ -204,7 +204,7 @@ if Meteor.isClient
       e.target.className="fa fa-thumbs-up thumbsUp"
       e.target.parentNode.parentElement.style.color="rgb(243,11,68)"
       #e.target.textContent=e.target.textContent-0+1
-      mqtt_msg = {"type": "postthumbup", "message": "hello from hotshare", "postid": Session.get('postContent')._id}
+      mqtt_msg = {"type": "postthumbup", "message": "xxx 赞了此文章", "postid": Session.get('postContent')._id}
       mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80')
       mqtt_connection.on('connect',()->
         console.log('Connected to server')
