@@ -826,6 +826,7 @@ if Meteor.isClient
       previousIsImage = false
       resortedArticle = []
       sortedImages = 0
+      sortedVideos = 0
 
 #      musics = getMusicFromScript(url, documentBody)
 #      if(musics.length > 0)
@@ -876,7 +877,10 @@ if Meteor.isClient
         else
           videoInfo = getPossibleVideo(node)
           if videoInfo
+            sortedVideos++
             resortedArticle.push({type:'video', videoInfo:videoInfo})
+            if videoInfo.imageUrl
+              data.imageArray.push videoInfo.imageUrl
             return true
         text = $(node).text()
         if text and text isnt ''
@@ -1000,7 +1004,7 @@ if Meteor.isClient
             toBeInsertedStyleAlign = styleAlign;
       if toBeInsertedText and toBeInsertedText isnt ''
         appendParagraph(resortedArticle, toBeInsertedText, undefined)
-      if sortedImages < 1
+      if sortedImages < 1 and sortedVideos < 1
         console.log('no image ?')
         grabImagesInHTMLString(data)
         if data.imageArray.length > 0

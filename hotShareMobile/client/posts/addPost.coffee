@@ -182,7 +182,7 @@ if Meteor.isClient
       type:'video',
       owner: Meteor.userId(),
       toTheEnd: true,
-      text:'您当前程序不支持视频播放，请分享到微信中欣赏',
+      text:'来自故事贴',
       videoInfo: videoInfo
       data_row:'1',
       data_col:'3',
