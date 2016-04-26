@@ -104,6 +104,6 @@ Template.accountPreferences.events
 		KonchatNotification.notify
 			payload:
 				sender:
-					username: 'rocket.cat'
+					username: 'group.cat'
 			title: TAPi18n.__('Desktop_Notification_Test')
 			text: TAPi18n.__('This_is_a_desktop_notification')

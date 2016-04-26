@@ -210,7 +210,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 											else if message.subtype is 'me_message'
 												RocketChat.sendMessage @getRocketUser(message.user), { msg: '_' + @convertSlackMessageToRocketChat(message.text) + '_', ts: new Date(parseInt(message.ts.split('.')[0]) * 1000) }, room
 											else if message.subtype is 'bot_message'
-												botUser = RocketChat.models.Users.findOneById 'rocket.cat', { fields: { username: 1 }}
+												botUser = RocketChat.models.Users.findOneById 'group.cat', { fields: { username: 1 }}
 												botUsername = if @bots[message.bot_id] then @bots[message.bot_id]?.name else message.username
 												msgObj =
 													msg: if message.text then message.text else ''

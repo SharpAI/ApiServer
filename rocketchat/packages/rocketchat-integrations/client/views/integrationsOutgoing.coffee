@@ -1,6 +1,6 @@
 Template.integrationsOutgoing.onCreated ->
 	@record = new ReactiveVar
-		username: 'rocket.cat'
+		username: 'group.cat'
 		token: Random.id(24)
 
 

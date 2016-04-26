@@ -14,9 +14,9 @@ Meteor.startup ->
         msg: mqtt_msg.message,
         ts: new Date(),
         u: {
-            _id: 'rocket.cat',
-            name: 'Rocket.Cat',
-            username: 'rocket.cat'
+            _id: 'group.cat',
+            name: 'Group.Cat',
+            username: 'group.cat'
         }
       }
 

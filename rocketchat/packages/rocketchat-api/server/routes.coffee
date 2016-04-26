@@ -27,7 +27,7 @@ RocketChat.API.v1.addRoute 'chat.messageExamples', authRequired: true,
 				channel_name: 'general'
 				timestamp: new Date
 				user_id: Random.id()
-				user_name: 'rocket.cat'
+				user_name: 'group.cat'
 				text: 'Sample text 1'
 				trigger_word: 'Sample'
 			,
@@ -36,7 +36,7 @@ RocketChat.API.v1.addRoute 'chat.messageExamples', authRequired: true,
 				channel_name: 'general'
 				timestamp: new Date
 				user_id: Random.id()
-				user_name: 'rocket.cat'
+				user_name: 'group.cat'
 				text: 'Sample text 2'
 				trigger_word: 'Sample'
 			,
@@ -45,7 +45,7 @@ RocketChat.API.v1.addRoute 'chat.messageExamples', authRequired: true,
 				channel_name: 'general'
 				timestamp: new Date
 				user_id: Random.id()
-				user_name: 'rocket.cat'
+				user_name: 'group.cat'
 				text: 'Sample text 3'
 				trigger_word: 'Sample'
 			]

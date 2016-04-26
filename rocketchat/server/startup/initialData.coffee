@@ -5,11 +5,11 @@ Meteor.startup ->
 			RocketChat.models.Rooms.createWithIdTypeAndName 'GENERAL', 'c', 'general',
 				default: true
 
-		if not RocketChat.models.Users.findOneById('rocket.cat')?
+		if not RocketChat.models.Users.findOneById('group.cat')?
 			RocketChat.models.Users.create
-				_id: 'rocket.cat'
-				name: "Rocket.Cat"
-				username: 'rocket.cat'
+				_id: 'group.cat'
+				name: "Group.Cat"
+				username: 'group.cat'
 				status: "online"
 				statusDefault: "online"
 				utcOffset: 0
@@ -20,7 +20,7 @@ Meteor.startup ->
 			RocketChatFileAvatarInstance.deleteFile "rocket.cat.jpg"
 			ws = RocketChatFileAvatarInstance.createWriteStream "rocket.cat.jpg", 'image/png'
 			ws.on 'end', Meteor.bindEnvironment ->
-				RocketChat.models.Users.setAvatarOrigin 'rocket.cat', 'local'
+				RocketChat.models.Users.setAvatarOrigin 'group.cat', 'local'
 
 			rs.pipe(ws)
 
@@ -81,7 +81,7 @@ Meteor.startup ->
 		# Set oldest user as admin, if none exists yet
 		if _.isEmpty( RocketChat.authz.getUsersInRole( 'admin' ).fetch())
 			# get oldest user
-			oldestUser = RocketChat.models.Users.findOne({ _id: { $ne: 'rocket.cat' }}, { fields: { username: 1 }, sort: {createdAt: 1}})
+			oldestUser = RocketChat.models.Users.findOne({ _id: { $ne: 'group.cat' }}, { fields: { username: 1 }, sort: {createdAt: 1}})
 			if oldestUser
 				RocketChat.authz.addUserRoles( oldestUser._id, 'admin')
 				console.log "No admins are found. Set #{oldestUser.username} as admin for being the oldest user"
