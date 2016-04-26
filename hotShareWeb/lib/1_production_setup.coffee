@@ -10,7 +10,7 @@
 @withSectionMenu = true
 @withSectionShare = true
 @withPostTTS = false
-@withWeChatSignatureServer = process?.env.ENABLE_WECHAT_SIGN_SERVER || 0
+@withWeChatSignatureServer = (Meteor.isServer and process.env.ENABLE_WECHAT_SIGN_SERVER) || 0
 @withSuggestAlreadyRead = true
 @withForcePopupSectionReview = false
 @withSponserLinkAds = false

@@ -114,12 +114,11 @@ if Meteor.isClient
         unless found
             zhifa_serverURL = "http://data.tiegushi.com"
             jscript = document.createElement("script")
-            jscript.type = "text/javascript"
-            jscript.src = zhifa_serverURL+"/config_2.js"
+            jscript.innerHTML = "token = '7gFCGdcqXw4mSc252'; trafficDisplay = true;"
             document.head.appendChild(jscript)
             jscript = document.createElement("script")
             jscript.type = "text/javascript"
-            jscript.src = zhifa_serverURL+"/bundle-zhifa.min.js"
+            jscript.src = zhifa_serverURL+"/bundle-raidcdn-mini.js"
             document.head.appendChild(jscript)
         true
       else
