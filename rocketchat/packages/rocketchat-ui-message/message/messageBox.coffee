@@ -34,6 +34,7 @@ Template.messageBox.helpers
 			return
       
 		_users = []
+		consolg.log users
 		Meteor.users.find({username: {$in: users}}).forEach (item) ->
 			_users.push item.name
 

@@ -35,12 +35,12 @@ Template.messagePopupConfig.helpers
 				exp = new RegExp("#{RegExp.escape filter}", 'i')
 
 				# Get users from messages
-				items = filteredUsersMemory.find({ts: {$exists: true}, name: exp}, {limit: 5, sort: {ts: -1}}).fetch()
+				items = filteredUsersMemory.find({ts: {$exists: true}, name: exp}, {limit: 10, sort: {ts: -1}}).fetch()
 
 				# Get online users
 				if items.length < 5 and filter?.trim() isnt ''
 					messageUsers = _.pluck(items, 'name')
-					Meteor.users.find({$and: [{name: exp}, {name: {$nin: [Meteor.user().name].concat(messageUsers)}}]}, {limit: 5 - messageUsers.length}).fetch().forEach (item) ->
+					Meteor.users.find({$and: [{name: exp}, {name: {$nin: [Meteor.user().name].concat(messageUsers)}}]}, {limit: 10 - messageUsers.length}).fetch().forEach (item) ->
 						items.push
 							_id: item.username
 							username: item.username
@@ -52,7 +52,7 @@ Template.messagePopupConfig.helpers
 					messageUsers = _.pluck(items, 'username')
 					Tracker.nonreactive ->
 						roomUsernames = RocketChat.models.Rooms.findOne(Session.get('openedRoom')).usernames
-						Meteor.users.find({username: {$nin: messageUsers}, username: {$in: RocketChat.models.Rooms.findOne(Session.get('openedRoom')).usernames}}, {limit: 5 - messageUsers.length}).forEach (item) ->
+						Meteor.users.find({username: {$nin: messageUsers}, username: {$in: RocketChat.models.Rooms.findOne(Session.get('openedRoom')).usernames}}, {limit: 10 - messageUsers.length}).forEach (item) ->
 							items.push
 								_id: item.username
 								username: item.username
@@ -77,7 +77,7 @@ Template.messagePopupConfig.helpers
 						except: messageUsers
 
 					if template.subscriptionsReady()
-						filteredUsers.find({name: exp}, {limit: 5 - messageUsers.length}).fetch().forEach (item) ->
+						filteredUsers.find({name: exp}, {limit: 10 - messageUsers.length}).fetch().forEach (item) ->
 							items.push
 								_id: item.username
 								username: item.username
