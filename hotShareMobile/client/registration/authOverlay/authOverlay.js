@@ -3,6 +3,9 @@ if (Meteor.isClient) {
       if (Accounts._resetPasswordToken) {
           Session.set('resetPassword', Accounts._resetPasswordToken);
       }
+       WechatShare.isWXAppInstalled({}, function(result){
+        Session.set('isWXAppInstalled', result);
+      }, function(){});
   });
   Template.authOverlay.onRendered(function () {
     $('.authOverlay').css('height', $(window).height());
@@ -17,6 +20,12 @@ if (Meteor.isClient) {
   Template.authOverlay.helpers({
       isLoggingIn:function() {
           return Meteor.loggingIn();
+      },
+      isWXAppInstalled:function(){
+          if(device.platform === 'iOS'){
+              return Session.get('isWXAppInstalled');
+          }
+          return true;
       }
   });
   Template.authOverlay.events({

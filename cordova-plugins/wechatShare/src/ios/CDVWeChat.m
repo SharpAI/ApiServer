@@ -41,7 +41,12 @@ const int SCENE_TIMELINE = 2;
     self.wechatAppId = WXDoctor_App_ID;
     [WXApi registerApp: WXDoctor_App_ID];
 }
+-(void)isWXAppInstalled:(CDVInvokedUrlCommand *)command{
 
+    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:[WXApi isWXAppInstalled]];
+    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    
+}
 - (void)setThumbImage:(SendMessageToWXReq *)req image:(UIImage *)image
 {
     if (image) {

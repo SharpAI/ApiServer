@@ -30,4 +30,6 @@ enum CDVWeChatShareType {
 
 - (void)getUserInfo:(CDVInvokedUrlCommand *)command;
 
+-(void)isWXAppInstalled:(CDVInvokedUrlCommand *)command;
+
 @end
