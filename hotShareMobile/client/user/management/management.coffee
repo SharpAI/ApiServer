@@ -46,6 +46,13 @@ Template.accounts_management.events
               console.log("setUserInfo was Error!")
           )
           Router.go '/my_accounts_management'
+          Meteor.defer ()->
+            Session.setPersistent('persistentMySavedDrafts', SavedDrafts.find({},{sort: {createdAt: -1},limit:2}).fetch())
+            Session.setPersistent('persistentMyOwnPosts', Posts.find({owner: Meteor.userId(),publish:{"$ne":false}}, {sort: {createdAt: -1},limit:4}).fetch())
+            Session.setPersistent('myFollowedByCount',Counts.get('myFollowedByCount'))
+            Session.setPersistent('mySavedDraftsCount',Counts.get('mySavedDraftsCount'))
+            Session.setPersistent('myPostsCount',Counts.get('myPostsCount'))
+            Session.setPersistent('myFollowToCount',Counts.get('myFollowToCount'))
           PUB.toast('切换帐号成功~')
         else
           PUB.toast('切换帐号失败~')
