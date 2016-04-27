@@ -186,6 +186,7 @@ if Meteor.isClient
         Router.go '/followers'
       ,animatePageTrasitionTimeout
     'click .draftImages ul li':(e)->
+      Session.set('pubImages', [])
       #Use for if user discard change on Draft
       TempDrafts
         .find {owner: Meteor.userId()}
