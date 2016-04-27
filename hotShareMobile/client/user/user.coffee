@@ -230,6 +230,7 @@ if Meteor.isClient
           scrollTop: document.body.scrollTop
       }
       Session.set "history_view", history
+      Session.set('backtopageuser', true)
       Meteor.setTimeout ()->
         Router.go '/posts/'+postId
       ,animatePageTrasitionTimeout

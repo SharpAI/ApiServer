@@ -544,6 +544,9 @@ if Meteor.isClient
         if Session.get("backtoMyPosts") is true
           Session.set("backtoMyPosts",false)
           PUB.page('/myPosts')
+        else if Session.get("backtopageuser") is true
+          Session.set('backtopageuser', false)
+          PUB.page('/user')
         else
           PUB.postPageBack()
         if Session.get("Social.LevelOne.Menu") is 'userProfile'
