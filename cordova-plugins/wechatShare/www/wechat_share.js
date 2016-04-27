@@ -39,6 +39,13 @@ WechatShare.prototype.getUserInfo = function(options, success, fail) {
     fail();
   }, "WechatShare", "getUserInfo", [options]);
 };
+WechatShare.prototype.isWXAppInstalled = function(success, fail) {
+  cordova.exec(function(result) {
+    success(result);
+  }, function() {
+    fail();
+  }, "WechatShare", "isWXAppInstalled", []);
+};
 
 WechatShare.prototype.login = function(options, success, fail) {
   cordova.exec(function(result) {

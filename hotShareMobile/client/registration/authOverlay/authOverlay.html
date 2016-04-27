@@ -19,7 +19,9 @@
     <!--
     <div id="weibo"><i class="fa fa-weibo"></i>&nbsp;使用新浪微博登录</div>
     -->
+    {{#if isWXAppInstalled}}
     <div id="wechat"><i class="fa fa-weixin"></i>&nbsp;{{_ "loginByWechat"}}</div>
+    {{/if}}
     <!--
     <div id="qq"><i class="fa fa-qq"></i>&nbsp;使用QQ登录</div>
     -->
