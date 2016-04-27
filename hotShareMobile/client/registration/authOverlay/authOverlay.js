@@ -3,7 +3,7 @@ if (Meteor.isClient) {
       if (Accounts._resetPasswordToken) {
           Session.set('resetPassword', Accounts._resetPasswordToken);
       }
-       WechatShare.isWXAppInstalled({}, function(result){
+       WechatShare.isWXAppInstalled(function(result){
         Session.set('isWXAppInstalled', result);
       }, function(){});
   });
