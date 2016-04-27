@@ -9,20 +9,23 @@ Meteor.startup ->
     mqtt_connection.on 'message',(topic, message)->
       mqtt_msg = JSON.parse(message.toString())
 
-      message = {
-        rid: mqtt_msg.postid,
-        msg: mqtt_msg.message,
-        ts: new Date(),
-        u: {
-            _id: 'group.cat',
-            name: 'Group.Cat',
-            username: 'group.cat'
-        }
-      }
 
       Fiber(() ->
+        room =  RocketChat.models.Rooms.findOneByName mqtt_msg.postid
 
-        RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser(null, message.rid, message.msg, message.u, message)
+        if room
+            message = {
+              rid: room._id,
+              msg: mqtt_msg.message,
+              ts: new Date(),
+              u: {
+                  _id: 'group.cat',
+                  name: 'Group.Cat',
+                  username: 'group.cat'
+              }
+            }
+
+            RocketChat.models.Messages.createWithTypeRoomIdMessageAndUser(null, message.rid, message.msg, message.u, message)
         return
         ).run()
 

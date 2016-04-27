@@ -267,7 +267,10 @@
           postId = Session.get("postContent")._id;
           post = Session.get("postContent").pub;
 
-          var mqtt_msg = {"type": "postcomment", "message": "xxx 评论了此文章", "postid": Session.get('postContent')._id};
+          var mqtt_msg = {"type": "postcomment", "message": " 评论了此文章", "postid": Session.get('postContent')._id};
+
+          mqtt_msg.message = Meteor.user().profile.fullname + mqtt_msg.message;
+
           mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80');
           mqtt_connection.on('connect',function() {
             mqtt_connection.publish('all', JSON.stringify(mqtt_msg));
