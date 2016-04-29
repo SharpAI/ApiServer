@@ -62,6 +62,7 @@ specialClassNameForPopularMobileSite = [
   '.main_box' # QQ 音乐
   '#page-content'   #xueqiu
   '#BODYCON'        #tripadvisor
+  '.yaow > p'  #news.ifeng.com
 ]
 
 specialClassNameExcludeMobileSites = [
@@ -399,6 +400,7 @@ cloneWithoutSibling=(parentNode, node)->
             rootNode = item.parentNode
             break
 
+    console.log rootNode
     if rootNode isnt null
       treeWalker = document.createTreeWalker(
         rootNode,
