@@ -575,35 +575,42 @@ if Meteor.isClient
       Router.go('/add')
     'click #unpublish': (event)->
       self = this
-      navigator.notification.confirm('取消发表的故事将会被转换为草稿。', (r)->
-        if r isnt 2
-          return
-        #PUB.page('/user')
-        fromUrl = ''
-        if self.fromUrl and self.fromUrl isnt ''
-          fromUrl = self.fromUrl
-        draft0 = {_id:self._id, type:'image', isImage:true, url:fromUrl ,owner: Meteor.userId(), imgUrl:self.mainImage, filename:self.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0}
-        self.pub.splice(0, 0, draft0);
-        if Posts.find({owner: Meteor.userId()}).count() is 1
-          Session.setPersistent('persistentMyOwnPosts',null)
-          Session.setPersistent('myPostsCount',0)
-        postId = self._id
-        userId = Meteor.userId()
-        drafts = {
-          _id:postId,
-          pub:self.pub,
-          title:self.title,
-          fromUrl:fromUrl,
-          addontitle:self.addontitle,
-          mainImage: self.mainImage,
-          mainText: self.mainText,
-          owner:userId,
-          createdAt: new Date(),
+      # navigator.notification.confirm('取消发表的故事将会被转换为草稿。', (r)->
+      #   if r isnt 2
+      #     return
+      #   #PUB.page('/user')
+      fromUrl = ''
+      if self.fromUrl and self.fromUrl isnt ''
+        fromUrl = self.fromUrl
+      draft0 = {_id:self._id, type:'image', isImage:true, url:fromUrl ,owner: Meteor.userId(), imgUrl:self.mainImage, filename:self.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0}
+      self.pub.splice(0, 0, draft0);
+      if Posts.find({owner: Meteor.userId()}).count() is 1
+        Session.setPersistent('persistentMyOwnPosts',null)
+        Session.setPersistent('myPostsCount',0)
+      postId = self._id
+      userId = Meteor.userId()
+      drafts = {
+        _id:postId,
+        pub:self.pub,
+        title:self.title,
+        fromUrl:fromUrl,
+        addontitle:self.addontitle,
+        mainImage: self.mainImage,
+        mainText: self.mainText,
+        owner:userId,
+        createdAt: new Date(),
+      }
+      Meteor.call 'unpublish',postId,userId,drafts, (err, res)->
+        Meteor.subscribe 'myCounter'
+        Meteor.subscribe 'followposts', Session.get('followpostsitemsLimit'), {
+          onStop: subscribeFollowPostsOnStop
+          onReady: ()->
+            console.log 'followPostsCollection loaded'
+            Session.set 'followPostsCollection', 'loaded'
         }
-        Meteor.call 'unpublish',postId,userId,drafts
-        Router.go('/user')
-        return
-      , '取消发表故事', ['依然发表','存为草稿']);
+      Router.go('/user')
+      return
+      # , '取消发表故事', ['依然发表','存为草稿']);
 
 
     'click #report': (e)->
