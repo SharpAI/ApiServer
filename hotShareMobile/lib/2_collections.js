@@ -39,7 +39,12 @@ if(Meteor.isClient){
 }
 if(Meteor.isServer){
   RefNames = new Meteor.Collection("refnames");
-  PComments = new Meteor.Collection("pcomments")
+  PComments = new Meteor.Collection("pcomments");
+  // 服务器启动时查询topicId 和 '婚恋摄影家'用户Id
+  Meteor.startup(function () {
+    topicId = Topics.findOne({text: '婚恋摄影家'})._id;
+    tagFollowerId = Meteor.users.findOne({'profile.fullname':'婚恋摄影家'})._id;
+  });
 }
 
 if(Meteor.isServer){
@@ -401,12 +406,12 @@ if(Meteor.isServer){
             catch(error){}
         });
     };
-    var topicPostsInsertHookDeferHandle = function(userId, doc){
+    var topicPostsInsertHookDeferHandle = function(userId, doc, topicId, followerId){
       Meteor.defer(function(){
         try{
           console.log('------------调用了为文章添加标题后的Handle---------------');
-          var topicId = Topics.findOne({text: '婚恋摄影家'})._id;
-          var followerId = Meteor.users.findOne({'profile.fullname':'婚恋摄影家'})._id;
+          // var topicId = Topics.findOne({text: '婚恋摄影家'})._id;
+          // var followerId = Meteor.users.findOne({'profile.fullname':'婚恋摄影家'})._id;
           var follows = Follower.find({followerId: followerId});
           var post;
           if(follows.count()>0 && doc.topicId === topicId){
@@ -894,7 +899,7 @@ if(Meteor.isServer){
             catch(error){}
         });
     };
-    var followerInsertHookDeferHook=function(userId,doc){
+    var followerInsertHookDeferHook=function(userId,doc,topicId){
         Meteor.defer(function(){
             try{
                 Meets.update({me:doc.userId,ta:doc.followerId},{$set:{isFriend:true}});
@@ -902,7 +907,7 @@ if(Meteor.isServer){
             catch(error){}
             try{
                 var posts=Posts.find({owner: doc.followerId});
-                var topicId = Topics.findOne({text: '婚恋摄影家'})._id;
+                // var topicId = Topics.findOne({text: '婚恋摄影家'})._id;
                 var topicPosts = TopicPosts.find({topicId: topicId});
                 var post;
                 if(topicPosts.count()>0 && doc.followerName == '婚恋摄影家'){
@@ -1849,7 +1854,7 @@ if(Meteor.isServer){
       {
         Meteor.defer(function(){
             try{
-              topicPostsInsertHookDeferHandle(doc.owner, doc);
+              topicPostsInsertHookDeferHandle(doc.owner, doc, topicId, tagFollowerId);
               Topics.update({_id: doc.topicId},{$inc: {posts: 1}});
             }
             catch(error){}
@@ -1913,7 +1918,7 @@ if(Meteor.isServer){
         return false;
       }
       if(doc.userId === userId || doc.followerId === userId){
-        followerInsertHookDeferHook(userId,doc);
+        followerInsertHookDeferHook(userId,doc, topicId);
         return true;
       }
       return false;
