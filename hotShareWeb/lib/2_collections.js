@@ -61,6 +61,9 @@ if(Meteor.isServer){
             }
         });
     }
+    /*Meteor.startup(function(){
+        postsInsertHookPostToBaiduDeferHandle('CJj4k9fhj2hrrZhCb')
+    })*/
     var newMeetsAddedForPostFriendsDeferHandle = function(self,taId,userId,id,fields){
         Meteor.defer(function(){
             var taInfo = Meteor.users.findOne({_id: taId},{fields: {'username':1,'email':1,'profile.fullname':1,
@@ -401,6 +404,17 @@ if(Meteor.isServer){
             catch(error){}
         });
     };
+    var postsInsertHookPostToBaiduDeferHandle = function(postid) {
+        Meteor.defer(function () {
+            if(postid && postid!==''){
+                var link='http://www.tiegushi.com/posts/'+postid;
+                HTTP.post('http://data.zz.baidu.com/urls?site=www.tiegushi.com&token=sra0FwZC821iV2M0',{content:link},
+                    function (error, result) {
+                        console.log('post to baidu '+link+' result '+JSON.stringify(result));
+                    })
+            }
+        })
+    }
     var postsInsertHookDeferHandle = function(userId,doc){
         Meteor.defer(function(){
             try{
@@ -1672,6 +1686,10 @@ if(Meteor.isServer){
       if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
         //postsInsertHookDeferHandle(userId,doc);
         postsInsertHookDeferHandle(doc.owner,doc);
+          try{
+              postsInsertHookPostToBaiduDeferHandle(doc._id);
+          }catch(err){
+          }
         return true;
       }
       return false;
