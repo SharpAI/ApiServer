@@ -10,7 +10,7 @@
 @withSectionMenu = true
 @withSectionShare = true
 @withPostTTS = false
-@withWeChatSignatureServer = false
+@withWeChatSignatureServer = true
 @withSuggestAlreadyRead = true
 @withForcePopupSectionReview = false
 @withSponserLinkAds = false
