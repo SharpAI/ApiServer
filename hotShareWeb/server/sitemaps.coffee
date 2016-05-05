@@ -1,6 +1,6 @@
 sitemaps.add '/sitemap.xml', ()->
     maps = []
-    posts = Posts.find().fetch()
+    posts = Posts.find({}, {sort: {createAt:-1}, limit: 50000}).fetch()
 
     _.each posts, (post)->
         maps.push {
