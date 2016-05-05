@@ -4,7 +4,7 @@ sitemaps.add '/sitemap.xml', ()->
 
     _.each posts, (post)->
         maps.push {
-            page: '/posts/' + post._id
+            page: 'http://www.tiegushi.com/posts/' + post._id
             lastmod: post.createAt
         }
         return
