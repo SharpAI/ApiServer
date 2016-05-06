@@ -6,12 +6,12 @@ Meteor.startup ->
         ChatMessage.insert {
             t: 'bot'
             msg: '您已经进入房间 ' + duration + ' 秒'
-            rid: 'GENERAL'
+            rid: ChatRoom.findOne()._id
             ts: new Date()
             u: {
                 _id: 'group.cat'
-                username: 'group.cat'
-                name: 'Group.Cat'
+                username: 'GS'
+                name: '故事贴小秘'
             }
         }
     , 10000
