@@ -1,11 +1,11 @@
-Meteor.startup ->
-    timeIn = Date.now()
 
-    setInterval ()->
-        duration = parseInt((Date.now() - timeIn)/1000)
+if Meteor.isClient
+    idleMessageInterval = null
+    timeIn = Date.now()
+    sendPersonalMessageToRoom = (message)->
         ChatMessage.insert {
             t: 'bot'
-            msg: '您已经进入房间 ' + duration + ' 秒'
+            msg: message
             rid: ChatRoom.findOne()._id
             ts: new Date()
             u: {
@@ -14,4 +14,32 @@ Meteor.startup ->
                 name: '故事贴小秘'
             }
         }
-    , 10000
+    idleMessage = ()->
+        console.log('idleMessage')
+        duration = parseInt((Date.now() - timeIn)/1000)
+        sendPersonalMessageToRoom('您已经进入房间 ' + duration + ' 秒')
+    startIdleMessage = ()->
+        console.log('startIdleMessage')
+        if !idleMessageInterval
+            idleMessageInterval = setInterval(idleMessage,10000)
+    stopIdleMessage = ()->
+        console.log('stopIdleMessage')
+        if idleMessageInterval
+            clearInterval(idleMessageInterval)
+            idleMessageInterval = null
+    restartIdleMessage = ()->
+        console.log('restartIdleMessage')
+        if !idleMessageInterval
+            idleMessageInterval = setInterval(idleMessage,10000)
+        else
+            stopIdleMessage()
+            startIdleMessage()
+
+    Meteor.startup ->
+        Tracker.autorun ()->
+            if MsgTyping.selfTyping.get()
+                console.log('Need stop interval since typing')
+                stopIdleMessage()
+            else
+                console.log('not typing now')
+                restartIdleMessage()
