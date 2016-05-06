@@ -1369,5 +1369,63 @@ Meteor.startup(function(){
             createdAt: new Date(),
             followby: followeeId
        });
+       
+      
+    }
+    
+    // 创建婚恋摄影家topic
+    if(Topics.find({text:'婚恋摄影家'}).count() === 0){
+      TopicsId[15] = Topics.insert({
+          type: 'topic',
+          text: '婚恋摄影家',
+          imgUrl: ''
+        });
+    }
+    // 创建婚恋摄影家偶像用户
+    if(Follows.find({username:'Hunlian'}).count() === 0){
+        try{
+            followeeId = Meteor.users.findOne({'username': 'suggestPosts' })._id;
+        }
+        catch(error)
+        {
+            //创建公共粉丝用户，关注所有推荐用户，从公共粉丝用户的FollowPosts里提取推荐帖子，加快推荐帖子速度
+            followeeId = Accounts.createUser({
+                username:'suggestPosts',
+                password:'actiontec123',
+                email:'suggestposts@ggmail.com',
+                profile:{
+                    icon:'/follows/icon1.png',
+                    desc:"留下美好的瞬间！就看我的！",
+                    fullname:'伊人'
+                }
+            });
+        }
+      //  创建tagFollow偶像用户
+      followerId = Accounts.createUser({
+           username:'Hunlian',
+           password:'actiontec123',
+           email:'Hunlian@ggmail.com',
+           profile:{
+               icon:'/follows/icon7.png',
+               desc:"铭记这一浪漫时刻,定格美好和感人的婚恋瞬间！",
+               fullname:'婚恋摄影家',
+           },
+       });
+        Follower.insert({
+            userId: followeeId,
+            followerId: followerId,
+            createAt: new Date()
+        });
+       Follows.insert({
+           icon:'/follows/icon7.png',
+           userId:followerId,
+           username:'Hunlian',
+           fullname:'婚恋摄影家',
+           desc:"铭记这一浪漫时刻,定格美好和感人的婚恋瞬间！",
+           share1:'/follows/71.jpg',
+           share2:'/follows/72.jpg',
+           share3:'/follows/73.jpg',
+           index:7
+       });
     }
 });
