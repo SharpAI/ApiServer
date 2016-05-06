@@ -5,7 +5,7 @@ sitemaps.add '/sitemap.xml', ()->
     _.each posts, (post)->
         maps.unshift {
             page: 'http://www.tiegushi.com/posts/' + post._id
-            lastmod: post.createAt
+            lastmod: post.createdAt
         }
         return
 
