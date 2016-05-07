@@ -48,3 +48,5 @@ if Meteor.isClient
             if ChatMessage.findOne({t:{$ne:'bot'}},{sort:{ts:-1}},{fields:{ts:1}})
                 console.log('New message arrived')
                 restartIdleMessage()
+        Tracker.autorun ()->
+            console.log('Online member: '+(_.size(RoomManager.onlineUsers.get())-1))
