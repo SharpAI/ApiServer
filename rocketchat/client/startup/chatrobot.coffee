@@ -2,6 +2,7 @@
 if Meteor.isClient
     idleMessageInterval = null
     timeIn = Date.now()
+    idleMessageIntervalSec = 30000
     sendPersonalMessageToRoom = (message)->
         ChatMessage.insert {
             t: 'bot'
@@ -21,7 +22,7 @@ if Meteor.isClient
     startIdleMessage = ()->
         console.log('startIdleMessage')
         if !idleMessageInterval
-            idleMessageInterval = setInterval(idleMessage,10000)
+            idleMessageInterval = setInterval(idleMessage,idleMessageIntervalSec)
     stopIdleMessage = ()->
         console.log('stopIdleMessage')
         if idleMessageInterval
@@ -30,7 +31,7 @@ if Meteor.isClient
     restartIdleMessage = ()->
         console.log('restartIdleMessage')
         if !idleMessageInterval
-            idleMessageInterval = setInterval(idleMessage,10000)
+            idleMessageInterval = setInterval(idleMessage,idleMessageIntervalSec)
         else
             stopIdleMessage()
             startIdleMessage()
@@ -42,4 +43,8 @@ if Meteor.isClient
                 stopIdleMessage()
             else
                 console.log('not typing now')
+                restartIdleMessage()
+        Tracker.autorun ()->
+            if ChatMessage.findOne({t:{$ne:'bot'}},{sort:{ts:-1}},{fields:{ts:1}})
+                console.log('New message arrived')
                 restartIdleMessage()
