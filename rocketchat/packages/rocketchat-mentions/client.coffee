@@ -30,8 +30,13 @@ class MentionsClient
 					classes = 'mention-link'
 					if username is me
 						classes += ' mention-link-me'
-
-					return match.replace mention, "<a href=\"\" class=\"#{classes}\" data-username=\"#{username}\">#{mention}</a>"
+					else 
+						classes += ' mention-not-for-me'
+#					return match.replace mention, "<a href=\"\" class=\"#{classes}\" data-username=\"#{username}\">#{mention}</a>"
+					name = "@"+ChatMessage.findOne('u.username':username).u.name
+					if name is undefined
+						name = Meteor.user().name
+					return match.replace mention, "<a href=\"\" class=\"#{classes}\" data-username=\"#{username}\">#{name}</a>"
 
 			channels = []
 			msgChannelRegex = new RegExp '(?:^|\\s|\\n)(?:#)(' + RocketChat.settings.get('UTF8_Names_Validation') + ')', 'g'

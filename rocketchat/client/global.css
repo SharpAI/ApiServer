@@ -3,3 +3,8 @@ html{
   -ms-text-size-adjust: 100%; 
   text-size-adjust: 100%;
 }
+.isNotAlertMe{
+	display: none;
+	visibility: hidden;
+	background: red;
+}
