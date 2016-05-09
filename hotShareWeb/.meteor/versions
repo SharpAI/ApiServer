@@ -31,6 +31,8 @@ ejson@1.0.7
 email@1.0.8
 fastclick@1.0.7
 fortawesome:fontawesome@4.4.0
+gadicohen:robots-txt@0.0.10
+gadicohen:sitemaps@0.0.24
 geojson-utils@1.0.4
 hot-code-push@1.0.0
 html-tools@1.0.5
@@ -65,6 +67,7 @@ meteorhacks:meteorx@1.4.1
 meteorhacks:npm@1.5.0
 meteorhacks:picker@1.0.3
 meteorhacks:search-source@1.4.1
+meteorhacks:ssr@2.2.0
 meteorhacks:subs-manager@1.6.2
 meteorspark:util@0.2.0
 minifiers@1.1.7
@@ -96,7 +99,6 @@ session@1.1.1
 sha@1.0.4
 spacebars@1.0.7
 spacebars-compiler@1.0.7
-spiderable@1.0.9
 srp@1.0.4
 standard-minifiers@1.0.2
 tap:i18n@1.7.0

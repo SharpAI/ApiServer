@@ -129,12 +129,48 @@ if Meteor.isClient
     this.render 'userProfilePage'
     return
 if Meteor.isServer
+  ###
   Router.route '/posts/:_id', {
       waitOn: ->
           [subs.subscribe("publicPosts",this.params._id),
            subs.subscribe "pcomments"]
       fastRender: true
     }
+  ###
+  Router.route '/posts/:_id', (req, res, next)->
+    BOTS = [
+      'googlebot',
+      'baiduspider',
+      '360Spider',
+      'sosospider',
+      'sogou spider',
+      'facebookexternalhit',
+      'twitterbot',
+      'rogerbot',
+      'linkedinbot',
+      'embedly',
+      'bufferbot',
+      'quora link preview',
+      'showyoubot',
+      'outbrain',
+      'pinterest',
+      'developers.google.com/+/web/snippet',
+      'slackbot'
+    ]
+    agentPattern = new RegExp(BOTS.join('|'), 'i')
+    userAgent = req.headers['user-agent']
+    if agentPattern.test(userAgent)
+      SSR.compileTemplate('post', Assets.getText('template/post.html'))
+      postItem = Posts.findOne({_id: this.params._id})
+      postHtml = SSR.render('post', postItem)
+
+      res.writeHead(200, {
+        'Content-Type': 'text/html'
+      })
+      res.end(postHtml)
+    else
+      next()    
+  , {where: 'server'}
   Router.route '/posts/:_id/:_index', {
       waitOn: ->
         [subs.subscribe("publicPosts",this.params._id),
