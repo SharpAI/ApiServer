@@ -39,7 +39,7 @@ if Meteor.isClient
     )
     Session.set("postForward",[])
     Session.set("postBack",[])
-    
+
     ###
     show big picture will trigger this event
     this code purpose only for width resize
@@ -67,6 +67,28 @@ if Meteor.isClient
     Session.set("showSuggestPosts",false)
     $('.tool-container').remove()
   Template.showPosts.onRendered ->
+    mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80')
+    mqtt_connection.on('connect',()->
+      console.log('Connected to server')
+      mqtt_connection.subscribe(Session.get('postContent')._id)
+      #mqtt_connection.publish(Session.get('postContent')._id, 'Hello u'+Session.get('postContent')._id)
+    )
+    mqtt_connection.on 'message',(topic, message)->
+      mqtt_msg = JSON.parse(message.toString())
+      console.log(message.toString())
+      if mqtt_msg.type and mqtt_msg.type is 'newmessage'
+        #$(".chatBtn").addClass('twinking')
+        #$(".chatBtn i").removeClass('fa-comment-o').addClass('fa-commenting-o')
+        #mqtt_msg_num = 
+        $(".chatBtn .red_spot").show().html(parseInt($(".chatBtn .red_spot").html()) + 1)
+
+      if mqtt_msg.type and mqtt_msg.type is 'newmember'
+        $(".chatBtn .chat-icon-img").addClass('twinkling')
+        setTimeout(() ->
+          $(".chatBtn .chat-icon-img").removeClass('twinkling')
+        , 1000);
+
+
     #Calc Wechat token after post rendered.
     if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
       Meteor.setTimeout ()->
@@ -83,7 +105,8 @@ if Meteor.isClient
         $('.showPosts').get(0).style.position = 'relative'
         # $showPosts.after('<div class="readmore">继续阅读<i class="fa fa-angle-double-down"></i><div>')
         $showPosts.after('<div class="readmore"><div class="readMoreContent"><i class="fa fa-plus-circle"></i>继续阅读</div></div>')
-    , 600        
+    , 600
+
   Template.showPosts.onRendered ->
     Session.setDefault "toasted",false
     Session.set('postfriendsitemsLimit', 10)
@@ -365,7 +388,7 @@ if Meteor.isClient
       $('.showPosts').get(0).style.overflow = ''
       $('.showPosts').get(0).style.maxHeight = ''
       $('.showPosts').get(0).style.position = ''
-      $('.readmore').remove()  
+      $('.readmore').remove()
     'click .unpublishWebPage': (e)->
       postBack = Session.get("postBack")
       postBackId = postBack.pop()
@@ -518,7 +541,7 @@ if Meteor.isClient
       postBack.push(postId)
       Session.set("postForward",postForward)
       Session.set("postBack",postBack)
-      
+
       Session.set("pcommetsId","")
       Session.set("pcommentsName","")
       $(window).children().off()
@@ -936,5 +959,5 @@ if Meteor.isClient
           Session.set("clickedCommentOverlayThumbsDown",true)
         else
           Session.set("clickedCommentOverlayThumbsDown",true)
-       
+
 

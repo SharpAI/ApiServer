@@ -7,4 +7,3 @@ App.info({
   email: '',
   website: ''
 });
-
