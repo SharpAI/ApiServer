@@ -1,10 +1,4 @@
 Template.message.helpers
-	isNotAlertMe: ->
-		console.log(this)
-		isMe=new RegExp(Meteor.user()?.username)
-		if this.msg.indexOf('@all') isnt 0
-			if isMe.test(this.msg) isnt true and this.msg.indexOf("@") > -1 and this.u?._id isnt Meteor.userId()
-				return 'isNotAlertMe'
 	isBot: ->
 		return 'bot' if this.bot?
 	isGroupable: ->
