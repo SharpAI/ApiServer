@@ -1,0 +1,31 @@
+1. Dump data from server
+
+mongoexport -h host1.tiegushi.com:27017 -d hotShare -c users -o users.json -u hotShareAdmin -p aei_19056
+mongoexport -h host1.tiegushi.com:27017 -d hotShare -c posts -o posts.json -u hotShareAdmin -p aei_19056
+mongoexport -h host1.tiegushi.com:27017 -d hotShare -c viewers -o viewers.json -u hotShareAdmin -p aei_19056
+
+
+2. Restore data to local db
+
+mongoimport -h localhost:27017 -d localdb -c users --type=json  --file users.json
+mongoimport -h localhost:27017 -d localdb -c posts --type=json  --file posts.json
+mongoimport -h localhost:27017 -d localdb -c viewers --type=json  --file viewers.json
+
+
+
+CREATE INDEX ON :User(userId);
+CREATE INDEX ON :Post(postId);
+CREATE INDEX ON :Post(ownerId);
+CREATE INDEX ON :Viewer(viewerId);
+CREATE INDEX ON :Viewer(postId);
+
+MATCH (v:Viewer),(p:Post),(u:User)
+WHERE v.postId=p.postId AND u.userId=v.viewerId
+CREATE (u)-[:VIEWER]->(p);
+
+MATCH (a:User),(b:User),(p:Post)
+WHERE (a)-[:VIEWER]->(p)<-[:VIEWER]-(b)
+CREATE (a)-[:MEET]->(b);
+
+MATCH (a:User)-[:VIEWER]->(p:Post)<-[:VIEWER]-(b:User)
+CREATE (a)-[:MEET]->(b);

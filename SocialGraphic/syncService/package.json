@@ -1,0 +1,14 @@
+{
+  "name": "socialSync",
+  "version": "0.0.2",
+   "author": "RAID CDN Team",
+  "dependencies": {
+    "seraph":"^0.14.2",
+    "mongodb":"^2.1.8"
+  },
+  "devDependencies": {
+  },
+  "engines": {
+    "node": ">=0.10.39"
+  }
+}
