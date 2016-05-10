@@ -35,6 +35,7 @@
 			/* jshint multistr: true */
 			html = '<div id="swipebox-overlay">\
 					<div id="swipebox-container">\
+            <div id="swipebox-console"><i class="fa fa-times"></i></div>\
 						<div id="swipebox-slider"></div>\
 						<div id="swipebox-top-bar">\
 							<div id="swipebox-title"></div>\
@@ -284,6 +285,9 @@
 					hSwipMinDistance = 10,
 					vSwipMinDistance = 50,
 					startCoords = {},
+          scaleCoords = {},
+          region = {},
+          fixRegionSetTimeout = null,
 					endCoords = {},
 					bars = $( '#swipebox-top-bar, #swipebox-bottom-bar' ),
 					slider = $( '#swipebox-slider' );
@@ -291,30 +295,115 @@
 				bars.addClass( 'visible-bars' );
 				$this.setTimeout();
 
-				$( 'body' ).bind( 'touchstart', function( event ) {
-					if(typeof StartZoom != 'undefined' && StartZoom>0)
-					{
-						return false;
-					}
+        $('#swipebox-console').click(function (event) {
+          event.preventDefault();
+					event.stopPropagation();
+          var _index = $( '#swipebox-slider .slide' ).index( $( '#swipebox-slider .slide.current' ) );
+          
+          $('#swipebox-slider .current .img-box').css({
+            '-webkit-transition' : '-webkit-transform 0.4s ease',
+            'transition' : 'transform 0.4s ease',
+            '-webkit-transform' : 'translate3d(0px, 0px, 0px)',
+            'transform' : 'translate3d(0px, 0px, 0px)'
+          });
+          $('#swipebox-slider .current img').css({
+            '-webkit-transition' : '-webkit-transform 0.4s ease',
+            'transition' : 'transform 0.4s ease',
+            '-webkit-transform' : ''
+          });
+          $(this).css('display', 'none');
+          
+          $this.setSlide(_index, _index <= 0);
+        });
+				$( '#swipebox-slider' ).bind( 'touchstart', function( event ) {
+          //$('#swipebox-console').html(event.originalEvent.targetTouches[0].pageX + ',' + event.originalEvent.targetTouches[0].pageY);
+          //$('#swipebox-console').html('');
+
+					// if(typeof StartZoom != 'undefined' && StartZoom>0)
+					// {
+					// 	return false;
+					// }
+          
 					$( this ).addClass( 'touching' );
-					index = $( '#swipebox-slider .slide' ).index( $( '#swipebox-slider .slide.current' ) );
-					endCoords = event.originalEvent.targetTouches[0];
-					startCoords.pageX = event.originalEvent.targetTouches[0].pageX;
-					startCoords.pageY = event.originalEvent.targetTouches[0].pageY;
+          
+          //scale
+          var img_style = $('#swipebox-slider .current img')[0].style['-webkit-transform'];
+          if(img_style && img_style != '' && img_style != 'scale(1)'){
+            var transform_style = $('#swipebox-slider .current .img-box')[0].style['-webkit-transform'];
+            if(transform_style != ''){
+              scaleCoords.x = parseInt(transform_style.split('(')[1].split(',')[0].replace('px', ''));
+              scaleCoords.y = parseInt(transform_style.split('(')[1].split(',')[1].replace('px', ''));
+            }else{
+              scaleCoords.x = 0;
+              scaleCoords.y = 0;
+            }
+            scaleCoords.pageX = event.originalEvent.targetTouches[0].pageX;
+            scaleCoords.pageY = event.originalEvent.targetTouches[0].pageY;
+            
+            // get region
+            var scale = parseInt(img_style.split('(')[1].split(')')[0]);
+            var $img = $('#swipebox-slider .current img');
+            var img_height = $img.height()*scale;
+            var img_width = $img.width()*scale;
+            region.right = -((img_width-$(window).width())/2);
+            region.left =  (img_width-$(window).width())/2;
+            if(img_height < $(window).height()){
+              region.top = 0;
+              region.down = 0;
+            } else if(img_height > $(window).height()){
+              region.top = (img_height - $(window).height())/2;
+              region.down = -((img_height - $(window).height())/2);
+            } else {
+              region.top = 0;
+              region.down = 0;
+            }
+          }else{
+            index = $( '#swipebox-slider .slide' ).index( $( '#swipebox-slider .slide.current' ) );
+            endCoords = event.originalEvent.targetTouches[0];
+            startCoords.pageX = event.originalEvent.targetTouches[0].pageX;
+            startCoords.pageY = event.originalEvent.targetTouches[0].pageY;
 
-					$( '#swipebox-slider' ).css( {
-						'-webkit-transform' : 'translate3d(' + currentX +'%, 0, 0)',
-						'transform' : 'translate3d(' + currentX + '%, 0, 0)'
-					} );
+            var size = ($( window ).width() * (currentX)/100);
+            $( '#swipebox-slider' ).css( {
+                '-webkit-transform' : 'translate3d(' + size +'px, 0, 0)',
+                'transform' : 'translate3d(' + size +'px, 0, 0)'
+            } );
+          }
 
-					$( '.touching' ).bind( 'touchmove',function( event ) {
+					//$( '#swipebox-slider' ).css( {
+					//	'-webkit-transform' : 'translate3d(' + currentX +'%, 0, 0)',
+					//	'transform' : 'translate3d(' + currentX + '%, 0, 0)'
+					//} );
+					Session.set('longTouch', false);
+					$( '.touching' ).bind('touchstart',function(){
+					       setTimeout(function() {
+					            Session.set('longTouch', true);
+					        }, 500);
+					}).bind( 'touchmove',function( event ) {
 						event.preventDefault();
 						event.stopPropagation();
-						if(typeof StartZoom != 'undefined' && StartZoom>0)
-						{
-							return false;
-						}
-						endCoords = event.originalEvent.targetTouches[0];
+            endCoords = event.originalEvent.targetTouches[0];
+            
+            //scale
+            var img_style = $('#swipebox-slider .current img')[0].style['-webkit-transform'];
+            if(img_style && img_style != '' && img_style != 'scale(1)'){
+              var pageX = event.originalEvent.targetTouches[0].pageX - scaleCoords.pageX + scaleCoords.x;
+              var pageY = event.originalEvent.targetTouches[0].pageY - scaleCoords.pageY + scaleCoords.y;
+
+              $('#swipebox-slider .current .img-box').css({
+                '-webkit-transition' : '',
+                'transition' : '',
+                '-webkit-transform' : 'translate3d('+pageX+'px, '+pageY+'px, 0px)',
+                'transform' : 'translate3d('+pageX+'px, '+pageY+'px, 0px)'
+              });
+              
+              return false;
+            }
+            
+						// if(typeof StartZoom != 'undefined' && StartZoom>0)
+						// {
+						// 	return false;
+						// }
 
 						if ( ! hSwipe ) {
 							vDistanceLast = vDistance;
@@ -348,15 +437,22 @@
 
 								// first slide
 								if ( 0 === index ) {
-									// console.log( 'first' );
 									$( '#swipebox-overlay' ).addClass( 'leftSpringTouch' );
 								} else {
+                                    $( '#swipebox-overlay' ).removeClass( 'leftSpringTouch' ).removeClass( 'rightSpringTouch' );
+
+                                    var size = ($( window ).width() * (currentX+ hDistancePercent)/100);
+
+                                    $( '#swipebox-slider' ).css( {
+                                        '-webkit-transform' : 'translate3d(' + size +'px, 0, 0)',
+                                        'transform' : 'translate3d(' + size +'px, 0, 0)'
+                                    } );
+
 									// Follow gesture
-									$( '#swipebox-overlay' ).removeClass( 'leftSpringTouch' ).removeClass( 'rightSpringTouch' );
-									$( '#swipebox-slider' ).css( {
-										'-webkit-transform' : 'translate3d(' + ( currentX + hDistancePercent ) +'%, 0, 0)',
-										'transform' : 'translate3d(' + ( currentX + hDistancePercent ) + '%, 0, 0)'
-									} );
+									//$( '#swipebox-slider' ).css( {
+									//	'-webkit-transform' : 'translate3d(' + ( currentX + hDistancePercent ) +'%, 0, 0)',
+								//		'transform' : 'translate3d(' + ( currentX + hDistancePercent ) + '%, 0, 0)'
+								//	} );
 								}
 
 							// swipe rught
@@ -364,37 +460,147 @@
 
 								// last Slide
 								if ( elements.length === index +1 ) {
-									// console.log( 'last' );
 									$( '#swipebox-overlay' ).addClass( 'rightSpringTouch' );
 								} else {
 									$( '#swipebox-overlay' ).removeClass( 'leftSpringTouch' ).removeClass( 'rightSpringTouch' );
-									$( '#swipebox-slider' ).css( {
-										'-webkit-transform' : 'translate3d(' + ( currentX + hDistancePercent ) +'%, 0, 0)',
-										'transform' : 'translate3d(' + ( currentX + hDistancePercent ) + '%, 0, 0)'
-									} );
+
+                                    var size = ($( window ).width() * (currentX+ hDistancePercent)/100);
+
+                                    $( '#swipebox-slider' ).css( {
+                                        '-webkit-transform' : 'translate3d(' + size +'px, 0, 0)',
+                                        'transform' : 'translate3d(' + size +'px, 0, 0)'
+                                    } );
+
+									//$( '#swipebox-slider' ).css( {
+									//	'-webkit-transform' : 'translate3d(' + ( currentX + hDistancePercent ) +'%, 0, 0)',
+									//	'transform' : 'translate3d(' + ( currentX + hDistancePercent ) + '%, 0, 0)'
+									//} );
+
 								}
 
 							}
 						}
 					} );
-					if(!hSwipe && !vSwipe)
-					{
-						startTime = new Date().getTime();
-					}
+
 					return false;
 
 				} ).bind( 'touchend',function( event ) {
 					event.preventDefault();
 					event.stopPropagation();
-					if(typeof StartZoom != 'undefined' && StartZoom>0)
-					{
-						StartZoom--;
-						return false;
-					}
+          
+          var img_style = $('#swipebox-slider .current img')[0].style['-webkit-transform'];
+          if(img_style && img_style != '' && img_style != 'scale(1)'){
+            //console.log(img_style.split('(')[1].split(')')[0]);
+            var scale = parseInt(img_style.split('(')[1].split(')')[0]);
+            
+            // get direction
+            var direction = {};
+            if(endCoords.pageX > scaleCoords.pageX){direction.right = true;}
+            else if(endCoords.pageX < scaleCoords.pageX){direction.left = true;}
+            if(endCoords.pageY > scaleCoords.pageY){direction.down = true;}
+            else if(endCoords.pageY < scaleCoords.pageY){direction.up = true;}
+            if(direction.up && !direction.left && !direction.right){direction.result = "up";}
+            else if(direction.right && !direction.up && !direction.down){direction.result = "right";}
+            else if(direction.down && !direction.left && !direction.right){direction.result = "down";}
+            else if(direction.left && !direction.up && !direction.down){direction.result = "left";}
+            else if(direction.up && direction.right){direction.result = "rightUp";}
+            else if(direction.right && direction.down){direction.result = "rightDown";}
+            else if(direction.left && direction.down){direction.result = "leftDown";}
+            else if(direction.left && direction.up){direction.result = "leftUp";}
+            
+            // fix region
+            var pageX = endCoords.pageX - scaleCoords.pageX + scaleCoords.x;
+            var pageY = endCoords.pageY - scaleCoords.pageY + scaleCoords.y;
+            console.log(region);
+            console.log('x:'+pageX+', y:'+pageY);
+            
+            switch (direction.result) {
+              case 'up':
+                if(region.down === 0){pageY = 0;}
+                else if(pageY < region.down){pageY = region.down;}
+                break;
+              case 'right':
+                if(pageX > region.left){pageX = region.left;}
+                break;
+              case 'down':
+                if(region.top === 0){pageY = 0;}
+                else if(pageY > region.top){pageY = region.top;}
+                break;
+              case 'left':
+                if(pageX < region.right){pageX = region.right;}
+                break;
+              case 'rightUp':
+                if(pageX > region.left){pageX = region.left;}
+                if(region.down === 0){pageY = 0;}
+                else if(pageY < region.down){pageY = region.down;}
+                break;
+              case 'rightDown':
+                if(pageX > region.left){pageX = region.left;}
+                if(region.top === 0){pageY = 0;}
+                else if(pageY > region.top){pageY = region.top;}
+                break;
+              case 'leftDown':
+                if(pageX < region.right){pageX = region.right;}
+                if(region.top === 0){pageY = 0;}
+                else if(pageY > region.top){pageY = region.top;}
+                break;
+              case 'leftUp':
+                if(pageX < region.right){pageX = region.right;}
+                if(region.down === 0){pageY = 0;}
+                else if(pageY < region.down){pageY = region.down;}
+                break;
+            }
+            
+            if(pageX != endCoords.pageX - scaleCoords.pageX + scaleCoords.x || pageY != endCoords.pageY - scaleCoords.pageY + scaleCoords.y){
+              //$('#swipebox-console').html('x:'+pageX+', y:'+pageY);
+              
+              var x = pageX - (endCoords.pageX - scaleCoords.pageX + scaleCoords.x);
+              var y = pageY - (endCoords.pageY - scaleCoords.pageY + scaleCoords.y);
+              console.log('x:'+x+', y:'+y);
+              var maxVal = $(window).width()*scale*0.3;
+              // if(x > maxVal || x < -(maxVal) || y > maxVal || y < -(maxVal){
+              //   console.log('close');
+              //   $('#swipebox-console').html(maxVal+'close-> x:'+x+',y:'+y);
+              // }
+              // if(x > $(window).width()/2 || x < -($(window).width()/2) || y > $(window).width()/2 || y < -($(window).width()/2)){
+              //   $('#swipebox-slider .current .img-box').css({
+              //     '-webkit-transition' : '',
+              //     'transition' : '',
+              //     '-webkit-transform' : 'translate3d(0px, 0px, 0px)',
+              //     'transform' : 'translate3d(0px, 0px, 0px)'
+              //   });
+              //   $('#swipebox-slider .current img').css({
+              //     '-webkit-transform' : 'scale(1)'
+              //   });
+              // }else{
+                $('#swipebox-slider .current .img-box').css({
+                  '-webkit-transition' : '-webkit-transform 0.4s ease',
+                  'transition' : 'transform 0.4s ease',
+                  '-webkit-transform' : 'translate3d('+pageX+'px, '+pageY+'px, 0px)',
+                  'transform' : 'translate3d('+pageX+'px, '+pageY+'px, 0px)'
+                });
+              // }
+            }
+            
+            //$('#swipebox-console').html(direction.result);
+            //console.log(region);
+            //console.log(direction.result);
+              
+            return false;
+          }
+            
+					// if(typeof StartZoom != 'undefined' && StartZoom>0)
+					// {
+					// 	StartZoom--;
+					// 	return false;
+					// }
+          
 					$( '#swipebox-slider' ).css( {
 						'-webkit-transition' : '-webkit-transform 0.4s ease',
 						'transition' : 'transform 0.4s ease'
 					} );
+
+					//ifIsCurrentLike();
 
 					vDistance = endCoords.pageY - startCoords.pageY;
 					hDistance = endCoords.pageX - startCoords.pageX;
@@ -417,31 +623,29 @@
 					} else if ( hSwipe ) {
 
 						hSwipe = false;
+						if(Session.get('longTouch')){
+							// swipeLeft
+							if(hDistancePercent>=50) {
+								$this.getPrev();
 
-						// swipeLeft
-						if( hDistance >= hSwipMinDistance && hDistance >= hDistanceLast) {
+							// swipeRight
+							}else if ( hDistancePercent<=-50) {
+								$this.getNext();
+							}
+						}else{
+							// swipeLeft
+							if( hDistance >= hSwipMinDistance && hDistance >= hDistanceLast) {
+								$this.getPrev();
 
-							$this.getPrev();
-
-						// swipeRight
-						} else if ( hDistance <= -hSwipMinDistance && hDistance <= hDistanceLast) {
-
-							$this.getNext();
+							// swipeRight
+							} else if ( hDistance <= -hSwipMinDistance && hDistance <= hDistanceLast) {
+								$this.getNext();
+							}
 						}
 
 					} else { // Top and bottom bars have been removed on touchable devices
-                                                if(typeof startTime != 'undefined')
-                                                {
-        					    var endTime = new Date().getTime();
-		    				    var longpress = (endTime - startTime < 500) ? false : true;
-						    if(longpress)
-						    {
-					  			return false;
-					  	    }
-                                                }
-
 						// tap
-                        if($( this ).hasClass( 'touching' )){
+                        if($( this ).hasClass( 'touching' ) && typeof($("#isClicked").attr('value')) == "undefined"){
                             slider.animate( { 'opacity': 0 },
                                 300,
                                 function () {
@@ -457,10 +661,17 @@
                             }
 						}
 
-					$( '#swipebox-slider' ).css( {
-						'-webkit-transform' : 'translate3d(' + currentX + '%, 0, 0)',
-						'transform' : 'translate3d(' + currentX + '%, 0, 0)'
-					} );
+                    var size = ($( window ).width() * currentX/100);
+
+                    $( '#swipebox-slider' ).css( {
+                            '-webkit-transform' : 'translate3d(' + size +'px, 0, 0)',
+                            'transform' : 'translate3d(' + size +'px, 0, 0)'
+                    } );
+
+					//$( '#swipebox-slider' ).css( {
+					//	'-webkit-transform' : 'translate3d(' + currentX + '%, 0, 0)',
+					//	'transform' : 'translate3d(' + currentX + '%, 0, 0)'
+					//} );
 
 					$( '#swipebox-overlay' ).removeClass( 'leftSpringTouch' ).removeClass( 'rightSpringTouch' );
 					$( '.touching' ).off( 'touchmove' ).removeClass( 'touching' );
@@ -627,12 +838,22 @@
 				currentX = -index*100;
 
 				if ( this.doCssTrans() ) {
-					slider.css( {
-						'-webkit-transform' : 'translate3d(' + (-index*100)+'%, 0, 0)',
-						'transform' : 'translate3d(' + (-index*100)+'%, 0, 0)'
-					} );
+
+                    var size = -$( window ).width() * index;
+
+                    slider.css( {
+                        '-webkit-transform' : 'translate3d(' + size +'px, 0, 0)',
+                        'transform' : 'translate3d(' + size +'px, 0, 0)'
+                    } );
+
+					//slider.css( {
+					//	'-webkit-transform' : 'translate3d(' + (-index*100)+'%, 0, 0)',
+					//	'transform' : 'translate3d(' + (-index*100)+'%, 0, 0)'
+					//} );
 				} else {
-					slider.animate( { left : ( -index*100 )+'%' } );
+                    var size = -$( window ).width() * index;
+                    slider.animate( { left : ( size )+'px' } );
+					//slider.animate( { left : ( -index*100 )+'%' } );
 				}
 
 				$( '#swipebox-slider .slide' ).removeClass( 'current' );
@@ -687,8 +908,22 @@
 						scale = initScale * event.scale;
 						if(scale<1 || scale>3)
 							return;
+              
 						// redraw
-						currentSlide.css('-webkit-transform', 'scale(' + scale + ')');
+            $('#swipebox-console').css('display', 'block');
+            $('#swipebox-slider .current img').css({
+              '-webkit-transform' : 'scale(' + scale + ')'
+            });
+            
+            // var img_style = $('#swipebox-slider .current img')[0].style['-webkit-transform'];
+            // if(!(img_style && img_style != '' && img_style != 'scale(1)')){
+            //   $('#swipebox-slider .current .img-box').css({
+            //     '-webkit-transition' : '',
+            //     'transition' : '',
+            //     '-webkit-transform' : 'translate3d(0px, 0px, 0px)',
+            //     'transform' : 'translate3d(0px, 0px, 0px)'
+            //   });
+            // }
 					}
 				});
 
@@ -765,7 +1000,7 @@
 					slide.addClass( 'slide-loading' );
 					$this.loadMedia( src, function() {
 						slide.removeClass( 'slide-loading' );
-						slide.html( this );
+						slide.html('<div class="img-box" style="display: inline-block;"><img src="' + src + '" /></div>');
 					} );
 				} else {
 					slide.html( $this.getVideo( src ) );
