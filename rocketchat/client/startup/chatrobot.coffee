@@ -37,6 +37,7 @@ if Meteor.isClient
             startIdleMessage()
 
     Meteor.startup ->
+        onlineUsers = 0
         Tracker.autorun ()->
             if MsgTyping.selfTyping.get()
                 console.log('Need stop interval since typing')
@@ -49,4 +50,6 @@ if Meteor.isClient
                 console.log('New message arrived')
                 restartIdleMessage()
         Tracker.autorun ()->
-            console.log('Online member: '+(_.size(RoomManager.onlineUsers.get())-1))
+            if onlineUsers != (_.size(RoomManager.onlineUsers.get())-1)
+                onlineUsers = (_.size(RoomManager.onlineUsers.get())-1)
+                console.log('Online member: '+(_.size(RoomManager.onlineUsers.get())-1))
