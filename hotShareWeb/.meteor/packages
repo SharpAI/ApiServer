@@ -51,3 +51,6 @@ tap:i18n
 mkarliner:mqtt
 gadicohen:sitemaps
 meteorhacks:ssr
+sanjo:jasmine
+velocity:html-reporter
+practicalmeteor:sinon
