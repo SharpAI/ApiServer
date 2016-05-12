@@ -133,7 +133,8 @@ function save_post_node(doc,cb){
                     name: doc.title,
                     addonTitle: doc.addontitle,
                     ownerName: doc.ownerName,
-                    ownerId: doc.owner
+                    ownerId: doc.owner,
+                    mainImage: doc.mainImage
                 }
             } catch (e) {
                 if(cb){
@@ -254,7 +255,8 @@ function grab_postsInfo_in_hotshare(db){
         owner:true,
         _id:true,
         ownerName:true,
-        createdAt:true
+        createdAt:true,
+        mainImage:true
     }});//.limit(3000).sort({createdAt:-1});
     function eachPostsInfo(err,doc){
         if(doc ===null){
