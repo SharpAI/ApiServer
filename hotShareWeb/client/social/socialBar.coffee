@@ -12,7 +12,7 @@ if Meteor.isClient
       document.body.scrollTop = 0
     'click .chatBtn': (e)->
       e.stopPropagation()
-      window.location.href = 'http://testchat.tiegushi.com/channel/'+ Session.get('postContent')._id;
+      window.location.href = 'http://testchat.tiegushi.com/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
       #Session.set("Social.LevelOne.Menu",'chatContent')
       #Session.set("SocialOnButton",'chatContent')
     'click .contactsBtn':->
