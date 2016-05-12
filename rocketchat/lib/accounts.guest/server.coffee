@@ -13,7 +13,7 @@ if Meteor.isServer
 
 
   # ddp = DDP.connect 'http://host1.tiegushi.com'
-  db_url= process.env.MONGO_METRICS_URL || 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare'
+  db_url= process.env.MONGO_GUSHITIE_URL || 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare'
   connect = MongoInternals.NpmModule.MongoClient.connect
   connect = Meteor.wrapAsync(connect)
 
