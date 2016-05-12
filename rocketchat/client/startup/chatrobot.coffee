@@ -39,6 +39,9 @@ if Meteor.isClient
             startIdleMessage()
 
     Meteor.startup ->
+        Meteor.call 'getPostInfo','mypostid',(err,data)->
+            if !err and data
+                console.log data
         Tracker.autorun (t)->
             if Meteor.user() and amplify.store('hotshareUserID')
                 t.stop()
