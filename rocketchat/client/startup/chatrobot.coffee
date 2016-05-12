@@ -3,18 +3,20 @@ if Meteor.isClient
     idleMessageInterval = null
     timeIn = Date.now()
     idleMessageIntervalSec = 30000
+    mystate = null
     sendPersonalMessageToRoom = (message)->
-        ChatMessage.insert {
-            t: 'bot'
-            msg: message
-            rid: ChatRoom.findOne()._id
-            ts: new Date()
-            u: {
-                _id: 'group.cat'
-                username: 'GS'
-                name: '故事贴小秘'
+        if ChatRoom.findOne()
+            ChatMessage.insert {
+                t: 'bot'
+                msg: message
+                rid: ChatRoom.findOne()._id
+                ts: new Date()
+                u: {
+                    _id: 'group.cat'
+                    username: 'GS'
+                    name: '故事贴小秘'
+                }
             }
-        }
     idleMessage = ()->
         console.log('idleMessage')
         duration = parseInt((Date.now() - timeIn)/1000)
@@ -37,7 +39,12 @@ if Meteor.isClient
             startIdleMessage()
 
     Meteor.startup ->
-        onlineUsers = 0
+        Tracker.autorun (t)->
+            if Meteor.user() and amplify.store('hotshareUserID')
+                t.stop()
+                Meteor.call 'getMyState',amplify.store('hotshareUserID'),(err,list)->
+                    console.log('Got my list: '+list)
+                console.log('HotShare ID is '+amplify.store('hotshareUserID'))
         Tracker.autorun ()->
             if MsgTyping.selfTyping.get()
                 console.log('Need stop interval since typing')

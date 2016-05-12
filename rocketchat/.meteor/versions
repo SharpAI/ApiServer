@@ -20,6 +20,8 @@ boilerplate-generator@1.0.4
 caching-compiler@1.0.0
 caching-html-compiler@1.0.2
 callback-hook@1.0.4
+ccorcos:neo4j@0.1.1
+ccorcos:utils@0.0.3
 cfs:http-methods@0.0.30
 check@1.1.0
 chrismbeckett:toastr@2.1.2_1
@@ -125,6 +127,7 @@ raix:eventstate@0.0.4
 raix:handlebar-helpers@0.2.5
 raix:push@3.0.2
 raix:ui-dropped-event@0.0.7
+ramda:ramda@0.17.1
 random@1.0.5
 rate-limit@1.0.0
 reactive-dict@1.1.3
