@@ -8,6 +8,14 @@ Meteor.startup ->
         if err
           amplify.store('hotshareUserID',null)
           console.log('>>>>>> login with error:')
+          uuid = amplify.store('uuid') || Meteor.uuid()
+          Meteor.loginWithAnonymous uuid, (err)->
+            if err
+              console.log('>>>>>> login with error:')
+              return console.log(err)
+
+            amplify.store('uuid', uuid)
+            console.log('Anonymous login')
           return console.log(err)
         console.log('Gushitie login')
         me=Meteor.user()
