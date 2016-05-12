@@ -28,5 +28,5 @@ Meteor.startup ()->
       return result
     'getPostInfo':(postId)->
       this.unblock()
-      return GushitiePosts.findOne({_id:'27ZRmEeXwkoFi6BZC'},{fields:{mainImage:1,ownerName:1,name:1,addonTitle:1,createdAt:1}})
+      return GushitiePosts.findOne({_id:postId},{fields:{mainImage:1,ownerName:1,title:1,addonTitle:1,createdAt:1}})
 

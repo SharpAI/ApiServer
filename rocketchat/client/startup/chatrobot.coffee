@@ -61,7 +61,7 @@ if Meteor.isClient
     idleMessage = ()->
         console.log('idleMessage')
         duration = parseInt((Date.now() - timeIn)/1000)
-        sendPersonalMessageToRoom('您已经进入房间 ' + duration + ' 秒')
+        #sendPersonalMessageToRoom('您已经进入房间 ' + duration + ' 秒')
     startIdleMessage = ()->
         console.log('startIdleMessage')
         if !idleMessageInterval
@@ -80,9 +80,20 @@ if Meteor.isClient
             startIdleMessage()
 
     Meteor.startup ->
-        Meteor.call 'getPostInfo','mypostid',(err,data)->
-            if !err and data
-                console.log data
+        Tracker.autorun (t)->
+            if ChatRoom.findOne()
+                t.stop()
+                Meteor.call 'getPostInfo',ChatRoom.findOne().name,(err,data)->
+                    if !err and data
+                        ###
+                        _id:"27ZRmEeXwkoFi6BZC"
+                        createdAt:Thu May 28 2015 17:26:48 GMT-0700 (PDT)
+                        mainImage:"http://data.tiegushi.com/yDDXttJznF72aR9kL_1432858306301_cdv_photo_002.jpg"
+                        ownerName:"微尘"
+                        ###
+                        console.log data
+                        sendPersonalMessageWithURLToRoom('欢迎来到本贴的专属聊天室，您可以点右上角转发链接到微信朋友圈，让更多的朋友加入聊天室参与匿名聊天。\r\n点击链接可以查看原文:',
+                          'http://cdcdn.tiegushi.com/posts/'+data._id, data.title, data.addonTitle, data.mainImage)
         Tracker.autorun (t)->
             if Meteor.user() and amplify.store('hotshareUserID')
                 t.stop()
