@@ -55,3 +55,4 @@ accounts-ui
 accounts-base
 service-configuration
 tap:i18n-bundler
+mkarliner:mqtt
