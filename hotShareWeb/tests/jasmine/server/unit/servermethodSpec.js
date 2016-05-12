@@ -15,14 +15,16 @@ describe('servermethod', function(){
 			var subject	= "test";
 			var text	= "first test";
 
-			expect(Meteor.call('sendEmailToAdmin',froma,subject,text,function(err,reslt){})).toBeTruthy;
+			spyOn(Email, 'send');
+			Meteor.call('sendEmailToAdmin', froma, subject, text, function(err,reslt){});
+			expect(Email.send.calls.count()).toEqual(1);
 		});
 	});
 
 	describe('unpublish', function(){
-		it('the args is right', function(){
-			var postId	= "xxx@tiegushi.com";
-			var userId	= "test";
+		it('test the args', function(){
+			var postId	= "8888";
+			var userId	= "123";
 			var drafts	= "first test";
 			var func	= function(err,reslt){};
 			
@@ -30,11 +32,15 @@ describe('servermethod', function(){
 			expect(Meteor.call.calls.allArgs()).toEqual([['unpublish',"xxx@tiegushi.com", "test", "first test", func]]);
 		});
 	});
-	
+
 	describe('unpublishPosts', function(){
 		it('', function(){
 			// add unit test code 
+			var postId, userId, drafts;
+			var func	= function(err,reslt){};
 			
+			Meteor.call('unpublish',postId,userId,drafts,func);
+			//expect(Meteor.call.calls.allArgs()).toEqual([['unpublish',"xxx@tiegushi.com", "test", "first test", func]]);
 		});
 	});
 	
@@ -47,6 +53,11 @@ describe('servermethod', function(){
 	describe('getS3WritePolicy', function(){
 		it('', function(){
 			// add unit test code
+			var filename	= "file";
+			var URI			= "/url";
+			var policy;			
+			
+			Meteor.call('getS3WritePolicy',filename,URI).returnValue(policy);
 		});
 	});
 	
