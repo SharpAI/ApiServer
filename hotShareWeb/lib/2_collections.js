@@ -22,6 +22,9 @@ Moments = new Meteor.Collection('moments');
 BlackList = new Meteor.Collection('blackList');
 AssociatedUsers = new Meteor.Collection('associatedusers');
 
+if(Meteor.isServer)
+  PushSendLogs = new Meteor.Collection('pushSendLogs');
+
 ReaderPopularPosts = new Meteor.Collection('readerpopularposts');
 
 FavouritePosts = new Meteor.Collection('favouriteposts');
