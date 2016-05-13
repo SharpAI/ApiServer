@@ -11,9 +11,13 @@ if Meteor.isClient
         $('.contactsList .head').fadeOut 300
       document.body.scrollTop = 0
     'click .chatBtn': (e)->
+      $(".chatBtn .red_spot").hide().html(0)
+      trackEvent("socialBar","GroupChat")
       e.stopPropagation()
-      window.location.href = 'http://testchat.tiegushi.com/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
-      #Session.set("Social.LevelOne.Menu",'chatContent')
+      #window.location.href = 'http://testchat.tiegushi.com/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
+      url = 'http://testchat.tiegushi.com/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
+      window.open(url,'_blank')
+#Session.set("Social.LevelOne.Menu",'chatContent')
       #Session.set("SocialOnButton",'chatContent')
     'click .contactsBtn':->
       trackEvent("socialBar","Newfrineds")
