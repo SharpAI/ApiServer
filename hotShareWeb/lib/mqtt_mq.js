@@ -12,7 +12,7 @@ if(Meteor.isServer){
         });
         sendMqttMessage=function(topic,message){
             Meteor.defer(function(){
-                mqtt_connection.publish(topic,JSON.stringify(message))
+                mqtt_connection.publish(topic,JSON.stringify(message),{qos:2})
             })
         }
         mqttPostViewHook=function(userId,postId){
