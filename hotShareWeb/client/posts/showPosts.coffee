@@ -81,13 +81,12 @@ if Meteor.isClient
     mqtt_connection.on 'message',(topic, message)->
       mqtt_msg = JSON.parse(message.toString())
       console.log(message.toString())
-      #if mqtt_msg.type and mqtt_msg.type is 'newmessage'
+      if mqtt_msg.type and mqtt_msg.type is 'newmessage'
+        $('.socialContent .chatFooter').fadeIn 300
         #$(".chatBtn").addClass('twinking')
         #$(".chatBtn i").removeClass('fa-comment-o').addClass('fa-commenting-o')
         #mqtt_msg_num =
-
-      $('.socialContent .chatFooter').fadeIn 300
-      $(".chatBtn .red_spot").show().html(parseInt($(".chatBtn .red_spot").html()) + 1)
+        $(".chatBtn .red_spot").show().html(parseInt($(".chatBtn .red_spot").html()) + 1)
 
       #if mqtt_msg.type and mqtt_msg.type is 'newmember'
       $(".chatBtn .chat-icon-img").addClass('twinkling')
