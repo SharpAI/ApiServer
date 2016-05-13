@@ -92,10 +92,10 @@ if Meteor.isClient
                         ownerName:"微尘"
                         ###
                         console.log data
-                        document.title = data.title + ' - 聊天室'
+                        document.title = data.title + '－专属聊天室'
                         window.trackPage(window.location.href,data.title)
                         sendPersonalMessageWithURLToRoom('欢迎来到本贴的专属聊天室，您可以点右上角转发链接到微信朋友圈，让更多的朋友加入聊天室参与匿名聊天。\r\n点击链接可以查看原文:',
-                          'http://cdcdn.tiegushi.com/posts/'+data._id, data.title, data.addonTitle, data.mainImage)
+                          'http://cdn.tiegushi.com/posts/'+data._id, data.title, data.addonTitle, data.mainImage)
         Tracker.autorun (t)->
             if Meteor.user() and amplify.store('hotshareUserID')
                 t.stop()
