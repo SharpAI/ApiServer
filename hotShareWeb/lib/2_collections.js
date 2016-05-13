@@ -1351,6 +1351,7 @@ if(Meteor.isServer){
         var self = this;
         //publicPostsPublisherDeferHandle(self.userId,postId);
         updateMomentsDeferHandle(self,postId);
+        mqttPostViewHook(self.userId,postId);
         return Posts.find({_id: postId});
       }
   });
@@ -1693,6 +1694,9 @@ if(Meteor.isServer){
               postsInsertHookPostToBaiduDeferHandle(doc._id);
           }catch(err){
           }
+          try{
+              mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
+          }catch(err){}
         return true;
       }
       return false;
