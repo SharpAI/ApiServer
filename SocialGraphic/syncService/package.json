@@ -1,9 +1,16 @@
 {
   "name": "socialSync",
   "version": "0.0.2",
-   "author": "RAID CDN Team",
+  "author": "RAID CDN Team",
+  "main":"main.js",
+  "scripts":{
+    "import-user-post":"RUN_IMPORT_USER_POST=1 node import-user-post-info.js",
+    "import-user-post":"RUN_IMPORT_VIEWER=1 node import-viewer-info.js",
+    "run":"node main.js"
+  },
   "dependencies": {
     "seraph":"^0.14.2",
+    "mqtt":"^1.7.3",
     "mongodb":"^2.1.8"
   },
   "devDependencies": {

@@ -2,6 +2,8 @@
  * Created by simba on 5/6/16.
  */
 
+module.exports.save_viewer_node=save_viewer_node
+
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 //var url = 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare';
@@ -18,7 +20,7 @@ function save_viewer_node(doc,cb){
         console.log(querystr)
         dbGraph.query(querystr, function(err, relationShip) {
             var createstr = 'MATCH (u:User {userId:"'+doc.userId+'"}),(p:Post {postId:"'+
-                doc.postId+'"}) CREATE  (u)-[v:VIEWER{by:"'+doc.createdAt+'"}]->(p) RETURN v;';
+                doc.postId+'"}) MERGE  (u)-[v:VIEWER{by:'+doc.createdAt.getTime()+'}]->(p) RETURN v;';
             console.log(relationShip)
             if (!relationShip || relationShip.length===0){
                 console.log(createstr)
@@ -55,7 +57,12 @@ function grab_viewerInfo_in_hotshare(db){
     }
     cursor.next(eachViewersInfo)
 }
-MongoClient.connect(url, function(err, db) {
-    assert.equal(null, err);
-    grab_viewerInfo_in_hotshare(db)
-});
+
+
+if(process.env.RUN_IMPORT_VIEWER) {
+    MongoClient.connect(url, function (err, db) {
+        assert.equal(null, err);
+        grab_viewerInfo_in_hotshare(db)
+    });
+}
+

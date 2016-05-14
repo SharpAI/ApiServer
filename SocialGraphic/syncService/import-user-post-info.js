@@ -2,6 +2,9 @@
  * Created by simba on 5/6/16.
  */
 
+module.exports.save_user_node=save_user_node
+module.exports.save_post_node=save_post_node
+
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 //var url = 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare';
@@ -49,6 +52,7 @@ function check_post_existing(id,cb){
 }
 function save_user_node(doc,cb){
     if (doc !== null) {
+        console.log('createdAt:doc.createdAt '+ doc.createdAt.getTime())
         check_user_existing(doc._id,function(result){
             if(result){
                 console.log('Existing node');
@@ -60,7 +64,7 @@ function save_user_node(doc,cb){
             try{
                 var userInfo={
                     userId:doc._id,
-                    createdAt:doc.createdAt,
+                    createdAt:doc.createdAt.getTime(),
                     fullname: doc.profile.fullname,
                     device: doc.type,
                     sex: doc.profile.sex?doc.profile.sex:'',
@@ -111,7 +115,7 @@ function save_post_node(doc,cb){
             try {
                 var postInfo = {
                     postId: doc._id,
-                    createdAt: doc.createdAt,
+                    createdAt: doc.createdAt.getTime(),
                     name: doc.title,
                     addonTitle: doc.addontitle,
                     ownerName: doc.ownerName,
@@ -195,8 +199,10 @@ function grab_postsInfo_in_hotshare(db){
     }
     cursor.next(eachPostsInfo)
 }
-MongoClient.connect(url, function(err, db) {
-    assert.equal(null, err);
-    grab_userInfo_in_hotshare(db);
-    grab_postsInfo_in_hotshare(db);
-});
+if(process.env.RUN_IMPORT_USER_POST){
+    MongoClient.connect(url, function(err, db) {
+        assert.equal(null, err);
+        grab_userInfo_in_hotshare(db);
+        grab_postsInfo_in_hotshare(db);
+    });
+}
