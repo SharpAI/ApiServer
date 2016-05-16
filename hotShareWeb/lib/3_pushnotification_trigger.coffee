@@ -82,31 +82,33 @@ if Meteor.isServer
     toUserToken = Meteor.users.findOne({_id: toUserId})
 
     unless toUserToken is undefined or toUserToken.type is undefined or toUserToken.token is undefined
-      # push send logs
-      removeTime = new Date((new Date()).getTime() - 1000*60*60*12) # 12 hour
-      expireTime = new Date((new Date()).getTime() - 1000*60*10) # 10 minute
-      
-      PushSendLogs.remove({createAt: {$lt: removeTime}})
-      if(PushSendLogs.find({
-        type: toUserToken.type
-        token: toUserToken.token
-        message: content
-        'extras.type': extras.type
-        'extras.postId': extras.postId
-        'extras.requesterId': extras.requesterId
-        createAt: {$gte: expireTime}
-      }).count() > 0)
-        return
+    
+      if type is "newpost"
+        # push send logs
+        removeTime = new Date((new Date()).getTime() - 1000*60*60*48) # 48 hour
+        expireTime = new Date((new Date()).getTime() - 1000*60*10) # 10 minute
         
-      pushReq = {
-        toUserId: toUserId
-        type: toUserToken.type
-        token: toUserToken.token
-        message: content
-        extras: extras
-        createAt: new Date()
-      }
-      PushSendLogs.insert pushReq
+        PushSendLogs.remove({createAt: {$lt: removeTime}})
+        if(PushSendLogs.find({
+          type: toUserToken.type
+          token: toUserToken.token
+          message: content
+          'extras.type': extras.type
+          'extras.postId': extras.postId
+          'extras.requesterId': extras.requesterId
+          createAt: {$gte: expireTime}
+        }).count() > 0)
+          return
+          
+        pushReq = {
+          toUserId: toUserId
+          type: toUserToken.type
+          token: toUserToken.token
+          message: content
+          extras: extras
+          createAt: new Date()
+        }
+        PushSendLogs.insert pushReq
     
       pushToken = {type: toUserToken.type, token: toUserToken.token}
       #console.log "toUserToken.type:"+toUserToken.type+";toUserToken.token:"+toUserToken.token
