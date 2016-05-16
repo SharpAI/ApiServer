@@ -15,7 +15,7 @@ if Meteor.isClient
       trackEvent("socialBar","GroupChat")
       e.stopPropagation()
       #window.location.href = 'http://testchat.tiegushi.com/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
-      url = 'http://testchat.tiegushi.com/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
+      url = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
       window.open(url,'_blank')
 #Session.set("Social.LevelOne.Menu",'chatContent')
       #Session.set("SocialOnButton",'chatContent')
