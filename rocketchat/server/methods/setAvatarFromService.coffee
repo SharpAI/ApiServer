@@ -13,6 +13,8 @@ Meteor.methods
 			return
 
 		if service is 'url'
+			RocketChat.models.Users.setAvatarURLOrigin user._id, dataURI
+			###
 			result = null
 
 			try
@@ -40,6 +42,7 @@ Meteor.methods
 				, 500
 
 			ars.pipe(aws)
+			###
 			return
 
 		{image, contentType} = RocketChatFile.dataURIParse dataURI

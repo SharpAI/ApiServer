@@ -10,6 +10,7 @@ Meteor.publish 'userData', ->
 			statusDefault: 1
 			statusConnection: 1
 			avatarOrigin: 1
+			avatarUrl: 1
 			utcOffset: 1
 			language: 1
 			settings: 1

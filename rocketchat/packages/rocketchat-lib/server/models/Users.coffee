@@ -200,6 +200,14 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @update _id, update
 
+	setAvatarURLOrigin: (_id, origin) ->
+		update =
+			$set:
+				avatarOrigin: 'url'
+				avatarUrl: origin
+
+		return @update _id, update		
+
 	unsetAvatarOrigin: (_id) ->
 		update =
 			$unset:
