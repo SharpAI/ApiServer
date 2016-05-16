@@ -12,7 +12,7 @@ if Meteor.isClient
                 rid: ChatRoom.findOne()._id
                 ts: new Date()
                 u: {
-                    _id: 'group.cat'
+                    _id: '故事贴小秘'
                     username: 'GS'
                     name: '故事贴小秘'
                 }

@@ -37,6 +37,13 @@ Meteor.startup ->
       if (!me.services or !me.services.gushitie) and amplify.store('hotshareUserID')
         Meteor.call 'associateGushitie',amplify.store('hotshareUserID')
         console.log(me)
+  Tracker.autorun (t)->
+    if ChatRoom.findOne() && ChatRoom.findOne()._id
+      roomID= ChatRoom.findOne()._id
+      if ChatSubscription.find({ rid: roomID }).count() is 0
+        console.log('Need subscribe this room')
+        Meteor.call 'joinRoom', roomID
+
     # unless Meteor.user()
     #     createUser = () ->
     #         uuid = Meteor.uuid();
