@@ -172,7 +172,8 @@ Template.main.helpers
 Template.main.events
 
 	"click .burger": ->
-		history.back()
+		#history.back()
+		history.go(Session.get('HistoryBack'))
 		#window.parent.postMessage('closechatpage', '*')
 		#console.log 'room click .burger' if window.rocketDebug
 		#chatContainer = $("#rocket-chat")

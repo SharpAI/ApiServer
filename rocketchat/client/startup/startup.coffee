@@ -7,6 +7,8 @@ Meteor.startup ->
 
 	Session.setDefault('AvatarRandom', 0)
 
+	Session.setDefault('HistoryBack', -1)	
+
 	window.lastMessageWindow = {}
 	window.lastMessageWindowHistory = {}
 
