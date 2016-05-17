@@ -57,11 +57,22 @@ if Meteor.isClient
         } 
 
         ChatMessage.insert msg
-
+    todisplayList=[]
+    needToFethReadlist=false
+    unless amplify.store('readListDisplayed')
+        amplify.store('readListDisplayed',1)
+    postOneViewedPost = ()->
+        if todisplayList and todisplayList.length > 0
+            data=todisplayList.pop()[1]
+            console.log(data)
+            sendPersonalMessageWithURLToRoom('朋友们可能还在看帖子，您可以回顾一下浏览过的故事贴:','http://cdn.tiegushi.com/posts/'+data.postId, data.name, data.addonTitle, data.mainImage)
+            amplify.store('readListDisplayed',amplify.store('readListDisplayed')+1)
+        else if needToFethReadlist
+            fetchReadListFromServer()
     idleMessage = ()->
         console.log('idleMessage')
-        duration = parseInt((Date.now() - timeIn)/1000)
-        #sendPersonalMessageToRoom('您已经进入房间 ' + duration + ' 秒')
+        duration = parseInt((Date.now() - timeIn)/1000)#sendPersonalMessageToRoom('您已经进入房间 ' + duration + ' 秒')
+        postOneViewedPost()
     startIdleMessage = ()->
         console.log('startIdleMessage')
         if !idleMessageInterval
@@ -78,7 +89,17 @@ if Meteor.isClient
         else
             stopIdleMessage()
             startIdleMessage()
-
+    fetchReadListFromServer = ()->
+        needToFethReadlist=false
+        Meteor.call 'getMyState',amplify.store('hotshareUserID'),amplify.store('readListDisplayed'),amplify.store('readListDisplayed')+10,(err,list)->
+            console.log('Got my list: '+list)
+            if list and list.length > 0
+                todisplayList = list
+                setTimeout postOneViewedPost,2000
+                needToFethReadlist=true
+            else if amplify.store('readListDisplayed')>0
+                amplify.store('readListDisplayed',0)
+                #fetchReadListFromServer()
     Meteor.startup ->
         Tracker.autorun (t)->
             if ChatRoom.findOne()
@@ -99,8 +120,7 @@ if Meteor.isClient
         Tracker.autorun (t)->
             if Meteor.user() and amplify.store('hotshareUserID')
                 t.stop()
-                Meteor.call 'getMyState',amplify.store('hotshareUserID'),(err,list)->
-                    console.log('Got my list: '+list)
+                fetchReadListFromServer()
                 console.log('HotShare ID is '+amplify.store('hotshareUserID'))
         Tracker.autorun ()->
             if MsgTyping.selfTyping.get()
