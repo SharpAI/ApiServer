@@ -9,10 +9,10 @@ var assert = require('assert');
 //var url = 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare';
 var url = 'mongodb://localhost:27017/localdb';
 
-var dbGraph = require("seraph")({ server: "http://localhost:7474",
+var dbGraph = require("seraph")({ server: "http://120.24.247.107:7474",
     endpoint: "/db/data",
     user: "neo4j",
-    pass: "123456" });
+    pass: "5MW-wU3-V9t-bF6" });
 function save_viewer_node(doc,cb){
     if (doc !== null) {
         var querystr = 'MATCH (u:User)-[v:VIEWER]->(p:Post) WHERE u.userId="'+doc.userId+

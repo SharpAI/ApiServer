@@ -10,10 +10,11 @@ var assert = require('assert');
 //var url = 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare';
 var url = 'mongodb://localhost:27017/localdb';
 
-var dbGraph = require("seraph")({ server: "http://localhost:7474",
+var dbGraph = require("seraph")({ server: "http://120.24.247.107:7474",
     endpoint: "/db/data",
     user: "neo4j",
-    pass: "123456" });
+    pass: "5MW-wU3-V9t-bF6" });
+
 function check_user_existing(id,cb){
     if(id && id !='' && cb){
         dbGraph.find({userId: id}, 'User', function(err, results) {

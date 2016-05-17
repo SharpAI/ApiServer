@@ -14,7 +14,17 @@ var assert = require('assert');
 var url = 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare';
 //var url = 'mongodb://localhost:27017/localdb';
 var db = null
-
+process.addListener('uncaughtException', function (err) {
+    var msg = err.message;
+    if (err.stack) {
+        msg += '\n' + err.stack;
+    }
+    if (!msg) {
+        msg = JSON.stringify(err);
+    }
+    console.log(msg);
+    console.trace();
+});
 MongoClient.connect(url, function(err, tdb) {
     assert.equal(null, err);
     db=tdb
@@ -92,8 +102,8 @@ client.on('connect' ,function () {
                 mainImage:true
             }},function(err, post) {
                 savePostUser.save_post_node(post,function(){
-                console.log('Post Info saved')
-            })
+                    console.log('Post Info saved')
+                })
             });
         }
         //client.end();
