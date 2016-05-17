@@ -29,4 +29,12 @@ Meteor.startup ()->
     'getPostInfo':(postId)->
       this.unblock()
       return GushitiePosts.findOne({_id:postId},{fields:{mainImage:1,ownerName:1,title:1,addonTitle:1,createdAt:1}})
+    'getMeetTimes': (fromUserId, toUserId)->
+      this.unblock()
+      console.log '>>>> in getMeetTimes <<<<<'
+      console.log fromUserId
+      console.log toUserId
+      result = Neo4j.query "MATCH (fromUser:User)-[v:VIEWER]->(p:Post)-[v2:VIEWER]-(toUser:User) WHERE fromUser.userId=\"#{fromUserId}\" AND toUser.userId=\"#{toUserId}\"  RETURN COUNT(p)"
+      console.log result
+      return result
 
