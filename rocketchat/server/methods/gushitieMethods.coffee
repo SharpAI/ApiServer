@@ -52,12 +52,13 @@ Meteor.startup ()->
           myGushitieID=me.services.gushitie.id
           taGushitieId=ta.services.gushitie.id
           #Calc the meet time
-          meetTimes = Neo4j.query "MATCH (fromUser:User)-[v:VIEWER]->(p:Post)-[v2:VIEWER]-(toUser:User) WHERE fromUser.userId=\"#{myGushitieID}\" AND toUser.userId=\"#{taGushitieId}\"  RETURN COUNT(p)"
-          meetTimes = meetTimes[0]
+          mutualPosts = Neo4j.query "MATCH (fromUser:User)-[v:VIEWER]->(p:Post)-[v2:VIEWER]-(toUser:User) WHERE fromUser.userId=\"#{myGushitieID}\" AND toUser.userId=\"#{taGushitieId}\"  RETURN p"
+          meetTimes = mutualPosts.length
           console.log('Meet time '+meetTimes)
           resp.meets = meetTimes
           if meetTimes > 0
-            #Calc the mutal post
+            #Calc the mutual post
+            resp.mutualPosts = mutualPosts
             console.log('get post list')
           else
             #Calc the post not read but read by ta
