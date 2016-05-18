@@ -24,16 +24,14 @@ Meteor.startup ()->
         skip = 0
       unless limit
         limit = 20
-      console.log('This is '+gUserID)
+      #console.log('This is '+gUserID)
       result = Neo4j.query "MATCH (u:User)-[v:VIEWER]->(p:Post) WHERE u.userId=\"#{gUserID}\" RETURN v.by,p ORDER BY v.by DESC SKIP #{skip} LIMIT #{limit}"
-      console.log result
+      #console.log result
       return result
     'getPostInfo':(postId)->
       this.unblock()
       postinfo = GushitiePosts.findOne({_id:postId},{fields:{mainImage:1,ownerName:1,title:1,addonTitle:1,createdAt:1}})
-      console.log(postinfo)
       return postinfo
-      return GushitiePosts.findOne({_id:postId},{fields:{mainImage:1,ownerName:1,title:1,addonTitle:1,createdAt:1}})
     'getMeetTimes': (fromUserId, toUserId)->
       this.unblock()
       console.log '>>>> in getMeetTimes <<<<<'
@@ -42,4 +40,32 @@ Meteor.startup ()->
       result = Neo4j.query "MATCH (fromUser:User)-[v:VIEWER]->(p:Post)-[v2:VIEWER]-(toUser:User) WHERE fromUser.userId=\"#{fromUserId}\" AND toUser.userId=\"#{toUserId}\"  RETURN COUNT(p)"
       console.log result
       return result
+    'calcRelationship':(userId)->
+      this.unblock()
+      resp={}
+      me=Meteor.user()
+      if me and me.services and me.services.gushitie and me.services.gushitie.id
+        ta=Meteor.users.findOne({_id:userId})
+        resp.taId=ta._id
+        resp.taName=ta.name
+        if ta and ta.services and ta.services.gushitie and ta.services.gushitie.id
+          myGushitieID=me.services.gushitie.id
+          taGushitieId=ta.services.gushitie.id
+          #Calc the meet time
+          meetTimes = Neo4j.query "MATCH (fromUser:User)-[v:VIEWER]->(p:Post)-[v2:VIEWER]-(toUser:User) WHERE fromUser.userId=\"#{myGushitieID}\" AND toUser.userId=\"#{taGushitieId}\"  RETURN COUNT(p)"
+          meetTimes = meetTimes[0]
+          console.log('Meet time '+meetTimes)
+          resp.meets = meetTimes
+          if meetTimes > 0
+            #Calc the mutal post
+            console.log('get post list')
+          else
+            #Calc the post not read but read by ta
+            queryString="MATCH (u:User)-[v:VIEWER]->(p:Post),(u1:User)-[v1:VIEWER]->(p1:Post) WHERE u.userId=\"#{myGushitieID}\" AND u1.userId=\"#{taGushitieId}\" AND p.postId<>p1.postId RETURN p1 ORDER BY p1.createdBy DESC LIMIT 10"
+            taRead=Neo4j.query queryString
+            resp.taRead = taRead
+            #console.log(queryString)
+            #console.log(resp.taRead )
+          return resp
+      #console.log(Meteor.user())
 

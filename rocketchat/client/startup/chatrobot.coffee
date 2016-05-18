@@ -1,9 +1,15 @@
 
 if Meteor.isClient
     idleMessageInterval = null
+    friendSocialGraphMessageInterval = null
     timeIn = Date.now()
+    friendSocialGraphMessageIntervalSec = 25000
     idleMessageIntervalSec = 30000
     mystate = null
+    onlineUsers = 0
+    todisplayList=[]
+    socialGraphMessageList=[]
+    needToFethReadlist=false
     sendPersonalMessageToRoom = (message)->
         if ChatRoom.findOne()
             ChatMessage.insert {
@@ -57,11 +63,11 @@ if Meteor.isClient
         } 
 
         ChatMessage.insert msg
-    todisplayList=[]
-    needToFethReadlist=false
     unless amplify.store('readListDisplayed')
         amplify.store('readListDisplayed',1)
     postOneViewedPost = ()->
+        if onlineUsers>1
+            return
         if todisplayList and todisplayList.length > 0
             data=todisplayList.pop()[1]
             console.log(data)
@@ -71,8 +77,8 @@ if Meteor.isClient
             fetchReadListFromServer()
     idleMessage = ()->
         console.log('idleMessage')
-        duration = parseInt((Date.now() - timeIn)/1000)#sendPersonalMessageToRoom('您已经进入房间 ' + duration + ' 秒')
-        postOneViewedPost()
+        if onlineUsers <= 1
+            postOneViewedPost()
     startIdleMessage = ()->
         console.log('startIdleMessage')
         if !idleMessageInterval
@@ -100,6 +106,44 @@ if Meteor.isClient
             else if amplify.store('readListDisplayed')>0
                 amplify.store('readListDisplayed',0)
                 #fetchReadListFromServer()
+
+    friendSocialGraphMessage = ()->
+        console.log('friendSocialGraphMessage')
+        if socialGraphMessageList and socialGraphMessageList.length > 0
+            socialMsg = socialGraphMessageList.pop()
+            if socialMsg.type is 'taRead'
+                sendPersonalMessageWithURLToRoom('您的在线朋友 '+socialMsg.taName+' 读过这篇故事',socialMsg.link, socialMsg.name, socialMsg.desc, socialMsg.image)
+            #postOneViewedPost()
+    startFriendSocialGraphMessage = ()->
+        console.log('startfriendSocialGraphMessage')
+        if !friendSocialGraphMessageInterval
+            friendSocialGraphMessageInterval = setInterval(friendSocialGraphMessage,friendSocialGraphMessageIntervalSec)
+    stopFriendSocialGraphMessage = ()->
+        console.log('stopfriendSocialGraphMessage')
+        if friendSocialGraphMessageInterval
+            clearInterval(friendSocialGraphMessageInterval)
+            friendSocialGraphMessageInterval = null
+    restartFriendSocialGraphMessage = ()->
+        console.log('restartfriendSocialGraphMessage')
+        if !friendSocialGraphMessageInterval
+            friendSocialGraphMessageInterval = setInterval(friendSocialGraphMessage,friendSocialGraphMessageIntervalSec)
+        else
+            stopFriendSocialGraphMessage()
+            startFriendSocialGraphMessage()
+    processFriendSocialGraph = (socialGraph)->
+        console.log(socialGraph)
+        taName = socialGraph.taName
+        if socialGraph.taRead.length > 0
+            socialGraph.taRead.forEach (key,num)->
+                console.log(key)
+                socialGraphMessageList.push({
+                    type:'taRead'
+                    taName:taName
+                    link:'http://cdn.tiegushi.com/posts/'+key.postId
+                    name:key.name
+                    desc:key.addonTitle
+                    image:key.mainImage
+                })
     Meteor.startup ->
         Tracker.autorun (t)->
             if ChatRoom.findOne()
@@ -123,6 +167,8 @@ if Meteor.isClient
                 fetchReadListFromServer()
                 console.log('HotShare ID is '+amplify.store('hotshareUserID'))
         Tracker.autorun ()->
+            if onlineUsers > 1
+                return
             if MsgTyping.selfTyping.get()
                 console.log('Need stop interval since typing')
                 stopIdleMessage()
@@ -130,10 +176,35 @@ if Meteor.isClient
                 console.log('not typing now')
                 restartIdleMessage()
         Tracker.autorun ()->
+            if onlineUsers > 1
+                return
             if ChatMessage.findOne({t:{$ne:'bot'}},{sort:{ts:-1}},{fields:{ts:1}})
                 console.log('New message arrived')
                 restartIdleMessage()
         Tracker.autorun ()->
             if onlineUsers != (_.size(RoomManager.onlineUsers.get())-1)
                 onlineUsers = (_.size(RoomManager.onlineUsers.get())-1)
-                console.log('Online member: '+(_.size(RoomManager.onlineUsers.get())-1))
+                console.log('Online member: '+onlineUsers)
+                if onlineUsers > 1
+                    stopIdleMessage()
+                    restartFriendSocialGraphMessage()
+                    console.log('need get the user')
+                    userArray=_.filter(RoomManager.onlineUsers.get(), (obj, key)->
+                        unless obj._id
+                            return false
+                        if obj._id is 'group.cat'
+                            return false
+                        if obj._id is Meteor.userId()
+                            return false
+                        if Session.get('user_record_'+obj._id)
+                            return false
+                        Session.set('user_record_'+obj._id,true)
+                        Meteor.call 'calcRelationship',obj._id,(err,result)->
+                            processFriendSocialGraph(result)
+                            friendSocialGraphMessage()
+                        #sendPersonalMessageToRoom('您的朋友 '+result.taName+' 正在聊天，你们初次相逢，他推荐您看这个帖子：')
+                        return true
+                    )
+                else
+                    restartIdleMessage()
+                    stopFriendSocialGraphMessage()
