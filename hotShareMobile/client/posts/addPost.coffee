@@ -1069,14 +1069,17 @@ if Meteor.isClient
         draftToBeUploadedImageData = []
         for i in [0..(draftImageData.length-1)]
             if draftImageData[i].imgUrl is undefined or draftImageData[i].imgUrl.toLowerCase().indexOf("http://")>= 0 or draftImageData[i].imgUrl.toLowerCase().indexOf("https://")>= 0
+                draftToBeUploadedImageData.unshift({})
                 continue
             draftToBeUploadedImageData.push(draftImageData[i])
         for music in draftMusicData
           if music.musicInfo.playUrl.toLowerCase().indexOf("http://")>= 0 or music.musicInfo.playUrl.toLowerCase().indexOf("https://")>= 0
+            draftToBeUploadedImageData.unshift({})
             continue
           draftToBeUploadedImageData.push(music)
         for video in draftVideoData
           if video.videoInfo.imageUrl.toLowerCase().indexOf("http://")>= 0 or video.videoInfo.imageUrl.toLowerCase().indexOf("https://")>= 0
+            draftToBeUploadedImageData.unshift({})
             continue
           draftToBeUploadedImageData.push(video)
         #uploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId)
