@@ -531,9 +531,11 @@ if Meteor.isClient
 
     if modalUserId isnt undefined or modalUserId isnt null
       ownerUser = Meteor.users.findOne({_id: modalUserId})
+      Session.set 'post-publish-user-id', modalUserId
 
     if ownerUser is undefined or ownerUser is null
       ownerUser = Meteor.user()
+      Session.set 'post-publish-user-id', ''
 
     try
       #ownerIcon = Meteor.user().profile.icon

@@ -27,14 +27,19 @@ if Meteor.isClient
        TopicAddonTitle = Session.get("TopicAddonTitle")
        TopicMainImage = Session.get("TopicMainImage")
        comment = Session.get("comment")
+       user = Meteor.user()
+       
+       unless Session.equals('post-publish-user-id', '')
+         user = Meteor.users.findOne({_id: Session.get('post-publish-user-id')})
+       
        if comment != ''
-         if Meteor.user()
-           if Meteor.user().profile.fullname
-             username = Meteor.user().profile.fullname
+         if user
+           if user.profile.fullname
+             username = user.profile.fullname
            else
-             username = Meteor.user().username
-           userId = Meteor.user()._id
-           userIcon = Meteor.user().profile.icon
+             username = user.username
+           userId = user._id
+           userIcon = user.profile.icon
          else
            username = '匿名'
            userId = 0
@@ -73,13 +78,13 @@ if Meteor.isClient
                   imgUrl: ""
                 }
              #console.log "topicId:" + topicId
-             if Meteor.user()
-               if Meteor.user().profile.fullname
-                 username = Meteor.user().profile.fullname
+             if user
+               if user.profile.fullname
+                 username = user.profile.fullname
                else
-                 username = Meteor.user().username
-               userId = Meteor.user()._id
-               userIcon = Meteor.user().profile.icon
+                 username = user.username
+               userId = user._id
+               userIcon = user.profile.icon
              else
                username = '匿名'
                userId = 0
