@@ -111,6 +111,8 @@ if Meteor.isClient
     friendSocialGraphMessage = ()->
         console.log('friendSocialGraphMessage')
         doc=socialGraphCollection.findOne({})
+        unless doc
+            return
         socialGraphCollection.remove({_id:doc._id})
         if doc.type is 'taRead'
             sendPersonalMessageWithURLToRoom('您的在线朋友 '+doc.taName+' 读过这篇故事',doc.link, doc.name, doc.desc, doc.image)
