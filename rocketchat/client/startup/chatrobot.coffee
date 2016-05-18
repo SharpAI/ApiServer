@@ -1,9 +1,10 @@
 
 if Meteor.isClient
+    socialGraphCollection = new Meteor.Collection('socialGraph')
     idleMessageInterval = null
     friendSocialGraphMessageInterval = null
     timeIn = Date.now()
-    friendSocialGraphMessageIntervalSec = 25000
+    friendSocialGraphMessageIntervalSec = 20000
     idleMessageIntervalSec = 30000
     mystate = null
     onlineUsers = 0
@@ -109,10 +110,10 @@ if Meteor.isClient
 
     friendSocialGraphMessage = ()->
         console.log('friendSocialGraphMessage')
-        if socialGraphMessageList and socialGraphMessageList.length > 0
-            socialMsg = socialGraphMessageList.pop()
-            if socialMsg.type is 'taRead'
-                sendPersonalMessageWithURLToRoom('您的在线朋友 '+socialMsg.taName+' 读过这篇故事',socialMsg.link, socialMsg.name, socialMsg.desc, socialMsg.image)
+        doc=socialGraphCollection.findOne({})
+        socialGraphCollection.remove({_id:doc._id})
+        if doc.type is 'taRead'
+            sendPersonalMessageWithURLToRoom('您的在线朋友 '+doc.taName+' 读过这篇故事',doc.link, doc.name, doc.desc, doc.image)
             #postOneViewedPost()
     startFriendSocialGraphMessage = ()->
         console.log('startfriendSocialGraphMessage')
@@ -136,14 +137,16 @@ if Meteor.isClient
         if socialGraph.taRead.length > 0
             socialGraph.taRead.forEach (key,num)->
                 console.log(key)
-                socialGraphMessageList.push({
-                    type:'taRead'
-                    taName:taName
-                    link:'http://cdn.tiegushi.com/posts/'+key.postId
-                    name:key.name
-                    desc:key.addonTitle
-                    image:key.mainImage
-                })
+                unless socialGraphCollection.findOne({postId:key.postId})
+                    socialGraphCollection.insert {
+                        postId:key.postId
+                        type:'taRead'
+                        taName:taName
+                        link:'http://cdn.tiegushi.com/posts/'+key.postId
+                        name:key.name
+                        desc:key.addonTitle
+                        image:key.mainImage
+                    }
     Meteor.startup ->
         Tracker.autorun (t)->
             if ChatRoom.findOne()
