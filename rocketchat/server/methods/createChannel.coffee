@@ -1,7 +1,7 @@
 Meteor.methods
 	createChannel: (name, members) ->
-		if not Meteor.userId()
-			throw new Meteor.Error 'invalid-user', "[methods] createChannel -> Invalid user"
+		#if not Meteor.userId()
+		#	throw new Meteor.Error 'invalid-user', "[methods] createChannel -> Invalid user"
 
 		try
 			nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
@@ -11,11 +11,13 @@ Meteor.methods
 		if not nameValidation.test name
 			throw new Meteor.Error 'name-invalid'
 
-		if RocketChat.authz.hasPermission(Meteor.userId(), 'create-c') isnt true
-			throw new Meteor.Error 'not-authorized', '[methods] createChannel -> Not authorized'
+		
+		#if RocketChat.authz.hasPermission(Meteor.userId(), 'create-c') isnt true
+		#	throw new Meteor.Error 'not-authorized', '[methods] createChannel -> Not authorized'
 
 		now = new Date()
-		user = Meteor.user()
+		#user = Meteor.user()
+		user = Meteor.users.findOne({_id: 'group.cat'})
 
 		members.push user.username if user.username not in members
 
@@ -55,7 +57,8 @@ Meteor.methods
 			RocketChat.models.Subscriptions.createWithRoomAndUser room, member, extra
 
 		# set creator as channel moderator.  permission limited to channel by scoping to rid
-		RocketChat.authz.addUserRoles(Meteor.userId(), ['moderator','owner'], room._id)
+		#RocketChat.authz.addUserRoles(Meteor.userId(), ['moderator','owner'], room._id)
+		RocketChat.authz.addUserRoles('group.cat', ['moderator','owner'], room._id)
 
 		Meteor.defer ->
 			RocketChat.callbacks.run 'afterCreateChannel', user, room
