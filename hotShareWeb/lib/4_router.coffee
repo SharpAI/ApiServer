@@ -137,6 +137,19 @@ if Meteor.isServer
       fastRender: true
     }
   ###
+  Router.configure {
+    waitOn: ()->
+      if this and this.path
+        path=this.path
+        if path.indexOf('/posts/') is 0
+          params=path.replace('/posts/','')
+          params=params.split('/')
+          if params.length > 0
+             return [subs.subscribe("publicPosts",params[0]),
+             subs.subscribe "pcomments"]
+    fastRender: true
+  }
+
   Router.route '/posts/:_id', (req, res, next)->
     BOTS = [
       'googlebot',
@@ -169,11 +182,13 @@ if Meteor.isServer
       })
       res.end(postHtml)
     else
-      next()    
+      next()
   , {where: 'server'}
+  ###
   Router.route '/posts/:_id/:_index', {
       waitOn: ->
         [subs.subscribe("publicPosts",this.params._id),
          subs.subscribe "pcomments"]
       fastRender: true
     }
+  ###
