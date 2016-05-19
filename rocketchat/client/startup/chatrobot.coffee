@@ -1,10 +1,10 @@
 
 if Meteor.isClient
-    socialGraphCollection = new Meteor.Collection('socialGraph')
+    window.socialGraphCollection = new Meteor.Collection()
     idleMessageInterval = null
     friendSocialGraphMessageInterval = null
     timeIn = Date.now()
-    friendSocialGraphMessageIntervalSec = 20000
+    friendSocialGraphMessageIntervalSec = 15000
     idleMessageIntervalSec = 30000
     mystate = null
     onlineUsers = 0
@@ -115,10 +115,10 @@ if Meteor.isClient
             return
         socialGraphCollection.remove({_id:doc._id})
         if doc.type is 'taRead'
-            sendPersonalMessageWithURLToRoom('您的在线朋友 '+doc.taName+' 读过这篇故事',doc.link, doc.name, doc.desc, doc.image)
+            sendPersonalMessageWithURLToRoom(doc.taName+' 读过这篇故事，您还没读过',doc.link, doc.name, doc.desc, doc.image)
             #postOneViewedPost()
         else if doc.type is 'mutualRead'
-            sendPersonalMessageWithURLToRoom('您和您的在线朋友 '+doc.taName+' 都读过这篇故事',doc.link, doc.name, doc.desc, doc.image)
+            sendPersonalMessageWithURLToRoom(doc.taName+' 和 您 都读过这篇故事，是不是很有缘分，TA也在线哦（输入@可以看到在线好友）',doc.link, doc.name, doc.desc, doc.image)
 
     startFriendSocialGraphMessage = ()->
         console.log('startfriendSocialGraphMessage')
@@ -140,33 +140,33 @@ if Meteor.isClient
         currentRoomPostId = FlowRouter.current().params.name
         console.log(socialGraph)
         taName = socialGraph.taName
-        if socialGraph.taRead? and socialGraph.taRead.length > 0
-            socialGraph.taRead.forEach (key,num)->
-                #console.log(key)
-                unless socialGraphCollection.findOne({postId:key.postId})
-                    socialGraphCollection.insert {
-                        postId:key.postId
-                        type:'taRead'
-                        taName:taName
-                        link:'http://cdn.tiegushi.com/posts/'+key.postId
-                        name:key.name
-                        desc:key.addonTitle
-                        image:key.mainImage
-                    }
         if socialGraph.mutualPosts? and socialGraph.mutualPosts.length > 0
             socialGraph.mutualPosts.forEach (key, num)->
                 # add mutual post into collection
                 #console.log(key)
-                unless currentRoomPostId is key.postId or socialGraphCollection.findOne({postId:key.postId})
-                    socialGraphCollection.insert {
-                        postId:key.postId
-                        type:'mutualRead'
-                        taName:taName
-                        link:'http://cdn.tiegushi.com/posts/'+key.postId
-                        name:key.name
-                        desc:key.addonTitle
+                #两个人都读过的文章是可以重复的
+                unless currentRoomPostId is key.postId
+                    socialGraphCollection.insert({
+                        type:'mutualRead',
+                        taName:taName,
+                        link:'http://cdn.tiegushi.com/posts/'+key.postId,
+                        name:key.name,
+                        desc:key.addonTitle,
                         image:key.mainImage
-                    }                
+                    })
+        if socialGraph.taRead? and socialGraph.taRead.length > 0
+            socialGraph.taRead.forEach (key,num)->
+                #console.log(key)
+                unless socialGraphCollection.findOne({postId:key.postId})
+                    socialGraphCollection.insert({
+                        postId:key.postId,
+                        type:'taRead',
+                        taName:taName,
+                        link:'http://cdn.tiegushi.com/posts/'+key.postId,
+                        name:key.name,
+                        desc:key.addonTitle,
+                        image:key.mainImage
+                    })
     Meteor.startup ->
         Tracker.autorun (t)->
             if ChatRoom.findOne()
@@ -224,7 +224,7 @@ if Meteor.isClient
                         Session.set('user_record_'+obj._id,true)
                         Meteor.call 'calcRelationship',obj._id,(err,result)->
                             processFriendSocialGraph(result)
-                            friendSocialGraphMessage()
+                            setTimeout friendSocialGraphMessage,2000
                         #sendPersonalMessageToRoom('您的朋友 '+result.taName+' 正在聊天，你们初次相逢，他推荐您看这个帖子：')
                         return true
                     )
