@@ -341,11 +341,15 @@ if (Meteor.isCordova){
 
     var fileUploader = function (item,callback){
         console.log('uploading ' + JSON.stringify(item));
-
         if (Session.get('terminateUpload')) {
             return callback(new Error('aboutUpload'),item)
         }
         var self = this;
+        if ($.isEmptyObject(item)) {
+            self.uploaded++;
+            Session.set('progressBarWidth', parseInt(100*self.uploaded/self.total));
+            return callback(null,item);
+        }
         var filename = '';
         var URI = ''
         if (item.type === 'music') {
@@ -390,7 +394,7 @@ if (Meteor.isCordova){
         Template.progressBar.__helpers.get('close')();
         if (err){
             if (this.finalCallback) {
-                this.finalCallback('error');
+                this.finalCallback('error',result);
             }
         } else {
             if (this.finalCallback) {

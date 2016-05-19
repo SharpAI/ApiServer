@@ -44,28 +44,37 @@ Meteor.startup ()->
       this.unblock()
       resp={}
       me=Meteor.user()
+      taGushitieId=null
+      myGushitieID=null
       if me and me.services and me.services.gushitie and me.services.gushitie.id
-        ta=Meteor.users.findOne({_id:userId})
-        resp.taId=ta._id
-        resp.taName=ta.name
-        if ta and ta.services and ta.services.gushitie and ta.services.gushitie.id
-          myGushitieID=me.services.gushitie.id
-          taGushitieId=ta.services.gushitie.id
-          #Calc the meet time
-          meetTimes = Neo4j.query "MATCH (fromUser:User)-[v:VIEWER]->(p:Post)-[v2:VIEWER]-(toUser:User) WHERE fromUser.userId=\"#{myGushitieID}\" AND toUser.userId=\"#{taGushitieId}\"  RETURN COUNT(p)"
-          meetTimes = meetTimes[0]
-          console.log('Meet time '+meetTimes)
-          resp.meets = meetTimes
-          if meetTimes > 0
-            #Calc the mutal post
-            console.log('get post list')
-          else
-            #Calc the post not read but read by ta
-            queryString="MATCH (u:User)-[v:VIEWER]->(p:Post),(u1:User)-[v1:VIEWER]->(p1:Post) WHERE u.userId=\"#{myGushitieID}\" AND u1.userId=\"#{taGushitieId}\" AND p.postId<>p1.postId RETURN p1 ORDER BY p1.createdBy DESC LIMIT 10"
-            taRead=Neo4j.query queryString
-            resp.taRead = taRead
-            #console.log(queryString)
-            #console.log(resp.taRead )
-          return resp
+        myGushitieID=me.services.gushitie.id
+      else if me and me.gushitie and me.gushitie.id
+        myGushitieID=me.gushitie.id
+
+      ta=Meteor.users.findOne({_id:userId})
+      resp.taId=ta._id
+      resp.taName=ta.name
+
+      if ta and ta.services and ta.services.gushitie and ta.services.gushitie.id
+        taGushitieId=ta.services.gushitie.id
+      else if ta and ta.gushitie and ta.gushitie.id
+        taGushitieId=ta.gushitie.id
+      if taGushitieId and myGushitieID
+        #Calc the meet time
+        mutualPosts = Neo4j.query "MATCH (fromUser:User)-[v:VIEWER]->(p:Post)-[v2:VIEWER]-(toUser:User) WHERE fromUser.userId=\"#{myGushitieID}\" AND toUser.userId=\"#{taGushitieId}\"  RETURN DISTINCT p ORDER BY p.createdBy DESC LIMIT 5"
+        meetTimes = mutualPosts.length
+        console.log('Meet time '+meetTimes)
+        #resp.meets = meetTimes
+        if meetTimes > 0
+          #Calc the mutual post
+          resp.mutualPosts = mutualPosts
+          console.log('get post list')
+        #Calc the post not read but read by ta
+        queryString="MATCH (u:User)-[v:VIEWER]->(p:Post),(u1:User)-[v1:VIEWER]->(p1:Post) WHERE u.userId=\"#{myGushitieID}\" AND u1.userId=\"#{taGushitieId}\" AND p.postId<>p1.postId RETURN p1 ORDER BY p1.createdBy DESC LIMIT 5"
+        taRead=Neo4j.query queryString
+        resp.taRead = taRead
+        #console.log(queryString)
+        #console.log(resp.taRead )
+        return resp
       #console.log(Meteor.user())
 

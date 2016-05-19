@@ -9,16 +9,14 @@ RocketChat.roomTypes.add 'c', 10,
 		name: 'channel'
 		path: '/channel/:name'
 		action: (params, queryParams) ->
-			console.log('>>>>>>>>> in route channel');
-			console.log(params);
-
 			Meteor.call 'createChannel', params.name, [], (err, result) ->
 				if err
 					console.log err
 
-			Session.set 'showUserInfo'
-			openRoom 'c', params.name
-			RocketChat.TabBar.showGroup 'channel'
+				Session.set 'showUserInfo'
+				openRoom 'c', params.name
+				RocketChat.TabBar.showGroup 'channel'
+
 		link: (sub) ->
 			return { name: sub.name }
 	condition: ->
