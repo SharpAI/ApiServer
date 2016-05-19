@@ -61,7 +61,7 @@ Meteor.startup ()->
         taGushitieId=ta.gushitie.id
       if taGushitieId and myGushitieID
         #Calc the meet time
-        mutualPosts = Neo4j.query "MATCH (fromUser:User)-[v:VIEWER]->(p:Post)-[v2:VIEWER]-(toUser:User) WHERE fromUser.userId=\"#{myGushitieID}\" AND toUser.userId=\"#{taGushitieId}\"  RETURN p ORDER BY p.createdBy DESC LIMIT 5"
+        mutualPosts = Neo4j.query "MATCH (fromUser:User)-[v:VIEWER]->(p:Post)-[v2:VIEWER]-(toUser:User) WHERE fromUser.userId=\"#{myGushitieID}\" AND toUser.userId=\"#{taGushitieId}\"  RETURN DISTINCT p ORDER BY p.createdBy DESC LIMIT 5"
         meetTimes = mutualPosts.length
         console.log('Meet time '+meetTimes)
         #resp.meets = meetTimes

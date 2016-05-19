@@ -145,7 +145,7 @@ if Meteor.isClient
                 # add mutual post into collection
                 #console.log(key)
                 #两个人都读过的文章是可以重复的
-                unless currentRoomPostId is key.postId
+                unless currentRoomPostId is key.postId or socialGraphCollection.findOne({postId:key.postId, taName: taName, type:'mutualRead'})
                     socialGraphCollection.insert({
                         type:'mutualRead',
                         taName:taName,
