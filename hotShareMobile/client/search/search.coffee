@@ -177,9 +177,15 @@ if Meteor.isClient
        Session.set "topicTitle", "#"+ @text + "#"
        Router.go '/topicPosts'
     'click #search_people': (event)->
-        Session.set('is_people', true)
+      Session.set('is_people', true)
+      text = $('#search-box').val().trim()
+      FollowUsersSearch.search text
+      $('#search-box').trigger('focus')
     'click #search_topic': (event)->
-        Session.set('is_people', false)
+      Session.set('is_people', false)
+      text = $('#search-box').val().trim()
+      TopicsSearch.search text
+      $('#search-box').trigger('focus')
     'click .back': (event)->
        history.back()
     'click .delFollow':(e)->
