@@ -12,11 +12,15 @@ if Meteor.isClient
     socialGraphMessageList=[]
     needToFethReadlist=false
     sendPersonalMessageToRoom = (message)->
-        if ChatRoom.findOne()
+        # 当可以在多个聊天室之间切换以后，ChatRoom　里面会包含所有访问过的聊天室信息
+        #if ChatRoom.findOne()
+        openedRoomId = Session.get('openedRoom')
+        if ChatRoom.findOne({_id: openedRoomId})
             ChatMessage.insert {
                 t: 'bot'
                 msg: message
-                rid: ChatRoom.findOne()._id
+                #rid: ChatRoom.findOne()._id
+                rid: openedRoomId
                 ts: new Date()
                 u: {
                     _id: '故事贴小秘'
@@ -33,7 +37,8 @@ if Meteor.isClient
         msg = {
             t: 'bot'
             msg: if message? then message else ''
-            rid: ChatRoom.findOne()._id
+            #rid: ChatRoom.findOne()._id
+            rid: Session.get('openedRoom')
             ts: new Date()
             u: {
                 _id: 'group.cat'
@@ -169,9 +174,12 @@ if Meteor.isClient
                     })
     Meteor.startup ->
         Tracker.autorun (t)->
-            if ChatRoom.findOne()
+            # 当可以在多个聊天室之间切换以后，此处需要响应是重新计算数据，由于FlowRouter不支持响应式，所以使用Session
+            currentRoomId = Session.get('openedRoom')
+            if ChatRoom.findOne({_id: currentRoomId})
+                # 此处的 stop 后面需要去掉以保持响应式计算，但是需要处理下，已经访问过的聊天室再次切换回去的时候，就不要再计算了
                 t.stop()
-                Meteor.call 'getPostInfo',ChatRoom.findOne().name,(err,data)->
+                Meteor.call 'getPostInfo',ChatRoom.findOne({_id: currentRoomId}).name,(err,data)->
                     if !err and data
                         ###
                         _id:"27ZRmEeXwkoFi6BZC"
