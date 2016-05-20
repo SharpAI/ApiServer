@@ -35,7 +35,8 @@ if Meteor.isClient
       else
         FavouritePosts.insert({postId: postId, userId: Meteor.userId(), createdAt: new Date(), updateAt: new Date()})
     setupWeichat = (url)->
-      Meteor.call 'getSignatureFromServer',url,(error,result)->
+      #Meteor.call 'getSignatureFromServer',url,(error,result)->
+      HTTP.get sign_server_url+encodeURIComponent(url),(error,result)->
         #FeedAfterShare(Session.get('postContent'))
         if error
           if localStorage.getItem('savedsignature'+url)
