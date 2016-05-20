@@ -96,6 +96,15 @@ server.get('/echo/:name', function (req, res, next) {
     res.send({test:req.params.name});
     return next();
 });
+server.get('/verify', function (req, res, next) {
+    res.send({ticket:ticket,token:token});
+    return next();
+});
+server.get('/update', function (req, res, next) {
+    updateTokenAndTicket();
+    res.send('ok');
+    return next();
+});
 server.get('/sign/:url', function (req, res, next) {
     var url=decodeURIComponent(req.params.url);
     console.log('To sign this url: '+url);
