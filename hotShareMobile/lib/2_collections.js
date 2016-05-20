@@ -2216,7 +2216,7 @@ if(Meteor.isClient){
   };
   window.refreshMainDataSource = function(){
       Meteor.subscribe('waitreadcount');
-      Meteor.subscribe('shareURLs');
+      //Meteor.subscribe('shareURLs');
   };
   
   // if(Meteor.isCordova){

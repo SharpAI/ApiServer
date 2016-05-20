@@ -64,7 +64,7 @@ static CustomDialogView* _instance = nil;
                                           nil]];
     
     UINavigationItem *newItem = [[UINavigationItem alloc] init];
-    UIBarButtonItem *waitBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"稍后",nil)  style:UIBarButtonItemStylePlain target:self action:@selector(waitButtonTapped:)];
+    UIBarButtonItem *waitBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"删除",nil)  style:UIBarButtonItemStylePlain target:self action:@selector(waitButtonTapped:)];
     [waitBarButtonItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                                         
                                         [UIFont fontWithName:@"Helvetica" size:15.0], NSFontAttributeName,
@@ -72,7 +72,7 @@ static CustomDialogView* _instance = nil;
                                         nil] 
      
                               forState:UIControlStateNormal];
-    UIBarButtonItem *startBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"开始",nil)  style:UIBarButtonItemStyleDone target:self action:@selector(startButtonTapped:)];
+    UIBarButtonItem *startBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"导入",nil)  style:UIBarButtonItemStyleDone target:self action:@selector(startButtonTapped:)];
     [startBarButtonItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                                         
                                         [UIFont fontWithName:@"Helvetica" size:15.0], NSFontAttributeName,
@@ -104,20 +104,14 @@ static CustomDialogView* _instance = nil;
 
 -(void)waitButtonTapped:(UIBarButtonItem *)sender{
     
+    self.block(NO);
+    
     [self removeFromSuperview];
 }
 
 
 -(void)startButtonTapped:(UIBarButtonItem *)sender{
-    
-    if ([self.superview isKindOfClass:[UIWebView class]]) {
-        
-        UIWebView *webView = (UIWebView *)self.superview;
-        
-        //NSString *scriptCall = [NSString stringWithFormat:@"editFromShare('%@','%@')",self.url,self.ID];
-        NSString *scriptCall = [NSString stringWithFormat:@"editFromShare('%@');ShareURLs.remove({ _id:'%@'})",self.url,self.ID];
-        [webView stringByEvaluatingJavaScriptFromString:scriptCall];
-    }
+    self.block(YES);
     
     [self removeFromSuperview];
 }

@@ -12,21 +12,17 @@
   
     NSUserDefaults * mySharedDefults = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.hotsharetest"];
     
-    NSDictionary *dic = [mySharedDefults objectForKey:@"shareExtensionItem"];
+    NSArray *ary = [mySharedDefults objectForKey:@"shareExtensionItems"];
     
-   // NSLog(@"shareExtensionItem =======  %@",dic);
-    
-    //NSString *url = dic[@"url"];
-     NSString *url = [mySharedDefults objectForKey:@"shareUrl"];
-    
-    if (url) {
+    if (ary.count) {
         
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:url];
+        NSLog(@"shareExtensionItem =======  %@",ary[0]);
+        
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:ary[0]];
     }
     else{
         
-        //pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
     }
     
     
@@ -39,12 +35,19 @@
     CDVPluginResult* pluginResult = nil;
     
     NSUserDefaults * mySharedDefults = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.hotsharetest"];
-  
-    [mySharedDefults removeObjectForKey:@"shareUrl"];
     
-    [mySharedDefults synchronize];
+    NSMutableArray  *ary =[NSMutableArray arrayWithArray:[mySharedDefults objectForKey:@"shareExtensionItems"]];
     
-    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    if (ary.count) {
+        
+        [ary removeObjectAtIndex:0];
+        
+        [mySharedDefults setObject:ary forKey:@"shareExtensionItems"];
+        
+        [mySharedDefults synchronize];
+    }
+
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:ary.count];
     
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     

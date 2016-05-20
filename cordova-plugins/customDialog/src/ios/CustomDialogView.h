@@ -14,9 +14,7 @@
 
 @property(strong,nonatomic)UIImageView *imageView;
 
-@property(strong,nonatomic)NSString *url;
-
-@property(strong,nonatomic)NSString *ID;
+@property(copy,nonatomic)void (^block)(BOOL);
 
 +(instancetype) shareInstance ; 
 
