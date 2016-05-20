@@ -2,7 +2,9 @@
   "name": "signitureserver",
   "version": "1.0.0",
   "main": "main.js",
-  "start": "node main.js",
+  "scripts":{
+    "start": "node main.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/npm/init-package-json.git"
