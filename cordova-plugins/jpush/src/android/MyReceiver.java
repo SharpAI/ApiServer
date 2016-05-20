@@ -24,9 +24,9 @@ public class MyReceiver extends BroadcastReceiver {
 
         if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
         	
-        }else if (JPushInterface.ACTION_UNREGISTER.equals(intent.getAction())){
+        }/*else if (JPushInterface.ACTION_UNREGISTER.equals(intent.getAction())){
         	
-        } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
+        } */else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
 		handlingReceivedMessage(context,intent);
         } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent.getAction())) {
         	

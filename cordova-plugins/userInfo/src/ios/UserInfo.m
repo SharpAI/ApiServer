@@ -11,6 +11,11 @@
     NSString  *userId = [command.arguments objectAtIndex:0];
     
     [mySharedDefults setObject:userId forKey:@"userId"];
+    
+    if ([userId isEqualToString:@""]) {
+        
+        [mySharedDefults removeObjectForKey:@"shareExtensionItems"];
+    }
 
     [mySharedDefults synchronize];
     

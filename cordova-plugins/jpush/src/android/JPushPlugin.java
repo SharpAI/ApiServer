@@ -192,7 +192,7 @@ public class JPushPlugin extends CordovaPlugin {
 			callbackContext.error("error reading num json");
 		}
 		if(num != -1){
-			JPushInterface.setLatestNotifactionNumber(this.cordova.getActivity().getApplicationContext(), num);
+			JPushInterface.setLatestNotificationNumber(this.cordova.getActivity().getApplicationContext(), num);
 		}else{
 			callbackContext.error("error num");
 		}
