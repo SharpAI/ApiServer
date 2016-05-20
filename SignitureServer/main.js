@@ -1,6 +1,7 @@
 /**
  * Created by simba on 5/19/16.
  */
+require('newrelic');
 var restify = require('restify');
 var request = require('request');
 var jsSHA = require('jssha')
@@ -18,8 +19,14 @@ var server = restify.createServer({
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
+server.use(restify.CORS({
+    // Defaults to ['*'].
+    //origins: ['https://foo.com', 'http://bar.com', 'http://baz.com:8081'],
+    origins: ['*'],
+    // Defaults to false.
+    credentials: false
 
-
+}));
 var token = '';
 var ticket = ''
 var appId = process.env.WECHATAPI_APP_ID || ''
@@ -90,8 +97,8 @@ server.get('/echo/:name', function (req, res, next) {
     return next();
 });
 server.get('/sign/:url', function (req, res, next) {
-    var url=req.params.url;
-    console.log('To sign this url:'+url);
+    var url=decodeURIComponent(req.params.url);
+    console.log('To sign this url: '+url);
     var result=generateSignature(url);
     res.send(result);
     return next();

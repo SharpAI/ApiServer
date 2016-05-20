@@ -2,6 +2,7 @@
   "name": "signitureserver",
   "version": "1.0.0",
   "main": "main.js",
+  "start": "node main.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/npm/init-package-json.git"
@@ -12,7 +13,8 @@
   "dependencies": {
     "restify":"^4.0.3",
     "request":"^2.72.0",
-    "jssha":"^2.1.0"
+    "jssha":"^2.1.0",
+    "newrelic":"^1.27.2"
   },
   "devDependencies": {
   },
