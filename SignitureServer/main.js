@@ -69,8 +69,8 @@ var generateSignature = function (url) {
 var updateTicket = function (access_token) {
     request('https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token='+ access_token +'&type=jsapi', function(error,result,body){
         if(!error) {
-            var resp = body
-            console.log('Result is '+JSON.stringify(body));
+            var resp = JSON.parse(body)
+            console.log('Result is '+JSON.stringify(resp));
             if(resp && resp.ticket){
                 ticket = resp.ticket;
             }
@@ -82,7 +82,9 @@ var updateTokenAndTicket = function(){
     request(requestUrl, function(error,result,body) {
         if (!error){
             console.log('return access_token:  ' + JSON.stringify(body));
-            token = body.access_token;
+            var json = JSON.parse(body);
+            token = json.access_token;
+            console.log(token)
             updateTicket(token);
         }
     });
