@@ -1,5 +1,6 @@
 
 if Meteor.isClient
+    Session.setDefault('visitedRooms', []);
     window.socialGraphCollection = new Meteor.Collection()
     idleMessageInterval = null
     friendSocialGraphMessageInterval = null
@@ -176,9 +177,12 @@ if Meteor.isClient
         Tracker.autorun (t)->
             # 当可以在多个聊天室之间切换以后，此处需要响应是重新计算数据，由于FlowRouter不支持响应式，所以使用Session
             currentRoomId = Session.get('openedRoom')
-            if ChatRoom.findOne({_id: currentRoomId})
+            visitedRooms = Session.get('visitedRooms')
+            if ChatRoom.findOne({_id: currentRoomId}) and !~visitedRooms.indexOf(currentRoomId)
+                visitedRooms.push(currentRoomId)
+                Session.set('visitedRooms', visitedRooms)
                 # 此处的 stop 后面需要去掉以保持响应式计算，但是需要处理下，已经访问过的聊天室再次切换回去的时候，就不要再计算了
-                t.stop()
+                #t.stop()
                 Meteor.call 'getPostInfo',ChatRoom.findOne({_id: currentRoomId}).name,(err,data)->
                     if !err and data
                         ###

@@ -1,6 +1,5 @@
 Meteor.startup ->
 	# 这个方式可以后面整合到某个lib文件下，避免多个地方重复编写
-	###
 	sendPersonalMessageWithURLToRoom = (message, url, title, description, mainImageUrl, roomName)->
 	    url = if url? then url else 'http://www.tiegushi.com/'
 	    alink = document.createElement 'a'
@@ -19,7 +18,7 @@ Meteor.startup ->
 	        },
 	        urls : [ 
 	            {
-	                "url" : '/channel/'+roomName, # 这边需要设置下 url 的格式和打开方式，　现在默认是　新窗口打开，聊天室的切换可以在统一页面切换
+	                "url" : ''+roomName, # 这边需要设置下 url 的格式和打开方式，　现在默认是　新窗口打开，聊天室的切换可以在统一页面切换
 	                "meta" : {
 	                    "ogSiteName" : "故事贴",
 	                    "ogTitle" : if title? then title else "", #千老这个称谓的来历
@@ -32,10 +31,12 @@ Meteor.startup ->
 	                    "contentType" : "text/html; charset=utf-8"
 	                },
 	                "parsedUrl" : {
-	                    "host" : alink.host, #www.tiegushi.com
+	                    #"host" : alink.host, #www.tiegushi.com
+	                    "host" : window.location.hostname, #www.tiegushi.com
 	                    "pathname" : alink.pathname, #/posts/NYtJcHfCKSE6GWhmj
 	                    "protocol" : alink.protocol #http:
-	                }
+	                },
+	                "roomAlert": true
 	            }
 	        ]            
 	    } 
@@ -47,7 +48,6 @@ Meteor.startup ->
                 		Meteor.call 'getPostInfo',roomName,(err,data)->
                     			if !err and data
                         				sendPersonalMessageWithURLToRoom('这个聊天室有新消息啦!\r\n点击链接去看看:', 'http://cdn.tiegushi.com/posts/'+data._id, data.title, data.addonTitle, data.mainImage, roomName)
-	###
 
 	Tracker.autorun ->
 
@@ -61,11 +61,11 @@ Meteor.startup ->
 			if FlowRouter.getRouteName() in ['channel', 'group', 'direct']
 				openedRoomId = Session.get 'openedRoom'
 
-		for subscription in subscriptions.fetch()			
+		for subscription in subscriptions.fetch()
 			if subscription.alert or subscription.unread > 0
 				# 由于此功能测试下来暂时还有不少问题，暂时注释掉
-				#if subscription.name isnt FlowRouter.current().params.name
-				#	handleMessageAlert(subscription.name)
+				if subscription.name isnt FlowRouter.current().params.name
+					handleMessageAlert(subscription.name)
 				# This logic is duplicated in /client/notifications/notification.coffee.
 				hasFocus = readMessage.isEnable()
 				subscriptionIsTheOpenedRoom = openedRoomId is subscription.rid
