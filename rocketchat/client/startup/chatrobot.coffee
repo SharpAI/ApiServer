@@ -73,7 +73,7 @@ if Meteor.isClient
     unless amplify.store('readListDisplayed')
         amplify.store('readListDisplayed',1)
     postOneViewedPost = ()->
-        if onlineUsers>1
+        if onlineUsers>1 and socialGraphCollection.find().count() > 0
             return
         if todisplayList and todisplayList.length > 0
             data=todisplayList.pop()[1]
@@ -84,7 +84,7 @@ if Meteor.isClient
             fetchReadListFromServer()
     idleMessage = ()->
         console.log('idleMessage')
-        if onlineUsers <= 1
+        if onlineUsers <= 1 or socialGraphCollection.find().count() is 0
             postOneViewedPost()
     startIdleMessage = ()->
         console.log('startIdleMessage')
@@ -143,10 +143,14 @@ if Meteor.isClient
             stopFriendSocialGraphMessage()
             startFriendSocialGraphMessage()
     processFriendSocialGraph = (socialGraph)->
+        # 如果在线用户没有对应的故事贴关联信息，这边会报 TypeError: Cannot read property 'taName' of undefined
+        if !socialGraph?
+            return
         currentRoomPostId = FlowRouter.current().params.name
         console.log(socialGraph)
         taName = socialGraph.taName
         if socialGraph.mutualPosts? and socialGraph.mutualPosts.length > 0
+            stopIdleMessage()
             socialGraph.mutualPosts.forEach (key, num)->
                 # add mutual post into collection
                 #console.log(key)
@@ -161,6 +165,7 @@ if Meteor.isClient
                         image:key.mainImage
                     })
         if socialGraph.taRead? and socialGraph.taRead.length > 0
+            stopIdleMessage()
             socialGraph.taRead.forEach (key,num)->
                 #console.log(key)
                 unless socialGraphCollection.findOne({postId:key.postId})
@@ -221,7 +226,7 @@ if Meteor.isClient
                 onlineUsers = (_.size(RoomManager.onlineUsers.get())-1)
                 console.log('Online member: '+onlineUsers)
                 if onlineUsers > 1
-                    stopIdleMessage()
+                    #stopIdleMessage()
                     restartFriendSocialGraphMessage()
                     console.log('need get the user')
                     userArray=_.filter(RoomManager.onlineUsers.get(), (obj, key)->
