@@ -59,6 +59,7 @@
 <template name="main">
 	{{#if subsReady}}
 		{{#unless logged}}
+		<!--
 			<div class="connection-status">
 				{{> status}}
 			</div>
@@ -70,6 +71,8 @@
 				{{> loginLayout center="loginForm"}}
 			{{/if}}
 			<script>{{{CustomScriptLoggedOut}}}</script>
+		-->
+			{{> pageLoading}}
 		{{else}}
 			{{#unless hasUsername}}
 				{{> username}}
