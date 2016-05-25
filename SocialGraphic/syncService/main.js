@@ -40,6 +40,19 @@ client.on('connect' ,function () {
         console.log(topic+': '+message.toString());
         var json = JSON.parse(message)
         if(topic === 'postView'){
+            if (!json.userId || !json.postId){
+                return
+            }
+            if (json.postId.indexOf('?')>0){
+                json.postId = json.postId.split('?')[0];
+            }
+            if (!json.createdAt){
+                json.createdAt = new Date();
+            }
+            console.log('To save postview: '+JSON.stringify(json));
+            save_viewer_node(json,function(){
+            })
+            /*
             db.collection('posts').findOne({_id:json.postId},{fields:{
                 browse:true,
                 title:true,
@@ -73,7 +86,8 @@ client.on('connect' ,function () {
                         })
                     })
                 });
-            });
+
+            });*/
         } else if(topic === 'newUser'){
             db.collection('users').findOne({_id:json.userId},{fields:{
                 username: true,
