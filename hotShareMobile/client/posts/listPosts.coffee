@@ -29,7 +29,7 @@ if Meteor.isClient
     myPosts:()->
       myFollowedPosts = FollowPosts.find({followby:Meteor.userId(),publish:{"$ne":false}}, {sort: {createdAt: -1}})
       Session.setPersistent('persistentMyFollowedPosts',myFollowedPosts.fetch())
-      return Session.get('persistentMyFollowedPosts')
+      return myFollowedPosts #Session.get('persistentMyFollowedPosts')
     moreResults:->
       !(FollowPosts.find().count() < Session.get("followpostsitemsLimit"))
     loading:->

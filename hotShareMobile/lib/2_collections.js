@@ -1612,6 +1612,14 @@ if(Meteor.isServer){
         return [];
     }
   });
+  
+  Meteor.publish('SaveDraftsByLogin', function() {
+    if(!this.userId)
+      return [];
+      
+    return SavedDrafts.find({owner: this.userId}, {sort: {createdAt: -1}});
+  });
+  
 
   FavouritePosts.allow({
     insert: function(userId, doc) {
@@ -2408,5 +2416,10 @@ if(Meteor.isClient){
             }
         });
     }
-  });    
+  });   
+  
+  Tracker.autorun(function() {
+    if (Meteor.userId())
+        Meteor.subscribe('SaveDraftsByLogin');
+  }); 
 }

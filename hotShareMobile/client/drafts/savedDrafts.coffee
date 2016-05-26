@@ -3,8 +3,7 @@ if Meteor.isClient
     #Meteor.subscribe("saveddrafts")
   Template.allDrafts.helpers
     items:()->
-      for i in [0..SavedDrafts.find().count()-1]
-        SavedDrafts.find({},{sort: {createdAt: -1}}).fetch()[i]
+      SavedDrafts.find({owner: Meteor.userId()},{sort: {createdAt: -1}})
     getmainImage:()->
       mImg = this.mainImage
       if (mImg.indexOf('file:///') >= 0)

@@ -47,14 +47,14 @@
       </div>
       -->
     <div class="draft">
-      {{#if compareDraftsCount 0}}
+      {{#if gtZero draftsCount}}
         <div class="draftLeft">{{draftsCount}}{{_ "draft"}}</div>
       {{/if}}
-      {{#if compareDraftsCount 2}}
+      {{#if gtValue draftsCount 2}}
         <div class="draftRight">{{_ "checkAll"}}></div>
       {{/if}}
     </div>
-    {{#if compareDraftsCount 0}}
+    {{#if gtZero draftsCount}}
     <div class="draftImages">
         <ul>
             {{#each items}}
@@ -71,14 +71,14 @@
     </div>
     {{/if}}
     <div class="post">
-      {{#if comparePostsCount 0}}
+      {{#if gtZero postsCount}}
         <div class="postLeft">{{postsCount}}{{_ "numOfStory"}}</div>
       {{/if}}
-      {{#if comparePostsCount 0}}
+      {{#if gtZero postsCount}}
         <div class="postRight">{{_ "checkAll"}}></div>
       {{/if}}
     </div>
-    {{#if comparePostsCount 0}}
+    {{#if gtZero postsCount}}
     <div class="postImages">
         <ul>
                 {{#each postItems}}

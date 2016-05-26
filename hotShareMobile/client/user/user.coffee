@@ -86,30 +86,38 @@ if Meteor.isClient
       else
         0
     draftsCount:->
-      mySavedDraftsCount = Session.get('mySavedDraftsCount')
-      if mySavedDraftsCount
-        mySavedDraftsCount
-      else
-        0
+      return SavedDrafts.find({owner: Meteor.userId()}).count()
+      # mySavedDraftsCount = Session.get('mySavedDraftsCount')
+      # if mySavedDraftsCount
+      #   mySavedDraftsCount
+      # else
+      #   0
     compareDraftsCount:(value)->
       if (Session.get('mySavedDraftsCount')> value)
         true
       else
         false
     items:()->
-      mySavedDrafts = SavedDrafts.find({},{sort: {createdAt: -1},limit:2})
+      mySavedDrafts = SavedDrafts.find({owner: Meteor.userId()},{sort: {createdAt: -1},limit:2})
       if mySavedDrafts.count() > 0
         Meteor.defer ()->
           Session.setPersistent('persistentMySavedDrafts',mySavedDrafts.fetch())
         return mySavedDrafts
       else
         Session.get('persistentMySavedDrafts')
+        
+      return mySavedDrafts
+    gtValue: (value1, value2)->
+      return value1 > value2
+    gtZero: (value)->
+      return value > 0
     postsCount:->
-      myPostsCount = Session.get('myPostsCount')
-      if myPostsCount
-        myPostsCount
-      else
-        0
+      return  Posts.find({owner: Meteor.userId(), publish: {$ne: false}}).count()
+      # myPostsCount = Session.get('myPostsCount')
+      # if myPostsCount
+      #   myPostsCount
+      # else
+      #   0
     comparePostsCount:(value)->
       if (Session.get('myPostsCount') > value)
         true
