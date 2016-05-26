@@ -10,6 +10,7 @@ if Meteor.isClient
     mystate = null
     onlineUsers = 0
     todisplayList=[]
+    todisplayListIds = []
     socialGraphMessageList=[]
     needToFethReadlist=false
     sendPersonalMessageToRoom = (message)->
@@ -75,11 +76,23 @@ if Meteor.isClient
     postOneViewedPost = ()->
         if onlineUsers>1 and socialGraphCollection.find().count() > 0
             return
-        if todisplayList and todisplayList.length > 0
-            data=todisplayList.pop()[1]
+
+        while !data and todisplayList and todisplayList.length > 0
+             data = todisplayList.pop()[1]
+             if !~todisplayListIds.indexOf(data.postId)
+                 todisplayListIds.push(data.postId)
+             else
+                console.log('repeat post: ', data.name)
+                data = null
+             amplify.store('readListDisplayed',amplify.store('readListDisplayed')+1)
+
+
+        #if todisplayList and todisplayList.length > 0
+        if data
+            #data=todisplayList.pop()[1]
             console.log(data)
             sendPersonalMessageWithURLToRoom('朋友们可能还在看帖子，您可以回顾一下浏览过的故事贴:','http://cdn.tiegushi.com/posts/'+data.postId, data.name, data.addonTitle, data.mainImage)
-            amplify.store('readListDisplayed',amplify.store('readListDisplayed')+1)
+            #amplify.store('readListDisplayed',amplify.store('readListDisplayed')+1)
         else if needToFethReadlist
             fetchReadListFromServer()
     idleMessage = ()->

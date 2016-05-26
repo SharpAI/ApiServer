@@ -8,8 +8,8 @@ Meteor.startup ->
 		if not RocketChat.models.Users.findOneById('group.cat')?
 			RocketChat.models.Users.create
 				_id: 'group.cat'
-				name: "Group.Cat"
-				username: 'group.cat'
+				name: "故事贴小秘"
+				username: 'GS'
 				status: "online"
 				statusDefault: "online"
 				utcOffset: 0

@@ -20,8 +20,8 @@ Meteor.startup ->
               ts: new Date(),
               u: {
                   _id: 'group.cat',
-                  name: 'Group.Cat',
-                  username: 'group.cat'
+                  name: '故事贴小秘',
+                  username: 'GS'
               }
             }
 

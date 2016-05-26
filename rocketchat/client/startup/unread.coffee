@@ -44,10 +44,10 @@ Meteor.startup ->
 	    ChatMessage.insert msg
 
 	handleMessageAlert = (roomName)->
-		if roomName?# and ChatRoom.findOne({name: roomName})
-                		Meteor.call 'getPostInfo',roomName,(err,data)->
-                    			if !err and data
-                        				sendPersonalMessageWithURLToRoom('这个聊天室有新消息啦!\r\n点击链接去看看:', 'http://cdn.tiegushi.com/posts/'+data._id, data.title, data.addonTitle, data.mainImage, roomName)
+		if roomName?
+			Meteor.call 'getPostInfo',roomName,(err,data) ->
+				if !err and data
+					sendPersonalMessageWithURLToRoom('这个聊天室有新消息啦!\r\n点击链接去看看:', 'http://cdn.tiegushi.com/posts/'+data._id, data.title, data.addonTitle, data.mainImage, roomName)
 
 	Tracker.autorun ->
 
@@ -62,10 +62,10 @@ Meteor.startup ->
 				openedRoomId = Session.get 'openedRoom'
 
 		for subscription in subscriptions.fetch()
+			if subscription.alert and subscription.unread > 0 and subscription.name isnt FlowRouter.current().params.name
+				handleMessageAlert(subscription.name)
+				
 			if subscription.alert or subscription.unread > 0
-				# 由于此功能测试下来暂时还有不少问题，暂时注释掉
-				if subscription.name isnt FlowRouter.current().params.name
-					handleMessageAlert(subscription.name)
 				# This logic is duplicated in /client/notifications/notification.coffee.
 				hasFocus = readMessage.isEnable()
 				subscriptionIsTheOpenedRoom = openedRoomId is subscription.rid
