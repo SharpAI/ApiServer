@@ -20,15 +20,22 @@
         [dialog.imageView removeFromSuperview];
         
         dialog.contentText.frame = CGRectMake(0, 45, 250, 100);
+        
+        if (text||[text isEqualToString:@""]) {
+            dialog.contentText.text = content[0];
+        }
+        else{
+            dialog.contentText.text = text;
+        }
     }
     
     if ([type isEqualToString:@"image"]) {
         
-        UIImage * image = [UIImage imageWithContentsOfFile:content[0]];
+        NSLog(@"imagePath:%@",content[0]);
+        UIImage * image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:content[0]]]];
         dialog.imageView.image = image;
+        dialog.contentText.text = text;
     }
-    
-    dialog.contentText.text = text?text:content[0];
     
 //    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 //        
@@ -49,14 +56,21 @@
         NSString *scriptCall;
         
         if (isImport) {
+            NSMutableString   *items = [[NSMutableString alloc] initWithFormat:@"'%@'",content[0]];
+          
+            for (int i = 1; i<content.count; i++) {
+                
+                [items appendFormat:@",'%@'",content[i]];
+            }
+            NSLog(@"%@",items);
             
             scriptCall  = [NSString stringWithFormat:
-                           @"var data = {type:'%@',content:['%@']};editFromShare(data);window.plugins.shareExtension.emptyData(function(count){if(count===0){return Session.set('wait_import_count',false);}Session.set('wait_import_count',true);},function(){});"
-                           ,type,content[0]];
+                           @"var data = {type:'%@',content:[%@]};editFromShare(data);window.plugins.shareExtension.emptyData(function(count){if(count===0){return Session.set('wait_import_count',false);}Session.set('wait_import_count',true);},function(){});"
+                           ,type,items];
         }
         else{
             scriptCall  = [NSString stringWithFormat:
-                           @"window.plugins.shareExtension.emptyData(function(count){PUB.toast('删除成功！');if(count===0){return Session.set('wait_import_count',false);} Session.set('wait_import_count',true);},function(){});"];
+                           @"window.plugins.shareExtension.deleteFiles(%@）;window.plugins.shareExtension.emptyData(function(count){PUB.toast('删除成功！');if(count===0){return Session.set('wait_import_count',false);} Session.set('wait_import_count',true);},function(){});",content];
         }
         
         [self.commandDelegate evalJs:scriptCall];

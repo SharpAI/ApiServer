@@ -9,4 +9,6 @@
 
 -(void)closeView:(CDVInvokedUrlCommand*)command;
 
+-(void)deleteFiles:(CDVInvokedUrlCommand*)command;
+
 @end

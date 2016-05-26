@@ -13,11 +13,17 @@
 
 {
     NSString *userId;
-    NSString *imagePath;
     NSString *entensionTitle;
     NSString *entensionURL;
     NSMutableDictionary *extensionItem;
-    
+    NSMutableArray *imagesAry;
+    NSFileManager* fileMgr;
+    NSString* filePath;
+    NSString* docsPath;
+    UIImageOrientation orientation;
+    CGSize targetSize;
+    NSInteger quality;
+    NSInteger count;
     UIBarButtonItem *saveBarButtonItem;
 }
 @property (strong, nonatomic)NSUserDefaults *mySharedDefults;
@@ -109,6 +115,7 @@
 
 }
 
+
 -(void)setCancelSaveNavigationItem
 {
     UINavigationItem *newItem = [[UINavigationItem alloc] init];
@@ -153,15 +160,33 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSArray *inputItems = self.extensionContext.inputItems;
         NSExtensionItem *item = inputItems.firstObject;//无论多少数据，实际上只有一个 NSExtensionItem 对象
+        count = item.attachments.count;
         for (NSItemProvider *provider in item.attachments) {
             //completionHandler 是异步运行的
             NSString *dataType = provider.registeredTypeIdentifiers.firstObject;//实际上一个NSItemProvider里也只有一种数据类型
-            if ([dataType isEqualToString:@"public.image"]) {
+            if ([dataType isEqualToString:@"public.png"]) {
                 [provider loadItemForTypeIdentifier:dataType options:nil completionHandler:^(UIImage *image, NSError *error){
                     //collect image...
                     
+                    [self getImagePath:image];
+                    
+                    
                 }];
-            }else if ([dataType isEqualToString:@"public.plain-text"]){
+            }else if ([dataType isEqualToString:@"public.jpeg"]){
+                [provider loadItemForTypeIdentifier:dataType options:nil completionHandler:^(UIImage *image, NSError *error){
+                    //collect image...
+                    [self getImagePath:image];
+                    
+                }];
+            }
+            else if ([dataType isEqualToString:@"public.image"]){
+                [provider loadItemForTypeIdentifier:dataType options:nil completionHandler:^(UIImage *image, NSError *error){
+                    //collect image...
+                    [self getImagePath:image];
+                    
+                }];
+            }
+           else if ([dataType isEqualToString:@"public.plain-text"]){
                 [provider loadItemForTypeIdentifier:dataType options:nil completionHandler:^(NSString *contentText, NSError *error){
                     //collect image...
                     
@@ -186,7 +211,10 @@
                     dispatch_async(dispatch_get_main_queue(), ^{
                         
                         saveBarButtonItem.enabled = true;
-                        
+                        if ([self.textView.text isEqualToString:@""]) {
+                            
+                            self.textView.text = entensionURL;
+                        }
                     });
                     
                     
@@ -196,6 +224,102 @@
         }
     });
     
+}
+                   
+-(void)getImagePath:(UIImage *)image{
+    int i;
+    NSError* err = nil;
+    if (!imagesAry) {
+        imagesAry = [NSMutableArray new];
+        fileMgr = [NSFileManager defaultManager];
+        
+        NSURL *containerURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.org.hotsharetest"];
+        //docsPath  = [NSHomeDirectory()stringByAppendingPathComponent:@"Documents/"];
+        docsPath = [[containerURL path] stringByAppendingPathComponent:@"Documents"];
+        [fileMgr createDirectoryAtPath:docsPath withIntermediateDirectories:YES attributes:nil error:nil];
+        orientation = UIImageOrientationUp;
+        targetSize = CGSizeMake(1900, 1900);
+        i = 1;
+        quality = 20;
+    }
+    do {
+        
+    
+        NSString *fileName = [NSString stringWithFormat:@"%@%03d.%@", @"cdv_photo_", i++, @"jpg"];
+        filePath =[docsPath stringByAppendingPathComponent:fileName];
+
+    } while ([fileMgr fileExistsAtPath:filePath]);
+    
+    UIImage* scaledImage = [self imageByScalingNotCroppingForSize:image toSize:targetSize];
+    NSData* data = UIImageJPEGRepresentation(scaledImage, quality/100.0f);
+    //[data writeToFile:filePath options:NSDataWritingAtomic error:nil];
+
+    NSLog(@"filePath:%@",filePath);
+    if (![data writeToFile:filePath options:NSDataWritingAtomic error:&err]) {
+        
+        NSLog(@"error:%@",[err localizedDescription]);
+        
+    } else {
+        [imagesAry addObject:[[NSURL fileURLWithPath:filePath] absoluteString]];
+    }
+    
+    if (imagesAry.count == count) {
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            saveBarButtonItem.enabled = true;
+            
+        });
+        
+        [extensionItem setObject:@"image" forKey:@"type"];
+        
+        [extensionItem setObject:imagesAry forKey:@"content"];
+
+    }
+    
+}
+
+- (UIImage*)imageByScalingNotCroppingForSize:(UIImage*)anImage toSize:(CGSize)frameSize
+{
+    UIImage* sourceImage = anImage;
+    UIImage* newImage = nil;
+    CGSize imageSize = sourceImage.size;
+    CGFloat width = imageSize.width;
+    CGFloat height = imageSize.height;
+    CGFloat targetWidth = frameSize.width;
+    CGFloat targetHeight = frameSize.height;
+    CGFloat scaleFactor = 0.0;
+    CGSize scaledSize = frameSize;
+    
+    if (CGSizeEqualToSize(imageSize, frameSize) == NO) {
+        CGFloat widthFactor = targetWidth / width;
+        CGFloat heightFactor = targetHeight / height;
+        
+        // opposite comparison to imageByScalingAndCroppingForSize in order to contain the image within the given bounds
+        if (widthFactor == 0.0) {
+            scaleFactor = heightFactor;
+        } else if (heightFactor == 0.0) {
+            scaleFactor = widthFactor;
+        } else if (widthFactor > heightFactor) {
+            scaleFactor = heightFactor; // scale to fit height
+        } else {
+            scaleFactor = widthFactor; // scale to fit width
+        }
+        scaledSize = CGSizeMake(width * scaleFactor, height * scaleFactor);
+    }
+    
+    UIGraphicsBeginImageContext(scaledSize); // this will resize
+    
+    [sourceImage drawInRect:CGRectMake(0, 0, scaledSize.width, scaledSize.height)];
+    
+    newImage = UIGraphicsGetImageFromCurrentImageContext();
+    if (newImage == nil) {
+        NSLog(@"could not scale image");
+    }
+    
+    // pop the context to get back to the default
+    UIGraphicsEndImageContext();
+    return newImage;
 }
 
 

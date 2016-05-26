@@ -907,6 +907,8 @@ if Meteor.isClient
           Session.setPersistent('persistentMySavedDrafts',null)
         SavedDrafts.remove draftId
         #Clear Drafts
+        draftImageData = Drafts.find({type:'image'}).fetch()
+        removeImagesFromCache(draftImageData)
         Drafts.remove {owner: Meteor.userId()}
         $('.addPost').addClass('animated ' + animateOutUpperEffect);
         Meteor.setTimeout ()->
@@ -945,6 +947,8 @@ if Meteor.isClient
             draftId = draftData[0]._id
             SavedDrafts.remove draftId
           #Clear Drafts
+          draftImageData = Drafts.find({type:'image'}).fetch()
+          removeImagesFromCache(draftImageData)
           Drafts.remove {owner: Meteor.userId()}
           $('.addPost').addClass('animated ' + animateOutUpperEffect);
           Meteor.setTimeout ()->
@@ -1107,6 +1111,7 @@ if Meteor.isClient
               window.plugins.toast.showShortBottom('上传失败，请稍后重试')
               return
             publishPostHandle()
+            removeImagesFromCache(draftImageData)
           )
         else
           publishPostHandle()

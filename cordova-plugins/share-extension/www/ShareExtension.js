@@ -16,6 +16,10 @@ ShareExtension.prototype.closeView = function (error,successCallback, errorCallb
     cordova.exec(successCallback, errorCallback, "ShareExtension", "closeView",[error]);
 };
 
+ShareExtension.prototype.deleteFiles = function (files,successCallback, errorCallback) {
+    cordova.exec(successCallback, errorCallback, "ShareExtension", "deleteFiles",[files]);
+};
+
 ShareExtension.install = function () {
     if (!window.plugins) {
         window.plugins = {};
