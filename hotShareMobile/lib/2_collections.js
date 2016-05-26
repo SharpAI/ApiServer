@@ -42,7 +42,12 @@ if(Meteor.isClient){
 }
 if(Meteor.isServer){
   RefNames = new Meteor.Collection("refnames");
-  PComments = new Meteor.Collection("pcomments")
+  PComments = new Meteor.Collection("pcomments");
+  // 服务器启动时查询topicId 和 '婚恋摄影家'用户Id
+  Meteor.startup(function () {
+    topicId = Topics.findOne({text: '婚恋摄影家'})._id;
+    tagFollowerId = Meteor.users.findOne({'profile.fullname':'婚恋摄影家'})._id;
+  });
 }
 
 if(Meteor.isServer){
@@ -404,6 +409,85 @@ if(Meteor.isServer){
             catch(error){}
         });
     };
+    var topicPostsInsertHookDeferHandle = function(userId, doc, topicId, followerId){
+      Meteor.defer(function(){
+        try{
+          console.log('------------调用了为文章添加标题后的Handle---------------');
+          // var topicId = Topics.findOne({text: '婚恋摄影家'})._id;
+          // var followerId = Meteor.users.findOne({'profile.fullname':'婚恋摄影家'})._id;
+          var follows = Follower.find({followerId: followerId});
+          var post;
+          if(follows.count()>0 && doc.topicId === topicId){
+            follows.forEach(function(data){
+              if(data.userId !== doc.owner){ //判断是不是当前用户
+                post = Posts.findOne({_id: doc.postId});
+                if(data.owner === suggestPostsUserId){ 
+                  FollowPosts.insert({
+                    _id: doc.postId,
+                    postId: doc.postId,
+                    title: doc.title,
+                    addontitle: doc.addontitle,
+                    mainImage: doc.mainImage,
+                    mainImageStyle:post.mainImageStyle,
+                    heart:0,
+                    retweet:0,
+                    comment:0,
+                    browse: 0,
+                    publish: post.publish,
+                    owner:doc.owner,
+                    ownerName:doc.ownerName,
+                    ownerIcon:doc.ownerIcon,
+                    createdAt: doc.createdAt,
+                    followby: data.userId,
+                    tag: '婚恋摄影家'
+                  });
+                } else {
+                  FollowPosts.insert({
+                    postId: doc.postId,
+                    title: doc.title,
+                    addontitle: doc.addontitle,
+                    mainImage: doc.mainImage,
+                    mainImageStyle:post.mainImageStyle,
+                    heart:0,
+                    retweet:0,
+                    comment:0,
+                    browse: 0,
+                    publish: post.publish,
+                    owner:doc.owner,
+                    ownerName:doc.ownerName,
+                    ownerIcon:doc.ownerIcon,
+                    createdAt: doc.createdAt,
+                    followby: data.userId,
+                    tag: '婚恋摄影家'
+                  });
+                }
+                Feeds.insert({
+                  owner:doc.owner,
+                  ownerName:doc.ownerName,
+                  ownerIcon:doc.ownerIcon,
+                  eventType:'SelfPosted',
+                  postId:doc._id,
+                  postTitle:doc.title,
+                  mainImage:doc.mainImage,
+                  createdAt:doc.createdAt,
+                  heart:0,
+                  retweet:0,
+                  comment:0,
+                  followby: data.userId
+                });
+                pushnotification("newpost",doc,data.userId);
+                waitReadCount = Meteor.users.findOne({_id:data.userId}).profile.waitReadCount;
+                if(waitReadCount === undefined || isNaN(waitReadCount))
+                {
+                  waitReadCount = 0;
+                }
+                Meteor.users.update({_id: data.userId}, {$set: {'profile.waitReadCount': waitReadCount+1}});
+              }
+            });
+          }
+        }catch(error){}
+      });
+    }
     var postsInsertHookDeferHandle = function(userId,doc){
         Meteor.defer(function(){
             try{
@@ -818,7 +902,7 @@ if(Meteor.isServer){
             catch(error){}
         });
     };
-    var followerInsertHookDeferHook=function(userId,doc){
+    var followerInsertHookDeferHook=function(userId,doc,topicId){
         Meteor.defer(function(){
             try{
                 Meets.update({me:doc.userId,ta:doc.followerId},{$set:{isFriend:true}});
@@ -826,7 +910,51 @@ if(Meteor.isServer){
             catch(error){}
             try{
                 var posts=Posts.find({owner: doc.followerId});
-                if(posts.count()>0){
+                // var topicId = Topics.findOne({text: '婚恋摄影家'})._id;
+                var topicPosts = TopicPosts.find({topicId: topicId});
+                var post;
+                if(topicPosts.count()>0 && doc.followerName == '婚恋摄影家'){
+                  console.log("--用户关注tag--");
+                  topicPosts.forEach(function(data){
+                      post = Posts.findOne({_id: data.postId});
+                      if(doc.userId === suggestPostsUserId)
+                        {
+                            FollowPosts.insert({
+                                _id:data.postId,
+                                postId:data.postId,
+                                title:data.title,
+                                addontitle:data.addontitle,
+                                mainImage: data.mainImage,
+                                mainImageStyle: post.mainImageStyle,
+                                publish: post.publish,
+                                owner:data.owner,
+                                ownerName:data.ownerName,
+                                ownerIcon:data.ownerIcon,
+                                createdAt: data.createdAt,
+                                followby: doc.userId,
+                                tag: '婚恋摄影家'
+                            });
+                        }
+                        else
+                        {
+                            FollowPosts.insert({
+                                postId:data.postId,
+                                title:data.title,
+                                addontitle:data.addontitle,
+                                mainImage: data.mainImage,
+                                mainImageStyle:post.mainImageStyle,
+                                owner: data.owner,
+                                publish: post.publish,
+                                ownerName:data.ownerName,
+                                ownerIcon:data.ownerIcon,
+                                createdAt: data.createdAt,
+                                followby: doc.userId,
+                                tag: '婚恋摄影家'
+                            });
+                        }
+                    });
+                }
+                else if(posts.count()>0){
                     posts.forEach(function(data){
                         if(doc.userId === suggestPostsUserId)
                         {
@@ -874,7 +1002,11 @@ if(Meteor.isServer){
             }
             catch(error){}
             try{
-                FollowPosts.remove({owner:doc.followerId,followby:userId});
+                if(doc.followerName === '婚恋摄影家'){
+                  FollowPosts.remove({tag: '婚恋摄影家', followby: userId});
+                } else {
+                  FollowPosts.remove({owner:doc.followerId,followby:userId});
+                }
             }
             catch(error){}
         });
@@ -1733,6 +1865,7 @@ if(Meteor.isServer){
       {
         Meteor.defer(function(){
             try{
+              topicPostsInsertHookDeferHandle(doc.owner, doc, topicId, tagFollowerId);
               Topics.update({_id: doc.topicId},{$inc: {posts: 1}});
             }
             catch(error){}
@@ -1796,7 +1929,7 @@ if(Meteor.isServer){
         return false;
       }
       if(doc.userId === userId || doc.followerId === userId){
-        followerInsertHookDeferHook(userId,doc);
+        followerInsertHookDeferHook(userId,doc, topicId);
         return true;
       }
       return false;
@@ -2224,7 +2357,7 @@ if(Meteor.isClient){
   };
   window.refreshMainDataSource = function(){
       Meteor.subscribe('waitreadcount');
-      Meteor.subscribe('shareURLs');
+      //Meteor.subscribe('shareURLs');
   };
   
   // if(Meteor.isCordova){

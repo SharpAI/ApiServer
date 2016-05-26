@@ -1,6 +1,6 @@
 Template.integrationsIncoming.onCreated ->
 	@record = new ReactiveVar
-		username: 'group.cat'
+		username: 'GS'
 
 
 Template.integrationsIncoming.helpers

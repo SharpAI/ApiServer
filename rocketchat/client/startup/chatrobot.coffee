@@ -1,5 +1,6 @@
 
 if Meteor.isClient
+    Session.setDefault('visitedRooms', []);
     window.socialGraphCollection = new Meteor.Collection()
     idleMessageInterval = null
     friendSocialGraphMessageInterval = null
@@ -9,14 +10,19 @@ if Meteor.isClient
     mystate = null
     onlineUsers = 0
     todisplayList=[]
+    todisplayListIds = []
     socialGraphMessageList=[]
     needToFethReadlist=false
     sendPersonalMessageToRoom = (message)->
-        if ChatRoom.findOne()
+        # 当可以在多个聊天室之间切换以后，ChatRoom　里面会包含所有访问过的聊天室信息
+        #if ChatRoom.findOne()
+        openedRoomId = Session.get('openedRoom')
+        if ChatRoom.findOne({_id: openedRoomId})
             ChatMessage.insert {
                 t: 'bot'
                 msg: message
-                rid: ChatRoom.findOne()._id
+                #rid: ChatRoom.findOne()._id
+                rid: openedRoomId
                 ts: new Date()
                 u: {
                     _id: '故事贴小秘'
@@ -33,7 +39,8 @@ if Meteor.isClient
         msg = {
             t: 'bot'
             msg: if message? then message else ''
-            rid: ChatRoom.findOne()._id
+            #rid: ChatRoom.findOne()._id
+            rid: Session.get('openedRoom')
             ts: new Date()
             u: {
                 _id: 'group.cat'
@@ -67,18 +74,30 @@ if Meteor.isClient
     unless amplify.store('readListDisplayed')
         amplify.store('readListDisplayed',1)
     postOneViewedPost = ()->
-        if onlineUsers>1
+        if onlineUsers>1 and socialGraphCollection.find().count() > 0
             return
-        if todisplayList and todisplayList.length > 0
-            data=todisplayList.pop()[1]
+
+        while !data and todisplayList and todisplayList.length > 0
+             data = todisplayList.pop()[1]
+             if !~todisplayListIds.indexOf(data.postId)
+                 todisplayListIds.push(data.postId)
+             else
+                console.log('repeat post: ', data.name)
+                data = null
+             amplify.store('readListDisplayed',amplify.store('readListDisplayed')+1)
+
+
+        #if todisplayList and todisplayList.length > 0
+        if data
+            #data=todisplayList.pop()[1]
             console.log(data)
             sendPersonalMessageWithURLToRoom('朋友们可能还在看帖子，您可以回顾一下浏览过的故事贴:','http://cdn.tiegushi.com/posts/'+data.postId, data.name, data.addonTitle, data.mainImage)
-            amplify.store('readListDisplayed',amplify.store('readListDisplayed')+1)
+            #amplify.store('readListDisplayed',amplify.store('readListDisplayed')+1)
         else if needToFethReadlist
             fetchReadListFromServer()
     idleMessage = ()->
         console.log('idleMessage')
-        if onlineUsers <= 1
+        if onlineUsers <= 1 or socialGraphCollection.find().count() is 0
             postOneViewedPost()
     startIdleMessage = ()->
         console.log('startIdleMessage')
@@ -137,10 +156,14 @@ if Meteor.isClient
             stopFriendSocialGraphMessage()
             startFriendSocialGraphMessage()
     processFriendSocialGraph = (socialGraph)->
+        # 如果在线用户没有对应的故事贴关联信息，这边会报 TypeError: Cannot read property 'taName' of undefined
+        if !socialGraph?
+            return
         currentRoomPostId = FlowRouter.current().params.name
         console.log(socialGraph)
         taName = socialGraph.taName
         if socialGraph.mutualPosts? and socialGraph.mutualPosts.length > 0
+            stopIdleMessage()
             socialGraph.mutualPosts.forEach (key, num)->
                 # add mutual post into collection
                 #console.log(key)
@@ -155,6 +178,7 @@ if Meteor.isClient
                         image:key.mainImage
                     })
         if socialGraph.taRead? and socialGraph.taRead.length > 0
+            stopIdleMessage()
             socialGraph.taRead.forEach (key,num)->
                 #console.log(key)
                 unless socialGraphCollection.findOne({postId:key.postId})
@@ -169,9 +193,15 @@ if Meteor.isClient
                     })
     Meteor.startup ->
         Tracker.autorun (t)->
-            if ChatRoom.findOne()
-                t.stop()
-                Meteor.call 'getPostInfo',ChatRoom.findOne().name,(err,data)->
+            # 当可以在多个聊天室之间切换以后，此处需要响应是重新计算数据，由于FlowRouter不支持响应式，所以使用Session
+            currentRoomId = Session.get('openedRoom')
+            visitedRooms = Session.get('visitedRooms')
+            if ChatRoom.findOne({_id: currentRoomId}) and !~visitedRooms.indexOf(currentRoomId)
+                visitedRooms.push(currentRoomId)
+                Session.set('visitedRooms', visitedRooms)
+                # 此处的 stop 后面需要去掉以保持响应式计算，但是需要处理下，已经访问过的聊天室再次切换回去的时候，就不要再计算了
+                #t.stop()
+                Meteor.call 'getPostInfo',ChatRoom.findOne({_id: currentRoomId}).name,(err,data)->
                     if !err and data
                         ###
                         _id:"27ZRmEeXwkoFi6BZC"
@@ -209,7 +239,7 @@ if Meteor.isClient
                 onlineUsers = (_.size(RoomManager.onlineUsers.get())-1)
                 console.log('Online member: '+onlineUsers)
                 if onlineUsers > 1
-                    stopIdleMessage()
+                    #stopIdleMessage()
                     restartFriendSocialGraphMessage()
                     console.log('need get the user')
                     userArray=_.filter(RoomManager.onlineUsers.get(), (obj, key)->

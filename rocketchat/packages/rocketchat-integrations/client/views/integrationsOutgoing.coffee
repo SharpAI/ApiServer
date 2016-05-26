@@ -1,6 +1,6 @@
 Template.integrationsOutgoing.onCreated ->
 	@record = new ReactiveVar
-		username: 'group.cat'
+		username: 'GS'
 		token: Random.id(24)
 
 

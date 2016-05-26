@@ -35,18 +35,26 @@ if Meteor.isClient
       else
         FavouritePosts.insert({postId: postId, userId: Meteor.userId(), createdAt: new Date(), updateAt: new Date()})
     setupWeichat = (url)->
-      Meteor.call 'getSignatureFromServer',url,(error,result)->
+      #Meteor.call 'getSignatureFromServer',url,(error,result)->
+      if !Session.get('sign_status_'+url)
+        Session.set('sign_status_'+url,'starting')
+      else if Session.equals('sign_status_'+url,'starting') or Session.equals('sign_status_'+url,'done')
+        return
+      HTTP.get sign_server_url+encodeURIComponent(url),(error,result)->
         #FeedAfterShare(Session.get('postContent'))
+
         if error
           if localStorage.getItem('savedsignature'+url)
             signatureResult = localStorage.getItem('savedsignature'+url)
-            # console.log('Got Post signature Result from localStorage ' + signatureResult)
+            Session.set('sign_status_'+url,'failed')
+            console.log('Got Post signature Result from localStorage ' + signatureResult)
         else
-          signatureResult = result
+          signatureResult = JSON.parse(result.content)
+          Session.set('sign_status_'+url,'done')
           # console.log('Got Post signature signatureResult1 ' + signatureResult)
-        localStorage.setItem('savedsignature'+url, result);
-        # console.log('Got Post signature ' + JSON.stringify(result))
-        # console.log('Got Post signature signatureResult ' + JSON.stringify(signatureResult) + "####" + signatureResult)
+          localStorage.setItem('savedsignature'+url, signatureResult);
+        console.log(result)
+        console.log('Got Post signature ' + JSON.stringify(signatureResult))
         wx.config {
             debug: false,
             appId: signatureResult.appid,

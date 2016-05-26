@@ -5,20 +5,36 @@
 				{{#if image}}
 					{{#if meta.ogImageUserGenerated}}
 						<div>
-							<a href="{{url}}" target="_blank">
-								<img src="{{image}}" height="200" />
-							</a>
+							{{#if roomAlert}}
+								<a class="mention-link" data-channel="{{url}}">
+									<img src="{{image}}" height="200" />
+								</a>
+							{{else}}
+								<a href="{{url}}" target="_blank">
+									<img src="{{image}}" height="200" />
+								</a>
+							{{/if}}					
 						</div>
 					{{else}}
-						<a href="{{url}}" target="_blank">
-							<img src="{{image}}" height="60" align="left" style="margin-right: 10px;"/>
-						</a>
+						{{#if roomAlert}}
+							<a class="mention-link" data-channel="{{url}}">
+								<img src="{{image}}" height="60" align="left" style="margin-right: 10px;"/>
+							</a>
+						{{else}}
+							<a href="{{url}}" target="_blank">
+								<img src="{{image}}" height="60" align="left" style="margin-right: 10px;"/>
+							</a>
+						{{/if}}
 					{{/if}}
 				{{/if}}
 				<div style="color: #AAA;">{{parsedUrl.host}}</div>
 				{{#if title}}
 					<div>
-						<a href="{{url}}" target="_blank"><strong>{{title}}</strong></a>
+						{{#if roomAlert}}
+							<a class="mention-link" data-channel="{{url}}"><strong>{{title}}</strong></a>
+						{{else}}
+							<a href="{{url}}" target="_blank"><strong>{{title}}</strong></a>
+						{{/if}}
 					</div>
 				{{/if}}
 				{{{description}}}

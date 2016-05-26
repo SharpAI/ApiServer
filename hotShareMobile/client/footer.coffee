@@ -17,11 +17,8 @@ if Meteor.isClient
       else
         0
     wait_import_count:->
-       waitImportCount = ShareURLs.find().count()
-       if waitImportCount > 0
-          return true
-       else
-          return false
+       return Session.get('wait_import_count')
+       
     focus_style:(channelName)->
       channel = Session.get "focusOn"
       if channel is channelName
@@ -67,14 +64,36 @@ if Meteor.isClient
             if waitImportCount > 0
               data = ShareURLs.find().fetch()
               console.log 'CustomDialog show!'
-              CustomDialog.show data[0]
+              #CustomDialog.show data[0]
         ,100)
         
-  @editFromShare = (url)->
+  @editFromShare = (data)->
     Meteor.defer ()->
       $('.modal-backdrop.in').remove()
     prepareToEditorMode()
     PUB.page '/add'
+    console.log 'type is ' + data.type 
+    console.log  'content'+data.content[0]
+    if data.type is 'url'
+       Meteor.setTimeout(()->
+          handleDirectLinkImport(data.content[0])
+       ,100)
+       return
+    if data.type is 'image'
+       Meteor.defer ()->
+          importImagesFromShareExtension(data.content, (cancel, result,currentCount,totalCount)->
+            if cancel
+              #$('#level2-popup-menu').modal('hide');
+              PUB.back()
+              return
+            if result
+              console.log 'Local is ' + result.smallImage
+              Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
+              if currentCount >= totalCount
+                Meteor.setTimeout(()->
+                  Template.addPost.__helpers.get('saveDraft')()
+                ,100)
+          )
     Meteor.setTimeout(()->
       handleDirectLinkImport(url)
     ,100)
@@ -133,9 +152,18 @@ if Meteor.isClient
         handleAddedLink(null)
         window.plugins.toast.showLongCenter("无法获得粘贴板数据，请手动粘贴\n浏览器内容加载后，点击地址栏右侧\"导入\"按钮");
     'click #share-import':(e)->
-        data = ShareURLs.find().fetch()
-        editFromShare(data[0].url)
-        ShareURLs.remove({ _id:data[0]._id})
+        window.plugins.shareExtension.getShareData ((data) ->
+            if data
+                editFromShare(data)
+                window.plugins.shareExtension.emptyData ((count)->
+                   if count == 0
+                      return Session.set('wait_import_count',false)
+                   Session.set('wait_import_count',true)
+                ),->
+                   console.log 'deleteShareData was failed!'
+          ), ->
+            Session.set('wait_import_count',false)
+            console.log 'getShareData was Error!'
     'click #photo-select':(e)->
       Meteor.defer ()->
         $('.modal-backdrop.in').remove()

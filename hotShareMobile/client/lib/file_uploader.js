@@ -515,5 +515,63 @@ if (Meteor.isCordova){
             storage: 'persistent'
           });
         };
+    importImagesFromShareExtension = function (results, callback) {
+        if (results === undefined) {
+            return;
+        }
+
+        var length = 0;
+        try {
+            length = results.length;
+        }
+        catch (error) {
+            length = results.length;
+        }
+        if (length === 0) {
+            callback('cancel');
+            return;
+        }
+
+        for (var i = 0; i < length; i++) {
+            var timestamp = new Date().getTime();
+            var originalFilename = results[i].replace(/^.*[\\\/]/, '');
+            var filename = Meteor.userId() + '_' + timestamp + '_' + originalFilename;
+            showDebug && console.log('File name ' + filename);
+            showDebug && console.log('Original full path ' + results[i]);
+            var params = { filename: filename, URI: results[i], smallImage: 'cdvfile://localhost/persistent/drafts/' + originalFilename };
+
+            callback(null, params, (i + 1), length);
+        }
+
+    };
+
+    removeImagesFromCache = function (draftImageData) {
+        var length = draftImageData.length;
+        if (length === 0) {
+            return;
+        }
+
+        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function () {
+            for (var i = 0; i < length; i++) {
+                var URI = draftImageData[i].URI;
+                if (URI === void 0 || draftImageData[i].imgUrl.toLowerCase().indexOf("http://") >= 0 || draftImageData[i].imgUrl.toLowerCase().indexOf("https://") >= 0) {
+                    continue;
+                }
+                window.resolveLocalFileSystemURL(URI, function (fileEntry) {
+                    fileEntry.remove(function () {
+                        console.log("Removal succeeded");
+                    }, function (e) {
+                        console.log('Error removing file: ' + e);
+                    });
+                }, function (error) {
+                    console.log("fileEntry.file Error = " + error.code);
+                });
+            }
+
+        }, function () {
+            console.log('Request file system error');
+        });
+
+    };
         uploadFile = uploadFileInCordova;
     }

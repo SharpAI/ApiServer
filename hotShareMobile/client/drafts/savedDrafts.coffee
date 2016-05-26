@@ -33,6 +33,7 @@ if Meteor.isClient
               SavedDrafts.remove saveddrafts._id
           Session.setPersistent('mySavedDraftsCount',0)
           Session.setPersistent('persistentMySavedDrafts',null)
+          window.plugins.shareExtension.deleteFiles()
           Meteor.setTimeout ()->
             PUB.back()
           ,animatePageTrasitionTimeout
