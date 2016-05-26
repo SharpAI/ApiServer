@@ -142,11 +142,13 @@ if Meteor.isServer
       if this and this.path
         path=this.path
         if path.indexOf('/posts/') is 0
+          if path.indexOf('?') > 0
+            path = path.split('?')[0]
           params=path.replace('/posts/','')
           params=params.split('/')
           if params.length > 0
-             return [subs.subscribe("publicPosts",params[0]),
-             subs.subscribe "pcomments"]
+            return [subs.subscribe("publicPosts",params[0]),
+            subs.subscribe "pcomments"]
     fastRender: true
   }
 
