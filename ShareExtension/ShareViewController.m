@@ -8,7 +8,7 @@
 
 #import "ShareViewController.h"
 #import "PromptViewController.h"
-
+#import "TFHpple.h"
 @interface ShareViewController ()
 
 {
@@ -78,7 +78,6 @@
     
 }
 
-
 -(void) viewWillAppear:(BOOL)animated
 {
     
@@ -86,13 +85,13 @@
     
     if (!self.customNavBar) {
         
-       self.customNavBar = [[UINavigationBar alloc] init];
+        self.customNavBar = [[UINavigationBar alloc] init];
         
-       [self setCancelSaveNavigationItem];
+        [self setCancelSaveNavigationItem];
         
-       [self.navigationController.navigationBar removeFromSuperview];
+        [self.navigationController.navigationBar removeFromSuperview];
         
-       [self.navigationController.view addSubview:self.customNavBar];
+        [self.navigationController.view addSubview:self.customNavBar];
         //使用Auto Layout约束，禁止将Autoresizing Mask转换为约束
         [self.customNavBar setTranslatesAutoresizingMaskIntoConstraints:NO];
         
@@ -112,7 +111,7 @@
     //self.textView.editable = NO;
     
     [self fetchItemDataAtBackground];
-
+    
 }
 
 
@@ -186,7 +185,7 @@
                     
                 }];
             }
-           else if ([dataType isEqualToString:@"public.plain-text"]){
+            else if ([dataType isEqualToString:@"public.plain-text"]){
                 [provider loadItemForTypeIdentifier:dataType options:nil completionHandler:^(NSString *contentText, NSError *error){
                     //collect image...
                     
@@ -208,14 +207,7 @@
                     
                     [extensionItem setObject:ary forKey:@"content"];
                     
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        
-                        saveBarButtonItem.enabled = true;
-                        if ([self.textView.text isEqualToString:@""]) {
-                            
-                            self.textView.text = entensionURL;
-                        }
-                    });
+                    [self parserHTML:url];
                     
                     
                 }];
@@ -225,7 +217,42 @@
     });
     
 }
-                   
+
+-(void)parserHTML:(NSURL *)url{
+    
+    
+    NSData *data = [[NSData alloc] initWithContentsOfURL:url];
+    TFHpple *xpathParser = [[TFHpple alloc] initWithHTMLData:data];
+    NSArray *elements  = [xpathParser searchWithXPathQuery:@"//title"];
+    TFHppleElement *element = [elements objectAtIndex:0];
+    NSString *content = [element content];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        if ([self.textView.text isEqualToString:@""]) {
+            
+            self.textView.text = content;
+        }
+        
+    });
+    NSArray *imagesArry  = [xpathParser searchWithXPathQuery:@"//img"];
+    
+    if (imagesArry) {
+        
+        TFHppleElement *element2 = [imagesArry objectAtIndex:0];
+        NSDictionary *elementContent = [element2 attributes];
+        NSString *imageUrl = [elementContent objectForKey:@"src"];
+        NSLog(@"imageUrl:%@",imageUrl);
+        [extensionItem setObject:imageUrl forKey:@"imageUrl"];
+    }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        saveBarButtonItem.enabled = true;
+        
+    });
+}
+
+
 -(void)getImagePath:(UIImage *)image{
     int i;
     NSError* err = nil;
@@ -244,16 +271,16 @@
     }
     do {
         
-    
+        
         NSString *fileName = [NSString stringWithFormat:@"%@%03d.%@", @"cdv_photo_", i++, @"jpg"];
         filePath =[docsPath stringByAppendingPathComponent:fileName];
-
+        
     } while ([fileMgr fileExistsAtPath:filePath]);
     
     UIImage* scaledImage = [self imageByScalingNotCroppingForSize:image toSize:targetSize];
     NSData* data = UIImageJPEGRepresentation(scaledImage, quality/100.0f);
     //[data writeToFile:filePath options:NSDataWritingAtomic error:nil];
-
+    
     NSLog(@"filePath:%@",filePath);
     if (![data writeToFile:filePath options:NSDataWritingAtomic error:&err]) {
         
@@ -274,7 +301,7 @@
         [extensionItem setObject:@"image" forKey:@"type"];
         
         [extensionItem setObject:imagesAry forKey:@"content"];
-
+        
     }
     
 }
