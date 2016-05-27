@@ -4,18 +4,10 @@ Meteor.startup ()->
   Neo4j = new Neo4jDb url
 
   mongourl = process.env.MONGO_GUSHITIE_URL || 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare'
-  connect = MongoInternals.NpmModule.MongoClient.connect
-  connect = Meteor.wrapAsync(connect)
 
-  db = connect(mongourl);
-  GushitiePosts = db.collection('posts');
-
-  GushitiePosts.aggregate = Meteor.wrapAsync(GushitiePosts.aggregate, GushitiePosts)
-  GushitiePosts.insert = Meteor.wrapAsync(GushitiePosts.insert, GushitiePosts)
-  GushitiePosts.update = Meteor.wrapAsync(GushitiePosts.update, GushitiePosts)
-  GushitiePosts.findOne = Meteor.wrapAsync(GushitiePosts.findOne, GushitiePosts)
-  GushitiePosts.find = Meteor.wrapAsync(GushitiePosts.find, GushitiePosts)
-  GushitiePosts._ensureIndex = Meteor.wrapAsync(GushitiePosts.ensureIndex, GushitiePosts)
+  GushitieDB = new MongoInternals.RemoteCollectionDriver(mongourl);
+  GushitieViewers = new Mongo.Collection("viewers", { _driver: GushitieDB });
+  GushitiePosts = new Mongo.Collection("posts", { _driver: GushitieDB });
 
   Meteor.methods
     'getMyState':(gUserID,skip,limit)->
@@ -24,10 +16,28 @@ Meteor.startup ()->
         skip = 0
       unless limit
         limit = 20
-      #console.log('This is '+gUserID)
-      result = Neo4j.query "MATCH (u:User)-[v:VIEWER]->(p:Post) WHERE u.userId=\"#{gUserID}\" RETURN v.by,p ORDER BY v.by DESC SKIP #{skip} LIMIT #{limit}"
+      console.log('This is '+gUserID)
+      #result = Neo4j.query "MATCH (u:User)-[v:VIEWER]->(p:Post) WHERE u.userId=\"#{gUserID}\" RETURN v.by,p ORDER BY v.by DESC SKIP #{skip} LIMIT #{limit}"
       #console.log result
-      return result
+      #viewers = GushitieViewers.find({userId:'eWMF3NWh6Wpc9zfnt'}, {sort: {createdAt: -1}, limit: 5,skip:0})
+      viewers = GushitieViewers.find({userId:gUserID}, {sort: {createdAt: -1}, limit: limit,skip:skip,fields:{postId:1,createdAt:1}})
+      readList = []
+      viewers.forEach((a)->
+        #console.log(a)
+        item=[a.createdAt]
+        postDetail=GushitiePosts.findOne({_id:a.postId},fields:{mainImage:1,ownerName:1,title:1,addonTitle:1,createdAt:1})
+        if postDetail
+          postDetail.postId=a.postId
+          postDetail.name=postDetail.title
+
+          delete postDetail['_id']
+          delete postDetail['title']
+
+          item.push postDetail
+          console.log postDetail
+          readList.push item
+      )
+      return readList
     'getPostInfo':(postId)->
       this.unblock()
       postinfo = GushitiePosts.findOne({_id:postId},{fields:{mainImage:1,ownerName:1,title:1,addonTitle:1,createdAt:1}})
