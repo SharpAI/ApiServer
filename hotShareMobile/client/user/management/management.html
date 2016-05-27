@@ -1,7 +1,15 @@
 <template name="accounts_management">
     <div class="dashboard page-accounts-management">
         <div class="head">
-            <div class="managementTitle">{{_ "Account"}}</div>
+            {{#if connecting}}
+            <div class="managementTitle">重新连接中...</div>
+            {{else}}
+              {{#if loging}}
+              <div class="managementTitle">帐号切换中...</div>
+              {{else}}
+              <div class="managementTitle">{{_ "Account"}}</div>
+              {{/if}}
+            {{/if}}
             <div class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
         </div>
         <div class="content">

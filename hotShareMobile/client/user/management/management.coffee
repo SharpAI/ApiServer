@@ -1,4 +1,39 @@
+is_loading = new ReactiveVar([])
+loginFn = (id)->  
+  Meteor.loginWithUserId(
+    id#slef._id
+    (err)->
+      $title.html(title)
+      if(!err)
+        window.plugins.userinfo.setUserInfo(
+          Meteor.userId()
+          ()->
+            console.log("setUserInfo was success ")
+          ()->
+            console.log("setUserInfo was Error!")
+        )
+        Router.go '/my_accounts_management'
+        Meteor.defer ()->
+          Session.setPersistent('persistentMySavedDrafts', SavedDrafts.find({},{sort: {createdAt: -1},limit:2}).fetch())
+          Session.setPersistent('persistentMyOwnPosts', Posts.find({owner: Meteor.userId(),publish:{"$ne":false}}, {sort: {createdAt: -1},limit:4}).fetch())
+          Session.setPersistent('myFollowedByCount',Counts.get('myFollowedByCount'))
+          Session.setPersistent('mySavedDraftsCount',Counts.get('mySavedDraftsCount'))
+          Session.setPersistent('myPostsCount',Counts.get('myPostsCount'))
+          Session.setPersistent('myFollowToCount',Counts.get('myFollowToCount'))
+        PUB.toast('切换帐号成功~')
+      else
+        console.log err
+        PUB.toast('切换帐号失败~')
+  )
+      
 Template.accounts_management.rendered=->
+  is_loading = new ReactiveVar([])
+  Tracker.autorun ()->
+    if Meteor.status().connected && is_loading.get().length > 0
+      loginFn is_loading.get().pop()
+      is_loading.set([])
+
+
   $('.dashboard').css 'min-height', $(window).height()
 
   userIds = []
@@ -15,6 +50,10 @@ Template.accounts_management.rendered=->
   return
 
 Template.accounts_management.helpers
+  connecting: ->
+    return is_loading.get().length > 0
+  loging: ->
+    return Meteor.loggingIn()
   accountList :->
     userIds = []
     AssociatedUsers.find({}).forEach((item)->
@@ -29,34 +68,11 @@ Template.accounts_management.helpers
 
 Template.accounts_management.events
   'click dl.my_account': ->
-    $title = $('.managementTitle')
-    title = $title.html()
-    $title.text('切换帐号中...')
-    
-    Meteor.loginWithUserId(
-      @_id
-      (err)->
-        $title.html(title)
-        if(!err)
-          window.plugins.userinfo.setUserInfo(
-            Meteor.userId()
-            ()->
-              console.log("setUserInfo was success ")
-            ()->
-              console.log("setUserInfo was Error!")
-          )
-          Router.go '/my_accounts_management'
-          Meteor.defer ()->
-            Session.setPersistent('persistentMySavedDrafts', SavedDrafts.find({},{sort: {createdAt: -1},limit:2}).fetch())
-            Session.setPersistent('persistentMyOwnPosts', Posts.find({owner: Meteor.userId(),publish:{"$ne":false}}, {sort: {createdAt: -1},limit:4}).fetch())
-            Session.setPersistent('myFollowedByCount',Counts.get('myFollowedByCount'))
-            Session.setPersistent('mySavedDraftsCount',Counts.get('mySavedDraftsCount'))
-            Session.setPersistent('myPostsCount',Counts.get('myPostsCount'))
-            Session.setPersistent('myFollowToCount',Counts.get('myFollowToCount'))
-          PUB.toast('切换帐号成功~')
-        else
-          PUB.toast('切换帐号失败~')
-    )
+    slef = this
+    unless Meteor.status().connected
+      is_loading.set([@_id])
+      return Meteor.reconnect()
+    loginFn(@_id)
   'click .add-new' :->
     Router.go '/my_accounts_management_addnew'
 

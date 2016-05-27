@@ -62,7 +62,7 @@ Meteor.startup ->
 				openedRoomId = Session.get 'openedRoom'
 
 		for subscription in subscriptions.fetch()
-			if subscription.alert and subscription.unread > 0 and subscription.name isnt FlowRouter.current().params.name
+			if window.withOtherChatRoomMessageAlert and subscription.alert and subscription.unread > 0 and subscription.name isnt FlowRouter.current().params.name
 				handleMessageAlert(subscription.name)
 				
 			if subscription.alert or subscription.unread > 0
@@ -102,9 +102,11 @@ Meteor.startup ->
 		animation: 'none'
 
 	Tracker.autorun ->
+		###
 		siteName = RocketChat.settings.get 'Site_Name'
 
 		unread = Session.get 'unread'
 		fireGlobalEvent 'unread-changed', unread
 		favico?.badge unread, bgColor: if typeof unread isnt 'number' then '#3d8a3a' else '#ac1b1b'
 		document.title = if unread == '' then 'Group Chat' else '(' + unread + ') '+ 'Group Chat'
+		###
