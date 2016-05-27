@@ -261,3 +261,6 @@ if Meteor.isClient
                 else
                     restartIdleMessage()
                     stopFriendSocialGraphMessage()
+        Tracker.autorun ()->
+            if socialGraphCollection.find({}).count() is 0
+                restartIdleMessage()
