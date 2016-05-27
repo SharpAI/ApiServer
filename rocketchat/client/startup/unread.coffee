@@ -62,8 +62,8 @@ Meteor.startup ->
 				openedRoomId = Session.get 'openedRoom'
 
 		for subscription in subscriptions.fetch()
-			#if subscription.alert and subscription.unread > 0 and subscription.name isnt FlowRouter.current().params.name
-			#	handleMessageAlert(subscription.name)
+			if window.withOtherChatRoomMessageAlert and subscription.alert and subscription.unread > 0 and subscription.name isnt FlowRouter.current().params.name
+				handleMessageAlert(subscription.name)
 				
 			if subscription.alert or subscription.unread > 0
 				# This logic is duplicated in /client/notifications/notification.coffee.

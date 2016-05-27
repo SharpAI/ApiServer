@@ -211,6 +211,23 @@ if Meteor.isClient
                         ###
                         console.log data
                         document.title = data.title + '－专属聊天室'
+
+                        # begin - 尝试解决document.title 在 ios 下不生效的bug
+                        iframe = document.createElement('iframe')
+                        iframe.setAttribute('src', '/favicon.ico')
+                        iframe.setAttribute('height', '0')
+                        iframe.setAttribute('width', '0')
+
+                        iframe.addEventListener('load', cb=() ->
+                            setTimeout(()->
+                                iframe.removeEventListener('load', cb);
+                                document.body.removeChild(iframe);                                
+                            , 0);
+                        );
+                        
+                        document.body.appendChild(iframe)
+                        # end - 尝试解决document.title 在 ios 下不生效的bug
+
                         window.trackPage(window.location.href,data.title)
                         sendPersonalMessageWithURLToRoom('欢迎来到本贴的专属聊天室，您可以点右上角转发链接到微信朋友圈，让更多的朋友加入聊天室参与匿名聊天。\r\n点击链接可以查看原文:',
                           'http://cdn.tiegushi.com/posts/'+data._id, data.title, data.addonTitle, data.mainImage)
