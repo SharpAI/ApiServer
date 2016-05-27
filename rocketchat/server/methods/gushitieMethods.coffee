@@ -20,7 +20,7 @@ Meteor.startup ()->
       #result = Neo4j.query "MATCH (u:User)-[v:VIEWER]->(p:Post) WHERE u.userId=\"#{gUserID}\" RETURN v.by,p ORDER BY v.by DESC SKIP #{skip} LIMIT #{limit}"
       #console.log result
       #viewers = GushitieViewers.find({userId:'eWMF3NWh6Wpc9zfnt'}, {sort: {createdAt: -1}, limit: 5,skip:0})
-      viewers = GushitieViewers.find({userId:gUserID}, {sort: {createdAt: -1}, limit: limit,skip:skip,fields:{postId:1,createdAt:1}})
+      viewers = GushitieViewers.find({userId:gUserID}, {limit: limit,skip:skip,fields:{postId:1,createdAt:1}})
       readList = []
       viewers.forEach((a)->
         #console.log(a)
