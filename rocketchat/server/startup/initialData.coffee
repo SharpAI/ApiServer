@@ -23,6 +23,16 @@ Meteor.startup ->
 				RocketChat.models.Users.setAvatarOrigin 'group.cat', 'local'
 
 			rs.pipe(ws)
+		else
+			gs = RocketChat.models.Users.findOneById('group.cat')
+			if gs? and gs.username isnt 'GS' and gs.name isnt '故事贴小秘'
+				Meteor.users.update(gs._id, {$set: {username: 'GS', name: '故事贴小秘'}});
+			else if gs? and gs.username isnt 'GS'
+				Meteor.users.update(gs._id, {$set: {username: 'GS'}});
+			else if gs? and gs.name isnt '故事贴小秘'
+				Meteor.users.update(gs._id, {$set: {name: '故事贴小秘'}});
+
+
 
 
 		if process.env.ADMIN_PASS?
