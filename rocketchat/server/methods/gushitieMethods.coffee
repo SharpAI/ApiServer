@@ -25,7 +25,7 @@ Meteor.startup ()->
       viewers.forEach((a)->
         #console.log(a)
         item=[a.createdAt]
-        postDetail=GushitiePosts.findOne({_id:a.postId},fields:{mainImage:1,ownerName:1,title:1,addonTitle:1,createdAt:1})
+        postDetail=GushitiePosts.findOne({_id:a.postId},fields:{mainImage:1,ownerName:1,title:1,addontitle:1,createdAt:1})
         if postDetail
           postDetail.postId=a.postId
           postDetail.name=postDetail.title
@@ -40,7 +40,7 @@ Meteor.startup ()->
       return readList
     'getPostInfo':(postId)->
       this.unblock()
-      postinfo = GushitiePosts.findOne({_id:postId},{fields:{mainImage:1,ownerName:1,title:1,addonTitle:1,createdAt:1}})
+      postinfo = GushitiePosts.findOne({_id:postId},{fields:{mainImage:1,ownerName:1,title:1,addontitle:1,createdAt:1}})
       return postinfo
     'getMeetTimes': (fromUserId, toUserId)->
       this.unblock()

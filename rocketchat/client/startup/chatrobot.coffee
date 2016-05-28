@@ -88,7 +88,7 @@ if Meteor.isClient
             console.log(data)
 
             Session.set('showReadList',Session.get('showReadList')+1)
-            sendPersonalMessageWithURLToRoom('朋友们可能还在看帖子，您可以回顾一下浏览过的故事贴('+Session.get('showReadList')+'/'+Session.get('gotReadList')+'):','http://cdn.tiegushi.com/posts/'+data.postId, data.name, data.addonTitle, data.mainImage)
+            sendPersonalMessageWithURLToRoom('朋友们可能还在看帖子，您可以回顾一下浏览过的故事贴('+Session.get('showReadList')+'/'+Session.get('gotReadList')+'):','http://cdn.tiegushi.com/posts/'+data.postId, data.name, data.addontitle, data.mainImage)
             #amplify.store('readListDisplayed',amplify.store('readListDisplayed')+1)
         else if needToFethReadlist
             fetchReadListFromServer()
@@ -221,7 +221,7 @@ if Meteor.isClient
 
                         window.trackPage(window.location.href,data.title)
                         sendPersonalMessageWithURLToRoom('欢迎来到本贴的专属聊天室，您可以点右上角转发链接到微信朋友圈，让更多的朋友加入聊天室参与匿名聊天。\r\n点击链接可以查看原文:',
-                          'http://cdn.tiegushi.com/posts/'+data._id, data.title, data.addonTitle, data.mainImage)
+                          'http://cdn.tiegushi.com/posts/'+data._id, data.title, data.addontitle, data.mainImage)
         Tracker.autorun (t)->
             if Meteor.user() and amplify.store('hotshareUserID')
                 t.stop()
