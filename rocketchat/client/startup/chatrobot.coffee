@@ -1,12 +1,10 @@
 
 if Meteor.isClient
     Session.setDefault('visitedRooms', []);
-    window.socialGraphCollection = new Meteor.Collection()
+    window.socialGraphCollection = new Meteor.Collection(null)
     idleMessageInterval = null
-    friendSocialGraphMessageInterval = null
     timeIn = Date.now()
-    friendSocialGraphMessageIntervalSec = 15000
-    idleMessageIntervalSec = 30000
+    idleMessageIntervalSec = 20000
     mystate = null
     onlineUsers = 0
     todisplayList=[]
@@ -74,9 +72,6 @@ if Meteor.isClient
     unless amplify.store('readListDisplayed')
         amplify.store('readListDisplayed',1)
     postOneViewedPost = ()->
-        if onlineUsers>1 and socialGraphCollection.find().count() > 0
-            return
-
         while !data and todisplayList and todisplayList.length > 0
              data = todisplayList.pop()[1]
              if !~todisplayListIds.indexOf(data.postId)
@@ -99,8 +94,10 @@ if Meteor.isClient
             fetchReadListFromServer()
     idleMessage = ()->
         console.log('idleMessage')
-        if onlineUsers <= 1 or socialGraphCollection.find().count() is 0
-            postOneViewedPost()
+        #if onlineUsers <= 1 or socialGraphCollection.find().count() is 0
+        if friendSocialGraphMessage() is true
+            return
+        postOneViewedPost()
     startIdleMessage = ()->
         console.log('startIdleMessage')
         if !idleMessageInterval
@@ -135,34 +132,20 @@ if Meteor.isClient
         console.log('friendSocialGraphMessage')
         doc=socialGraphCollection.findOne({})
         unless doc
-            return
+            return false
         socialGraphCollection.remove({_id:doc._id})
 
         Session.set('ViewedSocialMessageTotal',Session.get('ViewedSocialMessageTotal')+1)
         if doc.type is 'taRead'
             sendPersonalMessageWithURLToRoom(doc.taName+' 读过这篇故事，您还没读过 ('+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+')',doc.link, doc.name, doc.desc, doc.image)
-            #postOneViewedPost()
+            return true
         else if doc.type is 'mutualRead'
             #现在TA也在线不准，修好了之后再说吧
             #sendPersonalMessageWithURLToRoom(doc.taName+' 和 您 都读过这篇故事，是不是很有缘分，TA也在线哦（输入@可以看到在线好友'+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+'）',doc.link, doc.name, doc.desc, doc.image)
             sendPersonalMessageWithURLToRoom(doc.taName+' 和 您 都读过这篇故事，是不是很有缘分（'+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+'）',doc.link, doc.name, doc.desc, doc.image)
+            return true
+        return false
 
-    startFriendSocialGraphMessage = ()->
-        console.log('startfriendSocialGraphMessage')
-        if !friendSocialGraphMessageInterval
-            friendSocialGraphMessageInterval = setInterval(friendSocialGraphMessage,friendSocialGraphMessageIntervalSec)
-    stopFriendSocialGraphMessage = ()->
-        console.log('stopfriendSocialGraphMessage')
-        if friendSocialGraphMessageInterval
-            clearInterval(friendSocialGraphMessageInterval)
-            friendSocialGraphMessageInterval = null
-    restartFriendSocialGraphMessage = ()->
-        console.log('restartfriendSocialGraphMessage')
-        if !friendSocialGraphMessageInterval
-            friendSocialGraphMessageInterval = setInterval(friendSocialGraphMessage,friendSocialGraphMessageIntervalSec)
-        else
-            stopFriendSocialGraphMessage()
-            startFriendSocialGraphMessage()
     processFriendSocialGraph = (socialGraph)->
         # 如果在线用户没有对应的故事贴关联信息，这边会报 TypeError: Cannot read property 'taName' of undefined
         if !socialGraph?
@@ -171,7 +154,6 @@ if Meteor.isClient
         console.log(socialGraph)
         taName = socialGraph.taName
         if socialGraph.mutualPosts? and socialGraph.mutualPosts.length > 0
-            stopIdleMessage()
             socialGraph.mutualPosts.forEach (key, num)->
                 # add mutual post into collection
                 #console.log(key)
@@ -186,7 +168,6 @@ if Meteor.isClient
                         image:key.mainImage
                     })
         if socialGraph.taRead? and socialGraph.taRead.length > 0
-            stopIdleMessage()
             socialGraph.taRead.forEach (key,num)->
                 #console.log(key)
                 unless socialGraphCollection.findOne({postId:key.postId})
@@ -247,8 +228,6 @@ if Meteor.isClient
                 fetchReadListFromServer()
                 console.log('HotShare ID is '+amplify.store('hotshareUserID'))
         Tracker.autorun ()->
-            if onlineUsers > 1
-                return
             if MsgTyping.selfTyping.get()
                 console.log('Need stop interval since typing')
                 stopIdleMessage()
@@ -256,8 +235,6 @@ if Meteor.isClient
                 console.log('not typing now')
                 restartIdleMessage()
         Tracker.autorun ()->
-            if onlineUsers > 1
-                return
             if ChatMessage.findOne({t:{$ne:'bot'}},{sort:{ts:-1}},{fields:{ts:1}})
                 console.log('New message arrived')
                 restartIdleMessage()
@@ -266,8 +243,6 @@ if Meteor.isClient
                 onlineUsers = (_.size(RoomManager.onlineUsers.get())-1)
                 console.log('Online member: '+onlineUsers)
                 if onlineUsers > 1
-                    #stopIdleMessage()
-                    restartFriendSocialGraphMessage()
                     console.log('need get the user')
                     userArray=_.filter(RoomManager.onlineUsers.get(), (obj, key)->
                         unless obj._id
@@ -281,13 +256,6 @@ if Meteor.isClient
                         Session.set('user_record_'+obj._id,true)
                         Meteor.call 'calcRelationship',obj._id,(err,result)->
                             processFriendSocialGraph(result)
-                            setTimeout friendSocialGraphMessage,2000
-                        #sendPersonalMessageToRoom('您的朋友 '+result.taName+' 正在聊天，你们初次相逢，他推荐您看这个帖子：')
+                            #sendPersonalMessageToRoom('您的朋友 '+result.taName+' 正在聊天，你们初次相逢，他推荐您看这个帖子：')
                         return true
                     )
-                else
-                    restartIdleMessage()
-                    stopFriendSocialGraphMessage()
-        Tracker.autorun ()->
-            if socialGraphCollection.find({}).count() is 0
-                restartIdleMessage()
