@@ -91,7 +91,9 @@ if Meteor.isClient
         if data
             #data=todisplayList.pop()[1]
             console.log(data)
-            sendPersonalMessageWithURLToRoom('朋友们可能还在看帖子，您可以回顾一下浏览过的故事贴:','http://cdn.tiegushi.com/posts/'+data.postId, data.name, data.addonTitle, data.mainImage)
+
+            Session.set('showReadList',Session.get('showReadList')+1)
+            sendPersonalMessageWithURLToRoom('朋友们可能还在看帖子，您可以回顾一下浏览过的故事贴('+Session.get('showReadList')+'/'+Session.get('gotReadList')+'):','http://cdn.tiegushi.com/posts/'+data.postId, data.name, data.addonTitle, data.mainImage)
             #amplify.store('readListDisplayed',amplify.store('readListDisplayed')+1)
         else if needToFethReadlist
             fetchReadListFromServer()
@@ -117,10 +119,12 @@ if Meteor.isClient
             startIdleMessage()
     fetchReadListFromServer = ()->
         needToFethReadlist=false
-        Meteor.call 'getMyState',amplify.store('hotshareUserID'),amplify.store('readListDisplayed'),amplify.store('readListDisplayed')+10,(err,list)->
+        Meteor.call 'getMyState',amplify.store('hotshareUserID'),amplify.store('readListDisplayed'),5,(err,list)->
             console.log('Got my list: '+list)
             if list and list.length > 0
                 todisplayList = list
+                Session.set('gotReadList',list.length)
+                Session.set('showReadList',0)
                 setTimeout postOneViewedPost,2000
                 needToFethReadlist=true
             else if amplify.store('readListDisplayed')>0
@@ -133,11 +137,15 @@ if Meteor.isClient
         unless doc
             return
         socialGraphCollection.remove({_id:doc._id})
+
+        Session.set('ViewedSocialMessageTotal',Session.get('ViewedSocialMessageTotal')+1)
         if doc.type is 'taRead'
-            sendPersonalMessageWithURLToRoom(doc.taName+' 读过这篇故事，您还没读过',doc.link, doc.name, doc.desc, doc.image)
+            sendPersonalMessageWithURLToRoom(doc.taName+' 读过这篇故事，您还没读过 ('+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+')',doc.link, doc.name, doc.desc, doc.image)
             #postOneViewedPost()
         else if doc.type is 'mutualRead'
-            sendPersonalMessageWithURLToRoom(doc.taName+' 和 您 都读过这篇故事，是不是很有缘分，TA也在线哦（输入@可以看到在线好友）',doc.link, doc.name, doc.desc, doc.image)
+            #现在TA也在线不准，修好了之后再说吧
+            #sendPersonalMessageWithURLToRoom(doc.taName+' 和 您 都读过这篇故事，是不是很有缘分，TA也在线哦（输入@可以看到在线好友'+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+'）',doc.link, doc.name, doc.desc, doc.image)
+            sendPersonalMessageWithURLToRoom(doc.taName+' 和 您 都读过这篇故事，是不是很有缘分（'+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+'）',doc.link, doc.name, doc.desc, doc.image)
 
     startFriendSocialGraphMessage = ()->
         console.log('startfriendSocialGraphMessage')
@@ -191,6 +199,8 @@ if Meteor.isClient
                         desc:key.addonTitle,
                         image:key.mainImage
                     })
+        Session.set('SocialMessageTotal',socialGraphCollection.find().count())
+        Session.set('ViewedSocialMessageTotal',0)
     Meteor.startup ->
         Tracker.autorun (t)->
             # 当可以在多个聊天室之间切换以后，此处需要响应是重新计算数据，由于FlowRouter不支持响应式，所以使用Session
