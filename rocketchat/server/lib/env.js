@@ -1,0 +1,1 @@
+exposeEnvVar('MESSAGE_PUSH_TIME');
