@@ -12,16 +12,26 @@
         BOOMR.init({
             beacon_url: "http://localhost:8124/beacon.gif",
             BW: {
-                user_ip: "localhost",
+                // user_ip: "localhost",
                 base_url: "http://data.tiegushi.com/",
-                cookie: "BW"
+                cookie: "BW",
+                block_beacon: true
             }
         });
     </script>
 </head>
 <body>
 
-<pre class="code prettyprint" id="results"> yield </pre>
+<!-- User's bandwidth-->
+<h6>带宽信息:</h6>
+<pre class="code prettyprint" id="bandwidth"> bandwidth </pre>
+<!-- pages Info -->
+<h6>页面加载信息:</h6>
+<pre class="code prettyprint" id="pages"> pages </pre>
+<!-- others -->
+<h6>其它:</h6>
+<pre class="code prettyprint" id="others"> others </pre>
+
 
 <script type="text/javascript">
     prettyPrint();
