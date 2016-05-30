@@ -342,8 +342,11 @@ if (Meteor.isCordova){
     var fileUploader = function (item,callback){
         console.log('uploading ' + JSON.stringify(item));
         if (Session.get('terminateUpload')) {
-            Session.set('flag',true);
-            return callback(new Error('aboutUpload'),item)
+            if (Session.get('flag')){
+                    return;
+             } 
+             Session.set('flag',true);         
+             return callback(new Error('aboutUpload'),item)
         }
         var self = this;
         if ($.isEmptyObject(item)) {
