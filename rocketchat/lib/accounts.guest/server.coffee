@@ -18,14 +18,14 @@ if Meteor.isServer
   connect = Meteor.wrapAsync(connect)
 
   db = connect(db_url)
-  GushitieUSsers = db.collection('users')
+  @GushitieUsers = db.collection('users')
 
-  GushitieUSsers.aggregate = Meteor.wrapAsync(GushitieUSsers.aggregate, GushitieUSsers)
-  GushitieUSsers.insert = Meteor.wrapAsync(GushitieUSsers.insert, GushitieUSsers)
-  GushitieUSsers.update = Meteor.wrapAsync(GushitieUSsers.update, GushitieUSsers)
-  GushitieUSsers.findOne = Meteor.wrapAsync(GushitieUSsers.findOne, GushitieUSsers)
-  GushitieUSsers._ensureIndex = Meteor.wrapAsync(GushitieUSsers.ensureIndex, GushitieUSsers)
-  
+  GushitieUsers.aggregate = Meteor.wrapAsync(GushitieUsers.aggregate, GushitieUsers)
+  GushitieUsers.insert = Meteor.wrapAsync(GushitieUsers.insert, GushitieUsers)
+  GushitieUsers.update = Meteor.wrapAsync(GushitieUsers.update, GushitieUsers)
+  GushitieUsers.findOne = Meteor.wrapAsync(GushitieUsers.findOne, GushitieUsers)
+  GushitieUsers._ensureIndex = Meteor.wrapAsync(GushitieUsers.ensureIndex, GushitieUsers)
+
   GushitieDB = new MongoInternals.RemoteCollectionDriver(db_url)
   GushitieRefnames = new Mongo.Collection("refnames", { _driver: GushitieDB })
   refNameCount = GushitieRefnames.find({}).count()
@@ -50,7 +50,7 @@ if Meteor.isServer
 
       return result
     if options.userId
-      gushitieUser = GushitieUSsers.findOne({_id:options.userId})
+      gushitieUser = GushitieUsers.findOne({_id:options.userId})
       console.log(gushitieUser)
       user = Meteor.users.findOne({'services.gushitie.id': options.userId})
       result = Accounts.updateOrCreateUserFromExternalService('gushitie', {id: options.userId, _OAuthCustom: true}, {})
