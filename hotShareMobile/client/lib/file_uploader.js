@@ -376,13 +376,17 @@ if (Meteor.isCordova){
             }
             if (status === 'uploading' && param){
                 var progressBarWidth = parseInt(100*(self.uploaded/self.total + (param.loaded / param.total)/self.total));
-                if(progressBarWidth-Session.get('progressBarWidth')){
+                if(progressBarWidth-Session.get('progressBarWidth')>=1){
                     Session.set('progressBarWidth',progressBarWidth);
                 }
                 //Session.set('progressBarWidth', parseInt(100*(self.uploaded/self.total + (param.loaded / param.total)/self.total)));
             } else if (status === 'done'){
                 self.uploaded++;
-                Session.set('progressBarWidth', parseInt(100*self.uploaded/self.total));
+                var progressBarWidth1 = parseInt(100*self.uploaded/self.total);
+                if(progressBarWidth1-Session.get('progressBarWidth')>=1){
+                    Session.set('progressBarWidth',progressBarWidth1);
+                }
+                //Session.set('progressBarWidth', parseInt(100*self.uploaded/self.total));
                 if ( item.type === 'music'){
                     item.musicInfo.playUrl = param;
                 } else if ( item.type === 'video'){
