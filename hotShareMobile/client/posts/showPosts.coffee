@@ -157,6 +157,33 @@ if Meteor.isClient
       $('.tts-stoper').hide()
       window.currentTTS.stop()
   Template.showPosts.onRendered ->
+    if !amplify.store('chatNotify')
+      amplify.store('chatNotify',1)
+    if amplify.store('chatNotify') < 6
+      amplify.store('chatNotify',amplify.store('chatNotify')+1)
+      $(".chatBtn .red_spot").show().html(1)
+    mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80')
+    mqtt_connection.on('connect',()->
+      console.log('Connected to server')
+      mqtt_connection.subscribe(Session.get('postContent')._id)
+      #mqtt_connection.publish(Session.get('postContent')._id, 'Hello u'+Session.get('postContent')._id)
+    )
+    mqtt_connection.on 'message',(topic, message)->
+      mqtt_msg = JSON.parse(message.toString())
+      console.log(message.toString())
+      if mqtt_msg.type and mqtt_msg.type is 'newmessage'
+        $('.socialContent .chatFooter').fadeIn 300
+        #$(".chatBtn").addClass('twinking')
+        #$(".chatBtn i").removeClass('fa-comment-o').addClass('fa-commenting-o')
+        #mqtt_msg_num =
+        $(".chatBtn .red_spot").show().html(parseInt($(".chatBtn .red_spot").html()) + 1)
+
+      #if mqtt_msg.type and mqtt_msg.type is 'newmember'
+      $(".chatBtn .chat-icon-img").addClass('twinkling')
+      setTimeout(() ->
+        $(".chatBtn .chat-icon-img").removeClass('twinkling')
+      , 10000);
+    
     #Calc Wechat token after post rendered.
     calcPostSignature(window.location.href.split('#')[0]);
     if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
@@ -889,6 +916,16 @@ if Meteor.isClient
         content = $('#pcommitReport').val()
         postId = Session.get("postContent")._id
         post = Session.get("postContent").pub
+
+        mqtt_msg = {"type": "postcomment", "message": " 评论了此文章", "postid": Session.get('postContent')._id}
+        mqtt_msg.message = Meteor.user().profile.fullname + mqtt_msg.message
+        mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80')
+        mqtt_connection.on('connect',()->
+          console.log('Connected to server')
+          #mqtt_connection.subscribe(Session.get('postContent')._id)
+          mqtt_connection.publish('all', JSON.stringify(mqtt_msg))
+        )
+
         if (favp = FavouritePosts.findOne({postId: postId, userId: Meteor.userId()}))
           FavouritePosts.update({_id: favp._id}, {$set: {updateAt: new Date()}})
         else

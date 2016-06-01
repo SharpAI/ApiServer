@@ -1469,6 +1469,7 @@ if(Meteor.isServer){
         var self = this;
         //publicPostsPublisherDeferHandle(self.userId,postId);
         updateMomentsDeferHandle(self,postId);
+        mqttPostViewHook(self.userId,postId);
         return Posts.find({_id: postId});
       }
   });
@@ -1819,6 +1820,9 @@ if(Meteor.isServer){
       if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
         //postsInsertHookDeferHandle(userId,doc);
         postsInsertHookDeferHandle(doc.owner,doc);
+        try{
+            mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
+        }catch(err){}        
         return true;
       }
       return false;
