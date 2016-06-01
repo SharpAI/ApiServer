@@ -186,8 +186,10 @@ if Meteor.isClient
     sendPostStatToOwner = (postId) ->
         Meteor.call 'getPostStat', postId, (err, stat) ->
             if !err and stat
-                sendPersonalMessageToRoom('您的这个故事帖已经被' + stat.browses + '人读过')
-                sendPersonalMessageToRoom('您一共创作、发表了' + stat.posts + '篇故事贴')
+                if stat.browses?
+                    sendPersonalMessageToRoom('您的这个故事帖已经被' + stat.browses + '人读过')
+                if stat.posts?
+                    sendPersonalMessageToRoom('您一共创作、发表了' + stat.posts + '篇故事贴')
 
     Meteor.startup ->
         Tracker.autorun (t)->
