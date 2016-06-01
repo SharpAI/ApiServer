@@ -40,16 +40,24 @@ Meteor.startup ()->
       return readList
     'getPostInfo':(postId)->
       this.unblock()
-      postinfo = GushitiePosts.findOne({_id:postId},{fields:{mainImage:1,ownerName:1,title:1,addontitle:1,createdAt:1}})
+      postinfo = GushitiePosts.findOne({_id:postId},{fields:{mainImage:1,owner:1,ownerName:1,title:1,addontitle:1,createdAt:1}})
       return postinfo
-    'getMeetTimes': (fromUserId, toUserId)->
+    'getPostStat': (postId)->
       this.unblock()
-      console.log '>>>> in getMeetTimes <<<<<'
-      console.log fromUserId
-      console.log toUserId
-      result = Neo4j.query "MATCH (fromUser:User)-[v:VIEWER]->(p:Post)-[v2:VIEWER]-(toUser:User) WHERE fromUser.userId=\"#{fromUserId}\" AND toUser.userId=\"#{toUserId}\"  RETURN COUNT(p)"
-      console.log result
-      return result
+
+      me=Meteor.user()
+      myGushitieID=null
+      if me and me.services and me.services.gushitie and me.services.gushitie.id
+        myGushitieID=me.services.gushitie.id
+      else if me and me.gushitie and me.gushitie.id
+        myGushitieID=me.gushitie.id
+
+      stat = {}
+      if myGushitieID?
+        stat.browses = GushitieViewers.find({postId: postId}).count()
+        stat.posts = GushitiePosts.find({owner: myGushitieID, publish: {$ne: false}}).count()
+
+      return stat
     'calcRelationship':(userId)->
       this.unblock()
       resp={}

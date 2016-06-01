@@ -182,6 +182,13 @@ if Meteor.isClient
                     })
         Session.set('SocialMessageTotal',socialGraphCollection.find().count())
         Session.set('ViewedSocialMessageTotal',0)
+
+    sendPostStatToOwner = (postId) ->
+        Meteor.call 'getPostStat', postId, (err, stat) ->
+            if !err and stat
+                sendPersonalMessageToRoom('您的这个故事帖已经被' + stat.browses + '人读过')
+                sendPersonalMessageToRoom('您一共创作、发表了' + stat.posts + '篇故事贴')
+
     Meteor.startup ->
         Tracker.autorun (t)->
             # 当可以在多个聊天室之间切换以后，此处需要响应是重新计算数据，由于FlowRouter不支持响应式，所以使用Session
@@ -222,6 +229,8 @@ if Meteor.isClient
                         window.trackPage(window.location.href,data.title)
                         sendPersonalMessageWithURLToRoom('欢迎来到本贴的专属聊天室，您可以点右上角转发链接到微信朋友圈，让更多的朋友加入聊天室参与匿名聊天。\r\n点击链接可以查看原文:',
                           'http://cdn.tiegushi.com/posts/'+data._id, data.title, data.addontitle, data.mainImage)
+                        if Meteor.user() and amplify.store('hotshareUserID') and data.owner is amplify.store('hotshareUserID')
+                            sendPostStatToOwner(data._id)
         Tracker.autorun (t)->
             if Meteor.user() and amplify.store('hotshareUserID')
                 t.stop()
