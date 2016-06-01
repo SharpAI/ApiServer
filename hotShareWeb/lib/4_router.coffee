@@ -137,6 +137,16 @@ if Meteor.isServer
       fastRender: true
     }
   ###
+  injectSignData = (req,res)->
+    try
+      console.log(req.url)
+      if req.url
+        signature=generateSignature('http://'+server_domain_name+req.url)
+        if signature
+          console.log(signature)
+          InjectData.pushData(res, "wechatsign",  signature);
+    catch error
+      return null
   Router.configure {
     waitOn: ()->
       if this and this.path
@@ -184,7 +194,12 @@ if Meteor.isServer
       })
       res.end(postHtml)
     else
+      injectSignData(req,res)
       next()
+  , {where: 'server'}
+  Router.route '/posts/:_id/:index', (req, res, next)->
+    injectSignData(req,res)
+    next()
   , {where: 'server'}
   ###
   Router.route '/posts/:_id/:_index', {

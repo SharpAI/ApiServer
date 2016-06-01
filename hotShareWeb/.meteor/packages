@@ -54,3 +54,4 @@ meteorhacks:ssr
 sanjo:jasmine
 velocity:html-reporter
 practicalmeteor:sinon
+meteorhacks:inject-data

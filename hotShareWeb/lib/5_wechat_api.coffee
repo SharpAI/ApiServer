@@ -34,115 +34,130 @@ if Meteor.isClient
         FavouritePosts.update({_id: favp._id}, {$set: {updateAt: new Date()}})
       else
         FavouritePosts.insert({postId: postId, userId: Meteor.userId(), createdAt: new Date(), updateAt: new Date()})
+    wechatSetup = (signatureResult)->
+      wx.config {
+        debug: false,
+        appId: signatureResult.appid,
+        timestamp: signatureResult.timestamp,
+        nonceStr: signatureResult.nonceStr,
+        signature: signatureResult.signature,
+        jsApiList: ['checkJsApi',
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'onMenuShareQQ',
+                    'onMenuShareWeibo',
+                    'onMenuShareQZone']
+      }
+    wechatReady = ()->
+      # Session.set('turnOnRandom',false)
+      if Session.get('focusedIndex') isnt undefined
+        description =Session.get('postContent').pub[Session.get('focusedIndex')].text.replace(/\s\s\s+/g, '');
+        if !description || description is ''
+          description = Session.get("DocumentTitle").replace('『故事贴』','');
+        else if(description.length > 100)
+          description = description.substring(0, 100)
+        timelineData = {
+          title: description,
+          desc: description,
+          link: window.location.href,
+          imgUrl: Session.get('postContent').mainImage,
+          success: () ->
+            trackEvent("Share","Section to Wechat Timeline")
+            FeedAfterShare(Session.get('postContent'))
+            addToFavouriteAfterShare(Session.get('postContent'))
+            console.log('Share success');
+          cancel: ()->
+            console.log('Share cancled');
+        }
+        chatShareData = {
+          title: Session.get("DocumentTitle"),
+          desc: description,
+          link: window.location.href,
+          imgUrl: Session.get('postContent').mainImage,
+          success: () ->
+            trackEvent("Share","Section to Wechat Chat")
+            FeedAfterShare(Session.get('postContent'))
+            addToFavouriteAfterShare(Session.get('postContent'))
+            console.log('Share success');
+          cancel: ()->
+            console.log('Share cancled');
+        }
+      else
+        patagraphLength = Session.get('postContent').pub.length
+        if  patagraphLength > 0
+          textArr = Session.get('postContent').pub
+          for i in [patagraphLength - 1..0]
+            if textArr[i].text
+              console.log(textArr[i].text)
+              descriptionFirstParagraph = textArr[i].text
+        else
+          descriptionFirstParagraph = Session.get("DocumentTitle")
+        timelineData = {
+          title: Session.get("DocumentTitle"),
+          desc: Session.get("DocumentTitle"),
+          link: window.location.href,
+          imgUrl: Session.get('postContent').mainImage,
+          success: () ->
+            trackEvent("Share","Post to Wechat Timeline")
+            FeedAfterShare(Session.get('postContent'))
+            addToFavouriteAfterShare(Session.get('postContent'))
+            console.log('Share success');
+          cancel: ()->
+            console.log('Share cancled');
+        }
+        chatShareData = {
+          title: Session.get("DocumentTitle"),
+          desc: descriptionFirstParagraph,
+          link: window.location.href,
+          imgUrl: Session.get('postContent').mainImage,
+          success: () ->
+            trackEvent("Share","Post to Wechat Chat")
+            FeedAfterShare(Session.get('postContent'))
+            addToFavouriteAfterShare(Session.get('postContent'))
+            console.log('Share success');
+          cancel: ()->
+            console.log('Share cancled');
+        }
+      wx.onMenuShareTimeline(timelineData);
+      wx.onMenuShareQQ(chatShareData);
+      wx.onMenuShareWeibo(chatShareData);
+      wx.onMenuShareAppMessage(chatShareData);
+      wx.onMenuShareQZone(chatShareData);
+
     setupWeichat = (url)->
       #Meteor.call 'getSignatureFromServer',url,(error,result)->
       if !Session.get('sign_status_'+url)
         Session.set('sign_status_'+url,'starting')
       else if Session.equals('sign_status_'+url,'starting') or Session.equals('sign_status_'+url,'done')
         return
-      HTTP.get sign_server_url+encodeURIComponent(url),(error,result)->
-        #FeedAfterShare(Session.get('postContent'))
 
-        if error
-          if localStorage.getItem('savedsignature'+url)
-            signatureResult = localStorage.getItem('savedsignature'+url)
-            Session.set('sign_status_'+url,'failed')
-            console.log('Got Post signature Result from localStorage ' + signatureResult)
-        else
-          signatureResult = JSON.parse(result.content)
-          Session.set('sign_status_'+url,'done')
-          # console.log('Got Post signature signatureResult1 ' + signatureResult)
+      InjectData.getData "wechatsign", (data)->
+        if data
+          console.log('Signature from inject-data:')
+          console.log(data)
+          signatureResult = data
           localStorage.setItem('savedsignature'+url, signatureResult);
-        console.log(result)
-        console.log('Got Post signature ' + JSON.stringify(signatureResult))
-        wx.config {
-            debug: false,
-            appId: signatureResult.appid,
-            timestamp: signatureResult.timestamp,
-            nonceStr: signatureResult.nonceStr,
-            signature: signatureResult.signature,
-            jsApiList: ['checkJsApi',
-                        'onMenuShareTimeline',
-                        'onMenuShareAppMessage',
-                        'onMenuShareQQ',
-                        'onMenuShareWeibo',
-                        'onMenuShareQZone']
-        }
-        wx.ready ()->
-          # Session.set('turnOnRandom',false)
-          if Session.get('focusedIndex') isnt undefined
-            description =Session.get('postContent').pub[Session.get('focusedIndex')].text.replace(/\s\s\s+/g, '');
-            if !description || description is ''
-              description = Session.get("DocumentTitle").replace('『故事贴』','');
-            else if(description.length > 100)
-              description = description.substring(0, 100)
-            timelineData = {
-              title: description,
-              desc: description,
-              link: window.location.href,
-              imgUrl: Session.get('postContent').mainImage,
-              success: () ->
-                trackEvent("Share","Section to Wechat Timeline")
-                FeedAfterShare(Session.get('postContent'))
-                addToFavouriteAfterShare(Session.get('postContent'))
-                console.log('Share success');
-              cancel: ()->
-                console.log('Share cancled');
-            }
-            chatShareData = {
-              title: Session.get("DocumentTitle"),
-              desc: description,
-              link: window.location.href,
-              imgUrl: Session.get('postContent').mainImage,
-              success: () ->
-                trackEvent("Share","Section to Wechat Chat")
-                FeedAfterShare(Session.get('postContent'))
-                addToFavouriteAfterShare(Session.get('postContent'))
-                console.log('Share success');
-              cancel: ()->
-                console.log('Share cancled');
-            }
-          else
-            patagraphLength = Session.get('postContent').pub.length
-            if  patagraphLength > 0
-              textArr = Session.get('postContent').pub
-              for i in [patagraphLength - 1..0]
-                if textArr[i].text
-                  console.log(textArr[i].text)
-                  descriptionFirstParagraph = textArr[i].text
+          Session.set('sign_status_'+url,'done')
+
+          wechatSetup(signatureResult)
+          wx.ready(wechatReady)
+        else
+          HTTP.get sign_server_url+encodeURIComponent(url),(error,result)->
+            #FeedAfterShare(Session.get('postContent'))
+            if error
+              if localStorage.getItem('savedsignature'+url)
+                signatureResult = localStorage.getItem('savedsignature'+url)
+                Session.set('sign_status_'+url,'failed')
+                console.log('Got Post signature Result from localStorage ' + signatureResult)
             else
-              descriptionFirstParagraph = Session.get("DocumentTitle")
-            timelineData = {
-              title: Session.get("DocumentTitle"),
-              desc: Session.get("DocumentTitle"),
-              link: window.location.href,
-              imgUrl: Session.get('postContent').mainImage,
-              success: () ->
-                trackEvent("Share","Post to Wechat Timeline")
-                FeedAfterShare(Session.get('postContent'))
-                addToFavouriteAfterShare(Session.get('postContent'))
-                console.log('Share success');
-              cancel: ()->
-                console.log('Share cancled');
-            }
-            chatShareData = {
-              title: Session.get("DocumentTitle"),
-              desc: descriptionFirstParagraph,
-              link: window.location.href,
-              imgUrl: Session.get('postContent').mainImage,
-              success: () ->
-                trackEvent("Share","Post to Wechat Chat")
-                FeedAfterShare(Session.get('postContent'))
-                addToFavouriteAfterShare(Session.get('postContent'))
-                console.log('Share success');
-              cancel: ()->
-                console.log('Share cancled');
-            }
-          wx.onMenuShareTimeline(timelineData);
-          wx.onMenuShareQQ(chatShareData);
-          wx.onMenuShareWeibo(chatShareData);
-          wx.onMenuShareAppMessage(chatShareData);
-          wx.onMenuShareQZone(chatShareData);
+              signatureResult = JSON.parse(result.content)
+              Session.set('sign_status_'+url,'done')
+              # console.log('Got Post signature signatureResult1 ' + signatureResult)
+              localStorage.setItem('savedsignature'+url, signatureResult);
+            console.log(result)
+            console.log('Got Post signature ' + JSON.stringify(signatureResult))
+            wechatSetup(signatureResult)
+            wx.ready(wechatReady)
     @calcPostSignature = (url)->
       if isWeiXinFunc()
         # Session.set('turnOnRandom',true)
@@ -152,14 +167,24 @@ if Meteor.isClient
         else
           setupWeichat(url)
 if Meteor.isServer
-  unless withWeChatSignatureServer
-    return;
   token = ''
   ticket = ''
   jsSHA = Meteor.npmRequire('jssha')
-  appId = process.env.WECHATAPI_APP_ID || ''
+  appId = process.env.WECHATAPI_APP_ID || 'wx2dbd5095a2666e8f'
   appSecret = process.env.WECHATAPI_APP_SECRET || ''
   requestUrl = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='+appId+'&secret='+appSecret
+
+  updateTicketFromSignServer = ()->
+    HTTP.get('http://sign.tiegushi.com:8080/verify',(err,resp)->
+      if err
+        token = ''
+        ticket = ''
+      else
+        if resp.data
+          json=resp.data
+          ticket = json.ticket
+          token= json.token
+    )
   `
       // 随机字符串产生函数
       var createNonceStr = function() {
@@ -178,7 +203,10 @@ if Meteor.isServer
           return shaObj.getHash('HEX');
       }
       // 获取微信签名所需的ticket
-      var generateSignature = function (url) {
+      generateSignature = function (url) {
+          if (!ticket || ticket===''){
+              return null;
+          }
           var ts = createTimeStamp();
           var nonceStr = createNonceStr();
           var signature = calcSignature(ticket, nonceStr, ts, url);
@@ -206,28 +234,23 @@ if Meteor.isServer
               }
           });
       }
-      var updateTokenAndTicket = function(){
-          HTTP.get(requestUrl, function(error,result) {
-              if (!error){
-                  console.log('return access_token:  ' + JSON.stringify(result.data));
-                  token = result.data.access_token;
-                  updateTicket(token);
-              }
-          });
-      }
-      SyncedCron.add({
-          name: 'Update WeChat token and API',
-          schedule: function(parser) {
-              // parser is a later.parse object
-              return parser.text('every 1 hour');
-          },
-          job: function() {
-              updateTokenAndTicket();
+      if (withWeChatSignatureServer) {
+          var updateTokenAndTicket = function(){
+              HTTP.get(requestUrl, function(error,result) {
+                  if (!error){
+                      console.log('return access_token:  ' + JSON.stringify(result.data));
+                      token = result.data.access_token;
+                      updateTicket(token);
+                  }
+              });
           }
-      });
-      SyncedCron.start();
+          updateTokenAndTicket();
+          setInterval(updateTokenAndTicket,60*60*1000)
+      } else {
+          updateTicketFromSignServer()
+          setInterval(updateTicketFromSignServer,30*60*1000)
+      }
   `
-  updateTokenAndTicket();
   Meteor.methods
     getSignatureFromServer: (url)->
       check(url, String);
