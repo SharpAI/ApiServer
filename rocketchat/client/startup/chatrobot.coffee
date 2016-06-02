@@ -226,10 +226,17 @@ if Meteor.isClient
         Session.set('ViewedSocialMessageTotal',0)
 
     sendPostStatToOwner = (postId) ->
-        Meteor.call 'getPostStat', postId, (err, stat) ->
+        Meteor.call 'getMyPostStat', postId, (err, stat) ->
             if !err and stat
                 if stat.browses?
-                    sendPersonalMessageToRoom('您的这个故事帖已经被' + stat.browses + '人读过')
+                    sendPersonalMessageToRoom('*您*发表的这篇故事贴已经被朋友们读过 ' + stat.browses + ' 次')
+                if stat.readers?
+                    friendMsg=''
+                    stat.readers.forEach((item,index)->
+                        friendMsg+=' @'+item
+                    )
+                    friendMsg+=' 是最新的读者'
+                    sendPersonalMessageToRoom(friendMsg)
                 if stat.posts? and stat.totalbrowses?
                     sendPersonalMessageToRoom('您一共创作、发表了' + stat.posts + '篇故事贴, 总共有' + stat.totalbrowses + '人读过您的帖子')
                 if stat.locations? and stat.locations.length > 0

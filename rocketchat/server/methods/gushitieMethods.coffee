@@ -43,25 +43,38 @@ Meteor.startup ()->
       this.unblock()
       postinfo = GushitiePosts.findOne({_id:postId},{fields:{mainImage:1,owner:1,ownerName:1,title:1,addontitle:1,createdAt:1}})
       return postinfo
-    'getPostStat': (postId)->
+    'getMyPostStat': (postId)->
       this.unblock()
 
       me=Meteor.user()
       myGushitieID=null
       if me and me.services and me.services.gushitie and me.services.gushitie.id
         myGushitieID=me.services.gushitie.id
-      else if me and me.gushitie and me.gushitie.id
+      if me and me.gushitie and me.gushitie.id
         myGushitieID=me.gushitie.id
 
+      console.log myGushitieID
       stat = {}
       if myGushitieID?
-        stat.browses = GushitieViewers.find({postId: postId}).count()
-        stat.posts = GushitiePosts.find({owner: myGushitieID, publish: {$ne: false}}).count()
-        stat.totalbrowses = 0
+        postinfo = GushitiePosts.findOne({_id:postId},{fields:{browse:1}})
+        console.log(postinfo)
+        if postinfo and postinfo.browse
+          stat.browses = postinfo.browse #GushitieViewers.find({postId: postId}).count()
+        readers=GushitieViewers.find({postId: postId},{sort:{createdBy:-1},limit:5,fields:{username:1,userId:1}}).fetch()
+        console.log(readers)
+        readers=readers.map((item,index)->
+          if item.userId and item.userId is myGushitieID
+            return
+          return item.username
+        )
+        stat.readers=readers
+        stat.posts = GushitiePosts.find({owner: myGushitieID}).count()
+        #stat.totalbrowses = 0
         stat.locations = []
         postIds = []
         readerIds = []
-        GushitiePosts.find({owner: myGushitieID, publish: {$ne: false}}).forEach((post) ->
+        ###
+        GushitiePosts.find({owner: myGushitieID}).forEach((post) ->
           postIds.push(post._id)
         )
         if postIds.length > 0
@@ -72,15 +85,12 @@ Meteor.startup ()->
 
         if readerIds.length > 0
           stat.totalbrowses = readerIds.length
-          ###
           GushitieUsersInner.find({_id: {$in: readerIds}}).forEach((user)->
               if user.profile and user.profile.location
                 if !~stat.locations.indexOf(user.profile.location) and stat.locations.length < 5
                   console.log('>>>>: ', user.profile.location)
                   stat.locations.push(user.profile.location)            
           )
-          ###
-          ###
           GushitieUsers.find({_id: {$in: readerIds}}).each((err, user)->
               if user.profile and user.profile.location
                 if !~stat.locations.indexOf(user.profile.location) and stat.locations.length < 5
