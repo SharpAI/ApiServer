@@ -86,7 +86,7 @@ if Meteor.isClient
   scrollEventCallback = ()->
 #Sets the current scroll position
     st = $(window).scrollTop()
-    if st is 0
+    if st <= 40
       showSocialBar()
       unless $('.showPosts .head').is(':visible')
         $('.showPosts .head').fadeIn 300
