@@ -14,6 +14,7 @@ cordova-plugin-device-motion@1.1.1
 cordova-plugin-dialogs@1.1.1
 cordova-plugin-file@3.0.0
 cordova-plugin-inappbrowser@file://../cordova-plugins/inappbrowser
+cordova-plugin-themeablebrowser@file://../cordova-plugins/cordova-plugin-themeablebrowser
 cordova-plugin-media@file://../cordova-plugins/media
 cordova-plugin-network-information@1.0.1
 nl.x-services.plugins.toast@2.1.1
@@ -26,7 +27,7 @@ org.zy.yuancheng.qq@file://../cordova-plugins/qq
 com.tiegushi.cordova.tts@file://../cordova-plugins/baidutts
 com.rd11.remote-controls@file://../cordova-plugins/ios-control-bar
 cordova-plugin-apprate@file://../cordova-plugins/apprate
-
 org.hotshare.shareExtension@file://../cordova-plugins/share-extension
 org.hotshare.userinfo@file://../cordova-plugins/userInfo
 org.hotshare.customDialog@file://../cordova-plugins/customDialog
+
