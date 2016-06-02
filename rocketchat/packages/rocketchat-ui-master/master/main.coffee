@@ -173,7 +173,11 @@ Template.main.events
 
 	"click .burger": ->
 		#history.back()
-		history.go(Session.get('HistoryBack'))
+		if history.length < 3
+			#window.close()
+			window.open('mobile/close')
+		else
+			history.go(Session.get('HistoryBack'))
 		#window.parent.postMessage('closechatpage', '*')
 		#console.log 'room click .burger' if window.rocketDebug
 		#chatContainer = $("#rocket-chat")

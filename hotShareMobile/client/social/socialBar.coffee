@@ -10,15 +10,21 @@ if Meteor.isClient
       if $('.contactsList .head').is(':visible')
         $('.contactsList .head').fadeOut 300
       document.body.scrollTop = 0
-    'click .chatBtn': (e)->
+    'click .chatBtn': (e, t)->
       e.stopPropagation()
       $(".chatBtn .red_spot").hide().html(0)
-      trackEvent("socialBar","GroupChat")   
+      trackEvent("socialBar","GroupChat")
+      chat_server_url = '172.16.10.34:4000';
       url = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
-      window.location.href = url
-      #window.open(url,'_blank', 'location=no')
+      #window.location.href = url
+      ref = window.open(url,'_blank', 'location=no')
+      ref.addEventListener('loadstart', (event) ->
+          if event.url.match("mobile/close")
+              ref.close()
+      )
       #Session.set("Social.LevelOne.Menu",'chatContent')
       #Session.set("SocialOnButton",'chatContent')
+      #t.chatroom.show()
     'click .contactsBtn':->
       trackEvent("socialBar","Newfrineds")
       Session.set("Social.LevelOne.Menu",'contactsList')
@@ -50,6 +56,10 @@ if Meteor.isClient
       setTimeout(triggerScroll, 500)
   Template.socialContent.rendered=->
     $('.chatBoxContent').css('min-height',$(window).height()-90)
+
+    #url = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
+    #this.chatroom = window.open(url,'_blank', 'location=no,hidden=yes')
+
   Template.socialContent.helpers
     newcount:()->
       PostFriends.find({meetOnPostId:Session.get("postContent")._id,count:1,ta:{$ne:null}},{sort: {createdAt: -1}}).count()
