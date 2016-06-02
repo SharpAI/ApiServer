@@ -8,6 +8,7 @@ Meteor.startup ()->
   GushitieDB = new MongoInternals.RemoteCollectionDriver(mongourl);
   GushitieViewers = new Mongo.Collection("viewers", { _driver: GushitieDB });
   GushitiePosts = new Mongo.Collection("posts", { _driver: GushitieDB });
+  #GushitieUsersInner = new Mongo.Collection("users", { _driver: GushitieDB, _preventAutopublish: true});
 
   Meteor.methods
     'getMyState':(gUserID,skip,limit)->
@@ -56,7 +57,36 @@ Meteor.startup ()->
       if myGushitieID?
         stat.browses = GushitieViewers.find({postId: postId}).count()
         stat.posts = GushitiePosts.find({owner: myGushitieID, publish: {$ne: false}}).count()
+        stat.totalbrowses = 0
+        stat.locations = []
+        postIds = []
+        readerIds = []
+        GushitiePosts.find({owner: myGushitieID, publish: {$ne: false}}).forEach((post) ->
+          postIds.push(post._id)
+        )
+        if postIds.length > 0
+          GushitieViewers.find({postId: {$in: postIds}}).forEach((viewer) ->
+            if !~readerIds.indexOf(viewer.userId)
+              readerIds.push(viewer.userId)
+          )
 
+        if readerIds.length > 0
+          stat.totalbrowses = readerIds.length
+          ###
+          GushitieUsersInner.find({_id: {$in: readerIds}}).forEach((user)->
+              if user.profile and user.profile.location
+                if !~stat.locations.indexOf(user.profile.location) and stat.locations.length < 5
+                  console.log('>>>>: ', user.profile.location)
+                  stat.locations.push(user.profile.location)            
+          )
+          ###
+          ###
+          GushitieUsers.find({_id: {$in: readerIds}}).each((err, user)->
+              if user.profile and user.profile.location
+                if !~stat.locations.indexOf(user.profile.location) and stat.locations.length < 5
+                  stat.locations.push(user.profile.location)
+          )
+          ###
       return stat
     'calcRelationship':(userId)->
       this.unblock()

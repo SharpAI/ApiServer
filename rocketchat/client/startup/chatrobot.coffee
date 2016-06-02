@@ -188,8 +188,10 @@ if Meteor.isClient
             if !err and stat
                 if stat.browses?
                     sendPersonalMessageToRoom('您的这个故事帖已经被' + stat.browses + '人读过')
-                if stat.posts?
-                    sendPersonalMessageToRoom('您一共创作、发表了' + stat.posts + '篇故事贴')
+                if stat.posts? and stat.totalbrowses?
+                    sendPersonalMessageToRoom('您一共创作、发表了' + stat.posts + '篇故事贴, 总共有' + stat.totalbrowses + '人读过您的帖子')
+                if stat.locations? and stat.locations.length > 0
+                    sendPersonalMessageToRoom('他们大多来自于 ' + stat.locations.jion(', '))
 
     Meteor.startup ->
         Tracker.autorun (t)->
