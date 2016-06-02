@@ -57,9 +57,15 @@
 		<div class="body" dir="auto">
 			{{{body}}}
 			{{#if hasOembed}}
-				{{#each urls}}
+				{{#each get_urls urls}}
 					{{> oembedBaseWidget}}
 				{{/each}}
+        <div style="display:none;">
+        {{#each get_other_urls urls}}
+					{{> oembedBaseWidget}}
+				{{/each}}
+        </div>
+        {{#if is_more_urls urls}}<span class="_view-more-urls" onclick="if($(this).prev().css('display') === 'none'){$(this).prev().slideDown()}else{$(this).prev().slideUp()}">查看更多>></span>{{/if}}
 			{{/if}}
 			{{#each attachments}}
 				{{> messageAttachment}}

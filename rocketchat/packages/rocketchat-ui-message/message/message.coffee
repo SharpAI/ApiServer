@@ -181,3 +181,21 @@ Template.message.onViewRendered = (context) ->
 				if templateInstance?.atBottom isnt true
 					newMessage = templateInstance?.find(".new-message")
 					newMessage?.className = "new-message"
+          
+Template.message.helpers
+  is_more_urls: (val)->
+    return val.length > 3
+  get_urls: (val)->
+    if val.length <= 3
+      return val
+    urls = []
+    for i in [0..2]
+      urls.push(val[i])
+    return urls
+  get_other_urls: (val)->
+    if val.length <= 3
+      return []
+    urls = []
+    for i in [3..val.length-1]
+      urls.push(val[i])
+    return urls

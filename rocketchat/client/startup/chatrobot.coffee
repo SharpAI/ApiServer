@@ -69,6 +69,48 @@ if Meteor.isClient
         } 
 
         ChatMessage.insert msg
+    sendPersonalMessageWithURLSToRoom = (message, urls)->
+        new_urls = []
+        _.map urls, (item)->
+            url = if item.url? then item.url else 'http://www.tiegushi.com/'
+            alink = document.createElement 'a'
+            alink.href = url
+            
+            new_urls.push {
+                "url" : url, #http://www.tiegushi.com/posts/NYtJcHfCKSE6GWhmj
+                "meta" : {
+                    "ogSiteName" : "故事贴",
+                    "ogTitle" : if item.title? then item.title else "", #千老这个称谓的来历
+                    "ogUrl" :url, #http://www.tiegushi.com/posts/NYtJcHfCKSE6GWhmj
+                    "ogImage" : if item.mainImageUrl? then item.mainImageUrl else "", #http://data.tiegushi.com/2Yfmd5PmEDsoECLvg_1459975484141_cdv_photo_001.jpg
+                    "ogDescription" : if item.description? then item.description else "", #早点一咬牙一跺脚转CS，现在幸福日子望不到头呢！…
+                    "ogType" : "article"
+                },
+                "headers" : {
+                    "contentType" : "text/html; charset=utf-8"
+                },
+                "parsedUrl" : {
+                    "host" : alink.host, #www.tiegushi.com
+                    "pathname" : alink.pathname, #/posts/NYtJcHfCKSE6GWhmj
+                    "protocol" : alink.protocol #http:
+                }
+            }
+        
+        msg = {
+            t: 'bot'
+            msg: if message? then message else ''
+            #rid: ChatRoom.findOne()._id
+            rid: Session.get('openedRoom')
+            ts: new Date()
+            u: {
+                _id: 'group.cat'
+                username: 'GS'
+                name: '故事贴小秘'
+            },
+            urls : new_urls         
+        } 
+
+        ChatMessage.insert msg
     unless amplify.store('readListDisplayed')
         amplify.store('readListDisplayed',1)
     postOneViewedPost = ()->
@@ -274,3 +316,21 @@ if Meteor.isClient
                             #sendPersonalMessageToRoom('您的朋友 '+result.taName+' 正在聊天，你们初次相逢，他推荐您看这个帖子：')
                         return true
                     )
+                    
+        # 故事贴推荐贴子的推送
+        Tracker.autorun ()->
+            
+            if Meteor.userId() and Session.get('openedRoom')
+                Meteor.call 'getFeedsByLogin', (err, res)->
+                    if err
+                        return
+                    urls = []
+                    _.map res, (item)->
+                        urls.push {
+                            url: 'http://cdn.tiegushi.com/posts/' + item.postId
+                            title: item.postTitle
+                            description: '作者：' + item.ownerName
+                            mainImageUrl: item.mainImage
+                        }
+                    if urls.length > 0
+                        sendPersonalMessageWithURLSToRoom '新故事推荐：', urls

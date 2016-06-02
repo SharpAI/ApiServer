@@ -21,7 +21,8 @@ Package.onUse(function(api) {
 		'underscore',
 		'tracker',
 		'rocketchat:lib',
-		'mkarliner:mqtt'
+		'mkarliner:mqtt',
+    'reactive-var'
 	]);
 
 	api.addFiles('message/message.html', 'client');
