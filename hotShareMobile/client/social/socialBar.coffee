@@ -14,13 +14,18 @@ if Meteor.isClient
       e.stopPropagation()
       $(".chatBtn .red_spot").hide().html(0)
       trackEvent("socialBar","GroupChat")
-      chat_server_url = '172.16.10.34:4000';
       url = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
       #window.location.href = url
-      ref = window.open(url,'_blank', 'location=no')
-      ref.addEventListener('loadstart', (event) ->
-          if event.url.match("mobile/close")
-              ref.close()
+      ref = cordova.ThemeableBrowser.open(url,'_blank',{
+          closeButton: {
+            image: 'ic_action_remove.png',
+            imagePressed: 'ic_action_remove.png',
+            align: 'right',
+            event: 'closePressed'
+          }
+        })
+      ref.addEventListener('closePressed', (event) ->
+        ref.close()
       )
       #Session.set("Social.LevelOne.Menu",'chatContent')
       #Session.set("SocialOnButton",'chatContent')
