@@ -18,9 +18,9 @@ if Meteor.isClient
       #window.location.href = url
       ref = cordova.ThemeableBrowser.open(url,'_blank',{
           closeButton: {
-            image: 'ic_action_remove.png',
-            imagePressed: 'ic_action_remove.png',
-            align: 'right',
+            image: 'ic_action_previous_item.png',
+            imagePressed: 'ic_action_previous_item.png',
+            align: 'left',
             event: 'closePressed'
           }
         })
