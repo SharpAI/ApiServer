@@ -12,6 +12,7 @@ window.trackPage=(url,title)->
     if typeof(piwik) is 'undefined'
       initPiwik(url,title)
     else
+      piwik.enableHeartBeatTimer(5)
       piwik.setCustomUrl(url)
       piwik.setReferrerUrl(url)
       piwik.setDocumentTitle(title)
@@ -26,6 +27,7 @@ initPiwik=(url,title)->
     $.getScript('http://piwik.tiegushi.com/piwik.js' ,()->
       console.log('Got piwik')
       window.piwik = Piwik.getTracker( 'http://piwik.tiegushi.com/piwik.php', 9 )
+      piwik.enableHeartBeatTimer(5)
       piwik.setCustomUrl(url)
       piwik.setReferrerUrl(url)
       piwik.setDocumentTitle(title)
