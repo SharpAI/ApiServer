@@ -38,7 +38,10 @@ Meteor.startup ()->
           console.log postDetail
           readList.push item
       )
-      return readList
+      return {
+        'end': if viewers.count() > 0 then false else true,
+        'list': readList
+      }
     'getPostInfo':(postId)->
       this.unblock()
       postinfo = GushitiePosts.findOne({_id:postId},{fields:{mainImage:1,owner:1,ownerName:1,title:1,addontitle:1,createdAt:1}})

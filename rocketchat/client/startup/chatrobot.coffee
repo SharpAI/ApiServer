@@ -4,7 +4,7 @@ if Meteor.isClient
     window.socialGraphCollection = new Meteor.Collection(null)
     idleMessageInterval = null
     timeIn = Date.now()
-    idleMessageIntervalSec = Meteor.settings.public.MESSAGE_PUSH_TIME or 20000
+    idleMessageIntervalSec = Meteor.settings.public.MESSAGE_PUSH_TIME or 2000
     mystate = null
     onlineUsers = 0
     todisplayList=[]
@@ -127,7 +127,7 @@ if Meteor.isClient
         #if todisplayList and todisplayList.length > 0
         if data
             #data=todisplayList.pop()[1]
-            console.log(data)
+            #console.log(data)
 
             Session.set('showReadList',Session.get('showReadList')+1)
             sendPersonalMessageWithURLToRoom('朋友们可能还在看帖子，您可以回顾一下浏览过的故事贴('+Session.get('showReadList')+'/'+Session.get('gotReadList')+'):','http://cdn.tiegushi.com/posts/'+data.postId, data.name, data.addontitle, data.mainImage)
@@ -158,15 +158,26 @@ if Meteor.isClient
             startIdleMessage()
     fetchReadListFromServer = ()->
         needToFethReadlist=false
-        Meteor.call 'getMyState',amplify.store('hotshareUserID'),amplify.store('readListDisplayed'),5,(err,list)->
-            console.log('Got my list: '+list)
+        Meteor.call 'getMyState',amplify.store('hotshareUserID'),amplify.store('readListDisplayed'),5,(err,data)->
+            console.log('Got my list: '+data)
+            list = data.list
+            tempList = []
+            _.each(list, (item)->
+                if item[1]? and !~todisplayListIds.indexOf(item[1].postId)
+                    tempList.push(item)
+                else
+                    amplify.store('readListDisplayed',amplify.store('readListDisplayed')+1)
+            )
+            list = tempList
             if list and list.length > 0
                 todisplayList = list
                 Session.set('gotReadList',list.length)
                 Session.set('showReadList',0)
                 setTimeout postOneViewedPost,2000
                 needToFethReadlist=true
-            else if amplify.store('readListDisplayed')>0
+            else if !data.end
+                needToFethReadlist=true
+            else if data.end and amplify.store('readListDisplayed')>0
                 amplify.store('readListDisplayed',0)
                 #fetchReadListFromServer()
 
