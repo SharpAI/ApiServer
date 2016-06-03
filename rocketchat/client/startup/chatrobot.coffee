@@ -4,7 +4,7 @@ if Meteor.isClient
     window.socialGraphCollection = new Meteor.Collection(null)
     idleMessageInterval = null
     timeIn = Date.now()
-    idleMessageIntervalSec = Meteor.settings.public.MESSAGE_PUSH_TIME or 2000
+    idleMessageIntervalSec = Meteor.settings.public.MESSAGE_PUSH_TIME or 20000
     mystate = null
     onlineUsers = 0
     todisplayList=[]
