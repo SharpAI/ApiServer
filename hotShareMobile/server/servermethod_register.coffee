@@ -123,7 +123,7 @@ if Meteor.isServer
           )
 
           postIds = []
-          Viewers.find({userId: userId}, {sort: {createdAt: -1}, limit: 200}).forEach((item)->
+          Viewers.find({userId: userId}, {sort: {createdAt: -1}, limit: 50}).forEach((item)->
             postIds.push(item.postId)
           )
 
