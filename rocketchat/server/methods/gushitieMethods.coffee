@@ -68,7 +68,9 @@ Meteor.startup ()->
         readers=readers.map((item,index)->
           if item.userId and item.userId is myGushitieID
             return
-          return item.username
+          if item.username
+            return item.username
+          return
         )
         stat.readers=readers
         stat.posts = GushitiePosts.find({owner: myGushitieID}).count()
