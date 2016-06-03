@@ -10,7 +10,8 @@ Meteor.methods
             'services.gushitie.id':gushitieId,
             'services.gushitie.icon':gushitieProfile.profile.icon,
             'avatarUrl':gushitieProfile.profile.icon,
-            'name': gushitieProfile.profile.fullname
+            'name': gushitieProfile.profile.fullname,
+            'gushitie.id':gushitieId
         }})
       else
-        Meteor.users.update({_id:Meteor.userId()},{$set:{'services.gushitie.id':gushitieId}})
+        Meteor.users.update({_id:Meteor.userId()},{$set:{'services.gushitie.id':gushitieId, 'gushitie.id':gushitieId}})
