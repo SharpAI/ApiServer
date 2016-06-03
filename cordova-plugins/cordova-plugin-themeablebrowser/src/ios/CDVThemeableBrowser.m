@@ -489,11 +489,24 @@
         }
     } else if ((self.callbackId != nil) && isTopLevelNavigation) {
         // Send a loadstart event for each top-level navigation (includes redirects).
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                                      messageAsDictionary:@{@"type":@"loadstart", @"url":[url absoluteString]}];
-        [pluginResult setKeepCallback:[NSNumber numberWithBool:YES]];
+        NSString * urlStr = [url absoluteString];
+        if ([urlStr rangeOfString:@"cdn.tiegushi.com"].location == NSNotFound) {
+            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                                          messageAsDictionary:@{@"type":@"loadstart", @"url":[url absoluteString]}];
+            [pluginResult setKeepCallback:[NSNumber numberWithBool:YES]];
+            
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+        } else {
+            NSArray *array = [urlStr componentsSeparatedByString:@"/"];
+            NSLog(@"postID:%@",[array lastObject]);
+            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                                          messageAsDictionary:@{@"type":@"toPost", @"postId":[array lastObject]}];
+            [pluginResult setKeepCallback:[NSNumber numberWithBool:YES]];
+            
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+        }
+       
 
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
     }
 
     return YES;

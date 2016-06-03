@@ -34,6 +34,13 @@ if Meteor.isClient
       ref.addEventListener('closePressed', (event) ->
         ref.close()
       )
+      ref.addEventListener('toPost', (event) ->
+        ref.close()
+        console.log("postId:"+event.postId)
+        Meteor.setTimeout ()->
+          Router.go '/posts/'+event.postId
+        ,300
+      )
       #Session.set("Social.LevelOne.Menu",'chatContent')
       #Session.set("SocialOnButton",'chatContent')
       #t.chatroom.show()
