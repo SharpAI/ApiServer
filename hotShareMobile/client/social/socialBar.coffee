@@ -22,6 +22,13 @@ if Meteor.isClient
             imagePressed: 'ic_action_previous_item.png',
             align: 'left',
             event: 'closePressed'
+          },
+          statusbar: {
+            color: '#000000'
+          },
+          toolbar: {
+            height: 40,
+            color: '#F0F0F0'
           }
         })
       ref.addEventListener('closePressed', (event) ->
