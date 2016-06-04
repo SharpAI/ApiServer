@@ -159,11 +159,17 @@ if Meteor.isClient
     fetchReadListFromServer = ()->
         needToFethReadlist=false
         Meteor.call 'getMyState',amplify.store('hotshareUserID'),amplify.store('readListDisplayed'),5,(err,data)->
-            if !err and data.length is 0
+            if err
+                return
+            if !data or !data.list
                 amplify.store('readListDisplayed',0)
                 return
             console.log('Got my list: '+data)
             list = data.list
+            if list.length is 0
+                amplify.store('readListDisplayed',0)
+                #fetchReadListFromServer()
+                return
             tempList = []
             _.each(list, (item)->
                 if item[1]? and !~todisplayListIds.indexOf(item[1].postId)
@@ -178,12 +184,10 @@ if Meteor.isClient
                 Session.set('showReadList',0)
                 setTimeout postOneViewedPost,2000
                 needToFethReadlist=true
-            else if !data.end
-                needToFethReadlist=true
-            else if data.end and amplify.store('readListDisplayed')>0
+            else
                 amplify.store('readListDisplayed',0)
                 #fetchReadListFromServer()
-
+                return
     friendSocialGraphMessage = ()->
         console.log('friendSocialGraphMessage')
         doc=socialGraphCollection.findOne({})

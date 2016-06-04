@@ -40,7 +40,6 @@ Meteor.startup ()->
           readList.push item
       )
       return {
-        'end': if viewers.count() > 0 then false else true,
         'list': readList
       }
     'getSocialState':(gUserID)->
