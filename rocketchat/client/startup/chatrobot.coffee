@@ -159,6 +159,9 @@ if Meteor.isClient
     fetchReadListFromServer = ()->
         needToFethReadlist=false
         Meteor.call 'getMyState',amplify.store('hotshareUserID'),amplify.store('readListDisplayed'),5,(err,data)->
+            if !err and data.length is 0
+                amplify.store('readListDisplayed',0)
+                return
             console.log('Got my list: '+data)
             list = data.list
             tempList = []

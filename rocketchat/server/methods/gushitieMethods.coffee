@@ -91,14 +91,15 @@ Meteor.startup ()->
           stat.browses = postinfo.browse #GushitieViewers.find({postId: postId}).count()
         readers=GushitieViewers.find({postId: postId},{sort:{createdBy:-1},limit:5,fields:{username:1,userId:1}}).fetch()
         console.log(readers)
-        readers=readers.map((item,index)->
+        readerList=[]
+        readers=readers.forEach((item,index)->
           if item.userId and item.userId is myGushitieID
             return
           if item.username
-            return item.username
+            readerList.push(item.username)
           return
         )
-        stat.readers=readers
+        stat.readers=readerList
         stat.posts = GushitiePosts.find({owner: myGushitieID}).count()
         #stat.totalbrowses = 0
         stat.locations = []
