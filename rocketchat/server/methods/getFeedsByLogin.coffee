@@ -1,6 +1,3 @@
-db_url= process.env.MONGO_GUSHITIE_URL || 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare'
-GushitieDB = new MongoInternals.RemoteCollectionDriver(db_url)
-GushitieFeeds = new Mongo.Collection("feeds", { _driver: GushitieDB })
 
 Meteor.methods
   getFeedsByLogin: ()->

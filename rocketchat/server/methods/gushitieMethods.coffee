@@ -5,10 +5,11 @@ Meteor.startup ()->
 
   mongourl = process.env.MONGO_GUSHITIE_URL || 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare'
 
-  GushitieDB = new MongoInternals.RemoteCollectionDriver(mongourl);
-  GushitieViewers = new Mongo.Collection("viewers", { _driver: GushitieDB });
-  GushitiePosts = new Mongo.Collection("posts", { _driver: GushitieDB });
-  #GushitieUsersInner = new Mongo.Collection("users", { _driver: GushitieDB, _preventAutopublish: true});
+  GushitieDB = new MongoInternals.RemoteCollectionDriver(mongourl)
+  @GushitieViewers = new Mongo.Collection("viewers", { _driver: GushitieDB })
+  @GushitiePosts = new Mongo.Collection("posts", { _driver: GushitieDB })
+  @GushitieMeets = new Mongo.Collection("meets", { _driver: GushitieDB })
+  @GushitieFeeds = new Mongo.Collection("feeds", { _driver: GushitieDB })
 
   Meteor.methods
     'getMyState':(gUserID,skip,limit)->
@@ -42,6 +43,31 @@ Meteor.startup ()->
         'end': if viewers.count() > 0 then false else true,
         'list': readList
       }
+    'getSocialState':(gUserID)->
+      this.unblock()
+      meet=GushitieMeets.find({me:gUserID},{sort:{createdAt:-1},limit:5}).fetch()
+      result=[]
+      meet.forEach((a)->
+        console.log(a.ta)
+        if a and a.ta
+          userInfo=GushitieUsers.findOne({_id:a.ta},{fields:{username:1,'profile.fullname':1,username:1,'profile.location':1}})
+          if userInfo
+            if userInfo.profile and userInfo.profile.fullname and userInfo.profile.fullname isnt ''
+              name = userInfo.profile.fullname
+            else
+              name = userInfo.fullname
+            if userInfo.profile and userInfo.profile.location and userInfo.profile.location isnt ''
+              location = userInfo.profile.location
+            else
+              location = null
+            if name
+              if location
+                result.push({name:name,location:location})
+              else
+                result.push({name:name})
+      )
+      console.log result
+      return result
     'getPostInfo':(postId)->
       this.unblock()
       postinfo = GushitiePosts.findOne({_id:postId},{fields:{mainImage:1,owner:1,ownerName:1,title:1,addontitle:1,createdAt:1}})

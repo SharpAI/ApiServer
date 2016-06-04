@@ -254,6 +254,7 @@ if Meteor.isClient
                     sendPersonalMessageToRoom('他们大多来自于 ' + stat.locations.jion(', '))
 
     Meteor.startup ->
+        document.title = '故事贴专属聊天室'
         Tracker.autorun (t)->
             # 当可以在多个聊天室之间切换以后，此处需要响应是重新计算数据，由于FlowRouter不支持响应式，所以使用Session
             currentRoomId = Session.get('openedRoom')
@@ -263,6 +264,21 @@ if Meteor.isClient
                 Session.set('visitedRooms', visitedRooms)
                 # 此处的 stop 后面需要去掉以保持响应式计算，但是需要处理下，已经访问过的聊天室再次切换回去的时候，就不要再计算了
                 #t.stop()
+                if amplify.store('hotshareUserID')
+                    Meteor.call 'getSocialState',amplify.store('hotshareUserID'),(err,data)->
+                        if !err and data and data.length > 0
+                            console.log(data)
+                            message=''
+                            data.forEach((item,index)->
+                                if item.name and item.name isnt ''
+                                    if item.location and item.location isnt ''
+                                        message+= item.name+'('+item.location+') '
+                                    else
+                                        message+= item.name+' '
+                            )
+                            if message isnt ''
+                                message='*您*最近在故事贴偶遇的朋友是：'+message
+                                sendPersonalMessageToRoom(message)
                 Meteor.call 'getPostInfo',ChatRoom.findOne({_id: currentRoomId}).name,(err,data)->
                     if !err and data
                         ###
