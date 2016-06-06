@@ -86,7 +86,7 @@ getFirstParagraph = function(){
       for (var i = 0; i < patagraphLength; i++){
         if(textArr[i].text == invalidString) {
         //   console.log(textArr[i].text);
-          var text = "此帖子包含视频内容";
+          var text = "来自故事贴";
           return text;
         }else if(textArr[i].text){
           return textArr[i].text.substring(0, 100);
