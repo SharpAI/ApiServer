@@ -79,12 +79,23 @@ getPostSharingPath = function(){
     return url;
 };
 getFirstParagraph = function(){
-    var patagraphLength = Session.get('postContent').pub.length
-    if (patagraphLength > 0) {
+    var patagraphLength = Session.get('postContent').pub.length;
+    var invalidString = "您当前程序不支持视频观看";
+    if (patagraphLength > 0 && patagraphLength < 2) {
       var textArr = Session.get('postContent').pub;
       for (var i = 0; i < patagraphLength; i++){
-        if(textArr[i].text) {
-          console.log(textArr[i].text);
+        if(textArr[i].text == invalidString) {
+        //   console.log(textArr[i].text);
+          var text = "此帖子包含视频内容";
+          return text;
+        }else if(textArr[i].text){
+          return textArr[i].text.substring(0, 100);
+        }
+      }
+    }else if(patagraphLength >= 2){
+      var textArr = Session.get('postContent').pub;
+      for (var i = 0; i < patagraphLength; i++){
+        if(textArr[i].text && textArr[i].text != invalidString){
           return textArr[i].text.substring(0, 100);
         }
       }

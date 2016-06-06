@@ -84,12 +84,20 @@ if Meteor.isClient
         }
       else
         patagraphLength = Session.get('postContent').pub.length
-        if  patagraphLength > 0
+        invalidString = "您当前程序不支持视频观看"
+        if  patagraphLength > 0 and patagraphLength < 2
           textArr = Session.get('postContent').pub
           for i in [patagraphLength - 1..0]
-            if textArr[i].text
+            if textArr[i].text is invalidString
+              descriptionFirstParagraph = "此帖子包含视频内容"
+            else if textArr[i].text
+              descriptionFirstParagraph = textArr[i].text.substring(0, 100)
+        else if  patagraphLength >= 2
+          textArr = Session.get('postContent').pub
+          for i in [patagraphLength - 1..0]
+            if textArr[i].text and textArr[i].text isnt invalidString
               console.log(textArr[i].text)
-              descriptionFirstParagraph = textArr[i].text
+              descriptionFirstParagraph = textArr[i].text.substring(0, 100)
         else
           descriptionFirstParagraph = Session.get("DocumentTitle")
         timelineData = {
