@@ -52,6 +52,10 @@ if Meteor.isClient
   Tracker.autorun ()->
     if Session.get("needToast") is true
       Session.set("needToast",false)
+      $('.showPosts').get(0).style.overflow = ''
+      $('.showPosts').get(0).style.maxHeight = ''
+      $('.showPosts').get(0).style.position = ''
+      $('.readmore').remove()      
       scrolltop = 0
       Meteor.setTimeout ()->
         if $('.dCurrent').length
