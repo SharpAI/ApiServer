@@ -87,6 +87,11 @@
 						<div class="connection-status">
 							{{> status}}
 						</div>
+                        {{#unless modal}}
+                            <div class="flex-tab-bar" role="toolbar">
+                                {{> flexTabBar}}
+                            </div>
+                        {{/unless}}
             <!--{{#if flexOpened}}		
  							<div class="flex-tab-bar" role="toolbar">		
  								{{> flexTabBar}}		
