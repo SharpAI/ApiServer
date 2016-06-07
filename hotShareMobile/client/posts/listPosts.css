@@ -6,7 +6,7 @@ ul,li,input,textarea { font-family: "Microsoft YaHei","微软雅黑","PingHei","
     overflow: hidden;
     margin: auto;
     margin-top: 10px;
-    padding: 0 15px;
+    padding: 0;
 }
 .item
 {
@@ -87,7 +87,8 @@ img.flip {
   font-weight: normal;
   /*white-space: pre-line;*/
   word-wrap: break-word;
-  font-size: 18pt;
+  font-size: 16pt;
+  font-weight: 100;
   line-height: 22pt;
   max-height: 46pt;
   overflow: hidden;
@@ -103,17 +104,18 @@ img.flip {
   /*white-space: pre-line;*/
   word-wrap: break-word;
 /*  font-weight:bold*/
-  font-size: 13pt;
-  margin-top: 15px;
+  font-size: 12pt;
+  font-weight: 100;
+  margin-top: 10px;
   max-height: 38pt;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .home .content #list .mainImage{position: relative;height: 300px;overflow: hidden;margin-bottom: 5px;}
-.home .content #list .footer{position: relative;min-height: 30px;line-height: 30px;padding: 0 10px; margin-top: -40px; margin-bottom: 15px;}
+.home .content #list .footer{position: relative;min-height: 30px;line-height: 30px;padding: 0 10px;  margin-bottom: 15px;}
 .home .content #list .footer span, .home .content #list .footer img{margin: 0; padding: 0}
-.home .content #list .footer .name{ font-size: 12pt; margin-left: 4px;}
+.home .content #list .footer .name{color:#000; font-size: 12pt; margin-left: 4px;font-size: 10pt; font-weight: 300;}
 .home .content #list .footer .icon{border: none;border-radius:50%;margin-bottom: 2.5px;}
 .home .content #list .footer .right{float: right;color: gray;}
 .home .content #list .footer .right i{margin: 0 2px}

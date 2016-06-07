@@ -1,0 +1,39 @@
+    {{#if isImage}}
+        {{#if inIframe}}
+            <div class='postIframeItem element' id="{{_id}}">
+                {{{iframe}}}
+            </div>
+        {{else}}
+            <div class='postImageItem element' id="{{_id}}">
+                <img id="{{_id}}img" class="lazy" data-original="{{imgUrl}}" src="{{imgUrl}}" data-sizey="{{data_sizey}}" style="{{style}}" >
+            </div>
+        {{/if}}
+    {{else}}
+        {{#if musicInfo}}
+
+        {{else}}
+            {{#if hasVideoInfo videoInfo}}
+
+            {{else}}
+                {{#if adv}}
+                    <div class="postLinkItem element">
+                        <div class="ads-story"  href="http://cdn.tiegushi.com/posts/qwWdWJPMAbyeo8tiJ">
+                            <div class="instruction">
+                                如何改写喜欢的文章呢
+                            </div>
+                            <div class="GridSpread">
+                                <div class="ads-owner">故事贴<span class="ads-mark"> 提供</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {{else}}
+                    <div class="postTextItem element" id="{{_id}}">
+                        <div class="textDiv1 {{pcIndex}} {{scIndex}}" text={{_id}} name="textarea" style="{{calcStyle}};{{getStyle}}">
+                          <span class="textDiv1Link">{{{text}}}</span> {{#if isTextLength text}}<div class='inlineScoring'>{{#if myselfClickedUp}}<i class="fa fa-thumbs-up thumbsUp" style="color:red;font-size: larger;">{{plike}}&nbsp;&nbsp;</i>{{else}}<i class="fa fa-thumbs-o-up thumbsUp" style="font-size: small;">{{plike}}&nbsp;&nbsp;</i>{{/if}}{{#if myselfClickedDown}}<i class="fa fa-thumbs-down thumbsDown" style="color:blue;font-size: small;">{{pdislike}}&nbsp;&nbsp;</i>{{else}}<i class="fa fa-thumbs-o-down thumbsDown" style="font-size: small;">{{pdislike}}&nbsp;&nbsp;</i>{{/if}}<i class="fa fa-comment-o pcomments" style="color:black;font-size: larger;">&nbsp;&nbsp;&nbsp;</i></div>{{/if}}
+                        </div>
+                    </div>
+                {{/if}}
+            {{/if}}
+        {{/if}}
+    {{/if}}
