@@ -106,7 +106,7 @@ if Meteor.isClient
         found = 0
         if scripts.length > 0
           for i in [0..scripts.length-1]
-            if scripts[i].getAttribute('src') and scripts[i].getAttribute('src').indexOf('bundle-zhifa') >= 0
+            if scripts[i].getAttribute('src') and scripts[i].getAttribute('src').indexOf('bundle-raidcdn') >= 0
               found = 1
               break
         unless found
