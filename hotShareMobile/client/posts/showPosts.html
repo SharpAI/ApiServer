@@ -13,13 +13,13 @@
         {{else}}
           <div class="rightButton" style="font-weight:bold; color: red;" onclick="window.open('http://cdn.tiegushi.com', '_system');">{{_ "clickMeToCreate"}}</div>
         {{/if}}
-        <!--<div class="user">
+        <div class="user">
           {{#if isMobile}}
             <img class="icon" src="{{ownerIcon}}" width='25' height='25'>
           {{/if}}
           <span class="name">{{ownerName}}</span>
           <div class="createAt">{{time_diff createdAt}}</div>
-        </div>-->
+        </div>
 
         {{#if isMobile}}
           <div class="rightDropMenu dropdown">
@@ -34,30 +34,15 @@
                 <li role="presentation"><a id="edit" role="menuitem" tabindex="-1" ><i class="fa fa-pencil fa-fw"></i>{{_ "edit"}}</a></li>
                 <li role="presentation" class="divider"></li>
               {{/if}}
-              <!--<li role="presentation"><a id="WXSessionShare" role="menuitem" tabindex="-1" ><i class="fa fa-weixin fa-fw"></i>{{_ "shareWechatFriend"}}</a></li>
+              <li role="presentation"><a id="WXSessionShare" role="menuitem" tabindex="-1" ><i class="fa fa-weixin fa-fw"></i>{{_ "shareWechatFriend"}}</a></li>
               <li role="presentation"><a id="WXTimelineShare" role="menuitem" tabindex="-1" ><i class="fa fa-weixin fa-fw"></i>{{_ "shareWechatFriendField"}}</a></li>
               <li role="presentation"><a id="QQShare" role="menuitem" tabindex="-1" ><i class="fa fa-qq fa-fw"></i>{{_ "shareQQ"}}</a></li>
               <li role="presentation"><a id="QQZoneShare" role="menuitem" tabindex="-1" ><i class="fa fa-qq fa-fw"></i>{{_ "shareQQZone"}}</a></li>
-              <li role="presentation"><a id="socialShare" role="menuitem" tabindex="-1" ><i class="fa fa-share-alt fa-fw"></i>{{_ "shareMore"}}</a></li>-->
-              <li role="presentation"><a id="WXSessionShare" role="menuitem" tabindex="-1" ><img src="/share/share_weixin_friends.png" height="48" width="48" /><p>{{_ "shareWechatFriend"}}</p></a></li>
-              <li role="presentation"><a id="WXTimelineShare" role="menuitem" tabindex="-1" ><img src="/share/share_weixin_timeline.png" height="48" width="48" /><p>{{_ "shareWechatFriendField"}}</p></a></li>
-              <li role="presentation"><a id="QQShare" role="menuitem" tabindex="-1" ><img src="/share/share_qq_friends.png" height="48" width="48" /><p>{{_ "shareQQ"}}</p></a></li>
-              <li role="presentation"><a id="QQZoneShare" role="menuitem" tabindex="-1" ><img src="/share/share_qq_qzone.png" height="48" width="48" /><p>{{_ "shareQQZone"}}</p></a></li>
-              <li role="presentation"><a id="socialShare" role="menuitem" tabindex="-1" ><img src="/share/share_more.png" height="48" width="48" /><p>{{_ "shareMore"}}</p></a></li>
+              <li role="presentation"><a id="socialShare" role="menuitem" tabindex="-1" ><i class="fa fa-share-alt fa-fw"></i>{{_ "shareMore"}}</a></li>
             </ul>
           </div>
         {{/if}}
       </div>
-      <div class="user">
-          {{#if isMobile}}
-            <img class="icon" src="{{ownerIcon}}" width='25' height='25'>
-          {{/if}}
-          <div class="right">
-            <span class="name">{{ownerName}}</span>
-            <div class="createAt">{{time_diff createdAt}}</div>
-          </div>
-          <div class="followTA"><i class="fa fa-plus"></i>&nbsp;关注</div>
-        </div>
       <div class="content">
           {{#if getAbstractSentence}}
               <div class="post_header">
@@ -83,15 +68,11 @@
         <div id="wrapper">
           <div class="mainImage" id="{{_id}}" style="height:{{getMainImageHeight}}px;">
             <img id="wx-img" class="scale item" src="{{mainImage}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImageStyle}}" >
-            <!--<header>
-              <h2 id="wx-title" class="title">{{title}}</h2>
-              <h4 id="wx-con" class="addontitle">{{addontitle}}</h4>
-            </header>-->
-          </div>
-          <header>
+            <header>
               <h2 id="wx-title" class="title">{{title}}</h2>
               <h4 id="wx-con" class="addontitle">{{addontitle}}</h4>
             </header>
+          </div>
         </div>
         <div class="contentList">
           {{#if mainText}}
