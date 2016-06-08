@@ -359,8 +359,8 @@ if Meteor.isClient
                     )
                     
         # 故事贴推荐贴子的推送
-        Tracker.autorun ()->
-            
+        getFeedsByLoginInterval = null
+        getFeedsByLogin = ()->
             if Meteor.userId() and Session.get('openedRoom')
                 Meteor.call 'getFeedsByLogin', (err, res)->
                     if err
@@ -375,3 +375,10 @@ if Meteor.isClient
                         }
                     if urls.length > 0
                         sendPersonalMessageWithURLSToRoom '新故事推荐：', urls
+        Tracker.autorun ()->          
+            if Meteor.userId() and Session.get('openedRoom')
+                getFeedsByLogin()
+                getFeedsByLoginInterval = Meteor.setInterval getFeedsByLogin, 10000
+            else if getFeedsByLoginInterval isnt null
+                Meteor.clearInterval getFeedsByLoginInterval
+                getFeedsByLoginInterval = null
