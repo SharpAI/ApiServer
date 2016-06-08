@@ -16,9 +16,9 @@ Meteor.methods
     result = []
     if myGushitieID?
         #GushitieFeeds.find({followby:Meteor.userId(),checked:false}).forEach (feed)->
-        GushitieFeeds.find({followby: myGushitieID,checked:false}).forEach (feed)->
+        GushitieFeeds.find({followby: myGushitieID,checked:{$ne: true}}).forEach (feed)->
           result.push(feed)
         #GushitieFeeds.update({followby:Meteor.userId(),checked:false}, {$set: {checked: true}})
-        GushitieFeeds.update({followby: myGushitieID,checked:false}, {$set: {checked: true}}, {multi: true})
+        GushitieFeeds.update({followby: myGushitieID,checked:{$ne: true}}, {$set: {checked: true}}, {multi: true})
     
     return result
