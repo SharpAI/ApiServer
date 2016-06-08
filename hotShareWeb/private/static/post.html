@@ -51,7 +51,10 @@
             </div>
         </div>
     </div>
-
+    <div onclick="window.open('http://cdn.tiegushi.com', '_system');"><img src="/img/download.png" style="width:90%;margin-left:5%;"></div>
+      <div class="showPostsFollowMe">
+        <p>更多精彩内容，请搜索关注<span><a><i class="fa fa-weixin"></i>故事贴</a></span>微信公众号</p>
+      </div>
 <!--  footer -->
 <div class="socialContent">
     <div class="showPostsLine" id="socialContentDivider"></div>
@@ -136,17 +139,11 @@
   </div>
   <!--  end footer -->
 </div>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script type="text/javascript" src="/statics/libs/jquery/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="/statics/posts/showpost.js"></script>
 <script type="text/javascript">
     $(function() {
-        $("#wrapper .mainImage").css("height", ( $(window).height()*0.55) + "px");
-
-        var   baseHeight= ($('.showPosts').width()-30)/6;
-        $(".postImageItem.element").each(function(idx, item) {
-            var img = this.querySelector("img.lazy");
-            var pHeight = parseInt($(img).data('sizey')) * baseHeight;
-            this.style.height = pHeight + 'px';
-        });
+        gushitie.showpost.init();
     });
 </script>
 </body>
