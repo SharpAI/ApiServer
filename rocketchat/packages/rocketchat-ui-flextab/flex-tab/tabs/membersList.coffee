@@ -27,11 +27,22 @@ Template.membersList.helpers
 						utcOffset = "+#{utcOffset}"
 
 					utcOffset = "(UTC #{utcOffset})"
+				userInfo=Meteor.users.findOne({username:username})
+				if userInfo.avatarUrl?
+					users.push
+						avatarUrl: userInfo.avatarUrl
+						name:userInfo.name or username
+						username: username
+						status: onlineUsers[username]?.status
+						utcOffset: utcOffset
+				else
+					users.push
+						avatarUrl: userInfo.avatarUrl
+						name:userInfo.name or username
+						username: username
+						status: onlineUsers[username]?.status
+						utcOffset: utcOffset
 
-				users.push
-					username: username
-					status: onlineUsers[username]?.status
-					utcOffset: utcOffset
 
 		users = _.sortBy users, 'username'
 		# show online users first.

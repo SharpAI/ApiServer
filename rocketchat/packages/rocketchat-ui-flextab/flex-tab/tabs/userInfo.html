@@ -6,8 +6,8 @@
 				{{> avatar username=username}}
 			</div>
 			<div class="info">
-				<h3 title="{{username}}"><i class="status-{{status}}"></i> {{username}}</h3>
-				<p>{{name}}</p>
+				<h3 title="{{name}}"><i class="status-{{status}}"></i> {{name}}</h3>
+				<!--<p>{{name}}</p>-->
 				{{#if utc}}<p><i class="icon-clock"></i>{{userTime}} (UTC {{utc}})</p>{{/if}}
 				{{#if hasPermission 'view-full-other-user-info'}}
 					{{#each emails}} <p><i class="icon-mail"></i> {{address}}{{#if verified}}&nbsp;<i class="icon-ok"></i>{{/if}}</p> {{/each}}
@@ -27,9 +27,10 @@
 		</div>
 		{{/with}}
 		<nav>
-			{{> videoButtons}}
+			<!--{{> videoButtons}}-->
 
 			{{#if showAll}}
+                <!--
 				{{#if canDirectMessage user.username}}
 					<button class='button button-block pvt-msg'><span><i class='icon-chat'></i> {{_ "Conversation"}}</span></button>
 				{{/if}}
@@ -57,6 +58,7 @@
 						<button class="button button-block mute-user red"><span>{{_ "Mute_user"}}</span></button>
 					{{/if}}
 				{{/if}}
+				-->
 				<button class='button secondary back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
 			{{/if}}
 		</nav>

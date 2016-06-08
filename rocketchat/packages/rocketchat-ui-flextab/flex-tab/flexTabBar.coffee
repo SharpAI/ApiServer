@@ -13,7 +13,16 @@ Template.flexTabBar.helpers
 		      
 		return btns
 		###
-		return RocketChat.TabBar.getButtons()
+		btns = []
+		_.map(
+			RocketChat.TabBar.getButtons()
+			(item)->
+				if(item.id is 'visitor-info' or item.id is 'user-info' or item.id is 'members-list')
+					btns.push(item)
+		)
+
+		return btns
+		#return RocketChat.TabBar.getButtons()
 	title: ->
 		return t(@i18nTitle) or @title
 	visible: ->

@@ -8,7 +8,7 @@
 						<h2>{{_ "Members_List"}}</h2>
 						<p>
 							{{{_ "Showing_online_users" total_showing=totalShowing total=total}}}
-							<a class="see-all">{{seeAll}}</a>
+							<!--<a class="see-all">{{seeAll}}</a>-->
 						</p>
 						{{> videoButtons}}
 						{{#if canAddUser}}
@@ -26,8 +26,8 @@
 						{{#each users}}
 							<li class='user-image user-card-room status-{{status}}'>
 								<a data-username="{{username}}" tabindex="0" title="{{username}}">
-									{{> avatar username=username}}
-									<p>{{username}} {{utcOffset}}</p>
+									{{> avatar username=username avatarUrl=avatarUrl}}
+									<p>{{name}} {{utcOffset}}</p>
 								</a>
 							</li>
 						{{/each}}
