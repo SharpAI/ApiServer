@@ -24,102 +24,78 @@
       {{#each eventFeeds}}
         {{#if isAlsoComment eventType}}
             <a href="/posts/{{postId}}" class="contentList">
-                <img class="icon" src="{{ownerIcon}}" width='55' height='55'>
-                <div id="{{postId}}" class="alarm">
-                  <div class="ownerName">{{ownerName}}</div> 
-                  <div class="con">{{_ "alsoCommentThisStory"}} 《{{postTitle}}》</div>
-                </div>
+                <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+                <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "alsoCommentThisStory"}} 《{{postTitle}}》</div>
                 <div class="createAt">{{time_diff createdAt}}</div>
             </a>
-            <!--<div class="line">
+            <div class="line">
                 <span></span>
-            </div>-->
+            </div>
         {{/if}}
         {{#if isAlsoFavourite eventType}}
             <a href="/posts/{{postId}}" class="contentList">
-                <img class="icon" src="{{ownerIcon}}" width='55' height='55'>
-                <div id="{{postId}}" class="alarm">
-                  <div class="ownerName">{{ownerName}}</div> 
-                  <div class="con">{{_ "alsoCommentThisStory"}} 《{{postTitle}}》</div>
-                </div>
+                <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+                <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "alsoFavouriteThisStory"}} 《{{postTitle}}》</div>
                 <div class="createAt">{{time_diff createdAt}}</div>
             </a>
-            <!--<div class="line">
+            <div class="line">
                 <span></span>
-            </div>-->
+            </div>
         {{/if}}
         {{#if isPcommentOwner eventType}}
             <a href="/posts/{{postId}}" class="contentList">
-                <img class="icon" src="{{ownerIcon}}" width='55' height='55'>
-                <div id="{{postId}}" class="alarm">
-                  <div class="ownerName">{{ownerName}}</div> 
-                  <div class="con">{{_ "alsoCommentThisStory"}} 《{{postTitle}}》</div>
-                </div>
+                <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+                <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "commentYourStory"}} 《{{postTitle}}》</div>
                 <div class="createAt">{{time_diff createdAt}}</div>
             </a>
-            <!--<div class="line">
+            <div class="line">
                 <span></span>
-            </div>-->
+            </div>
         {{/if}}
         {{#if isReComment eventType}}
           <a href="/posts/{{postId}}" class="contentList">
-            <img class="icon" src="{{ownerIcon}}" width='55' height='55'>
-            <div id="{{postId}}" class="alarm">
-              <div class="ownerName">{{ownerName}}</div> 
-              <div class="con">{{_ "alsoCommentThisStory"}} 《{{postTitle}}》</div>
-            </div>
+            <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+            <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "replyStoryYouJoin"}} 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
           </a>
-          <!--<div class="line">
+          <div class="line">
             <span></span>
-          </div>-->
+          </div>
         {{/if}}
         {{#if isComment eventType}}
           <a href="/posts/{{postId}}" class="contentList">
-            <img class="icon" src="{{ownerIcon}}" width='55' height='55'>
-            <div id="{{postId}}" class="alarm">
-              <div class="ownerName">{{ownerName}}</div> 
-              <div class="con">{{_ "alsoCommentThisStory"}} 《{{postTitle}}》</div>
-            </div>
+            <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+            <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "replyYourStory"}} 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
           </a>
-          <!--<div class="line">
+          <div class="line">
             <span></span>
-          </div>-->
+          </div>
         {{/if}}
         {{#if selfPosted eventType}}
           <a href="/posts/{{postId}}" class="contentList">
-            <img class="icon" src="{{ownerIcon}}" width='55' height='55'>
-            <div id="{{postId}}" class="alarm">
-              <div class="ownerName">{{ownerName}}</div> 
-              <div class="con">{{_ "alsoCommentThisStory"}} 《{{postTitle}}》</div>
-            </div>
+            <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+            <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "publishNewStory"}} 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
           </a>
-          <!--<div class="line">
+          <div class="line">
             <span></span>
-          </div>-->
+          </div>
         {{/if}}
         {{#if isRecommand eventType}}
           <a href="/posts/{{postId}}" class="contentList">
-            <img class="icon" src="{{recommanderIcon}}" width='55' height='55'>
-            <div id="{{postId}}" class="alarm">
-              <div class="ownerName">{{ownerName}}</div> 
-              <div class="con">{{_ "alsoCommentThisStory"}} 《{{postTitle}}》</div>
-            </div>
+            <img class="icon" src="{{recommanderIcon}}" width='30' height='30'>
+            <div id="{{postId}}" class="alarm">{{recommander}} {{_ "recommendAStory"}} 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
           </a>
-          <!--<div class="line">
+          <div class="line">
             <span></span>
-          </div>-->
+          </div>
         {{/if}}
         {{#if isGetRequest eventType}}
           <div id="{{requesterId}}" class="contentList">
-            <img class="icon" src="{{requesterIcon}}" width='55' height='55'>
-            <div id="{{requesterId}}" class="alarm">
-              <div class="ownerName">{{requester}}</div> 
-              <div class="con">{{_ "askFriends"}}</div>
-            </div>
+            <img class="icon" src="{{requesterIcon}}" width='30' height='30'>
+            <div id="{{requesterId}}" class="alarm">{{requester}}{{_ "askFriends"}}</div>
             <div class="createAt">{{time_diff createdAt}}</div>
             {{#if isFriend requesterId}}
             <div class='button'>{{_ "alreadyAdded"}}</div>
@@ -127,16 +103,14 @@
             <div class='button acceptrequest'>{{_ "acceptInvitation"}}</div>
             {{/if}}
           </div>
-          <!--<div class="line">
+          <div class="line">
             <span></span>
-          </div>-->
+          </div>
         {{/if}}
         {{#if isSendRequest eventType}}
           <div id="{{requesteeId}}" class="contentList">
-            <img class="icon" src="{{requesteeIcon}}" width='55' height='55'>
-            <div id="{{requesteeId}}" class="alarm">
-              <div class="ownerName">{{requestee}}</div> 
-            </div>
+            <img class="icon" src="{{requesteeIcon}}" width='30' height='30'>
+            <div id="{{requesteeId}}" class="alarm">{{requestee}}</div>
             <div class="createAt">{{time_diff createdAt}}</div>
             {{#if isFriend requesteeId}}
             <div class='button'>{{_ "alreadyAdded"}}</div>
@@ -144,9 +118,9 @@
             <div class='button'>{{_ "alreadySendInvitation"}}</div>
             {{/if}}
           </div>
-          <!--<div class="line">
+          <div class="line">
             <span></span>
-          </div>-->
+          </div>
         {{/if}}
       {{/each}}
       {{#if moreResults}}
