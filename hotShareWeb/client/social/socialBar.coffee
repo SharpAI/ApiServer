@@ -10,10 +10,7 @@ if Meteor.isClient
       if $('.contactsList .head').is(':visible')
         $('.contactsList .head').fadeOut 300
       document.body.scrollTop = 0
-    'click .chatBtn': (e, t)->
-      $(".showBgColor").hide()
-      $("#groupchatiframe").fadeIn()
-    'click .oldchatBtn': (e)->
+    'click .chatBtn': (e)->
       $(".chatBtn .red_spot").hide().html(0)
       trackEvent("socialBar","GroupChat")
       e.stopPropagation()

@@ -11,13 +11,9 @@ if Meteor.isClient
         $('.contactsList .head').fadeOut 300
       document.body.scrollTop = 0
     'click .chatBtn': (e, t)->
-      $(".showBgColor").hide()
-      $("#groupchatiframe").fadeIn()
-    'click .oldchatBtn': (e, t)->
       e.stopPropagation()
       $(".chatBtn .red_spot").hide().html(0)
       trackEvent("socialBar","GroupChat")
-      # url = 'http://localhost:9000/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
       url = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
       #window.location.href = url
       ref = cordova.ThemeableBrowser.open(url,'_blank',{

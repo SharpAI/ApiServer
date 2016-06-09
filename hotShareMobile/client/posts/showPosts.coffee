@@ -160,14 +160,6 @@ if Meteor.isClient
     if $('.tts-stoper').is(':visible')
       $('.tts-stoper').hide()
       window.currentTTS.stop()
-  Template.importGroupChat.onRendered ->
-    iframe = ''
-    iframe = '<iframe id="group-chat-content" style="width: 100%;height: 100%;" src="//'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId()+'" frameborder="0" allowfullscreen></iframe>'
-    $('#groupchatiframe').append(iframe)
-  Template.importGroupChat.events
-    'click #iframe-back-btn': (e)->
-      $("#groupchatiframe").hide()
-      $(".showBgColor").fadeIn()
   Template.showPosts.onRendered ->
     if !amplify.store('chatNotify')
       amplify.store('chatNotify',1)
@@ -195,7 +187,7 @@ if Meteor.isClient
       setTimeout(() ->
         $(".chatBtn .chat-icon-img").removeClass('twinkling')
       , 10000);
-
+    
     #Calc Wechat token after post rendered.
     calcPostSignature(window.location.href.split('#')[0]);
     if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
@@ -260,7 +252,7 @@ if Meteor.isClient
           console.log "sssdsdds"
           document.body.scrollTop = Session.get("changeNameBckScroll")
         , 450
-
+    
 
     Meteor.setTimeout ()->
       $showPosts = $('.showPosts')
