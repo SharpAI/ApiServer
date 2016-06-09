@@ -55,7 +55,7 @@ if Meteor.isClient
       $('.showPosts').get(0).style.overflow = ''
       $('.showPosts').get(0).style.maxHeight = ''
       $('.showPosts').get(0).style.position = ''
-      $('.readmore').remove()      
+      $('.readmore').remove()
       scrolltop = 0
       Meteor.setTimeout ()->
         if $('.dCurrent').length
@@ -70,6 +70,10 @@ if Meteor.isClient
     Session.set("postPageScrollTop", 0)
     Session.set("showSuggestPosts",false)
     $('.tool-container').remove()
+  Template.showPosts.onCreated ->
+    iframe = ''
+    iframe = '<iframe id="groupchatiframe" style="width: 100%;height: 100%;display: none;" src="//'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId()+'" frameborder="0" allowfullscreen></iframe>'
+    $('body').append(iframe)
   Template.showPosts.onRendered ->
     if !amplify.store('chatNotify')
       amplify.store('chatNotify',1)
@@ -969,5 +973,3 @@ if Meteor.isClient
           Session.set("clickedCommentOverlayThumbsDown",true)
         else
           Session.set("clickedCommentOverlayThumbsDown",true)
-
-
