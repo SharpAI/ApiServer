@@ -55,9 +55,13 @@ if Meteor.isServer
       user = Meteor.users.findOne({'services.gushitie.id': options.userId})
       result = Accounts.updateOrCreateUserFromExternalService('gushitie', {id: options.userId, _OAuthCustom: true}, {})
       console.log(user)
+      if gushitieUser.username
+        gushitieUsername = gushitieUser.username
+      else
+        gushitieUsername = gushitieUser.profile.fullname
       Meteor.users.update({_id: result.userId},
         { $set: {
-          username: gushitieUser.username
+          username: gushitieUsername
           name: gushitieUser.profile.fullname
           'services.gushitie.icon': gushitieUser.profile.icon
           }
