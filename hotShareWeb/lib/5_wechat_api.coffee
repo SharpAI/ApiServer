@@ -49,6 +49,17 @@ if Meteor.isClient
                     'onMenuShareQZone']
       }
     wechatReady = ()->
+      unless window.networkType
+        wx.getNetworkType({
+          success:  (res)->
+            # networkType = res.networkType; Returns network type, including 2g, 3g, 4g and wifi
+            if res?.networkType?
+              window.networkType = res.networkType
+              if window.networkType is 'wifi'
+                Session.set('isWeChatWifi',true)
+              else
+                Session.set('isWeChatWifi',false)
+        })
       # Session.set('turnOnRandom',false)
       if Session.get('focusedIndex') isnt undefined
         description =Session.get('postContent').pub[Session.get('focusedIndex')].text.replace(/\s\s\s+/g, '');

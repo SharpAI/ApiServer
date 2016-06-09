@@ -11,6 +11,10 @@
   <div class="showBgColor">
     <div class="showPostsBox">
     <div class="showPosts">
+
+      {{#if hiddenChatLoad}}
+        <iframe src='{{chatUrl}}' style="width:0;height:0;border:0; border:none;"></iframe>
+      {{/if}}
       <div id="blur_overlay" style="position: absolute; opacity: 0.5; z-index: -1; width:100%; background-color:white;">
           {{> spinner}}
       </div>
