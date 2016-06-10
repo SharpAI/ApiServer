@@ -16,21 +16,18 @@ layoutHelper = [0, 0, 0, 0, 0, 0];
 imageMarginPixel = 5;
 
 getLayoutTop = function(helper, col, sizeX) {
-  var i, j, max, ref, ref1;
+  var max;
   max = 0;
-  for (i = j = ref = col, ref1 = col + sizeX - 1; ref <= ref1 ? j <= ref1 : j >= ref1; i = ref <= ref1 ? ++j : --j) {
-    max = Math.max(max, helper[i - 1]);
+  for (i = col; i <= col+sizeX -1; i++) {
+    max = Math.max(max, helper[(i - 1)]);
   }
   return max;
 };
 
 updateLayoutData = function(helper, col, sizeX, bottom) {
-  var i, j, ref, ref1, results;
-  results = [];
-  for (i = j = ref = col, ref1 = col + sizeX - 1; ref <= ref1 ? j <= ref1 : j >= ref1; i = ref <= ref1 ? ++j : --j) {
-    results.push(helper[i - 1] = bottom);
+  for (i = col; i <= col+sizeX -1; i++) {
+    helper[(i - 1)] = bottom;
   }
-  return results;
 };
 
 gushitie.showpost.init = function () {
@@ -50,11 +47,11 @@ gushitie.showpost.init = function () {
     obj.each(function(){
         element = this
         dataId=$(this).attr('id');
-        myData.index = $(this).attr('index');
-        myData.data_col = $(this).attr('col');
+        myData.index = Number($(this).attr('index'));
+        myData.data_col = Number($(this).attr('col'));
         myData.type = $(this).attr('type');
-        myData.data_sizex = $(this).attr('sizex');
-        myData.data_sizey = $(this).attr('sizey');
+        myData.data_sizex = Number($(this).attr('sizex'));
+        myData.data_sizey = Number($(this).attr('sizey'));
         parentNode = element.parentNode;
         if (myData.index === 0) {
             updateLayoutData(layoutHelper, 1, 6, parentNode.offsetTop);
