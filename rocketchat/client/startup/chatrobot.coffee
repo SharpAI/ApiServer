@@ -365,16 +365,23 @@ if Meteor.isClient
                 Meteor.call 'getFeedsByLogin', (err, res)->
                     if err
                         return
-                    urls = []
+                        
+                    # owner group
+                    owners = []
                     _.map res, (item)->
-                        urls.push {
+                        url = {
                             url: 'http://cdn.tiegushi.com/posts/' + item.postId
                             title: item.postTitle
-                            description: '作者：' + item.ownerName
+                            description: '发表：' + GetTime0(item.createdAt)
                             mainImageUrl: item.mainImage
                         }
-                    if urls.length > 0
-                        sendPersonalMessageWithURLSToRoom '新故事推荐：', urls
+                        if _.pluck(owners, 'ownerId').indexOf(item.owner) is -1
+                            owners.push {ownerId: item.owner, ownerName: item.ownerName, urls: [url]}
+                        else
+                            owners[_.pluck(owners, 'ownerId').indexOf(item.owner)].urls.push(url)
+                            
+                    _.map owners, (item)->
+                        sendPersonalMessageWithURLSToRoom '您曾在故事贴偶遇的朋友 "'+item.ownerName+'" 写了篇故事贴，想看看吗？', item.urls
         Tracker.autorun ()->          
             if Meteor.userId() and Session.get('openedRoom')
                 getFeedsByLogin()
