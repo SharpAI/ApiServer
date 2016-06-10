@@ -1,31 +1,39 @@
 is_loading = new ReactiveVar([])
 loginFn = (id)->  
-  Meteor.loginWithUserId(
-    id#slef._id
-    (err)->
-      $title.html(title)
-      if(!err)
-        window.plugins.userinfo.setUserInfo(
-          Meteor.userId()
-          ()->
-            console.log("setUserInfo was success ")
-          ()->
-            console.log("setUserInfo was Error!")
-        )
-        Router.go '/my_accounts_management'
-        Meteor.defer ()->
-          Session.setPersistent('persistentMySavedDrafts', SavedDrafts.find({},{sort: {createdAt: -1},limit:2}).fetch())
-          Session.setPersistent('persistentMyOwnPosts', Posts.find({owner: Meteor.userId(),publish:{"$ne":false}}, {sort: {createdAt: -1},limit:4}).fetch())
-          Session.setPersistent('myFollowedByCount',Counts.get('myFollowedByCount'))
-          Session.setPersistent('mySavedDraftsCount',Counts.get('mySavedDraftsCount'))
-          Session.setPersistent('myPostsCount',Counts.get('myPostsCount'))
-          Session.setPersistent('myFollowToCount',Counts.get('myFollowToCount'))
-        PUB.toast('切换帐号成功~')
-      else
-        console.log err
-        PUB.toast('切换帐号失败~')
-  )
+  Meteor.loginWithUserId id, (err)->
+    if err is 'RESET_LOGIN'
+      return navigator.notification.confirm('切换帐号失败~'
+        (index)->
+          if index is 1 then loginFn id
+        '提示', ['知道了', '重新切换']
+      )
+    else if err is 'NOT_LOGIN'
+      return navigator.notification.confirm('切换帐号时发生异常，需要重新登录您的帐号！'
+        ()->
+          return Router.go '/authOverlay'
+        '提示', ['重新登录']
+      )
+    else if err is 'WAIT_TIME'
+      return navigator.notification.confirm '切换帐号太频繁了（间隔至少10秒），请稍后在试！', null, '提示', ['知道了']
+    
+    window.plugins.userinfo.setUserInfo(
+      Meteor.userId()
+      ()->
+        console.log("setUserInfo was success ")
+      ()->
+        console.log("setUserInfo was Error!")
+    )
+    Router.go '/my_accounts_management'
+    Meteor.defer ()->
+      Session.setPersistent('persistentMySavedDrafts', SavedDrafts.find({},{sort: {createdAt: -1},limit:2}).fetch())
+      Session.setPersistent('persistentMyOwnPosts', Posts.find({owner: Meteor.userId(),publish:{"$ne":false}}, {sort: {createdAt: -1},limit:4}).fetch())
+      Session.setPersistent('myFollowedByCount',Counts.get('myFollowedByCount'))
+      Session.setPersistent('mySavedDraftsCount',Counts.get('mySavedDraftsCount'))
+      Session.setPersistent('myPostsCount',Counts.get('myPostsCount'))
+      Session.setPersistent('myFollowToCount',Counts.get('myFollowToCount'))
       
+    navigator.notification.confirm '切换帐号成功~', null, '提示', ['知道了']
+            
 Template.accounts_management.rendered=->
   is_loading = new ReactiveVar([])
   Tracker.autorun ()->
