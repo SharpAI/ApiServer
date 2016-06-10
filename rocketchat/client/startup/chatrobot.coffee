@@ -262,6 +262,8 @@ if Meteor.isClient
 
     Meteor.startup ->
         document.title = '故事贴专属聊天室'
+        if Session.equals('hiddenMode',true)
+            return
         Tracker.autorun (t)->
             # 当可以在多个聊天室之间切换以后，此处需要响应是重新计算数据，由于FlowRouter不支持响应式，所以使用Session
             currentRoomId = Session.get('openedRoom')
