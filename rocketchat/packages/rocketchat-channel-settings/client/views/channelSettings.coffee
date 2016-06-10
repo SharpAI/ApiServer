@@ -29,6 +29,8 @@ Template.channelSettings.helpers
 			return t('Room_archivation_state_false')
 
 Template.channelSettings.events
+	'click #shareThisRoom': (e,t)->
+		$('.dialog-layout').show()
 	'keydown input[type=text]': (e, t) ->
 		if e.keyCode is 13
 			e.preventDefault()

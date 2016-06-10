@@ -976,5 +976,8 @@
   "Your_mail_was_sent_to_s" : "您的邮件发送至 %s",
   "Your_Open_Source_solution" : "您自己的开源聊天解决方案",
   "Your_password_is_wrong" : "密码错误！",
-  "Your_push_was_sent_to_s_devices" : "成功向 %s 台设备推送"
+  "Your_push_was_sent_to_s_devices" : "成功向 %s 台设备推送",
+  // share
+  "shareThisRoom": "分享这个聊天室",
+  "shareArrowTip": "点击右上角将它发送给指定朋友或分享到朋友圈"
 }

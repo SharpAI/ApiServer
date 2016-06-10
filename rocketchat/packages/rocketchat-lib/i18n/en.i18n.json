@@ -1022,5 +1022,8 @@
   "Your_mail_was_sent_to_s" : "Your mail was sent to %s",
   "Your_Open_Source_solution" : "Your own Open Source chat solution",
   "Your_password_is_wrong" : "Your password is wrong!",
-  "Your_push_was_sent_to_s_devices" : "Your push was sent to %s devices"
+  "Your_push_was_sent_to_s_devices" : "Your push was sent to %s devices",
+  // share
+  "shareThisRoom": "Share this room",
+  "shareArrowTip": "Click on the top right to send it to a friend or share it on Moments"
 }

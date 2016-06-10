@@ -392,5 +392,8 @@
   "You_will_not_be_able_to_recover" : "您將無法恢復這則訊息！",
   "Your_entry_has_been_deleted" : "您的项目已被删除。",
   "Your_Open_Source_solution" : "您自己的開源聊天軟體",
-  "Your_push_was_sent_to_s_devices" : "你的推播被送到 %s 裝置"
+  "Your_push_was_sent_to_s_devices" : "你的推播被送到 %s 裝置",
+  // share
+  "shareThisRoom": "分享這個房間",
+  "shareArrowTip": "點擊右上角將它發送給指定朋友或分享到朋友圈"
 }

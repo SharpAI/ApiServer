@@ -20,7 +20,15 @@ Template.flexTabBar.helpers
 				if(item.id is 'visitor-info' or item.id is 'user-info' or item.id is 'members-list')
 					btns.push(item)
 		)
-
+		if isWeiXinFunc()
+			btns.push({
+				groups: ["channel","privategroup","directmessage","livechat"]
+				i18nTitle: "shareThisRoom",
+				icon: "icon-share",
+				id: "share-room",
+				order:11,
+				template: "shareRoom"
+			})
 		return btns
 		#return RocketChat.TabBar.getButtons()
 	title: ->
@@ -32,8 +40,10 @@ Template.flexTabBar.helpers
 Template.flexTabBar.events
 	'click .tab-button': (e, t) ->
 		e.preventDefault()
-
-		if RocketChat.TabBar.isFlexOpen() and RocketChat.TabBar.getTemplate() is @template
+		if e.currentTarget.id is 'share-room'
+			$('.dialog-layout').show()
+			return
+		else if RocketChat.TabBar.isFlexOpen() and RocketChat.TabBar.getTemplate() is @template
 			RocketChat.TabBar.closeFlex()
 			$('.flex-tab').css('max-width', '')
 		else
