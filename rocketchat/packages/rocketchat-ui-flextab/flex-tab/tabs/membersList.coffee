@@ -1,12 +1,4 @@
 Template.membersList.helpers
-	getDisplayName: (username)->
-		userInfo=Meteor.users.findOne({username:username})
-		if userInfo?.name?
-			return userInfo.name
-		else if username is 'GS'
-			return '故事贴小秘'
-		else
-			return username
 	tAddUsers: ->
 		return t('Add_users')
 
@@ -39,12 +31,14 @@ Template.membersList.helpers
 				if userInfo.avatarUrl?
 					users.push
 						avatarUrl: userInfo.avatarUrl
+						name:userInfo.name or username
 						username: username
 						status: onlineUsers[username]?.status
 						utcOffset: utcOffset
 				else
 					users.push
 						avatarUrl: userInfo.avatarUrl
+						name:userInfo.name or username
 						username: username
 						status: onlineUsers[username]?.status
 						utcOffset: utcOffset
