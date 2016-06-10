@@ -186,6 +186,7 @@ if Meteor.isClient
         else
           setupWeichat(url)
 if Meteor.isServer
+  Fiber = Npm.require('fibers')
   token = ''
   ticket = ''
   jsSHA = Meteor.npmRequire('jssha')
@@ -194,16 +195,18 @@ if Meteor.isServer
   requestUrl = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='+appId+'&secret='+appSecret
 
   updateTicketFromSignServer = ()->
-    HTTP.get('http://sign.tiegushi.com:8080/verify',(err,resp)->
-      if err
-        token = ''
-        ticket = ''
-      else
-        if resp.data
-          json=resp.data
-          ticket = json.ticket
-          token= json.token
-    )
+    Fiber(()->
+      HTTP.get('http://sign.tiegushi.com:8080/verify',(err,resp)->
+        if err
+          token = ''
+          ticket = ''
+        else
+          if resp.data
+            json=resp.data
+            ticket = json.ticket
+            token= json.token
+            console.log('got ticket:'+ticket+' token:'+token)
+    )).run()
   `
       // 随机字符串产生函数
       var createNonceStr = function() {
