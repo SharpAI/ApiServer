@@ -1,197 +1,212 @@
-describe('servermethod', function(){
+
+function runStartup(){
+	Meteor.runStartupMethods();
+}
+
+describe('server', function(){
 	
 	beforeEach(function () {
 		/* 这个describe中的测试代码执行之前执行 */
-		spyOn(Meteor, 'call');// 存根需要跟踪的函数
+		MeteorStubs.install();
 	});
   
 	afterEach(function () {
 		/* 这个describe中的测试代码执行之后执行 */
+		MeteorStubs.uninstall();
 	});
+	
 		
-	describe('sendEmailToAdmin', function(){
-		it('is executed', function(){
-			var froma	= "xxx@tiegushi.com";
-			var subject	= "test";
-			var text	= "first test";
+	describe('the server start', function(){
+		it('all function is called', function(){
+			spyOn(Meteor, 'methods');
+			spyOn(Accounts,'onLogin');
+			spyOn(Accounts, 'onCreateUser');
+			spyOn(Accounts, 'config');
 
-			spyOn(Email, 'send');
-			Meteor.call('sendEmailToAdmin', froma, subject, text, function(err,reslt){});
-			expect(Email.send.calls.count()).toEqual(0);
+			Meteor.runStartupMethods();
+			expect(Meteor.methods.calls.count()).toEqual(1);
+			expect(Accounts.config.calls.argsFor(0)).toEqual([{loginExpirationInDays :null}]);
+			expect(Accounts.onLogin.calls.count()).toEqual(1);
+			expect(Accounts.onCreateUser.calls.count()).toEqual(1);
 		});
-	});
 
-	describe('unpublish', function(){
-		it('the fundction is executed', function(){
-			var postId	= "8888";
-			var userId	= "123";
-			var drafts	= "first test";
-			var func	= function(err,reslt){};
-			
-			spyOn(Posts, 'update');
-			spyOn(SavedDrafts, 'insert');
-			spyOn(FollowPosts, 'update');
-			spyOn(FavouritePosts, 'remove');
-			Meteor.call('unpublish',postId,userId,drafts,func);
-			expect(Posts.update.calls.count()).toEqual(0);
-			expect(SavedDrafts.insert.calls.count()).toEqual(0);
-			expect(FollowPosts.update.calls.count()).toEqual(0);
-			expect(FavouritePosts.remove.calls.count()).toEqual(0);			
-		});
-	});
+		it('call Moments _ensureIndex is three times', function(){
+			spyOn(Moments, "_ensureIndex");
 
-	describe('unpublishPosts', function(){
-		it('test passed', function(){
-			var postId	= "8888";
-			var userId	= "123";
-			var drafts	= "first test";
-			var res		= 1;
-			var func	= function(err,reslt){return err};
-			
-			res	= Meteor.call('unpublishPosts',postId,userId,drafts,func);
-			expect(res).toBeNull;
+			runStartup();
+			expect(Moments._ensureIndex.calls.count()).toEqual(3);
 		});
-	});
-	
-	describe('readPostReport', function(){
-		it('no code', function(){
-			// add unit test code
+		
+		it('call Viewers _ensureIndex is three times', function(){
+			spyOn(Viewers, "_ensureIndex");
 			
+			runStartup();
+			expect(Viewers._ensureIndex.calls.count()).toEqual(3);
 		});
-	});
-	
-	describe('getS3WritePolicy', function(){
-		it('test returnValue', function(){
-			// add unit test code
-			var filename	= "file";
-			var URI			= "/url";
-			var res;			
+		
+		it('call Follower _ensureIndex is three times', function(){
+			spyOn(Follower, "_ensureIndex");
 			
-			res	= Meteor.call('getS3WritePolicy',filename,URI,function(err,res){throw  res;});
-			expect(res).not.toBeNull;
+			runStartup();
+			expect(Follower._ensureIndex.calls.count()).toEqual(3);
 		});
-	});
-	
-	describe('getBCSSigniture', function(){
-		it('test returnValue', function(){
-			// add unit test code
-			var filename	= "file";
-			var URI			= "/url";
-			var res;			
+		
+		it('call Follows _ensureIndex is one times', function(){
+			spyOn(Follows, "_ensureIndex");
 			
-			res	= Meteor.call('getBCSSigniture',filename,URI,function(err,res){throw  res;});
-			expect(res).not.toBeNull;
+			runStartup();
+			expect(Follows._ensureIndex.calls.count()).toEqual(1);
+		});
+		
+		it('call TopicPosts _ensureIndex is one times', function(){
+			spyOn(TopicPosts, "_ensureIndex");
+			
+			runStartup();
+			expect(TopicPosts._ensureIndex.calls.count()).toEqual(1);
+		});
+		
+		it('call ReComment _ensureIndex is two times', function(){
+			spyOn(ReComment, "_ensureIndex");
+			
+			runStartup();
+			expect(ReComment._ensureIndex.calls.count()).toEqual(2);
+		});
+		
+		it('call Meets _ensureIndex is four times', function(){
+			spyOn(Meets, "_ensureIndex");
+			
+			runStartup();
+			expect(Meets._ensureIndex.calls.count()).toEqual(4);
+		});
+		
+		it('call Posts _ensureIndex is two times', function(){
+			spyOn(Posts, "_ensureIndex");
+			
+			runStartup();
+			expect(Posts._ensureIndex.calls.count()).toEqual(2);
+		});
+		
+		it('call FollowPosts _ensureIndex is one times', function(){
+			spyOn(FollowPosts, "_ensureIndex");
 
+			runStartup();
+			expect(FollowPosts._ensureIndex.calls.count()).toEqual(1);
 		});
-	});
-	
-	describe('changeMyPassword', function(){
-		it('use setPassword', function(){
-			// add unit test code
-			spyOn(Accounts, 'setPassword');
-			Meteor.call('changeMyPassword',"123");
-			expect(Accounts.setPassword.calls.any()).toBeTruthy;
-		});
-	});
-	
-	describe('getAliyunWritePolicy', function(){
-		it('return value', function(){
-			// add unit test code
-			var filename	= "file";
-			var URI			= "/url";
-			var res;			
-			
-			res	= Meteor.call('getAliyunWritePolicy',filename,URI,function(err,res){throw  res;});
-			expect(res).not.toBeNull;
-		});
-	});
-	
-	describe('getGeoFromConnection', function(){
-		it('return clientIp', function(){
-			// add unit test code
-		});
-	});
-	
-	describe('readMessage', function(){
-		it('use function', function(){
-			// add unit test code
-			var toBeNull={type:"user"}
-			
-			spyOn(MsgSession, 'update');
-			spyOn(Messages, 'update');
-			Meteor.call('readMessage',"123");
-			expect(MsgSession.update.calls.any()).toBeTruthy;
-			expect(Messages.update.calls.any()).toBeTruthy;
-		});
-	});
-	
-	describe('initReaderPopularPosts', function(){
-		it('call function and return value', function(){
-			// add unit test code
-			var res	= false;
-			
-			spyOn(ReaderPopularPosts, 'find');
-			spyOn(ReaderPopularPosts, 'remove');
-			spyOn(Viewers, 'find');
-			spyOn(Posts, 'find');
-			spyOn(ReaderPopularPosts, 'insert');
-			
-			res	= Meteor.call('initReaderPopularPosts',function(err,res){return res;});
-			expect(ReaderPopularPosts.find.calls.any()).toBeTruthy;
-			expect(ReaderPopularPosts.remove.calls.any()).toBeTruthy;
-			expect(Viewers.find.calls.any()).toBeTruthy;
-			expect(Posts.find.calls.any()).toBeTruthy;
-			expect(ReaderPopularPosts.insert.calls.any()).toBeTruthy;
-			expect(res).toBeTruthy;
-		});
-	});
-	
-	describe('pushPostToReaderGroups', function(){
-		it('call function', function(){
-			// add unit test code
-			var feed,grups;
-			spyOn(Viewers, 'find');
+		
+		it('call SavedDrafts _ensureIndex is one times', function(){
+			spyOn(SavedDrafts, "_ensureIndex");
 
-			Meteor.call('pushPostToReaderGroups',feed,grups,function(err,res){});
-			expect(Viewers.find.calls.any()).toBeTruthy;
+			runStartup();
+			expect(SavedDrafts._ensureIndex.calls.count()).toEqual(1);
 		});
-	});
-	
-	describe('addAssociatedUser', function(){
-		it('no test code', function(){
-			// add unit test code
+		
+		it('call Feeds _ensureIndex is five times', function(){
+			spyOn(Feeds, "_ensureIndex");
+
+			runStartup();
+			expect(Feeds._ensureIndex.calls.count()).toEqual(5);
 		});
-	});
-	
-	describe('removeAssociatedUser', function(){
-		it('call AssociatedUsers.remove', function(){
-			// add unit test code
-			var userId;
-			spyOn(AssociatedUsers, 'remove');
+		
+		it('call Comment _ensureIndex is one times', function(){
+			spyOn(Comment, "_ensureIndex");
+
+			runStartup();
+			expect(Comment._ensureIndex.calls.count()).toEqual(1);
+		});
+		
+		it('call Reports _ensureIndex is one times', function(){
+			spyOn(Reports, "_ensureIndex");
+
+			runStartup();
+			expect(Reports._ensureIndex.calls.count()).toEqual(1);
+		});
+		
+		it('call Messages _ensureIndex is two times', function(){
+			spyOn(Messages, "_ensureIndex");
+
+			runStartup();
+			expect(Messages._ensureIndex.calls.count()).toEqual(2);
+		});
+		
+		it('call MsgSession _ensureIndex is one times', function(){
+			spyOn(MsgSession, "_ensureIndex");
+
+			runStartup();
+			expect(MsgSession._ensureIndex.calls.count()).toEqual(1);
+		});
+
+		it('call MsgGroup _ensureIndex is one times', function(){
+			spyOn(MsgGroup, "_ensureIndex");
+
+			runStartup();
+			expect(MsgGroup._ensureIndex.calls.count()).toEqual(1);
+		});
+		
+		it('call PComments _ensureIndex is one times', function(){
+			spyOn(PComments, "_ensureIndex");
+
+			runStartup();
+			expect(PComments._ensureIndex.calls.count()).toEqual(1);
+		});
+		
+		it('register methods(sixteen) by Meteor.methods', function(){
+			spyOn(Meteor, 'methods');
+			runStartup();
 			
-			Meteor.call('refreshAssociatedUserToken',userId,function(err,res){});
-			expect(AssociatedUsers.remove.calls.any()).toBeTruthy;
+			expect(Meteor.methods.calls.argsFor(0)[0]['sendEmailToAdmin']).toBeDefined();
+			expect(Meteor.methods.calls.argsFor(0)[0]['unpublishPosts']).toBeDefined();
+			expect(Meteor.methods.calls.argsFor(0)[0]['unpublish']).toBeDefined();
+			expect(Meteor.methods.calls.argsFor(0)[0]['readPostReport']).toBeDefined();
+			expect(Meteor.methods.calls.argsFor(0)[0]['getS3WritePolicy']).toBeDefined();
+			expect(Meteor.methods.calls.argsFor(0)[0]['getBCSSigniture']).toBeDefined();
+			expect(Meteor.methods.calls.argsFor(0)[0]['changeMyPassword']).toBeDefined();
+			expect(Meteor.methods.calls.argsFor(0)[0]['getAliyunWritePolicy']).toBeDefined();
+			expect(Meteor.methods.calls.argsFor(0)[0]['getGeoFromConnection']).toBeDefined();
+			expect(Meteor.methods.calls.argsFor(0)[0]['readMessage']).toBeDefined();
+			expect(Meteor.methods.calls.argsFor(0)[0]['initReaderPopularPosts']).toBeDefined();
+			expect(Meteor.methods.calls.argsFor(0)[0]['pushPostToReaderGroups']).toBeDefined();
+			expect(Meteor.methods.calls.argsFor(0)[0]['addAssociatedUser']).toBeDefined();
+			expect(Meteor.methods.calls.argsFor(0)[0]['removeAssociatedUser']).toBeDefined();
+			expect(Meteor.methods.calls.argsFor(0)[0]['addBlackList']).toBeDefined();
+			expect(Meteor.methods.calls.argsFor(0)[0]['refreshAssociatedUserToken']).toBeDefined();
 		});
 	});
 	
-	describe('addBlackList', function(){
-		it('call AssociatedUsers.find', function(){
-			// add unit test code
-			var blacker, blackBy;
-			spyOn(BlackList, 'insert');
+	describe('method', function(){
+		it('get Random Anonymous Name is 关羽', function(){
+			spyOn(RefNames,'findOne').and.returnValue({'text':"关羽"});
 			
-			Meteor.call('addBlackList',blacker, blackBy,function(err,res){});
-			expect(BlackList.insert.calls.any()).toBeTruthy;
+			var name	= Meteor.startupFunctions['getRandomAnonymousName']();
+			expect(name).toEqual("关羽");
 		});
+		
+		it('get Random Anonymous Name is null', function(){
+			var name	= Meteor.startupFunctions['getRandomAnonymousName']();
+			expect(name).toBeNull;
+		});
+
+		xit('Create User', function(){
+			var opt	= {
+				profile:{
+					anonymous: true,
+				}
+			};
+			
+			spyOn(Accounts, 'onCreateUser');
+			Meteor.executeFunction(Accounts.onCreateUser,function(err,res){
+				if(err){
+					console.log("err");
+					console.log(err);
+				}
+				console.log("pass");
+				console.log(res);
+			});
+			runStartup();
+			
+			//var user	= Accounts.onCreateUser();
+			//console.log(user);
+			//expect(user).toEqual(anonymousUser);
+			expect(Accounts.onCreateUser.calls.count()).toEqual(1);
+		});		
 	});
-	
-	describe('refreshAssociatedUserToken', function(){
-		it('call AssociatedUsers.find', function(){
-			// add unit test code
-			spyOn(AssociatedUsers, 'find');
-			
-			Meteor.call('refreshAssociatedUserToken',"123",function(err,res){});
-			expect(AssociatedUsers.find.calls.any()).toBeTruthy;
-		});
-	});	
 });
