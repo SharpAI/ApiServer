@@ -353,7 +353,7 @@ if Meteor.isClient
                             return false
                         Session.set('user_record_'+obj._id,true)
                         Meteor.call 'calcRelationship',obj._id,(err,result)->
-                            if result and result.length > 0
+                            if result
                                 processFriendSocialGraph(result)
                                 setTimeout friendSocialGraphMessage,1000
                             #sendPersonalMessageToRoom('您的朋友 '+result.taName+' 正在聊天，你们初次相逢，他推荐您看这个帖子：')
