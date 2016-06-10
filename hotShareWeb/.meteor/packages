@@ -48,10 +48,11 @@ npm-container
 meteorhacks:subs-manager
 u2622:persistent-session
 tap:i18n
-mkarliner:mqtt
 gadicohen:sitemaps
 meteorhacks:ssr
 sanjo:jasmine
 velocity:html-reporter
 practicalmeteor:sinon
 meteorhacks:inject-data
+lmieulet:meteor-coverage
+mkarliner:mqtt
