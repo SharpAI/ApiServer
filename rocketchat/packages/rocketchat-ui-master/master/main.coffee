@@ -170,7 +170,8 @@ Template.main.helpers
 
 
 Template.main.events
-
+	"click .dialog-layout": (e,t)->
+		e.currentTarget.style.display = 'none'		
 	"click .burger": ->
 		#history.back()
 		if history.length < 3

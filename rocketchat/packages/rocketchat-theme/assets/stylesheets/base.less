@@ -191,7 +191,26 @@ blockquote {
 .text-center {
 	text-align: center;
 }
-
+.dialog-layout {
+	display: none;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	.share-bg{
+		position: absolute;
+		height: 100%;
+		width: 100%;
+		background: rgba(0,0,0,.26);
+		z-index: 9999;
+		.share-info{
+			position: absolute;
+			top:0;
+			right: 0;
+			font-weight: 600;
+			p{ text-align: center; width: 58%; padding-right: 32px;  font-size: 16px;  line-height: 22px;   color: #fff;  float: right;}
+		}
+	}
+}
 .connection-status > .alert {
 	padding: 2px;
 	position: absolute;

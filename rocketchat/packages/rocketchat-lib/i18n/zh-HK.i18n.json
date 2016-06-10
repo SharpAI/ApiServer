@@ -318,5 +318,8 @@
   "You_need_confirm_email" : "登录前请验证您的电子邮件！",
   "You_will_not_be_able_to_recover" : "您将无法恢复！",
   "Your_entry_has_been_deleted" : "您的项目已被删除。",
-  "Your_Open_Source_solution" : "您自己的开源聊天解决方案"
+  "Your_Open_Source_solution" : "您自己的开源聊天解决方案",
+  // share
+  "shareThisRoom": "分享這個房間",
+  "shareArrowTip": "點擊右上角將它發送給指定朋友或分享到朋友圈"
 }
