@@ -1,11 +1,12 @@
 if Meteor.isClient
   Meteor.startup ()->
-    jQuery.loadScript =  (url, callback)->
+    loadScript =  (url, callback)->
       jQuery.ajax({
           url: url,
           dataType: 'script',
           success: callback,
-          async: true
+          async: true,
+          cache: true
         });
     window.FeedAfterShare=(postContent)->
       unless Feeds.findOne({followby:Meteor.userId(),postId:postContent._id,eventType: 'share'})
@@ -181,7 +182,7 @@ if Meteor.isClient
       if isWeiXinFunc()
         # Session.set('turnOnRandom',true)
         if (typeof wx is 'undefined')
-          $.loadScript 'http://res.wx.qq.com/open/js/jweixin-1.0.0.js', ()->
+          loadScript 'http://res.wx.qq.com/open/js/jweixin-1.0.0.js', ()->
             setupWeichat(url)
         else
           setupWeichat(url)

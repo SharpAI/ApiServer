@@ -21,10 +21,18 @@ window.trackPage=(url,title)->
     console.log('trackpage exception')
 
 initPiwik=(url,title)->
+  loadScript =  (url, callback)->
+    jQuery.ajax({
+      url: url,
+      dataType: 'script',
+      success: callback,
+      async: true,
+      cache: true
+    });
   if typeof(Piwik) isnt 'undefined'
     console.log('Has piwik');
   else
-    $.getScript('http://piwik.tiegushi.com/piwik.js' ,()->
+    loadScript('http://piwik.tiegushi.com/piwik.js' ,()->
       console.log('Got piwik')
       window.piwik = Piwik.getTracker( 'http://piwik.tiegushi.com/piwik.php', 9 )
       piwik.enableHeartBeatTimer(5)
