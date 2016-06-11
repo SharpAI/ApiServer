@@ -159,12 +159,13 @@ Meteor.startup ()->
           resp.mutualPosts = mutualPosts
           console.log('get mutualPosts list')
           console.log(mutualPosts)
-        #Calc the post not read but read by ta
-        queryString="MATCH (u:User)-[v:VIEWER]->(p:Post),(u1:User)-[v1:VIEWER]->(p1:Post) WHERE u.userId=\"#{myGushitieID}\" AND u1.userId=\"#{taGushitieId}\" AND p.postId<>p1.postId RETURN p1 ORDER BY p1.createdBy DESC LIMIT 5"
-        taRead=Neo4j.query queryString
-        resp.taRead = taRead
-        #console.log(queryString)
-        #console.log(resp.taRead )
+        else
+          #Calc the post not read but read by ta
+          queryString="MATCH (u:User)-[v:VIEWER]->(p:Post),(u1:User)-[v1:VIEWER]->(p1:Post) WHERE u.userId=\"#{myGushitieID}\" AND u1.userId=\"#{taGushitieId}\" AND p.postId<>p1.postId RETURN p1 ORDER BY p1.createdBy DESC LIMIT 5"
+          taRead=Neo4j.query queryString
+          resp.taRead = taRead
+          #console.log(queryString)
+          #console.log(resp.taRead )
         return resp
       else
         console.log('User '+userId+' dont have guishitie id')
