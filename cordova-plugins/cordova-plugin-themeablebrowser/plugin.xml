@@ -64,10 +64,17 @@
 
         <header-file src="src/ios/CDVThemeableBrowser.h" />
         <source-file src="src/ios/CDVThemeableBrowser.m" />
+        <header-file src="src/ios/CustomActionSheet.h" />
+        <source-file src="src/ios/CustomActionSheet.m" />
         <resource-file src="src/ios/Resources/back@2x.png" />
         <resource-file src="src/ios/Resources/back_pressed@2x.png" />
         <resource-file src="src/ios/Resources/share@2x.png" />
         <resource-file src="src/ios/Resources/share_pressed@2x.png" /> 
+        <resource-file src="src/ios/Resources/share_more.png" />
+        <resource-file src="src/ios/Resources/share_qq_friends.png" />
+        <resource-file src="src/ios/Resources/share_qq_qzone.png" />
+        <resource-file src="src/ios/Resources/share_weixin_friends.png" /> 
+        <resource-file src="src/ios/Resources/share_weixin_timeline.png" /> 
 
         <framework src="CoreGraphics.framework" />
     </platform>

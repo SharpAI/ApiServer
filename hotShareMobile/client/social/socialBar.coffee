@@ -16,6 +16,9 @@ if Meteor.isClient
       trackEvent("socialBar","GroupChat")
       url = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
       #window.location.href = url
+      shareUrl = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id
+      imgUrl = 'http://cdn.tiegushi.com/images/logo.png'
+      title = '故事贴专属聊天室'
       ref = cordova.ThemeableBrowser.open(url,'_blank',{
           closeButton: {
             image: 'back',
@@ -31,23 +34,28 @@ if Meteor.isClient
             items: [
               {
                 event: 'shareWechatFriend',
-                label: '分享给微信好友'
+                label: '微信好友',
+                image:'share_weixin_friends'
               },
               {
                 event: 'shareWechatFriendField',
-                label: '分享到微信朋友圈'
+                label: '微信朋友圈',
+                image:'share_weixin_timeline'
               },
               {
                 event: 'shareQQ',
-                label: '分享到QQ'
+                label: 'QQ好友',
+                image:'share_qq_friends'
               },
               {
                 event: 'shareQQZone',
-                label: '分享到QQ空间'
+                label: 'QQ空间',
+                image:'share_qq_qzone'
               },
               {
                 event: 'shareMore',
-                label: '分享到更多应用'
+                label: '更多',
+                image:'share_more'
               }
             ]
           },
@@ -69,42 +77,49 @@ if Meteor.isClient
           Router.go '/posts/'+event.postId
         ,300
       )
+      ref.addEventListener('loadstop', (event) ->
+        try
+          console.log 'loadstop'
+          ref.executeScript( { code: "var getSomething = function(){var data = {title: document.title ? document.title : '故事贴专属聊天室',imgUrl: document.images && document.images.length > 0 ? document.images[0].src : 'http://cdn.tiegushi.com/images/logo.png'};return data;};getSomething();" }, (values) ->
+             console.log 'document.title：' + values[0].title
+             console.log 'document.images: ' + values[0].imgUrl
+             imgUrl = values[0].imgUrl
+             title = values[0].title
+          )
+        catch e
+          console.log e
+      )
       ref.addEventListener('shareWechatFriend', (event) ->
         console.log("shareWechatFriend Pressed!")
-        imgUrl = if document.images and document.images.length > 0 then document.images[0].src else 'http://cdn.tiegushi.com/images/logo.png'
         downloadFromBCS imgUrl, (result) ->
           if result
-            shareToWechatTimeLine '故事贴专属聊天室', '来自故事贴', result, url
+            shareToWechatSession title, '来自故事贴', result, shareUrl
           else
             PUB.toast TAPi18n.__('failToGetPicAndTryAgain')
           return  
       )
       ref.addEventListener('shareWechatFriendField', (event) ->
         console.log("shareWechatFriendField Pressed！")
-        imgUrl = if document.images and document.images.length > 0 then document.images[0].src else 'http://cdn.tiegushi.com/images/logo.png'
         downloadFromBCS imgUrl, (result) ->
           if result
-            shareToWechatSession '故事贴专属聊天室', '来自故事贴', result, url
+            shareToWechatTimeLine title, '来自故事贴', result, shareUrl
           else
             PUB.toast TAPi18n.__('failToGetPicAndTryAgain')
           return 
       )
       ref.addEventListener('shareQQ', (event) ->
         console.log("shareQQ Pressed！")
-        imgUrl = if document.images and document.images.length > 0 then document.images[0].src else 'http://cdn.tiegushi.com/images/logo.png'
-        shareToQQ('故事贴专属聊天室', "来自故事贴",imgUrl,url);
+        shareToQQ(title, "来自故事贴",imgUrl,shareUrl);
       )
       ref.addEventListener('shareQQZone', (event) ->
         console.log("shareQQZone Pressed！")
-        imgUrl = if document.images and document.images.length > 0 then document.images[0].src else 'http://cdn.tiegushi.com/images/logo.png'
-        shareToQQZone('故事贴专属聊天室', "来自故事贴",imgUrl,url);
+        shareToQQZone(title, "来自故事贴",imgUrl,shareUrl);
       )
       ref.addEventListener('shareMore', (event) ->
         console.log("shareMore Pressed！")
-        imgUrl = if document.images and document.images.length > 0 then document.images[0].src else 'http://cdn.tiegushi.com/images/logo.png'
         downloadFromBCS imgUrl, (result) ->
           if result
-            shareToSystem '故事贴专属聊天室', '来自故事贴', result, url
+            shareToSystem title, '来自故事贴', result, shareUrl
           else
             PUB.toast TAPi18n.__('failToGetPicAndTryAgain')
           return 

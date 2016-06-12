@@ -20,7 +20,7 @@
 #import <Cordova/CDVPlugin.h>
 #import <Cordova/CDVInvokedUrlCommand.h>
 #import <Cordova/CDVScreenOrientationDelegate.h>
-
+#import "CustomActionSheet.h"
 #ifdef __CORDOVA_4_0_0
     #import <Cordova/CDVUIWebViewDelegate.h>
 #else
@@ -80,7 +80,7 @@
 
 @end
 
-@interface CDVThemeableBrowserViewController : UIViewController <UIWebViewDelegate, CDVScreenOrientationDelegate, UIActionSheetDelegate>{
+@interface CDVThemeableBrowserViewController : UIViewController <UIWebViewDelegate, CDVScreenOrientationDelegate, UIActionSheetDelegate,DownSheetDelegate>{
     @private
     NSString* _userAgent;
     NSString* _prevUserAgent;
