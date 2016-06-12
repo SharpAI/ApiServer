@@ -62,6 +62,9 @@ if Meteor.isServer
         SSR.compileTemplate('postItem', Assets.getText('static/postItem.html'))
         Template.postItem.helpers
             hasVideoInfo: (videoInfo)->
+              if videoInfo
+                return true
+              else
                 false
             myselfClickedUp:->
                 false
