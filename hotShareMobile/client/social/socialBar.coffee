@@ -18,16 +18,44 @@ if Meteor.isClient
       #window.location.href = url
       ref = cordova.ThemeableBrowser.open(url,'_blank',{
           closeButton: {
-            image: 'ic_action_previous_item.png',
-            imagePressed: 'ic_action_previous_item.png',
+            image: 'back',
+            imagePressed: 'back_pressed',
             align: 'left',
             event: 'closePressed'
+          },
+          menu: {
+            image: 'share',
+            imagePressed: 'share_pressed',
+            align: 'right',
+            cancel: '取消',
+            items: [
+              {
+                event: 'shareWechatFriend',
+                label: '分享给微信好友'
+              },
+              {
+                event: 'shareWechatFriendField',
+                label: '分享到微信朋友圈'
+              },
+              {
+                event: 'shareQQ',
+                label: '分享到QQ'
+              },
+              {
+                event: 'shareQQZone',
+                label: '分享到QQ空间'
+              },
+              {
+                event: 'shareMore',
+                label: '分享到更多应用'
+              }
+            ]
           },
           statusbar: {
             color: '#000000'
           },
           toolbar: {
-            height: 40,
+            height: 44,
             color: '#F0F0F0'
           }
         })
@@ -40,6 +68,46 @@ if Meteor.isClient
         Meteor.setTimeout ()->
           Router.go '/posts/'+event.postId
         ,300
+      )
+      ref.addEventListener('shareWechatFriend', (event) ->
+        console.log("shareWechatFriend Pressed!")
+        imgUrl = if document.images and document.images.length > 0 then document.images[0].src else 'http://cdn.tiegushi.com/images/logo.png'
+        downloadFromBCS imgUrl, (result) ->
+          if result
+            shareToWechatTimeLine '故事贴专属聊天室', '来自故事贴', result, url
+          else
+            PUB.toast TAPi18n.__('failToGetPicAndTryAgain')
+          return  
+      )
+      ref.addEventListener('shareWechatFriendField', (event) ->
+        console.log("shareWechatFriendField Pressed！")
+        imgUrl = if document.images and document.images.length > 0 then document.images[0].src else 'http://cdn.tiegushi.com/images/logo.png'
+        downloadFromBCS imgUrl, (result) ->
+          if result
+            shareToWechatSession '故事贴专属聊天室', '来自故事贴', result, url
+          else
+            PUB.toast TAPi18n.__('failToGetPicAndTryAgain')
+          return 
+      )
+      ref.addEventListener('shareQQ', (event) ->
+        console.log("shareQQ Pressed！")
+        imgUrl = if document.images and document.images.length > 0 then document.images[0].src else 'http://cdn.tiegushi.com/images/logo.png'
+        shareToQQ('故事贴专属聊天室', "来自故事贴",imgUrl,url);
+      )
+      ref.addEventListener('shareQQZone', (event) ->
+        console.log("shareQQZone Pressed！")
+        imgUrl = if document.images and document.images.length > 0 then document.images[0].src else 'http://cdn.tiegushi.com/images/logo.png'
+        shareToQQZone('故事贴专属聊天室', "来自故事贴",imgUrl,url);
+      )
+      ref.addEventListener('shareMore', (event) ->
+        console.log("shareMore Pressed！")
+        imgUrl = if document.images and document.images.length > 0 then document.images[0].src else 'http://cdn.tiegushi.com/images/logo.png'
+        downloadFromBCS imgUrl, (result) ->
+          if result
+            shareToSystem '故事贴专属聊天室', '来自故事贴', result, url
+          else
+            PUB.toast TAPi18n.__('failToGetPicAndTryAgain')
+          return 
       )
       #Session.set("Social.LevelOne.Menu",'chatContent')
       #Session.set("SocialOnButton",'chatContent')

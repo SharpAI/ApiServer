@@ -64,6 +64,10 @@
 
         <header-file src="src/ios/CDVThemeableBrowser.h" />
         <source-file src="src/ios/CDVThemeableBrowser.m" />
+        <resource-file src="src/ios/Resources/back@2x.png" />
+        <resource-file src="src/ios/Resources/back_pressed@2x.png" />
+        <resource-file src="src/ios/Resources/share@2x.png" />
+        <resource-file src="src/ios/Resources/share_pressed@2x.png" /> 
 
         <framework src="CoreGraphics.framework" />
     </platform>
