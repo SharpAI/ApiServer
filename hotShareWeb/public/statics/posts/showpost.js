@@ -7,6 +7,12 @@ getBaseWidth = function() {
   return ($('.showPosts').width() - 30) / 6;
 };
 
+window.getDocHeight = function() {
+  var D;
+  D = document;
+  return Math.max(Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.offsetHeight, D.documentElement.offsetHeight), Math.max(D.body.clientHeight, D.documentElement.clientHeight));
+};
+
 getBaseHeight = function() {
   return ($('.showPosts').width() - 30) / 6;
 };
@@ -81,20 +87,8 @@ gushitie.showpost.init = function () {
         $('.showPosts').get(0).style.overflow = 'hidden';
         $('.showPosts').get(0).style.maxHeight = '1500px';
         $('.showPosts').get(0).style.position = 'relative';
-        var i_el = document.createElement('i');
-        i_el.className = 'fa fa-plus-circle';
-        i_el.textContent = '继续阅读';
 
-        var dd_el = document.createElement('div');
-        dd_el.className = 'readMoreContent';
-        dd_el.appendChild(i_el);
-
-        var d_el = document.createElement('div');
-        d_el.className = 'readmore';
-        d_el.appendChild(dd_el);
-
-        //$showPosts.after('<div class="readmore"><div class="readMoreContent"><i class="fa fa-plus-circle"></i>继续阅读</div></div>');
-        $showPosts.after(d_el);
+        $showPosts.after('<div class="readmore"><div class="readMoreContent"><i class="fa fa-plus-circle"></i>继续阅读</div></div>');
     }
 
     $('.showPostsBox .readmore').click(function (e) {
@@ -103,5 +97,84 @@ gushitie.showpost.init = function () {
         $('.showPosts').get(0).style.maxHeight = '';
         $('.showPosts').get(0).style.position = '';
         $('.readmore').remove();
+    });
+
+    // register window scroll callback
+    function toggleHeaderNav(show) {
+        if(show) {
+            if (!$('.showPosts .head').is(':visible')) {
+                $('.showPosts .head').fadeIn(300);
+            }
+        }
+        else {
+            if ($('.showPosts .head').is(':visible')) {
+                $('.showPosts .head').fadeOut(300);
+            }
+        }
+    }
+
+    function toggleFooterNav(show) {
+        if(show) {
+            if (!$('.socialContent .chatFooter').is(':visible')) {
+                $('.socialContent .chatFooter').fadeIn(300);
+            }
+        }
+        else {
+            if ($('.socialContent .chatFooter').is(':visible')) {
+                $('.socialContent .chatFooter').fadeOut(300);
+            }           
+        }
+    }
+
+    function scrollEventCallback() {
+        var st = $(window).scrollTop();
+
+        if (st <= 40) {
+            toggleHeaderNav(true);
+            toggleFooterNav(true);
+            window.lastScroll = st;
+            return;
+        }
+
+        // reach bottom
+        if ((st + $(window).height()) === window.getDocHeight()) {
+            toggleHeaderNav(true);
+            toggleFooterNav(true);
+            window.lastScroll = st;
+            return;
+        }
+
+
+        // scroll up
+        if (window.lastScroll - st > 5) {
+            toggleHeaderNav(true);
+            toggleFooterNav(true);
+        }
+
+        // scroll down
+        if (window.lastScroll - st < -5) {
+            toggleHeaderNav(false);
+            toggleFooterNav(false);
+        }
+
+        if (Math.abs(window.lastScroll - st) < 5) {
+            return;
+        }
+
+        window.lastScroll = st;
+    }
+    $(window).scroll(scrollEventCallback);
+
+
+    // register for video play
+    $(".postVideoItem.element .play_area").click(function() {
+        var _self = this, $_self = $(this);
+
+        $video = $_self.find("video");
+
+        if ($video.get(0)) {
+            $video.siblings('.video_thumb').fadeOut(100);
+            $video.get(0).paused ? $video.get(0).play() : $video.get(0).pause();
+        }
     });
 };
