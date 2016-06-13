@@ -76,16 +76,12 @@
         <resource-file src="src/ios/Resources/back@2x.png" />
         <resource-file src="src/ios/Resources/back_pressed@2x.png" />
         <resource-file src="src/ios/Resources/share@2x.png" />
-<<<<<<< HEAD
         <resource-file src="src/ios/Resources/share_pressed@2x.png" /> 
         <resource-file src="src/ios/Resources/share_more.png" />
         <resource-file src="src/ios/Resources/share_qq_friends.png" />
         <resource-file src="src/ios/Resources/share_qq_qzone.png" />
         <resource-file src="src/ios/Resources/share_weixin_friends.png" /> 
         <resource-file src="src/ios/Resources/share_weixin_timeline.png" /> 
-=======
-        <resource-file src="src/ios/Resources/share_pressed@2x.png" />
->>>>>>> eff46ddf6bd6f2e49fb079c28c40802530735162
 
         <framework src="CoreGraphics.framework" />
     </platform>

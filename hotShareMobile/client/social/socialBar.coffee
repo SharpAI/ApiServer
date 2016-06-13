@@ -17,8 +17,8 @@ if Meteor.isClient
       url = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
       #window.location.href = url
       shareUrl = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id
-      imgUrl = 'http://cdn.tiegushi.com/images/logo.png'
-      title = '故事贴专属聊天室'
+      imgUrl = if Session.get('postContent').mainImage then Session.get('postContent').mainImage else'http://cdn.tiegushi.com/images/logo.png'
+      title = if Session.get('postContent').title then Session.get('postContent').title+'－专属聊天室' else '故事贴专属聊天室'
       ref = cordova.ThemeableBrowser.open(url,'_blank',{
           closeButton: {
             image: 'back',
@@ -77,20 +77,9 @@ if Meteor.isClient
           Router.go '/posts/'+event.postId
         ,300
       )
-      ref.addEventListener('loadstop', (event) ->
-        try
-          console.log 'loadstop'
-          ref.executeScript( { code: "var getSomething = function(){var data = {title: document.title ? document.title : '故事贴专属聊天室',imgUrl: document.images && document.images.length > 0 ? document.images[0].src : 'http://cdn.tiegushi.com/images/logo.png'};return data;};getSomething();" }, (values) ->
-             console.log 'document.title：' + values[0].title
-             console.log 'document.images: ' + values[0].imgUrl
-             imgUrl = values[0].imgUrl
-             title = values[0].title
-          )
-        catch e
-          console.log e
-      )
       ref.addEventListener('shareWechatFriend', (event) ->
         console.log("shareWechatFriend Pressed!")
+        window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
         downloadFromBCS imgUrl, (result) ->
           if result
             shareToWechatSession title, '来自故事贴', result, shareUrl
@@ -100,6 +89,7 @@ if Meteor.isClient
       )
       ref.addEventListener('shareWechatFriendField', (event) ->
         console.log("shareWechatFriendField Pressed！")
+        window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
         downloadFromBCS imgUrl, (result) ->
           if result
             shareToWechatTimeLine title, '来自故事贴', result, shareUrl
@@ -109,14 +99,17 @@ if Meteor.isClient
       )
       ref.addEventListener('shareQQ', (event) ->
         console.log("shareQQ Pressed！")
+        window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
         shareToQQ(title, "来自故事贴",imgUrl,shareUrl);
       )
       ref.addEventListener('shareQQZone', (event) ->
         console.log("shareQQZone Pressed！")
+        window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
         shareToQQZone(title, "来自故事贴",imgUrl,shareUrl);
       )
       ref.addEventListener('shareMore', (event) ->
         console.log("shareMore Pressed！")
+        window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
         downloadFromBCS imgUrl, (result) ->
           if result
             shareToSystem title, '来自故事贴', result, shareUrl
