@@ -1,6 +1,6 @@
 is_loading = new ReactiveVar([])
 loginFn = (id)->  
-  Meteor.loginWithUserId id, (err)->
+  Meteor.loginWithUserId id, false, (err)->
     if err is 'RESET_LOGIN'
       return navigator.notification.confirm('切换帐号失败~'
         (index)->
