@@ -1,180 +1,224 @@
-var gushitie = {};
-gushitie.showpost = {};
+(function(global) {
+    if (!global.gushitie) global.gushitie = {};
 
-var getBaseHeight, getBaseWidth, getLayoutTop, imageMarginPixel, layoutHelper, updateLayoutData;
+    var gushitie = global.gushitie;
+    gushitie.showpost = {};
 
-getBaseWidth = function() {
-  return ($('.showPosts').width() - 30) / 6;
-};
+    var getBaseWidth = function() {
+      return ($('.showPosts').width() - 30) / 6;
+    };
 
-window.getDocHeight = function() {
-  var D;
-  D = document;
-  return Math.max(Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.offsetHeight, D.documentElement.offsetHeight), Math.max(D.body.clientHeight, D.documentElement.clientHeight));
-};
+    var getDocHeight = function() {
+      var D;
+      D = document;
+      return Math.max(Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.offsetHeight, D.documentElement.offsetHeight), Math.max(D.body.clientHeight, D.documentElement.clientHeight));
+    };
 
-getBaseHeight = function() {
-  return ($('.showPosts').width() - 30) / 6;
-};
+    var getBaseHeight = function() {
+      return ($('.showPosts').width() - 30) / 6;
+    };
 
-layoutHelper = [0, 0, 0, 0, 0, 0];
 
-imageMarginPixel = 5;
+    var getLayoutTop = function(helper, col, sizeX) {
+      var max;
+      max = 0;
+      for (i = col; i <= col+sizeX -1; i++) {
+        max = Math.max(max, helper[(i - 1)]);
+      }
+      return max;
+    };
 
-getLayoutTop = function(helper, col, sizeX) {
-  var max;
-  max = 0;
-  for (i = col; i <= col+sizeX -1; i++) {
-    max = Math.max(max, helper[(i - 1)]);
-  }
-  return max;
-};
+    var updateLayoutData = function(helper, col, sizeX, bottom) {
+      for (i = col; i <= col+sizeX -1; i++) {
+        helper[(i - 1)] = bottom;
+      }
+    };
 
-updateLayoutData = function(helper, col, sizeX, bottom) {
-  for (i = col; i <= col+sizeX -1; i++) {
-    helper[(i - 1)] = bottom;
-  }
-};
+    var fetchPubInfo = function($elem) {
+        return {
+            "index": Number($elem.attr('index')),
+            "type": $elem.attr('type'),
+            "data_col": Number($elem.attr('col')),
+            "data_sizex": Number($elem.attr('sizex')),
+            "data_sizey": Number($elem.attr('sizey'))
+        };
+    };
 
-gushitie.showpost.init = function () {
-    $("#wrapper .mainImage").css("height", ($(window).height() * 0.55) + "px");
+    var calcLayoutForEachPubElement = function() {
+        var layoutHelper = [0, 0, 0, 0, 0, 0];
+        var imageMarginPixel = 5;
 
-    var baseHeight = ($('.showPosts').width() - 30) / 6;
-    $(".postImageItem.element").each(function (idx, item) {
-        var img = this.querySelector("img.lazy");
-        var pHeight = parseInt($(img).data('sizey')) * baseHeight;
-        this.style.height = pHeight + 'px';
-    });
-    
-    var element, elementBottom, parentNode;
-    var myData = new Object();
-    $('.textDiv1Link').linkify();
-    var obj = $("#test").find('.element');
-    obj.each(function(){
-        element = this
-        dataId=$(this).attr('id');
-        myData.index = Number($(this).attr('index'));
-        myData.data_col = Number($(this).attr('col'));
-        myData.type = $(this).attr('type');
-        myData.data_sizex = Number($(this).attr('sizex'));
-        myData.data_sizey = Number($(this).attr('sizey'));
-        parentNode = element.parentNode;
-        if (myData.index === 0) {
-            updateLayoutData(layoutHelper, 1, 6, parentNode.offsetTop);
+        $("#test .element").each(function() {
+            var elem = this, $elem= $(this), parentNode = this.parentNode;
+            var pubInfo = fetchPubInfo($elem);
+
+            if (pubInfo.index === 0) {
+                updateLayoutData(layoutHelper, 1, 6, parentNode.offsetTop);
+            }
+
+            elem.style.top = getLayoutTop(layoutHelper, pubInfo.data_col, pubInfo.data_sizex) + imageMarginPixel + 'px';
+
+            var left = parentNode.offsetLeft + (pubInfo.data_col - 1) * getBaseWidth();
+            var width = pubInfo.data_sizex * getBaseWidth();
+
+            if (pubInfo.data_col !== 1) {
+                left = left + imageMarginPixel;
+                width = width - imageMarginPixel;
+            }
+
+            elem.style.left = left + 'px';
+            elem.style.width = width + 'px';
+
+            if (pubInfo.type === 'image' || pubInfo.type === 'video') {
+                elem.style.height = pubInfo.data_sizey * getBaseHeight() + 'px';
+            }
+
+            var elemBottom = elem.offsetTop + elem.offsetHeight;
+            updateLayoutData(layoutHelper, pubInfo.data_col, pubInfo.data_sizex, elemBottom);
+            parentNode.style.height = getLayoutTop(layoutHelper, 1, 6) - parentNode.offsetTop + 'px';            
+        });
+    };
+
+    var initLazyload = function() {
+        $(".padding-overlay").siblings("img.lazy").each(function() {
+            var $lazyItem = $(this);
+            $lazyItem.lazyload({
+                effect: "fadeIn",
+                effectspeed: 600,
+                threshold: 800,
+                placeholder: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=",
+                load: function() {
+                    $(this).parent().actImageFitCover('style');
+                }
+            });
+            padding.setRandomlyBackgroundColor($lazyItem);
+        });
+    };
+
+    gushitie.showpost.init = function () {
+        $("#wrapper .mainImage").css("height", ($(window).height() * 0.55) + "px");
+        $('.textDiv1Link').linkify();
+
+        calcLayoutForEachPubElement();
+
+        var $showPosts, $test;
+        $showPosts = $('.showPosts');
+        $test = $('.showPosts').find('.content .gridster #test');
+        if ($test.height() > 1000) {
+            $('.showPosts').get(0).style.overflow = 'hidden';
+            $('.showPosts').get(0).style.maxHeight = '1500px';
+            $('.showPosts').get(0).style.position = 'relative';
+
+            $showPosts.after('<div class="readmore"><div class="readMoreContent"><i class="fa fa-plus-circle"></i>继续阅读</div></div>');
         }
-        element.style.top = getLayoutTop(layoutHelper, myData.data_col, myData.data_sizex) + imageMarginPixel + 'px';
-        if (myData.data_col !== 1) {
-            element.style.left = (parentNode.offsetLeft + (myData.data_col - 1) * getBaseWidth() + imageMarginPixel) + 'px';
-            element.style.width = (myData.data_sizex * getBaseWidth() - imageMarginPixel) + 'px';
-        } else {
-            element.style.left = parentNode.offsetLeft + (myData.data_col - 1) * getBaseWidth() + 'px';
-            element.style.width = myData.data_sizex * getBaseWidth() + 'px';
-        }
-        if (myData.type === 'image') {
-            element.style.height = myData.data_sizey * getBaseHeight() + 'px';
-        } else if (myData.type === 'video') {
-            element.style.height = myData.data_sizey * getBaseHeight() + 'px';
-        }
-        elementBottom = element.offsetTop + element.offsetHeight;
-        updateLayoutData(layoutHelper, myData.data_col, myData.data_sizex, elementBottom);
-        return parentNode.style.height = getLayoutTop(layoutHelper, 1, 6) - parentNode.offsetTop + 'px';
-    });
 
-    var $showPosts, $test;
-    $showPosts = $('.showPosts');
-    $test = $('.showPosts').find('.content .gridster #test');
-    if ($test.height() > 1000) {
-        $('.showPosts').get(0).style.overflow = 'hidden';
-        $('.showPosts').get(0).style.maxHeight = '1500px';
-        $('.showPosts').get(0).style.position = 'relative';
+        initLazyload();
 
-        $showPosts.after('<div class="readmore"><div class="readMoreContent"><i class="fa fa-plus-circle"></i>继续阅读</div></div>');
-    }
+        $('.showPostsBox .readmore').click(function (e) {
+            e.stopPropagation();
+            $('.showPosts').get(0).style.overflow = '';
+            $('.showPosts').get(0).style.maxHeight = '';
+            $('.showPosts').get(0).style.position = '';
+            $('.readmore').remove();
+        });
 
-    $('.showPostsBox .readmore').click(function (e) {
-        e.stopPropagation();
-        $('.showPosts').get(0).style.overflow = '';
-        $('.showPosts').get(0).style.maxHeight = '';
-        $('.showPosts').get(0).style.position = '';
-        $('.readmore').remove();
-    });
-
-    // register window scroll callback
-    function toggleHeaderNav(show) {
-        if(show) {
-            if (!$('.showPosts .head').is(':visible')) {
-                $('.showPosts .head').fadeIn(300);
+        // register window scroll callback
+        function toggleHeaderNav(show) {
+            if(show) {
+                if (!$('.showPosts .head').is(':visible')) {
+                    $('.showPosts .head').fadeIn(300);
+                }
+            }
+            else {
+                if ($('.showPosts .head').is(':visible')) {
+                    $('.showPosts .head').fadeOut(300);
+                }
             }
         }
-        else {
-            if ($('.showPosts .head').is(':visible')) {
-                $('.showPosts .head').fadeOut(300);
+
+        function toggleFooterNav(show) {
+            if(show) {
+                if (!$('.socialContent .chatFooter').is(':visible')) {
+                    $('.socialContent .chatFooter').fadeIn(300);
+                }
+            }
+            else {
+                if ($('.socialContent .chatFooter').is(':visible')) {
+                    $('.socialContent .chatFooter').fadeOut(300);
+                }           
             }
         }
-    }
 
-    function toggleFooterNav(show) {
-        if(show) {
-            if (!$('.socialContent .chatFooter').is(':visible')) {
-                $('.socialContent .chatFooter').fadeIn(300);
+        function scrollEventCallback() {
+            var st = $(window).scrollTop();
+
+            if (st <= 40) {
+                toggleHeaderNav(true);
+                toggleFooterNav(true);
+                window.lastScroll = st;
+                return;
             }
-        }
-        else {
-            if ($('.socialContent .chatFooter').is(':visible')) {
-                $('.socialContent .chatFooter').fadeOut(300);
-            }           
-        }
-    }
 
-    function scrollEventCallback() {
-        var st = $(window).scrollTop();
+            // reach bottom
+            if ((st + $(window).height()) === getDocHeight()) {
+                toggleHeaderNav(true);
+                toggleFooterNav(true);
+                window.lastScroll = st;
+                return;
+            }
 
-        if (st <= 40) {
-            toggleHeaderNav(true);
-            toggleFooterNav(true);
+
+            // scroll up
+            if (window.lastScroll - st > 5) {
+                toggleHeaderNav(true);
+                toggleFooterNav(true);
+            }
+
+            // scroll down
+            if (window.lastScroll - st < -5) {
+                toggleHeaderNav(false);
+                toggleFooterNav(false);
+            }
+
+            if (Math.abs(window.lastScroll - st) < 5) {
+                return;
+            }
+
             window.lastScroll = st;
-            return;
         }
-
-        // reach bottom
-        if ((st + $(window).height()) === window.getDocHeight()) {
-            toggleHeaderNav(true);
-            toggleFooterNav(true);
-            window.lastScroll = st;
-            return;
-        }
+        $(window).scroll(scrollEventCallback);
 
 
-        // scroll up
-        if (window.lastScroll - st > 5) {
-            toggleHeaderNav(true);
-            toggleFooterNav(true);
-        }
+        // register for audio/video play
+        $(".postAudioItem.element .play_area").click(function() {
+            var _self = this, $_self = $(this), $audio= $_self.find('audio');
+            if ($_self.hasClass('music_playing')) {
+                $_self.removeClass('music_playing');
+                $audio.trigger('pause');
+            }
+            else {
+                $_self.addClass('music_playing');
+                $audio.trigger('play');
+            }
+        });
+        
+        $(".postVideoItem.element .play_area").click(function() {
+            var _self = this, $_self = $(this), $video = $_self.find("video");
 
-        // scroll down
-        if (window.lastScroll - st < -5) {
-            toggleHeaderNav(false);
-            toggleFooterNav(false);
-        }
+            if ($video.get(0)) {
+                $video.siblings('.video_thumb').fadeOut(100);
+                $video.get(0).paused ? $video.get(0).play() : $video.get(0).pause();
+            }
+        });
 
-        if (Math.abs(window.lastScroll - st) < 5) {
-            return;
-        }
+        $(".chatBtn").click(function() {
+            var chat_server_url = 'testchat.tiegushi.com';
+            var postId = window.location.pathname.split('/static/')[1];
+            var url = 'http://'+chat_server_url+'/channel/' + postId;
 
-        window.lastScroll = st;
-    }
-    $(window).scroll(scrollEventCallback);
-
-
-    // register for video play
-    $(".postVideoItem.element .play_area").click(function() {
-        var _self = this, $_self = $(this);
-
-        $video = $_self.find("video");
-
-        if ($video.get(0)) {
-            $video.siblings('.video_thumb').fadeOut(100);
-            $video.get(0).paused ? $video.get(0).play() : $video.get(0).pause();
-        }
-    });
-};
+            var userId = localStorage.getItem("Meteor.userId");
+            if (userId) url += '/userid/' + userId;
+            window.open(url,'_blank')
+        });
+    };
+})(window);

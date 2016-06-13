@@ -5,12 +5,30 @@
             </div>
         {{else}}
             <div class='postImageItem element' id="{{_id}}" index="{{index}}" col="{{data_col}}" sizex="{{data_sizex}}" type="{{type}}" sizey="{{data_sizey}}" >
-                <img id="{{_id}}img" class="lazy" data-original="{{imgUrl}}" src="{{imgUrl}}" data-sizey="{{data_sizey}}" style="{{style}}" >
+                <div class='padding-overlay'></div>
+                <img id="{{_id}}img" class="lazy" data-original="{{imgUrl}}" style="{{style}}" >
             </div>
         {{/if}}
     {{else}}
         {{#if musicInfo}}
-
+            <div class='postAudioItem element' id="{{_id}}" index="{{index}}" col="{{data_col}}" sizex="{{data_sizex}}" type="{{type}}" sizey="{{data_sizey}}" >
+                <span class="musicContainer">
+                    <span class="music_bd">
+                        <span class="play_area">
+                            <i class="icon_music_switch"></i>
+                            <img src="/music_pic_default.png" alt="" class="pic_music_default">
+                            <img src="{{musicInfo.image}}" class="music_thumb" alt="">
+                            <audio preload="auto">
+                                <source src="{{musicInfo.playUrl}}">
+                            </audio>
+                        </span>
+                        <a class="description">
+                            <span class="songname">{{musicInfo.songName}}</span>
+                            <span class="singername">{{musicInfo.singerName}}</span>
+                        </a>
+                    </span>
+                </span>
+            </div>
         {{else}}
             {{#if hasVideoInfo videoInfo}}
                 <div class='postVideoItem element' id="{{_id}}" index="{{index}}" col="{{data_col}}" sizex="{{data_sizex}}" type="{{type}}" sizey="{{data_sizey}}" >

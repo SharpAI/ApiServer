@@ -11,7 +11,7 @@
     <div class="showPostsBox">
         <div class="showPosts">
             <div class="head">
-                <div class="rightButton" style="font-weight:bold; color: red;" onclick=" trackEvent('Download','from Post Header'); window.open('http://cdn.tiegushi.com', '_system');">点我创作</div>
+                <div class="rightButton" style="font-weight:bold; color: red;" onclick="window.open('http://cdn.tiegushi.com', '_system');">点我创作</div>
                 <div class="user">
                     <span class="name userDashboard">{{ownerName}}</span>
                     <div class="createAt userDashboard">{{time_diff createdAt}}</div>
@@ -51,7 +51,7 @@
     <div class="showPostsLine" id="socialContentDivider"></div>
     <div class="content">
       <div class="chatBox">
-        <div class="chatBoxContent" style="min-height: 646px;">
+        <div class="chatBoxContent" style="min-height: 0px;">
             <div class="div_contactsList" style="display:none">
               <div class="comFadeIn contactsList">
     <div class="head" style="display: block;">
@@ -133,6 +133,8 @@
 <script type="text/javascript" src="/statics/libs/jquery/jquery-1.12.4.min.js"></script>
 <script type="text/javascript" src="/statics/libs/jquery.lazyload.1.9.3.js"></script>
 <script type="text/javascript" src="/statics/libs/jquery.linkify.js"></script>
+<script type="text/javascript" src="/statics/libs/image-fit-cover.js"></script>
+<script type="text/javascript" src="/statics/posts/padding.js"></script>
 <script type="text/javascript" src="/statics/posts/showpost.js"></script>
 <script type="text/javascript">
     $(function() {
