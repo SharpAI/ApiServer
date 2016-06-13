@@ -128,7 +128,18 @@
       #endif
     }
   }
-  [self.viewController presentViewController:activityVC animated:YES completion:nil];
+  //[self.viewController presentViewController:activityVC animated:YES completion:nil];
+    [[self getTopPresentedViewController] presentViewController:activityVC animated:YES completion:nil];
+}
+
+-(UIViewController *)getTopPresentedViewController {
+    UIViewController *presentingViewController = self.viewController;
+    while(presentingViewController.presentedViewController != nil)
+    {
+        presentingViewController = presentingViewController.
+        presentedViewController;
+    }
+    return presentingViewController;
 }
 
 - (void)shareViaTwitter:(CDVInvokedUrlCommand*)command {
