@@ -17,7 +17,7 @@ cordova-plugin-inappbrowser@file://../cordova-plugins/inappbrowser
 cordova-plugin-themeablebrowser@file://../cordova-plugins/cordova-plugin-themeablebrowser
 cordova-plugin-media@file://../cordova-plugins/media
 cordova-plugin-network-information@1.0.1
-nl.x-services.plugins.toast@2.1.1
+nl.x-services.plugins.toast@2.5.2
 me.rahul.plugins.audio-picker@file://../cordova-plugins/iosaudiopicker
 nl.x-services.plugins.backgroundaudio@file://../cordova-plugins/backgroundaudio
 nl.x-services.plugins.socialsharing@file://../cordova-plugins/socialsharing
