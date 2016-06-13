@@ -61,6 +61,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.ProgressBar;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaArgs;
@@ -108,6 +109,7 @@ public class ThemeableBrowser extends CordovaPlugin {
     private WebView inAppWebView;
     private EditText edittext;
     private CallbackContext callbackContext;
+    private ProgressBar progressBar = null;
 
     /**
      * Executes the request and returns PluginResult.
@@ -542,6 +544,10 @@ public class ThemeableBrowser extends CordovaPlugin {
                 dialog.setCancelable(true);
                 dialog.setThemeableBrowser(getThemeableBrowser());
 
+                RelativeLayout rlRoot = new RelativeLayout(cordova.getActivity());
+                RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(
+                  RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
+
                 // Main container layout
                 ViewGroup main = null;
 
@@ -775,6 +781,9 @@ public class ThemeableBrowser extends CordovaPlugin {
                         if (forward != null) {
                             forward.setEnabled(canGoForward);
                         }
+
+                        if (progressBar != null)
+                          progressBar.setVisibility(View.GONE);
                     }
                 });
                 inAppWebView.setWebViewClient(client);
@@ -937,7 +946,17 @@ public class ThemeableBrowser extends CordovaPlugin {
                 lp.width = WindowManager.LayoutParams.MATCH_PARENT;
                 lp.height = WindowManager.LayoutParams.MATCH_PARENT;
 
-                dialog.setContentView(main);
+                progressBar = new ProgressBar(cordova.getActivity(), null,android.R.attr.progressBarStyle);
+                progressBar.setIndeterminate(true);
+                progressBar.setVisibility(View.VISIBLE);
+
+                rlRoot.addView(main, rlp);
+
+                RelativeLayout.LayoutParams progresslp = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                progresslp.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+                rlRoot.addView(progressBar, progresslp);
+
+                dialog.setContentView(rlRoot, rlp);
                 dialog.show();
                 dialog.getWindow().setAttributes(lp);
                 // the goal of openhidden is to load the url and not display it
