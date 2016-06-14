@@ -247,8 +247,7 @@ if Meteor.isClient
     hiddenChatLoad: ()->
       Session.equals('isWeChatWifi',true) and Meteor.userId()
     chatUrl: ()->
-      #return 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
-      return 'http://'+chat_server_url+'/hidden/'+ 'tgj2nbGFvRRSmyr6n'+'/userid/'+Meteor.userId();
+      return 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
     clickedCommentOverlayThumbsUp:()->
       i = Session.get('focusedIndex')
       userId = Meteor.userId()

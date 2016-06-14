@@ -16,8 +16,7 @@ if Meteor.isClient
       e.stopPropagation()
       #window.location.href = 'http://testchat.tiegushi.com/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
       #This is a Evaluation version to redirect all web user to the same chat room, let's wait and see what will happen
-      #url = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
-      url = 'http://'+chat_server_url+'/channel/tgj2nbGFvRRSmyr6n'+'/userid/'+Meteor.userId();
+      url = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
       window.open(url,'_blank')
 #Session.set("Social.LevelOne.Menu",'chatContent')
       #Session.set("SocialOnButton",'chatContent')
