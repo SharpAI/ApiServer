@@ -41,8 +41,6 @@ RocketChat.models.Messages = new class extends RocketChat.models._Base
 		query =
 			_hidden:
 				$ne: true
-			t:
-				$ne: 'uj'
 			rid: roomId
 
 		return @find query, options
