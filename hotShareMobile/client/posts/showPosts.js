@@ -244,6 +244,25 @@ shareTo = function(to,self,index){
         }
     }
     window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
+    
+    var post = Session.get('postContent');
+    Feeds.insert({
+      "owner": Meteor.user()._id,
+      "ownerName": Meteor.user().profile.fullname || Meteor.user().username,
+      "ownerIcon" : Meteor.user().profile.icon,
+      "eventType" : "share",
+      "postId" : post._id,
+      "postTitle" : post.title,
+      "addontitle" : post.addontitle,
+      "pindex" : index,
+      "mainImage" : post.mainImag,
+      "createdAt" : new Date(),
+      "heart" : 0,
+      "retweet" : 0,
+      "comment" : 0,
+      "followby" : post.owner,
+      "checked" : false
+    })
 
     var height = $('.showPosts').height();
     $('#blur_overlay').css('height',height);

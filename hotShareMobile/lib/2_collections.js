@@ -1974,8 +1974,14 @@ if(Meteor.isServer){
         return (doc.postId !== null && doc.followby !== null && doc.recommander !== null)
       }
       else if(doc.eventType==='share'){
-          if(Feeds.findOne({followby:doc.followby,postId:doc.postId,eventType: 'share'})){
-              return false;
+          if(doc.pindex){
+            if(Feeds.findOne({followby:doc.followby,postId:doc.postId,owner:doc.owner,pindex:doc.pindex,eventType: 'share'})){
+                return false;
+            }
+          }else{
+            if(Feeds.findOne({followby:doc.followby,postId:doc.postId,owner:doc.owner,eventType: 'share'})){
+                return false;
+            }
           }
           return true;
       }

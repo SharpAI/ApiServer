@@ -1207,6 +1207,7 @@ public class ThemeableBrowser extends CordovaPlugin {
      * The webview client receives notifications about appView
      */
     public class ThemeableBrowserClient extends WebViewClient {
+        private static final String postUrlPrefix = "http://cdn.tiegushi.com/posts/";
         PageLoadListener callback;
         CordovaWebView webView;
 
@@ -1281,6 +1282,21 @@ public class ThemeableBrowser extends CordovaPlugin {
                 } catch (android.content.ActivityNotFoundException e) {
                     Log.e(LOG_TAG, "Error sending sms " + url + ":" + e.toString());
                 }
+            }
+            else if (url.startsWith(postUrlPrefix)) {
+              int idxStart = postUrlPrefix.length();
+              String postId = url.substring(idxStart);
+              Log.i(LOG_TAG, "access posts: " + postId);
+
+              try {
+                  JSONObject obj = new JSONObject();
+                  obj.put("type", "toPost");
+                  obj.put("postId", postId);
+                  sendUpdate(obj, true);
+              } catch (JSONException ex) {
+                  Log.e(LOG_TAG, "postId passed in has caused a JSON error.");
+              }
+              return true;
             }
             return false;
         }

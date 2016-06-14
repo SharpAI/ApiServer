@@ -174,3 +174,22 @@ if Meteor.isServer
         })
         res.end(postHtml)
     , {where: 'server'}
+
+    Router.route '/static/data/suggestposts/:_id/:skip/:limit', (req, res, next)->
+        userId = this.params._id
+        limit = parseInt(this.params.limit)
+        if not limit
+          limit = 10
+        skip = parseInt(this.params.skip)
+        if not skip
+          skip = 0
+
+
+        suggestPostsUserId = Meteor.users.findOne({'username': 'suggestPosts'})._id
+        suggestPosts = FollowPosts.find({followby: suggestPostsUserId}, {sort: {createdAt: -1}, skip: skip, limit: limit}).fetch()
+        res.writeHead(200, {
+            'Content-Type': 'application/json'
+        })
+        res.end(JSON.stringify({data: suggestPosts}))        
+    , {where: 'server'}    
+

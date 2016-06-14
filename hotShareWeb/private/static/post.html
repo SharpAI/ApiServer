@@ -4,7 +4,15 @@
     <title>{{title}} - 故事贴</title>
     <meta name="description" content="{{title}}, {{addontitle}}, 故事贴">
     <link rel="stylesheet" type="text/css" class="__meteor-css__" href="/merged-stylesheets.css?7bcea97fd097c7bd570da7ca07eb500473d4eef3">
+    <link rel="stylesheet" type="text/css" href="/statics/libs/wookmark/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/statics/libs/wookmark/css/overview.css">
     <link rel="icon" href="{{mainImage}}">
+
+    <style type="text/css">
+      .newLayout_element {
+          background-color: #fff;
+      }
+    </style>
 </head>
 <body>
 <div class="showBgColor">
@@ -54,50 +62,48 @@
         <div class="chatBoxContent" style="min-height: 0px;">
             <div class="div_contactsList" style="display:none">
               <div class="comFadeIn contactsList">
-    <div class="head" style="display: block;">
-        <div class="socialTitle">
-          <span class="Contacts">联系人</span>
-        </div>
-    </div>
-    <div id="addNewFriends" class="eachViewer">
-      <img class="icon" src="/userPlus.png" width="30" height="30">
-      <span class="userName">新的朋友</span>
-    </div>
-    <div class="chatContentLine"></div>
-      <div class="addNewFriends">
-    
-    
-      <div id="wrapper">
-      </div>
-  </div>
-  </div>
+                <div class="head" style="display: block;">
+                    <div class="socialTitle">
+                      <span class="Contacts">联系人</span>
+                    </div>
+                </div>
+                <div id="addNewFriends" class="eachViewer">
+                  <img class="icon" src="/userPlus.png" width="30" height="30">
+                  <span class="userName">新的朋友</span>
+                </div>
+                <div class="chatContentLine"></div>
+                <div class="addNewFriends">
+                  <div id="wrapper">
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="div_discover" style="display:block">
               <div class="comFadeIn discover">
-      <div class="discover-top">
-          <div class="discover-bg"></div>
-          <div class="discover-con" style="width: 193px;">
-            <img src="/book-icon.png">
-            <span>看过该帖的朋友还看过...</span>
-          </div>
-      </div>
+                <div class="discover-top">
+                    <div class="discover-bg"></div>
+                    <div class="discover-con" style="width: 193px;">
+                      <img src="/book-icon.png">
+                      <span>看过该帖的朋友还看过...</span>
+                    </div>
+                </div>
 
-      <div class="lpcomments">
-        <ul id="wrapper" class="swipe-delete">
-            
-        </ul>
-    </div>
-      <div class="moments">
-      </div>
-      <!--朋友圈 end-->
-    
-  </div>
+                <div class="lpcomments">
+                  <ul id="wrapper" class="swipe-delete">
+                      
+                  </ul>
+                </div>
+
+                <div class="moments">
+                </div>
+                <!--朋友圈 end-->
+              </div>
             </div>
             <div class="div_me" style="display:none">
               
 
-            </div>
-        </div>
+            </div><!-- end div_contactsList -->
+        </div><!-- end chatBoxContent -->
         <div class="chatFooter" style="display: block;">
           <div class="postBtn focusColor">
             <i class="fa fa-file-image-o"></i>
@@ -134,6 +140,8 @@
 <script type="text/javascript" src="/statics/libs/jquery.lazyload.1.9.3.js"></script>
 <script type="text/javascript" src="/statics/libs/jquery.linkify.js"></script>
 <script type="text/javascript" src="/statics/libs/image-fit-cover.js"></script>
+<script type="text/javascript" src="/statics/libs/imagesloaded.pkgd.min.js"></script>
+<script type="text/javascript" src="/statics/libs/wookmark/wookmark.min.js"></script>
 <script type="text/javascript" src="/statics/posts/padding.js"></script>
 <script type="text/javascript" src="/statics/posts/showpost.js"></script>
 <script type="text/javascript">
