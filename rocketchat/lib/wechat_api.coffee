@@ -24,7 +24,7 @@ if Meteor.isClient
       }
     wechatReady = ()->
       timelineData = {
-        title: if document.title then document.title else '故事贴专属聊天室',
+        title: if document.title then document.title else '故事贴主题阅览室',
         desc: "来自故事贴",
         link: window.location.href,
         imgUrl: if document.images and document.images.length > 0 then document.images[0].src else 'http://cdn.tiegushi.com/images/logo.png',
@@ -34,7 +34,7 @@ if Meteor.isClient
           console.log('Share cancled');
       }
       chatShareData = {
-        title: if document.title then document.title else '故事贴专属聊天室',
+        title: if document.title then document.title else '故事贴主题阅览室',
         desc: "来自故事贴",
         link: window.location.href,
         imgUrl: if document.images and document.images.length > 0 then document.images[0].src else 'http://cdn.tiegushi.com/images/logo.png',

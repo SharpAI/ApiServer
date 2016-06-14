@@ -275,7 +275,7 @@ if Meteor.isClient
                     sendPersonalMessageToRoom('他们大多来自于 ' + stat.locations.jion(', '))
 
     Meteor.startup ->
-        document.title = '故事贴专属聊天室'
+        document.title = '故事贴主题阅览室'
         if Session.equals('hiddenMode',true)
             return
         Tracker.autorun (t)->
@@ -311,7 +311,7 @@ if Meteor.isClient
                         ownerName:"微尘"
                         ###
                         console.log data
-                        document.title = data.title + '－专属聊天室'
+                        document.title = data.title + '－主题阅览室'
 
                         # begin - 尝试解决document.title 在 ios 下不生效的bug
                         iframe = document.createElement('iframe')
