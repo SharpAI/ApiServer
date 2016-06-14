@@ -27,7 +27,7 @@ Template.room.helpers
 		return isSubscribed(this._id)
 
 	messagesHistory: ->
-		return ChatMessage.find { rid: this._id, t: { '$ne': 't' }, t:{'$ne':'uj'}  }, { sort: { ts: 1 } }
+		return ChatMessage.find { rid: this._id, t: { '$ne': 't' }  }, { sort: { ts: 1 } }
 
 	hasMore: ->
 		return RoomHistoryManager.hasMore this._id
