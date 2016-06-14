@@ -7,36 +7,36 @@ Meteor.methods
     if not Meteor.userId()
       return []
       
-    return [
-      {
-        owner:'NYtJcHfCKSE6GWhmj',
-        ownerName:'ccoo',
-        ownerIcon:'',
-        eventType:'SelfPosted',
-        postId:'NYtJcHfCKSE6GWhmj',
-        postTitle:'千老这个称谓的来历',
-        mainImage:'http://data.tiegushi.com/2Yfmd5PmEDsoECLvg_1459975484141_cdv_photo_001.jpg',
-        createdAt:new Date(new Date().getTime()-1455460221),
-        heart:0,
-        retweet:0,
-        comment:0,
-        followby: Meteor.userId()
-      },
-      {
-        owner:'NYtJcHfCKSEfd6GWj',
-        ownerName:'ccoo',
-        ownerIcon:'',
-        eventType:'SelfPosted',
-        postId:'NYtJcHfCKSE6GWhmj',
-        postTitle:'千老这个称谓的来历',
-        mainImage:'http://data.tiegushi.com/2Yfmd5PmEDsoECLvg_1459975484141_cdv_photo_001.jpg',
-        createdAt:new Date(new Date().getTime()-14501),
-        heart:0,
-        retweet:0,
-        comment:0,
-        followby: Meteor.userId()
-      }
-    ]
+    # return [
+    #   {
+    #     owner:'NYtJcHfCKSE6GWhmj',
+    #     ownerName:'ccoo',
+    #     ownerIcon:'',
+    #     eventType:'SelfPosted',
+    #     postId:'NYtJcHfCKSE6GWhmj',
+    #     postTitle:'千老这个称谓的来历',
+    #     mainImage:'http://data.tiegushi.com/2Yfmd5PmEDsoECLvg_1459975484141_cdv_photo_001.jpg',
+    #     createdAt:new Date(new Date().getTime()-1455460221),
+    #     heart:0,
+    #     retweet:0,
+    #     comment:0,
+    #     followby: Meteor.userId()
+    #   },
+    #   {
+    #     owner:'NYtJcHfCKSEfd6GWj',
+    #     ownerName:'ccoo',
+    #     ownerIcon:'',
+    #     eventType:'SelfPosted',
+    #     postId:'NYtJcHfCKSE6GWhmj',
+    #     postTitle:'千老这个称谓的来历',
+    #     mainImage:'http://data.tiegushi.com/2Yfmd5PmEDsoECLvg_1459975484141_cdv_photo_001.jpg',
+    #     createdAt:new Date(new Date().getTime()-14501),
+    #     heart:0,
+    #     retweet:0,
+    #     comment:0,
+    #     followby: Meteor.userId()
+    #   }
+    # ]
     
     me=Meteor.user()
     myGushitieID=null
