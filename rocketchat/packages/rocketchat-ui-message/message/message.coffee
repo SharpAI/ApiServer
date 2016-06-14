@@ -16,13 +16,6 @@ Template.message.helpers
 		return +this.ts
 	chatops: ->
 		return 'chatops-message' if this.u?.username is RocketChat.settings.get('Chatops_Username')
-	location: (username) ->
-		user = RocketChat.models.Users.findOne(username: username)
-		console.log user
-		if user.profile is undefined
-			updateMyOwnLocationAddress()
-			user = RocketChat.models.Users.findOne(username: username)
-		return '['+user.profile.location+']'
 	time: ->
 		return moment(this.ts).format('LT')
 	date: ->
@@ -137,8 +130,6 @@ Template.message.onCreated ->
 
 Template.message.onViewRendered = (context) ->
 	view = this
-	usernames = RocketChat.models.Rooms.findOne({}).usernames
-	Meteor.subscribe "userLocation", usernames
 	this._domrange.onAttached (domRange) ->
 		currentNode = domRange.lastNode()
 		currentDataset = currentNode.dataset

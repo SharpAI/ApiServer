@@ -34,7 +34,6 @@ Meteor.startup ->
   Tracker.autorun (t)->
     if Meteor.user() and Meteor.user().name
       me = Meteor.user()
-      updateMyOwnLocationAddress()
       if (!me.services or !me.services.gushitie) and amplify.store('hotshareUserID')
         Meteor.call 'associateGushitie',amplify.store('hotshareUserID')
         console.log(me)
