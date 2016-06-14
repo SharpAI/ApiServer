@@ -11,12 +11,26 @@ if Meteor.isClient
     todisplayListIds = []
     socialGraphMessageList=[]
     needToFethReadlist=false
+    
+    insertMessageToChat = (doc)->
+        # ChatMessage.insert doc
+        new_urls = []
+        if doc.t is 'bot' and doc.u and doc.u._id is 'group.cat' and doc.urls
+            if doc.urls.length > 0
+                 for item in doc.urls
+                     if ChatMessage.find({'urls.url': item.url, rid: doc.rid}).count() <= 0
+                         new_urls.push item
+                     
+        if new_urls.length > 0
+            doc.urls = new_urls
+            ChatMessage.insert(doc)
+    
     sendPersonalMessageToRoom = (message)->
         # 当可以在多个聊天室之间切换以后，ChatRoom　里面会包含所有访问过的聊天室信息
         #if ChatRoom.findOne()
         openedRoomId = Session.get('openedRoom')
         if ChatRoom.findOne({_id: openedRoomId})
-            ChatMessage.insert {
+            insertMessageToChat {
                 t: 'bot'
                 msg: message
                 #rid: ChatRoom.findOne()._id
@@ -68,7 +82,7 @@ if Meteor.isClient
             ]            
         } 
 
-        ChatMessage.insert msg
+        insertMessageToChat msg
     sendPersonalMessageWithURLSToRoom = (message, urls)->
         new_urls = []
         _.map urls, (item)->
@@ -110,7 +124,7 @@ if Meteor.isClient
             urls : new_urls         
         } 
 
-        ChatMessage.insert msg
+        insertMessageToChat msg
     unless amplify.store('readListDisplayed')
         amplify.store('readListDisplayed',1)
     postOneViewedPost = ()->
