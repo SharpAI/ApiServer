@@ -21,7 +21,6 @@ Template.membersList.helpers
 
 		for username in roomUsernames
 			if Template.instance().showAllUsers.get() or onlineUsers[username]?
-				location = onlineUsers[username].location
 				utcOffset = onlineUsers[username]?.utcOffset
 				if utcOffset?
 					if utcOffset > 0
@@ -36,7 +35,6 @@ Template.membersList.helpers
 						username: username
 						status: onlineUsers[username]?.status
 						utcOffset: utcOffset
-						location: location
 				else
 					users.push
 						avatarUrl: userInfo.avatarUrl
@@ -44,7 +42,7 @@ Template.membersList.helpers
 						username: username
 						status: onlineUsers[username]?.status
 						utcOffset: utcOffset
-						location: location
+
 
 		users = _.sortBy users, 'username'
 		# show online users first.
