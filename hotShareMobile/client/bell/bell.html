@@ -23,7 +23,10 @@
       {{/if}}
       {{#each eventFeeds}}
         {{#if isAlsoComment eventType}}
-            <a href="/posts/{{postId}}" class="contentList">
+            <a href="/posts/{{postId}}" class="contentList" id="{{_id}}">
+                {{#if notRead checked}}
+                <div class="readTips"></div>
+                {{/if}}
                 <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
                 <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "alsoCommentThisStory"}} 《{{postTitle}}》</div>
                 <div class="createAt">{{time_diff createdAt}}</div>
@@ -33,7 +36,10 @@
             </div>
         {{/if}}
         {{#if isAlsoFavourite eventType}}
-            <a href="/posts/{{postId}}" class="contentList">
+            <a href="/posts/{{postId}}" class="contentList" id="{{_id}}">
+                {{#if notRead checked}}
+                <div class="readTips"></div>
+                {{/if}}
                 <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
                 <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "alsoFavouriteThisStory"}} 《{{postTitle}}》</div>
                 <div class="createAt">{{time_diff createdAt}}</div>
@@ -43,7 +49,10 @@
             </div>
         {{/if}}
         {{#if isPcommentOwner eventType}}
-            <a href="/posts/{{postId}}" class="contentList">
+            <a href="/posts/{{postId}}" class="contentList" id="{{_id}}">
+                {{#if notRead checked}}
+                <div class="readTips"></div>
+                {{/if}}
                 <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
                 <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "commentYourStory"}} 《{{postTitle}}》</div>
                 <div class="createAt">{{time_diff createdAt}}</div>
@@ -53,7 +62,10 @@
             </div>
         {{/if}}
         {{#if isReComment eventType}}
-          <a href="/posts/{{postId}}" class="contentList">
+          <a href="/posts/{{postId}}" class="contentList" id="{{_id}}">
+          {{#if notRead checked}}
+                <div class="readTips" style="background: green; width:10px; height:10px;"></div>
+                {{/if}}
             <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
             <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "replyStoryYouJoin"}} 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
@@ -64,6 +76,9 @@
         {{/if}}
         {{#if isComment eventType}}
           <a href="/posts/{{postId}}" class="contentList">
+            {{#if notRead checked}}
+                <div class="readTips"></div>
+                {{/if}}
             <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
             <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "replyYourStory"}} 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
@@ -84,6 +99,9 @@
         {{/if}}
         {{#if isRecommand eventType}}
           <a href="/posts/{{postId}}" class="contentList">
+          {{#if notRead checked}}
+                <div class="readTips"></div>
+                {{/if}}
             <img class="icon" src="{{recommanderIcon}}" width='30' height='30'>
             <div id="{{postId}}" class="alarm">{{recommander}} {{_ "recommendAStory"}} 《{{postTitle}}》</div>
             <div class="createAt">{{time_diff createdAt}}</div>
@@ -94,6 +112,9 @@
         {{/if}}
         {{#if isGetRequest eventType}}
           <div id="{{requesterId}}" class="contentList">
+            {{#if notRead checked}}
+                <div class="readTips"></div>
+                {{/if}}
             <img class="icon" src="{{requesterIcon}}" width='30' height='30'>
             <div id="{{requesterId}}" class="alarm">{{requester}}{{_ "askFriends"}}</div>
             <div class="createAt">{{time_diff createdAt}}</div>
@@ -109,6 +130,9 @@
         {{/if}}
         {{#if isSendRequest eventType}}
           <div id="{{requesteeId}}" class="contentList">
+            {{#if notRead checked}}
+                <div class="readTips"></div>
+                {{/if}}
             <img class="icon" src="{{requesteeIcon}}" width='30' height='30'>
             <div id="{{requesteeId}}" class="alarm">{{requestee}}</div>
             <div class="createAt">{{time_diff createdAt}}</div>

@@ -1951,6 +1951,8 @@ if(Meteor.isServer){
   });
   Feeds.allow({
     insert: function (userId, doc) {
+      //console.log('feeds insert...');
+      
       var userData = Meteor.users.findOne({_id:userId});
       if(!userData){
           return false;

@@ -12,8 +12,11 @@ if Meteor.isClient
     socialGraphMessageList=[]
     needToFethReadlist=false
     
-    insertMessageToChat = (doc)->
+    insertMessageToChat = (doc, isRepeat)->
         # ChatMessage.insert doc
+        if(isRepeat)
+            return ChatMessage.insert(doc)
+        
         new_urls = []
         if doc.t is 'bot' and doc.u and doc.u._id is 'group.cat' and doc.urls
             if doc.urls.length > 0
@@ -43,7 +46,7 @@ if Meteor.isClient
                 }
             }
 
-    sendPersonalMessageWithURLToRoom = (message, url, title, description, mainImageUrl)->
+    sendPersonalMessageWithURLToRoom = (message, url, title, description, mainImageUrl, isRepeat)->
         url = if url? then url else 'http://www.tiegushi.com/'
         alink = document.createElement 'a'
         alink.href = url
@@ -82,7 +85,7 @@ if Meteor.isClient
             ]            
         } 
 
-        insertMessageToChat msg
+        insertMessageToChat msg, isRepeat
     sendPersonalMessageWithURLSToRoom = (message, urls)->
         new_urls = []
         _.map urls, (item)->
@@ -405,3 +408,24 @@ if Meteor.isClient
             else if getFeedsByLoginInterval isnt null
                 Meteor.clearInterval getFeedsByLoginInterval
                 getFeedsByLoginInterval = null
+                
+                
+        # sub hotshareFeeds
+        Tracker.autorun ()->
+            if Meteor.userId() and Session.get('openedRoom')
+                Meteor.subscribe 'hotShareFeeds'
+                
+        HotShareFeeds.find({}).observeChanges {
+          added: (id, feed)->
+            if ['SelfPosted', 'share', 'pcommentowner'].indexOf(feed.eventType) is -1
+              return;
+              
+            if feed.eventType is 'pcommentowner'
+              sendPersonalMessageWithURLToRoom(feed.ownerName + ' 点评了您的贴子:', 'http://cdn.tiegushi.com/posts/' + feed.postId, feed.postTitle, '段落: ' + feed.pindexText, feed.mainImage, true)
+            else if feed.eventType is 'share'
+              sendPersonalMessageWithURLToRoom(feed.ownerName + ' 转发了您的贴子:', 'http://cdn.tiegushi.com/posts/' + feed.postId, feed.postTitle, '段落: ' + feed.pindexText, feed.mainImage, true)
+              
+            Meteor.call('updateFeedsChecked', id)
+        }
+                
+    

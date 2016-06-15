@@ -262,7 +262,9 @@ shareTo = function(to,self,index){
       "comment" : 0,
       "followby" : post.owner,
       "checked" : false
-    })
+    }, function (err, _id) {
+      //alert(err);
+    });
 
     var height = $('.showPosts').height();
     $('#blur_overlay').css('height',height);

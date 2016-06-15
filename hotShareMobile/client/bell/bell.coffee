@@ -18,6 +18,11 @@ if Meteor.isClient
             if (target.data("visible"))
                 target.data("visible", false);
   Template.bell.helpers
+    notRead:(val)->
+      if val
+        return false
+      else
+        return true
     isFriend:(userId)->
       Meteor.subscribe("friendFollower",Meteor.userId(),userId)
       if Follower.findOne({"userId":Meteor.userId(),"followerId":userId})
@@ -64,6 +69,9 @@ if Meteor.isClient
       else 
          return true
   Template.bell.events
+    'click .contentList': (e)->
+      console.log(this._id)
+      Meteor.call 'feedsMsgSetAsRead', this._id
     'click .acceptrequest': (event)->
        Follower.insert {
          userId: this.requesteeId
