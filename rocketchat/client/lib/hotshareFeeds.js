@@ -1,0 +1,1 @@
+HotShareFeeds = new Mongo.Collection("hotshareFeeds");
