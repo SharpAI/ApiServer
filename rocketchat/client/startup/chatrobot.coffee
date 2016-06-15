@@ -378,43 +378,38 @@ if Meteor.isClient
                     )
                     
         # 故事贴推荐贴子的推送
-        getFeedsByLoginInterval = null
         getFeedsByLogin = ()->
+            Meteor.call 'getFeedsByLogin', (err, res)->
+                if err
+                    return
+
+                # owner group
+                owners = []
+                _.map res, (item)->
+                    url = {
+                        url: 'http://cdn.tiegushi.com/posts/' + item.postId
+                        title: item.postTitle
+                        description: '发表：' + GetTime0(item.createdAt)
+                        mainImageUrl: item.mainImage
+                    }
+                    if _.pluck(owners, 'ownerId').indexOf(item.owner) is -1
+                        owners.push {ownerId: item.owner, ownerName: item.ownerName, urls: [url]}
+                    else
+                        owners[_.pluck(owners, 'ownerId').indexOf(item.owner)].urls.push(url)
+
+                _.map owners, (item)->
+                    sendPersonalMessageWithURLSToRoom '您曾在故事贴偶遇的朋友 "'+item.ownerName+'" 写了篇故事贴给您，想看看吗？', item.urls
+
+        Tracker.autorun (t)->
             if Meteor.userId() and Session.get('openedRoom')
-                Meteor.call 'getFeedsByLogin', (err, res)->
-                    if err
-                        return
-                        
-                    # owner group
-                    owners = []
-                    _.map res, (item)->
-                        url = {
-                            url: 'http://cdn.tiegushi.com/posts/' + item.postId
-                            title: item.postTitle
-                            description: '发表：' + GetTime0(item.createdAt)
-                            mainImageUrl: item.mainImage
-                        }
-                        if _.pluck(owners, 'ownerId').indexOf(item.owner) is -1
-                            owners.push {ownerId: item.owner, ownerName: item.ownerName, urls: [url]}
-                        else
-                            owners[_.pluck(owners, 'ownerId').indexOf(item.owner)].urls.push(url)
-                            
-                    _.map owners, (item)->
-                        sendPersonalMessageWithURLSToRoom '您曾在故事贴偶遇的朋友 "'+item.ownerName+'" 写了篇故事贴，想看看吗？', item.urls
-        Tracker.autorun ()->          
-            if Meteor.userId() and Session.get('openedRoom')
+                t.stop()
                 getFeedsByLogin()
-                getFeedsByLoginInterval = Meteor.setInterval getFeedsByLogin, 10000
-            else if getFeedsByLoginInterval isnt null
-                Meteor.clearInterval getFeedsByLoginInterval
-                getFeedsByLoginInterval = null
-                
-                
+
         # sub hotshareFeeds
-        Tracker.autorun ()->
+        Tracker.autorun (t)->
             if Meteor.userId() and Session.get('openedRoom')
+                t.stop()
                 Meteor.subscribe 'hotShareFeeds'
-                
         HotShareFeeds.find({}).observeChanges {
           added: (id, feed)->
             if ['SelfPosted', 'share', 'pcommentowner'].indexOf(feed.eventType) is -1
