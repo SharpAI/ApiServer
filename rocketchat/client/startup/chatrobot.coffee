@@ -4,7 +4,7 @@ if Meteor.isClient
     window.socialGraphCollection = new Meteor.Collection(null)
     idleMessageInterval = null
     timeIn = Date.now()
-    idleMessageIntervalSec = Meteor.settings.public.MESSAGE_PUSH_TIME or 20000
+    idleMessageIntervalSec = Meteor.settings.public.MESSAGE_PUSH_TIME or 2000
     mystate = null
     onlineUsers = 0
     todisplayList=[]
@@ -149,8 +149,9 @@ if Meteor.isClient
             Session.set('showReadList',Session.get('showReadList')+1)
             sendPersonalMessageWithURLToRoom('朋友们可能还在看帖子，您可以回顾一下浏览过的故事贴('+Session.get('showReadList')+'/'+Session.get('gotReadList')+'):','http://cdn.tiegushi.com/posts/'+data.postId, data.name, data.addontitle, data.mainImage)
             #amplify.store('readListDisplayed',amplify.store('readListDisplayed')+1)
-        else if needToFethReadlist
-            fetchReadListFromServer()
+        #Don't pull further information from server, leave it for the next time.
+        #else if needToFethReadlist
+        #    fetchReadListFromServer()
     idleMessage = ()->
         console.log('idleMessage')
         #if onlineUsers <= 1 or socialGraphCollection.find().count() is 0
