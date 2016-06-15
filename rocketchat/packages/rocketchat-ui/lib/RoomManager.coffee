@@ -211,7 +211,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 		room = openedRooms[typeName]
 		return room?.dom?
 
-	updateUserStatus = (user, status, utcOffset) ->
+	updateUserStatus = (user, status, utcOffset, location) ->
 		onlineUsersValue = onlineUsers.curValue
 
 		if status is 'offline'
@@ -221,7 +221,7 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 				_id: user._id
 				status: status
 				utcOffset: utcOffset
-
+				location: location
 		onlineUsers.set onlineUsersValue
 
 	updateMentionsMarksOfRoom = (typeName) ->
