@@ -1,6 +1,13 @@
 /* globals Inject */
+SSR.compileTemplate('hottestPosts', Assets.getText('server/hottestPosts.html'));
+//Inject.rawHead("loader", Assets.getText('server/loader.html'));
+Inject.rawHead("hottestPosts",function(){
+	var postHtml = SSR.render('hottestPosts', {});
+	return postHtml;
+});
 
-Inject.rawBody('page-loading', `
+/*
+Inject.rawBody('page-loading',`
 	<div id="initial-page-loading" class="page-loading">
 		<div class="spinner">
 			<div class="rect1"></div>
@@ -9,9 +16,8 @@ Inject.rawBody('page-loading', `
 			<div class="rect4"></div>
 			<div class="rect5"></div>
 		</div>
-	</div>`
-);
-
+	</div>`);
+*/
 RocketChat.settings.get('Site_Url', function() {
 	Meteor.defer(function() {
 		if (__meteor_runtime_config__.ROOT_URL_PATH_PREFIX && __meteor_runtime_config__.ROOT_URL_PATH_PREFIX.trim() !== '') {

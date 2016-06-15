@@ -21,9 +21,11 @@ Package.onUse(function(api) {
 		'underscore',
 		'rocketchat:lib',
 		'meteorhacks:inject-initial',
+		'meteorhacks:ssr@2.2.0',
 		'meteorhacks:fast-render'
 	]);
 
+	api.addFiles('master/hottestPosts.js', 'client');
 	api.addFiles('master/main.html', 'client');
 	api.addFiles('master/loading.html', 'client');
 	api.addFiles('master/pageLoading.html', 'client');
@@ -32,6 +34,7 @@ Package.onUse(function(api) {
 
 	api.addFiles('master/main.coffee', 'client');
 
+	api.addAssets('server/hottestPosts.html', 'server');
 	api.addFiles('server/inject.js', 'server');
 	api.addFiles('server/fastRender.js', 'server');
 });
