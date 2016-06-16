@@ -1,40 +1,40 @@
 Meteor.startup ->
 
-  unless Meteor.userId()
-    hotShareUserId=amplify.store('hotshareUserID')
-    console.log('hotShareUserId: '+hotShareUserId)
-    if hotShareUserId
-      Meteor.loginWithGushitie hotShareUserId, (err)->
-        if err
-          amplify.store('hotshareUserID',null)
-          console.log('>>>>>> login with error:')
-          uuid = amplify.store('uuid') || Meteor.uuid()
-          Meteor.loginWithAnonymous uuid, (err)->
-            if err
-              console.log('>>>>>> login with error:')
-              return console.log(err)
+  Tracker.autorun ()->
+    unless Meteor.userId()
+      hotShareUserId=amplify.store('hotshareUserID')
+      console.log('hotShareUserId: '+hotShareUserId)
+      if hotShareUserId
+        Meteor.loginWithGushitie hotShareUserId, (err)->
+          if err
+            amplify.store('hotshareUserID',null)
+            console.log('>>>>>> login with error:')
+            uuid = amplify.store('uuid') || Meteor.uuid()
+            Meteor.loginWithAnonymous uuid, (err)->
+              if err
+                console.log('>>>>>> login with error:')
+                return console.log(err)
 
-            amplify.store('uuid', uuid)
-            console.log('Anonymous login')
-          return console.log(err)
-        console.log('Gushitie login')
-        me=Meteor.user()
-        if me.services.gushitie.icon
-          console.log('setup icon')
-          Meteor.call 'setAvatarFromService', me.services.gushitie.icon, '', 'url'
-    else
-      uuid = amplify.store('uuid') || Meteor.uuid()
-      Meteor.loginWithAnonymous uuid, (err)->
-        if err
-          console.log('>>>>>> login with error:')
-          return console.log(err)
+              amplify.store('uuid', uuid)
+              console.log('Anonymous login')
+            return console.log(err)
+          console.log('Gushitie login')
+          me=Meteor.user()
+          if me.services.gushitie.icon
+            console.log('setup icon')
+            Meteor.call 'setAvatarFromService', me.services.gushitie.icon, '', 'url'
+      else
+        uuid = amplify.store('uuid') || Meteor.uuid()
+        Meteor.loginWithAnonymous uuid, (err)->
+          if err
+            console.log('>>>>>> login with error:')
+            return console.log(err)
 
-        amplify.store('uuid', uuid)
-        console.log('Anonymous login')
+          amplify.store('uuid', uuid)
+          console.log('Anonymous login')
   Tracker.autorun (t)->
     if Meteor.user() and Meteor.user().name
       me = Meteor.user()
-      updateMyOwnLocationAddress()
       if (!me.services or !me.services.gushitie) and amplify.store('hotshareUserID')
         Meteor.call 'associateGushitie',amplify.store('hotshareUserID')
         console.log(me)
