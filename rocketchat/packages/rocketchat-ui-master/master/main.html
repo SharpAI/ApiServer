@@ -56,7 +56,7 @@
 <body>
 </body>
 
-<template name="main">
+<template name="mainOrig">
 	{{#if subsReady}}
 		{{#unless logged}}
 		<!--
@@ -115,4 +115,29 @@
 	{{else}}
 		{{> pageLoading}}
 	{{/if}}
+</template>
+<template name="main">
+    {{#if subsReady}}
+        {{> spotlight}}
+        <div id="user-card-popover"></div>
+        <div id="rocket-chat" class="menu-nav menu-closed">
+            <div class="dialog-layout">
+                {{> shareRoom}}
+            </div>
+            <div class="connection-status">
+                {{> status}}
+            </div>
+            {{#unless modal}}
+                <div class="flex-tab-bar" role="toolbar">
+                    {{> flexTabBar}}
+                </div>
+            {{/unless}}
+            <div class="main-content {{flexOpened}} {{flexOpenedRTC1}} {{flexOpenedRTC2}} {{#if modal}}main-modal{{/if}}">
+                {{> Template.dynamic template=center}}
+            </div>
+        </div>
+        {{#if logged}}
+            <script>{{{CustomScriptLoggedIn}}}</script>
+        {{/if}}
+    {{/if}}
 </template>
