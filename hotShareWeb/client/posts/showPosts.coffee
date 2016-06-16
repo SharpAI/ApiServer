@@ -391,6 +391,22 @@ if Meteor.isClient
             when 4 then shareTo('System',Blaze.getData($('.showPosts')[0]),self.index)
         );
       else
+        i = Session.get "pcommentIndexNum"
+        postId = Session.get("postContent")._id
+        post = Session.get("postContent").pub
+
+        # if (favp = FavouritePosts.findOne({postId: postId, userId: Meteor.userId()}))
+        #   FavouritePosts.update({_id: favp._id}, {$set: {updateAt: new Date()}})
+        # else
+        #   FavouritePosts.insert({postId: postId, userId: Meteor.userId(), createdAt: new Date(), updateAt: new Date()})
+
+        Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"pshare","pindex":i}}, (error, result)->
+          if error
+            console.log(error.reason);
+          else
+            console.log("success");
+        )
+      
         Session.set("doSectionForward",true)
         toastr.success('将在微信分享时引用本段内容', '您选定了本段文字')
         console.log('Selected index '+self.index)
