@@ -71,7 +71,8 @@
   "followPeople": "关注您喜欢的人",
   "knowActivity": "及时了解对方的动态",
   "chooseAtLeast": "至少再关注",
-  "toFollow": "个讲故事者可以继续",
+  "chooseAtLeast1": "至少再关注",
+  "toFollow1": "个讲故事者可以继续",
   "conTinue": "继续",
   //end
   //user.html
@@ -250,7 +251,7 @@
   "NewFriendsList": "新的朋友",
   "FailToLoad": "加载失败，请检查网络设置或稍后重试",
   "FateAh": "缘分啊，我们已偶遇",
-  "times": "次了!",
+  "times1": "次了!",
   "Moments": "朋友圈",
   "RecommendPosts": "看过当前帖子的朋友看过的帖子，您都看过了，特意为您推荐以下您没看过帖子...",
   "AlsoRead": "看过当前帖子的朋友，还看过...",
