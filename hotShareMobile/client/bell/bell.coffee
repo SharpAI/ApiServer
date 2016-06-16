@@ -18,8 +18,11 @@ if Meteor.isClient
             if (target.data("visible"))
                 target.data("visible", false);
   Template.bell.helpers
-    notRead:(val)->
-      if val
+    notReadCount: ()->
+      Feeds.find({isRead:{$ne: true}, checked:{$ne: true}}).count()
+    notRead:(read, check)->
+      console.log('isRead:'+read+ 'isCheck:'+check)
+      if check or read
         return false
       else
         return true

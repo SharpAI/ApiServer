@@ -23,8 +23,8 @@
       {{/if}}
       {{#each eventFeeds}}
         {{#if isAlsoComment eventType}}
-            <a href="/posts/{{postId}}" class="contentList" id="{{_id}}">
-                {{#if notRead checked}}
+            <a href="/posts/{{postId}}" class="contentList">
+                {{#if notRead isRead checked}}
                 <div class="readTips"></div>
                 {{/if}}
                 <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
@@ -36,8 +36,8 @@
             </div>
         {{/if}}
         {{#if isAlsoFavourite eventType}}
-            <a href="/posts/{{postId}}" class="contentList" id="{{_id}}">
-                {{#if notRead checked}}
+            <a href="/posts/{{postId}}" class="contentList">
+                {{#if notRead isRead checked}}
                 <div class="readTips"></div>
                 {{/if}}
                 <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
@@ -49,8 +49,8 @@
             </div>
         {{/if}}
         {{#if isPcommentOwner eventType}}
-            <a href="/posts/{{postId}}" class="contentList" id="{{_id}}">
-                {{#if notRead checked}}
+            <a href="/posts/{{postId}}" class="contentList">
+                {{#if notRead isRead checked}}
                 <div class="readTips"></div>
                 {{/if}}
                 <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
@@ -62,8 +62,8 @@
             </div>
         {{/if}}
         {{#if isReComment eventType}}
-          <a href="/posts/{{postId}}" class="contentList" id="{{_id}}">
-          {{#if notRead checked}}
+          <a href="/posts/{{postId}}" class="contentList">
+          {{#if notRead isRead checked}}
                 <div class="readTips" style="background: green; width:10px; height:10px;"></div>
                 {{/if}}
             <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
@@ -76,7 +76,7 @@
         {{/if}}
         {{#if isComment eventType}}
           <a href="/posts/{{postId}}" class="contentList">
-            {{#if notRead checked}}
+            {{#if notRead isRead checked}}
                 <div class="readTips"></div>
                 {{/if}}
             <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
@@ -99,7 +99,7 @@
         {{/if}}
         {{#if isRecommand eventType}}
           <a href="/posts/{{postId}}" class="contentList">
-          {{#if notRead checked}}
+          {{#if notRead isRead checked}}
                 <div class="readTips"></div>
                 {{/if}}
             <img class="icon" src="{{recommanderIcon}}" width='30' height='30'>
@@ -112,7 +112,7 @@
         {{/if}}
         {{#if isGetRequest eventType}}
           <div id="{{requesterId}}" class="contentList">
-            {{#if notRead checked}}
+            {{#if notRead isRead checked}}
                 <div class="readTips"></div>
                 {{/if}}
             <img class="icon" src="{{requesterIcon}}" width='30' height='30'>
@@ -130,7 +130,7 @@
         {{/if}}
         {{#if isSendRequest eventType}}
           <div id="{{requesteeId}}" class="contentList">
-            {{#if notRead checked}}
+            {{#if notRead isRead checked}}
                 <div class="readTips"></div>
                 {{/if}}
             <img class="icon" src="{{requesteeIcon}}" width='30' height='30'>

@@ -4,10 +4,10 @@ if Meteor.isServer
     Meteor.methods
       "updataFeedsWithMe": (userId)->
         Meteor.defer ()->
-          Feeds.update({followby: userId},{$set:{checked: true}},{multi: true})
+          Feeds.update({followby: userId},{$set:{isRead: true}},{multi: true})
       "feedsMsgSetAsRead": (id)->
         Meteor.defer ()->
-          Feeds.update({_id:id},{$set: {checked:true}})
+          Feeds.update({_id:id},{$set: {isRead:true}})
       "unpublish":(postId,userId,drafts)->
         Meteor.defer ()->
           Posts.update({_id:postId},{$set:{publish:false}})
