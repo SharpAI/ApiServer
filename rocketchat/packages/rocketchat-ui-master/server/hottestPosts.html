@@ -17,6 +17,10 @@
         padding: 0px 10px 10px 10px;
         margin-top: -2px;
     }
+    ul.post-list li a:hover {color:#444;}
+    ul.post-list li a:visited {color:#444;}
+    ul.post-list li a:link {color:#444;}
+    ul.post-list li a {color:#444;}
     ul.post-list {
         list-style-type: none;
         /*width: 80%;
@@ -99,14 +103,16 @@
     <div class='post-list-box'>
         <ul class='post-list'>
             {{#each posts}}
-                <li href="{{linkUrl}}" target="_blank" style="border-top: 1px solid #f0f0f0;">
+            <li style="border-top: 1px solid #f0f0f0;">
+                <a href="{{linkUrl}}" target="_blank">
                     <div class="banner">
                         <div class="image" style="background-image:url({{mainImage}})"></div>
                     </div>
                     <!--<img src="{{mainImage}}" >-->
                     <h3 style="padding: 5px;">{{name}}</h3>
                     <p>{{description}}</p>
-                </li>
+                </a>
+            </li>
             {{/each}}
         </ul>
     </div>
