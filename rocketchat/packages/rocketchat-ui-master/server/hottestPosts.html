@@ -46,13 +46,17 @@
         if(typeof Meteor != 'undefined'){
             if(typeof Meteor.userId == 'function') {
                 if (Meteor.userId() != '') {
-                    console.log('logged in');
-                    clearInterval(checkingInterval);
-                    setTimeout(function () {
-                        $("#inject-loader-wrapper").fadeOut(500, function () {
-                            $(this).remove();
-                        });
-                    }, 500);
+                    if(typeof Session != 'undefined'){
+                        if(Session.get('openedRoom')){
+                            console.log('logged in');
+                            clearInterval(checkingInterval);
+                            setTimeout(function () {
+                                $("#inject-loader-wrapper").fadeOut(500, function () {
+                                    $(this).remove();
+                                });
+                            }, 500);
+                        }
+                    }
                 }
             }
         }
