@@ -139,19 +139,19 @@ if Meteor.isClient
   Tracker.autorun ()->
     if Session.get("needToast") is true
       Session.set("needToast",false)
-      $('.showPosts').get(0).style.overflow = ''
-      $('.showPosts').get(0).style.maxHeight = ''
-      $('.showPosts').get(0).style.position = ''
-      $('.readmore').remove()
       Meteor.setTimeout ()->
         scrolltop = 0
+        $('.showPosts').get(0).style.overflow = ''
+        $('.showPosts').get(0).style.maxHeight = ''
+        $('.showPosts').get(0).style.position = ''
+        $('.readmore').remove()
         if $('.dCurrent').length
           scrolltop=$('.dCurrent').offset().top
           Session.set("postPageScrollTop", scrolltop)
           document.body.scrollTop = Session.get("postPageScrollTop")
         userName=Session.get("pcommentsName")
         toastr.info(userName+"点评过的段落已为您用蓝色标注！")
-      ,300
+      ,1000
   Template.showPosts.onDestroyed ->
     document.body.scrollTop = 0
     Session.set("postPageScrollTop", 0)
@@ -258,7 +258,7 @@ if Meteor.isClient
       $showPosts = $('.showPosts')
       $test = $('.showPosts').find('.content .gridster #test')
 
-      if $test and $test.height() > 1000
+      if $test and $test.height() > 1000 and $('.dCurrent').length is 0
         $('.showPosts').get(0).style.overflow = 'hidden'
         $('.showPosts').get(0).style.maxHeight = '1500px'
         $('.showPosts').get(0).style.position = 'relative'

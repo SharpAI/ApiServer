@@ -70,6 +70,11 @@ if Meteor.isClient
          return true
   Template.bell.events
     'click .contentList': (e)->
+      if this.pindex?
+        Session.set("pcurrentIndex",this.pindex)
+        Session.set("pcommetsId",this.owner)
+        Session.set("pcommentsName",this.ownerName)
+        Session.set "toasted",false
       console.log(this._id)
       Meteor.call 'feedsMsgSetAsRead', this._id
     'click .acceptrequest': (event)->
