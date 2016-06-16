@@ -7,6 +7,9 @@ if (Meteor.isClient) {
       console.log('on IOS');
       this.onNotificationAPN = function(event) {
         console.log('Got message');
+        if(event.badge){
+           Session.set('waitReadCount', event.badge);
+        }
         if (event.foreground === '0') {
           console.log('Push notification when background');
           window.refreshMainDataSource();
