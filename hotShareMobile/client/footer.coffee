@@ -6,12 +6,14 @@ if Meteor.isClient
     wait_read_count:->
       me = Meteor.user()
       if me
-        if me.profile and me.profile.waitReadCount
-          waitReadCount = me.profile.waitReadCount
+          waitReadCount = Session.get('waitReadCount')
+        #if me.profile and me.profile.waitReadCount
+          #waitReadCount = me.profile.waitReadCount
           if waitReadCount is undefined or isNaN(waitReadCount)
             waitReadCount = 0
           if Session.get('channel') is 'bell' and waitReadCount > 0
             waitReadCount = 0
+            Session.set('waitReadCount',0)
             Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
           return waitReadCount
       else

@@ -72,8 +72,8 @@
    //registerFollow.html
   "followPeople": "Follow people",
   "knowActivity": "Read their latest stories",
-  "chooseAtLeast": "Follow at least ",
-  "toFollow": " story tellers to continue.",
+  "chooseAtLeast1": "Follow at least ",
+  "toFollow1": " story tellers to continue.",
   "conTinue": "Continue",
   //end
    //user.html
@@ -250,7 +250,7 @@
   "NewFriendsList": "New friends",
   "FailToLoad": "Failed to load, check the network settings or try again later",
   "FateAh": "Fate ah, we have encounter ",
-  "times": " times.",
+  "times1": " times.",
   "Moments": "Moments",
   "RecommendPosts": "Read the current posts ago friend posts, you have seen, specially recommended for you that you did not read the following posts ...",
   "AlsoRead": "friends who read the current post, also read ...",

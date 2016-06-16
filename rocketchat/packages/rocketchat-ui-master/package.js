@@ -25,7 +25,6 @@ Package.onUse(function(api) {
 		'meteorhacks:fast-render'
 	]);
 
-	api.addFiles('master/hottestPosts.js', 'client');
 	api.addFiles('master/main.html', 'client');
 	api.addFiles('master/loading.html', 'client');
 	api.addFiles('master/pageLoading.html', 'client');

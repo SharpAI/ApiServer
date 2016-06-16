@@ -1,138 +1,123 @@
 <div id="inject-loader-wrapper">
 <style type="text/css">
-.showbox {
-  background-color: #ffffff;
-}
-
-.showbox {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 30%;
-}
-
-.loader {
-  position: relative;
-  margin: 0px auto;
-  width: 100px;
-}
-.loader:before {
-  content: '';
-  display: block;
-  padding-top: 100%;
-}
-
-.circular {
-  -webkit-animation: rotate 2s linear infinite;
-          animation: rotate 2s linear infinite;
-  height: 100%;
-  -webkit-transform-origin: center center;
-          transform-origin: center center;
-  width: 100%;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-}
-
-.path {
-  stroke-dasharray: 1,200;
-  stroke-dashoffset: 0;
-  -webkit-animation: dash 1.5s ease-in-out infinite, color 6s ease-in-out infinite;
-          animation: dash 1.5s ease-in-out infinite, color 6s ease-in-out infinite;
-  stroke-linecap: round;
-}
-
-.path-2 {
-  stroke-dasharray: 1,200;
-  stroke-dashoffset: 0;
-  -webkit-animation: dash 3s ease-in-out infinite, color 8s ease-in-out infinite;
-          animation: dash 3s ease-in-out infinite, color 8s ease-in-out infinite;
-  stroke-linecap: round;
-}
-
-.path-3 {
-  stroke-dasharray: 1,200;
-  stroke-dashoffset: 0;
-  -webkit-animation: dash 4.5s ease-in-out infinite, color 12s ease-in-out infinite;
-          animation: dash 4.5s ease-in-out infinite, color 12s ease-in-out infinite;
-  stroke-linecap: round;
-}
-
-@-webkit-keyframes rotate {
-  100% {
-    -webkit-transform: rotate(360deg);
-            transform: rotate(360deg);
-  }
-}
-
-@keyframes rotate {
-  100% {
-    -webkit-transform: rotate(360deg);
-            transform: rotate(360deg);
-  }
-}
-@-webkit-keyframes dash {
-  0% {
-    stroke-dasharray: 1,200;
-    stroke-dashoffset: 0;
-  }
-  50% {
-    stroke-dasharray: 89,200;
-    stroke-dashoffset: -35px;
-  }
-  100% {
-    stroke-dasharray: 89,200;
-    stroke-dashoffset: -124px;
-  }
-}
-@keyframes dash {
-  0% {
-    stroke-dasharray: 1,200;
-    stroke-dashoffset: 0;
-  }
-  50% {
-    stroke-dasharray: 89,200;
-    stroke-dashoffset: -35px;
-  }
-  100% {
-    stroke-dasharray: 89,200;
-    stroke-dashoffset: -124px;
-  }
-}
-@-webkit-keyframes color {
-  100%, 0% {
-    stroke: #d62d20;
-  }
-  40% {
-    stroke: #0007e7;
-  }
-  66% {
-    stroke: #0f0;
-  }
-  80%, 90% {
-    stroke: #ffa700;
-  }
-}
-@keyframes color {
-  100%, 0% {
-    stroke: #d62d20;
-  }
-  40% {
-    stroke: #0007e7;
-  }
-  66% {
-    stroke: #0f0;
-  }
-  80%, 90% {
-    stroke: #ffa700;
-  }
-}
+    body{
+        background:white !important;
+    }
+    #inject-loader-wrapper{
+        background-color:white;
+        background:white;
+    }
+    * {margin: 0; padding: 0;}
+    div.post-list-box {
+        background: white;
+        /*margin: 20px;*/
+        /*padding: 10px;*/
+        position: relative;
+        z-index: 0;
+        padding: 0px 10px 10px 10px;
+        margin-top: -2px;
+    }
+    ul.post-list li a:hover {color:#444;}
+    ul.post-list li a:visited {color:#444;}
+    ul.post-list li a:link {color:#444;}
+    ul.post-list li a {color:#444;}
+    ul.post-list {
+        list-style-type: none;
+        /*width: 80%;
+        margin: 10%;*/
+    }
+    .post-list-box ul li div.banner{
+        float: left;
+        margin: 0 10px 0 0;
+        width: 100px;
+        height: 100px;
+        max-width: 100px;
+        max-height: 100px;
+        padding: 5px 5px 5px 5px;
+        position: relative;
+    }
+    .post-list-box ul li div.image{
+        width: 100%;
+        height: 100%;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+    h3 {
+        font: bold 20px/1.5 Helvetica, Verdana, sans-serif;
+        padding: 5px 5px 5px 5px;
+    }
+    .showHottestPostsTitle{
+        text-align: center;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        position: relative;
+        background: #fff;
+        z-index: 11;
+        color: #c0c0c0;
+    }
+    li img {
+        float: left;
+        margin: 0 10px 0 0;
+        width: 100px;
+        height:100px;
+        max-width: 100px;
+        max-height: 100px;
+        padding: 5px 5px 5px 5px;
+    }
+    li p {
+        font: 200 12px/1.5 Georgia, Times New Roman, serif;
+    }
+    li {
+        border-bottom: solid 1px #f0f0f0;
+        /*padding: 10px;*/
+        overflow: auto;
+    }
+    li:hover {
+        background: #eee;
+        cursor: pointer;
+    }
 </style>
+<script>
+    var checkingInterval=setInterval(function(){
+        if(typeof Meteor != 'undefined'){
+            if(typeof Meteor.userId == 'function') {
+                if (Meteor.userId() != '') {
+                    if(typeof Session != 'undefined'){
+                        if(Session.get('openedRoom')){
+                            console.log('logged in');
+                            clearInterval(checkingInterval);
+                            setTimeout(function () {
+                                $("#inject-loader-wrapper").fadeOut(500, function () {
+                                    $(this).remove();
+                                });
+                            }, 500);
+                        }
+                    }
+                }
+            }
+        }
+    },1000)
+</script>
+<div class="showHottestPosts">
+    <h3 class="showHottestPostsTitle">24小时最热门故事贴</h3>
+    <div class='post-list-box'>
+        <ul class='post-list'>
+            {{#each posts}}
+            <li style="border-top: 1px solid #f0f0f0;">
+                <a href="{{linkUrl}}" target="_blank">
+                    <div class="banner">
+                        <div class="image" style="background-image:url({{mainImage}})"></div>
+                    </div>
+                    <!--<img src="{{mainImage}}" >-->
+                    <h3 style="padding: 5px;">{{name}}</h3>
+                    <p>{{description}}</p>
+                </a>
+            </li>
+            {{/each}}
+        </ul>
+    </div>
+</div>
+    <!--
 <div class="showbox">
   <div class="loader">
     <svg class="circular" viewBox="25 25 50 50">
@@ -142,4 +127,5 @@
     </svg>
   </div>
 </div>
+-->
 </div>

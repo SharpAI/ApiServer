@@ -159,9 +159,9 @@ if Meteor.isClient
     newcount:()->
       PostFriends.find({meetOnPostId:Session.get("postContent")._id,count:1,ta:{$ne:null}},{sort: {createdAt: -1}}).count()
     feedscount:()->
-      Feeds.find({followby:Meteor.userId(),checked:false}).count()
+      Feeds.find({followby:Meteor.userId(),checked:false, eventType: {$ne: 'share'}}).count()
     haveFeeds:->
-      if Feeds.find({followby:Meteor.userId(),checked:false}).count()>0
+      if Feeds.find({followby:Meteor.userId(),checked:false, eventType: {$ne: 'share'}}).count()>0
         true
       else
         false

@@ -1,9 +1,39 @@
 /* globals Inject */
 SSR.compileTemplate('hottestPosts', Assets.getText('server/hottestPosts.html'));
+Template.hottestPosts.helpers({
+	linkUrl:function(){
+		return 'http://cdn.tiegushi.com/posts/'+this.postId;
+	},
+	description:function(){
+		if( this.addonTitle && this.addonTitle != ''){
+			return this.addonTitle;
+		} else if (this.ownerName && this.ownerName!='') {
+			return '作者: '+this.ownerName;
+		} else {
+			return '';
+		}
+	}
+});
 //Inject.rawHead("loader", Assets.getText('server/loader.html'));
-Inject.rawHead("hottestPosts",function(){
-	var postHtml = SSR.render('hottestPosts', {});
-	return postHtml;
+Inject.rawHead("hottestPosts",function(chunk,res){
+	if(chunk && chunk.req && chunk.req.url){
+		console.log('the url is '+chunk.req.url);
+		var url = chunk.req.url;
+		if(url.indexOf('/channel/') ===0){
+			url=url.replace('/channel/','')
+			console.log('Channel request');
+			url=url.split('?')[0];
+			url=url.split('/userid/')[0];
+			if(url.indexOf('/') > 0){
+				console.log('not a hackable post link')
+				return null;
+			}
+			console.log('The id is'+url)
+			var postHtml = SSR.render('hottestPosts', {posts:getHottestPosts()});
+			return postHtml;
+		}
+	}
+	return null;
 });
 
 /*
