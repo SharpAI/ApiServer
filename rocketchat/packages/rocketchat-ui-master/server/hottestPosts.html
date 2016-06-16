@@ -10,30 +10,62 @@
     * {margin: 0; padding: 0;}
     div.post-list-box {
         background: white;
-        margin: 20px;
+        /*margin: 20px;*/
+        /*padding: 10px;*/
+        position: relative;
+        z-index: 0;
+        padding: 0px 10px 10px 10px;
+        margin-top: -2px;
     }
     ul.post-list {
         list-style-type: none;
-        width: 80%;
-        margin: 10%;
+        /*width: 80%;
+        margin: 10%;*/
+    }
+    .post-list-box ul li div.banner{
+        float: left;
+        margin: 0 10px 0 0;
+        width: 100px;
+        height: 100px;
+        max-width: 100px;
+        max-height: 100px;
+        padding: 5px 5px 5px 5px;
+        position: relative;
+    }
+    .post-list-box ul li div.image{
+        width: 100%;
+        height: 100%;
+        background-repeat: no-repeat;
+        background-size: cover;
     }
     h3 {
         font: bold 20px/1.5 Helvetica, Verdana, sans-serif;
+        padding: 5px 5px 5px 5px;
+    }
+    .showHottestPostsTitle{
+        text-align: center;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        position: relative;
+        background: #fff;
+        z-index: 11;
+        color: #c0c0c0;
     }
     li img {
         float: left;
-        margin: 0 15px 0 0;
+        margin: 0 10px 0 0;
         width: 100px;
         height:100px;
-        width-max:100px;
-        height-max:100px;
+        max-width: 100px;
+        max-height: 100px;
         padding: 5px 5px 5px 5px;
     }
     li p {
         font: 200 12px/1.5 Georgia, Times New Roman, serif;
     }
     li {
-        padding: 10px;
+        border-bottom: solid 1px #f0f0f0;
+        /*padding: 10px;*/
         overflow: auto;
     }
     li:hover {
@@ -63,13 +95,16 @@
     },1000)
 </script>
 <div class="showHottestPosts">
-    <h3>24小时之内,最热门故事贴：</h3>
+    <h3 class="showHottestPostsTitle">24小时最热门故事贴</h3>
     <div class='post-list-box'>
         <ul class='post-list'>
             {{#each posts}}
-                <li href="{{linkUrl}}" target="_blank">
-                    <img src="{{mainImage}}" >
-                    <h3>{{name}}</h3>
+                <li href="{{linkUrl}}" target="_blank" style="border-top: 1px solid #f0f0f0;">
+                    <div class="banner">
+                        <div class="image" style="background-image:url({{mainImage}})"></div>
+                    </div>
+                    <!--<img src="{{mainImage}}" >-->
+                    <h3 style="padding: 5px;">{{name}}</h3>
                     <p>{{description}}</p>
                 </li>
             {{/each}}
