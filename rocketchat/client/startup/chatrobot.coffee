@@ -279,7 +279,6 @@ if Meteor.isClient
                     sendPersonalMessageToRoom('他们大多来自于 ' + stat.locations.jion(', '))
 
     Meteor.startup ->
-        document.title = '故事贴主题阅览室'
         if Session.equals('hiddenMode',true)
             return
         Tracker.autorun (t)->
@@ -306,6 +305,8 @@ if Meteor.isClient
                             if message isnt ''
                                 message='*您*最近在故事贴偶遇的朋友是：'+message
                                 sendPersonalMessageToRoom(message)
+
+                document.title = '故事贴主题阅览室'
                 Meteor.call 'getPostInfo',ChatRoom.findOne({_id: currentRoomId}).name,(err,data)->
                     if !err and data
                         ###
@@ -316,6 +317,7 @@ if Meteor.isClient
                         ###
                         console.log data
                         document.title = data.title + '－主题阅览室'
+                        amplify.store('postTitle_'+currentRoomId,data.title)
 
                         # begin - 尝试解决document.title 在 ios 下不生效的bug
                         iframe = document.createElement('iframe')
@@ -338,6 +340,8 @@ if Meteor.isClient
                           'http://cdn.tiegushi.com/posts/'+data._id, data.title, data.addontitle, data.mainImage)
                         if Meteor.user() and amplify.store('hotshareUserID') and data.owner is amplify.store('hotshareUserID')
                             sendPostStatToOwner(data._id)
+            else if amplify.store('postTitle_'+currentRoomId)
+                document.title = amplify.store('postTitle_'+currentRoomId) + '－主题阅览室'
         Tracker.autorun (t)->
             if Meteor.user() and amplify.store('hotshareUserID')
                 t.stop()
