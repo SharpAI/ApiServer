@@ -383,6 +383,7 @@ Template.shareTheReadingRoom.events({
     var imgUrl = Session.get('postContent').mainImage ? Session.get('postContent').mainImage : 'http://cdn.tiegushi.com/images/logo.png';
     var title = Session.get('postContent').title ? Session.get('postContent').title + '－专属聊天室' : '故事贴专属聊天室';
     var type = Session.get("shareToWechatType");
+    $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300);
     if (type === "WXTimeLine") {
         window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
         return downloadFromBCS(imgUrl, function(result) {
