@@ -347,12 +347,18 @@ Template.showPosts.events({
     },
     'click #QQShare':function(e, t){
         shareTo('QQShare',this);
+        Session.set("shareToWechatType","QQShare")
+        $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
     },
     'click #QQZoneShare':function(e, t){
         shareTo('QQZoneShare',this);
+        Session.set("shareToWechatType","QQZoneShare")
+        $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
     },
     'click #socialShare':function(e, t){
         shareTo('System',this);
+        Session.set("shareToWechatType","System")
+        $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
     },
     'click  .like_img' : function(e){
            if (Meteor.user()) {
@@ -386,7 +392,7 @@ Template.shareTheReadingRoom.events({
                 PUB.toast(TAPi18n.__('failToGetPicAndTryAgain'));
             }
         });
-    } else {
+    } else if (type === "WXSession"){
         window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
         return downloadFromBCS(imgUrl, function(result) {
         if (result) {
@@ -395,6 +401,21 @@ Template.shareTheReadingRoom.events({
             PUB.toast(TAPi18n.__('failToGetPicAndTryAgain'));
         }
       });
+    } else if (type === "QQShare"){
+        window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
+        return shareToQQ(title, "来自故事贴",imgUrl,shareUrl);
+    } else if (type === "QQZoneShare"){
+        window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
+        return shareToQQZone(title, "来自故事贴",imgUrl,shareUrl);
+    } else if (type === "System"){
+        window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
+        return downloadFromBCS(imgUrl, function(result) {
+            if (result) {
+                shareToSystem(title, '来自故事贴', result, shareUrl);
+            } else {
+                PUB.toast(TAPi18n.__('failToGetPicAndTryAgain'));
+            }
+        });
     }
   }
 });
