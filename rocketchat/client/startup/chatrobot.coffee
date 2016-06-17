@@ -48,8 +48,8 @@ if Meteor.isClient
 
     sendPersonalMessageWithURLToRoom = (message, url, title, description, mainImageUrl, isRepeat)->
         url = if url? then url else 'http://www.tiegushi.com/'
-        alink = document.createElement 'a'
-        alink.href = url
+        #alink = document.createElement 'a'
+        #alink.href = url
 
         msg = {
             t: 'bot'
@@ -75,12 +75,13 @@ if Meteor.isClient
                     },
                     "headers" : {
                         "contentType" : "text/html; charset=utf-8"
-                    },
+                    }
+                    ###,
                     "parsedUrl" : {
                         "host" : alink.host, #www.tiegushi.com
                         "pathname" : alink.pathname, #/posts/NYtJcHfCKSE6GWhmj
                         "protocol" : alink.protocol #http:
-                    }
+                    }###
                 }
             ]            
         } 
@@ -90,8 +91,8 @@ if Meteor.isClient
         new_urls = []
         _.map urls, (item)->
             url = if item.url? then item.url else 'http://www.tiegushi.com/'
-            alink = document.createElement 'a'
-            alink.href = url
+            #alink = document.createElement 'a'
+            #alink.href = url
             
             new_urls.push {
                 "url" : url, #http://www.tiegushi.com/posts/NYtJcHfCKSE6GWhmj
@@ -105,12 +106,15 @@ if Meteor.isClient
                 },
                 "headers" : {
                     "contentType" : "text/html; charset=utf-8"
-                },
+                }
+                ###
+                ,
                 "parsedUrl" : {
                     "host" : alink.host, #www.tiegushi.com
                     "pathname" : alink.pathname, #/posts/NYtJcHfCKSE6GWhmj
                     "protocol" : alink.protocol #http:
                 }
+                ###
             }
         
         msg = {
