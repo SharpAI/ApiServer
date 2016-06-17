@@ -337,9 +337,13 @@ shareTo = function(to,self,index){
 Template.showPosts.events({
     'click #WXTimelineShare':function(e, t){
         shareTo('WXTimeLine',this);
+        Session.set("shareToWechatType","WXTimeLine")
+        $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
     },
     'click #WXSessionShare':function(e, t){
         shareTo('WXSession',this);
+        Session.set("shareToWechatType","WXSession")
+        $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
     },
     'click #QQShare':function(e, t){
         shareTo('QQShare',this);
@@ -358,6 +362,23 @@ Template.showPosts.events({
            }
        e.stopPropagation();
     }
+});
+Template.shareTheReadingRoom.events({
+  'click .shareAlertBackground': function() {
+    return $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300);
+  },
+  'click .btnNo': function() {
+    return $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300);
+  },
+  'click .btnYes': function() {
+    var type;
+    type = Session.get("shareToWechatType");
+    if (type === "WXTimeLine") {
+      return shareTo('WXTimeLine', this);
+    } else {
+      return shareTo('WXSession', this);
+    }
+  }
 });
 /*
 clickToLike = function(currentPost, current_imgId){
