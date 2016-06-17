@@ -30,21 +30,18 @@ if Meteor.isClient
     
     sendPersonalMessageToRoom = (message)->
         # 当可以在多个聊天室之间切换以后，ChatRoom　里面会包含所有访问过的聊天室信息
-        #if ChatRoom.findOne()
-        openedRoomId = Session.get('openedRoom')
-        if ChatRoom.findOne({_id: openedRoomId})
-            insertMessageToChat {
-                t: 'bot'
-                msg: message
-                #rid: ChatRoom.findOne()._id
-                rid: openedRoomId
-                ts: new Date()
-                u: {
-                    _id: '故事贴小秘'
-                    username: 'GS'
-                    name: '故事贴小秘'
-                }
+        ChatMessage.insert {
+            t: 'bot'
+            msg: message
+            #rid: ChatRoom.findOne()._id
+            rid: Session.get('openedRoom')
+            ts: new Date()
+            u: {
+                _id: 'group.cat'
+                username: 'GS'
+                name: '故事贴小秘'
             }
+        }
 
     sendPersonalMessageWithURLToRoom = (message, url, title, description, mainImageUrl, isRepeat)->
         url = if url? then url else 'http://www.tiegushi.com/'
