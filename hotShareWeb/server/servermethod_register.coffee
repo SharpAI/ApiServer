@@ -2,6 +2,12 @@ if Meteor.isServer
   myCrypto = Meteor.npmRequire "crypto"
   Meteor.startup ()->
     Meteor.methods
+      "updataFeedsWithMe": (userId)->
+        Meteor.defer ()->
+          Feeds.update({followby: userId},{$set:{isRead: true}},{multi: true})
+      "feedsMsgSetAsRead": (id)->
+        Meteor.defer ()->
+          Feeds.update({_id:id},{$set: {isRead:true}})
       'sendEmailToAdmin':(from, subject, text)->
         to = 'admin@tiegushi.com'
         check([from, subject, text], [String])
