@@ -151,7 +151,14 @@ if Meteor.isClient
             #console.log(data)
 
             Session.set('showReadList',Session.get('showReadList')+1)
-            sendPersonalMessageWithURLToRoom('朋友们可能还在看帖子，您可以回顾一下浏览过的故事贴('+Session.get('showReadList')+'/'+Session.get('gotReadList')+'):','http://cdn.tiegushi.com/posts/'+data.postId, data.name, data.addontitle, data.mainImage)
+
+            description=''
+            if data.ownerName and data.ownerName isnt ''
+                description='作者：'+data.ownerName
+            if data.addontitle and data.addontitle isnt ''
+                data.name+="："+data.addontitle
+            sendPersonalMessageWithURLToRoom('朋友们可能还在看帖子，您可以回顾一下浏览过的故事贴('+Session.get('showReadList')+
+                '/'+Session.get('gotReadList')+'):','http://cdn.tiegushi.com/posts/'+data.postId, data.name, description, data.mainImage)
             #amplify.store('readListDisplayed',amplify.store('readListDisplayed')+1)
         #Don't pull further information from server, leave it for the next time.
         #else if needToFethReadlist
@@ -218,13 +225,18 @@ if Meteor.isClient
         socialGraphCollection.remove({_id:doc._id})
 
         Session.set('ViewedSocialMessageTotal',Session.get('ViewedSocialMessageTotal')+1)
+        description=''
+        if doc.ownerName and doc.ownerName isnt ''
+            description='作者：'+doc.ownerName
+        if doc.desc and doc.desc isnt ''
+            doc.name+="："+doc.desc
         if doc.type is 'taRead'
-            sendPersonalMessageWithURLToRoom(doc.taName+' 读过这篇故事，您还没读过 ('+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+')',doc.link, doc.name, doc.desc, doc.image)
+            sendPersonalMessageWithURLToRoom(doc.taName+' 读过这篇故事，您还没读过 ('+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+')',doc.link, doc.name, description, doc.image)
             return true
         else if doc.type is 'mutualRead'
             #现在TA也在线不准，修好了之后再说吧
             #sendPersonalMessageWithURLToRoom(doc.taName+' 和 您 都读过这篇故事，是不是很有缘分，TA也在线哦（输入@可以看到在线好友'+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+'）',doc.link, doc.name, doc.desc, doc.image)
-            sendPersonalMessageWithURLToRoom(doc.taName+' 和 您 都读过这篇故事（'+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+'）',doc.link, doc.name, doc.desc, doc.image)
+            sendPersonalMessageWithURLToRoom(doc.taName+' 和 您 都读过这篇故事（'+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+'）',doc.link, doc.name, description, doc.image)
             return true
         return false
 
@@ -338,10 +350,14 @@ if Meteor.isClient
                         
                         document.body.appendChild(iframe)
                         # end - 尝试解决document.title 在 ios 下不生效的bug
-
+                        description=''
+                        if data.ownerName and data.ownerName isnt ''
+                            description='作者：'+data.ownerName
+                        if data.addontitle and data.addontitle isnt ''
+                            data.title+="："+data.addontitle
                         window.trackPage(window.location.href,data.title)
                         sendPersonalMessageWithURLToRoom('欢迎来到本贴的专属聊天室，您可以点右上角转发链接到微信朋友圈，让更多的朋友加入聊天室参与匿名聊天。\r\n点击链接可以查看原文:',
-                          'http://cdn.tiegushi.com/posts/'+data._id, data.title, data.addontitle, data.mainImage)
+                          'http://cdn.tiegushi.com/posts/'+data._id, data.title, description, data.mainImage)
                         if Meteor.user() and amplify.store('hotshareUserID') and data.owner is amplify.store('hotshareUserID')
                             sendPostStatToOwner(data._id)
             else if amplify.store('postTitle_'+currentRoomId)
@@ -407,7 +423,7 @@ if Meteor.isClient
                         owners[_.pluck(owners, 'ownerId').indexOf(item.owner)].urls.push(url)
 
                 _.map owners, (item)->
-                    sendPersonalMessageWithURLSToRoom '您曾在故事贴偶遇的朋友 "'+item.ownerName+'" 写了篇故事贴给您，想看看吗？', item.urls
+                    sendPersonalMessageWithURLSToRoom '您的朋友 '+item.ownerName+' 发表了故事贴，邀请您阅读：', item.urls
 
         Tracker.autorun (t)->
             if Meteor.userId() and Session.get('openedRoom')
