@@ -635,6 +635,7 @@ if(Meteor.isServer){
                                         addontitle: doc.addontitle,
                                         pindex: pindex,
                                         pindexText: pindex && pindex >= 0 ? doc.pub[pindex].text : '',
+                                        meComment: PComments.find({commentUserId:data.commentUserId,postId:doc._id,pindex:pindex}).count() > 0,//我是否点评过此段落
                                         mainImage: doc.mainImage,
                                         createdAt: new Date(),
                                         heart: 0,
@@ -689,6 +690,7 @@ if(Meteor.isServer){
                                                 addontitle: doc.addontitle,
                                                 pindex: pindex,
                                                 pindexText: pindex && pindex >= 0 ? doc.pub[pindex].text : '',
+                                                meComment: PComments.find({commentUserId:data.commentUserId,postId:doc._id,pindex:pindex}).count() > 0,//我是否点评过此段落
                                                 mainImage: doc.mainImage,
                                                 createdAt: new Date(),
                                                 heart: 0,
