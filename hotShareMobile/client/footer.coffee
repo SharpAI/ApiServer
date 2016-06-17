@@ -6,16 +6,17 @@ if Meteor.isClient
     wait_read_count:->
       me = Meteor.user()
       if me
-          waitReadCount = Session.get('waitReadCount')
+        return Feeds.find({followby: Meteor.userId(),isRead:{$ne: true}, checked:{$ne: true}, eventType:{$ne:'share'}}).count()
+          # waitReadCount = Session.get('waitReadCount')
         #if me.profile and me.profile.waitReadCount
           #waitReadCount = me.profile.waitReadCount
-          if waitReadCount is undefined or isNaN(waitReadCount)
-            waitReadCount = 0
-          if Session.get('channel') is 'bell' and waitReadCount > 0
-            waitReadCount = 0
-            Session.set('waitReadCount',0)
-            Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
-          return waitReadCount
+          # if waitReadCount is undefined or isNaN(waitReadCount)
+          #   waitReadCount = 0
+          # if Session.get('channel') is 'bell' and waitReadCount > 0
+          #   waitReadCount = 0
+          #   Session.set('waitReadCount',0)
+          #   Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
+          # return waitReadCount
       else
         0
     wait_import_count:->
