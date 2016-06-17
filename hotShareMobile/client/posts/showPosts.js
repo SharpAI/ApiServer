@@ -372,11 +372,29 @@ Template.shareTheReadingRoom.events({
   },
   'click .btnYes': function() {
     var type;
-    type = Session.get("shareToWechatType");
+    var url = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
+    var shareUrl = 'http://' + chat_server_url + '/channel/' + Session.get('postContent')._id;
+    var imgUrl = Session.get('postContent').mainImage ? Session.get('postContent').mainImage : 'http://cdn.tiegushi.com/images/logo.png';
+    var title = Session.get('postContent').title ? Session.get('postContent').title + '－专属聊天室' : '故事贴专属聊天室';
+    var type = Session.get("shareToWechatType");
     if (type === "WXTimeLine") {
-      return shareTo('WXTimeLine', this);
+        window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
+        return downloadFromBCS(imgUrl, function(result) {
+            if (result) {
+                shareToWechatTimeLine(title, '来自故事贴', result, shareUrl);
+            } else {
+                PUB.toast(TAPi18n.__('failToGetPicAndTryAgain'));
+            }
+        });
     } else {
-      return shareTo('WXSession', this);
+        window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
+        return downloadFromBCS(imgUrl, function(result) {
+        if (result) {
+            shareToWechatSession(title, '来自故事贴', result, shareUrl);
+        } else {
+            PUB.toast(TAPi18n.__('failToGetPicAndTryAgain'));
+        }
+      });
     }
   }
 });
