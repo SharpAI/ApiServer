@@ -921,7 +921,7 @@ if Meteor.isClient
         postId = Session.get("postContent")._id
         post = Session.get("postContent").pub
 
-        mqtt_msg = {"type": "postcomment", "message": " 评论了此文章", "postid": Session.get('postContent')._id}
+        mqtt_msg = {"type": "postcomment", "message": " 评论了此段 \"" + Session.get("postContent").pub[i].text + '": ' + content, "postid": Session.get('postContent')._id}
         mqtt_msg.message = Meteor.user().profile.fullname + mqtt_msg.message
         mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80')
         mqtt_connection.on('connect',()->
