@@ -596,14 +596,23 @@ if(Meteor.isServer){
                     createdAt: new Date()
                   });
                 }
-                                    
-                PComments.insert({
-                    postId:doc._id,
-                    pindex:pindex,
-                    ptype:ptype,
-                    commentUserId: userId,
-                    createdAt: new Date()
-                });
+                if(needRemove){
+                    //console.log('need remove '+needRemove)
+                    PComments.remove({
+                        postId:doc._id,
+                        pindex:pindex,
+                        ptype:ptype,
+                        commentUserId: userId
+                    });
+                } else {
+                    PComments.insert({
+                        postId:doc._id,
+                        pindex:pindex,
+                        ptype:ptype,
+                        commentUserId: userId,
+                        createdAt: new Date()
+                    });
+                }
                 var pcs=PComments.find({postId:doc._id});
                 //console.log("=======pcs.count=="+pcs.count()+"======================");
                 if(pcs.count()>0)
@@ -730,28 +739,31 @@ if(Meteor.isServer){
                   PShares.find({postId:doc._id,pindex:pindex}).forEach(function(item){
                     if(item.userId === userId)
                       return;
-                      
-                    if(Feeds.find({owner: userId, postId: doc._id, pindex: pindex, followby: item.userId, eventType: 'pcommentShare'}).count() > 0)
-                      return Feeds.update({owner: userId, postId: doc._id, pindex: pindex, followby: item.userId, eventType: 'pcommentShare'}, {$set:{checked: false, createdAt: new Date()}});
-                    
-                    Feeds.insert({
-                      owner: userId,
-                      ownerName: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
-                      ownerIcon: userinfo.profile.icon,
-                      eventType: 'pcommentShare',
-                      postId: doc._id,
-                      postTitle: doc.title,
-                      addontitle: doc.addontitle,
-                      pindex: pindex,
-                      pindexText: pindex && pindex >= 0 ? doc.pub[pindex].text : '',
-                      mainImage: doc.mainImage,
-                      createdAt: new Date(),
-                      heart: 0,
-                      retweet: 0,
-                      comment: 0,
-                      followby: item.userId,
-                      checked: false
-                    });
+                    if(needRemove){
+                      Feeds.remove({owner: userId, postId: doc._id, pindex: pindex, followby: item.userId, eventType: 'pcommentShare'})
+                    } else {
+                        if(Feeds.find({owner: userId, postId: doc._id, pindex: pindex, followby: item.userId, eventType: 'pcommentShare'}).count() > 0)
+                            return Feeds.update({owner: userId, postId: doc._id, pindex: pindex, followby: item.userId, eventType: 'pcommentShare'}, {$set:{checked: false, createdAt: new Date()}});
+
+                        Feeds.insert({
+                            owner: userId,
+                            ownerName: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
+                            ownerIcon: userinfo.profile.icon,
+                            eventType: 'pcommentShare',
+                            postId: doc._id,
+                            postTitle: doc.title,
+                            addontitle: doc.addontitle,
+                            pindex: pindex,
+                            pindexText: pindex && pindex >= 0 ? doc.pub[pindex].text : '',
+                            mainImage: doc.mainImage,
+                            createdAt: new Date(),
+                            heart: 0,
+                            retweet: 0,
+                            comment: 0,
+                            followby: item.userId,
+                            checked: false
+                        });
+                    }
                   });
                 }
                 
