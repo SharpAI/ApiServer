@@ -11,13 +11,15 @@ Meteor.startup ()->
     latestView.setHours(latestView.getHours() - 24)
     latestView = latestView.getTime()
 
-    queryResult = Neo4j.query "MATCH (u:User)-[v:VIEWER]->(p:Post) WITH v,p,length(()--p) AS views WHERE v.by > #{latestView} AND views > 50 AND p.createdAt > #{latestPost}  RETURN DISTINCT p.postId,p,length(()--p) AS views  ORDER BY views DESC LIMIT 5"
+    queryString = "MATCH (u:User)-[v:VIEWER]->(p:Post) WITH v,p,length(()--p) AS views WHERE v.by > #{latestView} AND views > 50 AND p.createdAt > #{latestPost}  RETURN DISTINCT p.postId,p,length(()--p) AS views  ORDER BY views DESC LIMIT 5"
+    queryResult = Neo4j.query queryString
+    console.log queryString
     if queryResult and queryResult.length > 0
       queryResult.forEach (item)->
         postId=item[0]
         postInfo=item[1]
         postViews=item[2]
-        console.log('postid: '+postId+' PostInfo '+JSON.stringify(postInfo))
+        console.log('postViews: '+postViews+' PostInfo '+JSON.stringify(postInfo))
         if postInfo and postInfo.postId and postInfo.name
           hottestPosts.push(postInfo)
   @getHottestPosts=()->

@@ -42,7 +42,8 @@ if(Meteor.isClient){
 }
 if(Meteor.isServer){
   RefNames = new Meteor.Collection("refnames");
-  PComments = new Meteor.Collection("pcomments")
+  PComments = new Meteor.Collection("pcomments");
+  PShares = new Meteor.Collection("pshares");
 }
 
 if(Meteor.isServer){
@@ -581,6 +582,21 @@ if(Meteor.isServer){
                     needRemove = true;
                 if(ptype ==="dislike" && doc.pub[pindex].dislikeUserId && doc.pub[pindex].dislikeUserId[userId] === true)
                     needRemove = true;
+                
+                // 段落转发
+                if(ptype === 'pshare'){
+                  if(PShares.find({postId:doc._id,pindex:pindex,userId: userId}).count() > 0)
+                    return PShares.update({postId:doc._id,pindex:pindex,userId: userId},{$set:{createdAt: new Date()}});
+                  
+                  return PShares.insert({
+                    postId:doc._id,
+                    pindex:pindex,
+                    ptype:ptype,
+                    userId: userId,
+                    createdAt: new Date()
+                  });
+                }
+                                    
                 PComments.insert({
                     postId:doc._id,
                     pindex:pindex,
@@ -618,6 +634,7 @@ if(Meteor.isServer){
                                         postTitle: doc.title,
                                         addontitle: doc.addontitle,
                                         pindex: pindex,
+                                        pindexText: pindex && pindex >= 0 ? doc.pub[pindex].text : '',
                                         mainImage: doc.mainImage,
                                         createdAt: new Date(),
                                         heart: 0,
@@ -671,6 +688,7 @@ if(Meteor.isServer){
                                                 postTitle: doc.title,
                                                 addontitle: doc.addontitle,
                                                 pindex: pindex,
+                                                pindexText: pindex && pindex >= 0 ? doc.pub[pindex].text : '',
                                                 mainImage: doc.mainImage,
                                                 createdAt: new Date(),
                                                 heart: 0,
@@ -706,6 +724,36 @@ if(Meteor.isServer){
                 }
 
                 //有人点评了您的转发，只支持Web端转发。--begin
+                if(PShares.find({postId:doc._id,pindex:pindex}).count() > 0){
+                  PShares.find({postId:doc._id,pindex:pindex}).forEach(function(item){
+                    if(item.userId === userId)
+                      return;
+                      
+                    if(Feeds.find({owner: userId, postId: doc._id, pindex: pindex, followby: item.userId, eventType: 'pcommentShare'}).count() > 0)
+                      return Feeds.update({owner: userId, postId: doc._id, pindex: pindex, followby: item.userId, eventType: 'pcommentShare'}, {$set:{checked: false, createdAt: new Date()}});
+                    
+                    Feeds.insert({
+                      owner: userId,
+                      ownerName: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
+                      ownerIcon: userinfo.profile.icon,
+                      eventType: 'pcommentShare',
+                      postId: doc._id,
+                      postTitle: doc.title,
+                      addontitle: doc.addontitle,
+                      pindex: pindex,
+                      pindexText: pindex && pindex >= 0 ? doc.pub[pindex].text : '',
+                      mainImage: doc.mainImage,
+                      createdAt: new Date(),
+                      heart: 0,
+                      retweet: 0,
+                      comment: 0,
+                      followby: item.userId,
+                      checked: false
+                    });
+                  });
+                }
+                
+                // @feiwu: 以下处理暂时保留，还不清楚处理逻辑
                 //1.查谁转发了这个帖子
                 var fds=Feeds.find({postId:doc._id,eventType:"share"})
                 if(fds.count()>0)
@@ -739,6 +787,7 @@ if(Meteor.isServer){
                                             postTitle: doc.title,
                                             addontitle: doc.addontitle,
                                             pindex: pindex,
+                                            pindexText: pindex && pindex >= 0 ? doc.pub[pindex].text : '',
                                             mainImage: doc.mainImage,
                                             createdAt: new Date(),
                                             heart: 0,

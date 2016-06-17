@@ -78,7 +78,21 @@
     }
 </style>
 <script>
+    var notify='稍候转入阅览室';
+    document.title = notify;
+    var count = 0;
     var checkingInterval=setInterval(function(){
+        count++;
+        var mod=count%4;
+        if(mod===1){
+            document.title=notify+'.';
+        } else if(mod===2){
+            document.title=notify+'..';
+        } else if(mod===3){
+            document.title=notify+'...';
+        } else {
+            document.title=notify;
+        }
         if(typeof Meteor != 'undefined'){
             if(typeof Meteor.userId == 'function') {
                 if (Meteor.userId() != '') {
@@ -96,7 +110,7 @@
                 }
             }
         }
-    },1000)
+    },500)
 </script>
 <div class="showHottestPosts">
     <h3 class="showHottestPostsTitle">24小时最热门故事贴</h3>
