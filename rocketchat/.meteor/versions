@@ -82,10 +82,12 @@ mdg:validation-error@0.5.1
 meteor@1.1.10
 meteor-base@1.0.1
 meteor-developer@1.1.5
+meteorhacks:async@1.0.0
 meteorhacks:fast-render@2.13.0
 meteorhacks:inject-data@2.0.0
 meteorhacks:inject-initial@1.0.4
 meteorhacks:meteorx@1.4.1
+meteorhacks:npm@1.5.0
 meteorhacks:picker@1.0.3
 meteorhacks:ssr@2.2.0
 meteorspark:util@0.2.0
@@ -108,6 +110,7 @@ mystor:device-detection@0.2.0
 nimble:restivus@0.8.10
 nooitaf:colors@0.0.3
 npm-bcrypt@0.7.8_2
+npm-container@1.2.0
 npm-mongo@1.4.39_1
 oauth@1.1.6
 oauth1@1.1.5
