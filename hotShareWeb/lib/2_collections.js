@@ -1910,6 +1910,30 @@ if(Meteor.isServer){
         return (doc.postId !== null && doc.followby !== null && doc.recommander !== null)
       }
       else if(doc.eventType==='share'){
+          if(doc.extra && doc.extra.wechat){
+              Meteor.defer(function(){
+                  var info=doc.extra.wechat;
+                  var type='wechat_'+info.type
+                  var section=info.section
+                  if (typeof section ==='undefined'){
+                      PComments.insert({
+                          postId:doc.postId,
+                          ptype:type,
+                          commentUserId: doc.owner,
+                          createdAt: new Date()
+                      });
+                  } else{
+                      type='section_'+type
+                      PComments.insert({
+                          postId:doc.postId,
+                          pindex:section,
+                          ptype:type,
+                          commentUserId: doc.owner,
+                          createdAt: new Date()
+                      });
+                  }
+              });
+          }
           if(Feeds.findOne({followby:doc.followby,postId:doc.postId,eventType: 'share'})){
               return false;
           }

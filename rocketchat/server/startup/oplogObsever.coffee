@@ -43,22 +43,39 @@ Meteor.startup ()->
   postCommentToChannel=(info,userInfo)->
     room = RocketChat.models.Rooms.findOneByName info.postId
     post = GushitiePosts.findOne({_id:info.postId})
+    unless post
+      return
+    msg = ''
+    description = ''
     if room
       if info.ptype is 'like'
         msg='我喜欢这段：'
       else if info.ptype is 'dislike'
         msg='我不喜欢这段：'
       else if info.ptype is 'pcomments'
-        msg=''
         pcomments=post?.pub?[info.pindex]?.pcomments
         if pcomments and pcomments.length > 0
           msg=pcomments[pcomments.length-1].content
         console.log(pcomments)
+      else if info.ptype is 'section_wechat_chat'
+        msg='这段不错，已分享到群聊'
+      else if info.ptype is 'section_wechat_timeline'
+        msg='这段不错，已分享到朋友圈'
+      else if info.ptype is 'wechat_chat'
+        msg='文章不错，已分享到群聊'
+      else if info.ptype is 'wechat_timeline'
+        msg='文章不错，已分享到朋友圈'
+      else
+        console.log('type: '+info.ptype)
       joinRoom(room,userInfo)
-      url=gushitie_server_url+'/posts/'+info.postId+'/'+info.pindex
-      description=post?.pub?[info.pindex]?.text
-      title=post?.title
-      mainImageUrl=post?.mainImage
+      if (typeof info.pindex) isnt 'undefined'
+        url=gushitie_server_url+'/posts/'+info.postId+'/'+info.pindex
+        description=post.pub[info.pindex].text
+      else
+        url=gushitie_server_url+'/posts/'+info.postId
+        description=post.addonTitle
+      title=post.title
+      mainImageUrl=post.mainImage
       #console.log(post)
       message = {
         rid: room._id,
