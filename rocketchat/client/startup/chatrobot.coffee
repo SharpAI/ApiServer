@@ -432,13 +432,13 @@ if Meteor.isClient
           added: (id, feed)->
             if ['SelfPosted', 'share', 'pcommentowner'].indexOf(feed.eventType) is -1
               return;
+            if feed.postTitle isnt undefined and feed.pindexText isnt undefined and feed.mainImage isnt undefined
+              if feed.eventType is 'pcommentowner'
+                sendPersonalMessageWithURLToRoom(feed.ownerName + ' 点评了您的贴子:', 'http://cdn.tiegushi.com/posts/' + feed.postId, feed.postTitle, '段落: ' + feed.pindexText, feed.mainImage, true)
+              else if feed.eventType is 'share'
+                sendPersonalMessageWithURLToRoom(feed.ownerName + ' 转发了您的贴子:', 'http://cdn.tiegushi.com/posts/' + feed.postId, feed.postTitle, '段落: ' + feed.pindexText, feed.mainImage, true)
               
-            if feed.eventType is 'pcommentowner'
-              sendPersonalMessageWithURLToRoom(feed.ownerName + ' 点评了您的贴子:', 'http://cdn.tiegushi.com/posts/' + feed.postId, feed.postTitle, '段落: ' + feed.pindexText, feed.mainImage, true)
-            else if feed.eventType is 'share'
-              sendPersonalMessageWithURLToRoom(feed.ownerName + ' 转发了您的贴子:', 'http://cdn.tiegushi.com/posts/' + feed.postId, feed.postTitle, '段落: ' + feed.pindexText, feed.mainImage, true)
-              
-            Meteor.call('updateFeedsChecked', id)
+              Meteor.call('updateFeedsChecked', id)
         }
                 
     
