@@ -61,6 +61,7 @@ if Meteor.isClient
               else
                 Session.set('isWeChatWifi',false)
         })
+      isWechatapi()
       # Session.set('turnOnRandom',false)
       if Session.get('focusedIndex') isnt undefined
         description =Session.get('postContent').pub[Session.get('focusedIndex')].text.replace(/\s\s\s+/g, '');
@@ -78,6 +79,9 @@ if Meteor.isClient
             trackEvent("Share","Section to Wechat Timeline")
             FeedAfterShare(Session.get('postContent'),{wechat:{type:'timeline',section:section}})
             addToFavouriteAfterShare(Session.get('postContent'))
+            if Session.get('inWechatBrowser') is true
+              Session.set('shareToWechatType','WXSession')
+              $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
             console.log('Share success');
           cancel: ()->
             console.log('Share cancled');
@@ -91,6 +95,9 @@ if Meteor.isClient
             trackEvent("Share","Section to Wechat Chat")
             FeedAfterShare(Session.get('postContent'),{wechat:{type:'chat',section:section}})
             addToFavouriteAfterShare(Session.get('postContent'))
+            if Session.get('inWechatBrowser') is true
+              Session.set('shareToWechatType','WXTimeLine')
+              $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
             console.log('Share success');
           cancel: ()->
             console.log('Share cancled');
@@ -122,6 +129,9 @@ if Meteor.isClient
             trackEvent("Share","Post to Wechat Timeline")
             FeedAfterShare(Session.get('postContent'),{wechat:{type:'timeline'}})
             addToFavouriteAfterShare(Session.get('postContent'))
+            if Session.get('inWechatBrowser') is true
+              Session.set('shareToWechatType','WXSession')
+              $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
             console.log('Share success');
           cancel: ()->
             console.log('Share cancled');
@@ -135,6 +145,9 @@ if Meteor.isClient
             trackEvent("Share","Post to Wechat Chat")
             FeedAfterShare(Session.get('postContent'),{wechat:{type:'chat'}})
             addToFavouriteAfterShare(Session.get('postContent'))
+            if Session.get('inWechatBrowser') is true
+              Session.set('shareToWechatType','WXTimeLine')
+              $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
             console.log('Share success');
           cancel: ()->
             console.log('Share cancled');

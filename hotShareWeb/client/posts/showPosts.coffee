@@ -31,6 +31,27 @@ if Meteor.isClient
         Session.set('displayUserProfileBox',false)
       onOpen: ->
         Session.set('displayUserProfileBox',true)
+  @isWechatapi = ->
+    if typeof WeixinJSBridge is 'undefined'
+      # alert('请先通过微信打开')
+      Session.set('inWechatBrowser',false)
+    else
+      # alert('gooode')
+      Session.set('inWechatBrowser',true)
+  @shareTowechatSessionOnWeb = (title,shareUrl,imgUrl)->
+    WeixinJSBridge.invoke('sendAppMessage',{
+          "title": title,
+          "link": shareUrl,
+          "desc": "来自故事贴",
+          "img_url": imgUrl
+        })
+  @shareTowechatTimelineOnWeb = (title,shareUrl,imgUrl)->
+    WeixinJSBridge.invoke('shareTimeline',{
+          "title": title,
+          "link": shareUrl,
+          "desc": "来自故事贴",
+          "img_url": imgUrl
+        })
   Meteor.startup ()->
     $(document).bind("fontresize",$.debounce(250,(event, data)->
         #alert('Font Resized '+data+'px')
@@ -50,6 +71,7 @@ if Meteor.isClient
     )
     ###
   Tracker.autorun ()->
+    isWechatapi()
     if Session.get("needToast") is true
       Session.set("needToast",false)
       scrolltop = 0
@@ -82,6 +104,7 @@ if Meteor.isClient
       mqtt_connection.subscribe(Session.get('postContent')._id)
       #mqtt_connection.publish(Session.get('postContent')._id, 'Hello u'+Session.get('postContent')._id)
     )
+    isWechatapi()
     mqtt_connection.on 'message',(topic, message)->
       mqtt_msg = JSON.parse(message.toString())
       console.log(message.toString())
@@ -411,6 +434,22 @@ if Meteor.isClient
         toastr.success('将在微信分享时引用本段内容', '您选定了本段文字')
         console.log('Selected index '+self.index)
         Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
+  Template.shareTheReadingRoom.events
+    'click .shareAlertBackground': ()->
+      $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300)
+    'click .btnNo': ()->
+      $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300)
+    'click .btnYes': ()->
+      url = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId()
+      shareUrl = 'http://' + chat_server_url + '/channel/' + Session.get('postContent')._id
+      imgUrl = if Session.get('postContent').mainImage then Session.get('postContent').mainImage else 'http://cdn.tiegushi.com/images/logo.png'
+      title =  if Session.get('postContent').title then Session.get('postContent').title + '－专属聊天室' else '故事贴专属聊天室'
+      sharetype = Session.get("shareToWechatType")
+      $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300)
+      if sharetype is "WXSession"
+        shareTowechatSessionOnWeb(title,shareUrl,imgUrl)
+      else
+        shareTowechatTimelineOnWeb(title,shareUrl,imgUrl)
   Template.showPosts.events
     'click .readmore': (e, t)->
       # if e.target is e.currentTarget
