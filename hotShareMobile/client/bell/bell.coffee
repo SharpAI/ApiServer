@@ -21,8 +21,11 @@ if Meteor.isClient
     notReadCount: ()->
       Feeds.find({isRead:{$ne: true}, checked:{$ne: true}}).count()
     notRead:(read, check)->
-      console.log('isRead:'+read+ 'isCheck:'+check)
+      console.log('isRead:'+read+ 'isCheck:'+check+'>>>>>>>>>>>参数 长度：'+arguments.length)
       if check or read
+        return false
+      else if arguments.length is 0
+        console.log(">>>++++>>>"+this._id)
         return false
       else
         return true

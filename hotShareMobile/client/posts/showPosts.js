@@ -337,18 +337,28 @@ shareTo = function(to,self,index){
 Template.showPosts.events({
     'click #WXTimelineShare':function(e, t){
         shareTo('WXTimeLine',this);
+        Session.set("shareToWechatType","WXTimeLine")
+        $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
     },
     'click #WXSessionShare':function(e, t){
         shareTo('WXSession',this);
+        Session.set("shareToWechatType","WXSession")
+        $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
     },
     'click #QQShare':function(e, t){
         shareTo('QQShare',this);
+        Session.set("shareToWechatType","QQShare")
+        $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
     },
     'click #QQZoneShare':function(e, t){
         shareTo('QQZoneShare',this);
+        Session.set("shareToWechatType","QQZoneShare")
+        $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
     },
     'click #socialShare':function(e, t){
         shareTo('System',this);
+        Session.set("shareToWechatType","System")
+        $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
     },
     'click  .like_img' : function(e){
            if (Meteor.user()) {
@@ -358,6 +368,57 @@ Template.showPosts.events({
            }
        e.stopPropagation();
     }
+});
+Template.shareTheReadingRoom.events({
+  'click .shareAlertBackground': function() {
+    return $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300);
+  },
+  'click .btnNo': function() {
+    return $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300);
+  },
+  'click .btnYes': function() {
+    var type;
+    var url = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
+    var shareUrl = 'http://' + chat_server_url + '/channel/' + Session.get('postContent')._id;
+    var imgUrl = Session.get('postContent').mainImage ? Session.get('postContent').mainImage : 'http://cdn.tiegushi.com/images/logo.png';
+    var title = Session.get('postContent').title ? Session.get('postContent').title + '－专属聊天室' : '故事贴专属聊天室';
+    var type = Session.get("shareToWechatType");
+    $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300);
+    if (type === "WXTimeLine") {
+        window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
+        return downloadFromBCS(imgUrl, function(result) {
+            if (result) {
+                shareToWechatTimeLine(title, '来自故事贴', result, shareUrl);
+            } else {
+                PUB.toast(TAPi18n.__('failToGetPicAndTryAgain'));
+            }
+        });
+    } else if (type === "WXSession"){
+        window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
+        return downloadFromBCS(imgUrl, function(result) {
+        if (result) {
+            shareToWechatSession(title, '来自故事贴', result, shareUrl);
+        } else {
+            PUB.toast(TAPi18n.__('failToGetPicAndTryAgain'));
+        }
+      });
+    } else if (type === "QQShare"){
+        window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
+        return shareToQQ(title, "来自故事贴",imgUrl,shareUrl);
+    } else if (type === "QQZoneShare"){
+        window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
+        return shareToQQZone(title, "来自故事贴",imgUrl,shareUrl);
+    } else if (type === "System"){
+        window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
+        return downloadFromBCS(imgUrl, function(result) {
+            if (result) {
+                shareToSystem(title, '来自故事贴', result, shareUrl);
+            } else {
+                PUB.toast(TAPi18n.__('failToGetPicAndTryAgain'));
+            }
+        });
+    }
+  }
 });
 /*
 clickToLike = function(currentPost, current_imgId){

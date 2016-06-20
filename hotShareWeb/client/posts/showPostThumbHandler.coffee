@@ -204,14 +204,16 @@ if Meteor.isClient
       e.target.className="fa fa-thumbs-up thumbsUp"
       e.target.parentNode.parentElement.style.color="rgb(243,11,68)"
       #e.target.textContent=e.target.textContent-0+1
-      mqtt_msg = {"type": "postthumbup", "message": " 赞了此文章", "postid": Session.get('postContent')._id}
+      ###
+      mqtt_msg = {"type": "postthumbup", "message": " 觉得此段 \"" + Session.get("postContent").pub[self.index].text + '" 很赞', "postid": Session.get('postContent')._id}
       mqtt_msg.message = Meteor.user().profile.fullname + mqtt_msg.message
       mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80')
       mqtt_connection.on('connect',()->
         console.log('Connected to server')
         #mqtt_connection.subscribe(Session.get('postContent')._id)
         mqtt_connection.publish('all', JSON.stringify(mqtt_msg))
-      )        
+      )
+      ###
       if e.target.nextElementSibling.className is "fa fa-thumbs-down thumbsDown"
         e.target.nextElementSibling.className = "fa fa-thumbs-o-down thumbsDown"
         #e.target.nextElementSibling.textContent=e.target.nextElementSibling.textContent-1

@@ -222,18 +222,14 @@ if Meteor.isClient
         socialGraphCollection.remove({_id:doc._id})
 
         Session.set('ViewedSocialMessageTotal',Session.get('ViewedSocialMessageTotal')+1)
-        description=''
-        if doc.ownerName and doc.ownerName isnt ''
-            description='作者：'+doc.ownerName
-        if doc.desc and doc.desc isnt ''
-            doc.name+="："+doc.desc
+
         if doc.type is 'taRead'
-            sendPersonalMessageWithURLToRoom(doc.taName+' 读过这篇故事，您还没读过 ('+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+')',doc.link, doc.name, description, doc.image)
+            sendPersonalMessageWithURLToRoom(doc.taName+' 读过这篇故事，您还没读过 ('+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+')',doc.link, doc.name, doc.desc, doc.image)
             return true
         else if doc.type is 'mutualRead'
             #现在TA也在线不准，修好了之后再说吧
             #sendPersonalMessageWithURLToRoom(doc.taName+' 和 您 都读过这篇故事，是不是很有缘分，TA也在线哦（输入@可以看到在线好友'+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+'）',doc.link, doc.name, doc.desc, doc.image)
-            sendPersonalMessageWithURLToRoom(doc.taName+' 和 您 都读过这篇故事（'+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+'）',doc.link, doc.name, description, doc.image)
+            sendPersonalMessageWithURLToRoom(doc.taName+' 和 您 都读过这篇故事（'+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+'）',doc.link, doc.name, doc.desc, doc.image)
             return true
         return false
 

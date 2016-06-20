@@ -8,26 +8,26 @@ if Meteor.isClient
           async: true,
           cache: true
         });
-    window.FeedAfterShare=(postContent)->
-      unless Feeds.findOne({followby:Meteor.userId(),postId:postContent._id,eventType: 'share'})
-        me = Meteor.user()
-        username = me.username
-        if me.profile.fullname
-          username = me.profile.fullname
-        Feeds.insert({
-          owner: Meteor.userId()
-          ownerName: username,
-          ownerIcon: Meteor.user().profile.icon,
-          eventType: 'share',
-          postId: postContent._id,
-          postTitle: postContent.title,
-          addontitle: postContent.addontitle,
-          mainImage: postContent.mainImage,
-          createdAt: new Date(),
-          ReadAfterShare:0,
-          followby: Meteor.userId(),
-          checked: true
-        });
+    window.FeedAfterShare=(postContent,extra)->
+      me = Meteor.user()
+      username = me.username
+      if me.profile.fullname
+        username = me.profile.fullname
+      Feeds.insert({
+        owner: Meteor.userId()
+        ownerName: username,
+        ownerIcon: Meteor.user().profile.icon,
+        eventType: 'share',
+        postId: postContent._id,
+        postTitle: postContent.title,
+        addontitle: postContent.addontitle,
+        mainImage: postContent.mainImage,
+        createdAt: new Date(),
+        ReadAfterShare:0,
+        followby: Meteor.userId(),
+        checked: true
+        extra:extra
+      });
     window.addToFavouriteAfterShare=(postContent)->
       postId = postContent._id
 
@@ -68,6 +68,7 @@ if Meteor.isClient
           description = Session.get("DocumentTitle").replace('『故事贴』','');
         else if(description.length > 100)
           description = description.substring(0, 100)
+        section=parseInt(Session.get('focusedIndex'))
         timelineData = {
           title: description,
           desc: description,
@@ -75,7 +76,7 @@ if Meteor.isClient
           imgUrl: Session.get('postContent').mainImage,
           success: () ->
             trackEvent("Share","Section to Wechat Timeline")
-            FeedAfterShare(Session.get('postContent'))
+            FeedAfterShare(Session.get('postContent'),{wechat:{type:'timeline',section:section}})
             addToFavouriteAfterShare(Session.get('postContent'))
             console.log('Share success');
           cancel: ()->
@@ -88,7 +89,7 @@ if Meteor.isClient
           imgUrl: Session.get('postContent').mainImage,
           success: () ->
             trackEvent("Share","Section to Wechat Chat")
-            FeedAfterShare(Session.get('postContent'))
+            FeedAfterShare(Session.get('postContent'),{wechat:{type:'chat',section:section}})
             addToFavouriteAfterShare(Session.get('postContent'))
             console.log('Share success');
           cancel: ()->
@@ -119,7 +120,7 @@ if Meteor.isClient
           imgUrl: Session.get('postContent').mainImage,
           success: () ->
             trackEvent("Share","Post to Wechat Timeline")
-            FeedAfterShare(Session.get('postContent'))
+            FeedAfterShare(Session.get('postContent'),{wechat:{type:'timeline'}})
             addToFavouriteAfterShare(Session.get('postContent'))
             console.log('Share success');
           cancel: ()->
@@ -132,7 +133,7 @@ if Meteor.isClient
           imgUrl: Session.get('postContent').mainImage,
           success: () ->
             trackEvent("Share","Post to Wechat Chat")
-            FeedAfterShare(Session.get('postContent'))
+            FeedAfterShare(Session.get('postContent'),{wechat:{type:'chat'}})
             addToFavouriteAfterShare(Session.get('postContent'))
             console.log('Share success');
           cancel: ()->
