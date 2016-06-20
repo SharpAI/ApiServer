@@ -391,6 +391,22 @@
   </div>
   <div onclick="hideshareAlertBackground()" class="shareAlertBackground"></div>
   <script>
+      function shareTowechatSessionOnWeb(title, shareUrl, imgUrl){
+        WeixinJSBridge.invoke('sendAppMessage', {
+          "title": title,
+          "link": shareUrl,
+          "desc": "来自故事贴",
+          "img_url": imgUrl
+        });
+      }
+      function shareTowechatTimelineOnWeb(title, shareUrl, imgUrl){
+        WeixinJSBridge.invoke('shareTimeline', {
+          "title": title,
+          "link": shareUrl,
+          "desc": "来自故事贴",
+          "img_url": imgUrl
+        });
+      }
       function hideshareAlertBackground(){
         $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300)
       }

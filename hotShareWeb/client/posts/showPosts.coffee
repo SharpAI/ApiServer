@@ -38,20 +38,6 @@ if Meteor.isClient
     else
       # alert('gooode')
       Session.set('inWechatBrowser',true)
-  @shareTowechatSessionOnWeb = (title,shareUrl,imgUrl)->
-    WeixinJSBridge.invoke('sendAppMessage',{
-          "title": title,
-          "link": shareUrl,
-          "desc": "来自故事贴",
-          "img_url": imgUrl
-        })
-  @shareTowechatTimelineOnWeb = (title,shareUrl,imgUrl)->
-    WeixinJSBridge.invoke('shareTimeline',{
-          "title": title,
-          "link": shareUrl,
-          "desc": "来自故事贴",
-          "img_url": imgUrl
-        })
   Meteor.startup ()->
     $(document).bind("fontresize",$.debounce(250,(event, data)->
         #alert('Font Resized '+data+'px')
