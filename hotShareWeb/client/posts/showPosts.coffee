@@ -434,22 +434,6 @@ if Meteor.isClient
         toastr.success('将在微信分享时引用本段内容', '您选定了本段文字')
         console.log('Selected index '+self.index)
         Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
-  Template.shareTheReadingRoom.events
-    'click .shareAlertBackground': ()->
-      $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300)
-    'click .btnNo': ()->
-      $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300)
-    'click .btnYes': ()->
-      url = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId()
-      shareUrl = 'http://' + chat_server_url + '/channel/' + Session.get('postContent')._id
-      imgUrl = if Session.get('postContent').mainImage then Session.get('postContent').mainImage else 'http://cdn.tiegushi.com/images/logo.png'
-      title =  if Session.get('postContent').title then Session.get('postContent').title + '－专属聊天室' else '故事贴专属聊天室'
-      sharetype = Session.get("shareToWechatType")
-      $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300)
-      if sharetype is "WXSession"
-        shareTowechatSessionOnWeb(title,shareUrl,imgUrl)
-      else
-        shareTowechatTimelineOnWeb(title,shareUrl,imgUrl)
   Template.showPosts.events
     'click .readmore': (e, t)->
       # if e.target is e.currentTarget

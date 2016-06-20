@@ -382,13 +382,33 @@
 </template>
 
 <template name="shareTheReadingRoom">
-  <!--<div class="shareTheReadingRoom">-->
-  <div class="shareTheReadingRoom" style="display:none;">
+  <div class="shareTheReadingRoom">
+  <!--<div class="shareTheReadingRoom" style="display:none;">-->
     <div class="title">同步分享此帖子的阅览室？</div>
     <div class="banner">
-      <div class="btnNo">不分享</div>
-      <span class="btnYes">继续分享</span>
+      <div onclick="hideshareAlertBackground()" class="btnNo">不分享</div>
+      <span onclick="shareYestothereadingroom()" class="btnYes">继续分享</span>
     </div>
   </div>
-  <div class="shareAlertBackground"></div>
+  <div onclick="hideshareAlertBackground()" class="shareAlertBackground"></div>
+  <script>
+      function hideshareAlertBackground(){
+        $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300)
+      }
+      function shareYestothereadingroom(){
+        var imgUrl, shareUrl, sharetype, title, url;
+        url = 'http://' + chat_server_url + '/channel/' + Session.get('postContent')._id + '/userid/' + Meteor.userId();
+        shareUrl = 'http://' + chat_server_url + '/channel/' + Session.get('postContent')._id;
+        imgUrl = Session.get('postContent').mainImage ? Session.get('postContent').mainImage : 'http://cdn.tiegushi.com/images/logo.png';
+        title = Session.get('postContent').title ? Session.get('postContent').title + '－专属聊天室' : '故事贴专属聊天室';
+        sharetype = Session.get("shareToWechatType");
+        $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300);
+        if (sharetype === "WXSession") {
+          return shareTowechatSessionOnWeb(title, shareUrl, imgUrl);
+        } else {
+          return shareTowechatTimelineOnWeb(title, shareUrl, imgUrl);
+        }
+      }
+
+  </script>
 </template>
