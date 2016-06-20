@@ -123,6 +123,11 @@ if Meteor.isClient
           Router.go '/posts/'+postId
         ,300
     Template.lpcomments.helpers
+      isShareFeed:->
+        if this.eventType is "share"
+          true
+        else
+          false    
       withSuggestAlreadyRead:()->
         withSuggestAlreadyRead
       description:->
