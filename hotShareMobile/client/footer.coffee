@@ -6,7 +6,15 @@ if Meteor.isClient
     wait_read_count:->
       me = Meteor.user()
       if me
-        return Feeds.find({followby: Meteor.userId(),isRead:{$ne: true}, checked:{$ne: true}, eventType:{$ne:'share'}}).count()
+        return Feeds.find({
+            followby: Meteor.userId(),
+            isRead:{$ne: true}, 
+            checked:{$ne: true}, 
+            eventType:{$ne:'share'},
+            createdAt: {$gt: new Date((new Date()).getTime() - 7 * 24 * 3600 * 1000)}
+          },{
+            limit: 20
+          }).count()
           # waitReadCount = Session.get('waitReadCount')
         #if me.profile and me.profile.waitReadCount
           #waitReadCount = me.profile.waitReadCount

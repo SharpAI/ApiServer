@@ -20,11 +20,15 @@ if Meteor.isClient
   Template.bell.helpers
     notReadCount: ()->
       Feeds.find({isRead:{$ne: true}, checked:{$ne: true}}).count()
-    notRead:(read, check)->
+    notRead:(read, check, index, createAt)->
       console.log('isRead:'+read+ 'isCheck:'+check+'>>>>>>>>>>>参数 长度：'+arguments.length)
+      if (new Date() - new Date(createAt).getTime() ) > (7 * 24 * 3600 * 1000)
+        return false
+      if index > 20
+        return false      
       if check or read
         return false
-      else if arguments.length is 0
+      else if arguments.length is 2
         console.log(">>>++++>>>"+this._id)
         return false
       else
