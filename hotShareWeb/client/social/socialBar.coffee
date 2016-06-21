@@ -49,16 +49,8 @@ if Meteor.isClient
       triggerScroll=()->
         $(window).trigger('scroll')
       setTimeout(triggerScroll, 500)
-  Template.socialContent.created =->
-    this.reactivevars = {}
-    this.reactivevars.chatcount = new ReactiveVar(0)
   Template.socialContent.rendered=->
-    inst = this
     $('.chatBoxContent').css('min-height',$(window).height()-90)
-    Meteor.call('fetchUnreadGroupChatMessageCount', Session.get('postContent')._id, (err, data) ->
-      if !err
-        inst.reactivevars.chatcount.set(data.count)
-    );
   Template.socialContent.helpers
     newcount:()->
       PostFriends.find({meetOnPostId:Session.get("postContent")._id,count:1,ta:{$ne:null}},{sort: {createdAt: -1}}).count()
@@ -89,7 +81,3 @@ if Meteor.isClient
         return 'me'
       else
         return 'emptyMe'
-    chatcount: ()->
-      Template.instance().reactivevars.chatcount.get()
-    haschats: ()->
-      return (if Template.instance().reactivevars.chatcount.get() > 0 then true else false)

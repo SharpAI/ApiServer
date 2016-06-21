@@ -42,7 +42,7 @@ if Meteor.isServer
             TopicPosts.remove({postId:postId})
             FavouritePosts.remove({postId:postId})
           catch error
-      "readPostReport": (postId,userId,NoUpdateShare)->
+      "readPostReport": (postId,userId)->
         if(!Match.test(postId, String) || !Match.test(userId, String))
           return
         try
@@ -53,11 +53,6 @@ if Meteor.isServer
               browseTimes = post.browse + 1
             Meteor.defer ()->
               pushnotification("read",post,userId)
-              unless NoUpdateShare
-                Feeds.update({postId:postId,eventType: 'share'},{
-                  $inc: { ReadAfterShare: 1 },
-                  $set:{checked:false}
-                });              
           Posts.update({_id:postId},{$set:{browse:browseTimes}})
         catch error
           console.log('Error on RedpostReport' + error)
@@ -234,20 +229,4 @@ if Meteor.isServer
             if item.userIdB isnt self.userId
               Meteor.users.update({_id: item.userIdB}, {$set: {type: data.type, token: data.token}})
           )
-      'fetchUnreadGroupChatMessageCount': (roomName)->
-        this.unblock()
-        room = GroupChatRoom.findOne({name: roomName})
-        count = 0
-        if room? and room._id
-          chatUser = GroupChatUsers.findOne({'services.gushitie.id': this.userId})
-          if chatUser? and chatUser._id
-            chatSubs = GroupChatSubscription.findOne({'rid': room._id, 'u._id': chatUser._id})
-            if chatSubs? and chatSubs.ls?
-              count = GroupChatMessage.find({'rid': room._id, 'ts': {$gt: chatSubs.ls}}).count()
-            else
-              count = GroupChatMessage.find({'rid': room._id}).count()
-          else
-            count = GroupChatMessage.find({'rid': room._id}).count()
-        return {
-          'count': count
-        }
+

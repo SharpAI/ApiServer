@@ -56,4 +56,3 @@ practicalmeteor:sinon
 meteorhacks:inject-data
 lmieulet:meteor-coverage
 mkarliner:mqtt
-reactive-var
