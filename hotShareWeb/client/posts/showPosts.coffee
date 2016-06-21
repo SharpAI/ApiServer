@@ -57,7 +57,7 @@ if Meteor.isClient
     )
     ###
   Tracker.autorun ()->
-    isWechatapi()
+    # isWechatapi()
     if Session.get("needToast") is true
       Session.set("needToast",false)
       scrolltop = 0
@@ -90,7 +90,7 @@ if Meteor.isClient
       mqtt_connection.subscribe(Session.get('postContent')._id)
       #mqtt_connection.publish(Session.get('postContent')._id, 'Hello u'+Session.get('postContent')._id)
     )
-    isWechatapi()
+    # isWechatapi()
     mqtt_connection.on 'message',(topic, message)->
       mqtt_msg = JSON.parse(message.toString())
       console.log(message.toString())
