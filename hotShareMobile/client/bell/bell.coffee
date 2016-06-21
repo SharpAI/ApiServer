@@ -81,6 +81,7 @@ if Meteor.isClient
         Session.set("pcommetsId",this.owner)
         Session.set("pcommentsName",this.ownerName)
         Session.set "toasted",false
+        Feeds.update({_id:this._id},{$set: {checked:true}})
       console.log(this._id)
       Meteor.call 'feedsMsgSetAsRead', this._id
     'click .acceptrequest': (event)->

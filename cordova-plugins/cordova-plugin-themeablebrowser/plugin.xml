@@ -56,6 +56,12 @@
         <resource-file src="src/android/res/drawable-xhdpi/close_pressed.png" target="res/drawable-xhdpi/close_pressed.png"/>
         <resource-file src="src/android/res/drawable-xhdpi/share.png" target="res/drawable-xhdpi/share.png"/>
         <resource-file src="src/android/res/drawable-xhdpi/share_pressed.png" target="res/drawable-xhdpi/share_pressed.png"/>
+
+        <resource-file src="src/android/res/drawable-xhdpi/share_weixin_friends.png" target="res/drawable-xhdpi/share_weixin_friends.png"/>
+        <resource-file src="src/android/res/drawable-xhdpi/share_weixin_timeline.png" target="res/drawable-xhdpi/share_weixin_timeline.png"/>
+        <resource-file src="src/android/res/drawable-xhdpi/share_qq_friends.png" target="res/drawable-xhdpi/share_qq_friends.png"/>
+        <resource-file src="src/android/res/drawable-xhdpi/share_qq_qzone.png" target="res/drawable-xhdpi/share_qq_qzone.png"/>
+        <resource-file src="src/android/res/drawable-xhdpi/share_more.png" target="res/drawable-xhdpi/share_more.png"/>
     </platform>
 
     <!-- ios -->
@@ -76,12 +82,12 @@
         <resource-file src="src/ios/Resources/back@2x.png" />
         <resource-file src="src/ios/Resources/back_pressed@2x.png" />
         <resource-file src="src/ios/Resources/share@2x.png" />
-        <resource-file src="src/ios/Resources/share_pressed@2x.png" /> 
+        <resource-file src="src/ios/Resources/share_pressed@2x.png" />
         <resource-file src="src/ios/Resources/share_more.png" />
         <resource-file src="src/ios/Resources/share_qq_friends.png" />
         <resource-file src="src/ios/Resources/share_qq_qzone.png" />
-        <resource-file src="src/ios/Resources/share_weixin_friends.png" /> 
-        <resource-file src="src/ios/Resources/share_weixin_timeline.png" /> 
+        <resource-file src="src/ios/Resources/share_weixin_friends.png" />
+        <resource-file src="src/ios/Resources/share_weixin_timeline.png" />
 
         <framework src="CoreGraphics.framework" />
     </platform>
