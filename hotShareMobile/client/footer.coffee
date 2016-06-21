@@ -1,5 +1,17 @@
 #space 2
 if Meteor.isClient
+
+  # $('#level2-popup-menu').on('hide.bs.modal', function (e) {
+  #     alert("hidden")
+  # }).on('show.bs.modal', function (e) {
+  #   alert("show");
+  # });
+  $('#level2-popup-menu').on('hide.bs.modal', (e) ->
+    alert 'hidden'
+    return
+  ).on 'show.bs.modal', (e) ->
+    alert 'show'
+    return
   Template.footer.helpers
     is_wait_read_count: (count)->
       count > 0
