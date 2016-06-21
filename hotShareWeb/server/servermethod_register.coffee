@@ -235,4 +235,23 @@ if Meteor.isServer
             if item.userIdB isnt self.userId
               Meteor.users.update({_id: item.userIdB}, {$set: {type: data.type, token: data.token}})
           )
+      'fetchUnreadGroupChatMessageCount': (roomName)->
+        this.unblock()
+        room = GroupChatRoom.findOne({name: roomName})
+        count = 0
+        if room? and room._id
+          chatUser = GroupChatUsers.findOne({'services.gushitie.id': this.userId})
+          if chatUser? and chatUser._id
+            chatSubs = GroupChatSubscription.findOne({'rid': room._id, 'u._id': chatUser._id})
+            if chatSubs? and chatSubs.ls?
+              count = GroupChatMessage.find({'rid': room._id, 'ts': {$gt: chatSubs.ls}}).count()
+            else
+              count = GroupChatMessage.find({'rid': room._id}).count()
+          else
+            count = GroupChatMessage.find({'rid': room._id}).count()
+        return {
+          'count': count
+        }
+
+
 

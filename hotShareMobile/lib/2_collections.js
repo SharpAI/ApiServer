@@ -1,3 +1,27 @@
+if (Meteor.isServer) {
+    db_url= process.env.MONGO_GROUPCHAT_URL || 'mongodb://chatmongo/rctest';
+    //db_url= 'mongodb://127.0.0.1:4001/meteor';
+
+    GroupChatDB = new MongoInternals.RemoteCollectionDriver(db_url);
+    //GroupChatUsers = new Mongo.Collection("users", { _driver: GroupChatDB });
+    GroupChatRoom = new Mongo.Collection("rocketchat_room", { _driver: GroupChatDB });
+    GroupChatSubscription = new Mongo.Collection("rocketchat_subscription", { _driver: GroupChatDB });
+    GroupChatMessage = new Mongo.Collection("rocketchat_message", { _driver: GroupChatDB });
+
+
+    connect = MongoInternals.NpmModule.MongoClient.connect
+    connect = Meteor.wrapAsync(connect)
+
+    db = connect(db_url);
+    GroupChatUsers = db.collection('users');
+
+    GroupChatUsers.aggregate = Meteor.wrapAsync(GroupChatUsers.aggregate, GroupChatUsers);
+    GroupChatUsers.insert = Meteor.wrapAsync(GroupChatUsers.insert, GroupChatUsers);
+    GroupChatUsers.update = Meteor.wrapAsync(GroupChatUsers.update, GroupChatUsers);
+    GroupChatUsers.findOne = Meteor.wrapAsync(GroupChatUsers.findOne, GroupChatUsers);
+    GroupChatUsers._ensureIndex = Meteor.wrapAsync(GroupChatUsers.ensureIndex, GroupChatUsers);
+}
+
 Posts = new Meteor.Collection('posts');
 FollowPosts = new Meteor.Collection('followposts');
 Feeds = new Meteor.Collection('feeds');
