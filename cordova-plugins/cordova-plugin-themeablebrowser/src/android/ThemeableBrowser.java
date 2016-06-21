@@ -117,6 +117,7 @@ public class ThemeableBrowser extends CordovaPlugin {
     private EditText edittext;
     private CallbackContext callbackContext;
     private ProgressBar progressBar = null;
+    private PopupWindow menuPopup = null;
 
     /**
      * Executes the request and returns PluginResult.
@@ -204,7 +205,7 @@ public class ThemeableBrowser extends CordovaPlugin {
             });
         }
         else if (action.equals("close")) {
-            closeDialog();
+            closeDialog(true);
         }
         else if (action.equals("injectScriptCode")) {
             String jsWrapper = null;
@@ -272,7 +273,7 @@ public class ThemeableBrowser extends CordovaPlugin {
      */
     @Override
     public void onReset() {
-        closeDialog();
+        closeDialog(true);
     }
 
     /**
@@ -280,7 +281,7 @@ public class ThemeableBrowser extends CordovaPlugin {
      * Stop listener.
      */
     public void onDestroy() {
-        closeDialog();
+        closeDialog(true);
     }
 
     /**
@@ -390,7 +391,7 @@ public class ThemeableBrowser extends CordovaPlugin {
     /**
      * Closes the dialog
      */
-    public void closeDialog() {
+    public void closeDialog(final boolean force) {
         this.cordova.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -399,6 +400,17 @@ public class ThemeableBrowser extends CordovaPlugin {
                 if (inAppWebView == null) {
                     emitWarning(WRN_UNEXPECTED, "Close called but already closed.");
                     return;
+                }
+
+                if (!force && menuPopup != null) {
+                  menuPopup.dismiss();
+                  menuPopup = null;
+                  return;
+                }
+
+                if (menuPopup != null) {
+                  menuPopup.dismiss();
+                  menuPopup = null;
                 }
 
                 inAppWebView.setWebViewClient(new WebViewClient() {
@@ -640,7 +652,7 @@ public class ThemeableBrowser extends CordovaPlugin {
                                     inAppWebView.getUrl());
 
                             if (features.backButtonCanClose && !canGoBack()) {
-                                closeDialog();
+                                closeDialog(false);
                             } else {
                                 goBack();
                             }
@@ -681,7 +693,7 @@ public class ThemeableBrowser extends CordovaPlugin {
                             emitButtonEvent(
                                     features.closeButton,
                                     inAppWebView.getUrl());
-                            closeDialog();
+                            closeDialog(false);
                         }
                     }
                 );
@@ -728,7 +740,7 @@ public class ThemeableBrowser extends CordovaPlugin {
                         }
                       });
 
-                      Button btnCancel = new Button(cordova.getActivity());
+                      /*Button btnCancel = new Button(cordova.getActivity());
                       btnCancel.setText("Cancel");
                       LinearLayout.LayoutParams llCancel = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 70);
                       llCancel.gravity = Gravity.CENTER_HORIZONTAL;
@@ -739,12 +751,14 @@ public class ThemeableBrowser extends CordovaPlugin {
                           pw.dismiss();
                         }
                       });
-                      llRoot.addView(btnCancel);
+                      llRoot.addView(btnCancel);*/
 
                       llRoot.setBackgroundColor(Color.parseColor("#ff888888"));
                       pw.setOutsideTouchable(true);
-                      pw.setFocusable(true);
+                      pw.setFocusable(false);
+                      pw.setBackgroundDrawable(new BitmapDrawable());
                       pw.showAtLocation(inAppWebView, Gravity.CENTER, 0, 0);
+                      menuPopup = pw;
                     }
                   });
                 }

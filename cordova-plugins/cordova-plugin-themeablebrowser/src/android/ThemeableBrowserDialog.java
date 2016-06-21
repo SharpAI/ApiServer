@@ -51,11 +51,11 @@ public class ThemeableBrowserDialog extends Dialog {
         } else {
             // better to go through in themeableBrowser because it does a clean
             // up
-            if (this.hardwareBack && this.themeableBrowser.canGoBack()) {
-                this.themeableBrowser.goBack();
-            }  else {
-                this.themeableBrowser.closeDialog();
-            }
+            //if (this.hardwareBack && this.themeableBrowser.canGoBack()) {
+                //this.themeableBrowser.goBack();
+            //}  else {
+                this.themeableBrowser.closeDialog(false);
+            //}
         }
     }
 }
