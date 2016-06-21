@@ -20,9 +20,16 @@ if Meteor.isClient
   Template.bell.helpers
     notReadCount: ()->
       Feeds.find({isRead:{$ne: true}, checked:{$ne: true}}).count()
-    notRead:(read, check)->
-      console.log('isRead:'+read+ 'isCheck:'+check)
+    notRead:(read, check, index, createAt)->
+      console.log('isRead:'+read+ 'isCheck:'+check+'>>>>>>>>>>>参数 长度：'+arguments.length)
+      if (new Date() - new Date(createAt).getTime() ) > (7 * 24 * 3600 * 1000)
+        return false
+      if index > 20
+        return false      
       if check or read
+        return false
+      else if arguments.length is 2
+        console.log(">>>++++>>>"+this._id)
         return false
       else
         return true
@@ -78,6 +85,7 @@ if Meteor.isClient
         Session.set("pcommetsId",this.owner)
         Session.set("pcommentsName",this.ownerName)
         Session.set "toasted",false
+        Feeds.update({_id:this._id},{$set: {checked:true}})
       console.log(this._id)
       Meteor.call 'feedsMsgSetAsRead', this._id
     'click .acceptrequest': (event)->

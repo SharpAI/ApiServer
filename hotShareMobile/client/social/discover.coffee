@@ -123,6 +123,11 @@ if Meteor.isClient
           Router.go '/posts/'+postId
         ,300
     Template.lpcomments.helpers
+      isShareFeed:->
+        if this.eventType is "share"
+          true
+        else
+          false    
       withSuggestAlreadyRead:()->
         withSuggestAlreadyRead
       description:->
@@ -131,7 +136,7 @@ if Meteor.isClient
         else
           "也点评了此故事"
       lpcomments:()->
-        Feeds.find({followby:Meteor.userId(),checked:false, eventType: {$ne: 'share'}},{sort: {createdAt: -1}})
+        Feeds.find({followby:Meteor.userId(),checked:false, createdAt:{$gt:new Date((new Date()).getTime() - 7 * 24 * 3600 * 1000)}},{sort: {createdAt: -1}, limit:20})
       time_diff: (created)->
         GetTime0(new Date() - created)
     Template.lpcomments.events

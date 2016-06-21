@@ -8,6 +8,7 @@
 	</center>
   {{/if}}-->
   {{> pcommentInput}}
+  <!--{{> shareTheReadingRoom}}-->
   <div class="showBgColor">
     <div class="showPostsBox">
     <div class="showPosts">
@@ -272,7 +273,7 @@
           postId = Session.get("postContent")._id;
           post = Session.get("postContent").pub;
 
-          var mqtt_msg = {"type": "postcomment", "message": " 评论了此文章", "postid": Session.get('postContent')._id};
+          var mqtt_msg = {"type": "postcomment", "message": " 评论了此段 \"" + Session.get("postContent").pub[i].text + '": ' + content, "postid": Session.get('postContent')._id};
 
           mqtt_msg.message = Meteor.user().profile.fullname + mqtt_msg.message;
 
@@ -380,3 +381,49 @@
     {{/if}}
 </template>
 
+<template name="shareTheReadingRoom">
+  <div class="shareTheReadingRoom" style="display:none;">
+    <div class="title">同步分享此帖子的阅览室？</div>
+    <div class="banner">
+      <div onclick="hideshareAlertBackground()" class="btnNo">不分享</div>
+      <span onclick="shareYestothereadingroom()" class="btnYes">继续分享</span>
+    </div>
+  </div>
+  <div onclick="hideshareAlertBackground()" class="shareAlertBackground"></div>
+  <script>
+      function shareTowechatSessionOnWeb(title, shareUrl, imgUrl){
+        WeixinJSBridge.invoke('sendAppMessage', {
+          "title": title,
+          "link": shareUrl,
+          "desc": "来自故事贴",
+          "img_url": imgUrl
+        });
+      }
+      function shareTowechatTimelineOnWeb(title, shareUrl, imgUrl){
+        WeixinJSBridge.invoke('shareTimeline', {
+          "title": title,
+          "link": shareUrl,
+          "desc": "来自故事贴",
+          "img_url": imgUrl
+        });
+      }
+      function hideshareAlertBackground(){
+        $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300)
+      }
+      function shareYestothereadingroom(){
+        var imgUrl, shareUrl, sharetype, title, url;
+        url = 'http://' + chat_server_url + '/channel/' + Session.get('postContent')._id + '/userid/' + Meteor.userId();
+        shareUrl = 'http://' + chat_server_url + '/channel/' + Session.get('postContent')._id;
+        imgUrl = Session.get('postContent').mainImage ? Session.get('postContent').mainImage : 'http://cdn.tiegushi.com/images/logo.png';
+        title = Session.get('postContent').title ? Session.get('postContent').title + '－专属聊天室' : '故事贴专属聊天室';
+        sharetype = Session.get("shareToWechatType");
+        $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300);
+        if (sharetype === "WXSession") {
+          return shareTowechatSessionOnWeb(title, shareUrl, imgUrl);
+        } else {
+          return shareTowechatTimelineOnWeb(title, shareUrl, imgUrl);
+        }
+      }
+
+  </script>
+</template>

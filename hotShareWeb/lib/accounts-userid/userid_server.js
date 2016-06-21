@@ -6,6 +6,8 @@ if (Meteor.isServer) {
       throw new Meteor.Error(403, 'User not found');
     if(options.isExtension)
       return {userId: options.userId};
+      
+    options.loginUserId = options.loginUserId || this.userId;
     if(AssociatedUsers.find({$or: [{userIdA: options.userId, userIdB: options.loginUserId}, {userIdA: options.loginUserId, userIdB: options.userId}]}).count() > 0)
       return {userId: options.userId};
       

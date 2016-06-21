@@ -31,6 +31,30 @@ if Meteor.isServer
   refNameCount = GushitieRefnames.find({}).count()
   console.log 'refNameCount:' + refNameCount
 
+  @getOrCreateGushiTieServiceAccount=(userId)->
+    gushitieUser = GushitieUsers.findOne({_id:userId})
+    console.log(gushitieUser)
+    result = Accounts.updateOrCreateUserFromExternalService('gushitie', {id: userId, _OAuthCustom: true}, {})
+    if gushitieUser.username
+      gushitieUsername = gushitieUser.username
+    else
+      gushitieUsername = gushitieUser.profile.fullname
+    try
+      Meteor.users.update({_id: result.userId},{
+          $set: {
+            username: gushitieUsername
+            name: gushitieUser.profile.fullname
+            'services.gushitie.icon': gushitieUser.profile.icon
+            avatarOrigin: 'url'
+            avatarUrl:gushitieUser.profile.icon
+          }
+        }
+      )
+    catch err
+      console.log(err)
+
+    console.log(result)
+    return result
   Accounts.registerLoginHandler('anonymous', (options)->
     unless (options.uuid or options.userId)
       throw new Meteor.Error(403, 'Missing parameter: UUID/UserID');
@@ -50,25 +74,8 @@ if Meteor.isServer
 
       return result
     if options.userId
-      gushitieUser = GushitieUsers.findOne({_id:options.userId})
-      console.log(gushitieUser)
-      user = Meteor.users.findOne({'services.gushitie.id': options.userId})
-      result = Accounts.updateOrCreateUserFromExternalService('gushitie', {id: options.userId, _OAuthCustom: true}, {})
-      console.log(user)
-      if gushitieUser.username
-        gushitieUsername = gushitieUser.username
-      else
-        gushitieUsername = gushitieUser.profile.fullname
-      Meteor.users.update({_id: result.userId},
-        { $set: {
-          username: gushitieUsername
-          name: gushitieUser.profile.fullname
-          'services.gushitie.icon': gushitieUser.profile.icon
-          }
-        }
-      )
       # unless user.name
       #   Meteor.users.update({_id: result.userId}, {$set: {username: username, name: name}})
-
+      result=getOrCreateGushiTieServiceAccount(options.userId)
       return result
   )

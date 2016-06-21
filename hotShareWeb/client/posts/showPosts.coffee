@@ -31,6 +31,13 @@ if Meteor.isClient
         Session.set('displayUserProfileBox',false)
       onOpen: ->
         Session.set('displayUserProfileBox',true)
+  @isWechatapi = ->
+    if typeof WeixinJSBridge is 'undefined'
+      # alert('请先通过微信打开')
+      Session.set('inWechatBrowser',false)
+    else
+      # alert('gooode')
+      Session.set('inWechatBrowser',true)
   Meteor.startup ()->
     $(document).bind("fontresize",$.debounce(250,(event, data)->
         #alert('Font Resized '+data+'px')
@@ -50,6 +57,7 @@ if Meteor.isClient
     )
     ###
   Tracker.autorun ()->
+    # isWechatapi()
     if Session.get("needToast") is true
       Session.set("needToast",false)
       scrolltop = 0
@@ -82,6 +90,7 @@ if Meteor.isClient
       mqtt_connection.subscribe(Session.get('postContent')._id)
       #mqtt_connection.publish(Session.get('postContent')._id, 'Hello u'+Session.get('postContent')._id)
     )
+    # isWechatapi()
     mqtt_connection.on 'message',(topic, message)->
       mqtt_msg = JSON.parse(message.toString())
       console.log(message.toString())
