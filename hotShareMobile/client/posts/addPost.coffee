@@ -766,7 +766,11 @@ if Meteor.isClient
             fromUrl = url
             handleAddedLink(fromUrl)
     'beUnSelected .resortitem': (e)->
-      if window.footbarOppration
+      console.log 'window.footbarOppration ====== ' +window.footbarOppration
+      console.log 'automaticSegmentation ====== ' +Session.get('automaticSegmentation')
+      if Session.get('automaticSegmentation') is false or undefined
+         window.autoSegmentSelectedElem = e.currentTarget 
+      if window.footbarOppration 
         window.unSelectedElem = e.currentTarget
         window.footbarOppration = false
       else
@@ -779,7 +783,24 @@ if Meteor.isClient
       $(".head").css 'position','fixed'
     'change [name=textarea]' : (e,cxt)->
       console.log("textarea change "+ e.currentTarget.value)
-      Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
+      paragraphArray = []
+      paragraphArrayTmp = []
+      paragraphArrayTmp = e.currentTarget.value.split('\n')
+      if paragraphArrayTmp.length > 0
+          for i in [0..paragraphArrayTmp.length-1]
+            unless (paragraphArrayTmp[i].length == 0 or paragraphArrayTmp[i] == ' ')
+              paragraphArray.push(paragraphArrayTmp[i])
+      if paragraphArray.length > 0
+          console.log("paragraphArray.length="+paragraphArray.length)
+          for i in [0..paragraphArray.length-1]
+            console.log('paragraphArray['+i+']='+paragraphArray[i])
+            if i == 0
+              #Session.set('textareaFirstParagraph', paragraphArray[i])
+              Drafts.update({_id: this._id}, {$set: {text: paragraphArray[i] }});
+            else
+              Session.set('automaticSegmentation', true)
+              Drafts.insert {type:'text', currentCount:i+1, totalCount:paragraphArray.length,isImage:false, owner: Meteor.userId(), text:paragraphArray[i], style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+      #Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
     'click #addAudio': ()->
       if isIOS
         window.plugins.iOSAudioPicker.getAudio((list)->
@@ -862,7 +883,9 @@ if Meteor.isClient
       return
     'click #addText':->
       window.footbarOppration = true
-      Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:'', style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+      Session.set('automaticSegmentation', false) #自动添加
+      window.insert_sizey = 0
+      Drafts.insert {type:'text', currentCount:1, totalCount:1,isImage:false, owner: Meteor.userId(), text:'', style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
       return
     'click .back':(event)->
       if Session.get('isReviewMode') is '2'
