@@ -1,5 +1,0 @@
-describe('test', function(){
-	it('tt', function(){
-		expect(true).toBe(true);
-	});
-});
