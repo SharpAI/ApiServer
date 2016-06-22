@@ -1,12 +1,32 @@
 #space 2
 if Meteor.isClient
+
+  # $('#level2-popup-menu').on('hide.bs.modal', function (e) {
+  #     alert("hidden")
+  # }).on('show.bs.modal', function (e) {
+  #   alert("show");
+  # });
+  $('#level2-popup-menu').on('hide.bs.modal', (e) ->
+    alert 'hidden'
+    return
+  ).on 'show.bs.modal', (e) ->
+    alert 'show'
+    return
   Template.footer.helpers
     is_wait_read_count: (count)->
       count > 0
     wait_read_count:->
       me = Meteor.user()
       if me
-        return Feeds.find({followby: Meteor.userId(),isRead:{$ne: true}, checked:{$ne: true}, eventType:{$ne:'share'}}).count()
+        return Feeds.find({
+            followby: Meteor.userId(),
+            isRead:{$ne: true}, 
+            checked:{$ne: true}, 
+            eventType:{$ne:'share'},
+            createdAt: {$gt: new Date((new Date()).getTime() - 7 * 24 * 3600 * 1000)}
+          },{
+            limit: 20
+          }).count()
           # waitReadCount = Session.get('waitReadCount')
         #if me.profile and me.profile.waitReadCount
           #waitReadCount = me.profile.waitReadCount

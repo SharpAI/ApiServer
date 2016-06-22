@@ -1,3 +1,4 @@
+/* 调试时可打开border, 便于观察边界 */
 //.showPosts .content .gridster img.lazy{position:relative !important;}
 .showPosts .content .gridster textarea{font-size:large; margin: 0;color: black;white-space: pre-line;word-wrap: break-word;background :none; line-height: 30px; border:0px dotted #00c4ff;overflow-y: hidden; resize:vertical;height:100%;width:100%;box-sizing:border-box;}
 .showPosts .content .gridster p{vertical-align: middle; display: inline-block; padding-left:4px; padding-right:4px; font-size:large; color: black;white-space: pre-wrap;word-wrap: break-word;background :none; line-height: 30px; border:0px dotted #00c4ff;resize:vertical;height:100%;width:100%;box-sizing:border-box;}
@@ -5,13 +6,14 @@
 .showPosts .content .gridster .textDiv1 span{white-space: pre-wrap;}
 .showPosts .content .gridster {padding-left:15px; padding-right:15px;}
 
-.showPosts .content .gridster .element{position:absolute;color:black;display:block;overflow: hidden;}
+.showPosts .content .gridster .element{position: relative !important;color:black;display:block;overflow: hidden;width: 100% !important;left: 0 !important;top: auto !important;right: auto !important; margin-top: 10px; /* border: 2px #33a solid;*/ }
 .showPosts .content .gridster .postTextItem .inlineScoring{display:inline;/*float: right;*/}
-.showPosts .content .gridster .postTextItem{height:auto;}
+.showPosts .content .gridster .postTextItem{height:auto; /* border: 2px red solid; */ }
 .showPosts .content .gridster .postImageItem{
   margin-left: 0;
   margin-right: 0;
-
+  margin-top: 15px;
+  // border: 2px #00c4ff solid; 
 }
 .showPosts .content .gridster .postAudioItem{
   display: block;
@@ -22,6 +24,7 @@
   font-size: 0;
   line-height: 0;
   text-align: left;
+  // border: 2px yellow solid; 
 }
 .postAudioItem .musicContainer{
   border: 1px solid #ebebeb;
@@ -116,6 +119,7 @@
   font-size: 0;
   line-height: 0;
   text-align: left;
+  // border: 2px green solid;
 }
 .postVideoItem .videoContainer{
   border: 1px solid #ebebeb;
