@@ -2,6 +2,9 @@
   <script src="http://qzonestyle.gtimg.cn/qzone/app/qzlike/qzopensl.js#jsdate=20111201" charset="utf-8"></script>
   {{> pcommentInput}}
   {{> shareTheReadingRoom}}
+  {{#if isMynewpost}}
+    {{> shareRoom}}
+  {{/if}}
   <div class="showBgColor">
     <div class="showPostsBox">
     <div class="showPosts">
@@ -50,19 +53,6 @@
                   <div class="post_abstract">
                       <div class="abstract_sentence"><span style="white-space: pre-wrap;">{{getAbstractSentence}}</span></div>
                       <div class="abstract_chapter">{{_ "fromNumOf"}}{{getAbstractSentenceIndex}}{{_ "segment"}}{{title}}{{#if addontitle}}：{{addontitle}}{{/if}}</div>
-<!--                      <div class="abstract_comment">
-                        {{#if clickedCommentOverlayThumbsDown}}
-                          <img class="abstract_thumbsDown" src="/thumbsDownBlue.png" width="20" height="20">
-                        {{else}}
-                          <img class="abstract_thumbsDown" src="/thumbsDownGray.png" width="20" height="20">
-                        {{/if}}
-                        {{#if clickedCommentOverlayThumbsUp}}
-                          <img class="abstract_thumbsUp" src="/thumbsUpPink.png" width="20" height="20">
-                        {{else}}
-                          <img class="abstract_thumbsUp" src="/thumbsUpGray.png" width="20" height="20">
-                        {{/if}}
-                          <img class="abstract_commentGray" src="/commentGray.png" width="20" height="20">
-                    </div>-->
                   </div>
               </div>
           {{/if}}
@@ -262,4 +252,13 @@
     </div>
   </div>
   <div class="shareAlertBackground" style="background: rgba(0, 0, 0, 0.5);"></div>
+</template>
+<template name="shareRoom">
+  <div class="share-room">
+    <p style="text-align: right;">
+      <img src="/arrow_top_right.png" style="width:32%;"/>
+    </p>
+    <p>马上分享给您的朋友们吧！</p>
+  </div>
+  <div class="share-room-background" style="background: rgba(0, 0, 0, 0.5);"></div>
 </template>

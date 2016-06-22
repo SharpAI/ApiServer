@@ -1,7 +1,7 @@
 if Meteor.isClient
   Template.addTopicComment.rendered=->
     Meteor.subscribe "topics"
-    Meteor.subscribe "ViewPostsList", Session.get("TopicPostId")    
+    Meteor.subscribe "ViewPostsList", Session.get("TopicPostId")
     Session.set("comment","")
   Template.addTopicComment.helpers
     comment:()->
@@ -28,10 +28,10 @@ if Meteor.isClient
        TopicMainImage = Session.get("TopicMainImage")
        comment = Session.get("comment")
        user = Meteor.user()
-       
+
        unless Session.equals('post-publish-user-id', '')
          user = Meteor.users.findOne({_id: Session.get('post-publish-user-id')})
-       
+
        if comment != ''
          if user
            if user.profile.fullname
@@ -128,5 +128,6 @@ if Meteor.isClient
        if groups.length isnt 0
          Meteor.call('pushPostToReaderGroups', feedItem, groups)
 
+       Session.set("mynewpostId",topicPostId)
        Router.go('/posts/'+topicPostId)
        false
