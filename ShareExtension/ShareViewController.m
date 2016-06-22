@@ -119,7 +119,7 @@
 {
     UINavigationItem *newItem = [[UINavigationItem alloc] init];
     UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"取消",nil)  style:UIBarButtonItemStylePlain target:self action:@selector(cancelButtonTapped:)];
-    saveBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"保存",nil)  style:UIBarButtonItemStyleDone target:self action:@selector(saveButtonTapped:)];
+    saveBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"发送",nil)  style:UIBarButtonItemStyleDone target:self action:@selector(saveButtonTapped:)];
     newItem.leftBarButtonItem = cancelBarButtonItem;
     newItem.rightBarButtonItem = saveBarButtonItem;
     newItem.title = @"故事贴";

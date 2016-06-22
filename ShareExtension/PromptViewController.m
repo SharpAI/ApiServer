@@ -28,7 +28,7 @@
     
     // Set the annular determinate mode to show task progress.
     hud.mode = MBProgressHUDModeText;
-    hud.label.text = NSLocalizedString(@"保存成功，可打开故事贴编辑。", @"HUD message title");
+    hud.label.text = NSLocalizedString(@"发送成功，点击这里打开故事贴编辑。", @"HUD message title");
     // Move to bottm center.
     hud.offset = CGPointMake(0.f, MBProgressMaxOffset/4.f);
     
