@@ -65,9 +65,9 @@ if Meteor.isClient
     newcount:()->
       PostFriends.find({meetOnPostId:Session.get("postContent")._id,count:1,ta:{$ne:null}},{sort: {createdAt: -1}}).count()
     feedscount:()->
-      Feeds.find({followby:Meteor.userId(),checked:false}).count()
+      Feeds.find({followby:Meteor.userId(),checked:false, createdAt:{$gt:new Date((new Date()).getTime() - 7 * 24 * 3600 * 1000)}},{sort: {createdAt: -1}, limit:20}).count()
     haveFeeds:->
-      if Feeds.find({followby:Meteor.userId(),checked:false}).count()>0
+      if Feeds.find({followby:Meteor.userId(),checked:false, createdAt:{$gt:new Date((new Date()).getTime() - 7 * 24 * 3600 * 1000)}},{sort: {createdAt: -1}, limit:20}).count()>0
         true
       else
         false

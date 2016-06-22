@@ -5,7 +5,10 @@
 .showPosts .content .gridster .textDiv1 span{white-space: pre-wrap;}
 .showPosts .content .gridster {padding-left:15px; padding-right:15px;}
 
-.showPosts .content .gridster .element{position: relative;color:black;display:block;overflow: hidden;}
+.showPosts .content .gridster .element{position: relative;color:black;display:block;overflow: hidden;width: 100% !important;left: 0 !important;top: auto !important;right: auto !important; margin-top: 10px; /* border: 2px #33a solid; */}
+.showPosts .content .gridster #test{
+  height: auto !important;
+}
 .showPosts .content .gridster .element .ads-story{
   -webkit-hyphens: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -201,6 +204,7 @@
   font-size: 0;
   line-height: 0;
   text-align: left;
+  height: auto !important;
 }
 .postVideoItem .videoContainer{
   border: 1px solid #ebebeb;
@@ -240,6 +244,10 @@
 .video_bd .play_area video{
   width: 100%;
   height: auto;
+  -webkit-background-size:cover !important;
+  -moz-background-size:cover !important;
+  -o-background-size:cover !important;
+  background-size:cover !important;
 }
 .video_bd .description{
   display: block;
