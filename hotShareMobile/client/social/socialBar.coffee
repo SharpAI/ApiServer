@@ -18,7 +18,7 @@ if Meteor.isClient
       #window.location.href = url
       shareUrl = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id
       imgUrl = if Session.get('postContent').mainImage then Session.get('postContent').mainImage else'http://cdn.tiegushi.com/images/logo.png'
-      title = if Session.get('postContent').title then Session.get('postContent').title+'－专属聊天室' else '故事贴专属聊天室'
+      title = if Session.get('postContent').title then Session.get('postContent').title+'－专属阅览室' else '故事贴专属阅览室'
       ref = cordova.ThemeableBrowser.open(url,'_blank',{
           closeButton: {
             image: 'back',

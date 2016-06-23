@@ -391,7 +391,7 @@ Template.shareTheReadingRoom.events({
     var url = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
     var shareUrl = 'http://' + chat_server_url + '/channel/' + Session.get('postContent')._id;
     var imgUrl = Session.get('postContent').mainImage ? Session.get('postContent').mainImage : 'http://cdn.tiegushi.com/images/logo.png';
-    var title = Session.get('postContent').title ? Session.get('postContent').title + '－专属聊天室' : '故事贴专属聊天室';
+    var title = Session.get('postContent').title ? Session.get('postContent').title + '－专属阅览室' : '故事贴专属阅览室';
     var type = Session.get("shareToWechatType");
     $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300);
     if (type === "WXTimeLine") {
