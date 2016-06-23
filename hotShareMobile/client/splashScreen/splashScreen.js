@@ -30,7 +30,7 @@ Template.splashScreen.helpers({
   isUSVersion: function () {
     // return isUSVersion;
     if(Session.equals('display-lang',undefined)){
-      return getUserLanguang() == 'en';
+      return getUserLanguage() == 'en';
     } else {
       return Session.equals('display-lang','en');
     }
