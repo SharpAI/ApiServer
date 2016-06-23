@@ -15,17 +15,19 @@ if Meteor.isClient
   Template.footer.helpers
     is_wait_read_count: (count)->
       count > 0
+    limit_top_read_count: (count)->
+      count >= 99
     wait_read_count:->
       me = Meteor.user()
       if me
         return Feeds.find({
             followby: Meteor.userId(),
-            isRead:{$ne: true}, 
-            checked:{$ne: true}, 
+            isRead:{$ne: true},
+            checked:{$ne: true},
             eventType:{$ne:'share'},
             createdAt: {$gt: new Date((new Date()).getTime() - 7 * 24 * 3600 * 1000)}
           },{
-            limit: 20
+            limit: 99
           }).count()
           # waitReadCount = Session.get('waitReadCount')
         #if me.profile and me.profile.waitReadCount
@@ -41,7 +43,7 @@ if Meteor.isClient
         0
     wait_import_count:->
        return Session.get('wait_import_count')
-       
+
     focus_style:(channelName)->
       channel = Session.get "focusOn"
       if channel is channelName
@@ -89,13 +91,13 @@ if Meteor.isClient
               console.log 'CustomDialog show!'
               #CustomDialog.show data[0]
         ,100)
-        
+
   @editFromShare = (data)->
     Meteor.defer ()->
       $('.modal-backdrop.in').remove()
     prepareToEditorMode()
     PUB.page '/add'
-    console.log 'type is ' + data.type 
+    console.log 'type is ' + data.type
     console.log  'content'+data.content[0]
     if data.type is 'url'
        Meteor.setTimeout(()->

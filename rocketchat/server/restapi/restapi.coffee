@@ -211,11 +211,11 @@ Api.addRoute 'gushitie/msgcount/:uid', authRequired: false,
     get: ->
         count = 0
         gstUserId = @urlParams.uid
-        chatUser = Meteor.users.findOne({'services.gushitie.id': gstUserId})
+        chatUser = Meteor.users.findOne({'services.gushitie.id': gstUserId}, {sort: {createdAt: -1}})
 
         RocketChat.models.Rooms.findForGushitie().forEach((room)->
             if chatUser? and (subs = RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(room._id, chatUser._id))? and subs.ls?
-                count += RocketChat.models.Messages.findVisibleByRoomIdAfterTimestamp(room._id, subs.ls, {sort: {ts: -1}}).count()
+                count += RocketChat.models.Messages.findVisibleByRoomIdAfterTimestampWithoutType(room._id, subs.ls, {sort: {ts: -1}}).count()
             else
                 count += room.msgs
         )

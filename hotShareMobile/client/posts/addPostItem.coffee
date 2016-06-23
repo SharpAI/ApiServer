@@ -63,6 +63,7 @@ if Meteor.isClient
     textarea = textdiv.children('textarea')
     doc_id =  $(textarea).attr("text")
     if buttonClicked.id == "modify"
+      Session.set('automaticSegmentation', false) #自动添加
       $(textarea).attr('readOnly',false)
       $(textarea).off('focus')
       $(textarea).off('focusout')
@@ -84,7 +85,7 @@ if Meteor.isClient
         $(textarea).off('focus')
         $(".head").css 'position','absolute'
       )
-
+      
       $(textarea).focus()
 
       $(textarea).focusout(()->
@@ -102,6 +103,8 @@ if Meteor.isClient
 
         $(textarea).off('focusout')
         $(".head").css 'position','fixed'
+        id = this.id.replace("TextArea", "")
+        adjustTextAreaHeightAndResizeInTheLayoutEngine(id,this)
       )
 
     else if buttonClicked.id == "del"
@@ -194,13 +197,44 @@ if Meteor.isClient
         size_y = sizeY
       else
         size_y = 1
-      if window.unSelectedElem
-        insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
-        window.unSelectedElem = undefined
-        console.log('Selected data-row is ' + insert_row)
-        grid.add_widget(node, 6, size_y, 1, insert_row)
+      currentCount = insertedObj.currentCount
+      totalCount = insertedObj.totalCount
+      console.log("Now painting currentCount is " + currentCount + " totalCount is " + totalCount)
+      if currentCount is 1
+        window.addTextArea = true
+        if window.unSelectedElem
+          insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
+          window.unSelectedElem = undefined
+          console.log('Selected data-row is ' + insert_row)
+          grid.add_widget(node, 6, size_y, 1, insert_row)
+        else
+          grid.add_widget(node, 6, size_y, 1)
       else
-        grid.add_widget(node, 6, size_y, 1)
+        if window.autoSegmentSelectedElem
+          insert_row = parseInt($(window.autoSegmentSelectedElem).attr('data-row'))
+          insert_sizey = parseInt($(window.autoSegmentSelectedElem).attr('data-sizey'))
+          console.log('insert_row:'+insert_row)
+          console.log('insert_sizey:'+insert_sizey)
+          console.log('size_y:'+size_y)
+          if window.addTextArea is true 
+             if currentCount == 2
+                insert_row = insert_row + insert_sizey
+             else 
+                insert_row = window.previousItem_row + window.previousItem_sizey
+             window.previousItem_row = insert_row
+             window.previousItem_sizey = size_y
+          else 
+             insert_row = insert_row + window.insert_sizey+insert_sizey
+             window.insert_sizey += size_y
+          console.log('Selected data-row is ' + insert_row)
+          grid.add_widget(node, 6, size_y, 1, insert_row)
+        else
+          grid.add_widget(node, 6, size_y, 1)
+      if currentCount >= totalCount
+         window.autoSegmentSelectedElem = undefined
+         if totalCount != 1
+            window.addTextArea = undefined
+            window.insert_sizey = 0
     else if type is 'music'
       grid.add_widget(node, 6, 2, 1)
     else if type is 'video'
@@ -347,6 +381,18 @@ if Meteor.isClient
     console.log('#display width is '+getDisplayElementWidth()+' .addPost width is '+$('.addPost').width())
     min_widget_height =  grid_size + baseGap*2;
     #offset = this.offsetHeight - this.clientHeight;
+    if Session.get('textareaFocused') is false 
+      paragraphArray = []
+      paragraphArrayTmp = []
+      paragraphArrayTmp = node.value.split('\n')
+      if paragraphArrayTmp.length > 0
+          for i in [0..paragraphArrayTmp.length-1]
+            unless (paragraphArrayTmp[i].length == 0 or paragraphArrayTmp[i] == ' ')
+              paragraphArray.push(paragraphArrayTmp[i])
+      if paragraphArray.length > 0
+        node.value = paragraphArrayTmp[0]
+      if paragraphArray.length == 1
+        Session.set('automaticSegmentation', false)  
     node.style.height='auto'
     node.style.height=node.scrollHeight+'px'
     sizey = Math.ceil((node.scrollHeight+baseGap*2) / min_widget_height)
@@ -448,7 +494,10 @@ if Meteor.isClient
     appendNodeToLayoutEngine(node,data,gridster,sizeY)
     if type is "text" and !data.noKeyboardPopup
       initToolBar(node,data,gridster,false)
-      $(node).trigger("toolbarItemClick", {id:"modify"})
+      if data.currentCount == 1 
+        $(node).trigger("toolbarItemClick", {id:"modify"})
+      if(data.currentCount>=data.totalCount)
+        Session.set('automaticSegmentation',false)
       return
     $(node).one('click',()->
       toolbarObj=$(node).data('toolbarObj')
