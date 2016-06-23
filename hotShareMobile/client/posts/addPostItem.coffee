@@ -201,12 +201,12 @@ if Meteor.isClient
       totalCount = insertedObj.totalCount
       console.log("Now painting currentCount is " + currentCount + " totalCount is " + totalCount)
       if currentCount is 1
+        window.addTextArea = true
         if window.unSelectedElem
           insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
           window.unSelectedElem = undefined
           console.log('Selected data-row is ' + insert_row)
           grid.add_widget(node, 6, size_y, 1, insert_row)
-          window.addTextArea = true
         else
           grid.add_widget(node, 6, size_y, 1)
       else
@@ -216,17 +216,20 @@ if Meteor.isClient
           console.log('insert_row:'+insert_row)
           console.log('insert_sizey:'+insert_sizey)
           console.log('size_y:'+size_y)
-          console.log('window.addTextArea ~~~~~~~~~~'+window.addTextArea)
           if window.addTextArea is true 
-             insert_row = insert_row + window.insert_sizey
-          else if currentCount = 2
-             insert_row = insert_row + window.insert_sizey
+             if currentCount == 2
+                insert_row = insert_row + insert_sizey
+             else 
+                insert_row = window.previousItem_row + window.previousItem_sizey
+             window.previousItem_row = insert_row
+             window.previousItem_sizey = size_y
+          else 
+             insert_row = insert_row + window.insert_sizey+insert_sizey
+             window.insert_sizey += size_y
           console.log('Selected data-row is ' + insert_row)
           grid.add_widget(node, 6, size_y, 1, insert_row)
         else
           grid.add_widget(node, 6, size_y, 1)
-      window.insert_sizey += size_y
-      console.log("window.insert_sizey@@@@@@@@@@@@@@@ " + window.insert_sizey)
       if currentCount >= totalCount
          window.autoSegmentSelectedElem = undefined
          if totalCount != 1
