@@ -1,5 +1,14 @@
 
 if Meteor.isClient
+    @executeAfterClickPostLink = (e)->
+        #在聊天内容中点击与故事贴帖子相关的内容的超链接后会被触发
+        #此部分需要等具体方案出来以后再细化完善，目前不会影响其他功能的使用
+        #因为此部分代码会在链接跳转之前执行，所以耗时操作请使用异步执行，另外请不要return false
+        if e.target.nodeName is 'A'
+            postId = e.target.pathname.split('/posts/')[1]
+
+        console.log 'hello from chat robot, postId : ' + postId
+        
     Session.setDefault('visitedRooms', []);
     window.socialGraphCollection = new Meteor.Collection(null)
     idleMessageInterval = null
