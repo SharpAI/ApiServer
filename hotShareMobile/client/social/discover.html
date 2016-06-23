@@ -99,20 +99,20 @@
             $(document).unbind('touchmove', prevent_default)
         }
         var x, elementId;
-        $('.swipe-delete li > a')
-            .on('touchstart', function(e) {
+        $('body')
+            .on('touchstart','.swipe-delete li > a', function(e) {
                 console.log(e.originalEvent.pageX)
                 $('.swipe-delete li > a.open').css('left', '0px').removeClass('open') // close em all
                 $(e.currentTarget).addClass('open')
                 x = e.originalEvent.targetTouches[0].pageX // anchor point
             })
-            .on('touchmove', function(e) {
+            .on('touchmove','.swipe-delete li > a', function(e) {
                 var change = e.originalEvent.targetTouches[0].pageX - x
                 change = Math.min(Math.max(-100, change), 0) // restrict to -100px left, 0px right
                 e.currentTarget.style.left = change + 'px'
                 if (change < -10) disable_scroll() // disable scroll once we hit 10px horizontal slide
             })
-            .on('touchend', function(e) {
+            .on('touchend','.swipe-delete li > a', function(e) {
                 var left = parseInt(e.currentTarget.style.left)
                 var new_left;
                 if (left < -35) {
@@ -126,7 +126,7 @@
                 $(e.currentTarget).animate({left: new_left}, 200)
                 enable_scroll()
             });
-        $('.swipe-delete .delete-btn').on('touchend', function(e) {
+        $('body').on('touchend','.swipe-delete .delete-btn', function(e) {
             e.preventDefault()
             console.log(e.currentTarget.id);
             elementId = e.currentTarget.id;
