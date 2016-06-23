@@ -338,27 +338,37 @@ Template.showPosts.events({
     'click #WXTimelineShare':function(e, t){
         shareTo('WXTimeLine',this);
         Session.set("shareToWechatType","WXTimeLine")
-        $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+        Meteor.setTimeout (function(){
+          $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+        },2000);
     },
     'click #WXSessionShare':function(e, t){
         shareTo('WXSession',this);
         Session.set("shareToWechatType","WXSession")
-        $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+        Meteor.setTimeout (function(){
+          $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+        },2000);
     },
     'click #QQShare':function(e, t){
         shareTo('QQShare',this);
         Session.set("shareToWechatType","QQShare")
-        $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+        Meteor.setTimeout (function(){
+          $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+        },2000);
     },
     'click #QQZoneShare':function(e, t){
         shareTo('QQZoneShare',this);
         Session.set("shareToWechatType","QQZoneShare")
-        $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+        Meteor.setTimeout (function(){
+          $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+        },2000);
     },
     'click #socialShare':function(e, t){
         shareTo('System',this);
         Session.set("shareToWechatType","System")
-        $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+        Meteor.setTimeout (function(){
+          $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+        },2000);
     },
     'click  .like_img' : function(e){
            if (Meteor.user()) {
