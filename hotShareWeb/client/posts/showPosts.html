@@ -221,7 +221,7 @@
 <template name="pCommentsList">
   <div class="pcommentsList" style="display:none;">
       <div class="pcomment">
-        {{#if hasPcomments}}                      
+        {{#if hasPcomments}}
          {{#each pcomments}}
           <div class="eachComment">
             <div class="bubble">
@@ -280,7 +280,7 @@
           mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80');
           mqtt_connection.on('connect',function() {
             mqtt_connection.publish('all', JSON.stringify(mqtt_msg));
-          });   
+          });
 
           if (favp = FavouritePosts.findOne({postId: postId, userId: Meteor.userId()})) {
             FavouritePosts.update({_id: favp._id}, {$set: {updateAt: new Date()}});
@@ -383,7 +383,7 @@
 
 <template name="shareTheReadingRoom">
   <div class="shareTheReadingRoom" style="display:none;">
-    <div class="title">同步分享此帖子的阅览室？</div>
+    <div class="title">分享阅览室，结交新朋友！</div>
     <div class="banner">
       <div onclick="hideshareAlertBackground()" class="btnNo">不分享</div>
       <span onclick="shareYestothereadingroom()" class="btnYes">继续分享</span>

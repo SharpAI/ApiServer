@@ -9,6 +9,17 @@ RocketChat.models.Rooms = new class extends RocketChat.models._Base
 		@tryEnsureIndex { 'u._id': 1 }
 
 
+	findForGushitie: () ->
+		query =
+			_id:
+				$ne: 'GENERAL'
+			t: 'c'
+			msgs:
+				$gt: 0
+		options =
+			sort:
+				msgs: -1
+		return @find query, options
 	# FIND ONE
 	findOneById: (_id, options) ->
 		query =

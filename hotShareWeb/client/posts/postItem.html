@@ -49,8 +49,8 @@
                                 <i class="icon_video_switch"></i>
                                 <!--<img src="/music_pic_default.png" alt="" class="pic_video_default">-->
                                 <div id="cdn_stats" class="speed below_controls" style="position: absolute; width: 100%;" data-collecting="true"></div>
-                                <img src="{{videoInfo.imageUrl}}" class="video_thumb" alt="">
-                                <video class="video" controls>
+                                <!--<img src="{{videoInfo.imageUrl}}" class="video_thumb" alt="">-->
+                                <video class="video" controls poster="../notReal.png" style=" background:transparent url('{{videoInfo.imageUrl}}') 50% 50% no-repeat;">
                                     <source src="{{videoInfo.playUrl}}">
                                 </video>
                             </span>

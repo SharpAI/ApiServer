@@ -244,7 +244,7 @@ shareTo = function(to,self,index){
         }
     }
     window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
-    
+
     var post = Session.get('postContent');
     Feeds.insert({
       "owner": Meteor.user()._id,
@@ -418,6 +418,16 @@ Template.shareTheReadingRoom.events({
             }
         });
     }
+  }
+});
+Template.shareRoom.events({
+  'click .share-room': function() {
+    Session.set("mynewpostId","")
+    return $('.share-room,.share-room-background').fadeOut(300);
+  },
+  'click .share-room-background': function() {
+    Session.set("mynewpostId","")
+    return $('.share-room,.share-room-background').fadeOut(300);
   }
 });
 /*

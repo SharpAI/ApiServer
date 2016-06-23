@@ -37,7 +37,8 @@
             <div>新朋友</div>
           </div>
           <div class="chatBtn">
-            <div class="chat-icon-wrap"><img src="/img/chat-icon.png" class="chat-icon-img"><div class="red_spot" style="display: none;">0</div>
+            <div class="chat-icon-wrap"><img src="/img/chat-icon.png" class="chat-icon-img">
+            <div class="red_spot" style="{{#if haschats}}display: block;{{else}}display: none;{{/if}}">{{chatcount}}</div>
             <div style="position: absolute;width: 100%;text-align: center;margin-left: -14%;margin-top: 2px;">阅览室</div>
             </div>
           </div>

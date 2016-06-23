@@ -187,7 +187,7 @@ if Meteor.isClient
       setTimeout(() ->
         $(".chatBtn .chat-icon-img").removeClass('twinkling')
       , 10000);
-    
+
     #Calc Wechat token after post rendered.
     calcPostSignature(window.location.href.split('#')[0]);
     if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
@@ -252,7 +252,7 @@ if Meteor.isClient
           console.log "sssdsdds"
           document.body.scrollTop = Session.get("changeNameBckScroll")
         , 450
-    
+
 
     Meteor.setTimeout ()->
       $showPosts = $('.showPosts')
@@ -274,6 +274,14 @@ if Meteor.isClient
       userId = Meteor.userId()
       post = Session.get("postContent").pub
       if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].likeUserId[userId] is true
+        return true
+      else
+        return false
+    isMynewpost:()->
+      postId = Session.get("postContent")._id
+      mynewpostId = Session.get("mynewpostId")
+      if postId is mynewpostId
+        # Session.set("mynewpostId","")
         return true
       else
         return false

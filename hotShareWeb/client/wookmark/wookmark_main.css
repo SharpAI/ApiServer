@@ -148,7 +148,7 @@
     width: 100%;
     display: block;
     position: absolute;
-    margin-bottom: 50px;
+    padding-bottom: 50px;
     background-color: rgb(231,231,231);
 }
 
