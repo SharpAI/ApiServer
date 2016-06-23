@@ -25,7 +25,11 @@
                 <i class="fa fa-bell" style="font-size: 22px;"></i>
                 <div class="footerName">{{_ "message"}}</div>
                 {{#if is_wait_read_count wait_read_count}}
-                <div class="msg_count">{{wait_read_count}}</div>
+                  {{#if limit_top_read_count wait_read_count}}
+                  <div class="msg_count">99+</div>
+                  {{else}}
+                  <div class="msg_count">{{wait_read_count}}</div>
+                  {{/if}}
                 {{/if}}
               </a>
             </div>
