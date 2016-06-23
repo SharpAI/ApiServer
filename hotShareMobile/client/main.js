@@ -52,6 +52,11 @@ if (Meteor.isCordova) {
         document.addEventListener("pause", eventPause, false);//挂起
         document.addEventListener("resume", eventResume, false);
         TAPi18n.precacheBundle = true;
+        if(isUSVersion){
+          Session.set("display_lang",'en');
+          Cookies.set("display-lang","en",360);
+          AppRate.preferences.useLanguage = 'en';
+        }
         if(Cookies.check("display-lang")){
           var displayLang = Cookies.get("display-lang");
           Session.set("display_lang",displayLang)
@@ -88,13 +93,13 @@ if (Meteor.isCordova) {
         AppRate.preferences.storeAppURL.ios = '957024953';
         AppRate.preferences.storeAppURL.android = 'http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere';
         AppRate.promptForRating(false);
-        
+
     }
-    
+
     function checkShareExtension(){
-        
+
         window.plugins.shareExtension.getShareData(function(data) {
-            if(data){  
+            if(data){
                CustomDialog.show(data);
             }
         }, function() {Session.set('wait_import_count',false);});
@@ -124,7 +129,7 @@ if (Meteor.isCordova) {
                 Template.addPost.__helpers.get('saveDraft')()
             }
         }
-      
+
       var currentRoute = Router.current().route.getName();
       if (currentRoute == undefined || currentRoute =="search" || currentRoute =="add" || currentRoute =="bell" || currentRoute =="user" || currentRoute == "authOverlay") {
         window.plugins.toast.showShortBottom('再点击一次退出!');
