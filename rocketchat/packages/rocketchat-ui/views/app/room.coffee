@@ -445,6 +445,9 @@ Template.room.events
 			for message in addClass
 				$(".messages-box ##{message}").addClass('selected')
 
+	'click li.message a[href*="tiegushi.com/posts/"]': (e, template) ->
+		if window? and window.executeAfterClickPostLink? and (typeof window.executeAfterClickPostLink is 'function')
+			window.executeAfterClickPostLink(e)
 
 Template.room.onCreated ->
 	# this.scrollOnBottom = true
