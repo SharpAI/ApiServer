@@ -93,29 +93,29 @@ App.accessRule('http://*');
 App.accessRule('https://*');
 
 App.icons({
-  'iphone': 'resource/iconEN1_57.png',
-  'iphone_2x': 'resource/iconEN1_120.png',
-  'iphone_3x': 'resource/iconEN1_180.png',
-  'ipad': 'resource/iconEN1_76.png',
-  'ipad_2x': 'resource/iconEN1_152.png',
-  'android_ldpi': 'resource/iconEN1_36.png',
-  'android_mdpi': 'resource/iconEN1_48.png',
-  'android_hdpi': 'resource/iconEN1_96.png',
-  'android_xhdpi': 'resource/iconEN1.png'
+  'iphone': 'resource/icon_57.png',
+  'iphone_2x': 'resource/icon_120.png',
+  'iphone_3x': 'resource/icon_180.png',
+  'ipad': 'resource/icon_76.png',
+  'ipad_2x': 'resource/icon_152.png',
+  'android_ldpi': 'resource/icon_36.png',
+  'android_mdpi': 'resource/icon_48.png',
+  'android_hdpi': 'resource/icon_96.png',
+  'android_xhdpi': 'resource/icon.png'
 });
 
  App.launchScreens({
-   'iphone': 'resource/splashEN1_768_1024.png',
-   'iphone_2x': 'resource/splashEN1_640_960.png',
-   'iphone5': 'resource/splashEN1_640_1136.png',
-   'iphone6': 'resource/splashEN1_750_1334.png',
-   'iphone6p_portrait': 'resource/splashEN1_1242_2208.png',
-   'ipad_portrait': 'resource/splashEN1_768_1024.png',
-   'ipad_portrait_2x': 'resource/splashEN1_1536_2048.png',
-   'android_ldpi_portrait': 'resource/splashEN1.png',
-   'android_mdpi_portrait': 'resource/splashEN1.png',
-   'android_hdpi_portrait': 'resource/splashEN1.png',
-   'android_xhdpi_portrait': 'resource/splashEN1.png'
+   'iphone': 'resource/splashEN_768_1024.png',
+   'iphone_2x': 'resource/splashEN_640_960.png',
+   'iphone5': 'resource/splashEN_640_1136.png',
+   'iphone6': 'resource/splashEN_750_1334.png',
+   'iphone6p_portrait': 'resource/splashEN_1242_2208.png',
+   'ipad_portrait': 'resource/splashEN_768_1024.png',
+   'ipad_portrait_2x': 'resource/splashEN_1536_2048.png',
+   'android_ldpi_portrait': 'resource/splashEN.png',
+   'android_mdpi_portrait': 'resource/splashEN.png',
+   'android_hdpi_portrait': 'resource/splashEN.png',
+   'android_xhdpi_portrait': 'resource/splashEN.png'
  });
 
 App.configurePlugin('nl.x-services.plugins.socialsharing', {
