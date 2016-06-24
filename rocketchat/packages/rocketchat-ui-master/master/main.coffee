@@ -123,7 +123,8 @@ Template.body.onRendered ->
 
 
 Template.main.helpers
-
+	canShowTopTost: ->
+		return isWeiXinFunc() and Session.equals('canShowTopTost',true)
 	siteName: ->
 		return RocketChat.settings.get 'Site_Name'
 
@@ -172,6 +173,13 @@ Template.main.helpers
 Template.main.events
 	"click .dialog-layout": (e,t)->
 		e.currentTarget.style.display = 'none'		
+	"click .topTosts-layout": (e,t)->
+		e.currentTarget.style.display = 'none'
+		Session.set('canShowTopTost',false)
+		showTopTosts = Meteor.setTimeout ()->
+			Session.set('canShowTopTost',true)
+			Meteor.clearTimeout(showTopTosts)
+		,2000*60
 	"click .burger": ->
 		#history.back()
 		if history.length < 3
@@ -245,7 +253,7 @@ Template.main.events
 
 
 Template.main.onRendered ->
-
+	Session.set('canShowTopTost',true)
 	# RTL Support - Need config option on the UI
 	if isRtl localStorage.getItem "userLanguage"
 		$('html').addClass "rtl"

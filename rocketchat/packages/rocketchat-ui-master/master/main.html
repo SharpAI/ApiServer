@@ -124,6 +124,11 @@
             <div class="dialog-layout">
                 {{> shareRoom}}
             </div>
+			{{#if canShowTopTost}}
+			<div class="topTosts-layout">
+				{{> topTosts}}
+			</div>
+			{{/if}}
             <div class="connection-status">
                 {{> status}}
             </div>

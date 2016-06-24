@@ -395,5 +395,11 @@
   "Your_push_was_sent_to_s_devices" : "你的推播被送到 %s 裝置",
   // share
   "shareThisRoom": "分享這個房間",
-  "shareArrowTip": "點擊右上角將它發送給指定朋友或分享到朋友圈"
+  "shareArrowTip": "點擊右上角將它發送給指定朋友或分享到朋友圈",
+  
+  // tip onpen in Browser
+  "tipUserOpenInSafari": "在Safari中打开",
+  "tipUserOpenInChrome": "在浏览器中打开",
+  "tipUserBrowser": " 可以继续收到阅览室的动态哦！",
+  "tipUserOK": "我知道了"
 }
