@@ -112,7 +112,7 @@ if Meteor.isClient
         unless found
             zhifa_serverURL = "http://data.tiegushi.com"
             jscript = document.createElement("script")
-            jscript.innerHTML = "token = '7gFCGdcqXw4mSc252'; trafficDisplay = true;"
+            jscript.innerHTML = "token = '7gFCGdcqXw4mSc252'; trafficDisplay = false;"
             document.head.appendChild(jscript)
             jscript = document.createElement("script")
             jscript.type = "text/javascript"
