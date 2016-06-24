@@ -76,8 +76,19 @@
         background: #eee;
         cursor: pointer;
     }
+    #firstPageTipBox{
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background: -webkit-linear-gradient(left,#dedede,#fff);
+        line-height: 32px;
+        padding: 4px 12px;
+    }
 </style>
 <script>
+    document.title = '故事贴专属阅览室'
+</script>
+<!--<script>
     var notify='稍候转入阅览室';
     document.title = notify;
     var count = 0;
@@ -111,7 +122,7 @@
             }
         }
     },500)
-</script>
+</script>-->
 <div class="showHottestPosts">
     <h3 class="showHottestPostsTitle">24小时最热门故事贴</h3>
     <div class='post-list-box'>
@@ -131,6 +142,8 @@
         </ul>
     </div>
 </div>
+
+<div id="firstPageTipBox"></div>
     <!--
 <div class="showbox">
   <div class="loader">
@@ -143,3 +156,40 @@
 </div>
 -->
 </div>
+<script>
+    var notify='稍候转入阅览室';
+    // document.title = notify;
+    var tipBox = document.getElementById('firstPageTipBox');
+    tipBox.innerHTML = notify;
+    var count = 0;
+    var checkingInterval=setInterval(function(){
+        count++;
+        var mod=count%4;
+        if(mod===1){
+            tipBox.innerHTML=notify+'.';
+        } else if(mod===2){
+            tipBox.innerHTML=notify+'..';
+        } else if(mod===3){
+            tipBox.innerHTML=notify+'...';
+        } else {
+            tipBox.innerHTML=notify;
+        }
+        if(typeof Meteor != 'undefined'){
+            if(typeof Meteor.userId == 'function') {
+                if (Meteor.userId() != '') {
+                    if(typeof Session != 'undefined'){
+                        if(Session.get('openedRoom')){
+                            console.log('logged in');
+                            clearInterval(checkingInterval);
+                            setTimeout(function () {
+                                $("#inject-loader-wrapper").fadeOut(500, function () {
+                                    $(this).remove();
+                                });
+                            }, 500);
+                        }
+                    }
+                }
+            }
+        }
+    },500)
+</script>

@@ -322,5 +322,11 @@
   "Your_Open_Source_solution" : "您自己的开源聊天解决方案",
   // share
   "shareThisRoom": "分享這個房間",
-  "shareArrowTip": "点击右上角将它发送给指定朋友或分享到朋友圈"
+  "shareArrowTip": "点击右上角将它发送给指定朋友或分享到朋友圈",
+  
+  // tip onpen in Browser
+  "tipUserOpenInSafari": "在Safari中打开",
+  "tipUserOpenInChrome": "在浏览器中打开",
+  "tipUserBrowser": " 可以继续收到阅览室的动态哦！",
+  "tipUserOK": "我知道了"
 }

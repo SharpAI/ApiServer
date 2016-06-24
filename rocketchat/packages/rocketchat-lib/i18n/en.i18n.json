@@ -1025,5 +1025,12 @@
   "Your_push_was_sent_to_s_devices" : "Your push was sent to %s devices",
   // share
   "shareThisRoom": "Share this room",
-  "shareArrowTip": "Click on the top right to send it to a friend or share it on Moments"
+  "shareArrowTip": "Click on the top right to send it to a friend or share it on Moments",
+  
+  // tip onpen in Browser
+  // tip onpen in Browser
+  "tipUserOpenInSafari": "Open the Reading Room in Safari",
+  "tipUserOpenInChrome": "Open the Reading Room in Chrome",
+  "tipUserBrowser": "Keep up with the latest news",
+  "tipUserOK": "I Know!"
 }

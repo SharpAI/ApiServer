@@ -126,6 +126,8 @@ if Meteor.isClient
         $showPosts.after('<div class="readmore"><div class="readMoreContent"><i class="fa fa-plus-circle"></i>继续阅读</div></div>')
     , 600
 
+  Template.showPosts.created=->
+    Session.set("content_loadedCount", 0)
   Template.showPosts.onRendered ->
     Session.setDefault "toasted",false
     Session.set('postfriendsitemsLimit', 10)
@@ -332,7 +334,37 @@ if Meteor.isClient
       #   postId=Session.get("postContent")._id
       #   Session.set("firstPost",postId)
       #   false
+    getPostContent:(obj)->
+      self = obj
+      self.pub = self.pub || []
+      if withSponserLinkAds
+        position = 1+(self.pub.length / 2)
+        self.pub.splice(position,0,{adv:true,type:'insertedLink',data_col:1,data_sizex:6,urlinfo:'http://cdn.tiegushi.com/posts/qwWdWJPMAbyeo8tiJ'})
+        _.map self.pub, (doc, index, cursor)->
+          if position < index
+            _.extend(doc, {index: index-1})
+          else
+            _.extend(doc, {index: index})
+      else
+        _.map self.pub, (doc, index, cursor)->
+          _.extend(doc, {index: index})
     getPub:->
+      self = this
+      contentList = Template.showPosts.__helpers.get('getPostContent')(self)
+      loadedCount = if Session.get("content_loadedCount") then Session.get("content_loadedCount") else 0
+      console.log("loadedCount="+loadedCount+", "+contentList.length)
+      newLoadedCount = contentList.length
+      if (loadedCount < contentList.length)
+        if loadedCount+10 < contentList.length
+          newLoadedCount = loadedCount+10
+        else
+          newLoadedCount = contentList.length
+        if Session.get("content_loadedCount") isnt newLoadedCount
+          Meteor.setTimeout(()->
+              Session.set("content_loadedCount", newLoadedCount)
+            , 0)
+      contentList.slice(0, newLoadedCount)
+    getPub2:->
       self = this
       self.pub = self.pub || []
       if withSponserLinkAds
