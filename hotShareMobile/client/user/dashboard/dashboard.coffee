@@ -41,7 +41,10 @@ if Meteor.isClient
     'click .back' :->
       Router.go '/user'
     'click .logout':(e)->
-      e.target.innerText="正在退出登录..."
+      if isUSVersion == true
+        e.target.innerText="Logging out..."
+      else
+        e.target.innerText="正在退出登录..."
 #      thisUser = Meteor.user()
 #      Meteor.users.update({_id: thisUser._id}, {$set: {type: '', token: ''}})
       Meteor.logout (msg)->

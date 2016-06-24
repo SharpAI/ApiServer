@@ -12,7 +12,7 @@ if (Meteor.isClient) {
     if (Meteor.user())
       Meteor.subscribe("follows");
     if (isUSVersion == true) {
-      document.getElementById("authOverlaybg").style.backgroundImage = "url(loginbg1en.jpg)";
+      document.getElementById("authOverlaybg").style.backgroundImage = "url(loginbgEN1-640-1136.png)";
     } else {
       document.getElementById("authOverlaybg").style.backgroundImage = "url(loginbg1.png)";
     }  
