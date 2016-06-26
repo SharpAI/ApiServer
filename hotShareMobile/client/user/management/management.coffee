@@ -14,7 +14,7 @@ loginFn = (id)->
         '提示', ['重新登录']
       )
     else if err is 'WAIT_TIME'
-      return navigator.notification.confirm '切换帐号太频繁了（间隔至少10秒），请稍后在试！', null, '提示', ['知道了']
+      return navigator.notification.confirm '切换帐号太频繁了（间隔至少10秒），请稍后再试！', null, '提示', ['知道了']
     
     window.plugins.userinfo.setUserInfo(
       Meteor.userId()
