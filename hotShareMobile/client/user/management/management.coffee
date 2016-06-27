@@ -32,6 +32,7 @@ loginFn = (id)->
       Session.setPersistent('myPostsCount',Counts.get('myPostsCount'))
       Session.setPersistent('myFollowToCount',Counts.get('myFollowToCount'))
       
+    is_loading.set([])
     navigator.notification.confirm '切换帐号成功~', null, '提示', ['知道了']
             
 Template.accounts_management.rendered=->
@@ -76,6 +77,8 @@ Template.accounts_management.helpers
 
 Template.accounts_management.events
   'click dl.my_account': ->
+    if is_loading.get().length > 0
+      return navigator.notification.confirm '正在切换中，请稍后在试~', null, '提示', ['知道了']
     slef = this
     unless Meteor.status().connected
       is_loading.set([@_id])
