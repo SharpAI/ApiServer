@@ -29,6 +29,8 @@
     // Set the annular determinate mode to show task progress.
     hud.mode = MBProgressHUDModeText;
     hud.label.text = NSLocalizedString(@"发送成功，点击这里打开故事贴编辑。", @"HUD message title");
+    hud.label.adjustsFontSizeToFitWidth = YES;
+    //hud.label.font = [UIFont systemFontOfSize:11];
     // Move to bottm center.
     hud.offset = CGPointMake(0.f, MBProgressMaxOffset/4.f);
     
@@ -39,9 +41,15 @@
     
     UITapGestureRecognizer *tapGesture=[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(onClickUI:)];
     
-    hud.userInteractionEnabled=YES;
+    hud.backgroundView.userInteractionEnabled=YES;
     
-    [hud addGestureRecognizer:tapGesture];
+    [hud.backgroundView addGestureRecognizer:tapGesture];
+    
+    UITapGestureRecognizer *tapLabelGesture=[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(onClickUILabel:)];
+    
+    hud.bezelView.userInteractionEnabled=YES;
+    
+    [hud.bezelView addGestureRecognizer:tapLabelGesture];
     
 }
 
@@ -50,9 +58,13 @@
     
     self.block();
 }
-
-
 -(void)onClickUI:(UITapGestureRecognizer *)sender{
+    
+    self.block();
+    
+}
+
+-(void)onClickUILabel:(UITapGestureRecognizer *)sender{
   
     NSString *customURL = @"hotshare://";
     
