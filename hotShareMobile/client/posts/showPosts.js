@@ -340,35 +340,35 @@ Template.showPosts.events({
         Session.set("shareToWechatType","WXTimeLine")
         Meteor.setTimeout (function(){
           $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
-        },2000);
+        },5000);
     },
     'click #WXSessionShare':function(e, t){
         shareTo('WXSession',this);
         Session.set("shareToWechatType","WXSession")
         Meteor.setTimeout (function(){
           $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
-        },2000);
+        },5000);
     },
     'click #QQShare':function(e, t){
         shareTo('QQShare',this);
         Session.set("shareToWechatType","QQShare")
         Meteor.setTimeout (function(){
           $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
-        },2000);
+        },5000);
     },
     'click #QQZoneShare':function(e, t){
         shareTo('QQZoneShare',this);
         Session.set("shareToWechatType","QQZoneShare")
         Meteor.setTimeout (function(){
           $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
-        },2000);
+        },5000);
     },
     'click #socialShare':function(e, t){
         shareTo('System',this);
         Session.set("shareToWechatType","System")
         Meteor.setTimeout (function(){
           $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
-        },2000);
+        },5000);
     },
     'click  .like_img' : function(e){
            if (Meteor.user()) {

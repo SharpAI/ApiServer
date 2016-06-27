@@ -1662,7 +1662,7 @@ if(Meteor.isServer){
         });
         return [
             FavouritePosts.find({userId: this.userId}, {sort: {createdAt: -1}, limit: limit}),
-            Posts.find({_id: {$in: postIds}})
+            Posts.find({_id: {$in: postIds}},{fields:{'title':'1','addontitle':'1','mainImage':'1','ownerName':'1'}})
         ];
     }
     else {
@@ -1679,7 +1679,7 @@ if(Meteor.isServer){
         });
         return [
             FavouritePosts.find({userId: userId}, {sort: {createdAt: -1}, limit: limit}),
-            Posts.find({_id: {$in: postIds}})
+            Posts.find({_id: {$in: postIds}},{fields:{'title':'1','addontitle':'1','mainImage':'1','ownerName':'1'}})
         ];
     }
     else {
