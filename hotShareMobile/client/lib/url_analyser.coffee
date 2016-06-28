@@ -1,5 +1,5 @@
 if Meteor.isClient
-  showDebug=false
+  showDebug=true
   importColor=false
   titleRules = [
     # link string, class name
@@ -529,6 +529,8 @@ if Meteor.isClient
       callback data
   _html2data = (url, data, callback)->
     Meteor.defer ()->
+      onBeforeExtract(url, data)
+      
       if data[0]
         showDebug&&console.log 'data0 is ' + JSON.stringify(data[0])
         data = data[0]
@@ -735,6 +737,8 @@ if Meteor.isClient
       callback data
   _html2data2 = (url, data, callback)->
     Meteor.defer ()->
+      onBeforeExtract(url, data)
+    
       pageInnerText = ''
       previousParagraph = ''
       paragraphArray = []

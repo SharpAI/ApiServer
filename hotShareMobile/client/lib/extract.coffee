@@ -74,6 +74,34 @@ specialMobileSiteForImages = [
   'techcrunch.com'
 ]
 
+beforeExtractConfig = [
+  # 微信凤凰读书诗歌的例外处理。
+  # {
+  #   enable: (url, data)->
+  #     $page = $(data.body)
+  #     if $page.find('.rich_media_content').length <= 0
+  #       return false
+  #     if $page.find(".rich_media_content > section > section:last > section > section:last > section > section > section").length <= 0
+  #       return false
+  #     return true
+  #   extract: (url, data)->
+  #     $page = $(data.body)
+  #     $sction = $page.find(".rich_media_content > section > section:last > section > section:last > section > section")
+  #     $sction.each ()->
+  #       $(this).html('<p>'+$(this).text()+'</p>')
+      
+  #     data.body = ''
+  #     _.map $page[0].parentNode.childNodes, (node)->
+  #       data.body += node.outerHTML
+  #     data.bodyLength = data.body.length
+  # }
+]
+
+@onBeforeExtract = (url, data)->
+  _.map beforeExtractConfig, (config)->
+    if config.enable(url, data)
+      config.extract(url, data)
+
 textContentFor = (node, normalizeWs = true) ->
   return "" unless node.textContent
   text = node.textContent.replace(REGEXPS.trim, "")
@@ -400,7 +428,9 @@ cloneWithoutSibling=(parentNode, node)->
             rootNode = item.parentNode
             break
 
+    console.log '======================================================'
     console.log rootNode
+    console.log '======================================================'
     if rootNode isnt null
       treeWalker = document.createTreeWalker(
         rootNode,
