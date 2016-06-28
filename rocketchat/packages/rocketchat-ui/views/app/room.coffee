@@ -320,7 +320,7 @@ Template.room.events
 
 	'click .new-message': (e) ->
 		Template.instance().atBottom = true
-		Template.instance().find('.input-message').focus()
+		# Template.instance().find('.input-message').focus()
 
 	'click .message-cog': (e) ->
 		message = @_arguments[1]
