@@ -27,7 +27,7 @@ if Meteor.isClient
             return ChatMessage.insert(doc)
         
         new_urls = []
-        if doc.t is 'bot' and doc.u and doc.u._id is 'group.cat' and doc.urls
+        if (doc.t is 'bot' or doc.t is 'bot welcome-msg') and doc.u and doc.u._id is 'group.cat' and doc.urls
             if doc.urls.length > 0
                  for item in doc.urls
                      if ChatMessage.find({'urls.url': item.url, rid: doc.rid}).count() <= 0
@@ -58,7 +58,7 @@ if Meteor.isClient
         #alink.href = url
 
         msg = {
-            t: 'bot'
+            t: if message.indexOf('欢迎来到阅览室')>-1 then 'bot welcome-msg' else 'bot'
             msg: if message? then message else ''
             #rid: ChatRoom.findOne()._id
             rid: Session.get('openedRoom')
@@ -138,6 +138,51 @@ if Meteor.isClient
         } 
 
         insertMessageToChat msg
+    sendAuthorSelfMessageWithURLSToRoom = (message, urls)->
+        new_urls = []
+        _.map urls, (item)->
+            url = if item.url? then item.url else 'http://www.tiegushi.com/'
+            #alink = document.createElement 'a'
+            #alink.href = url
+            
+            new_urls = {
+                "url" : url, #http://www.tiegushi.com/posts/NYtJcHfCKSE6GWhmj
+                "meta" : {
+                    "ogSiteName" : "故事贴",
+                    "ogTitle" : if item.title? then item.title else "", #千老这个称谓的来历
+                    "ogUrl" :url, #http://www.tiegushi.com/posts/NYtJcHfCKSE6GWhmj
+                    "ogImage" : if item.mainImageUrl? then item.mainImageUrl else "", #http://data.tiegushi.com/2Yfmd5PmEDsoECLvg_1459975484141_cdv_photo_001.jpg
+                    "ogDescription" : if item.description? then item.description else "", #早点一咬牙一跺脚转CS，现在幸福日子望不到头呢！…
+                    "ogType" : "article"
+                },
+                "headers" : {
+                    "contentType" : "text/html; charset=utf-8"
+                }
+                ###
+                ,
+                "parsedUrl" : {
+                    "host" : alink.host, #www.tiegushi.com
+                    "pathname" : alink.pathname, #/posts/NYtJcHfCKSE6GWhmj
+                    "protocol" : alink.protocol #http:
+                }
+                ###
+            }
+            
+            
+        
+            msg = {
+                msg: if message? then message else ''
+                rid: Session.get('openedRoom')
+                ts: new Date()
+                u: {
+                    _id: item.owner
+                    username: item.owner
+                    name: item.ownerName
+                },
+                urls : new_urls         
+            } 
+
+            ChatMessage.insert(msg)
     unless amplify.store('readListDisplayed')
         amplify.store('readListDisplayed',1)
     postOneViewedPost = ()->
@@ -425,7 +470,8 @@ if Meteor.isClient
                         owners[_.pluck(owners, 'ownerId').indexOf(item.owner)].urls.push(url)
 
                 _.map owners, (item)->
-                    sendPersonalMessageWithURLSToRoom '您的朋友 '+item.ownerName+' 发表了故事贴，邀请您阅读：', item.urls
+                    # sendPersonalMessageWithURLSToRoom '您的朋友 '+item.ownerName+' 发表了故事贴，邀请您阅读：', item.urls
+                    sendAuthorSelfMessageWithURLSToRoom '我发表了故事贴，邀请您阅读：', item.urls
 
         Tracker.autorun (t)->
             if Meteor.userId() and Session.get('openedRoom')
