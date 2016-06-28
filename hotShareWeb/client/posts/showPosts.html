@@ -190,9 +190,10 @@
   {{> SectionReviewBox}}
   </div>
 
+  <!-- 此部分在wifi情况下，会导致微信分享端口被重写，url改变为阅览室地址，临时注销掉，待解决此问题后再开放。
   {{#if hiddenChatLoad}}
     <iframe src='{{chatUrl}}' style="width:0;height:0;border:0; border:none;"></iframe>
-  {{/if}}
+  {{/if}}-->
 </template>
 <template name="postFooter">
   <div id="postFooter" class="showPostsFooter">
