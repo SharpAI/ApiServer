@@ -129,6 +129,9 @@ shareToWechatSession = function (title, description, thumbData, url) {
         }
       }, function() {
         window.PUB.toast('分享成功!');
+        Meteor.setTimeout (function(){
+          $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+        },3000);
       }, function() {
         window.PUB.toast('分享失败!你安装微信了吗？');
       });
@@ -161,6 +164,9 @@ shareToWechatTimeLine = function (title, description, thumbData, url) {
         }
       }, function() {
         window.PUB.toast('分享成功!');
+        Meteor.setTimeout (function(){
+          $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+        },3000);
       }, function() {
         window.PUB.toast('分享失败!你安装微信了吗？');
       });
@@ -181,6 +187,7 @@ shareToWechat = function(title,description,thumbData,url,type) {
         url: url
     }, type, function () {
         console.log('分享成功~');
+        $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
     }, function (reason) {
         // 分享失败
         if (reason === 'ERR_WECHAT_NOT_INSTALLED') {
@@ -338,16 +345,10 @@ Template.showPosts.events({
     'click #WXTimelineShare':function(e, t){
         shareTo('WXTimeLine',this);
         Session.set("shareToWechatType","WXTimeLine")
-        Meteor.setTimeout (function(){
-          $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
-        },5000);
     },
     'click #WXSessionShare':function(e, t){
         shareTo('WXSession',this);
         Session.set("shareToWechatType","WXSession")
-        Meteor.setTimeout (function(){
-          $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
-        },5000);
     },
     'click #QQShare':function(e, t){
         shareTo('QQShare',this);
