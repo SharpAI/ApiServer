@@ -129,9 +129,14 @@ shareToWechatSession = function (title, description, thumbData, url) {
         }
       }, function() {
         window.PUB.toast('分享成功!');
-        Meteor.setTimeout (function(){
-          $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
-        },3000);
+        var shareType = Session.get("shareToWechatType");
+        if(shareType[1] && shareType[1] == true){
+            Meteor.setTimeout (function(){
+                $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+            },3000);
+            shareType[1] = false;
+            Session.set("shareToWechatType",shareType);
+        }
       }, function() {
         window.PUB.toast('分享失败!你安装微信了吗？');
       });
@@ -164,9 +169,14 @@ shareToWechatTimeLine = function (title, description, thumbData, url) {
         }
       }, function() {
         window.PUB.toast('分享成功!');
-        Meteor.setTimeout (function(){
-          $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
-        },3000);
+        var shareType = Session.get("shareToWechatType");
+        if(shareType[1] && shareType[1] == true){
+            Meteor.setTimeout (function(){
+                $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+            },3000);
+            shareType[1] = false;
+            Session.set("shareToWechatType",shareType);
+        }
       }, function() {
         window.PUB.toast('分享失败!你安装微信了吗？');
       });
@@ -187,7 +197,12 @@ shareToWechat = function(title,description,thumbData,url,type) {
         url: url
     }, type, function () {
         console.log('分享成功~');
-        $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+        var shareType = Session.get("shareToWechatType");
+        if(shareType[1] && shareType[1] == true){
+            $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+            shareType[1] = false;
+            Session.set("shareToWechatType",shareType);
+        }
     }, function (reason) {
         // 分享失败
         if (reason === 'ERR_WECHAT_NOT_INSTALLED') {
@@ -207,6 +222,12 @@ shareToQQ = function (title,description,imageUrl,url){
     args.appName = TAPi18n.__("gst");
     YCQQ.shareToQQ(function(){
         console.log("share success");
+        var shareType = Session.get("shareToWechatType");
+        if(shareType[1] && shareType[1] == true){
+            $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+            shareType[1] = false;
+            Session.set("shareToWechatType",shareType);
+        }
     },function(reason){
         if (reason ==='QQ Client is not installed') {
             PUB.toast(TAPi18n.__("qqNotInstalled"));
@@ -225,6 +246,12 @@ shareToQQZone = function (title,description,imageUrl,url){
   args.imageUrl = imgs;
   YCQQ.shareToQzone(function () {
     console.log("share success");
+    var shareType = Session.get("shareToWechatType");
+    if(shareType[1] && shareType[1] == true){
+        $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+        shareType[1] = false;
+        Session.set("shareToWechatType",shareType);
+    }
   }, function (failReason) {
     console.log(failReason);
   }, args);
@@ -344,29 +371,23 @@ shareTo = function(to,self,index){
 Template.showPosts.events({
     'click #WXTimelineShare':function(e, t){
         shareTo('WXTimeLine',this);
-        Session.set("shareToWechatType","WXTimeLine")
+        Session.set("shareToWechatType",["WXTimeLine",true])
     },
     'click #WXSessionShare':function(e, t){
         shareTo('WXSession',this);
-        Session.set("shareToWechatType","WXSession")
+        Session.set("shareToWechatType",["WXSession",true])
     },
     'click #QQShare':function(e, t){
         shareTo('QQShare',this);
-        Session.set("shareToWechatType","QQShare")
-        Meteor.setTimeout (function(){
-          $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
-        },5000);
+        Session.set("shareToWechatType",["QQShare",true])
     },
     'click #QQZoneShare':function(e, t){
         shareTo('QQZoneShare',this);
-        Session.set("shareToWechatType","QQZoneShare")
-        Meteor.setTimeout (function(){
-          $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
-        },5000);
+        Session.set("shareToWechatType",["QQZoneShare",true])
     },
     'click #socialShare':function(e, t){
         shareTo('System',this);
-        Session.set("shareToWechatType","System")
+        Session.set("shareToWechatType",["System",true])
         Meteor.setTimeout (function(){
           $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
         },5000);
@@ -395,7 +416,7 @@ Template.shareTheReadingRoom.events({
     var title = Session.get('postContent').title ? Session.get('postContent').title + '－专属阅览室' : '故事贴专属阅览室';
     var type = Session.get("shareToWechatType");
     $('.shareTheReadingRoom,.shareAlertBackground').fadeOut(300);
-    if (type === "WXTimeLine") {
+    if (type[0] === "WXTimeLine") {
         window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
         return downloadFromBCS(imgUrl, function(result) {
             if (result) {
@@ -404,7 +425,7 @@ Template.shareTheReadingRoom.events({
                 PUB.toast(TAPi18n.__('failToGetPicAndTryAgain'));
             }
         });
-    } else if (type === "WXSession"){
+    } else if (type[0] === "WXSession"){
         window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
         return downloadFromBCS(imgUrl, function(result) {
         if (result) {
@@ -413,13 +434,13 @@ Template.shareTheReadingRoom.events({
             PUB.toast(TAPi18n.__('failToGetPicAndTryAgain'));
         }
       });
-    } else if (type === "QQShare"){
+    } else if (type[0] === "QQShare"){
         window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
         return shareToQQ(title, "来自故事贴",imgUrl,shareUrl);
-    } else if (type === "QQZoneShare"){
+    } else if (type[0] === "QQZoneShare"){
         window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
         return shareToQQZone(title, "来自故事贴",imgUrl,shareUrl);
-    } else if (type === "System"){
+    } else if (type[0] === "System"){
         window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
         return downloadFromBCS(imgUrl, function(result) {
             if (result) {
