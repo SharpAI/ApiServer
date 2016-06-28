@@ -403,7 +403,7 @@ if Meteor.isClient
                         if data.addontitle and data.addontitle isnt ''
                             data.title+="："+data.addontitle
                         window.trackPage(window.location.href,data.title)
-                        sendPersonalMessageWithURLToRoom('欢迎来到阅览室，您可以点右上角转发到微信朋友圈，让更多的朋友加入。\r\n点击链接可查看原文:',
+                        sendPersonalMessageWithURLToRoom('欢迎来到阅览室，您可以点右上角转发到微信朋友圈，让更多的朋友加入。\r\n *点击链接可查看原文*',
                           'http://cdn.tiegushi.com/posts/'+data._id, data.title, description, data.mainImage)
                         if Meteor.user() and amplify.store('hotshareUserID') and data.owner is amplify.store('hotshareUserID')
                             sendPostStatToOwner(data._id)

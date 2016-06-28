@@ -2667,7 +2667,50 @@ a.github-fork {
 		position: absolute;
 	}
 }
-
+.welcome-msg{
+	.body{
+		background-image: url('/welcome_alert.jpg');
+		background-repeat: no-repeat;
+		background-size: 32px 25px;
+		background-position: left top;
+		padding-left: 40px;
+		font-family: "Microsoft YaHei","微软雅黑","PingHei","Helvetica Neue",SimSun,Helvetica,Arial,sans-serif,Helvetica;
+		strong{
+			font-family:none;
+			position: relative;
+			height:30px;
+			line-height:30px;
+			background-color: #e6e6e6;
+			border-radius: 8px 8px 0 0 ;
+			display: block;
+			margin-left:-46px;
+			font-weight: normal;
+			padding-left: 8px;
+			
+		}
+		strong::before{
+			content: '';
+			width: 20px;
+			height: 10px;
+			position: absolute;
+			background-image: url('/welcome_tip_help_up.png');
+			background-repeat: no-repeat;
+			background-size: 20px 10px;
+			top: -10px;
+			left: 20px;
+		}
+		blockquote{
+			font-family:none;
+			background-color: #e6e6e6;
+			border-radius: 0 0 8px 8px;
+			margin-left:-46px;
+			line-height: 26px;
+			div {margin-left: -10px; padding-left: 10px !important; background: none; font-family:none;}
+			strong{margin-left:0; background: none; line-height: 16px; margin-bottom:4px;font-family:none; padding-left: 0; font-weight: 600;}
+			strong::before{	background: none;font-family:none;}
+		}
+	}
+}
 .message {
 	padding: 8px 20px 4px 70px;
 	position: relative;
@@ -2939,7 +2982,7 @@ body:not(.is-cordova) {
 	.message:hover:not(.system) .message-cog {
 		visibility: visible;
 	}
-
+	
 	.message {
 		.body, .user.user-card-message, .time {
 			-webkit-user-select: text;
