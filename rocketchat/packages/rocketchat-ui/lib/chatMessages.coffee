@@ -119,6 +119,44 @@ class @ChatMessages
 
 				Meteor.call 'sendMessage', msgObject
 
+	sendWithUrls: (rid, input) ->
+		if _.trim(input.msg) isnt '' and Array.isArray input.urls
+			readMessage.enable()
+			readMessage.readNow()
+			$('.message.first-unread').removeClass('first-unread')
+
+			msg = input.msg
+			urls = input.urls
+			msgObject = { _id: Random.id(), rid: rid, msg: msg, urls: urls}
+			msgObject.reactions = {'gotosee': {'usernames': [Meteor.user().username]}}
+
+			# Run to allow local encryption, and maybe other client specific actions to be run before send
+			RocketChat.promises.run('onClientBeforeSendMessage', msgObject).then (msgObject) =>
+
+				# checks for the final msgObject.msg size before actually sending the message
+				if this.isMessageTooLong(msgObject.msg)
+					return toastr.error t('Message_too_long')
+
+				if this.editing.id
+					this.update(this.editing.id, rid, msgObject.msg)
+					return
+
+				KonchatNotification.removeRoomNotification(rid)
+
+				this.hasValue.set false
+				this.stopTyping(rid)
+
+				#Check if message starts with /command
+				if msg[0] is '/'
+					match = msg.match(/^\/([^\s]+)(?:\s+(.*))?$/m)
+					if match? and RocketChat.slashCommands.commands[match[1]]
+						command = match[1]
+						param = match[2]
+						Meteor.call 'slashCommand', {cmd: command, params: param, msg: msgObject }
+						return
+
+				Meteor.call 'sendMessage', msgObject
+
 	deleteMsg: (message) ->
 		Meteor.call 'deleteMessage', message, (error, result) ->
 			if error

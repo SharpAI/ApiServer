@@ -97,6 +97,9 @@ Template.message.helpers
 	hideReactions: ->
 		return 'hidden' if _.isEmpty(@reactions)
 
+	isGoToSee: (value)->
+		return value is 'gotosee'		
+
 Template.message.onCreated ->
 	msg = Template.currentData()
 

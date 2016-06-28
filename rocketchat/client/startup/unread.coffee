@@ -2,8 +2,8 @@ Meteor.startup ->
 	# 这个方式可以后面整合到某个lib文件下，避免多个地方重复编写
 	sendPersonalMessageWithURLToRoom = (message, url, title, description, mainImageUrl, roomName)->
 	    url = if url? then url else 'http://www.tiegushi.com/'
-	    alink = document.createElement 'a'
-	    alink.href = url
+	    #alink = document.createElement 'a'
+	    #alink.href = url
 	    currentRoomId = Session.get('openedRoom')
 
 	    msg = {
@@ -30,12 +30,14 @@ Meteor.startup ->
 	                "headers" : {
 	                    "contentType" : "text/html; charset=utf-8"
 	                },
+	                ###
 	                "parsedUrl" : {
 	                    #"host" : alink.host, #www.tiegushi.com
 	                    "host" : window.location.hostname, #www.tiegushi.com
 	                    "pathname" : alink.pathname, #/posts/NYtJcHfCKSE6GWhmj
 	                    "protocol" : alink.protocol #http:
 	                },
+	                ###
 	                "roomAlert": true
 	            }
 	        ]            

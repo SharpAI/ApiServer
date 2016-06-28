@@ -4,10 +4,19 @@ if Meteor.isClient
         #在聊天内容中点击与故事贴帖子相关的内容的超链接后会被触发
         #此部分需要等具体方案出来以后再细化完善，目前不会影响其他功能的使用
         #因为此部分代码会在链接跳转之前执行，所以耗时操作请使用异步执行，另外请不要return false
-        if e.target.nodeName is 'A'
-            postId = e.target.pathname.split('/posts/')[1]
+        if e.currentTarget.nodeName is 'A'
+            postId = e.currentTarget.pathname.split('/posts/')[1]
+            $el_msg = $(e.currentTarget).closest('li')
+            #console.log($el_msg.data('type'))
+            #console.log($el_msg.attr('id'))
+            msg = ChatMessage.findOne({_id: $el_msg.attr('id'), type: 'taread'})
+            #msg = ChatMessage.findOne({_id: $el_msg.attr('id')})
+            if msg
+                text = msg.msg.split("，")[0]
+                chatMessages[Session.get('openedRoom')].sendWithUrls(Session.get('openedRoom'), {msg: text, urls: msg.urls})
 
         console.log 'hello from chat robot, postId : ' + postId
+        #return false
         
     Session.setDefault('visitedRooms', []);
     window.socialGraphCollection = new Meteor.Collection(null)
@@ -52,13 +61,14 @@ if Meteor.isClient
             }
         }
 
-    sendPersonalMessageWithURLToRoom = (message, url, title, description, mainImageUrl, isRepeat)->
+    sendPersonalMessageWithURLToRoom = (message, url, title, description, mainImageUrl, isRepeat, msgType)->
         url = if url? then url else 'http://www.tiegushi.com/'
         #alink = document.createElement 'a'
         #alink.href = url
 
         msg = {
             t: if message.indexOf('欢迎来到阅览室')>-1 then 'bot welcome-msg' else 'bot'
+            type: msgType            
             msg: if message? then message else ''
             #rid: ChatRoom.findOne()._id
             rid: Session.get('openedRoom')
@@ -209,7 +219,7 @@ if Meteor.isClient
             if data.addontitle and data.addontitle isnt ''
                 data.name+="："+data.addontitle
             sendPersonalMessageWithURLToRoom('朋友们可能还在看帖子，您可以回顾一下浏览过的故事贴('+Session.get('showReadList')+
-                '/'+Session.get('gotReadList')+'):','http://cdn.tiegushi.com/posts/'+data.postId, data.name, description, data.mainImage)
+                '/'+Session.get('gotReadList')+'):','http://cdn.tiegushi.com/posts/'+data.postId, data.name, description, data.mainImage, false, 'review')
             #amplify.store('readListDisplayed',amplify.store('readListDisplayed')+1)
         #Don't pull further information from server, leave it for the next time.
         #else if needToFethReadlist
@@ -278,12 +288,12 @@ if Meteor.isClient
         Session.set('ViewedSocialMessageTotal',Session.get('ViewedSocialMessageTotal')+1)
 
         if doc.type is 'taRead'
-            sendPersonalMessageWithURLToRoom(doc.taName+' 读过这篇故事，您还没读过 ('+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+')',doc.link, doc.name, doc.desc, doc.image)
+            sendPersonalMessageWithURLToRoom(doc.taName+' 读过这篇故事，您还没读过 ('+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+')',doc.link, doc.name, doc.desc, doc.image, false, 'taread')
             return true
         else if doc.type is 'mutualRead'
             #现在TA也在线不准，修好了之后再说吧
             #sendPersonalMessageWithURLToRoom(doc.taName+' 和 您 都读过这篇故事，是不是很有缘分，TA也在线哦（输入@可以看到在线好友'+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+'）',doc.link, doc.name, doc.desc, doc.image)
-            sendPersonalMessageWithURLToRoom(doc.taName+' 和 您 都读过这篇故事（'+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+'）',doc.link, doc.name, doc.desc, doc.image)
+            sendPersonalMessageWithURLToRoom(doc.taName+' 和 您 都读过这篇故事（'+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+'）',doc.link, doc.name, doc.desc, doc.image, false, 'mutual')
             return true
         return false
 
@@ -404,7 +414,7 @@ if Meteor.isClient
                             data.title+="："+data.addontitle
                         window.trackPage(window.location.href,data.title)
                         sendPersonalMessageWithURLToRoom('欢迎来到阅览室，您可以点右上角转发到微信朋友圈，让更多的朋友加入。\r\n *点击链接可查看原文*',
-                          'http://cdn.tiegushi.com/posts/'+data._id, data.title, description, data.mainImage)
+                          'http://cdn.tiegushi.com/posts/'+data._id, data.title, description, data.mainImage, false, 'current')
                         if Meteor.user() and amplify.store('hotshareUserID') and data.owner is amplify.store('hotshareUserID')
                             sendPostStatToOwner(data._id)
             else if amplify.store('postTitle_'+currentRoomId)
@@ -489,9 +499,9 @@ if Meteor.isClient
               return;
             if feed.postTitle isnt undefined and feed.pindexText isnt undefined
               if feed.eventType is 'pcommentowner'
-                sendPersonalMessageWithURLToRoom(feed.ownerName + ' 点评了您的贴子:', 'http://cdn.tiegushi.com/posts/' + feed.postId, feed.postTitle, '段落: ' + feed.pindexText, feed.mainImage, true)
+                sendPersonalMessageWithURLToRoom(feed.ownerName + ' 点评了您的贴子:', 'http://cdn.tiegushi.com/posts/' + feed.postId, feed.postTitle, '段落: ' + feed.pindexText, feed.mainImage, true, 'pcommentowner')
               else if feed.eventType is 'share'
-                sendPersonalMessageWithURLToRoom(feed.ownerName + ' 转发了您的贴子:', 'http://cdn.tiegushi.com/posts/' + feed.postId, feed.postTitle, '段落: ' + feed.pindexText, feed.mainImage, true)
+                sendPersonalMessageWithURLToRoom(feed.ownerName + ' 转发了您的贴子:', 'http://cdn.tiegushi.com/posts/' + feed.postId, feed.postTitle, '段落: ' + feed.pindexText, feed.mainImage, true, 'share')
               
               Meteor.call('updateFeedsChecked', id)
         }
