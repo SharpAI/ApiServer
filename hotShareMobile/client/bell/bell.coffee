@@ -87,7 +87,7 @@ if Meteor.isClient
         Session.set "toasted",false
         Feeds.update({_id:this._id},{$set: {checked:true}})
       console.log(this._id)
-      Meteor.call 'feedsMsgSetAsRead', this._id
+      Meteor.call 'updataFeedsWithMe', Meteor.userId()
     'click .acceptrequest': (event)->
        Follower.insert {
          userId: this.requesteeId
