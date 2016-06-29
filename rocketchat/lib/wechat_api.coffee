@@ -43,11 +43,13 @@ if Meteor.isClient
         cancel: ()->
           console.log('Share cancled');
       }
-      wx.onMenuShareTimeline(timelineData);
-      wx.onMenuShareQQ(chatShareData);
-      wx.onMenuShareWeibo(chatShareData);
-      wx.onMenuShareAppMessage(chatShareData);
-      wx.onMenuShareQZone(chatShareData);
+      
+      if(window.frames.length is parent.frames.length)
+        wx.onMenuShareTimeline(timelineData)
+        wx.onMenuShareQQ(chatShareData)
+        wx.onMenuShareWeibo(chatShareData)
+        wx.onMenuShareAppMessage(chatShareData)
+        wx.onMenuShareQZone(chatShareData)
 
     setupWeichat = (url)->
       Meteor.call 'getSignatureFromServer',url,(error,result)->

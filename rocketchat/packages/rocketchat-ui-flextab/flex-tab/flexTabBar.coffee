@@ -21,14 +21,15 @@ Template.flexTabBar.helpers
 					btns.push(item)
 		)
 		if isWeiXinFunc()
-			btns.push({
-				groups: ["channel","privategroup","directmessage","livechat"]
-				i18nTitle: "shareThisRoom",
-				icon: "icon-share",
-				id: "share-room",
-				order:11,
-				template: "shareRoom"
-			})
+      if(window.frames.length is parent.frames.length)
+        btns.push({
+          groups: ["channel","privategroup","directmessage","livechat"]
+          i18nTitle: "shareThisRoom",
+          icon: "icon-share",
+          id: "share-room",
+          order:11,
+          template: "shareRoom"
+        })
 		return btns
 		#return RocketChat.TabBar.getButtons()
 	title: ->
