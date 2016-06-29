@@ -50,6 +50,7 @@ if Meteor.isClient
         # 当可以在多个阅览室之间切换以后，ChatRoom　里面会包含所有访问过的阅览室信息
         ChatMessage.insert {
             t: 'bot'
+            private: true
             msg: message
             #rid: ChatRoom.findOne()._id
             rid: Session.get('openedRoom')
@@ -68,6 +69,7 @@ if Meteor.isClient
 
         msg = {
             t: if message.indexOf('欢迎来到阅览室')>-1 then 'bot welcome-msg' else 'bot'
+            private: true
             type: msgType            
             msg: if message? then message else ''
             #rid: ChatRoom.findOne()._id
@@ -135,6 +137,7 @@ if Meteor.isClient
         
         msg = {
             t: 'bot'
+            private: true
             msg: if message? then message else ''
             #rid: ChatRoom.findOne()._id
             rid: Session.get('openedRoom')
@@ -181,6 +184,7 @@ if Meteor.isClient
             
         
             msg = {
+                private: true
                 msg: if message? then message else ''
                 rid: Session.get('openedRoom')
                 ts: new Date()
