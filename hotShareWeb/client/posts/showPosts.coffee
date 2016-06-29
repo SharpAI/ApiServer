@@ -79,6 +79,13 @@ if Meteor.isClient
     Session.set("showSuggestPosts",false)
     $('.tool-container').remove()
   Template.showPosts.onRendered ->
+    #console.log 'showPost'
+    ogMeta = $("meta[property='og:image']") 
+    imageSrc = $('head link[id = "icon"]').attr('href')
+    if ogMeta.length is 0
+       $('head').append('<meta property=og:image content="' + imageSrc + '"/>')
+    else 
+       ogMeta.attr('content',imageSrc)
     if !amplify.store('chatNotify')
       amplify.store('chatNotify',1)
     if amplify.store('chatNotify') < 6
