@@ -17,4 +17,4 @@ RUN rm -rf /datatmp/node_modules /datatmp/assets
 RUN mv /datatmp/* /data/
 WORKDIR /data/
 
-CMD npm start
+CMD xvfb-run npm start
