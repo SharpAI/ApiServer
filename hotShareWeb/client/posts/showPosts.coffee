@@ -462,6 +462,10 @@ if Meteor.isClient
         console.log('Selected index '+self.index)
         Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
   Template.showPosts.events
+    'click .pub-me-post': ()->
+      trackEvent('Download','from Post Header')
+      window.open('http://cdn.tiegushi.com', '_system')
+      # Router.go('/import')
     'click .readmore': (e, t)->
       # if e.target is e.currentTarget
       $showPosts = $('.showPosts')

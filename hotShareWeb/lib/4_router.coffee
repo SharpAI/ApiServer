@@ -17,6 +17,8 @@ if Meteor.isClient
     Session.set('nextPostID',this.params._id)
     this.render 'redirect'
     return
+  Router.route '/import', ()->
+    this.render 'importPost'
   Router.route '/posts/:_id', {
       waitOn: ->
           [subs.subscribe("publicPosts",this.params._id),

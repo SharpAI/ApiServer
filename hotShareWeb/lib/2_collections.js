@@ -1686,6 +1686,15 @@ if(Meteor.isServer){
         return [];
     }
   });
+  
+  Meteor.publish('webUserPublishPosts', function(limit) {
+    if(!this.userId)
+      return [];
+      
+    limit = limit || 10;
+    //return Posts.find({}, {sort: {createdAt: -1}, limit: limit});
+    return Posts.find({owner: this.userId}, {sort: {createdAt: -1}, limit: limit});
+  });
 
   FavouritePosts.allow({
     insert: function(userId, doc) {

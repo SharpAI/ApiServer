@@ -20,6 +20,7 @@
       <div class="value">{{sex}}<i class="fa fa-angle-right"></i></div>
     </li>
   </ul>
+  {{> myPubPosts}}
   {{> myFavouritePosts}}
 </template>
 <template name="setNickname">
@@ -62,11 +63,34 @@
   </ul>
 </template>
 
+<template name="myPubPosts">
+  <div class="myPubPosts">
+    <p style="background-color: white; padding-left: 10px; font-size: 16px; padding-top: 10px; border-top: 1px solid #D9D9D9; margin-bottom: 7px;">我的故事</p> 
+    <ul>
+        {{#each myPubPosts}}
+        <li>
+          <div class="img" style="background-image: url({{mainImage}});"></div>
+          <h1>{{title}}</h1>
+        </li>
+        {{/each}}
+        <div class="clear"></div>
+    </ul>
+    {{#if loading}}
+      <div class="more">加载中，请稍候...</div>
+    {{else}}
+      {{#if hasMore}}
+      <div class="more">点击加载更多</div>
+      {{/if}}
+    {{/if}}
+  </div>
+</template>
+
 <template name="myFavouritePosts">
   <p style="background-color: white; padding-left: 10px; font-size: 16px; padding-top: 10px; border-top: 1px solid #D9D9D9; margin-bottom: 7px;">喜欢的故事</p>
-  {{#newLayoutContainer layoutId=onPostId src="me" container='.me'}}
+  <div class="favposts">
+  {{#newLayoutContainer layoutId=onPostId src="favposts" container='.favposts'}}
     {{#each favposts}}
-      {{#newLayoutElement layoutId=onPostId displayId=_id src="me" container='.me'}}
+      {{#newLayoutElement layoutId=onPostId displayId=_id src="favposts" container='.favposts'}}
         <div class="img_placeholder">
           <img class="mainImage" src="{{mainImage}}" />
         </div>
@@ -78,6 +102,7 @@
       {{/newLayoutElement}}
     {{/each}}
   {{/newLayoutContainer}}
+  </div>
   {{#if isLoading}}
       <div class="loading-spinner">
           <div class='spinner-overlay'>
