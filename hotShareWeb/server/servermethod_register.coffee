@@ -82,8 +82,8 @@ if Meteor.isServer
           orignalURI: URI
         }
         policy
-      "changeMyPassword": (newPassword)->
-        Accounts.setPassword this.userId, newPassword
+      "changeMyPassword": (userId, newPassword)->
+        Accounts.setPassword userId, newPassword
       "getAliyunWritePolicy": (filename, URI)->
         apiKey = 'Vh0snNA4Orv3emBj'
         SecrectKey = 'd7p2eNO8GuMl1GtIZ0at4wPDyED4Nz'
