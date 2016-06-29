@@ -80,8 +80,8 @@ if Meteor.isClient
     $('.tool-container').remove()
   Template.showPosts.onRendered ->
     #console.log 'showPost'
-    $('html').attr('prefix','og: http://ogp.me/ns#')
-    $('html').attr('xmlns:og','http://ogp.me/ns#')
+    $('html').attr('xmlns','http://www.w3.org/1999/xhtml')
+    $('html').attr('xmlns:fb','http://ogp.me/ns/fb#')
     ogMeta = $("meta[property='og:image']") 
     imageSrc = $('head link[id = "icon"]').attr('href')
     if ogMeta.length is 0
