@@ -1032,5 +1032,24 @@
   "tipUserOpenInSafari": "Open the Reading Room in Safari",
   "tipUserOpenInChrome": "Open the Reading Room in Chrome",
   "tipUserBrowser": "Keep up with the latest news",
-  "tipUserOK": "I Know!"
+  "tipUserOK": "I Know!",
+  
+  // Reading Room Bot Message, rrbMsg_
+  "rrbMsg_friends_readed_posts": "Your friends may also look at the following posts, you can look back to see the story posted(__showReadList__/__gotReadList__)",
+  "rrbMsg_ta_read": "__ta__ read the story, you haven't read it yet(__readMsg__/__total__).",
+  "rrbMsg_mutual_read": "__ta__  and YOU have read this story(__readMsg__/__total__).",
+  "rrbMsg_your_post_read_times": "The story *you* published/posted has been read __times__ times.",
+  "rrbMsg_new_reader": " is the latest reader.",
+  "rrbMsg_post_write_browses": "You have __posts_number__ storys, and there are __browses_number__ read your story",
+  "rrbMsg_posts_reader_locations": "Most of them come from __locations__",
+  "rrbMsg_meet_friend": "Recently, *you* meet them in hotShare: __message__",
+  "rrbMsg_welcome_to_reading_room": "Welcome to the reading room, you can click on the top right to send it to a friend or share it on Moments, Invite more friends \r\n *Click link to view*",
+  "rrbMsg_post_post": "I posted a story, Read it now：",
+  "rrbMsg_comment_your_post": "__feedOwner__ comment on your posts",
+  "rrbMsg_share_your_post": "__feedOwner__ forward your posts",
+  "rrbMsg_feed_pindex_text": "Paragraph: __text__",
+  
+  "rrbMsg_author": "Author: __author__",
+  "rrbMsg_document_title_default": "Reading Room",
+  "rrbMsg_document_title": "__title__－Reading Room"
 }

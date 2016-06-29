@@ -985,5 +985,24 @@
   "tipUserOpenInSafari": "在Safari中打开",
   "tipUserOpenInChrome": "在浏览器中打开",
   "tipUserBrowser": " 可以继续收到阅览室的动态哦！",
-  "tipUserOK": "我知道了"
+  "tipUserOK": "我知道了",
+  
+  // Reading Room Bot Message, rrbMsg_
+  "rrbMsg_friends_readed_posts": "          朋友们可能还在看帖子,您可以回顾一下浏览过的故事贴(__showReadList__/__gotReadList__)",
+  "rrbMsg_ta_read": "__ta__ 读过这篇故事，您还没读过(__readMsg__/__total__)",
+  "rrbMsg_mutual_read": "__ta__  和 您 都读过这篇故事(__readMsg__/__total__)",
+  "rrbMsg_your_post_read_times": "*您*发表的这篇故事贴已经被朋友们读过 __times__ 次",
+  "rrbMsg_new_reader": " 是最新的读者",
+  "rrbMsg_post_write_browses": "您一共创作、发表了__posts_number__篇故事贴, 总共有__browses_number__人读过您的帖子",
+  "rrbMsg_posts_reader_locations": "他们大多来自于 __locations__",
+  "rrbMsg_meet_friend": "*您*最近在故事贴偶遇的朋友是: __message__",
+  "rrbMsg_welcome_to_reading_room": "欢迎来到阅览室，您可以点右上角转发到微信朋友圈，让更多的朋友加入。\r\n *点击链接可查看原文*",
+  "rrbMsg_post_post": "我发表了故事贴，邀请您阅读：",
+  "rrbMsg_comment_your_post": "__feedOwner__ 点评了您的贴子",
+  "rrbMsg_share_your_post": "__feedOwner__ 点评了您的贴子",
+  "rrbMsg_feed_pindex_text": "段落: __text__",
+  
+  "rrbMsg_author": "作者： __author__",
+  "rrbMsg_document_title_default": "故事贴主题阅览室",
+  "rrbMsg_document_title": "__title__－主题阅览室"
 }

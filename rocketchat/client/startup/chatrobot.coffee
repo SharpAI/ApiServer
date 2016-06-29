@@ -68,10 +68,10 @@ if Meteor.isClient
         #alink.href = url
 
         msg = {
-            t: if message.indexOf('欢迎来到阅览室')>-1 then 'bot welcome-msg' else 'bot'
+            t: if message.indexOf('welcomeMSG')>-1 then 'bot welcome-msg' else 'bot'
             private: true
             type: msgType            
-            msg: if message? then message else ''
+            msg: if message? then message.slice(10,message.length) else ''
             #rid: ChatRoom.findOne()._id
             rid: Session.get('openedRoom')
             ts: new Date()
@@ -219,11 +219,11 @@ if Meteor.isClient
 
             description=''
             if data.ownerName and data.ownerName isnt ''
-                description='作者：'+data.ownerName
+                description=TAPi18n.__('rrbMsg_author',{author:data.ownerName})
             if data.addontitle and data.addontitle isnt ''
                 data.name+="："+data.addontitle
-            sendPersonalMessageWithURLToRoom('朋友们可能还在看帖子，您可以回顾一下浏览过的故事贴('+Session.get('showReadList')+
-                '/'+Session.get('gotReadList')+'):','http://cdn.tiegushi.com/posts/'+data.postId, data.name, description, data.mainImage, false, 'review')
+            console.log TAPi18n.__('rrbMsg_friends_readed_posts',{showReadList:Session.get('showReadList'), gotReadList:Session.get('gotReadList')})
+            sendPersonalMessageWithURLToRoom(TAPi18n.__('rrbMsg_friends_readed_posts',{showReadList:Session.get('showReadList'), gotReadList:Session.get('gotReadList')}),'http://cdn.tiegushi.com/posts/'+data.postId, data.name, description, data.mainImage, false, 'review')
             #amplify.store('readListDisplayed',amplify.store('readListDisplayed')+1)
         #Don't pull further information from server, leave it for the next time.
         #else if needToFethReadlist
@@ -292,12 +292,14 @@ if Meteor.isClient
         Session.set('ViewedSocialMessageTotal',Session.get('ViewedSocialMessageTotal')+1)
 
         if doc.type is 'taRead'
-            sendPersonalMessageWithURLToRoom(doc.taName+' 读过这篇故事，您还没读过 ('+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+')',doc.link, doc.name, doc.desc, doc.image, false, 'taread')
+            sendPersonalMessageWithURLToRoom(TAPi18n.__('rrbMsg_ta_read',{ta: doc.taName, readMsg: Session.get('ViewedSocialMessageTotal'), total:Session.get('SocialMessageTotal')})
+            ,doc.link, doc.name, doc.desc, doc.image, false, 'taread')
             return true
         else if doc.type is 'mutualRead'
             #现在TA也在线不准，修好了之后再说吧
             #sendPersonalMessageWithURLToRoom(doc.taName+' 和 您 都读过这篇故事，是不是很有缘分，TA也在线哦（输入@可以看到在线好友'+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+'）',doc.link, doc.name, doc.desc, doc.image)
-            sendPersonalMessageWithURLToRoom(doc.taName+' 和 您 都读过这篇故事（'+Session.get('ViewedSocialMessageTotal')+'/'+Session.get('SocialMessageTotal')+'）',doc.link, doc.name, doc.desc, doc.image, false, 'mutual')
+            sendPersonalMessageWithURLToRoom(TAPi18n.__('rrbMsg_mutual_read',{ta: doc.taName, readMsg: Session.get('ViewedSocialMessageTotal'), total:Session.get('SocialMessageTotal')})
+            ,doc.link, doc.name, doc.desc, doc.image, false, 'mutual')
             return true
         return false
 
@@ -342,18 +344,18 @@ if Meteor.isClient
         Meteor.call 'getMyPostStat', postId, (err, stat) ->
             if !err and stat
                 if stat.browses?
-                    sendPersonalMessageToRoom('*您*发表的这篇故事贴已经被朋友们读过 ' + stat.browses + ' 次')
+                    sendPersonalMessageToRoom(TAPi18n.__('rrbMsg_your_post_read_times',{times:stat.browses}) )
                 if stat.readers?
                     friendMsg=''
                     stat.readers.forEach((item,index)->
                         friendMsg+=' @'+item
                     )
-                    friendMsg+=' 是最新的读者'
+                    friendMsg+=TAPi18n.__('rrbMsg_new_reader')
                     sendPersonalMessageToRoom(friendMsg)
                 if stat.posts? and stat.totalbrowses?
-                    sendPersonalMessageToRoom('您一共创作、发表了' + stat.posts + '篇故事贴, 总共有' + stat.totalbrowses + '人读过您的帖子')
+                    sendPersonalMessageToRoom(TAPi18n.__('rrbMsg_post_write_browses',{posts_number:stat.posts, browses_number:stat.totalbrowses}))
                 if stat.locations? and stat.locations.length > 0
-                    sendPersonalMessageToRoom('他们大多来自于 ' + stat.locations.jion(', '))
+                    sendPersonalMessageToRoom(TAPi18n.__('rrbMsg_posts_reader_locations',{locations:stat.locations.jion(', ')}))
 
     Meteor.startup ->
         if Session.equals('hiddenMode',true)
@@ -380,10 +382,11 @@ if Meteor.isClient
                                         message+= item.name+' '
                             )
                             if message isnt ''
-                                message='*您*最近在故事贴偶遇的朋友是：'+message
+                                message= TAPi18n.__('rrbMsg_meet_friend',{message: message})
+                                # '*您*最近在故事贴偶遇的朋友是：'+message
                                 sendPersonalMessageToRoom(message)
 
-                document.title = '故事贴主题阅览室'
+                document.title = TAPi18n.__('rrbMsg_document_title_default')
                 Meteor.call 'getPostInfo',ChatRoom.findOne({_id: currentRoomId}).name,(err,data)->
                     if !err and data
                         ###
@@ -393,7 +396,7 @@ if Meteor.isClient
                         ownerName:"微尘"
                         ###
                         console.log data
-                        document.title = data.title + '－主题阅览室'
+                        document.title =TAPi18n.__('rrbMsg_document_title',{title: data.title})
                         amplify.store('postTitle_'+currentRoomId,data.title)
 
                         # begin - 尝试解决document.title 在 ios 下不生效的bug
@@ -413,16 +416,16 @@ if Meteor.isClient
                         # end - 尝试解决document.title 在 ios 下不生效的bug
                         description=''
                         if data.ownerName and data.ownerName isnt ''
-                            description='作者：'+data.ownerName
+                            description=TAPi18n.__('rrbMsg_author',{author:data.ownerName})
                         if data.addontitle and data.addontitle isnt ''
                             data.title+="："+data.addontitle
                         window.trackPage(window.location.href,data.title)
-                        sendPersonalMessageWithURLToRoom('欢迎来到阅览室，您可以点右上角转发到微信朋友圈，让更多的朋友加入。\r\n *点击链接可查看原文*',
+                        sendPersonalMessageWithURLToRoom('welcomeMSG'+TAPi18n.__('rrbMsg_welcome_to_reading_room'),
                           'http://cdn.tiegushi.com/posts/'+data._id, data.title, description, data.mainImage, false, 'current')
                         if Meteor.user() and amplify.store('hotshareUserID') and data.owner is amplify.store('hotshareUserID')
                             sendPostStatToOwner(data._id)
             else if amplify.store('postTitle_'+currentRoomId)
-                document.title = amplify.store('postTitle_'+currentRoomId) + '－主题阅览室'
+                document.title = TAPi18n.__('rrbMsg_document_title',{title: amplify.store('postTitle_'+currentRoomId)})
         Tracker.autorun (t)->
             if Meteor.user() and amplify.store('hotshareUserID')
                 t.stop()
@@ -485,7 +488,7 @@ if Meteor.isClient
 
                 _.map owners, (item)->
                     # sendPersonalMessageWithURLSToRoom '您的朋友 '+item.ownerName+' 发表了故事贴，邀请您阅读：', item.urls
-                    sendAuthorSelfMessageWithURLSToRoom '我发表了故事贴，邀请您阅读：', item.urls
+                    sendAuthorSelfMessageWithURLSToRoom TAPi18n.__('rrbMsg_post_post'), item.urls
 
         Tracker.autorun (t)->
             if Meteor.userId() and Session.get('openedRoom')
@@ -503,9 +506,9 @@ if Meteor.isClient
               return;
             if feed.postTitle isnt undefined and feed.pindexText isnt undefined
               if feed.eventType is 'pcommentowner'
-                sendPersonalMessageWithURLToRoom(feed.ownerName + ' 点评了您的贴子:', 'http://cdn.tiegushi.com/posts/' + feed.postId, feed.postTitle, '段落: ' + feed.pindexText, feed.mainImage, true, 'pcommentowner')
+                sendPersonalMessageWithURLToRoom(TAPi18n.__('rrbMsg_comment_your_post',{feedOwner: feed.ownerName}), 'http://cdn.tiegushi.com/posts/' + feed.postId, feed.postTitle, TAPi18n.__('rrbMsg_feed_pindex_text',{text:feed.pindexText}), feed.mainImage, true, 'pcommentowner')
               else if feed.eventType is 'share'
-                sendPersonalMessageWithURLToRoom(feed.ownerName + ' 转发了您的贴子:', 'http://cdn.tiegushi.com/posts/' + feed.postId, feed.postTitle, '段落: ' + feed.pindexText, feed.mainImage, true, 'share')
+                sendPersonalMessageWithURLToRoom(TAPi18n.__('rrbMsg_share_your_post',{feedOwner: feed.ownerName}), 'http://cdn.tiegushi.com/posts/' + feed.postId, feed.postTitle, TAPi18n.__('rrbMsg_feed_pindex_text',{text:feed.pindexText}), feed.mainImage, true, 'share')
               
               Meteor.call('updateFeedsChecked', id)
         }
