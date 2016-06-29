@@ -102,6 +102,22 @@ if Meteor.isClient
         false
       else
         true
+    hasnick :->
+      if Meteor.user() and Meteor.user().profile and Meteor.user().profile.fullname and Meteor.user().profile.fullname isnt ''
+        true
+      else
+        false
+    hasemail :->
+      if Meteor.user() and Meteor.user().emails and Meteor.user().emails[0] and Meteor.user().emails[0].address
+        true
+      else
+        false
+    userEmail :->
+      Meteor.user().emails[0].address
+    newpassword :->
+      $("#my_edit_password").val()
+    currentuser :->
+      Meteor.user()
   Template.my_password.events
     'click #pass_btn_save' :->
       Session.set('changePasswordSaveBtnClicked', true)
@@ -120,8 +136,8 @@ if Meteor.isClient
         navigator.notification.confirm('', (r)->
           if r is 1
             console.log 'changePassword !!'
+            $(".shownewpassword").html(new_pass)
             Accounts.changePassword old_pass, new_pass, (error) ->
-              # console.log 'changePassword Result ' + result
               console.log 'changePassword error ' + error
               if error
                 Meteor.setTimeout ()->
@@ -130,8 +146,8 @@ if Meteor.isClient
                 PUB.toast '输入密码有误，请重试!'
               else
                 Session.set('changePasswordSaveBtnClicked', false)
-                PUB.toast '修改密码成功!'
-                Router.go '/authOverlay'
+                $('.afterchangepassword').fadeOut 300
+                $('.show-change-userinfo').fadeIn 300
               return
             # Meteor.call "changeMyPassword", new_pass, (error, result) ->
             #   if error
@@ -151,6 +167,8 @@ if Meteor.isClient
     'click #pass_btn_back' :->
       Session.set('changePasswordSaveBtnClicked', false)
       Router.go '/dashboard'
+    'click #save-user-info-btn' :->
+      Router.go '/authOverlay'
 
   Template.my_notice.rendered=->
     $('.dashboard').css 'min-height', $(window).height()

@@ -227,6 +227,7 @@
   "notifiTips": "如果你要关闭或开启故事贴的新消息通知，请在系统设置中，找到应用程序“故事贴”更改",
   "notifiTipsIos": "如果你要关闭或开启故事贴的新消息通知，请在“设置”-“通知”功能中，找到应用程序“故事贴”更改。",
   "changePass": "修改密码",
+  "currentPass": "当前密码",
   "newPass": "新密码",
   "confirmPass": "确认",
   "language": "语言",

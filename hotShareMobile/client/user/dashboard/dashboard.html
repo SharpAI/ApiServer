@@ -52,7 +52,7 @@
 </template>
 <template name="my_password">
   <div class="dashboard">
-    <div class="head">
+    <div class="head afterchangepassword">
       <div>{{_ "changePass"}}</div>
       <div id="pass_btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
       {{#if showSaveBtn}}
@@ -61,15 +61,31 @@
       <div class="rightButton" style="margin-top:0px;color:#ccc;">{{_ "save"}}</div>
       {{/if}}
     </div>
-    <div class="content">
+    <div class="content afterchangepassword">
       <div class="box">
-        <div class='boxTitle bottomBorder'>当前密码<span class="input"><input autofocus="autofocus" type="password" id="my_old_password" placeholder="当前密码" value=""/></span></div>
+        <div class='boxTitle bottomBorder'>{{_ "currentPass"}}<span class="input"><input autofocus="autofocus" type="password" id="my_old_password" placeholder="{{_ 'currentPass'}}" value=""/></span></div>
         <div class='boxTitle bottomBorder'>{{_ "newPass"}}<span class="input"><input type="password" id="my_edit_password" placeholder="{{_ 'newPass'}}" value=""/></span></div>
         <div class='boxTitle'>{{_ "confirmPass"}}<span class="input"><input type="password" id="my_edit_password_confirm" placeholder="{{_ 'confirmPass'}}" value=""/></span></div>
       <!--input type="password" id="my_edit_password" placeholder="输入密码" style="width:95%;border-top:0px;margin-left:5px;height:25px;"/-->
       </div>
     </div>
+    <div class="showChangePwdInfo show-change-userinfo" style="display:none;">
+      <div class="title">修改成功！请妥善保存您的信息</div>
+      <div class="user-info-content">
+        <div>{{_ "userName"}}：{{currentuser.username}}</div>
+        {{#if hasnick}}
+        <div>{{_ "NickName"}}：{{currentuser.profile.fullname}}</div>
+        {{/if}}
+        {{#if hasemail}}
+        <div>{{_ "emailAddress"}}：{{userEmail}}</div>
+        {{/if}}
+        <div>{{_ "newPass"}}：<span class="shownewpassword"></span></div>
+      </div>
+      <div id="save-user-info-btn" style="padding: 5px;margin: 10px;">确认已保存</div>
+    </div>
+    <div class="changePwdInfoBackground show-change-userinfo" style="background: rgba(0, 0, 0, 0.5);"></div>
   </div>
+
 </template>
 <template name="my_notice">
   <div class="dashboard">

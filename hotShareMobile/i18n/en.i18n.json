@@ -227,6 +227,7 @@
   "notifiTipsIos": "如果你要关闭或开启故事贴的新消息通知，请在“设置”-“通知”功能中，找到应用程序“故事贴”更改。",
   "changePass": "Change PassWord",
   "newPass": "New PassWord",
+  "currentPass": "Current Password",
   "confirmPass": "Confirm",
   "language": "Language",
   "English": "English",
