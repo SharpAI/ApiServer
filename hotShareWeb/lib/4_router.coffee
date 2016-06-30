@@ -164,6 +164,7 @@ if Meteor.isServer
     fastRender: true
   }
 
+  SSR.compileTemplate('post', Assets.getText('template/post.html'))
   Router.route '/posts/:_id', (req, res, next)->
     BOTS = [
       'googlebot',
@@ -187,7 +188,6 @@ if Meteor.isServer
     agentPattern = new RegExp(BOTS.join('|'), 'i')
     userAgent = req.headers['user-agent']
     if agentPattern.test(userAgent)
-      SSR.compileTemplate('post', Assets.getText('template/post.html'))
       postItem = Posts.findOne({_id: this.params._id})
       postHtml = SSR.render('post', postItem)
 
