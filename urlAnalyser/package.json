@@ -1,0 +1,35 @@
+{
+  "name": "electron-quick-start",
+  "version": "1.0.0",
+  "description": "A minimal Electron application",
+  "main": "main.js",
+  "scripts": {
+    "start": "browserify -t coffeeify inspector.js > bundle.js && electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/electron/electron-quick-start.git"
+  },
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial"
+  ],
+  "author": "GitHub",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/electron/electron-quick-start/issues"
+  },
+  "homepage": "https://github.com/electron/electron-quick-start#readme",
+  "dependencies":{
+    "coffeeify":"^2.0.1",
+    "nightmare":"~2.5.2",
+    "express": "~4.14.0",
+    "body-parser": "~1.0.1",
+    "underscore": "~1.8.3"
+  },
+  "devDependencies": {
+    "electron-prebuilt": "^1.2.0"
+  }
+}
