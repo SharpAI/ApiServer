@@ -5,8 +5,16 @@
       <span>创作故事</span>
     </div>
     <div class="main">
+      {{#if hasImport}}
+      <div class="progress">
+        <span class="green" style="width: {{progress}}%;"><span>{{progress}}%</span></span>
+      </div>
+      <div class="progress-text">正在导入，预计2秒完成...</div>
+      <button type="button" class="btn btn-default btn-block cancel">取消导入</button>
+      {{else}}
       <input type="text" id="import-post-url" class="form-control" placeholder="请粘贴或输入一个URL地址">
-      <button type="button" class="btn btn-default btn-block">马上导入</button>
+      <button type="button" class="btn btn-default btn-block import">马上导入</button>
+      {{/if}}
     </div>
   </div>
 </template>

@@ -2,6 +2,8 @@ if Meteor.isServer
   myCrypto = Meteor.npmRequire "crypto"
   Meteor.startup ()->
     Meteor.methods
+      'httpCall': (method, url, options)->
+        return HTTP.call(method, url, options)
       "updataFeedsWithMe": (userId)->
         Meteor.defer ()->
           Feeds.update({followby: userId},{$set:{isRead: true}},{multi: true})

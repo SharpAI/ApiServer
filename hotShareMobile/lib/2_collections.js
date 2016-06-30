@@ -1839,35 +1839,35 @@ if(Meteor.isServer){
           return false;
       },
     update: function(userId, doc, fieldNames, modifier) {
-      // // 第一次web导入成功后执行insert的处理，也便触发推送之类的操作
-      // if(fieldNames.indexOf('webImport') != -1){
-      //   var  ownerUser = Meteor.users.findOne({_id: userId});
-      //   doc.owner = userId;
-      //   doc.ownerName = ownerUser.profile.icon || '/userPicture.png';
-      //   doc.ownerIcon = ownerUser.profile.fullname || ownerUser.username;
+      // 第一次web导入成功后执行insert的处理，也便触发推送之类的操作
+      if(fieldNames.indexOf('webImport') != -1){
+        var  ownerUser = Meteor.users.findOne({_id: userId});
+        doc.owner = userId;
+        doc.ownerName = ownerUser.profile.icon || '/userPicture.png';
+        doc.ownerIcon = ownerUser.profile.fullname || ownerUser.username;
         
-      //   // to -> posts.allow.insert
-      //   var userIds = [];
-      //   AssociatedUsers.find({}).forEach(function(item) {
-      //     if (!~userIds.indexOf(item.userIdA)) {
-      //       userIds.push(item.userIdA);
-      //     }
-      //     if (!~userIds.indexOf(item.userIdB)) {
-      //       userIds.push(item.userIdB);
-      //     }
-      //   });
+        // to -> posts.allow.insert
+        var userIds = [];
+        AssociatedUsers.find({}).forEach(function(item) {
+          if (!~userIds.indexOf(item.userIdA)) {
+            userIds.push(item.userIdA);
+          }
+          if (!~userIds.indexOf(item.userIdB)) {
+            userIds.push(item.userIdB);
+          }
+        });
         
-      //   //if(doc.owner === userId){
-      //   if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
-      //     //postsInsertHookDeferHandle(userId,doc);
-      //     postsInsertHookDeferHandle(doc.owner,doc);
-      //     try{
-      //       mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
-      //     }catch(err){}        
-      //   }
+        //if(doc.owner === userId){
+        if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
+          //postsInsertHookDeferHandle(userId,doc);
+          postsInsertHookDeferHandle(doc.owner,doc);
+          try{
+            mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
+          }catch(err){}        
+        }
         
-      //   return true;
-      // }
+        return true;
+      }
       
       if(fieldNames.toString() ==='pub,ptype,pindex')
       {
