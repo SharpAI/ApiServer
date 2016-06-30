@@ -1311,11 +1311,14 @@ if(Meteor.isServer){
     if(Rnd>Max) Rnd = 0;
     return RefComments.find({},{fields: {text:1},skip:Rnd,limit:8});
   });
-  Meteor.publish("topicposts", function() {
+  Meteor.publish("topicposts", function(topicId, limit) {
+      limit = limit || 20
       if(this.userId === null)
         return [];
+      else if (!topicId)
+        return TopicPosts.find({}, {sort: {createdAt: -1}, limit: limit});
       else
-        return TopicPosts.find({});
+        return TopicPosts.find({topicId: topicId}, {sort: {createdAt: -1}, limit: limit});
   });
   Meteor.publish("topics", function() {
       if(this.userId === null)
