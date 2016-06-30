@@ -40,6 +40,19 @@ Meteor.startup ()->
       return Meteor.users.findOne({_id:user.userId})
     else
       return {}
+  postNearImage=(info,post)->
+    if info.pindex?
+      pindex = info.pindex
+    images = []
+    post.pub.forEach (item) ->
+      if item.isImage
+        images.push({
+          index: Math.abs(item.index/pindex)
+          imgUrl: item.imgUrl
+        })
+    images.sort (a,b) ->
+      return a.index-b.index
+    return images[0]
   postCommentToChannel=(info,userInfo)->
     room = RocketChat.models.Rooms.findOneByName info.postId
     post = GushitiePosts.findOne({_id:info.postId})
@@ -75,7 +88,8 @@ Meteor.startup ()->
         url=gushitie_server_url+'/posts/'+info.postId
         description=post.addonTitle
       title=post.title
-      mainImageUrl=post.mainImage
+      # mainImageUrl=post.mainImage
+      mainImageUrl = postNearImage(info,post)
       #console.log(post)
       message = {
         rid: room._id,
