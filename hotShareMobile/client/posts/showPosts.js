@@ -128,7 +128,7 @@ shareToWechatSession = function (title, description, thumbData, url) {
           url: param.target_url
         }
       }, function() {
-        window.PUB.toast('分享成功!');
+        // window.PUB.toast('分享成功!');
         var shareType = Session.get("shareToWechatType");
         if(shareType[1] && shareType[1] == true){
             Meteor.setTimeout (function(){
@@ -168,7 +168,7 @@ shareToWechatTimeLine = function (title, description, thumbData, url) {
           url: param.target_url
         }
       }, function() {
-        window.PUB.toast('分享成功!');
+        // window.PUB.toast('分享成功!');
         var shareType = Session.get("shareToWechatType");
         if(shareType[1] && shareType[1] == true){
             Meteor.setTimeout (function(){
@@ -196,7 +196,7 @@ shareToWechat = function(title,description,thumbData,url,type) {
         thumbData: thumbData,
         url: url
     }, type, function () {
-        console.log('分享成功~');
+        // console.log('分享成功~');
         var shareType = Session.get("shareToWechatType");
         if(shareType[1] && shareType[1] == true){
             $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
