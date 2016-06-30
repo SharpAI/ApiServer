@@ -197,6 +197,15 @@ if Meteor.isServer
       })
       res.end(postHtml)
     else
+      postItem = Posts.findOne({_id: this.params._id},{fields:{title:1,mainImage:1,addontitle:1}});
+      Inject.rawHead("inject-image", "<meta property=\"og:image\" content=\"#{postItem.mainImage}\"/>", res);
+      Inject.rawHead("inject-description", "<meta property=\"og:description\" content=\"#{postItem.title} #{postItem.addontitle} 故事贴\"/>",res);
+      Inject.rawHead("inject-url", "<meta property=\"og:url\" content=\"http://#{server_domain_name}/posts/#{postItem._id}\"/>",res);
+      Inject.rawHead("inject-title", "<meta property=\"og:title\" content=\"#{postItem.title} - 故事贴\"/>",res);
+      Inject.rawHead("inject-width", "<meta property=\"og:image:width\" content=\"400\" />",res);
+      Inject.rawHead("inject-height", "<meta property=\"og:image:height\" content=\"300\" />",res);
+      Inject.rawHead("inject-height", "<meta property=\"fb:app_id\" content=\"1759413377637096\" />",res);
+
       injectSignData(req,res)
       next()
   , {where: 'server'}
