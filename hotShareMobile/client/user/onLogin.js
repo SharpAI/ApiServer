@@ -9,6 +9,15 @@ if (Meteor.isClient) {
       return Meteor.setTimeout(function() {
         console.log("Accounts.onLogin");
 	checkShareUrl();
+        if(device.platform === 'Android'){
+          window.plugins.shareExtension.getShareData(function(data) {
+            console.log("##RDBG getShareData: " + JSON.stringify(data));
+              if(data){
+                 editFromShare(data);
+              }
+          }, function() {});
+          window.plugins.shareExtension.emptyData(function(result) {}, function(err) {});
+        }
         window.updateMyOwnLocationAddress();
         if (device.platform === 'iOS' && localStorage.getItem('registrationID') == null ) {
           var registerInterval1 = window.setInterval( function(){
