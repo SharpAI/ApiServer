@@ -1,7 +1,7 @@
 if Meteor.isClient
   Template.topicPosts.onCreated ()->
     Meteor.subscribe("topics")
-    Meteor.subscribe("topicposts")
+    Meteor.subscribe("topicposts", Session.get('topicId'), 20)
   Template.topicPosts.rendered=->
     $('.content').css 'min-height',$(window).height()
 #    $('.addontitle').css('top',$(window).height()*0.25)

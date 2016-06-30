@@ -40,6 +40,19 @@ Meteor.startup ()->
       return Meteor.users.findOne({_id:user.userId})
     else
       return {}
+  postNearImage=(info,post)->
+    if info.pindex?
+      pindex = info.pindex
+    images = []
+    post.pub.forEach (item) ->
+      if item.isImage
+        images.push({
+          index: Math.abs(item.index/pindex)
+          imgUrl: item.imgUrl
+        })
+    images.sort (a,b) ->
+      return a.index-b.index
+    return images[0]
   postCommentToChannel=(info,userInfo)->
     room = RocketChat.models.Rooms.findOneByName info.postId
     post = GushitiePosts.findOne({_id:info.postId})
@@ -49,22 +62,22 @@ Meteor.startup ()->
     description = ''
     if room
       if info.ptype is 'like'
-        msg='我喜欢这段：'
+        msg=TAPi18n.__('toChannel_like')
       else if info.ptype is 'dislike'
-        msg='我不喜欢这段：'
+        msg=TAPi18n.__('toChannel_dislike')
       else if info.ptype is 'pcomments'
         pcomments=post?.pub?[info.pindex]?.pcomments
         if pcomments and pcomments.length > 0
           msg=pcomments[pcomments.length-1].content
         console.log(pcomments)
       else if info.ptype is 'section_wechat_chat'
-        msg='这段不错，已分享到群聊'
+        msg=TAPi18n.__('toChannel_share_weChat')
       else if info.ptype is 'section_wechat_timeline'
-        msg='这段不错，已分享到朋友圈'
+        msg=TAPi18n.__('toChannel_share_timeline')
       else if info.ptype is 'wechat_chat'
-        msg='文章不错，已分享到群聊'
+        msg=TAPi18n.__('toChannel_share_weChat')
       else if info.ptype is 'wechat_timeline'
-        msg='文章不错，已分享到朋友圈'
+        msg=TAPi18n.__('toChannel_share_timeline')
       else
         console.log('type: '+info.ptype)
       joinRoom(room,userInfo)
@@ -75,7 +88,8 @@ Meteor.startup ()->
         url=gushitie_server_url+'/posts/'+info.postId
         description=post.addonTitle
       title=post.title
-      mainImageUrl=post.mainImage
+      # mainImageUrl=post.mainImage
+      mainImageUrl = postNearImage(info,post)
       #console.log(post)
       message = {
         rid: room._id,

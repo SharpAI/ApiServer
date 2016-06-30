@@ -80,19 +80,19 @@ if Meteor.isClient
     $('.tool-container').remove()
   Template.showPosts.onRendered ->
     #console.log 'showPost'
-    $('html').attr('xmlns','http://www.w3.org/1999/xhtml')
-    $('html').attr('xmlns:fb','http://ogp.me/ns/fb#')
-    ogMeta = $("meta[property='og:image']") 
-    imageSrc = $('head link[id = "icon"]').attr('href')
-    if ogMeta.length is 0
-       $('head').append('<meta property=og:image content="' + imageSrc + '"/>')
-    else 
-       ogMeta.attr('content',imageSrc)
-    if !amplify.store('chatNotify')
-      amplify.store('chatNotify',1)
-    if amplify.store('chatNotify') < 6
-      amplify.store('chatNotify',amplify.store('chatNotify')+1)
-      $(".chatBtn .red_spot").show().html(1)
+    #$('html').attr('xmlns','http://www.w3.org/1999/xhtml')
+    #$('html').attr('xmlns:fb','http://ogp.me/ns/fb#')
+    #ogMeta = $("meta[property='og:image']") 
+    #imageSrc = $('head link[id = "icon"]').attr('href')
+    #if ogMeta.length is 0
+    #   $('head').append('<meta property=og:image content="' + imageSrc + '"/>')
+    #else 
+    #   ogMeta.attr('content',imageSrc)
+    #if !amplify.store('chatNotify')
+    #  amplify.store('chatNotify',1)
+    #if amplify.store('chatNotify') < 6
+    #  amplify.store('chatNotify',amplify.store('chatNotify')+1)
+    #  $(".chatBtn .red_spot").show().html(1)
     mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80')
     mqtt_connection.on('connect',()->
       console.log('Connected to server')
@@ -102,13 +102,16 @@ if Meteor.isClient
     # isWechatapi()
     mqtt_connection.on 'message',(topic, message)->
       mqtt_msg = JSON.parse(message.toString())
-      console.log(message.toString())
+      #console.log(message.toString())
       if mqtt_msg.type and mqtt_msg.type is 'newmessage'
         $('.socialContent .chatFooter').fadeIn 300
         #$(".chatBtn").addClass('twinking')
         #$(".chatBtn i").removeClass('fa-comment-o').addClass('fa-commenting-o')
-        #mqtt_msg_num =
-        $(".chatBtn .red_spot").show().html(parseInt($(".chatBtn .red_spot").html()) + 1)
+        mqtt_msg_num = $.trim($(".chatBtn .red_spot").html())
+        mqtt_msg_num = if mqtt_msg_num is '' then 0 else parseInt(mqtt_msg_num)
+        mqtt_msg_num += 1
+        mqtt_msg_num = if mqtt_msg_num > 99 then '99+' else mqtt_msg_num
+        $(".chatBtn .red_spot").show().html(mqtt_msg_num)
 
       #if mqtt_msg.type and mqtt_msg.type is 'newmember'
       $(".chatBtn .chat-icon-img").addClass('twinkling')

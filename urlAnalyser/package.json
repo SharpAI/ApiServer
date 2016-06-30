@@ -27,9 +27,11 @@
     "nightmare":"~2.5.2",
     "express": "~4.14.0",
     "body-parser": "~1.0.1",
-    "underscore": "~1.8.3"
+    "underscore": "~1.8.3",
+    "mongodb": "~2.1.18"
   },
   "devDependencies": {
+    "browserify": "~13.0.1",
     "electron-prebuilt": "^1.2.0"
   }
 }

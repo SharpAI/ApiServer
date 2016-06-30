@@ -97,12 +97,13 @@ if (Meteor.isCordova) {
     }
 
     function checkShareExtension(){
-
+      if(device.platform === 'iOS') {
         window.plugins.shareExtension.getShareData(function(data) {
             if(data){
                CustomDialog.show(data);
             }
         }, function() {Session.set('wait_import_count',false);});
+      }
     }
     function eventResume(){
         if (Meteor.user()) {
