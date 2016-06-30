@@ -1,777 +1,242 @@
 <template name="webHome">
-	<style>
-		/* -------------------------------- 
+    <div class="webHome">
+  {{#if resetPassword}}
+    {{>ResetPassword}}
+  {{else}}
+        <div class="sendAlert">
+          <div>您填写的内容不全！ </div>
+          <div id="sendAlert">知道了</div>
+        </div>
+        <div class="site-bg"></div>
+        <div class="site-bg-overlay"></div>
+        <div class="top-header">
+            <div class="container">
+                <div class="row">
 
-		Primary style
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <p class="phone-info">Call us: <a>(0871)65134197</a></p>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <div class="social-icons">
+                            <ul class="main-menu">
+                                <li><a href="#"><i class="fa fa-weixin"></i></a></li>
+                                <li><a href="#"><i class="fa fa-weibo"></i></a></li>
+                                <li><a href="#"><i class="fa fa-qq"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
 
-		-------------------------------- */
-		html * {
-			-webkit-font-smoothing: antialiased;
-			-moz-osx-font-smoothing: grayscale;
-		}
+                </div>
+            </div>
+        </div>
 
-		*, *::after, *::before {
-			-webkit-box-sizing: border-box;
-			-moz-box-sizing: border-box;
-			box-sizing: border-box;
-		}
+        <div class="visible-xs visible-sm responsive-menu">
+            <a href="#" class="toggle-menu">
+                <i class="fa fa-bars"></i> 网站导航
+            </a>
+            <div class="show-menu">
+                <ul class="main-menu">
+                    <li>
+                        <a class="show-1 active homebutton" href="#"><i class="fa fa-home"></i>网站首页</a>
+                    </li>
+                    <li>
+                        <a class="show-2 aboutbutton" href="#"><i class="fa fa-random"></i>使用指南</a>
+                    </li>
 
-		*::after, *::before {
-			content: '';
-		}
+                    <li>
+                        <a class="show-5 contactbutton" href="#"><i class="fa fa-envelope"></i>留言反馈</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
 
-		body {
-			font-size: 100%;
-			font-family: "Roboto", sans-serif;
-			color: #E1E1E4 !important;
-			background-color: #7bac8e !important;
-		}
 
-		a {
-			color: #FFFFFF;
-			text-decoration: none;
-		}
+        <div class="container" id="page-content">
+            <div class="row">
+                <div class="col-md-9 col-sm-12 content-holder">
+                    <div id="menu-container">
 
-		img {
-			max-width: 100%;
-		}
+                        <div class="logo-holder logo-top-margin">
+                            <a class="site-brand"><img src="images/logo.png" width="100px" height="100px"></a>
+                        </div>
+                        <div id="menu-1" class="homepage home-section text-center">
+                            <div class="welcome-text">
+                                <h2>一贴一故事，分享朋友圈</h2>
+                                <p>故事贴是一款基于阅读的半透明社交应用，通过发帖，分享，阅读，找到气味相投的读友。首创"偶遇"功能，让拥有共同兴趣，关注相似话题的用户能相互发现、聚集成朋友圈。</p>
+                                <form action="#" method="get" class="subscribe-form">
+                                    <div class="row">
+ 										<div class="iosBtn download">
+                                            <a href="https://itunes.apple.com/app/gu-shi-tie/id957024953" target="_blank"><i class="fa fa-apple app-dow"></i> Iphone 1.1.18</a>
+                                        </div>
+                                        <div class="androidBtn download">
+                                            <a href="http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere" target="_blank"><i class="fa fa-android android-dow"></i> Android 1.1.18</a>
+                                         </div>
+                                    </div>
 
-		h1, h2 {
-			color: #ffffff !important;
-		}
+                                </form>
 
-		/* -------------------------------- 
 
-		Modules - reusable parts of our design
+                            </div>
+                        </div>
 
-		-------------------------------- */
-		.btn {
-			display: inline-block;
-			text-align: center;
-			text-transform: uppercase;
-			font-weight: bold;
-			font-size: 12px;
-			font-size: 0.75rem;
-			color: #ffffff;
-			background-color: #47B685;
-			box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-			-webkit-transition: background-color 0.2s;
-			-moz-transition: background-color 0.2s;
-			transition: background-color 0.2s;
-			margin-top: 10px;
-		}
-		.no-touch .btn:hover {
-			background-color: #278C6B;
-		}
-		.btn.salmon {
-			background-color: #47B685;
-		}
-		.no-touch .btn.salmon:hover {
-			background-color: #278C6B;
-		}
-		@media only screen and (min-width: 1070px) {
-			.btn {
-				font-size: 14px;
-				font-size: 0.875rem;
-				letter-spacing: 2px;
-			}
-			
-			.fa{
-				margin: 16px 20px !important;
-				margin-right: -20px !important;
-			}
-			
-			.p-android{
-			 	margin-right: 20px !important;
-			}
-			
-			.android{
-				margin-left: 52px !important;
-			}
+                        <div id="menu-2" class="content about-section">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12">
+                                        <div class="strategy" id="custom-show-hide-example">
 
-		}
+                                            <h3 class="open">如何注册故事贴</h3>
+                                            <p>
+                                            <img src="images/zn_q_01.jpg">
+                                            <img src="images/zn_q_02.jpg">
+                                            </p>
 
-		/* -------------------------------- 
+                                            <h3>如何发帖</h3>
+                                            <p>
+                                            <img src="images/zn_w_01.jpg">
+                                            <img src="images/zn_w_02.jpg">
+                                            </p>
 
-		Main components 
+                                            <h3>图片调整</h3>
+                                            <p>
+                                            <img src="images/zn_e_01.jpg">
+                                            <img src="images/zn_e_02.jpg">
+                                            </p>
 
-		-------------------------------- */
-		html, body {
-			/* important for .cd-main-content 100% height to work */
-			height: 100%;
-		}
+                                            <h3>添加文字&排版</h3>
+                                            <p>
+                                            <img src="images/zn_r_01.jpg">
+                                            <img src="images/zn_r_02.jpg">
+                                            <img src="images/zn_r_03.jpg">
+                                            </p>
 
-		.cd-header {
-			position: fixed;
-			top: 0;
-			left: 0;
-			z-index: 3;
-			width: 100%;
-			height: 50px;
-			background-color: #2A3931 !important;
-			overflow: hidden;
-			/* Force Hardware Acceleration in WebKit */
-			-webkit-transform: translateZ(0);
-			-moz-transform: translateZ(0);
-			-ms-transform: translateZ(0);
-			-o-transform: translateZ(0);
-			transform: translateZ(0);
-			-webkit-backface-visibility: hidden;
-			backface-visibility: hidden;
-			-webkit-transform: translateY(-100%);
-			-moz-transform: translateY(-100%);
-			-ms-transform: translateY(-100%);
-			-o-transform: translateY(-100%);
-			transform: translateY(-100%);
-			-webkit-transition: -webkit-transform 0.3s;
-			-moz-transition: -moz-transform 0.3s;
-			transition: transform 0.3s;
-		}
-		.cd-header:after {
-			content: "";
-			display: table;
-			clear: both;
-		}
-		.cd-header #cd-logo {
-			float: left;
-			margin: 3px 0 0 5%;
-		}
-		.cd-header #cd-logo img {
-			display: block;
-			width: 45px;
-			height: 45px;
-		}
-		.cd-header #cd-action {
-			display: inline-block;
-			float: right;
-			margin: 10px 5% 0 0;
-		}
-		.cd-header .btn {
-			height: 30px;
-			line-height: 30px;
-			padding: 0 2em;
-		}
-		.cd-header.slide-down {
-			-webkit-transform: translateY(0);
-			-moz-transform: translateY(0);
-			-ms-transform: translateY(0);
-			-o-transform: translateY(0);
-			transform: translateY(0);
-		}
-		@media only screen and (min-width: 1070px) {
-			.cd-header {
-				height: 44px;
-				background-color: transparent;
-			}
-			.cd-header #cd-logo {
-				margin-top: -2px;
-				font-size: 28px;
-				font-size: 1.75rem;
-			}
-			.cd-header #cd-logo img {
-				width: 50px;
-				height: 50px;
-			}
-			.cd-header #cd-action {
-				margin: 8px 5% 0 0;
-			}
-			.cd-header .btn{	
-				<script src="js/jquery-1.9.1.min.js"></script>
-				<script src="js/jquery.lettering.js"></script>
-				<script src="js/jquery.textillate.js"></script>
-				<script>
-				height: 50px;
-				line-height: 50px;
-			}
-		}
+                                            <h3>一键导入</h3>
+                                            <p>
+                                            <img src="images/zn_t_01.jpg">
+                                            <img src="images/zn_t_02.jpg">
+                                            </p>
 
-		.cd-main-content {
-			overflow: hidden;
-			max-width: 1440px;
-			margin: 0 auto;
-		}
-		@media only screen and (min-width: 1070px) {
-			.cd-main-content {
-				position: relative;
-				height: 100%;
-				min-height: 500px;
-				padding: 0 10%;
-			}
-		}
+                                            <h3>分享朋友圈</h3>
+                                            <p>
+                                            <img src="images/zn_y_01.jpg">
+                                            </p>
 
-		.cd-product-intro {
-			padding: 50px 5%;
-			text-align: center;
-		}
-		.cd-product-intro h1 {
-			margin-bottom: 10px;
-			font-weight: 100;
-			font-size: 25p560px;
-			margin: 0 auto;
-		}
-		.cd-product-intro .cd-triggers:after {
-			content: "";
-			display: table;
-			clear: both;
-		}
-		.cd-product-intro .btn {
-			width: 120px;
-			height: 40px;
-			/*line-height: 40px;*/
-			margin-right: 8px;
-		}
-		@media only screen and (min-width: 480px) {
-		.cd-product-intro {
-			padding: 50px 10%;
-		}
-		}
-		@media only screen and (min-width: 850px) {
-		.cd-product-intro {
-			padding: 50px 15%;
-		}
-		}
-		@media only screen and (min-width: 1070px) {
-		.cd-product-intro {
-			/* Force Hardware Acceleration in WebKit */
-			-webkit-transform: translateZ(0);
-			-moz-transform: translateZ(0);
-			-ms-transform: translateZ(0);
-			-o-transform: translateZ(0);
-			transform: translateZ(0);
-			-webkit-backface-visibility: hidden;
-			backface-visibility: hidden;
-			position: absolute;
-			top: 50%;
-			-webkit-transform: translateY(-50%);
-			-moz-transform: translateY(-50%);
-			-ms-transform: translateY(-50%);
-			-o-transform: translateY(-50%);
-			transform: translateY(-50%);
-			left: 10%;
-			width: 5ute;
-			top: 50%;
-			-webkit-transform: translateY(-50%);
-			-moz-transform: translateY(-50%);
-			-ms-transform: translateY(-50%);
-			-o-transform: translateY(-50%);
-			transform: translateY(-50%);
-			left: 10%;
-			width: 60%;
-			padding: 0;
-			text-align: left;
-			-webkit-transition: -webkit-transform 0.3s, opacity 0.3s;
-			-moz-transition: -moz-transform 0.3s 0s, opacity 0.3s;
-			transition: transform 0.3s, opacity 0.3s;
-		}
-		.is-product-tour .cd-product-intro {
-			opacity: 0;
-			-webkit-transform: translateY(-50%) translateX(-50%);
-			-moz-transform: translateY(-50%) translateX(-50%);
-			-ms-transform: translateY(-50%) translateX(-50%);
-			-o-transform: translateY(-50%) translateX(-50%);
-			transform: translateY(-50%) translateX(-50%);
-		}
-		.cd-product-intro h1 {
-			font-size: 50px;
-			font-size: 3.125rem;
-		}
-		.cd-product-intro p {
-			font-size: 16px;
-			font-size: 1rem;
-			padding: 3px 0 44px;
-			margin: 0;
-		}
-		.cd-product-intro .btn {
-			margin-right: 15px;
-			width: 190px;
-			height: 60px;
-			line-height: 60px;
-		}
-		}
+                                            <h3>忘记登录密码</h3>
+                                            <p>
+                                            <img src="images/zn_pass_01.jpg">
+                                            </p>
 
-		#cd-product-tour {
-			position: relative;
-		}
-		@media only screen and (min-width: 1070px) {
-			#cd-product-tour {
-				width: 100%;
-				max-width: 850px;
-				margin: 0 auto;
-				height: 500px;
-				top: 50%;
-				left: 0;
-				-webkit-transform: translateZ(0);
-				-moz-transform: translateZ(0);
-				-ms-transform: translateZ(0);
-				-o-transform: translateZ(0);
-				transform: translateZ(0);
-				-webkit-transform: translateY(-50%) translateX(75%);
-				-moz-transform: translateY(-50%) translateX(75%);
-				-ms-transform: translateY(-50%) translateX(75%);
-				-o-transform: translateY(-50%) translateX(75%);
-				transform: translateY(-50%) translateX(75%);
-				-webkit-transition: -webkit-transform 0.3s;
-				-moz-transition: -moz-transform 0.3s;
-				transition: transform 0.3s;
-			}
-			.is-product-tour #cd-product-tour {
-				-webkit-transform: translateY(-50%) translateX(0);
-				-moz-transform: translateY(-50%) translateX(0);
-				-ms-transform: translateY(-50%) translateX(0);
-				-o-transform: translateY(-50%) translateX(0);
-				transform: translateY(-50%) translateX(0);
-			}
-			#cd-product-tour > ul {
-				height: 100%;
-				width: 100%;
-			}
-		}
+                                            <h3>如何段落转帖</h3>
+                                            <p>
+                                            <img src="images/zn_u_01.jpg">
+                                            <img src="images/zn_u_02.jpg">
+                                            </p>
 
-		.cd-single-item {
-			/* product tour - single list item */
-			padding: 50px 5% 120px;
-			width: 100%;
-			text-align: center;
-			/*border-top: 1px solid #494e6e;*/
-		}
-		.cd-single-item h2 {
-			margin-bottom: 15px;
-			font-size: 22px;
-			font-size: 1.375rem;
-			width:528px;
-			text-align: left
-		}
-		.cd-single-item p {
-			padding: 10px 0 50px;
-			font-size: 14px;
-			font-size: 0.875rem;
-			line-height: 1.6;
-		}
-		@media only screen and (min-width: 480px) {
-			.cd-single-item {
-				padding: 50px 10% 120px;
-			}
-		}
-		@media only screen and (min-width: 850px) {
-			.cd-single-item {
-				padding: 50px 15% 120px;
-			}
-			.cd-single-item:after {
-				content: "";
-				display: table;
-				clear: both;
-			}
-			.cd-single-item .cd-caption {
-				width: 50%;
-				float: left;
-				margin-top: 180px;
-			}
-			.cd-single-item:nth-child(2n) .cd-caption {
-				float: right;
-			}
-		}
-		@media only screen and (min-width: 1070px) {
-			.cd-single-item {
-				position: absolute;
-				top: 50%;
-				-webkit-transform: translateY(-50%);
-				-moz-transform: translateY(-50%);
-				-ms-transform: translateY(-50%);
-				-o-transform: translateY(-50%);
-				transform: translateY(-50%);
-				left: 0;
-				text-align: left;
-				border-top: none;
-				padding: 0;
-				visibility: visible;
-			}
-			.cd-single-item.cd-not-visible {
-				/*need to create a specific class to change visibility value due to a Firefox bug*/
-				/*CSS transition/animation fails when parent element changes visibility attribute*/
-				visibility: hidden;
-			}
-			.cd-single-item h2 {
-				font-size: 48px;
-				font-size: 3rem;
-				font-weight: 300;
-			}
-			.cd-single-item p {
-				font-size: 16px;
-				font-size: 1rem;
-				line-height: 1.5;
-				max-width: 600px;
-			}
-			.cd-single-item .cd-caption {
-				width: 60%;
-				float: right;
-				margin: 80px 0 0 5%;
-				opacity: 0;
-				-webkit-transform: translateZ(0);
-				-moz-transform: translateZ(0);
-				-ms-transform: translateZ(0);
-				-o-transform: translateZ(0);
-				transform: translateZ(0);
-				-webkit-transition: -webkit-transform 0.3s, opacity 0.3s;
-				-moz-transition: -moz-transform 0.3s 0s, opacity 0.3s;
-				transition: transform 0.3s, opacity 0.3s;
-			}
-			.is-product-tour .cd-single-item.cd-active .cd-caption {
-				opacity: 1;
-			}
-			.cd-single-item.cd-move-right .cd-caption {
-				-webkit-transform: translateX(100px);
-				-moz-transform: translateX(100px);
-				-ms-transform: translateX(100px);
-				-o-transform: translateX(100px);
-				transform: translateX(100px);
-			}
-		}
+                                            <h3>作者自己的文章搜索</h3>
+                                            <p>
+                                            <img src="images/zn_i_01.jpg">
+                                            </p>
 
-		.cd-image-container {
-			/*wrapper for image (and video - desktop only)*/
-			max-width: 228px;
-			margin: 0 auto;
-			padding-top: 50px;
-		}
-		.cd-image-container > div {
-			position: relative;
-		}
-		.cd-image-container img {
-			display: block;
-		}
-		.cd-image-container video {
-			display: none;
-		}
-		@media only screen and (min-width: 850px) {
-		.cd-image-container {
-			float: right;
-		}
-		.cd-single-item:nth-child(2n) .cd-image-container {
-			float: left;
-		}
-		}
-		@media only screen and (min-width: 1070px) {
-		.cd-image-container {
-			height: 402px;
-			width: 35%;
-			float: left;
-			max-width: none;
-			padding-top: 0;
-		}
-		.cd-image-container > div {
-			display: inline-block;
-			max-width: 100%;
-			max-height: 100%;
-		}
-		.cd-image-container img {
-			height: 402px;
-			-webkit-transition: -webkit-transform 0.3s;
-			-moz-transition: -moz-transform 0.3s;
-			transition: transform 0.3s;
-			-webkit-transform: translateZ(0);
-			-moz-transform: translateZ(0);
-			-ms-transform: translateZ(0);
-			-o-transform: translateZ(0);
-			transform: translateZ(0);
-		}
-		.cd-image-container video {
-			/*not inserted in html - will be loaded through jQuery*/
-			display: block;
-			position: absolute;
-			width: 228px;
-			left: 50%;
-			top: 50%;
-			bottom: auto;
-			right: auto;
-			z-index: 1;
-			-webkit-transition: -webkit-transform 0.3s;
-			-moz-transition: -moz-transform 0.3s;
-			transition: transform 0.3s;
-			-webkit-transform: translateZ(0);
-			-moz-transform: translateZ(0);
-			-ms-transform: translateZ(0);
-			-o-transform: translateZ(0);
-			transform: translateZ(0);
-			-webkit-transform: translateX(-50%) translateY(-50%) rotate(0deg);
-			-moz-transform: translateX(-50%) translateY(-50%) rotate(0deg);
-			-ms-transform: translateX(-50%) translateY(-50%) rotate(0deg);
-			-o-transform: translateX(-50%) translateY(-50%) rotate(0deg);
-			transform: translateX(-50%) translateY(-50%) rotate(0deg);
-		}
-		.cd-move-right .cd-image-container img {
-			-webkit-transform: translateX(100%);
-			-moz-transform: translateX(100%);
-			-ms-transform: translateX(100%);
-			-o-transform: translateX(100%);
-			transform: translateX(100%);
-		}
-		.cd-move-right .cd-image-container video {
-			-webkit-transform: translateX(50%) translateY(-50%) rotate(-90deg);
-			-moz-transform: translateX(50%) translateY(-50%) rotate(-90deg);
-			-ms-transform: translateX(50%) translateY(-50%) rotate(-90deg);
-			-o-transform: translateX(50%) translateY(-50%) rotate(-90deg);
-			transform: translateX(50%) translateY(-50%) rotate(-90deg);
-		}
-		}
+                                            <h3>使用匿名发帖</h3>
+                                            <p>
+                                            <img src="images/zn_o_01.jpg">
+                                            <img src="images/zn_o_02.jpg">
+                                            </p>
 
-		.cd-phone-frame {
-			/* Phone in CSS */
-			-webkit-box-sizing: content-box;
-			-moz-box-sizing: content-box;
-			box-sizing: content-box;
-			position: absolute;
-			top: -45px;
-			left: -10px;
-			width: 100%;
-			height: 100%;
-			border-color: #d3d4d4;
-			border-style: solid;
-			border-width: 45px 10px;
-			border-radius: 2.5em;
-			-webkit-backface-visibility: hidden;
-			backface-visibility: hidden;
-		}
-		.cd-phone-frame::after, .cd-phone-frame::before {
-			/*these are the iPhone circle elements*/
-			position: absolute;
-			left: 50%;
-			right: auto;
-			-webkit-transform: translateX(-50%);
-			-moz-transform: translateX(-50%);
-			-ms-transform: translateX(-50%);
-			-o-transform: translateX(-50%);
-			transform: translateX(-50%);
-			-webkit-backface-visibility: hidden;
-			backface-visibility: hidden;
-			background-color: #b1b1b1;
-			border-radius: 50%;
-		}
-		.cd-phone-frame::before {
-			height: 11px;
-			width: 11px;
-			top: -28px;
-		}
-		.cd-phone-frame::after {
-			height: 31px;
-			width: 31px;
-			bottom: -38px;
-		}
+                                            <h3>收藏帖子</h3>
+                                            <p>
+                                            <img src="images/zn_p_01.jpg">
+                                            <img src="images/zn_p_02.jpg">
+                                            </p>
 
-		.cd-image-wrapper {
-			position: relative;
-			overflow: hidden;
-			z-index: 2;
-		}
 
-		.cd-slider-nav {
-			/* product discover slider navigation */
-			display: none;
-			position: fixed;
-			bottom: 0;
-			left: 0;
-			z-index: 1;
-			width: 100%;
-			height: 80px;
-		}
-		.cd-slider-nav:after {
-			content: "";
-			display: table;
-			clear: both;
-		}
-		.cd-slider-nav a {
-			position: relative;
-			display: block;
-			height: 100%;
-			width: 50%;
-			float: left;
-			overflow: hidden;
-			text-indent: 100%;
-			white-space: nowrap;
-			color: transparent;
-			background: none;
-		}
-		.no-touch .cd-slider-nav a:hover {
-			background: none;
-		}
-		.cd-slider-nav a::before {
-			/*this is the bacgrounf arrow - we have been used a before element to change the opacity on hover*/
-			position: absolute;
-			left: 50%;
-			top: 50%;
-			bottom: auto;
-			right: auto;
-			-webkit-transform: translateX(-50%) translateY(-50%);
-			-moz-transform: translateX(-50%) translateY(-50%);
-			-ms-transform: translateX(-50%) translateY(-50%);
-			-o-transform: translateX(-50%) translateY(-50%);
-			transform: translateX(-50%) translateY(-50%);
-			width: 24px;
-			height: 16px;
-			opacity: .2;
-			background: url(../img/cd-arrow.svg) no-repeat center center;
-			-webkit-backface-visibility: hidden;
-			backface-visibility: hidden;
-			-webkit-transition: opacity 0.2s;
-			-moz-transition: opacity 0.2s;
-			transition: opacity 0.2s;
-		}
-		.no-touch .cd-slider-nav a:hover::before {
-			opacity: 1;
-		}
-		.cd-slider-nav .cd-next {
-			border-left: none;
-		}
-		.cd-slider-nav .cd-next::before {
-			-webkit-transform: translateX(-50%) translateY(-50%) rotate(180deg);
-			-moz-transform: translateX(-50%) translateY(-50%) rotate(180deg);
-			-ms-transform: translateX(-50%) translateY(-50%) rotate(180deg);
-			-o-transform: translateX(-50%) translateY(-50%) rotate(180deg);
-			transform: translateX(-50%) translateY(-50%) rotate(180deg);
-		}
-		@media only screen and (min-width: 1070px) {
-			.cd-slider-nav {
-				display: block;
-			}
-			.cd-slider-nav a {
-				visibility: hidden;
-				opacity: 0;
-				-webkit-transition: opacity 0.3s 0s, visibility 0s 0.3s, background 0.2s;
-				-moz-transition: opacity 0.3s 0s, visibility 0s 0.3s, background 0.2s;
-				transition: opacity 0.3s 0s, visibility 0s 0.3s, background 0.2s;
-			}
-			.is-product-tour .cd-slider-nav a {
-				visibility: visible;
-				opacity: 1;
-				-webkit-transition: opacity 0.3s 0s, visibility 0s 0s, background 0.2s;
-				-moz-transition: opacity 0.3s 0s, visibility 0s 0s, background 0.2s;
-				transition: opacity 0.3s 0s, visibility 0s 0s, background 0.2s;
-			}
-			.is-product-tour .cd-slider-nav a.cd-inactive {
-				visibility: hidden;
-				opacity: 0;
-				-webkit-transition: opacity 0.3s 0s, visibility 0s 0.3s, background 0.2s;
-				-moz-transition: opacity 0.3s 0s, visibility 0s 0.3s, background 0.2s;
-				transition: opacity 0.3s 0s, visibility 0s 0.3s, background 0.2s;
-			}
-		}
+                                    </div>
+                                </div>
 
-		.cd-loader {
-			/*top loading bar*/
-			position: fixed;
-			top: 0;
-			left: 0;
-			height: 3px;
-			width: 0;
-			background-color: #f58780;
-			display: none;
-		}
-		
-		.fa{
-			font-size: 28px;
-			margin: 6px 12px;
-			margin-right: 0px;
-			float: left;
-		}
-	</style>
+                            </div>
+                        </div>
+                        <div id="menu-3" class="content contact-section">
+                            <div class="row">
+                                <div class="col-md-8 col-sm-8">
+                                    <div class="box-content">
+                                        <h3 class="widget-title">请你留下最诚恳的建议</h3>
+                                        <form class="contact-form">
+                                            <fieldset>
+                                                <input type="text" class="name" id="sendEmailname" placeholder="姓名...">
+                                            </fieldset>
+                                            <fieldset>
+                                                <input type="email" class="email" id="sendEmailemail" placeholder="邮箱...">
+                                            </fieldset>
+                                            <fieldset>
+                                                <input type="text" class="subject" id="sendEmailsubject" placeholder="主题...">
+                                            </fieldset>
+                                            <fieldset>
+                                                <textarea name="message" id="sendEmailmessage" cols="30" rows="4" placeholder="留言.."></textarea>                                   </fieldset>
+                                            <fieldset>
+                                                <input type="button" class="button" id="sendEmailbtn" value="提交">
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <div class="box-content">
+                                        <h3 class="widget-title">您好 HELLO!</h3>
+                                        <p>感谢您来到故事贴APP下载官网<br><br>
+										点击下载扫描，体验后如果有什么好的宝贵意见，请您为我们留言或使用以下方式联系我们，我们将尽快给你回复，谢谢。 </p>
+                                        <div class="about-social">
+                                            <ul>
+                                                <li><i class="fa fa-fax"></i>0871 6513 4197</li>
+                                                <li><i class="fa fa-envelope"></i>admin@tiegushi.com</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-	<head>
-		<!--<script src="/statics/js/jquery-1.9.1.min.js"></script>-->
-		<!--<script src="/statics/js/jquery.lettering.js"></script>
-		<script src="/statics/js/jquery.textillate.js"></script>
-		<script>
-		function printWord (ele) {
-			console.log("print")
-			$(ele).textillate({
-				initialDelay: 100000, 	//设置动画开始时间
-				in: { effect: 'flipInX'	//设置动画名称
-				}
-			});
-		}-->
 
-		<!--</script>-->
-	</head>
-	<header class="cd-header">
-		<div id="cd-logo"><img src="img/logo.png" alt="Logo"></div>
-		<!--<div id="cd-action"><a href="http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere" >下载</a></div>-->
-	</header>
 
-	<main class="cd-main-content">
-		<div class="cd-product-intro" id="aaa">
-			<a name="abc"></a>
-			<h1>故事贴</h1>
-			<p id="text2">故事贴是一款基于阅读的半透明社交应用，通过发帖，分享，阅读，找到气味相投的读友。<br>首创"偶遇"功能，让拥有共同兴趣，关注相似话题的用户能相互发现、聚集成朋友圈。</p>
-			<div class="cd-triggers" style="margin-top:50px">
-				<a href="http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere" class="btn"><i class="fa fa-android android-dow"></i>
-				<p>android版</p></a>
-				<a href="https://itunes.apple.com/app/gu-shi-tie/id957024953" class="btn"><i class="fa fa-apple app-dow android"></i>
-				<p class="p-android">ios版</p></a>
-				<a id="tour" class="btn salmon" data-type="cd-tour"><p>介绍</p></a>
-			</div>
-		</div> <!-- cd-product-intro -->
+                    </div>
+                </div>
 
-		<div id="cd-product-tour">
-			<ul style="background: #7BAC8E;">
-				<li class="cd-single-item cd-active">
-					<div class="cd-caption">
-						<h2>一帖一故事，分享朋友圈</h2>
-						<p id="ptour">一个帖子，记录一个故事<br>一个故事，述说一段旅程<br>一次分享，传播无数快乐<br>. . .</p>
-					</div>
-					<div class="cd-image-container">
-						<div>
-							<div class="cd-phone-frame"></div>
-							<div class="cd-image-wrapper">
-								<img src="video/hotshare_animoto_1080p.png" data-video="http://data.tiegushi.com/34reert234qw" alt="Screen Preview 1">
-							</div>
-						</div>
-					</div>
-				</li>
-				<li class="cd-single-item cd-not-visible cd-move-right">
-					<div class="cd-caption">
-						<h2>更好的阅读社交</h2>
-						<p>不仅可以阅读更多丰富多彩的故事。故事贴还有偶遇、段落分享等等与世界各地读友互动的功能哦！
-						</p>
-					</div>
-					<div class="cd-image-container">
-						<div>
-							<div class="cd-phone-frame"></div>
-							<div class="cd-image-wrapper">
-								<img src="img/typesetting.png" data-video="http://mvvideo2.meitudata.com/57690b4fc9bdb2504" alt="Screen Preview 2">
-							</div>
-						</div>
-					</div>
-				</li>
-				<li class="cd-single-item cd-not-visible cd-move-right">
-					<div class="cd-caption">
-						<h2>特色功能</h2>
-						<p>喜欢哪段就给哪段点个赞，故事贴首创段落点赞;还有图片分享，不止是9张哦... <br>还有大量好玩有趣的功能等你来体验哦！
-						</p>
-					</div>
-					<div class="cd-image-container">
-						<div>
-							<div class="cd-phone-frame"></div>
-							<div class="cd-image-wrapper">
-								<img src="img/add.png" data-video="http://mvvideo2.meitudata.com/575fb28ca0937836" alt="Screen Preview 3">
-							</div>
-						</div>
-					</div>
-				</li>
-			</ul>
-		</div> <!-- cd-product-tour -->
+                <div class="col-md-3 hidden-sm">
 
-		<div class="cd-slider-nav">
-			<a class="cd-prev" href="#0">Previous</a>
-			<a class="cd-next" href="#0">Next</a>
-		</div> <!-- cd-slider-nav -->
+                    <nav id="nav" class="main-navigation hidden-xs hidden-sm">
+                        <ul class="main-menu">
+                            <li>
+                                <a class="show-1 active homebutton" href="#"><i class="fa fa-home"></i>网站首页</a>
+                            </li>
+                            <li>
+                                <a class="show-2 aboutbutton" href="#"><i class="fa fa-random"></i>使用指南</a>
+                            </li>
+                            <li>
+                                <a class="show-5 contactbutton" href="#"><i class="fa fa-envelope"></i>留言反馈</a>
+                            </li>
+                        </ul>
+                    </nav>
 
-		<div class="cd-loader"></div> <!-- top loading bar -->
-	</main>
-	
-	<!--<script>
-		console.log("print1");
-		$(document).ready(function(){
-			console.log("inint >>>");
-			printWord('#text2');
-		});
-	</script>-->
+                </div>
+            </div>
+        </div>
+  {{/if}}
+      <div class="site-footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <p>Copyright &copy; 2015故事贴<span>昆明讯动科技有限公司</span>滇ICP 备14007324号</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+       <script>
+        new jQueryCollapse($("#custom-show-hide-example"), {
+          open: function() {
+            this.slideDown(150);
+          },
+          closes: function() {
+            this.slideUp(150);
+          }
+        });
+       </script>
+    </div>
 </template>
