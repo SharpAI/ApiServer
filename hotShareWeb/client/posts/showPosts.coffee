@@ -80,14 +80,14 @@ if Meteor.isClient
     $('.tool-container').remove()
   Template.showPosts.onRendered ->
     #console.log 'showPost'
-    $('html').attr('xmlns','http://www.w3.org/1999/xhtml')
-    $('html').attr('xmlns:fb','http://ogp.me/ns/fb#')
-    ogMeta = $("meta[property='og:image']") 
-    imageSrc = $('head link[id = "icon"]').attr('href')
-    if ogMeta.length is 0
-       $('head').append('<meta property=og:image content="' + imageSrc + '"/>')
-    else 
-       ogMeta.attr('content',imageSrc)
+    #$('html').attr('xmlns','http://www.w3.org/1999/xhtml')
+    #$('html').attr('xmlns:fb','http://ogp.me/ns/fb#')
+    #ogMeta = $("meta[property='og:image']") 
+    #imageSrc = $('head link[id = "icon"]').attr('href')
+    #if ogMeta.length is 0
+    #   $('head').append('<meta property=og:image content="' + imageSrc + '"/>')
+    #else 
+    #   ogMeta.attr('content',imageSrc)
     #if !amplify.store('chatNotify')
     #  amplify.store('chatNotify',1)
     #if amplify.store('chatNotify') < 6
