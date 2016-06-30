@@ -24,6 +24,19 @@ var insert_data = function(id, url, data, cb) {
     }
 
     collection = db.collection('posts');
+    
+    if(data.resortedArticle.length > 0){
+      for(var i=0;i<data.resortedArticle.length;i++){
+        if(data.resortedArticle[i].type === 'image')
+          data.resortedArticle[i].isImage = true;
+        data.resortedArticle[i]._id = id + i;
+        // data.resortedArticle[i].data_row = ;
+        // data.resortedArticle[i].data_col = ;
+        // data.resortedArticle[i].data_sizex = ;
+        // data.resortedArticle[i].data_sizey = ;
+      }
+    }
+    
     var data_insert = [{
       '_id': id,
       'pub': data.resortedArticle,
