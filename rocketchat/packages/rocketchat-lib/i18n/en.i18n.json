@@ -1051,5 +1051,11 @@
   
   "rrbMsg_author": "Author: __author__",
   "rrbMsg_document_title_default": "Reading Room",
-  "rrbMsg_document_title": "__title__－Reading Room"
+  "rrbMsg_document_title": "__title__－Reading Room",
+  
+  // postCommentToChannel  toChannel_
+  "toChannel_like" : "I like this:",
+  "toChannel_dislike": "I do not like this：",
+  "toChannel_share_weChat": "Looks great, have shared the WeChat:",
+  "toChannel_share_timeline": "Looks great, have shared the TimeLine:"
 }

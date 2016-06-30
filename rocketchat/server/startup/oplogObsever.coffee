@@ -49,22 +49,22 @@ Meteor.startup ()->
     description = ''
     if room
       if info.ptype is 'like'
-        msg='我喜欢这段：'
+        msg=TAPi18n.__('toChannel_like')
       else if info.ptype is 'dislike'
-        msg='我不喜欢这段：'
+        msg=TAPi18n.__('toChannel_dislike')
       else if info.ptype is 'pcomments'
         pcomments=post?.pub?[info.pindex]?.pcomments
         if pcomments and pcomments.length > 0
           msg=pcomments[pcomments.length-1].content
         console.log(pcomments)
       else if info.ptype is 'section_wechat_chat'
-        msg='这段不错，已分享到群聊'
+        msg=TAPi18n.__('toChannel_share_weChat')
       else if info.ptype is 'section_wechat_timeline'
-        msg='这段不错，已分享到朋友圈'
+        msg=TAPi18n.__('toChannel_share_timeline')
       else if info.ptype is 'wechat_chat'
-        msg='文章不错，已分享到群聊'
+        msg=TAPi18n.__('toChannel_share_weChat')
       else if info.ptype is 'wechat_timeline'
-        msg='文章不错，已分享到朋友圈'
+        msg=TAPi18n.__('toChannel_share_timeline')
       else
         console.log('type: '+info.ptype)
       joinRoom(room,userInfo)
