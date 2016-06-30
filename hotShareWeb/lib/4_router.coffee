@@ -198,6 +198,10 @@ if Meteor.isServer
       res.end(postHtml)
     else
       postItem = Posts.findOne({_id: this.params._id},{fields:{title:1,mainImage:1,addontitle:1}});
+      Inject.rawModHtml('addxmlns', (html) ->
+        return html.replace(/<html>/, '<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:fb="http://ogp.me/ns/fb#">');
+      )
       Inject.rawHead("inject-image", "<meta property=\"og:image\" content=\"#{postItem.mainImage}\"/>", res);
       Inject.rawHead("inject-description", "<meta property=\"og:description\" content=\"#{postItem.title} #{postItem.addontitle} 故事贴\"/>",res);
       Inject.rawHead("inject-url", "<meta property=\"og:url\" content=\"http://#{server_domain_name}/posts/#{postItem._id}\"/>",res);
