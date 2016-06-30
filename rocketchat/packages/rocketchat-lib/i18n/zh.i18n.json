@@ -988,7 +988,7 @@
   "tipUserOK": "我知道了",
   
   // Reading Room Bot Message, rrbMsg_
-  "rrbMsg_friends_readed_posts": "          朋友们可能还在看帖子,您可以回顾一下浏览过的故事贴(__showReadList__/__gotReadList__)",
+  "rrbMsg_friends_readed_posts": "朋友们可能还在看帖子，您可以回顾一下浏览过的故事贴(__showReadList__/__gotReadList__)",
   "rrbMsg_ta_read": "__ta__ 读过这篇故事，您还没读过(__readMsg__/__total__)",
   "rrbMsg_mutual_read": "__ta__  和 您 都读过这篇故事(__readMsg__/__total__)",
   "rrbMsg_your_post_read_times": "*您*发表的这篇故事贴已经被朋友们读过 __times__ 次",
@@ -1004,5 +1004,11 @@
   
   "rrbMsg_author": "作者： __author__",
   "rrbMsg_document_title_default": "故事贴主题阅览室",
-  "rrbMsg_document_title": "__title__－主题阅览室"
+  "rrbMsg_document_title": "__title__－主题阅览室",
+  
+  // postCommentToChannel  toChannel_
+  "toChannel_like" : "我喜欢这段：",
+  "toChannel_dislike": "我不喜欢这段：",
+  "toChannel_share_weChat": "这段不错，已分享到群聊",
+  "toChannel_share_timeline": "这段不错，已分享到朋友圈"
 }

@@ -66,12 +66,19 @@ if Meteor.isClient
         url = if url? then url else 'http://www.tiegushi.com/'
         #alink = document.createElement 'a'
         #alink.href = url
-
+        # 对message做特殊处理
+        if message?
+            if message.indexOf('welcomeMSG')>-1
+                themsg = message.slice(10,message.length)
+            else
+                themsg = message
+        else
+            themsg = ''
         msg = {
             t: if message.indexOf('welcomeMSG')>-1 then 'bot welcome-msg' else 'bot'
             private: true
             type: msgType            
-            msg: if message? then message.slice(10,message.length) else ''
+            msg: themsg
             #rid: ChatRoom.findOne()._id
             rid: Session.get('openedRoom')
             ts: new Date()
@@ -151,14 +158,14 @@ if Meteor.isClient
         } 
 
         insertMessageToChat msg
-    sendAuthorSelfMessageWithURLSToRoom = (message, urls)->
+    sendAuthorSelfMessageWithURLSToRoom = (message, urls,owner)->
         new_urls = []
         _.map urls, (item)->
             url = if item.url? then item.url else 'http://www.tiegushi.com/'
             #alink = document.createElement 'a'
             #alink.href = url
             
-            new_urls = {
+            new_urls.push {
                 "url" : url, #http://www.tiegushi.com/posts/NYtJcHfCKSE6GWhmj
                 "meta" : {
                     "ogSiteName" : "故事贴",
@@ -183,20 +190,21 @@ if Meteor.isClient
             
             
         
-            msg = {
-                private: true
-                msg: if message? then message else ''
-                rid: Session.get('openedRoom')
-                ts: new Date()
-                u: {
-                    _id: item.owner
-                    username: item.owner
-                    name: item.ownerName
-                },
-                urls : new_urls         
-            } 
-
-            ChatMessage.insert(msg)
+        msg = {
+            private: true
+            msg: if message? then message else ''
+            rid: Session.get('openedRoom')
+            ts: new Date()
+            u: {
+                _id: owner.owner
+                username: owner.ownerName
+                name: owner.ownerName
+            },
+            urls : new_urls         
+        } 
+        console.log(owner)
+        console.log(msg)
+        ChatMessage.insert(msg)
     unless amplify.store('readListDisplayed')
         amplify.store('readListDisplayed',1)
     postOneViewedPost = ()->
@@ -482,13 +490,13 @@ if Meteor.isClient
                         mainImageUrl: item.mainImage
                     }
                     if _.pluck(owners, 'ownerId').indexOf(item.owner) is -1
-                        owners.push {ownerId: item.owner, ownerName: item.ownerName, urls: [url]}
+                        owners.push {ownerId: item.owner, ownerName: item.ownerName,ownerIcon: item.ownerIcon, urls: [url]}
                     else
                         owners[_.pluck(owners, 'ownerId').indexOf(item.owner)].urls.push(url)
 
                 _.map owners, (item)->
                     # sendPersonalMessageWithURLSToRoom '您的朋友 '+item.ownerName+' 发表了故事贴，邀请您阅读：', item.urls
-                    sendAuthorSelfMessageWithURLSToRoom TAPi18n.__('rrbMsg_post_post'), item.urls
+                    sendAuthorSelfMessageWithURLSToRoom(TAPi18n.__('rrbMsg_post_post'), item.urls, item)
 
         Tracker.autorun (t)->
             if Meteor.userId() and Session.get('openedRoom')
