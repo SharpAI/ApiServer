@@ -81,12 +81,36 @@ router.route('/:url')
         /*if (err)
          res.send(err);*/
         mainWindow.loadURL(req.params.url);
-
-         // you can do whatever you want here..
-        ipcMain.once('analyse-done', function(event, arg) {
-            console.log(arg);
-            res.json({status:'ok',json:arg});
+        mainWindow.webContents.on('dom-ready', function (e) {
+            var interval=setInterval(function(){
+                try{
+                    mainWindow.webContents.executeJavaScript('(' + (function () {
+                            try {
+                                return window.detected_json_from_gushitie;
+                            } catch(error){
+                                return;
+                            }
+                        }).toString() + ')()',function(result){
+                        //console.log(result)
+                        if(result){
+                            clearInterval(interval);
+                            interval=null;
+                            if(!req.state){
+                                req.state = true
+                                res.json({status:'ok',json:result});
+                            }
+                        }
+                    })
+                } catch (err){
+                    clearInterval(interval)
+                    res.json({status:'error'});
+                }
+            },1000);
         });
+         // you can do whatever you want here..
+        /*ipcMain.once('analyse-done', function(event, arg) {
+            console.log(arg);
+        });*/
     });
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api

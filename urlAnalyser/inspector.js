@@ -27,11 +27,12 @@ window.onload = function() {
         }
         console.log(returnJson);
         analyserHTML(window.location.href,returnJson,function(result){
-            const {ipcRenderer} = require('electron');
+            window.detected_json_from_gushitie=result
+            /*const {ipcRenderer} = require('electron');
             //console.log(ipcRenderer.sendSync('synchronous-message', 'ping')); // prints "pong"
 
             ipcRenderer.send('analyse-done', result);
-            console.log(result)
+            console.log(result)*/
         })
     });
 };
