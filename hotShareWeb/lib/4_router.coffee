@@ -188,6 +188,7 @@ if Meteor.isServer
     agentPattern = new RegExp(BOTS.join('|'), 'i')
     userAgent = req.headers['user-agent']
     if agentPattern.test(userAgent)
+      console.log('user Agent: '+userAgent);
       postItem = Posts.findOne({_id: this.params._id})
       postHtml = SSR.render('post', postItem)
 
