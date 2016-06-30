@@ -3,15 +3,13 @@
  */
 // injection technique borrowed from http://stackoverflow.com/questions/840240/injecting-jquery-into-a-page-fails-when-using-google-ajax-libraries-api
 console.log('inject code');
-//window.onload = function() {
+window.onload = function() {
     console.log('inject code');
     window.$ = window.jQuery = require('./jquery-2.1.4.min.js');
     $(document).ready(function() {
-        //require('coffee-script').register();
-        console.log('1');
-        require('./extract.coffee');
-        console.log('2');
-        var url_analyser=require('./url_analyser.coffee');
+        require('coffee-script').register();
+        require('./extract');
+        var url_analyser=require('./url_analyser');
         var analyserHTML=url_analyser.analyserHTML;
         var returnJson = {};
         if(document.title){
@@ -29,14 +27,13 @@ console.log('inject code');
         }
         console.log(returnJson);
         analyserHTML(window.location.href,returnJson,function(result){
-            window.document.body.insertAdjacentHTML( 'afterbegin', '<div id="detected_json_from_gushitie" style="color:blue;"> With some data...</div>' );
-            window.detected_json_from_gushitie=result;
+            window.detected_json_from_gushitie=result
             /*const {ipcRenderer} = require('electron');
-             //console.log(ipcRenderer.sendSync('synchronous-message', 'ping')); // prints "pong"
+            //console.log(ipcRenderer.sendSync('synchronous-message', 'ping')); // prints "pong"
 
-             ipcRenderer.send('analyse-done', result);
-             console.log(result)*/
+            ipcRenderer.send('analyse-done', result);
+            console.log(result)*/
         })
     });
-//};
+};
 console.log('inject code');

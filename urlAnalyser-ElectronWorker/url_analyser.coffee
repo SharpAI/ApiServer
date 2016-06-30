@@ -1,7 +1,7 @@
 
 showDebug=false
 importColor=false
-extract=require('./extract.coffee')
+extract=require('./extract')
 titleRules = [
   # link string, class name
   {prefix:'view.inews.qq.com',titleClass:'title'},

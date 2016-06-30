@@ -4,7 +4,7 @@
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
-    "start": "browserify -t coffeeify inspector.js > bundle.js && electron ."
+    "start": "electron ."
   },
   "repository": {
     "type": "git",
@@ -23,14 +23,13 @@
   },
   "homepage": "https://github.com/electron/electron-quick-start#readme",
   "dependencies":{
-    "coffeeify":"^2.0.1",
-    "nightmare":"~2.5.2",
+    "coffee-script": "~1.10.0",
+    "electron-workers": "~1.7.0",
     "express": "~4.14.0",
     "body-parser": "~1.0.1",
-    "underscore": "~1.8.3"
+    "underscore": "1.8.3"
   },
   "devDependencies": {
-    "browserify": "~13.0.1",
     "electron-prebuilt": "^1.2.0"
   }
 }
