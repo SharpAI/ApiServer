@@ -4,6 +4,7 @@ var fs = require('fs');
 var os = require('os');
 var sizeOf = require('image-size');
 var async = require('async');
+var crypto = require('crypto');
 
 module.exports = filedownup
 
@@ -75,8 +76,8 @@ var downloadFromBCS = function(source, callback){
 //            }, fail);
 //    }
 //    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, fail);
-
-  var target = os.tmpdir() + '/' + mongoid() + '/';
+  var nameHash=crypto.createHash('md5').update(source).digest("hex");
+  var target = os.tmpdir() + '/' + 'imagecache' + '/';
   if (fs.existsSync(target)) {
       console.log('directory already exist ' + target);
   } else {
@@ -85,16 +86,16 @@ var downloadFromBCS = function(source, callback){
 
   var wget_opt = {
     url:  source,
-    dest: target,
+    dest: target+nameHash,
     timeout: 2000};
 
   var theFile = {
-   name: source.substr(source.lastIndexOf('/') + 1),
+   name: nameHash,
    toURL: function() {
-     return target + source.substr(source.lastIndexOf('/') + 1);
+     return target +nameHash;
    }
   }
-  
+
   wget(wget_opt, function (error, response, body) {
     if (error) {
       console.log('--- error:');
