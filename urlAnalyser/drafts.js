@@ -283,6 +283,7 @@ drafts = (function() {
       }
     }
     _results = [];
+    console.log('processTitleOfPost');
     for (_i = 0, _len = _successCallback.length; _i < _len; _i++) {
       item = _successCallback[_i];
       _results.push(item && item());
@@ -297,31 +298,32 @@ drafts = (function() {
     draftVideoData = _getItems('video');
     draftToBeUploadedImageData = [];
     for (i = _i = 0, _ref = draftImageData.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-      if (draftImageData[i].imgUrl === void 0 || draftImageData[i].imgUrl.toLowerCase().indexOf("http://") >= 0 || draftImageData[i].imgUrl.toLowerCase().indexOf("https://") >= 0) {
-        draftToBeUploadedImageData.unshift({});
-        continue;
-      }
+      // if (draftImageData[i].imgUrl === void 0 || draftImageData[i].imgUrl.toLowerCase().indexOf("http://") >= 0 || draftImageData[i].imgUrl.toLowerCase().indexOf("https://") >= 0) {
+      //   draftToBeUploadedImageData.unshift({});
+      //   continue;
+      // }
       draftToBeUploadedImageData.push(draftImageData[i]);
     }
     for (_j = 0, _len = draftMusicData.length; _j < _len; _j++) {
       music = draftMusicData[_j];
-      if (music.musicInfo.playUrl.toLowerCase().indexOf("http://") >= 0 || music.musicInfo.playUrl.toLowerCase().indexOf("https://") >= 0) {
-        draftToBeUploadedImageData.unshift({});
-        continue;
-      }
+      // if (music.musicInfo.playUrl.toLowerCase().indexOf("http://") >= 0 || music.musicInfo.playUrl.toLowerCase().indexOf("https://") >= 0) {
+      //   draftToBeUploadedImageData.unshift({});
+      //   continue;
+      // }
       draftToBeUploadedImageData.push(music);
     }
     for (_k = 0, _len1 = draftVideoData.length; _k < _len1; _k++) {
       video = draftVideoData[_k];
-      if (video.videoInfo.imageUrl.toLowerCase().indexOf("http://") >= 0 || video.videoInfo.imageUrl.toLowerCase().indexOf("https://") >= 0) {
-        draftToBeUploadedImageData.unshift({});
-        continue;
-      }
+      // if (video.videoInfo.imageUrl.toLowerCase().indexOf("http://") >= 0 || video.videoInfo.imageUrl.toLowerCase().indexOf("https://") >= 0) {
+      //   draftToBeUploadedImageData.unshift({});
+      //   continue;
+      // }
       draftToBeUploadedImageData.push(video);
     }
     if (draftToBeUploadedImageData.length <= 0) {
       return callback && callback();
     }
+    console.log('draftToBeUploadedImageData:', draftToBeUploadedImageData);
     return multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, null, function(err, result) {
       var item, _l, _len2;
       if (!result) {

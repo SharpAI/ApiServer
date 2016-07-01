@@ -162,24 +162,27 @@ router.route('/:_id/:url')
                   var data = result;
                   var draftsObj = drafts.createDrafts(postId, user);
                   draftsObj.onSuccess(function(){
-                    var postObj = draftsObj.getPubObject();
-                    draftsObj.destroy();
-                    updatePosts(postId, postObj, function(err, number){
-                      if(err || number <= 0)
-                        console.log('import error.');
-                    });
-                    
-                    // draftsObj.uploadFiles(function (err) {
-                    //   if(err)
-                    //     return console.log('upload file error.');
-                        
-                    //   var postObj = draftsObj.getPubObject();
-                    //   draftsObj.destroy();
-                    //   updatePosts(postId, postObj, function(err, number){
-                    //     if(err || number <= 0)
-                    //       console.log('import error.');
-                    //   });
+                    // var postObj = draftsObj.getPubObject();
+                    // draftsObj.destroy();
+                    // updatePosts(postId, postObj, function(err, number){
+                    //   if(err || number <= 0)
+                    //     console.log('import error.');
                     // });
+                    
+                    console.log('===================================');
+                    console.log('import success.');
+                    console.log('===================================');
+                    draftsObj.uploadFiles(function (err) {
+                      if(err)
+                        return console.log('upload file error.');
+                        
+                      var postObj = draftsObj.getPubObject();
+                      draftsObj.destroy();
+                      updatePosts(postId, postObj, function(err, number){
+                        if(err || number <= 0)
+                          console.log('import error.');
+                      });
+                    });
                   });
                   draftsObj.onFail(function(){
                     // TODO:

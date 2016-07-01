@@ -86,7 +86,7 @@ var downloadFromBCS = function(source, callback){
      return target + source.substr(source.lastIndexOf('/') + 1);
    }
   }
-
+  
   wget(wget_opt, function (error, response, body) {
     if (error) {
       console.log('--- error:');
@@ -121,6 +121,7 @@ filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, c
     }
   };
   onSuccess = function(url, source, file) {
+    console.log(file);
     return get_image_size_from_URI(url, function(width, height) {
       if (height >= minimalWidthAndHeight && width >= minimalWidthAndHeight) {
         callback(file, width, height, ++foundImages, imageCounter, imageArray.length, source);
@@ -143,6 +144,7 @@ filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, c
       return callback(null, 0, 0, foundImages, imageCounter, imageArray.length, null, source);
     }
   };
+  console.log('seekSuitableImageFromArrayAndDownloadToLocal');
   return downloadFromBCS(imageArray[imageCounter], downloadHandler);
 };
 
@@ -183,5 +185,173 @@ filedownup.seekOneUsableMainImage = function(data, callback, minimal) {
   } else {
     return callback(null, 0, 0, 0, 0, 0, null);
   }
+};
+
+
+var fileUploader = function (item,callback){
+  console.log('uploading ' + JSON.stringify(item));
+  // if (Session.get('terminateUpload')) {
+  //     if (Session.get('flag')){
+  //             return;
+  //       } 
+  //       Session.set('flag',true);         
+  //       return callback(new Error('aboutUpload'),item)
+  // }
+  var self = this;
+  if ($.isEmptyObject(item)) {
+      self.uploaded++;
+      //Session.set('progressBarWidth', parseInt(100*self.uploaded/self.total));
+      return callback(null,item);
+  }
+  var filename = '';
+  var URI = ''
+  if (item.type === 'music') {
+      filename = item.musicInfo.filename
+      URI = item.musicInfo.URI
+  } else if (item.type === 'video') {
+      filename = item.videoInfo.filename
+      URI = item.videoInfo.URI
+  } else {
+      filename = item.filename;
+      URI = item.URI
+  }
+  
+  //npm install ali-oss
+  //npm install co
+  //var mongoid = require('mongoid-js');
+
+  var co = require('co');
+  var OSS = require('ali-oss');
+
+  var client = new OSS({
+    region: 'oss-cn-shenzhen',
+    accessKeyId: 'Vh0snNA4Orv3emBj',
+    accessKeySecret: 'd7p2eNO8GuMl1GtIZ0at4wPDyED4Nz'
+  });
+
+
+  //co(function* () {
+  //  var result = yield client.listBuckets();
+  //  console.log(result);
+  //}).catch(function (err) {
+  //  console.log(err);
+  //});
+
+  //co(function* () {
+  //  client.useBucket('tiegushi');
+  //  var result = yield client.list({
+  //    'max-keys': 5
+  //  });
+  //  console.log(result);
+  //}).catch(function (err) {
+  //  console.log(err);
+  //});
+
+
+  co(function* () {
+    var key = mongoid();
+    client.useBucket('tiegushi');
+    console.log(key)
+    var result = yield client.put(key, URI);
+    item.uploaded = true;
+    callback(null,item)
+    //console.log(result);
+  }).catch(function (err) {
+    item.uploaded = false;
+      setTimeout( function() {
+        fileUploader(item, callback)
+      },1000);
+    console.log(err);
+  });
+
+  // var ft = uploadToAliyun_new(filename, URI, function(status,param){
+  //   if (Session.get('terminateUpload')) {
+  //       if (Session.get('flag')){
+  //           return;
+  //       } 
+  //       Session.set('flag',true);         
+  //       return callback(new Error('aboutUpload'),item)
+  //   }
+  //   if (status === 'uploading' && param){
+  //       var progressBarWidth = parseInt(100*(self.uploaded/self.total + (param.loaded / param.total)/self.total));
+  //       if(progressBarWidth-Session.get('progressBarWidth')>=1){
+  //           Session.set('progressBarWidth',progressBarWidth);
+  //       }
+  //       //Session.set('progressBarWidth', parseInt(100*(self.uploaded/self.total + (param.loaded / param.total)/self.total)));
+  //   } else if (status === 'done'){
+  //       self.uploaded++;
+  //       var progressBarWidth1 = parseInt(100*self.uploaded/self.total);
+  //       if(progressBarWidth1-Session.get('progressBarWidth')>=1){
+  //           Session.set('progressBarWidth',progressBarWidth1);
+  //       }
+  //       //Session.set('progressBarWidth', parseInt(100*self.uploaded/self.total));
+  //       if ( item.type === 'music'){
+  //           item.musicInfo.playUrl = param;
+  //       } else if ( item.type === 'video'){
+  //           item.videoInfo.imageUrl = param;
+  //       } else {
+  //           item.imgUrl = param;
+  //       }
+  //       item.uploaded = true;
+  //       callback(null,item)
+  //   } else if (status === 'error'){
+  //       item.uploaded = false;
+  //       Meteor.setTimeout( function() {
+  //           fileUploader(item, callback)
+  //       },1000);
+  //   }
+  // });
+};
+var asyncCallback = function (err,result){
+    console.log('async processing done ' + JSON.stringify(result));
+    //Template.progressBar.__helpers.get('close')();
+    if (err){
+        if (this.finalCallback) {
+            this.finalCallback('error',result);
+        }
+    } else {
+        if (this.finalCallback) {
+            this.finalCallback(null,result);
+        }
+    }
+};
+var multiThreadUploadFile_new = function(draftData, maxThreads, callback) {
+    var uploadObj = {
+        fileUploader : fileUploader,
+        draftData : draftData,
+        finalCallback: callback,
+        asyncCallback: asyncCallback,
+        uploaded : 0,
+        total : draftData.length
+    };
+    console.log('draft data is ' + JSON.stringify(draftData));
+
+    //Session.set('aboutUpload', false);
+    //Session.set('flag',false);
+    async.mapLimit(draftData,maxThreads,uploadObj.fileUploader.bind(uploadObj),uploadObj.asyncCallback.bind(uploadObj));
+};
+    
+filedownup.multiThreadUploadFileWhenPublishInCordova = function(draftData, postId, callback){
+    //showDebug && console.log("draftData="+JSON.stringify(draftData));
+    if (draftData.length > 0) {
+        //Template.progressBar.__helpers.get('show')();
+    } else {
+        callback('failed');
+    }
+
+    var multiThreadUploadFileCallback = function(err,result){
+      if (!err) {
+          callback(null, result);
+      } else {
+          //Template.progressBar.__helpers.get('close')();
+          showDebug && console.log("Jump to post page...");
+          //PUB.pagepop();//Pop addPost page, it was added by PUB.page('/progressBar');
+          callback('failed', result);
+          showDebug && console.log("multiThreadUploadFile, failed");
+      }
+    };
+
+    multiThreadUploadFile_new(draftData, 1, multiThreadUploadFileCallback);
+    return;
 };
 
