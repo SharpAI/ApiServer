@@ -179,6 +179,7 @@ router.route('/:_id/:url')
                   });
                   resortObj = {}
                   
+                  var inputUrl = req.params.url;
                   filedownup.seekOneUsableMainImage(data, function(file, w, h, found, index, total, source) {
                     console.log('found ' + found + ' index ' + index + ' total ' + total + ' fileObject ' + file + ' source ' + source);
                     if (file) {

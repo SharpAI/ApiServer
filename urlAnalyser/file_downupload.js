@@ -2,14 +2,29 @@ var mongoid = require('mongoid-js');
 var wget = require('wgetjs');
 var fs = require('fs');
 var os = require('os');
+var sizeOf = require('image-size')
 
 module.exports = filedownup
 
-var showDebug = false
+var showDebug = true
 
 function filedownup(){
 
 }
+
+var get_image_size_from_URI = function(url, cb) {
+  var dimensions = sizeOf(url);
+  var width = 0;
+  var height = 0;
+
+  if (dimensions) {
+    width = dimensions.width;
+    height = dimensions.height;
+  }
+
+  cb && cb(width, height);
+};
+
 
 var downloadFromBCS = function(source, callback){
 //    function fail(error) {
@@ -65,19 +80,34 @@ var downloadFromBCS = function(source, callback){
     dest: target,
     timeout: 2000};
 
+  var theFile = {
+   name: source.substr(source.lastIndexOf('/') + 1),
+   toURL: function() {
+     return target + source.substr(source.lastIndexOf('/') + 1);
+   }
+  }
+
   wget(wget_opt, function (error, response, body) {
     if (error) {
       console.log('--- error:');
       console.log(error);            // error encountered
+      if(callback){
+        callback(null, source);
+      }
+    }
+    else {
+      if(callback){
+        callback(theFile.toURL(), source, theFile);
+      }
     }
   });
 }
 
 
-var seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, callback, minimal, onlyOne) {
+filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, callback, minimal, onlyOne) {
   var downloadHandler, minimalWidthAndHeight, onError, onSuccess;
-  this.imageCounter = 0;
-  this.foundImages = 0;
+  var imageCounter = 0;
+  var foundImages = 0;
   if (minimal) {
     minimalWidthAndHeight = minimal;
   } else {
@@ -141,7 +171,7 @@ filedownup.seekOneUsableMainImage = function(data, callback, minimal) {
   }
   showDebug && console.log('Got images to be anylised ' + JSON.stringify(imageArray));
   if (imageArray.length > 0) {
-    return seekSuitableImageFromArrayAndDownloadToLocal(imageArray, function(file, w, h, found, index, length, source) {
+    return filedownup.seekSuitableImageFromArrayAndDownloadToLocal(imageArray, function(file, w, h, found, index, length, source) {
       if (file) {
         showDebug && console.log('Original source:' + source + 'Got local url ' + JSON.stringify(file) + ' w:' + w + ' h:' + h);
         return callback(file, w, h, found, index, length, source);

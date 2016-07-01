@@ -1,7 +1,12 @@
+var mongoid = require('mongoid-js');
+var filedownup = require('./file_downupload.js');
+var async = require('async');
 var drafts;
+
 
 drafts = (function() {
   var insertVideoWithDownloadedImage, _addontitle, _drafts, _getItem, _getItemIndex, _getItems, _imageIndex, _successCallback, _title;
+  var user = null;
 
   _drafts = [];
 
@@ -11,9 +16,9 @@ drafts = (function() {
 
   _successCallback = [];
 
-  function drafts(id, user) {
+  function drafts(id, u) {
     this.id = id;
-    this.user = user;
+    user = u;
   }
 
   _imageIndex = function() {
@@ -79,12 +84,13 @@ drafts = (function() {
     var imageArray, self;
     if (item.type === 'text') {
       console.log('Processing Text');
+      console.log(user)
       _drafts.push({
         type: 'text',
         toTheEnd: true,
         noKeyboardPopup: true,
         isImage: false,
-        owner: this.user._id,
+        owner: user._id,
         text: item.text,
         style: '',
         layout: item.layout,
@@ -99,9 +105,9 @@ drafts = (function() {
       if (item.imageUrl && item.imageUrl !== '') {
         imageArray = [];
         imageArray.push(item.imageUrl);
-        return seekSuitableImageFromArrayAndDownloadToLocal(imageArray, function(file, w, h, found, index, total, source) {
+        return filedownup.seekSuitableImageFromArrayAndDownloadToLocal(imageArray, function(file, w, h, found, index, total, source) {
           if (file) {
-            this.insertDownloadedImage(self.data, source, found, self.inputUrl, file, w, h);
+            drafts.prototype.insertDownloadedImage(self.data, source, found, self.inputUrl, file, w, h);
           }
           return callback(null, item);
         }, 150, true);
@@ -112,7 +118,7 @@ drafts = (function() {
         type: 'image',
         isImage: true,
         inIframe: true,
-        owner: this.user._id,
+        owner: user._id,
         toTheEnd: true,
         text: '您当前程序不支持视频观看',
         iframe: item.iframe,
@@ -129,7 +135,7 @@ drafts = (function() {
       if (item.videoInfo.imageUrl) {
         imageArray = [];
         imageArray.push(item.videoInfo.imageUrl);
-        return seekSuitableImageFromArrayAndDownloadToLocal(imageArray, function(file, w, h, found, index, total, source) {
+        return filedownup.seekSuitableImageFromArrayAndDownloadToLocal(imageArray, function(file, w, h, found, index, total, source) {
           if (file) {
             item.videoInfo.imageUrl = 'cdvfile://localhost/persistent/' + file.name;
             item.videoInfo.filename = file.name;
@@ -144,7 +150,7 @@ drafts = (function() {
         this.insertVideoInfo(item.videoInfo);
       }
     }
-    return Meteor.setTimeout(function() {
+    return setTimeout(function() {
       return callback(null, item);
     }, 10);
   };
@@ -171,7 +177,7 @@ drafts = (function() {
     return _drafts.push({
       _id: mongoid(),
       type: 'video',
-      owner: this.user._id,
+      owner: user._id,
       toTheEnd: true,
       text: '来自故事贴',
       videoInfo: videoInfo,
@@ -186,7 +192,7 @@ drafts = (function() {
     return _drafts.push({
       _id: mongoid(),
       type: 'music',
-      owner: this.user._id,
+      owner: user._id,
       toTheEnd: true,
       text: '您当前程序不支持音频播放，请分享到微信中欣赏',
       musicInfo: musicInfo,
@@ -214,7 +220,7 @@ drafts = (function() {
         isImage: true,
         siteTitle: linkInfo.title,
         siteHost: linkInfo.host,
-        owner: this.user._id,
+        owner: user._id,
         imgUrl: 'cdvfile://localhost/persistent/' + file.name,
         filename: file.name,
         URI: file.toURL(),
@@ -241,7 +247,7 @@ drafts = (function() {
         isImage: true,
         siteTitle: linkInfo.title,
         siteHost: linkInfo.host,
-        owner: this.user._id,
+        owner: user._id,
         imgUrl: mainImageUrl,
         filename: mainImageUrl,
         URI: mainImageUrl,
@@ -261,7 +267,7 @@ drafts = (function() {
     resortedObj.inputUrl = inputUrl;
     return async.mapLimit(data.resortedArticle, 1, resortedObj.itemProcessor.bind(resortedObj), function(err, results) {
       console.log('error ' + err);
-      return processTitleOfPost(data);
+      return drafts.prototype.processTitleOfPost(data);
     });
   };
 
@@ -354,8 +360,8 @@ drafts = (function() {
     pub = [];
     addontitle = _addontitle;
     title = _title;
-    modalUserId = this.user._id;
-    ownerUser = this.user;
+    modalUserId = user._id;
+    ownerUser = user;
     try {
       ownerIcon = ownerUser.profile.icon;
     } catch (_error) {
@@ -424,6 +430,7 @@ drafts = (function() {
 
 module.exports = {
   createDrafts: function(postId, user) {
+    console.log(postId , user)
     return new drafts(postId, user);
   }
 };
