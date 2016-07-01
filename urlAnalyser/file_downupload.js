@@ -13,9 +13,16 @@ function filedownup(){
 }
 
 var get_image_size_from_URI = function(url, cb) {
-  var dimensions = sizeOf(url);
+  //FIXME: other formate ???
+
   var width = 0;
   var height = 0;
+
+  if (url.substr(url.lastIndexOf('.'))  === '.ico') {
+    return cb(width, height);
+  }
+
+  var dimensions = sizeOf(url);
 
   if (dimensions) {
     width = dimensions.width;
