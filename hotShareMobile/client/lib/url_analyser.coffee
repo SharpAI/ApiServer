@@ -975,6 +975,19 @@ if Meteor.isClient
               toBeInsertedText = ''
             toBeInsertedStyleAlign = styleAlign
         else if text and text isnt ''
+          if node.tagName is 'OL'
+            textArray = text.split('\n')
+            if textArray.length > 0
+              for i in [0..textArray.length-1]
+                if toBeInsertedText.length < 20
+                  if toBeInsertedText.length > 0
+                    toBeInsertedText += '\n'
+                  toBeInsertedText += textArray[i]
+                else
+                  appendParagraph(resortedArticle, toBeInsertedText, toBeInsertedStyleAlign)
+                  toBeInsertedText = textArray[i]
+                  toBeInsertedStyleAlign = styleAlign
+              return
           previousIsImage = false
           showDebug&&console.log '    Got text in this element('+toBeInsertedText.length+') '+text
           showDebug&&console.log 'Text  ['+text+'] color is '+nodeColor+' nodeBackgroundColor is '+nodeBackgroundColor
