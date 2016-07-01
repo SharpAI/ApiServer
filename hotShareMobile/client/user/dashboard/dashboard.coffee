@@ -254,9 +254,11 @@ if Meteor.isClient
       Session.set("display_lang","en")
       Cookies.set("display-lang","en",360)
       TAPi18n.setLanguage("en")
+      Meteor.call 'updateUserLanguage', Meteor.userId(), 'en'
       Router.go '/dashboard'
     'click #chinese': ->
       Session.set("display_lang","zh")
       Cookies.set("display-lang","zh",360)
       TAPi18n.setLanguage("zh")
+      Meteor.call 'updateUserLanguage', Meteor.userId(), 'zh'
       Router.go '/dashboard'

@@ -7,6 +7,7 @@ if (Meteor.isClient) {
         Session.setPersistent('persistentLoginStatus', true);
       }
       return Meteor.setTimeout(function() {
+        Meteor.call('updateUserLanguage', Meteor.userId(), 'en');
         console.log("Accounts.onLogin");
 	checkShareUrl();
         if(device.platform === 'Android'){

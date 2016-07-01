@@ -11,7 +11,8 @@ if Meteor.isClient
                 fullname:'匿名',
                 icon:'/userPicture.png',
                 anonymous:true,
-                browser:true
+                browser:true,
+                language: if isUSVersion 'en' then 'zh'
               }
             }
           ,(error)->
@@ -22,6 +23,7 @@ if Meteor.isClient
               Meteor.loginWithPassword(uuid,'123456',(error)->
                 unless error
                   checkShareUrl()
+                  Meteor.call 'updateUserLanguage', Meteor.userId(), 'en'
                   if window.updateMyOwnLocationAddress
                     window.updateMyOwnLocationAddress()
               )
@@ -29,6 +31,7 @@ if Meteor.isClient
           Meteor.loginWithPassword(amplify.store('uuid'),'123456',(error)->
             unless error
               checkShareUrl()
+              Meteor.call 'updateUserLanguage', Meteor.userId(), 'en'
               if window.updateMyOwnLocationAddress
                 window.updateMyOwnLocationAddress()
             else

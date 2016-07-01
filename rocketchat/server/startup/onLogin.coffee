@@ -29,3 +29,7 @@ if Meteor.isServer
         if object.connection and object.connection.clientAddress
           console.log(object.user)
           Meteor.users.update {_id:object.user._id},{$set:{'profile.lastLogonIP':object.connection.clientAddress}}
+        
+        if gushitieProfile and gushitieProfile.profile and gushitieProfile.profile.language
+          console.log("the Language is: "+gushitieProfile.profile)
+          Meteor.users.update {_id:object.user._id},{$set:{language: gushitieProfile.profile.language}}

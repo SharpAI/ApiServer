@@ -2,6 +2,9 @@ if Meteor.isServer
   myCrypto = Meteor.npmRequire "crypto"
   Meteor.startup ()->
     Meteor.methods
+      "updateUserLanguage": (userId, lang)->
+        Meteor.defer ()->
+          Meteor.users.update({_id: userId},{$set: {'profile.language': lang}})
       'httpCall': (method, url, options)->
         return HTTP.call(method, url, options)
       "updataFeedsWithMe": (userId)->
