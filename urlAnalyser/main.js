@@ -4,7 +4,35 @@ var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 var path = require('path');
 var mongoid = require('mongoid-js');
+var kue = require('kue')
+    , queue = kue.createQueue({
+        prefix: 'q',
+        redis: {
+            port: 6379,
+            host: '192.168.99.100',
+            auth: 'mypass'
+        }});
 
+var job = queue.create('email', {
+    title: 'welcome email for tj'
+    , to: 'tj@learnboost.com'
+    , template: 'welcome-email'
+}).save( function(err){
+    if( !err ) console.log( job.id );
+});
+
+queue.process('email', 5 ,function(job, done){
+    email(job.data.to, done);
+});
+
+function email(address, done) {
+    //if(!isValidEmail(address)) {
+        //done('invalid to address') is possible but discouraged
+    //    return done(new Error('invalid to address'));
+    //}
+    // email send stuff...
+    done();
+}
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -113,6 +141,13 @@ router.route('/:_id/:url')
                 console.log('Post id is: '+postId);
 
                 res.json({status:'succ',json:'http://cdn.tiegushi.com/posts/'+postId});
+                  var job = queue.create('email', {
+                      title: 'welcome email for tj'
+                      , to: 'tj@learnboost.com'
+                      , template: 'welcome-email'
+                  }).save( function(err){
+                      if( !err ) console.log( job.id );
+                  });
               });
             }
           })
