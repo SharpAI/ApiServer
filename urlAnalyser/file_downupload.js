@@ -2,7 +2,8 @@ var mongoid = require('mongoid-js');
 var wget = require('wgetjs');
 var fs = require('fs');
 var os = require('os');
-var sizeOf = require('image-size')
+var sizeOf = require('image-size');
+var async = require('async');
 
 module.exports = filedownup
 
@@ -205,7 +206,7 @@ var fileUploader = function (item,callback){
   //       return callback(new Error('aboutUpload'),item)
   // }
   var self = this;
-  if ($.isEmptyObject(item)) {
+  if (!item) {
       self.uploaded++;
       //Session.set('progressBarWidth', parseInt(100*self.uploaded/self.total));
       return callback(null,item);
@@ -260,6 +261,16 @@ var fileUploader = function (item,callback){
     client.useBucket('tiegushi');
     console.log(key)
     var result = yield client.put(key, URI);
+    var url = 'http://data.tiegushi.com/' + key;
+    
+    if ( item.type === 'music'){
+      item.musicInfo.playUrl = url;
+    } else if ( item.type === 'video'){
+      item.videoInfo.imageUrl = url;
+    } else {
+      item.imgUrl = url;
+    }
+    
     item.uploaded = true;
     callback(null,item)
     //console.log(result);

@@ -324,7 +324,7 @@ drafts = (function() {
       return callback && callback();
     }
     console.log('draftToBeUploadedImageData:', draftToBeUploadedImageData);
-    return multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, null, function(err, result) {
+    return filedownup.multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, null, function(err, result) {
       var item, _l, _len2;
       if (!result) {
         return callback && callback('上传失败，请稍后重试');
@@ -341,7 +341,7 @@ drafts = (function() {
             if (!_drafts[_getItemIndex(item._id)].musicInfo) {
               _drafts[_getItemIndex(item._id)].musicInfo = {};
             }
-            _drafts[_getItemIndex(item._id)].musicInfo.playUrl = tem.musicInfo.playUrl;
+            _drafts[_getItemIndex(item._id)].musicInfo.playUrl = item.musicInfo.playUrl;
           } else if (item.type === 'video' && item.videoInfo && item.videoInfo.imageUrl) {
             if (!_drafts[_getItemIndex(item._id)].videoInfo) {
               _drafts[_getItemIndex(item._id)].videoInfo = {};
