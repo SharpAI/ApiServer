@@ -267,6 +267,8 @@ if Meteor.isClient
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
+    showImporting: ()->
+      Session.get('postContent').status is 'importing' and Session.get('postContent').ownerId is Meteor.userId()
     hiddenChatLoad: ()->
       Session.equals('isWeChatWifi',true) and Meteor.userId()
     chatUrl: ()->
@@ -466,9 +468,9 @@ if Meteor.isClient
         Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
   Template.showPosts.events
     'click .pub-me-post': ()->
-      trackEvent('Download','from Post Header')
-      window.open('http://cdn.tiegushi.com', '_system')
-      # Router.go('/import')
+      # trackEvent('Download','from Post Header')
+      # window.open('http://cdn.tiegushi.com', '_system')
+      Router.go('/import')
     'click .readmore': (e, t)->
       # if e.target is e.currentTarget
       $showPosts = $('.showPosts')

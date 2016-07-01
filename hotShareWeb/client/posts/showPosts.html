@@ -76,6 +76,10 @@
                   </div>
               </div>
           {{/if}}
+        
+        {{#if showImporting}}
+        <div class="importing">您的故事服务器正在优化中，完成后此消息会消失...</div>
+        {{/if}}
         <div id="wrapper">
           <div class="mainImage" id="{{_id}}" style="height:{{getMainImageHeight}}px;">
             <img id="wx-img" class="scale item" src="{{mainImage}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImageStyle}}" >
