@@ -42,6 +42,7 @@ var port = process.env.PORT || 8080;        // set our port
 var MongoClient = require('mongodb').MongoClient;
 var DB_CONN_STR = 'mongodb://127.0.0.1:3001/meteor';
 var posts = null;
+var users = null;
 
 MongoClient.connect(DB_CONN_STR, function(err, db) {
     if (err) {
@@ -49,9 +50,10 @@ MongoClient.connect(DB_CONN_STR, function(err, db) {
         return;
     }
     posts = db.collection('posts');
+    users = db.collection('users');
 });
-var insert_data = function(id, url, data, cb) {
-    if (!id || !data || !url || !posts) {
+var insert_data = function(user, url, data, cb) {
+    if (!user || !data || !url || !posts) {
       console.log('Error: null of id or data');
       if(cb){
           cb('error',null)
@@ -63,7 +65,7 @@ var insert_data = function(id, url, data, cb) {
       for(var i=0;i<data.resortedArticle.length;i++){
         if(data.resortedArticle[i].type === 'image')
           data.resortedArticle[i].isImage = true;
-        data.resortedArticle[i]._id = id + i;
+        data.resortedArticle[i]._id = mongoid();
         // data.resortedArticle[i].data_row = ;
         // data.resortedArticle[i].data_col = ;
         // data.resortedArticle[i].data_sizex = ;
@@ -72,8 +74,8 @@ var insert_data = function(id, url, data, cb) {
     }
     
     var data_insert = [{
-      '_id':id+'_'+mongoid(),
-      'ownerId': id,
+      '_id':mongoid(),
+      'ownerId': user._id,
       'pub': data.resortedArticle,
       'title': data.title,
       'browse': 0,
@@ -82,11 +84,14 @@ var insert_data = function(id, url, data, cb) {
       'comment': [],
       'commentsCount': 0,
       'addontitle': [],
-      'mainImage': data.imageArray[0],
+      'mainImage': data.imageArray.length > 0 ? data.imageArray[0] : 'http://data.tiegushi.com/res/defaultMainImage1.jpg',
       'mainImageStyle': [],
       'mainText': [],
       'fromUrl': url,
       'status':'importing',
+      'owner':user._id,
+      'ownerName':user.profile.fullname || user.username,
+      'ownerIcon':user.profile.icon || '/userPicture.png',
       'publish': true
       }];
 
@@ -104,6 +109,13 @@ var insert_data = function(id, url, data, cb) {
       }
     });
 }
+
+var updatePosts = function(postId, post, callback){
+  post.status = 'imported';
+  posts.update({_id: postId},{$set: post}, function(err, number){
+    callback && callback(err, number);
+  });
+};
 
 // ROUTES FOR OUR API
 // =============================================================================
@@ -132,14 +144,54 @@ router.route('/:_id/:url')
             if(!req.state){
               req.state = true
 
-              insert_data(req.params._id, req.params.url, result, function(err,postId){
+              var user = users.findOne({_id: req.params._id});
+              if(!user)
+                return res.json({status:'failed'});
+              
+              insert_data(user, req.params.url, result, function(err,postId){
                 if (err) {
                   console.log('Error: insert_data failed');
                   res.json({status:'failed'});
                   return;
                 }
                 console.log('Post id is: '+postId);
-
+                
+                
+                // 图片的下载及排版计算
+                var data = result;
+                var drafts = new draftsClass(postId, user);
+                drafts.onSuccess(function(){
+                  var postObj = drafts.getPubObject();
+                  drafts.destroy();
+                  updatePosts(postId, postObj, function(err, number){
+                    if(err || number <= 0)
+                      console.log('import error.');
+                  });
+                });
+                drafts.onFail(function(){
+                  // TODO:
+                });
+                resortObj = {}
+                
+                seekOneUsableMainImage(data, function(file, w, h, found, index, total, source) {
+                  console.log('found ' + found + ' index ' + index + ' total ' + total + ' fileObject ' + file + ' source ' + source);
+                  if (file) {
+                    drafts.insertDownloadedImage(data, source, found, inputUrl, file, w, h);
+                    resortObj.mainUrl = source;
+                  } else {
+                    drafts.insertDefaultImage(data, 'http://data.tiegushi.com/res/defaultMainImage1.jpg', false, inputUrl);
+                  }
+                  if (data.resortedArticle.length > 0) {
+                    resortObj.index = 0;
+                    resortObj.length = data.resortedArticle.length;
+                    console.log('resortObj' + JSON.stringify(resortObj));
+                    return drafts.renderResortedArticleAsync(data, inputUrl, resortObj);
+                  } else {
+                    return drafts.processTitleOfPost(data);
+                  }
+                }, 200);
+     
+                // send response
                 res.json({status:'succ',json:'http://cdn.tiegushi.com/posts/'+postId});
                   var job = queue.create('email', {
                       title: 'welcome email for tj'
