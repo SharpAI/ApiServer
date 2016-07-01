@@ -35,7 +35,7 @@ if Meteor.isServer
     gushitieUser = GushitieUsers.findOne({_id:userId})
     console.log(gushitieUser)
     result = Accounts.updateOrCreateUserFromExternalService('gushitie', {id: userId, _OAuthCustom: true}, {})
-    if gushitieUser.username
+    if gushitieUser and gushitieUser.username
       gushitieUsername = gushitieUser.username
     else
       gushitieUsername = gushitieUser.profile.fullname

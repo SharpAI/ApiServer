@@ -15,6 +15,10 @@ if Meteor.isClient
       $(".chatBtn .red_spot").hide().html(0)
       trackEvent("socialBar","GroupChat")
       url = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
+      if isUSVersion
+        url += '#en'
+      else
+        url += '#zh'
       #window.location.href = url
       shareUrl = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id
       imgUrl = if Session.get('postContent').mainImage then Session.get('postContent').mainImage else'http://cdn.tiegushi.com/images/logo.png'

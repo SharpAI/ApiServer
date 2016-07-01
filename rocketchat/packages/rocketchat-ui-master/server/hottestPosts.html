@@ -86,7 +86,15 @@
     }
 </style>
 <script>
-    document.title = '故事贴专属阅览室'
+    var url = window.location.href;
+    var language = url.split('#')[1];
+    console.log(language)
+    if(language == 'zh'){
+        document.title = '故事贴专属阅览室';    
+    } else if(language == 'en'){
+        document.title = 'Reading Room';
+    }
+    // document.title = '故事贴专属阅览室'
 </script>
 <!--<script>
     var notify='稍候转入阅览室';
@@ -124,7 +132,7 @@
     },500)
 </script>-->
 <div class="showHottestPosts">
-    <h3 class="showHottestPostsTitle">24小时最热门故事贴</h3>
+    <h3 id="showHottestPostsTitle" class="showHottestPostsTitle">24小时最热故事贴</h3>
     <div class='post-list-box'>
         <ul class='post-list'>
             {{#each posts}}
@@ -157,7 +165,14 @@
 -->
 </div>
 <script>
-    var notify='稍候转入阅览室';
+    var notify = '稍候转入阅览室';
+    if(language == 'zh'){
+        notify='稍候转入阅览室';
+        document.getElementById('showHottestPostsTitle').innerHTML = '24小时最热故事贴';
+    } else if(language == 'en'){
+        notify = 'Please Wait'; 
+        document.getElementById('showHottestPostsTitle').innerHTML = 'hottest Posts In 24Hours';   
+    } 
     // document.title = notify;
     var tipBox = document.getElementById('firstPageTipBox');
     tipBox.innerHTML = notify;

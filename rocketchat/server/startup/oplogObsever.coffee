@@ -52,7 +52,7 @@ Meteor.startup ()->
         })
     images.sort (a,b) ->
       return a.index-b.index
-    return images[0]
+    return images[0].imgUrl
   postCommentToChannel=(info,userInfo)->
     room = RocketChat.models.Rooms.findOneByName info.postId
     post = GushitiePosts.findOne({_id:info.postId})
@@ -89,8 +89,10 @@ Meteor.startup ()->
         description=post.addonTitle
       title=post.title
       # mainImageUrl=post.mainImage
-      mainImageUrl = postNearImage(info,post)
-      #console.log(post)
+      NearImage = postNearImage(info,post)
+      mainImageUrl = if NearImage then NearImage else post.mainImage
+      # console.log(NearImage)
+      # console.log(mainImageUrl)
       message = {
         rid: room._id,
         msg: msg,

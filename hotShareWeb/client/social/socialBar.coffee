@@ -17,6 +17,10 @@ if Meteor.isClient
       #window.location.href = 'http://testchat.tiegushi.com/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
       #This is a Evaluation version to redirect all web user to the same chat room, let's wait and see what will happen
       url = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
+      if isUSVersion
+        url += '#en'
+      else
+        url += '#zh'
       window.open(url,'_blank')
 #Session.set("Social.LevelOne.Menu",'chatContent')
       #Session.set("SocialOnButton",'chatContent')
