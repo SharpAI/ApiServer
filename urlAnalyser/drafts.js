@@ -3,10 +3,10 @@ var filedownup = require('./file_downupload.js');
 var async = require('async');
 var drafts;
 
-
 drafts = (function() {
   var insertVideoWithDownloadedImage, _addontitle, _drafts, _getItem, _getItemIndex, _getItems, _imageIndex, _successCallback, _title;
   var user = null;
+  var postId = null;
 
   _drafts = [];
 
@@ -17,7 +17,7 @@ drafts = (function() {
   _successCallback = [];
 
   function drafts(id, u) {
-    this.id = id;
+    postId = id;
     user = u;
   }
 
@@ -367,14 +367,14 @@ drafts = (function() {
     } catch (_error) {
       ownerIcon = '/userPicture.png';
     }
-    console.log('Full name is ' + Meteor.user().profile.fullname);
+    console.log('Full name is ' + ownerUser.profile.fullname);
     if (ownerUser.profile.fullname && (ownerUser.profile.fullname !== '')) {
       ownerName = ownerUser.profile.fullname;
     } else {
       ownerName = ownerUser.username;
     }
     draftData = _drafts;
-    postId = this.id;
+    //postId = this.id;
     fromUrl = draftData[0].url;
     for (i = _i = 0, _ref = draftData.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
       if (i === 0) {
@@ -412,7 +412,7 @@ drafts = (function() {
       addontitle: addontitle,
       mainImage: mainImage,
       mainImageStyle: mainImageStyle,
-      mainText: mainText,
+      //mainText: mainText,
       fromUrl: fromUrl,
       publish: true,
       owner: ownerUser._id,
