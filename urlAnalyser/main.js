@@ -4,26 +4,27 @@ var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 var path = require('path');
 var mongoid = require('mongoid-js');
-var kue = require('kue')
-    , queue = kue.createQueue({
-        prefix: 'q',
-        redis: {
-            port: 6379,
-            host: '192.168.99.100',
-            auth: 'mypass'
-        }});
+var drafts = require('./drafts.js');
+// var kue = require('kue')
+//     , queue = kue.createQueue({
+//         prefix: 'q',
+//         redis: {
+//             port: 6379,
+//             host: '192.168.99.100',
+//             auth: 'mypass'
+//         }});
 
-var job = queue.create('email', {
-    title: 'welcome email for tj'
-    , to: 'tj@learnboost.com'
-    , template: 'welcome-email'
-}).save( function(err){
-    if( !err ) console.log( job.id );
-});
+// var job = queue.create('email', {
+//     title: 'welcome email for tj'
+//     , to: 'tj@learnboost.com'
+//     , template: 'welcome-email'
+// }).save( function(err){
+//     if( !err ) console.log( job.id );
+// });
 
-queue.process('email', 5 ,function(job, done){
-    email(job.data.to, done);
-});
+// queue.process('email', 5 ,function(job, done){
+//     email(job.data.to, done);
+// });
 
 function email(address, done) {
     //if(!isValidEmail(address)) {
@@ -144,62 +145,67 @@ router.route('/:_id/:url')
             if(!req.state){
               req.state = true
 
-              var user = users.findOne({_id: req.params._id});
-              if(!user)
-                return res.json({status:'failed'});
-              
-              insert_data(user, req.params.url, result, function(err,postId){
-                if (err) {
-                  console.log('Error: insert_data failed');
-                  res.json({status:'failed'});
-                  return;
-                }
-                console.log('Post id is: '+postId);
-                
-                
-                // 图片的下载及排版计算
-                var data = result;
-                var drafts = new draftsClass(postId, user);
-                drafts.onSuccess(function(){
-                  var postObj = drafts.getPubObject();
-                  drafts.destroy();
-                  updatePosts(postId, postObj, function(err, number){
-                    if(err || number <= 0)
-                      console.log('import error.');
-                  });
-                });
-                drafts.onFail(function(){
-                  // TODO:
-                });
-                resortObj = {}
-                
-                seekOneUsableMainImage(data, function(file, w, h, found, index, total, source) {
-                  console.log('found ' + found + ' index ' + index + ' total ' + total + ' fileObject ' + file + ' source ' + source);
-                  if (file) {
-                    drafts.insertDownloadedImage(data, source, found, inputUrl, file, w, h);
-                    resortObj.mainUrl = source;
-                  } else {
-                    drafts.insertDefaultImage(data, 'http://data.tiegushi.com/res/defaultMainImage1.jpg', false, inputUrl);
+              users.findOne({_id: req.params._id}, function (err, user) {
+                if(err)
+                  return res.json({status:'failed'});
+                  
+                insert_data(user, req.params.url, result, function(err,postId){
+                  if (err) {
+                    console.log('Error: insert_data failed');
+                    res.json({status:'failed'});
+                    return;
                   }
-                  if (data.resortedArticle.length > 0) {
-                    resortObj.index = 0;
-                    resortObj.length = data.resortedArticle.length;
-                    console.log('resortObj' + JSON.stringify(resortObj));
-                    return drafts.renderResortedArticleAsync(data, inputUrl, resortObj);
-                  } else {
-                    return drafts.processTitleOfPost(data);
-                  }
-                }, 200);
-     
-                // send response
-                res.json({status:'succ',json:'http://cdn.tiegushi.com/posts/'+postId});
-                  var job = queue.create('email', {
-                      title: 'welcome email for tj'
-                      , to: 'tj@learnboost.com'
-                      , template: 'welcome-email'
-                  }).save( function(err){
-                      if( !err ) console.log( job.id );
+                  console.log('Post id is: '+postId);
+                  
+                  // 图片的下载及排版计算
+                  var data = result;
+                  var draftsObj = drafts.createDrafts(postId, user);
+                  draftsObj.onSuccess(function(){
+                    draftsObj.uploadFiles(function (err) {
+                      if(err)
+                        return console.log('upload file error.');
+                        
+                      var postObj = draftsObj.getPubObject();
+                      draftsObj.destroy();
+                      updatePosts(postId, postObj, function(err, number){
+                        if(err || number <= 0)
+                          console.log('import error.');
+                      });
+                    });
                   });
+                  draftsObj.onFail(function(){
+                    // TODO:
+                  });
+                  resortObj = {}
+                  
+                  seekOneUsableMainImage(data, function(file, w, h, found, index, total, source) {
+                    console.log('found ' + found + ' index ' + index + ' total ' + total + ' fileObject ' + file + ' source ' + source);
+                    if (file) {
+                      draftsObj.insertDownloadedImage(data, source, found, inputUrl, file, w, h);
+                      resortObj.mainUrl = source;
+                    } else {
+                      draftsObj.insertDefaultImage(data, 'http://data.tiegushi.com/res/defaultMainImage1.jpg', false, inputUrl);
+                    }
+                    if (data.resortedArticle.length > 0) {
+                      resortObj.index = 0;
+                      resortObj.length = data.resortedArticle.length;
+                      console.log('resortObj' + JSON.stringify(resortObj));
+                      return draftsObj.renderResortedArticleAsync(data, inputUrl, resortObj);
+                    } else {
+                      return draftsObj.processTitleOfPost(data);
+                    }
+                  }, 200);
+      
+                  // send response
+                  res.json({status:'succ',json:'http://cdn.tiegushi.com/posts/'+postId});
+                  // var job = queue.create('email', {
+                  //     title: 'welcome email for tj'
+                  //     , to: 'tj@learnboost.com'
+                  //     , template: 'welcome-email'
+                  // }).save( function(err){
+                  //     if( !err ) console.log( job.id );
+                  // });
+                });
               });
             }
           })
