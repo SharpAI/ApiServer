@@ -7,7 +7,11 @@ if (Meteor.isClient) {
         Session.setPersistent('persistentLoginStatus', true);
       }
       return Meteor.setTimeout(function() {
-        Meteor.call('updateUserLanguage', Meteor.userId(), 'en');
+        if(isUSVersion){
+          Meteor.call('updateUserLanguage', Meteor.userId(), 'en');  
+        } else {
+          Meteor.call('updateUserLanguage', Meteor.userId(), 'zh');
+        }
         console.log("Accounts.onLogin");
 	checkShareUrl();
         if(device.platform === 'Android'){

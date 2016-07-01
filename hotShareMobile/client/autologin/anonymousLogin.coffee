@@ -31,7 +31,10 @@ if Meteor.isClient
           Meteor.loginWithPassword(amplify.store('uuid'),'123456',(error)->
             unless error
               checkShareUrl()
-              Meteor.call 'updateUserLanguage', Meteor.userId(), 'en'
+              if isUSVersion
+                Meteor.call 'updateUserLanguage', Meteor.userId(), 'en'
+              else
+                Meteor.call 'updateUserLanguage', Meteor.userId(), 'zh'
               if window.updateMyOwnLocationAddress
                 window.updateMyOwnLocationAddress()
             else
