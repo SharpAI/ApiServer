@@ -124,7 +124,8 @@ Template.body.onRendered ->
 
 Template.main.helpers
 	canShowTopTost: ->
-		return isWeiXinFunc() and Session.equals('canShowTopTost',true)
+		# return isWeiXinFunc() and Session.equals('canShowTopTost',true)
+		return false
 	siteName: ->
 		return RocketChat.settings.get 'Site_Name'
 
