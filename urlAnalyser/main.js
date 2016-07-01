@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var path = require('path');
 var mongoid = require('mongoid-js');
 var drafts = require('./drafts.js');
+var filedownup = require('./file_downupload.js');
 // var kue = require('kue')
 //     , queue = kue.createQueue({
 //         prefix: 'q',
@@ -146,9 +147,9 @@ router.route('/:_id/:url')
               req.state = true
 
               users.findOne({_id: req.params._id}, function (err, user) {
-                if(err)
+                if(err || !user)
                   return res.json({status:'failed'});
-                  
+
                 insert_data(user, req.params.url, result, function(err,postId){
                   if (err) {
                     console.log('Error: insert_data failed');
@@ -178,7 +179,7 @@ router.route('/:_id/:url')
                   });
                   resortObj = {}
                   
-                  seekOneUsableMainImage(data, function(file, w, h, found, index, total, source) {
+                  filedownup.seekOneUsableMainImage(data, function(file, w, h, found, index, total, source) {
                     console.log('found ' + found + ' index ' + index + ' total ' + total + ' fileObject ' + file + ' source ' + source);
                     if (file) {
                       draftsObj.insertDownloadedImage(data, source, found, inputUrl, file, w, h);
