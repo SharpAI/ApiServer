@@ -71,7 +71,7 @@ if(Meteor.isServer){
       }
     }
     
-    OldTopicPosts =  TopicPosts.find({_id: {$in: ids}}, {sort: {createdAt: -1}}).fetch(); 
+    OldTopicPosts =  TopicPosts.find({_id: {$in: ids}}, {sort: {createdAt: -1}}); 
   };
   Meteor.startup(function(){
     makeOldTopicPosts();
@@ -1347,13 +1347,10 @@ if(Meteor.isServer){
     return RefComments.find({},{fields: {text:1},skip:Rnd,limit:8});
   });
   Meteor.publish("topicposts", function(topicId, limit) {
-      console.log('topicposts', JSON.stringify(OldTopicPosts));
       // 老版本的处理，修改请慎重, @feiwu
       if(!topicId && !limit){
         if(!this.userId)
           return [];
-        if(OldTopicPosts.length <= 0)
-          makeOldTopicPosts(); 
           
         return OldTopicPosts;
       }
