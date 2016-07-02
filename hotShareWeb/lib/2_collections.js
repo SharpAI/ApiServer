@@ -46,6 +46,37 @@ if(Meteor.isServer){
   PShares = new Meteor.Collection("pshares");
 }
 
+// 为老版本计算默认 topicpost 数据
+OldTopicPosts = [];
+if(Meteor.isServer){
+  Meteor.startup(function(){
+    Meteor.setInterval(function(){
+      var topics = Topics.find({type:"topic"}, {sort: {posts: -1},limit:10}).fetch(); // 原客户端取20条
+      var themes = Topics.find({type:"theme"}, {sort: {posts: -1},limit:5}).fetch();
+      var ids = [];
+      
+      // 每主题取5条
+      if(themes.length > 0){
+        for(var i=0;i<themes.length;i++)
+          ids = _.pluck(TopicPosts.find({topicId: themes[i]._id}, {sort: {createdAt: -1},limit:5}).fetch(), '_id');
+      }
+      // 每话题取2条
+      if(topics.length > 0){
+        for(var i=0;i<topics.length;i++){
+          var tmpIds = _.pluck(TopicPosts.find({topicId: themes[i]._id}, {sort: {createdAt: -1},limit:2}).fetch(), '_id');
+          if(tmpIds.length <= 0)
+            continue;
+            
+          for(var ii=0;ii<tmpIds.length;ii++)
+            ids.push(tmpIds[ii]);
+        }
+      }
+      
+      OldTopicPosts =  TopicPosts.find({_id: {$in: ids}}, {sort: {createdAt: -1}}).fetch();         
+    }, 1000*60*10); // 10 分钟
+  });
+}
+
 if(Meteor.isServer){
     Rnd = 0;
     try{
@@ -1312,6 +1343,15 @@ if(Meteor.isServer){
     return RefComments.find({},{fields: {text:1},skip:Rnd,limit:8});
   });
   Meteor.publish("topicposts", function(topicId, limit) {
+      // 老版本的处理，修改请慎重, @feiwu
+      if(!topicId && !limit){
+        if(!this.userId)
+          return [];
+          
+        return OldTopicPosts;
+      }
+      
+      // new version
       limit = limit || 20
       if(this.userId === null)
         return [];
