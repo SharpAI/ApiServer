@@ -63,7 +63,7 @@ if(Meteor.isServer){
       // 每话题取2条
       if(topics.length > 0){
         for(var i=0;i<topics.length;i++){
-          var tmpIds = _.pluck(TopicPosts.find({topicId: themes[i]._id}, {sort: {createdAt: -1},limit:2}).fetch(), '_id');
+          var tmpIds = _.pluck(TopicPosts.find({topicId: topics[i]._id}, {sort: {createdAt: -1},limit:2}).fetch(), '_id');
           if(tmpIds.length <= 0)
             continue;
             
@@ -1343,6 +1343,7 @@ if(Meteor.isServer){
     return RefComments.find({},{fields: {text:1},skip:Rnd,limit:8});
   });
   Meteor.publish("topicposts", function(topicId, limit) {
+      console.log('topicposts', JSON.stringify(OldTopicPosts));
       // 老版本的处理，修改请慎重, @feiwu
       if(!topicId && !limit){
         if(!this.userId)

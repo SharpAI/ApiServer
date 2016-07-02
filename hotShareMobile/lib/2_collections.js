@@ -67,7 +67,7 @@ if(Meteor.isServer){
       // 每话题取2条
       if(topics.length > 0){
         for(var i=0;i<topics.length;i++){
-          var tmpIds = _.pluck(TopicPosts.find({topicId: themes[i]._id}, {sort: {createdAt: -1},limit:2}).fetch(), '_id');
+          var tmpIds = _.pluck(TopicPosts.find({topicId: topics[i]._id}, {sort: {createdAt: -1},limit:2}).fetch(), '_id');
           if(tmpIds.length <= 0)
             continue;
             
