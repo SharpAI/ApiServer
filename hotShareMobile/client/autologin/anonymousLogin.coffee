@@ -12,7 +12,7 @@ if Meteor.isClient
                 icon:'/userPicture.png',
                 anonymous:true,
                 browser:true,
-                language: if isUSVersion 'en' then 'zh'
+                language: if isUSVersion then 'en' else 'zh'
               }
             }
           ,(error)->

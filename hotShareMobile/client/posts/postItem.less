@@ -6,13 +6,15 @@
 .showPosts .content .gridster .textDiv1 span{white-space: pre-wrap;}
 .showPosts .content .gridster {padding-left:15px; padding-right:15px;}
 
-.showPosts .content .gridster .element{position: relative !important;color:black;display:block;overflow: hidden;width: 100% !important;left: 0 !important;top: auto !important;right: auto !important; margin-top: 10px; /* border: 2px #33a solid;*/ }
+.showPosts .content .gridster .element{position: relative !important;color:black;display:block;overflow: hidden;top: auto !important;}
 .showPosts .content .gridster .postTextItem .inlineScoring{display:inline;/*float: right;*/}
-.showPosts .content .gridster .postTextItem{height:auto; /* border: 2px red solid; */ }
+.showPosts .content .gridster .postTextItem{height:auto !important; margin-left: -15px;/* border: 2px red solid; */ }
 .showPosts .content .gridster .postImageItem{
   margin-left: 0;
   margin-right: 0;
   margin-top: 15px;
+  display: inline-block;
+  left: 0px !important;
   // border: 2px #00c4ff solid; 
 }
 .showPosts .content .gridster #test{
@@ -27,7 +29,6 @@
   font-size: 0;
   line-height: 0;
   text-align: left;
-  // border: 2px yellow solid; 
 }
 .postAudioItem .musicContainer{
   border: 1px solid #ebebeb;
@@ -122,8 +123,6 @@
   font-size: 0;
   line-height: 0;
   text-align: left;
-  height: auto !important;
-  // border: 2px green solid;
 }
 .postVideoItem .videoContainer{
   border: 1px solid #ebebeb;
@@ -163,10 +162,6 @@
 .video_bd .play_area video{
   width: 100%;
   height: auto;
-  -webkit-background-size:cover !important;
-  -moz-background-size:cover !important;
-  -o-background-size:cover !important;
-  background-size:cover !important;
 }
 .video_bd .description{
   display: block;
