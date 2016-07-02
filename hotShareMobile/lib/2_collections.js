@@ -1402,7 +1402,7 @@ if(Meteor.isServer){
     return RefComments.find({},{fields: {text:1},skip:Rnd,limit:8});
   });
   Meteor.publish("topicposts", function(topicId, limit) {
-      console.log('OldTopicPosts:', JSON.stringify(OldTopicPosts.fetch()));
+      //console.log('OldTopicPosts:', JSON.stringify(OldTopicPosts.fetch()));
       // 老版本的处理，修改请慎重, @feiwu
       if(!topicId && !limit){
         if(!this.userId)
