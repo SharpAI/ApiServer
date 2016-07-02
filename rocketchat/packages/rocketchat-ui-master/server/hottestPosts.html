@@ -88,6 +88,9 @@
 <script>
     var url = window.location.href;
     var language = url.split('#')[1];
+    if(language == undefined){
+        language = 'zh';
+    }
     console.log(language)
     if(language == 'zh'){
         document.title = '故事贴专属阅览室';    
