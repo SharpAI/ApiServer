@@ -781,16 +781,20 @@ if Meteor.isClient
     'blur [name=textareatitle]':->
       Session.set('textareaFocused', false)
       $(".head").css 'position','fixed'
+    'paste [name=textarea]' : (e)->
+       console.log("textarea paste !!!!!!!!!!!!!!!")
+       Session.set('textareaPasted', true)
     'change [name=textarea]' : (e,cxt)->
       console.log("textarea change "+ e.currentTarget.value)
-      paragraphArray = []
-      paragraphArrayTmp = []
-      paragraphArrayTmp = e.currentTarget.value.split('\n')
-      if paragraphArrayTmp.length > 0
+      if Session.get('textareaPasted') is true
+        paragraphArray = []
+        paragraphArrayTmp = []
+        paragraphArrayTmp = e.currentTarget.value.split('\n')
+        if paragraphArrayTmp.length > 0
           for i in [0..paragraphArrayTmp.length-1]
             unless (paragraphArrayTmp[i].length == 0 or paragraphArrayTmp[i] == ' ')
               paragraphArray.push(paragraphArrayTmp[i])
-      if paragraphArray.length > 0
+        if paragraphArray.length > 0
           console.log("paragraphArray.length="+paragraphArray.length)
           for i in [0..paragraphArray.length-1]
             console.log('paragraphArray['+i+']='+paragraphArray[i])
@@ -800,7 +804,8 @@ if Meteor.isClient
             else
               Session.set('automaticSegmentation', true)
               Drafts.insert {type:'text', currentCount:i+1, totalCount:paragraphArray.length,isImage:false, owner: Meteor.userId(), text:paragraphArray[i], style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
-      #Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
+      else
+        Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
     'click #addAudio': ()->
       if isIOS
         window.plugins.iOSAudioPicker.getAudio((list)->
