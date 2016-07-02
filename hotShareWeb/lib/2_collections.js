@@ -50,26 +50,30 @@ if(Meteor.isServer){
 if(Meteor.isServer){
   OldTopicPosts = [];
   var makeOldTopicPosts = function(){
-    var topics = Topics.find({type:"topic"}, {sort: {posts: -1},limit:10}).fetch(); // 原客户端取20条
-    var themes = Topics.find({type:"theme"}, {sort: {posts: -1},limit:5}).fetch();
     var ids = [];
-    
-    // 每主题取5条
-    if(themes.length > 0){
-      for(var i=0;i<themes.length;i++)
-        ids = _.pluck(TopicPosts.find({topicId: themes[i]._id}, {sort: {createdAt: -1},limit:5}).fetch(), '_id');
-    }
-    // 每话题取2条
-    if(topics.length > 0){
-      for(var i=0;i<topics.length;i++){
-        var tmpIds = _.pluck(TopicPosts.find({topicId: topics[i]._id}, {sort: {createdAt: -1},limit:2}).fetch(), '_id');
-        if(tmpIds.length <= 0)
-          continue;
-          
-        for(var ii=0;ii<tmpIds.length;ii++)
-          ids.push(tmpIds[ii]);
+    var addIds = function(){
+      if(arguments[0].length > 0){
+        for(var i=0;i<arguments[0].length;i++)
+          ids.push(arguments[0][i]);
       }
+    };
+    var getIds = function(name, limit){
+      var topic = Topics.findOne({text: name});
+      if(!topic)
+        return [];
+      return _.pluck(TopicPosts.find({topicId: topic._id}, {sort: {createdAt: -1},limit: limit}).fetch(), '_id')
     }
+    
+    addIds(getIds('精选', 30));
+    addIds(getIds('故事贴使用说明', 20));
+    addIds(getIds('小故事', 15));
+    addIds(getIds('寻觅一缕心香', 10));
+    addIds(getIds('热点新闻', 10));
+    addIds(getIds('故事', 5));
+    addIds(getIds('诗和远方', 5));
+    addIds(getIds('有关故事贴', 5));
+    addIds(getIds('丽江古城', 5));
+    addIds(getIds('旅游', 5));
     
     OldTopicPosts =  TopicPosts.find({_id: {$in: ids}}, {sort: {createdAt: -1}}); 
   };
