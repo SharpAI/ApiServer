@@ -79,7 +79,7 @@ var downloadFromBCS = function(source, callback){
   var nameHash=crypto.createHash('md5').update(source).digest("hex");
   var target = os.tmpdir() + '/' + 'imagecache' + '/';
   if (fs.existsSync(target)) {
-      console.log('directory already exist ' + target);
+      showDebug && console.log('directory already exist ' + target);
   } else {
       fs.mkdirSync(target);
   }
@@ -130,7 +130,7 @@ filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, c
     }
   };
   onSuccess = function(url, source, file) {
-    console.log(file);
+    showDebug && console.log(file);
     return get_image_size_from_URI(url, function(width, height) {
       if (height >= minimalWidthAndHeight && width >= minimalWidthAndHeight) {
         callback(file, width, height, ++foundImages, imageCounter, imageArray.length, source);
@@ -153,7 +153,7 @@ filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, c
       return callback(null, 0, 0, foundImages, imageCounter, imageArray.length, null, source);
     }
   };
-  console.log('seekSuitableImageFromArrayAndDownloadToLocal');
+  showDebug && console.log('seekSuitableImageFromArrayAndDownloadToLocal');
   return downloadFromBCS(imageArray[imageCounter], downloadHandler);
 };
 
@@ -198,7 +198,7 @@ filedownup.seekOneUsableMainImage = function(data, callback, minimal) {
 
 
 var fileUploader = function (item,callback){
-  console.log('uploading ' + JSON.stringify(item));
+  showDebug && console.log('uploading ' + JSON.stringify(item));
   // if (Session.get('terminateUpload')) {
   //     if (Session.get('flag')){
   //             return;
@@ -260,7 +260,7 @@ var fileUploader = function (item,callback){
   co(function* () {
     var key = mongoid();
     client.useBucket('tiegushi');
-    console.log(key)
+    showDebug && console.log(key)
     var result = yield client.put(key, URI);
     var url = 'http://data.tiegushi.com/' + key;
     
@@ -322,7 +322,7 @@ var fileUploader = function (item,callback){
   // });
 };
 var asyncCallback = function (err,result){
-    console.log('async processing done ' + JSON.stringify(result));
+    showDebug && console.log('async processing done ' + JSON.stringify(result));
     //Template.progressBar.__helpers.get('close')();
     if (err){
         if (this.finalCallback) {
@@ -343,7 +343,7 @@ var multiThreadUploadFile_new = function(draftData, maxThreads, callback) {
         uploaded : 0,
         total : draftData.length
     };
-    console.log('draft data is ' + JSON.stringify(draftData));
+    showDebug && console.log('draft data is ' + JSON.stringify(draftData));
 
     //Session.set('aboutUpload', false);
     //Session.set('flag',false);

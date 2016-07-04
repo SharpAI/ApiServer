@@ -3,6 +3,8 @@ var filedownup = require('./file_downupload.js');
 var async = require('async');
 var drafts;
 
+var showDebug = false
+
 drafts = (function() {
   var insertVideoWithDownloadedImage, _addontitle, _drafts, _getItem, _getItemIndex, _getItems, _imageIndex, _successCallback, _title;
   var user = null;
@@ -83,8 +85,8 @@ drafts = (function() {
   drafts.prototype.itemProcessor = function(item, callback) {
     var imageArray, self;
     if (item.type === 'text') {
-      console.log('Processing Text');
-      console.log(user)
+      showDebug && console.log('Processing Text');
+      showDebug && console.log(user)
       _drafts.push({
         type: 'text',
         toTheEnd: true,
@@ -100,7 +102,7 @@ drafts = (function() {
         data_sizey: '1'
       });
     } else if (item.type === 'image') {
-      console.log('Processing Image ' + item.imageUrl);
+      showDebug && console.log('Processing Image ' + item.imageUrl);
       self = this;
       if (item.imageUrl && item.imageUrl !== '') {
         imageArray = [];
@@ -173,7 +175,7 @@ drafts = (function() {
     } else {
       data_sizey = '4';
     }
-    console.log("data_sizey is " + data_sizey);
+    showDebug && console.log("data_sizey is " + data_sizey);
     return _drafts.push({
       _id: mongoid(),
       type: 'video',
@@ -274,7 +276,7 @@ drafts = (function() {
   drafts.prototype.processTitleOfPost = function(data) {
     var item, _i, _len, _results;
     if (data.title) {
-      console.log('Title is ' + data.title);
+      showDebug && console.log('Title is ' + data.title);
       if (!(_title && _title !== '')) {
         _title = data.title;
       }
@@ -283,7 +285,7 @@ drafts = (function() {
       }
     }
     _results = [];
-    console.log('processTitleOfPost');
+    showDebug && console.log('processTitleOfPost');
     for (_i = 0, _len = _successCallback.length; _i < _len; _i++) {
       item = _successCallback[_i];
       _results.push(item && item());
@@ -323,7 +325,7 @@ drafts = (function() {
     if (draftToBeUploadedImageData.length <= 0) {
       return callback && callback();
     }
-    console.log('draftToBeUploadedImageData:', draftToBeUploadedImageData);
+    showDebug && console.log('draftToBeUploadedImageData:', draftToBeUploadedImageData);
     return filedownup.multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, null, function(err, result) {
       var item, _l, _len2;
       if (!result) {
@@ -369,7 +371,7 @@ drafts = (function() {
     } catch (_error) {
       ownerIcon = '/userPicture.png';
     }
-    console.log('Full name is ' + ownerUser.profile.fullname);
+    showDebug && console.log('Full name is ' + ownerUser.profile.fullname);
     if (ownerUser.profile.fullname && (ownerUser.profile.fullname !== '')) {
       ownerName = ownerUser.profile.fullname;
     } else {
@@ -432,7 +434,7 @@ drafts = (function() {
 
 module.exports = {
   createDrafts: function(postId, user) {
-    console.log(postId , user)
+    showDebug && console.log(postId , user)
     return new drafts(postId, user);
   }
 };
