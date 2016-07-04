@@ -46,7 +46,7 @@ if Meteor.isClient
             doc.urls = new_urls
             ChatMessage.insert(doc)
     
-    sendPersonalMessageToRoom = (message)->
+    @sendPersonalMessageToRoom = (message)->
         # 当可以在多个阅览室之间切换以后，ChatRoom　里面会包含所有访问过的阅览室信息
         ChatMessage.insert {
             t: 'bot'
@@ -424,7 +424,10 @@ if Meteor.isClient
                         # end - 尝试解决document.title 在 ios 下不生效的bug
                         description=''
                         if data.ownerName and data.ownerName isnt ''
-                            description=TAPi18n.__('rrbMsg_author',{author:data.ownerName})
+                            if data.owner and data.owner isnt ''
+                                description=TAPi18n.__('rrbMsg_author_with_follow',{author:data.ownerName, author_id: data.owner})
+                            else
+                                description=TAPi18n.__('rrbMsg_author',{author:data.ownerName})
                         if data.addontitle and data.addontitle isnt ''
                             data.title+="："+data.addontitle
                         window.trackPage(window.location.href,data.title)

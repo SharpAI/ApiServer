@@ -7,7 +7,7 @@ Meteor.startup ()->
   @GushitiePosts = new Mongo.Collection("posts", { _driver: GushitieDB })
   @GushitieMeets = new Mongo.Collection("meets", { _driver: GushitieDB })
   @GushitieFeeds = new Mongo.Collection("feeds", { _driver: GushitieDB })
-
+  @GushitieFollower = new Mongo.Collection("follower", { _driver: GushitieDB })
   Meteor.methods
     'getMyState':(gUserID,skip,limit)->
       this.unblock()

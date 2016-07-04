@@ -1003,6 +1003,9 @@
   "rrbMsg_feed_pindex_text": "段落: __text__",
   
   "rrbMsg_author": "作者： __author__",
+  "rrbMsg_author_with_follow": "作者： __author__  <p class='follow-author button' id=\"__author_id__\" style='padding:4px 8px; margin:10px'>关注</p>",
+  "rrbMsg_follow_success": "你关注了本篇帖子的作者！",
+  "rrbMsg_follow_filed": "你已经关注了本篇帖子的作者！",
   "rrbMsg_document_title_default": "故事贴主题阅览室",
   "rrbMsg_document_title": "__title__－主题阅览室",
   
