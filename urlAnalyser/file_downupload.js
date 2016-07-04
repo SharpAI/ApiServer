@@ -17,21 +17,15 @@ function filedownup(){
 var get_image_size_from_URI = function(url, cb) {
   //FIXME: other formate ???
 
-  var width = 0;
-  var height = 0;
+  sizeOf(url, function (err, dimensions) {
+    if (err) {
+      console.log ('Calculate picture size failed: ' + url);
+      return cb(0, 0);
+    }
 
-  if (url.substr(url.lastIndexOf('.'))  === '.ico') {
-    return cb(width, height);
-  }
+    return cb(dimensions.width, dimensions.height);
+  });
 
-  var dimensions = sizeOf(url);
-
-  if (dimensions) {
-    width = dimensions.width;
-    height = dimensions.height;
-  }
-
-  cb && cb(width, height);
 };
 
 
