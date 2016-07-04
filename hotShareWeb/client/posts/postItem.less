@@ -3,12 +3,9 @@
 .showPosts .content .gridster p{vertical-align: middle; display: inline-block; padding-left:4px; padding-right:4px; font-size:large; color: black;white-space: pre-wrap;word-wrap: break-word;background :none; line-height: 30px; border:0px dotted #00c4ff;resize:vertical;height:100%;width:100%;box-sizing:border-box;}
 .showPosts .content .gridster .textDiv1{vertical-align: middle; display: inline-block; padding:5px; font-size:large; color: black;white-space: pre-line;word-wrap: break-word;background :none;border:0px dotted #00c4ff;resize:vertical;height:100%;width:100%;box-sizing:border-box;}
 .showPosts .content .gridster .textDiv1 span{white-space: pre-wrap;}
-.showPosts .content .gridster {padding-left:0px; padding-right:15px;}
+.showPosts .content .gridster {padding-left:15px; padding-right:15px;}
 
-.showPosts .content .gridster .element{position:relative;margin-left:15px; color:black;display:block;overflow: hidden;top: auto !important;}
-.showPosts .content .gridster #test{
-  height: auto !important;
-}
+.showPosts .content .gridster .element{position:absolute;color:black;display:block;overflow: hidden;}
 .showPosts .content .gridster .element .ads-story{
   -webkit-hyphens: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -96,7 +93,7 @@
   -webkit-font-smoothing: antialiased;
 }
 .showPosts .content .gridster .postTextItem .inlineScoring{display:inline;/*float: right;*/}
-.showPosts .content .gridster .postTextItem{height:auto;top: auto !important;}
+.showPosts .content .gridster .postTextItem{height:auto;}
 .showPosts .content .gridster .postImageItem{
   margin-left: 0;
   margin-right: 0;
@@ -111,8 +108,6 @@
   font-size: 0;
   line-height: 0;
   text-align: left;
-  top: auto !important;
-  margin-left: 15px;
 }
 .postAudioItem .musicContainer{
   border: 1px solid #ebebeb;
@@ -206,9 +201,6 @@
   font-size: 0;
   line-height: 0;
   text-align: left;
-  height: auto !important;
-  top: auto !important;
-  margin-left: 15px;
 }
 .postVideoItem .videoContainer{
   border: 1px solid #ebebeb;
@@ -248,10 +240,6 @@
 .video_bd .play_area video{
   width: 100%;
   height: auto;
-  -webkit-background-size:cover !important;
-  -moz-background-size:cover !important;
-  -o-background-size:cover !important;
-  background-size:cover !important;
 }
 .video_bd .description{
   display: block;
@@ -277,22 +265,13 @@
   color: #3e3e3e
 }
 
-.showPosts .content .gridster .postImageItem {
-  margin-left: 0;
-  margin-right: 0;
-  margin-top: 15px;
-  display: inline-block;
-  top: auto !important;
-  left: 15px !important;
-  img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    z-index:1;
-    // position:absolute !important;
-  }
+.showPosts .content .gridster .postImageItem img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  z-index:1;
+  position:absolute !important;
 }
-
 
 .showPosts .content .gridster .postTextItem .pcomment { background-color: #f3f3f5;font-size: 1em; padding: 5px 5px 0 5px;position:relative; }
 .showPosts .content .gridster .postTextItem .pcomment:after { position: absolute; left: 20px; border: 6px solid transparent; content: " "; bottom: 100%; border-bottom-color: #f3f3f5; border-bottom-width: 4px;}
