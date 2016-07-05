@@ -1049,7 +1049,10 @@
   "rrbMsg_share_your_post": "__feedOwner__ forward your posts",
   "rrbMsg_feed_pindex_text": "Paragraph: __text__",
   
-  "rrbMsg_author": "Author: __author__",
+  "rrbMsg_author": "Author: __author__ ",
+  "rrbMsg_author_with_follow": "Author: __author__  <p class='follow-author button' id=\"__author_id__\" style='padding:4px 8px; margin:10px'>关注</p>",
+  "rrbMsg_follow_success": "You followed the author of this story posts!",
+  "rrbMsg_follow_filed": "You already followed the author of this story posts!",
   "rrbMsg_document_title_default": "Reading Room",
   "rrbMsg_document_title": "__title__－Reading Room",
   

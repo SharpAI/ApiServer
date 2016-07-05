@@ -172,6 +172,15 @@ Template.main.helpers
 
 
 Template.main.events
+	"click .follow-author": (e,t)->
+		authorId = e.currentTarget.id
+		e.currentTarget.style.display = 'none'
+		Meteor.call 'followAuthor', authorId, Meteor.userId(), (res)->
+			if res
+				sendPersonalMessageToRoom(TAPi18n.__('rrbMsg_follow_success'))
+				console.log(">>follow success!>>>")
+			else
+				sendPersonalMessageToRoom(TAPi18n.__('rrbMsg_follow_filed'))
 	"click .dialog-layout": (e,t)->
 		e.currentTarget.style.display = 'none'		
 	"click .topTosts-layout": (e,t)->
