@@ -5,6 +5,20 @@ window.trackEvent=(category, action)->
       piwik.trackEvent(category, action)
   catch error
     console.log('trackevent exception')
+  
+window.trackImportEvent=(url)->
+  try
+    console.log('Track Event')
+    if typeof(piwik) isnt 'undefined'
+      piwik.trackEvent('logs', 'import', 'URL', url)
+    else
+      $.getScript('http://piwik.tiegushi.com/piwik.js' ,()->
+        console.log('Got piwik')
+        window.piwik = Piwik.getTracker( 'http://piwik.tiegushi.com/piwik.php', 2 )
+        piwik.trackEvent('logs', 'import', 'URL', url)
+      )
+  catch error
+    console.log('trackevent exception')  
 
 window.trackPage=(url,title)->
   try
