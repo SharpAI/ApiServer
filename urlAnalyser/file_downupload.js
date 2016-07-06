@@ -267,13 +267,14 @@ var fileUploader = function (item,callback){
     }
     
     item.uploaded = true;
-    callback(null,item)
+    callback && callback(null,item)
     //console.log(result);
   }).catch(function (err) {
     item.uploaded = false;
-      setTimeout( function() {
-        fileUploader(item, callback)
-      },1000);
+    setTimeout( function() {
+      fileUploader(item, callback)
+    },1000);
+    
     console.log(err);
   });
 
@@ -366,5 +367,22 @@ filedownup.multiThreadUploadFileWhenPublishInCordova = function(draftData, postI
 
     multiThreadUploadFile_new(draftData, 1, multiThreadUploadFileCallback);
     return;
+};
+
+filedownup.removeImagesFromCache = function (draftImageData) {
+  var length = draftImageData.length;
+  if (length === 0) {
+    return;
+  }
+  
+  for (var i = 0; i < length; i++) {
+    var item = draftImageData[i];
+    if (fs.existsSync(item.URI)) {
+      showDebug && console.log('directory already exist ' + item.URI);
+      fs.unlinkSync(filepath);
+    } else {
+      console.log("local file not found: " + item.URI);
+    }
+  }
 };
 

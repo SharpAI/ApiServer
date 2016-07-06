@@ -217,7 +217,7 @@ drafts = (function() {
         siteTitle: linkInfo.title,
         siteHost: linkInfo.host,
         owner: user._id,
-        imgUrl: 'cdvfile://localhost/persistent/' + file.name,
+        imgUrl: imageExternalURL,//'cdvfile://localhost/persistent/' + file.name,
         filename: file.name,
         URI: file.toURL(),
         url: inputUrl,
@@ -349,6 +349,8 @@ drafts = (function() {
       if (err) {
         return callback && callback('上传失败，请稍后重试');
       }
+      
+      filedownup.removeImagesFromCache(draftImageData)
       return callback && callback();
     });
   };

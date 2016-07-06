@@ -7,7 +7,7 @@ var mongoid = require('mongoid-js');
 var drafts = require('./drafts.js');
 var filedownup = require('./file_downupload.js');
 
-var showDebug = false
+var showDebug = true;
 
 // var kue = require('kue')
 //     , queue = kue.createQueue({
@@ -212,7 +212,8 @@ router.route('/:_id/:url')
                   }, 200);
       
                   // send response
-                  res.json({status:'succ',json:'http://cdn.tiegushi.com/posts/'+postId});
+                  res.json({status:'succ',json:'http://192.168.1.73:9000/posts/'+postId});
+                  //res.json({status:'succ',json:'http://cdn.tiegushi.com/posts/'+postId});
                   // var job = queue.create('email', {
                   //     title: 'welcome email for tj'
                   //     , to: 'tj@learnboost.com'
