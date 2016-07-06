@@ -6,21 +6,15 @@ var drafts;
 var showDebug = false
 
 drafts = (function() {
-  var insertVideoWithDownloadedImage, _addontitle, _drafts, _getItem, _getItemIndex, _getItems, _imageIndex, _successCallback, _title;
-  var user = null;
-  var postId = null;
-
-  _drafts = [];
-
-  _title = '';
-
-  _addontitle = '';
-
-  _successCallback = [];
+  var insertVideoWithDownloadedImage, _addontitle, _drafts, _getItem, _getItemIndex, _getItems, _imageIndex, _successCallback, _title, user, postId;
 
   function drafts(id, u) {
     postId = id;
     user = u;
+    _drafts = [];
+    _title = '';
+    _addontitle = '';
+    _successCallback = [];
   }
 
   _imageIndex = function() {
@@ -426,7 +420,14 @@ drafts = (function() {
     };
   };
 
-  drafts.prototype.destroy = function() {};
+  drafts.prototype.destroy = function() {
+    postId = '';
+    user = null;
+    _drafts = [];
+    _title = '';
+    _addontitle = '';
+    _successCallback = [];
+  };
 
   return drafts;
 
