@@ -355,6 +355,7 @@ if Meteor.isClient
         showPopupProgressBar()
       getContentListsFromUrl iabHandle,inputUrl,(data)->
         if data is null
+          window.trackImportEvent inputUrl
           console.log('AnalyseUrl error, need add error notification')
           return
         console.log('Got data')

@@ -17,21 +17,15 @@ function filedownup(){
 var get_image_size_from_URI = function(url, cb) {
   //FIXME: other formate ???
 
-  var width = 0;
-  var height = 0;
+  sizeOf(url, function (err, dimensions) {
+    if (err) {
+      console.log ('Calculate picture size failed: ' + url);
+      return cb(0, 0);
+    }
 
-  if (url.substr(url.lastIndexOf('.'))  === '.ico') {
-    return cb(width, height);
-  }
+    return cb(dimensions.width, dimensions.height);
+  });
 
-  var dimensions = sizeOf(url);
-
-  if (dimensions) {
-    width = dimensions.width;
-    height = dimensions.height;
-  }
-
-  cb && cb(width, height);
 };
 
 
@@ -79,7 +73,7 @@ var downloadFromBCS = function(source, callback){
   var nameHash=crypto.createHash('md5').update(source).digest("hex");
   var target = os.tmpdir() + '/' + 'imagecache' + '/';
   if (fs.existsSync(target)) {
-      console.log('directory already exist ' + target);
+      showDebug && console.log('directory already exist ' + target);
   } else {
       fs.mkdirSync(target);
   }
@@ -130,7 +124,7 @@ filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, c
     }
   };
   onSuccess = function(url, source, file) {
-    console.log(file);
+    showDebug && console.log(file);
     return get_image_size_from_URI(url, function(width, height) {
       if (height >= minimalWidthAndHeight && width >= minimalWidthAndHeight) {
         callback(file, width, height, ++foundImages, imageCounter, imageArray.length, source);
@@ -153,7 +147,7 @@ filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, c
       return callback(null, 0, 0, foundImages, imageCounter, imageArray.length, null, source);
     }
   };
-  console.log('seekSuitableImageFromArrayAndDownloadToLocal');
+  showDebug && console.log('seekSuitableImageFromArrayAndDownloadToLocal');
   return downloadFromBCS(imageArray[imageCounter], downloadHandler);
 };
 
@@ -198,7 +192,7 @@ filedownup.seekOneUsableMainImage = function(data, callback, minimal) {
 
 
 var fileUploader = function (item,callback){
-  console.log('uploading ' + JSON.stringify(item));
+  showDebug && console.log('uploading ' + JSON.stringify(item));
   // if (Session.get('terminateUpload')) {
   //     if (Session.get('flag')){
   //             return;
@@ -260,7 +254,7 @@ var fileUploader = function (item,callback){
   co(function* () {
     var key = mongoid();
     client.useBucket('tiegushi');
-    console.log(key)
+    showDebug && console.log(key)
     var result = yield client.put(key, URI);
     var url = 'http://data.tiegushi.com/' + key;
     
@@ -273,13 +267,15 @@ var fileUploader = function (item,callback){
     }
     
     item.uploaded = true;
-    callback(null,item)
+    try{callback && callback(null,item);}
+    catch(e){}
     //console.log(result);
   }).catch(function (err) {
     item.uploaded = false;
-      setTimeout( function() {
-        fileUploader(item, callback)
-      },1000);
+    setTimeout( function() {
+      fileUploader(item, callback)
+    },1000);
+    
     console.log(err);
   });
 
@@ -322,7 +318,7 @@ var fileUploader = function (item,callback){
   // });
 };
 var asyncCallback = function (err,result){
-    console.log('async processing done ' + JSON.stringify(result));
+    showDebug && console.log('async processing done ' + JSON.stringify(result));
     //Template.progressBar.__helpers.get('close')();
     if (err){
         if (this.finalCallback) {
@@ -343,7 +339,7 @@ var multiThreadUploadFile_new = function(draftData, maxThreads, callback) {
         uploaded : 0,
         total : draftData.length
     };
-    console.log('draft data is ' + JSON.stringify(draftData));
+    showDebug && console.log('draft data is ' + JSON.stringify(draftData));
 
     //Session.set('aboutUpload', false);
     //Session.set('flag',false);
@@ -372,5 +368,23 @@ filedownup.multiThreadUploadFileWhenPublishInCordova = function(draftData, postI
 
     multiThreadUploadFile_new(draftData, 1, multiThreadUploadFileCallback);
     return;
+};
+
+filedownup.removeImagesFromCache = function (draftImageData) {
+  var length = draftImageData.length;
+  if (length === 0) {
+    return;
+  }
+  
+  for (var i = 0; i < length; i++) {
+    var item = draftImageData[i];
+    if (fs.existsSync(item.URI)) {
+      showDebug && console.log('directory already exist ' + item.URI);
+      try{fs.unlinkSync(filepath);}
+      catch(e){}
+    } else {
+      console.log("local file not found: " + item.URI);
+    }
+  }
 };
 

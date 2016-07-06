@@ -6,6 +6,9 @@ var path = require('path');
 var mongoid = require('mongoid-js');
 var drafts = require('./drafts.js');
 var filedownup = require('./file_downupload.js');
+
+var showDebug = true;
+
 // var kue = require('kue')
 //     , queue = kue.createQueue({
 //         prefix: 'q',
@@ -65,13 +68,13 @@ var insert_data = function(user, url, data, cb) {
 
     if(data.resortedArticle.length > 0){
       for(var i=0;i<data.resortedArticle.length;i++){
+        data.resortedArticle[i]._id = mongoid();
         if(data.resortedArticle[i].type === 'image')
           data.resortedArticle[i].isImage = true;
-        data.resortedArticle[i]._id = mongoid();
-        // data.resortedArticle[i].data_row = ;
-        // data.resortedArticle[i].data_col = ;
-        // data.resortedArticle[i].data_sizex = ;
-        // data.resortedArticle[i].data_sizey = ;
+        data.resortedArticle[i].data_row = 1;
+        data.resortedArticle[i].data_col = 1;
+        data.resortedArticle[i].data_sizex = 6;
+        data.resortedArticle[i].data_sizey = 1;
       }
     }
     
@@ -105,7 +108,7 @@ var insert_data = function(user, url, data, cb) {
         }
         return null;
       }
-      console.log(result.insertedIds[0]);
+      showDebug && console.log(result.insertedIds[0]);
       if(cb){
           cb(null,result.insertedIds[0])
       }
@@ -131,7 +134,7 @@ router.get('/', function(req, res) {
 // more routes for our API will happen here
 router.route('/:_id/:url')
     .get(function(req, res) {
-      console.log('_id=' + req.params._id + ' url=' + req.params.url);
+      showDebug && console.log('_id=' + req.params._id + ' url=' + req.params.url);
       var nightmare = Nightmare({ show: true , openDevTools: true});
       nightmare
           .goto(req.params.url)
@@ -156,7 +159,7 @@ router.route('/:_id/:url')
                     res.json({status:'failed'});
                     return;
                   }
-                  console.log('Post id is: '+postId);
+                  showDebug && console.log('Post id is: '+postId);
                   
                   // 图片的下载及排版计算
                   var data = result;
@@ -169,9 +172,9 @@ router.route('/:_id/:url')
                     //     console.log('import error.');
                     // });
                     
-                    console.log('===================================');
-                    console.log('import success.');
-                    console.log('===================================');
+                    showDebug && console.log('===================================');
+                    showDebug && console.log('import success.');
+                    showDebug && console.log('===================================');
                     draftsObj.uploadFiles(function (err) {
                       if(err)
                         return console.log('upload file error.');
@@ -191,7 +194,7 @@ router.route('/:_id/:url')
                   
                   var inputUrl = req.params.url;
                   filedownup.seekOneUsableMainImage(data, function(file, w, h, found, index, total, source) {
-                    console.log('found ' + found + ' index ' + index + ' total ' + total + ' fileObject ' + file + ' source ' + source);
+                    showDebug && console.log('found ' + found + ' index ' + index + ' total ' + total + ' fileObject ' + file + ' source ' + source);
                     if (file) {
                       draftsObj.insertDownloadedImage(data, source, found, inputUrl, file, w, h);
                       resortObj.mainUrl = source;
@@ -201,7 +204,7 @@ router.route('/:_id/:url')
                     if (data.resortedArticle.length > 0) {
                       resortObj.index = 0;
                       resortObj.length = data.resortedArticle.length;
-                      console.log('resortObj' + JSON.stringify(resortObj));
+                      showDebug && console.log('resortObj' + JSON.stringify(resortObj));
                       return draftsObj.renderResortedArticleAsync(data, inputUrl, resortObj);
                     } else {
                       return draftsObj.processTitleOfPost(data);
@@ -209,7 +212,8 @@ router.route('/:_id/:url')
                   }, 200);
       
                   // send response
-                  res.json({status:'succ',json:'http://cdn.tiegushi.com/posts/'+postId});
+                  res.json({status:'succ',json:'http://192.168.1.73:9000/posts/'+postId});
+                  //res.json({status:'succ',json:'http://cdn.tiegushi.com/posts/'+postId});
                   // var job = queue.create('email', {
                   //     title: 'welcome email for tj'
                   //     , to: 'tj@learnboost.com'
