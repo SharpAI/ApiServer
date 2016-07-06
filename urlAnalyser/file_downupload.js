@@ -267,7 +267,8 @@ var fileUploader = function (item,callback){
     }
     
     item.uploaded = true;
-    callback && callback(null,item)
+    try{callback && callback(null,item);}
+    catch(e){}
     //console.log(result);
   }).catch(function (err) {
     item.uploaded = false;
@@ -379,7 +380,8 @@ filedownup.removeImagesFromCache = function (draftImageData) {
     var item = draftImageData[i];
     if (fs.existsSync(item.URI)) {
       showDebug && console.log('directory already exist ' + item.URI);
-      fs.unlinkSync(filepath);
+      try{fs.unlinkSync(filepath);}
+      catch(e){}
     } else {
       console.log("local file not found: " + item.URI);
     }

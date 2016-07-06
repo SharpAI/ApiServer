@@ -350,7 +350,9 @@ drafts = (function() {
         return callback && callback('上传失败，请稍后重试');
       }
       
-      filedownup.removeImagesFromCache(draftImageData)
+      setTimeout(function () {
+        filedownup.removeImagesFromCache(draftImageData)
+      }, 0);
       return callback && callback();
     });
   };

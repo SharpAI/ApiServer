@@ -68,13 +68,13 @@ var insert_data = function(user, url, data, cb) {
 
     if(data.resortedArticle.length > 0){
       for(var i=0;i<data.resortedArticle.length;i++){
+        data.resortedArticle[i]._id = mongoid();
         if(data.resortedArticle[i].type === 'image')
           data.resortedArticle[i].isImage = true;
-        data.resortedArticle[i]._id = mongoid();
-        // data.resortedArticle[i].data_row = ;
-        // data.resortedArticle[i].data_col = ;
-        // data.resortedArticle[i].data_sizex = ;
-        // data.resortedArticle[i].data_sizey = ;
+        data.resortedArticle[i].data_row = 1;
+        data.resortedArticle[i].data_col = 3;
+        data.resortedArticle[i].data_sizex = 6;
+        data.resortedArticle[i].data_sizey = 1;
       }
     }
     
