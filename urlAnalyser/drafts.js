@@ -91,7 +91,7 @@ drafts = (function() {
         style: '',
         layout: item.layout,
         data_row: '1',
-        data_col: '3',
+        data_col: '1',
         data_sizex: '6',
         data_sizey: '1'
       });
@@ -120,7 +120,7 @@ drafts = (function() {
         iframe: item.iframe,
         imgUrl: 'http://data.tiegushi.com/res/video_old_version.jpg',
         data_row: '1',
-        data_col: '3',
+        data_col: '1',
         data_sizex: '6',
         data_sizey: '4'
       });
@@ -178,7 +178,7 @@ drafts = (function() {
       text: '来自故事贴',
       videoInfo: videoInfo,
       data_row: '1',
-      data_col: '3',
+      data_col: '1',
       data_sizex: '6',
       data_sizey: data_sizey
     });
@@ -193,7 +193,7 @@ drafts = (function() {
       text: '您当前程序不支持音频播放，请分享到微信中欣赏',
       musicInfo: musicInfo,
       data_row: '1',
-      data_col: '3',
+      data_col: '1',
       data_sizex: '6',
       data_sizey: '1'
     });
@@ -223,7 +223,7 @@ drafts = (function() {
         url: inputUrl,
         toTheEnd: true,
         data_row: '1',
-        data_col: '3',
+        data_col: '1',
         data_sizex: '6',
         data_sizey: sizey.toString()
       });
@@ -250,7 +250,7 @@ drafts = (function() {
         url: inputUrl,
         toTheEnd: true,
         data_row: '1',
-        data_col: '3',
+        data_col: '1',
         data_sizex: '6',
         data_sizey: '6'
       });

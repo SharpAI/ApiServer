@@ -72,7 +72,7 @@ var insert_data = function(user, url, data, cb) {
         if(data.resortedArticle[i].type === 'image')
           data.resortedArticle[i].isImage = true;
         data.resortedArticle[i].data_row = 1;
-        data.resortedArticle[i].data_col = 3;
+        data.resortedArticle[i].data_col = 1;
         data.resortedArticle[i].data_sizex = 6;
         data.resortedArticle[i].data_sizey = 1;
       }
