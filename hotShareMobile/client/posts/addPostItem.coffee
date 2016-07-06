@@ -382,19 +382,17 @@ if Meteor.isClient
     min_widget_height =  grid_size + baseGap*2;
     #offset = this.offsetHeight - this.clientHeight;
     if Session.get('textareaFocused') is false 
-      if Session.get('textareaPasted') is true
-        Session.set('textareaPasted', false)
-        paragraphArray = []
-        paragraphArrayTmp = []
-        paragraphArrayTmp = node.value.split('\n')
-        if paragraphArrayTmp.length > 0
+      paragraphArray = []
+      paragraphArrayTmp = []
+      paragraphArrayTmp = node.value.split('\n')
+      if paragraphArrayTmp.length > 0
           for i in [0..paragraphArrayTmp.length-1]
             unless (paragraphArrayTmp[i].length == 0 or paragraphArrayTmp[i] == ' ')
               paragraphArray.push(paragraphArrayTmp[i])
-        if paragraphArray.length > 0
-          node.value = paragraphArrayTmp[0]
-        if paragraphArray.length == 1
-          Session.set('automaticSegmentation', false)  
+      if paragraphArray.length > 0
+        node.value = paragraphArrayTmp[0]
+      if paragraphArray.length == 1
+        Session.set('automaticSegmentation', false)  
     node.style.height='auto'
     node.style.height=node.scrollHeight+'px'
     sizey = Math.ceil((node.scrollHeight+baseGap*2) / min_widget_height)
