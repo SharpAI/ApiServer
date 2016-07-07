@@ -100,6 +100,29 @@ if Meteor.isClient
           $curVideo.siblings('.video_thumb').fadeOut(100)
 
   Template.postItem.helpers
+    isOverLapping: (id)->
+      rect1 = document.getElementById(id).getBoundingClientRect()
+      rect2 = document.getElementById(($("#"+id).next().next().attr('id'))).getBoundingClientRect()
+      overlapping = !(rect1.right < rect2.left or rect1.left > rect2.right or rect1.bottom < rect2.top or rect1.top > rect2.bottom)
+      console.log(rect1.height)
+      if overlapping
+        console.log('被挡住了')
+      else 
+        console.log('没有被挡住')
+      return overlapping
+    addTopOffsetStyle: (id)->
+      rect1 = document.getElementById(id).getBoundingClientRect()
+      rect2 = document.getElementById(($("#"+id).next().next().attr('id'))).getBoundingClientRect()
+      offsetTopLen = Number(rect1.height - (rect2.top - rect1.top)) + 15
+      console.log('顶部偏移量为: '+offsetTopLen)
+      # 更新容器高度
+      testHeight = Number($('#test').css('height').slice(0,-2))
+      $('#test').css({height: testHeight+Number(offsetTopLen)+'px'})
+      # 更新后面的元素的top
+      domNeedUpdate = $('#'+id).nextAll()
+      domNeedUpdate.each () ->
+        top = $(this).css('top').slice(0,-2)
+        $(this).css({top: Number(top)+Number(offsetTopLen)+'px'})
     hasVideoInfo: (videoInfo)->
       if videoInfo
         scripts = document.head.getElementsByTagName("script")
