@@ -107,7 +107,7 @@ var downloadFromBCS = function(source, callback){
 }
 
 
-filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, callback, minimal, onlyOne) {
+filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, callback, minimal, onlyOne, insertTmpImgs) {
   var downloadHandler, minimalWidthAndHeight, onError, onSuccess;
   var imageCounter = 0;
   var foundImages = 0;
@@ -124,6 +124,7 @@ filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, c
     }
   };
   onSuccess = function(url, source, file) {
+    insertTmpImgs && insertTmpImgs(url);
     showDebug && console.log(file);
     return get_image_size_from_URI(url, function(width, height) {
       if (height >= minimalWidthAndHeight && width >= minimalWidthAndHeight) {
@@ -132,7 +133,9 @@ filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, c
           return;
         }
       }
-      if (++imageCounter < imageArray.length) {
+      
+      if ((imageCounter+1) < imageArray.length) {
+        imageCounter += 1;
         return downloadFromBCS(imageArray[imageCounter], downloadHandler);
       } else {
         return callback(null, 0, 0, foundImages, imageCounter, imageArray.length, source);
@@ -141,7 +144,8 @@ filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, c
   };
   onError = function(source) {
     showDebug && console.log('image resolve url got error');
-    if (++imageCounter < imageArray.length) {
+    if ((imageCounter+1) < imageArray.length) {
+      imageCounter += 1;
       return downloadFromBCS(imageArray[imageCounter], downloadHandler);
     } else {
       return callback(null, 0, 0, foundImages, imageCounter, imageArray.length, null, source);
@@ -152,7 +156,7 @@ filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, c
 };
 
 
-filedownup.seekOneUsableMainImage = function(data, callback, minimal) {
+filedownup.seekOneUsableMainImage = function(data, callback, minimal, insertTmpImgs) {
   var bgImg, imageArray, imageUrl, img, _i, _j, _len, _len1, _ref, _ref1;
   imageArray = [];
   if (data.imageArray) {
@@ -184,7 +188,7 @@ filedownup.seekOneUsableMainImage = function(data, callback, minimal) {
         showDebug && console.log('No local url ' + ' w:' + w + ' h:' + h);
         return callback(null, 0, 0, found, index, length, source);
       }
-    }, minimal, true);
+    }, minimal, true, insertTmpImgs);
   } else {
     return callback(null, 0, 0, 0, 0, 0, null);
   }
@@ -381,14 +385,15 @@ filedownup.removeImagesFromCache = function (draftImageData) {
     return;
   }
   
+  console.log('removeImagesFromCache: ', JSON.stringify(draftImageData));
   for (var i = 0; i < length; i++) {
     var item = draftImageData[i];
-    if (fs.existsSync(item.URI)) {
-      showDebug && console.log('directory already exist ' + item.URI);
-      try{fs.unlinkSync(filepath);}
+    if (fs.existsSync(item)) {
+      showDebug && console.log('directory already exist ' + item);
+      try{fs.unlinkSync(item);}
       catch(e){}
     } else {
-      console.log("local file not found: " + item.URI);
+      console.log("local file not found: " + item);
     }
   }
 };

@@ -4,8 +4,8 @@ var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 var path = require('path');
 var mongoid = require('mongoid-js');
-var drafts = require('./drafts.js');
 var filedownup = require('./file_downupload.js');
+var drafts = require('./post_drafts.js');
 
 var showDebug = true;
 
@@ -175,56 +175,25 @@ router.route('/:_id/:url')
                   showDebug && console.log('Post id is: '+postId);
                   
                   // 图片的下载及排版计算
-                  var data = result;
-                  var draftsObj = drafts.createDrafts(postId, user);
+                  var draftsObj = new drafts.createDrafts(postId, user);
                   draftsObj.onSuccess(function(){
-                    // var postObj = draftsObj.getPubObject();
-                    // draftsObj.destroy();
-                    // updatePosts(postId, postObj, function(err, number){
-                    //   if(err || number <= 0)
-                    //     console.log('import error.');
-                    // });
-                    
-                    showDebug && console.log('===================================');
-                    showDebug && console.log('import success.');
-                    showDebug && console.log('===================================');
                     draftsObj.uploadFiles(function (err) {
                       if(err)
                         return console.log('upload file error.');
                         
                       var postObj = draftsObj.getPubObject();
-                      draftsObj.destroy();
+                      // console.log('post:', JSON.stringify(postObj));
+                      // draftsObj.destroy();
                       updatePosts(postId, postObj, function(err, number){
                         if(err || number <= 0)
                           console.log('import error.');
                       });
                     });
                   });
-                  draftsObj.onFail(function(){
-                    // TODO:
-                  });
-                  resortObj = {}
-                  
-                  var inputUrl = req.params.url;
-                  filedownup.seekOneUsableMainImage(data, function(file, w, h, found, index, total, source) {
-                    showDebug && console.log('found ' + found + ' index ' + index + ' total ' + total + ' fileObject ' + file + ' source ' + source);
-                    if (file) {
-                      draftsObj.insertDownloadedImage(data, source, found, inputUrl, file, w, h);
-                      resortObj.mainUrl = source;
-                    } else {
-                      draftsObj.insertDefaultImage(data, 'http://data.tiegushi.com/res/defaultMainImage1.jpg', false, inputUrl);
-                    }
-                    if (data.resortedArticle.length > 0) {
-                      resortObj.index = 0;
-                      resortObj.length = data.resortedArticle.length;
-                      showDebug && console.log('resortObj' + JSON.stringify(resortObj));
-                      return draftsObj.renderResortedArticleAsync(data, inputUrl, resortObj);
-                    } else {
-                      return draftsObj.processTitleOfPost(data);
-                    }
-                  }, 200);
+                  draftsObj.seekOneUsableMainImage(result, req.params.url);
       
                   // send response
+                  //res.json({status:'succ',json:'http://192.168.1.73:9000/posts/'+postId});
                   res.json({status:'succ',json:hotshare_web+'/posts/'+postId});
                   // var job = queue.create('email', {
                   //     title: 'welcome email for tj'
