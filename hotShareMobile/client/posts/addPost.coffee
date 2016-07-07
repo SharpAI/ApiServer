@@ -797,7 +797,7 @@ if Meteor.isClient
       Session.set('textareaFocused', false)
       $(".head").css 'position','fixed'
     'paste [name=textarea]' : (e)-> 
-      Session.set('textareaPaste', true)
+      #Session.set('textareaPaste', true)
       currentData = e.currentTarget.value  
       console.log ("currentData:"+currentData)
       pastedData = e.originalEvent.clipboardData.getData('Text')
@@ -806,7 +806,7 @@ if Meteor.isClient
       paragraphArray = []
       paragraphArrayTmp = []
       paragraphArrayTmp = totalData.split('\n')
-      if paragraphArrayTmp.length > 0   
+      if paragraphArrayTmp.length > 0
         for i in [0..paragraphArrayTmp.length-1]                
           unless (paragraphArrayTmp[i].length == 0 or paragraphArrayTmp[i] == ' ') 
             paragraphArray.push(paragraphArrayTmp[i])
@@ -824,7 +824,7 @@ if Meteor.isClient
               console.log 'window.unSelectedElem==='+window.unSelectedElem
           else
             Drafts.insert {type:'text', currentCount:i+1, totalCount:paragraphArray.length,isImage:false, owner: Meteor.userId(), text:paragraphArray[i], style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
-      Session.set('textareaPaste', false)   
+      #Session.set('textareaPaste', false)
     'change [name=textarea]' : (e,cxt)->
       console.log("textarea change "+ e.currentTarget.value)
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
