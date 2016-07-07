@@ -10,12 +10,16 @@ RUN apt-get -y clean
 EXPOSE 8080 5900
 RUN mkdir ~/.vnc
 RUN x11vnc -storepasswd 1234 ~/.vnc/passwd
+RUN rm -f /data/package.json
 ADD ./package.json /data/package.json
-RUN cd /data && npm install
+RUN mkdir -p /root/.electron/
+ADD assets/monit/electron-v1.2.6-linux-x64.zip /root/.electron/
+RUN cd /data && npm install --registry=https://registry.npm.taobao.org
 
 ADD . /datatmp/
 RUN rm -rf /datatmp/node_modules /datatmp/assets
 RUN mv /datatmp/* /data/
 WORKDIR /data/
-RUN bash -c 'echo "cd /data && npm start" >> /.bashrc'
-CMD x11vnc -forever -usepw -create
+#RUN bash -c 'echo "cd /data && npm start" >> /.bashrc'
+#CMD x11vnc -forever -usepw -create
+CMD xvfb-run --auto-servernum --server-args="-screen 0 1280x760x24"  npm start

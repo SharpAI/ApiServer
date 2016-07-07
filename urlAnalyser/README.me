@@ -14,3 +14,17 @@ var kue = require('kue')
         }});
 
 npm start
+
+
+##### HOWTO
+1 to make 'npm install' easier, download electron-***.zip and copy to docker(/root/.electron/)
+   ./download.sh
+
+2 docker build
+   docker build -t lambadzhang/urlimport:1.1.2 .
+
+3 docker run
+   docker run --restart=always -d  -p 8080:8080 \
+              -e  HOTSHARE_WEB_HOST=http://cdcdn.tiegushi.com \
+              -e MONGO_URL=mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare \
+              -t lambadzhang/urlimport:1.1.2
