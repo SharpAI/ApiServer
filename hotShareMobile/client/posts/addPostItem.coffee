@@ -102,6 +102,10 @@ if Meteor.isClient
 
         $(textarea).off('focusout')
         $(".head").css 'position','fixed'
+        if Session.get('textareaPaste') is true
+          id = this.id.replace("TextArea", "")   
+          adjustTextAreaHeightAndResizeInTheLayoutEngine(id,this)
+          Session.set('textareaPaste', false)
       )
 
     else if buttonClicked.id == "del"
@@ -197,6 +201,7 @@ if Meteor.isClient
       if window.unSelectedElem
         currentCount = insertedObj.currentCount
         totalCount = insertedObj.totalCount
+        Drafts.update({_id: node._id}, {$set: {currentCount:undefined,totalCount:undefined}});
         if totalCount is 1 or !totalCount
           insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
           window.unSelectedElem = undefined
@@ -205,11 +210,12 @@ if Meteor.isClient
         else
           insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
           insert_sizey = parseInt($(window.unSelectedElem).attr('data-sizey'))
+          console.log 'insertRow:' + insert_row + 'insert_sizey:' + insert_sizey
           if currentCount >= totalCount
             window.unSelectedElem = undefined
           else
             window.unSelectedElem=node
-          grid.add_widget(node, insert_sizex, insert_sizey, insert_col, insert_row + insert_sizey)
+          grid.add_widget(node, 6, size_y, 1,insert_row + insert_sizey)
       else
         grid.add_widget(node, 6, size_y, 1)
     else if type is 'music'
@@ -357,7 +363,7 @@ if Meteor.isClient
     grid_size=Math.floor(getDisplayElementWidth() / 6 - baseGap*2)
     console.log('#display width is '+getDisplayElementWidth()+' .addPost width is '+$('.addPost').width())
     min_widget_height =  grid_size + baseGap*2;
-    #offset = this.offsetHeight - this.clientHeight;
+    #offset = this.offsetHeight - this.clientHeight;  
     node.style.height='auto'
     node.style.height=node.scrollHeight+'px'
     sizey = Math.ceil((node.scrollHeight+baseGap*2) / min_widget_height)
@@ -459,7 +465,8 @@ if Meteor.isClient
     appendNodeToLayoutEngine(node,data,gridster,sizeY)
     if type is "text" and !data.noKeyboardPopup
       initToolBar(node,data,gridster,false)
-      $(node).trigger("toolbarItemClick", {id:"modify"})
+      if data.totalCount == 1  or !data.totalCount
+        $(node).trigger("toolbarItemClick", {id:"modify"})
       return
     $(node).one('click',()->
       toolbarObj=$(node).data('toolbarObj')
