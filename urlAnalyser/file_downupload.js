@@ -219,6 +219,11 @@ var fileUploader = function (item,callback){
       URI = item.URI
   }
   
+  //FIXME:
+  if (!URI || !(fs.existsSync(URI))) {
+    item.uploaded = true;
+    return callback && callback(null,item);
+  }
   //npm install ali-oss
   //npm install co
   //var mongoid = require('mongoid-js');
