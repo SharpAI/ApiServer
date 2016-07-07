@@ -135,24 +135,24 @@ if Meteor.isClient
         data_col:'3',
         data_sizex:'6',
         data_sizey:sizey.toString()}
-      window.resolveLocalFileSystemURL file.toURL(), (fileEntry)->
-        fileURL = file.toURL()
-        fileName = fileURL.substring(fileURL.lastIndexOf('/')+1)
-        fileDir = fileURL.substring(0, fileURL.lastIndexOf('/'))
-        console.log 'parse file URL: filename: ' + fileName + ', dir: ' + fileDir
-        imageType = 'jpg';
-        console.log 'fileentry: ' + fileURL
-        if fileURL.endsWith('.png')
-          imageType = 'png';
-        fileEntry.file (fileObj)->
-          console.log 'fileObj: ' + fileObj
-          console.log 'filesize: ' + fileObj.size
-          if fileObj.size > 100*1024
-            window.imageResizer.resizeImage( (data)->
-                console.log('resizeImage, filename: ' + data.filename + 'width: ' + data.width + ',height: ' + data.height)
-              ,(error)->
-                console.log("Error : \r\n" + error)
-              ,file.toURL(), 64, 0, {imageDataType:ImageResizer.IMAGE_DATA_TYPE_URL, resizeType:ImageResizer.RESIZE_TYPE_MIN_PIXEL, format: imageType, storeImage: true, filename: fileName, directory: fileDir});      
+      #window.resolveLocalFileSystemURL file.toURL(), (fileEntry)->
+        #fileURL = file.toURL()
+        #fileName = fileURL.substring(fileURL.lastIndexOf('/')+1)
+        #fileDir = fileURL.substring(0, fileURL.lastIndexOf('/'))
+        #console.log 'parse file URL: filename: ' + fileName + ', dir: ' + fileDir
+        #imageType = 'jpg';
+        #console.log 'fileentry: ' + fileURL
+        #if fileURL.endsWith('.png')
+        #  imageType = 'png';
+        #fileEntry.file (fileObj)->
+          #console.log 'fileObj: ' + fileObj
+          #console.log 'filesize: ' + fileObj.size
+          #if fileObj.size > 100*1024
+            #window.imageResizer.resizeImage( (data)->
+                #console.log('resizeImage, filename: ' + data.filename + 'width: ' + data.width + ',height: ' + data.height)
+              #,(error)->
+                #console.log("Error : \r\n" + error)
+              #,file.toURL(), 64, 0, {imageDataType:ImageResizer.IMAGE_DATA_TYPE_URL, resizeType:ImageResizer.RESIZE_TYPE_MIN_PIXEL, #format: imageType, storeImage: true, filename: fileName, directory: fileDir});      
   insertVideoWithDownloadedImage = (videoInfo, linkInfo,imageExternalURL,found,inputUrl,file,width,height)->
     if file
       sizey = Math.round( 6 * height / width )
