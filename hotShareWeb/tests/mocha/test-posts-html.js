@@ -2838,30 +2838,54 @@ var post = {
     "ptype": "like", 
     "pindex": 131
 }
+
 var config = {};
 config.posts = [
-		{postId:"tPFRjDK8kpKQGkbZu"}
+		{postId:"YFQofExszB4wD8QfR"},
+        {postId:""},
 	];
 
 describe('测试post数据到数据库后的html', function () {
 	before(function () {
-		// var db = new Connection;
-		// var post = server.call('getPostById',function(result){
-		// 	console.log(result);
-		// });
+        // test ddp connect 
+        var result = server.call('getOnePostForTest');
+        // console.log(result);
+        var getMeteorSettings = function(setting) {
+            return Meteor.settings[setting];
+        }
+        var mySetting = server.execute(getMeteorSettings, 'MySetting');
+        // console.log(mySetting);
+
+        var getUserProfileProperty = function(property) {
+            return Meteor.user().profile[property]
+        }
+        console.log("------------------------+++------------------");
+        // client.url('http://localhost:3000');
+        
 		browser.windowHandleSize({width: 800, height: 600});   
-		browser.url('http://cdcdn.tiegushi.com/posts/YFQofExszB4wD8QfR');
+		// browser.url('http://cdcdn.tiegushi.com/posts/YFQofExszB4wD8QfR');
+        browser.url('http://localhost:3000');
 		browser.pause(6000);
-		// browser.waitForExist('.showBgColor');
-		// server.call('generateFixtures');
+        var userName = browser.execute(getUserProfileProperty, 'fullname').value;
+        console.log(userName);
+
+        // browser.url('http://localhost:3000/posts/YFQofExszB4wD8QfR');
+		// browser.pause(6000);
+        var getPostPubById = function(id, property) {
+            console.log(Posts.find().count());
+            // return Posts.findOne({_id: id}).pub;
+            return Posts.find().count()
+        }
+        var PUB = browser.execute(getPostPubById, 'pub').value;
+        console.log(PUB);
+
+        browser.url('http://cdcdn.tiegushi.com/posts/YFQofExszB4wD8QfR');
+		browser.pause(6000);
 	});
 	beforeEach(function () {
-		browser.waitForExist('.showBgColor');
+		// browser.waitForExist('.showBgColor');
 	});
-	// config.posts.forEach(function(post){
-	// 	browser.url('http://cdcdn.tiegushi.com/posts/tPFRjDK8kpKQGkbZu');
-	// 	browser.pause(6000);
-	// });
+
 	it('标题和标题图片 @watch', function () {
 		var mainImage = browser.element('.mainImage img');
 		var title = browser.element('h2 .title');
@@ -2877,7 +2901,6 @@ describe('测试post数据到数据库后的html', function () {
 			console.log(pub.value.length);
 			// expect(pub.value.length).to.be.equal(post.pub.length);	
 	});
-	
 	describe('结构与样式 @watch', function () {
 		post.pub.forEach(function(item) {
 			if(!item.isImage && item.type == 'text' && item.text != ""){
