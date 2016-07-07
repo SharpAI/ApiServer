@@ -44,8 +44,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 var port = process.env.PORT || 8080;        // set our port
+var hotshare_web = process.env.HOTSHARE_WEB_HOST || 'http://cdcdn.tiegushi.com';
 var MongoClient = require('mongodb').MongoClient;
-var DB_CONN_STR = 'mongodb://127.0.0.1:3001/meteor';
+var DB_CONN_STR = process.env.MONGO_URL || 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare';
 var posts = null;
 var users = null;
 
@@ -212,8 +213,7 @@ router.route('/:_id/:url')
                   }, 200);
       
                   // send response
-                  res.json({status:'succ',json:'http://192.168.1.73:9000/posts/'+postId});
-                  //res.json({status:'succ',json:'http://cdn.tiegushi.com/posts/'+postId});
+                  res.json({status:'succ',json:hotshare_web+'/posts/'+postId});
                   // var job = queue.create('email', {
                   //     title: 'welcome email for tj'
                   //     , to: 'tj@learnboost.com'
