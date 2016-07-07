@@ -197,7 +197,7 @@ if Meteor.isClient
       if window.unSelectedElem
         currentCount = insertedObj.currentCount
         totalCount = insertedObj.totalCount
-        if totalCount is 1
+        if totalCount is 1 or !totalCount
           insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
           window.unSelectedElem = undefined
           console.log('Selected data-row is ' + insert_row)
