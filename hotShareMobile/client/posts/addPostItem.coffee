@@ -195,10 +195,21 @@ if Meteor.isClient
       else
         size_y = 1
       if window.unSelectedElem
-        insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
-        window.unSelectedElem = undefined
-        console.log('Selected data-row is ' + insert_row)
-        grid.add_widget(node, 6, size_y, 1, insert_row)
+        currentCount = insertedObj.currentCount
+        totalCount = insertedObj.totalCount
+        if totalCount is 1
+          insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
+          window.unSelectedElem = undefined
+          console.log('Selected data-row is ' + insert_row)
+          grid.add_widget(node, 6, size_y, 1, insert_row)
+        else
+          insert_row = parseInt($(window.unSelectedElem).attr('data-row'))
+          insert_sizey = parseInt($(window.unSelectedElem).attr('data-sizey'))
+          if currentCount >= totalCount
+            window.unSelectedElem = undefined
+          else
+            window.unSelectedElem=node
+          grid.add_widget(node, insert_sizex, insert_sizey, insert_col, insert_row + insert_sizey)
       else
         grid.add_widget(node, 6, size_y, 1)
     else if type is 'music'
