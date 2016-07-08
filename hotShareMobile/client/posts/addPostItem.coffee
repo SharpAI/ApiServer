@@ -102,10 +102,10 @@ if Meteor.isClient
 
         $(textarea).off('focusout')
         $(".head").css 'position','fixed'
-        if Session.get('textareaPaste') is true
-          id = this.id.replace("TextArea", "")   
-          adjustTextAreaHeightAndResizeInTheLayoutEngine(id,this)
-          Session.set('textareaPaste', false)
+        #if Session.get('textareaPaste') is true
+        id = this.id.replace("TextArea", "")
+        adjustTextAreaHeightAndResizeInTheLayoutEngine(id,this)
+        #Session.set('textareaPaste', false)
       )
 
     else if buttonClicked.id == "del"
