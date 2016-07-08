@@ -432,8 +432,11 @@ if Meteor.isClient
     documentBody.innerHTML = data.body
     $(documentBody).find('img').each ()->
       dataSrc = $(this).attr('data-src')
+      dataLISrc = $(this).attr('data-li-src')
       if dataSrc and dataSrc isnt ''
         src = dataSrc
+      else if dataLISrc and dataLISrc isnt ''
+        src = dataLISrc
       else
         src = $(this).attr('src')
       if src and src isnt ''
@@ -638,8 +641,11 @@ if Meteor.isClient
         else if node.tagName == 'IMG'
           previousIsSpan = false
           dataSrc = $(node).attr('data-src')
+          dataLISrc = $(node).attr('data-li-src')
           if dataSrc and dataSrc isnt ''
             src = dataSrc
+          else if dataLISrc and dataLISrc isnt ''
+            src = dataLISrc
           else
             src = $(node).attr('src')
           if src and src isnt ''
@@ -918,8 +924,11 @@ if Meteor.isClient
         else if node.tagName == 'IMG'
           previousIsSpan = false
           dataSrc = $(node).attr('data-src')
+          dataLISrc = $(node).attr('data-li-src')
           if dataSrc and dataSrc isnt ''
             src = dataSrc
+          else if dataLISrc and dataLISrc isnt ''
+            src = dataLISrc
           else
             src = $(node).attr('src')
           if src and src isnt ''
@@ -978,15 +987,21 @@ if Meteor.isClient
           if node.tagName is 'OL'
             textArray = text.split('\n')
             if textArray.length > 0
+              count = 0
+              $(node).children().each(()->
+                console.log("this.value = "+this.value)
+              )
               for i in [0..textArray.length-1]
                 if toBeInsertedText.length < 20
                   if toBeInsertedText.length > 0
                     toBeInsertedText += '\n'
-                  toBeInsertedText += textArray[i]
+                  if textArray[i].length > 0
+                    toBeInsertedText += '  '+(parseInt(count++,10)+1).toString()+'. '+textArray[i]
                 else
-                  appendParagraph(resortedArticle, toBeInsertedText, toBeInsertedStyleAlign)
-                  toBeInsertedText = textArray[i]
-                  toBeInsertedStyleAlign = styleAlign
+                  if textArray[i].length > 0
+                    appendParagraph(resortedArticle, toBeInsertedText, toBeInsertedStyleAlign)
+                    toBeInsertedText = '  '+(parseInt(count++,10)+1).toString()+'. '+textArray[i]
+                    toBeInsertedStyleAlign = styleAlign
               return
           previousIsImage = false
           showDebug&&console.log '    Got text in this element('+toBeInsertedText.length+') '+text

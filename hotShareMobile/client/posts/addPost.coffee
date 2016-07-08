@@ -387,6 +387,8 @@ if Meteor.isClient
             resortObj.mainUrl = source
           else
             insertDefaultImage(data,'http://data.tiegushi.com/res/defaultMainImage1.jpg',false,inputUrl)
+          if data.resortedArticle[0].type is 'image' and data.resortedArticle[0].imageUrl is source
+            data.resortedArticle.splice(0, 1)
           if data.resortedArticle.length > 0
             resortObj.index = 0
             resortObj.length = data.resortedArticle.length

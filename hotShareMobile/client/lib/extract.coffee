@@ -63,6 +63,7 @@ specialClassNameForPopularMobileSite = [
   '#page-content'   #xueqiu
   '#BODYCON'        #tripadvisor
   '.yaow > p'  #news.ifeng.com
+  #'.pulse-article'    #Linkedin
 ]
 
 specialClassNameExcludeMobileSites = [
@@ -209,6 +210,10 @@ scoreNode = (node) ->
   #if node.className && node.className.search(REGEXPS.specialClass)
   #  console.log('the main class of mainstream web for mobile. bingo')
   #  return 250
+  if node.tagName == "IMG"
+    if $(node).parent() and $(node).parent().hasClass('article-cover')
+      if $(node).parent().parent() and $(node).parent().parent().hasClass('article-header')
+        return 99999
   unlikely = node.className + node.id
   if unlikely.search(REGEXPS.unlikelyCandidates) != -1 and \
      unlikely.search(REGEXPS.okMaybeItsACandidate) == -1 and \
@@ -297,7 +302,16 @@ asTop = (page) ->
 scoreAndSelectTop = (nodes) ->
   scored = _.reduce(nodes, reduceScorable, [])
   #_.each(scored, (n) => n.score.scale(1 - linkDensityFor(n)))
-  _.sortBy(scored, (n) -> n.score.value)[scored.length-1]
+  #_.sortBy(scored, (n) -> n.score.value)[scored.length-1]
+  sortArray = _.sortBy(scored, (n) -> n.score.value)
+  id = scored.length-1
+  while id >= 0 and sortArray[id].score.value == 99999
+    id--
+  topId = scored.length-1
+  if id >= 0 and id != scored.length-1
+    $(sortArray[id]).prepend($(sortArray[scored.length-1]))
+    topId = id
+  sortArray[topId]
 
 collectSiblings = (top) ->
   _.reduce(
