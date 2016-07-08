@@ -1,9 +1,9 @@
 <template name="importPost">
   <div class="import-post">
-    <div class="head">
+    <!--<div class="head">
       <div class="left-btn">取消</div>
       <span>创作故事</span>
-    </div>
+    </div>-->
     <div class="main">
       {{#if hasImport}}
       <div class="progress">
@@ -14,7 +14,11 @@
       {{else}}
       <input type="text" id="import-post-url" class="form-control" placeholder="请粘贴或输入一个URL地址">
       <button type="button" class="btn btn-default btn-block import">马上导入</button>
-      <img class="import-setup" src="/import_setup.png" />
+        {{#if minIimg}}
+        <img class="import-setup" src="/import_setup.png" />
+        {{else}}
+        <img class="import-setup" src="/import_setup_800.png" />
+        {{/if}}
       {{/if}}
     </div>
   </div>

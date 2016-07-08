@@ -11,6 +11,9 @@ Template.importPost.helpers({
   },
   progress: function () {
     return progress.get();
+  },
+  minIimg: function () {
+    return $('.import-post').width() <= 640;
   }
 });
 Template.importPost.events({
@@ -26,7 +29,8 @@ Template.importPost.events({
       return alert('请粘贴或输入一个URL地址');
       
     // 调用server进行导入
-    var api_url = 'http://120.24.229.253:8080/import';
+    // var api_url = 'http://120.24.229.253:8080/import';
+    var api_url = 'http://127.0.0.1:8080/import';
     var id = new Mongo.ObjectID()._str;
     
     hasCancel = false;
