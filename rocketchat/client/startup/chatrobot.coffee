@@ -1,5 +1,6 @@
 
 if Meteor.isClient
+    TAPi18n.setLanguage 'zh'
     @executeAfterClickPostLink = (e)->
         #在聊天内容中点击与故事贴帖子相关的内容的超链接后会被触发
         #此部分需要等具体方案出来以后再细化完善，目前不会影响其他功能的使用

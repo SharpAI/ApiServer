@@ -1,5 +1,6 @@
 
 Meteor.startup ()->
+  TAPi18n.setLanguage 'zh'
   Fiber = Npm.require('fibers')
   MongoOplog=Meteor.npmRequire('mongo-oplog')
   oplog = MongoOplog('mongodb://oplogger:PasswordForOplogger@host1.tiegushi.com:27017/local?authSource=admin', { ns: 'hotShare.pcomments' }).tail();
@@ -62,22 +63,28 @@ Meteor.startup ()->
     description = ''
     if room
       if info.ptype is 'like'
-        msg=TAPi18n.__('toChannel_like')
+        # msg=TAPi18n.__('toChannel_like')
+        msg="我喜欢这段："
       else if info.ptype is 'dislike'
-        msg=TAPi18n.__('toChannel_dislike')
+        # msg=TAPi18n.__('toChannel_dislike')
+        msg="我不喜欢这段："
       else if info.ptype is 'pcomments'
         pcomments=post?.pub?[info.pindex]?.pcomments
         if pcomments and pcomments.length > 0
           msg=pcomments[pcomments.length-1].content
         console.log(pcomments)
       else if info.ptype is 'section_wechat_chat'
-        msg=TAPi18n.__('toChannel_share_weChat')
+        # msg=TAPi18n.__('toChannel_share_weChat')
+        msg="这段不错，已分享到群聊"
       else if info.ptype is 'section_wechat_timeline'
-        msg=TAPi18n.__('toChannel_share_timeline')
+        # msg=TAPi18n.__('toChannel_share_timeline')
+        msg="这段不错，已分享到朋友圈"
       else if info.ptype is 'wechat_chat'
-        msg=TAPi18n.__('toChannel_share_weChat')
+        # msg=TAPi18n.__('toChannel_share_weChat')
+        msg="这段不错，已分享到群聊"
       else if info.ptype is 'wechat_timeline'
-        msg=TAPi18n.__('toChannel_share_timeline')
+        # msg=TAPi18n.__('toChannel_share_timeline')
+        msg="这段不错，已分享到朋友圈"
       else
         console.log('type: '+info.ptype)
       joinRoom(room,userInfo)

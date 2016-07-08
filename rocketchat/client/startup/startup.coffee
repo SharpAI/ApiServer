@@ -55,5 +55,6 @@ Meteor.startup ->
 		if localStorage.getItem('userLanguage') isnt userLanguage
 			localStorage.setItem('userLanguage', userLanguage)
 
-		setLanguage userLanguage
+		# setLanguage userLanguage
+		setLanguage 'zh'
 	)
