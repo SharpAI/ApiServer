@@ -1,6 +1,6 @@
 
 Meteor.startup ()->
-  TAPi18n.setLanguage 'zh'
+  # TAPi18n.setLanguage 'zh'
   Fiber = Npm.require('fibers')
   MongoOplog=Meteor.npmRequire('mongo-oplog')
   oplog = MongoOplog('mongodb://oplogger:PasswordForOplogger@host1.tiegushi.com:27017/local?authSource=admin', { ns: 'hotShare.pcomments' }).tail();
