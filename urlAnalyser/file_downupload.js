@@ -8,7 +8,7 @@ var crypto = require('crypto');
 
 module.exports = filedownup
 
-var showDebug = true
+var showDebug = false;
 
 function filedownup(){
 
@@ -134,8 +134,7 @@ filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, c
         }
       }
       
-      if ((imageCounter+1) < imageArray.length) {
-        imageCounter += 1;
+      if (++imageCounter+1 < imageArray.length) {
         return downloadFromBCS(imageArray[imageCounter], downloadHandler);
       } else {
         return callback(null, 0, 0, foundImages, imageCounter, imageArray.length, source);
@@ -144,8 +143,7 @@ filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, c
   };
   onError = function(source) {
     showDebug && console.log('image resolve url got error');
-    if ((imageCounter+1) < imageArray.length) {
-      imageCounter += 1;
+    if (++imageCounter+1 < imageArray.length) {
       return downloadFromBCS(imageArray[imageCounter], downloadHandler);
     } else {
       return callback(null, 0, 0, foundImages, imageCounter, imageArray.length, null, source);
@@ -385,7 +383,7 @@ filedownup.removeImagesFromCache = function (draftImageData) {
     return;
   }
   
-  console.log('removeImagesFromCache: ', JSON.stringify(draftImageData));
+  showDebug && console.log('removeImagesFromCache: ', JSON.stringify(draftImageData));
   for (var i = 0; i < length; i++) {
     var item = draftImageData[i];
     if (fs.existsSync(item)) {
@@ -393,7 +391,7 @@ filedownup.removeImagesFromCache = function (draftImageData) {
       try{fs.unlinkSync(item);}
       catch(e){}
     } else {
-      console.log("local file not found: " + item);
+      showDebug && console.log("local file not found: " + item);
     }
   }
 };

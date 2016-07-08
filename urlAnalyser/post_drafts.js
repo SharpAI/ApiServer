@@ -64,20 +64,25 @@ function PostDrafts(id, user) {
     if (item.type === 'text') {
       showDebug && console.log('Processing Text');
       showDebug && console.log(user)
-      drafts.push({
+      
+      var draftItem = {
         type: 'text',
         toTheEnd: true,
         noKeyboardPopup: true,
         isImage: false,
         owner: user._id,
         text: item.text,
-        style: '',
-        layout: item.layout,
+        // style: '',
+        //layout: item.layout,
         data_row: '1',
         data_col: '1',
         data_sizex: '6',
         data_sizey: '1'
-      });
+      };
+      if(item.layout)
+        draftItem.layout = item.layout;
+      
+      drafts.push(draftItem);
     } else if (item.type === 'image') {
       showDebug && console.log('Processing Image ' + item.imageUrl);
       if (item.imageUrl && item.imageUrl !== '') {
@@ -228,13 +233,17 @@ function PostDrafts(id, user) {
     resortedObj.data = data;
     resortedObj.inputUrl = inputUrl;
     return async.mapLimit(data.resortedArticle, 1, resortedObj.itemProcessor.bind(resortedObj), function(err, results) {
-      console.log('error ' + err);
+      if(err)
+        console.log('error ' + err);
+      
+      showDebug && console.log('results:', JSON.stringify(results));
       return postDrafts.processTitleOfPost(data);
     });
   };
   postDrafts.seekOneUsableMainImage = function(data, inputUrl){
+    // console.log('data:' + JSON.stringify(data));
+    var resortObj = {};
     filedownup.seekOneUsableMainImage(data, function(file, w, h, found, index, total, source) {
-      var resortObj = {};
       showDebug && console.log('found ' + found + ' index ' + index + ' total ' + total + ' fileObject ' + file + ' source ' + source);
       if (file) {
         postDrafts.insertDownloadedImage(data, source, found, inputUrl, file, w, h);
@@ -242,13 +251,15 @@ function PostDrafts(id, user) {
       } else {
         postDrafts.insertDefaultImage(data, 'http://data.tiegushi.com/res/defaultMainImage1.jpg', false, inputUrl);
       }
+      if (data.resortedArticle[0].type === 'image' && data.resortedArticle[0].imageUrl === source)
+        data.resortedArticle.splice(0, 1);
       if (data.resortedArticle.length > 0) {
         resortObj.index = 0;
         resortObj.length = data.resortedArticle.length;
         showDebug && console.log('resortObj' + JSON.stringify(resortObj));
-        return postDrafts.renderResortedArticleAsync(data, inputUrl, resortObj);
+        postDrafts.renderResortedArticleAsync(data, inputUrl, resortObj);
       } else {
-        return postDrafts.processTitleOfPost(data);
+        postDrafts.processTitleOfPost(data);
       }
     }, 200, function(file){
       localImgs.push(file);
@@ -256,7 +267,7 @@ function PostDrafts(id, user) {
   };
   postDrafts.processTitleOfPost = function(data){
     if(data.title){
-      console.log('Title is ' + data.title);
+      showDebug && console.log('Title is ' + data.title);
       if(!title || title === '')
         title = data.title
       if(!addontitle || addontitle === '')
@@ -366,17 +377,17 @@ function PostDrafts(id, user) {
         return -1 * r;
       if (a[key] && b[key] && a[key] < b[key])
         return +1 * r;
-      if (a[key] === void 0 && b[key])
+      if (!a[key] && b[key])
         return +1 * r;
-      if (a[key] && b[key] === void 0)
+      if (a[key] && !b[key])
         return -1 * r;
 
       return 0;
     };
     
-    pub.sort(function(a, b) {
-      sortBy('data_row', a, b);
-    });
+    // pub.sort(function(a, b) {
+    //   sortBy('data_row', a, b);
+    // });
     
     return {
       pub:pub,

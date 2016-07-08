@@ -7,7 +7,7 @@ var mongoid = require('mongoid-js');
 var filedownup = require('./file_downupload.js');
 var drafts = require('./post_drafts.js');
 
-var showDebug = true;
+var showDebug = false;
 
 process.addListener('uncaughtException', function (err) {
   var msg = err.message;
