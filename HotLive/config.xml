@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.webrtc.scalablebroadcast" version="3.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Scalable-Broadcast</name>
+<widget id="org.tiegushi.live" version="1.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>故事直播</name>
     <icon src="www/img/icon.png" />
     <description>
         Peer-to-Peer (Secure) Video Scalable Broadcast (across all devices & platforms) using WebRTC/RTCMultiConnection.
     </description>
-    <author email="muazkh@gmail.com" href="https://www.webrtc-experiment.com/">
-        Muaz khan
+    <author email="admin@tiegushi.com" href="https://raidcdn.com/">
+        RAID CDN
     </author>
     <content src="index.html" />
     <access origin="*" subdomains="true" uri="*" />
