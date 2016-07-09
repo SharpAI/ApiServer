@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.webrtc.scalablebroadcast" version="3.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Scalable-Broadcast</name>
+    <icon src="www/img/icon.png" />
+    <description>
+        Peer-to-Peer (Secure) Video Scalable Broadcast (across all devices & platforms) using WebRTC/RTCMultiConnection.
+    </description>
+    <author email="muazkh@gmail.com" href="https://www.webrtc-experiment.com/">
+        Muaz khan
+    </author>
+    <content src="index.html" />
+    <access origin="*" subdomains="true" uri="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+    <allow-navigation href="https://*/*" />
+    <platform name="android">
+        <preference name="Orientation" value="default" />
+        <allow-intent href="market:*" />
+        <allow-navigation href="https://rtcmulticonnection.herokuapp.com/*" />
+        <allow-intent href="https://rtcmulticonnection.herokuapp.com/*" />
+        <access origin="https://rtcmulticonnection.herokuapp.com" />
+        <preference name="KeepRunning" value="true" />
+        <preference name="AndroidLaunchMode" value="singleTop" />
+    </platform>
+    <platform name="ios">
+        <preference name="Orientation" value="all" />
+        <allow-intent href="itms:*" />
+        <allow-intent href="itms-apps:*" />
+        <hook type="after_platform_add" src="hooks/iosrtc-swift-support.js" />
+        <config-file target="*-Info.plist" parent="CFBundleURLTypes">
+            <array>
+                <key>NSAppTransportSecurity</key>
+                <dict>
+                  <!--Include to allow all connections (DANGER)-->
+                  <key>NSAllowsArbitraryLoads</key>
+                      <true/>
+                </dict>
+            </array>
+        </config-file>
+    </platform>
+    <preference name="BackgroundColor" value="0xFFFF0000" />
+    <preference name="xwalkUserAgent" value="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36" />
+    <preference name="Fullscreen" value="false" />
+    <preference name="WebViewBounce" value="true" />
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="HideKeyboardFormAccessoryBar" value="true" />
+    <preference name="TopActivityIndicator" value="white" />
+    <preference name="KeyboardDisplayRequiresUserAction" value="false" />
+    <preference name="AutoHideSplashScreen" value="true" />
+    <preference name="SplashScreenDelay" value="1000" />
+    <preference name="SplashMaintainAspectRatio" value="true" />
+    <preference name="SplashShowOnlyFirstTime" value="false" />
+    <preference name="FadeSplashScreen" value="true" />
+    <preference name="FadeSplashScreenDuration" value="1000" />
+    <preference name="ShowSplashScreenSpinner" value="true" />
+    <preference name="xwalkVersion" value="17+" />
+    <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
+    <preference name="xwalkMode" value="embedded" />
+    <preference name="xwalkMultipleApk" value="true" />
+</widget>
