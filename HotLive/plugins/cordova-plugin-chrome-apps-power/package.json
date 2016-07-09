@@ -1,0 +1,35 @@
+{
+  "name": "cordova-plugin-chrome-apps-power",
+  "version": "1.0.4",
+  "description": "This plugin provides the ability to override the device's default power management.",
+  "cordova": {
+    "id": "cordova-plugin-chrome-apps-power",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MobileChromeApps/cordova-plugin-chrome-apps-power.git"
+  },
+  "keywords": [
+    "chrome",
+    "power",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "author": "",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/MobileChromeApps/cordova-plugin-chrome-apps-power/issues"
+  },
+  "homepage": "https://github.com/MobileChromeApps/cordova-plugin-chrome-apps-power"
+}
