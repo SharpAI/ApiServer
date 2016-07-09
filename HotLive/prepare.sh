@@ -1,4 +1,6 @@
 #!/bin/bash
+rm -rf platforms/android
+rm -rf platforms/ios
 rm -rf plugins/cordova-*
 npm install xcode
 cordova platforms remove ios
