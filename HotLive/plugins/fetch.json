@@ -2,7 +2,7 @@
     "cordova-plugin-whitelist": {
         "source": {
             "type": "registry",
-            "id": "cordova-plugin-whitelist@1"
+            "id": "cordova-plugin-whitelist@1.2.1"
         },
         "is_top_level": true,
         "variables": {}
@@ -10,7 +10,7 @@
     "cordova-plugin-crosswalk-webview": {
         "source": {
             "type": "registry",
-            "id": "cordova-plugin-crosswalk-webview"
+            "id": "cordova-plugin-crosswalk-webview@1.5.0"
         },
         "is_top_level": true,
         "variables": {}
@@ -18,7 +18,7 @@
     "cordova-plugin-chrome-apps-power": {
         "source": {
             "type": "registry",
-            "id": "cordova-plugin-chrome-apps-power"
+            "id": "cordova-plugin-chrome-apps-power@1.0.4"
         },
         "is_top_level": true,
         "variables": {}
@@ -26,7 +26,7 @@
     "cordova-plugin-file": {
         "source": {
             "type": "registry",
-            "id": "cordova-plugin-file"
+            "id": "cordova-plugin-file@4.1.1"
         },
         "is_top_level": true,
         "variables": {}
@@ -34,8 +34,9 @@
     "cordova-plugin-background-download": {
         "source": {
             "type": "git",
-            "url": "https://github.com/sgrebnov/cordova-plugin-background-download.git",
-            "subdir": "."
+            "url": "https://github.com/sgrebnov/cordova-plugin-background-download",
+            "subdir": ".",
+            "ref": "master"
         },
         "is_top_level": true,
         "variables": {}
@@ -43,16 +44,15 @@
     "cordova-plugin-iosrtc": {
         "source": {
             "type": "registry",
-            "id": "cordova-plugin-iosrtc"
+            "id": "cordova-plugin-iosrtc@3.0.1"
         },
         "is_top_level": true,
         "variables": {}
     },
     "cordova-plugin-device": {
         "source": {
-            "type": "git",
-            "url": "https://github.com/apache/cordova-plugin-device",
-            "subdir": "."
+            "type": "registry",
+            "id": "cordova-plugin-device"
         },
         "is_top_level": true,
         "variables": {}
