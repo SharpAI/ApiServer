@@ -28,7 +28,7 @@ if (Meteor.isClient) {
       //   return callback && callback('NOT_LOGIN');
       
       Accounts.callLoginMethod({
-        methodArguments: [{userId: userId, loginUserId: loginUserId}],
+        methodArguments: [{userId: userId, loginUserId: loginUserId, version: '2.0'}],
         userCallback: function (err) {
           if (err)
             return callback && callback('NOT_LOGIN');
