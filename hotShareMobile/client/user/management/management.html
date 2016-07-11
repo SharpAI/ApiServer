@@ -12,6 +12,7 @@
             {{/if}}
             <div class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
         </div>
+        {{#if currentUser}}
         <div class="content">
             <div class="box accounts-list">
                 <dl>
@@ -34,18 +35,15 @@
             </div>
             <div class="logout box boxTitle boxCenter">退出当前帐号</div>
         </div>
+        {{/if}}
     </div>
 </template>
 
 <template name="accounts_management_item">
     <dl class="my_account">
-        <dt><img src="{{profile.icon}}" alt="Avatar"><i class="fa fa-check-circle"></i></dt>
+        <dt><img src="{{toIcon}}" alt="Avatar"><i class="fa fa-check-circle"></i></dt>
         <dd class="other-user">
-            {{#if profile.fullname}}
-                {{profile.fullname}}
-            {{else}}
-                {{username}}
-            {{/if}}
+            {{toName}}
             <span class="remove"><i class="fa fa-times"></i></span>
         </dd>
     </dl>

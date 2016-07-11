@@ -167,7 +167,94 @@ if Meteor.isServer
               pushnotification("newpost", {_id: feedItem.postId, ownerName: feedItem.ownerName, title: feedItem.postTitle}, item.userId)
           )
         true
+        
+      'addAssociatedUserNew': (userInfo)->
+        # check params
+        if !this.userId or !userInfo or !userInfo.username or !userInfo.password
+          return {status: 'ERROR', message: 'Invalid Username'}
+          
+        # find user
+        userTarget = Accounts.findUserByUsername(userInfo.username)
+        if !userTarget
+          return {status: 'ERROR', message: 'Invalid Username'}
+        if userTarget._id is this.userId
+          return {status: 'ERROR', message: 'Can not add their own'}
+          
+        # check passwod
+        isMatch = false
+        if userTarget isnt undefined and userTarget isnt null
+          if userInfo.type is undefined or userInfo.type is null
+            userInfo.type = ''
+          if userInfo.token is undefined or userInfo.token is null
+            userInfo.token = ''
+          passwordTarget = {digest: userInfo.password, algorithm: 'sha-256'};
+          result = Accounts._checkPassword(userTarget, passwordTarget)
+          isMatch = (result.error is undefined)
+        unless isMatch
+          return {status: 'ERROR', message: 'Invalid Password'}
+        
+        # check relation
+        if UserRelation.find({userId: this.userId, toUserId: userTarget._id}).count() > 0
+          return {status: 'ERROR', message: 'Exist Associate User'}
+        
+        # save relation
+        me = Meteor.users.findOne({_id: this.userId})
+        UserRelation.insert {
+          userId: me._id
+          name: if me.profile and me.profile.fullname then me.profile.fullname else me.username
+          icon: if me.profile and me.profile.icon then me.profile.icon else '/userPicture.png'
+          toUserId: userTarget._id
+          toName: if userTarget.profile and userTarget.profile.fullname then userTarget.profile.fullname else userTarget.username
+          toIcon: if userTarget.profile and userTarget.profile.icon then userTarget.profile.icon else '/userPicture.png'
+          createAt: new Date()
+        }
+        UserRelation.insert {
+          userId: userTarget._id
+          name: if userTarget.profile and userTarget.profile.fullname then userTarget.profile.fullname else userTarget.username
+          icon: if userTarget.profile and userTarget.profile.icon then userTarget.profile.icon else '/userPicture.png'
+          toUserId: me._id
+          toName: if me.profile and me.profile.fullname then me.profile.fullname else me.username
+          toIcon: if me.profile and me.profile.icon then me.profile.icon else '/userPicture.png'
+          createAt: new Date()
+        }
+        UserRelation.find({userId: this.userId}).forEach (relation)->
+          if relation.toUserId isnt userTarget._id
+            UserRelation.insert {
+              userId: relation.toUserId
+              name: relation.toName
+              icon: relation.toIcon
+              toUserId: userTarget._id
+              toName: if userTarget.profile and userTarget.profile.fullname then userTarget.profile.fullname else userTarget.username
+              toIcon: if userTarget.profile and userTarget.profile.icon then userTarget.profile.icon else '/userPicture.png'
+              createAt: new Date()
+            }
+            UserRelation.insert {
+              userId: userTarget._id
+              name: if userTarget.profile and userTarget.profile.fullname then userTarget.profile.fullname else userTarget.username
+              icon: if userTarget.profile and userTarget.profile.icon then userTarget.profile.icon else '/userPicture.png'
+              toUserId: relation.toUserId
+              toName: relation.toName
+              toIcon: relation.toIcon
+              createAt: new Date()
+            }
+
+        return {status: 'SUCCESS'}  
+        
+      'removeAssociatedUserNew': (userId)->
+        if !this.userId or !userId
+          return false
+        if UserRelation.find({userId: this.userId, toUserId: userId}).count() <= 0
+          return false
+          
+        UserRelation.remove({toUserId: userId})
+        UserRelation.remove({userId: userId})
+          
+        return true
+        
       'addAssociatedUser': (userInfo)->
+        Meteor.defer ()->
+          Meteor.call 'addAssociatedUserNew', userInfo
+      
         if this.userId is undefined or this.userId is null or userInfo is undefined or userInfo is null
           return false
 
@@ -214,6 +301,9 @@ if Meteor.isServer
         else
           return {status: 'ERROR', message: 'Invalid Password'}
       'removeAssociatedUser': (userId)->
+        Meteor.defer ()->
+          Meteor.call 'removeAssociatedUserNew', userId
+          
         if this.userId is undefined or this.userId is null or userId is undefined or userId is null
           return false
         self = this

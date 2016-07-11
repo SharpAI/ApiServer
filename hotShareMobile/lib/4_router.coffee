@@ -177,7 +177,7 @@ if Meteor.isClient
         return
     Router.route '/my_accounts_management', {
       waitOn: ->
-        [Meteor.subscribe("associatedusers")]
+        [Meteor.subscribe("userRelation")]
       loadingTemplate: 'loadingPost'
       action: ->
         if Meteor.isCordova is true

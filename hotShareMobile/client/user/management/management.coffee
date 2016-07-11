@@ -45,35 +45,38 @@ Template.accounts_management.rendered=->
 
   $('.dashboard').css 'min-height', $(window).height()
 
-  userIds = []
-  AssociatedUsers.find({}).forEach((item)->
-      if Meteor.userId() isnt item.userIdA and !~ userIds.indexOf(item.userIdA)
-          userIds.push(item.userIdA)
+  # userIds = []
+  # AssociatedUsers.find({}).forEach((item)->
+  #     if Meteor.userId() isnt item.userIdA and !~ userIds.indexOf(item.userIdA)
+  #         userIds.push(item.userIdA)
 
-      if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
-          userIds.push(item.userIdB)
-  )
+  #     if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
+  #         userIds.push(item.userIdB)
+  # )
   
-  Meteor.subscribe('associateduserdetails', userIds)
+  # Meteor.subscribe('associateduserdetails', userIds)
 
-  return
+  # return
 
 Template.accounts_management.helpers
+  is_me: (id)->
+    return id is Meteor.userId()
   connecting: ->
     return is_loading.get().length > 0
   loging: ->
     return Meteor.loggingIn()
   accountList :->
-    userIds = []
-    AssociatedUsers.find({}).forEach((item)->
-        if Meteor.userId() isnt item.userIdA and !~ userIds.indexOf(item.userIdA)
-            userIds.push(item.userIdA)
+    UserRelation.find({userId: Meteor.userId()})
+    # userIds = []
+    # AssociatedUsers.find({}).forEach((item)->
+    #     if Meteor.userId() isnt item.userIdA and !~ userIds.indexOf(item.userIdA)
+    #         userIds.push(item.userIdA)
 
-        if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
-            userIds.push(item.userIdB)
-    )
+    #     if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
+    #         userIds.push(item.userIdB)
+    # )
     
-    return Meteor.users.find({_id: {'$in': userIds}})
+    # return Meteor.users.find({_id: {'$in': userIds}})
 
 Template.accounts_management.events
   'click dl.my_account': ->
@@ -81,22 +84,22 @@ Template.accounts_management.events
       return navigator.notification.confirm '正在切换中，请稍后在试~', null, '提示', ['知道了']
     slef = this
     unless Meteor.status().connected
-      is_loading.set([@_id])
+      is_loading.set([@toUserId])
       return Meteor.reconnect()
-    loginFn(@_id)
+    loginFn(@toUserId)
   'click .add-new' :->
     Router.go '/my_accounts_management_addnew'
 
   'click .remove': (e, t)->
     e.stopPropagation()
-    id = @_id
+    id = @toUserId
     #console.log(this._id)
     #console.log(e.currentTarget)
     PUB.confirm(
       '确定要删除吗？'
       ()->
         Meteor.call(
-          'removeAssociatedUser'
+          'removeAssociatedUserNew'
           id
         )
     )
@@ -124,7 +127,7 @@ Template.accounts_management_addnew.events
         token: Meteor.user().token
     }
     
-    Meteor.call('addAssociatedUser', userInfo, (err, data)->
+    Meteor.call('addAssociatedUserNew', userInfo, (err, data)->
       if data and data.status is 'ERROR'
         if data.message is 'Invalid Username'
           PUB.toast('用户不存在')

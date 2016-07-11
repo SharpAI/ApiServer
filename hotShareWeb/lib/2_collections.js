@@ -21,6 +21,7 @@ Versions = new Meteor.Collection('versions');
 Moments = new Meteor.Collection('moments');
 BlackList = new Meteor.Collection('blackList');
 AssociatedUsers = new Meteor.Collection('associatedusers');
+UserRelation = new Meteor.Collection('userrelation'); // 用户关系，为了不和以前的产生冲突，使用新表
 
 if(Meteor.isServer)
   PushSendLogs = new Meteor.Collection('pushSendLogs');
@@ -1693,6 +1694,13 @@ if(Meteor.isServer){
         Meteor.users.find({_id: {"$in": userIds}}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}})
       ];
     }
+  });
+  
+  Meteor.publish('userRelation', function() {
+    if(!this.userId)
+       return [];
+    
+    return UserRelation.find({userId: this.userId});
   });
 
   Meteor.publish('associateduserdetails', function(userIds) {
