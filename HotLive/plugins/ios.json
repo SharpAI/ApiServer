@@ -8,25 +8,25 @@
     },
     "installed_plugins": {
         "cordova-plugin-background-download": {
-            "PACKAGE_NAME": "com.webrtc.scalablebroadcast"
+            "PACKAGE_NAME": "org.tiegushi.live"
         },
         "cordova-plugin-chrome-apps-power": {
-            "PACKAGE_NAME": "com.webrtc.scalablebroadcast"
+            "PACKAGE_NAME": "org.tiegushi.live"
         },
         "cordova-plugin-crosswalk-webview": {
-            "PACKAGE_NAME": "com.webrtc.scalablebroadcast"
+            "PACKAGE_NAME": "org.tiegushi.live"
         },
         "cordova-plugin-device": {
-            "PACKAGE_NAME": "com.webrtc.scalablebroadcast"
+            "PACKAGE_NAME": "org.tiegushi.live"
         },
         "cordova-plugin-file": {
-            "PACKAGE_NAME": "com.webrtc.scalablebroadcast"
+            "PACKAGE_NAME": "org.tiegushi.live"
         },
         "cordova-plugin-iosrtc": {
-            "PACKAGE_NAME": "com.webrtc.scalablebroadcast"
+            "PACKAGE_NAME": "org.tiegushi.live"
         },
         "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "com.webrtc.scalablebroadcast"
+            "PACKAGE_NAME": "org.tiegushi.live"
         }
     },
     "dependent_plugins": {}
