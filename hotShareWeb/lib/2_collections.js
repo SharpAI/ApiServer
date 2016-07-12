@@ -1683,14 +1683,15 @@ if(Meteor.isServer){
     if(this.userId) {
       var self = this;
       var userIds = []
-      
-      AssociatedUsers.find({$or: [{userIdA: this.userId}, {userIdB: this.userId}]}).forEach(function(item) {
+      this.unblock();
+      var users=AssociatedUsers.find({$or: [{userIdA: this.userId}, {userIdB: this.userId}]}).fetch()
+      users.forEach(function(item) {
         if(self.userId !== item.userIdA && !~ userIds.indexOf(item.userIdA)) userIds.push(item.userIdA);
         if(self.userId !== item.userIdB && !~ userIds.indexOf(item.userIdB)) userIds.push(item.userIdB);
       });
-      
+
       return [
-        AssociatedUsers.find({$or: [{userIdA: this.userId}, {userIdB: this.userId}]}),
+        users,
         Meteor.users.find({_id: {"$in": userIds}}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}})
       ];
     }
@@ -1704,6 +1705,7 @@ if(Meteor.isServer){
   });
 
   Meteor.publish('associateduserdetails', function(userIds) {
+    this.unblock()
     if(userIds) {
         return Meteor.users.find({_id: {"$in": userIds}}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}});
     }
@@ -1714,13 +1716,14 @@ if(Meteor.isServer){
 
   Meteor.publish('favouriteposts', function(limit) {
     if(this.userId && limit) {
+        this.unblock();
         var postIds = [];
-
-        FavouritePosts.find({userId: this.userId}, {sort: {createdAt: -1}, limit: limit}).forEach(function(item) {
+        var posts=FavouritePosts.find({userId: this.userId}, {sort: {createdAt: -1}, limit: limit}).fetch();
+        posts.forEach(function(item) {
             if(!~postIds.indexOf(item.postId)) postIds.push(item.postId); 
         });
         return [
-            FavouritePosts.find({userId: this.userId}, {sort: {createdAt: -1}, limit: limit}),
+            posts,
             Posts.find({_id: {$in: postIds}},{fields:{title:1,addontitle:1,mainImage:1,ownerName:1}})
         ];
     }
@@ -1731,13 +1734,15 @@ if(Meteor.isServer){
 
   Meteor.publish('userfavouriteposts', function(userId, limit) {
     if(userId && limit) {
+        this.unblock()
         var postIds = [];
 
-        FavouritePosts.find({userId: userId}, {sort: {createdAt: -1}, limit: limit}).forEach(function(item) {
+        var posts=FavouritePosts.find({userId: userId}, {sort: {createdAt: -1}, limit: limit}).fetch();
+        posts.forEach(function(item) {
             if(!~postIds.indexOf(item.postId)) postIds.push(item.postId); 
         });
         return [
-            FavouritePosts.find({userId: userId}, {sort: {createdAt: -1}, limit: limit}),
+            posts,
             Posts.find({_id: {$in: postIds}},{fields:{title:1,addontitle:1,mainImage:1,ownerName:1}})
         ];
     }
@@ -1808,6 +1813,7 @@ if(Meteor.isServer){
     insert: function (userId, doc) {
       var userIds = [];
 
+      /*
       AssociatedUsers.find({}).forEach(function(item) {
         if (!~userIds.indexOf(item.userIdA)) {
           userIds.push(item.userIdA);
@@ -1815,10 +1821,10 @@ if(Meteor.isServer){
         if (!~userIds.indexOf(item.userIdB)) {
           userIds.push(item.userIdB);
         }
-      });
+      });*/
 
       //if(doc.owner === userId){
-      if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
+      //if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
         //postsInsertHookDeferHandle(userId,doc);
         postsInsertHookDeferHandle(doc.owner,doc);
           try{
@@ -1829,8 +1835,8 @@ if(Meteor.isServer){
               mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
           }catch(err){}
         return true;
-      }
-      return false;
+      //}
+      //return true;
     },
       remove: function (userId, doc) {
           if(doc.owner === userId){
@@ -1849,23 +1855,23 @@ if(Meteor.isServer){
         
         // to -> posts.allow.insert
         var userIds = [];
-        AssociatedUsers.find({}).forEach(function(item) {
+        /*AssociatedUsers.find({}).forEach(function(item) {
           if (!~userIds.indexOf(item.userIdA)) {
             userIds.push(item.userIdA);
           }
           if (!~userIds.indexOf(item.userIdB)) {
             userIds.push(item.userIdB);
           }
-        });
+        });*/
         
         //if(doc.owner === userId){
-        if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
+        //if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
           //postsInsertHookDeferHandle(userId,doc);
           postsInsertHookDeferHandle(doc.owner,doc);
           try{
             mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
           }catch(err){}        
-        }
+        //}
         
         return true;
       }
@@ -1895,7 +1901,7 @@ if(Meteor.isServer){
         postsUpdateHookDeferHandle(userId,doc,fieldNames, modifier);
         return true;
       }
-      return false;
+      return true;
     }
   });
   TopicPosts.allow({
