@@ -2,6 +2,19 @@ if Meteor.isServer
   myCrypto = Meteor.npmRequire "crypto"
   Meteor.startup ()->
     Meteor.methods
+      'sendErrorReport':(to, from, subject, text)->
+        console.log(to)
+        console.log(from)
+        console.log(subject)
+        console.log(text)
+        check([from, subject, text], [String])
+        this.unblock()
+        Email.send ({
+            to: to,
+            from: from,
+            subject: subject,
+            text: text
+        })
       "updateUserLanguage": (userId, lang)->
         Meteor.defer ()->
           Meteor.users.update({_id: userId},{$set: {'profile.language': lang}})
