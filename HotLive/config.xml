@@ -20,9 +20,9 @@
     <platform name="android">
         <preference name="Orientation" value="default" />
         <allow-intent href="market:*" />
-        <allow-navigation href="https://rtcmulticonnection.herokuapp.com/*" />
-        <allow-intent href="https://rtcmulticonnection.herokuapp.com/*" />
-        <access origin="https://rtcmulticonnection.herokuapp.com" />
+        <allow-navigation href="https://tiegushi.com/*" />
+        <allow-intent href="https://tiegushi.com/*" />
+        <access origin="https://tiegushi.com" />
         <preference name="KeepRunning" value="true" />
         <preference name="AndroidLaunchMode" value="singleTop" />
         <config-file target="AndroidManifest.xml" parent="/manifest">
