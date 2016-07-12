@@ -2,9 +2,9 @@
 // MIT License    - www.WebRTC-Experiment.com/licence
 // Documentation  - github.com/muaz-khan/RTCMultiConnection
 
-var isUseHTTPs = !(!!process.env.PORT || !!process.env.IP);
+var isUseHTTPs = true;//!(!!process.env.PORT || !!process.env.IP);
 
-var port = process.env.PORT || 9001;
+var port = process.env.PORT || 443;
 
 try {
     var _port = require('./config.json').port;
@@ -108,8 +108,10 @@ var app;
 
 if (isUseHTTPs) {
     var options = {
-        key: fs.readFileSync(path.join(__dirname, 'fake-keys/privatekey.pem')),
-        cert: fs.readFileSync(path.join(__dirname, 'fake-keys/certificate.pem'))
+        key: fs.readFileSync(path.join(__dirname, 'keys/private.key')),
+        cert: fs.readFileSync(path.join(__dirname, 'keys/certificate.crt')),
+        ca: [fs.readFileSync(path.join(__dirname, 'keys/gd_bundle_01.crt'), 'utf8'),
+            fs.readFileSync(path.join(__dirname, 'keys/gd_bundle_02.crt'), 'utf8')]
     };
     app = server.createServer(options, serverHandler);
 } else app = server.createServer(serverHandler);
