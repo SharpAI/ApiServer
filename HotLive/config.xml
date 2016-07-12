@@ -20,9 +20,9 @@
     <platform name="android">
         <preference name="Orientation" value="default" />
         <allow-intent href="market:*" />
-        <allow-navigation href="https://tiegushi.com/*" />
-        <allow-intent href="https://tiegushi.com/*" />
-        <access origin="https://tiegushi.com" />
+        <allow-navigation href="http://tiegushi.com/*" />
+        <allow-intent href="http://tiegushi.com/*" />
+        <access origin="http://tiegushi.com" />
         <preference name="KeepRunning" value="true" />
         <preference name="AndroidLaunchMode" value="singleTop" />
         <config-file target="AndroidManifest.xml" parent="/manifest">
