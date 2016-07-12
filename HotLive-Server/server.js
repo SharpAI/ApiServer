@@ -9,7 +9,7 @@ var port = process.env.PORT || 443;
 try {
     var _port = require('./config.json').port;
 
-    if (_port && _port.toString() !== '9001') {
+    if (_port && _port.toString() !== '443') {
         port = parseInt(_port);
     }
 } catch (e) {}
