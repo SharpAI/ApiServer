@@ -230,10 +230,40 @@ describe('界面事件操作 @watch', function(){
         }
     });
     it('动态页面', function(){
+        browser.scroll(0,-200);
+        browser.click('.discoverBtn');
+        browser.pause(300);
+        if(browser.isExisting('.newLayout_element')){
+            browser.moveToObject('.newLayout_element');
+            browser.click('.newLayout_element');
+            browser.pause(6000);
+            browser.back();
+        }
 
     });
 
     it('新朋友页面', function(){
+        browser.scroll(0,-200);
+        browser.click('.contactsBtn');
+        browser.pause(300);
+        if(browser.isExisting('.postImages') && browser.isExisting('.swipe-control')){
+            if(browser.isExisting('.postMainImage')){
+                // 点击操作
+                browser.moveToObject('.postMainImage');
+                browser.click('.postMainImage');
+                browser.pause(300);
+                browser.back();
 
+            }
+        }
+
+        // 滑动页面操作
+        browser.moveToObject('.swipe-control');
+        browser.swipeRight('.swipe-control',2);
+        browser.pause(300);
+
+        browser.moveToObject('.swipe-control');
+        browser.swipeLeft('.swipe-control',2);
+        browser.pause(300);
     });
 });
