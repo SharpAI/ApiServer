@@ -66,7 +66,9 @@ if (isUseHTTPs) {
         key: fs.readFileSync(path.join(__dirname, 'keys/private.key')),
         cert: fs.readFileSync(path.join(__dirname, 'keys/certificate.crt')),
         ca: [fs.readFileSync(path.join(__dirname, 'keys/gd_bundle_01.crt'), 'utf8'),
-            fs.readFileSync(path.join(__dirname, 'keys/gd_bundle_02.crt'), 'utf8')]
+            fs.readFileSync(path.join(__dirname, 'keys/gd_bundle_02.crt'), 'utf8')],
+        ciphers: 'ECDHE-RSA-AES256-SHA:AES256-SHA:RC4-SHA:RC4:HIGH:!MD5:!aNULL:!EDH:!AESGCM',
+        honorCipherOrder: true
     };
     app = server.createServer(options, serverHandler);
 } else app = server.createServer(serverHandler);
