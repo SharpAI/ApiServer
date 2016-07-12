@@ -2469,31 +2469,31 @@ if(Meteor.isClient){
                       },500);
                   }
               });
+
+              Meteor.subscribe('readerpopularposts', {
+                  onReady: function(){
+                      //Session.set('momentsCollection','loaded');
+                  }
+              });
           }
       });
   }
-  Tracker.autorun(function(){
-      if (Meteor.userId()){
-          Meteor.subscribe('suggestPosts', 15, {
-              onReady: function(){
-                  Session.set('momentsCollection','loaded');
-              }
-          });
 
-          Meteor.subscribe('readerpopularposts', {
-              onReady: function(){
-                  //Session.set('momentsCollection','loaded');
-              }
-          });
+    Tracker.autorun(function(){
+        if (Meteor.userId()){
+            Meteor.subscribe('suggestPosts', 15, {
+                onReady: function(){
+                    Session.set('momentsCollection','loaded');
+                }
+            });
 
-          Meteor.subscribe('associatedusers', {
-            onReady: function() {
+            Meteor.subscribe('associatedusers', {
+                onReady: function() {
 
-            }
-          });          
-      }
-  });
-
+                }
+            });
+        }
+    });
   Tracker.autorun(function() {
     if (Meteor.userId()) {
         if (Meteor.isCordova){
