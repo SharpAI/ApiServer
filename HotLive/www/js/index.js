@@ -84,7 +84,7 @@ var app = {
         // connection.socketURL = '/';
 
         // comment-out below line if you do not have your own socket.io server
-        connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';
+        connection.socketURL = 'https://tiegushi.com:443/';
 
         connection.socketMessageEvent = 'scalable-media-broadcast-demo';
 
