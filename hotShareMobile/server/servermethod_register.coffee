@@ -245,7 +245,9 @@ if Meteor.isServer
         
       'addAssociatedUser': (userInfo)->
         Meteor.defer ()->
-          Meteor.call 'addAssociatedUserNew', userInfo
+          try
+            Meteor.call 'addAssociatedUserNew', userInfo
+          catch e
       
         if this.userId is undefined or this.userId is null or userInfo is undefined or userInfo is null
           return false
@@ -294,7 +296,9 @@ if Meteor.isServer
           return {status: 'ERROR', message: 'Invalid Password'}
       'removeAssociatedUser': (userId)->
         Meteor.defer ()->
-          Meteor.call 'removeAssociatedUserNew', userId
+          try
+            Meteor.call 'removeAssociatedUserNew', userId
+          catch e
           
         if this.userId is undefined or this.userId is null or userId is undefined or userId is null
           return false

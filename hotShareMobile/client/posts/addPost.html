@@ -168,13 +168,9 @@
           </dl>
           {{#each accountList}}
             <dl>
-              <dt userId="{{_id}}"><img src="{{profile.icon}}" alt="Avatar"><i class="fa fa-check-circle"></i></dt>
+              <dt userId="{{toUserId}}" userIcon="{{toIcon}}" userName="{{toName}}"><img src="{{toIcon}}" alt="Avatar"><i class="fa fa-check-circle"></i></dt>
               <dd>
-                  {{#if profile.fullname}}
-                      {{profile.fullname}}
-                  {{else}}
-                      {{username}}
-                  {{/if}}
+                  {{toName}}
               </dd>
             </dl>
           {{/each}}          

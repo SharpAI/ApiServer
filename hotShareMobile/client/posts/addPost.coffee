@@ -549,30 +549,47 @@ if Meteor.isClient
 
     modalUserId = $('#chooseAssociatedUser .modal-body dt.active').attr('userId')
     ownerUser = null
-
-    if modalUserId isnt undefined or modalUserId isnt null
-      ownerUser = Meteor.users.findOne({_id: modalUserId})
-      Session.set 'post-publish-user-id', modalUserId
-
-    if ownerUser is undefined or ownerUser is null
+    
+    if modalUserId is Meteor.userId() or !modalUserId
       ownerUser = Meteor.user()
-      Session.set 'post-publish-user-id', ''
+    else
+      ownerUser = {
+        _id: modalUserId
+        username: $('#chooseAssociatedUser .modal-body dt.active').attr('userName')
+        profile: {
+          icon: $('#chooseAssociatedUser .modal-body dt.active').attr('userIcon')
+          fullname: $('#chooseAssociatedUser .modal-body dt.active').attr('userName')
+        }
+      }
+      
+    Session.set 'post-publish-user-id', ownerUser._id
+    ownerIcon = if ownerUser.profile and ownerUser.profile.fullname then ownerUser.profile.fullname else ownerUser.username
+    ownerName = if ownerUser.profile and ownerUser.profile.icon then ownerUser.profile.icon else '/userPicture.png'
 
-    try
-      #ownerIcon = Meteor.user().profile.icon
-      ownerIcon = ownerUser.profile.icon
-    catch
-      ownerIcon = '/userPicture.png'
+    # if modalUserId isnt undefined or modalUserId isnt null
+    #   ownerUser = Meteor.users.findOne({_id: modalUserId})
+    #   Session.set 'post-publish-user-id', modalUserId
+    # if modalUserId is Meteor.userId()
+
+    # if ownerUser is undefined or ownerUser is null
+    #   ownerUser = Meteor.user()
+    #   Session.set 'post-publish-user-id', ''
+
+    # try
+    #   #ownerIcon = Meteor.user().profile.icon
+    #   ownerIcon = ownerUser.profile.icon
+    # catch
+    #   ownerIcon = '/userPicture.png'
     Session.set 'draftTitle',''
     Session.set 'draftAddontitle',''
-    console.log 'Full name is ' + Meteor.user().profile.fullname
-    #if Meteor.user().profile.fullname && (Meteor.user().profile.fullname isnt '')
-    #  ownerName = Meteor.user().profile.fullname
-    if ownerUser.profile.fullname && (ownerUser.profile.fullname isnt '')
-      ownerName = ownerUser.profile.fullname
-    else
-      #ownerName = Meteor.user().username
-      ownerName = ownerUser.username
+    # console.log 'Full name is ' + Meteor.user().profile.fullname
+    # #if Meteor.user().profile.fullname && (Meteor.user().profile.fullname isnt '')
+    # #  ownerName = Meteor.user().profile.fullname
+    # if ownerUser.profile.fullname && (ownerUser.profile.fullname isnt '')
+    #   ownerName = ownerUser.profile.fullname
+    # else
+    #   #ownerName = Meteor.user().username
+    #   ownerName = ownerUser.username
 
     draftData = Drafts.find().fetch()
     postId = draftData[0]._id;
@@ -1187,29 +1204,31 @@ if Meteor.isClient
         loopAtEnd: false
       }
   Template.chooseAssociatedUser.onRendered ()->
-    userIds = []
-    AssociatedUsers.find({}).forEach((item)->
-        if Meteor.userId() isnt item.userIdA and !~ userIds.indexOf(item.userIdA)
-            userIds.push(item.userIdA)
+    # userIds = []
+    # AssociatedUsers.find({}).forEach((item)->
+    #     if Meteor.userId() isnt item.userIdA and !~ userIds.indexOf(item.userIdA)
+    #         userIds.push(item.userIdA)
 
-        if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
-            userIds.push(item.userIdB)
-    )
+    #     if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
+    #         userIds.push(item.userIdB)
+    # )
     
-    Meteor.subscribe('associateduserdetails', userIds)
+    # Meteor.subscribe('associateduserdetails', userIds)
+    Meteor.subscribe('userRelation')
 
   Template.chooseAssociatedUser.helpers
     accountList :->
-      userIds = []
-      AssociatedUsers.find({}).forEach((item)->
-          if Meteor.userId() isnt item.userIdA and !~ userIds.indexOf(item.userIdA)
-              userIds.push(item.userIdA)
+      # userIds = []
+      # AssociatedUsers.find({}).forEach((item)->
+      #     if Meteor.userId() isnt item.userIdA and !~ userIds.indexOf(item.userIdA)
+      #         userIds.push(item.userIdA)
 
-          if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
-              userIds.push(item.userIdB)
-      )
+      #     if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
+      #         userIds.push(item.userIdB)
+      # )
       
-      return Meteor.users.find({_id: {'$in': userIds}})
+      # return Meteor.users.find({_id: {'$in': userIds}})
+      return UserRelation.find({userId: Meteor.userId()})
 
   Template.chooseAssociatedUser.events
     "click .modal-body dl": (e, t)->
