@@ -1,0 +1,13 @@
+On development machine:
+
+tar -zcf HotLive-Server.tgz HotLive-Server/
+scp HotLive-Server.tgz root@120.26.118.194:/root/
+
+On Host server:
+
+tar -zxvf HotLive-Server.tgz 
+cd HotLive-Server/
+npm install
+vi config.json and modify port to 443, disable log.
+
+forever start server.js
