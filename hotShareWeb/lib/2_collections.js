@@ -1672,7 +1672,7 @@ if(Meteor.isServer){
 
   Meteor.publish('readerpopularposts', function() {
     if(this.userId) {
-        return ReaderPopularPosts.find({userId: this.userId});
+        return ReaderPopularPosts.find({userId: this.userId},{limit:3});
     }
     else {
         return [];
