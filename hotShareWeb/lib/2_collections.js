@@ -1683,7 +1683,6 @@ if(Meteor.isServer){
     if(this.userId) {
       var self = this;
       var userIds = []
-      this.unblock();
       var users=AssociatedUsers.find({$or: [{userIdA: this.userId}, {userIdB: this.userId}]}).fetch()
       users.forEach(function(item) {
         if(self.userId !== item.userIdA && !~ userIds.indexOf(item.userIdA)) userIds.push(item.userIdA);
@@ -1705,7 +1704,6 @@ if(Meteor.isServer){
   });
 
   Meteor.publish('associateduserdetails', function(userIds) {
-    this.unblock()
     if(userIds) {
         return Meteor.users.find({_id: {"$in": userIds}}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}});
     }
@@ -1716,7 +1714,6 @@ if(Meteor.isServer){
 
   Meteor.publish('favouriteposts', function(limit) {
     if(this.userId && limit) {
-        this.unblock();
         var postIds = [];
         var posts=FavouritePosts.find({userId: this.userId}, {sort: {createdAt: -1}, limit: limit}).fetch();
         posts.forEach(function(item) {
@@ -1734,7 +1731,6 @@ if(Meteor.isServer){
 
   Meteor.publish('userfavouriteposts', function(userId, limit) {
     if(userId && limit) {
-        this.unblock()
         var postIds = [];
 
         var posts=FavouritePosts.find({userId: userId}, {sort: {createdAt: -1}, limit: limit}).fetch();
