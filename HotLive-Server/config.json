@@ -2,6 +2,6 @@
   "socketURL": "/",
   "socketMessageEvent": "RTCMultiConnection-Message",
   "socketCustomEvent": "RTCMultiConnection-Custom-Message",
-  "port": "443",
+  "port": "80",
   "enableLogs": "false"
 }

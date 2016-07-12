@@ -2,9 +2,9 @@
 // MIT License    - www.WebRTC-Experiment.com/licence
 // Documentation  - github.com/muaz-khan/RTCMultiConnection
 
-var isUseHTTPs = true;//!(!!process.env.PORT || !!process.env.IP);
+var isUseHTTPs = false;//!(!!process.env.PORT || !!process.env.IP);
 
-var port = process.env.PORT || 443;
+var port = process.env.PORT || 80;
 
 try {
     var _port = require('./config.json').port;
