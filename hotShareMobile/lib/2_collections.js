@@ -1399,7 +1399,7 @@ if(Meteor.isServer){
       );
   });
   Meteor.publish('allBlackList', function () {
-    return BlackList.find({});
+    return BlackList.find({},{limit: 10});
   });
   Meteor.publish("refcomments", function() {
     Max = RefComments.find().count()-8;
