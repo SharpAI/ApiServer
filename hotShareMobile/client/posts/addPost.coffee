@@ -563,8 +563,8 @@ if Meteor.isClient
       }
       
     Session.set 'post-publish-user-id', ownerUser._id
-    ownerIcon = if ownerUser.profile and ownerUser.profile.fullname then ownerUser.profile.fullname else ownerUser.username
-    ownerName = if ownerUser.profile and ownerUser.profile.icon then ownerUser.profile.icon else '/userPicture.png'
+    ownerName = if ownerUser.profile and ownerUser.profile.fullname then ownerUser.profile.fullname else ownerUser.username
+    ownerIcon = if ownerUser.profile and ownerUser.profile.icon then ownerUser.profile.icon else '/userPicture.png'
 
     # if modalUserId isnt undefined or modalUserId isnt null
     #   ownerUser = Meteor.users.findOne({_id: modalUserId})
