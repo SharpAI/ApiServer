@@ -1681,7 +1681,6 @@ if(Meteor.isServer){
   });
 
   Meteor.publish('associatedusers', function() {
-    return this.ready()
     if(!this.userId){
         return this.ready()
     }
@@ -1746,7 +1745,6 @@ if(Meteor.isServer){
   });
 
   Meteor.publish('associateduserdetails', function(userIds) {
-    return this.ready();
     if(userIds) {
         return Meteor.users.find({_id: {"$in": userIds}}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}});
     }
