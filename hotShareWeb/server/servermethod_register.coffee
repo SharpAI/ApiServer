@@ -65,21 +65,23 @@ if Meteor.isServer
         if(!Match.test(postId, String) || !Match.test(userId, String))
           return
         try
-          post = Posts.findOne({_id:postId})
+          this.unblock();
+          post = Posts.findOne({_id:postId},{fields:{browse:1}})
           browseTimes = 1;
           if post
             if post.browse isnt undefined
               browseTimes = post.browse + 1
             Meteor.defer ()->
+              Posts.update({_id:postId},{$set:{browse:browseTimes}})
               pushnotification("read",post,userId)
               unless NoUpdateShare
                 Feeds.update({postId:postId,eventType: 'share'},{
                   $inc: { ReadAfterShare: 1 },
                   $set:{checked:false}
                 });
-          Posts.update({_id:postId},{$set:{browse:browseTimes}})
         catch error
           console.log('Error on RedpostReport' + error)
+        return
 
       "getS3WritePolicy": (filename, URI)->
         MAXIMUM_MB = 10
