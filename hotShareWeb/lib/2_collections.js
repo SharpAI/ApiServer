@@ -1256,24 +1256,30 @@ if(Meteor.isServer){
         else{
             var self = this;
             self.count = 0;
+            self.meeterIds=[];
             publicPostsPublisherDeferHandle(userId,postId);
             var handle = Meets.find({me: userId,meetOnPostId:postId},{sort: {createdAt: -1},limit:limit}).observeChanges({
                 added: function (id,fields) {
                     var taId = fields.ta;
                     //Call defered function here:
-                    if (taId !== userId)
-                        newMeetsAddedForPostFriendsDeferHandle(self,taId,userId,id,fields);
+                    if (taId !== userId){
+                        if(!~self.meeterIds.indexOf(taId)){
+                            self.meeterIds.push(taId);
+                            newMeetsAddedForPostFriendsDeferHandle(self,taId,userId,id,fields);
+                        }
+                    }
                 },
                 changed: function (id,fields) {
-                    try{
-                        self.changed("postfriends", id, fields);
-                    }catch(error){
-                    }
+                    self.changed("postfriends", id, fields);
+                },
+                removed:function (id,fields) {
+                    self.removed("postfriends", id, fields);
                 }
             });
             self.ready();
             self.onStop(function () {
                 handle.stop();
+                delete self.meeterIds
             });
         }
   });
@@ -1533,6 +1539,9 @@ if(Meteor.isServer){
                         self.changed("userDetail", id, fields);
                     }catch(error){
                     }
+                },
+                removed: function(id, fields){
+                    self.removed('userDetail', id, fields);
                 }
             });
             getViewLists(self, id, 3);
@@ -1542,16 +1551,7 @@ if(Meteor.isServer){
             });
         } catch (error) {
         }
-        return Meteor.users.find({_id: id},
-            {
-                'username': 1,
-                'email': 1,
-                'profile.fullname': 1,
-                'profile.icon': 1,
-                'profile.desc': 1,
-                'profile.location': 1
-            }
-        );
+        return;
     }
   });
   Meteor.publish("usersById", function (userId) {
@@ -1672,7 +1672,7 @@ if(Meteor.isServer){
 
   Meteor.publish('readerpopularposts', function() {
     if(this.userId) {
-        return ReaderPopularPosts.find({userId: this.userId});
+        return ReaderPopularPosts.find({userId: this.userId},{limit:3});
     }
     else {
         return [];
@@ -1680,20 +1680,60 @@ if(Meteor.isServer){
   });
 
   Meteor.publish('associatedusers', function() {
-    if(this.userId) {
-      var self = this;
-      var userIds = []
-      
-      AssociatedUsers.find({$or: [{userIdA: this.userId}, {userIdB: this.userId}]}).forEach(function(item) {
-        if(self.userId !== item.userIdA && !~ userIds.indexOf(item.userIdA)) userIds.push(item.userIdA);
-        if(self.userId !== item.userIdB && !~ userIds.indexOf(item.userIdB)) userIds.push(item.userIdB);
-      });
-      
-      return [
-        AssociatedUsers.find({$or: [{userIdA: this.userId}, {userIdB: this.userId}]}),
-        Meteor.users.find({_id: {"$in": userIds}}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}})
-      ];
+    if(!this.userId){
+        return this.ready()
     }
+      var self = this;
+      var pub = this;
+
+      var userA_Handle=AssociatedUsers.find({userIdA: self.userId}).observeChanges({
+          added: function(_id, record){
+              if(record.userIdB){
+                  Meteor.defer(function(){
+                      var userInfo=Meteor.users.findOne({_id: record.userIdB}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}})
+                      if(userInfo){
+                          pub.added('associatedusers', _id, record);
+                          var userId=userInfo._id
+                          delete userInfo['_id']
+                          pub.added('users', userId, userInfo);
+                      }
+                  })
+              }
+          },
+          changed: function(_id, record){
+              pub.changed('associatedusers', _id, record);
+          },
+          removed: function(_id, record){
+              pub.removed('associatedusers', _id, record);
+          }
+      });
+      var userB_Handle=AssociatedUsers.find({userIdB: self.userId}).observeChanges({
+          added: function(_id, record){
+              if(record.userIdA){
+                  Meteor.defer(function(){
+                      var userInfo=Meteor.users.findOne({_id: record.userIdA}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}})
+                      if(userInfo){
+                          pub.added('associatedusers', _id, record);
+                          var userId=userInfo._id
+                          delete userInfo['_id']
+                          pub.added('users', userId, userInfo);
+                      }
+                  })
+              }
+          },
+          changed: function(_id, record){
+              pub.changed('associatedusers', _id, record);
+          },
+          removed: function(_id, record){
+              pub.removed('associatedusers', _id, record);
+          }
+      });
+      this.ready();
+      this.onStop(function(){
+          userA_Handle.stop();
+          userB_Handle.stop();
+      });
+      return
   });
   
   Meteor.publish('userRelation', function() {
@@ -1708,47 +1748,54 @@ if(Meteor.isServer){
         return Meteor.users.find({_id: {"$in": userIds}}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}});
     }
     else {
-        return [];
+        return this.ready();
     }
   });  
-
+  function publishTheFavouritePosts(self,userId,limit){
+      var pub = self
+      var cursorHandle=FavouritePosts.find({userId: userId}, {sort: {createdAt: -1}, limit: limit}).observeChanges({
+          added: function(_id, record){
+              Meteor.defer(function(){
+                  var postInfo=Posts.findOne({_id: record.postId},{fields:{title:1,addontitle:1,mainImage:1,ownerName:1}});
+                  if(postInfo){
+                      pub.added('favouriteposts', _id, record);
+                      var postId=postInfo._id
+                      delete postInfo['_id']
+                      pub.added('posts', postId, postInfo);
+                  }
+              })
+          },
+          changed: function(_id, record){
+              pub.changed('favouriteposts', _id, record);
+          },
+          removed: function(_id, record){
+              pub.removed('favouriteposts', _id, record);
+          }
+      });
+      self.ready()
+      self.onStop(function(){
+          cursorHandle.stop()
+      })
+  }
   Meteor.publish('favouriteposts', function(limit) {
-    if(this.userId && limit) {
-        var postIds = [];
-
-        FavouritePosts.find({userId: this.userId}, {sort: {createdAt: -1}, limit: limit}).forEach(function(item) {
-            if(!~postIds.indexOf(item.postId)) postIds.push(item.postId); 
-        });
-        return [
-            FavouritePosts.find({userId: this.userId}, {sort: {createdAt: -1}, limit: limit}),
-            Posts.find({_id: {$in: postIds}},{fields:{title:1,addontitle:1,mainImage:1,ownerName:1}})
-        ];
+    if(!this.userId){
+        return this.ready();
     }
-    else {
-        return [];
-    }
+    limit = limit || 3;
+    return publishTheFavouritePosts(this,this.userId,limit)
   });
 
   Meteor.publish('userfavouriteposts', function(userId, limit) {
-    if(userId && limit) {
-        var postIds = [];
-
-        FavouritePosts.find({userId: userId}, {sort: {createdAt: -1}, limit: limit}).forEach(function(item) {
-            if(!~postIds.indexOf(item.postId)) postIds.push(item.postId); 
-        });
-        return [
-            FavouritePosts.find({userId: userId}, {sort: {createdAt: -1}, limit: limit}),
-            Posts.find({_id: {$in: postIds}},{fields:{title:1,addontitle:1,mainImage:1,ownerName:1}})
-        ];
+    if(!userId){
+        this.ready()
     }
-    else {
-        return [];
-    }
+    limit= limit || 3;
+    return publishTheFavouritePosts(this,userId,limit)
   });
   
   Meteor.publish('webUserPublishPosts', function(limit) {
     if(!this.userId)
-      return [];
+      return this.ready();
       
     limit = limit || 10;
     //return Posts.find({}, {sort: {createdAt: -1}, limit: limit});
@@ -1808,6 +1855,7 @@ if(Meteor.isServer){
     insert: function (userId, doc) {
       var userIds = [];
 
+      /*
       AssociatedUsers.find({}).forEach(function(item) {
         if (!~userIds.indexOf(item.userIdA)) {
           userIds.push(item.userIdA);
@@ -1815,10 +1863,10 @@ if(Meteor.isServer){
         if (!~userIds.indexOf(item.userIdB)) {
           userIds.push(item.userIdB);
         }
-      });
+      });*/
 
       //if(doc.owner === userId){
-      if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
+      //if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
         //postsInsertHookDeferHandle(userId,doc);
         postsInsertHookDeferHandle(doc.owner,doc);
           try{
@@ -1829,8 +1877,8 @@ if(Meteor.isServer){
               mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
           }catch(err){}
         return true;
-      }
-      return false;
+      //}
+      //return true;
     },
       remove: function (userId, doc) {
           if(doc.owner === userId){
@@ -1849,23 +1897,23 @@ if(Meteor.isServer){
         
         // to -> posts.allow.insert
         var userIds = [];
-        AssociatedUsers.find({}).forEach(function(item) {
+        /*AssociatedUsers.find({}).forEach(function(item) {
           if (!~userIds.indexOf(item.userIdA)) {
             userIds.push(item.userIdA);
           }
           if (!~userIds.indexOf(item.userIdB)) {
             userIds.push(item.userIdB);
           }
-        });
+        });*/
         
         //if(doc.owner === userId){
-        if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
+        //if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
           //postsInsertHookDeferHandle(userId,doc);
           postsInsertHookDeferHandle(doc.owner,doc);
           try{
             mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
           }catch(err){}        
-        }
+        //}
         
         return true;
       }
@@ -1895,7 +1943,7 @@ if(Meteor.isServer){
         postsUpdateHookDeferHandle(userId,doc,fieldNames, modifier);
         return true;
       }
-      return false;
+      return true;
     }
   });
   TopicPosts.allow({
@@ -2467,30 +2515,30 @@ if(Meteor.isClient){
                       },500);
                   }
               });
+
+              Meteor.subscribe('readerpopularposts', {
+                  onReady: function(){
+                      //Session.set('momentsCollection','loaded');
+                  }
+              });
+          }
+      });
+      Tracker.autorun(function(){
+          if (Meteor.userId()){
+              Meteor.subscribe('suggestPosts', 15, {
+                  onReady: function(){
+                      Session.set('momentsCollection','loaded');
+                  }
+              });
+
+              Meteor.subscribe('associatedusers', {
+                  onReady: function() {
+
+                  }
+              });
           }
       });
   }
-  Tracker.autorun(function(){
-      if (Meteor.userId()){
-          Meteor.subscribe('suggestPosts', 15, {
-              onReady: function(){
-                  Session.set('momentsCollection','loaded');
-              }
-          });
-
-          Meteor.subscribe('readerpopularposts', {
-              onReady: function(){
-                  //Session.set('momentsCollection','loaded');
-              }
-          });
-
-          Meteor.subscribe('associatedusers', {
-            onReady: function() {
-
-            }
-          });          
-      }
-  });
 
   Tracker.autorun(function() {
     if (Meteor.userId()) {
