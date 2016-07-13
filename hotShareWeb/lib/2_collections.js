@@ -391,7 +391,7 @@ if(Meteor.isServer){
             } catch (error){
             }
             try{
-                var views=Viewers.find({postId:postId},{limit:100});
+                var views=Viewers.find({postId:postId},{limit:50});
                 if(views.count()>0){
                     views.forEach(function(data){
                         var meetItemOne = Meets.findOne({me:userId,ta:data.userId});
@@ -1211,14 +1211,14 @@ if(Meteor.isServer){
             self.changed("viewlists", id, fields);
           }catch(error){
           }
-        },
+        }/*,
         removed: function (id) {
           try{
             self.removed("viewlists", id);
             self.count--;
           }catch(error){
           }
-        }
+        }*/
       });
 
       self.ready();
@@ -1271,10 +1271,10 @@ if(Meteor.isServer){
                 },
                 changed: function (id,fields) {
                     self.changed("postfriends", id, fields);
-                },
+                }/*,
                 removed:function (id,fields) {
                     self.removed("postfriends", id, fields);
-                }
+                }*/
             });
             self.ready();
             self.onStop(function () {
@@ -1540,10 +1540,10 @@ if(Meteor.isServer){
                         self.changed("userDetail", id, fields);
                     }catch(error){
                     }
-                },
+                }/*,
                 removed: function(id, fields){
                     self.removed('userDetail', id, fields);
-                }
+                }*/
             });
             getViewLists(self, id, 3);
             self.ready();
@@ -1587,16 +1587,16 @@ if(Meteor.isServer){
       return Viewers.find({userId: userId}, {sort: {createdAt: -1}, limit:3});
   });
   Meteor.publish("viewers", function(postId) {
-    if(!Match.test(postId, String))
+    //if(!Match.test(postId, String))
       return this.ready();
-    else
-      return Viewers.find({postId: postId}, {sort: {createdAt: -1}});
+    //else
+    //  return Viewers.find({postId: postId}, {sort: {createdAt: -1}});
   });
   Meteor.publish("reports", function(postId) {
     if(!Match.test(postId, String))
       return this.ready();
     else
-      return Reports.find({postId: postId});
+      return Reports.find({postId: postId},{limit:5});
   });
   Meteor.publish("messages", function(to){
     if(this.userId === null || to === null || to === undefined)
@@ -1681,6 +1681,7 @@ if(Meteor.isServer){
   });
 
   Meteor.publish('associatedusers', function() {
+    return this.ready()
     if(!this.userId){
         return this.ready()
     }
@@ -1745,6 +1746,7 @@ if(Meteor.isServer){
   });
 
   Meteor.publish('associateduserdetails', function(userIds) {
+    return this.ready();
     if(userIds) {
         return Meteor.users.find({_id: {"$in": userIds}}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}});
     }
