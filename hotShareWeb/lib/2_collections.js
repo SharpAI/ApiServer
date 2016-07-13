@@ -1114,7 +1114,7 @@ if(Meteor.isServer){
     };
     Meteor.publish("suggestPosts", function (limit) {
         if(this.userId === null){
-            return [];
+            return this.ready();
         }
         else {
             var self = this;
@@ -1154,7 +1154,7 @@ if(Meteor.isServer){
     };
     Meteor.publish("newDynamicMoments", function (postId,limit) {
         if(this.userId === null || !Match.test(postId, String) ){
-            return [];
+            return this.ready();
         }
         else{
             var self = this;
@@ -1175,7 +1175,7 @@ if(Meteor.isServer){
     });
   Meteor.publish("dynamicMoments", function (postId,limit) {
       if(this.userId === null || !Match.test(postId, String) ){
-          return [];
+          return this.ready();
       }
       else{
           var self = this;
@@ -1196,7 +1196,7 @@ if(Meteor.isServer){
   });
   Meteor.publish("viewlists", function (userId, viewerId) {
     if(this.userId === null || !Match.test(viewerId, String))
-      return [];
+      return this.ready();
     else{
       var self = this;
       self.count = 0;
@@ -1229,7 +1229,7 @@ if(Meteor.isServer){
     }
   });
   Meteor.publish("userDetail", function (userId) {
-      return [];
+      return this.ready();
       /*
       if(!Match.test(userId, String)){
           return [];
@@ -1251,7 +1251,7 @@ if(Meteor.isServer){
   });
   Meteor.publish("postFriends", function (userId,postId,limit) {
         if(this.userId === null || !Match.test(postId, String) ){
-            return [];
+            return this.ready();
         }
         else{
             var self = this;
@@ -1284,8 +1284,9 @@ if(Meteor.isServer){
         }
   });
   Meteor.publish("newfriends", function (userId,postId) {
-    if(this.userId === null || !Match.test(postId, String))
-      return [];
+    if(this.userId === null || !Match.test(postId, String)){
+        return this.ready();
+    }
     else{
       var self = this;
       this.count = 0;
@@ -1328,21 +1329,21 @@ if(Meteor.isServer){
     }
   });
   Meteor.publish('meetscountwithlimit', function(limit) {
-    if(this.userId === null || !Match.test(limit, Number))
-      return [];
-    else
-      return Meets.find({me:this.userId},{sort:{count:-1},limit:limit});
+    if(this.userId === null || !Match.test(limit, Number)){
+        return this.ready();
+    }
+    return Meets.find({me:this.userId},{sort:{count:-1},limit:limit});
   });
   Meteor.publish('meetscount', function() {
-    if(this.userId === null)
-      return [];
-    else
-      return Meets.find({me:this.userId});
+    if(!this.userId){
+        return this.ready()
+    }
+    return Meets.find({me:this.userId});
   });
   Meteor.publish('waitreadcount', function() {
-    if(this.userId === null)
-      return [];
-    else
+    if(!this.userId){
+        return this.ready();
+    }
       return Meteor.users.find(
           { _id : this.userId },
           { field: {'profile.waitReadCount':1}}
@@ -1361,7 +1362,7 @@ if(Meteor.isServer){
       // 老版本的处理，修改请慎重, @feiwu
       if(!topicId && !limit){
         if(!this.userId)
-          return [];
+          return this.ready();
           
         return OldTopicPosts;
       }
@@ -1369,7 +1370,7 @@ if(Meteor.isServer){
       // new version
       limit = limit || 20
       if(this.userId === null)
-        return [];
+        return this.ready();
       else if (!topicId)
         return TopicPosts.find({}, {sort: {createdAt: -1}, limit: limit});
       else
@@ -1377,31 +1378,31 @@ if(Meteor.isServer){
   });
   Meteor.publish("topics", function() {
       if(this.userId === null)
-        return [];
+        return this.ready();
       else
         return Topics.find({});
   });
   Meteor.publish("shareURLs", function() {
       if(this.userId === null)
-        return [];
+        return this.ready();
       else
         return ShareURLs.find({userId:this.userId});
   });
   Meteor.publish("posts", function() {
     if(this.userId === null)
-      return [];
+      return this.ready();
     else
       return Posts.find({owner: this.userId},{sort: {createdAt: -1}});
   });
   Meteor.publish('pcomments', function() {
       if(this.userId === null)
-          return [];
+          return this.ready();
       else
           return Feeds.find({followby:this.userId,checked:false});
   });
   Meteor.publish("myCounter",function(){
       if(this.userId === null)
-          return [];
+          return this.ready();
       else {
           Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId}), {nonReactive: true });
           Counts.publish(this, 'mySavedDraftsCount', SavedDrafts.find({owner: this.userId}), {nonReactive: true });
@@ -1413,7 +1414,7 @@ if(Meteor.isServer){
   });
   Meteor.publish("postsWithLimit", function(limit) {
       if(this.userId === null|| !Match.test(limit, Number)) {
-          return [];
+          return this.ready();
       }
       else{
           return Posts.find({owner: this.userId},{sort: {createdAt: -1},limit:limit});
@@ -1421,7 +1422,7 @@ if(Meteor.isServer){
   });
   Meteor.publish("savedDraftsWithLimit", function(limit) {
       if(this.userId === null|| !Match.test(limit, Number)){
-          return [];
+          return this.ready();
       }
       else{
           return SavedDrafts.find({owner: this.userId},{sort: {createdAt: -1},limit:limit});
@@ -1430,7 +1431,7 @@ if(Meteor.isServer){
   Meteor.publish("followedByWithLimit", function(limit) {
       /*列出自己的粉丝*/
       if(this.userId === null|| !Match.test(limit, Number)){
-          return [];
+          return this.ready();
       }
       else {
           return Follower.find({followerId:this.userId},{sort: {createAt: -1},limit:limit});
@@ -1439,7 +1440,7 @@ if(Meteor.isServer){
   Meteor.publish("followToWithLimit", function(limit) {
       /*列出自己的偶像*/
       if(this.userId === null|| !Match.test(limit, Number)){
-          return [];
+          return this.ready();
       }
       else {
           return Follower.find({userId:this.userId},{sort: {createAt: -1},limit:limit});
@@ -1447,7 +1448,7 @@ if(Meteor.isServer){
   });
   Meteor.publish("momentsWithLimit", function(postId,limit) {
       if(this.userId === null|| !Match.test(limit, Number)) {
-          return [];
+          return this.ready();
       }
       else{
           return Moments.find({currentPostId: postId},{sort: {createdAt: -1},limit:limit});
@@ -1455,19 +1456,19 @@ if(Meteor.isServer){
   });
   Meteor.publish("followposts", function(limit) {
     if(this.userId === null || !Match.test(limit, Number))
-      return [];
+      return this.ready();
     else
       return FollowPosts.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
   });
   Meteor.publish("ViewPostsList", function(postId) {
       if(this.userId === null || !Match.test(postId, String))
-        return [];
+        return this.ready();
       else
         return Posts.find({_id: postId});
   });
   Meteor.publish("publicPosts", function(postId) {
       if(this.userId === null || !Match.test(postId, String))
-        return [];
+        return this.ready();
       else{
         var self = this;
         //publicPostsPublisherDeferHandle(self.userId,postId);
@@ -1481,25 +1482,25 @@ if(Meteor.isServer){
   });*/
   Meteor.publish("saveddrafts", function() {
     if(this.userId === null)
-      return [];
+      return this.ready();
     else
       return SavedDrafts.find({owner: this.userId},{sort: {createdAt: -1}});
   });
   Meteor.publish("feeds", function(limit) {
     if(this.userId === null || !Match.test(limit, Number))
-      return [];
+      return this.ready();
     else
       return Feeds.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
   });
   Meteor.publish("userFeeds", function(followId,postId) {
     if(this.userId === null || !Match.test(followId, String) || !Match.test(postId, String))
-      return [];
+      return this.ready();
     else
       return Feeds.find({followby: followId,postId: postId,eventType:'recommand',recommanderId:this.userId}, {sort: {createdAt: -1}, limit:2});
   });
   Meteor.publish("friendFeeds", function(friendId,userId) {
     if(this.userId === null || !Match.test(friendId, String) || !Match.test(userId, String) || this.userId !== userId)
-      return [];
+      return this.ready();
     else
       return Feeds.find({requesteeId:friendId,requesterId:userId},{sort: {createdAt: -1}, limit:2})
   });
@@ -1508,19 +1509,19 @@ if(Meteor.isServer){
   });
   Meteor.publish("follower", function() {
     if(this.userId === null)
-      return [];
+      return this.ready();
     else
       return Follower.find({$or:[{userId:this.userId},{followerId:this.userId}]});
   });
   Meteor.publish("friendFollower", function(userId,friendId) {
     if(this.userId === null || !Match.test(friendId, String) || !Match.test(userId, String) || this.userId !== userId)
-      return [];
+      return this.ready();
     else
       return Follower.find({"userId":userId,"followerId":friendId},{sort: {createAt: -1}, limit:2})
   });
   Meteor.publish("userinfo", function(id) {
     if(this.userId === null || !Match.test(id, String))
-      return [];
+      return this.ready();
     else {
         try {
             var self = this;
@@ -1566,7 +1567,7 @@ if(Meteor.isServer){
   Meteor.publish("comment", function(postId) {
     if(this.userId === null || !Match.test(postId, String))
     {
-        return [];
+        return this.ready();
     }
     else
     {
@@ -1575,31 +1576,31 @@ if(Meteor.isServer){
   });
   Meteor.publish("userViewers", function(postId,userId) {
     if(!Match.test(postId, String) || !Match.test(userId, String))
-      return [];
+      return this.ready();
     else
       return Viewers.find({postId: postId,userId: userId}, {sort: {createdAt: -1}, limit:2});
   });
   Meteor.publish("recentPostsViewByUser", function(userId) {
     if(!Match.test(userId, String))
-      return [];
+      return this.ready();
     else
       return Viewers.find({userId: userId}, {sort: {createdAt: -1}, limit:3});
   });
   Meteor.publish("viewers", function(postId) {
     if(!Match.test(postId, String))
-      return [];
+      return this.ready();
     else
       return Viewers.find({postId: postId}, {sort: {createdAt: -1}});
   });
   Meteor.publish("reports", function(postId) {
     if(!Match.test(postId, String))
-      return [];
+      return this.ready();
     else
       return Reports.find({postId: postId});
   });
   Meteor.publish("messages", function(to){
     if(this.userId === null || to === null || to === undefined)
-      return [];
+      return this.ready();
     
     var filter = {};
     to = to || {};
@@ -1649,20 +1650,20 @@ if(Meteor.isServer){
         }
         break;
       default:
-        return [];
+        return this.ready();
     }
 
     return Messages.find(filter, {sort: {createTime: 1}});
   });
   Meteor.publish("msgSession", function(){
     if(this.userId === null)
-      return [];
+      return this.ready();
     else
       return MsgSession.find({userId: this.userId}, {sort: {updateTime: -1}});
   });
   Meteor.publish("msgGroup", function(){
     if(this.userId === null)
-      return [];
+      return this.ready();
     else
       return MsgGroup.find({"users.userId": this.userId});
   });
@@ -1675,7 +1676,7 @@ if(Meteor.isServer){
         return ReaderPopularPosts.find({userId: this.userId},{limit:3});
     }
     else {
-        return [];
+        return this.ready();
     }
   });
 
@@ -1738,7 +1739,7 @@ if(Meteor.isServer){
   
   Meteor.publish('userRelation', function() {
     if(!this.userId)
-       return [];
+       return this.ready();
     
     return UserRelation.find({userId: this.userId});
   });
@@ -2361,7 +2362,7 @@ if(Meteor.isServer){
       var selector = {'text': regExp};
       return Topics.find(selector, options).fetch();
     } else {
-      return [];
+      return this.ready();
       //return Topics.find({}, options).fetch();
     }
   });
@@ -2377,7 +2378,7 @@ if(Meteor.isServer){
       ]};
       return Meteor.users.find(selector, options).fetch();
     } else {
-      return [];
+      return this.ready();
       //return Meteor.users.find({}, options).fetch();
     }
   });
@@ -2390,7 +2391,7 @@ if(Meteor.isServer){
       var selector = { owner: this.userId,'title': regExp };
       return Posts.find(selector, options).fetch();
     } else {
-      return [];
+      return this.ready();
     }
   });
 
