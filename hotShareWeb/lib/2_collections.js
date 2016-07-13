@@ -1161,7 +1161,9 @@ if(Meteor.isServer){
             self.count = 0;
             var handle = Moments.find({currentPostId: postId},{sort: {createdAt: -1},limit:limit}).observeChanges({
                 added: function (id,fields) {
-                    momentsAddForNewDynamicMomentsDeferHandle(self,id,fields);
+                    if(fields && fields.readPostId){
+                        momentsAddForNewDynamicMomentsDeferHandle(self,fields.readPostId,fields);
+                    }
                 },
                 changed:function (id,fields){
                     momentsChangeForNewDynamicMomentsDeferHandle(self,id,fields);
