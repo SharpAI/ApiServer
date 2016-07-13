@@ -21,7 +21,7 @@ if Meteor.isClient
     if Session.get("postContent")
       Meteor.setTimeout ()->
         Meteor.subscribe "comment",Session.get("postContent")._id
-        Meteor.subscribe "viewers",Session.get("postContent")._id
+        #Meteor.subscribe "viewers",Session.get("postContent")._id
       ,500
   onUserProfile = ->
     @PopUpBox = $('.popUpBox').bPopup
@@ -93,6 +93,7 @@ if Meteor.isClient
     #if amplify.store('chatNotify') < 6
     #  amplify.store('chatNotify',amplify.store('chatNotify')+1)
     #  $(".chatBtn .red_spot").show().html(1)
+    ###
     mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80')
     mqtt_connection.on('connect',()->
       console.log('Connected to server')
@@ -119,7 +120,7 @@ if Meteor.isClient
         $(".chatBtn .chat-icon-img").removeClass('twinkling')
       , 10000);
 
-
+    ###
     #Calc Wechat token after post rendered.
     if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
       Meteor.setTimeout ()->
