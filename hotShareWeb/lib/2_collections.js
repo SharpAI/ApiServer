@@ -1382,7 +1382,7 @@ if(Meteor.isServer){
       if(this.userId === null)
         return this.ready();
       else
-        return Topics.find({});
+        return Topics.find({},{sort: {createdAt: -1},limit:20});
   });
   Meteor.publish("shareURLs", function() {
       if(this.userId === null)
