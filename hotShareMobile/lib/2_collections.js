@@ -1867,20 +1867,28 @@ if(Meteor.isServer){
   
   Posts.allow({
     insert: function (userId, doc) {
-      var userIds = [];
+      var hasInsert = false;
+      if(doc.owner === userId)
+        hasInsert = true;
+      if(!hasInsert && AssociatedUsers.find({$or: [{userIdA: userId, userIdB: doc.owner}, {userIdA: doc.owner, userIdB: userId}]}).count() > 0)
+        hasInsert = true;
+      if(!hasInsert && UserRelation.find({userId: userId, toUserId: doc.owner}).count() > 0)
+        hasInsert = true;
+      // var userIds = [];
 
-      AssociatedUsers.find({}).forEach(function(item) {
-        if (!~userIds.indexOf(item.userIdA)) {
-          userIds.push(item.userIdA);
-        }
-        if (!~userIds.indexOf(item.userIdB)) {
-          userIds.push(item.userIdB);
-        }
-      });
+      // AssociatedUsers.find({}).forEach(function(item) {
+      //   if (!~userIds.indexOf(item.userIdA)) {
+      //     userIds.push(item.userIdA);
+      //   }
+      //   if (!~userIds.indexOf(item.userIdB)) {
+      //     userIds.push(item.userIdB);
+      //   }
+      // });
 
       //if(doc.owner === userId){
-      if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
+      // if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
         //postsInsertHookDeferHandle(userId,doc);
+      if(hasInsert){
         postsInsertHookDeferHandle(doc.owner,doc);
         try{
             mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
@@ -1905,18 +1913,26 @@ if(Meteor.isServer){
         doc.ownerIcon = ownerUser.profile.fullname || ownerUser.username;
         
         // to -> posts.allow.insert
-        var userIds = [];
-        AssociatedUsers.find({}).forEach(function(item) {
-          if (!~userIds.indexOf(item.userIdA)) {
-            userIds.push(item.userIdA);
-          }
-          if (!~userIds.indexOf(item.userIdB)) {
-            userIds.push(item.userIdB);
-          }
-        });
+        // var userIds = [];
+        // AssociatedUsers.find({}).forEach(function(item) {
+        //   if (!~userIds.indexOf(item.userIdA)) {
+        //     userIds.push(item.userIdA);
+        //   }
+        //   if (!~userIds.indexOf(item.userIdB)) {
+        //     userIds.push(item.userIdB);
+        //   }
+        // });
+        var hasUpdate = false;
+        if(doc.owner === userId)
+          hasUpdate = true;
+        if(!hasUpdate && AssociatedUsers.find({$or: [{userIdA: userId, userIdB: doc.owner}, {userIdA: doc.owner, userIdB: userId}]}).count() > 0)
+          hasUpdate = true;
+        if(!hasUpdate && UserRelation.find({userId: userId, toUserId: doc.owner}).count() > 0)
+          hasUpdate = true;
         
         //if(doc.owner === userId){
-        if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
+        // if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
+        if(hasUpdate){
           //postsInsertHookDeferHandle(userId,doc);
           postsInsertHookDeferHandle(doc.owner,doc);
           try{

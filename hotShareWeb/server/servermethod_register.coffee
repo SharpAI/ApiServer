@@ -211,6 +211,7 @@ if Meteor.isServer
           return {status: 'ERROR', message: 'Exist Associate User'}
         
         # save relation
+        # 只记录单向关系
         me = Meteor.users.findOne({_id: this.userId})
         UserRelation.insert {
           userId: me._id
@@ -221,35 +222,55 @@ if Meteor.isServer
           toIcon: if userTarget.profile and userTarget.profile.icon then userTarget.profile.icon else '/userPicture.png'
           createAt: new Date()
         }
-        UserRelation.insert {
-          userId: userTarget._id
-          name: if userTarget.profile and userTarget.profile.fullname then userTarget.profile.fullname else userTarget.username
-          icon: if userTarget.profile and userTarget.profile.icon then userTarget.profile.icon else '/userPicture.png'
-          toUserId: me._id
-          toName: if me.profile and me.profile.fullname then me.profile.fullname else me.username
-          toIcon: if me.profile and me.profile.icon then me.profile.icon else '/userPicture.png'
-          createAt: new Date()
-        }
-        UserRelation.find({userId: this.userId}).forEach (relation)->
-          if relation.toUserId isnt userTarget._id
-            UserRelation.insert {
-              userId: relation.toUserId
-              name: relation.toName
-              icon: relation.toIcon
-              toUserId: userTarget._id
-              toName: if userTarget.profile and userTarget.profile.fullname then userTarget.profile.fullname else userTarget.username
-              toIcon: if userTarget.profile and userTarget.profile.icon then userTarget.profile.icon else '/userPicture.png'
-              createAt: new Date()
-            }
-            UserRelation.insert {
-              userId: userTarget._id
-              name: if userTarget.profile and userTarget.profile.fullname then userTarget.profile.fullname else userTarget.username
-              icon: if userTarget.profile and userTarget.profile.icon then userTarget.profile.icon else '/userPicture.png'
-              toUserId: relation.toUserId
-              toName: relation.toName
-              toIcon: relation.toIcon
-              createAt: new Date()
-            }
+        if UserRelation.find({toUserId: this.userId, userId: userTarget._id}).count() <= 0
+          UserRelation.insert {
+            userId: userTarget._id
+            name: if userTarget.profile and userTarget.profile.fullname then userTarget.profile.fullname else userTarget.username
+            icon: if userTarget.profile and userTarget.profile.icon then userTarget.profile.icon else '/userPicture.png'
+            toUserId: me._id
+            toName: if me.profile and me.profile.fullname then me.profile.fullname else me.username
+            toIcon: if me.profile and me.profile.icon then me.profile.icon else '/userPicture.png'
+            createAt: new Date()
+          }
+        # me = Meteor.users.findOne({_id: this.userId})
+        # UserRelation.insert {
+        #   userId: me._id
+        #   name: if me.profile and me.profile.fullname then me.profile.fullname else me.username
+        #   icon: if me.profile and me.profile.icon then me.profile.icon else '/userPicture.png'
+        #   toUserId: userTarget._id
+        #   toName: if userTarget.profile and userTarget.profile.fullname then userTarget.profile.fullname else userTarget.username
+        #   toIcon: if userTarget.profile and userTarget.profile.icon then userTarget.profile.icon else '/userPicture.png'
+        #   createAt: new Date()
+        # }
+        # UserRelation.insert {
+        #   userId: userTarget._id
+        #   name: if userTarget.profile and userTarget.profile.fullname then userTarget.profile.fullname else userTarget.username
+        #   icon: if userTarget.profile and userTarget.profile.icon then userTarget.profile.icon else '/userPicture.png'
+        #   toUserId: me._id
+        #   toName: if me.profile and me.profile.fullname then me.profile.fullname else me.username
+        #   toIcon: if me.profile and me.profile.icon then me.profile.icon else '/userPicture.png'
+        #   createAt: new Date()
+        # }
+        # UserRelation.find({userId: this.userId}).forEach (relation)->
+        #   if relation.toUserId isnt userTarget._id
+        #     UserRelation.insert {
+        #       userId: relation.toUserId
+        #       name: relation.toName
+        #       icon: relation.toIcon
+        #       toUserId: userTarget._id
+        #       toName: if userTarget.profile and userTarget.profile.fullname then userTarget.profile.fullname else userTarget.username
+        #       toIcon: if userTarget.profile and userTarget.profile.icon then userTarget.profile.icon else '/userPicture.png'
+        #       createAt: new Date()
+        #     }
+        #     UserRelation.insert {
+        #       userId: userTarget._id
+        #       name: if userTarget.profile and userTarget.profile.fullname then userTarget.profile.fullname else userTarget.username
+        #       icon: if userTarget.profile and userTarget.profile.icon then userTarget.profile.icon else '/userPicture.png'
+        #       toUserId: relation.toUserId
+        #       toName: relation.toName
+        #       toIcon: relation.toIcon
+        #       createAt: new Date()
+        #     }
 
         return {status: 'SUCCESS'}  
         
@@ -259,8 +280,9 @@ if Meteor.isServer
         if UserRelation.find({userId: this.userId, toUserId: userId}).count() <= 0
           return false
           
-        UserRelation.remove({toUserId: userId})
-        UserRelation.remove({userId: userId})
+        UserRelation.remove({userId: this.userId, toUserId: userId})
+        UserRelation.remove({userId: userId, toUserId: this.userId})
+        # UserRelation.remove({userId: userId})
           
         return true
         
