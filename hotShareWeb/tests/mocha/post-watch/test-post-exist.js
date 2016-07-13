@@ -37,12 +37,13 @@ describe('测试贴子是否能够访问 @watch', function () {
             it('帖子是否正常打开', function (done) {
                 browser.url(watchServer+'/posts/7iFh5KQJFcq9FH4PE');
                 var startTime = new Date();
-                browser.pause(20000);             
+                browser.pause(2000);             
                 
                 try {
                     console.log(startTime);
                 
                     expect(browser.isExisting('.element')).to.be.ok;
+                    expect(browser.isVisible('.element')).to.be.ok;
                     done();
                 } catch (e) {
                     
@@ -72,6 +73,7 @@ describe('测试贴子是否能够访问 @watch', function () {
         try {
             console.log('帖子能够打开');
             expect(browser.isExisting('.element')).to.be.ok;
+            expect(browser.isVisible('.element')).to.be.ok;
             done();
         } catch (e) {
             var text = '故事贴帖子打开异常';
