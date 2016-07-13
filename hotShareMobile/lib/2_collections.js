@@ -1647,10 +1647,10 @@ if(Meteor.isServer){
       return Viewers.find({userId: userId}, {sort: {createdAt: -1}, limit:3});
   });
   Meteor.publish("viewers", function(postId) {
-    if(!Match.test(postId, String))
-      return [];
-    else
-      return Viewers.find({postId: postId}, {sort: {createdAt: -1}});
+    //if(!Match.test(postId, String))
+      return this.ready();
+    //else
+    //  return Viewers.find({postId: postId}, {sort: {createdAt: -1}});
   });
   Meteor.publish("reports", function(postId) {
     if(!Match.test(postId, String))

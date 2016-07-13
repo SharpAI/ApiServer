@@ -18,11 +18,11 @@ if Meteor.isClient
       Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     )
   subscribeCommentAndViewers = ()->
-    if Session.get("postContent")
-      Meteor.setTimeout ()->
-        Meteor.subscribe "comment",Session.get("postContent")._id
-        Meteor.subscribe "viewers",Session.get("postContent")._id
-      ,500
+    #if Session.get("postContent")
+      #Meteor.setTimeout ()->
+        #Meteor.subscribe "comment",Session.get("postContent")._id
+        #Meteor.subscribe "viewers",Session.get("postContent")._id
+      #,500
   onUserProfile = ->
     @PopUpBox = $('.popUpBox').bPopup
       positionStyle: 'fixed'
@@ -166,6 +166,7 @@ if Meteor.isClient
     #if amplify.store('chatNotify') < 6
     #  amplify.store('chatNotify',amplify.store('chatNotify')+1)
     #  $(".chatBtn .red_spot").show().html(1)
+    ###
     mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80')
     mqtt_connection.on('connect',()->
       console.log('Connected to server')
@@ -190,7 +191,7 @@ if Meteor.isClient
       setTimeout(() ->
         $(".chatBtn .chat-icon-img").removeClass('twinkling')
       , 10000);
-
+    ###
     #Calc Wechat token after post rendered.
     calcPostSignature(window.location.href.split('#')[0]);
     if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
@@ -210,7 +211,7 @@ if Meteor.isClient
     if postContent.addontitle
       title=title+":"+postContent.addontitle
     trackPage('http://cdn.tiegushi.com/posts/'+postContent._id,title)
-    subscribeCommentAndViewers()
+    #subscribeCommentAndViewers()
     browseTimes = 0
     Session.set("Social.LevelOne.Menu",'discover')
     Session.set("SocialOnButton",'postBtn')
@@ -931,7 +932,7 @@ if Meteor.isClient
         content = $('#pcommitReport').val()
         postId = Session.get("postContent")._id
         post = Session.get("postContent").pub
-
+        ###
         mqtt_msg = {"type": "postcomment", "message": " 评论了此段 \"" + Session.get("postContent").pub[i].text + '": ' + content, "postid": Session.get('postContent')._id}
         mqtt_msg.message = Meteor.user().profile.fullname + mqtt_msg.message
         mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80')
@@ -940,6 +941,7 @@ if Meteor.isClient
           #mqtt_connection.subscribe(Session.get('postContent')._id)
           mqtt_connection.publish('all', JSON.stringify(mqtt_msg))
         )
+        ###
 
         if (favp = FavouritePosts.findOne({postId: postId, userId: Meteor.userId()}))
           FavouritePosts.update({_id: favp._id}, {$set: {updateAt: new Date()}})

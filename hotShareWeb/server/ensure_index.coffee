@@ -38,6 +38,7 @@ if Meteor.isServer
     Feeds._ensureIndex({recommanderId: 1, recommander: 1, postId: 1, followby: 1})
     Feeds._ensureIndex({requesteeId: 1, requesterId: 1, followby: 1})
     Feeds._ensureIndex({owner:1,followby: 1, checked: 1, postId: 1, pindex: 1})
+    Feeds._ensureIndex({postId:1,eventType: 1})
     PComments._ensureIndex({postId:1})
     AssociatedUsers._ensureIndex({userIdA:1})
     AssociatedUsers._ensureIndex({userIdB:1})
