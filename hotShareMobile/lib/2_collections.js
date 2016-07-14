@@ -2661,7 +2661,19 @@ if(Meteor.isClient){
           }
       });
   }
-
+  Meteor.setTimeout(function(){
+      Tracker.autorun(function(){
+          if( Session.get("postContent") && Session.get("postContent")._id && Meteor.userId() && Session.get('postfriendsitemsLimit')){
+              Session.set('postfriendsCollection','loading')
+              Meteor.subscribe('postFriends', Meteor.userId(), Session.get("postContent")._id, Session.get('postfriendsitemsLimit'), {
+                  onReady: function () {
+                      console.log('postfriendsCollection loaded')
+                      Session.set('postfriendsCollection', 'loaded')
+                  }
+              })
+          }
+      });
+  },2000);
   Tracker.autorun(function() {
     if (Meteor.userId()) {
         if (Meteor.isCordova){
