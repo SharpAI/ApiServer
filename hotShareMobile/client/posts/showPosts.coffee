@@ -152,6 +152,8 @@ if Meteor.isClient
         userName=Session.get("pcommentsName")
         toastr.info(userName+"点评过的段落已为您用蓝色标注！")
       ,1000
+  Template.showPosts.created=->
+    Session.set("content_loadedCount", 0)
   Template.showPosts.onDestroyed ->
     document.body.scrollTop = 0
     Session.set("postPageScrollTop", 0)
@@ -314,7 +316,28 @@ if Meteor.isClient
         if pub[i].type is 'text'
           count++
       count
+    getPostContent:(obj)->
+      self = obj
+      self.pub = self.pub || []
+      _.map self.pub, (doc, index, cursor)->
+        _.extend(doc, {index: index})
     getPub:->
+      self = this
+      contentList = Template.showPosts.__helpers.get('getPostContent')(self)
+      loadedCount = if Session.get("content_loadedCount") then Session.get("content_loadedCount") else 0
+      #console.log("loadedCount="+loadedCount+", "+contentList.length)
+      newLoadedCount = contentList.length
+      if (loadedCount < contentList.length)
+        if loadedCount+10 < contentList.length
+          newLoadedCount = loadedCount+10
+        else
+          newLoadedCount = contentList.length
+        if Session.get("content_loadedCount") isnt newLoadedCount
+          Meteor.setTimeout(()->
+              Session.set("content_loadedCount", newLoadedCount)
+            , 0)
+      contentList.slice(0, newLoadedCount)
+    getPub2:->
       self = this
       self.pub = self.pub || []
       _.map self.pub, (doc, index, cursor)->
