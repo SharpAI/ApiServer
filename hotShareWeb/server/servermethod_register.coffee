@@ -66,7 +66,7 @@ if Meteor.isServer
           return
         try
           this.unblock();
-          post = Posts.findOne({_id:postId},{fields:{browse:1}})
+          post = Posts.findOne({_id:postId},{fields:{owner:1,browse:1,title:1}})
           browseTimes = 1;
           if post
             if post.browse isnt undefined
