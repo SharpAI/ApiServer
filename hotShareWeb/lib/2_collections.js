@@ -128,8 +128,8 @@ if(Meteor.isServer){
                 } catch (error){
                 }
             }
+            //getViewLists(self,taId,3);
             self.added("postfriends", id, fields);
-            getViewLists(self,taId,3);
             self.count++;
         });
     };
@@ -1774,6 +1774,9 @@ if(Meteor.isServer){
           removed: function(_id, record){
               pub.removed('favouriteposts', _id, record);
           }
+      });
+      Meteor.defer (function(){
+          getViewLists(self,userId,3);
       });
       self.ready()
       self.onStop(function(){
