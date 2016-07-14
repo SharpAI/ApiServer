@@ -15,7 +15,6 @@ if Meteor.isClient
     for i in [col..(col+sizeX-1)]
       helper[(i-1)]=bottom
   Template.postItem.onRendered ()->
-    $('.textDiv1Link').linkify()
     element=this.find('.element')
     myData=this.data
     parentNode=element.parentNode
@@ -37,6 +36,8 @@ if Meteor.isClient
     updateLayoutData(layoutHelper,myData.data_col,myData.data_sizex,elementBottom)
     parentNode.style.height=getLayoutTop(layoutHelper,1,6)-parentNode.offsetTop+'px'
 
+    $('#'+myData._id).linkify()
+    element.style.visibility = '';
     #console.log('['+this.data.index+']'+' '+myData.type+' col '+myData.data_col+
     #    ' row '+myData.data_row+' h '+myData.data_sizey+' w '+myData.data_sizex+
     #    ' H '+element.offsetHeight+'/'+element.clientHeight+' W '+element.offsetWidth+' Top '+element.offsetTop
