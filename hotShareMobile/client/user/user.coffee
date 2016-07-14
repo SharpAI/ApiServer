@@ -112,12 +112,12 @@ if Meteor.isClient
     gtZero: (value)->
       return value > 0
     postsCount:->
-      return  Posts.find({owner: Meteor.userId(), publish: {$ne: false}}).count()
-      # myPostsCount = Session.get('myPostsCount')
-      # if myPostsCount
-      #   myPostsCount
-      # else
-      #   0
+      #return  Posts.find({owner: Meteor.userId(), publish: {$ne: false}}).count()
+      myPostsCount = Counts.get('myPostsCount')
+      if myPostsCount
+        myPostsCount
+      else
+        0
     comparePostsCount:(value)->
       if (Session.get('myPostsCount') > value)
         true
