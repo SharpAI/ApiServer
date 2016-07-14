@@ -1481,7 +1481,8 @@ if(Meteor.isServer){
           return this.ready();
       }
       else{
-          return Posts.find({owner: this.userId},{sort: {createdAt: -1},limit:limit});
+          return this.ready();
+          //return Posts.find({owner: this.userId},{sort: {createdAt: -1},limit:limit});
       }
   });
   Meteor.publish("savedDraftsWithLimit", function(limit) {
@@ -2575,14 +2576,14 @@ if(Meteor.isClient){
                       Session.set('followeesCollection', 'loaded');
                   }
               });
-              Meteor.subscribe('postsWithLimit', Session.get('mypostsitemsLimit'), {
+              /*Meteor.subscribe('postsWithLimit', Session.get('mypostsitemsLimit'), {
                   onReady: function(){
                       console.log('myPostsCollection loaded');
                       Meteor.setTimeout(function(){
                         Session.set('myPostsCollection','loaded');
                       },500);
                   }
-              });
+              });*/
 
               Meteor.subscribe('readerpopularposts', {
                   onReady: function(){
