@@ -17,7 +17,7 @@ if Meteor.isClient
       if(meetCount and meetCount is 1)
         Meets.update({_id: meetInfo._id}, {$set: {count: 2}})
   getLocation = (userId)->
-    userInfo = UserDetail.findOne {_id:userId}
+    userInfo = PostFriends.findOne({ta:userId})
     console.log('Get location for user '+ userId + JSON.stringify(userInfo))
     if userInfo and userInfo.profile
       if userInfo.profile.location and userInfo.profile.location isnt ''
@@ -74,10 +74,9 @@ if Meteor.isClient
     username = Meteor.user().username
     if Meteor.user().profile.fullname
       username = Meteor.user().profile.fullname
-    UserProfile = UserDetail.findOne {_id: Session.get(userId)}
-    requestee = UserProfile.username
-    if UserProfile.profile.fullname
-      requestee = UserProfile.profile.fullname
+    UserProfile = PostFriends.findOne({ta:Session.get(userId)})
+    requestee = UserProfile.displayName
+    UserProfile._id = UserProfile.ta
     if Follower.findOne({"userId":UserProfile._id,"followerId":Meteor.userId()})
       Follower.insert {
         userId: Meteor.userId()
@@ -143,7 +142,7 @@ if Meteor.isClient
     #@UserProfilesSwiper = new Swipe(['userProfilePage'])
   Template.userProfile.helpers
     Swiper: -> UserProfilesSwiper
-  Template.userProfile.rendered = ->
+  Template.userProfile.onRendered ->
     # starting page
     Session.set("postPageScrollTop", 0)
     console.log 'Showing userProfile'
@@ -176,7 +175,6 @@ if Meteor.isClient
               Session.set("ProfileUserId3", userProfileList[nextProfileIndex].ta)
             else
               Session.set("ProfileUserId3", userProfileList[nextProfileIndex].followerId)
-            #Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId3"), Session.get("momentsitemsLimit"))
           if Session.get("currentPageIndex") is 3
             currentProfileIndex = Session.get("currentProfileIndex")+1
             if currentProfileIndex >  userProfileList.length-1
@@ -189,7 +187,6 @@ if Meteor.isClient
               Session.set("ProfileUserId2", userProfileList[nextProfileIndex].ta)
             else
               Session.set("ProfileUserId2", userProfileList[nextProfileIndex].followerId)
-            #Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId2"), Session.get("momentsitemsLimit"))
           Session.set("currentPageIndex", 1)
         if Session.get("currentPageIndex") is -1
           UserProfilesSwiper.leftRight(null, null)
@@ -213,7 +210,6 @@ if Meteor.isClient
               Session.set("ProfileUserId3", userProfileList[nextProfileIndex].ta)
             else
               Session.set("ProfileUserId3", userProfileList[nextProfileIndex].followerId)
-            #Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId3"), Session.get("momentsitemsLimit"))
           if Session.get("currentPageIndex") is 3
             currentProfileIndex = Session.get("currentProfileIndex")-1
             if currentProfileIndex < 0
@@ -226,7 +222,6 @@ if Meteor.isClient
               Session.set("ProfileUserId1", userProfileList[nextProfileIndex].ta)
             else
               Session.set("ProfileUserId1", userProfileList[nextProfileIndex].followerId)
-            #Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), Session.get("momentsitemsLimit"))
           Session.set("currentPageIndex", 2)
         UserProfilesSwiper.leftRight('userProfilePage1', 'userProfilePage3')
 
@@ -247,7 +242,6 @@ if Meteor.isClient
               Session.set("ProfileUserId2", userProfileList[nextProfileIndex].ta)
             else
               Session.set("ProfileUserId2", userProfileList[nextProfileIndex].followerId)
-            #Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId2"), Session.get("momentsitemsLimit"))
           if Session.get("currentPageIndex") is 2
             currentProfileIndex = Session.get("currentProfileIndex")+1
             if currentProfileIndex >  userProfileList.length-1
@@ -260,7 +254,6 @@ if Meteor.isClient
               Session.set("ProfileUserId1", userProfileList[nextProfileIndex].ta)
             else
               Session.set("ProfileUserId1", userProfileList[nextProfileIndex].followerId)
-            #Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), Session.get("momentsitemsLimit"))
           Session.set("currentPageIndex", 3)
         UserProfilesSwiper.leftRight('userProfilePage2', 'userProfilePage1')
 
@@ -300,7 +293,7 @@ if Meteor.isClient
     withChat:->
       withChat
     profile:->
-      UserDetail.findOne {_id: Session.get("ProfileUserId1")}
+      PostFriends.findOne {ta: Session.get("ProfileUserId1")}
     location:->
       getLocation(Session.get("ProfileUserId1"))
     isFollowed:()->
@@ -389,7 +382,7 @@ if Meteor.isClient
     withChat:->
       withChat
     profile:->
-      UserDetail.findOne {_id: Session.get("ProfileUserId2")}
+      PostFriends.findOne {ta: Session.get("ProfileUserId2")}
     location:->
       getLocation(Session.get("ProfileUserId2"))
     isFollowed:()->
@@ -401,9 +394,9 @@ if Meteor.isClient
     viewLists:()->
       ViewLists.find({userId:Session.get("ProfileUserId2")},{sort: {createdAt: -1}, limit:3})
     favouriteList: ()->
-      Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), 3)
+      Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId2"), 3)
       postIds = []
-      FavouritePosts.find({userId: Session.get("ProfileUserId1")}).forEach((item) ->
+      FavouritePosts.find({userId: Session.get("ProfileUserId2")}).forEach((item) ->
           if !~postIds.indexOf(item.postId)
             postIds.push(item.postId)
       )
@@ -478,7 +471,7 @@ if Meteor.isClient
     withChat:->
       withChat
     profile:->
-      UserDetail.findOne {_id: Session.get("ProfileUserId3")}
+      PostFriends.findOne {ta: Session.get("ProfileUserId3")}
     location:->
       getLocation(Session.get("ProfileUserId3"))
     isFollowed:()->
@@ -490,9 +483,9 @@ if Meteor.isClient
     viewLists:()->
       ViewLists.find({userId:Session.get("ProfileUserId3")},{sort: {createdAt: -1}, limit:3})
     favouriteList: ()->
-      Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId1"), 3)
+      Meteor.subscribe("userfavouriteposts", Session.get("ProfileUserId3"), 3)
       postIds = []
-      FavouritePosts.find({userId: Session.get("ProfileUserId1")}).forEach((item) ->
+      FavouritePosts.find({userId: Session.get("ProfileUserId3")}).forEach((item) ->
           if !~postIds.indexOf(item.postId)
             postIds.push(item.postId)
       )
