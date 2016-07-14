@@ -95,11 +95,6 @@ if Meteor.isClient
         else
           if (target.data("visible"))
             target.data("visible", false);
-  Template.addNewFriends.onDestroyed ()->
-    meeter = Template.addNewFriends.__helpers.get('meeter')()
-    meeter.forEach (person)->
-      if person.count is 1
-        Meets.update({_id: person._id}, {$set: {count: 2}})
   Template.addNewFriends.helpers
     hasFriendMeet:()->
     meeter:()->
