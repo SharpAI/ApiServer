@@ -391,7 +391,7 @@ if(Meteor.isServer){
             } catch (error){
             }
             try{
-                var views=Viewers.find({postId:postId},{limit:50});
+                var views=Viewers.find({postId:postId},{limit:100});
                 if(views.count()>0){
                     views.forEach(function(data){
                         var meetItemOne = Meets.findOne({me:userId,ta:data.userId});
@@ -2433,7 +2433,7 @@ if(Meteor.isClient){
   Session.set('followeesCollection','loading');
   Session.set('myPostsCollection','loading');
   Session.set('momentsCollection','loading');
-  Session.set('postfriendsCollection','loading');
+  Session.set('postfriendsCollection','loaded');
   var subscribeFollowPostsOnStop = function(err){
       console.log('followPostsCollection ' + err);
       Session.set('followPostsCollection','error');
@@ -2575,12 +2575,13 @@ if(Meteor.isClient){
                     Session.set('momentsCollection_getmore','done');
                 }
             });
+            /*
             Meteor.subscribe('postFriends', Meteor.userId(), Session.get("postContent")._id, Session.get('postfriendsitemsLimit'), {
                 onReady: function(){
                     console.log('postfriendsCollection loaded');
                     Session.set('postfriendsCollection','loaded');
                 }
-            });
+            });*/
         }
     }
   });

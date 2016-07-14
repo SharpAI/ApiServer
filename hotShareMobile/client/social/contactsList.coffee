@@ -64,6 +64,13 @@ if Meteor.isClient
     'click .messageGroup': ()->
       Session.set("Social.LevelOne.Menu", 'messageGroup')
   Template.addNewFriends.rendered=->
+    Session.set('postfriendsCollection','loading');
+    postfriendsitemsLimit = POSTFRIENDS_ITEMS_INCREMENT/2
+    Meteor.subscribe('postFriends', Meteor.userId(), Session.get("postContent")._id,postfriendsitemsLimit, {
+      onReady: ()->
+        console.log('postfriendsCollection loaded');
+        Session.set('postfriendsCollection','loaded');
+    });
     $(window).scroll (event)->
       if Session.get("Social.LevelOne.Menu") is 'contactsList'
         console.log "postfriends window scroll event: "+event
@@ -78,8 +85,13 @@ if Meteor.isClient
         if target.offset().top < threshold
           if (!target.data("visible"))
             target.data("visible", true);
-            Session.set("postfriendsitemsLimit",
-              Session.get("postfriendsitemsLimit") + POSTFRIENDS_ITEMS_INCREMENT);
+            postfriendsitemsLimit+= POSTFRIENDS_ITEMS_INCREMENT/2
+
+            Meteor.subscribe('postFriends', Meteor.userId(), Session.get("postContent")._id, postfriendsitemsLimit, {
+              onReady: ()->
+                console.log('postfriendsCollection loaded');
+                Session.set('postfriendsCollection','loaded');
+            });
         else
           if (target.data("visible"))
             target.data("visible", false);

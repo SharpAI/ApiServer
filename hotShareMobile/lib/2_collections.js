@@ -692,13 +692,37 @@ if(Meteor.isServer){
                     needRemove = true;
                 if(ptype ==="dislike" && doc.pub[pindex].dislikeUserId && doc.pub[pindex].dislikeUserId[userId] === true)
                     needRemove = true;
-                PComments.insert({
+                
+                // 段落转发
+                if(ptype === 'pshare'){
+                  if(PShares.find({postId:doc._id,pindex:pindex,userId: userId}).count() > 0)
+                    return PShares.update({postId:doc._id,pindex:pindex,userId: userId},{$set:{createdAt: new Date()}});
+                  
+                  return PShares.insert({
                     postId:doc._id,
                     pindex:pindex,
                     ptype:ptype,
-                    commentUserId: userId,
+                    userId: userId,
                     createdAt: new Date()
-                });
+                  });
+                }
+                if(needRemove){
+                    //console.log('need remove '+needRemove)
+                    PComments.remove({
+                        postId:doc._id,
+                        pindex:pindex,
+                        ptype:ptype,
+                        commentUserId: userId
+                    });
+                } else {
+                    PComments.insert({
+                        postId:doc._id,
+                        pindex:pindex,
+                        ptype:ptype,
+                        commentUserId: userId,
+                        createdAt: new Date()
+                    });
+                }
                 var pcs=PComments.find({postId:doc._id});
                 //console.log("=======pcs.count=="+pcs.count()+"======================");
                 if(pcs.count()>0)
@@ -729,6 +753,8 @@ if(Meteor.isServer){
                                         postTitle: doc.title,
                                         addontitle: doc.addontitle,
                                         pindex: pindex,
+                                        pindexText: pindex && pindex >= 0 ? doc.pub[pindex].text : '',
+                                        meComment: PComments.find({commentUserId:data.commentUserId,postId:doc._id,pindex:pindex}).count() > 0,//我是否点评过此段落
                                         mainImage: doc.mainImage,
                                         createdAt: new Date(),
                                         heart: 0,
@@ -782,6 +808,8 @@ if(Meteor.isServer){
                                                 postTitle: doc.title,
                                                 addontitle: doc.addontitle,
                                                 pindex: pindex,
+                                                pindexText: pindex && pindex >= 0 ? doc.pub[pindex].text : '',
+                                                meComment: PComments.find({commentUserId:data.commentUserId,postId:doc._id,pindex:pindex}).count() > 0,//我是否点评过此段落
                                                 mainImage: doc.mainImage,
                                                 createdAt: new Date(),
                                                 heart: 0,
@@ -817,6 +845,39 @@ if(Meteor.isServer){
                 }
 
                 //有人点评了您的转发，只支持Web端转发。--begin
+                if(PShares.find({postId:doc._id,pindex:pindex}).count() > 0){
+                  PShares.find({postId:doc._id,pindex:pindex}).forEach(function(item){
+                    if(item.userId === userId)
+                      return;
+                    if(needRemove){
+                      Feeds.remove({owner: userId, postId: doc._id, pindex: pindex, followby: item.userId, eventType: 'pcommentShare'})
+                    } else {
+                        if(Feeds.find({owner: userId, postId: doc._id, pindex: pindex, followby: item.userId, eventType: 'pcommentShare'}).count() > 0)
+                            return Feeds.update({owner: userId, postId: doc._id, pindex: pindex, followby: item.userId, eventType: 'pcommentShare'}, {$set:{checked: false, createdAt: new Date()}});
+
+                        Feeds.insert({
+                            owner: userId,
+                            ownerName: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
+                            ownerIcon: userinfo.profile.icon,
+                            eventType: 'pcommentShare',
+                            postId: doc._id,
+                            postTitle: doc.title,
+                            addontitle: doc.addontitle,
+                            pindex: pindex,
+                            pindexText: pindex && pindex >= 0 ? doc.pub[pindex].text : '',
+                            mainImage: doc.mainImage,
+                            createdAt: new Date(),
+                            heart: 0,
+                            retweet: 0,
+                            comment: 0,
+                            followby: item.userId,
+                            checked: false
+                        });
+                    }
+                  });
+                }
+                
+                // @feiwu: 以下处理暂时保留，还不清楚处理逻辑
                 //1.查谁转发了这个帖子
                 var fds=Feeds.find({postId:doc._id,eventType:"share"})
                 if(fds.count()>0)
@@ -850,6 +911,7 @@ if(Meteor.isServer){
                                             postTitle: doc.title,
                                             addontitle: doc.addontitle,
                                             pindex: pindex,
+                                            pindexText: pindex && pindex >= 0 ? doc.pub[pindex].text : '',
                                             mainImage: doc.mainImage,
                                             createdAt: new Date(),
                                             heart: 0,
@@ -1170,7 +1232,7 @@ if(Meteor.isServer){
     };
     Meteor.publish("suggestPosts", function (limit) {
         if(this.userId === null){
-            return [];
+            return this.ready();
         }
         else {
             var self = this;
@@ -1210,14 +1272,16 @@ if(Meteor.isServer){
     };
     Meteor.publish("newDynamicMoments", function (postId,limit) {
         if(this.userId === null || !Match.test(postId, String) ){
-            return [];
+            return this.ready();
         }
         else{
             var self = this;
             self.count = 0;
             var handle = Moments.find({currentPostId: postId},{sort: {createdAt: -1},limit:limit}).observeChanges({
                 added: function (id,fields) {
-                    momentsAddForNewDynamicMomentsDeferHandle(self,id,fields);
+                    if(fields && fields.readPostId){
+                        momentsAddForNewDynamicMomentsDeferHandle(self,fields.readPostId,fields);
+                    }
                 },
                 changed:function (id,fields){
                     momentsChangeForNewDynamicMomentsDeferHandle(self,id,fields);
@@ -1231,7 +1295,7 @@ if(Meteor.isServer){
     });
   Meteor.publish("dynamicMoments", function (postId,limit) {
       if(this.userId === null || !Match.test(postId, String) ){
-          return [];
+          return this.ready();
       }
       else{
           var self = this;
@@ -1252,7 +1316,7 @@ if(Meteor.isServer){
   });
   Meteor.publish("viewlists", function (userId, viewerId) {
     if(this.userId === null || !Match.test(viewerId, String))
-      return [];
+      return this.ready();
     else{
       var self = this;
       self.count = 0;
@@ -1267,14 +1331,14 @@ if(Meteor.isServer){
             self.changed("viewlists", id, fields);
           }catch(error){
           }
-        },
+        }/*,
         removed: function (id) {
           try{
             self.removed("viewlists", id);
             self.count--;
           }catch(error){
           }
-        }
+        }*/
       });
 
       self.ready();
@@ -1285,7 +1349,7 @@ if(Meteor.isServer){
     }
   });
   Meteor.publish("userDetail", function (userId) {
-      return [];
+      return this.ready();
       /*
       if(!Match.test(userId, String)){
           return [];
@@ -1307,35 +1371,42 @@ if(Meteor.isServer){
   });
   Meteor.publish("postFriends", function (userId,postId,limit) {
         if(this.userId === null || !Match.test(postId, String) ){
-            return [];
+            return this.ready();
         }
         else{
             var self = this;
             self.count = 0;
+            self.meeterIds=[];
             publicPostsPublisherDeferHandle(userId,postId);
             var handle = Meets.find({me: userId,meetOnPostId:postId},{sort: {createdAt: -1},limit:limit}).observeChanges({
                 added: function (id,fields) {
                     var taId = fields.ta;
                     //Call defered function here:
-                    if (taId !== userId)
-                        newMeetsAddedForPostFriendsDeferHandle(self,taId,userId,id,fields);
+                    if (taId !== userId){
+                        if(!~self.meeterIds.indexOf(taId)){
+                            self.meeterIds.push(taId);
+                            newMeetsAddedForPostFriendsDeferHandle(self,taId,userId,id,fields);
+                        }
+                    }
                 },
                 changed: function (id,fields) {
-                    try{
-                        self.changed("postfriends", id, fields);
-                    }catch(error){
-                    }
-                }
+                    self.changed("postfriends", id, fields);
+                }/*,
+                removed:function (id,fields) {
+                    self.removed("postfriends", id, fields);
+                }*/
             });
             self.ready();
             self.onStop(function () {
                 handle.stop();
+                delete self.meeterIds
             });
         }
   });
   Meteor.publish("newfriends", function (userId,postId) {
-    if(this.userId === null || !Match.test(postId, String))
-      return [];
+    if(this.userId === null || !Match.test(postId, String)){
+        return this.ready();
+    }
     else{
       var self = this;
       this.count = 0;
@@ -1378,21 +1449,21 @@ if(Meteor.isServer){
     }
   });
   Meteor.publish('meetscountwithlimit', function(limit) {
-    if(this.userId === null || !Match.test(limit, Number))
-      return [];
-    else
-      return Meets.find({me:this.userId},{sort:{count:-1},limit:limit});
+    if(this.userId === null || !Match.test(limit, Number)){
+        return this.ready();
+    }
+    return Meets.find({me:this.userId},{sort:{count:-1},limit:limit});
   });
   Meteor.publish('meetscount', function() {
-    if(this.userId === null)
-      return [];
-    else
-      return Meets.find({me:this.userId});
+    if(!this.userId){
+        return this.ready()
+    }
+    return Meets.find({me:this.userId});
   });
   Meteor.publish('waitreadcount', function() {
-    if(this.userId === null)
-      return [];
-    else
+    if(!this.userId){
+        return this.ready();
+    }
       return Meteor.users.find(
           { _id : this.userId },
           { field: {'profile.waitReadCount':1}}
@@ -1408,19 +1479,18 @@ if(Meteor.isServer){
     return RefComments.find({},{fields: {text:1},skip:Rnd,limit:8});
   });
   Meteor.publish("topicposts", function(topicId, limit) {
-      //console.log('OldTopicPosts:', JSON.stringify(OldTopicPosts.fetch()));
       // 老版本的处理，修改请慎重, @feiwu
       if(!topicId && !limit){
         if(!this.userId)
-          return [];
-
+          return this.ready();
+          
         return OldTopicPosts;
       }
       
       // new version
       limit = limit || 20
       if(this.userId === null)
-        return [];
+        return this.ready();
       else if (!topicId)
         return TopicPosts.find({}, {sort: {createdAt: -1}, limit: limit});
       else
@@ -1428,31 +1498,31 @@ if(Meteor.isServer){
   });
   Meteor.publish("topics", function() {
       if(this.userId === null)
-        return [];
+        return this.ready();
       else
-        return Topics.find({});
+        return Topics.find({},{sort: {createdAt: -1},limit:20});
   });
   Meteor.publish("shareURLs", function() {
       if(this.userId === null)
-        return [];
+        return this.ready();
       else
         return ShareURLs.find({userId:this.userId});
   });
   Meteor.publish("posts", function() {
     if(this.userId === null)
-      return [];
+      return this.ready();
     else
       return Posts.find({owner: this.userId},{sort: {createdAt: -1}});
   });
   Meteor.publish('pcomments', function() {
       if(this.userId === null)
-          return [];
+          return this.ready();
       else
           return Feeds.find({followby:this.userId,checked:false});
   });
   Meteor.publish("myCounter",function(){
       if(this.userId === null)
-          return [];
+          return this.ready();
       else {
           Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId}), {nonReactive: true });
           Counts.publish(this, 'mySavedDraftsCount', SavedDrafts.find({owner: this.userId}), {nonReactive: true });
@@ -1464,7 +1534,7 @@ if(Meteor.isServer){
   });
   Meteor.publish("postsWithLimit", function(limit) {
       if(this.userId === null|| !Match.test(limit, Number)) {
-          return [];
+          return this.ready();
       }
       else{
           return Posts.find({owner: this.userId},{sort: {createdAt: -1},limit:limit});
@@ -1472,7 +1542,7 @@ if(Meteor.isServer){
   });
   Meteor.publish("savedDraftsWithLimit", function(limit) {
       if(this.userId === null|| !Match.test(limit, Number)){
-          return [];
+          return this.ready();
       }
       else{
           return SavedDrafts.find({owner: this.userId},{sort: {createdAt: -1},limit:limit});
@@ -1481,7 +1551,7 @@ if(Meteor.isServer){
   Meteor.publish("followedByWithLimit", function(limit) {
       /*列出自己的粉丝*/
       if(this.userId === null|| !Match.test(limit, Number)){
-          return [];
+          return this.ready();
       }
       else {
           return Follower.find({followerId:this.userId},{sort: {createAt: -1},limit:limit});
@@ -1490,7 +1560,7 @@ if(Meteor.isServer){
   Meteor.publish("followToWithLimit", function(limit) {
       /*列出自己的偶像*/
       if(this.userId === null|| !Match.test(limit, Number)){
-          return [];
+          return this.ready();
       }
       else {
           return Follower.find({userId:this.userId},{sort: {createAt: -1},limit:limit});
@@ -1498,7 +1568,7 @@ if(Meteor.isServer){
   });
   Meteor.publish("momentsWithLimit", function(postId,limit) {
       if(this.userId === null|| !Match.test(limit, Number)) {
-          return [];
+          return this.ready();
       }
       else{
           return Moments.find({currentPostId: postId},{sort: {createdAt: -1},limit:limit});
@@ -1506,19 +1576,19 @@ if(Meteor.isServer){
   });
   Meteor.publish("followposts", function(limit) {
     if(this.userId === null || !Match.test(limit, Number))
-      return [];
+      return this.ready();
     else
       return FollowPosts.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
   });
   Meteor.publish("ViewPostsList", function(postId) {
       if(this.userId === null || !Match.test(postId, String))
-        return [];
+        return this.ready();
       else
         return Posts.find({_id: postId});
   });
   Meteor.publish("publicPosts", function(postId) {
       if(this.userId === null || !Match.test(postId, String))
-        return [];
+        return this.ready();
       else{
         var self = this;
         //publicPostsPublisherDeferHandle(self.userId,postId);
@@ -1532,29 +1602,25 @@ if(Meteor.isServer){
   });*/
   Meteor.publish("saveddrafts", function() {
     if(this.userId === null)
-      return [];
+      return this.ready();
     else
       return SavedDrafts.find({owner: this.userId},{sort: {createdAt: -1}});
-    // var self = this;
-    // Meteor.setTimeout(function () {
-    //   self.ready();
-    // }, 5000);
   });
   Meteor.publish("feeds", function(limit) {
     if(this.userId === null || !Match.test(limit, Number))
-      return [];
+      return this.ready();
     else
       return Feeds.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
   });
   Meteor.publish("userFeeds", function(followId,postId) {
     if(this.userId === null || !Match.test(followId, String) || !Match.test(postId, String))
-      return [];
+      return this.ready();
     else
       return Feeds.find({followby: followId,postId: postId,eventType:'recommand',recommanderId:this.userId}, {sort: {createdAt: -1}, limit:2});
   });
   Meteor.publish("friendFeeds", function(friendId,userId) {
     if(this.userId === null || !Match.test(friendId, String) || !Match.test(userId, String) || this.userId !== userId)
-      return [];
+      return this.ready();
     else
       return Feeds.find({requesteeId:friendId,requesterId:userId},{sort: {createdAt: -1}, limit:2})
   });
@@ -1563,19 +1629,19 @@ if(Meteor.isServer){
   });
   Meteor.publish("follower", function() {
     if(this.userId === null)
-      return [];
+      return this.ready();
     else
       return Follower.find({$or:[{userId:this.userId},{followerId:this.userId}]});
   });
   Meteor.publish("friendFollower", function(userId,friendId) {
     if(this.userId === null || !Match.test(friendId, String) || !Match.test(userId, String) || this.userId !== userId)
-      return [];
+      return this.ready();
     else
       return Follower.find({"userId":userId,"followerId":friendId},{sort: {createAt: -1}, limit:2})
   });
   Meteor.publish("userinfo", function(id) {
     if(this.userId === null || !Match.test(id, String))
-      return [];
+      return this.ready();
     else {
         try {
             var self = this;
@@ -1594,7 +1660,10 @@ if(Meteor.isServer){
                         self.changed("userDetail", id, fields);
                     }catch(error){
                     }
-                }
+                }/*,
+                removed: function(id, fields){
+                    self.removed('userDetail', id, fields);
+                }*/
             });
             getViewLists(self, id, 3);
             self.ready();
@@ -1603,16 +1672,7 @@ if(Meteor.isServer){
             });
         } catch (error) {
         }
-        return Meteor.users.find({_id: id},
-            {
-                'username': 1,
-                'email': 1,
-                'profile.fullname': 1,
-                'profile.icon': 1,
-                'profile.desc': 1,
-                'profile.location': 1
-            }
-        );
+        return;
     }
   });
   Meteor.publish("usersById", function (userId) {
@@ -1627,7 +1687,7 @@ if(Meteor.isServer){
   Meteor.publish("comment", function(postId) {
     if(this.userId === null || !Match.test(postId, String))
     {
-        return [];
+        return this.ready();
     }
     else
     {
@@ -1636,13 +1696,13 @@ if(Meteor.isServer){
   });
   Meteor.publish("userViewers", function(postId,userId) {
     if(!Match.test(postId, String) || !Match.test(userId, String))
-      return [];
+      return this.ready();
     else
       return Viewers.find({postId: postId,userId: userId}, {sort: {createdAt: -1}, limit:2});
   });
   Meteor.publish("recentPostsViewByUser", function(userId) {
     if(!Match.test(userId, String))
-      return [];
+      return this.ready();
     else
       return Viewers.find({userId: userId}, {sort: {createdAt: -1}, limit:3});
   });
@@ -1654,13 +1714,13 @@ if(Meteor.isServer){
   });
   Meteor.publish("reports", function(postId) {
     if(!Match.test(postId, String))
-      return [];
+      return this.ready();
     else
-      return Reports.find({postId: postId});
+      return Reports.find({postId: postId},{limit:5});
   });
   Meteor.publish("messages", function(to){
     if(this.userId === null || to === null || to === undefined)
-      return [];
+      return this.ready();
     
     var filter = {};
     to = to || {};
@@ -1710,20 +1770,20 @@ if(Meteor.isServer){
         }
         break;
       default:
-        return [];
+        return this.ready();
     }
 
     return Messages.find(filter, {sort: {createTime: 1}});
   });
   Meteor.publish("msgSession", function(){
     if(this.userId === null)
-      return [];
+      return this.ready();
     else
       return MsgSession.find({userId: this.userId}, {sort: {updateTime: -1}});
   });
   Meteor.publish("msgGroup", function(){
     if(this.userId === null)
-      return [];
+      return this.ready();
     else
       return MsgGroup.find({"users.userId": this.userId});
   });
@@ -1733,33 +1793,73 @@ if(Meteor.isServer){
 
   Meteor.publish('readerpopularposts', function() {
     if(this.userId) {
-        return ReaderPopularPosts.find({userId: this.userId});
+        return ReaderPopularPosts.find({userId: this.userId},{limit:3});
     }
     else {
-        return [];
+        return this.ready();
     }
   });
 
   Meteor.publish('associatedusers', function() {
-    if(this.userId) {
-      var self = this;
-      var userIds = []
-      
-      AssociatedUsers.find({$or: [{userIdA: this.userId}, {userIdB: this.userId}]}).forEach(function(item) {
-        if(self.userId !== item.userIdA && !~ userIds.indexOf(item.userIdA)) userIds.push(item.userIdA);
-        if(self.userId !== item.userIdB && !~ userIds.indexOf(item.userIdB)) userIds.push(item.userIdB);
-      });
-      
-      return [
-        AssociatedUsers.find({$or: [{userIdA: this.userId}, {userIdB: this.userId}]}),
-        Meteor.users.find({_id: {"$in": userIds}}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}})
-      ];
+    if(!this.userId){
+        return this.ready()
     }
+      var self = this;
+      var pub = this;
+
+      var userA_Handle=AssociatedUsers.find({userIdA: self.userId}).observeChanges({
+          added: function(_id, record){
+              if(record.userIdB){
+                  Meteor.defer(function(){
+                      var userInfo=Meteor.users.findOne({_id: record.userIdB}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}})
+                      if(userInfo){
+                          pub.added('associatedusers', _id, record);
+                          var userId=userInfo._id
+                          delete userInfo['_id']
+                          pub.added('users', userId, userInfo);
+                      }
+                  })
+              }
+          },
+          changed: function(_id, record){
+              pub.changed('associatedusers', _id, record);
+          },
+          removed: function(_id, record){
+              pub.removed('associatedusers', _id, record);
+          }
+      });
+      var userB_Handle=AssociatedUsers.find({userIdB: self.userId}).observeChanges({
+          added: function(_id, record){
+              if(record.userIdA){
+                  Meteor.defer(function(){
+                      var userInfo=Meteor.users.findOne({_id: record.userIdA}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}})
+                      if(userInfo){
+                          pub.added('associatedusers', _id, record);
+                          var userId=userInfo._id
+                          delete userInfo['_id']
+                          pub.added('users', userId, userInfo);
+                      }
+                  })
+              }
+          },
+          changed: function(_id, record){
+              pub.changed('associatedusers', _id, record);
+          },
+          removed: function(_id, record){
+              pub.removed('associatedusers', _id, record);
+          }
+      });
+      this.ready();
+      this.onStop(function(){
+          userA_Handle.stop();
+          userB_Handle.stop();
+      });
+      return
   });
   
   Meteor.publish('userRelation', function() {
     if(!this.userId)
-       return [];
+       return this.ready();
     
     return UserRelation.find({userId: this.userId});
   });
@@ -1769,42 +1869,49 @@ if(Meteor.isServer){
         return Meteor.users.find({_id: {"$in": userIds}}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}});
     }
     else {
-        return [];
+        return this.ready();
     }
   });  
-
+  function publishTheFavouritePosts(self,userId,limit){
+      var pub = self
+      var cursorHandle=FavouritePosts.find({userId: userId}, {sort: {createdAt: -1}, limit: limit}).observeChanges({
+          added: function(_id, record){
+              Meteor.defer(function(){
+                  var postInfo=Posts.findOne({_id: record.postId},{fields:{title:1,addontitle:1,mainImage:1,ownerName:1}});
+                  if(postInfo){
+                      pub.added('favouriteposts', _id, record);
+                      var postId=postInfo._id
+                      delete postInfo['_id']
+                      pub.added('posts', postId, postInfo);
+                  }
+              })
+          },
+          changed: function(_id, record){
+              pub.changed('favouriteposts', _id, record);
+          },
+          removed: function(_id, record){
+              pub.removed('favouriteposts', _id, record);
+          }
+      });
+      self.ready()
+      self.onStop(function(){
+          cursorHandle.stop()
+      })
+  }
   Meteor.publish('favouriteposts', function(limit) {
-    if(this.userId && limit) {
-        var postIds = [];
-
-        FavouritePosts.find({userId: this.userId}, {sort: {createdAt: -1}, limit: limit}).forEach(function(item) {
-            if(!~postIds.indexOf(item.postId)) postIds.push(item.postId); 
-        });
-        return [
-            FavouritePosts.find({userId: this.userId}, {sort: {createdAt: -1}, limit: limit}),
-            Posts.find({_id: {$in: postIds}},{fields:{'title':'1','addontitle':'1','mainImage':'1','ownerName':'1'}})
-        ];
+    if(!this.userId){
+        return this.ready();
     }
-    else {
-        return [];
-    }
+    limit = limit || 3;
+    return publishTheFavouritePosts(this,this.userId,limit)
   });
 
   Meteor.publish('userfavouriteposts', function(userId, limit) {
-    if(userId && limit) {
-        var postIds = [];
-
-        FavouritePosts.find({userId: userId}, {sort: {createdAt: -1}, limit: limit}).forEach(function(item) {
-            if(!~postIds.indexOf(item.postId)) postIds.push(item.postId); 
-        });
-        return [
-            FavouritePosts.find({userId: userId}, {sort: {createdAt: -1}, limit: limit}),
-            Posts.find({_id: {$in: postIds}},{fields:{'title':'1','addontitle':'1','mainImage':'1','ownerName':'1'}})
-        ];
+    if(!userId){
+        this.ready()
     }
-    else {
-        return [];
-    }
+    limit= limit || 3;
+    return publishTheFavouritePosts(this,userId,limit)
   });
   
   Meteor.publish('SaveDraftsByLogin', function() {
@@ -1864,38 +1971,34 @@ if(Meteor.isServer){
       return doc.username !== null;
     }
   });
-  
   Posts.allow({
     insert: function (userId, doc) {
-      var hasInsert = false;
-      if(doc.owner === userId)
-        hasInsert = true;
-      if(!hasInsert && AssociatedUsers.find({$or: [{userIdA: userId, userIdB: doc.owner}, {userIdA: doc.owner, userIdB: userId}]}).count() > 0)
-        hasInsert = true;
-      if(!hasInsert && UserRelation.find({userId: userId, toUserId: doc.owner}).count() > 0)
-        hasInsert = true;
-      // var userIds = [];
+      var userIds = [];
 
-      // AssociatedUsers.find({}).forEach(function(item) {
-      //   if (!~userIds.indexOf(item.userIdA)) {
-      //     userIds.push(item.userIdA);
-      //   }
-      //   if (!~userIds.indexOf(item.userIdB)) {
-      //     userIds.push(item.userIdB);
-      //   }
-      // });
+      /*
+      AssociatedUsers.find({}).forEach(function(item) {
+        if (!~userIds.indexOf(item.userIdA)) {
+          userIds.push(item.userIdA);
+        }
+        if (!~userIds.indexOf(item.userIdB)) {
+          userIds.push(item.userIdB);
+        }
+      });*/
 
       //if(doc.owner === userId){
-      // if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
+      //if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
         //postsInsertHookDeferHandle(userId,doc);
-      if(hasInsert){
         postsInsertHookDeferHandle(doc.owner,doc);
-        try{
-            mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
-        }catch(err){}        
+          try{
+              postsInsertHookPostToBaiduDeferHandle(doc._id);
+          }catch(err){
+          }
+          try{
+              mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
+          }catch(err){}
         return true;
-      }
-      return false;
+      //}
+      //return true;
     },
       remove: function (userId, doc) {
           if(doc.owner === userId){
@@ -1913,32 +2016,24 @@ if(Meteor.isServer){
         doc.ownerIcon = ownerUser.profile.fullname || ownerUser.username;
         
         // to -> posts.allow.insert
-        // var userIds = [];
-        // AssociatedUsers.find({}).forEach(function(item) {
-        //   if (!~userIds.indexOf(item.userIdA)) {
-        //     userIds.push(item.userIdA);
-        //   }
-        //   if (!~userIds.indexOf(item.userIdB)) {
-        //     userIds.push(item.userIdB);
-        //   }
-        // });
-        var hasUpdate = false;
-        if(doc.owner === userId)
-          hasUpdate = true;
-        if(!hasUpdate && AssociatedUsers.find({$or: [{userIdA: userId, userIdB: doc.owner}, {userIdA: doc.owner, userIdB: userId}]}).count() > 0)
-          hasUpdate = true;
-        if(!hasUpdate && UserRelation.find({userId: userId, toUserId: doc.owner}).count() > 0)
-          hasUpdate = true;
+        var userIds = [];
+        /*AssociatedUsers.find({}).forEach(function(item) {
+          if (!~userIds.indexOf(item.userIdA)) {
+            userIds.push(item.userIdA);
+          }
+          if (!~userIds.indexOf(item.userIdB)) {
+            userIds.push(item.userIdB);
+          }
+        });*/
         
         //if(doc.owner === userId){
-        // if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
-        if(hasUpdate){
+        //if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
           //postsInsertHookDeferHandle(userId,doc);
           postsInsertHookDeferHandle(doc.owner,doc);
           try{
             mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
           }catch(err){}        
-        }
+        //}
         
         return true;
       }
@@ -1968,7 +2063,7 @@ if(Meteor.isServer){
         postsUpdateHookDeferHandle(userId,doc,fieldNames, modifier);
         return true;
       }
-      return false;
+      return true;
     }
   });
   TopicPosts.allow({
@@ -1977,7 +2072,6 @@ if(Meteor.isServer){
       {
         Meteor.defer(function(){
             try{
-              topicPostsInsertHookDeferHandle(doc.owner, doc, topicId, tagFollowerId);
               Topics.update({_id: doc.topicId},{$inc: {posts: 1}});
             }
             catch(error){}
@@ -2041,7 +2135,7 @@ if(Meteor.isServer){
         return false;
       }
       if(doc.userId === userId || doc.followerId === userId){
-        followerInsertHookDeferHook(userId,doc, topicId);
+        followerInsertHookDeferHook(userId,doc);
         return true;
       }
       return false;
@@ -2059,8 +2153,6 @@ if(Meteor.isServer){
   });
   Feeds.allow({
     insert: function (userId, doc) {
-      //console.log('feeds insert...');
-      
       var userData = Meteor.users.findOne({_id:userId});
       if(!userData){
           return false;
@@ -2084,14 +2176,32 @@ if(Meteor.isServer){
         return (doc.postId !== null && doc.followby !== null && doc.recommander !== null)
       }
       else if(doc.eventType==='share'){
-          if(doc.pindex){
-            if(Feeds.findOne({followby:doc.followby,postId:doc.postId,owner:doc.owner,pindex:doc.pindex,eventType: 'share'})){
-                return false;
-            }
-          }else{
-            if(Feeds.findOne({followby:doc.followby,postId:doc.postId,owner:doc.owner,eventType: 'share'})){
-                return false;
-            }
+          if(doc.extra && doc.extra.wechat){
+              Meteor.defer(function(){
+                  var info=doc.extra.wechat;
+                  var type='wechat_'+info.type
+                  var section=info.section
+                  if (typeof section ==='undefined'){
+                      PComments.insert({
+                          postId:doc.postId,
+                          ptype:type,
+                          commentUserId: doc.owner,
+                          createdAt: new Date()
+                      });
+                  } else{
+                      type='section_'+type
+                      PComments.insert({
+                          postId:doc.postId,
+                          pindex:section,
+                          ptype:type,
+                          commentUserId: doc.owner,
+                          createdAt: new Date()
+                      });
+                  }
+              });
+          }
+          if(Feeds.findOne({followby:doc.followby,postId:doc.postId,eventType: 'share'})){
+              return false;
           }
           return true;
       }
@@ -2371,7 +2481,7 @@ if(Meteor.isServer){
       var selector = {'text': regExp};
       return Topics.find(selector, options).fetch();
     } else {
-      return [];
+      return this.ready();
       //return Topics.find({}, options).fetch();
     }
   });
@@ -2387,7 +2497,7 @@ if(Meteor.isServer){
       ]};
       return Meteor.users.find(selector, options).fetch();
     } else {
-      return [];
+      return this.ready();
       //return Meteor.users.find({}, options).fetch();
     }
   });
@@ -2400,7 +2510,7 @@ if(Meteor.isServer){
       var selector = { owner: this.userId,'title': regExp };
       return Posts.find(selector, options).fetch();
     } else {
-      return [];
+      return this.ready();
     }
   });
 
@@ -2440,7 +2550,7 @@ if(Meteor.isClient){
   Session.set('followeesCollection','loading');
   Session.set('myPostsCollection','loading');
   Session.set('momentsCollection','loading');
-  Session.set('postfriendsCollection','loading');
+  Session.set('postfriendsCollection','loaded');
   var subscribeFollowPostsOnStop = function(err){
       console.log('followPostsCollection ' + err);
       Session.set('followPostsCollection','error');
@@ -2480,7 +2590,7 @@ if(Meteor.isClient){
       //Meteor.subscribe('shareURLs');
   };
   
-  // if(Meteor.isCordova){
+  if(Meteor.isCordova){
       var options = {
           keepHistory: 1000 * 60 * 5,
           localSearch: true
@@ -2527,30 +2637,30 @@ if(Meteor.isClient){
                       },500);
                   }
               });
+
+              Meteor.subscribe('readerpopularposts', {
+                  onReady: function(){
+                      //Session.set('momentsCollection','loaded');
+                  }
+              });
           }
       });
-  // }
-  Tracker.autorun(function(){
-      if (Meteor.userId()){
-          Meteor.subscribe('suggestPosts', 15, {
-              onReady: function(){
-                  Session.set('momentsCollection','loaded');
-              }
-          });
+      Tracker.autorun(function(){
+          if (Meteor.userId()){
+              Meteor.subscribe('suggestPosts', 15, {
+                  onReady: function(){
+                      Session.set('momentsCollection','loaded');
+                  }
+              });
 
-          Meteor.subscribe('readerpopularposts', {
-              onReady: function(){
-                  //Session.set('momentsCollection','loaded');
-              }
-          });
+              Meteor.subscribe('associatedusers', {
+                  onReady: function() {
 
-          Meteor.subscribe('associatedusers', {
-            onReady: function() {
-
-            }
-          });          
-      }
-  });
+                  }
+              });
+          }
+      });
+  }
 
   Tracker.autorun(function() {
     if (Meteor.userId()) {
@@ -2584,12 +2694,13 @@ if(Meteor.isClient){
                     Session.set('momentsCollection_getmore','done');
                 }
             });
+            /*
             Meteor.subscribe('postFriends', Meteor.userId(), Session.get("postContent")._id, Session.get('postfriendsitemsLimit'), {
                 onReady: function(){
                     console.log('postfriendsCollection loaded');
                     Session.set('postfriendsCollection','loaded');
                 }
-            });
+            });*/
         }
     }
   });
@@ -2670,9 +2781,4 @@ if(Meteor.isClient){
         });
     }
   });   
-  
-  Tracker.autorun(function() {
-    if (Meteor.userId())
-        Meteor.subscribe('SaveDraftsByLogin');
-  }); 
 }
