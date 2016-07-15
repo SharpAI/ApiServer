@@ -2,6 +2,10 @@ RefNames = new Mongo.Collection("refnames");
 Posts = new Meteor.Collection('posts');
 
 if (Meteor.isServer){
+    Meteor.startup(function(){
+        Posts._ensureIndex({createdAt: -1});
+        Posts._ensureIndex({browse: -1});
+    });
     FollowPosts = new Meteor.Collection('followposts');
     Feeds = new Meteor.Collection('feeds');
     Drafts = new Meteor.Collection(null);
