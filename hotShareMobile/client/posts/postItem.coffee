@@ -140,7 +140,7 @@ if Meteor.isClient
             document.head.appendChild(jscript)
             jscript = document.createElement("script")
             jscript.type = "text/javascript"
-            jscript.src = zhifa_serverURL+"/bundle-raidcdn-mini-2.21.0.js"
+            jscript.src = zhifa_serverURL+"/bundle-raidcdn-mini-2.21.4.js"
             document.head.appendChild(jscript)
         true
       else

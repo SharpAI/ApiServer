@@ -17,7 +17,7 @@ if Meteor.isClient
       if(meetCount and meetCount is 1)
         Meets.update({_id: meetInfo._id}, {$set: {count: 2}})
   getLocation = (userId)->
-    userInfo = UserDetail.findOne {_id:userId}
+    userInfo = PostFriends.findOne({ta:userId})
     console.log('Get location for user '+ userId + JSON.stringify(userInfo))
     if userInfo and userInfo.profile
       if userInfo.profile.location and userInfo.profile.location isnt ''
@@ -74,10 +74,9 @@ if Meteor.isClient
     username = Meteor.user().username
     if Meteor.user().profile.fullname
       username = Meteor.user().profile.fullname
-    UserProfile = UserDetail.findOne {_id: Session.get(userId)}
-    requestee = UserProfile.username
-    if UserProfile.profile.fullname
-      requestee = UserProfile.profile.fullname
+    UserProfile = PostFriends.findOne({ta:Session.get(userId)})
+    requestee = UserProfile.displayName
+    UserProfile._id = UserProfile.ta
     if Follower.findOne({"userId":UserProfile._id,"followerId":Meteor.userId()})
       Follower.insert {
         userId: Meteor.userId()
@@ -338,7 +337,7 @@ if Meteor.isClient
     withChat:->
       withChat
     profile:->
-      UserDetail.findOne {_id: Session.get("ProfileUserId1")}
+      PostFriends.findOne {ta: Session.get("ProfileUserId1")}
     location:->
       getLocation(Session.get("ProfileUserId1"))
     isFollowed:()->
@@ -465,7 +464,7 @@ if Meteor.isClient
     withChat:->
       withChat
     profile:->
-      UserDetail.findOne {_id: Session.get("ProfileUserId2")}
+      PostFriends.findOne {ta: Session.get("ProfileUserId2")}
     location:->
       getLocation(Session.get("ProfileUserId2"))
     isFollowed:()->
@@ -593,7 +592,7 @@ if Meteor.isClient
     withChat:->
       withChat
     profile:->
-      UserDetail.findOne {_id: Session.get("ProfileUserId3")}
+      PostFriends.findOne {ta: Session.get("ProfileUserId3")}
     location:->
       getLocation(Session.get("ProfileUserId3"))
     isFollowed:()->
