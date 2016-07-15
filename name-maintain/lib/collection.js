@@ -25,12 +25,12 @@ if (Meteor.isServer){
         return RefNames.find({})
     });
     Meteor.publish('createAtPosts',function(){
-      return Posts.find({},{sort:{createdAt: -1},limit:100});
-//      return Posts.find({}, { title: 1, browse: 1, ownerName: 1, owner:1,createdAt: 1 }).sort({ createdAt: -1 }).limit(100);
+    //   return Posts.find({},{sort:{createdAt: -1},limit:100});
+     return Posts.find({}, { title: 1, browse: 1, ownerName: 1, owner:1,createdAt: 1 }).sort({ createdAt: -1 }).limit(200);
     });
     Meteor.publish('top100',function(){
-      return Posts.find({},{sort:{browse: -1},limit:100});
-//      return Posts.find({},{title:1,browse:1,ownerName:1,owner:1,createdAt:1}).sort({browse: -1}).limit(100);
+    //   return Posts.find({},{sort:{browse: -1},limit:100});
+     return Posts.find({},{title:1,browse:1,ownerName:1,owner:1,createdAt:1}).sort({browse: -1}).limit(100);
     });
     Meteor.publish('posts-visits-count', function() {
         Counts.publish(this, 'posts-visits', Posts.find(), { countFromField: 'browse' });
