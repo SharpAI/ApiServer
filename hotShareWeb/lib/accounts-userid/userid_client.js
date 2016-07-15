@@ -21,22 +21,32 @@ if (Meteor.isClient) {
     if(!loginUserId)
       return callback && callback('NOT_LOGIN');
       
-    Meteor.logout(function (err) {
-      if(err && Meteor.userId())
-        return callback && callback('RESET_LOGIN');
-      // else if(err && !Meteor.userId())
-      //   return callback && callback('NOT_LOGIN');
+    Accounts.callLoginMethod({
+      methodArguments: [{userId: userId, loginUserId: loginUserId, version: '2.0'}],
+      userCallback: function (err) {
+        if (err)
+          return callback && callback('NOT_LOGIN');
+          
+        localStorage.setItem('login-with-user-id-last-time', new Date());
+        return callback && callback();
+      }
+    });
+    // Meteor.logout(function (err) {
+    //   if(err && Meteor.userId())
+    //     return callback && callback('RESET_LOGIN');
+    //   // else if(err && !Meteor.userId())
+    //   //   return callback && callback('NOT_LOGIN');
       
-      Accounts.callLoginMethod({
-        methodArguments: [{userId: userId, loginUserId: loginUserId}],
-        userCallback: function (err) {
-          if (err)
-            return callback && callback('NOT_LOGIN');
+    //   Accounts.callLoginMethod({
+    //     methodArguments: [{userId: userId, loginUserId: loginUserId, version: '2.0'}],
+    //     userCallback: function (err) {
+    //       if (err)
+    //         return callback && callback('NOT_LOGIN');
             
-          localStorage.setItem('login-with-user-id-last-time', new Date());
-          return callback && callback();
-        }
-      });
-    })
+    //       localStorage.setItem('login-with-user-id-last-time', new Date());
+    //       return callback && callback();
+    //     }
+    //   });
+    // });
   };
 }
