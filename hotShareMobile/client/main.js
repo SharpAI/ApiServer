@@ -11,7 +11,7 @@ if (Meteor.isCordova) {
                 {
                     console.log("type:"+type+";token:"+token);
                     Meteor.users.update({_id: Meteor.user()._id}, {$set: {type: type, token: token}});
-                    Meteor.call('refreshAssociatedUserToken' ,{type: type, token: token});
+                    // Meteor.call('refreshAssociatedUserToken' ,{type: type, token: token});
                     Session.set("token", token);
                 }
             } else {
@@ -158,8 +158,8 @@ if (Meteor.isClient) {
   Session.set("DocumentTitle",'故事贴');
   Deps.autorun(function(){
     if(Meteor.userId()){
-      Meteor.subscribe("topics");
-      Meteor.subscribe("topicposts");
+      // Meteor.subscribe("topics");
+      // Meteor.subscribe("topicposts");
     }
     document.title = Session.get("DocumentTitle");
   });

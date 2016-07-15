@@ -161,6 +161,7 @@ if Meteor.isServer
         true
         
       'addAssociatedUserNew': (userInfo)->
+        this.unblock()
         # check params
         if !this.userId or !userInfo or !userInfo.username or !userInfo.password
           return {status: 'ERROR', message: 'Invalid Username'}
@@ -189,9 +190,13 @@ if Meteor.isServer
         if UserRelation.find({userId: this.userId, toUserId: userTarget._id}).count() > 0
           return {status: 'ERROR', message: 'Exist Associate User'}
         
+        # update token
+        if userInfo.type and userInfo.token
+          Meteor.users.update({_id: userTarget._id}, {$set: {type: userInfo.type, token: userInfo.token}})
+        
         # save relation
         # 只记录单向关系
-        me = Meteor.users.findOne({_id: this.userId})
+        me = Meteor.users.findOne({_id: this.userId}, {fields: {_id: 1, username: 1, 'profile.fullname': 1, 'profile.icon': 1}})
         UserRelation.insert {
           userId: me._id
           name: if me.profile and me.profile.fullname then me.profile.fullname else me.username
@@ -254,6 +259,7 @@ if Meteor.isServer
         return {status: 'SUCCESS'}  
         
       'removeAssociatedUserNew': (userId)->
+        this.unblock()
         if !this.userId or !userId
           return false
         if UserRelation.find({userId: this.userId, toUserId: userId}).count() <= 0
@@ -266,6 +272,7 @@ if Meteor.isServer
         return true
         
       'addAssociatedUser': (userInfo)->
+        this.unblock()
         Meteor.defer ()->
           try
             Meteor.call 'addAssociatedUserNew', userInfo
@@ -294,7 +301,7 @@ if Meteor.isServer
         if userTarget._id is this.userId
           return {status: 'ERROR', message: 'Can not add their own'}
 
-        if AssociatedUsers.findOne($or: [{userIdA: userTarget._id, userIdB: self.userId}, {userIdA: self.userId, userIdB: userTarget._id}])
+        if AssociatedUsers.find($or: [{userIdA: userTarget._id, userIdB: self.userId}, {userIdA: self.userId, userIdB: userTarget._id}]).count() > 0
           return {status: 'ERROR', message: 'Exist Associate User'}
 
         isMatch = false
@@ -317,6 +324,7 @@ if Meteor.isServer
         else
           return {status: 'ERROR', message: 'Invalid Password'}
       'removeAssociatedUser': (userId)->
+        this.unblock()
         Meteor.defer ()->
           try
             Meteor.call 'removeAssociatedUserNew', userId
@@ -332,20 +340,21 @@ if Meteor.isServer
       'addBlackList': (blacker, blackBy)->
         BlackList.insert({blacker: [blacker],blackBy: blackBy})
       'refreshAssociatedUserToken': (data)->
-        if data is undefined or data is null
-          return false
-        if data.type is undefined or data.type is null
-          data.type = ''
-        if data.token is undefined or data.token is null
-          data.token = ''
+        return
+        # if data is undefined or data is null
+        #   return false
+        # if data.type is undefined or data.type is null
+        #   data.type = ''
+        # if data.token is undefined or data.token is null
+        #   data.token = ''
 
-        this.unblock()
-        self = this
-        Meteor.defer ()->
-          AssociatedUsers.find({$or: [{userIdA: self.userId}, {userIdB: self.userId}]}).forEach((item)->
-            if item.userIdA != self.userId
-              Meteor.users.update({_id: item.userIdA}, {$set: {type: data.type, token: data.token}})
-            if item.userIdB isnt self.userId
-              Meteor.users.update({_id: item.userIdB}, {$set: {type: data.type, token: data.token}})
-          )
+        # this.unblock()
+        # self = this
+        # Meteor.defer ()->
+        #   AssociatedUsers.find({$or: [{userIdA: self.userId}, {userIdB: self.userId}]}).forEach((item)->
+        #     if item.userIdA != self.userId
+        #       Meteor.users.update({_id: item.userIdA}, {$set: {type: data.type, token: data.token}})
+        #     if item.userIdB isnt self.userId
+        #       Meteor.users.update({_id: item.userIdB}, {$set: {type: data.type, token: data.token}})
+        #   )
 
