@@ -64,6 +64,7 @@ specialClassNameForPopularMobileSite = [
   '#page-content'   #xueqiu
   '#BODYCON'        #tripadvisor
   '.yaow > p'  #news.ifeng.com
+  #'.pulse-article'    #Linkedin
 ]
 
 specialClassNameExcludeMobileSites = [
@@ -74,6 +75,34 @@ specialMobileSiteForImages = [
   'medium.com'
   'techcrunch.com'
 ]
+
+beforeExtractConfig = [
+  # 微信凤凰读书诗歌的例外处理。
+  # {
+  #   enable: (url, data)->
+  #     $page = $(data.body)
+  #     if $page.find('.rich_media_content').length <= 0
+  #       return false
+  #     if $page.find(".rich_media_content > section > section:last > section > section:last > section > section > section").length <= 0
+  #       return false
+  #     return true
+  #   extract: (url, data)->
+  #     $page = $(data.body)
+  #     $sction = $page.find(".rich_media_content > section > section:last > section > section:last > section > section")
+  #     $sction.each ()->
+  #       $(this).html('<p>'+$(this).text()+'</p>')
+      
+  #     data.body = ''
+  #     _.map $page[0].parentNode.childNodes, (node)->
+  #       data.body += node.outerHTML
+  #     data.bodyLength = data.body.length
+  # }
+]
+
+@onBeforeExtract = (url, data)->
+  _.map beforeExtractConfig, (config)->
+    if config.enable(url, data)
+      config.extract(url, data)
 
 textContentFor = (node, normalizeWs = true) ->
   return "" unless node.textContent
@@ -182,6 +211,10 @@ scoreNode = (node) ->
   #if node.className && node.className.search(REGEXPS.specialClass)
   #  console.log('the main class of mainstream web for mobile. bingo')
   #  return 250
+  if node.tagName == "IMG"
+    if $(node).parent() and $(node).parent().hasClass('article-cover')
+      if $(node).parent().parent() and $(node).parent().parent().hasClass('article-header')
+        return 99999
   unlikely = node.className + node.id
   if unlikely.search(REGEXPS.unlikelyCandidates) != -1 and \
      unlikely.search(REGEXPS.okMaybeItsACandidate) == -1 and \
@@ -270,7 +303,17 @@ asTop = (page) ->
 scoreAndSelectTop = (nodes) ->
   scored = _.reduce(nodes, reduceScorable, [])
   #_.each(scored, (n) => n.score.scale(1 - linkDensityFor(n)))
-  _.sortBy(scored, (n) -> n.score.value)[scored.length-1]
+  #_.sortBy(scored, (n) -> n.score.value)[scored.length-1]
+  sortArray = _.sortBy(scored, (n) -> n.score.value)
+  id = scored.length-1
+  while id >= 0 and sortArray[id].score.value == 99999
+    id--
+  topId = scored.length-1
+  if id >= 0 and id != scored.length-1
+    $(sortArray[id]).prepend($(sortArray[scored.length-1]))
+    topId = id
+  console.log("topId="+topId+", scored.length="+scored.length)
+  sortArray[topId]
 
 collectSiblings = (top) ->
   _.reduce(
@@ -376,6 +419,9 @@ extract = (page) ->
     rootNode = null
     
     if($(bodyParified).find(tag).length > 0) # 无法查找body下的第一层
+      #item = $(bodyParified).find(tag)[0]
+      #if item.tagName and item.tagName.toUpperCase() is 'IMG'
+      #  continue
       rootNode = $(bodyParified).find(tag)[0]
     else
       for item in bodyParified
@@ -387,7 +433,7 @@ extract = (page) ->
             rootNode = item.parentNode
             break
         else if tag.indexOf('.') is 0
-          if item.className is tag.substr(1)
+          if item.className is tag.substr(1)# and item.tagName isnt 'IMG'
             rootNode = item
             break
           else if item.parentNode.className is tag.substr(1)
@@ -401,7 +447,7 @@ extract = (page) ->
             rootNode = item.parentNode
             break
 
-    console.log rootNode
+    console.log("rootNode =" + rootNode)
     if rootNode isnt null
       treeWalker = document.createTreeWalker(
         rootNode,

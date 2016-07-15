@@ -7,7 +7,7 @@ var mongoid = require('mongoid-js');
 var filedownup = require('./file_downupload.js');
 var drafts = require('./post_drafts.js');
 
-var showDebug = false;
+var showDebug = true;
 
 process.addListener('uncaughtException', function (err) {
   var msg = err.message;
@@ -148,8 +148,12 @@ router.get('/', function(req, res) {
 router.route('/:_id/:url')
     .get(function(req, res) {
       showDebug && console.log('_id=' + req.params._id + ' url=' + req.params.url);
+      var userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_2 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12D508 (5752533504)';   //iPhone 8.2 Safari UA
+      //var userAgent = 'Mozilla/5.0 (iPhone; U; CPU iPhone OS 8_2 like Mac OS X; en) AppleWebKit/534.46.0 (KHTML, like Gecko) CriOS/19.0.1084.60 Mobile/9B206 Safari/7534.48.3'; //Chrome UA on iPhone
+      //var userAgent = 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Electron/1.2.5 Safari/537.36'; //Chrome on Macbook
       var nightmare = Nightmare({ show: true , openDevTools: true});
       nightmare
+          .useragent(userAgent)
           .goto(req.params.url)
           .inject('js','bundle.js')
           .wait('#detected_json_from_gushitie')
@@ -182,7 +186,7 @@ router.route('/:_id/:url')
                         return console.log('upload file error.');
                         
                       var postObj = draftsObj.getPubObject();
-                      // console.log('post:', JSON.stringify(postObj));
+                      //console.log('post:', JSON.stringify(postObj));
                       // draftsObj.destroy();
                       updatePosts(postId, postObj, function(err, number){
                         if(err || number <= 0)
