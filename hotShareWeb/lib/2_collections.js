@@ -158,7 +158,6 @@ if(Meteor.isServer){
             }
             //getViewLists(self,taId,3);
             self.added("postfriends", id, fields);
-            self.count++;
         });
     };
     var newMeetsAddedForNewFriendsDeferHandle = function(self,taId,userId,id,fields){
@@ -1332,6 +1331,12 @@ if(Meteor.isServer){
                             newMeetsAddedForPostFriendsDeferHandleV2(self,taId,userId,id,fields);
                         }
                     }
+                    if(self.count === 0){
+                        var postInfo=Posts.findOne({_id:postId},{fields:{owner:1}})
+                        console.log('owner is '+postInfo.owner);
+                        newMeetsAddedForPostFriendsDeferHandleV2(self,postInfo.owner,userId,postInfo.owner,{me:userId,ta:postInfo.owner});
+                    }
+                    self.count++;
                 },
                 changed: function (id,fields) {
                     self.changed("postfriends", id, fields);
