@@ -9,6 +9,9 @@
 _=require('underscore')
 keepImagesForSpecialMobileSite = false
 removeStyle = true
+
+storeStyleInItem = (node,type,value)->
+  $(node).attr('hotshare-'+type,value)
 class Log
   this.print = (message) -> console.log(message)
   this.error = (message) -> console.log(message)

@@ -160,7 +160,7 @@ router.route('/:_id/:url')
           .evaluate(function () {
             return window.detected_json_from_gushitie
           })
-          //.end()
+          .end()
           .then(function (result) {
             //console.log(result)
             if(!req.state){
