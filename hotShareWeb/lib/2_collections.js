@@ -390,8 +390,17 @@ if(Meteor.isServer){
             }
         });
     }
-    var publicPostsPublisherDeferHandle = function(userId,postId) {
+    var publicPostsPublisherDeferHandle = function(userId,postId,self) {
         Meteor.defer(function(){
+            try {
+                var postInfo=Posts.findOne({_id:postId},{fields:{owner:1}})
+                if(postInfo){
+                    console.log('owner is '+postInfo.owner);
+                    newMeetsAddedForPostFriendsDeferHandleV2(self,postInfo.owner,userId,postInfo.owner,{me:userId,ta:postInfo.owner});
+                }
+            } catch (error){
+            }
+
             var needUpdateMeetCount = false;
             try {
                 if(userId && postId ){
@@ -1320,7 +1329,7 @@ if(Meteor.isServer){
             var self = this;
             self.count = 0;
             self.meeterIds=[];
-            publicPostsPublisherDeferHandle(userId,postId);
+            publicPostsPublisherDeferHandle(userId,postId,self);
             var handle = Meets.find({me: userId,meetOnPostId:postId},{sort: {createdAt: -1},limit:limit}).observeChanges({
                 added: function (id,fields) {
                     var taId = fields.ta;
@@ -1330,11 +1339,6 @@ if(Meteor.isServer){
                             self.meeterIds.push(taId);
                             newMeetsAddedForPostFriendsDeferHandleV2(self,taId,userId,id,fields);
                         }
-                    }
-                    if(self.count === 0){
-                        var postInfo=Posts.findOne({_id:postId},{fields:{owner:1}})
-                        console.log('owner is '+postInfo.owner);
-                        newMeetsAddedForPostFriendsDeferHandleV2(self,postInfo.owner,userId,postInfo.owner,{me:userId,ta:postInfo.owner});
                     }
                     self.count++;
                 },
