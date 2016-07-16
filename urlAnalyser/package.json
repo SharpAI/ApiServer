@@ -4,7 +4,9 @@
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
-    "start": "browserify -t coffeeify inspector.js > bundle.js && electron ."
+    "start": "browserify -t coffeeify inspector.js > bundle.js && electron .",
+    "startmaster": "browserify -t coffeeify inspector.js > bundle.js && node main_cluster.js",
+    "startslaver": "browserify -t coffeeify inspector.js > bundle.js && isClient=1 node main_cluster.js"
   },
   "repository": {
     "type": "git",
