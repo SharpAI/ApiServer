@@ -21,14 +21,16 @@ process.addListener('uncaughtException', function (err) {
   console.trace();
 });
 
-// var kue = require('kue')
-//     , queue = kue.createQueue({
-//         prefix: 'q',
-//         redis: {
-//             port: 6379,
-//             host: '192.168.99.100',
-//             auth: 'mypass'
-//         }});
+var kue = require('kue'), 
+    cluster = require('cluster'),
+    clusterWorkerSize = require('os').cpus().length,
+    queue = kue.createQueue({
+         prefix: 'import_tasks',
+         redis: {
+             port: 6379,
+             host: 'urlanalyser.tiegushi.com',
+             auth: 'uwAL539mUJ'
+         }});
 
 // var job = queue.create('email', {
 //     title: 'welcome email for tj'
@@ -56,7 +58,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 var port = process.env.PORT || 8080;        // set our port
-var hotshare_web = process.env.HOTSHARE_WEB_HOST || 'http://cdcdn.tiegushi.com';
+var hotshare_web = process.env.HOTSHARE_WEB_HOST || 'http://cdn.tiegushi.com';
 var MongoClient = require('mongodb').MongoClient;
 var DB_CONN_STR = process.env.MONGO_URL || 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare';
 var posts = null;
@@ -135,26 +137,14 @@ var updatePosts = function(postId, post, callback){
   });
 };
 
-// ROUTES FOR OUR API
-// =============================================================================
-var router = express.Router();              // get an instance of the express Router
-
-// test route to make sure everything is working (accessed at GET http://localhost:8080/api)
-router.get('/', function(req, res) {
-  res.json({ message: 'hooray! welcome to our api!' });
-});
-
-// more routes for our API will happen here
-router.route('/:_id/:url')
-    .get(function(req, res) {
-      showDebug && console.log('_id=' + req.params._id + ' url=' + req.params.url);
-      var userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_2 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12D508 (5752533504)';   //iPhone 8.2 Safari UA
-      //var userAgent = 'Mozilla/5.0 (iPhone; U; CPU iPhone OS 8_2 like Mac OS X; en) AppleWebKit/534.46.0 (KHTML, like Gecko) CriOS/19.0.1084.60 Mobile/9B206 Safari/7534.48.3'; //Chrome UA on iPhone
-      //var userAgent = 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Electron/1.2.5 Safari/537.36'; //Chrome on Macbook
-      var nightmare = Nightmare({ show: true , openDevTools: true});
+function importUrl(_id, url, callback) {
+  var userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_2 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12D508 (5752533504)';   //iPhone 8.2 Safari UA
+  //var userAgent = 'Mozilla/5.0 (iPhone; U; CPU iPhone OS 8_2 like Mac OS X; en) AppleWebKit/534.46.0 (KHTML, like Gecko) CriOS/19.0.1084.60 Mobile/9B206 Safari/7534.48.3'; //Chrome UA on iPhone
+  //var userAgent = 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Electron/1.2.5 Safari/537.36'; //Chrome on Macbook
+  var nightmare = Nightmare({ show: true , openDevTools: true});
       nightmare
           .useragent(userAgent)
-          .goto(req.params.url)
+          .goto(url)
           .inject('js','bundle.js')
           .wait('#detected_json_from_gushitie')
           .evaluate(function () {
@@ -163,14 +153,15 @@ router.route('/:_id/:url')
           .end()
           .then(function (result) {
             //console.log(result)
-            if(!req.state){
-              req.state = true
-
-              users.findOne({_id: req.params._id}, function (err, user) {
+              users.findOne({_id: _id}, function (err, user) {
                 if(err || !user)
-                  return res.json({status:'failed'});
+                  if (callback) {
+                    console.log("err="+err);
+                    callback({status:'failed'});
+                    return;
+                  }
 
-                insert_data(user, req.params.url, result, function(err,postId){
+                insert_data(user, url, result, function(err,postId){
                   if (err) {
                     console.log('Error: insert_data failed');
                     res.json({status:'failed'});
@@ -186,7 +177,7 @@ router.route('/:_id/:url')
                         return console.log('upload file error.');
                         
                       var postObj = draftsObj.getPubObject();
-                      //console.log('post:', JSON.stringify(postObj));
+                      // console.log('post:', JSON.stringify(postObj));
                       // draftsObj.destroy();
                       updatePosts(postId, postObj, function(err, number){
                         if(err || number <= 0)
@@ -194,33 +185,86 @@ router.route('/:_id/:url')
                       });
                     });
                   });
-                  draftsObj.seekOneUsableMainImage(result, req.params.url);
+                  draftsObj.seekOneUsableMainImage(result, url);
       
                   // send response
-                  //res.json({status:'succ',json:'http://192.168.1.73:9000/posts/'+postId});
-                  res.json({status:'succ',json:hotshare_web+'/posts/'+postId});
-                  // var job = queue.create('email', {
-                  //     title: 'welcome email for tj'
-                  //     , to: 'tj@learnboost.com'
-                  //     , template: 'welcome-email'
-                  // }).save( function(err){
-                  //     if( !err ) console.log( job.id );
-                  // });
+                  if (callback) {
+                    callback({status:'succ',json:hotshare_web+'/posts/'+postId});
+                  }
                 });
               });
-            }
           })
           .catch(function (error) {
-            res.json({status:'failed'});
+            if (callback) {
+              callback({status:'failed'});
+            }
             console.error('Search failed:', error);
           })
+}
+
+if (cluster.isMaster) {
+  console.log("clusterWorkerSize="+clusterWorkerSize);
+  for (var i = 0; i < clusterWorkerSize; i++) {
+    cluster.fork();
+    console.log("cluster master fork: i="+i);
+  }
+  if (process.env.isClient) {
+    console.log("cluster Slaver");
+    return;
+  } else {
+    console.log("cluster Master");
+  }
+  var router = express.Router();
+  router.get('/', function(req, res) {
+    res.json({ message: 'hooray! welcome to our api!' });
+  });
+
+  router.route('/:_id/:url')
+    .get(function(req, res) {
+      showDebug && console.log('_id=' + req.params._id + ' url=' + req.params.url);
+      //importUrl(req.params._id, req.params.url, res.json);
+      var job = queue.create('import_tasks', {
+        id: req.params._id,
+        url: req.params.url,
+      }).save(function(err){
+        if( !err ) console.log( job.id );
+      });
+
+      job.on('complete', function(result){
+        console.log('Job completed with data', result);
+      }).on('failed attempt', function(errorMessage, doneAttempts){
+        console.log('Job attempt failed');
+        res.json({status:'failed'});
+      }).on('failed', function(errorMessage){
+        console.log('Job failed');
+        res.json({status:'failed'});
+      }).on('progress', function(progress, data){
+        console.log('\r  job #' + job.id + ' ' + progress + '% complete with data ', data);
+        if (progress == 100) {
+          res.json(JSON.parse(data));
+        }
+      });
     });
-// REGISTER OUR ROUTES -------------------------------
-// all of our routes will be prefixed with /api
-app.use('/import', router);
+  app.use('/import', router);
+  app.listen(port);
+  console.log('Magic happens on port ' + port);
+} else {
+  console.log("cluster Slaver");
+  queue.process('import_tasks', 100, function(job, done){
+    console.log('worker', cluster.worker.id, 'queue.process', job.data);
+    var data = job.data;
+    var _id = data.id;
+    var url = data.url;
 
-// START THE SERVER
-// =============================================================================
-app.listen(port);
-
-console.log('Magic happens on port ' + port);
+    importUrl(_id, url, function(result) {
+      //setTimeout(function() { done(); }, jobDelay);
+      console.log('result='+JSON.stringify(result));
+      if (result.status == 'succ') {
+        job.progress(100, 100, JSON.stringify(result));
+        done();
+      } else {
+        done(new Error('failed'));
+      }
+    });
+  });
+}

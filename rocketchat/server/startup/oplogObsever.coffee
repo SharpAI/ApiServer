@@ -53,7 +53,7 @@ Meteor.startup ()->
         })
     images.sort (a,b) ->
       return a.index-b.index
-    return images[0].imgUrl
+    return images[0] and images[0].imgUrl
   postCommentToChannel=(info,userInfo)->
     room = RocketChat.models.Rooms.findOneByName info.postId
     post = GushitiePosts.findOne({_id:info.postId})

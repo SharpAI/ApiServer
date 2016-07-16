@@ -40,7 +40,7 @@ if (Meteor.isClient) {
     },
     createAtPosts: function () {
       Meteor.subscribe('createAtPosts');
-      return Posts.find({}, { sort: { createdAt: -1 }, limit: 100 });
+      return Posts.find({}, { sort: { createdAt: -1 }, limit: 200 });
     },
     top100: function () {
       Meteor.subscribe('top100');

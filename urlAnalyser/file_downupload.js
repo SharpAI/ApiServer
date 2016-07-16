@@ -17,6 +17,7 @@ function filedownup(){
 var get_image_size_from_URI = function(url, cb) {
   //FIXME: other formate ???
 
+  console.log("url="+url);
   sizeOf(url, function (err, dimensions) {
     if (err) {
       console.log ('Calculate picture size failed: ' + url);

@@ -417,6 +417,9 @@ cloneWithoutSibling=(parentNode, node)->
     rootNode = null
     
     if($(bodyParified).find(tag).length > 0) # 无法查找body下的第一层
+      #item = $(bodyParified).find(tag)[0]
+      #if item.tagName and item.tagName.toUpperCase() is 'IMG'
+      #  continue
       rootNode = $(bodyParified).find(tag)[0]
     else
       for item in bodyParified
@@ -442,9 +445,7 @@ cloneWithoutSibling=(parentNode, node)->
             rootNode = item.parentNode
             break
 
-    console.log '======================================================'
-    console.log rootNode
-    console.log '======================================================'
+    console.log("rootNode =" + rootNode)
     if rootNode isnt null
       treeWalker = document.createTreeWalker(
         rootNode,
