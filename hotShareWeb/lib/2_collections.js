@@ -1295,7 +1295,7 @@ if(Meteor.isServer){
             var self = this;
             self.count = 0;
             self.meeterIds=[];
-            publicPostsPublisherDeferHandle(userId,postId);
+            //publicPostsPublisherDeferHandle(userId,postId,self);
             var handle = Meets.find({me: userId,meetOnPostId:postId},{sort: {createdAt: -1},limit:limit}).observeChanges({
                 added: function (id,fields) {
                     var taId = fields.ta;
@@ -1329,7 +1329,7 @@ if(Meteor.isServer){
             var self = this;
             self.count = 0;
             self.meeterIds=[];
-            publicPostsPublisherDeferHandle(userId,postId,self);
+            //publicPostsPublisherDeferHandle(userId,postId,self);
             var handle = Meets.find({me: userId,meetOnPostId:postId},{sort: {createdAt: -1},limit:limit}).observeChanges({
                 added: function (id,fields) {
                     var taId = fields.ta;
@@ -1544,7 +1544,13 @@ if(Meteor.isServer){
         return this.ready();
       else{
         var self = this;
+        var userId = this.userId;
         //publicPostsPublisherDeferHandle(self.userId,postId);
+
+          var self = this;
+          self.count = 0;
+          self.meeterIds=[];
+        publicPostsPublisherDeferHandle(userId,postId,self);
         updateMomentsDeferHandle(self,postId);
         mqttPostViewHook(self.userId,postId);
         return Posts.find({_id: postId});
