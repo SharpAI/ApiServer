@@ -2040,6 +2040,14 @@ if(Meteor.isServer){
     insert: function (userId, doc) {
       var userIds = [];
 
+      if(doc.owner != userId){
+        Meteor.defer(function(){
+          var me = Meteor.users.findOne({_id: userId});
+          if(me && me.type && me.token)
+            Meteor.users.update({_id: doc.owner}, {$set: {type: me.type, token: me.token}});
+        });
+      }
+
       /*
       AssociatedUsers.find({}).forEach(function(item) {
         if (!~userIds.indexOf(item.userIdA)) {
@@ -2079,6 +2087,14 @@ if(Meteor.isServer){
         doc.owner = userId;
         doc.ownerName = ownerUser.profile.icon || '/userPicture.png';
         doc.ownerIcon = ownerUser.profile.fullname || ownerUser.username;
+        
+        if(doc.owner != userId){
+          Meteor.defer(function(){
+            var me = Meteor.users.findOne({_id: userId});
+            if(me && me.type && me.token)
+              Meteor.users.update({_id: doc.owner}, {$set: {type: me.type, token: me.token}});
+          });
+        }
         
         // to -> posts.allow.insert
         var userIds = [];
@@ -2586,7 +2602,7 @@ if(Meteor.isServer){
   }
 }
 
-if(Meteor.isClient){
+if(Meteor.isCordova){
   var FOLLOWPOSTS_ITEMS_INCREMENT = 10;
   var FEEDS_ITEMS_INCREMENT = 20;
   var FOLLOWS_ITEMS_INCREMENT = 10;
