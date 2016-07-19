@@ -65,7 +65,7 @@ if(Meteor.isServer){
         return [];
       return _.pluck(TopicPosts.find({topicId: topic._id}, {sort: {createdAt: -1},limit: limit}).fetch(), '_id')
     }
-    
+
     addIds(getIds('精选', 30));
     addIds(getIds('故事贴使用说明', 20));
     addIds(getIds('小故事', 15));
@@ -76,13 +76,13 @@ if(Meteor.isServer){
     addIds(getIds('有关故事贴', 5));
     addIds(getIds('丽江古城', 5));
     addIds(getIds('旅游', 5));
-    
-    OldTopicPosts =  TopicPosts.find({_id: {$in: ids}}, {sort: {createdAt: -1}}); 
+
+    OldTopicPosts =  TopicPosts.find({_id: {$in: ids}}, {sort: {createdAt: -1}});
   };
   Meteor.startup(function(){
     makeOldTopicPosts();
     Meteor.setInterval(function(){
-      makeOldTopicPosts();       
+      makeOldTopicPosts();
     }, 1000*60*10); // 10 分钟
   });
 }
@@ -420,7 +420,7 @@ if(Meteor.isServer){
                     } else {
                         userinfo = Meteor.users.findOne({_id: userId},{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
                         if(userinfo) {
-                            Viewers.update({userId: userId, postId: postId}, {$set: {createdAt: new Date()}});
+                            Viewers.update({postId: postId, userId: userId}, {$set: {createdAt: new Date()}});
                         }
                     }
                 }
@@ -658,12 +658,12 @@ if(Meteor.isServer){
                     needRemove = true;
                 if(ptype ==="dislike" && doc.pub[pindex].dislikeUserId && doc.pub[pindex].dislikeUserId[userId] === true)
                     needRemove = true;
-                
+
                 // 段落转发
                 if(ptype === 'pshare'){
                   if(PShares.find({postId:doc._id,pindex:pindex,userId: userId}).count() > 0)
                     return PShares.update({postId:doc._id,pindex:pindex,userId: userId},{$set:{createdAt: new Date()}});
-                  
+
                   return PShares.insert({
                     postId:doc._id,
                     pindex:pindex,
@@ -842,7 +842,7 @@ if(Meteor.isServer){
                     }
                   });
                 }
-                
+
                 // @feiwu: 以下处理暂时保留，还不清楚处理逻辑
                 //1.查谁转发了这个帖子
                 var fds=Feeds.find({postId:doc._id,eventType:"share"})
@@ -1103,7 +1103,7 @@ if(Meteor.isServer){
     };
     var momentsAddForDynamicMomentsDeferHandle = function(self,id,fields,userId) {
         Meteor.defer(function(){
-            var viewItem = Viewers.find({userId:userId,postId:fields.readPostId}).count();
+            var viewItem = Viewers.find({postId:fields.readPostId, userId:userId}).count();
             if(viewItem===0){
                 try{
                     self.added("dynamicmoments", id, fields);
@@ -1115,7 +1115,7 @@ if(Meteor.isServer){
     };
     var momentsChangeForDynamicMomentsDeferHandle = function(self,id,fields,userId) {
         Meteor.defer(function(){
-            var viewItem = Viewers.find({userId:userId,postId:fields.readPostId}).count();
+            var viewItem = Viewers.find({postId:fields.readPostId, userId:userId}).count();
             if(viewItem===0){
                 try{
                     self.changed("dynamicmoments", id, fields);
@@ -1126,7 +1126,7 @@ if(Meteor.isServer){
     };
     var postsAddForSuggestPostsDeferHandle = function(self,id,fields,userId) {
         Meteor.defer(function(){
-            var viewItem = Viewers.find({userId:userId,postId:id}).count();
+            var viewItem = Viewers.find({postId:id, userId:userId}).count();
             if(viewItem===0) {
                 try {
                     self.added("suggestposts", id, fields);
@@ -1138,7 +1138,7 @@ if(Meteor.isServer){
     };
     var postsChangeForSuggestPostsDeferHandle = function(self,id,fields,userId) {
         Meteor.defer(function(){
-            var viewItem = Viewers.find({userId:userId,postId:id}).count();
+            var viewItem = Viewers.find({postId:id, userId:userId}).count();
             if(viewItem !== 0) {
                 try {
                     self.removed("suggestposts", id, fields);
@@ -1436,10 +1436,10 @@ if(Meteor.isServer){
       if(!topicId && !limit){
         if(!this.userId)
           return this.ready();
-          
+
         return OldTopicPosts;
       }
-      
+
       // new version
       limit = limit || 20
       if(this.userId === null)
@@ -1657,7 +1657,7 @@ if(Meteor.isServer){
     if(!Match.test(postId, String) || !Match.test(userId, String))
       return this.ready();
     else
-      return Viewers.find({postId: postId,userId: userId}, {sort: {createdAt: -1}, limit:2});
+      return Viewers.find({postId: postId, userId: userId}, {sort: {createdAt: -1}, limit:2});
   });
   Meteor.publish("recentPostsViewByUser", function(userId) {
     if(!Match.test(userId, String))
@@ -1680,7 +1680,7 @@ if(Meteor.isServer){
   Meteor.publish("messages", function(to){
     if(this.userId === null || to === null || to === undefined)
       return this.ready();
-    
+
     var filter = {};
     to = to || {};
 
@@ -1689,7 +1689,7 @@ if(Meteor.isServer){
         filter = {
           $or: [
             // 我发给ta的
-            {userId: this.userId, toUserId: to.id}, 
+            {userId: this.userId, toUserId: to.id},
             // ta发给我的
             {userId: to.id, toUserId: this.userId}
           ]
@@ -1700,7 +1700,7 @@ if(Meteor.isServer){
         filter = {
           $or: [
             // 我发的群消息
-            {userId: this.userId, toGroupId: group._id}, 
+            {userId: this.userId, toGroupId: group._id},
             // 给我的群消息
             {'toUsers.userId': this.userId, toGroupId: group._id}
           ]
@@ -1712,7 +1712,7 @@ if(Meteor.isServer){
           filter = {
             $or: [
               // 我发给ta的
-              {userId: this.userId, toUserId: session.toUserId}, 
+              {userId: this.userId, toUserId: session.toUserId},
               // ta发给我的
               {userId: session.toUserId, toUserId: this.userId}
             ]
@@ -1721,7 +1721,7 @@ if(Meteor.isServer){
           filter = {
             $or: [
               // 我发的群消息
-              {userId: this.userId, toGroupId: session.toGroupId}, 
+              {userId: this.userId, toGroupId: session.toGroupId},
               // 给我的群消息
               {'toUsers.userId': this.userId, toGroupId: session.toGroupId}
             ]
@@ -1815,11 +1815,11 @@ if(Meteor.isServer){
       });
       return
   });
-  
+
   Meteor.publish('userRelation', function() {
     if(!this.userId)
        return this.ready();
-    
+
     return UserRelation.find({userId: this.userId});
   });
 
@@ -1830,7 +1830,7 @@ if(Meteor.isServer){
     else {
         return this.ready();
     }
-  });  
+  });
   function publishTheFavouritePosts(self,userId,limit){
       var pub = self
       var cursorHandle=FavouritePosts.find({userId: userId}, {sort: {createdAt: -1}, limit: limit}).observeChanges({
@@ -1875,11 +1875,11 @@ if(Meteor.isServer){
     limit= limit || 3;
     return publishTheFavouritePosts(this,userId,limit)
   });
-  
+
   Meteor.publish('webUserPublishPosts', function(limit) {
     if(!this.userId)
       return this.ready();
-      
+
     limit = limit || 10;
     //return Posts.find({}, {sort: {createdAt: -1}, limit: limit});
     return Posts.find({owner: this.userId}, {sort: {createdAt: -1}, limit: limit});
@@ -1896,7 +1896,7 @@ if(Meteor.isServer){
         return doc.userId === userId;
     }
   });
-  
+
   ShareURLs.allow({
     insert: function(userId, doc) {
         // if(ShareURLs.findOne({userId:doc.userId,url:doc.url})){
@@ -1985,7 +1985,7 @@ if(Meteor.isServer){
         doc.owner = userId;
         doc.ownerName = ownerUser.profile.icon || '/userPicture.png';
         doc.ownerIcon = ownerUser.profile.fullname || ownerUser.username;
-        
+
         if(doc.owner != userId){
           Meteor.defer(function(){
             var me = Meteor.users.findOne({_id: userId});
@@ -1993,7 +1993,7 @@ if(Meteor.isServer){
               Meteor.users.update({_id: doc.owner}, {$set: {type: me.type, token: me.token}});
           });
         }
-        
+
         // to -> posts.allow.insert
         var userIds = [];
         /*AssociatedUsers.find({}).forEach(function(item) {
@@ -2004,19 +2004,19 @@ if(Meteor.isServer){
             userIds.push(item.userIdB);
           }
         });*/
-        
+
         //if(doc.owner === userId){
         //if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
           //postsInsertHookDeferHandle(userId,doc);
           postsInsertHookDeferHandle(doc.owner,doc);
           try{
             mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
-          }catch(err){}        
+          }catch(err){}
         //}
-        
+
         return true;
       }
-      
+
       if(fieldNames.toString() ==='pub,ptype,pindex')
       {
           //console.log("====================change ptype========================");
@@ -2209,7 +2209,7 @@ if(Meteor.isServer){
       if(doc.username === null) {
           return false;
       }
-      if( Viewers.findOne({postId:doc.postId,userId:doc.userId})){
+      if( Viewers.findOne({postId:doc.postId, userId:doc.userId})){
           return false;
       }
       return doc.username !== null;
@@ -2294,11 +2294,11 @@ if(Meteor.isServer){
           }
         }
       }
-      
+
       // 处理会话
       if(userId === doc.userId){
         var toUser = {};
-        
+
         // 群消息或群通知
         if(doc.sesType === 'groupChat' || doc.sesType === 'chatNotify'){
           var group = MsgGroup.findOne(doc.toGroupId);
@@ -2308,14 +2308,14 @@ if(Meteor.isServer){
             groupIcon: '/usersChat.jpg'
           };
         }else{
-          var user = Meteor.users.findOne(doc.toUserId); 
+          var user = Meteor.users.findOne(doc.toUserId);
           toUser = {
             userId: user._id,
             userName: user.profile.fullname || user.username,
             userIcon: user.profile.icon || '/userPicture.png'
           };
         }
-        
+
         //sep1:我的会话
         // 群消息或群通知
         if(doc.sesType === 'groupChat' || doc.sesType === 'chatNotify'){
@@ -2338,7 +2338,7 @@ if(Meteor.isServer){
                 updateTime: new Date()
               }
             }
-          );       
+          );
         }else{
           MsgSession.upsert(
             {userId: userId, toUserId: toUser.userId},
@@ -2361,7 +2361,7 @@ if(Meteor.isServer){
             }
           );
         }
-        
+
         //sep2:ta的会话
         // 群消息或群通知
         if(doc.sesType === 'groupChat' || doc.sesType === 'chatNotify'){
@@ -2433,7 +2433,7 @@ if(Meteor.isServer){
           return true;
         }
       }
-      
+
       return false;
     },
     remove: function (userId, doc) {
@@ -2442,13 +2442,13 @@ if(Meteor.isServer){
         MsgSession.remove({toGroupId: doc._id});
         return true;
       }
-      
+
       return false;
     }
   });
   MsgSession.allow({
     remove: function (userId, doc) {
-      return userId === doc.userId; 
+      return userId === doc.userId;
     }
   });
 
@@ -2480,7 +2480,7 @@ if(Meteor.isServer){
       //return Meteor.users.find({}, options).fetch();
     }
   });
-  
+
   SearchSource.defineSource('posts', function(searchText, options) {
     var options = {sort: {createdAt: -1}, limit: 20};
 
@@ -2762,5 +2762,5 @@ if(Meteor.isClient){
             }
         });
     }
-  });    
+  });
 }

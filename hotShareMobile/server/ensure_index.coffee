@@ -7,7 +7,7 @@ if Meteor.isServer
     # {postId: 1, userId: 1, createdAt: -1} will create 3 indexs,
     # {postId: 1},{postId: 1,userId: 1},{postId: 1, userId: 1, createdAt: -1}
     #Viewers._ensureIndex({postId: 1})
-    #Viewers._ensureIndex({postId: 1,userId: 1})
+    Viewers._ensureIndex({postId: 1,userId: 1})
     Viewers._ensureIndex({postId: 1, userId: 1, createdAt: -1})
     Viewers._ensureIndex({postId: 1, createdAt: -1})
     Follower._ensureIndex({userId: 1, followerId: 1, createAt:-1})
