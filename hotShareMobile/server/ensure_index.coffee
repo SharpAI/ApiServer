@@ -13,6 +13,7 @@ if Meteor.isServer
     Follower._ensureIndex({userId: 1, followerId: 1, createAt:-1})
     Follower._ensureIndex({followerId: 1, createAt:-1})
     Follower._ensureIndex({userId: 1, createAt:-1})
+    Follower._ensureIndex({userId: 1})
     Follows._ensureIndex({index: 1})
     TopicPosts._ensureIndex({postId: 1})
     ReComment._ensureIndex({postId: 1, commentUserId: 1})
@@ -48,3 +49,4 @@ if Meteor.isServer
     # Topics.find({})
     # Topics._ensureIndex({text: 1, createdAt: -1})
     #RefComments._ensureIndex({text: 1})
+    PushSendLogs._ensureIndex({createAt:-1})
