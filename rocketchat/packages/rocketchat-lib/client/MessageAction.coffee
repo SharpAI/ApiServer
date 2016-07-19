@@ -75,9 +75,9 @@ Meteor.startup ->
 			chatMessages[Session.get('openedRoom')].edit(message)
 			$("\##{message.id} .message-dropdown").hide()
 			input = instance.find('.input-message')
-			Meteor.setTimeout ->
-				input.focus()
-			, 200
+			# Meteor.setTimeout ->
+			# 	input.focus()
+			# , 200
 		validation: (message) ->
 			hasPermission = RocketChat.authz.hasAtLeastOnePermission('edit-message', message.rid)
 			isEditAllowed = RocketChat.settings.get 'Message_AllowEditing'

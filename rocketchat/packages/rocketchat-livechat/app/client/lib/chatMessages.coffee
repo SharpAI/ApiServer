@@ -51,9 +51,9 @@ class @ChatMessages
 		this.editing.id = id
 		element.classList.add("editing")
 		this.input.classList.add("editing")
-		setTimeout =>
-			this.input.focus()
-		, 5
+		# setTimeout =>
+		# 	this.input.focus()
+		# , 5
 
 	clearEditing: ->
 		if this.editing.element
