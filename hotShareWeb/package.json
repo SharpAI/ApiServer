@@ -2,6 +2,6 @@
   "scripts": {
     "chimp-watch": "chimp --ddp=http://localhost:3000 --watch --mocha --path=tests/mocha/post-test",
     "chimp-test": "chimp --mocha --path=tests/mocha",
-    "chimp-post-watch": "chimp --ddp=http://localhost:7788 --mocha --path=tests/mocha/post-watch"
+    "chimp-post-watch": "chimp --ddp=http://localhost:7788 --mocha --browser=firefox --path=tests/mocha/post-watch"
   }
 }
