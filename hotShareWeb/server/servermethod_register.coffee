@@ -183,6 +183,27 @@ if Meteor.isServer
           )
         true
         
+      'pushPostToHotPostGroups': (feed, groups)->
+        if this.userId is null or feed is undefined or feed is null or groups is undefined or groups is null or groups.length is 0
+          return false
+        self = this
+        this.unblock()
+        Meteor.defer ()->          
+          feeds = []
+          readers = []
+          Viewers.find({postId: {$in: groups}}).forEach((item)->
+            if !~readers.indexOf(item.userId) and item.userId isnt self.userId
+              readers.push(item.userId)
+              feedItem = _.extend(feed, {followby: item.userId})
+              #feeds.push(feedItem)
+              Feeds.insert(feedItem)
+
+              Meteor.users.update({_id: item.userId}, {$inc: {'profile.waitReadCount': 1}})
+              pushnotification("newpost", {_id: feedItem.postId, ownerName: feedItem.ownerName, title: feedItem.postTitle}, item.userId)
+          )
+          Posts.update({_id: {$in: groups}}, {$set: {hasPush: true}}, {multi: true})
+        true
+        
       'addAssociatedUserNew': (userInfo)->
         this.unblock()
         # check params

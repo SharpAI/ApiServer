@@ -129,6 +129,11 @@ if Meteor.isClient
             trackEvent("Share","Post to Wechat Timeline")
             FeedAfterShare(Session.get('postContent'),{wechat:{type:'timeline'}})
             addToFavouriteAfterShare(Session.get('postContent'))
+            
+            hotPosts = _.filter Session.get('hottestPosts') || [], (value)->
+              return !value.hasPush
+            if hotPosts.length > 0
+              $('.shareTheReadingRoom,.shareAlertBackground').show()
             # if Session.get('inWechatBrowser') is true
             #   Session.set('shareToWechatType','WXSession')
             #   $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
@@ -145,6 +150,11 @@ if Meteor.isClient
             trackEvent("Share","Post to Wechat Chat")
             FeedAfterShare(Session.get('postContent'),{wechat:{type:'chat'}})
             addToFavouriteAfterShare(Session.get('postContent'))
+            
+            hotPosts = _.filter Session.get('hottestPosts') || [], (value)->
+              return !value.hasPush
+            if hotPosts.length > 0
+              $('.shareTheReadingRoom,.shareAlertBackground').show()
             # if Session.get('inWechatBrowser') is true
             #   Session.set('shareToWechatType','WXTimeLine')
             #   $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)

@@ -27,6 +27,7 @@ if Meteor.isServer
     Meets._ensureIndex({me: 1, meetOnPostId: 1, createdAt: -1})
     Posts._ensureIndex({owner: 1, createdAt: -1})
     Posts._ensureIndex({createdAt: -1})
+    Posts._ensureIndex({hasPush: 1})
     FollowPosts._ensureIndex({followby: 1, createdAt: -1})
     FollowPosts._ensureIndex({postId: 1})
     FollowPosts._ensureIndex({owner: 1})
@@ -54,3 +55,4 @@ if Meteor.isServer
     # Topics._ensureIndex({text: 1, createdAt: -1})
     #RefComments._ensureIndex({text: 1})
     PushSendLogs._ensureIndex({createAt:-1})
+    UserRelation._ensureIndex({userId:1, toUserId: 1})

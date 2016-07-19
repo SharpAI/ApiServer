@@ -78,7 +78,12 @@ if Meteor.isClient
     Session.set("postPageScrollTop", 0)
     Session.set("showSuggestPosts",false)
     $('.tool-container').remove()
+    
+  Session.setDefault('hottestPosts', [])
   Template.showPosts.onRendered ->
+    Meteor.call 'getHottestPosts', (err,res)->
+      unless err
+        Session.set('hottestPosts', res)
     #console.log 'showPost'
     #$('html').attr('xmlns','http://www.w3.org/1999/xhtml')
     #$('html').attr('xmlns:fb','http://ogp.me/ns/fb#')
@@ -468,6 +473,13 @@ if Meteor.isClient
         console.log('Selected index '+self.index)
         Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
   Template.showPosts.events
+    'click .shareTheReadingRoom .btnYes': ()->
+      $('.shareTheReadingRoom,.shareAlertBackground').hide()
+      Router.go '/hotPosts/' + Session.get('postContent')._id
+    'click .shareTheReadingRoom .btnNo': ()->
+      $('.shareTheReadingRoom,.shareAlertBackground').hide()
+    'click .shareAlertBackground': ()->
+      $('.shareTheReadingRoom,.shareAlertBackground').hide()
     'click .pub-me-post': ()->
       # trackEvent('Download','from Post Header')
       # window.open('http://cdn.tiegushi.com', '_system')
