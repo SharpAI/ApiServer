@@ -561,7 +561,7 @@ if(Meteor.isServer){
         Meteor.defer(function(){
             try{
                 var follows=Follower.find({followerId:userId});
-                if(follows.count()>0){
+                if(follows.count()>0){                  
                     follows.forEach(function(data){
                         if(data.userId === suggestPostsUserId)
                         {
@@ -620,7 +620,8 @@ if(Meteor.isServer){
                             followby: data.userId
                         });
                         pushnotification("newpost",doc,data.userId);
-                        waitReadCount = Meteor.users.findOne({_id:data.userId}).profile.waitReadCount;
+                        dataUser = Meteor.users.findOne({_id:data.userId})
+                        waitReadCount = dataUser && dataUser.profile && dataUser.waitReadCount ? dataUser.profile.waitReadCount : 0;
                         if(waitReadCount === undefined || isNaN(waitReadCount))
                         {
                             waitReadCount = 0;
@@ -629,7 +630,7 @@ if(Meteor.isServer){
                     });
                 }
                 if(userId === suggestPostsUserId)
-                {
+                {                   
                     FollowPosts.insert({
                         _id:doc._id,
                         postId:doc._id,
