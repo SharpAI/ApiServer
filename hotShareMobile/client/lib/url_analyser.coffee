@@ -253,6 +253,13 @@ if Meteor.isClient
       videoUrlAttr: 'data-video',
       videoImgSelector: '#fVideoImg',
       videoImgAttr: 'src'
+    },
+    {
+      videoClass: '.jwvideo',
+      videoUrlSelector: '#container_media',
+      videoUrlAttr: 'src',
+      videoImgSelector: '.live-bg',
+      videoImgAttr: 'src'
     }
   ]
   getPossibleVideo = (elem,data)->
@@ -565,9 +572,6 @@ if Meteor.isClient
 
       #musicInfo = getMusicFromPage documentBody
       extracted = extract(documentBody)
-      console.log('extracted:')
-      console.log(extracted)
-      
       toBeInsertedText = ''
       toBeInsertedStyleAlign=''
       previousIsImage = false
@@ -583,7 +587,6 @@ if Meteor.isClient
         toBeProcessed = extracted
       else
         toBeProcessed = extracted.innerHTML
-      console.log($(toBeProcessed))
       previousIsSpan = false
       $(toBeProcessed).children().each (index,node)->
         info = {}
@@ -854,9 +857,12 @@ if Meteor.isClient
 
       if extracted.id is 'hotshare_special_tag_will_not_hit_other'
         toBeProcessed = extracted
+      else if data.host is "www.meerlive.com"
+        divv = document.createElement('div')
+        divv.appendChild(document.createElement('div'))
+        toBeProcessed = divv
       else
         toBeProcessed = extracted.innerHTML
-      console.log($(toBeProcessed))
       previousIsSpan = false
       $(toBeProcessed).children().each (index,node)->
         info = {}
