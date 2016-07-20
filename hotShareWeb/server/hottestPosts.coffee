@@ -24,13 +24,17 @@ Meteor.startup ()->
           postInfo.views = postViews
           postInfo.hasPush = false
           hottestPosts.push(postInfo)
-          
+
+  @getHottestPosts=()->
+    if(hottestPosts.length > 0)
       # 查找此故事是否推荐过，后面直接在neo4j里计算会更好
+      # console.log('================');
       Posts.find({_id: {$in: _.pluck(hottestPosts, 'postId')}}, {fields: {hasPush: 1}}).forEach (item)->
-        index = hottestPosts.indexOf(item.postId) 
+        index = _.pluck(hottestPosts, 'postId').indexOf(item._id) 
         if index != -1
           hottestPosts[index].hasPush = item.hasPush
-  @getHottestPosts=()->
+      # console.log(JSON.stringify(hottestPosts));
+  
     if hottestPosts and hottestPosts.length > 0
       return hottestPosts
     else
