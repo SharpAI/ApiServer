@@ -1,92 +1,105 @@
-// @fubo,帖子是否正常访问监控
-
-
+// @fubo,帖子是否正常访问监控, web端
 describe('测试贴子是否能够访问 @watch', function () {
     var i = 0;
-    var watchServer = '';
-    var server1 = 'http://cdn.tiegushi.com';
-    var server2 = "http://cdcdn.tiegushi.com";
-    var sendMailTo = ["sraita@139.com","guifubo@msn.cn","xfang@actiontec.com"];
-    // this.timeout(60000);
-    before(function () {
+    var watchPost = '7iFh5KQJFcq9FH4PE';
+    var Realserver = 'http://cdn.tiegushi.com';
+    var testServer = "http://cdcdn.tiegushi.com";
+    var sendMailTo = ["sraita@139.com", "guifubo@msn.cn", "xfang@actiontec.com"];
+     before(function () {
         browser.windowHandleSize({ width: 800, height: 600 });
-        browser.url('http://cdcdn.tiegushi.com/posts/7iFh5KQJFcq9FH4PE');
-        browser.pause(6000);
+        browser.url('http://www.baidu.com');
+        browser.pause(1000);
     });
     beforeEach(function (done) {
-        browser.url('http://cdcdn.tiegushi.com/posts/7iFh5KQJFcq9FH4PE');
+        browser.url('http://www.baidu.com');
         browser.pause(6000);
         console.log('开始检测');
-        // this.timeout(60000); // A very long environment setup.
-        setTimeout(done, 30000);
+        setTimeout(done, 2000);
     });
-    afterEach(function () {
+    afterEach(function (done) {
       // 设置检测间隔时长
-        browser.pause(600000);
-        setTimeout(done, 20000);
+        browser.pause(3000);
+        setTimeout(done, 2000);
     });
     
-    setInterval(function () {
-        console.log(i%2);
-        if(i%2){
-            watchServer = server1;
-        } else {
-            watchServer = server2;
+
+    it('检测帖子正式版帖子是否正常打开', function (done) {
+        var url = Realserver + '/posts/' + watchPost;
+        browser.url(url);
+        var startTime = new Date();
+        var waitTime = 0;
+        var log = {
+            url: url,
+            startTime: startTime,
+            serverStatus: browser.status().state
         }
-        describe('帖子是否正常打开 @watch', function () {
-            it('帖子是否正常打开', function (done) {
-                browser.url(watchServer+'/posts/7iFh5KQJFcq9FH4PE');
-                var startTime = new Date();
-                browser.pause(2000);             
-                
-                try {
-                    console.log(startTime);
-                
-                    expect(browser.isExisting('.element')).to.be.ok;
-                    expect(browser.isVisible('.element')).to.be.ok;
-                    done();
-                } catch (e) {
-                    
-                    var endTime = new Date();
-                    var text = '故事贴帖子打开异常：\n帖子'+watchServer;
-                    if(browser.isVisible('.unpublishWebPage')){
-                        text += '出现帖子被删除，';
-                    } else {
-                        text += '操作等待时长' + (endTime.getTime()-startTime.getTime())+ 'ms,  ';
-                    }
-                    
-                    text += '时间为：'+ startTime;
-                    console.log(text);
-                    server.apply('sendErrorReport', [sendMailTo, 'sraita@139.com', '故事贴帖子打开异常', text]);
-                    
-                    done(e);
-                }
-                i++;
-            });
-        })
-    }, 5000);
-
-
-    it('第一次检测帖子是否正常打开', function (done) {
-        browser.url('http://cdcdn.tiegushi.com/posts/7iFh5KQJFcq9FH4PE');
-        browser.pause(20000);
+        browser.pause(2000);
         try {
-            console.log('帖子能够打开');
             expect(browser.isExisting('.element')).to.be.ok;
             expect(browser.isVisible('.element')).to.be.ok;
+            var endTime = new Date();
+            waitTime = endTime.getTime() - startTime.getTime();
+            log.waitTime = waitTime;
+            // server.apply('insertTestLog',log);
             done();
         } catch (e) {
-            var text = '故事贴帖子打开异常';
-            text += e;
+
+            var endTime = new Date();
+            waitTime = endTime.getTime() - startTime.getTime();
+            log.waitTime = waitTime;
+            var text = '故事贴正式服务器帖子打开异常：\n帖子' + url;
+            if (browser.isVisible('.unpublishWebPage')) {
+                text += '出现帖子被删除提示';
+            } else {
+                text += '操作等待时长' + waitTime + 'ms,  ';
+            }
+
+            text += '时间为：' + startTime+ '， 服务器状态：'+log.serverStatus;
+            console.log(log);
             server.apply('sendErrorReport', [sendMailTo, 'sraita@139.com', '故事贴帖子打开异常', text]);
-            console.log(text);
+
             done(e);
         }
-        browser.pause(6000);
-        setTimeout(done, 3000);
     });
 
 
+    it('检测帖子测试版帖子是否正常打开', function (done) {
+        var url = testServer + '/posts/' + watchPost;
+        browser.url(url);
+        var startTime = new Date();
+        var waitTime = 0;
+        browser.pause(2000);
+        var log = {
+            url: url,
+            startTime: startTime,
+            serverStatus: browser.status().state
+        }
+        try {
+            expect(browser.isExisting('.element')).to.be.ok;
+            expect(browser.isVisible('.element')).to.be.ok;
+            var endTime = new Date();
+            waitTime = endTime.getTime() - startTime.getTime();
+            log.waitTime = waitTime;
+            // server.apply('insertTestLog',log);
+            done();
+        } catch (e) {
+            var endTime = new Date();
+            waitTime = endTime.getTime() - startTime.getTime();
+            log.waitTime = waitTime;
+            var text = '故事贴正式服务器帖子打开异常：\n帖子' + url;
+            if (browser.isVisible('.unpublishWebPage')) {
+                text += '出现帖子被删除提示';
+            } else {
+                text += '操作等待时长' + waitTime + 'ms,  ';
+            }
+
+            text += '时间为：' + startTime+'， 服务器状态：'+log.serverStatus;
+            console.log(log);
+            server.apply('sendErrorReport', [sendMailTo, 'fgui@actiontec.com', '故事贴帖子打开异常', text]);
+
+            done(e);
+        }
+    });
 });
 
 

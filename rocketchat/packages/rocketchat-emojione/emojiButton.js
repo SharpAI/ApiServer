@@ -15,7 +15,7 @@ Template.messageBox.events({
 
 				input.val(textAreaTxt.substring(0, caretPos) + emojiValue + textAreaTxt.substring(caretPos) );
 
-				input.focus();
+				// input.focus();
 
 				input.prop('selectionStart', caretPos + emojiValue.length);
 				input.prop('selectionEnd', caretPos + emojiValue.length);

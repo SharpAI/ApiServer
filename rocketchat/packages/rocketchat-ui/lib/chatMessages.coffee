@@ -66,9 +66,9 @@ class @ChatMessages
 		element.classList.add("editing")
 		this.input.classList.add("editing")
 		$(this.input).closest('.message-form').addClass('editing');
-		setTimeout =>
-			this.input.focus()
-		, 5
+		# setTimeout =>
+		# 	this.input.focus()
+		# , 5
 
 	clearEditing: ->
 		if this.editing.element

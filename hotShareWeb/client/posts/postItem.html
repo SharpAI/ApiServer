@@ -1,5 +1,12 @@
 <template name="postItem">
     {{#if isImage}}
+    <script>
+         (function(){
+             var helpDiv = document.createElement("div");
+             helpDiv.className = 'blazeHelper';
+             document.body.appendChild(helpDiv);
+         })();
+     </script>
         {{#if inIframe}}
             <div class='postIframeItem element' id="{{_id}}">
                 {{{iframe}}}

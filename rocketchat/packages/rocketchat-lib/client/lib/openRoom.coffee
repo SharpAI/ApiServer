@@ -59,10 +59,10 @@ currentTracker = undefined
 			, 2000
 			# KonchatNotification.removeRoomNotification(params._id)
 
-			if Meteor.Device.isDesktop()
-				setTimeout ->
-					$('.message-form .input-message').focus()
-				, 100
+			# if Meteor.Device.isDesktop()
+			# 	setTimeout ->
+			# 		$('.message-form .input-message').focus()
+			# 	, 100
 
 			# update user's room subscription
 			sub = ChatSubscription.findOne({rid: room._id})

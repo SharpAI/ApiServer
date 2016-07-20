@@ -64,6 +64,7 @@ specialClassNameForPopularMobileSite = [
   '#BODYCON'        #tripadvisor
   '.yaow > p'  #news.ifeng.com
   #'.pulse-article'    #Linkedin
+  '.page-wrap'  # businessinsider.com
 ]
 
 specialClassNameExcludeMobileSites = [

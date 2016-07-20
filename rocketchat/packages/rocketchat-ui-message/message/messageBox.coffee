@@ -84,7 +84,7 @@ Template.messageBox.events
 	'click .send-button': (event, instance) ->
 		input = instance.find('.input-message')
 		chatMessages[@_id].send(@_id, input)
-		input.focus()
+		# input.focus()
 		input.updateAutogrow()
 		instance.isMessageFieldEmpty.set(chatMessages[@_id].isEmpty())
 

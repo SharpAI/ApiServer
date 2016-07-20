@@ -3,7 +3,7 @@ getCursorPosition = (input) ->
 	if input.selectionStart?
 		return input.selectionStart
 	else if document.selection?
-		input.focus()
+		# input.focus()
 		sel = document.selection.createRange()
 		selLen = document.selection.createRange().text.length
 		sel.moveStart('character', - input.value.length)
@@ -12,7 +12,7 @@ getCursorPosition = (input) ->
 setCursorPosition = (input, caretPos) ->
 	if not input? then return
 	if input.selectionStart?
-		input.focus()
+		# input.focus()
 		return input.setSelectionRange(caretPos, caretPos)
 	else if document.selection?
 		range = input.createTextRange()

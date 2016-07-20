@@ -105,7 +105,9 @@ if Meteor.isClient
   Template.postItem.helpers
     isOverLapping: (id)->
       rect1 = document.getElementById(id).getBoundingClientRect()
-      rect2 = document.getElementById(($("#"+id).next().next().attr('id'))).getBoundingClientRect()
+      console.log("the next node id is >>> "+$("#"+id).nextAll('.element')[0].id)
+      console.log("the node is>>> "+document.getElementById($("#"+id).nextAll('.element')[0].id))
+      rect2 = document.getElementById($("#"+id).nextAll('.element')[0].id).getBoundingClientRect()
       overlapping = !(rect1.right < rect2.left or rect1.left > rect2.right or rect1.bottom < rect2.top or rect1.top > rect2.bottom)
       console.log(rect1.height)
       if overlapping
@@ -115,7 +117,7 @@ if Meteor.isClient
       return overlapping
     addTopOffsetStyle: (id)->
       rect1 = document.getElementById(id).getBoundingClientRect()
-      rect2 = document.getElementById(($("#"+id).next().next().attr('id'))).getBoundingClientRect()
+      rect2 = document.getElementById($("#"+id).nextAll('.element')[0].id).getBoundingClientRect()
       offsetTopLen = Number(rect1.height - (rect2.top - rect1.top)) + 15
       console.log('顶部偏移量为: '+offsetTopLen)
       # 更新容器高度

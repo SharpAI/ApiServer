@@ -253,9 +253,24 @@ if Meteor.isClient
       videoUrlAttr: 'data-video',
       videoImgSelector: '#fVideoImg',
       videoImgAttr: 'src'
+    },
+    {
+      videoClass: '.jwvideo',
+      videoUrlSelector: '#container_media',
+      videoUrlAttr: 'src',
+      videoImgSelector: '.live-bg',
+      videoImgAttr: 'src'
     }
   ]
-  getPossibleVideo = (elem)->
+  getPossibleVideo = (elem,data)->
+    if data.host is "www.meerlive.com"
+      playUrlArr = data.body.match(/file":\["(\S*)\"],"user"/)
+      playUrl = playUrlArr[1].replace(/\\/g,"")
+      if playUrl
+        imageUrlArr = data.body.match(/image":"(\S*)\","cover"/)
+        imageUrl = imageUrlArr[1].replace(/\\/g,"")
+      if playUrl and imageUrl
+        return {playUrl: playUrl, imageUrl: imageUrl}
     for s in videoExtactorMapping
       if '#'+elem.id is s.videoUrlSelector
         node = if elem.parentNode then elem.parentNode else elem
@@ -557,9 +572,6 @@ if Meteor.isClient
 
       #musicInfo = getMusicFromPage documentBody
       extracted = extract(documentBody)
-      console.log('extracted:')
-      console.log(extracted)
-      
       toBeInsertedText = ''
       toBeInsertedStyleAlign=''
       previousIsImage = false
@@ -575,7 +587,6 @@ if Meteor.isClient
         toBeProcessed = extracted
       else
         toBeProcessed = extracted.innerHTML
-      console.log($(toBeProcessed))
       previousIsSpan = false
       $(toBeProcessed).children().each (index,node)->
         info = {}
@@ -742,6 +753,7 @@ if Meteor.isClient
       showDebug&&console.log('Resorted Article is ' + JSON.stringify(data.resortedArticle))
       callback data
   _html2data2 = (url, data, callback)->
+    htmldata = data
     Meteor.defer ()->
       onBeforeExtract(url, data)
     
@@ -845,9 +857,12 @@ if Meteor.isClient
 
       if extracted.id is 'hotshare_special_tag_will_not_hit_other'
         toBeProcessed = extracted
+      else if data.host is "www.meerlive.com"
+        divv = document.createElement('div')
+        divv.appendChild(document.createElement('div'))
+        toBeProcessed = divv
       else
         toBeProcessed = extracted.innerHTML
-      console.log($(toBeProcessed))
       previousIsSpan = false
       $(toBeProcessed).children().each (index,node)->
         info = {}
@@ -885,7 +900,7 @@ if Meteor.isClient
           previousIsSpan = false
           return true
         else
-          videoInfo = getPossibleVideo(node)
+          videoInfo = getPossibleVideo(node,htmldata)
           if videoInfo
             sortedVideos++
             resortedArticle.push({type:'video', videoInfo:videoInfo})
@@ -1056,6 +1071,9 @@ if Meteor.isClient
     inappBrowser.executeScript {
         code: '
           var returnJson = {};
+          if(media_info){
+            returnJson["mediaInfo"] = media_info;
+          }
           if(document.title){
             returnJson["title"] = document.title;
           }

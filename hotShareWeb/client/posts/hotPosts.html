@@ -1,0 +1,11 @@
+<template name="hotPosts">
+  <div class="hot-posts">
+    <h1>把故事推荐给这些读者们</h1>
+    <ul>
+      {{#each posts}}
+      <li><input type="checkbox" value="{{postId}}" id="{{postId}}" /><label for="{{postId}}">{{name}}（{{views}}位读者）</label></li>
+      {{/each}}
+    </ul>
+    <div class="submit">推荐故事</div>
+  </div>
+</template>

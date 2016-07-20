@@ -272,8 +272,8 @@ Template.main.onRendered ->
 
 	$('#initial-page-loading').remove()
 
-	window.addEventListener 'focus', ->
-		Meteor.setTimeout ->
-			if not $(':focus').is('INPUT,TEXTAREA')
-				$('.input-message').focus()
-		, 100
+	# window.addEventListener 'focus', ->
+	# 	Meteor.setTimeout ->
+	# 		if not $(':focus').is('INPUT,TEXTAREA')
+	# 			$('.input-message').focus()
+	# 	, 100

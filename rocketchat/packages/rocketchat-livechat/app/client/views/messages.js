@@ -25,14 +25,14 @@ Template.messages.events({
 		console.log('11111111');
 		let input = instance.find('.input-message');
 		let sent = instance.chatMessages.send(visitor.getRoom(), input);
-		input.focus();
+		// input.focus();
 		instance.updateMessageInputHeight(input);
 
 		return sent;
 	},
 	'click .new-message': function(event, instance) {
 		instance.atBottom = true;
-		return instance.find('.input-message').focus();
+		// return instance.find('.input-message').focus();
 	},
 	'click .error': function(event) {
 		return $(event.currentTarget).removeClass('show');
