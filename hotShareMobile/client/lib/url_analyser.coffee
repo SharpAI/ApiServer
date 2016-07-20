@@ -258,26 +258,16 @@ if Meteor.isClient
   getPossibleVideo = (elem,data)->
     if data.host is "www.meerlive.com"
       playUrlArr = data.body.match(/file":\["(\S*)\"],"user"/)
-      console.log 'meeerrrrrrrr'
-      console.log playUrlArr[1]
       playUrl = playUrlArr[1].replace(/\\/g,"")
       if playUrl
         imageUrlArr = data.body.match(/image":"(\S*)\","cover"/)
         imageUrl = imageUrlArr[1].replace(/\\/g,"")
-      console.log imageUrl
       if playUrl and imageUrl
         return {playUrl: playUrl, imageUrl: imageUrl}
     for s in videoExtactorMapping
-      console.log videoExtactorMapping
-      console.log 'upthere $$$$$$$$$$$$'
       if '#'+elem.id is s.videoUrlSelector
-        console.log '##EEEE'
-        console.log elem
         node = if elem.parentNode then elem.parentNode else elem
-        console.log node
       if $(node).find(s.videoClass).length > 0
-        console.log 'woooooooooooo'
-        console.log (node).find(s.videoClass).length
         playUrl = $(node).find(s.videoUrlSelector).attr(s.videoUrlAttr)
         if s.videoImgSelector and s.videoImgSelector isnt ''
           imageUrl = $(node).find(s.videoImgSelector).attr(s.videoImgAttr)
@@ -1072,7 +1062,6 @@ if Meteor.isClient
       showDebug&&console.log('Resorted Article is ' + JSON.stringify(data.resortedArticle))
       callback data
   @getContentListsFromUrl = (inappBrowser,url,callback)->
-    console.log('start fdddddddddddddd')
     inappBrowser.executeScript {
         code: '
           var returnJson = {};
@@ -1095,8 +1084,6 @@ if Meteor.isClient
           returnJson;
       '}
     ,(data)->
-      console.log ('imdata #$$$$$$$$$$$')
-      console.log (data)
       _html2data2(url, data, callback)
   @_getContentListsFromUrl_test = (url, callback)->
     headers = {
