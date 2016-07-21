@@ -268,7 +268,7 @@ if Meteor.isClient
         $('.showPosts').get(0).style.overflow = 'hidden'
         $('.showPosts').get(0).style.maxHeight = '1500px'
         $('.showPosts').get(0).style.position = 'relative'
-        $showPosts.after('<div class="readmore"><div class="readMoreContent"><i class="fa fa-plus-circle"></i>' + (TAPi18n.__('readMore')) + '</div></div>')
+        $showPosts.after('<div class="readmore"><div class="readMoreContent"><i class="fa fa-chevron-down"></i>' + (TAPi18n.__('readMore')) + '</div></div>')
     , 600
 
   Template.showPosts.helpers
