@@ -84,9 +84,11 @@
 					{{> videoCall overlay=true}}
 					<div id="user-card-popover"></div>
 					<div id="rocket-chat" class="menu-nav menu-closed">
+                        <!--
 						<div class="dialog-layout">
 							{{> shareRoom}}
 						</div>
+						-->
 						<div class="connection-status">
 							{{> status}}
 						</div>
@@ -121,9 +123,11 @@
         {{> spotlight}}
         <div id="user-card-popover"></div>
         <div id="rocket-chat" class="menu-nav menu-closed">
-            <div class="dialog-layout">
-                {{> shareRoom}}
-            </div>
+            <!--
+                <div class="dialog-layout">
+                    {{> shareRoom}}
+                </div>
+            -->
 			{{#if canShowTopTost}}
 			<div class="topTosts-layout">
 				{{> topTosts}}

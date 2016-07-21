@@ -616,14 +616,14 @@ Template.room.onRendered ->
 
 	# salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date)
+	if WebRTC?
+		webrtc = WebRTC.getInstanceByRoomId template.data._id
+		if webrtc?
+			Tracker.autorun ->
+				if webrtc.remoteItems.get()?.length > 0
+					RocketChat.TabBar.setTemplate 'membersList'
+					RocketChat.TabBar.openFlex()
 
-	webrtc = WebRTC.getInstanceByRoomId template.data._id
-	if webrtc?
-		Tracker.autorun ->
-			if webrtc.remoteItems.get()?.length > 0
-				RocketChat.TabBar.setTemplate 'membersList'
-				RocketChat.TabBar.openFlex()
-
-			if webrtc.localUrl.get()?
-				RocketChat.TabBar.setTemplate 'membersList'
-				RocketChat.TabBar.openFlex()
+				if webrtc.localUrl.get()?
+					RocketChat.TabBar.setTemplate 'membersList'
+					RocketChat.TabBar.openFlex()
