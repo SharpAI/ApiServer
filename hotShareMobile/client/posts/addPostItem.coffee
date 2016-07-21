@@ -486,13 +486,26 @@ if Meteor.isClient
               break
         unless found
             zhifa_serverURL = "http://data.tiegushi.com"
-            jscript = document.createElement("script")
-            jscript.innerHTML = "token = '7gFCGdcqXw4mSc252'; trafficDisplay = true;"
-            document.head.appendChild(jscript)
-            jscript = document.createElement("script")
-            jscript.type = "text/javascript"
-            jscript.src = zhifa_serverURL+"/bundle-raidcdn-mini-2.21.4.js"
-            document.head.appendChild(jscript)
+            if videoInfo.playUrl.indexOf('m3u8') >= 0
+              jslink = document.createElement("link")
+              jslink.href = "css/" + zhifa_serverURL + "/video-js.min.css"
+              jslink.rel = "stylesheet"
+              document.head.appendChild(jslink)
+              jscript = document.createElement("script")
+              jscript.innerHTML = "token = 'YL9E33nSTdGLKwkds'; trafficDisplay = true;"
+              document.head.appendChild(jscript)
+              jscript = document.createElement("script")
+              jscript.type = "text/javascript"
+              jscript.src = zhifa_serverURL+"/bundle-hls.js"
+              document.head.appendChild(jscript)
+            else
+              jscript = document.createElement("script")
+              jscript.innerHTML = "token = '7gFCGdcqXw4mSc252'; trafficDisplay = true;"
+              document.head.appendChild(jscript)
+              jscript = document.createElement("script")
+              jscript.type = "text/javascript"
+              jscript.src = zhifa_serverURL+"/bundle-raidcdn-mini-2.21.4.js"
+              document.head.appendChild(jscript)
         true
       else
         false
