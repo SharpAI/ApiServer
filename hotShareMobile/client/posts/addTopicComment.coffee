@@ -8,10 +8,11 @@ if Meteor.isClient
       Session.get("comment")
     topics:()->
        Topics.find({type:"topic"}, {sort: {posts: -1}, limit:20})
-    groups: ()->
-      ReaderPopularPosts.find({userId: Meteor.userId()})
+    # groups: ()->
+    #   ReaderPopularPosts.find({userId: Meteor.userId()})
     isShowPublish: ()->
-      return ReaderPopularPosts.find({userId: Meteor.userId()}).count()
+      # return ReaderPopularPosts.find({userId: Meteor.userId()}).count()
+      return true
 
   Template.addTopicComment.events
     "change .publish-reader-group input[type='checkbox']": (e, t)->
@@ -131,3 +132,42 @@ if Meteor.isClient
        Session.set("mynewpostId",topicPostId)
        Router.go('/posts/'+topicPostId)
        false
+  
+  Template.publishReadersList.rendered=->
+     Meteor.subscribe "topics",(ready)->
+      handler = $('.newLayout_container')
+      options={
+        align: 'center',
+        autoResize: true,
+        comparator: null,
+        container: $('.publish-readers-list'),
+        direction: undefined,
+        ignoreInactiveItems: true,
+        itemWidth: 160,
+        fillEmptySpace: false,
+        flexibleWidth: 160,
+        offset: 8,
+        onLayoutChanged: undefined,
+        outerOffset: 0,
+        possibleFilters: [],
+        resizeDelay: 50,
+        verticalOffset: 8
+      }
+      Session.set('publish-readers-list-loading',true)
+      # handler.wookmark(options) 
+      $('.newLayout_element').imagesLoaded ()->
+        Session.set('publish-readers-list-loading',false)
+        handler.wookmark(options) 
+
+  Template.publishReadersList.helpers
+    groups: ()->
+      # ReaderPopularPosts.find({userId: Meteor.userId()})
+      TopicPosts.find({},{limit: 6})
+    isLoading: ()->
+      return Session.get('publish-readers-list-loading')
+
+  Template.publishReadersList.events
+    'click .newLayout_element': (e)->
+      e.preventDefault()
+      # alert(e.currentTarget.id)
+      $(e.currentTarget).toggleClass('select')
