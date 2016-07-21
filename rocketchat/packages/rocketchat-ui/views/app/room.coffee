@@ -299,6 +299,7 @@ Template.room.events
 		Session.set('showUserInfo', @username)
 
 	'click .user-card-message': (e) ->
+		return false
 		roomData = Session.get('roomData' + this._arguments[1].rid)
 		if roomData.t in ['c', 'p']
 			# Session.set('flexOpened', true)

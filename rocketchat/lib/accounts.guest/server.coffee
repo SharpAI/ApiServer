@@ -15,7 +15,7 @@ if Meteor.isServer
   # ddp = DDP.connect 'http://host1.tiegushi.com'
   db_url= process.env.MONGO_GUSHITIE_URL || 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare'
   connect = MongoInternals.NpmModule.MongoClient.connect
-  connect = Meteor.wrapAsync(connect)
+  connect = Meteor.wrapAsync(connect, {server : { reconnectTries : 3000, reconnectInterval: 2000, autoReconnect : true }})
 
   db = connect(db_url)
   @GushitieUsers = db.collection('users')

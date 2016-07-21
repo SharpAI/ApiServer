@@ -3,7 +3,8 @@ Meteor.startup ()->
   # TAPi18n.setLanguage 'zh'
   Fiber = Npm.require('fibers')
   MongoOplog=Meteor.npmRequire('mongo-oplog')
-  oplog = MongoOplog('mongodb://oplogger:PasswordForOplogger@host1.tiegushi.com:27017/local?authSource=admin', { ns: 'hotShare.pcomments' }).tail();
+  oplog = MongoOplog('mongodb://oplogger:PasswordForOplogger@host1.tiegushi.com:27017/local?authSource=admin', { ns: 'hotShare.pcomments' , server : { reconnectTries : 3000, reconnectInterval: 2000, autoReconnect : true }}).tail();
+  #oplog = MongoOplog('mongodb://oplogger:oplogger@127.0.0.1:27017/local?authSource=admin', { ns: 'hotShare.pcomments' , server : { reconnectTries : 3000, reconnectInterval: 2000, autoReconnect : true }}).tail();
   joinRoom=(room,user) ->
     rid=room._id
 
@@ -165,4 +166,13 @@ Meteor.startup ()->
   )
   oplog.on('end', ()->
     console.log('Stream ended')
+    
+    oplog.stop(()->
+      console.log('oplog stopped')
+      setTimeout(()->
+        oplog.tail(()->
+          console.log('start tailing')
+        )
+      , 2000)
+    )    
   )
