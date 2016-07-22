@@ -815,6 +815,7 @@ if Meteor.isClient
     'blur [name=textareatitle]':->
       Session.set('textareaFocused', false)
       $(".head").css 'position','fixed'
+    ###
     'paste [name=textarea]' : (e)-> 
       #Session.set('textareaPaste', true)
       currentData = e.currentTarget.value  
@@ -844,6 +845,7 @@ if Meteor.isClient
           else
             Drafts.insert {type:'text', currentCount:i+1, totalCount:paragraphArray.length,isImage:false, owner: Meteor.userId(), text:paragraphArray[i], style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
       #Session.set('textareaPaste', false)
+    ###
     'change [name=textarea]' : (e,cxt)->
       console.log("textarea change "+ e.currentTarget.value)
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
