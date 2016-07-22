@@ -129,40 +129,45 @@ if Meteor.isClient
         top = $(this).css('top').slice(0,-2)
         $(this).css({top: Number(top)+Number(offsetTopLen)+'px'})
 
+    hasm3u8: (videoInfo)->
+      unless videoInfo
+        return false
+      playUrl = videoInfo.playUrl
+      if playUrl.length > 5 and playUrl.lastIndexOf('.m3u8') is playUrl.length-5
+        return true
+      return false
     hasVideoInfo: (videoInfo)->
-      if videoInfo
-        scripts = document.head.getElementsByTagName("script")
-        found = 0
-        if scripts.length > 0
-          for i in [0..scripts.length-1]
-            if scripts[i].getAttribute('src') and scripts[i].getAttribute('src').indexOf('bundle-zhifa') >= 0
-              found = 1
-              break
-        unless found
-            zhifa_serverURL = "http://data.tiegushi.com"
-            if videoInfo.playUrl.indexOf('m3u8') >= 0
-              jslink = document.createElement("link")
-              jslink.href = "css/" + zhifa_serverURL + "/video-js.min.css"
-              jslink.rel = "stylesheet"
-              document.head.appendChild(jslink)
-              jscript = document.createElement("script")
-              jscript.innerHTML = "token = 'YL9E33nSTdGLKwkds'; trafficDisplay = true;"
-              document.head.appendChild(jscript)
-              jscript = document.createElement("script")
-              jscript.type = "text/javascript"
-              jscript.src = zhifa_serverURL+"/bundle-hls.js"
-              document.head.appendChild(jscript)
-            else
-              jscript = document.createElement("script")
-              jscript.innerHTML = "token = '7gFCGdcqXw4mSc252'; trafficDisplay = false;"
-              document.head.appendChild(jscript)
-              jscript = document.createElement("script")
-              jscript.type = "text/javascript"
-              jscript.src = zhifa_serverURL+"/bundle-raidcdn-mini-2.21.4.js"
-              document.head.appendChild(jscript)
-        true
+      unless videoInfo
+        return false
+        
+      playUrl = videoInfo.playUrl
+      zhifa_serverURL = "http://data.tiegushi.com"
+      
+      # m3u8
+      if playUrl.length > 5 and playUrl.lastIndexOf('.m3u8') is playUrl.length-5
+        if $('head script[tag=mp4]').length > 0
+          $('head script[tag=mp4]').remove()
+          $('head link[tag=mp4]').remove()
+        if $('head script[tag=m3u8]').length > 0
+          return true
+        
+        $('head').append('<link tag="m3u8" href="http://data.tiegushi.com/video-js.min.css" rel="stylesheet">')
+        $('head').append('<script tag="m3u8">token = "EioJxvLpZHJvcrYdJ"; trafficDisplay = true; </script>')
+        $('head').append('<script tag="m3u8" src="http://data.tiegushi.com/bundle-hls.js"></script>')
+      # other video        
       else
-        false
+        if $('head script[tag=m3u8]').length > 0
+          $('head script[tag=m3u8]').remove()
+          $('head link[tag=m3u8]').remove()
+        if $('head script[tag=mp4]').length > 0
+          return true
+      
+        $('head').append('<link tag="mp4" href="http://data.tiegushi.com/video-js.min.css" rel="stylesheet">')
+        $('head').append('<script tag="mp4">token = "7gFCGdcqXw4mSc252"; trafficDisplay = false; </script>')
+        $('head').append('<script tag="mp4" src="/bundle-raidcdn-mini-2.21.4.js"></script>')
+        
+      return true
+      
     myselfClickedUp:->
       i = this.index
       userId = Meteor.userId()
