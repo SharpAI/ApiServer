@@ -262,8 +262,8 @@ if Meteor.isClient
       videoImgAttr: 'src'
     }
   ]
-  getPossibleVideo = (elem,data, url)->
-    if url.indexOf("www.meerlive.com") isnt -1
+  getPossibleVideo = (elem,data)->
+    if data.host is "www.meerlive.com"
       playUrlArr = data.body.match(/file":\["(\S*)\"],"user"/)
       playUrl = playUrlArr[1].replace(/\\/g,"")
       if playUrl
@@ -857,7 +857,7 @@ if Meteor.isClient
 
       if extracted.id is 'hotshare_special_tag_will_not_hit_other'
         toBeProcessed = extracted
-      else if url.indexOf("www.meerlive.com") isnt -1
+      else if data.host is "www.meerlive.com"
         divv = document.createElement('div')
         divv.appendChild(document.createElement('div'))
         toBeProcessed = divv
@@ -900,7 +900,7 @@ if Meteor.isClient
           previousIsSpan = false
           return true
         else
-          videoInfo = getPossibleVideo(node,htmldata, url)
+          videoInfo = getPossibleVideo(node,htmldata)
           if videoInfo
             sortedVideos++
             resortedArticle.push({type:'video', videoInfo:videoInfo})
