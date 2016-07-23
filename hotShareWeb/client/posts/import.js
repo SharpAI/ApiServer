@@ -29,8 +29,8 @@ Template.importPost.events({
       return alert('请粘贴或输入一个URL地址');
       
     // 调用server进行导入
-    var api_url = 'http://urlanalyser.tiegushi.com:8080/import';
-    //var api_url = 'http://127.0.0.1:8080/import';
+    //var api_url = 'http://urlanalyser.tiegushi.com:8080/import';
+    var api_url = 'http://127.0.0.1:8080/import';
     var id = new Mongo.ObjectID()._str;
     
     hasCancel = false;
@@ -59,7 +59,7 @@ Template.importPost.events({
           return alert('导入失败，请重试~')
         
         // 所功后打开贴子
-        alert('导入成功，后端还会对图片进行自动优化~!!');
+        //alert('导入成功，后端还会对图片进行自动优化~!!');
         location = result.json;
       });
     } catch (error) {

@@ -25,6 +25,11 @@ app.use('/page', express.static('page'));
     res.send('page/guide.html');
 });*/
 
+app.get('/', function (req, res) {
+    res.redirect('http://cdn.tiegushi.com/import');
+    //res.location('http://uhella.tiegushi.com');
+});
+
 app.get('/', function(req, res){
     //res.sendfile('guide.html', {root: __dirname + '/page'});
   var html = '<head><meta http-equiv="content-type" content="text/html;charset=utf-8" />';

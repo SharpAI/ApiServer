@@ -8,6 +8,7 @@ var filedownup = require('./file_downupload.js');
 var drafts = require('./post_drafts.js');
 
 var showDebug = false;
+var redis_prefix = 'import_task';
 
 process.addListener('uncaughtException', function (err) {
   var msg = err.message;
@@ -25,7 +26,7 @@ var kue = require('kue'),
     cluster = require('cluster'),
     clusterWorkerSize = require('os').cpus().length,
     queue = kue.createQueue({
-         prefix: 'import_tasks',
+         prefix: redis_prefix,
          redis: {
              port: 6379,
              host: 'urlanalyser.tiegushi.com',
@@ -123,7 +124,7 @@ var insert_data = function(user, url, data, cb) {
         }
         return null;
       }
-      showDebug && console.log(result.insertedIds[0]);
+      showDebug && console.log("posts.insert: "+result.insertedIds[0]);
       if(cb){
           cb(null,result.insertedIds[0])
       }
@@ -141,7 +142,7 @@ function importUrl(_id, url, callback) {
   var userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_2 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12D508 (5752533504)';   //iPhone 8.2 Safari UA
   //var userAgent = 'Mozilla/5.0 (iPhone; U; CPU iPhone OS 8_2 like Mac OS X; en) AppleWebKit/534.46.0 (KHTML, like Gecko) CriOS/19.0.1084.60 Mobile/9B206 Safari/7534.48.3'; //Chrome UA on iPhone
   //var userAgent = 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Electron/1.2.5 Safari/537.36'; //Chrome on Macbook
-  var nightmare = Nightmare({ show: true , openDevTools: true});
+  var nightmare = Nightmare({ show: false , openDevTools: false});
       nightmare
           .useragent(userAgent)
           .goto(url)
@@ -156,7 +157,7 @@ function importUrl(_id, url, callback) {
               users.findOne({_id: _id}, function (err, user) {
                 if(err || !user)
                   if (callback) {
-                    console.log("err="+err);
+                    console.log("user not found, err="+err);
                     callback({status:'failed'});
                     return;
                   }
@@ -202,6 +203,18 @@ function importUrl(_id, url, callback) {
           })
 }
 
+function getUrl(url) {
+    if (url) {
+        var tmpUrl = url.trim().toUpperCase();
+        if ((tmpUrl.indexOf("HTTP://") == 0) || (tmpUrl.indexOf("HTTPS://") == 0)) {
+            return url.trim();
+        } else {
+            return 'http://'+url.trim();
+        }
+    }
+    return '';
+}
+
 if (cluster.isMaster) {
   console.log("clusterWorkerSize="+clusterWorkerSize);
   for (var i = 0; i < clusterWorkerSize; i++) {
@@ -221,13 +234,13 @@ if (cluster.isMaster) {
 
   router.route('/:_id/:url')
     .get(function(req, res) {
-      showDebug && console.log('_id=' + req.params._id + ' url=' + req.params.url);
+      showDebug && console.log('_id=' + req.params._id + ', url=' + req.params.url);
       //importUrl(req.params._id, req.params.url, res.json);
-      var job = queue.create('import_tasks', {
+      var job = queue.create(redis_prefix, {
         id: req.params._id,
-        url: req.params.url,
+        url: getUrl(req.params.url),
       }).save(function(err){
-        if( !err ) console.log( job.id );
+        if( !err ) console.log("job.id = "+job.id );
       });
 
       job.on('complete', function(result){
@@ -250,7 +263,7 @@ if (cluster.isMaster) {
   console.log('Magic happens on port ' + port);
 } else {
   console.log("cluster Slaver");
-  queue.process('import_tasks', 100, function(job, done){
+  queue.process(redis_prefix, 100, function(job, done){
     console.log('worker', cluster.worker.id, 'queue.process', job.data);
     var data = job.data;
     var _id = data.id;
