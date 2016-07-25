@@ -263,7 +263,7 @@ if Meteor.isClient
     }
   ]
   getPossibleVideo = (elem,data)->
-    if data.host is "www.meerlive.com"
+    if data.host is "www.meerlive.com" and device.platform is 'iOS'
       playUrlArr = data.body.match(/file":\["(\S*)\"],"user"/)
       playUrl = playUrlArr[1].replace(/\\/g,"")
       if playUrl
@@ -271,6 +271,27 @@ if Meteor.isClient
         imageUrl = imageUrlArr[1].replace(/\\/g,"")
       if playUrl and imageUrl
         return {playUrl: playUrl, imageUrl: imageUrl}
+      # try
+      #   alert(data.body)
+      #   reg = new RegExp(/var media_info = {[\s\S]*};/gim)
+      #   if !reg.test(data.body)
+      #     return null
+      #   regResult = data.body.match(reg)
+      #   alert(regResult)
+      #   if !regResult or regResult.length <= 0
+      #     return null
+      #   script = regResult[0].substr('var media_info = '.length)
+      #   script = script.substr(0, script.length-1)
+      #   alert(script)
+      #   media_info = JSON.parse(script)
+      #   if !media_info or !media_info.file or media_info.file.length <= 0
+      #     return null
+      #   return {
+      #     playUrl: media_info.file[0]
+      #     imageUrl: media_info.image
+      #   }
+      # catch
+      #   return null
     for s in videoExtactorMapping
       if '#'+elem.id is s.videoUrlSelector
         node = if elem.parentNode then elem.parentNode else elem
@@ -1087,6 +1108,11 @@ if Meteor.isClient
           returnJson;
       '}
     ,(data)->
+      unless data.host
+        a = document.createElement('a')
+        a.href = url
+        data.host = a.host
+    
       _html2data2(url, data, callback)
   @_getContentListsFromUrl_test = (url, callback)->
     headers = {
