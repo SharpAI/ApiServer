@@ -81,7 +81,7 @@
                         </div>
                         {{#if hasPcomments}}
                         {{#if isOverLapping _id}}
-                          {{addTopOffsetStyle _id}}
+                          <p style="display: none; visibility: hidden; height: 0;" class="overLappingHelper">{{addTopOffsetStyle _id}}</p>
                         {{/if}}
                         <div class="pcomment">
                            {{#each pcomment}}

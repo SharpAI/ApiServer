@@ -336,12 +336,14 @@
             userIcon: userIcon,
             createdAt: new Date()
           };
-          post[i].pcomments.push(pcommentJson);
+          // post[i].pcomments.push(pcommentJson);
           Posts.update({
             _id: postId
           }, {
-            "$set": {
-              "pub": post,
+            $push: {
+              [`pub.${i}.pcomments`]: pcommentJson
+            },
+            $set: {
               "ptype": "pcomments",
               "pindex": i
             }
