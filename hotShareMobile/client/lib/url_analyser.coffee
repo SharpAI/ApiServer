@@ -1071,9 +1071,6 @@ if Meteor.isClient
     inappBrowser.executeScript {
         code: '
           var returnJson = {};
-          if(media_info){
-            returnJson["mediaInfo"] = media_info;
-          }
           if(document.title){
             returnJson["title"] = document.title;
           }
