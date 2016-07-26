@@ -307,7 +307,7 @@ if (cluster.isMaster) {
       }
     });
   }
-  if (process.env.SERVER_IN_CN) {
+  if (!process.env.SERVER_IN_US) {
     console.log("cluster Slaver: CN");
     queue.process(redis_prefix, 100, process_callback);
   } else {
