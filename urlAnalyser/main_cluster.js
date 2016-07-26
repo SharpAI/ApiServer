@@ -6,9 +6,11 @@ var path = require('path');
 var mongoid = require('mongoid-js');
 var filedownup = require('./file_downupload.js');
 var drafts = require('./post_drafts.js');
+var geoip = require('geoip-lite');
 
-var showDebug = false;
+var showDebug = true;
 var redis_prefix = 'import_task';
+var redis_prefix_us = 'import_task_us';
 
 process.addListener('uncaughtException', function (err) {
   var msg = err.message;
@@ -26,7 +28,7 @@ var kue = require('kue'),
     cluster = require('cluster'),
     clusterWorkerSize = require('os').cpus().length,
     queue = kue.createQueue({
-         prefix: redis_prefix,
+         //prefix: redis_prefix,
          redis: {
              port: 6379,
              host: 'urlanalyser.tiegushi.com',
@@ -142,7 +144,7 @@ function importUrl(_id, url, callback) {
   var userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_2 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12D508 (5752533504)';   //iPhone 8.2 Safari UA
   //var userAgent = 'Mozilla/5.0 (iPhone; U; CPU iPhone OS 8_2 like Mac OS X; en) AppleWebKit/534.46.0 (KHTML, like Gecko) CriOS/19.0.1084.60 Mobile/9B206 Safari/7534.48.3'; //Chrome UA on iPhone
   //var userAgent = 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Electron/1.2.5 Safari/537.36'; //Chrome on Macbook
-  var nightmare = Nightmare({ show: false , openDevTools: false});
+  var nightmare = Nightmare({ show: false , openDevTools: false, waitTimeout: 60000});
       nightmare
           .useragent(userAgent)
           .goto(url)
@@ -215,6 +217,18 @@ function getUrl(url) {
     return '';
 }
 
+function checkIPAddr(ip) {
+    if (!ip) {
+        return 'CN';
+    }
+    var geo = geoip.lookup(ip);
+    console.log("geo = "+JSON.stringify(geo));
+    if (geo && geo.country == 'US') {
+        return 'US'
+    }
+    return 'CN';
+}
+
 if (cluster.isMaster) {
   console.log("clusterWorkerSize="+clusterWorkerSize);
   for (var i = 0; i < clusterWorkerSize; i++) {
@@ -222,10 +236,10 @@ if (cluster.isMaster) {
     console.log("cluster master fork: i="+i);
   }
   if (process.env.isClient) {
-    console.log("cluster Slaver");
+    console.log("Master: work only for slaver mode.");
     return;
   } else {
-    console.log("cluster Master");
+    console.log("cluster work both for Master and slaver mode.");
   }
   var router = express.Router();
   router.get('/', function(req, res) {
@@ -235,13 +249,27 @@ if (cluster.isMaster) {
   router.route('/:_id/:url')
     .get(function(req, res) {
       showDebug && console.log('_id=' + req.params._id + ', url=' + req.params.url);
+      showDebug && console.log('req.query=' + JSON.stringify(req.query));
       //importUrl(req.params._id, req.params.url, res.json);
-      var job = queue.create(redis_prefix, {
-        id: req.params._id,
-        url: getUrl(req.params.url),
-      }).save(function(err){
-        if( !err ) console.log("job.id = "+job.id );
-      });
+      var job;
+      var ip = req.query.ip;
+      if (checkIPAddr(ip) == 'CN') {
+        console.log("create task for CN");
+        job = queue.create(redis_prefix, {
+          id: req.params._id,
+          url: getUrl(req.params.url),
+        }).save(function(err){
+          if( !err ) console.log("job.id = "+job.id );
+        });
+      } else {
+        console.log("create task for US");
+        job = queue.create(redis_prefix_us, {
+          id: req.params._id,
+          url: getUrl(req.params.url),
+        }).save(function(err){
+          if( !err ) console.log("job.id = "+job.id );
+        });
+      }
 
       job.on('complete', function(result){
         console.log('Job completed with data', result);
@@ -262,8 +290,7 @@ if (cluster.isMaster) {
   app.listen(port);
   console.log('Magic happens on port ' + port);
 } else {
-  console.log("cluster Slaver");
-  queue.process(redis_prefix, 100, function(job, done){
+  function process_callback(job, done){
     console.log('worker', cluster.worker.id, 'queue.process', job.data);
     var data = job.data;
     var _id = data.id;
@@ -279,5 +306,12 @@ if (cluster.isMaster) {
         done(new Error('failed'));
       }
     });
-  });
+  }
+  if (process.env.SERVER_IN_CN) {
+    console.log("cluster Slaver: CN");
+    queue.process(redis_prefix, 100, process_callback);
+  } else {
+    console.log("cluster Slaver: US");
+    queue.process(redis_prefix_us, 100, process_callback);
+  }
 }

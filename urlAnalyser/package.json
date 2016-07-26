@@ -38,7 +38,8 @@
     "nightmare": "~2.5.2",
     "underscore": "~1.8.3",
     "wgetjs": "0.3.6",
-    "cluster": "~0.7.7"
+    "cluster": "~0.7.7",
+    "geoip-lite": "1.1.8"
   },
   "devDependencies": {
     "browserify": "~13.0.1",
