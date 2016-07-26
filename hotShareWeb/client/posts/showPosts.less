@@ -149,20 +149,25 @@
 .writeBottom p{color:#727272; line-height: 30px;text-align:center;font-size:16px;padding-top:20px;color:#c2c0be;}
 .writeBottom p span{color:#383838;font-size:18px;}
 
-#ViewOnWeb{
-  width: 40%;
-  position: relative;
-  z-index: 98;
-  padding: 5px;
-  color: rgba(8, 101, 255, 0.93);
-  text-align: left;
-  letter-spacing: 1px;
-  font-size: 18px;
-  margin: 10px auto;
-  margin-left: 5%;
-}
+// #ViewOnWeb{
+//   width: 40%;
+//   position: relative;
+//   z-index: 98;
+//   padding: 5px;
+//   color: rgba(8, 101, 255, 0.93);
+//   text-align: left;
+//   letter-spacing: 1px;
+//   font-size: 18px;
+//   margin: 10px auto;
+//   margin-left: 5%;
+// }
 // #ViewOnWeb{background-color: lightgrey;color: black;width: 90%;border-radius: 5px;text-align: center;font-size: 20px;padding: 10px;margin: 20px auto;}
 // #ViewOnWeb .fa-globe{font-size: 20px;}
+.readAndFollowBg {height: 48px; padding: 0 16px; margin-bottom: 6px; z-index: 98;
+    div{width: 50%; height: 48px; line-height: 48px; font-size: 18px; letter-spacing: 0.1em; color: #1773eb;}
+    #ViewOnWeb{float: left; padding-left: 5px;}
+    #SubscribeAuthor{float: right; padding-right: 5px; text-align: right;}
+}
 
 /*Mobile*/
 @media screen
@@ -511,4 +516,12 @@
       padding: 10px;
     }
   }
+}
+
+.subscribeAutorPage{
+  z-index: 9999; position: fixed;top: 0; right: 0; bottom: 0; left: 0;background: white;display: none;
+  .head{color: white;
+    .leftButton,.rightButton{padding: 0 12px; margin: 0;}
+  }
+  .content {background: white; position: fixed; top: 32px; right: 0; bottom: 0; left: 0; z-index: 99; overflow: hidden; padding: 16px;}
 }

@@ -106,9 +106,14 @@
         </div>
       </div>
     </div>
+    <div class="readAndFollowBg">
     {{#if haveUrl}}
     <div id="ViewOnWeb"><i class="fa fa-globe"></i>     阅读原文</div>
     {{/if}}
+    <!--关注作者-功能类似于订阅-START-->
+    <div id="SubscribeAuthor"><i class="fa fa-star-o"></i> 关注作者</div>
+    <!--关注作者-功能类似于订阅-END-->
+    </div>
     {{#if withAfterPostIntroduce}}
       <div class="write">
         <p class="author">Write by <span class="spc">{{ownerName}}</span></p>
@@ -208,6 +213,7 @@
       <div class="btnNo">取消</div>
     </div>
   </div>
+  {{> SubscribeAuthor}}
 </template>
 <template name="postFooter">
   <div id="postFooter" class="showPostsFooter">
@@ -390,4 +396,21 @@
         </div>
     </div>
     {{/if}}
+</template>
+
+<template name="SubscribeAuthor">
+  <div class="subscribeAutorPage">
+    <div class="head">
+      <div class="leftButton">返回</div>
+      <div class="title">关注作者</div>
+      <div class="rightButton">提交</div>
+    </div>
+
+    <div class="content">
+        <div class="form-group label-floating is-empty">
+          <input class="form-control" id="email" type="text" placeholder="输入您的QQ或Email">
+          <p class="help-block"></p>
+        </div>
+    </div>
+  </div>
 </template>

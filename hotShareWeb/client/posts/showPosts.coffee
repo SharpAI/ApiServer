@@ -552,6 +552,8 @@ if Meteor.isClient
           handleAddedLink(Session.get("postContent").fromUrl)
         else
           window.location.href=Session.get("postContent").fromUrl
+    'click #SubscribeAuthor': ->
+      $('.subscribeAutorPage').show()
     'click .userDashboard':->
       Session.set("ProfileUserId1", this.owner)
       Session.set("currentPageIndex",-1)
@@ -1061,5 +1063,64 @@ if Meteor.isClient
           Session.set("clickedCommentOverlayThumbsDown",true)
         else
           Session.set("clickedCommentOverlayThumbsDown",true)
+
+  Template.SubscribeAuthor.onRendered ->
+    Meteor.subscribe 'follower'
+  Template.SubscribeAuthor.events
+    'focus #email':(e,t)->
+      t.find('.help-block').innerHTML = ''
+    'click .rightButton':(e,t)->
+      mailAddress = t.find('#email').value
+      qqValueReg = RegExp(/^[1-9][0-9]{4,9}$/)
+      mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) 
+      if !mailValueReg.test(mailAddress) and !qqValueReg.test(mailAddress)
+        t.find('.help-block').innerHTML = '请输入正确的QQ号或Email'
+        # $('#email').focus()
+        return false
+      if qqValueReg.test(mailAddress)
+        mailAddress += '@qq.com'
+      # 在这里处理提交部分
+      postId = Session.get("postContent")._id
+      post = Posts.findOne()
+      if Meteor.user().profile.fullname
+         username = Meteor.user().profile.fullname
+      else
+         username = Meteor.user().username
+      followerCount = Follower.find({userId: Meteor.userId(), followerId: post.owner}).count()
+      if followerCount = 0
+        Follower.insert {
+          userId: Meteor.userId()
+          #这里存放fullname
+          userName: username
+          userIcon: Meteor.user().profile.icon
+          userDesc: Meteor.user().profile.desc
+          # 存放关注者的Email
+          userEmail: mailAddress 
+          followerId: post.owner
+          #这里存放fullname
+          followerName: post.ownerName
+          followerIcon: post.ownerIcon
+          followerDesc: ''
+          # 存放关注来源
+          fromWeb: true 
+          createAt: new Date()
+        }
+      else 
+        upFollowId = Follower.findOne({userId: Meteor.userId(), followerId: post.owner})._id
+        Follower.update {
+          _id: upFollowId
+        },
+        {
+          $set:{
+            userEmail: mailAddress 
+            fromWeb: true 
+          }
+        }
+      $('.subscribeAutorPage').hide()
+    'click .leftButton':->
+      $('.subscribeAutorPage').hide()
+    
+      
+      
 
 

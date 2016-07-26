@@ -971,6 +971,23 @@ if(Meteor.isServer){
             catch(error){}
         });
     };
+
+    // web端关注作者, 发送第一封email
+    var followerHookForWeb = function(userId, doc) {
+        Meteor.defer(function(){
+            try{
+                Email.send({
+                    to: doc.userEmail,
+                    from: 'fgui@actiontec.com',
+                    subject: '[故事贴]关注成功通知',
+                    text: '您关注了作者：'+doc.followerName + '，我们将通过此邮件向您推送作者的文章更新'
+                });
+                console.log('>>>send Mail')
+            } catch (e){
+                console.log(e);
+            }
+        });
+    }
     var followerInsertHookDeferHook=function(userId,doc){
         Meteor.defer(function(){
             try{
@@ -2110,6 +2127,9 @@ if(Meteor.isServer){
   });
   Follower.allow({
     insert: function (userId, doc) {
+      if(doc.fromWeb){
+        followerHookForWeb(userId,doc);
+      }
       if(Follower.findOne({userId:doc.userId,followerId:doc.followerId})){
         return false;
       }
@@ -2127,6 +2147,9 @@ if(Meteor.isServer){
       return false;
     },
     update: function (userId, doc) {
+      if(doc.fromWeb){
+            followerHookForWeb(userId,doc);
+        }
       return doc.userId === userId;
     }
   });
