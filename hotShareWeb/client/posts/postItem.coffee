@@ -36,7 +36,8 @@ if Meteor.isClient
     updateLayoutData(layoutHelper,myData.data_col,myData.data_sizex,elementBottom)
     parentNode.style.height=getLayoutTop(layoutHelper,1,6)-parentNode.offsetTop+'px'
 
-    $('#'+myData._id).linkify()
+    #$('#'+myData._id).linkify()
+    this.$('.textDiv1Link').linkify();
     element.style.visibility = '';
     #console.log('['+this.data.index+']'+' '+myData.type+' col '+myData.data_col+
     #    ' row '+myData.data_row+' h '+myData.data_sizey+' w '+myData.data_sizex+
