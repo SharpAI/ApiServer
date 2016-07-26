@@ -122,10 +122,12 @@ if Meteor.isClient
        }
 
        groups = []
-       $(".publish-reader-group").find("input:checked").each(()->
+      #  $(".publish-reader-group").find("input:checked").each(()->
+       $(".newLayout_container").find(".select").each(()->
           groups.push $(this).attr("id")
        )
 
+       console.log(groups)
        if groups.length isnt 0
          Meteor.call('pushPostToReaderGroups', feedItem, groups)
 
@@ -161,8 +163,8 @@ if Meteor.isClient
 
   Template.publishReadersList.helpers
     groups: ()->
-      # ReaderPopularPosts.find({userId: Meteor.userId()})
-      TopicPosts.find({},{limit: 6})
+      ReaderPopularPosts.find({userId: Meteor.userId()})
+      # TopicPosts.find({},{limit: 6})
     isLoading: ()->
       return Session.get('publish-readers-list-loading')
 
