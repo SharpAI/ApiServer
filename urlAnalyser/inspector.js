@@ -29,7 +29,7 @@ console.log('inject code');
         }
         console.log(returnJson);
         analyserHTML(window.location.href,returnJson,function(result){
-            window.document.body.insertAdjacentHTML( 'afterbegin', '<div id="detected_json_from_gushitie" style="color:blue;"> With some data...</div>' );
+            window.document.body.insertAdjacentHTML( 'beforeBegin', '<div id="detected_json_from_gushitie" style="color:blue;"> With some data...</div>' );
             window.detected_json_from_gushitie=result;
             /*const {ipcRenderer} = require('electron');
              //console.log(ipcRenderer.sendSync('synchronous-message', 'ping')); // prints "pong"
