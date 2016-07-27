@@ -4,6 +4,7 @@
       <div class="left-btn">取消</div>
       <span>创作故事</span>
     </div>-->
+    <form class="mport-post-form">
     <div class="main">
       {{#if hasImport}}
         {{#if importTypeByNew}}
@@ -29,7 +30,7 @@
         <button type="button" class="btn btn-default btn-block cancel">取消导入</button>
       {{else}}
         <input type="text" id="import-post-url" class="form-control" placeholder="请粘贴或输入一个URL地址">
-        <button type="button" class="btn btn-default btn-block import">马上导入</button>
+        <button type="submit" class="btn btn-default btn-block import">马上导入</button>
         {{#if minIimg}}
         <img class="import-setup" src="/import_setup.png" />
         {{else}}
@@ -37,5 +38,6 @@
         {{/if}}
       {{/if}}
     </div>
+    </form>
   </div>
 </template>
