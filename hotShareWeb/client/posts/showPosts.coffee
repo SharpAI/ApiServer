@@ -322,6 +322,13 @@ if Meteor.isClient
         if pub[i].type is 'text'
           count++
       count
+    displayFollowBtn: ()->
+      postForward = Session.get("postForward")
+      postBack = Session.get("postBack")
+      if postBack.length>0 or postForward.length>0
+        true
+      else
+        false 
     displayForwardBtn:()->
       postForward = Session.get("postForward")
       if postForward is undefined or postForward.length is 0
@@ -1069,7 +1076,7 @@ if Meteor.isClient
   Template.SubscribeAuthor.events
     'focus #email':(e,t)->
       t.find('.help-block').innerHTML = ''
-    'click .rightButton':(e,t)->
+    'click .okBtn':(e,t)->
       mailAddress = t.find('#email').value
       qqValueReg = RegExp(/^[1-9][0-9]{4,9}$/)
       mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) 
@@ -1087,7 +1094,18 @@ if Meteor.isClient
       else
          username = Meteor.user().username
       followerCount = Follower.find({userId: Meteor.userId(), followerId: post.owner}).count()
-      if followerCount = 0
+      if followerCount > 0 
+        upFollowId = Follower.findOne({userId: Meteor.userId(), followerId: post.owner})._id
+        Follower.update {
+          _id: upFollowId
+        },
+        {
+          $set:{
+            userEmail: mailAddress 
+            fromWeb: true 
+          }
+        }
+      else 
         Follower.insert {
           userId: Meteor.userId()
           #这里存放fullname
@@ -1105,19 +1123,9 @@ if Meteor.isClient
           fromWeb: true 
           createAt: new Date()
         }
-      else 
-        upFollowId = Follower.findOne({userId: Meteor.userId(), followerId: post.owner})._id
-        Follower.update {
-          _id: upFollowId
-        },
-        {
-          $set:{
-            userEmail: mailAddress 
-            fromWeb: true 
-          }
-        }
+        
       $('.subscribeAutorPage').hide()
-    'click .leftButton':->
+    'click .cannelBtn, click .bg':->
       $('.subscribeAutorPage').hide()
     
       

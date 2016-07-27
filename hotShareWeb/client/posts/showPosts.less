@@ -149,25 +149,25 @@
 .writeBottom p{color:#727272; line-height: 30px;text-align:center;font-size:16px;padding-top:20px;color:#c2c0be;}
 .writeBottom p span{color:#383838;font-size:18px;}
 
-// #ViewOnWeb{
-//   width: 40%;
-//   position: relative;
-//   z-index: 98;
-//   padding: 5px;
-//   color: rgba(8, 101, 255, 0.93);
-//   text-align: left;
-//   letter-spacing: 1px;
-//   font-size: 18px;
-//   margin: 10px auto;
-//   margin-left: 5%;
-// }
+#ViewOnWeb{
+  width: 40%;
+  position: relative;
+  z-index: 98;
+  padding: 5px;
+  color: rgba(8, 101, 255, 0.93);
+  text-align: left;
+  letter-spacing: 1px;
+  font-size: 18px;
+  margin: 10px auto;
+  margin-left: 5%;
+}
 // #ViewOnWeb{background-color: lightgrey;color: black;width: 90%;border-radius: 5px;text-align: center;font-size: 20px;padding: 10px;margin: 20px auto;}
 // #ViewOnWeb .fa-globe{font-size: 20px;}
-.readAndFollowBg {height: 48px; padding: 0 16px; margin-bottom: 6px; z-index: 98;
-    div{width: 50%; height: 48px; line-height: 48px; font-size: 18px; letter-spacing: 0.1em; color: #1773eb;}
-    #ViewOnWeb{float: left; padding-left: 5px;}
-    #SubscribeAuthor{float: right; padding-right: 5px; text-align: right;}
-}
+// .readAndFollowBg {height: 48px; padding: 0 16px; margin-bottom: 6px; z-index: 98;
+//     div{width: 50%; height: 48px; line-height: 48px; font-size: 18px; letter-spacing: 0.1em; color: #1773eb;}
+//     #ViewOnWeb{float: left; padding-left: 5px;}
+//     #SubscribeAuthor{float: right; padding-right: 5px; text-align: right;}
+// }
 
 /*Mobile*/
 @media screen
@@ -519,9 +519,64 @@
 }
 
 .subscribeAutorPage{
-  z-index: 9999; position: fixed;top: 0; right: 0; bottom: 0; left: 0;background: white;display: none;
-  .head{color: white;
-    .leftButton,.rightButton{padding: 0 12px; margin: 0;}
+  z-index: 9999; position: fixed;top: 0; right: 0; bottom: 0; left: 0;display: none;
+  .bg{z-index: 9;position: fixed;top: 0; right: 0; bottom: 0; left: 0;background: rgba(0,0,0,.36);}
+  .content {
+    background: white; 
+    position: absolute; 
+    top: 40%; 
+    left: 50%; 
+    width: 80%;
+    height: 200px;
+    border-radius: 4px;
+    transform: translate(-50%,-50%);
+    z-index: 99; 
+    .header{
+      line-height: 48px;
+      background: #eee;
+      font-size: 16px;
+      padding-left: 16px;
+      font-weight: 600;
+      border-radius: 4px 4px 0 0;
+    }
+    .body{
+      padding: 16px;
+      textarea{ width: 100%; border: none;line-height: 1.5em;resize:none;outline:none; color: #777; font-size: 14px;}
+      .help-block{ margin: 4px 0; color: #909090;}
+    }
+    .footer{
+      position: absolute;
+      width: 100%;
+      height: 48px;
+      bottom: 0;
+      left: 0;
+      border-top: 1px solid #ccc;
+      .btn{
+        width: 50%;
+        height: 48px;
+        line-height: 48px;
+        text-align: center;
+        color: #00c4ff;
+        float: left;
+        cursor: pointer;
+      }
+      .okBtn{border-bottom-left-radius: 4px; border-left: 1px solid #ccc;}
+      .cannelBtn{border-bottom-right-radius: 4px;}
+    }
   }
-  .content {background: white; position: fixed; top: 32px; right: 0; bottom: 0; left: 0; z-index: 99; overflow: hidden; padding: 16px;}
+}
+
+#SubscribeAuthor{
+    border: 1px solid #00c4ff;
+    border-radius: 4px;
+    display: inline-block;
+    line-height: 22px;
+    font-size: 14px;
+    color: #00c4ff;
+    padding: 2px 8px;
+    position: absolute;
+    left: 16px;
+    top: 5px;
+    z-index: 1000;
+    i{color: #00c4ff !important;}
 }
