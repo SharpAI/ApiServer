@@ -147,10 +147,53 @@ router.get('/', function(req, res) {
 // more routes for our API will happen here
 router.route('/:_id/:url')
     .get(function(req, res) {
+      var chunked = req.query['chunked'] && req.query['chunked'] === 'true' ? true : false;;
+      var nightmare_header = null;
+      var chunked_result = {};
+
+      res.writeHead(200, {
+        'Content-Type' : 'text/html;charset=UTF-8',
+        'Transfer-Encoding' : 'chunked'
+      });
+        
+      if(chunked){
+        chunked_result.status = 'importing';
+        chunked_result.json = {
+          title: req.params.url,
+          mainImg: 'http://data.tiegushi.com/res/defaultMainImage1.jpg',
+          remark: '[内容分析中...]'
+        };
+        res.write(JSON.stringify(chunked_result));
+      }
+      
       showDebug && console.log('_id=' + req.params._id + ' url=' + req.params.url);
       var userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_2 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12D508 (5752533504)';   //iPhone 8.2 Safari UA
       //var userAgent = 'Mozilla/5.0 (iPhone; U; CPU iPhone OS 8_2 like Mac OS X; en) AppleWebKit/534.46.0 (KHTML, like Gecko) CriOS/19.0.1084.60 Mobile/9B206 Safari/7534.48.3'; //Chrome UA on iPhone
       //var userAgent = 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Electron/1.2.5 Safari/537.36'; //Chrome on Macbook
+      
+      // 获取标题和图片信息
+      if(chunked){
+        nightmare_header = Nightmare({ show: true , openDevTools: true});
+        nightmare_header
+            .useragent(userAgent + ' (GetHeader)')
+            .goto(req.params.url)
+            .inject('js','bundle.js')
+            .wait('#detected_json_from_header')
+            .evaluate(function () {
+              return window.detected_json_from_header;
+            })
+            .end()
+            .then(function (result) {
+              if(chunked_result.status != 'failed' && chunked_result.status != 'succ'){
+                chunked_result.status = 'importing';
+                chunked_result.json.title = result.title || '[暂无标题]';
+                chunked_result.json.mainImg = result.mainImg || 'http://data.tiegushi.com/res/defaultMainImage1.jpg';
+                chunked_result.json.remark = result.remark || '[暂无介绍]';
+                res.write(JSON.stringify(chunked_result));
+              }
+            });
+      }
+      
       var nightmare = Nightmare({ show: true , openDevTools: true});
       nightmare
           .useragent(userAgent)
@@ -167,13 +210,16 @@ router.route('/:_id/:url')
               req.state = true
 
               users.findOne({_id: req.params._id}, function (err, user) {
-                if(err || !user)
-                  return res.json({status:'failed'});
+                if(err || !user){
+                  chunked_result.status = 'failed';
+                  return res.end(JSON.stringify({status:'failed'}));
+                }
 
                 insert_data(user, req.params.url, result, function(err,postId){
                   if (err) {
                     console.log('Error: insert_data failed');
-                    res.json({status:'failed'});
+                    chunked_result.status = 'failed';
+                    res.end(JSON.stringify({status:'failed'}));
                     return;
                   }
                   showDebug && console.log('Post id is: '+postId);
@@ -198,7 +244,9 @@ router.route('/:_id/:url')
       
                   // send response
                   //res.json({status:'succ',json:'http://192.168.1.73:9000/posts/'+postId});
-                  res.json({status:'succ',json:hotshare_web+'/posts/'+postId});
+                  chunked_result.status = 'succ';
+                  chunked_result.json = hotshare_web+'/posts/'+postId;
+                  res.end(JSON.stringify({status:'succ',json:hotshare_web+'/posts/'+postId}));
                   // var job = queue.create('email', {
                   //     title: 'welcome email for tj'
                   //     , to: 'tj@learnboost.com'
@@ -211,7 +259,8 @@ router.route('/:_id/:url')
             }
           })
           .catch(function (error) {
-            res.json({status:'failed'});
+            chunked_result.status = 'failed';
+            res.end(JSON.stringify({status:'failed'}));
             console.error('Search failed:', error);
           })
     });

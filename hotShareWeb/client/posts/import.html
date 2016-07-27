@@ -6,14 +6,30 @@
     </div>-->
     <div class="main">
       {{#if hasImport}}
-      <div class="progress">
-        <span class="green" style="width: {{progress}}%;"><span>{{progress}}%</span></span>
-      </div>
-      <div class="progress-text">正在导入，预计5秒完成...</div>
-      <button type="button" class="btn btn-default btn-block cancel">取消导入</button>
+        {{#if importTypeByNew}}
+        <div class="loading">
+          <div class="status">
+            <img src="/loading-2.gif" />
+            <span>正在导入，请稍候...</span>
+          </div>
+          <div class="posts">
+            <div class="title"></div>
+            <div class="body">
+              <div class="img"><img src="http://data.tiegushi.com/res/defaultMainImage1.jpg" /></div>
+              <div class="remark">[内容分析中...]</div>
+            </div>
+          </div>
+        </div>
+        {{else}}
+        <div class="progress">
+          <span class="green" style="width: {{progress}}%;"><span>{{progress}}%</span></span>
+        </div>
+        <div class="progress-text">正在导入，预计5秒完成...</div>
+        {{/if}}
+        <button type="button" class="btn btn-default btn-block cancel">取消导入</button>
       {{else}}
-      <input type="text" id="import-post-url" class="form-control" placeholder="请粘贴或输入一个URL地址">
-      <button type="button" class="btn btn-default btn-block import">马上导入</button>
+        <input type="text" id="import-post-url" class="form-control" placeholder="请粘贴或输入一个URL地址">
+        <button type="button" class="btn btn-default btn-block import">马上导入</button>
         {{#if minIimg}}
         <img class="import-setup" src="/import_setup.png" />
         {{else}}

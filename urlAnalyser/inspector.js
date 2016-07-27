@@ -28,15 +28,27 @@ console.log('inject code');
             returnJson["protocol"] = window.location.protocol;
         }
         console.log(returnJson);
-        analyserHTML(window.location.href,returnJson,function(result){
-            window.document.body.insertAdjacentHTML( 'beforeBegin', '<div id="detected_json_from_gushitie" style="color:blue;"> With some data...</div>' );
-            window.detected_json_from_gushitie=result;
-            /*const {ipcRenderer} = require('electron');
-             //console.log(ipcRenderer.sendSync('synchronous-message', 'ping')); // prints "pong"
+        if(navigator.userAgent.indexOf(' (GetHeader)') != -1){
+          var imgs = $(document.body.innerHTML).find('img[src]');
+          var header = {
+            status: 'importing',
+            title: document.title,
+            mainImg: imgs && imgs.length > 0 ? imgs[0].src : '',
+            remark: document.body.innerText ? document.body.innerText.substr(0, 100) : ''
+          };
+          window.document.body.insertAdjacentHTML( 'beforeBegin', '<div id="detected_json_from_header" style="color:blue;"> With some data... </div>' );
+          window.detected_json_from_header = header;
+        }else{
+          analyserHTML(window.location.href,returnJson,function(result){
+              window.document.body.insertAdjacentHTML( 'beforeBegin', '<div id="detected_json_from_gushitie" style="color:blue;"> With some data...</div>' );
+              window.detected_json_from_gushitie=result;
+              /*const {ipcRenderer} = require('electron');
+              //console.log(ipcRenderer.sendSync('synchronous-message', 'ping')); // prints "pong"
 
              ipcRenderer.send('analyse-done', result);
              console.log(result)*/
-        })
+        });
+      }
     });
 //};
 console.log('inject code');

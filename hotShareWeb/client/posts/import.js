@@ -1,11 +1,26 @@
 var progress = new ReactiveVar(100);
 var hasCancel = false;
+var importType = 'new'; // new/old
 
+Session.setDefault('import-post-info', null);
 Template.importPost.onRendered(function () {
   progress.set(100);
   hasCancel = false;
+  Session.set('import-post-info', null);
 });
 Template.importPost.helpers({
+  postInfo: function () {
+    return Session.get('import-post-info');
+  },
+  hasPostInfo: function () {
+    return Session.get('import-post-info') && Session.get('import-post-info').json && Session.get('import-post-info').title;
+  },
+  importUrl: function () {
+    return Session.get('import-post-info-url');
+  },
+  importTypeByNew: function () {
+    return importType === 'new';
+  },
   hasImport: function () {
     return progress.get() != 100;
   },
@@ -18,9 +33,13 @@ Template.importPost.helpers({
 });
 Template.importPost.events({
   'click .left-btn': function () {
+    Session.set('import-post-info', null);
+    Session.set('import-post-info-url', '');
     history.go(-1);
   },
   'click button.cancel': function () {
+    Session.set('import-post-info', null);
+    Session.set('import-post-info-url', '');
     hasCancel = true;
     progress.set(100);
   },
@@ -30,12 +49,59 @@ Template.importPost.events({
       
     // 调用server进行导入
     var api_url = 'http://urlanalyser.tiegushi.com:8080/import';
-    //var api_url = 'http://127.0.0.1:8080/import';
+    // var api_url = 'http://192.168.1.74:8080/import';
     var id = new Mongo.ObjectID()._str;
     
     hasCancel = false;
     api_url += '/' + Meteor.userId();
     api_url += '/' + encodeURIComponent($('#import-post-url').val());
+    Session.set('import-post-info-url', $('#import-post-url').val());
+    
+    if(importType === 'new'){
+      Session.set('import-post-info', null);
+      Session.set('import-post-info-url', null);
+      $('.posts .title').html($('#import-post-url').val());
+      progress.set(5);
+      var xmlhttp = jQuery.ajaxSettings.xhr();
+      var hasDone = false;
+      var submitDone = function (res) {
+        var result = res.split('\r\n');
+        result = result[result.length-1];
+        console.log(result);
+        result = JSON.parse(result)
+        
+        if(result.status != 'importing'){
+          hasDone = true;
+          if(result.status === 'succ')
+            return location = result.json;
+          
+          Session.set('import-post-info', null);
+          Session.set('import-post-info-url', '');
+          hasCancel = true;
+          progress.set(100);
+          alert('导入失败，请重试~');
+        }else{
+          var html = '<div class="title">'+result.json.title+'</div>';
+          html += '<div class="body">';
+          html += '<div class="img"><img src="'+result.json.mainImg+'" /></div>';
+          html += '<div class="remark">'+result.json.remark+'</div>';
+          html += '</div>';
+          $('.posts').html(html);
+          Session.set('import-post-info', result);
+        }
+      };
+      xmlhttp.onreadystatechange = function () {
+        if(xmlhttp.readyState === 4 && xmlhttp.status === 200 && !hasDone){
+          submitDone(xmlhttp.responseText);
+        }else if(xmlhttp.readyState === 3 && xmlhttp.responseText.length > 0 && !hasDone){
+          submitDone(xmlhttp.responseText);
+        }
+      };
+      xmlhttp.open("GET", '/import-server/' + Meteor.userId() + '/' + encodeURIComponent($('#import-post-url').val()), true);
+      xmlhttp.send(null);
+      
+      return;
+    }
 
     var intrval = Meteor.setInterval(function () {
       if(progress.get() === 100 || hasCancel)

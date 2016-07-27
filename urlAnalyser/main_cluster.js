@@ -140,10 +140,52 @@ var updatePosts = function(postId, post, callback){
   });
 };
 
-function importUrl(_id, url, callback) {
+function importUrl(_id, url, chunked, callback) {
+  switch (arguments.length) {
+    case 2:
+      chunked = false;
+      break;
+    case 3:
+      callback = chunked;
+      chunked = false;
+      break;
+  }
+
   var userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_2 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12D508 (5752533504)';   //iPhone 8.2 Safari UA
   //var userAgent = 'Mozilla/5.0 (iPhone; U; CPU iPhone OS 8_2 like Mac OS X; en) AppleWebKit/534.46.0 (KHTML, like Gecko) CriOS/19.0.1084.60 Mobile/9B206 Safari/7534.48.3'; //Chrome UA on iPhone
   //var userAgent = 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Electron/1.2.5 Safari/537.36'; //Chrome on Macbook
+  
+  var chunked_result = {};
+  if(chunked){
+    chunked_result.status = 'importing';
+    chunked_result.json = {
+      title: url,
+      mainImg: 'http://data.tiegushi.com/res/defaultMainImage1.jpg',
+      remark: '[内容分析中...]'
+    };
+    callback(chunked_result);
+    
+    var nightmare_header = Nightmare({ show: true , openDevTools: true});
+    nightmare_header
+      .useragent(userAgent + ' (GetHeader)')
+      .goto(url)
+      .inject('js','bundle.js')
+      .wait('#detected_json_from_header')
+      .evaluate(function () {
+        return window.detected_json_from_header;
+      })
+      .end()
+      .then(function (result) {
+        if(chunked_result.status != 'failed' && chunked_result.status != 'succ'){
+          chunked_result.status = 'importing';
+          chunked_result.json.title = result.title || '[暂无标题]';
+          chunked_result.json.mainImg = result.mainImg || 'http://data.tiegushi.com/res/defaultMainImage1.jpg';
+          chunked_result.json.remark = result.remark || '[暂无介绍]';
+          callback(chunked_result);
+        }
+      });
+  }
+  
   var nightmare = Nightmare({ show: false , openDevTools: false, waitTimeout: 60000});
       nightmare
           .useragent(userAgent)
@@ -160,6 +202,7 @@ function importUrl(_id, url, callback) {
                 if(err || !user)
                   if (callback) {
                     console.log("user not found, err="+err);
+                    chunked_result.status = 'failed';
                     callback({status:'failed'});
                     return;
                   }
@@ -167,7 +210,8 @@ function importUrl(_id, url, callback) {
                 insert_data(user, url, result, function(err,postId){
                   if (err) {
                     console.log('Error: insert_data failed');
-                    res.json({status:'failed'});
+                    chunked_result.status = 'failed';
+                    callback({status:'failed'});
                     return;
                   }
                   showDebug && console.log('Post id is: '+postId);
@@ -192,6 +236,8 @@ function importUrl(_id, url, callback) {
       
                   // send response
                   if (callback) {
+                    chunked_result.status = 'succ';
+                    chunked_result.json = hotshare_web+'/posts/'+postId;
                     callback({status:'succ',json:hotshare_web+'/posts/'+postId});
                   }
                 });
@@ -199,6 +245,7 @@ function importUrl(_id, url, callback) {
           })
           .catch(function (error) {
             if (callback) {
+              chunked_result.status = 'failed';
               callback({status:'failed'});
             }
             console.error('Search failed:', error);
@@ -248,6 +295,8 @@ if (cluster.isMaster) {
 
   router.route('/:_id/:url')
     .get(function(req, res) {
+      var chunked = req.query['chunked'] && req.query['chunked'] === 'true' ? true : false;;
+      
       showDebug && console.log('_id=' + req.params._id + ', url=' + req.params.url);
       showDebug && console.log('req.query=' + JSON.stringify(req.query));
       //importUrl(req.params._id, req.params.url, res.json);
@@ -258,6 +307,7 @@ if (cluster.isMaster) {
         job = queue.create(redis_prefix, {
           id: req.params._id,
           url: getUrl(req.params.url),
+          chunked: chunked
         }).save(function(err){
           if( !err ) console.log("job.id = "+job.id );
         });
@@ -266,6 +316,7 @@ if (cluster.isMaster) {
         job = queue.create(redis_prefix_us, {
           id: req.params._id,
           url: getUrl(req.params.url),
+          chunked: chunked
         }).save(function(err){
           if( !err ) console.log("job.id = "+job.id );
         });
@@ -275,14 +326,19 @@ if (cluster.isMaster) {
         console.log('Job completed with data', result);
       }).on('failed attempt', function(errorMessage, doneAttempts){
         console.log('Job attempt failed');
-        res.json({status:'failed'});
+        res.end(JSON.stringify({status:'failed'}));
       }).on('failed', function(errorMessage){
         console.log('Job failed');
-        res.json({status:'failed'});
+        res.end(JSON.stringify({status:'failed'}));
+      // }).on('importing', function(result){
+      //   console.log('Job result');
+      //   res.write(JSON.stringify(result));
       }).on('progress', function(progress, data){
         console.log('\r  job #' + job.id + ' ' + progress + '% complete with data ', data);
         if (progress == 100) {
-          res.json(JSON.parse(data));
+          res.end(data);
+        }else {
+          res.write(data);
         }
       });
     });
@@ -295,13 +351,16 @@ if (cluster.isMaster) {
     var data = job.data;
     var _id = data.id;
     var url = data.url;
+    var chunked = data.chunked;
 
-    importUrl(_id, url, function(result) {
+    importUrl(_id, url, chunked, function(result) {
       //setTimeout(function() { done(); }, jobDelay);
       console.log('result='+JSON.stringify(result));
       if (result.status == 'succ') {
         job.progress(100, 100, JSON.stringify(result));
         done();
+      } else if (result.status == 'importing') {
+        job.progress(50, 100, JSON.stringify(result));
       } else {
         done(new Error('failed'));
       }
