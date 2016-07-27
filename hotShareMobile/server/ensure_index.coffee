@@ -2,6 +2,8 @@ if Meteor.isServer
   Meteor.startup ()->
     Moments._ensureIndex({currentPostId:1, readPostId:1})
     Moments._ensureIndex({currentPostId:1, createdAt: -1})
+    Moments._ensureIndex({currentPostId:1})
+    Moments._ensureIndex({readPostId:1})
     Viewers._ensureIndex({userId: 1, createdAt: -1})
     Viewers._ensureIndex({userId: 1})
     # {postId: 1, userId: 1, createdAt: -1} will create 3 indexs,
@@ -29,6 +31,7 @@ if Meteor.isServer
     FollowPosts._ensureIndex({followby: 1, createdAt: -1})
     FollowPosts._ensureIndex({postId: 1})
     FollowPosts._ensureIndex({owner: 1})
+    FollowPosts._ensureIndex({owner: 1, followby: 1})
     SavedDrafts._ensureIndex({owner: 1, createdAt: -1})
     Feeds._ensureIndex({followby: 1, createdAt: -1})
     Feeds._ensureIndex({followby: 1, postId: 1, eventType: 1, recommanderId: 1, createdAt: -1})
@@ -41,6 +44,8 @@ if Meteor.isServer
     Feeds._ensureIndex({recommanderId: 1, recommander: 1, postId: 1, followby: 1})
     Feeds._ensureIndex({requesteeId: 1, requesterId: 1, followby: 1})
     Feeds._ensureIndex({owner:1,followby: 1, checked: 1, postId: 1, pindex: 1})
+    Feeds._ensureIndex({followby:1})
+    Feeds._ensureIndex({eventType:1})
     PComments._ensureIndex({postId:1})
     AssociatedUsers._ensureIndex({userIdA:1,userIdB:1})
     ReaderPopularPosts._ensureIndex({userId:1})
