@@ -43,7 +43,7 @@ Template.importPost.events({
     hasCancel = true;
     progress.set(100);
   },
-  'click button..import': function () {
+  'click button.import': function () {
     $('.mport-post-form').submit();
   },
   'submit form.mport-post-form': function () {
