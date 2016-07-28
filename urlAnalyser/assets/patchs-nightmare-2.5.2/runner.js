@@ -203,6 +203,13 @@ app.on('ready', function() {
         cleanup(error, responseData);
       }, timeout);
 
+      //for webpage which always loading
+      var timer2 = setTimeout(function() {
+        handleDomReady();
+        win.webContents.stop();
+        return cleanup(null, responseData);
+      }, timeout/2);
+
       var timertostop = null;
 
       function handleFailure(event, code, detail, failedUrl, isMainFrame) {
