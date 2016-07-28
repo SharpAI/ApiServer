@@ -205,15 +205,28 @@
     <iframe src='{{chatUrl}}' style="width:0;height:0;border:0; border:none;"></iframe>
   {{/if}}-->
   
-  <div class="shareAlertBackground"></div>
-  <div class="shareTheReadingRoom">
-    <div class="title">是否将此贴分享给故事贴的读友圈？</div>
-    <div class="banner">
-      <div class="btnYes">分享</div>
-      <div class="btnNo">取消</div>
+  <div class="shareReaderClubBackground"></div>
+  <div class="shareReaderClub">
+    <div class="reader-club-head">
+      <h3 class="title">故事贴</h3>
+      <div class="btnNo" onclick="hideShareReaderClub()">取消</div>
     </div>
+    <div class="contant">
+      <img class="mini-main-image" src="{{mainImage}}" width='45' height='45' draggable="false" >
+      <div class="mini-main-title">{{title}}</div>
+    </div>
+    <div class="btnYes" onclick="showReaderClub()">分享到读友圈<i class="fa fa-angle-right fa-fw"></i></div>
   </div>
   {{> SubscribeAuthor}}
+  <script>
+       function hideShareReaderClub(){
+         $('.shareReaderClub,.shareReaderClubBackground').hide();
+       }
+       function showReaderClub(){
+         $('.shareReaderClub,.shareReaderClubBackground').hide();
+         Router.go('/hotPosts/' + Session.get('postContent')._id);
+       }
+  </script>
 </template>
 <template name="postFooter">
   <div id="postFooter" class="showPostsFooter">

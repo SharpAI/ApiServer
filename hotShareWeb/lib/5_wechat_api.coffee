@@ -133,7 +133,7 @@ if Meteor.isClient
             hotPosts = _.filter Session.get('hottestPosts') || [], (value)->
               return !value.hasPush
             if hotPosts.length > 0
-              $('.shareTheReadingRoom,.shareAlertBackground').show()
+              $('.shareReaderClub,.shareReaderClubBackground').show()
             # if Session.get('inWechatBrowser') is true
             #   Session.set('shareToWechatType','WXSession')
             #   $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
@@ -154,7 +154,7 @@ if Meteor.isClient
             hotPosts = _.filter Session.get('hottestPosts') || [], (value)->
               return !value.hasPush
             if hotPosts.length > 0
-              $('.shareTheReadingRoom,.shareAlertBackground').show()
+              $('.shareReaderClub,.shareReaderClubBackground').show()
             # if Session.get('inWechatBrowser') is true
             #   Session.set('shareToWechatType','WXTimeLine')
             #   $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
