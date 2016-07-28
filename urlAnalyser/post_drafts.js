@@ -9,6 +9,7 @@ function PostDrafts(id, user) {
   var addontitle = '';
   var successCallback = [];
   var localImgs = [];
+  var _mainImage = '';
   
   var imageIndex = function () {
     if(drafts.length <= 0)
@@ -87,8 +88,11 @@ function PostDrafts(id, user) {
       showDebug && console.log('Processing Image ' + item.imageUrl);
       if (item.imageUrl && item.imageUrl !== '') {
         return filedownup.seekSuitableImageFromArrayAndDownloadToLocal([item.imageUrl], function(file, w, h, found, index, total, source) {
-          if (file)
+          if (file){
             postDrafts.insertDownloadedImage(self.data, source, found, self.inputUrl, file, w, h);
+            if(!_mainImage || _mainImage === 'http://data.tiegushi.com/res/defaultMainImage1.jpg')
+              _mainImage = source;
+          }
 
           return callback(null, item);
         }, 150, true, function(file){
@@ -364,8 +368,11 @@ function PostDrafts(id, user) {
     // Save gridster layout first. If publish failed, we can recover the drafts
     for(var i=0;i<draftData.length;i++){
       if(i === 0){
-        mainImage = draftData[i].imgUrl
-        mainImageStyle = draftData[i].style
+        if(_mainImage)
+          mainImage = _mainImage;
+        else
+          mainImage = draftData[i].imgUrl;
+        mainImageStyle = draftData[i].style;
       }else{
         pub.push(draftData[i]);
       }

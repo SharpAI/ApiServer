@@ -295,6 +295,7 @@
          Session.set('backgroundTop','')
        }
        function pcommitReport(e, t) {
+          console.log(">>>")
           var content, i, pcommentJson, pcomments, position, post, postId, userIcon, userId, username;
           i = Session.get("pcommentIndexNum");
           content = $('#pcommitReport').val();
@@ -356,12 +357,13 @@
             createdAt: new Date()
           };
           // post[i].pcomments.push(pcommentJson);
+          var popUpObj = {}
+          var objHelp = 'pub.'+i+'.pcomments';
+          popUpObj[objHelp] = pcommentJson;
           Posts.update({
             _id: postId
           }, {
-            $push: {
-              [`pub.${i}.pcomments`]: pcommentJson
-            },
+            $push: popUpObj,
             $set: {
               "ptype": "pcomments",
               "pindex": i
