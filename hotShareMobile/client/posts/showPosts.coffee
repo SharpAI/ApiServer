@@ -390,7 +390,7 @@ if Meteor.isClient
       return if val1 is true and val2 is true then 'two' else ''
     has_share_hot_post: ->
       hotPosts = _.filter Session.get('hottestPosts') || [], (value)->
-        return !value.hasPush
+        value.hasPush
       return hotPosts.length > 0
     has_share_follower: ->
       if Session.get('postContent').ownerId isnt Meteor.UserId()
