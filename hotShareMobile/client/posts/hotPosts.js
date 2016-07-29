@@ -36,6 +36,8 @@ Template.hotPosts.events({
       console.log('pushPostToHotPostGroups:', err);
     });
     PUB.toast('推荐成功！')
-    setTimeout("history.go(-1)",2000)
+    Meteor.setTimeout(function() {
+      return PUB.page('/posts/' + postItem._id);
+    }, animatePageTrasitionTimeout);
   }
 })
