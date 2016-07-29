@@ -43,17 +43,16 @@ Template.importPost.events({
     hasCancel = true;
     progress.set(100);
   },
-  'click button.import': function () {
-    $('.mport-post-form').submit();
-  },
-  'submit form.mport-post-form': function () {
+  'submit form.import-post-form': function () {
     Meteor.setTimeout(function(){
-      if(!($('#import-post-url').val() && ($('#import-post-url').val().indexOf('http://') === 0 || $('#import-post-url').val().indexOf('https://') === 0)))
-        return alert('请粘贴或输入一个URL地址');
+      if(!$('#import-post-url').val())
+        return alert('请粘贴或输入一个URL地址~');
+      if(!($('#import-post-url').val().indexOf('http://') === 0 || $('#import-post-url').val().indexOf('https://') === 0))
+        return alert('您输的不是URL地址~');
         
       // 调用server进行导入
       var api_url = 'http://urlanalyser.tiegushi.com:8080/import';
-      // var api_url = 'http://192.168.1.74:8080/import';
+      // var api_url = 'http://192.168.1.93:8080/import';
       var id = new Mongo.ObjectID()._str;
       
       hasCancel = false;
