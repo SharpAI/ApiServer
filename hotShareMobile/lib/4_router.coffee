@@ -270,6 +270,9 @@ if Meteor.isClient
     Router.route '/userProfilePage',()->
       this.render 'userProfilePage'
       return
+    Router.route '/hotPosts/:_id',()->
+      this.render 'hotPosts'
+      return
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->

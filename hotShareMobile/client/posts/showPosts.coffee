@@ -152,8 +152,12 @@ if Meteor.isClient
         userName=Session.get("pcommentsName")
         toastr.info(userName+"点评过的段落已为您用蓝色标注！")
       ,1000
+  Session.setDefault('hottestPosts', [])
   Template.showPosts.created=->
     Session.set("content_loadedCount", 0)
+    Meteor.call 'getHottestPosts', (err,res)->
+      unless err
+        Session.set('hottestPosts', res)
   Template.showPosts.onDestroyed ->
     document.body.scrollTop = 0
     Session.set("postPageScrollTop", 0)
@@ -163,6 +167,9 @@ if Meteor.isClient
       $('.tts-stoper').hide()
       window.currentTTS.stop()
   Template.showPosts.onRendered ->
+    Meteor.call 'getHottestPosts', (err,res)->
+      unless err
+        Session.set('hottestPosts', res)
     #if !amplify.store('chatNotify')
     #  amplify.store('chatNotify',1)
     #if amplify.store('chatNotify') < 6
@@ -201,6 +208,9 @@ if Meteor.isClient
           document.body.scrollTop = Session.get("postPageScrollTop")
         , 280
   Template.showPosts.onRendered ->
+    Meteor.call 'getHottestPosts', (err,res)->
+      unless err
+        Session.set('hottestPosts', res)
     Session.setDefault "displayPostContent",true
     Session.setDefault "toasted",false
     Session.set('postfriendsitemsLimit', 10)
@@ -1015,3 +1025,9 @@ if Meteor.isClient
         $('.pcommentInput,.alertBackground').fadeOut 300
         refreshPostContent()
         false
+  Template.shareReaderClub.events
+    'click .btnNo': (e, t)->
+      $('.shareReaderClub,.shareReaderClubBackground').hide()
+    'click .btnYes': (e, t)->
+      $('.shareReaderClub,.shareReaderClubBackground').hide()
+      Router.go('/hotPosts/' + Session.get('postContent')._id)

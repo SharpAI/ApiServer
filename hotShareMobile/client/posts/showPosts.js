@@ -128,6 +128,13 @@ shareToWechatSession = function (title, description, thumbData, url) {
           url: param.target_url
         }
       }, function() {
+        var hotPosts = _.filter(Session.get('hottestPosts') || [], function(value) {
+            return !value.hasPush;
+        });
+
+        if (hotPosts.length > 0) {
+            $('.shareReaderClub,.shareReaderClubBackground').show();
+        }
         // window.PUB.toast('分享成功!');
         // var shareType = Session.get("shareToWechatType");
         // if(shareType[1] && shareType[1] == true){
@@ -168,6 +175,13 @@ shareToWechatTimeLine = function (title, description, thumbData, url) {
           url: param.target_url
         }
       }, function() {
+        var hotPosts = _.filter(Session.get('hottestPosts') || [], function(value) {
+            return !value.hasPush;
+        });
+
+        if (hotPosts.length > 0) {
+            $('.shareReaderClub,.shareReaderClubBackground').show();
+        }
         // window.PUB.toast('分享成功!');
         // var shareType = Session.get("shareToWechatType");
         // if(shareType[1] && shareType[1] == true){
@@ -196,6 +210,13 @@ shareToWechat = function(title,description,thumbData,url,type) {
         thumbData: thumbData,
         url: url
     }, type, function () {
+        var hotPosts = _.filter(Session.get('hottestPosts') || [], function(value) {
+            return !value.hasPush;
+        });
+
+        if (hotPosts.length > 0) {
+            $('.shareReaderClub,.shareReaderClubBackground').show();
+        }
         // console.log('分享成功~');
         // var shareType = Session.get("shareToWechatType");
         // if(shareType[1] && shareType[1] == true){
