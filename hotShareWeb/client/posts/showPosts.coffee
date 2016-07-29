@@ -437,6 +437,14 @@ if Meteor.isClient
         false
       else
         true
+    get_share_class: (val1, val2)->
+      return if val1 is true and val2 is true then 'two' else ''
+    has_share_hot_post: ->
+      hotPosts = _.filter Session.get('hottestPosts') || [], (value)->
+        return !value.hasPush
+      return hotPosts.length > 0
+    has_share_follower: ->
+      return if Meteor.user().profile and Meteor.user().profile.web_follower_count then Meteor.user().profile.web_follower_count > 0 else false
   sectionToolbarClickHandler = (self,event,node)->
     console.log('Index ' + self.index + ' Action ' + $(node).attr('action') )
     action = $(node).attr('action')
@@ -480,13 +488,22 @@ if Meteor.isClient
         console.log('Selected index '+self.index)
         Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
   Template.showPosts.events
-    'click .shareTheReadingRoom .btnYes': ()->
-      $('.shareTheReadingRoom,.shareAlertBackground').hide()
+    # 'click .shareTheReadingRoom .btnYes': ()->
+    #   $('.shareTheReadingRoom,.shareAlertBackground').hide()
+    #   Router.go '/hotPosts/' + Session.get('postContent')._id
+    # 'click .shareTheReadingRoom .btnNo': ()->
+    #   $('.shareTheReadingRoom,.shareAlertBackground').hide()
+    'click .shareReaderClub .share-hot-post': ()->
+      $('.shareReaderClub,.shareReaderClubBackground').hide()
       Router.go '/hotPosts/' + Session.get('postContent')._id
-    'click .shareTheReadingRoom .btnNo': ()->
-      $('.shareTheReadingRoom,.shareAlertBackground').hide()
-    'click .shareAlertBackground': ()->
-      $('.shareTheReadingRoom,.shareAlertBackground').hide()
+    'click .shareReaderClub .share-fllower': ()->
+      $('.shareReaderClub,.shareReaderClubBackground').hide()
+      Meteor.call('sendEmailByWebFollower', Session.get('postContent')._id, 'share')
+      toastr.success('此篇故事已经通过邮件发给您的关注者（'+Meteor.user().profile.web_follower_count+'位）', '分享成功~')
+    'click .shareReaderClub .reader-club-head': ()->
+      $('.shareReaderClub,.shareReaderClubBackground').hide()
+    'click .shareReaderClubBackground': ()->
+      $('.shareReaderClub,.shareReaderClubBackground').hide()
     'click .pub-me-post': ()->
       # trackEvent('Download','from Post Header')
       # window.open('http://cdn.tiegushi.com', '_system')

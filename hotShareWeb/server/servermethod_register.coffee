@@ -404,4 +404,42 @@ if Meteor.isServer
         #     if item.userIdB isnt self.userId
         #       Meteor.users.update({_id: item.userIdB}, {$set: {type: data.type, token: data.token}})
         #   )
+        
+      'sendEmailByWebFollower': (id, event)->
+        slef = this
+        Meteor.defer ()->
+          post = Posts.findOne({_id: id})
+          text = Assets.getText(if event is 'share' then 'email/share-post.html' else 'email/push-post.html')
+          text = text.replace('{{post.title}}', post.title)
+          text = text.replace('{{post.subtitle}}', post.addontitle)
+          text = text.replace('{{post.author}}', post.ownerName)
+          text = text.replace('{{post.icon}}', post.ownerIcon)
+          text = text.replace('{{post.time}}', new Date().toLocaleString())
+          text = text.replace('{{post.href}}', 'http://cdn.tiegushi.com/posts/' + post._id)
+          text = text.replace('{{post.mainImage}}', post.mainImage)
+          
+          content = '[暂无内容]'
+          for item in post.pub
+            if item.type is 'text'
+              content = item.text
+              break
+          text = text.replace('{{post-content}}', content)
+          
+          Follower.find({followerId: slef.userId, fromWeb: true}).forEach (item)->
+            try
+              Email.send {
+                to: item.userEmail
+                from: '故事贴<admin@tiegushi.com>'
+                # from: '故事贴<33597990@qq.com>'
+                subject: '您在故事贴上关注的“'+post.ownerName+'”'+(if event is 'share' then '分享了故事' else '发表了新故事')+'：《'+post.title+'》' 
+                html: text
+                envelope: {
+                    from: "故事贴<admin@tiegushi.com>"
+                    to: item.userEmail+"<"+item.userEmail+">"
+                }
+              }
+              console.log('send mail to:', item.userEmail)
+            catch ex
+              console.log(ex)
+        return
 
