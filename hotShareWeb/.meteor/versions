@@ -14,6 +14,8 @@ boilerplate-generator@1.0.4
 caching-compiler@1.0.0
 caching-html-compiler@1.0.2
 callback-hook@1.0.4
+ccorcos:neo4j@0.1.1
+ccorcos:utils@0.0.2
 cfs:http-methods@0.0.30
 check@1.1.0
 chuangbo:cookie@1.1.0
@@ -51,7 +53,6 @@ jquery@1.11.4
 launch-screen@1.0.4
 less@2.5.1
 livedata@1.0.15
-lmieulet:meteor-coverage@0.0.2
 localstorage@1.0.5
 logging@1.0.8
 meteor@1.1.10
@@ -84,13 +85,10 @@ npm-container@1.2.0
 npm-mongo@1.4.39_1
 observe-sequence@1.0.7
 ordered-dict@1.0.4
-package-version-parser@3.0.4
 percolate:synced-cron@1.3.0
-practicalmeteor:chai@2.1.0_1
-practicalmeteor:loglevel@1.2.0_2
-practicalmeteor:sinon@1.14.1_2
 promise@0.5.1
 raix:eventemitter@0.1.3
+ramda:ramda@0.17.1
 random@1.0.5
 rate-limit@1.0.0
 reactive-dict@1.1.3
@@ -98,11 +96,6 @@ reactive-var@1.0.6
 reload@1.1.4
 retry@1.0.4
 routepolicy@1.0.6
-sanjo:jasmine@0.21.0
-sanjo:karma@3.1.1
-sanjo:long-running-child-process@1.1.5
-sanjo:meteor-files-helpers@1.2.0_1
-sanjo:meteor-version@1.0.0
 service-configuration@1.0.5
 servicelocale:geoip@0.1.3
 session@1.1.1
@@ -120,12 +113,6 @@ u2622:persistent-session@0.4.4
 ui@1.0.8
 underscore@1.0.4
 url@1.0.5
-velocity:chokidar@1.2.0_1
-velocity:core@0.10.10
-velocity:html-reporter@0.9.1
-velocity:meteor-internals@1.1.0_7
-velocity:meteor-stubs@1.1.1
-velocity:shim@0.1.0
 webapp@1.2.3
 webapp-hashing@1.0.5
 xolvio:backdoor@0.1.2

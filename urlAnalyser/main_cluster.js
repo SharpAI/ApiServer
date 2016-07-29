@@ -66,6 +66,9 @@ var MongoClient = require('mongodb').MongoClient;
 var DB_CONN_STR = process.env.MONGO_URL || 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare';
 var posts = null;
 var users = null;
+var Follower = null;
+var FollowPosts = null;
+var Feeds = null;
 
 MongoClient.connect(DB_CONN_STR, function(err, db) {
     if (err) {
@@ -74,7 +77,139 @@ MongoClient.connect(DB_CONN_STR, function(err, db) {
     }
     posts = db.collection('posts');
     users = db.collection('users');
+    Follower = db.collection('follower');
+    FollowPosts = db.collection('followposts');
+    Feeds = db.collection('feeds');
 });
+var postsInsertHookDeferHandle = function(userId,doc){
+    var suggestPostsUserId;
+    try{
+        suggestPostsUserId = users.findOne({'username': 'suggestPosts' })._id;
+    } catch(error) {
+    }
+    try{
+        Follower.find({followerId:userId}).toArray(function(err, follows) {
+            var follows_length = follows.length;
+            console.log("userId="+userId+", follows.length="+follows.length);
+            if(follows_length>0){                  
+                follows.forEach(function(data){
+                    if(data.userId === suggestPostsUserId)
+                    {
+                        FollowPosts.insert({
+                            _id:doc._id,
+                            postId:doc._id,
+                            title:doc.title,
+                            addontitle:doc.addontitle,
+                            mainImage: doc.mainImage,
+                            mainImageStyle:doc.mainImageStyle,
+                            heart:0,
+                            retweet:0,
+                            comment:0,
+                            browse: 0,
+                            publish: doc.publish,
+                            owner:doc.owner,
+                            ownerName:doc.ownerName,
+                            ownerIcon:doc.ownerIcon,
+                            createdAt: doc.createdAt,
+                            followby: data.userId
+                        });
+                    }
+                    else
+                    {
+                        FollowPosts.insert({
+                            postId:doc._id,
+                            title:doc.title,
+                            addontitle:doc.addontitle,
+                            mainImage: doc.mainImage,
+                            mainImageStyle:doc.mainImageStyle,
+                            heart:0,
+                            retweet:0,
+                            comment:0,
+                            browse: 0,
+                            publish: doc.publish,
+                            owner:doc.owner,
+                            ownerName:doc.ownerName,
+                            ownerIcon:doc.ownerIcon,
+                            createdAt: doc.createdAt,
+                            followby: data.userId
+                        });
+                    }
+
+                    Feeds.insert({
+                        owner:doc.owner,
+                        ownerName:doc.ownerName,
+                        ownerIcon:doc.ownerIcon,
+                        eventType:'SelfPosted',
+                        postId:doc._id,
+                        postTitle:doc.title,
+                        mainImage:doc.mainImage,
+                        createdAt:doc.createdAt,
+                        heart:0,
+                        retweet:0,
+                        comment:0,
+                        followby: data.userId
+                    });
+                    pushnotification("newpost",doc,data.userId);
+                    dataUser = users.findOne({_id:data.userId})
+                    waitReadCount = dataUser && dataUser.profile && dataUser.waitReadCount ? dataUser.profile.waitReadCount : 0;
+                    if(waitReadCount === undefined || isNaN(waitReadCount))
+                    {
+                        waitReadCount = 0;
+                    }
+                    users.update({_id: data.userId}, {$set: {'profile.waitReadCount': waitReadCount+1}});
+                });
+            }
+            if(userId === suggestPostsUserId)
+            {    
+                console.log("22222");               
+                FollowPosts.insert({
+                    _id:doc._id,
+                    postId:doc._id,
+                    title:doc.title,
+                    addontitle:doc.addontitle,
+                    mainImage: doc.mainImage,
+                    mainImageStyle:doc.mainImageStyle,
+                    heart:0,
+                    retweet:0,
+                    comment:0,
+                    browse: 0,
+                    publish: doc.publish,
+                    owner:doc.owner,
+                    ownerName:doc.ownerName,
+                    ownerIcon:doc.ownerIcon,
+                    createdAt: doc.createdAt,
+                    followby: userId
+                });
+            }
+            else
+            {         
+                FollowPosts.insert({
+                    postId:doc._id,
+                    title:doc.title,
+                    addontitle:doc.addontitle,
+                    mainImage: doc.mainImage,
+                    mainImageStyle:doc.mainImageStyle,
+                    heart:0,
+                    retweet:0,
+                    comment:0,
+                    browse: 0,
+                    publish: doc.publish,
+                    owner:doc.owner,
+                    ownerName:doc.ownerName,
+                    ownerIcon:doc.ownerIcon,
+                    createdAt: doc.createdAt,
+                    followby: userId
+                });
+            }
+        });
+    }
+    catch(error){}
+    /*try {
+        var pullingConn = Cluster.discoverConnection("pulling");
+        pullingConn.call("pullFromServer", doc._id);
+    }
+    catch(error){}*/
+};
 var insert_data = function(user, url, data, cb) {
     if (!user || !data || !url || !posts) {
       console.log('Error: null of id or data');
@@ -115,6 +250,7 @@ var insert_data = function(user, url, data, cb) {
       'owner':user._id,
       'ownerName':user.profile.fullname || user.username,
       'ownerIcon':user.profile.icon || '/userPicture.png',
+      'createdAt': new Date(),
       'publish': true
       }];
 
@@ -126,7 +262,9 @@ var insert_data = function(user, url, data, cb) {
         }
         return null;
       }
+      console.log("data_insert[0]._id="+data_insert[0]._id);
       showDebug && console.log("posts.insert: "+result.insertedIds[0]);
+      postsInsertHookDeferHandle(user._id, data_insert[0]);
       if(cb){
           cb(null,result.insertedIds[0])
       }
@@ -136,6 +274,20 @@ var insert_data = function(user, url, data, cb) {
 var updatePosts = function(postId, post, callback){
   post.status = 'imported';
   posts.update({_id: postId},{$set: post}, function(err, number){
+    callback && callback(err, number);
+  });
+};
+var updateFollowPosts = function(userId, postId, post, callback){
+  //console.log("userId="+userId+", postId="+postId+", post="+JSON.stringify(post));
+  FollowPosts.update({followby:userId, postId:postId}, {$set: {
+                    mainImage: post.mainImage,
+                    mainImageStyle:post.mainImageStyle,
+                    publish: post.publish,
+                    owner:post.owner,
+                    ownerName:post.ownerName,
+                    ownerIcon:post.ownerIcon,
+                }
+            }, function(err, number){
     callback && callback(err, number);
   });
 };
@@ -186,7 +338,7 @@ function importUrl(_id, url, chunked, callback) {
       });
   }
   
-  var nightmare = Nightmare({ show: false , openDevTools: false, waitTimeout: 60000});
+  var nightmare = Nightmare({ show: false , openDevTools: false, waitTimeout: 30000});
       nightmare
           .useragent(userAgent)
           .goto(url)
@@ -227,6 +379,10 @@ function importUrl(_id, url, chunked, callback) {
                       // console.log('post:', JSON.stringify(postObj));
                       // draftsObj.destroy();
                       updatePosts(postId, postObj, function(err, number){
+                        if(err || number <= 0)
+                          console.log('import error.');
+                      });
+                      updateFollowPosts(user._id, postId, postObj, function(err, number){
                         if(err || number <= 0)
                           console.log('import error.');
                       });
