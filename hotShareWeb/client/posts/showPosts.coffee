@@ -146,7 +146,13 @@ if Meteor.isClient
 
   Template.showPosts.created=->
     Session.set("content_loadedCount", 0)
+    Meteor.call 'getHottestPosts', (err,res)->
+      unless err
+        Session.set('hottestPosts', res)
   Template.showPosts.onRendered ->
+    Meteor.call 'getHottestPosts', (err,res)->
+      unless err
+        Session.set('hottestPosts', res)
     Session.setDefault "toasted",false
     Session.set('postfriendsitemsLimit', 10)
     Session.set("showSuggestPosts",false)
@@ -480,13 +486,13 @@ if Meteor.isClient
         console.log('Selected index '+self.index)
         Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
   Template.showPosts.events
-    'click .shareTheReadingRoom .btnYes': ()->
-      $('.shareTheReadingRoom,.shareAlertBackground').hide()
-      Router.go '/hotPosts/' + Session.get('postContent')._id
-    'click .shareTheReadingRoom .btnNo': ()->
-      $('.shareTheReadingRoom,.shareAlertBackground').hide()
-    'click .shareAlertBackground': ()->
-      $('.shareTheReadingRoom,.shareAlertBackground').hide()
+    # 'click .shareTheReadingRoom .btnYes': ()->
+    #   $('.shareTheReadingRoom,.shareAlertBackground').hide()
+    #   Router.go '/hotPosts/' + Session.get('postContent')._id
+    # 'click .shareTheReadingRoom .btnNo': ()->
+    #   $('.shareTheReadingRoom,.shareAlertBackground').hide()
+    # 'click .shareAlertBackground': ()->
+    #   $('.shareTheReadingRoom,.shareAlertBackground').hide()
     'click .pub-me-post': ()->
       # trackEvent('Download','from Post Header')
       # window.open('http://cdn.tiegushi.com', '_system')
