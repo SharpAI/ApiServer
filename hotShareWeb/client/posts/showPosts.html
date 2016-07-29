@@ -211,6 +211,22 @@
   <div class="shareReaderClub">
     <div class="reader-club-head">
       <h3 class="title">故事贴</h3>
+      <div class="btnNo">取消</div>
+    </div>
+    <div class="contant">
+      <img class="mini-main-image" src="{{mainImage}}" width='45' height='45' draggable="false" >
+      <div class="mini-main-title">{{title}}</div>
+    </div>
+    {{#if has_share_hot_post}}
+    <div class="btnYes share-hot-post">分享到读友圈<i class="fa fa-angle-right fa-fw"></i></div>
+    {{/if}}
+    {{#if has_share_follower}}
+    <div class="btnYes share-fllower">分享给关注者<i class="fa fa-angle-right fa-fw"></i></div>
+    {{/if}}
+  </div>
+  <!--<div class="shareReaderClub">
+    <div class="reader-club-head">
+      <h3 class="title">故事贴</h3>
       <i class="fa fa-times" aria-hidden="true"></i>
     </div>
     <div class="contant">
@@ -225,7 +241,7 @@
       <div class="btn share-fllower">分享给关注者</div>
       {{/if}}
     </div>
-  </div>
+  </div>-->
   {{> SubscribeAuthor}}
   <script>
        function hideShareReaderClub(){
