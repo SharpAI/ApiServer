@@ -275,6 +275,8 @@ if Meteor.isClient
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
+    showImporting: ()->
+      this.status is 'importing' and this.ownerId is Meteor.userId()
     clickedCommentOverlayThumbsUp:()->
       i = Session.get('focusedIndex')
       userId = Meteor.userId()

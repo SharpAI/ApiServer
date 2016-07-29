@@ -14,6 +14,8 @@ boilerplate-generator@1.0.4
 caching-compiler@1.0.0
 caching-html-compiler@1.0.2
 callback-hook@1.0.4
+ccorcos:neo4j@0.1.1
+ccorcos:utils@0.0.2
 cfs:http-methods@0.0.30
 check@1.1.0
 chuangbo:cookie@1.1.0
@@ -91,6 +93,7 @@ practicalmeteor:loglevel@1.2.0_2
 practicalmeteor:sinon@1.14.1_2
 promise@0.5.1
 raix:eventemitter@0.1.3
+ramda:ramda@0.17.1
 random@1.0.5
 rate-limit@1.0.0
 reactive-dict@1.1.3

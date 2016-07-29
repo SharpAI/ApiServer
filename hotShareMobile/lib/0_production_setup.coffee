@@ -16,3 +16,4 @@
 @withSponserLinkAds = false
 @isUSVersion = false
 @withZhiFaCDN = false
+@withServerImport = true

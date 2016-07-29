@@ -5,6 +5,11 @@ if Meteor.isServer
       "updateUserLanguage": (userId, lang)->
         Meteor.defer ()->
           Meteor.users.update({_id: userId},{$set: {'profile.language': lang}})
+      'httpCall': (method, url, options)->
+        url += '?ip='+this.connection.clientAddress
+        #url += '?ip=12.206.217.29'
+        console.log("Call httpCall, url="+url);
+        return HTTP.call(method, url, options)
       "updataFeedsWithMe": (userId)->
         Meteor.defer ()->
           Feeds.update({followby: userId},{$set:{isRead: true}},{multi: true})

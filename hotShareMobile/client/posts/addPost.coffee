@@ -301,7 +301,7 @@ if Meteor.isClient
       console.log('error ' + err)
       processTitleOfPost(data)
     )
-  @showPopupProgressBar = ()->
+  @showPopupProgressBar = (callback)->
     Session.set('importProcedure',1)
     Session.set('cancelImport',false)
     window.popupProgressBar = $('.importProgressBar').bPopup
@@ -315,6 +315,8 @@ if Meteor.isClient
           $('.modal-backdrop.in').remove()
           if Drafts.find().count() < 1
             Router.go('/')
+          if (callback)
+            callback()
         )
       onClose: ()->
         window.popupProgressBar = undefined
@@ -422,21 +424,70 @@ if Meteor.isClient
     Meteor.setTimeout ()->
       getURL(e)
     ,1200
-  @handleDirectLinkImport = (url)->
-    showPopupProgressBar()
-    if iabHandle
-      iabHandle.removeEventListener 'import',getURL
-      #iabHandle.removeEventListener 'exit',handleExitBrowser
-      iabHandle.removeEventListener 'hide',handleHideBrowser
-      iabHandle.removeEventListener 'loadstart',handlerLoadStartEvent
-      iabHandle.removeEventListener 'loadstop',handlerLoadStopEvent
-      iabHandle.removeEventListener 'loaderror',handlerLoadErrorEvent
-    window.iabHandle = window.open(url, '_blank', 'hidden=yes,toolbarposition=top')
-    if Session.get('isReviewMode') isnt '1'
-      iabHandle.addEventListener 'import',getURL
-      iabHandle.addEventListener 'loadstart',handlerLoadStartEvent
-      iabHandle.addEventListener 'loadstop',handlerLoadStopEvent
-      iabHandle.addEventListener 'loaderror',handlerLoadErrorEvent
+  @hanldeDirectLinkServerImport = (url)->
+    api_url = 'http://'+import_server_url+':'+IMPORT_SERVER_PORT+'/import'
+    id = (new Mongo.ObjectID())._str
+    api_url += '/' + Meteor.userId();
+    api_url += '/' + encodeURIComponent(url);
+    console.log("api_url="+api_url)
+    showPopupProgressBar(()->
+      return navigator.notification.confirm('快速导入不成功，是否尝试高级导入？'
+          (index)->
+            if index is 1 then handleDirectLinkImport(url, 1)
+          '温馨提示', ['是', '否']
+      )
+    )
+    intrval = Meteor.setInterval(()->
+        if Session.get('importProcedure') is 100 or Session.get('cancelImport')
+          return Meteor.clearInterval(intrval)
+        if Session.get('importProcedure') < 95
+          Session.set('importProcedure', Session.get('importProcedure') + 1)
+      , 200);
+
+    try
+        Meteor.call('httpCall', 'GET', api_url, (err, res)->
+          Session.set('importProcedure', 97)
+          Session.set('importProcedure', 100)
+          if (err)
+            console.log("httpCall error: err="+JSON.stringify(err));
+            #console.log(res.content);
+          result = JSON.parse(res.content);
+          if (err || !result || result.status != 'succ')
+            return navigator.notification.confirm('快速导入不成功，是否尝试高级导入？'
+              (index)->
+                if index is 1 then handleDirectLinkImport(url, 1)
+              '温馨提示', ['是', '否']
+            )
+          PUB.toast('导入成功，我们正在对图片进行处理。');
+          #location = result.json;
+          if result.json
+            url_array = result.json.split('/')
+            if url_array.length > 0
+              postId = url_array[url_array.length-1]
+              Router.go('/posts/'+postId)
+        )
+    catch error
+        console.log("ERROR: httpCall, api_url="+api_url);
+  @handleDirectLinkImport = (url, clientSide)->
+    if withServerImport and clientSide is undefined
+      console.log("Import url on server side...")
+      hanldeDirectLinkServerImport(url)
+    else
+      console.log("Import url on mobile side...")
+      showPopupProgressBar()
+      if iabHandle
+        iabHandle.removeEventListener 'import',getURL
+        #iabHandle.removeEventListener 'exit',handleExitBrowser
+        iabHandle.removeEventListener 'hide',handleHideBrowser
+        iabHandle.removeEventListener 'loadstart',handlerLoadStartEvent
+        iabHandle.removeEventListener 'loadstop',handlerLoadStopEvent
+        iabHandle.removeEventListener 'loaderror',handlerLoadErrorEvent
+      window.iabHandle = window.open(url, '_blank', 'hidden=yes,toolbarposition=top')
+      if Session.get('isReviewMode') isnt '1'
+        iabHandle.addEventListener 'import',getURL
+        iabHandle.addEventListener 'loadstart',handlerLoadStartEvent
+        iabHandle.addEventListener 'loadstop',handlerLoadStopEvent
+        iabHandle.addEventListener 'loaderror',handlerLoadErrorEvent
 
   @handleAddedLink = (url)->
     if iabHandle
