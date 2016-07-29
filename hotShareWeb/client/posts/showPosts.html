@@ -25,11 +25,13 @@
           </div>
           <div class="rightButton pub-me-post" style="font-weight:bold; color: red;">点我创作</div>
           <!--<div class="rightButton" style="font-weight:bold; color: red;" onclick=" trackEvent('Download','from Post Header'); window.open('http://cdn.tiegushi.com', '_system');">点我创作</div>-->
-        {{#if displayFollowBtn}}
-        <div id="SubscribeAuthor" style="left:64px;"><i class="fa fa-plus"></i> 关注</div>
-        {{else}}
-        <div id="SubscribeAuthor"><i class="fa fa-plus"></i> 关注</div>
-        {{/if}}
+        {{#unless readerIsOwner}}
+          {{#if displayFollowBtn}}
+          <div id="SubscribeAuthor" style="left:64px;"><i class="fa fa-plus"></i> 关注</div>
+          {{else}}
+          <div id="SubscribeAuthor"><i class="fa fa-plus"></i> 关注</div>
+          {{/if}}
+        {{/unless}}
         <div class="user">
           {{#if isMobile}}
             <img class="icon" src="{{ownerIcon}}" width='25' height='25'>
@@ -83,7 +85,7 @@
           {{/if}}
         
         {{#if showImporting}}
-        <div class="importing">您的故事服务器正在优化中，完成后此消息会消失...</div>
+        <div class="importing">故事贴中的图片正在处理中，完成后此消息会消失...</div>
         {{/if}}
         <div id="wrapper">
           <div class="mainImage" id="{{_id}}" style="height:{{getMainImageHeight}}px;">
@@ -426,7 +428,7 @@
     <div class="content">
         <div class="header">关注作者</div>
         <div class="body">
-          <textarea id="email" cols="10" rows="2" placeholder="请留下您的QQ号或者邮箱地址，您将收到关注作者的新文章"></textarea>
+          <textarea id="email" cols="10" rows="2" placeholder="请留下您的QQ号或者邮箱地址，您将收到相关消息">{{oldMail}}</textarea>
           <p class="help-block"></p>
         </div>
         <div class="footer">

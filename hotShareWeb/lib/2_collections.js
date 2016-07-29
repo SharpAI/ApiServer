@@ -986,8 +986,8 @@ if(Meteor.isServer){
             try{
                 Email.send({
                     to: doc.userEmail,
-                    // from: '故事贴<admin@tiegushi.com>',
-                    from: '故事贴<33597990@qq.com>',
+                    from: '故事贴<admin@tiegushi.com>',
+                    // from: '故事贴<33597990@qq.com>',
                     subject: '成功关注作者：'+doc.followerName + '',
                     body: '成功关注作者：'+doc.followerName + ',我们会不定期的为您推送关注作者的新文章！',
                     html: text,
