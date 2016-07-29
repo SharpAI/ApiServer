@@ -6,44 +6,6 @@
       <li><input type="checkbox" value="{{postId}}" id="{{postId}}" /><label for="{{postId}}">{{name}}（{{views}}位读者）</label></li>
       {{/each}}
     </ul>
-    <div class="submit" onclick="submitHotPosts()">推荐故事</div>
-    <div class="hotposts-toast-banner"><span id="hotposts-toast" class="toast"></span></div>
+    <div class="submit">推荐故事</div>
   </div>
-  <script>
-      function submitHotPosts(){
-        var postItem = Posts.findOne({_id: Session.get('postContent')._id});
-        var feedItem = {
-          owner: Meteor.userId(),
-          ownerName: postItem.ownerName,
-          ownerIcon: postItem.ownerIcon,
-          eventType:'SelfPosted',
-          postId: postItem._id,
-          postTitle: postItem.title,
-          mainImage: postItem.mainImage,
-          createdAt: postItem.createdAt,
-          heart: 0,
-          retweet: 0,
-          comment: 0
-        };
-
-        var groups = [];
-        $(".hot-posts").find("input:checked").each(function () {
-          groups.push($(this).attr("id"));
-        });
-
-        if (groups.length <= 0){
-          document.getElementById('hotposts-toast').innerHTML = '请选择要推荐的读友圈!';
-          $('#hotposts-toast').show();
-          return $('#hotposts-toast').fadeOut(3000);
-        }
-        Meteor.call('pushPostToHotPostGroups', feedItem, groups, function(err){
-          console.log('pushPostToHotPostGroups:', err);
-        });
-        document.getElementById('hotposts-toast').innerHTML = '推荐成功！';
-        $('#hotposts-toast').show();
-        $('#hotposts-toast').fadeOut(3000);
-        // history.go(-1);
-        setTimeout("history.go(-1)",2000)
-      }
-  </script>
 </template>
