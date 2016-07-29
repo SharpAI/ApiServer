@@ -165,7 +165,7 @@ if Meteor.isClient
       
         $('head').append('<link tag="mp4" href="http://data.tiegushi.com/video-js.min.css" rel="stylesheet">')
         $('head').append('<script tag="mp4">token = "7gFCGdcqXw4mSc252"; trafficDisplay = false; </script>')
-        $('head').append('<script tag="mp4" src="/bundle-raidcdn-mini-2.21.4.js"></script>')
+        $('head').append('<script tag="mp4" src="http://data.tiegushi.com/bundle-raidcdn-mini-2.21.4.js"></script>')
         
       return true
       
