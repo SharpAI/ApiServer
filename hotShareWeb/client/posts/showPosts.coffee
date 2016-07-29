@@ -279,6 +279,8 @@ if Meteor.isClient
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
+    readerIsOwner: ()->
+      return @owner is Meteor.userId()
     showImporting: ()->
       Session.get('postContent').status is 'importing' and Session.get('postContent').ownerId is Meteor.userId()
     hiddenChatLoad: ()->
@@ -1079,27 +1081,46 @@ if Meteor.isClient
 
   Template.SubscribeAuthor.onRendered ->
     Meteor.subscribe 'follower'
+  Template.SubscribeAuthor.helpers
+    oldMail: ->
+      postId = Session.get("postContent")._id
+      post = Posts.findOne()
+      followMailAddr = Meteor.user().profile.followMailAddr
+      follower = Follower.findOne({userId: Meteor.userId(), followerId: post.owner})
+      userEmail = if follower then follower.userEmail else ''
+      if userEmail
+        return userEmail
+      else if followMailAddr
+        return followMailAddr
+      else
+        return ''
   Template.SubscribeAuthor.events
     'focus #email':(e,t)->
       t.find('.help-block').innerHTML = ''
     'click .okBtn':(e,t)->
       mailAddress = t.find('#email').value
-      qqValueReg = RegExp(/^[1-9][0-9]{4,9}$/)
-      mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) 
-      if !mailValueReg.test(mailAddress) and !qqValueReg.test(mailAddress)
-        t.find('.help-block').innerHTML = '请输入正确的QQ号或Email'
-        # $('#email').focus()
-        return false
-      if qqValueReg.test(mailAddress)
-        mailAddress += '@qq.com'
-      # 在这里处理提交部分
       postId = Session.get("postContent")._id
       post = Posts.findOne()
+      followerCount = Follower.find({userId: Meteor.userId(), followerId: post.owner}).count()
+      qqValueReg = RegExp(/^[1-9][0-9]{4,9}$/)
+      mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) 
+      # 处理已经关注时， 可以输入空的Email
+      if followerCount > 0 and mailAddress is ''
+        mailAddress = null
+      else
+        if !mailValueReg.test(mailAddress) and !qqValueReg.test(mailAddress)
+          t.find('.help-block').innerHTML = '请输入正确的QQ号或Email'
+          # $('#email').focus()
+          return false
+      if qqValueReg.test(mailAddress)
+        mailAddress += '@qq.com'
+      
+      # 在这里处理提交部分
       if Meteor.user().profile.fullname
          username = Meteor.user().profile.fullname
       else
          username = Meteor.user().username
-      followerCount = Follower.find({userId: Meteor.userId(), followerId: post.owner}).count()
+      # 用户已经关注了作者
       if followerCount > 0 
         upFollowId = Follower.findOne({userId: Meteor.userId(), followerId: post.owner})._id
         Follower.update {
@@ -1111,6 +1132,7 @@ if Meteor.isClient
             fromWeb: true 
           }
         }
+      # 用户第一次关注该作者
       else 
         Follower.insert {
           userId: Meteor.userId()
@@ -1129,8 +1151,16 @@ if Meteor.isClient
           fromWeb: true 
           createAt: new Date()
         }
-        
+      # 更新USER中的followMailAddr
+      if mailAddress and mailAddress isnt Meteor.user().profile.followMailAddr
+        Meteor.users.update {
+          _id: Meteor.userId()
+        },{
+          $set:{'profile.followMailAddr': mailAddress}
+        }
       $('.subscribeAutorPage').hide()
+      if mailAddress
+        toastr.success('您已成功关注该作者，确认邮件将很快（10分钟左右）送达，谢谢！')
     'click .cannelBtn, click .bg':->
       $('.subscribeAutorPage').hide()
     
