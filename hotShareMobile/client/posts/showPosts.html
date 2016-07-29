@@ -55,6 +55,9 @@
                   </div>
               </div>
           {{/if}}
+        {{#if showImporting}}
+          <div class="importing">故事贴中的图片正在处理中，完成后此消息会消失...</div>
+        {{/if}}
         <div id="wrapper">
           <div class="mainImage" id="{{_id}}" style="height:{{getMainImageHeight}}px;">
             <img id="wx-img" class="scale item" src="{{mainImage}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImageStyle}}" >
@@ -183,7 +186,13 @@
       <img class="mini-main-image" src="{{mainImage}}" width='45' height='45' draggable="false" >
       <div class="mini-main-title">{{title}}</div>
     </div>
-    <div class="btnYes">分享到读友圈<i class="fa fa-angle-right fa-fw"></i></div>
+    {{#if has_share_hot_post}}
+    <div class="btnYes share-hot-post">分享到读友圈<i class="fa fa-angle-right fa-fw"></i></div>
+    {{/if}}
+    {{#if has_share_follower}}
+    <div class="btnYes share-fllower">分享给关注者<i class="fa fa-angle-right fa-fw"></i></div>
+    {{/if}}
+    <!--<div class="btnYes">分享到读友圈<i class="fa fa-angle-right fa-fw"></i></div>-->
   </div>
 </template>
 <template name="postFooter">

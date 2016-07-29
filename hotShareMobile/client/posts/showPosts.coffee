@@ -285,6 +285,8 @@ if Meteor.isClient
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
+    showImporting: ()->
+      this.status is 'importing' and this.ownerId is Meteor.userId()
     clickedCommentOverlayThumbsUp:()->
       i = Session.get('focusedIndex')
       userId = Meteor.userId()
@@ -384,6 +386,16 @@ if Meteor.isClient
         false
       else
         true
+    get_share_class: (val1, val2)->
+      return if val1 is true and val2 is true then 'two' else ''
+    has_share_hot_post: ->
+      hotPosts = _.filter Session.get('hottestPosts') || [], (value)->
+        return !value.hasPush
+      return hotPosts.length > 0
+    has_share_follower: ->
+      if Session.get('postContent').ownerId isnt Meteor.UserId()
+        return false
+      return if Meteor.user().profile and Meteor.user().profile.web_follower_count then Meteor.user().profile.web_follower_count > 0 else false
   isASCII = (str)->
     /^[\x00-\x7F]*$/.test(str)
   countASCII = (string)->
@@ -1028,6 +1040,10 @@ if Meteor.isClient
   Template.shareReaderClub.events
     'click .btnNo': (e, t)->
       $('.shareReaderClub,.shareReaderClubBackground').hide()
-    'click .btnYes': (e, t)->
+    'click .share-hot-post': (e, t)->
       $('.shareReaderClub,.shareReaderClubBackground').hide()
       Router.go('/hotPosts/' + Session.get('postContent')._id)
+    'click .share-fllower': (e, t)->
+      $('.shareReaderClub,.shareReaderClubBackground').hide()
+      Meteor.call('sendEmailByWebFollower', Session.get('postContent')._id, 'share')
+      navigator.notification.confirm('分享成功~', `function(){}`, '提示', ['知道了'])

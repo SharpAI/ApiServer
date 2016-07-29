@@ -74,6 +74,13 @@
       <div id="pubdivide"></div> 
       <div id="publishto">
         <h4>{{_ "publishTo"}}</h4>
+        {{#if has_share_push}}
+        <ul class="publish-readers-list1">
+          <li class="publish-reader-group1">
+            <label><input id="share-follower" type="checkbox"><label for="share-follower">推荐给您的关注者</label> (5 {{_ "readerUnit"}})</label>
+          </li>  
+        </ul>  
+        {{/if}}
         {{> publishReadersList}}
         <!--<ul class="publish-readers-list">
           {{#each groups}}
@@ -83,7 +90,7 @@
           {{/each}}
         </ul>-->
       </div>
-      {{/if}}      
+      {{/if}}
   </div>
   <div id="save">{{_ "OK"}}</div>
 </div>

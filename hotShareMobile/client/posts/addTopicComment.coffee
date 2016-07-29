@@ -13,6 +13,8 @@ if Meteor.isClient
     isShowPublish: ()->
       # return ReaderPopularPosts.find({userId: Meteor.userId()}).count()
       return true
+    has_share_push: ()->
+      return Meteor.user().profile and Meteor.user().profile.web_follower_count and Meteor.user().profile.web_follower_count > 0
 
   Template.addTopicComment.events
     "change .publish-reader-group input[type='checkbox']": (e, t)->
@@ -23,6 +25,9 @@ if Meteor.isClient
        comment = Session.get("comment")+"#"+this.text+"#"
        Session.set("comment",comment)
     "click #save":(event)->
+       if($('#share-follower').attr('checked'))
+         Meteor.call('sendEmailByWebFollower', Session.get('TopicPostId'), 'push')
+         
        topicPostId = Session.get("TopicPostId")
        TopicTitle = Session.get("TopicTitle")
        TopicAddonTitle = Session.get("TopicAddonTitle")
@@ -163,8 +168,8 @@ if Meteor.isClient
 
   Template.publishReadersList.helpers
     groups: ()->
-      ReaderPopularPosts.find({userId: Meteor.userId()})
-      # TopicPosts.find({},{limit: 6})
+      # ReaderPopularPosts.find({userId: Meteor.userId()})
+      TopicPosts.find({},{limit: 6})
     isLoading: ()->
       return Session.get('publish-readers-list-loading')
 
