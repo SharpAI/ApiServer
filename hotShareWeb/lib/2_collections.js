@@ -509,7 +509,7 @@ if(Meteor.isServer){
            text = text.replace('{{post.author}}', post.ownerName);
            text = text.replace('{{post.icon}}', post.ownerIcon);
            text = text.replace('{{post.time}}', new Date().toLocaleString());
-           text = text.replace('{{post.href}}', 'http://cdn.tiegushi.com/posts/' + post._id);
+           text = text.replace('{{post.href}}', 'http://' + server_domain_name + '/posts/' + post._id);
            text = text.replace('{{post.mainImage}}', post.mainImage);
            content = '[暂无内容]';
 
