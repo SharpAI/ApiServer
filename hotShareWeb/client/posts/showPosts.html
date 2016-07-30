@@ -211,17 +211,17 @@
   <div class="shareReaderClub">
     <div class="reader-club-head">
       <h3 class="title">故事贴</h3>
-      <div class="btnNo">取消</div>
+      <div class="btnNo" onclick="hideShareReaderClub()">取消</div>
     </div>
     <div class="contant">
       <img class="mini-main-image" src="{{mainImage}}" width='45' height='45' draggable="false" >
       <div class="mini-main-title">{{title}}</div>
     </div>
     {{#if has_share_hot_post}}
-    <div class="btnYes share-hot-post">分享到读友圈<i class="fa fa-angle-right fa-fw"></i></div>
+    <div class="btnYes share-hot-post" onclick="showReaderClub()">分享到读友圈<i class="fa fa-angle-right fa-fw"></i></div>
     {{/if}}
     {{#if has_share_follower}}
-    <div class="btnYes share-fllower">分享给关注者<i class="fa fa-angle-right fa-fw"></i></div>
+    <div class="btnYes share-fllower" onclick="sendEmailByWebFollower()">分享给关注者<i class="fa fa-angle-right fa-fw"></i></div>
     {{/if}}
   </div>
   <!--<div class="shareReaderClub">
@@ -250,6 +250,11 @@
        function showReaderClub(){
          $('.shareReaderClub,.shareReaderClubBackground').hide();
          Router.go('/hotPosts/' + Session.get('postContent')._id);
+       }
+       function sendEmailByWebFollower(){
+        $('.shareReaderClub,.shareReaderClubBackground').hide();
+        Meteor.call('sendEmailByWebFollower', Session.get('postContent')._id, 'share');
+        toastr.success('此篇故事已经通过邮件发给您的关注者（' + Meteor.user().profile.web_follower_count + '位）', '分享成功~');
        }
   </script>
 </template>
