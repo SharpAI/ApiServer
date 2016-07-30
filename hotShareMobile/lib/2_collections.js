@@ -561,7 +561,6 @@ if(Meteor.isServer){
     var sendEmailToFollower = function(id, userId){
         Meteor.defer(function() {
             var content, i, item, len, post, ref, text;
-            console.log()
             post = Posts.findOne({
                 _id: id
             });
@@ -590,8 +589,6 @@ if(Meteor.isServer){
             return Follower.find({
                 userId: userId
             }).fetch().forEach(function(item) {
-                console.log('Find followers, now sending email ...')
-                console.log("----find a item  ------", JSON.stringify(item));
                 var ex;
                 try {
                     Email.send({
@@ -676,10 +673,8 @@ if(Meteor.isServer){
                             comment:0,
                             followby: data.userId
                         });
-                        console.log('After postings!')
                         pushnotification("newpost",doc,data.userId);
                         sendEmailToFollower(doc._id, data.userId);
-                        console.log('After sending email!')
                         dataUser = Meteor.users.findOne({_id:data.userId})
                         waitReadCount = dataUser && dataUser.profile && dataUser.waitReadCount ? dataUser.profile.waitReadCount : 0;
                         if(waitReadCount === undefined || isNaN(waitReadCount))

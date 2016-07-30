@@ -499,7 +499,6 @@ if(Meteor.isServer){
     var sendEmailToFollower = function(id, userId){
         Meteor.defer(function() {
             var content, i, item, len, post, ref, text;
-            console.log()
             post = Posts.findOne({
                 _id: id
             });
@@ -528,8 +527,6 @@ if(Meteor.isServer){
             return Follower.find({
                 userId: userId
             }).fetch().forEach(function(item) {
-                console.log('Find followers, now sending email ...')
-                console.log("----find a item  ------", JSON.stringify(item));
                 var ex;
                 try {
                     Email.send({
