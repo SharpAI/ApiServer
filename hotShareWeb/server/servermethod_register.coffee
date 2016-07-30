@@ -425,7 +425,7 @@ if Meteor.isServer
               break
           text = text.replace('{{post-content}}', content)
           
-          Follower.find({followerId: slef.userId, fromWeb: true}).forEach (item)->
+          Follower.find({userId: slef.userId, fromWeb: true}).fetch().forEach (item)->
             try
               Email.send {
                 to: item.userEmail

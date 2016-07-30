@@ -495,6 +495,63 @@ if(Meteor.isServer){
             }
         })
     }
+
+    var sendEmailToFollower = function(id, userId){
+        Meteor.defer(function() {
+            var content, i, item, len, post, ref, text;
+            console.log()
+            post = Posts.findOne({
+                _id: id
+            });
+
+           text = Assets.getText('email/push-post.html');
+           text = text.replace('{{post.title}}', post.title);
+           text = text.replace('{{post.subtitle}}', post.addontitle);
+           text = text.replace('{{post.author}}', post.ownerName);
+           text = text.replace('{{post.icon}}', post.ownerIcon);
+           text = text.replace('{{post.time}}', new Date().toLocaleString());
+           text = text.replace('{{post.href}}', 'http://cdn.tiegushi.com/posts/' + post._id);
+           text = text.replace('{{post.mainImage}}', post.mainImage);
+           content = '[暂无内容]';
+
+           ref = post.pub;
+           for (i = 0, len = ref.length; i < len; i++) {
+               item = ref[i];
+               if (item.type === 'text') {
+                   content = item.text;
+                   break;
+                }
+            }
+
+            text = text.replace('{{post-content}}', content);
+
+            return Follower.find({
+                userId: userId
+            }).fetch().forEach(function(item) {
+                console.log('Find followers, now sending email ...')
+                console.log("----find a item  ------", JSON.stringify(item));
+                var ex;
+                try {
+                    Email.send({
+                        to: item.userEmail,
+                        from: '故事贴<admin@tiegushi.com>',
+                        subject: '您在故事贴上关注的“' + post.ownerName + '”' + '发表了新故事' + '：《' + post.title + '》',
+                        html: text,
+                        envelope: {
+                            from: "故事贴<admin@tiegushi.com>",
+                            to: item.userEmail + "<" + item.userEmail + ">"
+                        }
+                    });
+
+                    console.log('send mail to:', item.userEmail);
+                } catch (_error) {
+                    ex = _error;
+                    console.log("err is: ", ex);
+                }
+            });
+        });
+    }
+
     var postsInsertHookDeferHandle = function(userId,doc){
         Meteor.defer(function(){
             try{
@@ -558,6 +615,7 @@ if(Meteor.isServer){
                             followby: data.userId
                         });
                         pushnotification("newpost",doc,data.userId);
+                        sendEmailToFollower(doc._id, data.userId);
                         waitReadCount = Meteor.users.findOne({_id:data.userId}).profile.waitReadCount;
                         if(waitReadCount === undefined || isNaN(waitReadCount))
                         {
