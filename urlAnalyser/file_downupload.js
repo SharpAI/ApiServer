@@ -17,17 +17,30 @@ function filedownup(){
 
 var get_image_size_from_URI = function(url, cb) {
   //FIXME: other formate ???
+  fs.exists(url, function(exists) {
+    if (exists) {
+      var states = fs.statSync(url);
+      if(states.isDirectory()) {
+        console.log(url + " isDirectory");
+        return cb && cb(0, 0);
+      }
+      else {
+        showDebug && console.log("size: " + states.size);
+        showDebug && console.log("url="+url);
+        sizeOf(url, function (err, dimensions) {
+          if (err) {
+            console.log ('Calculate picture size failed: ' + url);
+            return cb(0, 0);
+          }
 
-  console.log("url="+url);
-  sizeOf(url, function (err, dimensions) {
-    if (err) {
-      console.log ('Calculate picture size failed: ' + url);
-      return cb(0, 0);
+          return cb(dimensions.width, dimensions.height);
+        });
+      }
+    } else {
+      console.log("file not found");
+      return cb && cb(0, 0);
     }
-
-    return cb(dimensions.width, dimensions.height);
   });
-
 };
 
 
@@ -42,7 +55,7 @@ var downloadFromBCS = function(source, callback){
 
   var url_protocol = url.parse(source).protocol;
   if (url_protocol != 'http:' && url_protocol != 'https:') {
-    showDebug && console.log("illegal URL: " + source);
+    console.log("illegal URL: " + source);
     return callback(null, source);
   }
 
@@ -60,7 +73,7 @@ var downloadFromBCS = function(source, callback){
       return callback(theFile.toURL(), source, theFile);
     })
     .catch(function (err){
-      showDebug && console.log('download failed err: ' + err);
+      console.log('download failed err: ' + err);
       return callback(null, source);
     });
 }
