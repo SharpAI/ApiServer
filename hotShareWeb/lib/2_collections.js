@@ -528,22 +528,24 @@ if(Meteor.isServer){
                 userId: userId
             }).fetch().forEach(function(item) {
                 var ex;
-                try {
-                    Email.send({
-                        to: item.userEmail,
-                        from: '故事贴<admin@tiegushi.com>',
-                        subject: '您在故事贴上关注的“' + post.ownerName + '”' + '发表了新故事' + '：《' + post.title + '》',
-                        html: text,
-                        envelope: {
-                            from: "故事贴<admin@tiegushi.com>",
-                            to: item.userEmail + "<" + item.userEmail + ">"
-                        }
-                    });
+                if (item.userEmail) {
+                  try {
+                      Email.send({
+                          to: item.userEmail,
+                          from: '故事贴<admin@tiegushi.com>',
+                          subject: '您在故事贴上关注的“' + post.ownerName + '”' + '发表了新故事' + '：《' + post.title + '》',
+                          html: text,
+                          envelope: {
+                              from: "故事贴<admin@tiegushi.com>",
+                              to: item.userEmail + "<" + item.userEmail + ">"
+                          }
+                      });
 
-                    console.log('send mail to:', item.userEmail);
-                } catch (_error) {
-                    ex = _error;
-                    console.log("err is: ", ex);
+                      console.log('send mail to:', item.userEmail);
+                  } catch (_error) {
+                      ex = _error;
+                      console.log("err is: ", ex);
+                  }
                 }
             });
         });
@@ -1034,7 +1036,7 @@ if(Meteor.isServer){
         if(action === 'insert')
           Meteor.users.update({_id: doc.followerId}, {$inc: {'profile.web_follower_count': 1}});
       });
-      
+
        // send mail
         var text = Assets.getText('email/follower-notify.html');
         Meteor.defer(function(){
