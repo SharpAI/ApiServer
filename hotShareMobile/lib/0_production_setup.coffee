@@ -17,3 +17,4 @@
 @isUSVersion = false
 @withZhiFaCDN = false
 @withServerImport = true
+@withShareStoryGroup = true

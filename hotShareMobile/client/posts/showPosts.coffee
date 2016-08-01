@@ -380,6 +380,11 @@ if Meteor.isClient
           if post.owner is Meteor.userId()
             return true
       return false
+    shareToStoryGroup:->
+      if withShareStoryGroup?
+        true
+      else
+        false
     isMobile:->
       Meteor.isCordova
     haveUrl:->

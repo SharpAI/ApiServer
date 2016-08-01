@@ -400,6 +400,14 @@ shareTo = function(to,self,index){
     })
 };
 Template.showPosts.events({
+    'click #shareStoryGroup':function(e, t){
+        //If has hotPosts
+        //if (hotPosts.length > 0 || (Meteor.user().profile && Meteor.user().profile.web_follower_count && Meteor.user().profile.web_follower_count > 0)) {
+            $('.shareReaderClub,.shareReaderClubBackground').show();
+        //}
+        //Else
+            //GUI to tell user how to have group
+    },
     'click #WXTimelineShare':function(e, t){
         shareTo('WXTimeLine',this);
         // Session.set("shareToWechatType",["WXTimeLine",true])
