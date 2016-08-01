@@ -8,6 +8,9 @@ Template.hotPosts.helpers({
   }
 })
 Template.hotPosts.events({
+  'click .back': function(){
+    return PUB.page('/posts/' + Session.get('postContent')._id);
+  },
   'click .submit': function () {
     var postItem = Posts.findOne({_id: Session.get('postContent')._id});
     var feedItem = {

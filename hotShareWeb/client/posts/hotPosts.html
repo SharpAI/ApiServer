@@ -1,5 +1,6 @@
 <template name="hotPosts">
   <div class="hot-posts">
+    <div class="leftButton"><i class="fa fa-angle-left back" onclick="btnBack()"></i><span class="back" onclick="btnBack()">故事贴</span></div>
     <h1>把故事推荐给这些读者们</h1>
     <ul>
       {{#each posts}}
@@ -10,6 +11,9 @@
     <div class="hotposts-toast-banner"><span id="hotposts-toast" class="toast"></span></div>
   </div>
   <script>
+      function btnBack(){
+        history.go(-1);
+      }
       function submitHotPosts(){
         var postItem = Posts.findOne({_id: Session.get('postContent')._id});
         var feedItem = {
