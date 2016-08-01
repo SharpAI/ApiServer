@@ -1,10 +1,11 @@
 var mongoid = require('mongoid-js');
-var wget = require('wgetjs');
 var fs = require('fs');
 var os = require('os');
 var sizeOf = require('image-size');
 var async = require('async');
 var crypto = require('crypto');
+var url = require('url');
+var download = require('download');
 
 module.exports = filedownup
 
@@ -31,46 +32,6 @@ var get_image_size_from_URI = function(url, cb) {
 
 
 var downloadFromBCS = function(source, callback){
-//    function fail(error) {
-//        showDebug && console.log(error)
-//        if(callback){
-//            callback(null, source);
-//        }
-//    }
-//    function onFileSystemSuccess(fileSystem) {
-//        var timestamp = new Date().getTime();
-//        var hashOnUrl = Math.abs(source.hashCode());
-//        var filename = Meteor.userId()+'_'+timestamp+ '_' + hashOnUrl;
-//        fileSystem.root.getFile(filename, {create: true, exclusive: false},
-//            function(fileEntry){
-//                showDebug && console.log("filename = "+filename+", fileEntry.toURL()="+fileEntry.toURL());
-//                //var target = "cdvfile://localhost/temporary/"+filename
-//                var target = fileEntry.toURL();
-//                showDebug && console.log("target = "+target);
-//
-//                var options = new FileDownloadOptions();
-//                var headers = {
-//                  "x-bs-acl": "public-read",
-//                  "Content-Type": "image/jpeg"
-//                  //"Authorization": "Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA=="
-//                };
-//                options.headers = headers;
-//                var ft = new FileTransfer();
-//                ft.download(source, target, function(theFile){
-//                    //showDebug && console.log('download suc, theFile.toURL='+theFile.toURL());
-//                    if(callback){
-//                        callback(theFile.toURL(),source,theFile);
-//                    }
-//                }, function(e){
-//                    showDebug && console.log('download error: ' + e.code)
-//                    if(callback){
-//                      callback(null, source);
-//                    }
-//                }, true, options);
-//
-//            }, fail);
-//    }
-//    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, fail);
   var nameHash=crypto.createHash('md5').update(source).digest("hex");
   var target = os.tmpdir() + '/' + 'imagecache' + '/';
   if (fs.existsSync(target)) {
@@ -79,10 +40,11 @@ var downloadFromBCS = function(source, callback){
       fs.mkdirSync(target);
   }
 
-  var wget_opt = {
-    url:  source,
-    dest: target+nameHash,
-    timeout: 2000};
+  var url_protocol = url.parse(source).protocol;
+  if (url_protocol != 'http:' && url_protocol != 'https:') {
+    showDebug && console.log("illegal URL: " + source);
+    return callback(null, source);
+  }
 
   var theFile = {
    name: nameHash,
@@ -91,22 +53,17 @@ var downloadFromBCS = function(source, callback){
    }
   }
 
-  wget(wget_opt, function (error, response, body) {
-    if (error) {
-      console.log('--- error:');
-      console.log(error);            // error encountered
-      if(callback){
-        callback(null, source);
-      }
-    }
-    else {
-      if(callback){
-        callback(theFile.toURL(), source, theFile);
-      }
-    }
-  });
+  download(source, {timeout: 2000, retries: 2})
+    .then(function (data){
+      fs.writeFileSync(target+nameHash, data);
+      showDebug && console.log('downloaded:  ' + source + " to " + target +nameHash);
+      return callback(theFile.toURL(), source, theFile);
+    })
+    .catch(function (err){
+      showDebug && console.log('download failed err: ' + err);
+      return callback(null, source);
+    });
 }
-
 
 filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, callback, minimal, onlyOne, insertTmpImgs) {
   var downloadHandler, minimalWidthAndHeight, onError, onSuccess;
