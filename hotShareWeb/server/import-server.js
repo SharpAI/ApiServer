@@ -1,8 +1,7 @@
 var request = Meteor.npmRequire('request');
 
 Router.route('/import-server/:_id/:url', function (req, res, next) {
-  var api_url = 'http://urlanalyser.tiegushi.com:8080/import';
-  // var api_url = 'http://192.168.1.74:8080/import';
+  var api_url = import_server_url;
     
   res.writeHead(200, {
     'Content-Type' : 'text/html;charset=UTF-8',

@@ -154,6 +154,7 @@ if Meteor.isClient
       ,1000
   Session.setDefault('hottestPosts', [])
   Template.showPosts.created=->
+    layoutHelperInit()
     Session.set("content_loadedCount", 0)
     Meteor.call 'getHottestPosts', (err,res)->
       unless err

@@ -51,8 +51,7 @@ Template.importPost.events({
         return alert('您输的不是URL地址~');
         
       // 调用server进行导入
-      var api_url = 'http://urlanalyser.tiegushi.com:8080/import';
-      // var api_url = 'http://192.168.1.93:8080/import';
+      var api_url = import_server_url;
       var id = new Mongo.ObjectID()._str;
       
       hasCancel = false;
