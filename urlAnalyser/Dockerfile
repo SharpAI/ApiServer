@@ -28,6 +28,8 @@ RUN chmod +x /srv/start.sh
 WORKDIR /srv/
 RUN NODE_ENV=production npm install
 
+COPY ./assets/patchs-nightmare-2.5.2/runner.js /srv/node_modules/nightmare/lib/runner.js
+
 #RUN bash -c 'echo "cd /data && npm start" >> /.bashrc'
 #CMD x11vnc -forever -usepw -create
 CMD xvfb-run --auto-servernum --server-args="-screen 0 1280x760x24"  /srv/start.sh
