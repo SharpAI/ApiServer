@@ -266,6 +266,7 @@
 
   //dynamic js file contents
   "hotShareQQZoneShare": "Share to QQZone from hotShare",
+  "shareStoryGroup": "Share to Story Group",
   "wechatNotInstalled": "wechat not installed, fail to share",
   "failToShare": "fail to share",
   "qqNotInstalled": "QQ not installed, fail to share",

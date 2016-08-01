@@ -70,9 +70,9 @@
   //registerFollow.html
   "followPeople": "关注您喜欢的人",
   "knowActivity": "及时了解对方的动态",
-  "chooseAtLeast": "至少再关注",
-  "chooseAtLeast1": "至少再关注",
-  "toFollow1": "个讲故事者可以继续",
+  "chooseAtLeast": "再关注",
+  "chooseAtLeast1": "再关注",
+  "toFollow1": "位作者，订阅喜欢的文章",
   "conTinue": "继续",
   //end
   //user.html
@@ -187,6 +187,7 @@
   "cancelPublish": "取消发表",
   "shareWechatFriend": "分享给微信好友",
   "shareWechatFriendField": "分享到微信朋友圈",
+  "shareStoryGroup": "分享到故事贴群",
   "shareQQ": "分享到QQ",
   "shareQQZone": "分享到QQ空间",
   "shareMore": "分享到更多应用",
