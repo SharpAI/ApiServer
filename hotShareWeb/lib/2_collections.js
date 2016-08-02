@@ -543,11 +543,8 @@ if(Meteor.isServer){
                         from: '故事贴<notify@mail.tiegushi.com>',
                         to: item.userEmail,
                         subject: '您在故事贴上关注的“' + post.ownerName + '”' + '发表了新故事' + '：《' + post.title + '》',
-                        html: text,
-                        envelope: {
-                            from: "故事贴<notify@mail.tiegushi.com>",
-                            to: item.userEmail+"<"+item.userEmail+">"
-                        }
+                        text: text,
+                        html: text
                     };
 
                     transporter.sendMail(mailOptions, function(error, info){
@@ -1082,11 +1079,8 @@ if(Meteor.isServer){
                         to: doc.userEmail,
                         subject: '成功关注作者：'+doc.followerName + '',
                         body: '成功关注作者：'+doc.followerName + ',我们会不定期的为您推送关注作者的新文章！',
-                        html: text,
-                        envelope: {
-                            from: "故事贴<notify@mail.tiegushi.com>",
-                            to: item.userEmail+"<"+item.userEmail+">"
-                        }
+                        text: text,
+                        html: text
                     };
 
                     transporter.sendMail(mailOptions, function(error, info){

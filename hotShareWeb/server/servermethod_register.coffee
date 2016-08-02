@@ -441,11 +441,8 @@ if Meteor.isServer
                     from: '故事贴<notify@mail.tiegushi.com>'
                     to: item.userEmail
                     subject: '您在故事贴上关注的“'+post.ownerName+'”'+(if event is 'share' then '分享了故事' else '发表了新故事')+'：《'+post.title+'》'
+                    text: text
                     html: text
-                    envelope: {
-                        from: "故事贴<notify@mail.tiegushi.com>"
-                        to: item.userEmail+"<"+item.userEmail+">"
-                    }
                 }
 
                 transporter.sendMail(mailOptions, (error, info)->
