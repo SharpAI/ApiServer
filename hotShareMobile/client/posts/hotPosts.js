@@ -5,9 +5,22 @@ Template.hotPosts.helpers({
     });
     console.log(_posts);
     return _posts;
+  },
+  isSelect: function(id) {
+    console.log($('#'+id).hasClass('select'));
+    return $('#'+id).hasClass('select');
   }
 })
 Template.hotPosts.events({
+  'click .pin': function(e){
+    e.preventDefault();
+    if($('#'+e.currentTarget.id).hasClass('select')){
+      $('#'+e.currentTarget.id+' .selectHelper img').attr('src','/select_n.png');
+    } else {
+      $('#'+e.currentTarget.id+' .selectHelper img').attr('src','/select_p.png');
+    }
+    $(e.currentTarget).toggleClass('select')
+  },
   'click .back': function(){
     return PUB.page('/posts/' + Session.get('postContent')._id);
   },
@@ -28,7 +41,10 @@ Template.hotPosts.events({
     };
 
     var groups = [];
-    $(".hot-posts").find("input:checked").each(function () {
+    // $(".hot-posts").find("input:checked").each(function () {
+    //   groups.push($(this).attr("id"));
+    // });
+    $('.select').each(function () {
       groups.push($(this).attr("id"));
     });
 

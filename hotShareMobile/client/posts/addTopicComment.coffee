@@ -141,24 +141,24 @@ if Meteor.isClient
        false
   
   Template.publishReadersList.rendered=->
-     Meteor.subscribe "topics",(ready)->
+     Meteor.subscribe "readerpopularposts",(ready)->
       handler = $('.newLayout_container')
       options={
-        align: 'center',
+        align: 'left',
         autoResize: true,
         comparator: null,
         container: $('.publish-readers-list'),
         direction: undefined,
         ignoreInactiveItems: true,
-        itemWidth: 160,
+        itemWidth: '50%',
         fillEmptySpace: false,
-        flexibleWidth: 160,
-        offset: 8,
+        flexibleWidth: '50%',
+        offset: 10,
         onLayoutChanged: undefined,
         outerOffset: 0,
         possibleFilters: [],
         resizeDelay: 50,
-        verticalOffset: 8
+        verticalOffset: 10
       }
       Session.set('publish-readers-list-loading',true)
       # handler.wookmark(options) 
@@ -169,7 +169,12 @@ if Meteor.isClient
   Template.publishReadersList.helpers
     groups: ()->
       # ReaderPopularPosts.find({userId: Meteor.userId()})
-      TopicPosts.find({},{limit: 6})
+      # TopicPosts.find({},{limit: 6})
+      posts = []
+      ReaderPopularPosts.find({userId: Meteor.userId()}).forEach (item)->
+        item.mainImage = Posts.findOne({_id: item.postId}).mainImage
+        posts.push(item)
+      return posts
     isLoading: ()->
       return Session.get('publish-readers-list-loading')
 

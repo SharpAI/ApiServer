@@ -2,11 +2,27 @@
   <div class="hot-posts">
     <div class="leftButton"><i class="fa fa-angle-left back" onclick="btnBack()"></i><span class="back" onclick="btnBack()">故事贴</span></div>
     <h1>把故事推荐给这些读者们</h1>
-    <ul>
+    <!--<ul>
       {{#each posts}}
       <li><input type="checkbox" value="{{postId}}" id="{{postId}}" /><label for="{{postId}}">{{name}}（{{views}}位读者）</label></li>
       {{/each}}
-    </ul>
+    </ul>-->
+    <div class="waterfall">
+    {{#each posts}}
+        <div class="pin" id={{postId}}>
+          <div class="img_placeholder">
+            <div class="selectHelper" style="background:rgba(0,0,0,.28); border-radius:50%;">
+              <img src="/select_n.png" style="width:32px;"/>
+            </div>
+            <div class="img-container"><img src="{{mainImage}}" /></div>
+          </div>
+          <div class="context" style="margin:5px;">{{name}}</div>
+          <div class="context" style="margin:5px; border-top:1px solid #eee;">
+            <span style="color:#00c4ff;">{{views}}</span>位读者
+          </div>
+        </div>
+      {{/each}}
+    </div>
     <div class="submit" onclick="submitHotPosts()">推荐故事</div>
     <div class="hotposts-toast-banner"><span id="hotposts-toast" class="toast"></span></div>
   </div>
@@ -31,10 +47,12 @@
         };
 
         var groups = [];
-        $(".hot-posts").find("input:checked").each(function () {
+        // $(".hot-posts").find("input:checked").each(function () {
+        //   groups.push($(this).attr("id"));
+        // });
+        $('.select').each(function () {
           groups.push($(this).attr("id"));
         });
-
         if (groups.length <= 0){
           document.getElementById('hotposts-toast').innerHTML = '请选择要推荐的读友圈!';
           $('#hotposts-toast').show();

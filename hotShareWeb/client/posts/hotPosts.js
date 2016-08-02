@@ -6,7 +6,19 @@ Template.hotPosts.helpers({
     console.log(_posts);
     return _posts;
   }
-})
+});
+
+Template.hotPosts.events({
+  'click .pin': function(e){
+    e.preventDefault();
+    if($('#'+e.currentTarget.id).hasClass('select')){
+      $('#'+e.currentTarget.id+' .selectHelper img').attr('src','/select_n.png');
+    } else {
+      $('#'+e.currentTarget.id+' .selectHelper img').attr('src','/select_p.png');
+    }
+    $(e.currentTarget).toggleClass('select')
+  }
+});
 // Template.hotPosts.events({
 //   'click .submit': function () {
 //     var postItem = Posts.findOne({_id: Session.get('postContent')._id});

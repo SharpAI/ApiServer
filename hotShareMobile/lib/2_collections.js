@@ -1911,7 +1911,15 @@ if(Meteor.isServer){
 
   Meteor.publish('readerpopularposts', function() {
     if(this.userId) {
-        return ReaderPopularPosts.find({userId: this.userId},{limit:3});
+        // return ReaderPopularPosts.find({userId: this.userId},{limit:3});
+        var postIds = [];
+        ReaderPopularPosts.find({userId: this.userId},{limit:3}).forEach(function(item){
+            postIds.push(item.postId)
+        })
+        return [
+            ReaderPopularPosts.find({},{limit:3}),
+            Posts.find({_id:{$in: postIds}})
+        ]
     }
     else {
         return this.ready();
@@ -2658,7 +2666,7 @@ if(Meteor.isServer){
   }
 }
 
-if(Meteor.isCordova){
+if(Meteor.isClient){
   var FOLLOWPOSTS_ITEMS_INCREMENT = 10;
   var FEEDS_ITEMS_INCREMENT = 20;
   var FOLLOWS_ITEMS_INCREMENT = 10;
@@ -2727,7 +2735,7 @@ if(Meteor.isCordova){
       //Meteor.subscribe('shareURLs');
   };
 
-  if(Meteor.isCordova){
+  if(Meteor.isClient){
       var options = {
           keepHistory: 1000 * 60 * 5,
           localSearch: true

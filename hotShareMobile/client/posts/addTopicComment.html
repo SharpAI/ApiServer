@@ -100,8 +100,23 @@
 <template name="publishReadersList">
 <div class="publish-readers-list">
   <style>
+    .img_placeholder:after{
+      content: url(/select_n.svg);
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 32px;
+      height: 32px;
+      background: rgba(0, 0, 0, 0.36);
+      border-radius: 50%;
+      display: block;
+    }
+    .select >.img_placeholder:after{
+      content: '';
+      display: none !important;
+    }
     .newLayout_element.select:before{
-      background: rgba(0, 196, 255, 0.18);
+      background: rgba(0, 196, 255, 0.1);
       position: absolute;
       top: 0;
       right: 0;
@@ -109,18 +124,21 @@
       left: 0;
       content: '.';
       color: rgba(0,0,0,0);
+      border-radius: 4px;
     }
     .newLayout_element.select:after{
-      content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"  width="60" height="60" viewBox="0 0 160 160" version="1.1"><g class="transform-group"><g transform="scale(0.1953125, 0.1953125)"><path d="M887.759617 241.872746c-10.36447-10.363022-27.153519-10.363022-37.516966 0L392.729287 724.898855 173.385873 505.541915c-10.415637-10.389628-27.256877-10.389628-37.620324 0-10.415637 10.388605-10.415637 27.229155 0 37.617759L374.184173 781.594111c9.782185 9.755178 25.228601 10.348696 35.657542 1.780553 1.045862-0.775666 2.05079-1.63729 3.000457-2.583848l474.919492-501.402641C898.123064 269.025153 898.123064 252.235768 887.759617 241.872746z" fill="#00c4ff"/></g></g></svg>');
+      content: url(/select_p.svg);
       position: absolute;
-      top: 45%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      top: 5px;
+      right: 5px;
+      width: 32px;
+      height: 32px;
+      display: block;
     }
   </style>
-  <div class="newLayout_container newLayout_container_moments_">
+  <div class="newLayout_container newLayout_container_moments_" style="background:#ffffff; margin-top:10px; overflow-x:hidden;">
     {{#each groups}} 
-      <div class="newLayout_element newLayout_element_moments_" id="{{postId}}" style="border-radius: 5px; background-color: white;">
+      <div class="newLayout_element newLayout_element_moments_" id="{{postId}}" style="border-radius: 5px; background-color: #f7f7f7;">
         <div class="img_placeholder">
           <img class="mainImage" src="{{mainImage}}" />
         </div>
