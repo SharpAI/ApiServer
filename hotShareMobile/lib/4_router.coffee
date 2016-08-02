@@ -7,6 +7,7 @@ subs = new SubsManager({
 
 if Meteor.isClient
   @refreshPostContent=()->
+    layoutHelperInit()
     Session.set("displayPostContent",false)
     Meteor.setTimeout ()->
       Session.set("displayPostContent",true)

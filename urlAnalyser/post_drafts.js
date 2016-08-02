@@ -368,10 +368,13 @@ function PostDrafts(id, user) {
     // Save gridster layout first. If publish failed, we can recover the drafts
     for(var i=0;i<draftData.length;i++){
       if(i === 0){
-        if(_mainImage)
+        if (draftData[i].uploaded === true && draftData[i].imgUrl)
+          mainImage = draftData[i].imgUrl;
+        else if (_mainImage)
           mainImage = _mainImage;
         else
-          mainImage = draftData[i].imgUrl;
+          mainImage = "http://data.tiegushi.com/res/defaultMainImage1.jpg";
+
         mainImageStyle = draftData[i].style;
       }else{
         pub.push(draftData[i]);

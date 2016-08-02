@@ -154,6 +154,7 @@ if Meteor.isClient
       ,1000
   Session.setDefault('hottestPosts', [])
   Template.showPosts.created=->
+    layoutHelperInit()
     Session.set("content_loadedCount", 0)
     Meteor.call 'getHottestPosts', (err,res)->
       unless err
@@ -379,6 +380,11 @@ if Meteor.isClient
           if post.owner is Meteor.userId()
             return true
       return false
+    shareToStoryGroup:->
+      if withShareStoryGroup?
+        true
+      else
+        false
     isMobile:->
       Meteor.isCordova
     haveUrl:->
@@ -1027,7 +1033,7 @@ if Meteor.isClient
         $('.showBgColor').removeAttr('style')
         $(window).scrollTop(0-Session.get('backgroundTop'))
         $('.pcommentInput,.alertBackground').fadeOut 300
-        refreshPostContent()
+        # refreshPostContent()
         false
   Template.shareReaderClub.helpers
     # show_share_reader_club: ->

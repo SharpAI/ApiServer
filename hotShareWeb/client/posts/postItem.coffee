@@ -6,6 +6,8 @@ if Meteor.isClient
     ($('.showPosts').width()-30)/6
   layoutHelper=[0,0,0,0,0,0]
   imageMarginPixel=5
+  @layoutHelperInit = ()->
+    layoutHelper=[0,0,0,0,0,0]
   getLayoutTop=(helper,col,sizeX)->
     max=0
     for i in [col..(col+sizeX-1)]
