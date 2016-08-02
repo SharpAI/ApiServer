@@ -105,7 +105,7 @@ filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, c
         }
       }
       
-      if (++imageCounter+1 < imageArray.length) {
+      if (++imageCounter < imageArray.length) {
         return downloadFromBCS(imageArray[imageCounter], downloadHandler);
       } else {
         return callback(null, 0, 0, foundImages, imageCounter, imageArray.length, source);
@@ -114,7 +114,7 @@ filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, c
   };
   onError = function(source) {
     showDebug && console.log('image resolve url got error');
-    if (++imageCounter+1 < imageArray.length) {
+    if (++imageCounter < imageArray.length) {
       return downloadFromBCS(imageArray[imageCounter], downloadHandler);
     } else {
       return callback(null, 0, 0, foundImages, imageCounter, imageArray.length, null, source);
