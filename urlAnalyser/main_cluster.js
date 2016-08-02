@@ -10,8 +10,8 @@ var geoip = require('geoip-lite');
 var http = require('http');
 
 var showDebug = true;
-var redis_prefix = 'testabc_import_task';
-var redis_prefix_us = 'testabc_import_task_us';
+var redis_prefix = PREFIX+'import_task';
+var redis_prefix_us = PREFIX+'import_task_us';
 
 process.addListener('uncaughtException', function (err) {
   var msg = err.message;
