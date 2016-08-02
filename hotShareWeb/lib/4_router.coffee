@@ -242,3 +242,28 @@ if Meteor.isServer
       fastRender: true
     }
   ###
+
+  Router.route('/restapi/postInsertHook/:_userId/:_postId', (req, res, next)->
+    self = this
+    failPage = ()->
+      res.writeHead(404, {
+        'Content-Type': 'text/html'
+      })
+      res.end("restapi failed! _userId="+self.params._userId+", _postId="+self.params._postId)
+    sucPage = ()->
+      res.writeHead(200, {
+        'Content-Type': 'text/html'
+      })
+      res.end("restapi suc! _userId="+self.params._userId+", _postId="+self.params._postId)
+    if this.params._userId is undefined or this.params._userId is null or this.params._postId is undefined or this.params._postId is null
+      console.log("restapi/postInsertHook: Send fail page.");
+      failPage()
+      return
+    globalPostsInsertHookDeferHandle(this.params._userId, this.params._postId)
+    console.log("restapi/postInsertHook: Send suc page.");
+    sucPage()
+    return
+  , {where: 'server'})
+
+
+

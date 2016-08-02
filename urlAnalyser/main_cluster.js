@@ -7,10 +7,11 @@ var mongoid = require('mongoid-js');
 var filedownup = require('./file_downupload.js');
 var drafts = require('./post_drafts.js');
 var geoip = require('geoip-lite');
+var http = require('http');
 
 var showDebug = true;
-var redis_prefix = 'import_task';
-var redis_prefix_us = 'import_task_us';
+var redis_prefix = 'testabc_import_task';
+var redis_prefix_us = 'testabc_import_task_us';
 
 process.addListener('uncaughtException', function (err) {
   var msg = err.message;
@@ -149,7 +150,7 @@ var postsInsertHookDeferHandle = function(userId,doc){
                         comment:0,
                         followby: data.userId
                     });
-                    pushnotification("newpost",doc,data.userId);
+                    //pushnotification("newpost",doc,data.userId);
                     dataUser = users.findOne({_id:data.userId})
                     waitReadCount = dataUser && dataUser.profile && dataUser.waitReadCount ? dataUser.profile.waitReadCount : 0;
                     if(waitReadCount === undefined || isNaN(waitReadCount))
@@ -210,6 +211,17 @@ var postsInsertHookDeferHandle = function(userId,doc){
     }
     catch(error){}*/
 };
+
+var httpget = function(url) {
+    http.get(url, function(res) {
+        console.log('httpget suc: url='+url+', response: ${res.statusCode}');
+        // consume response body
+        res.resume();
+    }).on('error', function(err) {
+        console.log('httpget failed: url='+url+', error: ${e.message}');
+    });
+}
+
 var insert_data = function(user, url, data, cb) {
     if (!user || !data || !url || !posts) {
       console.log('Error: null of id or data');
@@ -264,7 +276,7 @@ var insert_data = function(user, url, data, cb) {
       }
       console.log("data_insert[0]._id="+data_insert[0]._id);
       showDebug && console.log("posts.insert: "+result.insertedIds[0]);
-      postsInsertHookDeferHandle(user._id, data_insert[0]);
+      //postsInsertHookDeferHandle(user._id, data_insert[0]);
       if(cb){
           cb(null,result.insertedIds[0])
       }
@@ -350,6 +362,7 @@ function importUrl(_id, url, chunked, callback) {
           .end()
           .then(function (result) {
             //console.log(result)
+              console.log("nightmare finished, insert data and parse it...");
               users.findOne({_id: _id}, function (err, user) {
                 if(err || !user)
                   if (callback) {
@@ -379,13 +392,17 @@ function importUrl(_id, url, chunked, callback) {
                       // console.log('post:', JSON.stringify(postObj));
                       // draftsObj.destroy();
                       updatePosts(postId, postObj, function(err, number){
+                        if(err || number <= 0) {
+                          console.log('database update error!');
+                        } else {
+                            var url = hotshare_web+'/restapi/postInsertHook/'+user._id+'/'+postId;
+                            httpget(url);
+                        }
+                      });
+                      /*updateFollowPosts(user._id, postId, postObj, function(err, number){
                         if(err || number <= 0)
                           console.log('import error.');
-                      });
-                      updateFollowPosts(user._id, postId, postObj, function(err, number){
-                        if(err || number <= 0)
-                          console.log('import error.');
-                      });
+                      });*/
                     });
                   });
                   draftsObj.seekOneUsableMainImage(result, url);

@@ -109,6 +109,26 @@ if(Meteor.isServer){
     /*Meteor.startup(function(){
         postsInsertHookPostToBaiduDeferHandle('CJj4k9fhj2hrrZhCb')
     })*/
+    globalPostsInsertHookDeferHandle = function(userId, postId) {
+        Meteor.defer(function(){
+            var doc = Posts.findOne({"_id": postId});
+            if (doc) {
+                console.log("globalPostsInsertHookDeferHandle: userId="+userId+", doc._id="+doc._id+", doc.status="+doc.status);
+                if (doc.status && doc.status == "imported") {
+                    Posts.update({_id: postId}, {$set:{status: "done"}});
+                    postsInsertHookDeferHandle(userId, doc);
+                    try{
+                        postsInsertHookPostToBaiduDeferHandle(doc._id);
+                    }catch(err){
+                    }
+                    try{
+                        mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
+                    }catch(err){
+                    }
+                }
+            }
+        });
+    };
     var newMeetsAddedForPostFriendsDeferHandle = function(self,taId,userId,id,fields){
         Meteor.defer(function(){
             var taInfo = Meteor.users.findOne({_id: taId},{fields: {'username':1,'email':1,'profile.fullname':1,
