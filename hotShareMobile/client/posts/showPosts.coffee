@@ -388,14 +388,6 @@ if Meteor.isClient
         true
     get_share_class: (val1, val2)->
       return if val1 is true and val2 is true then 'two' else ''
-    has_share_hot_post: ->
-      hotPosts = _.filter Session.get('hottestPosts') || [], (value)->
-        value.hasPush
-      return hotPosts.length > 0
-    has_share_follower: ->
-      if Session.get('postContent').ownerId isnt Meteor.UserId()
-        return false
-      return if Meteor.user().profile and Meteor.user().profile.web_follower_count then Meteor.user().profile.web_follower_count > 0 else false
   isASCII = (str)->
     /^[\x00-\x7F]*$/.test(str)
   countASCII = (string)->
@@ -1037,6 +1029,19 @@ if Meteor.isClient
         $('.pcommentInput,.alertBackground').fadeOut 300
         refreshPostContent()
         false
+  Template.shareReaderClub.helpers
+    # show_share_reader_club: ->
+    #   hotPosts = _.filter Session.get('hottestPosts') || [], (value)->
+    #     value.hasPush
+    #   return (hotPosts.length > 0) and (Session.get('postContent').ownerId isnt Meteor.UserId()) or (hotPosts.length > 0) and (if Meteor.user().profile and Meteor.user().profile.web_follower_count then Meteor.user().profile.web_follower_count > 0 else false)
+    has_share_hot_post: ->
+      hotPosts = _.filter Session.get('hottestPosts') || [], (value)->
+        value.hasPush
+      return hotPosts.length > 0
+    has_share_follower: ->
+      if Session.get('postContent').ownerId isnt Meteor.UserId()
+        return false
+      return if Meteor.user().profile and Meteor.user().profile.web_follower_count then Meteor.user().profile.web_follower_count > 0 else false
   Template.shareReaderClub.events
     'click .btnNo': (e, t)->
       $('.shareReaderClub,.shareReaderClubBackground').hide()
