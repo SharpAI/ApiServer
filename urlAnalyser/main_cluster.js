@@ -243,43 +243,45 @@ var insert_data = function(user, url, data, cb) {
       }
     }
     
-    var data_insert = [{
-      '_id':mongoid(),
-      'ownerId': user._id,
-      'pub': data.resortedArticle,
-      'title': data.title,
-      'browse': 0,
-      'heart': [],
-      'retweet': [],
-      'comment': [],
-      'commentsCount': 0,
-      'addontitle': [],
-      'mainImage': data.imageArray.length > 0 ? data.imageArray[0] : 'http://data.tiegushi.com/res/defaultMainImage1.jpg',
-      'mainImageStyle': [],
-      'mainText': [],
-      'fromUrl': url,
-      'status':'importing',
-      'owner':user._id,
-      'ownerName':user.profile.fullname || user.username,
-      'ownerIcon':user.profile.icon || '/userPicture.png',
-      'createdAt': new Date(),
-      'publish': true
-      }];
+    filedownup.EalyMainImage(data, function (mainImageURL) {
+      var data_insert = [{
+        '_id':mongoid(),
+        'ownerId': user._id,
+        'pub': data.resortedArticle,
+        'title': data.title,
+        'browse': 0,
+        'heart': [],
+        'retweet': [],
+        'comment': [],
+        'commentsCount': 0,
+        'addontitle': [],
+        'mainImage': mainImageURL ? mainImageURL : 'http://data.tiegushi.com/res/defaultMainImage1.jpg',
+        'mainImageStyle': [],
+        'mainText': [],
+        'fromUrl': url,
+        'status':'importing',
+        'owner':user._id,
+        'ownerName':user.profile.fullname || user.username,
+        'ownerIcon':user.profile.icon || '/userPicture.png',
+        'createdAt': new Date(),
+        'publish': true
+        }];
 
-    posts.insert(data_insert, function(err, result) {
-      if(err || !result.insertedCount || !result.insertedIds || !result.insertedIds[0]) {
-        console.log('Error:'+ err);
-        if(cb){
-          cb(err,null)
+      posts.insert(data_insert, function(err, result) {
+        if(err || !result.insertedCount || !result.insertedIds || !result.insertedIds[0]) {
+          console.log('Error:'+ err);
+          if(cb){
+            cb(err,null)
+          }
+          return null;
         }
-        return null;
-      }
-      console.log("data_insert[0]._id="+data_insert[0]._id);
-      showDebug && console.log("posts.insert: "+result.insertedIds[0]);
-      //postsInsertHookDeferHandle(user._id, data_insert[0]);
-      if(cb){
-          cb(null,result.insertedIds[0])
-      }
+        console.log("data_insert[0]._id="+data_insert[0]._id);
+        showDebug && console.log("posts.insert: "+result.insertedIds[0]);
+        //postsInsertHookDeferHandle(user._id, data_insert[0]);
+        if(cb){
+            cb(null,result.insertedIds[0])
+        }
+      });
     });
 }
 

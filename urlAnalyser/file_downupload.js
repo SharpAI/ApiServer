@@ -124,6 +124,31 @@ filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, c
   return downloadFromBCS(imageArray[imageCounter], downloadHandler);
 };
 
+filedownup.EalyMainImage = function(data, callback) {
+  filedownup.seekOneUsableMainImage(data, function(file, w, h, found, index, total, source) {
+    showDebug && console.log('found ' + found + ' index ' + index + ' total ' + total + ' fileObject ' + file + ' source ' + source);
+    if (file) {
+      showDebug && console.log('found and downloaded main Image file to local: ' + file.toURL());
+
+      var EalyMainImageInfo = {
+        "type": "image",
+        "filename": file.name,
+        "URI": file.toURL(),
+        "uploaded": false,
+        "imgUrl": ''};
+
+      fileUploader(EalyMainImageInfo, function(err, item){
+        if (!err && item.imgUrl) {
+          callback && callback(item.imgUrl);
+        }
+        else
+          callback && callback(source);
+      });
+    }
+    else
+      callback && callback(source);
+  }, 200, function(file){});
+}
 
 filedownup.seekOneUsableMainImage = function(data, callback, minimal, insertTmpImgs) {
   var bgImg, imageArray, imageUrl, img, _i, _j, _len, _len1, _ref, _ref1;
