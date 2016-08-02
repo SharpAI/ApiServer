@@ -153,7 +153,7 @@ if Meteor.isServer
         if userId is undefined or userId is null
           return false
 
-        Meteor.defer ()->          
+        Meteor.defer ()->
           ReaderPopularPosts.find({userId: userId}).forEach((item)->
             ReaderPopularPosts.remove({_id: item._id})
           )
@@ -172,7 +172,7 @@ if Meteor.isServer
           return false
         self = this
         this.unblock()
-        Meteor.defer ()->          
+        Meteor.defer ()->
           feeds = []
           readers = []
           Viewers.find({postId: {$in: groups}}).forEach((item)->
@@ -186,13 +186,13 @@ if Meteor.isServer
               pushnotification("newpost", {_id: feedItem.postId, ownerName: feedItem.ownerName, title: feedItem.postTitle}, item.userId)
           )
         true
-        
+
       'pushPostToHotPostGroups': (feed, groups)->
         if this.userId is null or feed is undefined or feed is null or groups is undefined or groups is null or groups.length is 0
           return false
         self = this
         this.unblock()
-        Meteor.defer ()->          
+        Meteor.defer ()->
           feeds = []
           readers = []
           Viewers.find({postId: {$in: groups}}).forEach((item)->
@@ -207,20 +207,20 @@ if Meteor.isServer
           )
           Posts.update({_id: {$in: groups}}, {$set: {hasPush: true}}, {multi: true})
         true
-        
+
       'addAssociatedUserNew': (userInfo)->
         this.unblock()
         # check params
         if !this.userId or !userInfo or !userInfo.username or !userInfo.password
           return {status: 'ERROR', message: 'Invalid Username'}
-          
+
         # find user
         userTarget = Accounts.findUserByUsername(userInfo.username)
         if !userTarget
           return {status: 'ERROR', message: 'Invalid Username'}
         if userTarget._id is this.userId
           return {status: 'ERROR', message: 'Can not add their own'}
-          
+
         # check passwod
         isMatch = false
         if userTarget isnt undefined and userTarget isnt null
@@ -233,15 +233,15 @@ if Meteor.isServer
           isMatch = (result.error is undefined)
         unless isMatch
           return {status: 'ERROR', message: 'Invalid Password'}
-        
+
         # check relation
         if UserRelation.find({userId: this.userId, toUserId: userTarget._id}).count() > 0
           return {status: 'ERROR', message: 'Exist Associate User'}
-        
+
         # update token
         if userInfo.type and userInfo.token
           Meteor.users.update({_id: userTarget._id}, {$set: {type: userInfo.type, token: userInfo.token}})
-        
+
         # save relation
         # 只记录单向关系
         me = Meteor.users.findOne({_id: this.userId}, {fields: {_id: 1, username: 1, 'profile.fullname': 1, 'profile.icon': 1}})
@@ -304,28 +304,28 @@ if Meteor.isServer
         #       createAt: new Date()
         #     }
 
-        return {status: 'SUCCESS'}  
-        
+        return {status: 'SUCCESS'}
+
       'removeAssociatedUserNew': (userId)->
         this.unblock()
         if !this.userId or !userId
           return false
         if UserRelation.find({userId: this.userId, toUserId: userId}).count() <= 0
           return false
-          
+
         UserRelation.remove({userId: this.userId, toUserId: userId})
         UserRelation.remove({userId: userId, toUserId: this.userId})
         # UserRelation.remove({userId: userId})
-          
+
         return true
-        
+
       'addAssociatedUser': (userInfo)->
         this.unblock()
         Meteor.defer ()->
           try
             Meteor.call 'addAssociatedUserNew', userInfo
           catch e
-      
+
         if this.userId is undefined or this.userId is null or userInfo is undefined or userInfo is null
           return false
 
@@ -345,7 +345,7 @@ if Meteor.isServer
 
         if userTarget is undefined or userTarget is null
           return {status: 'ERROR', message: 'Invalid Username'}
-          
+
         if userTarget._id is this.userId
           return {status: 'ERROR', message: 'Can not add their own'}
 
@@ -367,7 +367,7 @@ if Meteor.isServer
             Meteor.users.update({_id: userTarget._id}, {$set: {type: userInfo.type, token: userInfo.token}})
         #  return
         if isMatch
-        #throw new Meteor.Error 404, "value should be 1, bro" 
+        #throw new Meteor.Error 404, "value should be 1, bro"
           return {status: 'SUCCESS'}
         else
           return {status: 'ERROR', message: 'Invalid Password'}
@@ -377,7 +377,7 @@ if Meteor.isServer
           try
             Meteor.call 'removeAssociatedUserNew', userId
           catch e
-          
+
         if this.userId is undefined or this.userId is null or userId is undefined or userId is null
           return false
         self = this
@@ -405,7 +405,7 @@ if Meteor.isServer
         #     if item.userIdB isnt self.userId
         #       Meteor.users.update({_id: item.userIdB}, {$set: {type: data.type, token: data.token}})
         #   )
-        
+
       'sendEmailByWebFollower': (id, event)->
         slef = this
         Meteor.defer ()->
@@ -418,14 +418,14 @@ if Meteor.isServer
           text = text.replace('{{post.time}}', new Date().toLocaleString())
           text = text.replace('{{post.href}}', 'http://cdn.tiegushi.com/posts/' + post._id)
           text = text.replace('{{post.mainImage}}', post.mainImage)
-          
+
           content = '[暂无内容]'
           for item in post.pub
             if item.type is 'text'
               content = item.text
               break
           text = text.replace('{{post-content}}', content)
-          
+
           Follower.find({userId: slef.userId, fromWeb: true}).fetch().forEach (item)->
             try
                 transporter = nodemailer.createTransport({
@@ -440,7 +440,7 @@ if Meteor.isServer
                 mailOptions = {
                     from: '故事贴<notify@mail.tiegushi.com>'
                     to: item.userEmail
-                    subject: '您在故事贴上关注的“'+post.ownerName+'”'+(if event is 'share' then '分享了故事' else '发表了新故事')+'：《'+post.title+'》' 
+                    subject: '您在故事贴上关注的“'+post.ownerName+'”'+(if event is 'share' then '分享了故事' else '发表了新故事')+'：《'+post.title+'》'
                     html: text
                     envelope: {
                         from: "故事贴<notify@mail.tiegushi.com>"
@@ -448,27 +448,25 @@ if Meteor.isServer
                     }
                 }
 
-                transporter.sendMail(mailOptions, function(error, info){
-                    if(error){
+                transporter.sendMail(mailOptions, (error, info)->
+                    if error
                         return console.log(error)
-                    }
                     console.log('Message sent: ' + info.response);
-                })
-              ###
-              Email.send {
-                to: item.userEmail
-                from: '故事贴<admin@tiegushi.com>'
-                # from: '故事贴<33597990@qq.com>'
-                subject: '您在故事贴上关注的“'+post.ownerName+'”'+(if event is 'share' then '分享了故事' else '发表了新故事')+'：《'+post.title+'》' 
-                html: text
-                envelope: {
-                    from: "故事贴<admin@tiegushi.com>"
-                    to: item.userEmail+"<"+item.userEmail+">"
+                )
+                ###
+                Email.send {
+                  to: item.userEmail
+                  from: '故事贴<admin@tiegushi.com>'
+                  # from: '故事贴<33597990@qq.com>'
+                  subject: '您在故事贴上关注的“'+post.ownerName+'”'+(if event is 'share' then '分享了故事' else '发表了新故事')+'：《'+post.title+'》'
+                  html: text
+                  envelope: {
+                      from: "故事贴<admin@tiegushi.com>"
+                      to: item.userEmail+"<"+item.userEmail+">"
+                  }
                 }
-              }
-              ###
-              console.log('send mail to:', item.userEmail)
+                ###
+                console.log('send mail to:', item.userEmail)
             catch ex
               console.log(ex)
         return
-
