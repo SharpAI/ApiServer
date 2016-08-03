@@ -1032,7 +1032,7 @@ if Meteor.isClient
         $('.showBgColor').removeAttr('style')
         $(window).scrollTop(0-Session.get('backgroundTop'))
         $('.pcommentInput,.alertBackground').fadeOut 300
-        # refreshPostContent()
+        refreshPostContent()
         false
   Template.shareReaderClub.helpers
     # show_share_reader_club: ->
