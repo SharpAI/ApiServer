@@ -12,8 +12,10 @@ if Meteor.isClient
       # ReaderPopularPosts.find({userId: Meteor.userId()})
       posts = []
       ReaderPopularPosts.find({}).forEach (item)->
-        item.mainImage = Posts.findOne({_id: item.postId}).mainImage
-        posts.push(item)
+        post = Posts.findOne({_id: item.postId})
+        if post
+          item.mainImage = post.mainImage
+          posts.push(item)
       return posts
     isShowPublish: ()->
       return ReaderPopularPosts.find({userId: Meteor.userId()}).count()
