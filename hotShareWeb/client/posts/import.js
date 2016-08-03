@@ -72,64 +72,70 @@ Template.importPost.events({
           console.log(result);
           result = JSON.parse(result)
           
-          if(result.status != 'importing'){
-            hasDone = true;
-            if(result.status === 'succ')
-              return result.json;
-            
-            Session.set('import-post-info', null);
-            Session.set('import-post-info-url', '');
-            hasCancel = true;
-            progress.set(100);
-            alert('导入失败，请重试~');
-          }else{
-            var html = '<div class="title">'+result.json.title+'</div>';
-            html += '<div class="body">';
-            html += '<div class="img"><img src="'+result.json.mainImg+'" /></div>';
-            html += '<div class="remark">'+result.json.remark+'</div>';
-            html += '</div>';
-            $('.posts').html(html);
-            Session.set('import-post-info', result);
+          switch (result.status) {
+            case 'importing':
+              var html = '<div class="title">'+result.json.title+'</div>';
+              html += '<div class="body">';
+              html += '<div class="img"><img src="'+result.json.mainImg+'" /></div>';
+              html += '<div class="remark">'+result.json.remark+'</div>';
+              html += '</div>';
+              $('.posts').html(html);
+              Session.set('import-post-info', result);
+              break;
+            case 'succ':
+              progress.set(100);
+              hasDone = true;
+              location = result.json;
+              break;
+            default:
+              hasCancel = true;
+              Session.set('import-post-info', null);
+              Session.set('import-post-info-url', '');
+              progress.set(100);
+              alert('导入失败，请重试~');
+              break;
           }
         };
         xmlhttp.onreadystatechange = function () {
-          if(xmlhttp.readyState === 4 && xmlhttp.status === 200 && !hasDone){
+          if(xmlhttp.readyState === 4 && xmlhttp.status === 200 && !hasDone && !hasCancel){
             submitDone(xmlhttp.responseText);
-          }else if(xmlhttp.readyState === 3 && xmlhttp.responseText.length > 0 && !hasDone){
+          }else if(xmlhttp.readyState === 3 && xmlhttp.responseText.length > 0 && !hasDone && !hasCancel){
             submitDone(xmlhttp.responseText);
           }
         };
         xmlhttp.open("GET", '/import-server/' + Meteor.userId() + '/' + encodeURIComponent($('#import-post-url').val()), true);
         xmlhttp.send(null);
-      }
-
-      var intrval = Meteor.setInterval(function () {
-        if(progress.get() === 100 || hasCancel)
-          return Meteor.clearInterval(intrval);
-        if(progress.get() < 95)
-          progress.set(progress.get()+1);
-      }, 200);
-      
-      progress.set(5);
-      console.log("api_url="+api_url);
-      try {
-        Meteor.call('httpCall', 'GET', api_url, function (err, res) {
-          progress.set(100);
-          if(hasCancel)
-            return;
-          if(err)
-            return alert('导入失败，请重试~');
-          //console.log(res.content);
-          var result = JSON.parse(res.content);
-          if(!result || result.status != 'succ')
-            return alert('导入失败，请重试~')
-          
-          // 所功后打开贴子
-          //alert('导入成功，后端还会对图片进行自动优化~!!');
-          location = result.json;
-        });
-      } catch (error) {
-          console.log("ERROR: httpCall, api_url="+api_url);
+      }else{
+        var intrval = Meteor.setInterval(function () {
+          if(progress.get() === 100 || hasCancel)
+            return Meteor.clearInterval(intrval);
+          if(progress.get() < 95)
+            progress.set(progress.get()+1);
+        }, 200);
+        
+        progress.set(5);
+        console.log("api_url="+api_url);
+        try {
+          Meteor.call('httpCall', 'GET', api_url, function (err, res) {
+            progress.set(100);
+            if(hasCancel)
+              return;
+            if(err)
+              return alert('导入失败，请重试~');
+            //console.log(res.content);
+            var result = JSON.parse(res.content);
+            if(!result || result.status != 'succ')
+              return alert('导入失败，请重试~')
+            
+            // 所功后打开贴子
+            //alert('导入成功，后端还会对图片进行自动优化~!!');
+            location = result.json;
+          });
+        } catch (error) {
+            progress.set(100);
+            alert('导入失败，请重试~');
+            console.log("ERROR: httpCall, api_url="+api_url);
+        }
       }
     }, 0);
     
