@@ -468,7 +468,24 @@ if Meteor.isClient
             url_array = result.json.split('/')
             if url_array.length > 0
               postId = url_array[url_array.length-1]
-              Router.go('/posts/'+postId)
+              #Router.go('/posts/'+postId)
+
+              if postId
+                Meteor.subscribe('publicPosts', postId, {
+                  onStop: ()->
+                    Router.go('/posts/'+postId)
+                  onReady: ()->
+                    postItem = Posts.findOne({_id:postId})
+                    Session.set("TopicPostId", postId)
+                    Session.set("TopicTitle", postItem.title)
+                    Session.set("TopicAddonTitle", postItem.addontitle)
+                    Session.set("TopicMainImage", postItem.mainImage)
+                    Router.go('/addTopicComment/')
+                  onError: ()->
+                    Router.go('/posts/'+postId)
+                })
+              else
+                Router.go('/posts/'+postId)
         )
     catch error
         console.log("ERROR: httpCall, api_url="+api_url);
