@@ -348,8 +348,10 @@ if Meteor.isClient
   @deferedProcessAddPostItemsWithEditingProcessBar = (pub, appEdited)->
     pub.processed=0
     Session.set('itemInAddPostPending',pub.length)
-    appEdited = appEdited || true;
+    if appEdited is null
+      appEdited = true
     Meteor.defer ()->
+      console.log('appEdited:', appEdited)
       async.mapLimit(pub,3,(item,callback)->
         if(appEdited is true)
           item.noKeyboardPopup=true

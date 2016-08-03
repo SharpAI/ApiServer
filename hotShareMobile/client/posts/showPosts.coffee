@@ -653,6 +653,7 @@ if Meteor.isClient
           appEdited = Session.get('postContent').appEdited 
         else if(Session.get('postContent').status and (Session.get('postContent').status is 'importing' or Session.get('postContent').status is 'imported'))
           appEdited = false
+        console.log(appEdited)
         deferedProcessAddPostItemsWithEditingProcessBar(pub, appEdited)
       Session.set 'isReviewMode','2'
       #Don't push showPost page into history. Because when save posted story, it will use Router.go to access published story directly. But in history, there is a duplicate record pointing to this published story.
