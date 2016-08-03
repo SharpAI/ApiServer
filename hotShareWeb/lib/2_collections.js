@@ -1172,12 +1172,35 @@ if(Meteor.isServer){
     };
 
     // web端关注作者, 发送第一封email
-    var followerHookForWeb = function(userId, doc, action) {
+    var followerHookForWeb = function(userId, doc, action, modifier) {
       Meteor.defer(function(){
         action = action || 'insert';
         if(action === 'insert')
           Meteor.users.update({_id: doc.followerId}, {$inc: {'profile.web_follower_count': 1}});
       });
+
+      //check repeated same email Accounts
+      if (action === "update") {
+        if (modifier["$set"] && modifier["$set"].userEmail) {
+          if (doc.userEmail === modifier["$set"].userEmail) {
+            console.log("##RDBG email not changed");
+            return;
+          }
+        }
+      }
+
+      var userEmail = null;
+      if (action === "insert")
+        userEmail = doc.userEmail;
+      else if (action === "update")
+        userEmail = modifier["$set"].userEmail;
+
+      if (!userEmail) {
+        console.log("null userEmail");
+        return;
+      }
+
+      console.log("send mail to: " + userEmail);
 
        // send mail
         var text = Assets.getText('email/follower-notify.html');
@@ -1194,7 +1217,7 @@ if(Meteor.isServer){
                     });
                     mailOptions = {
                         from: '故事贴<notify@mail.tiegushi.com>',
-                        to: doc.userEmail,
+                        to: userEmail,
                         subject: '成功关注作者：'+doc.followerName + '',
                         body: '成功关注作者：'+doc.followerName + ',我们会不定期的为您推送关注作者的新文章！',
                         text: text,
@@ -2392,9 +2415,9 @@ if(Meteor.isServer){
       }
       return false;
     },
-    update: function (userId, doc) {
+    update: function (userId, doc, fields, modifier) {
       if(doc.fromWeb){
-            followerHookForWeb(userId,doc, 'update');
+            followerHookForWeb(userId,doc, 'update', modifier);
         }
       return doc.userId === userId;
     }
