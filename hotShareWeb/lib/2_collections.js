@@ -547,7 +547,7 @@ if(Meteor.isServer){
            text = text.replace('{{post.title}}', post.title);
            text = text.replace('{{post.subtitle}}', post.addontitle);
            text = text.replace('{{action.owner}}', actionUser.profile.fullname ? actionUser.profile.fullname : actionUser.username);
-           text = text.replace('{{post.icon}}', actionUser.ownerIcon);
+           text = text.replace('{{post.icon}}', actionUser.profile.icon);
            text = text.replace('{{action}}', action);
            text = text.replace('{{post.time}}', new Date().toLocaleString());
            text = text.replace('{{post.href}}', 'http://' + server_domain_name + '/posts/' + post._id);
