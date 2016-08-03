@@ -516,6 +516,98 @@ if(Meteor.isServer){
         })
     }
 
+    var sendEmailToSubscriber = function(ptype, pindex, postId, fromUserId, toUserId) {
+        Meteor.defer(function() {
+
+
+            var content, i, item, len, post, ref, text;
+            post = Posts.findOne({
+                _id: postId
+            });
+
+            var notifyUser = Follower.findOne({userId: toUserId, followerId: post.owner, userEmail: {$exists: true}});
+
+            if(!notifyUser) return;
+
+            var actionUser = Meteor.users.findOne({_id: fromUserId});
+            if(!actionUser) return;
+
+            var subject = '有人也点评了此故事：《' + post.title + '》';
+            var action = '点评';
+            if (ptype === 'like') {
+                subject = '有人赞了此故事：《' + post.title + '》';
+                action = '赞';
+            }
+            else if (ptype === 'dislike') {
+                subject = '有人踩了此故事：《' + post.title + '》';
+                action = '踩';
+            }
+
+           text = Assets.getText('email/comment-post.html');
+           text = text.replace('{{post.title}}', post.title);
+           text = text.replace('{{post.subtitle}}', post.addontitle);
+           text = text.replace('{{action.owner}}', actionUser.profile.fullname ? actionUser.profile.fullname : actionUser.username);
+           text = text.replace('{{post.icon}}', actionUser.ownerIcon);
+           text = text.replace('{{action}}', action);
+           text = text.replace('{{post.time}}', new Date().toLocaleString());
+           text = text.replace('{{post.href}}', 'http://' + server_domain_name + '/posts/' + post._id);
+           text = text.replace('{{post.mainImage}}', post.mainImage);
+           content = '[暂无内容]';
+
+           ref = post.pub;
+           //if(Number.isInteger(pindex)) {
+           if(pindex != null) {
+                content = ref[pindex].text;
+           }
+           else {        
+               for (i = 0, len = ref.length; i < len; i++) {
+                   item = ref[i];
+                   if (item.type === 'text') {
+                       content = item.text;
+                       break;
+                    }
+                }
+           }
+
+            text = text.replace('{{post-content}}', content);
+
+            try {
+                var transporter = nodemailer.createTransport({
+                    "host": "smtpdm.aliyun.com",
+                    "port": 465,
+                    "secureConnection": true,
+                    "auth": {
+                        "user": 'notify@mail.tiegushi.com',
+                        "pass": 'Actiontec753951'
+                    }
+                });
+
+                //var transporter = nodemailer.createTransport('smtp://postmaster%40sandboxb40d25ffd9474e8b88a566924d4167bb.mailgun.org:9bad59febb44cf256ff0766960922980@smtp.mailgun.org:587');                
+
+                var mailOptions = {
+                    from: '故事贴<notify@mail.tiegushi.com>',
+                    to: notifyUser.userEmail,
+                    subject: subject,
+                    text: text,
+                    html: text
+                };
+
+                transporter.sendMail(mailOptions, function(error, info){
+                    if(error){
+                        return console.log(error);
+                    }
+                    console.log('Message sent: ' + info.response);
+                });
+
+                console.log('send mail to:', notifyUser.userEmail);
+            } catch (_error) {
+              ex = _error;
+              console.log("err is: ", ex);
+            }
+
+        });
+    };
+
     var sendEmailToFollower = function(id, userId){
         Meteor.defer(function() {
             var content, i, item, len, post, ref, text;
@@ -753,6 +845,7 @@ if(Meteor.isServer){
     var updateServerSidePcommentsHookDeferHandle = function(userId,doc,ptype,pindex){
         Meteor.defer(function(){
             try{
+                var set_notifiedUsersId = [];
                 var userinfo = Meteor.users.findOne({_id: userId },{'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1});
                 var needRemove = false;
                 if(ptype ==="like" && doc.pub[pindex].likeUserId && doc.pub[pindex].likeUserId[userId] === true)
@@ -798,6 +891,11 @@ if(Meteor.isServer){
                     pcs.forEach(function(data) {
                         if(data.commentUserId !== userId && data.commentUserId !== doc.owner)
                         {
+                            if (['pcomments', 'like', 'dislike'].indexOf(ptype) > -1 && needRemove === false && set_notifiedUsersId.indexOf(data.commentUserId) === -1) {
+                                set_notifiedUsersId.push(data.commentUserId);
+                                sendEmailToSubscriber(ptype, pindex, doc._id, userId, data.commentUserId);
+                            }
+
                             var pfeeds = Feeds.findOne({
                                 owner: userId,
                                 followby: data.commentUserId,
