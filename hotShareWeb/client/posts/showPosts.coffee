@@ -1183,6 +1183,7 @@ if Meteor.isClient
       $('.subscribeAutorPage').hide()
       if mailAddress
         toastr.success('您已成功关注该作者，确认邮件将很快（10分钟左右）送达，谢谢！')
+        trackEvent("Following","Email Follower")
     'click .cannelBtn, click .bg':->
       $('.subscribeAutorPage').hide()
     
