@@ -303,7 +303,8 @@ var insert_data = function(user, url, data, cb) {
         'ownerName':user.profile.fullname || user.username,
         'ownerIcon':user.profile.icon || '/userPicture.png',
         'createdAt': new Date(),
-        'publish': true
+        'publish': true,
+        'appEdited': false
         }];
 
       posts.insert(data_insert, function(err, result) {

@@ -111,7 +111,8 @@ var insert_data = function(user, url, data, cb) {
         'owner':user._id,
         'ownerName':user.profile.fullname || user.username,
         'ownerIcon':user.profile.icon || '/userPicture.png',
-        'publish': true
+        'publish': true,
+        'appEdited': false
         }];
 
       posts.insert(data_insert, function(err, result) {

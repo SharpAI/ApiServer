@@ -345,13 +345,15 @@ if Meteor.isClient
     $('.toEditingProgressBar').find('.total').text(n);
   closePreEditingPopup = ()->
     $('.toEditingProgressBar').bPopup().close()
-  @deferedProcessAddPostItemsWithEditingProcessBar = (pub)->
+  @deferedProcessAddPostItemsWithEditingProcessBar = (pub, appEdited)->
     pub.processed=0
     Session.set('itemInAddPostPending',pub.length)
+    appEdited = appEdited || false;
     Meteor.defer ()->
       async.mapLimit(pub,3,(item,callback)->
-        item.noKeyboardPopup=true
-        item.respectLayout=true
+        if(appEdited is true)
+          item.noKeyboardPopup=true
+          item.respectLayout=true
         Drafts.insert(item)
         Meteor.defer ()->
           pub.processed++
@@ -695,6 +697,7 @@ if Meteor.isClient
             ownerName:ownerName,
             ownerIcon:ownerIcon,
             createdAt: new Date(),
+            appEdited: true
           }
         }
       )
@@ -719,6 +722,7 @@ if Meteor.isClient
         ownerName:ownerName,
         ownerIcon:ownerIcon,
         createdAt: new Date(),
+        appEdited: true
       })
     #Delete from SavedDrafts if it is a saved draft.
     if SavedDrafts.find().count() is 1
