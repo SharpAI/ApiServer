@@ -1050,7 +1050,7 @@ if Meteor.isClient
         value.hasPush
       return hotPosts.length > 0
     has_share_follower: ->
-      if Session.get('postContent').ownerId isnt Meteor.UserId()
+      if Session.get('postContent').owner isnt Meteor.userId()
         return false
       return if Meteor.user().profile and Meteor.user().profile.web_follower_count then Meteor.user().profile.web_follower_count > 0 else false
   Template.shareReaderClub.events
