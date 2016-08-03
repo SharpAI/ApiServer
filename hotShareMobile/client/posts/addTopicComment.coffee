@@ -8,15 +8,32 @@ if Meteor.isClient
       Session.get("comment")
     topics:()->
        Topics.find({type:"topic"}, {sort: {posts: -1}, limit:20})
-    # groups: ()->
-    #   ReaderPopularPosts.find({userId: Meteor.userId()})
+    groups: ()->
+      # ReaderPopularPosts.find({userId: Meteor.userId()})
+      posts = []
+      ReaderPopularPosts.find({}).forEach (item)->
+        item.mainImage = Posts.findOne({_id: item.postId}).mainImage
+        posts.push(item)
+      return posts
     isShowPublish: ()->
-      # return ReaderPopularPosts.find({userId: Meteor.userId()}).count()
-      return true
+      return ReaderPopularPosts.find({userId: Meteor.userId()}).count()
+      # return true
     has_share_push: ()->
       return Meteor.user().profile and Meteor.user().profile.web_follower_count and Meteor.user().profile.web_follower_count > 0
 
   Template.addTopicComment.events
+    "click #share-follower": ()->
+      if $('#share-follower').prop('checked')
+        $(".publish-readers-list1").css('color','#00c4ff')
+      else
+        $('.publish-readers-list1').css('color','')
+    "click .pin": (e)->
+      e.preventDefault()
+      if $('#'+e.currentTarget.id).hasClass('select')
+        $('#'+e.currentTarget.id+' .selectHelper img').attr('src','/select_n.png')
+      else 
+        $('#'+e.currentTarget.id+' .selectHelper img').attr('src','/select_p.png')
+      $(e.currentTarget).toggleClass('select')
     "change .publish-reader-group input[type='checkbox']": (e, t)->
       $(e.target.parentNode).toggleClass('selected')
     "change #comment":()->
@@ -25,7 +42,7 @@ if Meteor.isClient
        comment = Session.get("comment")+"#"+this.text+"#"
        Session.set("comment",comment)
     "click #save":(event)->
-       if($('#share-follower').attr('checked'))
+       if($('#share-follower').prop('checked'))
          Meteor.call('sendEmailByWebFollower', Session.get('TopicPostId'), 'push')
          
        topicPostId = Session.get("TopicPostId")
@@ -128,7 +145,7 @@ if Meteor.isClient
 
        groups = []
       #  $(".publish-reader-group").find("input:checked").each(()->
-       $(".newLayout_container").find(".select").each(()->
+       $(".waterfall").find(".select").each(()->
           groups.push $(this).attr("id")
        )
 
@@ -166,17 +183,18 @@ if Meteor.isClient
         Session.set('publish-readers-list-loading',false)
         handler.wookmark(options) 
 
-  Template.publishReadersList.helpers
-    groups: ()->
-      # ReaderPopularPosts.find({userId: Meteor.userId()})
-      # TopicPosts.find({},{limit: 6})
-      posts = []
-      ReaderPopularPosts.find({userId: Meteor.userId()}).forEach (item)->
-        item.mainImage = Posts.findOne({_id: item.postId}).mainImage
-        posts.push(item)
-      return posts
-    isLoading: ()->
-      return Session.get('publish-readers-list-loading')
+  # Template.publishReadersList.helpers
+    # groups: ()->
+    #   # ReaderPopularPosts.find({userId: Meteor.userId()})
+    #   # TopicPosts.find({},{limit: 6})
+    #   # posts = []
+    #   # ReaderPopularPosts.find({}).forEach (item)->
+    #   #   item.mainImage = Posts.findOne({_id: item.postId}).mainImage
+    #   #   posts.push(item)
+    #   # return posts
+    #   ReaderPopularPosts.find({})
+    # isLoading: ()->
+    #   return Session.get('publish-readers-list-loading')
 
   Template.publishReadersList.events
     'click .newLayout_element': (e)->

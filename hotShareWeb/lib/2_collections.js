@@ -2032,11 +2032,11 @@ if(Meteor.isServer){
     if(this.userId) {
         // return ReaderPopularPosts.find({userId: this.userId},{limit:3});
         var postIds = [];
-        ReaderPopularPosts.find({userId: this.userId},{limit:3}).forEach(function(item){
+        ReaderPopularPosts.find({userId: this.userId},{limit:5}).forEach(function(item){
             postIds.push(item.postId)
         })
         return [
-            ReaderPopularPosts.find({},{limit:3}),
+            ReaderPopularPosts.find({userId: this.userId},{limit:5}),
             Posts.find({_id:{$in: postIds}})
         ]
     }

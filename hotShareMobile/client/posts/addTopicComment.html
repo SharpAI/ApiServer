@@ -21,22 +21,26 @@
     color: #A6A4A4;
   }  
 
-  #publishto .publish-reader-group input[type='checkbox']{
+  /* #publishto .publish-reader-group input[type='checkbox']{ */
+  input[type='checkbox']{
     background: none;
     border: none;
     -webkit-appearance: none;
     appearance: none;
     margin-right: 10px;
     position: relative;
-    bottom: -5px;
+    bottom: -10px;
+    outline: none !important;
   }
 
-  #publishto .publish-reader-group input[type='checkbox']:checked:after{
-    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#bddad5" stroke-width="10"/><path fill="#5dc2af" d="M72 25L42 71 27 56l-4 4 20 20 34-52z"/></svg>');
+  /* #publishto .publish-reader-group input[type='checkbox']:checked:after{ */
+  input[type='checkbox']:checked:after{
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#00c4ff" stroke-width="10"/><path fill="#00c4ff" d="M72 25L42 71 27 56l-4 4 20 20 34-52z"/></svg>');
   }
 
-  #publishto .publish-reader-group input[type='checkbox']:after{
-    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#bddad5" stroke-width="10"/></svg>');
+  /* #publishto .publish-reader-group input[type='checkbox']:after{ */
+  input[type='checkbox']:after{
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#aaaaaa" stroke-width="10"/></svg>');
   }
 
   #publishto .publish-reader-group label label {
@@ -69,19 +73,24 @@
           &nbsp;
           </span>
       {{/each}}
-
+      <div id="pubdivide"></div> 
+      <ul class="publish-readers-list1" style="padding:0; margin: 10px auto; text-align:center">
+          <li class="publish-reader-group1">
+            <label><input id="share-follower" type="checkbox"><label for="share-follower">分享这篇故事给朋友</label></label>
+          </li>  
+        </ul>  
       {{#if isShowPublish}}
       <div id="pubdivide"></div> 
       <div id="publishto">
         <h4 style="text-align:center;">{{_ "publishTo"}}</h4>
         {{#if has_share_push}}
-        <ul class="publish-readers-list1">
+        <!--<ul class="publish-readers-list1">
           <li class="publish-reader-group1">
             <label><input id="share-follower" type="checkbox"><label for="share-follower">点击选择朋友圈，分享这篇故事给朋友</label></label>
           </li>  
-        </ul>  
+        </ul>  -->
         {{/if}}
-        {{> publishReadersList}}
+        <!--{{> publishReadersList}}-->
         <!--<ul class="publish-readers-list">
           {{#each groups}}
             <li class="publish-reader-group">
@@ -89,6 +98,23 @@
             </li>      
           {{/each}}
         </ul>-->
+        <div class="waterfall">
+          {{#each groups}}
+            <div class="pin" id={{postId}}>
+              <div class="img_placeholder">
+                <div class="selectHelper" style="background:rgba(0,0,0,.28); border-radius:50%;">
+                  <img src="/select_n.png" style="width:26px;"/>
+                </div>
+                <div class="img-container"><img src="{{mainImage}}" /></div>
+              </div>
+              <div class="context" style="margin:5px;">{{title}}</div>
+              <div class="context" style="margin:5px; border-top:1px solid #eee; padding-top: 6px;">
+                读友圈有<span style="color:#00c4ff;">{{browse}}</span>位读者
+              </div>
+            </div>
+          {{/each}}
+        </div>
+
       </div>
       {{/if}}
   </div>
