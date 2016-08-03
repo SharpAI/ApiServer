@@ -657,7 +657,7 @@ if Meteor.isClient
         ###
         appEdited = true
         if(Session.get('postContent').appEdited)
-          appEdited = if Session.get('postContent').appEdited
+          appEdited = Session.get('postContent').appEdited 
         else if(Session.get('postContent').status and (Session.get('postContent').status is 'importing' or Session.get('postContent').status is 'imported'))
           appEdited = false
         deferedProcessAddPostItemsWithEditingProcessBar(pub, appEdited)
