@@ -400,13 +400,16 @@ shareTo = function(to,self,index){
     })
 };
 Template.showPosts.events({
-    'click #shareStoryGroup':function(e, t){
+    'click #ShareStoryGroup':function(e, t){
         //If has hotPosts
-        //if (hotPosts.length > 0 || (Meteor.user().profile && Meteor.user().profile.web_follower_count && Meteor.user().profile.web_follower_count > 0)) {
+        // if (hotPosts.length > 0 || (Meteor.user().profile && Meteor.user().profile.web_follower_count && Meteor.user().profile.web_follower_count > 0)) {
+        if (Template.shareReaderClub.__helpers.get('has_share_hot_post')()){
             $('.shareReaderClub,.shareReaderClubBackground').show();
-        //}
+        } else {
+            toastr.info("还没有读友圈哦，再多读一些故事帖吧！")
+        }
         //Else
-            //GUI to tell user how to have group
+        //GUI to tell user how to have group
     },
     'click #WXTimelineShare':function(e, t){
         shareTo('WXTimeLine',this);
