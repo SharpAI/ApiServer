@@ -156,9 +156,7 @@ if Meteor.isClient
   Template.showPosts.created=->
     layoutHelperInit()
     Session.set("content_loadedCount", 0)
-    Meteor.call 'getHottestPosts', (err,res)->
-      unless err
-        Session.set('hottestPosts', res)
+    getHotPostsData()
   Template.showPosts.onDestroyed ->
     document.body.scrollTop = 0
     Session.set("postPageScrollTop", 0)
@@ -168,9 +166,7 @@ if Meteor.isClient
       $('.tts-stoper').hide()
       window.currentTTS.stop()
   Template.showPosts.onRendered ->
-    Meteor.call 'getHottestPosts', (err,res)->
-      unless err
-        Session.set('hottestPosts', res)
+    getHotPostsData()
     #if !amplify.store('chatNotify')
     #  amplify.store('chatNotify',1)
     #if amplify.store('chatNotify') < 6
@@ -209,9 +205,7 @@ if Meteor.isClient
           document.body.scrollTop = Session.get("postPageScrollTop")
         , 280
   Template.showPosts.onRendered ->
-    Meteor.call 'getHottestPosts', (err,res)->
-      unless err
-        Session.set('hottestPosts', res)
+    getHotPostsData()
     Session.setDefault "displayPostContent",true
     Session.setDefault "toasted",false
     Session.set('postfriendsitemsLimit', 10)
@@ -266,7 +260,6 @@ if Meteor.isClient
       $('.div_me').css('display',"block")
       Session.set('changeUserNameBck', false)
       Meteor.setTimeout ()->
-          console.log "sssdsdds"
           document.body.scrollTop = Session.get("changeNameBckScroll")
         , 450
 
@@ -1047,7 +1040,9 @@ if Meteor.isClient
     #   return (hotPosts.length > 0) and (Session.get('postContent').ownerId isnt Meteor.UserId()) or (hotPosts.length > 0) and (if Meteor.user().profile and Meteor.user().profile.web_follower_count then Meteor.user().profile.web_follower_count > 0 else false)
     has_share_hot_post: ->
       hotPosts = _.filter Session.get('hottestPosts') || [], (value)->
-        value.hasPush
+        !value.hasPush
+      # console.log("-------------has_share_hot_post")
+      # console.log(hotPosts)
       return hotPosts.length > 0
     has_share_follower: ->
       if Session.get('postContent').owner isnt Meteor.userId()

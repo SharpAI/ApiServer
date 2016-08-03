@@ -139,7 +139,7 @@ shareToWechatSession = function (title, description, thumbData, url) {
         }
       }, function() {
         var hotPosts = _.filter(Session.get('hottestPosts') || [], function(value) {
-            return value.hasPush;
+            return !value.hasPush;
         });
 
         if (hotPosts.length > 0 || (Meteor.user().profile && Meteor.user().profile.web_follower_count && Meteor.user().profile.web_follower_count > 0)) {
@@ -186,7 +186,7 @@ shareToWechatTimeLine = function (title, description, thumbData, url) {
         }
       }, function() {
         var hotPosts = _.filter(Session.get('hottestPosts') || [], function(value) {
-            return value.hasPush;
+            return !value.hasPush;
         });
 
         if (hotPosts.length > 0 || (Meteor.user().profile && Meteor.user().profile.web_follower_count && Meteor.user().profile.web_follower_count > 0)) {
@@ -221,7 +221,7 @@ shareToWechat = function(title,description,thumbData,url,type) {
         url: url
     }, type, function () {
         var hotPosts = _.filter(Session.get('hottestPosts') || [], function(value) {
-            return value.hasPush;
+            return !value.hasPush;
         });
 
         if (hotPosts.length > 0 || (Meteor.user().profile && Meteor.user().profile.web_follower_count && Meteor.user().profile.web_follower_count > 0)) {

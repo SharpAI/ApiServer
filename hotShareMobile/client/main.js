@@ -20,6 +20,16 @@ if (Meteor.isCordova) {
         });
     }
   Meteor.startup(function(){
+    Session.setDefault('hottestPosts', [])
+    getHotPostsData = function() {
+      Meteor.call('getHottestPosts',function(err, res){
+        if (!err) {
+          console.log('-------------------getHottestPosts')
+          console.log(res)
+          return Session.set('hottestPosts', res)
+        }
+      });
+    }
     getUserLanguage = function() {
       var lang;
       lang = void 0;
@@ -46,7 +56,9 @@ if (Meteor.isCordova) {
     // PhoneGap加载完毕
     function onDeviceReady() {
         // 按钮事件
+        // console.log('<------- onDeviceReady ----->');
         checkShareExtension();
+        // getHotPostsData();
         navigator.splashscreen.hide();
         document.addEventListener("backbutton", eventBackButton, false); // 返回键
         document.addEventListener("pause", eventPause, false);//挂起
@@ -160,6 +172,7 @@ if (Meteor.isClient) {
     if(Meteor.userId()){
       Meteor.subscribe("topics");
       Meteor.subscribe("topicposts");
+      getHotPostsData();
     }
     document.title = Session.get("DocumentTitle");
   });
