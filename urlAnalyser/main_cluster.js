@@ -10,35 +10,6 @@ var geoip = require('geoip-lite');
 var http = require('http');
 
 var showDebug = true;
-var redis_prefix = process.env.PREFIX+'import_task';
-var redis_prefix_us = process.env.PREFIX+'import_task_us';
-
-process.addListener('uncaughtException', function (err) {
-  var msg = err.message;
-  if (err.stack) {
-    msg += '\n' + err.stack;
-  }
-  if (!msg) {
-    msg = JSON.stringify(err);
-  }
-  console.log(msg);
-  console.trace();
-});
-
-var kue = require('kue'), 
-    cluster = require('cluster'),
-    clusterWorkerSize = require('os').cpus().length,
-    queue = kue.createQueue({
-         //prefix: redis_prefix,
-         redis: {
-             port: 6379,
-             host: 'urlanalyser.tiegushi.com',
-             auth: 'uwAL539mUJ'
-         }});
-
-
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
 
 var port = process.env.PORT || 8080;        // set our port
 var hotshare_web = process.env.HOTSHARE_WEB_HOST || 'http://cdn.tiegushi.com';
@@ -49,30 +20,183 @@ var users = null;
 var Follower = null;
 var FollowPosts = null;
 var Feeds = null;
-var NIGHTMARE_DEBUG = false;
+
+var kue = require('kue'), 
+    cluster = require('cluster'),
+    clusterWorkerSize = require('os').cpus().length,
+    kuequeue;/* = kue.createQueue({
+         //prefix: redis_prefix,
+         redis: {
+             port: 6379,
+             host: 'urlanalyser.tiegushi.com',
+             auth: 'uwAL539mUJ'
+         }});*/
+var NIGHTMARE_DEBUG = true;
 var QUEUE_SIZE = 100;
 var nightmareQueue;
+var redis_prefix = process.env.PREFIX+'import_task';
+var redis_prefix_us = process.env.PREFIX+'import_task_us';
+var restartKueServiceTimeout = null;
 
+process.addListener('uncaughtException', function (err) {
+  if (!err) {
+    err = {};
+  }
+  var msg = err.message;
+  if (err.stack) {
+    msg += '\n' + err.stack;
+  }
+  if (!msg) {
+    msg = JSON.stringify(err);
+  }
+  if (cluster.isMaster) {
+    console.log("uncaughtException on Master");
+  } else {
+    console.log("uncaughtException on Slaver");
+  }
+  console.log("uncaughtException: err="+JSON.stringify(err));
+  console.log(msg);
+  console.trace();
+  if (err.message && err.message.toLowerCase().startsWith("redis")) {
+    if (restartKueServiceTimeout) {
+        clearTimeout(restartKueServiceTimeout);
+        restartKueServiceTimeout = null;
+    }
+
+    restartKueServiceTimeout = setTimeout(function(){
+                                if (cluster.isMaster) {
+                                    for (var id in cluster.workers) {
+                                        console.log("Sending message restartKueService to work id: "+id);
+                                        cluster.workers[id].send('restartKueService');
+                                    }
+                                }
+                                restartKueService();
+                            }, 10000);
+  }
+});
+
+function getUrl(url) {
+    if (url) {
+        var tmpUrl = url.trim().toUpperCase();
+        if ((tmpUrl.indexOf("HTTP://") == 0) || (tmpUrl.indexOf("HTTPS://") == 0)) {
+            return url.trim();F
+        } else {
+            return 'http://'+url.trim();
+        }
+    }
+    return '';
+}
+
+function checkIPAddr(ip) {
+    if (!ip) {
+        return 'CN';
+    }
+    var geo = geoip.lookup(ip);
+    console.log("geo = "+JSON.stringify(geo));
+    if (geo && geo.country == 'US') {
+        return 'US'
+    }
+    return 'CN';
+}
+
+
+/*Kue relative process*/
+function startKueService() {
+    kuequeue = kue.createQueue({
+             //prefix: redis_prefix,
+             redis: {
+                 port: 6379,
+                 host: 'urlanalyser.tiegushi.com',
+                 auth: 'uwAL539mUJ'
+             }});
+    if (cluster.isMaster) {
+        console.log("!!!!!!!!!! startKueService: Master...");
+    } else {
+        console.log("!!!!!!!!!! startKueService: Slaver...");
+        setKueProcessCallback();
+    }
+}
+function restartKueService() {
+    if (kuequeue) {
+        var timeout = 5000;
+        kuequeue.shutdown(Number(timeout), function () {
+            if (cluster.isMaster) {
+                console.log("!!!!!!!!!! restartKueService: Master, shutdown kue queue service! Start again...");
+            } else {
+                console.log("!!!!!!!!!! restartKueService: Slaver, shutdown kue queue service! Start again...");
+            }
+            kuequeue = null;
+            startKueService();
+        });
+    }
+}
+function createTaskToKueQueue(prefix, _id, url, server, chunked) {
+    var job = kuequeue.create(prefix, {
+      id: _id,
+      url: getUrl(url),
+      server: server,
+      chunked: chunked
+    }).save(function(err){
+      if (!err) {
+        console.log("   job.id = "+job.id);
+      }
+      showDebug && console.log(']');
+    });
+    return job;
+}
+function setKueProcessCallback() {
+  function process_callback(job, done){
+    showDebug && console.log('------- Start --------');
+    console.log('worker', cluster.worker.id, 'queue.process', job.data);
+    var data = job.data;
+    var _id = data.id;
+    var url = data.url;
+    var server = data.server;
+    var chunked = data.chunked;
+
+    importUrl(_id, url, server, chunked, function(result) {
+      //setTimeout(function() { done(); }, jobDelay);
+      console.log('result='+JSON.stringify(result));
+      if (result.status == 'succ') {
+        job.progress(100, 100, JSON.stringify(result));
+        done();
+      } else if (result.status == 'importing') {
+        job.progress(50, 100, JSON.stringify(result));
+      } else {
+        done(new Error('failed'));
+      }
+    });
+  }
+
+  if (!process.env.SERVER_IN_US) {
+    console.log("cluster Slaver: CN");
+    kuequeue.process(redis_prefix, QUEUE_SIZE, process_callback);
+  } else {
+    console.log("cluster Slaver: US");
+    kuequeue.process(redis_prefix_us, QUEUE_SIZE, process_callback);
+  }
+}
+
+
+/*nightmare queue relative process*/
 function initQueueMember(queueMember) {
     queueMember.status = "NONE";
     queueMember.nightmare = Nightmare({ show: NIGHTMARE_DEBUG , openDevTools: NIGHTMARE_DEBUG, waitTimeout: 30000});
-    showDebug && console.log("initQueueMember: init a nightmare index="+queueMember.index);
+    showDebug && console.log("initQueueMember: init a nightmare. index="+queueMember.index);
 }
-
 function initNightmareQueue() {
     var queue = new Array(QUEUE_SIZE);
     for (var i=0; i<QUEUE_SIZE; i++) {
         queue[i] = {};
         queue[i].index = i;
-        if (i < 3) {
+        if (i < 10) {
             initQueueMember(queue[i]);
         }
     }
     showDebug && console.log("initNightmareQueue: inititalized "+QUEUE_SIZE+" nightmares.");
     return queue;
 }
-
-function getIdleNightmare(queue, callback) {
+function getIdleNightmare(queue, callback, tryingCount) {
     var tryGetIdleNightmare = function () {
         for (var i=0; i<QUEUE_SIZE; i++) {
             if (!queue[i].nightmare) {
@@ -87,10 +211,18 @@ function getIdleNightmare(queue, callback) {
         }
         return null;
     }
+
+    if (tryingCount > 20) {
+        if (callback) {
+            callback(queueMember);
+        }
+        return;
+    }
+
     var queueMember = tryGetIdleNightmare();
     if (queueMember == null) {
         setTimeout(function(){
-            getIdleNightmare(queue, callback);
+            getIdleNightmare(queue, callback, tryingCount+1);
         }, 1000);
     } else {
         if (callback) {
@@ -98,7 +230,6 @@ function getIdleNightmare(queue, callback) {
         }
     }
 }
-
 function finishNightmare(queueMember) {
     if (queueMember && queueMember.nightmare) {
         queueMember.status = "NONE";
@@ -108,6 +239,8 @@ function finishNightmare(queueMember) {
     }
 }
 
+
+/*database relative process*/
 MongoClient.connect(DB_CONN_STR, function(err, db) {
     if (err) {
         console.log('Error:' + err);
@@ -248,19 +381,6 @@ var postsInsertHookDeferHandle = function(userId,doc){
     }
     catch(error){}*/
 };
-
-var httpget = function(url) {
-    http.get(url, function(res) {
-        showDebug && console.log('httpget suc: url='+url+', response: ${res.statusCode}');
-        showDebug && console.log('------- End --------');
-        // consume response body
-        res.resume();
-    }).on('error', function(err) {
-        showDebug && console.log('httpget failed: url='+url+', error: ${e.message}');
-        showDebug && console.log('------- End --------');
-    });
-}
-
 var insert_data = function(user, url, data, cb) {
     if (!user || !data || !url || !posts) {
       console.log('Error: null of id or data');
@@ -324,7 +444,6 @@ var insert_data = function(user, url, data, cb) {
       });
     });
 }
-
 var updatePosts = function(postId, post, callback){
   post.status = 'imported';
   posts.update({_id: postId},{$set: post}, function(err, number){
@@ -346,7 +465,20 @@ var updateFollowPosts = function(userId, postId, post, callback){
   });
 };
 
-function importUrl(_id, url, chunked, callback) {
+
+var httpget = function(url) {
+    http.get(url, function(res) {
+        showDebug && console.log('httpget suc: url='+url+', response: ${res.statusCode}');
+        showDebug && console.log('------- End --------');
+        // consume response body
+        res.resume();
+    }).on('error', function(err) {
+        showDebug && console.log('httpget failed: url='+url+', error: ${e.message}');
+        showDebug && console.log('------- End --------');
+    });
+}
+
+function importUrl(_id, url, server, chunked, callback) {
   switch (arguments.length) {
     case 2:
       chunked = false;
@@ -394,6 +526,14 @@ function importUrl(_id, url, chunked, callback) {
   
   //var nightmare = Nightmare({ show: false , openDevTools: false, waitTimeout: 30000});
   function startNavigation(queueMember) {
+      if (!queueMember) {
+        if (callback) {
+          console.log("    !!!!!!Error: can't get nightmare from queue!");
+          chunked_result.status = 'failed';
+          callback({status: 'failed'});
+        }
+        return;
+      }
       var index = queueMember.index;
       var nightmare = queueMember.nightmare;
       nightmare
@@ -441,7 +581,11 @@ function importUrl(_id, url, chunked, callback) {
                           showDebug && console.log('database update error!');
                           showDebug && console.log('------- End --------');
                         } else {
-                            var url = hotshare_web+'/restapi/postInsertHook/'+user._id+'/'+postId;
+                            var tmpServer = hotshare_web;
+                            if (server == '') {
+                                tmpServer = server;
+                            }
+                            var url = tmpServer+'/restapi/postInsertHook/'+user._id+'/'+postId;
                             httpget(url);
                         }
                       });
@@ -456,6 +600,7 @@ function importUrl(_id, url, chunked, callback) {
                   // send response
                   if (callback) {
                     chunked_result.status = 'succ';
+                    if (hotshare_web)
                     chunked_result.json = hotshare_web+'/posts/'+postId;
                     callback({status:'succ',json:hotshare_web+'/posts/'+postId});
                   }
@@ -476,32 +621,9 @@ function importUrl(_id, url, chunked, callback) {
 
           })
   }
-  getIdleNightmare(nightmareQueue, startNavigation);
+  getIdleNightmare(nightmareQueue, startNavigation, 0);
 }
 
-function getUrl(url) {
-    if (url) {
-        var tmpUrl = url.trim().toUpperCase();
-        if ((tmpUrl.indexOf("HTTP://") == 0) || (tmpUrl.indexOf("HTTPS://") == 0)) {
-            return url.trim();
-        } else {
-            return 'http://'+url.trim();
-        }
-    }
-    return '';
-}
-
-function checkIPAddr(ip) {
-    if (!ip) {
-        return 'CN';
-    }
-    var geo = geoip.lookup(ip);
-    console.log("geo = "+JSON.stringify(geo));
-    if (geo && geo.country == 'US') {
-        return 'US'
-    }
-    return 'CN';
-}
 
 if (cluster.isMaster) {
   console.log("clusterWorkerSize="+clusterWorkerSize);
@@ -509,12 +631,20 @@ if (cluster.isMaster) {
     cluster.fork();
     console.log("cluster master fork: i="+i);
   }
+  cluster.on('exit', function(worker, code, signal) {
+    console.log('Worker ' + worker.id + ' died..');
+    cluster.fork();
+  });
+  cluster.on('disconnect', function() {
+    console.log('Frank Worker disconnect..');
+  });
   if (process.env.isClient) {
     console.log("Master: work only for slaver mode.");
     return;
   } else {
     console.log("cluster work both for Master and slaver mode.");
   }
+
   var router = express.Router();
   router.get('/', function(req, res) {
     res.json({ message: 'hooray! welcome to our api!' });
@@ -529,30 +659,17 @@ if (cluster.isMaster) {
       //importUrl(req.params._id, req.params.url, res.json);
       var job;
       var ip = req.query.ip;
+      var server = req.query.server;
+      if (!server) {
+        server = '';
+      }
       if (checkIPAddr(ip) == 'CN') {
         console.log("   create task for CN");
-        job = queue.create(redis_prefix, {
-          id: req.params._id,
-          url: getUrl(req.params.url),
-          chunked: chunked
-        }).save(function(err){
-          if( !err ) {
-            console.log("   job.id = "+job.id);
-          }
-          showDebug && console.log(']');
-        });
+        job = createTaskToKueQueue(redis_prefix, req.params._id, req.params.url, server, chunked);
+        
       } else {
         console.log("   create task for US");
-        job = queue.create(redis_prefix_us, {
-          id: req.params._id,
-          url: getUrl(req.params.url),
-          chunked: chunked
-        }).save(function(err){
-          if( !err ) {
-            console.log("   job.id = "+job.id +"]");
-          }
-          showDebug && console.log(']');
-        });
+        job = createTaskToKueQueue(redis_prefix_us, req.params._id, req.params.url, server, chunked);
       }
 
       job.on('complete', function(result){
@@ -575,38 +692,23 @@ if (cluster.isMaster) {
         }
       });
     });
+
+  startKueService();
+  app.use(bodyParser.urlencoded({extended: true}));
+  app.use(bodyParser.json());
   app.use('/import', router);
   app.listen(port);
   console.log('Magic happens on port ' + port);
 } else {
-  function process_callback(job, done){
-    showDebug && console.log('------- Start --------');
-    console.log('worker', cluster.worker.id, 'queue.process', job.data);
-    var data = job.data;
-    var _id = data.id;
-    var url = data.url;
-    var chunked = data.chunked;
-
-    importUrl(_id, url, chunked, function(result) {
-      //setTimeout(function() { done(); }, jobDelay);
-      console.log('result='+JSON.stringify(result));
-      if (result.status == 'succ') {
-        job.progress(100, 100, JSON.stringify(result));
-        done();
-      } else if (result.status == 'importing') {
-        job.progress(50, 100, JSON.stringify(result));
-      } else {
-        done(new Error('failed'));
-      }
-    });
-  }
-
+  //process.on('message', (msg) => {
+  process.on('message', function(msg) {
+    //process.send(msg);
+    if (msg === 'restartKueService') {
+      console.log("Received restartKueService message from Master.");
+      //restartKueService();
+      process.exit(0);
+    }
+  });
   nightmareQueue = initNightmareQueue();
-  if (!process.env.SERVER_IN_US) {
-    console.log("cluster Slaver: CN");
-    queue.process(redis_prefix, QUEUE_SIZE, process_callback);
-  } else {
-    console.log("cluster Slaver: US");
-    queue.process(redis_prefix_us, QUEUE_SIZE, process_callback);
-  }
+  startKueService();
 }
