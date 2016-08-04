@@ -85,7 +85,7 @@ Template.importPost.events({
             case 'succ':
               progress.set(100);
               hasDone = true;
-              location = result.json;
+              Router.go('/posts/' + result.json.substr(result.json.lastIndexOf('/')+1));
               break;
             default:
               hasCancel = true;
@@ -129,7 +129,7 @@ Template.importPost.events({
             
             // 所功后打开贴子
             //alert('导入成功，后端还会对图片进行自动优化~!!');
-            location = result.json;
+            Router.go('/posts/' + result.json.substr(result.json.lastIndexOf('/')+1));
           });
         } catch (error) {
             progress.set(100);
