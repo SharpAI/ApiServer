@@ -21,6 +21,8 @@ if Meteor.isServer
           Meteor.users.update({_id: userId},{$set: {'profile.language': lang}})
       'httpCall': (method, url, options)->
         url += '?ip='+this.connection.clientAddress
+        if Meteor.absoluteUrl().toLowerCase().indexOf('host2.tiegushi.com') >= 0
+          url += '&server='+Meteor.absoluteUrl();
         #url += '?ip=12.206.217.29'
         console.log("Call httpCall, url="+url);
         return HTTP.call(method, url, options)
