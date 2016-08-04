@@ -12,9 +12,13 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
   var result = {status: 'failed'};
   var hasEnd = false;
   api_url += '/' + this.params._id + '/' + encodeURIComponent(this.params.url) + '?chunked=true';
-  api_url += '&ip='+this.request.connection.remoteAddress;
-  if (Meteor.absoluteUrl().toLowerCase().indexOf('host2.tiegushi.com') >= 0)
-          api_url += '&server='+encodeURIComponent(Meteor.absoluteUrl());
+  var clientIp = getClientIp(req);
+  if (clientIp) {
+    api_url += '&ip='+clientIp;
+  }
+  if (Meteor.absoluteUrl().toLowerCase().indexOf('host2.tiegushi.com') >= 0) {
+    api_url += '&server='+encodeURIComponent(Meteor.absoluteUrl());
+  }
   console.log("api_url="+api_url+", Meteor.absoluteUrl()="+Meteor.absoluteUrl());
   
   request({
