@@ -626,7 +626,7 @@ if(Meteor.isServer){
                     html: text,
                     envelope: {
                             from: "故事贴<notify@mail.tiegushi.com>",
-                            to: item.userEmail + "<" + item.userEmail + ">"
+                            to: notifyUser.userEmail + "<" + notifyUser.userEmail + ">"
                     }
                 });
 
