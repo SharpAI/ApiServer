@@ -1740,7 +1740,7 @@ if(Meteor.isServer){
       if(this.userId === null)
           return this.ready();
       else {
-          Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId}), {nonReactive: true });
+          Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId,publish: true}), {nonReactive: true });
           Counts.publish(this, 'mySavedDraftsCount', SavedDrafts.find({owner: this.userId}), {nonReactive: true });
           //Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { nonReactive: true });
           Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { reactive: true });
