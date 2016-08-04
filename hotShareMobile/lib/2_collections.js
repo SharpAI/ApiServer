@@ -573,23 +573,30 @@ if(Meteor.isServer){
 
             var actionUser = Meteor.users.findOne({_id: fromUserId});
             if(!actionUser) return;
-
-            var subject = '有人也点评了此故事：《' + post.title + '》';
+            var reg = new RegExp('[.^*#]','g');
+            var title = post.title.replace(reg,'-');
+            var addontitle = post.addontitle.replace(reg,'-');;
+            var subject = '有人也点评了此故事：《' + title + '》';
             var action = '点评';
             if (ptype === 'like') {
-                subject = '有人赞了此故事：《' + post.title + '》';
+                subject = '有人赞了此故事：《' + title + '》';
                 action = '赞';
             }
             else if (ptype === 'dislike') {
-                subject = '有人踩了此故事：《' + post.title + '》';
+                subject = '有人踩了此故事：《' + title + '》';
                 action = '踩';
             }
 
            text = Assets.getText('email/comment-post.html');
-           text = text.replace('{{post.title}}', post.title);
-           text = text.replace('{{post.subtitle}}', post.addontitle);
+           text = text.replace('{{post.title}}', title);
+           text = text.replace('{{post.subtitle}}', addontitle);
            text = text.replace('{{action.owner}}', actionUser.profile.fullname ? actionUser.profile.fullname : actionUser.username);
            text = text.replace('{{post.icon}}', actionUser.profile.icon);
+           if(actionUser.profile.icon == '/userPicture.png'){
+               text = text.replace('{{post.icon}}', 'http://' + server_domain_name + actionUser.profile.icon);
+           } else {
+               text = text.replace('{{post.icon}}', actionUser.profile.icon);
+           } 
            text = text.replace('{{action}}', action);
            text = text.replace('{{post.time}}', new Date().toLocaleString());
            text = text.replace('{{post.href}}', 'http://' + server_domain_name + '/posts/' + post._id);
@@ -614,6 +621,7 @@ if(Meteor.isServer){
             text = text.replace('{{post-content}}', content);
 
             try {
+                /*
                 var transporter = nodemailer.createTransport({
                     "host": "smtpdm.aliyun.com",
                     "port": 465,
@@ -640,6 +648,13 @@ if(Meteor.isServer){
                     }
                     console.log('Message sent: ' + info.response);
                 });
+                */
+                Email.send({
+                    to: notifyUser.userEmail,
+                    from: '故事贴<notify@mail.tiegushi.com>',
+                    subject: subject,
+                    html: text
+                });
 
                 console.log('send mail to:', notifyUser.userEmail);
             } catch (_error) {
@@ -656,12 +671,19 @@ if(Meteor.isServer){
             post = Posts.findOne({
                 _id: id
             });
+           var reg = new RegExp('[.^*#]','g');
+           var title = post.title.replace(reg,'-');
+           var addontitle = post.addontitle.replace(reg,'-');;
 
            text = Assets.getText('email/push-post.html');
-           text = text.replace('{{post.title}}', post.title);
-           text = text.replace('{{post.subtitle}}', post.addontitle);
+           text = text.replace('{{post.title}}', title);
+           text = text.replace('{{post.subtitle}}', addontitle);
            text = text.replace('{{post.author}}', post.ownerName);
-           text = text.replace('{{post.icon}}', post.ownerIcon);
+           if(post.ownerIcon == '/userPicture.png'){
+               text = text.replace('{{post.icon}}', 'http://cdn.tiegushi.com/posts/' + post.ownerIcon);
+           } else {
+               text = text.replace('{{post.icon}}', post.ownerIcon);
+           } 
            text = text.replace('{{post.time}}', new Date().toLocaleString());
            text = text.replace('{{post.href}}', 'http://cdn.tiegushi.com/posts/' + post._id);
            text = text.replace('{{post.mainImage}}', post.mainImage);
@@ -686,12 +708,12 @@ if(Meteor.isServer){
                     Email.send({
                         to: item.userEmail,
                         from: '故事贴<admin@tiegushi.com>',
-                        subject: '您在故事贴上关注的“' + post.ownerName + '”' + '发表了新故事' + '：《' + post.title + '》',
+                        subject: '您在故事贴上关注的“' + post.ownerName + '”' + '发表了新故事' + '：《' + title + '》',
                         html: text,
-                        envelope: {
-                            from: "故事贴<admin@tiegushi.com>",
-                            to: item.userEmail + "<" + item.userEmail + ">"
-                        }
+                        // envelope: {
+                        //     from: "故事贴<admin@tiegushi.com>",
+                        //     to: item.userEmail + "<" + item.userEmail + ">"
+                        // }
                     });
 
                     console.log('send mail to:', item.userEmail);
