@@ -680,6 +680,7 @@ if Meteor.isClient
       postForward = Session.get("postForward")
       postForwardId = postForward.pop()
       postBack.push(postId)
+      Session.set('postContentTwo', postForwardId)
       Session.set("postForward",postForward)
       Session.set("postBack",postBack)
 
@@ -696,6 +697,7 @@ if Meteor.isClient
       postForward = Session.get("postForward")
       postBackId = postBack.pop()
       postForward.push(postId)
+      Session.set('postContentTwo', postBackId)
       Session.set("postForward",postForward)
       Session.set("postBack",postBack)
       Session.set("pcommetsId","")
@@ -1121,8 +1123,12 @@ if Meteor.isClient
       t.find('.help-block').innerHTML = ''
     'click .okBtn':(e,t)->
       mailAddress = t.find('#email').value
-      postId = Session.get("postContent")._id
-      post = Posts.findOne()
+      if Session.set('postContentTwo')
+        postId = Session.set('postContentTwo')
+      else 
+        postId = Session.get("postContent")._id
+      # postId = Session.get("postContent")._id
+      post = Posts.findOne({_id: postId})
       followerCount = Follower.find({userId: Meteor.userId(), followerId: post.owner}).count()
       qqValueReg = RegExp(/^[1-9][0-9]{4,9}$/)
       mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) 

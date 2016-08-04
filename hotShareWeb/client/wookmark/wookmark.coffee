@@ -161,6 +161,7 @@ Template.newLayoutContainer.events =
     Session.set("postForward",[])
     Session.set("postBack",postBack)
     Session.set("lastPost",postId)
+    Session.set('postContentTwo', postId)
     $(window).children().off()
     $(window).unbind('scroll')
     if typeof PopUpBox isnt "undefined"
