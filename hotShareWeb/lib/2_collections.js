@@ -518,8 +518,6 @@ if(Meteor.isServer){
 
   var sendEmailToSubscriber = function(ptype, pindex, postId, fromUserId, toUserId) {
         Meteor.defer(function() {
-
-
             var content, i, item, len, post, ref, text;
             post = Posts.findOne({
                 _id: postId
@@ -546,8 +544,10 @@ if(Meteor.isServer){
             }
            
            text = Assets.getText('email/comment-post.html');
-           text = text.replace('{{post.title}}', antiSpam(post.title));
-           text = text.replace('{{post.subtitle}}', antiSpam(post.addontitle));
+           //text = text.replace('{{post.title}}', antiSpam(post.title));
+           //text = text.replace('{{post.subtitle}}', antiSpam(post.addontitle));
+           text = text.replace('{{post.title}}', post.title);
+           text = text.replace('{{post.subtitle}}', post.addontitle);
            text = text.replace('{{action.owner}}', actionUser.profile.fullname ? actionUser.profile.fullname : actionUser.username);
            if(actionUser.profile.icon == '/userPicture.png'){
                text = text.replace('{{post.icon}}', 'http://' + server_domain_name + actionUser.profile.icon);
@@ -579,39 +579,15 @@ if(Meteor.isServer){
             text = text.replace('{{post-content}}', content);
             
             try {
-                /*
-                var transporter = nodemailer.createTransport({
-                    "host": "smtpdm.aliyun.com",
-                    "port": 465,
-                    "secureConnection": true,
-                    "auth": {
-                        "user": 'notify@mail.tiegushi.com',
-                        "pass": 'Actiontec753951'
-                    }
-                });
-
-                //var transporter = nodemailer.createTransport('smtp://postmaster%40sandboxb40d25ffd9474e8b88a566924d4167bb.mailgun.org:9bad59febb44cf256ff0766960922980@smtp.mailgun.org:587');                
-
-                var mailOptions = {
-                    from: '故事贴<notify@mail.tiegushi.com>',
-                    to: notifyUser.userEmail,
-                    subject: subject,
-                    text: text,
-                    html: text
-                };
-
-                transporter.sendMail(mailOptions, function(error, info){
-                    if(error){
-                        return console.log(error);
-                    }
-                    console.log('Message sent: ' + info.response);
-                });
-                */
                 Email.send({
                     to: notifyUser.userEmail,
                     from: '故事贴<notify@mail.tiegushi.com>',
                     subject: subject,
-                    html: text
+                    html: text,
+                    envelope: {
+                        from: "故事贴<notify@mail.tiegushi.com>",
+                        to: item.userEmail + "<" + item.userEmail + ">"
+                    }
                 });
 
                 console.log('send mail to:', notifyUser.userEmail);
@@ -1264,6 +1240,10 @@ if(Meteor.isServer){
                     subject: '成功关注作者：'+doc.followerName + '',
                     body: '成功关注作者：'+doc.followerName + ',我们会不定期的为您推送关注作者的新文章！',
                     html: text,
+                    envelope: {
+                            from: "故事贴<notify@mail.tiegushi.com>",
+                            to: item.userEmail + "<" + item.userEmail + ">"
+                    }
                 });
                 
             } catch (e){

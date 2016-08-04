@@ -430,41 +430,17 @@ if Meteor.isServer
 
           Follower.find({userId: slef.userId, fromWeb: true}).fetch().forEach (item)->
             try
-                transporter = nodemailer.createTransport({
-                    "host": "smtpdm.aliyun.com"
-                    "port": 465
-                    "secureConnection": true
-                    "auth": {
-                        "user": 'notify@mail.tiegushi.com'
-                        "pass": 'Actiontec753951'
-                    }
-                })
-                mailOptions = {
-                    from: '故事贴<notify@mail.tiegushi.com>'
-                    to: item.userEmail
-                    subject: '您在故事贴上关注的“'+post.ownerName+'”'+(if event is 'share' then '分享了故事' else '发表了新故事')+'：《'+post.title+'》'
-                    text: text
-                    html: text
-                }
-
-                transporter.sendMail(mailOptions, (error, info)->
-                    if error
-                        return console.log(error)
-                    console.log('Message sent: ' + info.response);
-                )
-                ###
                 Email.send {
                   to: item.userEmail
-                  from: '故事贴<admin@tiegushi.com>'
+                  from: '故事贴<notify@mail.tiegushi.com>'
                   # from: '故事贴<33597990@qq.com>'
                   subject: '您在故事贴上关注的“'+post.ownerName+'”'+(if event is 'share' then '分享了故事' else '发表了新故事')+'：《'+post.title+'》'
                   html: text
                   envelope: {
-                      from: "故事贴<admin@tiegushi.com>"
+                      from: '故事贴<notify@mail.tiegushi.com>'
                       to: item.userEmail+"<"+item.userEmail+">"
                   }
                 }
-                ###
                 console.log('send mail to:', item.userEmail)
             catch ex
               console.log(ex)

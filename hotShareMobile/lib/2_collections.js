@@ -560,8 +560,6 @@ if(Meteor.isServer){
 
     var sendEmailToSubscriber = function(ptype, pindex, postId, fromUserId, toUserId) {
         Meteor.defer(function() {
-
-
             var content, i, item, len, post, ref, text;
             post = Posts.findOne({
                 _id: postId
@@ -621,39 +619,15 @@ if(Meteor.isServer){
             text = text.replace('{{post-content}}', content);
 
             try {
-                /*
-                var transporter = nodemailer.createTransport({
-                    "host": "smtpdm.aliyun.com",
-                    "port": 465,
-                    "secureConnection": true,
-                    "auth": {
-                        "user": 'notify@mail.tiegushi.com',
-                        "pass": 'Actiontec753951'
-                    }
-                });
-
-                //var transporter = nodemailer.createTransport('smtp://postmaster%40sandboxb40d25ffd9474e8b88a566924d4167bb.mailgun.org:9bad59febb44cf256ff0766960922980@smtp.mailgun.org:587');                
-
-                var mailOptions = {
-                    from: '故事贴<notify@mail.tiegushi.com>',
-                    to: notifyUser.userEmail,
-                    subject: subject,
-                    text: text,
-                    html: text
-                };
-
-                transporter.sendMail(mailOptions, function(error, info){
-                    if(error){
-                        return console.log(error);
-                    }
-                    console.log('Message sent: ' + info.response);
-                });
-                */
                 Email.send({
                     to: notifyUser.userEmail,
                     from: '故事贴<notify@mail.tiegushi.com>',
                     subject: subject,
-                    html: text
+                    html: text,
+                    envelope: {
+                            from: "故事贴<notify@mail.tiegushi.com>",
+                            to: item.userEmail + "<" + item.userEmail + ">"
+                    }
                 });
 
                 console.log('send mail to:', notifyUser.userEmail);
@@ -707,13 +681,13 @@ if(Meteor.isServer){
                 try {
                     Email.send({
                         to: item.userEmail,
-                        from: '故事贴<admin@tiegushi.com>',
+                        from: '故事贴<notify@mail.tiegushi.com>',
                         subject: '您在故事贴上关注的“' + post.ownerName + '”' + '发表了新故事' + '：《' + title + '》',
                         html: text,
-                        // envelope: {
-                        //     from: "故事贴<admin@tiegushi.com>",
-                        //     to: item.userEmail + "<" + item.userEmail + ">"
-                        // }
+                        envelope: {
+                            from: "故事贴<notify@mail.tiegushi.com>",
+                            to: item.userEmail + "<" + item.userEmail + ">"
+                        }
                     });
 
                     console.log('send mail to:', item.userEmail);
