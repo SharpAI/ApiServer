@@ -31,7 +31,7 @@ var kue = require('kue'),
              host: 'urlanalyser.tiegushi.com',
              auth: 'uwAL539mUJ'
          }});*/
-var NIGHTMARE_DEBUG = true;
+var NIGHTMARE_DEBUG = false;
 var QUEUE_SIZE = 100;
 var nightmareQueue;
 var redis_prefix = process.env.PREFIX+'import_task';
@@ -582,10 +582,13 @@ function importUrl(_id, url, server, chunked, callback) {
                           showDebug && console.log('------- End --------');
                         } else {
                             var tmpServer = hotshare_web;
-                            if (server == '') {
-                                tmpServer = server;
+                            if (server && (server != '')) {
+                                if (server.charAt(server.length - 1) == '/') {
+                                    tmpServer = server.substring(0, server.length - 1);
+                                }
                             }
                             var url = tmpServer+'/restapi/postInsertHook/'+user._id+'/'+postId;
+                            console.log("httpget url="+url);
                             httpget(url);
                         }
                       });

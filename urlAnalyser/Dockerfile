@@ -26,7 +26,7 @@ COPY ./post_drafts.js /srv/post_drafts.js
 COPY ./start.sh /srv/start.sh
 RUN chmod +x /srv/start.sh
 WORKDIR /srv/
-RUN NODE_ENV=production npm install
+RUN npm install --production
 
 COPY ./assets/patchs-nightmare-2.5.2/runner.js /srv/node_modules/nightmare/lib/runner.js
 
