@@ -484,7 +484,7 @@ function importUrl(_id, url, server, chunked, callback) {
       chunked = false;
       break;
     case 3:
-      callback = chunked;
+      //callback = chunked;
       chunked = false;
       break;
   }
