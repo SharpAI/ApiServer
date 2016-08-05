@@ -322,7 +322,11 @@
          $('.showBgColor').removeAttr('style');
          $(window).scrollTop(0-Session.get('backgroundTop'));
          $('.pcommentInput,.alertBackground').fadeOut(300);
-         Session.set('backgroundTop','')
+         Session.set('backgroundTop','');
+         
+         var postItem = $('.post-pcomment-current-pub-item');
+         console.log(postItem);
+         postItem.removeClass('post-pcomment-current-pub-item');
        }
        function pcommitReport(e, t) {
           console.log(">>>")
@@ -386,6 +390,7 @@
             userIcon: userIcon,
             createdAt: new Date()
           };
+
           // post[i].pcomments.push(pcommentJson);
           var popUpObj = {}
           var objHelp = 'pub.'+i+'.pcomments';
@@ -402,6 +407,19 @@
             if (error) {
               return console.log(error.reason);
             } else {
+              var postItem = $('.post-pcomment-current-pub-item');
+              var offsetHeight = postItem.height() - parseInt(postItem.attr('data-height'));
+              console.log(offsetHeight);
+              // resize nex node top
+              postItem.nextAll().each(function(){
+                try{
+                  var item = $(this);
+                  var top = offsetHeight + item.position().top;
+                  item.css('top', top + 'px');
+                }catch (ex){}
+              });
+              postItem.removeClass('post-pcomment-current-pub-item');
+          
               return console.log("success");
             }
           });
@@ -410,7 +428,8 @@
           $('.showBgColor').removeAttr('style');
           $(window).scrollTop(0 - Session.get('backgroundTop'));
           $('.pcommentInput,.alertBackground').fadeOut(300);
-          refreshPostContent()
+          
+          //refreshPostContent();
           return false;
         }
 

@@ -55,6 +55,8 @@ if Meteor.isClient
       thumbsDownHandler(e,this)
       Session.set('postPageScrollTop',document.body.scrollTop)
     'click .pcomments': (e)->
+      #console.log($(e.currentTarget).parent().parent().parent())
+      $(e.currentTarget).parent().parent().parent().addClass('post-pcomment-current-pub-item').attr('data-height': $(e.currentTarget).parent().parent().parent().height())
       bgheight = $(window).height() + $(window).scrollTop()
       # $('.showBgColor').css('overflow','hidden')
       $('.showBgColor').attr('style','overflow:hidden;min-width:' + $(window).width() + 'px;' + 'height:' + bgheight + 'px;')
