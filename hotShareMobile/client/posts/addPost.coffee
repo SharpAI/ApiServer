@@ -1024,6 +1024,7 @@ if Meteor.isClient
             SavedDrafts.remove draftId
           #Clear Drafts
           Drafts.remove {owner: Meteor.userId()}
+          Session.set('fromDraftPost',false)
           $('.addPost').addClass('animated ' + animateOutUpperEffect);
           Meteor.setTimeout ()->
             PUB.back()
@@ -1075,6 +1076,7 @@ if Meteor.isClient
           #Clear Drafts
           Drafts.remove {owner: Meteor.userId()}
           TempDrafts.remove {owner: Meteor.userId()}
+          Session.set('fromDraftPost',false)
           $('.addPost').addClass('animated ' + animateOutUpperEffect);
           Meteor.setTimeout ()->
             Router.go('/')
@@ -1190,20 +1192,24 @@ if Meteor.isClient
       Template.addPost.__helpers.get('saveDraft')()
       Drafts.remove {owner: Meteor.userId()}
       TempDrafts.remove {owner: Meteor.userId()}
-      savedDraftData = SavedDrafts.findOne({_id: Session.get('postContent').id})
-      if withDirectDraftShow
-        if savedDraftData and savedDraftData.pub and savedDraftData._id
-          Session.set('postContent',savedDraftData)
-          PUB.page('/draftposts/'+savedDraftData._id)
-          return
-        else
-          toastr.error('got wrong')
-          return
-      # history.back()
+      if Session.get('fromDraftPost') is true
+        Session.set('fromDraftPost',false)
+        savedDraftData = SavedDrafts.findOne({_id: Session.get('postContent')._id})
+        if withDirectDraftShow
+          if savedDraftData and savedDraftData.pub and savedDraftData._id
+            Session.set('postContent',savedDraftData)
+            PUB.page('/draftposts/'+savedDraftData._id)
+            return
+          else
+            toastr.error('got wrong')
+            return
+      else
+        history.back()
       #PUB.back()
 
 
     'click #publish, click #modalPublish': (e)->
+      Session.set('fromDraftPost',false)
       if Session.get('isReviewMode') is '0' and e.currentTarget.id is "publish" and Template.addPost.__helpers.get('hasAssocaitedUsers')()
         return
 

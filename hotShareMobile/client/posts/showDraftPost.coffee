@@ -89,6 +89,7 @@ if Meteor.isClient
 
   Template.showDraftPosts.events
     'click .showDraftback' :->
+      Session.set('fromDraftPost',false)
       Meteor.setTimeout ()->
         if Session.get("backtoalldrafts") is true
           Session.set("backtoalldrafts",false)
@@ -147,6 +148,7 @@ if Meteor.isClient
         else if(post.status is 'importing' or post.status is 'imported' or post.status is 'done')
           appEdited = false
         deferedProcessAddPostItemsWithEditingProcessBar(pub, appEdited)
+      Session.set('fromDraftPost',true)
       Session.set('isReviewMode','0')
       Router.go('/add')
     'click #delete':(event)->
@@ -154,6 +156,7 @@ if Meteor.isClient
         if r isnt 2
           return
         Session.set 'isReviewMode','1'
+        Session.set('fromDraftPost',false)
         #Delete it from SavedDrafts
         # draftData = Drafts.find().fetch()
         if Drafts.find().count() is 0
