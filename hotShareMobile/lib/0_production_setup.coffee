@@ -18,3 +18,4 @@
 @withZhiFaCDN = false
 @withServerImport = true
 @withShareStoryGroup = true
+@withDirectDraftShow = true

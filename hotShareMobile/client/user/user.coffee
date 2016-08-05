@@ -196,6 +196,7 @@ if Meteor.isClient
     'click .draftImages ul li':(e)->
       Session.set('pubImages', [])
       #Use for if user discard change on Draft
+      Session.set('backtopageuser', true)
       TempDrafts
         .find {owner: Meteor.userId()}
         .forEach (drafts)->
@@ -206,7 +207,16 @@ if Meteor.isClient
         .forEach (drafts)->
           Drafts.remove drafts._id
       #Prepare data
-      savedDraftData = SavedDrafts.find({_id: e.currentTarget.id}).fetch()[0]
+      savedDraftData = SavedDrafts.findOne({_id: e.currentTarget.id})
+      if withDirectDraftShow
+        if savedDraftData and savedDraftData.pub and savedDraftData._id
+          Session.set('postContent',savedDraftData)
+          PUB.page('/draftposts/'+savedDraftData._id)
+          return
+        else
+          toastr.error('got wrong')
+          return
+
       TempDrafts.insert {
         _id:savedDraftData._id,
         pub:savedDraftData.pub,

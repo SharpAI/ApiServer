@@ -353,6 +353,9 @@ if Meteor.isClient
     Meteor.defer ()->
       console.log('appEdited:', appEdited)
       async.mapLimit(pub,3,(item,callback)->
+        console.log('getcallback------------')
+        console.log(item)
+        console.log(callback)
         if(appEdited is true)
           item.noKeyboardPopup=true
           item.respectLayout=true
@@ -364,6 +367,8 @@ if Meteor.isClient
       ,(error,result)->
         closePreEditingPopup()
         Session.set('itemInAddPostPending',0)
+        console.log('error-----------------')
+        console.log(error)
         unless error
           console.log('no error')
       )
@@ -1187,7 +1192,16 @@ if Meteor.isClient
       Template.addPost.__helpers.get('saveDraft')()
       Drafts.remove {owner: Meteor.userId()}
       TempDrafts.remove {owner: Meteor.userId()}
-      history.back()
+      savedDraftData = SavedDrafts.findOne({_id: Session.get('postContent').id})
+      if withDirectDraftShow
+        if savedDraftData and savedDraftData.pub and savedDraftData._id
+          Session.set('postContent',savedDraftData)
+          PUB.page('/draftposts/'+savedDraftData._id)
+          return
+        else
+          toastr.error('got wrong')
+          return
+      # history.back()
       #PUB.back()
 
 

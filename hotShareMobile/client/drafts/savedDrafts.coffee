@@ -40,6 +40,8 @@ if Meteor.isClient
           return
         , '您确定删除全部草稿吗？', ['继续删除','放弃删除']);
     'click .mainImage':(e)->
+      Session.set('pubImages', [])
+      Session.set('backtoalldrafts', true)
       #Use for if user discard change on Draft
       TempDrafts
         .find {owner: Meteor.userId()}
@@ -51,7 +53,17 @@ if Meteor.isClient
         .forEach (drafts)->
           Drafts.remove drafts._id
       #Prepare data
-      savedDraftData = SavedDrafts.find({_id: @_id}).fetch()[0]
+      # savedDraftData = SavedDrafts.find({_id: @_id}).fetch()[0]
+      savedDraftData = SavedDrafts.findOne({_id: e.currentTarget.id})
+      if withDirectDraftShow
+        if savedDraftData and savedDraftData.pub and savedDraftData._id
+          Session.set('postContent',savedDraftData)
+          PUB.page('/draftposts/'+savedDraftData._id)
+          return
+        else
+          toastr.error('got wrong')
+          return
+
       TempDrafts.insert {
         _id:savedDraftData._id,
         pub:savedDraftData.pub,

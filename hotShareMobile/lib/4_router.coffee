@@ -130,6 +130,18 @@ if Meteor.isClient
             this.render 'unpublish'
           Session.set 'channel','posts/'+this.params._id
       }
+    Router.route '/draftposts/:_id', {
+      action: ->
+        post = Session.get('postContent')
+
+        if post and post.addontitle and (post.addontitle isnt '')
+          documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
+        else if post
+          documentTitle = "『故事贴』" + post.title
+        Session.set("DocumentTitle",documentTitle)
+        this.render 'showDraftPosts', {data: post}
+        Session.set 'draftposts','draftposts/'+this.params._id
+    }
     Router.route '/posts/:_id/:_index', {
       waitOn: ->
         [Meteor.subscribe("publicPosts",this.params._id),
