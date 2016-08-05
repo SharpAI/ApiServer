@@ -600,68 +600,65 @@ if(Meteor.isServer){
     };
 
     
-    var sendEmailToFollower = function(id, userId, data){
-        // console.log('给web关注者发送邮件')
-        Meteor.defer(function() {
-            var content, i, item, len, post, ref, text;
-            post = Posts.findOne({
-                _id: id
-            });
-            if (!post) {
-                console.log("Can't find the post: id="+id);
-            }
-           var reg = new RegExp('[.^*#]','g');
-           var title = post.title.replace(reg,'-');
-           var addontitle = post.addontitle.replace(reg,'-');;
-
-           text = Assets.getText('email/push-post.html');
-           text = text.replace('{{post.title}}', title);
-           text = text.replace('{{post.subtitle}}', addontitle);
-           text = text.replace('{{post.author}}', post.ownerName);
-           if(post.ownerIcon == '/userPicture.png'){
-               text = text.replace('{{post.icon}}', 'http://' + server_domain_name + post.ownerIcon);
-           } else {
-               text = text.replace('{{post.icon}}', post.ownerIcon);
-           }
-           var dt = post.createAt;
-           text = text.replace('{{post.time}}', new Date().toLocaleString());
-           text = text.replace('{{post.href}}', 'http://' + server_domain_name + '/posts/' + post._id);
-           text = text.replace('{{post.mainImage}}', post.mainImage);
-           content = '[暂无内容]';
-           if(post.pub){    
-            ref = post.pub;
-            for (i = 0, len = ref.length; i < len; i++) {
-                item = ref[i];
-                if (item.type === 'text') {
-                    content = item.text;
-                    break;
-                    }
-                }
-           }
-
-            text = text.replace('{{post-content}}', content);
-            if (data.userEmail) {
-              try {
-                  console.log(">>before Send")
-                  Email.send({
-                      to: item.userEmail,
-                      from: '故事贴<notify@mail.tiegushi.com>',
-                      subject: '您在故事贴上关注的“' + post.ownerName + '”' + '发表了新故事' + '：《' + title + '》',
-                      html: text
-                  });
-                  console.log('send mail to:', item.userEmail);
-              } catch (error) {
-                  console.log("Exception: sendEmailToFollower: err=", error);
-              }
+    var sendEmailToFollower = function(userEmail, subject, mailText){
+        console.log('给web关注者发送邮件')
+        Meteor.defer(function () {
+            try {
+                console.log(">>before Send")
+                Email.send({
+                    to: userEmail,
+                    from: '故事贴<notify@mail.tiegushi.com>',
+                    subject: subject,
+                    html: mailText
+                });
+                console.log('send mail to:', userEmail);
+            } catch (error) {
+                console.log("Exception: sendEmailToFollower: err=", error);
             }
         });
     }
 
     var postsInsertHookDeferHandle = function(userId,doc){
         Meteor.defer(function(){
-            try{
+            try{ 
                 var follows=Follower.find({followerId:userId});
                 if(follows.count()>0){
+                    //  sendEmailToFollower mail html start
+                    var content, i, item, len, post, ref, mailText, subject;
+                    var post = Posts.findOne({_id: doc._id});
+                    if (!post) {
+                        console.log("Can't find the post: id="+id);
+                    }
+                    var reg = new RegExp('[.^*#]','g');
+                    var title = post.title.replace(reg,'-');
+                    var addontitle = post.addontitle.replace(reg,'-');
+                    subject = '您在故事贴上关注的“' + post.ownerName + '”' + '发表了新故事' + '：《' + title + '》';
+                    mailText = Assets.getText('email/push-post.html');
+                    mailText = mailText.replace('{{post.title}}', title);
+                    mailText = mailText.replace('{{post.subtitle}}', addontitle);
+                    mailText = mailText.replace('{{post.author}}', post.ownerName);
+                    if(post.ownerIcon == '/userPicture.png'){
+                        mailText = mailText.replace('{{post.icon}}', 'http://' + server_domain_name + post.ownerIcon);
+                    } else {
+                        mailText = mailText.replace('{{post.icon}}', post.ownerIcon);
+                    }
+                    var dt = post.createdAt;
+                    mailText = mailText.replace('{{post.time}}', dt);
+                    mailText = mailText.replace('{{post.href}}', 'http://' + server_domain_name + '/posts/' + post._id);
+                    mailText = mailText.replace('{{post.mainImage}}', post.mainImage);
+                    content = '[暂无内容]';
+                    if (post.pub) {
+                        ref = post.pub;
+                        for (i = 0, len = ref.length; i < len; i++) {
+                            item = ref[i];
+                            if (item.type === 'text') {
+                                content = item.text;
+                                break;
+                            }
+                        }
+                    }
+                    mailText = mailText.replace('{{post-content}}', content);
+                    // sendEmailToFollower mail html end
                     follows.forEach(function(data){
                         if(data.userId === suggestPostsUserId)
                         {
@@ -720,7 +717,10 @@ if(Meteor.isServer){
                             followby: data.userId
                         });
                         pushnotification("newpost",doc,data.userId);
-                        sendEmailToFollower(doc._id, data.userId, data);
+                        if(data.userEmail){
+                            console.log(data.userEmail)
+                            sendEmailToFollower(data.userEmail, subject, mailText);
+                        }
                         waitReadCount = Meteor.users.findOne({_id:data.userId}).profile.waitReadCount;
                         if(waitReadCount === undefined || isNaN(waitReadCount))
                         {
