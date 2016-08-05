@@ -600,13 +600,16 @@ if(Meteor.isServer){
     };
 
     
-    var sendEmailToFollower = function(id, userId){
+    var sendEmailToFollower = function(id, userId, data){
         // console.log('给web关注者发送邮件')
         Meteor.defer(function() {
             var content, i, item, len, post, ref, text;
             post = Posts.findOne({
                 _id: id
             });
+            if (!post) {
+                console.log("Can't find the post: id="+id);
+            }
            var reg = new RegExp('[.^*#]','g');
            var title = post.title.replace(reg,'-');
            var addontitle = post.addontitle.replace(reg,'-');;
@@ -619,7 +622,8 @@ if(Meteor.isServer){
                text = text.replace('{{post.icon}}', 'http://' + server_domain_name + post.ownerIcon);
            } else {
                text = text.replace('{{post.icon}}', post.ownerIcon);
-           }  
+           }
+           var dt = post.createAt;
            text = text.replace('{{post.time}}', new Date().toLocaleString());
            text = text.replace('{{post.href}}', 'http://' + server_domain_name + '/posts/' + post._id);
            text = text.replace('{{post.mainImage}}', post.mainImage);
@@ -636,54 +640,20 @@ if(Meteor.isServer){
            }
 
             text = text.replace('{{post-content}}', content);
-            console.log(text)
-            return Follower.find({
-                userId: userId
-            }).fetch().forEach(function(item) {
-                var ex;
-                if (item.userEmail) {
-                    try {
-                    /*
-                        transporter = nodemailer.createTransport({
-                            "host": "smtpdm.aliyun.com",
-                            "port": 465,
-                            "secureConnection": true,
-                            "auth": {
-                                "user": 'notify@mail.tiegushi.com',
-                                "pass": 'Actiontec753951'
-                            }
-                    });
-                    mailOptions = {
-                        from: '故事贴<notify@mail.tiegushi.com>',
-                        to: item.userEmail,
-                        subject: '您在故事贴上关注的“' + post.ownerName + '”' + '发表了新故事' + '：《' + post.title + '》',
-                        text: text,
-                        html: text
-                    };
-
-                    transporter.sendMail(mailOptions, function(error, info){
-                        if(error){
-                            return console.log(error);
-                        }
-                        console.log('Message sent: ' + info.response);
-                    });
-                    */
-                    // /*
-                     console.log(">>before Send")
-                      Email.send({
-                          to: item.userEmail,
-                          from: '故事贴<notify@mail.tiegushi.com>',
-                          subject: '您在故事贴上关注的“' + post.ownerName + '”' + '发表了新故事' + '：《' + title + '》',
-                          html: text
-                      });
-                    // */
-                      console.log('send mail to:', item.userEmail);
-                  } catch (_error) {
-                      ex = _error;
-                      console.log("err is: ", ex);
-                  }
-                }
-            });
+            if (data.userEmail) {
+              try {
+                  console.log(">>before Send")
+                  Email.send({
+                      to: item.userEmail,
+                      from: '故事贴<notify@mail.tiegushi.com>',
+                      subject: '您在故事贴上关注的“' + post.ownerName + '”' + '发表了新故事' + '：《' + title + '》',
+                      html: text
+                  });
+                  console.log('send mail to:', item.userEmail);
+              } catch (error) {
+                  console.log("Exception: sendEmailToFollower: err=", error);
+              }
+            }
         });
     }
 
@@ -750,7 +720,7 @@ if(Meteor.isServer){
                             followby: data.userId
                         });
                         pushnotification("newpost",doc,data.userId);
-                        sendEmailToFollower(doc._id, data.userId);
+                        sendEmailToFollower(doc._id, data.userId, data);
                         waitReadCount = Meteor.users.findOne({_id:data.userId}).profile.waitReadCount;
                         if(waitReadCount === undefined || isNaN(waitReadCount))
                         {
