@@ -1,6 +1,6 @@
 App.info({
   id: 'org.hotshare.everywhere',
-  version: '1.2.26',
+  version: '1.2.27',
   name: 'hotShare',
   description: 'Share everything with everyone',
   author: 'hotShare Design Team',
