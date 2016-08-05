@@ -1179,44 +1179,12 @@ if(Meteor.isServer){
         var text = Assets.getText('email/follower-notify.html');
         Meteor.defer(function(){
             try{
-                /*
-                   transporter = nodemailer.createTransport({
-                            "host": "smtpdm.aliyun.com",
-                            "port": 465,
-                            "secureConnection": true,
-                            "auth": {
-                                "user": 'notify@mail.tiegushi.com',
-                                "pass": 'Actiontec753951'
-                            }
-                    });
-                    mailOptions = {
-                        from: '故事贴<notify@mail.tiegushi.com>',
-                        to: userEmail,
-                        subject: '成功关注作者：'+doc.followerName + '',
-                        body: '成功关注作者：'+doc.followerName + ',我们会不定期的为您推送关注作者的新文章！',
-                        text: text,
-                        html: text
-                    };
-
-                    transporter.sendMail(mailOptions, function(error, info){
-                        if(error){
-                            return console.log(error);
-                        }
-                        console.log('Message sent: ' + info.response);
-                    }); 
-                    */
-                
                 Email.send({
-                    to: doc.userEmail,
+                    to: userEmail,
                     from: '故事贴<notify@mail.tiegushi.com>',
-                    // from: '故事贴<33597990@qq.com>',
                     subject: '成功关注作者：'+doc.followerName + '',
                     body: '成功关注作者：'+doc.followerName + ',我们会不定期的为您推送关注作者的新文章！',
-                    html: text,
-                    envelope: {
-                            from: "故事贴<notify@mail.tiegushi.com>",
-                            to: doc.userEmail + "<" + doc.userEmail + ">"
-                    }
+                    html: text
                 });
                 
             } catch (e){
