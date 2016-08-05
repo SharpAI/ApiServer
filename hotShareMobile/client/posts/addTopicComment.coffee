@@ -25,10 +25,14 @@ if Meteor.isClient
 
   Template.addTopicComment.events
     "click #share-follower": ()->
-      if $('#share-follower').prop('checked')
-        $(".publish-readers-list1").css('color','#00c4ff')
-      else
-        $('.publish-readers-list1').css('color','')
+        if $('#share-follower').prop('checked')
+            $(".publish-readers-list1").css('color','#00c4ff')
+            $('.pin').each () ->
+                $('#'+$(this).attr("id")+' .selectHelper img').attr('src','/select_p.png')
+        else
+            $('.publish-readers-list1').css('color','')
+            $('.pin').each () ->
+                $('#'+$(this).attr("id")+' .selectHelper img').attr('src','/select_n.png')
     "click .pin": (e)->
       e.preventDefault()
       if $('#'+e.currentTarget.id).hasClass('select')
