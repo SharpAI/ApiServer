@@ -568,8 +568,9 @@ if Meteor.isClient
       window.location.href=this.urlinfo
     'click .postTextItem' :(e)->
       if withSectionMenu
-        console.log('clicked on textdiv ' + this._id)
-        $self = $('#'+this._id)
+        # console.log('clicked on textdiv ' + this._id)
+        # $self = $('#'+this._id)
+        $self = $(e.currentTarget)
         toolbar = $self.data('toolbarObj')
         unless toolbar
           self = this
