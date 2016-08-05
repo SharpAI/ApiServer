@@ -723,7 +723,9 @@ if(Meteor.isServer){
                             userEmail.push(data.userEmail);
                             // sendEmailToFollower(data.userEmail, subject, mailText);
                         }
-                        waitReadCount = Meteor.users.findOne({_id:data.userId}).profile.waitReadCount;
+                        // waitReadCount = Meteor.users.findOne({_id:data.userId}).profile.waitReadCount;
+                        var dataUser = Meteor.users.findOne({_id:data.userId})
+                        waitReadCount = dataUser && dataUser.profile && dataUser.waitReadCount ? dataUser.profile.waitReadCount : 0;
                         if(waitReadCount === undefined || isNaN(waitReadCount))
                         {
                             waitReadCount = 0;
@@ -774,7 +776,9 @@ if(Meteor.isServer){
                     });
                 }
             }
-            catch(error){}
+            catch(error){
+                console.log(err);
+            }
             try {
                 var pullingConn = Cluster.discoverConnection("pulling");
                 pullingConn.call("pullFromServer", doc._id);
@@ -1095,7 +1099,9 @@ if(Meteor.isServer){
                                 followby: doc.owner,
                                 checked: false
                             });
-                            var waitReadCount = Meteor.users.findOne({_id: doc.owner}).profile.waitReadCount;
+                            var dataUser = Meteor.users.findOne({_id:doc.owner});
+                            var waitReadCount = dataUser && dataUser.profile && dataUser.waitReadCount ? dataUser.profile.waitReadCount : 0;
+                            // var waitReadCount = Meteor.users.findOne({_id: doc.owner}).profile.waitReadCount;
                             if (waitReadCount === undefined || isNaN(waitReadCount)) {
                                 waitReadCount = 0;
                             }
@@ -1284,7 +1290,9 @@ if(Meteor.isServer){
                         comment: 0,
                         followby: post.owner
                     });
-                    var waitReadCount = Meteor.users.findOne({_id: post.owner}).profile.waitReadCount;
+                    var dataUser = Meteor.users.findOne({_id:post.owner});
+                    var waitReadCount = dataUser && dataUser.profile && dataUser.waitReadCount ? dataUser.profile.waitReadCount : 0;
+                    // var waitReadCount = Meteor.users.findOne({_id: post.owner}).profile.waitReadCount;
                     if (waitReadCount === undefined || isNaN(waitReadCount)) {
                         waitReadCount = 0;
                     }
@@ -1308,7 +1316,9 @@ if(Meteor.isServer){
                                 comment: 0,
                                 followby: recomments[item].commentUserId
                             });
-                            waitReadCount = Meteor.users.findOne({_id: recomments[item].commentUserId}).profile.waitReadCount;
+                            dataUser = Meteor.users.findOne({_id: recomments[item].commentUserId});
+                            waitReadCount = dataUser && dataUser.profile && dataUser.waitReadCount ? dataUser.profile.waitReadCount : 0;
+                            // waitReadCount = Meteor.users.findOne({_id: recomments[item].commentUserId}).profile.waitReadCount;
                             if (waitReadCount === undefined || isNaN(waitReadCount)) {
                                 waitReadCount = 0;
                             }
