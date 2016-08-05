@@ -73,13 +73,13 @@
           &nbsp;
           </span>
       {{/each}}
+      {{#if isShowPublish}}
       <div id="pubdivide"></div> 
       <ul class="publish-readers-list1" style="padding:0; margin: 10px auto; text-align:center">
           <li class="publish-reader-group1">
             <label><input id="share-follower" type="checkbox"><label for="share-follower" style="width:200px;">分享本文到故事贴读友圈</label></label>
           </li>  
         </ul>  
-      {{#if isShowPublish}}
       <div id="pubdivide"></div> 
       <div id="publishto">
         <h4 style="text-align:center;">{{_ "publishTo"}}</h4>

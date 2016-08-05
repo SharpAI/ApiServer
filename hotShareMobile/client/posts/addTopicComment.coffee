@@ -40,16 +40,16 @@ if Meteor.isClient
       else 
         $('#'+e.currentTarget.id+' .selectHelper img').attr('src','/select_p.png')
       $(e.currentTarget).toggleClass('select')
-    "change .publish-reader-group input[type='checkbox']": (e, t)->
-      $(e.target.parentNode).toggleClass('selected')
+    # "change .publish-reader-group input[type='checkbox']": (e, t)->
+    #   $(e.target.parentNode).toggleClass('selected')
     "change #comment":()->
        Session.set("comment",$('#comment').val())
     "click #topic":(event)->
        comment = Session.get("comment")+"#"+this.text+"#"
        Session.set("comment",comment)
     "click #save":(event)->
-       if($('#share-follower').prop('checked'))
-         Meteor.call('sendEmailByWebFollower', Session.get('TopicPostId'), 'push')
+      #  if($('#share-follower').prop('checked'))
+      #    Meteor.call('sendEmailByWebFollower', Session.get('TopicPostId'), 'push')
          
        topicPostId = Session.get("TopicPostId")
        TopicTitle = Session.get("TopicTitle")
