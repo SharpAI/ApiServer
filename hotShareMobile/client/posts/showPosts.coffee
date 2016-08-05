@@ -507,8 +507,9 @@ if Meteor.isClient
         window.currentTTS.stop()
     'click .postTextItem' :(e)->
       if withSectionMenu
-        console.log('clicked on textdiv ' + this._id)
-        $self = $('#'+this._id)
+        # console.log('clicked on textdiv ' + this._id)
+        # $self = $('#'+this._id)
+        $self = $(e.currentTarget)
         toolbar = $self.data('toolbarObj')
         unless toolbar
           self = this
@@ -648,12 +649,13 @@ if Meteor.isClient
         The Drafts.insert will trigger addPostItem OnRendered function run, then do the layout thing. The 2nd defer function
         will run after then. The final callback will be called after all item layout done, so closePreEditingPopup run.
         ###
+        
         appEdited = true
-        if(Session.get('postContent').appEdited)
-          appEdited = Session.get('postContent').appEdited 
-        else if(Session.get('postContent').status and (Session.get('postContent').status is 'importing' or Session.get('postContent').status is 'imported'))
+        post = Session.get('postContent')
+        if(post.status is true or post.status is false)
+          appEdited = post.status
+        else if(post.status is 'importing' or post.status is 'imported' or post.status is 'done')
           appEdited = false
-        console.log(appEdited)
         deferedProcessAddPostItemsWithEditingProcessBar(pub, appEdited)
       Session.set 'isReviewMode','2'
       #Don't push showPost page into history. Because when save posted story, it will use Router.go to access published story directly. But in history, there is a duplicate record pointing to this published story.
@@ -1024,6 +1026,18 @@ if Meteor.isClient
           if error
             console.log(error.reason);
           else
+            postItem = $('.post-pcomment-current-pub-item')
+            offsetHeight = postItem.height() - parseInt(postItem.attr('data-height'))
+            console.log(offsetHeight)
+            # resize nex node top
+            postItem.nextAll().each ()->
+              try
+                item = $(this)
+                top = offsetHeight + item.position().top
+                item.css('top', top + 'px')
+              catch
+            postItem.removeClass('post-pcomment-current-pub-item')
+              
             console.log("success");
         )
         $('#pcommitReport').val("")
@@ -1032,7 +1046,7 @@ if Meteor.isClient
         $('.showBgColor').removeAttr('style')
         $(window).scrollTop(0-Session.get('backgroundTop'))
         $('.pcommentInput,.alertBackground').fadeOut 300
-        refreshPostContent()
+        #refreshPostContent()
         false
   Template.shareReaderClub.helpers
     # show_share_reader_club: ->

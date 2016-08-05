@@ -54,6 +54,7 @@ if Meteor.isClient
       thumbsDownHandler(e,this)
     'click .pcomments': (e)->
       bgheight = $(window).height() + $(window).scrollTop()
+      $(e.currentTarget).parent().parent().parent().addClass('post-pcomment-current-pub-item').attr('data-height': $(e.currentTarget).parent().parent().parent().height())
       # $('.showBgColor').css('overflow','hidden')
       $('.showBgColor').attr('style','overflow:hidden;min-width:' + $(window).width() + 'px;' + 'height:' + bgheight + 'px;')
       Session.set("pcommetsId","")
