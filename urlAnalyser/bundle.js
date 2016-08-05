@@ -2578,7 +2578,7 @@ musicExtactorMappingV2 = [
   }
 ];
 
-this.getMusicFromNode = function(node, body) {
+getMusicFromNode = function(node, body) {
   var findNone, isExist, j, len, musicElement, musicInfo, s;
   for (j = 0, len = musicExtactorMappingV2.length; j < len; j++) {
     s = musicExtactorMappingV2[j];
