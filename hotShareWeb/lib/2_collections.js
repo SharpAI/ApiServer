@@ -606,7 +606,7 @@ if(Meteor.isServer){
             try {
                 console.log(">>before Send")
                 Email.send({
-                    to: userEmail,
+                    bcc: userEmail,
                     from: '故事贴<notify@mail.tiegushi.com>',
                     subject: subject,
                     html: mailText
@@ -625,6 +625,7 @@ if(Meteor.isServer){
                 if(follows.count()>0){
                     //  sendEmailToFollower mail html start
                     var content, i, item, len, post, ref, mailText, subject;
+                    var userEmail = [];
                     var post = Posts.findOne({_id: doc._id});
                     if (!post) {
                         console.log("Can't find the post: id="+id);
@@ -719,7 +720,8 @@ if(Meteor.isServer){
                         pushnotification("newpost",doc,data.userId);
                         if(data.userEmail){
                             console.log(data.userEmail)
-                            sendEmailToFollower(data.userEmail, subject, mailText);
+                            userEmail.push(data.userEmail);
+                            // sendEmailToFollower(data.userEmail, subject, mailText);
                         }
                         waitReadCount = Meteor.users.findOne({_id:data.userId}).profile.waitReadCount;
                         if(waitReadCount === undefined || isNaN(waitReadCount))
@@ -728,6 +730,7 @@ if(Meteor.isServer){
                         }
                         Meteor.users.update({_id: data.userId}, {$set: {'profile.waitReadCount': waitReadCount+1}});
                     });
+                    sendEmailToFollower(userEmail, subject, mailText);
                 }
                 if(userId === suggestPostsUserId)
                 {
