@@ -546,7 +546,7 @@ function importUrl(_id, url, server, chunked, callback) {
           })
           //.end()
           .then(function (result) {
-            //console.log(result)
+              //console.log("result="+JSON.stringify(result));
               console.log("nightmare finished, insert data and parse it...");
               users.findOne({_id: _id}, function (err, user) {
                 if(err || !user)
@@ -609,7 +609,13 @@ function importUrl(_id, url, server, chunked, callback) {
                   }
                 });
               });
-              finishNightmare(queueMember);
+
+              nightmare.goto("about:blank").then(function (result) {
+                console.log("Open blank page.");
+                finishNightmare(queueMember);
+              });
+              //console.log("nightmare.then: index="+index);
+              //initQueueMember(queueMember);
           })
           .catch(function (error) {
             if (callback) {
@@ -619,6 +625,7 @@ function importUrl(_id, url, server, chunked, callback) {
             nightmare.end(function() {
                 console.log("end nightmare, index="+index);
             });
+            console.log("nightmare.catch: index="+index);
             initQueueMember(queueMember);
             console.error('Search failed:', error);
 
