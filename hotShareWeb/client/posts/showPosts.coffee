@@ -1130,7 +1130,7 @@ if Meteor.isClient
         postId = Session.get("postContent")._id
       # postId = Session.get("postContent")._id
       post = Posts.findOne({_id: postId})
-      followerCount = Follower.find({userId: Meteor.userId(), followerId: post.owner}).count()
+      followerCount = Follower.find({followerId: post.owner, userEmail: mailAddress}).count()
       qqValueReg = RegExp(/^[1-9][0-9]{4,9}$/)
       mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) 
       # 处理已经关注时， 可以输入空的Email
@@ -1149,9 +1149,14 @@ if Meteor.isClient
          username = Meteor.user().profile.fullname
       else
          username = Meteor.user().username
+      # 重复关注处理
+      alreadyFollow = if followerCount > 0 then true else false
+      if alreadyFollow and Template.SubscribeAuthor.__helpers.get('oldMail')() is mailAddress
+        $('.subscribeAutorPage').hide()
+        return toastr.info('您已经关注了作者:'+post.ownerName,'已关注')
       # 用户已经关注了作者
       if followerCount > 0 
-        upFollowId = Follower.findOne({userId: Meteor.userId(), followerId: post.owner})._id
+        upFollowId = Follower.findOne({followerId: post.owner,userEmail: mailAddress})._id
         Follower.update {
           _id: upFollowId
         },
@@ -1189,7 +1194,7 @@ if Meteor.isClient
         }
       $('.subscribeAutorPage').hide()
       if mailAddress
-        toastr.success('您已成功关注该作者，确认邮件将很快（10分钟左右）送达，谢谢！')
+        toastr.success('您已成功关注该作者'+post.ownerName+'，确认邮件将很快（10分钟左右）送达，谢谢！','关注成功')
         trackEvent("Following","Email Follower")
     'click .cannelBtn, click .bg':->
       $('.subscribeAutorPage').hide()
