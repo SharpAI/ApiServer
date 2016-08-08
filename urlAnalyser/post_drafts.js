@@ -67,6 +67,7 @@ function PostDrafts(id, user) {
       showDebug && console.log(user)
       
       var draftItem = {
+        _id: mongoid(),
         type: 'text',
         toTheEnd: true,
         noKeyboardPopup: true,
