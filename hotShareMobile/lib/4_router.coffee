@@ -145,10 +145,19 @@ if Meteor.isClient
     Router.route '/posts/:_id/:_index', {
       waitOn: ->
         [Meteor.subscribe("publicPosts",this.params._id),
-         Meteor.subscribe "pcomments"]
+        Meteor.subscribe "pcomments"]
       loadingTemplate: 'loadingPost'
       action: ->
+        if Session.get("doSectionForward") is true
+          Session.set("doSectionForward",false)
+          Session.set("postPageScrollTop",0)
+          document.body.scrollTop = 0
         post = Posts.findOne({_id: this.params._id})
+        unless post
+          console.log "Cant find the request post"
+          this.render 'postNotFound'
+          return
+        Session.set("refComment",[''])
         if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
           Session.set('postContent',post)
           refreshPostContent()
@@ -157,12 +166,21 @@ if Meteor.isClient
           Session.set('postContent',post)
         Session.set('focusedIndex',this.params._index)
         if post.addontitle and (post.addontitle isnt '')
-          documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
+          documentTitle = post.title + "：" + post.addontitle
         else
-          documentTitle = "『故事贴』" + post.title
+          documentTitle = post.title
         Session.set("DocumentTitle",documentTitle)
+        favicon = document.createElement('link')
+        favicon.id = 'icon'
+        favicon.rel = 'icon'
+        favicon.href = post.mainImage
+        document.head.appendChild(favicon)
+
+        unless Session.equals('channel','posts/'+this.params._id+'/'+this.params._index)
+          refreshPostContent()
         this.render 'showPosts', {data: post}
         Session.set('channel','posts/'+this.params._id+'/'+this.params._index)
+      fastRender: true
     }
     # Router.route '/allDrafts',()->
     #   if Meteor.isCordova is true

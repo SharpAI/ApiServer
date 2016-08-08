@@ -14,8 +14,12 @@ if Meteor.isClient
             #msg = ChatMessage.findOne({_id: $el_msg.attr('id')})
             if msg
                 text = msg.msg.split("，")[0]
-                chatMessages[Session.get('openedRoom')].sendWithUrls(Session.get('openedRoom'), {msg: text, urls: msg.urls})
-
+                if msg.urls[0].url.split('/posts/').length is 1
+                    chatMessages[Session.get('openedRoom')].sendWithUrls(Session.get('openedRoom'), {msg: text, urls: msg.urls})
+                else
+                    postUrls = msg.urls
+                    postUrls[0].url = msg.urls[0].url.split('/posts/')[1]
+                    chatMessages[Session.get('openedRoom')].sendWithUrls(Session.get('openedRoom'), {msg: text, urls: postUrls})
         console.log 'hello from chat robot, postId : ' + postId
         #return false
         
