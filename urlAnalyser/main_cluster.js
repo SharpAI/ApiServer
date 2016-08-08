@@ -8,11 +8,13 @@ var filedownup = require('./file_downupload.js');
 var drafts = require('./post_drafts.js');
 var geoip = require('geoip-lite');
 var http = require('http');
+var format_pub = require('./format-pub.js');
 
 var showDebug = true;
 
 var port = process.env.PORT || 8080;        // set our port
 var hotshare_web = process.env.HOTSHARE_WEB_HOST || 'http://cdn.tiegushi.com';
+var format_pub_host = process.env.FORMAT_PUB_HOST || 'http://cdcdn.tiegushi.com';
 var MongoClient = require('mongodb').MongoClient;
 var DB_CONN_STR = process.env.MONGO_URL || 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare';
 var posts = null;
@@ -446,6 +448,7 @@ var insert_data = function(user, url, data, cb) {
 }
 var updatePosts = function(postId, post, callback){
   post.status = 'imported';
+  post.appEdited = true;
   posts.update({_id: postId},{$set: post}, function(err, number){
     callback && callback(err, number);
   });
@@ -576,22 +579,52 @@ function importUrl(_id, url, server, chunked, callback) {
                       var postObj = draftsObj.getPubObject();
                       // console.log('post:', JSON.stringify(postObj));
                       // draftsObj.destroy();
-                      updatePosts(postId, postObj, function(err, number){
-                        if(err || number <= 0) {
-                          showDebug && console.log('database update error!');
-                          showDebug && console.log('------- End --------');
-                        } else {
-                            var tmpServer = hotshare_web;
-                            if (server && (server != '')) {
-                                if (server.charAt(server.length - 1) == '/') {
+                      
+                      // update pub
+                      posts.update({_id: postId},{$set: postObj}, function(err, number){
+                      // updatePosts(postId, postObj, function(err, number){
+                        if(err || number <= 0)
+                          return console.log('import error.');
+                          
+                        // format pub
+                        if(postObj.pub && postObj.pub.length > 0){
+                          format_pub.format_pub(format_pub_host, postId, function (res) {
+                            postObj.pub = res;
+                            updatePosts(postId, postObj, function(err, number){
+                              if(err || number <= 0)
+                                return console.log('import error.');
+                                
+                                var tmpServer = hotshare_web;
+                                if (server && (server != '')) {
+                                  if (server.charAt(server.length - 1) == '/')
                                     tmpServer = server.substring(0, server.length - 1);
                                 }
-                            }
-                            var url = tmpServer+'/restapi/postInsertHook/'+user._id+'/'+postId;
-                            console.log("httpget url="+url);
-                            httpget(url);
+                                var url = tmpServer+'/restapi/postInsertHook/'+user._id+'/'+postId;
+                                console.log("httpget url="+url);
+                                httpget(url);
+                            });
+                          });
                         }
-                      });
+                      });                      
+                      
+                      // updatePosts(postId, postObj, function(err, number){
+                      //   if(err || number <= 0) {
+                      //     showDebug && console.log('database update error!');
+                      //     showDebug && console.log('------- End --------');
+                      //   } else {
+                      //       var tmpServer = hotshare_web;
+                      //       if (server && (server != '')) {
+                      //           if (server.charAt(server.length - 1) == '/') {
+                      //               tmpServer = server.substring(0, server.length - 1);
+                      //           }
+                      //       }
+                      //       var url = tmpServer+'/restapi/postInsertHook/'+user._id+'/'+postId;
+                      //       console.log("httpget url="+url);
+                      //       httpget(url);
+                      //   }
+                      // });
+                      
+                      
                       /*updateFollowPosts(user._id, postId, postObj, function(err, number){
                         if(err || number <= 0)
                           console.log('import error.');
