@@ -497,7 +497,7 @@
             
             [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
         } else {
-            NSArray *array = [urlStr componentsSeparatedByString:@"/"];
+            NSArray *array = [urlStr componentsSeparatedByString:@"/posts/"];
             NSLog(@"postID:%@",[array lastObject]);
             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                                           messageAsDictionary:@{@"type":@"toPost", @"postId":[array lastObject]}];
