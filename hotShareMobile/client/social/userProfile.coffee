@@ -330,20 +330,27 @@ if Meteor.isClient
         window.userProfileTrackerHandler = null
       Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
-        PopUpBox.close()
-    'click #suggestCurrentPost': ()->
-      suggestCurrentPost("ProfileUserId1")
-    'click #sendChatMessage': ()->
-      Session.set("messageDialog_to", {id: Session.get("ProfileUserId1"), type: 'user'})
-      Session.set("Social.LevelOne.Menu", 'messageDialog')
+        # PopUpBox.close()
+        $('.popUpBox').hide()
+    # 'click #suggestCurrentPost': ()->
+    #   suggestCurrentPost("ProfileUserId1")
+    # 'click #sendChatMessage': ()->
+    #   Session.set("messageDialog_to", {id: Session.get("ProfileUserId1"), type: 'user'})
+    #   Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
       postId = e.currentTarget.id
+      # console.log('11111111111'+postId)
       $(window).children().off()
       $(window).unbind('scroll')
       if PopUpBox
-        PopUpBox.close()
+        # console.log('popUpbox 1111111111')
+        # PopUpBox.close()
+        $('.popUpBox').hide()
+        $('.b-modal').remove()
+        
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
+        # console.log('go post 1111111111111'+postId)
         Router.go '/posts/'+postId
       ,300
     'click #addToContactList': ()->
@@ -419,20 +426,27 @@ if Meteor.isClient
         window.userProfileTrackerHandler = null
       Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
-        PopUpBox.close()
-    'click #suggestCurrentPost': ()->
-      suggestCurrentPost("ProfileUserId2")
-    'click #sendChatMessage': ()->
-      Session.set("messageDialog_to", {id: Session.get("ProfileUserId2"), type: 'user'})
-      Session.set("Social.LevelOne.Menu", 'messageDialog')
+        # PopUpBox.close()
+        $('.popUpBox').hide()
+        $('.b-modal').remove()
+    # 'click #suggestCurrentPost': ()->
+    #   suggestCurrentPost("ProfileUserId2")
+    # 'click #sendChatMessage': ()->
+    #   Session.set("messageDialog_to", {id: Session.get("ProfileUserId2"), type: 'user'})
+    #   Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
       postId = e.currentTarget.id
+      console.log('2222222222222'+postId)
       $(window).children().off()
       $(window).unbind('scroll')
       if PopUpBox
-        PopUpBox.close()
+        console.log('popUpbox 22222222222')
+        # PopUpBox.close()
+        $('.popUpBox').hide()
+        $('.b-modal').remove()
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
+        console.log('go post 222222222'+postId)
         Router.go '/posts/'+postId
       ,300
     'click #addToContactList': ()->
@@ -508,20 +522,27 @@ if Meteor.isClient
         window.userProfileTrackerHandler = null
       Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
-        PopUpBox.close()
-    'click #suggestCurrentPost': ()->
-      suggestCurrentPost("ProfileUserId3")
-    'click #sendChatMessage': ()->
-      Session.set("messageDialog_to", {id: Session.get("ProfileUserId3"), type: 'user'})
-      Session.set("Social.LevelOne.Menu", 'messageDialog')
+        # PopUpBox.close()
+        $('.popUpBox').hide()
+        $('.b-modal').remove()
+    # 'click #suggestCurrentPost': ()->
+    #   suggestCurrentPost("ProfileUserId3")
+    # 'click #sendChatMessage': ()->
+    #   Session.set("messageDialog_to", {id: Session.get("ProfileUserId3"), type: 'user'})
+    #   Session.set("Social.LevelOne.Menu", 'messageDialog')
     'click .postImages ul li':(e)->
       postId = e.currentTarget.id
+      console.log('333333333333333'+postId)
       $(window).children().off()
       $(window).unbind('scroll')
       if PopUpBox
-        PopUpBox.close()
+        console.log('popUpbox33333333333')
+        # PopUpBox.close()
+        $('.popUpBox').hide()
+        $('.b-modal').remove()
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
+        console.log('go post3333333'+postId)
         Router.go '/posts/'+postId
       ,300
     'click #addToContactList': ()->
@@ -599,13 +620,17 @@ if Meteor.isClient
         window.userProfileTrackerHandler = null
       Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
-        PopUpBox.close()
+        # PopUpBox.close()
+        $('.popUpBox').hide()
+        $('.b-modal').remove()
     'click .postImages ul li':(e)->
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
       if PopUpBox
-        PopUpBox.close()
+        # PopUpBox.close()
+        $('.popUpBox').hide()
+        $('.b-modal').remove()
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/posts/'+postId

@@ -65,7 +65,9 @@ postPageArr = []
     'back':->
         try
           if typeof PopUpBox isnt "undefined"
-             PopUpBox.close()
+            #  PopUpBox.close()
+            $('.popUpBox').hide()
+            $('.b-modal').remove()
         catch error
           console.log error
         history = Session.get("history_view")
