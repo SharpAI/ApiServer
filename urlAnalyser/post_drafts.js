@@ -256,8 +256,8 @@ function PostDrafts(id, user) {
       } else {
         postDrafts.insertDefaultImage(data, 'http://data.tiegushi.com/res/defaultMainImage1.jpg', false, inputUrl);
       }
-      if (data.resortedArticle && data.resortedArticle.length > 0 && data.resortedArticle[0].type === 'image' && data.resortedArticle[0].imageUrl === source)
-        data.resortedArticle.splice(0, 1);
+      //if (data.resortedArticle && data.resortedArticle.length > 0 && data.resortedArticle[0].type === 'image' && data.resortedArticle[0].imageUrl === source)
+      //  data.resortedArticle.splice(0, 1);
       if (data.resortedArticle && data.resortedArticle.length > 0) {
         resortObj.index = 0;
         resortObj.length = data.resortedArticle.length;
