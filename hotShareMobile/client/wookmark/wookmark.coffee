@@ -160,8 +160,7 @@ Template.newLayoutContainer.events =
     $(window).unbind('scroll')
     if typeof PopUpBox isnt "undefined"
       # PopUpBox.close()
-      $('.popUpBox').hide()
-      $('.b-modal').remove()
+      $('.popUpBox, .b-modal').hide()
     Router.go '/posts/'+postId
 Template.newLayoutContainer.helpers =
   displayId:()->
