@@ -1,0 +1,11 @@
+<template name="addPost">
+  <div class="addPost">
+    <div class="gridster">
+      <ul id="display">
+        {{#each pub}}
+            {{>addPostItem}}
+        {{/each}}
+      </ul>
+    </div>
+  </div>
+</template>

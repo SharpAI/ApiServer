@@ -14,6 +14,13 @@ if Meteor.isClient
       Session.set("displayPostContent",true)
       calcPostSignature(window.location.href.split('#')[0])
     ,300
+  Router.route '/add/:_id', {
+      waitOn: ->
+        [subs.subscribe("publicPosts",this.params._id)]
+      action: ->
+        post = Posts.findOne({_id: this.params._id})
+        this.render 'addPost', {data: post}
+    }
   Router.route '/redirect/:_id',()->
     Session.set('nextPostID',this.params._id)
     this.render 'redirect'
