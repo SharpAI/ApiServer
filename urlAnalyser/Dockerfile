@@ -23,6 +23,7 @@ COPY ./bundle.js /srv/
 COPY ./main_cluster.js /srv/main_cluster.js
 COPY ./file_downupload.js /srv/file_downupload.js
 COPY ./post_drafts.js /srv/post_drafts.js
+COPY ./format-pub.js /srv/format-pub.js
 COPY ./start.sh /srv/start.sh
 RUN chmod +x /srv/start.sh
 WORKDIR /srv/
