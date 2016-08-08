@@ -145,7 +145,7 @@ if Meteor.isClient
         post = Session.get('postContent')
         if(post.status is true or post.status is false)
           appEdited = post.status
-        else if(post.status is 'importing' or post.status is 'imported' or post.status is 'done')
+        else if(post.status)
           appEdited = false
         deferedProcessAddPostItemsWithEditingProcessBar(pub, appEdited)
       Session.set('fromDraftPost',true)
