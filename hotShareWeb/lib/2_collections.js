@@ -556,8 +556,8 @@ if(Meteor.isServer){
            }
         //    text = text.replace('{{post.icon}}', 'http://' + server_domain_name + actionUser.profile.icon);
            text = text.replace('{{action}}', action);
-           text = text.replace('{{post.time}}', new Date().toLocaleString());
-           text = text.replace('{{post.href}}', 'http://' + server_domain_name + '/posts/' + post._id);
+           text = text.replace('{{post.time}}', PUB.formatTime(post.createdAt));
+           text = text.replaceAll('{{post.href}}', 'http://' + server_domain_name + '/posts/' + post._id);
            text = text.replace('{{post.mainImage}}', post.mainImage);
            content = '[暂无内容]';
 
@@ -644,8 +644,8 @@ if(Meteor.isServer){
                         mailText = mailText.replace('{{post.icon}}', post.ownerIcon);
                     }
                     var dt = post.createdAt;
-                    mailText = mailText.replace('{{post.time}}', dt);
-                    mailText = mailText.replace('{{post.href}}', 'http://' + server_domain_name + '/posts/' + post._id);
+                    mailText = mailText.replace('{{post.time}}', PUB.formatTime(dt));
+                    mailText = mailText.replaceAll('{{post.href}}', 'http://' + server_domain_name + '/posts/' + post._id);
                     mailText = mailText.replace('{{post.mainImage}}', post.mainImage);
                     content = '[暂无内容]';
                     if (post.pub) {

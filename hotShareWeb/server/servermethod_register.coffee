@@ -409,16 +409,29 @@ if Meteor.isServer
         #   )
 
       'sendEmailByWebFollower': (id, event)->
+        console.log("start send share email")
+        user = Meteor.users.findOne({_id: this.userId})
+        if user.profile.fullname
+          username = user.profile.fullname
+        else
+          username = user.username
         slef = this
         Meteor.defer ()->
           post = Posts.findOne({_id: id})
+          reg = new RegExp('[.^*#]','g')
+          title = post.title.replace(reg,'-')
+          addontitle = post.addontitle.replace(reg,'-')
+          subject = '您在故事贴上关注的“'+username+'”'+(if event is 'share' then '分享了故事' else '发表了新故事')+'：《'+title+'》'
           text = Assets.getText(if event is 'share' then 'email/share-post.html' else 'email/push-post.html')
-          text = text.replace('{{post.title}}', post.title)
-          text = text.replace('{{post.subtitle}}', post.addontitle)
+          text = text.replace('{{post.title}}', title)
+          text = text.replace('{{post.subtitle}}', addontitle)
           text = text.replace('{{post.author}}', post.ownerName)
-          text = text.replace('{{post.icon}}', post.ownerIcon)
-          text = text.replace('{{post.time}}', new Date().toLocaleString())
-          text = text.replace('{{post.href}}', 'http://cdn.tiegushi.com/posts/' + post._id)
+          if post.ownerIcon is '/userPicture.png'
+            text = text.replace('{{post.icon}}', 'http://www.tiegushi.com'+post.ownerIcon)
+          else
+            text = text.replace('{{post.icon}}', post.ownerIcon)
+          text = text.replace('{{post.time}}', PUB.formatTime(new Date()))
+          text = text.replaceAll('{{post.href}}', 'http://cdn.tiegushi.com/posts/' + post._id)
           text = text.replace('{{post.mainImage}}', post.mainImage)
 
           content = '[暂无内容]'
@@ -427,21 +440,17 @@ if Meteor.isServer
               content = item.text
               break
           text = text.replace('{{post-content}}', content)
-
-          Follower.find({userId: slef.userId, fromWeb: true}).fetch().forEach (item)->
-            try
-                Email.send {
-                  to: item.userEmail
-                  from: '故事贴<notify@mail.tiegushi.com>'
-                  # from: '故事贴<33597990@qq.com>'
-                  subject: '您在故事贴上关注的“'+post.ownerName+'”'+(if event is 'share' then '分享了故事' else '发表了新故事')+'：《'+post.title+'》'
-                  html: text
-                  envelope: {
-                      from: '故事贴<notify@mail.tiegushi.com>'
-                      to: item.userEmail+"<"+item.userEmail+">"
-                  }
-                }
-                console.log('send mail to:', item.userEmail)
-            catch ex
-              console.log(ex)
+          userEmail = []
+          Follower.find({followerId: slef.userId, fromWeb: true}).fetch().forEach (item)->
+            userEmail.push(item.userEmail)
+          try
+              Email.send {
+                bcc: userEmail
+                from: '故事贴<notify@mail.tiegushi.com>'
+                subject: subject
+                html: text
+              }
+              console.log('send mail to:', userEmail)
+          catch ex
+            console.log(ex)
         return
