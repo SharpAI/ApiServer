@@ -27,6 +27,12 @@ if Meteor.isClient
       loadingTemplate: 'loadingPost'
       action: ->
         post = Posts.findOne({_id: this.params._id})
+        thePost = Posts.find({_id: this.params._id})
+        thePost.observeChanges {
+          changed:(id, fields)->
+            if(fields.pub)
+              Template.postItem.__helpers.get('reRender')()
+        }
         unless post
           console.log "Cant find the request post"
           this.render 'postNotFound'
