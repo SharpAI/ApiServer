@@ -20,7 +20,9 @@
 package org.hotshare.everywhere;
 
 import android.os.Bundle;
+import android.os.Build;
 import android.content.Intent;
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import android.util.Log;
@@ -40,10 +42,11 @@ public class MainActivity extends CordovaActivity
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
+        Log.i("##RDBG", "action: " + intent.getAction());
         if (Intent.ACTION_SEND.equals(intent.getAction()))
         {
           String type = intent.getType();
-
+          Log.i("##RDBG", "type: " + intent.getType());
           if (type.indexOf("text/plain") >= 0) {
             String txt = intent.getStringExtra(Intent.EXTRA_TEXT);
             if (txt != null && txt.length() > 0) {
@@ -59,7 +62,7 @@ public class MainActivity extends CordovaActivity
           else if (type.indexOf("image/") >= 0) {
             Uri uri = (Uri)intent.getExtras().get(Intent.EXTRA_STREAM);
             if (uri != null) {
-              String content = "[\'" + getPath(uri) + "\']";
+              String content = "[\'" + getPath(this, uri) + "\']";
               SharedPreferences settings = getSharedPreferences("org.hotshare.everywhere.sysshare", 0);
               SharedPreferences.Editor editor = settings.edit();
               editor.putString("shareType", "image");
@@ -79,10 +82,10 @@ public class MainActivity extends CordovaActivity
               for (Uri uri: imageUris) {
                 if (first) {
                   first = false;
-                  content = content + "\'" + getPath(uri) + "\'";
+                  content = content + "\'" + getPath(this, uri) + "\'";
                 }
                 else {
-                  content = content + ",\'" + getPath(uri) + "\'";
+                  content = content + ",\'" + getPath(this, uri) + "\'";
                 }
               }
             }
@@ -99,7 +102,9 @@ public class MainActivity extends CordovaActivity
         loadUrl(launchUrl);
     }
 
-    private String getPath(Uri uri) {
+    /*private String getPath(Uri uri) {
+      Log.i("##RDBG", "getPath, uri: " + uri.getPath());
+      Log.i("##RDBG", "schema: " + uri.getScheme());
       String[] projection = { MediaStore.Images.Media.DATA };
       Cursor cursor = managedQuery(uri, projection, null, null, null);
       startManagingCursor(cursor);
@@ -108,5 +113,68 @@ public class MainActivity extends CordovaActivity
       String path = cursor.getString(column_index);
       path = "file://" + path;
       return path;
+    }*/
+
+    public static String getPath(final Context context, final Uri uri) {
+      final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+      Log.i("URI",uri+"");
+      String result = uri+"";
+      // DocumentProvider
+      //  if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
+      if (isKitKat && (result.contains("media.documents"))) {
+        String[] ary = result.split("/");
+        int length = ary.length;
+        String imgary = ary[length-1];
+        final String[] dat = imgary.split("%3A");
+
+        final String docId = dat[1];
+        final String type = dat[0];
+
+        Uri contentUri = null;
+        if ("image".equals(type)) {
+            contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        } else if ("video".equals(type)) {
+
+        } else if ("audio".equals(type)) {
+        }
+
+        final String selection = "_id=?";
+        final String[] selectionArgs = new String[] {
+                dat[1]
+        };
+
+        return "file://" + getDataColumn(context, contentUri, selection, selectionArgs);
+      }
+      else if ("content".equalsIgnoreCase(uri.getScheme())) {
+        return "file://" + getDataColumn(context, uri, null, null);
+      }
+      // File
+      else if ("file".equalsIgnoreCase(uri.getScheme())) {
+        return "file://" + uri.getPath();
+      }
+
+      return null;
+    }
+
+    public static String getDataColumn(Context context, Uri uri, String selection,
+                                   String[] selectionArgs) {
+      Cursor cursor = null;
+      final String column = "_data";
+      final String[] projection = {
+            column
+      };
+
+      try {
+        cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
+                null);
+        if (cursor != null && cursor.moveToFirst()) {
+            final int column_index = cursor.getColumnIndexOrThrow(column);
+            return cursor.getString(column_index);
+        }
+      } finally {
+        if (cursor != null)
+            cursor.close();
+      }
+      return null;
     }
 }
