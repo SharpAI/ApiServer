@@ -181,7 +181,7 @@ function PostDrafts(id, user) {
     var sizey, timestamp;
     if (file) {
       timestamp = new Date().getTime();
-      if (imageIndex() !== -1) {
+      if (imageIndex() != -1) {
         drafts[imageIndex()].url = inputUrl;
       }
       sizey = Math.round(6 * height / width);
@@ -385,10 +385,13 @@ function PostDrafts(id, user) {
     // format pub
     if(pub.length > 0){
       for(var i=0;i<pub.length;i++){
+        pub[i].index = i;
         pub[i].data_col = parseInt(pub[i].data_col);
         pub[i].data_row = parseInt(pub[i].data_row);
         pub[i].data_sizex = parseInt(pub[i].data_sizex);
         pub[i].data_sizey = parseInt(pub[i].data_sizey);
+        pub[i].noKeyboardPopup=true;
+        pub[i].respectLayout=true;
         if(i > 0){pub[i].data_row = pub[i-1].data_row + pub[i-1].data_sizey;}
       }
     }
