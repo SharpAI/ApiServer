@@ -551,8 +551,8 @@ if Meteor.isClient
       Session.set("RC", RC)
     'click #finish':->
       if PopUpBox
-        # PopUpBox.close()
-        $('.popUpBox, .b-modal').hide()
+        PopUpBox.close()
+        # $('.popUpBox, .b-modal').hide()
       else
         $('.popUpBox').hide 0
     "click #submit":->
@@ -565,8 +565,8 @@ if Meteor.isClient
           if refComment.count() > 0
             Session.set("refComment",refComment.fetch())
       if PopUpBox
-        # PopUpBox.close()
-        $('.popUpBox, .b-modal').hide()
+        PopUpBox.close()
+        # $('.popUpBox, .b-modal').hide()
       else
         $('.popUpBox').hide 0
     "submit .new-reply": (event)->

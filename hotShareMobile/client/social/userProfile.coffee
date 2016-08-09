@@ -330,8 +330,8 @@ if Meteor.isClient
         window.userProfileTrackerHandler = null
       Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
-        # PopUpBox.close()
-        $('.popUpBox, .b-modal').hide()
+        PopUpBox.close()
+        # $('.popUpBox, .b-modal').hide()
     # 'click #suggestCurrentPost': ()->
     #   suggestCurrentPost("ProfileUserId1")
     # 'click #sendChatMessage': ()->
@@ -342,8 +342,8 @@ if Meteor.isClient
       $(window).children().off()
       $(window).unbind('scroll')
       if PopUpBox
-        # PopUpBox.close()
-        $('.popUpBox, .b-modal').hide()
+        PopUpBox.close()
+        # $('.popUpBox, .b-modal').hide()
         
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
@@ -422,8 +422,8 @@ if Meteor.isClient
         window.userProfileTrackerHandler = null
       Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
-        # PopUpBox.close()
-        $('.popUpBox, .b-modal').hide()
+        PopUpBox.close()
+        # $('.popUpBox, .b-modal').hide()
     # 'click #suggestCurrentPost': ()->
     #   suggestCurrentPost("ProfileUserId2")
     # 'click #sendChatMessage': ()->
@@ -434,8 +434,8 @@ if Meteor.isClient
       $(window).children().off()
       $(window).unbind('scroll')
       if PopUpBox
-        # PopUpBox.close()
-        $('.popUpBox, .b-modal').hide()
+        PopUpBox.close()
+        # $('.popUpBox, .b-modal').hide()
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/posts/'+postId
@@ -513,8 +513,8 @@ if Meteor.isClient
         window.userProfileTrackerHandler = null
       Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
-        # PopUpBox.close()
-        $('.popUpBox, .b-modal').hide()
+        PopUpBox.close()
+        # $('.popUpBox, .b-modal').hide()
     # 'click #suggestCurrentPost': ()->
     #   suggestCurrentPost("ProfileUserId3")
     # 'click #sendChatMessage': ()->
@@ -525,8 +525,8 @@ if Meteor.isClient
       $(window).children().off()
       $(window).unbind('scroll')
       if PopUpBox
-        # PopUpBox.close()
-        $('.popUpBox, .b-modal').hide()
+        PopUpBox.close()
+        # $('.popUpBox, .b-modal').hide()
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/posts/'+postId
@@ -606,15 +606,15 @@ if Meteor.isClient
         window.userProfileTrackerHandler = null
       Session.set("Social.LevelOne.Menu",'contactsList')
       if PopUpBox
-        # PopUpBox.close()
-        $('.popUpBox, .b-modal').hide()
+        PopUpBox.close()
+        # $('.popUpBox, .b-modal').hide()
     'click .postImages ul li':(e)->
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
       if PopUpBox
-        # PopUpBox.close()
-        $('.popUpBox, .b-modal').hide()
+        PopUpBox.close()
+        # $('.popUpBox, .b-modal').hide()
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/posts/'+postId
