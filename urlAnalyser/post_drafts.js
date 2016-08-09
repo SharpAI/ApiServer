@@ -382,6 +382,15 @@ function PostDrafts(id, user) {
       }
     }
     
+    // format pub
+    if(pub.length > 0){
+      for(var i=0;i<pub.length;i++){
+        pub[i].index = i;
+        if(i > 0)
+          pub[i].data_row = (parseInt(pub[i-1].data_row) + parseInt(pub[i-1].data_sizey)).toString();
+      }
+    }
+    
     var sortBy = function(key, a, b, r) {
       r = r ? 1 : -1;
       if (a[key] && b[key] && a[key] > b[key])

@@ -6,7 +6,6 @@ var path = require('path');
 var mongoid = require('mongoid-js');
 var filedownup = require('./file_downupload.js');
 var drafts = require('./post_drafts.js');
-var format_pub = require('./format-pub.js');
 
 var showDebug = false;
 
@@ -58,7 +57,6 @@ app.use(bodyParser.json());
 
 var port = process.env.PORT || 8080;        // set our port
 var hotshare_web = process.env.HOTSHARE_WEB_HOST || 'http://cdcdn.tiegushi.com';
-var format_pub_host = process.env.FORMAT_PUB_HOST || 'http://cdcdn.tiegushi.com';
 var MongoClient = require('mongodb').MongoClient;
 var DB_CONN_STR = process.env.MONGO_URL || 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare';
 var posts = null;
@@ -241,22 +239,9 @@ router.route('/:_id/:url')
                       // console.log('post:', JSON.stringify(postObj));
                       // draftsObj.destroy();
                       
-                      // update pub
-                      posts.update({_id: postId},{$set: postObj}, function(err, number){
-                      // updatePosts(postId, postObj, function(err, number){
+                      updatePosts(postId, postObj, function(err, number){
                         if(err || number <= 0)
-                          return console.log('import error.');
-                          
-                        // format pub
-                        if(postObj.pub && postObj.pub.length > 0){
-                          format_pub.format_pub(format_pub_host, postId, function (res) {
-                            postObj.pub = res;
-                            updatePosts(postId, postObj, function(err, number){
-                              if(err || number <= 0)
-                                console.log('import error.');
-                            });
-                          });
-                        }
+                          console.log('import error.');
                       });
                     });
                   });
