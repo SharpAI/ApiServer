@@ -188,17 +188,25 @@ if Meteor.isServer
         
       'addAssociatedUserNew': (userInfo)->
         this.unblock()
+        isEmail = /[a-z0-9-]{1,30}@[a-z0-9-]{1,65}.[a-z]{2,6}/
         # check params
         if !this.userId or !userInfo or !userInfo.username or !userInfo.password
           return {status: 'ERROR', message: 'Invalid Username'}
           
         # find user
-        userTarget = Accounts.findUserByUsername(userInfo.username)
+        console.log 'testEmail is ' + isEmail.test(userInfo.username)
+        if isEmail.test(userInfo.username) is true
+          userTarget = Accounts.findUserByEmail(userInfo.username)
+          console.log 'this User Target is Email ' + userTarget
+        else
+          userTarget = Accounts.findUserByUsername(userInfo.username)
+          console.log 'this User Target is Username ' + userTarget
         if !userTarget
           return {status: 'ERROR', message: 'Invalid Username'}
         if userTarget._id is this.userId
           return {status: 'ERROR', message: 'Can not add their own'}
           
+        console.log 'userTarget is ' + userTarget
         # check passwod
         isMatch = false
         if userTarget isnt undefined and userTarget isnt null
