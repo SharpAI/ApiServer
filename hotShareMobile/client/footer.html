@@ -58,6 +58,9 @@
         </div>
     </div>
   {{/if}}
+  {{#if display_select_import_way}}
+    {{> selectImportWay}}
+  {{/if}}
   <script>
     $(document).ready(function(){
       $('#level2-popup-menu').on('hide.bs.modal', function(e) {
@@ -67,4 +70,18 @@
       });
     });
   </script>
+</template>
+
+<template name="selectImportWay">
+  <div id="mask"></div>
+  <div class="selectImportWay">
+    <div class="importWayheader">
+      <div class="importWayTitle"><img src="/import-tip.png" width="40px"/>小贴士</div>
+      <div class="importWayContent">高级导入会比普通导入得更全面，更彻底哦！</div>
+    </div>
+    <div class="importWayFooter">
+      <div class="importWayBtn" id="appImport">高级导入</div>
+      <div class="importWayBtn importWayBtnLight" id="serverImport">普通导入</div>
+    </div>
+  </div>
 </template>

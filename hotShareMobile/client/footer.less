@@ -33,3 +33,48 @@
   }
 }
 
+#mask {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 9990;
+  background: rgba(0,0,0,.28);
+}
+.selectImportWay{
+  position: fixed;
+  background-color: #fff;
+  border-radius: 4px;
+  height: 200px;
+  width: 80%;
+  left: 10%;
+  bottom: 20%;
+  z-index: 9999;
+  .importWayheader{
+    background-color: #77a9d8;
+    color: #fff;
+    height: 130px;
+    padding: 16px;
+    border-radius: 4px 4px 0 0 ;
+    .importWayTitle{ padding-left: 6px; text-align: center; font-size: 18px; letter-spacing:2px;}
+    .importWayContent{margin-top: 16px;}
+  }
+  .importWayFooter { padding: 16px; border-radius: 4px;}
+  .importWayBtn {
+    display: inline-block;
+    text-align: center;
+    width: 45%;
+    line-height: 22px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid #77a9d8;
+    color: #77a9d8;
+  }
+  .importWayBtnLight{
+    right: 16px;
+    color: #fff;
+    position: absolute;
+    background: #77a9d8;
+  }
+}

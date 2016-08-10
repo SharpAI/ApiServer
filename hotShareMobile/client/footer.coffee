@@ -13,6 +13,8 @@ if Meteor.isClient
     alert 'show'
     return
   Template.footer.helpers
+    display_select_import_way: ()->
+      Session.equals 'display_select_import_way',true
     is_wait_read_count: (count)->
       count > 0
     limit_top_read_count: (count)->
@@ -159,26 +161,28 @@ if Meteor.isClient
                 ,100)
           )
     'click #web-import':(e)->
-      Meteor.defer ()->
-        $('.modal-backdrop.in').remove()
-      prepareToEditorMode()
-      PUB.page '/add'
-      cordova.plugins.clipboard.paste (link)->
-        regexToken = /\b(((http|https?)+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/ig
-        matchArray = regexToken.exec( link )
-        if matchArray isnt null
-          importLink = matchArray[0]
-          if matchArray[0].indexOf('http') is -1
-            importLink = "http://"+matchArray[0]
-          Meteor.setTimeout(()->
-            handleDirectLinkImport(importLink)
-          ,100)
-        else
-          handleAddedLink(null)
-          window.plugins.toast.showLongCenter("粘贴板内容并非有效连接，请手动粘贴\n浏览器内容加载后，点击地址栏右侧\"导入\"按钮");
-      ,()->
-        handleAddedLink(null)
-        window.plugins.toast.showLongCenter("无法获得粘贴板数据，请手动粘贴\n浏览器内容加载后，点击地址栏右侧\"导入\"按钮");
+      $('#level2-popup-menu').modal('hide')
+      Session.set('display_select_import_way',true)
+      # Meteor.defer ()->
+      #   $('.modal-backdrop.in').remove()
+      # prepareToEditorMode()
+      # PUB.page '/add'
+      # cordova.plugins.clipboard.paste (link)->
+      #   regexToken = /\b(((http|https?)+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/ig
+      #   matchArray = regexToken.exec( link )
+      #   if matchArray isnt null
+      #     importLink = matchArray[0]
+      #     if matchArray[0].indexOf('http') is -1
+      #       importLink = "http://"+matchArray[0]
+      #     Meteor.setTimeout(()->
+      #       handleDirectLinkImport(importLink)
+      #     ,100)
+      #   else
+      #     handleAddedLink(null)
+      #     window.plugins.toast.showLongCenter("粘贴板内容并非有效连接，请手动粘贴\n浏览器内容加载后，点击地址栏右侧\"导入\"按钮");
+      # ,()->
+      #   handleAddedLink(null)
+      #   window.plugins.toast.showLongCenter("无法获得粘贴板数据，请手动粘贴\n浏览器内容加载后，点击地址栏右侧\"导入\"按钮");
     'click #share-import':(e)->
         window.plugins.shareExtension.getShareData ((data) ->
             if data
@@ -208,3 +212,33 @@ if Meteor.isClient
               ,100)
             else
               PUB.back()
+
+  Template.selectImportWay.events
+    'click #mask': ->
+      Session.set('display_select_import_way',undefined)
+    'click .importWayBtn':(e,t)->
+      Session.set('post_improt_way',e.currentTarget.id)
+      Session.set('display_select_import_way',undefined)
+      Meteor.defer ()->
+        $('.modal-backdrop.in').remove()
+      prepareToEditorMode()
+      PUB.page '/add'
+      cordova.plugins.clipboard.paste (link)->
+        regexToken = /\b(((http|https?)+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/ig
+        matchArray = regexToken.exec( link )
+        if matchArray isnt null
+          importLink = matchArray[0]
+          if matchArray[0].indexOf('http') is -1
+            importLink = "http://"+matchArray[0]
+          Meteor.setTimeout(()->
+            if e.currentTarget.id is 'serverImport'
+              handleDirectLinkImport(importLink)
+            else
+              handleDirectLinkImport(importLink,1)
+          ,100)
+        else
+          handleAddedLink(null)
+          window.plugins.toast.showLongCenter("粘贴板内容并非有效连接，请手动粘贴\n浏览器内容加载后，点击地址栏右侧\"导入\"按钮");
+      ,()->
+        handleAddedLink(null)
+        window.plugins.toast.showLongCenter("无法获得粘贴板数据，请手动粘贴\n浏览器内容加载后，点击地址栏右侧\"导入\"按钮");
