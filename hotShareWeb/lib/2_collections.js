@@ -113,9 +113,9 @@ if(Meteor.isServer){
         Meteor.defer(function(){
             var doc = Posts.findOne({"_id": postId});
             if (doc) {
-                console.log("globalPostsInsertHookDeferHandle: userId="+userId+", doc._id="+doc._id+", doc.status="+doc.status);
-                if (doc.status && doc.status == "imported") {
-                    Posts.update({_id: postId}, {$set:{status: "done"}});
+                console.log("globalPostsInsertHookDeferHandle: userId="+userId+", doc._id="+doc._id+", doc.import_status="+doc.import_status);
+                if (doc.import_status && doc.import_status == "imported") {
+                    Posts.update({_id: postId}, {$set:{import_status: "done"}});
                     postsInsertHookDeferHandle(userId, doc);
                     try{
                         postsInsertHookPostToBaiduDeferHandle(doc._id);

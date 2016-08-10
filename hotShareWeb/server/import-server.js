@@ -31,7 +31,7 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
       
     try{
       result = JSON.parse(data);
-      if(result.status != 'importing'){
+      if(result.import_status != 'importing'){
         hasEnd = true;
         console.log("res.end: result="+JSON.stringify(result));
         return res.end('\r\n' + JSON.stringify(result));
