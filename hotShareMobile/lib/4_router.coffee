@@ -112,12 +112,6 @@ if Meteor.isClient
         loadingTemplate: 'loadingPost'
         action: ->
           post = Posts.findOne({_id: this.params._id})
-          thePost = Posts.find({_id: this.params._id})
-          thePost.observeChanges {
-            changed:(id, fields)->
-              if(fields.pub)
-                Template.postItem.__helpers.get('reRender')()
-          }
           if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
             Session.set('postContent',post)
             refreshPostContent()
