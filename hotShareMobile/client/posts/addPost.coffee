@@ -345,18 +345,16 @@ if Meteor.isClient
     $('.toEditingProgressBar').find('.total').text(n);
   closePreEditingPopup = ()->
     $('.toEditingProgressBar').bPopup().close()
-  @deferedProcessAddPostItemsWithEditingProcessBar = (pub, appEdited)->
+  @deferedProcessAddPostItemsWithEditingProcessBar = (pub)->
     pub.processed=0
     Session.set('itemInAddPostPending',pub.length)
     Meteor.defer ()->
-      console.log('appEdited:', appEdited)
-      async.mapLimit(pub,1,(item,callback)->
+      async.mapLimit(pub,3,(item,callback)->
         console.log('getcallback------------')
         console.log(item)
         console.log(callback)
-        if(appEdited is true)
-          item.noKeyboardPopup=true
-          item.respectLayout=true
+        item.noKeyboardPopup=true
+        item.respectLayout=true
         Drafts.insert(item)
         Meteor.defer ()->
           pub.processed++
@@ -696,6 +694,18 @@ if Meteor.isClient
     pub.sort((a, b)->
       sortBy('data_row', a, b)
     )
+    
+    # remove data_wait_init status
+    new_pub = []
+    if pub.length > 0
+      for i in [0..pub.length-1]
+        row = {}
+        for key,value of pub[i]
+          if key isnt 'data_wait_init'
+            row[key] = pub[i][key]
+        new_pub.push(row)
+    pub = new_pub
+    
     if Session.get('isReviewMode') is '2' or Posts.find({_id:postId}).count()>0
       Posts.update(
         {
@@ -718,8 +728,7 @@ if Meteor.isClient
             owner:ownerUser._id,
             ownerName:ownerName,
             ownerIcon:ownerIcon,
-            createdAt: new Date(),
-            appEdited: true
+            createdAt: new Date()
           }
         }
       )
@@ -743,8 +752,7 @@ if Meteor.isClient
         owner:ownerUser._id,
         ownerName:ownerName,
         ownerIcon:ownerIcon,
-        createdAt: new Date(),
-        appEdited: true
+        createdAt: new Date()
       })
     #Delete from SavedDrafts if it is a saved draft.
     if SavedDrafts.find().count() is 1

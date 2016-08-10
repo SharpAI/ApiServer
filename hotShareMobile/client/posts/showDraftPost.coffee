@@ -140,14 +140,7 @@ if Meteor.isClient
         The Drafts.insert will trigger addPostItem OnRendered function run, then do the layout thing. The 2nd defer function
         will run after then. The final callback will be called after all item layout done, so closePreEditingPopup run.
         ###
-        
-        appEdited = true
-        post = Session.get('postContent')
-        if(post.status is true or post.status is false)
-          appEdited = post.status
-        else if(post.status)
-          appEdited = false
-        deferedProcessAddPostItemsWithEditingProcessBar(pub, appEdited)
+        deferedProcessAddPostItemsWithEditingProcessBar(pub)
       Session.set('fromDraftPost',true)
       Session.set('isReviewMode','0')
       Router.go('/add')

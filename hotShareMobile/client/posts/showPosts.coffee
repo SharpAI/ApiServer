@@ -280,7 +280,7 @@ if Meteor.isClient
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
     showImporting: ()->
-      this.status is 'importing' and this.ownerId is Meteor.userId()
+      this.import_status is 'importing' and this.ownerId is Meteor.userId()
     clickedCommentOverlayThumbsUp:()->
       i = Session.get('focusedIndex')
       userId = Meteor.userId()
@@ -651,14 +651,7 @@ if Meteor.isClient
         The Drafts.insert will trigger addPostItem OnRendered function run, then do the layout thing. The 2nd defer function
         will run after then. The final callback will be called after all item layout done, so closePreEditingPopup run.
         ###
-        
-        appEdited = true
-        post = Session.get('postContent')
-        if(post.status is true or post.status is false)
-          appEdited = post.status
-        else if(post.status)
-          appEdited = false
-        deferedProcessAddPostItemsWithEditingProcessBar(pub, appEdited)
+        deferedProcessAddPostItemsWithEditingProcessBar(pub)
       Session.set 'isReviewMode','2'
       #Don't push showPost page into history. Because when save posted story, it will use Router.go to access published story directly. But in history, there is a duplicate record pointing to this published story.
       Router.go('/add')

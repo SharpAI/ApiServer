@@ -390,8 +390,7 @@ function PostDrafts(id, user) {
         pub[i].data_row = parseInt(pub[i].data_row);
         pub[i].data_sizex = parseInt(pub[i].data_sizex);
         pub[i].data_sizey = parseInt(pub[i].data_sizey);
-        pub[i].noKeyboardPopup=true;
-        pub[i].respectLayout=true;
+        pub[i].data_wait_init = true;
         if(i > 0){pub[i].data_row = pub[i-1].data_row + pub[i-1].data_sizey;}
       }
     }

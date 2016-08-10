@@ -424,7 +424,6 @@ var insert_data = function(user, url, data, cb) {
         'ownerIcon':user.profile.icon || '/userPicture.png',
         'createdAt': new Date(),
         'publish': true,
-        'appEdited': false
         }];
 
       posts.insert(data_insert, function(err, result) {
@@ -446,7 +445,6 @@ var insert_data = function(user, url, data, cb) {
 }
 var updatePosts = function(postId, post, callback){
   post.import_status = 'imported';
-  post.appEdited = true;
   posts.update({_id: postId},{$set: post}, function(err, number){
     callback && callback(err, number);
   });

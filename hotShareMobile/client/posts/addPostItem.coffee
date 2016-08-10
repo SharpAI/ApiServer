@@ -227,11 +227,10 @@ if Meteor.isClient
         size_y = 4
       grid.add_widget(node, 6, size_y, 1)
     else if type is "image"
-      if insertedObj.inIframe and insertedObj.iframe
-        console.log('to insert iframe')
+      if insertedObj.data_wait_init is true
         grid.add_widget(node, parseInt(insertedObj.data_sizex,baseGap*2), parseInt(insertedObj.data_sizey,baseGap*2))
-      # To be inserted at the end of the screen.
-      else if insertedObj.toTheEnd
+      else if insertedObj.inIframe and insertedObj.iframe
+        console.log('to insert iframe')
         grid.add_widget(node, parseInt(insertedObj.data_sizex,baseGap*2), parseInt(insertedObj.data_sizey,baseGap*2))
       # Images loaded during rendering
       else if insertedObj.respectLayout
@@ -266,6 +265,9 @@ if Meteor.isClient
         if currentCount >= totalCount
           window.unSelectedElem = undefined
         grid.add_widget(node, insert_sizex, insert_sizey, insert_col, insert_row)
+      # To be inserted at the end of the screen.
+      else if insertedObj.toTheEnd
+        grid.add_widget(node, parseInt(insertedObj.data_sizex,baseGap*2), parseInt(insertedObj.data_sizey,baseGap*2))
       # To be inserted at the end of the screen.
       # To be inserted at the end of screen.
       else
