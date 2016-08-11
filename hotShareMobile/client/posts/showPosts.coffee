@@ -636,8 +636,9 @@ if Meteor.isClient
           return
       ,animatePageTrasitionTimeout
     'click #edit': (event)->
-      unless this.import_status is 'imported' or this.import_status is 'done'
-        return window.plugins.toast.showLongBottom('此故事的图片正在处理中，请稍后操作~')
+      if this.import_status
+        unless this.import_status is 'imported' or this.import_status is 'done'
+          return window.plugins.toast.showLongBottom('此故事的图片正在处理中，请稍后操作~')
     
       #Clear draft first
       Drafts.remove({})
