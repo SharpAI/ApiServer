@@ -19,6 +19,7 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
   if (Meteor.absoluteUrl().toLowerCase().indexOf('host2.tiegushi.com') >= 0) {
     api_url += '&server='+encodeURIComponent(Meteor.absoluteUrl());
   }
+  api_url += '&task_id=' + this.params.query['task_id'];
   console.log("api_url="+api_url+", Meteor.absoluteUrl()="+Meteor.absoluteUrl());
   
   request({
@@ -48,5 +49,22 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
     if(hasEnd)
       return;
     res.end('\r\n' + JSON.stringify(result));
+  });
+}, {where: 'server'});
+
+
+Router.route('/import-cancel/:id', function (req, res, next) {
+  res.writeHead(200, {
+    'Content-Type' : 'text/html;charset=UTF-8'
+  });
+  
+  console.log('cancel import.');
+  if(!this.params.id)
+    return res.end('error');
+  
+  request(import_cancel_url + '/' + this.params.id, function(error, response, body){
+    if (!error && response.statusCode == 200)
+      res.end('done');
+    res.end('error');
   });
 }, {where: 'server'});

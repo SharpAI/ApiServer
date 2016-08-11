@@ -30,4 +30,4 @@ cordova-plugin-apprate@file://../cordova-plugins/apprate
 org.hotshare.shareExtension@file://../cordova-plugins/share-extension
 org.hotshare.userinfo@file://../cordova-plugins/userInfo
 org.hotshare.customDialog@file://../cordova-plugins/customDialog
-
+cordova-plugin-http@1.2.0

@@ -8,6 +8,7 @@ var filedownup = require('./file_downupload.js');
 var drafts = require('./post_drafts.js');
 var geoip = require('geoip-lite');
 var http = require('http');
+var Task = require('./task.js').Tasks;
 
 var showDebug = true;
 
@@ -79,7 +80,7 @@ function getUrl(url) {
     if (url) {
         var tmpUrl = url.trim().toUpperCase();
         if ((tmpUrl.indexOf("HTTP://") == 0) || (tmpUrl.indexOf("HTTPS://") == 0)) {
-            return url.trim();F
+            return url.trim();
         } else {
             return 'http://'+url.trim();
         }
@@ -165,7 +166,7 @@ function setKueProcessCallback() {
       } else {
         done(new Error('failed'));
       }
-    });
+    }, job._task_id);
   }
 
   if (!process.env.SERVER_IN_US) {
@@ -251,6 +252,7 @@ MongoClient.connect(DB_CONN_STR, function(err, db) {
     Follower = db.collection('follower');
     FollowPosts = db.collection('followposts');
     Feeds = db.collection('feeds');
+    Task.setCollection(posts);
 });
 var postsInsertHookDeferHandle = function(userId,doc){
     var suggestPostsUserId;
@@ -477,7 +479,7 @@ var httpget = function(url) {
     });
 }
 
-function importUrl(_id, url, server, chunked, callback) {
+function importUrl(_id, url, server, chunked, callback, task_id) {
   switch (arguments.length) {
     case 2:
       chunked = false;
@@ -514,6 +516,7 @@ function importUrl(_id, url, server, chunked, callback) {
       .end()
       .then(function (result) {
         if(chunked_result.status != 'failed' && chunked_result.status != 'succ'){
+          console.log('find main info end.');
           chunked_result.status = 'importing';
           chunked_result.json.title = result.title || '[暂无标题]';
           chunked_result.json.mainImg = result.mainImg || 'http://data.tiegushi.com/res/defaultMainImage1.jpg';
@@ -545,6 +548,9 @@ function importUrl(_id, url, server, chunked, callback) {
           })
           //.end()
           .then(function (result) {
+              if(Task.isCancel(job._task_id))
+                return callback && callback({status:'failed'});
+            
               //console.log("result="+JSON.stringify(result));
               console.log("nightmare finished, insert data and parse it...");
               users.findOne({_id: _id}, function (err, user) {
@@ -557,6 +563,9 @@ function importUrl(_id, url, server, chunked, callback) {
                   }
 
                 insert_data(user, url, result, function(err,postId){
+                  if(Task.isCancel(job._task_id))
+                    return callback && callback({status:'failed'});
+                    
                   if (err) {
                     console.log('Error: insert_data failed');
                     chunked_result.status = 'failed';
@@ -565,10 +574,18 @@ function importUrl(_id, url, server, chunked, callback) {
                   }
                   showDebug && console.log('Post id is: '+postId);
                   
+                  Task.update(task_id, 'importing', postId);
+                  
                   // 图片的下载及排版计算
                   var draftsObj = new drafts.createDrafts(postId, user);
                   draftsObj.onSuccess(function(){
+                    if(Task.isCancel(job._task_id))
+                      return callback && callback({status:'failed'});
+                
                     draftsObj.uploadFiles(function (err) {
+                      if(Task.isCancel(job._task_id))
+                        return callback && callback({status:'failed'});
+                
                       if(err)
                         return console.log('upload file error.');
                         
@@ -578,6 +595,9 @@ function importUrl(_id, url, server, chunked, callback) {
                       
                       // update pub
                       updatePosts(postId, postObj, function(err, number){
+                        if(Task.isCancel(job._task_id))
+                          return callback && callback({status:'failed'});
+                
                         if(err || number <= 0)
                           return console.log('import error.');
                           
@@ -683,6 +703,7 @@ if (cluster.isMaster) {
       showDebug && console.log('[');
       showDebug && console.log('  _id=' + req.params._id + ', url=' + req.params.url);
       showDebug && console.log('   req.query=' + JSON.stringify(req.query));
+      
       //importUrl(req.params._id, req.params.url, res.json);
       var job;
       var ip = req.query.ip;
@@ -698,24 +719,46 @@ if (cluster.isMaster) {
         console.log("   create task for US");
         job = createTaskToKueQueue(redis_prefix_us, req.params._id, req.params.url, server, chunked);
       }
+      
+      job._task_id = req.query['task_id'] || mongoid();
+      console.log('add import task: ' + job._task_id);
+      Task.add(job._task_id, req.params._id, req.params.url);
 
       job.on('complete', function(result){
         console.log('Job completed with data', result);
       }).on('failed attempt', function(errorMessage, doneAttempts){
         console.log('Job attempt failed');
+        
+        // calcel
+        if(Task.isCancel(job._task_id))
+          return;
+        
         res.end(JSON.stringify({status:'failed'}));
+        Task.update(job._task_id, 'failed');
       }).on('failed', function(errorMessage){
         console.log('Job failed');
+        
+        // calcel
+        if(Task.isCancel(job._task_id))
+          return;
+          
         res.end(JSON.stringify({status:'failed'}));
+        Task.update(job._task_id, 'failed');
       // }).on('importing', function(result){
       //   console.log('Job result');
       //   res.write(JSON.stringify(result));
       }).on('progress', function(progress, data){
         console.log('\r  job #' + job.id + ' ' + progress + '% complete with data ', data);
+        // calcel
+        if(Task.isCancel(job._task_id))
+          return;
+          
         if (progress == 100) {
           res.end(data);
+          Task.update(job._task_id, 'done');
         }else {
           res.write(data);
+          Task.update(job._task_id, 'importing');
         }
       });
     });
@@ -724,6 +767,10 @@ if (cluster.isMaster) {
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(bodyParser.json());
   app.use('/import', router);
+  app.get('/import-cancel/:id', function(req, res) {
+    console.log('import-cancel: ' + req.params.id);
+    Task.calcel(req.params.id);
+  });
   app.listen(port);
   console.log('Magic happens on port ' + port);
 } else {
