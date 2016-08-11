@@ -556,7 +556,7 @@ if(Meteor.isServer){
            }
         //    text = text.replace('{{post.icon}}', 'http://' + server_domain_name + actionUser.profile.icon);
            text = text.replace('{{action}}', action);
-           text = text.replace('{{post.time}}', PUB.formatTime(post.createdAt));
+           text = text.replace('{{post.time}}', PUB.formatTime(new Date()));
            text = text.replaceAll('{{post.href}}', 'http://' + server_domain_name + '/posts/' + post._id);
            text = text.replace('{{post.mainImage}}', post.mainImage);
            content = '[暂无内容]';
