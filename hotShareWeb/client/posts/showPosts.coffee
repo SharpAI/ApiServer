@@ -1130,11 +1130,11 @@ if Meteor.isClient
         postId = Session.get("postContent")._id
       # postId = Session.get("postContent")._id
       post = Posts.findOne({_id: postId})
-      followerCount = Follower.find({followerId: post.owner, userEmail: mailAddress}).count()
+      followerCount = Follower.find({followerId: post.owner, userId: Meteor.userId(),userEmail: {$exists: true}}).count()
       qqValueReg = RegExp(/^[1-9][0-9]{4,9}$/)
       mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) 
       # 处理已经关注时， 可以输入空的Email
-      if followerCount > 0 and mailAddress is ''
+      if followerCount >0 and mailAddress is ''
         mailAddress = null
       else
         if !mailValueReg.test(mailAddress) and !qqValueReg.test(mailAddress)
@@ -1143,20 +1143,25 @@ if Meteor.isClient
           return false
       if qqValueReg.test(mailAddress)
         mailAddress += '@qq.com'
-      
+      # 例外处理， 多个用户用同一Email关注同一作者
+      followerEmailCount = Follower.find({followerId: post.owner, userEmail: mailAddress}).count()
       # 在这里处理提交部分
       if Meteor.user().profile.fullname
          username = Meteor.user().profile.fullname
       else
          username = Meteor.user().username
       # 重复关注处理
-      alreadyFollow = if followerCount > 0 then true else false
-      if alreadyFollow and Template.SubscribeAuthor.__helpers.get('oldMail')() is mailAddress
+      if followerCount > 0
+        beforeEmail = Follower.find({followerId: post.owner, userId: Meteor.userId()}).userEmail
+        if beforeEmail is mailAddress
+          $('.subscribeAutorPage').hide()
+          return toastr.info('您已经关注了作者:'+post.ownerName,'已关注')
+      if followerEmailCount > 0
         $('.subscribeAutorPage').hide()
         return toastr.info('您已经关注了作者:'+post.ownerName,'已关注')
       # 用户已经关注了作者
-      if followerCount > 0 
-        upFollowId = Follower.findOne({followerId: post.owner,userEmail: mailAddress})._id
+      if followerCount > 0
+        upFollowId = Follower.findOne({followerId: post.owner,userId: Meteor.userId()})._id
         Follower.update {
           _id: upFollowId
         },
@@ -1165,7 +1170,7 @@ if Meteor.isClient
             userEmail: mailAddress 
             fromWeb: true 
           }
-        }
+        }        
       # 用户第一次关注该作者
       else 
         Follower.insert {
