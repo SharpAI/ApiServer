@@ -10,10 +10,18 @@ if Meteor.isClient
             $el_msg = $(e.currentTarget).closest('li')
             #console.log($el_msg.data('type'))
             #console.log($el_msg.attr('id'))
-            msg = ChatMessage.findOne({_id: $el_msg.attr('id'), type: 'taread'})
+            msg = ChatMessage.findOne({_id: $el_msg.attr('id'), type: {$in: ['taread', 'like', 'dislike', 'pcomments']}})
             #msg = ChatMessage.findOne({_id: $el_msg.attr('id')})
-            if msg
-                text = msg.msg.split("，")[0]
+            if msg and msg.u._id isnt Meteor.userId()
+                if msg.type is 'taread'
+                    text = msg.msg.split("，")[0]
+                else if msg.type is 'like'
+                    text = msg.u.name + ' 喜欢这段：'
+                else if msg.type is 'dislike'
+                    text = msg.u.name + ' 不喜欢这段：'
+                else if msg.type is 'pcomments'
+                    text = msg.u.name + ' 点评了这段：'
+                
                 chatMessages[Session.get('openedRoom')].sendWithUrls(Session.get('openedRoom'), {msg: text, urls: msg.urls})
         console.log 'hello from chat robot, postId : ' + postId
         #return false

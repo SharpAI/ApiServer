@@ -103,6 +103,7 @@ Meteor.startup ()->
       # console.log(mainImageUrl)
       message = {
         rid: room._id,
+        type: info.ptype,
         msg: msg,
         ts: new Date(),
         u: {
