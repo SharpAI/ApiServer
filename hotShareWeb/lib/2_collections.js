@@ -721,7 +721,6 @@ if(Meteor.isServer){
                         if(data.userEmail){
                             console.log(data.userEmail)
                             userEmail.push(data.userEmail);
-                            // sendEmailToFollower(data.userEmail, subject, mailText);
                         }
                         // waitReadCount = Meteor.users.findOne({_id:data.userId}).profile.waitReadCount;
                         var dataUser = Meteor.users.findOne({_id:data.userId});
@@ -732,7 +731,10 @@ if(Meteor.isServer){
                         }
                         Meteor.users.update({_id: data.userId}, {$set: {'profile.waitReadCount': waitReadCount+1}});
                     });
-                    sendEmailToFollower(userEmail, subject, mailText);
+
+                    if (userEmail.length > 0) {
+                        sendEmailToFollower(userEmail, subject, mailText);
+                    }
                 }
                 if(userId === suggestPostsUserId)
                 {
