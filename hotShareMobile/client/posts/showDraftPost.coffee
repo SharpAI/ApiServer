@@ -1,5 +1,7 @@
 if Meteor.isClient
-
+  Template.showDraftPosts.created=->
+    layoutHelperInit()
+    Session.set("content_loadedCount", 0)
   Template.showDraftPosts.onRendered ->
     Session.setDefault "displayPostContent",true
     $('.mainImage').css('height',$(window).height()*0.55)
@@ -54,7 +56,7 @@ if Meteor.isClient
       self = this
       contentList = Template.showDraftPosts.__helpers.get('getPostContent')(self)
       loadedCount = if Session.get("content_loadedCount") then Session.get("content_loadedCount") else 0
-      #console.log("loadedCount="+loadedCount+", "+contentList.length)
+      # console.log("loadedCount="+loadedCount+", "+contentList.length)
       newLoadedCount = contentList.length
       if (loadedCount < contentList.length)
         if loadedCount+10 < contentList.length
@@ -65,7 +67,7 @@ if Meteor.isClient
           Meteor.setTimeout(()->
             Session.set("content_loadedCount", newLoadedCount)
           , 0)
-      contentList.slice(0, newLoadedCount)
+      contentList.slice(1, newLoadedCount)
     getPub2:->
       self = this
       self.pub = self.pub || []

@@ -7,6 +7,7 @@ if Meteor.isClient
   layoutHelper=[0,0,0,0,0,0]
   imageMarginPixel=5
   @layoutHelperInit = ()->
+    #在gridster之前需调用此方法，否则div#test的height会继承上次的设置，并每次加倍
     layoutHelper=[0,0,0,0,0,0]
   getLayoutTop=(helper,col,sizeX)->
     max=0
