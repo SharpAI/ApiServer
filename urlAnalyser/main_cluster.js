@@ -35,8 +35,9 @@ var kue = require('kue'),
 var NIGHTMARE_DEBUG = false;
 var QUEUE_SIZE = 100;
 var nightmareQueue;
-var redis_prefix = process.env.PREFIX+'import_task';
-var redis_prefix_us = process.env.PREFIX+'import_task_us';
+var prefix = process.env.PREFIX || '';
+var redis_prefix = prefix+'import_task';
+var redis_prefix_us = prefix+'import_task_us';
 var restartKueServiceTimeout = null;
 
 process.addListener('uncaughtException', function (err) {
@@ -548,8 +549,8 @@ function importUrl(_id, url, server, chunked, callback, task_id) {
           })
           //.end()
           .then(function (result) {
-              if(Task.isCancel(job._task_id))
-                return callback && callback({status:'failed'});
+              //if(Task.isCancel(job._task_id))
+              //  return callback && callback({status:'failed'});
             
               //console.log("result="+JSON.stringify(result));
               console.log("nightmare finished, insert data and parse it...");
@@ -563,8 +564,8 @@ function importUrl(_id, url, server, chunked, callback, task_id) {
                   }
 
                 insert_data(user, url, result, function(err,postId){
-                  if(Task.isCancel(job._task_id))
-                    return callback && callback({status:'failed'});
+                  //if(Task.isCancel(job._task_id))
+                  //  return callback && callback({status:'failed'});
                     
                   if (err) {
                     console.log('Error: insert_data failed');
@@ -574,17 +575,17 @@ function importUrl(_id, url, server, chunked, callback, task_id) {
                   }
                   showDebug && console.log('Post id is: '+postId);
                   
-                  Task.update(task_id, 'importing', postId);
+                  //Task.update(task_id, 'importing', postId);
                   
                   // 图片的下载及排版计算
                   var draftsObj = new drafts.createDrafts(postId, user);
                   draftsObj.onSuccess(function(){
-                    if(Task.isCancel(job._task_id))
-                      return callback && callback({status:'failed'});
+                    //if(Task.isCancel(job._task_id))
+                    //  return callback && callback({status:'failed'});
                 
                     draftsObj.uploadFiles(function (err) {
-                      if(Task.isCancel(job._task_id))
-                        return callback && callback({status:'failed'});
+                      //if(Task.isCancel(job._task_id))
+                      //  return callback && callback({status:'failed'});
                 
                       if(err)
                         return console.log('upload file error.');
@@ -595,8 +596,8 @@ function importUrl(_id, url, server, chunked, callback, task_id) {
                       
                       // update pub
                       updatePosts(postId, postObj, function(err, number){
-                        if(Task.isCancel(job._task_id))
-                          return callback && callback({status:'failed'});
+                        //if(Task.isCancel(job._task_id))
+                        //  return callback && callback({status:'failed'});
                 
                         if(err || number <= 0)
                           return console.log('import error.');
