@@ -779,7 +779,7 @@ if(Meteor.isServer){
                 }
             }
             catch(error){
-                console.log(err);
+                console.log("Exception: postsInsertHookDeferHandle: err=", error);
             }
             try {
                 var pullingConn = Cluster.discoverConnection("pulling");
