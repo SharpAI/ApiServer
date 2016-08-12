@@ -765,17 +765,15 @@ if (cluster.isMaster) {
     });
   function routerCallback(req, res) {
       var chunked = req.query['chunked'] && req.query['chunked'] === 'true' ? true : false;;
-      showDebug && console.log('[');
-      showDebug && console.log('  _id=' + req.params._id + ', url=' + req.params.url);
-      showDebug && console.log('   req.query=' + JSON.stringify(req.query));
-      
-      //importUrl(req.params._id, req.params.url, res.json);
       var job;
       var ip = req.query.ip;
       var server = req.query.server || '';
       var unique_id = req.query.task_id || '';
+      showDebug && console.log('[');
+      showDebug && console.log('   req.params=' + JSON.stringify(req.params));
+      showDebug && console.log('   req.query=' + JSON.stringify(req.query));
       if (checkIPAddr(ip) == 'CN') {
-        console.log("   create task for CN, req.params.task_id="+req.query.task_id+", unique_id="+unique_id);
+        console.log("   create task for CN");
         job = createTaskToKueQueue(redis_prefix, req.params._id, req.params.url, server, unique_id, chunked);
         
       } else {
