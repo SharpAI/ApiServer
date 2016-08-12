@@ -443,7 +443,7 @@ if Meteor.isClient
     else
       api_url += '/' + Meteor.userId()
     api_url += '/' + encodeURIComponent(url)
-    api_url += '?task_id=' + unique_id;
+    api_url += '?task_id=' + unique_id + '&isMobile=true';
     console.log("api_url="+api_url)
     showPopupProgressBar(()->
       # cancel server import
@@ -500,7 +500,6 @@ if Meteor.isClient
               }
             )
         error_return = (res)->
-          _.task_id = ''
           console.log 'http response error: ' + res.error
           if Session.equals('cancelImport',true)
             return
