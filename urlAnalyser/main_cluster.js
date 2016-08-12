@@ -590,7 +590,7 @@ function importUrl(_id, url, server, unique_id, chunked, callback) {
                   }
                   showDebug && console.log('Post id is: '+postId);
                   
-                  //Task.update(task_id, 'importing', postId);
+                  Task.update(unique_id, 'importing', postId);
                   
                   // 图片的下载及排版计算
                   var draftsObj = new drafts.createDrafts(postId, user);
