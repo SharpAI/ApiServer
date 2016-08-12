@@ -472,9 +472,9 @@ if Meteor.isClient
           if Session.equals('cancelImport',true)
             return
           if result.status is 'succ'
-            Session.set('importProcedure', 97)
-            Session.set('importProcedure', 100)
-            PUB.toast('导入成功!')
+            # Session.set('importProcedure', 97)
+            # Session.set('importProcedure', 100)
+            # PUB.toast('导入成功!')
             postId = result.json.substr(result.json.lastIndexOf('/')+1)
             Meteor.subscribe(
               'publicPosts'
@@ -483,6 +483,9 @@ if Meteor.isClient
                 onStop: ()->
                   Router.go('/posts/'+postId)
                 onReady: ()->
+                  Session.set('importProcedure', 97)
+                  Session.set('importProcedure', 100)
+                  PUB.toast('导入成功!')
                   postItem = Posts.findOne({_id:postId})
                   Session.set("TopicPostId", postId)
                   Session.set("TopicTitle", postItem.title)
