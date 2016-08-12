@@ -437,7 +437,7 @@ if Meteor.isClient
     #api_url += '/' + Meteor.userId();
     #api_url += '/' + encodeURIComponent(url);
     #api_url += '/' + unique_id;
-    api_url = Meteor.absoluteUrl('import-server')
+    api_url = import_server_url #Meteor.absoluteUrl('import-server')
     api_url += '/' + Meteor.userId()
     api_url += '/' + encodeURIComponent(url)
     api_url += '?task_id=' + unique_id;
@@ -446,7 +446,7 @@ if Meteor.isClient
       # cancel server import
       request_return = (res)->
         console.log('cancel import res: ' + JSON.stringify(res))
-      cordovaHTTP.get Meteor.absoluteUrl('import-cancel/') + unique_id, {}, {}, request_return, request_return
+      cordovaHTTP.get import_cancel_url + '/' + unique_id, {}, {}, request_return, request_return
       console.log("import-cancel: unique_id="+unique_id);
       if Session.equals('cancelImport',true)
         return
