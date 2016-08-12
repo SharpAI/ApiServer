@@ -159,18 +159,20 @@ function setKueProcessCallback() {
     var unique_id = data.unique_id;
     var chunked = data.chunked;
 
-    importUrl(_id, url, server, unique_id, chunked, function(result) {
-      //setTimeout(function() { done(); }, jobDelay);
-      console.log('result='+JSON.stringify(result));
-      if (result.status == 'succ') {
-        job.progress(100, 100, JSON.stringify(result));
-        done();
-      } else if (result.status == 'importing') {
-        job.progress(50, 100, JSON.stringify(result));
-      } else {
-        done(new Error('failed'));
-      }
-    });
+    setTimeout(function() {
+        importUrl(_id, url, server, unique_id, chunked, function(result) {
+          //setTimeout(function() { done(); }, jobDelay);
+          console.log('result='+JSON.stringify(result));
+          if (result.status == 'succ') {
+            job.progress(100, 100, JSON.stringify(result));
+            done();
+          } else if (result.status == 'importing') {
+            job.progress(50, 100, JSON.stringify(result));
+          } else {
+            done(new Error('failed'));
+          }
+        });
+    }, 0);
   }
 
   if (!process.env.SERVER_IN_US) {
