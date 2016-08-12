@@ -1,10 +1,10 @@
 if Meteor.isServer
   myCrypto = Meteor.npmRequire "crypto"
   @nodemailer = Meteor.npmRequire('nodemailer');
+  if (Meteor.absoluteUrl().toLowerCase().indexOf('host2.tiegushi.com') >= 0)
+    process.env['HTTP_FORWARDED_COUNT'] = 1
+  console.log("process.env.HTTP_FORWARDED_COUNT="+process.env.HTTP_FORWARDED_COUNT);
   Meteor.startup ()->
-    if (Meteor.absoluteUrl().toLowerCase().indexOf('host2.tiegushi.com') >= 0)
-      process.env['HTTP_FORWARDED_COUNT'] = 1
-    console.log("process.env.HTTP_FORWARDED_COUNT="+process.env.HTTP_FORWARDED_COUNT);
     Meteor.methods
       'sendErrorReport':(to, from, subject, text)->
         console.log(to)

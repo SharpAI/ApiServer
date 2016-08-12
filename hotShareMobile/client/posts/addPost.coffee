@@ -310,11 +310,6 @@ if Meteor.isClient
       position: [0, 0]
       onOpen: ()->
         $(this).find('#cancelImport').on('click',()->
-          # cancel server import
-          request_return = (res)->
-            console.log('cancel import res: ' + JSON.stringify(res))
-          cordovaHTTP.get Meteor.absoluteUrl('import-cancel/') + _.task_id, {}, {}, request_return, request_return
-          
           console.log('Clicked on cancelImport button')
           Session.set('cancelImport',true)
           popupProgressBar.close()
@@ -436,20 +431,30 @@ if Meteor.isClient
       getURL(e)
     ,1200
   @hanldeDirectLinkServerImport = (url)->
-    # api_url = 'http://'+import_server_url+':'+IMPORT_SERVER_PORT+'/import'
+    unique_id = new Mongo.ObjectID()._str
+    #api_url = 'http://'+import_server_url+':'+IMPORT_SERVER_PORT+'/import'
     # id = (new Mongo.ObjectID())._str
-    # api_url += '/' + Meteor.userId();
-    # api_url += '/' + encodeURIComponent(url);
-    # console.log("api_url="+api_url)
+    #api_url += '/' + Meteor.userId();
+    #api_url += '/' + encodeURIComponent(url);
+    #api_url += '/' + unique_id;
+    api_url = Meteor.absoluteUrl('import-server')
+    api_url += '/' + Meteor.userId()
+    api_url += '/' + encodeURIComponent(url)
+    api_url += '?task_id=' + unique_id;
+    console.log("api_url="+api_url)
     showPopupProgressBar(()->
+      # cancel server import
+      request_return = (res)->
+        console.log('cancel import res: ' + JSON.stringify(res))
+      cordovaHTTP.get Meteor.absoluteUrl('import-cancel/') + unique_id, {}, {}, request_return, request_return
+      console.log("import-cancel: unique_id="+unique_id);
       if Session.equals('cancelImport',true)
         return
-              
-      return navigator.notification.confirm('快速导入不成功，是否尝试高级导入？'
-          (index)->
-            if index is 1 then handleDirectLinkImport(url, 1)
-          '温馨提示', ['是', '否']
-      )
+      #return navigator.notification.confirm('快速导入不成功，是否尝试高级导入？'
+      #    (index)->
+      #      if index is 1 then handleDirectLinkImport(url, 1)
+      #    '温馨提示', ['是', '否']
+      #)
     )
     intrval = Meteor.setInterval(()->
         if Session.get('importProcedure') is 100 or Session.get('cancelImport')
@@ -459,29 +464,18 @@ if Meteor.isClient
       , 200);
 
     try
-        _.task_id = new Mongo.ObjectID()._str
-        api_url = Meteor.absoluteUrl('import-server')
-        api_url += '/' + Meteor.userId()
-        api_url += '/' + encodeURIComponent(url)
-        api_url += '?task_id=' + _.task_id;
-        
         succ_return = (res)->
-          _.task_id = ''
-          console.log 'http response: ' + res.data
           result = res.data.split('\r\n')
           result = result[result.length-1]
           console.log(result)
           result = JSON.parse(result)
-          
           if Session.equals('cancelImport',true)
             return
-          
           if result.status is 'succ'
             Session.set('importProcedure', 97)
             Session.set('importProcedure', 100)
-            PUB.toast('导入成功，我们正在对图片进行处理。')
+            PUB.toast('导入成功!')
             postId = result.json.substr(result.json.lastIndexOf('/')+1)
-            
             Meteor.subscribe(
               'publicPosts'
               postId
@@ -499,33 +493,53 @@ if Meteor.isClient
                   Router.go('/posts/'+postId)
               }
             )
-          else
-            navigator.notification.confirm(
-              '快速导入不成功，是否尝试高级导入？'
-              (index)->
-                if index is 1
-                  handleDirectLinkImport(url, 1)
-              '温馨提示', ['是', '否']
-            )
         error_return = (res)->
           _.task_id = ''
           console.log 'http response error: ' + res.error
-          
           if Session.equals('cancelImport',true)
             return
-            
-          navigator.notification.confirm(
-              '快速导入不成功，是否尝试高级导入？'
-              (index)->
-                if index is 1
-                  handleDirectLinkImport(url, 1)
-              '温馨提示', ['是', '否']
-            )
-            
-        console.log 'http request: ' + api_url
+          PUB.toast('快速导入失败啦，请尝试高级导入吧。')
+
         cordovaHTTP.get api_url, {}, {}, succ_return, error_return
+
+        ###
+        Meteor.call('httpCall', 'GET', api_url, (err, res)->
+          if (err)
+            console.log("httpCall error: err="+JSON.stringify(err));
+            console.log(res.content);
+          result = JSON.parse(res.content);
+          if (err || !result || result.status != 'succ')
+            return PUB.toast('快速导入失败啦，请重新尝试高级导入吧。')
+          Session.set('importProcedure', 97)
+          Session.set('importProcedure', 100)
+          PUB.toast('导入成功!');
+          #location = result.json;
+          if result.json
+            url_array = result.json.split('/')
+            if url_array.length > 0
+              postId = url_array[url_array.length-1]
+              #Router.go('/posts/'+postId)
+              if postId
+                Meteor.subscribe('publicPosts', postId, {
+                  onStop: ()->
+                    Router.go('/posts/'+postId)
+                  onReady: ()->
+                    postItem = Posts.findOne({_id:postId})
+                    Session.set("TopicPostId", postId)
+                    Session.set("TopicTitle", postItem.title)
+                    Session.set("TopicAddonTitle", postItem.addontitle)
+                    Session.set("TopicMainImage", postItem.mainImage)
+                    Router.go('/addTopicComment/')
+                  onError: ()->
+                    Router.go('/posts/'+postId)
+                })
+              else
+                Router.go('/posts/'+postId)
+        )
+        ###
     catch error
         console.log("ERROR: httpCall, api_url="+api_url);
+
   @handleDirectLinkImport = (url, clientSide)->
     if withServerImport and clientSide is undefined
       console.log("Import url on server side...")
