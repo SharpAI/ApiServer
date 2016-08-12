@@ -2,16 +2,23 @@ function taskObj() {
   var task = new Object();
   var tasks = [];
   var collections = {};
+  var debug = false;
   
   task.add = function(id, userId, url){
-    console.log('add task: ' + id);
-    tasks.push({
-      id: id,
-      userId: userId,
-      url: url,
-      startTime: new Date(),
-      status: 'wait'
-    });
+    var index = task.getIndex(id);
+    if(index === -1){
+      debug && console.log('add task: ' + id);
+      tasks.push({
+        id: id,
+        userId: userId,
+        url: url,
+        startTime: new Date(),
+        status: 'wait'
+      });
+    }else{
+      tasks[index].userId = userId,
+      tasks[index].url = url
+    }
     task.removeOld();
   };
   
@@ -49,17 +56,25 @@ function taskObj() {
   };
   
   task.update = function(id, status, postId){
+    debug && console.log('update status: ' + status);
+    debug && console.log('update postId: ' + postId);
+    
+    debug && console.log('task: ' + id);
+    
     var index = task.getIndex(id);
     if(index === -1)
       return;
       
+    if(postId){
+      debug && console.log('update postId: ' + postId);
+      tasks[index].postId = postId;
+    }
+      
     if(task.isCancel(id))
       return;
-      
-    console.log('update status: ' + status);
+
     tasks[index].status = status;
-    if(postId)
-      tasks[index].postId = postId;
+    
     if(status === 'done'){
       tasks[index].endTime = new Date();
       tasks[index].execTime = (tasks[index].endTime - tasks[index].startTime)/1000 + 's';
@@ -67,43 +82,52 @@ function taskObj() {
       // save piwik
       // TODO:
       
-      tasks.splice(index, 1);
+      // tasks.splice(index, 1);
     }
   };
   
   task.cancel = function(id){
-    console.log('cancel import task: ' + id);
-    console.log('=========================');
-    console.log(tasks);
-    console.log('=========================');
+    debug && console.log('cancel import task: ' + id);
+    debug && console.log('=========================');
+    debug && console.log(tasks);
+    debug && console.log('=========================');
     
     var index = task.getIndex(id);
     if(index === -1)
       return;
-    
+
     // update status  
     task.update(id, 'cancel');
     
     // remove post
-    console.log('remove post.');
+    debug && console.log('remove post.');
     if(tasks[index].postId){
       console.log('remove import post.');
       collections.posts.remove({_id: tasks[index].postId});
-      tasks.splice(index, 1);
+      // tasks.splice(index, 1);
     }else{
-      tasks.splice(index, 1);
+      // tasks.splice(index, 1);
     }
   };
   
   task.setCollection = function(params){
     for (var key in params)
       collections[key] = params[key];
+      
+    debug && console.log('set collections: ' + params);
   };
   
-  task.isCancel = function(id){
+  task.isCancel = function(id, remove){
     var index = task.getIndex(id);
     if(index === -1)
       return false;
+      
+    if(remove === true && tasks[index].status === 'cancel'){
+      if(tasks[index].postId){
+        console.log('remove import post.');
+        collections.posts.remove({_id: tasks[index].postId});
+      }
+    }
     
     return tasks[index].status === 'cancel';
   }
