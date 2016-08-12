@@ -69,21 +69,28 @@ function taskObj() {
       debug && console.log('update postId: ' + postId);
       tasks[index].postId = postId;
     }
+    
+    if(status === 'done' || status === 'cancel' || status === 'failed'){
+      tasks[index].endTime = new Date();
+      tasks[index].execTime = (tasks[index].endTime - tasks[index].startTime)/1000 + 's';
+      
+      // save piwik
+      collections.serverImportLog.update({taskId: tasks[index].id}, {$set: {
+        taskId: tasks[index].id,
+        userId: tasks[index].userId,
+        importUrl: tasks[index].url,
+        startTime: tasks[index].startTime,
+        endTime: tasks[index].endTime,
+        execTime: tasks[index].execTime,
+        status: status
+      }}, {upsert: true});
+    }
       
     if(task.isCancel(id))
       return;
 
     tasks[index].status = status;
-    
-    if(status === 'done'){
-      tasks[index].endTime = new Date();
-      tasks[index].execTime = (tasks[index].endTime - tasks[index].startTime)/1000 + 's';
-      
-      // save piwik
-      // TODO:
-      
-      // tasks.splice(index, 1);
-    }
+    console.log('update status: ' + status);
   };
   
   task.cancel = function(id){
@@ -111,10 +118,10 @@ function taskObj() {
   };
   
   task.setCollection = function(params){
-    for (var key in params)
+    for (var key in params){
       collections[key] = params[key];
-      
-    debug && console.log('set collections: ' + params);
+      console.log('set collections: ' + key);
+    }
   };
   
   task.isCancel = function(id, remove){

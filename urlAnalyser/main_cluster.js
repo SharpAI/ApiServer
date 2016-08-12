@@ -21,6 +21,7 @@ var users = null;
 var Follower = null;
 var FollowPosts = null;
 var Feeds = null;
+var serverImportLog = null;
 
 var kue = require('kue'), 
     cluster = require('cluster'),
@@ -258,7 +259,8 @@ MongoClient.connect(DB_CONN_STR, function(err, db) {
     Follower = db.collection('follower');
     FollowPosts = db.collection('followposts');
     Feeds = db.collection('feeds');
-    Task.setCollection({posts: posts});
+    serverImportLog = db.collection('serverImportLog');
+    Task.setCollection({posts: posts, serverImportLog: serverImportLog});
 });
 var postsInsertHookDeferHandle = function(userId,doc){
     var suggestPostsUserId;
@@ -401,12 +403,26 @@ var insert_data = function(user, url, data, cb) {
     if (data.resortedArticle && data.resortedArticle.length > 0){
       for(var i=0;i<data.resortedArticle.length;i++){
         data.resortedArticle[i]._id = mongoid();
-        if(data.resortedArticle[i].type === 'image')
+        if(data.resortedArticle[i].type === 'image'){
           data.resortedArticle[i].isImage = true;
+          data.resortedArticle[i].data_sizey = 3;
+        }else{
+          data.resortedArticle[i].data_sizey = 1;
+        }
         data.resortedArticle[i].data_row = 1;
         data.resortedArticle[i].data_col = 1;
         data.resortedArticle[i].data_sizex = 6;
-        data.resortedArticle[i].data_sizey = 1;
+      }
+      
+      // format
+      for(var i=0;i<data.resortedArticle.length;i++){
+        data.resortedArticle[i].index = i;
+        data.resortedArticle[i].data_col = parseInt(data.resortedArticle[i].data_col);
+        data.resortedArticle[i].data_row = parseInt(data.resortedArticle[i].data_row);
+        data.resortedArticle[i].data_sizex = parseInt(data.resortedArticle[i].data_sizex);
+        data.resortedArticle[i].data_sizey = parseInt(data.resortedArticle[i].data_sizey);
+        data.resortedArticle[i].data_wait_init = true;
+        if(i > 0){data.resortedArticle[i].data_row = data.resortedArticle[i-1].data_row + data.resortedArticle[i-1].data_sizey;}
       }
     }
     
@@ -451,11 +467,25 @@ var insert_data = function(user, url, data, cb) {
       });
     });
 }
-var updatePosts = function(postId, post, callback){
+var updatePosts = function(postId, post, taskId, callback){
   post.import_status = 'imported';
   posts.update({_id: postId},{$set: post}, function(err, number){
     callback && callback(err, number);
   });
+  
+  var task = Task.get(taskId);
+  if(task){
+    console.log('task img upload: ' + taskId);
+    try{
+    serverImportLog.update({taskId: taskId}, {$set: {
+      postId: postId,
+      endImgTime: new Date(),
+      execImgTime: ((new Date()) - task.startTime)/1000 + 's'
+    }});
+    }catch (ex){
+      console.log(ex);
+    }
+  }
 };
 var updateFollowPosts = function(userId, postId, post, callback){
   //console.log("userId="+userId+", postId="+postId+", post="+JSON.stringify(post));
@@ -621,7 +651,7 @@ function importUrl(_id, url, server, unique_id, chunked, callback) {
                       // draftsObj.destroy();
                       
                       // update pub
-                      updatePosts(postId, postObj, function(err, number){
+                      updatePosts(postId, postObj, unique_id, function(err, number){
                         if (Task.isCancel(unique_id, true)) {
                           console.log("importUrl: cancel - 5.");
                           return callback && callback({status:'failed'});

@@ -29,18 +29,18 @@
     appearance: none;
     margin-right: 10px;
     position: relative;
-    bottom: -10px;
+    /*bottom: -10px;*/
     outline: none !important;
   }
 
   /* #publishto .publish-reader-group input[type='checkbox']:checked:after{ */
   input[type='checkbox']:checked:after{
-    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#00c4ff" stroke-width="10"/><path fill="#00c4ff" d="M72 25L42 71 27 56l-4 4 20 20 34-52z"/></svg>');
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 -15 100 120"><circle cx="50" cy="50" r="50" fill="none" stroke="#00c4ff" stroke-width="10"/><path fill="#00c4ff" d="M72 25L42 71 27 56l-4 4 20 20 34-52z"/></svg>');
   }
 
   /* #publishto .publish-reader-group input[type='checkbox']:after{ */
   input[type='checkbox']:after{
-    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#aaaaaa" stroke-width="10"/></svg>');
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 -15 100 120"><circle cx="50" cy="50" r="50" fill="none" stroke="#aaaaaa" stroke-width="10"/></svg>');
   }
 
   #publishto .publish-reader-group label label {
@@ -75,10 +75,11 @@
       {{/each}}
       {{#if isShowPublish}}
       <div id="pubdivide"></div> 
-      <ul class="publish-readers-list1" style="padding:0; margin: 10px auto; text-align:center">
-          <li class="publish-reader-group1">
-            <label><input id="share-follower" type="checkbox"><label for="share-follower" style="width:200px;">分享本文到故事贴读友圈</label></label>
-          </li>  
+      <ul  class="publish-readers-list1" style="padding:0; margin: 10px auto; text-align:center">
+          <li class="publish-reader-group1" style="padding:0;margin: 0 auto;height: 46px;max-width: 250px;display: block;">
+            <label style="margin:0;margin-top:2px; padding:0;height: 46px; display: table-cell; width:46px;"><input id="share-follower" type="checkbox"></label>
+            <label for="share-follower" style="display: table-cell; padding: 0; margin: 0; vertical-align: middle; line-height:46px;">分享本文到故事贴读友圈</label>
+          </li> 
         </ul>  
       <div id="pubdivide"></div> 
       <div id="publishto">
