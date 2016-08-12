@@ -71,7 +71,7 @@ function taskObj() {
     }
   };
   
-  task.calcel = function(id){
+  task.cancel = function(id){
     console.log('cancel import task: ' + id);
     console.log('=========================');
     console.log(tasks);
@@ -82,7 +82,7 @@ function taskObj() {
       return;
     
     // update status  
-    task.update(id, 'calcel');
+    task.update(id, 'cancel');
     
     // remove post
     console.log('remove post.');
@@ -105,7 +105,7 @@ function taskObj() {
     if(index === -1)
       return false;
     
-    return tasks[index].status === 'calcel';
+    return tasks[index].status === 'cancel';
   }
   
   return task;

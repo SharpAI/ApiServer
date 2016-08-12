@@ -68,8 +68,9 @@ process.addListener('uncaughtException', function (err) {
     restartKueServiceTimeout = setTimeout(function(){
                                 if (cluster.isMaster) {
                                     for (var id in cluster.workers) {
+                                        var msg = {type:'restartKueService'}
                                         console.log("Sending message restartKueService to work id: "+id);
-                                        cluster.workers[id].send('restartKueService');
+                                        cluster.workers[id].send(JSON.parse(msg));
                                     }
                                 }
                                 restartKueService();
@@ -132,11 +133,12 @@ function restartKueService() {
         });
     }
 }
-function createTaskToKueQueue(prefix, _id, url, server, chunked) {
+function createTaskToKueQueue(prefix, _id, url, server, unique_id, chunked) {
     var job = kuequeue.create(prefix, {
       id: _id,
       url: getUrl(url),
       server: server,
+      unique_id: unique_id,
       chunked: chunked
     }).save(function(err){
       if (!err) {
@@ -154,9 +156,10 @@ function setKueProcessCallback() {
     var _id = data.id;
     var url = data.url;
     var server = data.server;
+    var unique_id = data.unique_id;
     var chunked = data.chunked;
 
-    importUrl(_id, url, server, chunked, function(result) {
+    importUrl(_id, url, server, unique_id, chunked, function(result) {
       //setTimeout(function() { done(); }, jobDelay);
       console.log('result='+JSON.stringify(result));
       if (result.status == 'succ') {
@@ -167,7 +170,7 @@ function setKueProcessCallback() {
       } else {
         done(new Error('failed'));
       }
-    }, job._task_id);
+    });
   }
 
   if (!process.env.SERVER_IN_US) {
@@ -480,7 +483,7 @@ var httpget = function(url) {
     });
 }
 
-function importUrl(_id, url, server, chunked, callback, task_id) {
+function importUrl(_id, url, server, unique_id, chunked, callback) {
   switch (arguments.length) {
     case 2:
       chunked = false;
@@ -549,8 +552,18 @@ function importUrl(_id, url, server, chunked, callback, task_id) {
           })
           //.end()
           .then(function (result) {
-              //if(Task.isCancel(job._task_id))
-              //  return callback && callback({status:'failed'});
+              function cleanUp() {
+                nightmare.goto("about:blank").then(function (result) {
+                  console.log("Open blank page.");
+                  finishNightmare(queueMember);
+                });
+              }
+              console.log("unique_id="+unique_id);
+              if (Task.isCancel(unique_id)) {
+                console.log("importUrl: cancel - 1.");
+                cleanUp();
+                return callback && callback({status:'failed'});
+              }
             
               //console.log("result="+JSON.stringify(result));
               console.log("nightmare finished, insert data and parse it...");
@@ -564,8 +577,10 @@ function importUrl(_id, url, server, chunked, callback, task_id) {
                   }
 
                 insert_data(user, url, result, function(err,postId){
-                  //if(Task.isCancel(job._task_id))
-                  //  return callback && callback({status:'failed'});
+                  if (Task.isCancel(unique_id)) {
+                    console.log("importUrl: cancel - 2.");
+                    return callback && callback({status:'failed'});
+                  }
                     
                   if (err) {
                     console.log('Error: insert_data failed');
@@ -580,15 +595,20 @@ function importUrl(_id, url, server, chunked, callback, task_id) {
                   // 图片的下载及排版计算
                   var draftsObj = new drafts.createDrafts(postId, user);
                   draftsObj.onSuccess(function(){
-                    //if(Task.isCancel(job._task_id))
-                    //  return callback && callback({status:'failed'});
+                    if (Task.isCancel(unique_id)) {
+                      console.log("importUrl: cancel - 3.");
+                      return callback && callback({status:'failed'});
+                    }
                 
                     draftsObj.uploadFiles(function (err) {
-                      //if(Task.isCancel(job._task_id))
-                      //  return callback && callback({status:'failed'});
+                      if (Task.isCancel(unique_id)) {
+                        console.log("importUrl: cancel - 4.");
+                        return callback && callback({status:'failed'});
+                      }
                 
-                      if(err)
+                      if(err) {
                         return console.log('upload file error.');
+                      }
                         
                       var postObj = draftsObj.getPubObject();
                       // console.log('post:', JSON.stringify(postObj));
@@ -596,11 +616,14 @@ function importUrl(_id, url, server, chunked, callback, task_id) {
                       
                       // update pub
                       updatePosts(postId, postObj, function(err, number){
-                        //if(Task.isCancel(job._task_id))
-                        //  return callback && callback({status:'failed'});
+                        if (Task.isCancel(unique_id)) {
+                          console.log("importUrl: cancel - 5.");
+                          return callback && callback({status:'failed'});
+                        }
                 
-                        if(err || number <= 0)
+                        if(err || number <= 0) {
                           return console.log('import error.');
+                        }
                           
                           var tmpServer = hotshare_web;
                           if (server && (server != '')) {
@@ -642,16 +665,13 @@ function importUrl(_id, url, server, chunked, callback, task_id) {
                   if (callback) {
                     chunked_result.status = 'succ';
                     if (hotshare_web)
-                    chunked_result.json = hotshare_web+'/posts/'+postId;
+                        chunked_result.json = hotshare_web+'/posts/'+postId;
                     callback({status:'succ',json:hotshare_web+'/posts/'+postId});
                   }
                 });
               });
 
-              nightmare.goto("about:blank").then(function (result) {
-                console.log("Open blank page.");
-                finishNightmare(queueMember);
-              });
+              cleanUp();
               //console.log("nightmare.then: index="+index);
               //initQueueMember(queueMember);
           })
@@ -700,6 +720,13 @@ if (cluster.isMaster) {
 
   router.route('/:_id/:url')
     .get(function(req, res) {
+        routerCallback(req, res);
+    });
+  router.route('/:_id/:url/:unique_id')
+    .get(function(req, res) {
+        routerCallback(req, res);
+    });
+  function routerCallback(req, res) {
       var chunked = req.query['chunked'] && req.query['chunked'] === 'true' ? true : false;;
       showDebug && console.log('[');
       showDebug && console.log('  _id=' + req.params._id + ', url=' + req.params.url);
@@ -708,61 +735,65 @@ if (cluster.isMaster) {
       //importUrl(req.params._id, req.params.url, res.json);
       var job;
       var ip = req.query.ip;
-      var server = req.query.server;
-      if (!server) {
-        server = '';
-      }
+      var server = req.query.server || '';
+      var unique_id = req.query.task_id || '';
       if (checkIPAddr(ip) == 'CN') {
-        console.log("   create task for CN");
-        job = createTaskToKueQueue(redis_prefix, req.params._id, req.params.url, server, chunked);
+        console.log("   create task for CN, req.params.task_id="+req.query.task_id+", unique_id="+unique_id);
+        job = createTaskToKueQueue(redis_prefix, req.params._id, req.params.url, server, unique_id, chunked);
         
       } else {
         console.log("   create task for US");
-        job = createTaskToKueQueue(redis_prefix_us, req.params._id, req.params.url, server, chunked);
+        job = createTaskToKueQueue(redis_prefix_us, req.params._id, req.params.url, server, unique_id, chunked);
       }
       
-      job._task_id = req.query['task_id'] || mongoid();
-      console.log('add import task: ' + job._task_id);
-      Task.add(job._task_id, req.params._id, req.params.url);
+      if (unique_id != '') {
+        Task.add(unique_id, req.params._id, req.params.url);
+      }
 
       job.on('complete', function(result){
         console.log('Job completed with data', result);
       }).on('failed attempt', function(errorMessage, doneAttempts){
         console.log('Job attempt failed');
         
-        // calcel
-        if(Task.isCancel(job._task_id))
+        // cancel
+        if(Task.isCancel(unique_id)) {
+          console.log("Master: import cancel - 1.");
           return;
+        }
         
         res.end(JSON.stringify({status:'failed'}));
-        Task.update(job._task_id, 'failed');
+        Task.update(unique_id, 'failed');
       }).on('failed', function(errorMessage){
         console.log('Job failed');
         
-        // calcel
-        if(Task.isCancel(job._task_id))
+        // cancel
+        if(Task.isCancel(unique_id)) {
+          console.log("Master: import cancel - 1.");
           return;
+        }
           
         res.end(JSON.stringify({status:'failed'}));
-        Task.update(job._task_id, 'failed');
+        Task.update(unique_id, 'failed');
       // }).on('importing', function(result){
       //   console.log('Job result');
       //   res.write(JSON.stringify(result));
       }).on('progress', function(progress, data){
         console.log('\r  job #' + job.id + ' ' + progress + '% complete with data ', data);
-        // calcel
-        if(Task.isCancel(job._task_id))
+        // cancel
+        if(Task.isCancel(unique_id)) {
+          console.log("Master: import cancel - 3.");
           return;
+        }
           
         if (progress == 100) {
           res.end(data);
-          Task.update(job._task_id, 'done');
+          Task.update(unique_id, 'done');
         }else {
           res.write(data);
-          Task.update(job._task_id, 'importing');
+          Task.update(unique_id, 'importing');
         }
       });
-    });
+    }
 
   startKueService();
   app.use(bodyParser.urlencoded({extended: true}));
@@ -770,18 +801,30 @@ if (cluster.isMaster) {
   app.use('/import', router);
   app.get('/import-cancel/:id', function(req, res) {
     console.log('import-cancel: ' + req.params.id);
-    Task.calcel(req.params.id);
+    Task.cancel(req.params.id);
+    for (var id in cluster.workers) {
+        var msg = {type:'abortImport', unique_id:req.params.id};
+        console.log("Sending message abortImport to work id: "+id);
+        cluster.workers[id].send(JSON.stringify(msg));
+    }
+    res.end(JSON.stringify({status:'cancelled'}));
   });
   app.listen(port);
   console.log('Magic happens on port ' + port);
 } else {
   //process.on('message', (msg) => {
-  process.on('message', function(msg) {
+  process.on('message', function(obj) {
     //process.send(msg);
-    if (msg === 'restartKueService') {
+    var msg = JSON.parse(obj);
+    console.log("msg = "+JSON.stringify(msg));
+    if (msg.type === 'restartKueService') {
       console.log("Received restartKueService message from Master.");
       //restartKueService();
       process.exit(0);
+    } else if (msg.type === 'abortImport') {
+      console.log("Received abortImport message from Master.");
+      Task.add(msg.unique_id, '', '');
+      Task.update(msg.unique_id, 'cancel');
     }
   });
   nightmareQueue = initNightmareQueue();
