@@ -736,46 +736,52 @@ if(Meteor.isServer){
                         sendEmailToFollower(userEmail, subject, mailText);
                     }
                 }
-                if(userId === suggestPostsUserId)
-                {
-                    FollowPosts.insert({
-                        _id:doc._id,
-                        postId:doc._id,
-                        title:doc.title,
-                        addontitle:doc.addontitle,
-                        mainImage: doc.mainImage,
-                        mainImageStyle:doc.mainImageStyle,
-                        heart:0,
-                        retweet:0,
-                        comment:0,
-                        browse: 0,
-                        publish: doc.publish,
-                        owner:doc.owner,
-                        ownerName:doc.ownerName,
-                        ownerIcon:doc.ownerIcon,
-                        createdAt: doc.createdAt,
-                        followby: userId
-                    });
-                }
-                else
-                {
-                    FollowPosts.insert({
-                        postId:doc._id,
-                        title:doc.title,
-                        addontitle:doc.addontitle,
-                        mainImage: doc.mainImage,
-                        mainImageStyle:doc.mainImageStyle,
-                        heart:0,
-                        retweet:0,
-                        comment:0,
-                        browse: 0,
-                        publish: doc.publish,
-                        owner:doc.owner,
-                        ownerName:doc.ownerName,
-                        ownerIcon:doc.ownerIcon,
-                        createdAt: doc.createdAt,
-                        followby: userId
-                    });
+                var isInserted = FollowPosts.findOne({postId:doc._id, followby: userId}) ? true : false;
+                if (!isInserted)  {
+                    if(userId === suggestPostsUserId)
+                    {
+                        FollowPosts.insert({
+                            _id:doc._id,
+                            postId:doc._id,
+                            title:doc.title,
+                            addontitle:doc.addontitle,
+                            mainImage: doc.mainImage,
+                            mainImageStyle:doc.mainImageStyle,
+                            heart:0,
+                            retweet:0,
+                            comment:0,
+                            browse: 0,
+                            publish: doc.publish,
+                            owner:doc.owner,
+                            ownerName:doc.ownerName,
+                            ownerIcon:doc.ownerIcon,
+                            createdAt: doc.createdAt,
+                            followby: userId
+                        });
+                    }
+                    else
+                    {
+                        FollowPosts.insert({
+                            postId:doc._id,
+                            title:doc.title,
+                            addontitle:doc.addontitle,
+                            mainImage: doc.mainImage,
+                            mainImageStyle:doc.mainImageStyle,
+                            heart:0,
+                            retweet:0,
+                            comment:0,
+                            browse: 0,
+                            publish: doc.publish,
+                            owner:doc.owner,
+                            ownerName:doc.ownerName,
+                            ownerIcon:doc.ownerIcon,
+                            createdAt: doc.createdAt,
+                            followby: userId
+                        }, function(error, _id){
+                            console.log('error: ' + error);
+                            console.log('_id: ' + _id);
+                        });
+                    }
                 }
             }
             catch(error){

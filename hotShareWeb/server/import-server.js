@@ -20,6 +20,9 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
     api_url += '&server='+encodeURIComponent(Meteor.absoluteUrl());
   }
   api_url += '&task_id=' + this.params.query['task_id'];
+  if (this.params.query['isMobile']) {
+    api_url += '&isMobile=' + this.params.query['isMobile']
+  }
   console.log("api_url="+api_url+", Meteor.absoluteUrl()="+Meteor.absoluteUrl());
   
   request({
