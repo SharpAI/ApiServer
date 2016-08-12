@@ -159,18 +159,20 @@ function setKueProcessCallback() {
     var unique_id = data.unique_id;
     var chunked = data.chunked;
 
-    importUrl(_id, url, server, unique_id, chunked, function(result) {
-      //setTimeout(function() { done(); }, jobDelay);
-      console.log('result='+JSON.stringify(result));
-      if (result.status == 'succ') {
-        job.progress(100, 100, JSON.stringify(result));
-        done();
-      } else if (result.status == 'importing') {
-        job.progress(50, 100, JSON.stringify(result));
-      } else {
-        done(new Error('failed'));
-      }
-    });
+    setTimeout(function() {
+        importUrl(_id, url, server, unique_id, chunked, function(result) {
+          //setTimeout(function() { done(); }, jobDelay);
+          console.log('result='+JSON.stringify(result));
+          if (result.status == 'succ') {
+            job.progress(100, 100, JSON.stringify(result));
+            done();
+          } else if (result.status == 'importing') {
+            job.progress(50, 100, JSON.stringify(result));
+          } else {
+            done(new Error('failed'));
+          }
+        });
+    }, 0);
   }
 
   if (!process.env.SERVER_IN_US) {
@@ -256,7 +258,7 @@ MongoClient.connect(DB_CONN_STR, function(err, db) {
     Follower = db.collection('follower');
     FollowPosts = db.collection('followposts');
     Feeds = db.collection('feeds');
-    Task.setCollection(posts);
+    Task.setCollection({posts: posts});
 });
 var postsInsertHookDeferHandle = function(userId,doc){
     var suggestPostsUserId;
@@ -559,7 +561,7 @@ function importUrl(_id, url, server, unique_id, chunked, callback) {
                 });
               }
               console.log("unique_id="+unique_id);
-              if (Task.isCancel(unique_id)) {
+              if (Task.isCancel(unique_id, true)) {
                 console.log("importUrl: cancel - 1.");
                 cleanUp();
                 return callback && callback({status:'failed'});
@@ -577,7 +579,7 @@ function importUrl(_id, url, server, unique_id, chunked, callback) {
                   }
 
                 insert_data(user, url, result, function(err,postId){
-                  if (Task.isCancel(unique_id)) {
+                  if (Task.isCancel(unique_id, true)) {
                     console.log("importUrl: cancel - 2.");
                     return callback && callback({status:'failed'});
                   }
@@ -590,18 +592,22 @@ function importUrl(_id, url, server, unique_id, chunked, callback) {
                   }
                   showDebug && console.log('Post id is: '+postId);
                   
-                  //Task.update(task_id, 'importing', postId);
+                  console.log('insert posts.');
+                  if(!Task.get(unique_id))
+                    Task.add(unique_id, _id, url);
+                  Task.update(unique_id, 'importing', postId);
                   
+                  // setTimeout(function(){ // test code
                   // 图片的下载及排版计算
                   var draftsObj = new drafts.createDrafts(postId, user);
                   draftsObj.onSuccess(function(){
-                    if (Task.isCancel(unique_id)) {
+                    if (Task.isCancel(unique_id, true)) {
                       console.log("importUrl: cancel - 3.");
                       return callback && callback({status:'failed'});
                     }
                 
                     draftsObj.uploadFiles(function (err) {
-                      if (Task.isCancel(unique_id)) {
+                      if (Task.isCancel(unique_id, true)) {
                         console.log("importUrl: cancel - 4.");
                         return callback && callback({status:'failed'});
                       }
@@ -616,7 +622,7 @@ function importUrl(_id, url, server, unique_id, chunked, callback) {
                       
                       // update pub
                       updatePosts(postId, postObj, function(err, number){
-                        if (Task.isCancel(unique_id)) {
+                        if (Task.isCancel(unique_id, true)) {
                           console.log("importUrl: cancel - 5.");
                           return callback && callback({status:'failed'});
                         }
@@ -668,6 +674,7 @@ function importUrl(_id, url, server, unique_id, chunked, callback) {
                         chunked_result.json = hotshare_web+'/posts/'+postId;
                     callback({status:'succ',json:hotshare_web+'/posts/'+postId});
                   }
+                  // }, 5000); // test code
                 });
               });
 
@@ -756,7 +763,7 @@ if (cluster.isMaster) {
         console.log('Job attempt failed');
         
         // cancel
-        if(Task.isCancel(unique_id)) {
+        if(Task.isCancel(unique_id, true)) {
           console.log("Master: import cancel - 1.");
           return;
         }
@@ -767,7 +774,7 @@ if (cluster.isMaster) {
         console.log('Job failed');
         
         // cancel
-        if(Task.isCancel(unique_id)) {
+        if(Task.isCancel(unique_id, true)) {
           console.log("Master: import cancel - 1.");
           return;
         }
@@ -780,7 +787,7 @@ if (cluster.isMaster) {
       }).on('progress', function(progress, data){
         console.log('\r  job #' + job.id + ' ' + progress + '% complete with data ', data);
         // cancel
-        if(Task.isCancel(unique_id)) {
+        if(Task.isCancel(unique_id, true)) {
           console.log("Master: import cancel - 3.");
           return;
         }

@@ -18,11 +18,11 @@ if Meteor.isClient
       Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     )
   subscribeCommentAndViewers = ()->
-    #if Session.get("postContent")
-      #Meteor.setTimeout ()->
-        #Meteor.subscribe "comment",Session.get("postContent")._id
+    if Session.get("postContent")
+      Meteor.setTimeout ()->
+        Meteor.subscribe "comment",Session.get("postContent")._id
         #Meteor.subscribe "viewers",Session.get("postContent")._id
-      #,500
+      ,500
   onUserProfile = ->
     @PopUpBox = $('.popUpBox').bPopup
       positionStyle: 'fixed'
@@ -218,7 +218,7 @@ if Meteor.isClient
     if postContent.addontitle
       title=title+":"+postContent.addontitle
     trackPage('http://cdn.tiegushi.com/posts/'+postContent._id,title)
-    #subscribeCommentAndViewers()
+    subscribeCommentAndViewers()
     browseTimes = 0
     Session.set("Social.LevelOne.Menu",'discover')
     Session.set("SocialOnButton",'postBtn')
