@@ -448,11 +448,11 @@ if Meteor.isClient
     console.log("api_url="+api_url)
     showPopupProgressBar(()->
       # cancel server import
+      isCancel = true
       request_return = (res)->
         console.log('cancel import res: ' + JSON.stringify(res))
       cordovaHTTP.get Meteor.absoluteUrl('import-cancel/') + unique_id, {}, {}, request_return, request_return
       console.log("import-cancel: unique_id="+unique_id);
-      isCancel = true
       #return navigator.notification.confirm('快速导入不成功，是否尝试高级导入？'
       #    (index)->
       #      if index is 1 then handleDirectLinkImport(url, 1)
