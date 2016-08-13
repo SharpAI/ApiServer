@@ -163,18 +163,24 @@ function setKueProcessCallback() {
     var chunked = data.chunked;
 
     setTimeout(function() {
-        importUrl(_id, url, server, unique_id, isMobile, chunked, function(result) {
-          //setTimeout(function() { done(); }, jobDelay);
-          console.log('result='+JSON.stringify(result));
-          if (result.status == 'succ') {
-            job.progress(100, 100, JSON.stringify(result));
-            done();
-          } else if (result.status == 'importing') {
-            job.progress(50, 100, JSON.stringify(result));
-          } else {
+        try {
+            importUrl(_id, url, server, unique_id, isMobile, chunked, function(result) {
+              //setTimeout(function() { done(); }, jobDelay);
+              console.log('result='+JSON.stringify(result));
+              if (result.status == 'succ') {
+                job.progress(100, 100, JSON.stringify(result));
+                done();
+              } else if (result.status == 'importing') {
+                job.progress(50, 100, JSON.stringify(result));
+              } else {
+                done(new Error('failed'));
+              }
+            });
+        } catch (error) {
             done(new Error('failed'));
-          }
-        });
+            console.log("Exception: in importUrl: error="+error);
+            console.log("Exception: in importUrl. job.data="+JSON.stringify(job.data));
+        }
     }, 0);
   }
 
