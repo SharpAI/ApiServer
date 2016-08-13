@@ -431,6 +431,7 @@ if Meteor.isClient
       getURL(e)
     ,1200
   @hanldeDirectLinkServerImport = (url)->
+    isCancel = false;
     unique_id = new Mongo.ObjectID()._str
     #api_url = 'http://'+import_server_url+':'+IMPORT_SERVER_PORT+'/import'
     # id = (new Mongo.ObjectID())._str
@@ -451,8 +452,7 @@ if Meteor.isClient
         console.log('cancel import res: ' + JSON.stringify(res))
       cordovaHTTP.get Meteor.absoluteUrl('import-cancel/') + unique_id, {}, {}, request_return, request_return
       console.log("import-cancel: unique_id="+unique_id);
-      if Session.equals('cancelImport',true)
-        return
+      isCancel = true
       #return navigator.notification.confirm('快速导入不成功，是否尝试高级导入？'
       #    (index)->
       #      if index is 1 then handleDirectLinkImport(url, 1)
@@ -472,7 +472,8 @@ if Meteor.isClient
           result = result[result.length-1]
           console.log(result)
           result = JSON.parse(result)
-          if Session.equals('cancelImport',true)
+          if isCancel is true
+            console.log("Suc: import Cancelled.");
             return
           if result.status is 'succ'
             # Session.set('importProcedure', 97)
@@ -501,7 +502,8 @@ if Meteor.isClient
             )
         error_return = (res)->
           console.log 'http response error: ' + res.error
-          if Session.equals('cancelImport',true)
+          if isCancel is true
+            console.log("Error: import Cancelled.");
             return
           PUB.toast('快速导入失败啦，请尝试高级导入吧。')
 
