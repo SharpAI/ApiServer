@@ -144,7 +144,7 @@ function createTaskToKueQueue(prefix, _id, url, server, unique_id, isMobile, chu
       chunked: chunked
     }).save(function(err){
       if (!err) {
-        console.log("   job.id = "+job.id);
+        console.log("   job.id = "+job.id+", unique_id="+unique_id);
       }
       showDebug && console.log(']');
     });
@@ -856,24 +856,18 @@ if (cluster.isMaster) {
         console.log('Job completed with data', result);
       }).on('failed attempt', function(errorMessage, doneAttempts){
         console.log('Job attempt failed');
-        
         // cancel
         if(Task.isCancel(unique_id, true)) {
           console.log("Master: import cancel - 1.");
-          return;
         }
-        
         res.end(JSON.stringify({status:'failed'}));
         Task.update(unique_id, 'failed');
       }).on('failed', function(errorMessage){
         console.log('Job failed');
-        
         // cancel
         if(Task.isCancel(unique_id, true)) {
-          console.log("Master: import cancel - 1.");
-          return;
+          console.log("Master: import cancel - 2.");
         }
-          
         res.end(JSON.stringify({status:'failed'}));
         Task.update(unique_id, 'failed');
       // }).on('importing', function(result){
@@ -884,7 +878,6 @@ if (cluster.isMaster) {
         // cancel
         if(Task.isCancel(unique_id, true)) {
           console.log("Master: import cancel - 3.");
-          return;
         }
           
         if (progress == 100) {

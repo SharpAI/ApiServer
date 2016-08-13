@@ -288,7 +288,7 @@ function PostDrafts(_id, user) {
             "uploaded": false,
             "imgUrl": ''
           };
-          filedownup.fileUploader(EalyMainImageInfo, function(err, item){
+          filedownup.fileUploader(EalyMainImageInfo, source, function(err, item){
             if (!err && item.imgUrl) {
               callback && callback(item.imgUrl);
             }

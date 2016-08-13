@@ -124,7 +124,7 @@ filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, c
   return downloadFromBCS(imageArray[imageCounter], downloadHandler);
 };
 
-filedownup.fileUploader = function(imageInfo, callback) {
+filedownup.fileUploader = function(imageInfo, source, callback) {
     fileUploader(imageInfo, function(err, item){
         if (!err && item.imgUrl) {
           callback && callback(item.imgUrl);
