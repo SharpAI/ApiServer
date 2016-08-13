@@ -19,7 +19,9 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
   if (Meteor.absoluteUrl().toLowerCase().indexOf('host2.tiegushi.com') >= 0) {
     api_url += '&server='+encodeURIComponent(Meteor.absoluteUrl());
   }
-  api_url += '&task_id=' + this.params.query['task_id'];
+  if (this.params.query['task_id']) {
+    api_url += '&task_id=' + this.params.query['task_id'];
+  }
   if (this.params.query['isMobile']) {
     api_url += '&isMobile=' + this.params.query['isMobile']
   }
