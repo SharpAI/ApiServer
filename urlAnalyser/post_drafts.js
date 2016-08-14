@@ -288,12 +288,10 @@ function PostDrafts(_id, user) {
             "uploaded": false,
             "imgUrl": ''
           };
-          filedownup.fileUploader(EalyMainImageInfo, source, function(err, item){
-            if (!err && item.imgUrl) {
-              callback && callback(item.imgUrl);
+          filedownup.fileUploader(EalyMainImageInfo, source, function(imgUrl){
+            if (callback) {
+              callback && callback(imgUrl);
             }
-            else
-              callback && callback(source);
           });
         }
         else {

@@ -475,30 +475,21 @@ if Meteor.isClient
           if isCancel is true
             console.log("Suc: import Cancelled.");
             return
+          popupProgressBar.close()
           if result.status is 'succ'
-            # Session.set('importProcedure', 97)
-            # Session.set('importProcedure', 100)
-            # PUB.toast('导入成功!')
+            Session.set('importProcedure', 97)
+            Session.set('importProcedure', 100)
+            PUB.toast('导入成功!')
             postId = result.json.substr(result.json.lastIndexOf('/')+1)
+            console.log("postId="+postId);
+            Session.set("TopicPostId", postId)
+            Session.set("TopicTitle", result.title)
+            Session.set("TopicAddonTitle", result.addontitle)
+            Session.set("TopicMainImage", result.mainImage)
+            Router.go('/addTopicComment/')
             Meteor.subscribe(
               'publicPosts'
               postId
-              {
-                onStop: ()->
-                  Router.go('/posts/'+postId)
-                onReady: ()->
-                  Session.set('importProcedure', 97)
-                  Session.set('importProcedure', 100)
-                  PUB.toast('导入成功!')
-                  postItem = Posts.findOne({_id:postId})
-                  Session.set("TopicPostId", postId)
-                  Session.set("TopicTitle", postItem.title)
-                  Session.set("TopicAddonTitle", postItem.addontitle)
-                  Session.set("TopicMainImage", postItem.mainImage)
-                  Router.go('/addTopicComment/')
-                onError: ()->
-                  Router.go('/posts/'+postId)
-              }
             )
         error_return = (res)->
           console.log 'http response error: ' + res.error
@@ -506,6 +497,9 @@ if Meteor.isClient
             console.log("Error: import Cancelled.");
             return
           PUB.toast('快速导入失败啦，请尝试高级导入吧。')
+          popupProgressBar.close()
+          Router.go('/')
+
 
         cordovaHTTP.get api_url, {}, {}, succ_return, error_return
 

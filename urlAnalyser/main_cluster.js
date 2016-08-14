@@ -446,7 +446,7 @@ var insert_data = function(user, url, data, draftsObj, cb) {
         'retweet': [],
         'comment': [],
         'commentsCount': 0,
-        'addontitle': [],
+        'addontitle': '',
         'mainImage': mainImageURL,
         'mainImageStyle': [],
         'mainText': [],
@@ -774,7 +774,7 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
                     chunked_result.status = 'succ';
                     if (hotshare_web)
                         chunked_result.json = hotshare_web+'/posts/'+postId;
-                    callback({status:'succ',json:hotshare_web+'/posts/'+postId});
+                    callback({status:'succ',json:hotshare_web+'/posts/'+postId, title:result.title, addontitle:'', mainImage:mainUrl});
                   }
                   // }, 5000); // test code
                 });
