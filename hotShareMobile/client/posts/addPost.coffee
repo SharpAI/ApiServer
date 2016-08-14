@@ -470,7 +470,7 @@ if Meteor.isClient
         succ_return = (res)->
           result = res.data.split('\r\n')
           result = result[result.length-1]
-          console.log(result)
+          console.log("cordovaHTTP result="+result)
           result = JSON.parse(result)
           if isCancel is true
             console.log("Suc: import Cancelled.");
@@ -491,6 +491,13 @@ if Meteor.isClient
               'publicPosts'
               postId
             )
+          else
+            console.log 'Server import error: '
+            if isCancel is true
+              console.log("Error: import Cancelled.");
+              return
+            PUB.toast('快速导入失败啦，请尝试高级导入吧。')
+            Router.go('/')
         error_return = (res)->
           console.log 'http response error: ' + res.error
           if isCancel is true
