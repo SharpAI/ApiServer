@@ -1716,7 +1716,7 @@ if(Meteor.isServer){
       if(this.userId === null)
           return this.ready();
       else {
-          Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId,publish: true}), {nonReactive: true });
+          Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId,publish: {$ne: false}}), {nonReactive: true });
           Counts.publish(this, 'mySavedDraftsCount', SavedDrafts.find({owner: this.userId}), {nonReactive: true });
           //Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { nonReactive: true });
           Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { reactive: true });
@@ -1729,7 +1729,7 @@ if(Meteor.isServer){
           return this.ready();
       }
       else{
-          return Posts.find({owner: this.userId},{sort: {createdAt: -1},limit:limit,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,createdAt:1,ownerIcon:1,browse:1}});
+          return Posts.find({owner: this.userId, publish: {$ne: false}},{sort: {createdAt: -1},limit:limit,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1}});
       }
   });
   Meteor.publish("savedDraftsWithLimit", function(limit) {
