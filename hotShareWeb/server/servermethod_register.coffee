@@ -440,7 +440,7 @@ if Meteor.isServer
             text = text.replace('{{post.icon}}', 'http://www.tiegushi.com'+post.ownerIcon)
           else
             text = text.replace('{{post.icon}}', post.ownerIcon)
-          text = text.replace('{{post.time}}', PUB.formatTime(new Date()))
+          text = text.replace('{{post.time}}', PUB.formatTime(post.createdAt))
           text = text.replaceAll('{{post.href}}', 'http://cdn.tiegushi.com/posts/' + post._id)
           text = text.replace('{{post.mainImage}}', post.mainImage)
 
