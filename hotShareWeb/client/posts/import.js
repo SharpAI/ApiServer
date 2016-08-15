@@ -1,6 +1,7 @@
 var progress = new ReactiveVar(100);
 var hasCancel = false;
 var importType = 'new'; // new/old
+var task_id = new Mongo.ObjectID()._str;
 
 Session.setDefault('import-post-info', null);
 Template.importPost.onRendered(function () {
@@ -38,6 +39,10 @@ Template.importPost.events({
     history.go(-1);
   },
   'click button.cancel': function () {
+    var xmlhttp = jQuery.ajaxSettings.xhr();
+    xmlhttp.open("GET", '/import-cancel/' + task_id, true);
+    xmlhttp.send(null);
+        
     Session.set('import-post-info', null);
     Session.set('import-post-info-url', '');
     hasCancel = true;
@@ -51,12 +56,15 @@ Template.importPost.events({
         return alert('您输的不是URL地址~');
         
       // 调用server进行导入
+      var cancel_url = import_cancel_url;
       var api_url = import_server_url;
       var id = new Mongo.ObjectID()._str;
       
       hasCancel = false;
+      task_id = new Mongo.ObjectID()._str;
       api_url += '/' + Meteor.userId();
       api_url += '/' + encodeURIComponent($('#import-post-url').val());
+      api_url += '?task_id=' + task_id;
       Session.set('import-post-info-url', $('#import-post-url').val());
       
       if(importType === 'new'){
