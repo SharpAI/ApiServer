@@ -3,13 +3,14 @@ var filedownup = require('./file_downupload.js');
 var async = require('async');
 var showDebug = false;
 
-function PostDrafts(id, user) {
+function PostDrafts(_id, user) {
   var drafts = [];
   var title = '';
   var addontitle = '';
   var successCallback = [];
   var localImgs = [];
   var _mainImage = '';
+  var id;
   
   var imageIndex = function () {
     if(drafts.length <= 0)
@@ -56,6 +57,9 @@ function PostDrafts(id, user) {
   };
 
   var postDrafts = new Object();
+  postDrafts.setPostId = function(postId) {
+    id = postId;
+  }
   postDrafts.onSuccess = function(callback){
     callback && successCallback.push(callback);
   };
@@ -269,6 +273,48 @@ function PostDrafts(id, user) {
     }, 200, function(file){
       localImgs.push(file);
     });
+  };
+  postDrafts.EalyMainImage = function(data, inputUrl, callback) {
+    filedownup.seekOneUsableMainImage(data, function(file, w, h, found, index, total, source) {
+        showDebug && console.log('found ' + found + ' index ' + index + ' total ' + total + ' fileObject ' + file + ' source ' + source);
+        if (file) {
+          showDebug && console.log('found and downloaded main Image file to local: ' + file.toURL());
+          postDrafts.insertDownloadedImage(data, source, found, inputUrl, file, w, h);
+
+          var EalyMainImageInfo = {
+            "type": "image",
+            "filename": file.name,
+            "URI": file.toURL(),
+            "uploaded": false,
+            "imgUrl": ''
+          };
+          filedownup.fileUploader(EalyMainImageInfo, source, function(imgUrl){
+            if (callback) {
+              callback && callback(imgUrl);
+            }
+          });
+        }
+        else {
+          var defaultMainImage = 'http://data.tiegushi.com/res/defaultMainImage1.jpg';
+          postDrafts.insertDefaultImage(data, defaultMainImage, false, inputUrl);
+          callback && callback(defaultMainImage);
+        }
+      }, 200, function(file){
+        localImgs.push(file);
+      });
+  }
+  postDrafts.seekOneUsableMainImageWithOutMainImage = function(data, inputUrl, mainUrl){
+    // console.log('data:' + JSON.stringify(data));
+    var resortObj = {};
+    resortObj.mainUrl = mainUrl;
+    if (data.resortedArticle && data.resortedArticle.length > 0) {
+        resortObj.index = 0;
+        resortObj.length = data.resortedArticle.length;
+        showDebug && console.log('resortObj' + JSON.stringify(resortObj));
+        postDrafts.renderResortedArticleAsync(data, inputUrl, resortObj);
+    } else {
+        postDrafts.processTitleOfPost(data);
+    }
   };
   postDrafts.processTitleOfPost = function(data){
     if(data.title){

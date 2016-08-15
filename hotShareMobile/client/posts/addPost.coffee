@@ -431,25 +431,28 @@ if Meteor.isClient
       getURL(e)
     ,1200
   @hanldeDirectLinkServerImport = (url)->
+    isCancel = false;
     unique_id = new Mongo.ObjectID()._str
     #api_url = 'http://'+import_server_url+':'+IMPORT_SERVER_PORT+'/import'
     # id = (new Mongo.ObjectID())._str
     #api_url += '/' + Meteor.userId();
     #api_url += '/' + encodeURIComponent(url);
     #api_url += '/' + unique_id;
-    api_url = import_server_url #Meteor.absoluteUrl('import-server')
-    api_url += '/' + Meteor.userId()
+    api_url = Meteor.absoluteUrl('import-server')
+    if (api_url.endsWith("/"))
+      api_url += Meteor.userId()
+    else
+      api_url += '/' + Meteor.userId()
     api_url += '/' + encodeURIComponent(url)
-    api_url += '?task_id=' + unique_id;
+    api_url += '?task_id=' + unique_id + '&isMobile=true';
     console.log("api_url="+api_url)
     showPopupProgressBar(()->
       # cancel server import
+      isCancel = true
       request_return = (res)->
         console.log('cancel import res: ' + JSON.stringify(res))
-      cordovaHTTP.get import_cancel_url + '/' + unique_id, {}, {}, request_return, request_return
+      cordovaHTTP.get Meteor.absoluteUrl('import-cancel/') + unique_id, {}, {}, request_return, request_return
       console.log("import-cancel: unique_id="+unique_id);
-      if Session.equals('cancelImport',true)
-        return
       #return navigator.notification.confirm('快速导入不成功，是否尝试高级导入？'
       #    (index)->
       #      if index is 1 then handleDirectLinkImport(url, 1)
@@ -467,41 +470,43 @@ if Meteor.isClient
         succ_return = (res)->
           result = res.data.split('\r\n')
           result = result[result.length-1]
-          console.log(result)
+          console.log("cordovaHTTP result="+result)
           result = JSON.parse(result)
-          if Session.equals('cancelImport',true)
+          if isCancel is true
+            console.log("Suc: import Cancelled.");
             return
+          popupProgressBar.close()
           if result.status is 'succ'
-            # Session.set('importProcedure', 97)
-            # Session.set('importProcedure', 100)
-            # PUB.toast('导入成功!')
+            Session.set('importProcedure', 97)
+            Session.set('importProcedure', 100)
+            PUB.toast('导入成功!')
             postId = result.json.substr(result.json.lastIndexOf('/')+1)
+            console.log("postId="+postId);
+            Session.set("TopicPostId", postId)
+            Session.set("TopicTitle", result.title)
+            Session.set("TopicAddonTitle", result.addontitle)
+            Session.set("TopicMainImage", result.mainImage)
+            Router.go('/addTopicComment/')
             Meteor.subscribe(
               'publicPosts'
               postId
-              {
-                onStop: ()->
-                  Router.go('/posts/'+postId)
-                onReady: ()->
-                  Session.set('importProcedure', 97)
-                  Session.set('importProcedure', 100)
-                  PUB.toast('导入成功!')
-                  postItem = Posts.findOne({_id:postId})
-                  Session.set("TopicPostId", postId)
-                  Session.set("TopicTitle", postItem.title)
-                  Session.set("TopicAddonTitle", postItem.addontitle)
-                  Session.set("TopicMainImage", postItem.mainImage)
-                  Router.go('/addTopicComment/')
-                onError: ()->
-                  Router.go('/posts/'+postId)
-              }
             )
+          else
+            console.log 'Server import error: '
+            if isCancel is true
+              console.log("Error: import Cancelled.");
+              return
+            PUB.toast('快速导入失败啦，请尝试高级导入吧。')
+            Router.go('/')
         error_return = (res)->
-          _.task_id = ''
           console.log 'http response error: ' + res.error
-          if Session.equals('cancelImport',true)
+          if isCancel is true
+            console.log("Error: import Cancelled.");
             return
           PUB.toast('快速导入失败啦，请尝试高级导入吧。')
+          popupProgressBar.close()
+          Router.go('/')
+
 
         cordovaHTTP.get api_url, {}, {}, succ_return, error_return
 

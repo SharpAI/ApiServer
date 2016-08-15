@@ -124,6 +124,15 @@ filedownup.seekSuitableImageFromArrayAndDownloadToLocal = function(imageArray, c
   return downloadFromBCS(imageArray[imageCounter], downloadHandler);
 };
 
+filedownup.fileUploader = function(imageInfo, source, callback) {
+    fileUploader(imageInfo, function(err, item){
+        if (!err && item.imgUrl) {
+          callback && callback(item.imgUrl);
+        }
+        else
+          callback && callback(source);
+    });
+}
 filedownup.EalyMainImage = function(data, callback) {
   filedownup.seekOneUsableMainImage(data, function(file, w, h, found, index, total, source) {
     showDebug && console.log('found ' + found + ' index ' + index + ' total ' + total + ' fileObject ' + file + ' source ' + source);
@@ -255,7 +264,8 @@ var fileUploader = function (item,callback){
 
 
   co(function* () {
-    var key = mongoid();
+    var timestamp = new Date().getTime();
+    var key = timestamp+'_'+mongoid();
     client.useBucket('tiegushi');
     showDebug && console.log(key)
     var result = yield client.put(key, URI);

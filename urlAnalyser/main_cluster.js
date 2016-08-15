@@ -134,16 +134,17 @@ function restartKueService() {
         });
     }
 }
-function createTaskToKueQueue(prefix, _id, url, server, unique_id, chunked) {
+function createTaskToKueQueue(prefix, _id, url, server, unique_id, isMobile, chunked) {
     var job = kuequeue.create(prefix, {
       id: _id,
       url: getUrl(url),
       server: server,
       unique_id: unique_id,
+      isMobile: isMobile,
       chunked: chunked
     }).save(function(err){
       if (!err) {
-        console.log("   job.id = "+job.id);
+        console.log("   job.id = "+job.id+", unique_id="+unique_id);
       }
       showDebug && console.log(']');
     });
@@ -158,21 +159,28 @@ function setKueProcessCallback() {
     var url = data.url;
     var server = data.server;
     var unique_id = data.unique_id;
+    var isMobile = data.isMobile;
     var chunked = data.chunked;
 
     setTimeout(function() {
-        importUrl(_id, url, server, unique_id, chunked, function(result) {
-          //setTimeout(function() { done(); }, jobDelay);
-          console.log('result='+JSON.stringify(result));
-          if (result.status == 'succ') {
-            job.progress(100, 100, JSON.stringify(result));
-            done();
-          } else if (result.status == 'importing') {
-            job.progress(50, 100, JSON.stringify(result));
-          } else {
+        try {
+            importUrl(_id, url, server, unique_id, isMobile, chunked, function(result) {
+              //setTimeout(function() { done(); }, jobDelay);
+              console.log('result='+JSON.stringify(result));
+              if (result.status == 'succ') {
+                job.progress(100, 100, JSON.stringify(result));
+                done();
+              } else if (result.status == 'importing') {
+                job.progress(50, 100, JSON.stringify(result));
+              } else {
+                done(new Error('failed'));
+              }
+            });
+        } catch (error) {
             done(new Error('failed'));
-          }
-        });
+            console.log("Exception: in importUrl: error="+error);
+            console.log("Exception: in importUrl. job.data="+JSON.stringify(job.data));
+        }
     }, 0);
   }
 
@@ -256,9 +264,9 @@ MongoClient.connect(DB_CONN_STR, function(err, db) {
     }
     posts = db.collection('posts');
     users = db.collection('users');
-    Follower = db.collection('follower');
+    //Follower = db.collection('follower');
     FollowPosts = db.collection('followposts');
-    Feeds = db.collection('feeds');
+    //Feeds = db.collection('feeds');
     serverImportLog = db.collection('serverImportLog');
     Task.setCollection({posts: posts, serverImportLog: serverImportLog});
 });
@@ -391,7 +399,7 @@ var postsInsertHookDeferHandle = function(userId,doc){
     }
     catch(error){}*/
 };
-var insert_data = function(user, url, data, cb) {
+var insert_data = function(user, url, data, draftsObj, cb) {
     if (!user || !data || !url || !posts) {
       console.log('Error: null of id or data');
       if(cb){
@@ -426,7 +434,8 @@ var insert_data = function(user, url, data, cb) {
       }
     }
     
-    filedownup.EalyMainImage(data, function (mainImageURL) {
+    /*filedownup.EalyMainImage(data, function (mainImageURL) {*/
+    draftsObj.EalyMainImage(data, url, function (mainImageURL) {
       var data_insert = [{
         '_id':mongoid(),
         'ownerId': user._id,
@@ -437,8 +446,8 @@ var insert_data = function(user, url, data, cb) {
         'retweet': [],
         'comment': [],
         'commentsCount': 0,
-        'addontitle': [],
-        'mainImage': mainImageURL ? mainImageURL : 'http://data.tiegushi.com/res/defaultMainImage1.jpg',
+        'addontitle': '',
+        'mainImage': mainImageURL,
         'mainImageStyle': [],
         'mainText': [],
         'fromUrl': url,
@@ -462,9 +471,67 @@ var insert_data = function(user, url, data, cb) {
         showDebug && console.log("posts.insert: "+result.insertedIds[0]);
         //postsInsertHookDeferHandle(user._id, data_insert[0]);
         if(cb){
-            cb(null,result.insertedIds[0])
+            cb(null,result.insertedIds[0], mainImageURL)
         }
       });
+
+      var doc = data_insert[0];
+      var data_insert2 = {
+        _id: mongoid(),
+        postId:doc._id,
+        title:doc.title,
+        addontitle:doc.addontitle,
+        mainImage: doc.mainImage,
+        mainImageStyle:doc.mainImageStyle,
+        heart:0,
+        retweet:0,
+        comment:0,
+        browse: 0,
+        publish: doc.publish,
+        owner:doc.owner,
+        ownerName:doc.ownerName,
+        ownerIcon:doc.ownerIcon,
+        createdAt: doc.createdAt,
+        followby: user._id
+      };
+
+      users.findOne({'username': 'suggestPosts'}, function (err, suggestPostsUser) {
+          if(!err || suggestPostsUser) {
+            if (user._id == suggestPostsUser._id) {
+              data_insert2._id = doc._id;
+            }
+          }
+          FollowPosts.insert(data_insert2, function(err, result) {
+            if(err || !result.insertedCount || !result.insertedIds || !result.insertedIds[0]) {
+              console.log("Warning: FollowPosts.insert failed, postId="+doc._id+", followby="+user._id);
+            } else {
+              console.log("Warning: FollowPosts.insert suc, postId="+doc._id+", followby="+user._id);
+            }
+          });
+      });
+   });
+}
+var updateMyPost = function(userId, doc, cb) {
+    FollowPosts.insert({
+        postId:doc._id,
+        title:doc.title,
+        addontitle:doc.addontitle,
+        mainImage: doc.mainImage,
+        mainImageStyle:doc.mainImageStyle,
+        heart:0,
+        retweet:0,
+        comment:0,
+        browse: 0,
+        publish: doc.publish,
+        owner:doc.owner,
+        ownerName:doc.ownerName,
+        ownerIcon:doc.ownerIcon,
+        createdAt: doc.createdAt,
+        followby: userId
+    }, function(err, result) {
+        if(cb){
+            cb(null,result.insertedIds[0]);
+        }
     });
 }
 var updatePosts = function(postId, post, taskId, callback){
@@ -515,7 +582,7 @@ var httpget = function(url) {
     });
 }
 
-function importUrl(_id, url, server, unique_id, chunked, callback) {
+function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
   switch (arguments.length) {
     case 2:
       chunked = false;
@@ -526,40 +593,42 @@ function importUrl(_id, url, server, unique_id, chunked, callback) {
       break;
   }
 
-  var userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_2 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12D508 (5752533504)';   //iPhone 8.2 Safari UA
-  //var userAgent = 'Mozilla/5.0 (iPhone; U; CPU iPhone OS 8_2 like Mac OS X; en) AppleWebKit/534.46.0 (KHTML, like Gecko) CriOS/19.0.1084.60 Mobile/9B206 Safari/7534.48.3'; //Chrome UA on iPhone
-  //var userAgent = 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Electron/1.2.5 Safari/537.36'; //Chrome on Macbook
-  
   var chunked_result = {};
-  if(chunked){
-    chunked_result.status = 'importing';
-    chunked_result.json = {
-      title: url,
-      mainImg: 'http://data.tiegushi.com/res/defaultMainImage1.jpg',
-      remark: '[内容分析中...]'
-    };
-    callback(chunked_result);
-    
-    var nightmare_header = Nightmare({ show: false , openDevTools: false});
-    nightmare_header
-      .useragent(userAgent + ' (GetHeader)')
-      .goto(url)
-      .inject('js','bundle.js')
-      .wait('#detected_json_from_header')
-      .evaluate(function () {
-        return window.detected_json_from_header;
-      })
-      .end()
-      .then(function (result) {
-        if(chunked_result.status != 'failed' && chunked_result.status != 'succ'){
-          console.log('find main info end.');
-          chunked_result.status = 'importing';
-          chunked_result.json.title = result.title || '[暂无标题]';
-          chunked_result.json.mainImg = result.mainImg || 'http://data.tiegushi.com/res/defaultMainImage1.jpg';
-          chunked_result.json.remark = result.remark || '[暂无介绍]';
-          callback(chunked_result);
-        }
-      });
+  var userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_2 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12D508 (5752533504)';   //iPhone 8.2 Safari UA
+  console.log("isMobile="+isMobile);
+  if (isMobile == '') {
+      //var userAgent = 'Mozilla/5.0 (iPhone; U; CPU iPhone OS 8_2 like Mac OS X; en) AppleWebKit/534.46.0 (KHTML, like Gecko) CriOS/19.0.1084.60 Mobile/9B206 Safari/7534.48.3'; //Chrome UA on iPhone
+      //var userAgent = 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Electron/1.2.5 Safari/537.36'; //Chrome on Macbook
+      if(chunked){
+        chunked_result.status = 'importing';
+        chunked_result.json = {
+          title: url,
+          mainImg: 'http://data.tiegushi.com/res/defaultMainImage1.jpg',
+          remark: '[内容分析中...]'
+        };
+        callback(chunked_result);
+        
+        var nightmare_header = Nightmare({ show: false , openDevTools: false});
+        nightmare_header
+          .useragent(userAgent + ' (GetHeader)')
+          .goto(url)
+          .inject('js','bundle.js')
+          .wait('#detected_json_from_header')
+          .evaluate(function () {
+            return window.detected_json_from_header;
+          })
+          .end()
+          .then(function (result) {
+            if(chunked_result.status != 'failed' && chunked_result.status != 'succ'){
+              console.log('find main info end.');
+              chunked_result.status = 'importing';
+              chunked_result.json.title = result.title || '[暂无标题]';
+              chunked_result.json.mainImg = result.mainImg || 'http://data.tiegushi.com/res/defaultMainImage1.jpg';
+              chunked_result.json.remark = result.remark || '[暂无介绍]';
+              callback(chunked_result);
+            }
+          });
+      }
   }
   
   //var nightmare = Nightmare({ show: false , openDevTools: false, waitTimeout: 30000});
@@ -600,15 +669,17 @@ function importUrl(_id, url, server, unique_id, chunked, callback) {
               //console.log("result="+JSON.stringify(result));
               console.log("nightmare finished, insert data and parse it...");
               users.findOne({_id: _id}, function (err, user) {
-                if(err || !user)
+                if(err || !user) {
                   if (callback) {
                     console.log("user not found, err="+err);
                     chunked_result.status = 'failed';
                     callback({status:'failed'});
                     return;
                   }
+                }
 
-                insert_data(user, url, result, function(err,postId){
+                var draftsObj = new drafts.createDrafts(null, user);
+                insert_data(user, url, result, draftsObj, function(err, postId, mainUrl){
                   if (Task.isCancel(unique_id, true)) {
                     console.log("importUrl: cancel - 2.");
                     return callback && callback({status:'failed'});
@@ -629,7 +700,7 @@ function importUrl(_id, url, server, unique_id, chunked, callback) {
                   
                   // setTimeout(function(){ // test code
                   // 图片的下载及排版计算
-                  var draftsObj = new drafts.createDrafts(postId, user);
+                  draftsObj.setPostId(postId);
                   draftsObj.onSuccess(function(){
                     if (Task.isCancel(unique_id, true)) {
                       console.log("importUrl: cancel - 3.");
@@ -695,14 +766,15 @@ function importUrl(_id, url, server, unique_id, chunked, callback) {
                       });*/
                     });
                   });
-                  draftsObj.seekOneUsableMainImage(result, url);
+                  //draftsObj.seekOneUsableMainImage(result, url);
+                  draftsObj.seekOneUsableMainImageWithOutMainImage(result, url, mainUrl);
       
                   // send response
                   if (callback) {
                     chunked_result.status = 'succ';
                     if (hotshare_web)
                         chunked_result.json = hotshare_web+'/posts/'+postId;
-                    callback({status:'succ',json:hotshare_web+'/posts/'+postId});
+                    callback({status:'succ',json:hotshare_web+'/posts/'+postId, title:result.title, addontitle:'', mainImage:mainUrl});
                   }
                   // }, 5000); // test code
                 });
@@ -765,22 +837,21 @@ if (cluster.isMaster) {
     });
   function routerCallback(req, res) {
       var chunked = req.query['chunked'] && req.query['chunked'] === 'true' ? true : false;;
-      showDebug && console.log('[');
-      showDebug && console.log('  _id=' + req.params._id + ', url=' + req.params.url);
-      showDebug && console.log('   req.query=' + JSON.stringify(req.query));
-      
-      //importUrl(req.params._id, req.params.url, res.json);
       var job;
       var ip = req.query.ip;
       var server = req.query.server || '';
-      var unique_id = req.query.task_id || '';
+      var unique_id = req.query.task_id || mongoid();
+      var isMobile = req.query.isMobile || '';
+      showDebug && console.log('[');
+      showDebug && console.log('   req.params=' + JSON.stringify(req.params));
+      showDebug && console.log('   req.query=' + JSON.stringify(req.query));
       if (checkIPAddr(ip) == 'CN') {
-        console.log("   create task for CN, req.params.task_id="+req.query.task_id+", unique_id="+unique_id);
-        job = createTaskToKueQueue(redis_prefix, req.params._id, req.params.url, server, unique_id, chunked);
+        console.log("   create task for CN");
+        job = createTaskToKueQueue(redis_prefix, req.params._id, req.params.url, server, unique_id, isMobile, chunked);
         
       } else {
         console.log("   create task for US");
-        job = createTaskToKueQueue(redis_prefix_us, req.params._id, req.params.url, server, unique_id, chunked);
+        job = createTaskToKueQueue(redis_prefix_us, req.params._id, req.params.url, server, unique_id, isMobile, chunked);
       }
       
       if (unique_id != '') {
@@ -791,24 +862,18 @@ if (cluster.isMaster) {
         console.log('Job completed with data', result);
       }).on('failed attempt', function(errorMessage, doneAttempts){
         console.log('Job attempt failed');
-        
         // cancel
         if(Task.isCancel(unique_id, true)) {
           console.log("Master: import cancel - 1.");
-          return;
         }
-        
         res.end(JSON.stringify({status:'failed'}));
         Task.update(unique_id, 'failed');
       }).on('failed', function(errorMessage){
         console.log('Job failed');
-        
         // cancel
         if(Task.isCancel(unique_id, true)) {
-          console.log("Master: import cancel - 1.");
-          return;
+          console.log("Master: import cancel - 2.");
         }
-          
         res.end(JSON.stringify({status:'failed'}));
         Task.update(unique_id, 'failed');
       // }).on('importing', function(result){
@@ -819,7 +884,6 @@ if (cluster.isMaster) {
         // cancel
         if(Task.isCancel(unique_id, true)) {
           console.log("Master: import cancel - 3.");
-          return;
         }
           
         if (progress == 100) {
