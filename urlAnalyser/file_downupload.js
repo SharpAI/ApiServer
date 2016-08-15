@@ -197,7 +197,13 @@ filedownup.seekOneUsableMainImage = function(data, callback, minimal, insertTmpI
   }
 };
 
-
+var co = require('co');
+var OSS = require('ali-oss');
+var client = new OSS({
+  region: 'oss-cn-shenzhen',
+  accessKeyId: 'Vh0snNA4Orv3emBj',
+  accessKeySecret: 'd7p2eNO8GuMl1GtIZ0at4wPDyED4Nz'
+});
 var fileUploader = function (item,callback){
   showDebug && console.log('uploading ' + JSON.stringify(item));
   // if (Session.get('terminateUpload')) {
@@ -234,16 +240,6 @@ var fileUploader = function (item,callback){
   //npm install ali-oss
   //npm install co
   //var mongoid = require('mongoid-js');
-
-  var co = require('co');
-  var OSS = require('ali-oss');
-
-  var client = new OSS({
-    region: 'oss-cn-shenzhen',
-    accessKeyId: 'Vh0snNA4Orv3emBj',
-    accessKeySecret: 'd7p2eNO8GuMl1GtIZ0at4wPDyED4Nz'
-  });
-
 
   //co(function* () {
   //  var result = yield client.listBuckets();
@@ -289,7 +285,7 @@ var fileUploader = function (item,callback){
       fileUploader(item, callback)
     },1000);
     
-    console.log(err);
+    console.log('upload file error: ' + err);
   });
 
   // var ft = uploadToAliyun_new(filename, URI, function(status,param){
