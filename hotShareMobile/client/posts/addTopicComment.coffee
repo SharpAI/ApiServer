@@ -58,7 +58,8 @@ if Meteor.isClient
        comment = Session.get("comment")
        user = Meteor.user()
 
-       unless Session.equals('post-publish-user-id', '')
+       if Session.get('post-publish-user-id') and Session.get('post-publish-user-id') isnt ''
+       #unless Session.equals('post-publish-user-id', '')
          user = Meteor.users.findOne({_id: Session.get('post-publish-user-id')})
 
        if comment != ''
