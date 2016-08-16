@@ -16,6 +16,8 @@ if Meteor.isClient
         Session.setPersistent('myPostsCount',Counts.get('myPostsCount'))
       if Counts.get('myFollowToCount') > 0
         Session.setPersistent('myFollowToCount',Counts.get('myFollowToCount'))
+      if Counts.get('myEmailFollowerCount') > 0
+        Session.setPersistent('myEmailFollowerCount',Counts.get('myEmailFollowerCount'))
 
     Tracker.autorun ()->
       if Meteor.user() and Session.equals('channel','user')
@@ -50,6 +52,7 @@ if Meteor.isClient
         Session.get('persistentProfileIcon') is undefined or
         Session.get('persistentProfileName') is undefined or
         Session.get('myFollowedByCount') is undefined or
+        Session.get('myEmailFollowerCount') is undefined or
         Session.get('mySavedDraftsCount') is undefined or
         Session.get('persistentMySavedDrafts') is undefined or
         Session.get('myPostsCount') is undefined or
@@ -85,6 +88,22 @@ if Meteor.isClient
         myFollowedByCount
       else
         0
+    emailFollowerCount:->
+      myEmailFollowedByCount = Session.get('myEmailFollowerCount')
+      if myEmailFollowedByCount
+        myEmailFollowedByCount
+      else
+        0
+    appFollowerCount:->
+      myFollowedByCount = Session.get('myFollowedByCount')
+      myEmailFollowedByCount = Session.get('myEmailFollowerCount')
+
+      if myFollowedByCount and myEmailFollowedByCount
+          console.log "-----------enter app follower count func ----------"
+          myAppFollowerByCount = myFollowedByCount - myEmailFollowedByCount
+          myAppFollowerByCount
+      else
+          0
     draftsCount:->
       return SavedDrafts.find({owner: Meteor.userId()}).count()
       # mySavedDraftsCount = Session.get('mySavedDraftsCount')

@@ -1,112 +1,114 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-  <meta name="format-detection" content="telephone=no">
-  <title>故事贴</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+<title>故事贴</title>
+<style>
+  *{margin:0; padding:0}
+  body {margin: 0;padding: 0;font-size:16px; margin: 0 auto !important; }  
+  @media only screen and (max-device-width: 480px) {
+    body { width: 320px !important; margin: 0; padding: 0; }
+    tbody{ width: 300px !important;}
+    table[class="wrappertable"] {width: 320px !important;}
+    img[class="mainImage"]{width: 300px !important;height: 150px !important; }
+    table[class="fullcontent"] { width: 320px !important; }
+    table[class="content"] {width: 300px !important; margin: 20px 10px !important; }
+    div[class="datetext"] { font-size: 1em !important; -webkit-text-size-adjust: none; }
+  }
+
+  /* For PC */
+    table.wrappertable { width: 700px; }
+    table.fullcontent {width: 700px; }
+    table.content { width: 600px; }
+    table[class="titletable"] { width: 600px !important; margin: 0 0 0 0 !important;}
+    div[class="datetext"] { font-size: 1em !important; -webkit-text-size-adjust: none; }
+</style>
 </head>
 
 <body style="display: block; font-size:14px; margin:0; padding:0;background-color: #f0f0f0 !important">
-  <div style="text-align:center; margin: 0 auto !important;background-color: #f0f0f0 !important">
-    <table class="wrappertable" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;margin:0 auto;background:#fff; border:1px solid #e3e3e3;">
-      <tbody>
-        <tr class="fullcontent" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;margin:0;padding:0;">
-          <td>
-            <div class="logo" style="padding: 16px 5%; height:48px;background:#00c4ff;">
-              <img src="http://www.tiegushi.com/img/logo-no-text.png" alt="故事贴" style="margin:0;padding:0;width:54px; height:48px; display:block; float: left;"
-              />
-              <h1 style="margin:0;padding:0;display:inline-block; margin-left:16px; height:48px; line-height:48px; font-size:26px; color:#fff; float: left;">故事贴</h1>
-            </div>
-          </td>
-        </tr>
-
-        <tr>
-          <td>
-
-            <table class="content" width="90%" border="0" cellpadding="0" cellspacing="0" style="max-width:600px;margin:16px 5%; padding:0; text-align: left;">
-              <tr style="margin:16px 0;display: block;">
-                <td>
-                  <h1 style="font-size: 26px; line-height:44px; color:#225599;">{{post.title}}</h1>
-                  <h2 style="font-size: 22px; line-height:24px; color:#225599;">{{post.subtitle}}</h2>
-                </td>
-              </tr>
-              <tr style="margin:16px 0;display: block;">
-                <td style="margin:16px 0;display: block;">
-                  <a href="{{post.href}}" target="_blank">
-                    <img class="mainImage" style="margin:0;padding:0;width:100%;object-fit:cover;" src="{{post.mainImage}}" />
-                  </a>
-                </td>
-              </tr>
-              <tr style="margin:16px 0;display: block;">
-                <td>
-                  <table width="100%" border="0" cellpadding="0" cellspacing="0" align="center" style="margin:0; padding:0; text-align: left;">
-                    <tr>
-                      <td width="60" height="48">
-                        <img width="48" height="48" vertical-align="middle" src="{{post.icon}}" style="object-fit:cover;"/></td>
-                      <td style="color:#666666;">
-                        <p style="padding:0;margin:0;color:#000;line-height:16px; font-size:16px">
-                          <b>{{post.author}}</b>
-                        </p>
-                        <p style="padding:0;margin:0;margin-top:8px; font-size:12px; line-height:14px;">发表于：{{post.time}}</p>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-              <tr style="margin:16px 0;display: block;">
-                <td>
-                  <div class="datetext" style="margin:0;padding:0;line-height:28px; font-size:16px; color:#666;-webkit-text-size-adjust: none;">
-                    {{post-content}}
-                  </div>
-                </td>
-              </tr>
-              <tr style="margin:16px 0;display: block;" width="160" align="center">
-                <td style="display: block;text-align: center;" width="160" align="center">
-                  <a href="{{post.href}}" target="_blank" style="text-decoration: none;">
-                    <div style="margin:0;padding:0;line-height:28px; display: block !important; border: 1px solid #00c4ff; padding: 4px 32px; color: #00c4ff; font-size: 16px; border-radius: 4px;">阅读全文</div>
-                  </a>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-
-        <tr>
-          <td>
-            <table class="content" width="90%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;margin:16px 5%; padding:0; text-align: left; border-top:1px solid #ccc; ">
-              <tr style="height: 16px;">
-                <td colspan="2"></td>
-              </tr>
-              <tr>
-                <td style="background: #00c4ff; width: 60px; height: 60px; display:inline-block; float: left;margin: 0;">
-                  <img src="http://www.tiegushi.com/img/logo.png" width="60" height="60" />
-                </td>
-                <td style="margin: 0 auto; text-align:left; float: left; margin-left: 16px; font-size:14px; ">
-                  <p style="margin:0;padding:0;line-height:22px; font-size:14px; color:#666; text-align: left; margin-bottom:8px;">一贴一故事，分享朋友圈</p>
-                  <a href="https://itunes.apple.com/app/gu-shi-tie/id957024953" target="_blank" title="下载故事贴iPhone版" style="text-align:center; display: inline-block; margin: 0;padding:5px 10px;text-decoration: none; color:#00c4ff; border:#00c4ff 1px solid; border-radius:4px;">iPhone</a>
-                  <a href="http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere" target="_blank" title="下载故事贴Android版" style="text-align:center; display: inline-block; margin: 0; margin-left:16px;padding:5px 10px; text-decoration: none; color:#00c4ff; border:#00c4ff 1px solid; border-radius:4px;">Android</a>
-                </td>
-              </tr>
-              <tr style="height: 16px;">
-                <td colspan="2"></td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-
-        <tr class="fullcontent" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;margin:0;padding:0; height:16px; background:#00c4ff;">
-          <td></td>
-        </tr>
-        <tr class="content" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;margin:16px 0; padding:16px 0; text-align: center; height: 48px;">
-          <td>
-            <p style="padding:0;margin:0; font-size:14px;">Copyright © 2015-2016 故事贴</p>
-          </td>
-        </tr>
-      </tbody>
+<div style="text-align:center; margin: 0 auto !important;">
+  <table class="wrappertable" width="700" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;background:#fff; border:1px solid #e3e3e3;"><tbody><tr><td>
+    <!--top logo-->
+    <table class="fullcontent" width="700" cellpadding="0" cellspacing="0" border="0" style="margin:0;padding:0;">
+      <tr>
+        <td>
+          <div style=" padding: 16px; height:48px;background:#00c4ff;">
+            <img src="http://www.tiegushi.com/img/logo-no-text.png" alt="故事贴" style="margin:0;padding:0;width:54px; height:48px; display:block; float: left;"/>
+            <h1 style="margin:0;padding:0;display:inline-block; margin-left:16px; height:48px; line-height:48px; font-size:26px; color:#fff; float: left;">故事贴</h1>
+          </div>
+        </td>
+      </tr>
     </table>
-  </div>
-</body>
 
+    <!--main body-->
+    <table class="content" width="600" border="0" cellpadding="0" cellspacing="0" style="margin:50px; padding:0; text-align: left;">
+      <tr style="margin:16px 0;display: block;">
+        <td>
+          <h1 style="font-size: 20px; line-height:44px; color:#225599;">{{post.title}}</h1>
+          <h2 style="font-size: 16px; line-height:32px; color:#225599;">{{post.subtitle}}</h2>
+        </td>
+      </tr>
+      <tr style="margin:16px 0;display: block;">
+        <td>
+          <a href="{{post.href}}" target="_blank">
+            <img class="mainImage" style="margin:0;padding:0;width:600px; height:300px;" src="{{post.mainImage}}"
+            />
+          </a>
+        </td>
+      </tr>
+      <tr style="margin:16px 0;display: block;">
+        <td>
+          <table width="100%" border="0" cellpadding="0" cellspacing="0" align="center" style="margin:16px 0; padding:0; text-align: left;">
+            <tr>
+              <td width="36px">
+                <img style="width:26px; height:26px;" vertical-align="middle" src="{{post.icon}}"
+                /></td>
+              <td style="color:#666666; font-size:14px;"><b style="color:#000;">{{post.author}}</b>&nbsp;发表于：{{post.time}}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr style="margin:16px 0;display: block;">
+        <td>
+          <div class="datetext" style="margin:0;padding:0;line-height:28px; font-size:12px; color:#666;">
+            {{post-content}}
+          </div>
+        </td>
+      </tr>
+      <tr style="margin:16px 0;display: block;">
+        <td style="display: block;text-align: center;">
+          <a href="{{post.href}}" target="_blank">
+            <div style="margin:0;padding:0;line-height:28px; display: inline-block !important; border: 1px solid #00c4ff; padding: 4px 32px; color: #00c4ff; font-size: 16px; border-radius: 4px;">阅读全文</div>
+          </a>
+        </td>
+      </tr>
+    </table>
+    <!--foot1-->
+    <table class="content" width="600" cellpadding="0" cellspacing="0" border="0" style="margin:16px 50px; padding:16px 0; text-align: left; border-top:1px solid #ccc; ">
+      <tr>
+        <td>
+          <div style="background: #00c4ff; width: 64px; height: 64px; display:inline-block; float: left;">
+            <img src="http://www.tiegushi.com/img/logo.png" width="64px" />
+          </div>
+          <div style="margin: 0 auto; text-align:left; float: left; margin-left: 16px; ">
+            <p style="margin:0;padding:0;line-height:26px; font-size:16px; color:#666; text-align: left; margin-bottom:8px;">一贴一故事，分享朋友圈</p>
+            <a href="https://itunes.apple.com/app/gu-shi-tie/id957024953" target="_blank" title="下载故事贴iPhone版" style="text-align:center; display: inline-block; margin: 0;padding:6px 16px;text-decoration: none; color:#00c4ff; border:#00c4ff 1px solid; border-radius:4px;">iPhone</a>
+            <a href="http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere" target="_blank" title="下载故事贴Android版" style="text-align:center; display: inline-block; margin: 0; margin-left:16px;padding:6px 16px; text-decoration: none; color:#00c4ff; border:#00c4ff 1px solid; border-radius:4px;">Android</a>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <!--foot2-->
+    <table class="fullcontent" width="700" cellpadding="0" cellspacing="0" border="0" style="margin:0;padding:0; height:16px; background:#00c4ff;"></table>
+    <table class="content" width="600" cellpadding="0" cellspacing="0" border="0" style="margin:16px; padding:0; text-align: center;">
+      <tr>
+        <td>
+          <p style="padding:0;margin:0; font-size:14px;">Copyright © 2015-2016 故事贴</p>
+        </td>
+      </tr>
+    </table>
+</td></tr></tbody></table></div>
+</body>
 </html>

@@ -31,6 +31,7 @@ loginFn = (id)->
       Session.setPersistent('mySavedDraftsCount',Counts.get('mySavedDraftsCount'))
       Session.setPersistent('myPostsCount',Counts.get('myPostsCount'))
       Session.setPersistent('myFollowToCount',Counts.get('myFollowToCount'))
+      Session.setPersistent('myFollowToCount',Counts.get('myEmailFollowerCount'))
       
     is_loading.set([])
     navigator.notification.confirm '切换帐号成功~', null, '提示', ['知道了']

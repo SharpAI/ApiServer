@@ -1744,7 +1744,7 @@ if(Meteor.isServer){
           //Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { nonReactive: true });
           Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { reactive: true });
           //Counts.publish(this, 'myFollowToCount', Follower.find({userId:this.userId}), {nonReactive: true });
-          Counts.publish(this, 'myFollowToCount', Follower.find({userId:this.userId}), {reactive: true });
+          Counts.publish(this, 'myEmailFollowerCount', Follower.find({followerId:this.userId, userEmail: {$exists: true}}), {reactive: true });
       }
   });
   Meteor.publish("postsWithLimit", function(limit) {
