@@ -1136,7 +1136,10 @@ if(Meteor.isServer){
                                 addontitle:modifier.$set.addontitle,
                                 mainImage: modifier.$set.mainImage,
                                 mainImageStyle: modifier.$set.mainImageStyle,
-                                publish: modifier.$set.publish
+                                publish: modifier.$set.publish,
+                                owner: modifier.$set.owner,
+                                ownerName: modifier.$set.ownerName,
+                                ownerIcon: modifier.$set.ownerIcon
                             }
                             }
                         );
@@ -1149,7 +1152,10 @@ if(Meteor.isServer){
                         addontitle:modifier.$set.addontitle,
                         mainImage: modifier.$set.mainImage,
                         mainImageStyle: modifier.$set.mainImageStyle,
-                        publish: modifier.$set.publish
+                        publish: modifier.$set.publish,
+                        owner: modifier.$set.owner,
+                        ownerName: modifier.$set.ownerName,
+                        ownerIcon: modifier.$set.ownerIcon
                     }
                     }
                 );
