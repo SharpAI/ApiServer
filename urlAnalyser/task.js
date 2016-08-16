@@ -15,7 +15,7 @@ function taskObj() {
         startTime: new Date(),
         status: 'wait'
       });
-    }else{
+    }else if (userId && url){
       tasks[index].userId = userId,
       tasks[index].url = url
     }
@@ -72,7 +72,7 @@ function taskObj() {
     
     if(status === 'done' || status === 'cancel' || status === 'failed'){
       tasks[index].endTime = new Date();
-      tasks[index].execTime = (tasks[index].endTime - tasks[index].startTime)/1000 + 's';
+      tasks[index].execTime = (tasks[index].endTime - tasks[index].startTime)/1000;
       
       // save piwik
       collections.serverImportLog.update({taskId: tasks[index].id}, {$set: {

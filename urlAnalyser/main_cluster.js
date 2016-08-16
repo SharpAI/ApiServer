@@ -547,7 +547,7 @@ var updatePosts = function(postId, post, taskId, callback){
     serverImportLog.update({taskId: taskId}, {$set: {
       postId: postId,
       endImgTime: new Date(),
-      execImgTime: ((new Date()) - task.startTime)/1000 + 's'
+      execImgTime: ((new Date()) - task.startTime)/1000
     }});
     }catch (ex){
       console.log(ex);
