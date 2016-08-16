@@ -15,7 +15,7 @@ function taskObj() {
         startTime: new Date(),
         status: 'wait'
       });
-    }else{
+    }else if (userId && url){
       tasks[index].userId = userId,
       tasks[index].url = url
     }
@@ -72,7 +72,7 @@ function taskObj() {
     
     if(status === 'done' || status === 'cancel' || status === 'failed'){
       tasks[index].endTime = new Date();
-      tasks[index].execTime = (tasks[index].endTime - tasks[index].startTime)/1000 + 's';
+      tasks[index].execTime = (tasks[index].endTime - tasks[index].startTime)/1000;
       
       // save piwik
       collections.serverImportLog.update({taskId: tasks[index].id}, {$set: {
@@ -109,8 +109,7 @@ function taskObj() {
     // remove post
     debug && console.log('remove post.');
     if(tasks[index].postId){
-      console.log('remove import post.');
-      collections.posts.remove({_id: tasks[index].postId});
+      task.removePost(index);
       // tasks.splice(index, 1);
     }else{
       // tasks.splice(index, 1);
@@ -129,15 +128,19 @@ function taskObj() {
     if(index === -1)
       return false;
       
-    if(remove === true && tasks[index].status === 'cancel'){
-      if(tasks[index].postId){
-        console.log('remove import post.');
-        collections.posts.remove({_id: tasks[index].postId});
-      }
-    }
+    if(remove === true && tasks[index].status === 'cancel')
+      task.removePost(index);
     
     return tasks[index].status === 'cancel';
   }
+  
+  task.removePost = function(index){
+    if(tasks[index].postId){
+      console.log('remove import post.');
+      collections.posts.remove({_id: tasks[index].postId});
+      collections.followPosts.remove({postId: tasks[index].postId});
+    }
+  };
   
   return task;
 }

@@ -268,7 +268,7 @@ MongoClient.connect(DB_CONN_STR, function(err, db) {
     FollowPosts = db.collection('followposts');
     //Feeds = db.collection('feeds');
     serverImportLog = db.collection('serverImportLog');
-    Task.setCollection({posts: posts, serverImportLog: serverImportLog});
+    Task.setCollection({posts: posts, serverImportLog: serverImportLog, followPosts: FollowPosts});
 });
 var postsInsertHookDeferHandle = function(userId,doc){
     var suggestPostsUserId;
@@ -547,7 +547,7 @@ var updatePosts = function(postId, post, taskId, callback){
     serverImportLog.update({taskId: taskId}, {$set: {
       postId: postId,
       endImgTime: new Date(),
-      execImgTime: ((new Date()) - task.startTime)/1000 + 's'
+      execImgTime: ((new Date()) - task.startTime)/1000
     }});
     }catch (ex){
       console.log(ex);

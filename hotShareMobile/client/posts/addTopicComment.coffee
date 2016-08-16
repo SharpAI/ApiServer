@@ -37,7 +37,7 @@ if Meteor.isClient
       e.preventDefault()
       if $('#'+e.currentTarget.id).hasClass('select')
         $('#'+e.currentTarget.id+' .selectHelper img').attr('src','/select_n.png')
-      else 
+      else
         $('#'+e.currentTarget.id+' .selectHelper img').attr('src','/select_p.png')
       $(e.currentTarget).toggleClass('select')
     # "change .publish-reader-group input[type='checkbox']": (e, t)->
@@ -50,7 +50,7 @@ if Meteor.isClient
     "click #save":(event)->
       #  if($('#share-follower').prop('checked'))
       #    Meteor.call('sendEmailByWebFollower', Session.get('TopicPostId'), 'push')
-         
+
        topicPostId = Session.get("TopicPostId")
        TopicTitle = Session.get("TopicTitle")
        TopicAddonTitle = Session.get("TopicAddonTitle")
@@ -58,8 +58,11 @@ if Meteor.isClient
        comment = Session.get("comment")
        user = Meteor.user()
 
-       unless Session.equals('post-publish-user-id', '')
-         user = Meteor.users.findOne({_id: Session.get('post-publish-user-id')})
+       if Session.get('post-publish-user-id') and Session.get('post-publish-user-id') isnt ''
+       #unless Session.equals('post-publish-user-id', '')
+         pubuser = Meteor.users.findOne({_id: Session.get('post-publish-user-id')})
+         if pubuser
+           user = pubuser
 
        if comment != ''
          if user
@@ -162,7 +165,7 @@ if Meteor.isClient
        Session.set("mynewpostId",topicPostId)
        Router.go('/posts/'+topicPostId)
        false
-  
+
   Template.publishReadersList.rendered=->
      Meteor.subscribe "readerpopularposts",(ready)->
       handler = $('.newLayout_container')
@@ -184,10 +187,10 @@ if Meteor.isClient
         verticalOffset: 10
       }
       Session.set('publish-readers-list-loading',true)
-      # handler.wookmark(options) 
+      # handler.wookmark(options)
       $('.newLayout_element').imagesLoaded ()->
         Session.set('publish-readers-list-loading',false)
-        handler.wookmark(options) 
+        handler.wookmark(options)
 
   # Template.publishReadersList.helpers
     # groups: ()->
