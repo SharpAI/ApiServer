@@ -109,8 +109,7 @@ function taskObj() {
     // remove post
     debug && console.log('remove post.');
     if(tasks[index].postId){
-      console.log('remove import post.');
-      collections.posts.remove({_id: tasks[index].postId});
+      task.removePost(index);
       // tasks.splice(index, 1);
     }else{
       // tasks.splice(index, 1);
@@ -129,15 +128,19 @@ function taskObj() {
     if(index === -1)
       return false;
       
-    if(remove === true && tasks[index].status === 'cancel'){
-      if(tasks[index].postId){
-        console.log('remove import post.');
-        collections.posts.remove({_id: tasks[index].postId});
-      }
-    }
+    if(remove === true && tasks[index].status === 'cancel')
+      task.removePost(index);
     
     return tasks[index].status === 'cancel';
   }
+  
+  task.removePost = function(index){
+    if(tasks[index].postId){
+      console.log('remove import post.');
+      collections.posts.remove({_id: tasks[index].postId});
+      collections.followPosts.remove({postId: tasks[index].postId});
+    }
+  };
   
   return task;
 }
