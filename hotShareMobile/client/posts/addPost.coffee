@@ -937,7 +937,7 @@ if Meteor.isClient
         for i in [1..(Drafts.find({}).count()-1)]
           Drafts.find({}).fetch()[i]
     hasAssocaitedUsers: ()->
-      AssociatedUsers.find({}).count() > 0          
+      (AssociatedUsers.find({}).count() > 0) or (UserRelation.find({userId: Meteor.userId()}).count() > 0)
   Template.addPost.events
     'click #ViewOnWeb' :->
       if Meteor.isCordova and Session.get('isReviewMode') is '1'
