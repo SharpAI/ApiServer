@@ -82,6 +82,7 @@ function taskObj() {
         startTime: tasks[index].startTime,
         endTime: tasks[index].endTime,
         execTime: tasks[index].execTime,
+        error: tasks[index].error,
         status: status
       }}, {upsert: true});
     }
@@ -91,6 +92,15 @@ function taskObj() {
 
     tasks[index].status = status;
     console.log('update status: ' + status);
+  };
+  
+  task.failed = function(id, msg){
+    var index = task.getIndex(id);
+    if(index === -1)
+      return;
+      
+    tasks[index].error = msg;
+    task.update(id, 'failed');
   };
   
   task.cancel = function(id){
