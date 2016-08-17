@@ -275,6 +275,10 @@ function PostDrafts(_id, user) {
     });
   };
   postDrafts.EalyMainImage = function(data, inputUrl, callback) {
+    if (callback) {
+        callback && callback('http://data.tiegushi.com/res/defaultMainImage1.jpg');
+    }
+    return;
     filedownup.seekOneUsableMainImage(data, function(file, w, h, found, index, total, source) {
         showDebug && console.log('found ' + found + ' index ' + index + ' total ' + total + ' fileObject ' + file + ' source ' + source);
         if (file) {

@@ -73,7 +73,7 @@ var downloadFromBCS = function(source, callback){
       return callback(theFile.toURL(), source, theFile);
     })
     .catch(function (err){
-      console.log('download failed err: ' + err);
+      console.log('download failed source='+source+', err: ' + err);
       return callback(null, source);
     });
 }

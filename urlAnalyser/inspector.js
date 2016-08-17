@@ -36,11 +36,13 @@ console.log('inject code');
             mainImg: imgs && imgs.length > 0 ? imgs[0].src : '',
             remark: document.body.innerText ? document.body.innerText.substr(0, 100) : ''
           };
-          window.document.body.insertAdjacentHTML( 'beforeBegin', '<div id="detected_json_from_header" style="color:blue;"> With some data... </div>' );
+          //window.document.body.insertAdjacentHTML( 'beforeBegin', '<div id="detected_json_from_header" style="color:blue;"> With some data... </div>' );
+          $('body').append('<div id="detected_json_from_header" style="color:blue;"></div>');
           window.detected_json_from_header = header;
         }else{
           analyserHTML(window.location.href,returnJson,function(result){
-              window.document.body.insertAdjacentHTML( 'beforeBegin', '<div id="detected_json_from_gushitie" style="color:blue;"> With some data...</div>' );
+              //window.document.body.insertAdjacentHTML( 'beforeBegin', '<div id="detected_json_from_gushitie" style="color:blue;"> With some data...</div>' );
+              $('body').append('<div id="detected_json_from_gushitie" style="color:blue;"></div>');
               window.detected_json_from_gushitie=result;
               /*const {ipcRenderer} = require('electron');
               //console.log(ipcRenderer.sendSync('synchronous-message', 'ping')); // prints "pong"

@@ -446,13 +446,15 @@ if Meteor.isClient
     api_url += '/' + encodeURIComponent(url)
     api_url += '?task_id=' + unique_id + '&isMobile=true';
     console.log("api_url="+api_url)
-    showPopupProgressBar(()->
-      # cancel server import
+    abortFastImport = ()->
       isCancel = true
       request_return = (res)->
         console.log('cancel import res: ' + JSON.stringify(res))
       cordovaHTTP.get Meteor.absoluteUrl('import-cancel/') + unique_id, {}, {}, request_return, request_return
       console.log("import-cancel: unique_id="+unique_id);
+    showPopupProgressBar(()->
+      # cancel server import
+      abortFastImport()
       #return navigator.notification.confirm('快速导入不成功，是否尝试高级导入？'
       #    (index)->
       #      if index is 1 then handleDirectLinkImport(url, 1)
@@ -503,6 +505,7 @@ if Meteor.isClient
           if isCancel is true
             console.log("Error: import Cancelled.");
             return
+          abortFastImport()
           PUB.toast('快速导入失败啦，请尝试高级导入吧。')
           popupProgressBar.close()
           Router.go('/')
@@ -622,7 +625,11 @@ if Meteor.isClient
 
     if Session.get('itemInAddPostPending') > 0
       showEditingPopupProgressBar()
-    Meteor.subscribe("saveddrafts");
+    Meteor.subscribe("saveddrafts")
+
+    if Session.get('postContent')._id
+      Meteor.subscribe("mypostedposts",Session.get('postContent')._id)
+
     window.imageCounter2 = 1
     window.insertRow = 1
     `global_toolbar_hidden = false`
@@ -1289,7 +1296,6 @@ if Meteor.isClient
       else
         if(!Meteor.status().connected and Meteor.status().status isnt 'connecting')
           Meteor.reconnect()
-        
         title = $("#title").val()
         if title is '' or title is '[空标题]'
           $("#title").val('')

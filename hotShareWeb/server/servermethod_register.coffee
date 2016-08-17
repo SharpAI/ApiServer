@@ -6,6 +6,27 @@ if Meteor.isServer
   console.log("process.env.HTTP_FORWARDED_COUNT="+process.env.HTTP_FORWARDED_COUNT);
   Meteor.startup ()->
     Meteor.methods
+      'updateTopicPostsAfterComment':(topicPostId,topic,topicPostObj)->
+        if Topics.find({text:topic}).count() > 0
+          topicData = Topics.find({text:topic}).fetch()[0]
+          topicId = topicData._id
+        else
+          topicId = Topics.insert {
+            type:"topic",
+            text:topic,
+            imgUrl: ""
+          }
+        topicPostObj.topicId = topicId
+        
+        console.log topicId
+        unless TopicPosts.findOne({postId:topicPostId,topicId: topicId})
+          try
+            TopicPosts.insert topicPostObj,(err,id)->
+              console.log(">>>id>>"+id)
+              Topics.update({_id: topicId},{$inc: {posts: 1}})
+              return 
+          catch error
+            console.log error
       'sendErrorReport':(to, from, subject, text)->
         console.log(to)
         console.log(from)

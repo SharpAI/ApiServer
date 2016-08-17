@@ -16,6 +16,6 @@
 @withSponserLinkAds = false
 @isUSVersion = false
 @withZhiFaCDN = false
-@withServerImport = true
+@withServerImport = false
 @withShareStoryGroup = true
 @withDirectDraftShow = true

@@ -99,16 +99,17 @@ if Meteor.isClient
              if haveSpace > 0
                 topic = topic[...haveSpace]
              #console.log topic
-             if Topics.find({text:topic}).count() > 0
-                topicData = Topics.find({text:topic}).fetch()[0]
-                topicId = topicData._id
-                #console.log topicData._id
-             else
-                topicId = Topics.insert {
-                  type:"topic",
-                  text:topic,
-                  imgUrl: ""
-                }
+
+            #  if Topics.find({text:topic}).count() > 0
+            #     topicData = Topics.find({text:topic}).fetch()[0]
+            #     topicId = topicData._id
+            #     #console.log topicData._id
+            #  else
+            #     topicId = Topics.insert {
+            #       type:"topic",
+            #       text:topic,
+            #       imgUrl: ""
+            #     }
              #console.log "topicId:" + topicId
              if user
                if user.profile.fullname
@@ -121,21 +122,35 @@ if Meteor.isClient
                username = '匿名'
                userId = 0
                userIcon = ''
-             unless TopicPosts.findOne({postId:topicPostId,topicId: topicId})
-               TopicPosts.insert {
-                 postId:topicPostId,
-                 title:TopicTitle,
-                 addontitle:TopicAddonTitle,
-                 mainImage:TopicMainImage,
-                 heart:0,
-                 retweet:0,
-                 comment:1,
-                 owner:userId,
-                 ownerName:username,
-                 ownerIcon:userIcon,
-                 createdAt: new Date(),
-                 topicId: topicId
-               }
+             topicPostObj = {
+               postId:topicPostId,
+               title:TopicTitle,
+               addontitle:TopicAddonTitle,
+               mainImage:TopicMainImage,
+               heart:0,
+               retweet:0,
+               comment:1,
+               owner:userId,
+               ownerName:username,
+               ownerIcon:userIcon,
+               createdAt: new Date()
+             }
+             Meteor.call('updateTopicPostsAfterComment', topicPostId, topic, topicPostObj)
+            #  unless TopicPosts.findOne({postId:topicPostId,topicId: topicId})
+            #    TopicPosts.insert {
+            #      postId:topicPostId,
+            #      title:TopicTitle,
+            #      addontitle:TopicAddonTitle,
+            #      mainImage:TopicMainImage,
+            #      heart:0,
+            #      retweet:0,
+            #      comment:1,
+            #      owner:userId,
+            #      ownerName:username,
+            #      ownerIcon:userIcon,
+            #      createdAt: new Date(),
+            #      topicId: topicId
+            #    }
        #added for reader group
        postItem = Posts.findOne({_id: topicPostId})
        feedItem = {
