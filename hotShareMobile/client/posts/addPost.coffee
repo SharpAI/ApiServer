@@ -625,7 +625,11 @@ if Meteor.isClient
 
     if Session.get('itemInAddPostPending') > 0
       showEditingPopupProgressBar()
-    Meteor.subscribe("saveddrafts");
+    Meteor.subscribe("saveddrafts")
+
+    if Session.get('postContent')._id
+      Meteor.subscribe("mypostedposts",Session.get('postContent')._id)
+
     window.imageCounter2 = 1
     window.insertRow = 1
     `global_toolbar_hidden = false`
@@ -1292,7 +1296,6 @@ if Meteor.isClient
       else
         if(!Meteor.status().connected and Meteor.status().status isnt 'connecting')
           Meteor.reconnect()
-        
         title = $("#title").val()
         if title is '' or title is '[空标题]'
           $("#title").val('')
