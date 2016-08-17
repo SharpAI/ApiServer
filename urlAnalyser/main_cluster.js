@@ -61,21 +61,7 @@ process.addListener('uncaughtException', function (err) {
   console.log(msg);
   console.trace();
   if (err.message && err.message.toLowerCase().startsWith("redis")) {
-    if (restartKueServiceTimeout) {
-        clearTimeout(restartKueServiceTimeout);
-        restartKueServiceTimeout = null;
-    }
-
-    restartKueServiceTimeout = setTimeout(function(){
-                                if (cluster.isMaster) {
-                                    for (var id in cluster.workers) {
-                                        var msg = {type:'restartKueService'}
-                                        console.log("Sending message restartKueService to work id: "+id);
-                                        cluster.workers[id].send(JSON.parse(msg));
-                                    }
-                                }
-                                restartKueService();
-                            }, 10000);
+    restartKueService();
   }
 });
 
@@ -121,18 +107,34 @@ function startKueService() {
     }
 }
 function restartKueService() {
-    if (kuequeue) {
-        var timeout = 5000;
-        kuequeue.shutdown(Number(timeout), function () {
-            if (cluster.isMaster) {
-                console.log("!!!!!!!!!! restartKueService: Master, shutdown kue queue service! Start again...");
-            } else {
-                console.log("!!!!!!!!!! restartKueService: Slaver, shutdown kue queue service! Start again...");
-            }
-            kuequeue = null;
-            startKueService();
-        });
+    if (restartKueServiceTimeout) {
+        clearTimeout(restartKueServiceTimeout);
+        restartKueServiceTimeout = null;
     }
+
+    console.log("restartKueService in");
+    restartKueServiceTimeout = setTimeout(function(){
+        if (cluster.isMaster) {
+            for (var id in cluster.workers) {
+                var msg = {type:'restartKueService'}
+                console.log("Sending message restartKueService to work id: "+id);
+                cluster.workers[id].send(JSON.parse(msg));
+            }
+        }
+        if (kuequeue) {
+            var timeout = 5000;
+            kuequeue.shutdown(Number(timeout), function () {
+                if (cluster.isMaster) {
+                    console.log("!!!!!!!!!! restartKueService: Master, shutdown kue queue service! Start again...");
+                    kuequeue = null;
+                    startKueService();
+                } else {
+                    console.log("!!!!!!!!!! restartKueService: Slaver, shutdown kue queue service! Start again...");
+                    process.exit(0);
+                }
+            });
+        }
+    }, 5000);
 }
 function createTaskToKueQueue(prefix, _id, url, server, unique_id, isMobile, chunked) {
     var job = kuequeue.create(prefix, {
@@ -142,13 +144,77 @@ function createTaskToKueQueue(prefix, _id, url, server, unique_id, isMobile, chu
       unique_id: unique_id,
       isMobile: isMobile,
       chunked: chunked
-    }).save(function(err){
+    }).priority('critical').removeOnComplete(true).save(function(err){
       if (!err) {
         console.log("   job.id = "+job.id+", unique_id="+unique_id);
       }
       showDebug && console.log(']');
     });
     return job;
+}
+function abornalDispose() {
+    /*kuequeue.on('job enqueue', function(id, type){
+      if (cluster.isMaster) {
+        console.log('Master: Job %s got queued of type %s', id, type );
+      } else {
+        console.log('Slaver: Job %s got queued of type %s', id, type );
+      }
+    }).on('job complete', function(id, result){
+        kue.Job.get(id, function(err, job){
+        if (err) return;
+            job.remove(function(err){
+              if (err) throw err;
+              if (cluster.isMaster) {
+                console.log('Master: removed completed job #%d', job.id);
+              } else {
+                console.log('Slaver: removed completed job #%d', job.id);
+              }
+            });
+        });
+    });*/
+
+    kuequeue.on('error', function(err) {
+      if (cluster.isMaster) {
+        console.log('Master: Oops... ', err);
+      } else {
+        console.log('Slaver: Oops... ', err);
+      }
+      restartKueService();
+    });
+
+    kuequeue.watchStuckJobs(10*1000);
+
+    kuequeue.inactiveCount(function(err, total){ // others are activeCount, completeCount, failedCount, delayedCount
+      if (total > 100000) {
+        console.log( 'We need some back pressure here' );
+      }
+    });
+    kuequeue.failedCount('my-critical-job', function(err, total) {
+      if (total > 10000) {
+        console.log( 'This is tOoOo bad' );
+      }
+    });
+
+
+    /*queue.process('my-error-prone-task', function(job, done){
+      var domain = require('domain').create();
+      domain.on('error', function(err){
+        if (cluster.isMaster) {
+          console.log('Master: domain on error');
+        } else {
+          console.log('Slaver: domain on error');
+        }
+        done(err);
+      });
+      domain.run(function(){ // your process function
+        if (cluster.isMaster) {
+          throw new Error('Master: bad things happen');
+        } else {
+          throw new Error('Slaver: bad things happen');
+        }
+        done();
+      });
+    });*/
 }
 function setKueProcessCallback() {
   function process_callback(job, done){
@@ -897,6 +963,7 @@ if (cluster.isMaster) {
     }
 
   startKueService();
+  abornalDispose();
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(bodyParser.json());
   app.use('/import', router);
@@ -930,4 +997,5 @@ if (cluster.isMaster) {
   });
   nightmareQueue = initNightmareQueue();
   startKueService();
+  abornalDispose();
 }

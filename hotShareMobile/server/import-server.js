@@ -28,34 +28,38 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
   }
   console.log("api_url="+api_url+", Meteor.absoluteUrl()="+Meteor.absoluteUrl());
   
-  request({
-    method: 'GET',
-    uri: api_url
-  })
-  .on('data', function(data) {
-    if(hasEnd)
-      return;
+  try{
+    request({
+      method: 'GET',
+      uri: api_url
+    })
+    .on('data', function(data) {
+      if(hasEnd)
+        return;
       
-    try{
-      result = JSON.parse(data);
-      if(result.status != 'importing'){
+      try{
+        result = JSON.parse(data);
+        if(result.status != 'importing'){
+          hasEnd = true;
+          console.log("res.end: result="+JSON.stringify(result));
+          return res.end('\r\n' + JSON.stringify(result));
+        }
+        console.log("res.write: result="+JSON.stringify(result));
+        res.write('\r\n' + JSON.stringify(result));
+      }catch(er){
         hasEnd = true;
-        console.log("res.end: result="+JSON.stringify(result));
-        return res.end('\r\n' + JSON.stringify(result));
+        console.log("res.end: failed");
+        res.end('\r\n' + '{"status": "failed"}');
       }
-      console.log("res.write: result="+JSON.stringify(result));
-      res.write('\r\n' + JSON.stringify(result));
-    }catch(er){
-      hasEnd = true;
-      console.log("res.end: failed");
-      res.end('\r\n' + '{"status": "failed"}');
-    }
-  })
-  .on('end', function(data) {
-    if(hasEnd)
-      return;
-    res.end('\r\n' + JSON.stringify(result));
-  });
+    })
+    .on('end', function(data) {
+      if(hasEnd)
+        return;
+      res.end('\r\n' + JSON.stringify(result));
+    });
+  }catch(err){
+      console.log("request import Error: err="+err);
+  }
 }, {where: 'server'});
 
 
@@ -68,9 +72,13 @@ Router.route('/import-cancel/:id', function (req, res, next) {
   if(!this.params.id)
     return res.end('error');
   
-  request(import_cancel_url + '/' + this.params.id, function(error, response, body){
-    if (!error && response.statusCode == 200)
-      res.end('done');
-    res.end('error');
-  });
+  try {
+    request(import_cancel_url + '/' + this.params.id, function(error, response, body){
+      if (!error && response.statusCode == 200)
+        res.end('done');
+      res.end('error');
+    });
+  }catch(err){
+      console.log("request import-cancel Error: err="+err);
+  }
 }, {where: 'server'});
