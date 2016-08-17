@@ -465,6 +465,15 @@ var postsInsertHookDeferHandle = function(userId,doc){
     }
     catch(error){}*/
 };
+var update_mainImage = function(userId, postId, mainImageUrl, style){
+  console.log("mainImageUrl="+mainImageUrl);
+  /*posts.update({_id: postId},{$set: {mainImage: mainImageUrl}}, function(err, number){
+    console.log("update_mainImage: err="+err+", number="+number)
+  });*/
+  FollowPosts.update({followby:userId, postId:postId}, {$set: {mainImage: mainImageUrl, mainImageStyle:style}}, function(err, number){
+    console.log("update_mainImage2: err="+err+", number="+number)
+  });
+}
 var insert_data = function(user, url, data, draftsObj, cb) {
     if (!user || !data || !url || !posts) {
       console.log('Error: null of id or data');
@@ -514,7 +523,7 @@ var insert_data = function(user, url, data, draftsObj, cb) {
         'commentsCount': 0,
         'addontitle': '',
         'mainImage': mainImageURL,
-        'mainImageStyle': [],
+        'mainImageStyle': '',
         'mainText': [],
         'fromUrl': url,
         'import_status':'importing',
@@ -787,6 +796,7 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
                       // console.log('post:', JSON.stringify(postObj));
                       // draftsObj.destroy();
                       
+                      update_mainImage(user._id, postId, postObj.mainImage, postObj.mainImageStyle);
                       // update pub
                       updatePosts(postId, postObj, unique_id, function(err, number){
                         if (Task.isCancel(unique_id, true)) {
@@ -832,8 +842,8 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
                       });*/
                     });
                   });
-                  //draftsObj.seekOneUsableMainImage(result, url);
-                  draftsObj.seekOneUsableMainImageWithOutMainImage(result, url, mainUrl);
+                  draftsObj.seekOneUsableMainImage(result, url);
+                  //draftsObj.seekOneUsableMainImageWithOutMainImage(result, url, mainUrl);
       
                   // send response
                   if (callback) {
