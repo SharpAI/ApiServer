@@ -627,8 +627,10 @@ if Meteor.isClient
       showEditingPopupProgressBar()
     Meteor.subscribe("saveddrafts")
 
+    ###
     if Session.get('postContent')._id
       Meteor.subscribe("mypostedposts",Session.get('postContent')._id)
+    ###
 
     window.imageCounter2 = 1
     window.insertRow = 1

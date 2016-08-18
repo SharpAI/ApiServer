@@ -518,9 +518,11 @@ if Meteor.isClient
     # 'click .shareAlertBackground': ()->
     #   $('.shareTheReadingRoom,.shareAlertBackground').hide()
     'click .pub-me-post': ()->
-      # trackEvent('Download','from Post Header')
-      # window.open('http://cdn.tiegushi.com', '_system')
-      Router.go('/import')
+      if withServerImport is true
+          Router.go('/import')
+      else
+          trackEvent('Download','from Post Header')
+          window.open('http://www.tiegushi.com/', '_system')
     'click .readmore': (e, t)->
       # if e.target is e.currentTarget
       $showPosts = $('.showPosts')
