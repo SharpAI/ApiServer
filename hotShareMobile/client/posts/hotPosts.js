@@ -1,7 +1,8 @@
 Template.hotPosts.helpers({
   posts: function () {
     var _posts =  _.filter(Session.get('hottestPosts') || [], function (value) {
-      return !value.hasPush;
+      return true;
+      // return !value.hasPush;
     });
     console.log(_posts);
     return _posts;
