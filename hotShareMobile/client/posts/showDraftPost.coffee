@@ -6,6 +6,9 @@ if Meteor.isClient
     layoutHelperInit()
     Session.set("content_loadedCount", 0)
   Template.showDraftPosts.onRendered ->
+    if Session.get('postContent') and Session.get('postContent')._id
+      unless Posts.find({_id:Session.get('postContent')._id}).count() > 0
+        Meteor.subscribe("ViewPostsList",Session.get('postContent')._id)
     Session.setDefault "displayPostContent",true
     $('.mainImage').css('height',$(window).height()*0.55)
     postContent = Session.get("postContent")

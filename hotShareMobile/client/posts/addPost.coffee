@@ -628,7 +628,8 @@ if Meteor.isClient
     Meteor.subscribe("saveddrafts")
 
     if Session.get('postContent') and Session.get('postContent')._id
-      Meteor.subscribe("ViewPostsList",Session.get('postContent')._id)
+      unless Posts.find({_id:Session.get('postContent')._id}).count() > 0
+        Meteor.subscribe("ViewPostsList",Session.get('postContent')._id)
 
     window.imageCounter2 = 1
     window.insertRow = 1
