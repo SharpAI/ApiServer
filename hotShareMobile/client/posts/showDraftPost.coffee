@@ -1,4 +1,7 @@
 if Meteor.isClient
+  @cleanDraft = ()->
+    Drafts.remove({})
+    TempDrafts.remove({})
   Template.showDraftPosts.created=->
     layoutHelperInit()
     Session.set("content_loadedCount", 0)
@@ -90,6 +93,267 @@ if Meteor.isClient
     return count
 
   Template.showDraftPosts.events
+    'click #modalPublish': (e)->
+      cleanDraft()
+      Session.set('fromDraftPost',false)
+      Meteor.defer ()->
+        $('.modal-backdrop.fade.in').remove()
+      if Meteor.user() is null
+        window.plugins.toast.showShortBottom('请登录后发表您的故事')
+        Router.go('/user')
+        false
+      else
+        if(!Meteor.status().connected and Meteor.status().status isnt 'connecting')
+          Meteor.reconnect()
+        title = Session.get('postContent').title
+        if title is '' or title is '[空标题]'
+          window.plugins.toast.showShortBottom('请为您的故事加个标题')
+          return
+
+        #get the images to be uploaded
+        postDraftData = Session.get('postContent').pub
+        draftToBeUploadedImageData = []
+        savedDraftData = Session.get('postContent')
+
+        postId = savedDraftData._id
+        addontitle = savedDraftData.addontitle
+        title = savedDraftData.title
+        mainImageStyle = savedDraftData.mainImageStyle
+        mainText = savedDraftData.mainText
+        fromUrl = savedDraftData.fromUrl
+
+        modalUserId = $('#chooseAssociatedUser .modal-body dt.active').attr('userId')
+        ownerUser = null
+        
+        if modalUserId is Meteor.userId() or !modalUserId
+          ownerUser = Meteor.user()
+        else
+          ownerUser = {
+            _id: modalUserId
+            username: $('#chooseAssociatedUser .modal-body dt.active').attr('userName')
+            profile: {
+              icon: $('#chooseAssociatedUser .modal-body dt.active').attr('userIcon')
+              fullname: $('#chooseAssociatedUser .modal-body dt.active').attr('userName')
+            }
+          }
+            
+        Session.set 'post-publish-user-id', ownerUser._id
+        ownerName = if ownerUser.profile and ownerUser.profile.fullname then ownerUser.profile.fullname else ownerUser.username
+        ownerIcon = if ownerUser.profile and ownerUser.profile.icon then ownerUser.profile.icon else '/userPicture.png'
+
+        if postDraftData.length > 1
+          for i in [0..(postDraftData.length-1)]
+            Drafts.insert(postDraftData[i])
+          # console.log('Drafts is ')
+          # console.log(Drafts.find().fetch())
+          draftImageData = Drafts.find({type:'image'}).fetch()
+          draftMusicData = Drafts.find({type:'music'}).fetch()
+          draftVideoData = Drafts.find({type:'video'}).fetch()
+
+          # console.log 'draftData arr list '
+          # console.log draftImageData
+          # console.log draftVideoData
+          # console.log draftMusicData
+          for i in [0..(draftImageData.length-1)]
+              unless draftImageData[i].imgUrl.toLowerCase().indexOf("http://data.tiegushi.com/") isnt -1
+                # console.log 'push image to be uploaded.'
+                draftToBeUploadedImageData.push(draftImageData[i])
+          for music in draftMusicData
+            if music.musicInfo.playUrl.toLowerCase().indexOf("http://")>= 0 or music.musicInfo.playUrl.toLowerCase().indexOf("https://")>= 0
+              draftToBeUploadedImageData.unshift({})
+              continue
+            draftToBeUploadedImageData.push(music)
+          for video in draftVideoData
+            if video.videoInfo.imageUrl.toLowerCase().indexOf("http://")>= 0 or video.videoInfo.imageUrl.toLowerCase().indexOf("https://")>= 0
+              draftToBeUploadedImageData.unshift({})
+              continue
+            draftToBeUploadedImageData.push(video)
+          #uploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId)
+          #Don't add addpost page into history
+          Session.set('terminateUpload', false)
+          # console.log "draftToBeUploadedImageData is "
+          # console.log draftToBeUploadedImageData
+        else
+          draftToBeUploadedImageData = []
+        if draftToBeUploadedImageData.length > 0
+          multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, null, (err, result)->
+            # console.log 'result is  '
+            # console.log result
+            unless result
+              window.plugins.toast.showShortBottom('上传失败，请稍后重试')
+              return
+            if result.length < 1
+              window.plugins.toast.showShortBottom('上传失败，请稍后重试')
+              return
+            for item in result
+              # console.log item
+              if item.uploaded and item._id
+                if item.type is 'image' and item.imgUrl
+                  Drafts.update({_id: item._id}, {$set: {imgUrl:item.imgUrl}});
+                else if item.type is 'music' and item.musicInfo and item.musicInfo.playUrl
+                  Drafts.update({_id: item._id}, {$set: {"musicInfo.playUrl":item.musicInfo.playUrl}});
+                else if item.type is 'video' and item.videoInfo and item.videoInfo.imageUrl
+                  Drafts.update({_id: item._id}, {$set: {"videoInfo.imageUrl":item.videoInfo.imageUrl}});
+            if err
+              window.plugins.toast.showShortBottom('上传失败，请稍后重试')
+              return
+            # console.log 'get errrrrrrrror'
+            draftData = Drafts.find().fetch()
+            pub = []
+            #Save gridster layout first. If publish failed, we can recover the drafts
+            for i in [0..(draftData.length-1)]
+              if i is 0
+                mainImage = draftData[i].imgUrl
+              else
+                pub.push(draftData[i])
+            # console.log 'pub  is '
+            # console.log pub
+            sortBy = (key, a, b, r) ->
+              r = if r then 1 else -1
+              return -1*r if a[key] and b[key] and a[key] > b[key]
+              return +1*r if a[key] and b[key] and a[key] < b[key]
+              return +1*r if a[key] is undefined and b[key]
+              return -1*r if a[key] and b[key] is undefined
+              return 0
+            pub.sort((a, b)->
+              sortBy('data_row', a, b)
+            )
+            
+            # remove data_wait_init status
+            new_pub = []
+            if pub.length > 0
+              for i in [0..pub.length-1]
+                row = {}
+                for key,value of pub[i]
+                  if key isnt 'data_wait_init'
+                    row[key] = pub[i][key]
+                new_pub.push(row)
+            pub = new_pub
+            # console.log 'pub is  '
+            # console.log pub
+
+            if Posts.find({_id:postId}).count()>0
+              # console.log 'goooooooooood!!'
+              Posts.update(
+                {
+                  _id:postId
+                },
+                {
+                  $set:{
+                    pub:pub,
+                    title:title,
+                    heart:[],  #点赞
+                    retweet:[],#转发
+                    comment:[], #评论
+                    addontitle:addontitle,
+                    mainImage: mainImage,
+                    mainImageStyle:mainImageStyle,
+                    mainText: mainText,
+                    fromUrl: fromUrl,
+                    publish:true,
+                    owner:ownerUser._id,
+                    ownerName:ownerName,
+                    ownerIcon:ownerIcon,
+                    createdAt: new Date()
+                  }
+                }
+              )
+            else
+              Posts.insert( {
+                _id:postId,
+                pub:pub,
+                title:title,
+                browse:0,
+                heart:[],  #点赞
+                retweet:[],#转发
+                comment:[], #评论
+                commentsCount:0,
+                addontitle:addontitle,
+                mainImage: mainImage,
+                mainImageStyle:mainImageStyle,
+                mainText: mainText,
+                fromUrl: fromUrl,
+                publish:true,
+                owner:ownerUser._id,
+                ownerName:ownerName,
+                ownerIcon:ownerIcon,
+                createdAt: new Date()
+              })
+            #Delete from SavedDrafts if it is a saved draft.
+            if SavedDrafts.find().count() is 1
+              Session.setPersistent('mySavedDraftsCount',0)
+              Session.setPersistent('persistentMySavedDrafts',null)
+            SavedDrafts.remove({_id:postId})
+            #Delete the Drafts
+            cleanDraft()
+            Router.go('/posts/'+postId)
+
+            removeImagesFromCache(draftImageData)
+          )
+        else
+          # console.log 'update posts '
+          pubtest = savedDraftData.pub
+          pubtest.shift()
+          pub = pubtest
+          mainImage = savedDraftData.mainImage
+          
+
+          if Posts.find({_id:postId}).count()>0
+            # console.log 'goooooooooood!!'
+            Posts.update(
+              {
+                _id:postId
+              },
+              {
+                $set:{
+                  pub:pub,
+                  title:title,
+                  heart:[],  #点赞
+                  retweet:[],#转发
+                  comment:[], #评论
+                  addontitle:addontitle,
+                  mainImage: mainImage,
+                  mainImageStyle:mainImageStyle,
+                  mainText: mainText,
+                  fromUrl: fromUrl,
+                  publish:true,
+                  owner:ownerUser._id,
+                  ownerName:ownerName,
+                  ownerIcon:ownerIcon,
+                  createdAt: new Date()
+                }
+              }
+            )
+          else
+            Posts.insert( {
+              _id:postId,
+              pub:pub,
+              title:title,
+              browse:0,
+              heart:[],  #点赞
+              retweet:[],#转发
+              comment:[], #评论
+              commentsCount:0,
+              addontitle:addontitle,
+              mainImage: mainImage,
+              mainImageStyle:mainImageStyle,
+              mainText: mainText,
+              fromUrl: fromUrl,
+              publish:true,
+              owner:ownerUser._id,
+              ownerName:ownerName,
+              ownerIcon:ownerIcon,
+              createdAt: new Date()
+            })
+          #Delete from SavedDrafts if it is a saved draft.
+          if SavedDrafts.find().count() is 1
+            Session.setPersistent('mySavedDraftsCount',0)
+            Session.setPersistent('persistentMySavedDrafts',null)
+          SavedDrafts.remove({_id:postId})
+          #Delete the Drafts
+          cleanDraft()
+          Router.go('/posts/'+postId)
+        return
     'click .showDraftback' :->
       Session.set('fromDraftPost',false)
       Meteor.setTimeout ()->
@@ -106,7 +370,7 @@ if Meteor.isClient
       swipedata = []
       i = 0
       selected = 0
-      console.log "=============click on image index is: " + this.index
+      # console.log "=============click on image index is: " + this.index
       for image in Session.get('postContent').pub
         if image.imgUrl
           if image.imgUrl is this.imgUrl
@@ -121,6 +385,7 @@ if Meteor.isClient
         loopAtEnd: false
       }
     'click #edit': (event)->
+      cleanDraft()
       savedDraftData = SavedDrafts.findOne({_id: Session.get("postContent")._id})
       TempDrafts.insert {
         _id:savedDraftData._id,
@@ -150,17 +415,16 @@ if Meteor.isClient
       navigator.notification.confirm('您是否要删除草稿？', (r)->
         if r isnt 2
           return
-        Session.set 'isReviewMode','1'
         Session.set('fromDraftPost',false)
         #Delete it from SavedDrafts
         # draftData = Drafts.find().fetch()
-        if Drafts.find().count() is 0
-          draftId = Session.get("postContent")._id
-          if SavedDrafts.find().count() is 1
-            Session.setPersistent('mySavedDraftsCount',0)
-            Session.setPersistent('persistentMySavedDrafts',null)
-          SavedDrafts.remove draftId
         #Clear Drafts
+        cleanDraft()
+        draftId = Session.get("postContent")._id
+        if SavedDrafts.find().count() is 1
+          Session.setPersistent('mySavedDraftsCount',0)
+          Session.setPersistent('persistentMySavedDrafts',null)
+        SavedDrafts.remove draftId
         # draftImageData = Drafts.find({type:'image'}).fetch()
         # removeImagesFromCache(draftImageData)
         # Drafts.remove {owner: Meteor.userId()}
