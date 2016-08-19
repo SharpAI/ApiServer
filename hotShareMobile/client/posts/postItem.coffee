@@ -1,5 +1,40 @@
 
 if Meteor.isClient
+  @getLocalImagePath=(path,uri,id)->
+    if !path or !id
+      return ''
+    $selector = $(".image_"+id)
+    #cover IOS cdvfile:// and android file:///
+    if (path.indexOf('file://') > -1) and (window.wkwebview or withLocalBase64)
+      if $selector and $selector.attr('data-original') and $selector.attr('data-original') isnt '' and $selector.attr('data-original').indexOf('data:') is 0
+        return $selector.attr('data-original')
+      fileExtension = uri.replace(/^.*\./, '')
+      console.log('Path need to be replaced ' + path + ' this URI ' + uri + ' extension ' + fileExtension)
+      `
+          window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function() {
+              window.resolveLocalFileSystemURL(uri, function (fileEntry) {
+                  fileEntry.file(function (file) {
+                      var reader = new FileReader();
+                      reader.onloadend = function (event) {
+                          var localURL = event.target._localURL;
+                          //retCount++;
+                          var smallImage = event.target.result;
+                          console.log('got small image ');
+                          $(".image_"+id).attr('data-original',smallImage);
+                      };
+                      reader.readAsDataURL(file);
+                  }, function (e) {
+                      console.log('fileEntry.file Error = ' + e);
+                  });
+              }, function (e) {
+                  console.log('resolveLocalFileSystemURL Error = ' + e);
+              });
+          },function(){
+              console.log('Request file system error');
+          });
+      `
+      return ''
+    path
   getBaseWidth=()->
     ($('.showPosts').width()-30)/6
   getBaseHeight=()->
@@ -106,6 +141,13 @@ if Meteor.isClient
           $curVideo.siblings('.video_thumb').fadeOut(100)
 
   Template.postItem.helpers
+    isLocalImgUrlType: (imgUrl)->
+      if imgUrl.indexOf('file://') >-1
+        return true
+      else 
+        return false
+    DraftImageItem: (path,uri,id)->
+      getLocalImagePath(path,uri,id)
     isOverLapping: (id)->
       rect1 = document.getElementById(id).getBoundingClientRect()
       rect2 = document.getElementById($("#"+id).nextAll('.element')[0].id).getBoundingClientRect()
