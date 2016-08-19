@@ -8,11 +8,19 @@
                 </div>
                 <div class="head">
                     {{#if isMobile}}
-                        <div class="leftButton showDraftback"><i class="fa fa-angle-left fa-fw"></i></div>
-                        <div class="pullright">
-                        <div id="edit" class="secondRightButton" style="color: #00c4ff;margin-top:0px;">{{_ "edit"}}</div>
-                        <div id="delete" class="rightButton" style="color: #00c4ff;margin-top:0px;">{{_ "delete"}}</div>
-                        </div>
+                    <div class="leftButton showDraftback"><i class="fa fa-angle-left fa-fw"></i></div>
+                        <!-- <div class="pullright">
+                            <div id="edit" class="secondRightButton" style="color: #00c4ff;margin-top:0px;">{{_ "edit"}}</div>
+                            <div id="delete" class="rightButton" style="color: #00c4ff;margin-top:0px;">{{_ "delete"}}</div>
+                        </div> -->
+                    <div class="rightDropMenu dropdown">
+                        <button class="dropdown-toggle btn btn-flat" id="menu1" data-toggle="dropdown" style="padding-right: 5px;">{{_ "operate"}}</button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                          <li role="presentation"><a id="publish" role="menuitem" tabindex="-1" data-toggle="modal" data-target="#chooseAssociatedUser" ><i class="fa fa-file-o fa-fw"></i>{{_ "publish"}}</a></li>
+                          <li role="presentation"><a id="edit" role="menuitem" tabindex="-1" ><i class="fa fa-pencil fa-fw"></i>{{_ "edit"}}</a></li>
+                          <li role="presentation"><a id="delete" role="menuitem" tabindex="-1" ><i class="fa fa-trash fa-fw"></i>{{_ "delete"}}</a></li>
+                        </ul>
+                    </div>
                     {{/if}}
                 </div>
                 <div class="content">
@@ -31,7 +39,7 @@
                         <div class="mainImage" id="{{_id}}" style="height:{{getMainImageHeight}}px;">
                             <img id="wx-img" class="scale item" src="{{getmainImage}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImageStyle}}" >
                             <header>
-                                <h2 id="wx-title" class="title">{{title}}</h2>
+                                <h2 id="title" class="title">{{title}}</h2>
                                 <h4 id="wx-con" class="addontitle">{{addontitle}}</h4>
                             </header>
                         </div>
@@ -64,4 +72,5 @@
             {{> socialContent}}
         {{/if}}
     </div>
+    {{> chooseAssociatedUser}}
 </template>

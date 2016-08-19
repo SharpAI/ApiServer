@@ -351,9 +351,9 @@ if Meteor.isClient
     Session.set('itemInAddPostPending',pub.length)
     Meteor.defer ()->
       async.mapLimit(pub,3,(item,callback)->
-        console.log('getcallback------------')
-        console.log(item)
-        console.log(callback)
+        # console.log('getcallback------------')
+        # console.log(item)
+        # console.log(callback)
         item.noKeyboardPopup=true
         item.respectLayout=true
         Drafts.insert(item)
@@ -364,8 +364,8 @@ if Meteor.isClient
       ,(error,result)->
         closePreEditingPopup()
         Session.set('itemInAddPostPending',0)
-        console.log('error-----------------')
-        console.log(error)
+        # console.log('error-----------------')
+        # console.log(error)
         unless error
           console.log('no error')
       )
@@ -627,10 +627,9 @@ if Meteor.isClient
       showEditingPopupProgressBar()
     Meteor.subscribe("saveddrafts")
 
-    ###
-    if Session.get('postContent')._id
-      Meteor.subscribe("mypostedposts",Session.get('postContent')._id)
-    ###
+    if Session.get('postContent') and Session.get('postContent')._id
+      unless Posts.find({_id:Session.get('postContent')._id}).count() > 0
+        Meteor.subscribe("ViewPostsList",Session.get('postContent')._id)
 
     window.imageCounter2 = 1
     window.insertRow = 1
@@ -681,7 +680,7 @@ if Meteor.isClient
         `global_toolbar_hidden = false`
     Session.set('showContentInAddPost',true)
     return
-  publishPostHandle = ()->
+  @publishPostHandle = ()->
     layout = JSON.stringify(gridster.serialize())
     pub=[]
     addontitle = $("#addontitle").val()

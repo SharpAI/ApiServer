@@ -134,7 +134,7 @@ if Meteor.isClient
             text = text.substr(text.indexOf('mp3:"/') + 'mp3:"/'.length)
             text = text.substring(0, text.indexOf('.mp3"')+4)
             player = $(body).find('#jp_container_1')
-            
+
             return {
               playUrl: 'http://yuedu.fm' + text
               image: 'http://yuedu.fm' + player.find('.cover img').attr('src')
@@ -162,7 +162,7 @@ if Meteor.isClient
     for s in musicExtactorMappingV2
       isExist = false
       findNone = node
-      
+
       if s.nodeSelector isnt '' and node.nodeType isnt Node.TEXT_NODE
         if s.nodeSelector.indexOf('#') is 0
           if node.id is s.nodeSelector.substr(1)
@@ -186,7 +186,7 @@ if Meteor.isClient
           if node.parentNode.tagName is s.parentSelector.toUpperCase()
             findNone = node.parentNode
             isExist = true
-            
+
       if isExist is true
         musicInfo = {}
         if s.getMusicInfo
@@ -208,7 +208,7 @@ if Meteor.isClient
           musicElement.setAttribute('image', musicInfo.image)
           musicElement.setAttribute('songName', musicInfo.songName)
           musicElement.setAttribute('singerName', musicInfo.singerName)
-          
+
           findNone.appendChild(musicElement)
           console.log('Got Music Info '+JSON.stringify(musicInfo))
           return musicInfo
@@ -263,13 +263,33 @@ if Meteor.isClient
     }
   ]
   getPossibleVideo = (elem,data)->
+    showDebug&&console.log 'data is  --------------'
+    if device.platform isnt 'iOS'
+      data = data[0]
+    showDebug&&console.log data.scripts
+    showDebug&&console.log data.host
     if data.host is "www.meerlive.com" and device.platform is 'iOS'
+      console.log 'iOS device'
       playUrlArr = data.body.match(/file":\["(\S*)\"],"user"/)
       playUrl = playUrlArr[1].replace(/\\/g,"")
       if playUrl
         imageUrlArr = data.body.match(/image":"(\S*)\","cover"/)
         imageUrl = imageUrlArr[1].replace(/\\/g,"")
       if playUrl and imageUrl
+        return {playUrl: playUrl, imageUrl: imageUrl}
+    else if data.host is "www.meerlive.com" and device.platform isnt 'iOS' and data.scripts
+      html = data.scripts
+      playUrlArr = html.match(/file":\["(\S*)\"],"user"/)
+      console.log playUrlArr
+      playUrl = playUrlArr[1].replace(/\\/g,"")
+      console.log playUrl
+      if playUrl
+        imageUrlArr = html.match(/image":"(\S*)\","cover"/)
+        console.log imageUrlArr
+        imageUrl = imageUrlArr[1].replace(/\\/g,"")
+        console.log imageUrl
+      if playUrl and imageUrl
+        console.log 'onSuccess'
         return {playUrl: playUrl, imageUrl: imageUrl}
       # try
       #   alert(data.body)
@@ -292,17 +312,19 @@ if Meteor.isClient
       #   }
       # catch
       #   return null
-    for s in videoExtactorMapping
-      if '#'+elem.id is s.videoUrlSelector
-        node = if elem.parentNode then elem.parentNode else elem
-      if $(node).find(s.videoClass).length > 0
-        playUrl = $(node).find(s.videoUrlSelector).attr(s.videoUrlAttr)
-        if s.videoImgSelector and s.videoImgSelector isnt ''
-          imageUrl = $(node).find(s.videoImgSelector).attr(s.videoImgAttr)
-        console.log('found video element:' + playUrl + ', imageUrl=' + imageUrl)
-        $(node).find(s.videoUrlSelector).remove()
-        if playUrl
-          return {playUrl: playUrl, imageUrl: imageUrl}
+    else
+      console.log 'not match meerlive'
+      for s in videoExtactorMapping
+        if '#'+elem.id is s.videoUrlSelector
+          node = if elem.parentNode then elem.parentNode else elem
+        if $(node).find(s.videoClass).length > 0
+          playUrl = $(node).find(s.videoUrlSelector).attr(s.videoUrlAttr)
+          if s.videoImgSelector and s.videoImgSelector isnt ''
+            imageUrl = $(node).find(s.videoImgSelector).attr(s.videoImgAttr)
+          console.log('found video element:' + playUrl + ', imageUrl=' + imageUrl)
+          $(node).find(s.videoUrlSelector).remove()
+          if playUrl
+            return {playUrl: playUrl, imageUrl: imageUrl}
     return null
 
   ###
@@ -415,7 +437,7 @@ if Meteor.isClient
       iabRef = undefined
   @seekOneUsableMainImage = (data,callback,minimal)->
     imageArray = []
-    #showDebug&&console.log 'Url Analyse result is ' + JSON.stringify(data)
+    showDebug&&console.log 'Url Analyse result is ' + JSON.stringify(data)
     if data.imageArray
       for img in data.imageArray
         if img and img.startsWith("http")
@@ -439,7 +461,7 @@ if Meteor.isClient
       callback(null,0,0,0,0,0,null)
   @processInAppInjectionData = (data,callback,minimal)->
     imageArray = []
-    #showDebug&&console.log 'Url Analyse result is ' + JSON.stringify(data)
+    showDebug&&console.log 'Url Analyse result is ' + JSON.stringify(data)
     if data.imageArray
       for img in data.imageArray
         if img and img.startsWith("http")
@@ -569,7 +591,7 @@ if Meteor.isClient
   _html2data = (url, data, callback)->
     Meteor.defer ()->
       onBeforeExtract(url, data)
-      
+
       if data[0]
         showDebug&&console.log 'data0 is ' + JSON.stringify(data[0])
         data = data[0]
@@ -771,13 +793,13 @@ if Meteor.isClient
               showDebug&&console.log('    save background imageUrl ' + imageUrl)
               resortedArticle.push {type:'image',imageUrl:imageUrl}
       data.resortedArticle = resortedArticle
-      showDebug&&console.log('Resorted Article is ' + JSON.stringify(data.resortedArticle))
+      # showDebug&&console.log('Resorted Article is ' + JSON.stringify(data.resortedArticle))
       callback data
   _html2data2 = (url, data, callback)->
     htmldata = data
     Meteor.defer ()->
       onBeforeExtract(url, data)
-    
+
       pageInnerText = ''
       previousParagraph = ''
       paragraphArray = []
@@ -863,7 +885,7 @@ if Meteor.isClient
       initParagraphArray(extracted)
       console.log('extracted:')
       console.log(extracted)
-      
+
       toBeInsertedText = ''
       toBeInsertedStyleAlign={}
       previousIsImage = false
@@ -895,7 +917,7 @@ if Meteor.isClient
         #iframeNumber = $(node).find('iframe').length
         console.log('    Node['+index+'] tagName '+node.tagName+' text '+node.textContent)
         styleAlign={textAlign:getStyleInItem(node,'textAlign'), fontWeight:getStyleInItem(node,'fontWeight')}
-        console.log('    Got style '+JSON.stringify(styleAlign));
+        # console.log('    Got style '+JSON.stringify(styleAlign));
         if node.tagName is 'BR'
           if toBeInsertedText.length > 0
             appendParagraph(resortedArticle, toBeInsertedText, toBeInsertedStyleAlign)
@@ -921,6 +943,8 @@ if Meteor.isClient
           previousIsSpan = false
           return true
         else
+          console.log 'get htmldata is ----------'
+          console.log htmldata
           videoInfo = getPossibleVideo(node,htmldata)
           if videoInfo
             sortedVideos++
@@ -1086,7 +1110,7 @@ if Meteor.isClient
               showDebug&&console.log('    save background imageUrl ' + imageUrl)
               resortedArticle.push {type:'image',imageUrl:imageUrl}
       data.resortedArticle = resortedArticle
-      showDebug&&console.log('Resorted Article is ' + JSON.stringify(data.resortedArticle))
+      # showDebug&&console.log('Resorted Article is ' + JSON.stringify(data.resortedArticle))
       callback data
   @getContentListsFromUrl = (inappBrowser,url,callback)->
     inappBrowser.executeScript {
@@ -1097,6 +1121,18 @@ if Meteor.isClient
           }
           if(location.host){
             returnJson["host"] = location.host;
+          }
+          if(location.host){
+            returnJson["testhost"] = location.host;
+          }
+          if(document.scripts){
+            returnJson["meerlivescripts"] = location.host;
+          }
+          if(document.scripts){
+            returnJson["scripts"] = document.scripts[11].innerHTML;
+          }
+          if(location.host == "www.meerlive.com"){
+            returnJson["meerlive"] = location.host;
           }
           if(document.body){
             returnJson["body"] = document.body.innerHTML;
@@ -1111,8 +1147,13 @@ if Meteor.isClient
       unless data.host
         a = document.createElement('a')
         a.href = url
-        data.host = a.host
-    
+        data.host = a.hostname
+      console.log 'getContentListsFromUrl _html2data2 data is '
+      console.log data
+      console.log "testhost is " + data.testhost
+      console.log "scripts is " + data.scripts
+      console.log "meerlive is " + data.meerlive
+      console.log "meerlivescripts is " + data.meerlivescripts
       _html2data2(url, data, callback)
   @_getContentListsFromUrl_test = (url, callback)->
     headers = {
@@ -1127,7 +1168,7 @@ if Meteor.isClient
         returnJson = {}
         html = document.createElement('html')
         html.innerHTML = result.content
-        
+
         if(html.getElementsByTagName('title').length > 0)
           returnJson["title"] = html.getElementsByTagName('title')[0].innerText
         if(html.getElementsByTagName('body').length > 0)
@@ -1143,4 +1184,6 @@ if Meteor.isClient
 #          }
 #          false
 #        )
+        console.log '_getContentListsFromUrl_test _html2data2 data is '
+        console.log JSON.stringify returnJson
         _html2data2(url, returnJson, callback)

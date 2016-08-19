@@ -152,7 +152,7 @@ if Meteor.isClient
         userName=Session.get("pcommentsName")
         toastr.info(userName+"点评过的段落已为您用蓝色标注！")
       ,1000
-  Session.setDefault('hottestPosts', [])
+  # Session.setDefault('hottestPosts', [])
   Template.showPosts.created=->
     layoutHelperInit()
     Session.set("content_loadedCount", 0)
@@ -1054,7 +1054,8 @@ if Meteor.isClient
     #   return (hotPosts.length > 0) and (Session.get('postContent').ownerId isnt Meteor.UserId()) or (hotPosts.length > 0) and (if Meteor.user().profile and Meteor.user().profile.web_follower_count then Meteor.user().profile.web_follower_count > 0 else false)
     has_share_hot_post: ->
       hotPosts = _.filter Session.get('hottestPosts') || [], (value)->
-        !value.hasPush
+        true
+        # !value.hasPush
       # console.log("-------------has_share_hot_post")
       # console.log(hotPosts)
       return hotPosts.length > 0
