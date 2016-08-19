@@ -9,6 +9,11 @@ var drafts = require('./post_drafts.js');
 var geoip = require('geoip-lite');
 var http = require('http');
 var Task = require('./task.js').Tasks;
+var THREAD_NUMBER = {
+  download: 20,
+  upload: 20,
+  pub: 20 
+}; // 同时下载/上传/pub分析的任务数
 
 var showDebug = true;
 
@@ -753,7 +758,7 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
                   }
                 }
 
-                var draftsObj = new drafts.createDrafts(null, user);
+                var draftsObj = new drafts.createDrafts(null, user, THREAD_NUMBER);
                 insert_data(user, url, result, draftsObj, function(err, postId, mainUrl){
                   if (Task.isCancel(unique_id, true)) {
                     console.log("importUrl: cancel - 2.");
