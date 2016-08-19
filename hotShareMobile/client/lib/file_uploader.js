@@ -409,10 +409,14 @@ if (Meteor.isCordova){
         console.log('async processing done ' + JSON.stringify(result));
         Template.progressBar.__helpers.get('close')();
         if (err){
+            console.log('err is ' + err);
             if (this.finalCallback) {
+                console.log('result  is  '+ result);
                 this.finalCallback('error',result);
             }
         } else {
+            console.log('no err result ')
+            console.log(result)
             if (this.finalCallback) {
                 this.finalCallback(null,result);
             }
@@ -443,6 +447,7 @@ if (Meteor.isCordova){
 
         var multiThreadUploadFileCallback = function(err,result){
           if (!err) {
+              // console.log('gooooooooooooood ')
               callback(null, result);
           } else {
               Template.progressBar.__helpers.get('close')();
