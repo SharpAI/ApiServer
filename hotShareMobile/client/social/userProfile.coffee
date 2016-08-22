@@ -261,7 +261,46 @@ if Meteor.isClient
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
     $('.page').addClass('scrollable')
+    Session.set('postsChannel','authorPosts')
+    Meteor.subscribe "postOwnerInfo",Session.get("ProfileUserId1")
+    Meteor.subscribe "FollowedTheAuthor",Session.get("ProfileUserId1")
+    Meteor.subscribe "authorCounter",Session.get("ProfileUserId1"),{
+      onReady:()->
+        if Counts.get('authorFollowedByCount') > 0
+          Session.setPersistent('authorFollowedByCount',Counts.get('authorFollowedByCount'))
+        if Counts.get('authorPostsCount') > 0
+          Session.setPersistent('authorPostsCount',Counts.get('authorPostsCount'))
+        if Counts.get('authorFollowToCount') > 0
+          Session.setPersistent('authorFollowToCount',Counts.get('authorFollowToCount'))
+        if Counts.get('authorEmailFollowerCount') > 0
+          Session.setPersistent('authorEmailFollowerCount',Counts.get('authorEmailFollowerCount'))
+    }
   Template.userProfilePage1.helpers
+    isFollowedTheAuthor: ()->
+      Follower.find({followerId: Session.get("ProfileUserId1"), userId: Meteor.userId()}).count()>0
+    isAuthorPostsChannel: ()->
+      Session.equals('postsChannel','authorPosts')
+    isBrowserPostsChannel: ()->
+      Session.equals('postsChannel','browserPosts')
+    isFavoritePostsChannel: ()->
+      Session.equals('postsChannel','favoritePosts')
+    authorPostsCount: ()->
+      if Session.get('authorPostsCount') then Session.get('authorPostsCount') else 0
+    authorFollowerCount: ()->
+      if Session.get('authorFollowedByCount') then Session.get('authorFollowedByCount') else 0
+    authorFollowedCount: ()->
+      if Session.get('authorFollowToCount')
+        if Session.get('authorEmailFollowerCount')
+          Session.get('authorFollowToCount') + Session.get('authorEmailFollowerCount')
+        else
+          Session.get('authorFollowToCount')
+      else
+        if Session.get('authorEmailFollowerCount')
+          Session.get('authorFollowToCount')
+        else
+          0
+    authorPosts: ()->
+      Posts.find({owner: Session.get("ProfileUserId1"),publish: {$ne: false}},{limit:10})
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
     isMale:(sex)->
@@ -293,7 +332,8 @@ if Meteor.isClient
     withChat:->
       withChat
     profile:->
-      PostFriends.findOne {ta: Session.get("ProfileUserId1")}
+      # PostFriends.findOne {ta: Session.get("ProfileUserId1")}
+      Meteor.users.findOne({_id: Session.get("ProfileUserId1")})
     location:->
       getLocation(Session.get("ProfileUserId1"))
     isFollowed:()->
@@ -324,6 +364,45 @@ if Meteor.isClient
       else
         false
   Template.userProfilePage1.events
+    'click #followAuthor': (e)->
+      if Template.userProfilePage1.__helpers.get('isMyself')()
+        toastr.info('不能关注自己哦~')
+        return
+      if Meteor.user().profile.fullname
+        username = Meteor.user().profile.fullname
+      else
+        username = Meteor.user().username
+      profile = Template.userProfilePage1.__helpers.get('profile')()
+      if profile.profile.fullname
+        followerName = profile.profile.fullname
+      else
+        followerName = profile.username
+      Follower.insert {
+        userId: Meteor.userId()
+        #这里存放fullname
+        userName: username
+        userIcon: Meteor.user().profile.icon
+        userDesc: Meteor.user().profile.desc
+        followerId: Session.get("ProfileUserId1")
+        #这里存放fullname
+        followerName: followerName
+        followerIcon: profile.profile.icon
+        followerDesc: profile.profile.desc
+        createAt: new Date()
+      },(err)->
+        if !err
+          Session.set('isFollowedTheAuthor', true)
+          toastr.info('关注作者成功')
+    'click #unFollowAuthor': (e)->
+      followId = Follower.findOne({followerId: Session.get("ProfileUserId1"), userId: Meteor.userId()})._id
+      Follower.remove {
+        _id: followId
+      },(err)->
+        if !err
+          Session.set('isFollowedTheAuthor', false)
+          toastr.info('取消关注作者成功')
+    'click .postNav': (e)->
+      Session.set('postsChannel',e.currentTarget.id)
     'click .userProfile .back':()->
       if window.userProfileTrackerHandler
         window.userProfileTrackerHandler.stop()
@@ -354,7 +433,47 @@ if Meteor.isClient
   Template.userProfilePage2.rendered=->
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
+    Session.set('postsChannel','authorPosts')
+    Meteor.subscribe "postOwnerInfo",Session.get("ProfileUserId2")
+    Meteor.subscribe "FollowedTheAuthor",Session.get("ProfileUserId2")
+    Meteor.subscribe "authorCounter",Session.get("ProfileUserId2"),{
+      onReady:()->
+        if Counts.get('authorFollowedByCount') > 0
+          Session.setPersistent('authorFollowedByCount',Counts.get('authorFollowedByCount'))
+        if Counts.get('authorPostsCount') > 0
+          Session.setPersistent('authorPostsCount',Counts.get('authorPostsCount'))
+        if Counts.get('authorFollowToCount') > 0
+          Session.setPersistent('authorFollowToCount',Counts.get('authorFollowToCount'))
+        if Counts.get('authorEmailFollowerCount') > 0
+          Session.setPersistent('authorEmailFollowerCount',Counts.get('authorEmailFollowerCount'))
+    }
   Template.userProfilePage2.helpers
+    isFollowedTheAuthor: ()->
+      Follower.find({followerId: Session.get("ProfileUserId2"), userId: Meteor.userId()}).count()>0
+    isAuthorPostsChannel: ()->
+      Session.equals('postsChannel','authorPosts')
+    isBrowserPostsChannel: ()->
+      Session.equals('postsChannel','browserPosts')
+    isFavoritePostsChannel: ()->
+      Session.equals('postsChannel','favoritePosts')
+    authorPostsCount: ()->
+      if Session.get('authorPostsCount') then Session.get('authorPostsCount') else 0
+    authorFollowerCount: ()->
+      if Session.get('authorFollowedByCount') then Session.get('authorFollowedByCount') else 0
+    authorFollowedCount: ()->
+      if Session.get('authorFollowToCount')
+        if Session.get('authorEmailFollowerCount')
+          Session.get('authorFollowToCount') + Session.get('authorEmailFollowerCount')
+        else
+          Session.get('authorFollowToCount')
+      else
+        if Session.get('authorEmailFollowerCount')
+          Session.get('authorFollowToCount')
+        else
+          0
+    authorPosts: ()->
+      Meteor.subscribe("authorPosts", Session.get("ProfileUserId2"),10)
+      Posts.find({owner: Session.get("ProfileUserId2")},{limit:10})
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
     isMale:(sex)->
@@ -416,6 +535,45 @@ if Meteor.isClient
       else
         false
   Template.userProfilePage2.events
+    'click #followAuthor': (e)->
+      if Template.userProfilePage2.__helpers.get('isMyself')()
+        toastr.info('不能关注自己哦~')
+        return
+      if Meteor.user().profile.fullname
+        username = Meteor.user().profile.fullname
+      else
+        username = Meteor.user().username
+      profile = Template.userProfilePage2.__helpers.get('profile')()
+      if profile.profile.fullname
+        followerName = profile.profile.fullname
+      else
+        followerName = profile.username
+      Follower.insert {
+        userId: Meteor.userId()
+        #这里存放fullname
+        userName: username
+        userIcon: Meteor.user().profile.icon
+        userDesc: Meteor.user().profile.desc
+        followerId: Session.get("ProfileUserId2")
+        #这里存放fullname
+        followerName: followerName
+        followerIcon: profile.profile.icon
+        followerDesc: profile.profile.desc
+        createAt: new Date()
+      },(err)->
+        if !err
+          Session.set('isFollowedTheAuthor', true)
+          toastr.info('关注作者成功')
+    'click #unFollowAuthor': (e)->
+      followId = Follower.findOne({followerId: Session.get("ProfileUserId2"), userId: Meteor.userId()})._id
+      Follower.remove {
+        _id: followId
+      },(err)->
+        if !err
+          Session.set('isFollowedTheAuthor', false)
+          toastr.info('取消关注作者成功')
+    'click .postNav': (e)->
+      Session.set('postsChannel',e.currentTarget.id)
     'click .userProfile .back':()->
       if window.userProfileTrackerHandler
         window.userProfileTrackerHandler.stop()
@@ -446,7 +604,47 @@ if Meteor.isClient
   Template.userProfilePage3.rendered=->
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
+    Session.set('postsChannel','authorPosts')
+    Meteor.subscribe "postOwnerInfo",Session.get("ProfileUserId1")
+    Meteor.subscribe "FollowedTheAuthor",Session.get("ProfileUserId3")
+    Meteor.subscribe "authorCounter",Session.get("ProfileUserId3"),{
+      onReady:()->
+        if Counts.get('authorFollowedByCount') > 0
+          Session.setPersistent('authorFollowedByCount',Counts.get('authorFollowedByCount'))
+        if Counts.get('authorPostsCount') > 0
+          Session.setPersistent('authorPostsCount',Counts.get('authorPostsCount'))
+        if Counts.get('authorFollowToCount') > 0
+          Session.setPersistent('authorFollowToCount',Counts.get('authorFollowToCount'))
+        if Counts.get('authorEmailFollowerCount') > 0
+          Session.setPersistent('authorEmailFollowerCount',Counts.get('authorEmailFollowerCount'))
+    }
   Template.userProfilePage3.helpers
+    isFollowedTheAuthor: ()->
+      Follower.find({followerId: Session.get("ProfileUserId3"), userId: Meteor.userId()}).count()>0
+    isAuthorPostsChannel: ()->
+      Session.equals('postsChannel','authorPosts')
+    isBrowserPostsChannel: ()->
+      Session.equals('postsChannel','browserPosts')
+    isFavoritePostsChannel: ()->
+      Session.equals('postsChannel','favoritePosts')
+    authorPostsCount: ()->
+      if Session.get('authorPostsCount') then Session.get('authorPostsCount') else 0
+    authorFollowerCount: ()->
+      if Session.get('authorFollowedByCount') then Session.get('authorFollowedByCount') else 0
+    authorFollowedCount: ()->
+      if Session.get('authorFollowToCount')
+        if Session.get('authorEmailFollowerCount')
+          Session.get('authorFollowToCount') + Session.get('authorEmailFollowerCount')
+        else
+          Session.get('authorFollowToCount')
+      else
+        if Session.get('authorEmailFollowerCount')
+          Session.get('authorFollowToCount')
+        else
+          0
+    authorPosts: ()->
+      Meteor.subscribe("authorPosts", Session.get("ProfileUserId3"),10)
+      Posts.find({owner: Session.get("ProfileUserId3")},{limit:10})
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
     isMale:(sex)->
@@ -507,6 +705,45 @@ if Meteor.isClient
       else
         false
   Template.userProfilePage3.events
+    'click #followAuthor': (e)->
+      if Template.userProfilePage3.__helpers.get('isMyself')()
+        toastr.info('不能关注自己哦~')
+        return
+      if Meteor.user().profile.fullname
+        username = Meteor.user().profile.fullname
+      else
+        username = Meteor.user().username
+      profile = Template.userProfilePage3.__helpers.get('profile')()
+      if profile.profile.fullname
+        followerName = profile.profile.fullname
+      else
+        followerName = profile.username
+      Follower.insert {
+        userId: Meteor.userId()
+        #这里存放fullname
+        userName: username
+        userIcon: Meteor.user().profile.icon
+        userDesc: Meteor.user().profile.desc
+        followerId: Session.get("ProfileUserId3")
+        #这里存放fullname
+        followerName: followerName
+        followerIcon: profile.profile.icon
+        followerDesc: profile.profile.desc
+        createAt: new Date()
+      },(err)->
+        if !err
+          Session.set('isFollowedTheAuthor', true)
+          toastr.info('关注作者成功')
+    'click #unFollowAuthor': (e)->
+      followId = Follower.findOne({followerId: Session.get("ProfileUserId3"), userId: Meteor.userId()})._id
+      Follower.remove {
+        _id: followId
+      },(err)->
+        if !err
+          Session.set('isFollowedTheAuthor', false)
+          toastr.info('取消关注作者成功')
+    'click .postNav': (e)->
+      Session.set('postsChannel',e.currentTarget.id)
     'click .userProfile .back':()->
       if window.userProfileTrackerHandler
         window.userProfileTrackerHandler.stop()
@@ -539,7 +776,47 @@ if Meteor.isClient
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
     $('.page').addClass('scrollable')
+    Session.set('postsChannel','authorPosts')
+    Meteor.subscribe "postOwnerInfo",Session.get("ProfileUserId")
+    Meteor.subscribe "FollowedTheAuthor",Session.get("ProfileUserId")
+    Meteor.subscribe "authorCounter",Session.get("ProfileUserId"),{
+      onReady:()->
+        if Counts.get('authorFollowedByCount') > 0
+          Session.setPersistent('authorFollowedByCount',Counts.get('authorFollowedByCount'))
+        if Counts.get('authorPostsCount') > 0
+          Session.setPersistent('authorPostsCount',Counts.get('authorPostsCount'))
+        if Counts.get('authorFollowToCount') > 0
+          Session.setPersistent('authorFollowToCount',Counts.get('authorFollowToCount'))
+        if Counts.get('authorEmailFollowerCount') > 0
+          Session.setPersistent('authorEmailFollowerCount',Counts.get('authorEmailFollowerCount'))
+    }
   Template.userProfilePage.helpers
+    isFollowedTheAuthor: ()->
+      Follower.find({followerId: Session.get("ProfileUserId"), userId: Meteor.userId()}).count()>0
+    isAuthorPostsChannel: ()->
+      Session.equals('postsChannel','authorPosts')
+    isBrowserPostsChannel: ()->
+      Session.equals('postsChannel','browserPosts')
+    isFavoritePostsChannel: ()->
+      Session.equals('postsChannel','favoritePosts')
+    authorPostsCount: ()->
+      if Session.get('authorPostsCount') then Session.get('authorPostsCount') else 0
+    authorFollowerCount: ()->
+      if Session.get('authorFollowedByCount') then Session.get('authorFollowedByCount') else 0
+    authorFollowedCount: ()->
+      if Session.get('authorFollowToCount')
+        if Session.get('authorEmailFollowerCount')
+          Session.get('authorFollowToCount') + Session.get('authorEmailFollowerCount')
+        else
+          Session.get('authorFollowToCount')
+      else
+        if Session.get('authorEmailFollowerCount')
+          Session.get('authorFollowToCount')
+        else
+          0
+    authorPosts: ()->
+      Meteor.subscribe("authorPosts", Session.get("ProfileUserId"),10)
+      Posts.find({owner: Session.get("ProfileUserId")},{limit:10})
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
     isMale:(sex)->
@@ -600,6 +877,45 @@ if Meteor.isClient
       else
         false
   Template.userProfilePage.events
+    'click #followAuthor': (e)->
+      if Template.userProfilePage.__helpers.get('isMyself')()
+        toastr.info('不能关注自己哦~')
+        return
+      if Meteor.user().profile.fullname
+        username = Meteor.user().profile.fullname
+      else
+        username = Meteor.user().username
+      profile = Template.userProfilePage.__helpers.get('profile')()
+      if profile.profile.fullname
+        followerName = profile.profile.fullname
+      else
+        followerName = profile.username
+      Follower.insert {
+        userId: Meteor.userId()
+        #这里存放fullname
+        userName: username
+        userIcon: Meteor.user().profile.icon
+        userDesc: Meteor.user().profile.desc
+        followerId: Session.get("ProfileUserId")
+        #这里存放fullname
+        followerName: followerName
+        followerIcon: profile.profile.icon
+        followerDesc: profile.profile.desc
+        createAt: new Date()
+      },(err)->
+        if !err
+          Session.set('isFollowedTheAuthor', true)
+          toastr.info('关注作者成功')
+    'click #unFollowAuthor': (e)->
+      followId = Follower.findOne({followerId: Session.get("ProfileUserId"), userId: Meteor.userId()})._id
+      Follower.remove {
+        _id: followId
+      },(err)->
+        if !err
+          Session.set('isFollowedTheAuthor', false)
+          toastr.info('取消关注作者成功')
+    'click .postNav': (e)->
+      Session.set('postsChannel',e.currentTarget.id)
     'click .userProfile .back':()->
       if window.userProfileTrackerHandler
         window.userProfileTrackerHandler.stop()
