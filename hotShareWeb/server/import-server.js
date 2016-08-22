@@ -11,6 +11,8 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
   // console.log(api_url + '/' + this.params._id + '/' + encodeURIComponent(this.params.url));
   var result = {status: 'failed'};
   var hasEnd = false;
+  var hasRes = false;
+  var slef = this;
   api_url += '/' + this.params._id + '/' + encodeURIComponent(this.params.url) + '?chunked=true';
   var clientIp = getClientIp(req);
   if (clientIp) {
@@ -27,11 +29,24 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
   }
   console.log("api_url="+api_url+", Meteor.absoluteUrl()="+Meteor.absoluteUrl());
   
+  Meteor.setTimeout(function(){
+    if(!hasRes){
+      hasEnd = true;
+      console.log("res.end: failed");
+      res.end('\r\n' + '{"status": "failed"}');
+      
+      request(import_cancel_url + '/' + slef.params.query['task_id'], function(error, response, body){
+        // TODO:
+      });
+    }
+  }, 1000*10);
+  
   request({
     method: 'GET',
     uri: api_url
   })
   .on('data', function(data) {
+    hasRes = true;
     if(hasEnd)
       return;
       
@@ -51,6 +66,7 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
     }
   })
   .on('end', function(data) {
+    hasRes = true;
     if(hasEnd)
       return;
     res.end('\r\n' + JSON.stringify(result));

@@ -232,7 +232,10 @@ function setKueProcessCallback() {
     var unique_id = data.unique_id;
     var isMobile = data.isMobile;
     var chunked = data.chunked;
-
+    
+    if(isMobile)
+      job.progress(50, 100, JSON.stringify({status: 'importing'}));
+      
     setTimeout(function() {
         try {
             importUrl(_id, url, server, unique_id, isMobile, chunked, function(result) {
