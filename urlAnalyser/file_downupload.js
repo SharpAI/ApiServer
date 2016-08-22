@@ -45,6 +45,8 @@ var get_image_size_from_URI = function(url, cb) {
 
 
 var downloadFromBCS = function(source, callback){
+  console.log('download img: ' + source);
+  
   var nameHash=crypto.createHash('md5').update(source).digest("hex");
   var target = os.tmpdir() + '/' + 'imagecache' + '/';
   if (fs.existsSync(target)) {
@@ -355,7 +357,7 @@ var multiThreadUploadFile_new = function(draftData, maxThreads, callback) {
     async.mapLimit(draftData,maxThreads,uploadObj.fileUploader.bind(uploadObj),uploadObj.asyncCallback.bind(uploadObj));
 };
     
-filedownup.multiThreadUploadFileWhenPublishInCordova = function(draftData, postId, callback){
+filedownup.multiThreadUploadFileWhenPublishInCordova = function(draftData, threads, callback){
     //showDebug && console.log("draftData="+JSON.stringify(draftData));
     if (draftData.length > 0) {
         //Template.progressBar.__helpers.get('show')();
@@ -375,7 +377,7 @@ filedownup.multiThreadUploadFileWhenPublishInCordova = function(draftData, postI
       }
     };
 
-    multiThreadUploadFile_new(draftData, 1, multiThreadUploadFileCallback);
+    multiThreadUploadFile_new(draftData, threads, multiThreadUploadFileCallback);
     return;
 };
 

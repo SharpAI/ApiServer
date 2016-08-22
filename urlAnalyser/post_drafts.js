@@ -3,7 +3,59 @@ var filedownup = require('./file_downupload.js');
 var async = require('async');
 var showDebug = false;
 
-function PostDrafts(_id, user) {
+function downloadImgsClass(threadsNumber){
+  var obj = new Object();
+  obj.download = function(data, callback){
+    var imgs = [];
+    var localImgs = [];
+    threadsNumber = threadsNumber || 10;
+
+    for(var i=0;i<data.resortedArticle.length;i++){
+      if(!data.resortedArticle[i]._id){data.resortedArticle[i]._id=mongoid()}
+      if (data.resortedArticle[i].type === 'image')
+        imgs.push(data.resortedArticle[i]);
+    }
+  
+    if(imgs.length <= 0)
+      return callback && callback(null, data);
+    
+    async.mapLimit(imgs, imgs.length <= threadsNumber ? imgs.length : threadsNumber, function(item, asyncCallback){
+      filedownup.seekSuitableImageFromArrayAndDownloadToLocal([item.imageUrl], function(file, w, h, found, index, total, source) {
+        item._download = {
+          file: file,
+          w: w,
+          h: h,
+          found: found,
+          index: index,
+          total: total,
+          source: source
+        };
+        asyncCallback(null, item);
+      }, 150, true, function(file){
+        localImgs.push(file);
+      });
+    }, function(err, results) {
+      if(err)
+        return callback && callback(err);
+      
+      // var result = []
+      for(var i=0;i<data.resortedArticle.length;i++){
+        for(var ii=0;ii<results.length;ii++){
+          if(results[ii]._id === data.resortedArticle[i].id)
+            data.resortedArticle[i]._download = results[ii]._download;
+        }
+        // result.push(data.resortedArticle[i]);
+      }
+      
+      callback && callback(null, data);
+      // callback && callback(null, result);
+    });
+  }
+  
+  return obj;
+}
+
+function PostDrafts(_id, user, threadsNumber) {
   var drafts = [];
   var title = '';
   var addontitle = '';
@@ -11,6 +63,7 @@ function PostDrafts(_id, user) {
   var localImgs = [];
   var _mainImage = '';
   var id;
+  var download = new downloadImgsClass(threadsNumber.download);
   
   var imageIndex = function () {
     if(drafts.length <= 0)
@@ -92,6 +145,17 @@ function PostDrafts(_id, user) {
     } else if (item.type === 'image') {
       showDebug && console.log('Processing Image ' + item.imageUrl);
       if (item.imageUrl && item.imageUrl !== '') {
+        if(item._download){
+          if(item._download.file){
+            postDrafts.insertDownloadedImage(self.data, item._download.source, item._download.found, self.inputUrl, item._download.file, item._download.w, item._download.h);
+            if(!_mainImage || _mainImage === 'http://data.tiegushi.com/res/defaultMainImage1.jpg')
+              _mainImage = item._download.source;
+          }
+          
+          localImgs.push(item._download.file);
+          return callback(null, item);
+        }
+        
         return filedownup.seekSuitableImageFromArrayAndDownloadToLocal([item.imageUrl], function(file, w, h, found, index, total, source) {
           if (file){
             postDrafts.insertDownloadedImage(self.data, source, found, self.inputUrl, file, w, h);
@@ -238,16 +302,36 @@ function PostDrafts(_id, user) {
     }
   };
   postDrafts.renderResortedArticleAsync = function(data, inputUrl, resortedObj){
-    resortedObj.itemProcessor = postDrafts.itemProcessor;
-    resortedObj.data = data;
-    resortedObj.inputUrl = inputUrl;
-    return async.mapLimit(data.resortedArticle, 1, resortedObj.itemProcessor.bind(resortedObj), function(err, results) {
-      if(err)
-        console.log('error ' + err);
-      
-      showDebug && console.log('results:', JSON.stringify(results));
-      return postDrafts.processTitleOfPost(data);
-    });
+    if(threadsNumber.download > 1){
+      download.download(data, function(err){
+        if(err)
+          console.log('error ' + err);
+        
+        resortedObj.itemProcessor = postDrafts.itemProcessor;
+        resortedObj.data = data;
+        resortedObj.inputUrl = inputUrl;
+        
+        async.mapLimit(data.resortedArticle, (data.resortedArticle.length <= threadsNumber.pub ? data.resortedArticle.length : threadsNumber.pub), resortedObj.itemProcessor.bind(resortedObj), function(err, results) {
+          if(err)
+            console.log('error ' + err);
+          
+          showDebug && console.log('results:', JSON.stringify(results));
+          postDrafts.processTitleOfPost(data);
+        });
+      });
+    }else{
+      resortedObj.itemProcessor = postDrafts.itemProcessor;
+      resortedObj.data = data;
+      resortedObj.inputUrl = inputUrl;
+    
+      async.mapLimit(data.resortedArticle, (data.resortedArticle.length <= threadsNumber.pub ? data.resortedArticle.length : threadsNumber.pub), resortedObj.itemProcessor.bind(resortedObj), function(err, results) {
+        if(err)
+          console.log('error ' + err);
+        
+        showDebug && console.log('results:', JSON.stringify(results));
+        postDrafts.processTitleOfPost(data);
+      });
+    }
   };
   postDrafts.seekOneUsableMainImage = function(data, inputUrl){
     // console.log('data:' + JSON.stringify(data));
@@ -354,7 +438,7 @@ function PostDrafts(_id, user) {
     if(draftToBeUploadedImageData.length <= 0)
       return callback && callback();
       
-    filedownup.multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, null, function(err, result) {
+    filedownup.multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, threadsNumber.upload, function(err, result) {
       if(err || !result)
         return callback && callback('上传失败，请稍后重试');
       if(result.length < 1)
@@ -500,8 +584,8 @@ function PostDrafts(_id, user) {
 }
 
 module.exports = {
-  createDrafts: function(postId, user) {
-    showDebug && console.log(postId , user)
-    return new PostDrafts(postId, user);
+  createDrafts: function(postId, user, threadsNumber) {
+    showDebug && console.log(postId , user, threadsNumber)
+    return new PostDrafts(postId, user, threadsNumber);
   }
 };
