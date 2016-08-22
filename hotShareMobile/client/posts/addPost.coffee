@@ -432,6 +432,8 @@ if Meteor.isClient
     ,1200
   @hanldeDirectLinkServerImport = (url)->
     isCancel = false;
+    isRes = false
+    isTimeout = false
     unique_id = new Mongo.ObjectID()._str
     #api_url = 'http://'+import_server_url+':'+IMPORT_SERVER_PORT+'/import'
     # id = (new Mongo.ObjectID())._str
@@ -448,6 +450,7 @@ if Meteor.isClient
     console.log("api_url="+api_url)
     abortFastImport = ()->
       isCancel = true
+      isRes = true
       request_return = (res)->
         console.log('cancel import res: ' + JSON.stringify(res))
       cordovaHTTP.get Meteor.absoluteUrl('import-cancel/') + unique_id, {}, {}, request_return, request_return
@@ -466,10 +469,33 @@ if Meteor.isClient
           return Meteor.clearInterval(intrval)
         if Session.get('importProcedure') < 95
           Session.set('importProcedure', Session.get('importProcedure') + 1)
+        else if Session.get('importProcedure') is 95
+          if(isTimeout)
+            return
+            
+          isTimeout = true
+          Meteor.setTimeout(
+            ()->
+              if(isRes is true)
+                return
+              
+              popupProgressBar.close()
+              Session.set('cancelImport', true)
+              abortFastImport()
+              PUB.toast('快速导入失败啦，请尝试高级导入吧。')
+              Router.go('/')
+              # navigator.notification.confirm('快速导入不成功，是否尝试高级导入？'
+              #   (index)->
+              #     if index is 1 then handleDirectLinkImport(url, 1)
+              #   '温馨提示', ['是', '否']
+              # )
+            1000*5
+          )
       , 200);
 
     try
         succ_return = (res)->
+          isRes = true
           result = res.data.split('\r\n')
           result = result[result.length-1]
           console.log("cordovaHTTP result="+result)
@@ -501,6 +527,7 @@ if Meteor.isClient
             PUB.toast('快速导入失败啦，请尝试高级导入吧。')
             Router.go('/')
         error_return = (res)->
+          isRes = true
           console.log 'http response error: ' + res.error
           if isCancel is true
             console.log("Error: import Cancelled.");
