@@ -4,14 +4,23 @@
 .userProfile .head div{font-size: 16px;font-weight: bold;color:white;}
 
 .userProfile .userProfileTop{padding: 10px;position: relative}
-.userProfile .userProfileTop .icon{border-radius: 5px;margin-right: 10px;}
-.userProfile .userProfileTop .userName{font-size: large;position: absolute;}
+.userProfile .userProfileTop .icon{position: relative; display: block; width: 70px; height: 70px; margin: 20px auto; border-radius: 50%; box-shadow: 1px 3px 13px #ccc;
+  img{ border-radius: 50%;}
+  .userSex{ position: absolute; bottom: 0; right: 0;}
+}
+.userProfile .userProfileTop .userName{font-size: large;display: block; margin: 10px auto; text-align: center;}
 .userProfile .userProfileTop .userName img{margin-left: 5px;}
 .userProfile .userProfileTop .location{position: absolute;top: 38px;color: grey;}
 .userProfile .userProfileTop .desc{position: absolute;bottom: 18px;color: grey;}
-
-.userProfile .post{position: relative;margin: 10px 0;}
+.userProfile .userProfileTop .followMe{display: block;border: 1px solid deepskyblue;margin: 0 auto; width: 70px;height: 28px;line-height: 28px; text-align: center; font-size: 16px; color: deepskyblue; border-radius: 4px;}
+.userProfile .userProfileTop .MyInfos{height: 40px; margin: 0 auto; padding: 0;margin-top: 20px; width: 242px;
+  dl{width: 80px; float: left; text-align: center;}
+}
+.userProfile .post{position: relative;margin: 10px 0; height: 32px;}
 .userProfile .post .postLeft{margin: 0 20px;color: grey;}
+.userProfile .post .postNav{margin: 0;color: grey; width: 33.3%; height:32px;display: block; float: left; text-align: center;}
+.userProfile .post .postNavCurr{color: deepskyblue;}
+.userProfile .post .postNavCurr::after{content:'';height: 1px; width: 32px; border: 1px solid deepskyblue;display: block; margin: 4px auto;}
 .userProfile .post .postRight{float: right;margin: 0 20px;color: deepskyblue}
 .userProfile .postImages{padding-bottom: 15px;}
 .userProfile .postImages ul{margin: 0;padding: 0;overflow: hidden;list-style-type: none;}
@@ -33,3 +42,9 @@
 
 .userProfileMarginTop {margin-top: 40px;}
 
+.authorPostsLists li{width: 50% !important; box-shadow: none !important; margin: 4px 0 !important;}
+.authorPostsLists li:nth-child(odd) .postMainImage{margin:0 !important; margin-left:8px !important; margin-right:4px !important;}
+.authorPostsLists li:nth-child(even) .postMainImage{margin:0 !important;margin-left:4px !important; margin-right:8px !important;}
+.authorPostsLists li .title{font-size: 14px; line-height: 20px; height: 40px; display: block;}
+.authorPostsLists li:nth-child(odd) .title{margin:10px 4px 4px 8px !important;}
+.authorPostsLists li:nth-child(even) .title{margin:10px 8px 4px 4px !important;}
