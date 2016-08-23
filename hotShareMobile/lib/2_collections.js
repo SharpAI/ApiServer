@@ -1753,6 +1753,23 @@ if(Meteor.isServer){
           Counts.publish(this, 'myEmailFollowerCount', Follower.find({followerId:this.userId, userEmail: {$exists: true}}), {reactive: true });
       }
   });
+  Meteor.publish('postOwnerInfo', function (userId){
+          return Meteor.users.find({_id:userId});
+  });
+  Meteor.publish("authorCounter", function(userId){
+    if(this.userId === null)
+        return this.ready();
+    else {
+        Counts.publish(this, 'authorFollowToCount-'+userId, Follower.find({userId:userId}),{noReady: true });
+        Counts.publish(this, 'authorPostsCount-'+userId, Posts.find({owner: userId,publish: {$ne: false}}),{noReady: true});
+        Counts.publish(this, 'authorFollowedByCount-'+userId, Follower.find({followerId:userId}),{noReady: true });
+        Counts.publish(this, 'authorEmailFollowerCount-'+userId, Follower.find({followerId:userId, userEmail: {$exists: true}}),{noReady: true });
+        return Posts.find({owner: userId,publish: {$ne: false}},{limit:10})
+    }
+  });
+  Meteor.publish('FollowedTheAuthor',function(userId){
+      return Follower.find({followerId: userId, userId: this.userId})
+  });
   Meteor.publish("postsWithLimit", function(limit) {
       if(this.userId === null|| !Match.test(limit, Number)) {
           return this.ready();
