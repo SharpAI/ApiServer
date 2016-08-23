@@ -14,10 +14,10 @@ if Meteor.isClient
         Session.setPersistent('mySavedDraftsCount',Counts.get('mySavedDraftsCount'))
       if Counts.get('myPostsCount') > 0
         Session.setPersistent('myPostsCount',Counts.get('myPostsCount'))
-      # if Counts.get('myFollowToCount') > 0
-      #   Session.setPersistent('myFollowToCount',Counts.get('myFollowToCount'))
-      # if Counts.get('myEmailFollowerCount') > 0
-      #   Session.setPersistent('myEmailFollowerCount',Counts.get('myEmailFollowerCount'))
+      if Counts.get('myFollowToCount') > 0
+        Session.setPersistent('myFollowToCount',Counts.get('myFollowToCount'))
+      if Counts.get('myEmailFollowerCount') > 0
+        Session.setPersistent('myEmailFollowerCount',Counts.get('myEmailFollowerCount'))
 
     Tracker.autorun ()->
       if Meteor.user() and Session.equals('channel','user')
