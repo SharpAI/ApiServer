@@ -149,6 +149,27 @@
       按钮，订阅<strong>{{ownerName}}</strong>的故事
     </div>
     <div onclick="trackEvent('Download','from Post Tail');window.open('http://cdn.tiegushi.com', '_system');"><img src="/img/download.png" style="width:90%;margin-left:5%;"></div>
+    <div class="showPostsLine"></div>
+    <!--authorInfo Start-->
+    <div class="authorInfos">
+      <div class="icon">
+        <img src="{{ownerIcon}}" width="70" height="70"/>
+      </div>
+      <div class="authorNike">{{ownerName}}</div>
+      <div class="subscribe">
+        <div id="SubscribeAuthor" style="margin: 0 auto; position:relative; left:0;"><i class="fa fa-plus"></i> 关注</div>
+      </div>
+      {{#if authorReadPopularPosts}}
+      <div class="tipAuthorHotPosts">—&nbsp;热门文章&nbsp;—</div>
+      <ul>
+        {{#each authorReadPopularPosts}}
+        <dl id="{{_id}}" class="authorReadPopularPostItem"><dd>《{{title}}》</dd></dl>
+        {{/each}}
+      </ul>
+      {{/if}}
+    </div>
+    <div class="showPostsLine"></div>
+    <!--authorInfo End-->
     {{#unless isMyPost}}
       <div class="showPostsFollowMe">
         {{#if inWeiXin}}

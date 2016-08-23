@@ -280,6 +280,9 @@ if Meteor.isClient
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
+    authorReadPopularPosts: ()->
+      Meteor.subscribe "authorReadPopularPosts",@owner,@_id,3
+      return Posts.find({_id: {$ne: @_id},owner: @owner, publish: {$ne: false}},{sort: {browse: -1},limit: 3})
     readerIsOwner: ()->
       return @owner is Meteor.userId()
     showImporting: ()->
@@ -499,6 +502,18 @@ if Meteor.isClient
         console.log('Selected index '+self.index)
         Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
   Template.showPosts.events
+    'click .authorReadPopularPostItem': (e)->
+      postId = e.currentTarget.id
+      if postId is undefined
+        postId = this._id
+      currentPostId = Session.get("postContent")._id
+      postBack = Session.get("postBack")
+      postBack.push(currentPostId)
+      Session.set("postForward",[])
+      Session.set("postBack",postBack)
+      Session.set("lastPost",postId)
+      Session.set('postContentTwo', postId)
+      Router.go '/posts/' + postId
     # 'click .shareTheReadingRoom .btnYes': ()->
     #   $('.shareTheReadingRoom,.shareAlertBackground').hide()
     #   Router.go '/hotPosts/' + Session.get('postContent')._id

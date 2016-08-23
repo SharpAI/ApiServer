@@ -1745,6 +1745,13 @@ if(Meteor.isServer){
         return Posts.find({owner: userId,publish: {$ne: false}},{limit:10})
     }
   });
+  Meteor.publish('authorReadPopularPosts', function(owner,currPostId,limit){
+     if(this.userId === null|| !Match.test(limit, Number)) {
+          return this.ready();
+      } else {
+          return Posts.find({_id: {$ne: currPostId},owner: owner, publish: {$ne: false}},{sort: {browse: -1},limit: limit,fields:{title:1,publish:1,owner:1,browse:1}});
+      }
+  });
   Meteor.publish('FollowedTheAuthor',function(userId){
       return Follower.find({followerId: userId, userId: this.userId})
   });
