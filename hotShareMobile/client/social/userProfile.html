@@ -27,9 +27,9 @@
         </div>
           <span class="userName">
           {{#if profile.profile.fullname}}
-              {{profile.profile.fullname}} [{{location}}]
+              {{profile.profile.fullname}} {{#if location}}[{{location}}]{{/if}}
           {{else}}
-              {{profile.username}} [{{location}}]
+              {{profile.username}} {{#if location}}[{{location}}]{{/if}}
           {{/if}}
             <!--{{#if isMale profile.profile.sex}}
               <img src="/male.png" width='20' height='20'>
@@ -149,9 +149,9 @@
         </div>
           <span class="userName">
           {{#if profile.profile.fullname}}
-              {{profile.profile.fullname}}[{{location}}]
+              {{profile.profile.fullname}}{{#if location}}[{{location}}]{{/if}}
           {{else}}
-              {{profile.username}}[{{location}}]
+              {{profile.username}}{{#if location}}[{{location}}]{{/if}}
           {{/if}}
             <!--{{#if isMale profile.profile.sex}}
               <img src="/male.png" width='20' height='20'>
@@ -270,9 +270,9 @@
         </div>
           <span class="userName">
           {{#if profile.profile.fullname}}
-              {{profile.profile.fullname}}[{{location}}]
+              {{profile.profile.fullname}}{{#if location}}[{{location}}]{{/if}}
           {{else}}
-              {{profile.username}}[{{location}}]
+              {{profile.username}}{{#if location}}[{{location}}]{{/if}}
           {{/if}}
             <!--{{#if isMale profile.profile.sex}}
               <img src="/male.png" width='20' height='20'>
@@ -391,9 +391,9 @@
         </div>
           <span class="userName">
           {{#if profile.profile.fullname}}
-            {{profile.profile.fullname}}[{{location}}]
+            {{profile.profile.fullname}}{{#if location}}[{{location}}]{{/if}}
           {{else}}
-            {{profile.username}}[{{location}}]
+            {{profile.username}}{{#if location}}[{{location}}]{{/if}}
           {{/if}}
             <!--{{#if isMale profile.profile.sex}}
                 <img src="/male.png" width='20' height='20'>
