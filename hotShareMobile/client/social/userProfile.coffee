@@ -44,9 +44,9 @@ if Meteor.isClient
               if address isnt ''
                 Session.set('userLocation_'+userId,address)
             else
-              Session.set('userLocation_'+userId,null)
+              Session.set('userLocation_'+userId,'未知')
       else
-        Session.set('userLocation_'+userId,null)
+        Session.set('userLocation_'+userId,'未知')
       return Session.get('userLocation_'+userId)
 
   suggestCurrentPost = (userId)->
@@ -264,7 +264,17 @@ if Meteor.isClient
     Session.set('postsChannel','authorPosts')
     Meteor.subscribe "postOwnerInfo",Session.get("ProfileUserId1")
     Meteor.subscribe "FollowedTheAuthor",Session.get("ProfileUserId1")
-    Meteor.subscribe "authorCounter",Session.get("ProfileUserId1")
+    Meteor.subscribe "authorCounter",Session.get("ProfileUserId1"),{
+      onReady:()->
+        if Counts.get('authorFollowedByCount') > 0
+          Session.setPersistent('authorFollowedByCount',Counts.get('authorFollowedByCount'))
+        if Counts.get('authorPostsCount') > 0
+          Session.setPersistent('authorPostsCount',Counts.get('authorPostsCount'))
+        if Counts.get('authorFollowToCount') > 0
+          Session.setPersistent('authorFollowToCount',Counts.get('authorFollowToCount'))
+        if Counts.get('authorEmailFollowerCount') > 0
+          Session.setPersistent('authorEmailFollowerCount',Counts.get('authorEmailFollowerCount'))
+    }
   Template.userProfilePage1.helpers
     isFollowedTheAuthor: ()->
       Follower.find({followerId: Session.get("ProfileUserId1"), userId: Meteor.userId()}).count()>0
@@ -275,11 +285,20 @@ if Meteor.isClient
     isFavoritePostsChannel: ()->
       Session.equals('postsChannel','favoritePosts')
     authorPostsCount: ()->
-      Counts.get('authorPostsCount-'+Session.get("ProfileUserId1"))
+      if Session.get('authorPostsCount') then Session.get('authorPostsCount') else 0
     authorFollowerCount: ()->
-      Counts.get('authorFollowedByCount-'+Session.get("ProfileUserId1")) + Counts.get('authorEmailFollowerCount-'+Session.get("ProfileUserId1"))
+      if Session.get('authorFollowedByCount') then Session.get('authorFollowedByCount') else 0
     authorFollowedCount: ()->
-      Counts.get('authorFollowToCount-'+Session.get("ProfileUserId1"))
+      if Session.get('authorFollowToCount')
+        if Session.get('authorEmailFollowerCount')
+          Session.get('authorFollowToCount') + Session.get('authorEmailFollowerCount')
+        else
+          Session.get('authorFollowToCount')
+      else
+        if Session.get('authorEmailFollowerCount')
+          Session.get('authorFollowToCount')
+        else
+          0
     authorPosts: ()->
       Posts.find({owner: Session.get("ProfileUserId1"),publish: {$ne: false}},{limit:10})
     showPostSuggestionToUser: ()->
@@ -417,7 +436,17 @@ if Meteor.isClient
     Session.set('postsChannel','authorPosts')
     Meteor.subscribe "postOwnerInfo",Session.get("ProfileUserId2")
     Meteor.subscribe "FollowedTheAuthor",Session.get("ProfileUserId2")
-    Meteor.subscribe "authorCounter",Session.get("ProfileUserId2")
+    Meteor.subscribe "authorCounter",Session.get("ProfileUserId2"),{
+      onReady:()->
+        if Counts.get('authorFollowedByCount') > 0
+          Session.setPersistent('authorFollowedByCount',Counts.get('authorFollowedByCount'))
+        if Counts.get('authorPostsCount') > 0
+          Session.setPersistent('authorPostsCount',Counts.get('authorPostsCount'))
+        if Counts.get('authorFollowToCount') > 0
+          Session.setPersistent('authorFollowToCount',Counts.get('authorFollowToCount'))
+        if Counts.get('authorEmailFollowerCount') > 0
+          Session.setPersistent('authorEmailFollowerCount',Counts.get('authorEmailFollowerCount'))
+    }
   Template.userProfilePage2.helpers
     isFollowedTheAuthor: ()->
       Follower.find({followerId: Session.get("ProfileUserId2"), userId: Meteor.userId()}).count()>0
@@ -428,11 +457,20 @@ if Meteor.isClient
     isFavoritePostsChannel: ()->
       Session.equals('postsChannel','favoritePosts')
     authorPostsCount: ()->
-      Counts.get('authorPostsCount-'+Session.get("ProfileUserId2"))
+      if Session.get('authorPostsCount') then Session.get('authorPostsCount') else 0
     authorFollowerCount: ()->
-      Counts.get('authorFollowedByCount-'+Session.get("ProfileUserId2")) + Counts.get('authorEmailFollowerCount-'+Session.get("ProfileUserId2"))
+      if Session.get('authorFollowedByCount') then Session.get('authorFollowedByCount') else 0
     authorFollowedCount: ()->
-      Counts.get('authorFollowToCount-'+Session.get("ProfileUserId2"))
+      if Session.get('authorFollowToCount')
+        if Session.get('authorEmailFollowerCount')
+          Session.get('authorFollowToCount') + Session.get('authorEmailFollowerCount')
+        else
+          Session.get('authorFollowToCount')
+      else
+        if Session.get('authorEmailFollowerCount')
+          Session.get('authorFollowToCount')
+        else
+          0
     authorPosts: ()->
       Meteor.subscribe("authorPosts", Session.get("ProfileUserId2"),10)
       Posts.find({owner: Session.get("ProfileUserId2")},{limit:10})
@@ -569,7 +607,17 @@ if Meteor.isClient
     Session.set('postsChannel','authorPosts')
     Meteor.subscribe "postOwnerInfo",Session.get("ProfileUserId1")
     Meteor.subscribe "FollowedTheAuthor",Session.get("ProfileUserId3")
-    Meteor.subscribe "authorCounter",Session.get("ProfileUserId3")
+    Meteor.subscribe "authorCounter",Session.get("ProfileUserId3"),{
+      onReady:()->
+        if Counts.get('authorFollowedByCount') > 0
+          Session.setPersistent('authorFollowedByCount',Counts.get('authorFollowedByCount'))
+        if Counts.get('authorPostsCount') > 0
+          Session.setPersistent('authorPostsCount',Counts.get('authorPostsCount'))
+        if Counts.get('authorFollowToCount') > 0
+          Session.setPersistent('authorFollowToCount',Counts.get('authorFollowToCount'))
+        if Counts.get('authorEmailFollowerCount') > 0
+          Session.setPersistent('authorEmailFollowerCount',Counts.get('authorEmailFollowerCount'))
+    }
   Template.userProfilePage3.helpers
     isFollowedTheAuthor: ()->
       Follower.find({followerId: Session.get("ProfileUserId3"), userId: Meteor.userId()}).count()>0
@@ -580,11 +628,20 @@ if Meteor.isClient
     isFavoritePostsChannel: ()->
       Session.equals('postsChannel','favoritePosts')
     authorPostsCount: ()->
-      Counts.get('authorPostsCount-'+Session.get("ProfileUserId3"))
+      if Session.get('authorPostsCount') then Session.get('authorPostsCount') else 0
     authorFollowerCount: ()->
-      Counts.get('authorFollowedByCount-'+Session.get("ProfileUserId3")) + Counts.get('authorEmailFollowerCount-'+Session.get("ProfileUserId3"))
+      if Session.get('authorFollowedByCount') then Session.get('authorFollowedByCount') else 0
     authorFollowedCount: ()->
-      Counts.get('authorFollowToCount-'+Session.get("ProfileUserId3"))
+      if Session.get('authorFollowToCount')
+        if Session.get('authorEmailFollowerCount')
+          Session.get('authorFollowToCount') + Session.get('authorEmailFollowerCount')
+        else
+          Session.get('authorFollowToCount')
+      else
+        if Session.get('authorEmailFollowerCount')
+          Session.get('authorFollowToCount')
+        else
+          0
     authorPosts: ()->
       Meteor.subscribe("authorPosts", Session.get("ProfileUserId3"),10)
       Posts.find({owner: Session.get("ProfileUserId3")},{limit:10})
@@ -722,7 +779,17 @@ if Meteor.isClient
     Session.set('postsChannel','authorPosts')
     Meteor.subscribe "postOwnerInfo",Session.get("ProfileUserId")
     Meteor.subscribe "FollowedTheAuthor",Session.get("ProfileUserId")
-    Meteor.subscribe "authorCounter",Session.get("ProfileUserId")
+    Meteor.subscribe "authorCounter",Session.get("ProfileUserId"),{
+      onReady:()->
+        if Counts.get('authorFollowedByCount') > 0
+          Session.setPersistent('authorFollowedByCount',Counts.get('authorFollowedByCount'))
+        if Counts.get('authorPostsCount') > 0
+          Session.setPersistent('authorPostsCount',Counts.get('authorPostsCount'))
+        if Counts.get('authorFollowToCount') > 0
+          Session.setPersistent('authorFollowToCount',Counts.get('authorFollowToCount'))
+        if Counts.get('authorEmailFollowerCount') > 0
+          Session.setPersistent('authorEmailFollowerCount',Counts.get('authorEmailFollowerCount'))
+    }
   Template.userProfilePage.helpers
     isFollowedTheAuthor: ()->
       Follower.find({followerId: Session.get("ProfileUserId"), userId: Meteor.userId()}).count()>0
@@ -733,11 +800,20 @@ if Meteor.isClient
     isFavoritePostsChannel: ()->
       Session.equals('postsChannel','favoritePosts')
     authorPostsCount: ()->
-      Counts.get('authorPostsCount-'+Session.get("ProfileUserId"))
+      if Session.get('authorPostsCount') then Session.get('authorPostsCount') else 0
     authorFollowerCount: ()->
-      Counts.get('authorFollowedByCount-'+Session.get("ProfileUserId")) + Counts.get('authorEmailFollowerCount-'+Session.get("ProfileUserId"))
+      if Session.get('authorFollowedByCount') then Session.get('authorFollowedByCount') else 0
     authorFollowedCount: ()->
-      Counts.get('authorFollowToCount-'+Session.get("ProfileUserId"))
+      if Session.get('authorFollowToCount')
+        if Session.get('authorEmailFollowerCount')
+          Session.get('authorFollowToCount') + Session.get('authorEmailFollowerCount')
+        else
+          Session.get('authorFollowToCount')
+      else
+        if Session.get('authorEmailFollowerCount')
+          Session.get('authorFollowToCount')
+        else
+          0
     authorPosts: ()->
       Meteor.subscribe("authorPosts", Session.get("ProfileUserId"),10)
       Posts.find({owner: Session.get("ProfileUserId")},{limit:10})
