@@ -280,5 +280,8 @@
   //end
 
   "readMore": "继续阅读",
-  "readingRoom": "阅览室"
+  "readingRoom": "阅览室",
+
+  "emailFollow": "邮件",
+  "appFollow": "应用"
 }
