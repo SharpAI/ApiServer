@@ -1756,21 +1756,15 @@ if(Meteor.isServer){
   Meteor.publish('postOwnerInfo', function (userId){
           return Meteor.users.find({_id:userId});
   });
-  Meteor.publish("authorPosts", function(userId,limit) {
-    if(this.userId === null)
-      return this.ready();
-    else
-      return Posts.find({owner: userId},{sort: {createdAt: -1}})
-  });
   Meteor.publish("authorCounter", function(userId){
     if(this.userId === null)
         return this.ready();
     else {
-        Counts.publish(this, 'authorFollowToCount', Follower.find({userId:userId}),{nonReactive: true });
-        Counts.publish(this, 'authorPostsCount', Posts.find({owner: userId,publish: {$ne: false}}),{noReady: true});
-        Counts.publish(this, 'authorFollowedByCount', Follower.find({followerId:userId}),{nonReactive: true });
-        Counts.publish(this, 'authorEmailFollowerCount', Follower.find({followerId:userId, userEmail: {$exists: true}}));
-        return Posts.find({owner: userId,publish: {$ne: false}},{limit:10});
+        Counts.publish(this, 'authorFollowToCount-'+userId, Follower.find({userId:userId}),{noReady: true });
+        Counts.publish(this, 'authorPostsCount-'+userId, Posts.find({owner: userId,publish: {$ne: false}}),{noReady: true});
+        Counts.publish(this, 'authorFollowedByCount-'+userId, Follower.find({followerId:userId}),{noReady: true });
+        Counts.publish(this, 'authorEmailFollowerCount-'+userId, Follower.find({followerId:userId, userEmail: {$exists: true}}),{noReady: true });
+        return Posts.find({owner: userId,publish: {$ne: false}},{limit:10})
     }
   });
   Meteor.publish('FollowedTheAuthor',function(userId){

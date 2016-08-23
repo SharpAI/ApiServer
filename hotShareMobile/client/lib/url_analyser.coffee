@@ -267,7 +267,7 @@ if Meteor.isClient
     if device.platform isnt 'iOS'
       data = data[0]
     showDebug&&console.log data.scripts
-    showDebug&&console.log data.host
+    # showDebug&&console.log data.host
     if data.host is "www.meerlive.com" and device.platform is 'iOS'
       console.log 'iOS device'
       playUrlArr = data.body.match(/file":\["(\S*)\"],"user"/)
@@ -943,8 +943,8 @@ if Meteor.isClient
           previousIsSpan = false
           return true
         else
-          console.log 'get htmldata is ----------'
-          console.log htmldata
+          # console.log 'get htmldata is ----------'
+          # console.log htmldata
           videoInfo = getPossibleVideo(node,htmldata)
           if videoInfo
             sortedVideos++
@@ -1122,17 +1122,8 @@ if Meteor.isClient
           if(location.host){
             returnJson["host"] = location.host;
           }
-          if(location.host){
-            returnJson["testhost"] = location.host;
-          }
-          if(document.scripts){
-            returnJson["meerlivescripts"] = location.host;
-          }
-          if(document.scripts){
-            returnJson["scripts"] = document.scripts[11].innerHTML;
-          }
           if(location.host == "www.meerlive.com"){
-            returnJson["meerlive"] = location.host;
+            returnJson["scripts"] = document.scripts[11].innerHTML;
           }
           if(document.body){
             returnJson["body"] = document.body.innerHTML;
@@ -1150,10 +1141,7 @@ if Meteor.isClient
         data.host = a.hostname
       console.log 'getContentListsFromUrl _html2data2 data is '
       console.log data
-      console.log "testhost is " + data.testhost
       console.log "scripts is " + data.scripts
-      console.log "meerlive is " + data.meerlive
-      console.log "meerlivescripts is " + data.meerlivescripts
       _html2data2(url, data, callback)
   @_getContentListsFromUrl_test = (url, callback)->
     headers = {
