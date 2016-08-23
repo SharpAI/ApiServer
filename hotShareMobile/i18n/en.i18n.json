@@ -279,5 +279,8 @@
   //end
 
   "readMore": "Read More",
-  "readingRoom": "ReadingRoom"
+  "readingRoom": "ReadingRoom",
+
+  "emailFollow": "Email",
+  "appFollow": "App"
 }
