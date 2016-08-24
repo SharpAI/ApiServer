@@ -14,4 +14,4 @@
 @withSuggestAlreadyRead = true
 @withForcePopupSectionReview = false
 @withSponserLinkAds = false
-@withServerImport = false
+@withServerImport = true
