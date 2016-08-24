@@ -34,7 +34,7 @@ if Meteor.isClient
           onReady:()->
             Session.set('postsWithLimitCollection','loaded')
         })
-        Meteor.subscribe("savedDraftsWithLimit",2,{
+        Meteor.subscribe("savedDraftsWithLimit",20,{
           onReady:()->
             Session.set('savedDraftsWithLimitCollection','loaded')
         })
