@@ -8,7 +8,7 @@
             <div class='postImageItem element' id="{{_id}}">
                 {{>padding}}
                 {{#if isLocalImgUrlType imgUrl}}
-                <img id="{{_id}}img" class="image_{{_id}} lazy" data-original="{{DraftImageItem imgUrl imgUrl _id}}" style="{{style}};" >
+                <img id="{{_id}}img" class="image_{{_id}} lazy" src="{{getImageItem URI imgUrl}}" style="{{style}};" >
                 {{else}}
                 <img id="{{_id}}img" class="lazy" data-original="{{imgUrl}}" style="{{style}};" >
                 {{/if}}
