@@ -81,6 +81,7 @@ if Meteor.isClient
     
   Session.setDefault('hottestPosts', [])
   Template.showPosts.onRendered ->
+    Meteor.subscribe 'usersById', Session.get('postContent').owner
     Meteor.call 'getHottestPosts', (err,res)->
       unless err
         Session.set('hottestPosts', res)
@@ -280,6 +281,15 @@ if Meteor.isClient
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
+    authorInfo: ()->
+      user = Meteor.users.findOne({_id: @owner})
+      authorName = if user.profile.fullname then user.profile.fullname else user.profile.username
+      authorIcon = user.profile.icon
+      authorInfo = {
+        authorName: authorName
+        authorIcon: authorIcon
+      }
+      return authorInfo
     authorReadPopularPosts: ()->
       Meteor.subscribe "authorReadPopularPosts",@owner,@_id,3
       return Posts.find({_id: {$ne: @_id},owner: @owner, publish: {$ne: false}},{sort: {browse: -1},limit: 3})
@@ -609,7 +619,7 @@ if Meteor.isClient
           window.location.href=Session.get("postContent").fromUrl
     'click #SubscribeAuthor': ->
       $('.subscribeAutorPage').show()
-    'click .userDashboard':->
+    'click .userDashboard,.authorInfoIcon':->
       Session.set("ProfileUserId1", this.owner)
       Session.set("currentPageIndex",-1)
       Meteor.subscribe("userinfo", this.owner)
