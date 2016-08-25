@@ -25,6 +25,7 @@ var posts = null;
 var users = null;
 var Follower = null;
 var FollowPosts = null;
+var TopicPoss = null;
 var Feeds = null;
 var serverImportLog = null;
 
@@ -340,6 +341,7 @@ MongoClient.connect(DB_CONN_STR, function(err, db) {
     users = db.collection('users');
     //Follower = db.collection('follower');
     FollowPosts = db.collection('followposts');
+    TopicPoss = db.collection('topicposs');
     //Feeds = db.collection('feeds');
     serverImportLog = db.collection('serverImportLog');
     Task.setCollection({posts: posts, serverImportLog: serverImportLog, followPosts: FollowPosts});
@@ -481,6 +483,8 @@ var update_mainImage = function(userId, postId, mainImageUrl, style){
   FollowPosts.update({followby:userId, postId:postId}, {$set: {mainImage: mainImageUrl, mainImageStyle:style}}, function(err, number){
     console.log("update_mainImage2: err="+err+", number="+number)
   });
+  
+  TopicPoss.update({owner:userId, postId:postId}, {$set: {mainImage: mainImageUrl, mainImageStyle:style}});
 }
 var insert_data = function(user, url, data, draftsObj, cb) {
     if (!user || !data || !url || !posts) {
