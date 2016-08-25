@@ -141,8 +141,20 @@ if Meteor.isClient
           $curVideo.siblings('.video_thumb').fadeOut(100)
 
   Template.postItem.helpers
+    getImageItem:(mImg,imgurl)->
+      if (mImg.indexOf('file://') >= 0)
+        if Session.get(mImg) is undefined
+          ProcessImage = (URI,smallImage)->
+            if smallImage
+              Session.set(mImg, smallImage)
+            else
+              Session.set(mImg, '/noimage.png')
+          getBase64OfImage('','',mImg,ProcessImage)
+        Session.get(mImg)
+      else
+        imgurl
     isLocalImgUrlType: (imgUrl)->
-      if imgUrl.indexOf('file://') >-1
+      if imgUrl.indexOf('file://') > -1
         return true
       else 
         return false

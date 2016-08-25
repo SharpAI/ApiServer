@@ -156,13 +156,15 @@
     <div class="showPostsLine"></div>
     <!--authorInfo Start-->
     <div class="authorInfos">
-      <div class="icon">
-        <img src="{{ownerIcon}}" width="70" height="70"/>
+      <div class="icon authorInfoIcon">
+        <img src="{{authorInfo.authorIcon}}" width="70" height="70"/>
       </div>
-      <div class="authorNike">{{ownerName}}</div>
+      <div class="authorNike  authorInfoIcon">{{authorInfo.authorName}}</div>
+      {{#unless readerIsOwner}}
       <div class="subscribe">
         <div id="SubscribeAuthor" style="margin: 0 auto; position:relative; left:0;"><i class="fa fa-plus"></i> 关注</div>
       </div>
+      {{/unless}}
       {{#if authorReadPopularPosts}}
       <div class="tipAuthorHotPosts">—&nbsp;热门文章&nbsp;—</div>
       <ul>

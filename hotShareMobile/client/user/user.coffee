@@ -34,7 +34,7 @@ if Meteor.isClient
           onReady:()->
             Session.set('postsWithLimitCollection','loaded')
         })
-        Meteor.subscribe("savedDraftsWithLimit",2,{
+        Meteor.subscribe("savedDraftsWithLimit",20,{
           onReady:()->
             Session.set('savedDraftsWithLimitCollection','loaded')
         })
@@ -83,27 +83,30 @@ if Meteor.isClient
     followers:->
       #Follower存放用户间关注记录， Follows是推荐偶像列表
       #followerId是偶像userId, userId是粉丝userId
-      myFollowedByCount = Session.get('myFollowedByCount')
-      if myFollowedByCount
-        myFollowedByCount
-      else
-        0
+      # myFollowedByCount = Session.get('myFollowedByCount')
+      # if myFollowedByCount
+      #   myFollowedByCount
+      # else
+      #   0
+      Counts.get('myEmailFollowerCount-'+Meteor.userId()) + Counts.get('myFollowedByCount-'+Meteor.userId())
     emailFollowerCount:->
-      myEmailFollowedByCount = Session.get('myEmailFollowerCount')
-      if myEmailFollowedByCount
-        myEmailFollowedByCount
-      else
-        0
+      # myEmailFollowedByCount = Session.get('myEmailFollowerCount')
+      # if myEmailFollowedByCount
+      #   myEmailFollowedByCount
+      # else
+      #   0
+      Counts.get('myEmailFollowerCount-'+Meteor.userId())
     appFollowerCount:->
-      myFollowedByCount = Session.get('myFollowedByCount')
-      myEmailFollowedByCount = Session.get('myEmailFollowerCount')
+      # myFollowedByCount = Session.get('myFollowedByCount')
+      # myEmailFollowedByCount = Session.get('myEmailFollowerCount')
 
-      if myFollowedByCount and myEmailFollowedByCount
-          console.log "-----------enter app follower count func ----------"
-          myAppFollowerByCount = myFollowedByCount - myEmailFollowedByCount
-          myAppFollowerByCount
-      else
-          0
+      # if myFollowedByCount and myEmailFollowedByCount
+      #     console.log "-----------enter app follower count func ----------"
+      #     myAppFollowerByCount = myFollowedByCount - myEmailFollowedByCount
+      #     myAppFollowerByCount
+      # else
+      #     0
+      Counts.get('myFollowedByCount-'+Meteor.userId())
     draftsCount:->
       return SavedDrafts.find({owner: Meteor.userId()}).count()
       # mySavedDraftsCount = Session.get('mySavedDraftsCount')
