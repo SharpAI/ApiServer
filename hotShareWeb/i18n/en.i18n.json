@@ -64,8 +64,8 @@
   "forgotPassword": "Forgot your password?",
   //end
    //registerFollow.html
-  "chooseAtLeast": "Choose at least ",
-  "toFollow": " story tellers to follow.",
+  // "chooseAtLeast": "Choose at least ",
+  // "toFollow": " story tellers to follow.",
   //end
    //registerFollow.html
   "followPeople": "Follow people",
@@ -248,15 +248,14 @@
   "NewFriendsList": "New friends",
   "FailToLoad": "Failed to load, check the network settings or try again later",
   "FateAh": "Fate ah, we have encounter ",
-  "times": " times.",
   "Moments": "Moments",
   "RecommendPosts": "Read the current posts ago friend posts, you have seen, specially recommended for you that you did not read the following posts ...",
   "AlsoRead": "friends who read the current post, also read ...",
   "RecommendReadMore": "Friends who read the current post also read ...",
   "PersonReadYourForward": " persons read your forwarding",
   "AlsoComment": "also commented on this story",
-  "recommendA": "read the",
-  "recommendB": "recommend you to read this story",
+  "recommend": "read the the current post, recommend you to read:",
+  "theStoryGroupMsg": "Story Group Messages",
   "readed": "read",
   "postedastory": "posted a story",
   "readedastory": "readed a story",
