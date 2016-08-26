@@ -121,9 +121,9 @@
     {{#unless isMyPost}}
       <div class="showPostsFollowMe">
         {{#if inWeiXin}}
-        <p>{{_ "forMorePayAttentionTo"}}<span><a><i class="fa fa-weixin"></i>{{_ "gst"}}</a></span>{{_ "wechatPublicAccount"}}</p>
+        <p style="padding:0 10px;">{{_ "forMorePayAttentionTo"}}<span><a><i class="fa fa-weixin"></i>{{_ "gst"}}</a></span>{{_ "wechatPublicAccount"}}</p>
         {{else}}
-        <p>{{_ "forMoreSearch"}}<span><a><i class="fa fa-weixin"></i>{{_ "gst"}}</a></span>{{_ "wechatPublicAccount"}}</p>
+        <p style="padding:0 10px;">{{_ "forMoreSearch"}}<span><a><i class="fa fa-weixin"></i>{{_ "gst"}}</a></span>{{_ "wechatPublicAccount"}}</p>
         {{/if}}
       </div>
     {{/unless}}
@@ -137,7 +137,7 @@
       </div>
       {{#if withSocialBar}}
         <div class="superChatIntroduce">
-            <p>{{_ "noPrivacyExposed"}}</p>
+            <p style="padding:0 10px;">{{_ "noPrivacyExposed"}}</p>
         </div>
         {{> socialContent}}
       {{/if}}
