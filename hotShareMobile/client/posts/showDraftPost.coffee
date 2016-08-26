@@ -97,6 +97,12 @@ if Meteor.isClient
 
   Template.showDraftPosts.events
     'click #modalPublish': (e)->
+      history = []
+      history.push {
+          view: 'user'
+          scrollTop: document.body.scrollTop
+      }
+      Session.set "history_view", history
       cleanDraft()
       Session.set('fromDraftPost',false)
       Meteor.defer ()->

@@ -168,6 +168,30 @@ if Meteor.isServer
               Meteor.users.update({_id: item.userId}, {$inc: {'profile.waitReadCount': 1}})
               pushnotification("newpost", {_id: feedItem.postId, ownerName: feedItem.ownerName, title: feedItem.postTitle}, item.userId)
           )
+
+          relatedUserIds = []
+          Posts.find({_id: {$in: groups}}).forEach((item)->
+            if !~relatedUserIds.indexOf(item.owner)
+              relatedUserIds.push(item.owner)
+
+              recommendItem = {
+                targetPostId: item._id
+                targetPostTitle: item.title
+                targetPostAddonTitle: item.addontitle
+                relatedUserId: item.owner
+                relatedUserName: item.ownerName
+                relatedUserIcon: item.ownerIcon
+                recommendUserId: feed.owner
+                recommendUserName: feed.ownerName
+                recommendUserIcon: feed.ownerIcon
+                recommendPostId: feed.postId
+                recommendPostTitle: feed.postTitle
+                recommendPostMainImage: feed.mainImage
+                recommendPostCreatedAt: feed.createdAt
+                createdAt: new Date()
+              }
+              Recommends.insert(recommendItem)
+          )
         true
         
       'pushPostToHotPostGroups': (feed, groups)->

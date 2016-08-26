@@ -23,6 +23,8 @@ BlackList = new Meteor.Collection('blackList');
 AssociatedUsers = new Meteor.Collection('associatedusers');
 UserRelation = new Meteor.Collection('userrelation'); // 用户关系，为了不和以前的产生冲突，使用新表
 
+Recommends = new Meteor.Collection('recommends');
+
 if(Meteor.isServer)
   PushSendLogs = new Meteor.Collection('pushSendLogs');
 
@@ -792,6 +794,17 @@ if(Meteor.isServer){
                 pullingConn.call("pullFromServer", doc._id);
             }
             catch(error){}
+
+            try {
+                var recommendUserIds = [];
+                Recommends.find({relatedUserId: doc.owner, relatedPostId: {$exists: false}}).forEach(function(item) {
+                    if (!~recommendUserIds.indexOf(item.recommandUserId)) {
+                        recommendUserIds.push(item.recommandUserId);
+                        Recommends.update({_id: item._id}, {$set: {relatedPostId: doc._id}});
+                    }
+                });
+            }
+            catch(error) {}            
         });
     };
     var postsRemoveHookDeferHandle = function(userId,doc){
@@ -1393,6 +1406,32 @@ if(Meteor.isServer){
             }
         });
     };
+
+    Meteor.publish("list_recommends", function(postId) {
+        if(this.userId === null){
+            return this.ready();
+        }
+        else {
+            return Recommends.find({relatedPostId: postId});
+            /*
+            var self = this;
+            var handle = Recommends.find({relatedPostId: postId}, {
+                sort: {createdAt: -1}
+            }).observeChanges({
+                added: function (id, fields) {
+                    try {
+                        self.added("Recommends", id, fields);
+                    } catch (e) {
+                    }
+                }
+            });
+            self.ready();
+            self.onStop(function () {
+                handle.stop();
+            });*/
+        }        
+    });
+
     Meteor.publish("suggestPosts", function (limit) {
         if(this.userId === null){
             return this.ready();
@@ -1725,9 +1764,11 @@ if(Meteor.isServer){
           Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId,publish: {$ne: false}}), {nonReactive: true });
           Counts.publish(this, 'mySavedDraftsCount', SavedDrafts.find({owner: this.userId}), {nonReactive: true });
           //Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { nonReactive: true });
+          Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { reactive: true });
           Counts.publish(this, 'myFollowedByCount-'+this.userId, Follower.find({followerId:this.userId, userEmail: {$exists: false}}), { noReady: true });
           //Counts.publish(this, 'myFollowToCount', Follower.find({userId:this.userId}), {nonReactive: true });
           Counts.publish(this, 'myFollowToCount', Follower.find({userId:this.userId}), {reactive: true });
+          Counts.publish(this, 'myEmailFollowerCount', Follower.find({followerId:this.userId, userEmail: {$exists: true}}), {reactive: true });
           Counts.publish(this, 'myEmailFollowerCount-'+this.userId, Follower.find({followerId:this.userId, userEmail: {$exists: true}}), {noReady: true });
       }
   });
