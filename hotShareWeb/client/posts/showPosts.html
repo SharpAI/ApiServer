@@ -151,7 +151,7 @@
     <!--<div onclick="trackEvent('Download','from Post Tail');window.open('http://cdn.tiegushi.com', '_system');"><img src="/img/download.png" style="width:90%;margin-left:5%;"></div>-->
     <div onclick="trackEvent('Download','from Post Tail');window.open('http://cdn.tiegushi.com', '_system');" 
     style="background-color:#2d95bb; color: #fff; border-radius:8px; margin:16px; text-align:center;height: 40px;line-height: 40px; font-size:16px;">
-      <img src="/img/download_icon.png" width="28" style="margin-top: -4px; margin-right: 16px;">下载故事贴，你也能写这样的图文
+      <img src="/img/download_icon.png" width="28" style="margin-top: -4px; margin-right: 4px;">下载故事贴，你也能写这样的图文
     </div>
     <div class="showPostsLine"></div>
     <!--authorInfo Start-->
@@ -179,9 +179,9 @@
     {{#unless isMyPost}}
       <div class="showPostsFollowMe">
         {{#if inWeiXin}}
-        <p>更多精彩内容，敬请点击关注<span><a><i class="fa fa-weixin"></i>故事贴</a></span>微信公众号</p>
+        <p style="padding: 0 10px;">更多精彩内容，敬请点击关注<span><a><i class="fa fa-weixin"></i>故事贴</a></span>微信公众号</p>
         {{else}}
-        <p>更多精彩内容，请搜索关注<span><a><i class="fa fa-weixin"></i>故事贴</a></span>微信公众号</p>
+        <p style="padding:0 10px;">更多精彩内容，请搜索关注<span><a><i class="fa fa-weixin"></i>故事贴</a></span>微信公众号</p>
         {{/if}}
       </div>
     {{/unless}}
@@ -195,7 +195,7 @@
       </div>
       {{#if withSocialBar}}
         <div class="superChatIntroduce">
-            <p>故事贴无法获得微信信息，请放心使用</p>
+            <p style="padding:0 10px;">故事贴无法获得微信信息，请放心使用</p>
         </div>
         {{> socialContent}}
       {{/if}}
@@ -499,7 +499,7 @@
     <div class="content">
         <div class="header">关注作者</div>
         <div class="body">
-          <textarea id="email" cols="10" rows="2" placeholder="请放心留下您的QQ号或者邮箱地址，此信息不会展示给作者，您将收到相关消息">{{oldMail}}</textarea>
+          <textarea id="email" cols="10" rows="3" placeholder="请放心留下您的QQ号或者邮箱地址，此信息不会展示给作者，您将收到相关消息">{{oldMail}}</textarea>
           <p class="help-block"></p>
         </div>
         <div class="footer">
