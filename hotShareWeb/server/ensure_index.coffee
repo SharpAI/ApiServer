@@ -61,3 +61,5 @@ if Meteor.isServer
     #RefComments._ensureIndex({text: 1})
     PushSendLogs._ensureIndex({createAt:-1})
     UserRelation._ensureIndex({userId:1, toUserId: 1})
+    Recommends._ensureIndex({relatedUserId: 1})
+    Recommends._ensureIndex({relatedPostId: 1})

@@ -178,3 +178,25 @@ if Meteor.isClient
           ,300
         else
           document.body.scrollTop = 0
+    Template.recommends.helpers
+      recommends: ()->
+        Meteor.subscribe('list_recommends', Session.get("postContent")._id);
+        Recommends.find({relatedPostId: Session.get("postContent")._id})
+      time_diff: (created)->
+        GetTime0(new Date() - created)          
+    
+    Template.recommends.events
+      'click .elementBox': (e)->
+        postId = e.currentTarget.id
+        scrollTop = $(window).scrollTop()
+        currentPostId = Session.get("postContent")._id
+        postBack = Session.get("postBack")
+        postBack.push(currentPostId)
+        Session.set("postBack",postBack)
+        Session.set("lastPost",postId)
+        Session.set('postContentTwo', postId)
+        $(window).children().off()
+        $(window).unbind('scroll')
+        if typeof PopUpBox isnt "undefined"
+          PopUpBox.close()
+        Router.go '/posts/' + postId

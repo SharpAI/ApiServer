@@ -22,12 +22,46 @@
             <span>{{_ "RecommendReadMore"}}</span>
           </div>
       </div>
-      
+      {{> recommends}}
       {{>lpcomments}}
       {{>moments}}
       <!--朋友圈 end-->
     {{/if}}
   </div>
+</template>
+<template name="recommends">
+    <div class="recommends">
+        <ul id="wrapper">
+            {{#each recommends}}
+            <li class="elementBox" id="{{recommendPostId}}">
+                <a id="list" class="swipeElement">
+                    <div class="icon">
+                        <img src="{{recommendUserIcon}}" width="40" height="40"/>
+                    </div>
+                    <div class="user_name">
+                        <h2>{{recommendUserName}}&nbsp;
+                            <span>{{_ "recommendA"}}</span>
+                            <span id="{{targetPostId}}" style="color: deepskyblue">{{targetPostTitle}}</span>
+                            <span>{{_ "recommendB"}}</span>
+                            <span id="{{recommendPostId}}" style="color: deepskyblue">{{recommendPostTitle}}</span>
+                        </h2>
+                        <div class="readpost">
+                            <dl>
+                                <dt>
+                                    <img class="post_pic" src="{{recommendPostMainImage}}" width="40" height="40"/>
+                                    <div class="red_spot"></div>
+                                </dt>
+                                <dd>{{recommendPostTitle}}</dd>
+                            </dl>
+                        </div>
+                        <span style="margin:0;">&nbsp;<!--{{time_diff createdAt}}--></span>
+                    </div>
+                    <div class="clear"></div>
+                </a>
+              </li>            
+            {{/each}}
+        </ul>
+    </div>
 </template>
 <template name="lpcomments">
     <div class="lpcomments">
