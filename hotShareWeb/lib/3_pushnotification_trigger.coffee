@@ -37,6 +37,18 @@ if Meteor.isServer
         postId: doc.postId
       }
       toUserId = post.owner
+    else if type is "personalletter"
+      post = Posts.findOne({_id: doc.postId});
+      if post.owner == userId
+        #console.log "comment self post"
+        return
+      commentText = doc.content;
+      content = '您收到了一条来自' + doc.userName + '的私信'
+      extras = {
+        type: "personalletter"
+        postId: doc.postId
+      }
+      toUserId = userId
     else if type is "read"
       if doc.owner == userId
         #console.log "read self post"

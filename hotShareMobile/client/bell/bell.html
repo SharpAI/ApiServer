@@ -1,5 +1,6 @@
 <template name="bell">
   <div class="bell">
+    <div class="bellAlertBackground"></div>
     <div class="head">
       {{#if loading}}
         <img class="icon" src="/swiper.gif" width='16' height='16'> <strong>{{_ "receiving"}}</strong>
@@ -31,6 +32,22 @@
                 <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "alsoCommentThisStory"}} 《{{postTitle}}》</div>
                 <div class="createAt">{{time_diff createdAt}}</div>
             </a>
+            <div class="line">
+                <span></span>
+            </div>
+        {{/if}}
+        {{#if isPersonalletter eventType}}
+            <a href="" id="personalLetter" class="contentList">
+                {{#if notRead isRead checked @index createdAt}}
+                <div class="readTips"></div>
+                {{/if}}
+                <img class="icon" src="{{userIcon}}" width='30' height='30'>
+                <div id="{{_id}}" class="alarm">{{userName}} 给您发来一条私信</div>
+                <div class="createAt">{{time_diff createdAt}}</div>
+            </a>
+            <div id="{{_id}}content" class="personalLetterContent">
+              {{content}}
+            </div>
             <div class="line">
                 <span></span>
             </div>

@@ -290,6 +290,8 @@ if Meteor.isClient
         authorIcon: authorIcon
       }
       return authorInfo
+    oldMail: ->
+      Template.SubscribeAuthor.__helpers.get('oldMail')()
     authorReadPopularPosts: ()->
       Meteor.subscribe "authorReadPopularPosts",@owner,@_id,3
       return Posts.find({_id: {$ne: @_id},owner: @owner, publish: {$ne: false}},{sort: {browse: -1},limit: 3})
@@ -617,6 +619,48 @@ if Meteor.isClient
           handleAddedLink(Session.get("postContent").fromUrl)
         else
           window.location.href=Session.get("postContent").fromUrl
+    'click #sendEmail' :->
+      $('.sendAuthorEmail,.authorEmailAlertBackground').fadeIn(300)
+    'click #sendEmailBtn' :(e,t)->
+      mailAddress = t.find('#authorEmail').value
+      content = t.find('#sendContent').value
+      post = Session.get("postContent")
+      qqValueReg = RegExp(/^[1-9][0-9]{4,9}$/)
+      mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) 
+      if !mailValueReg.test(mailAddress) and !qqValueReg.test(mailAddress)
+        toastr.info('请输入正确的QQ号或Email')
+        return false
+      if qqValueReg.test(mailAddress)
+        mailAddress += '@qq.com'
+      if content is ''
+        toastr.info('请输入私信内容')
+        return false
+      if Meteor.user()
+        if Meteor.user().profile.fullname
+          username = Meteor.user().profile.fullname
+        else
+          username = Meteor.user().username
+        userId = Meteor.user()._id
+        userIcon = Meteor.user().profile.icon
+      else
+        username = '匿名'
+        userId = 0
+        userIcon = ''
+      $("#sendContent").val('')
+      doc = {
+        user: userId
+        userName: username
+        userIcon: userIcon
+        email: mailAddress
+        ownerId: post.owner
+        content: content
+        postId: post._id
+        title: post.title
+        addontitle: post.addontitle
+        mainImage: post.mainImage
+      }
+      Meteor.call('personalLetterSendEmailFeedback',doc)
+      $('.sendAuthorEmail,.authorEmailAlertBackground').hide();
     'click #SubscribeAuthor': ->
       $('.subscribeAutorPage').show()
     'click .userDashboard,.authorInfoIcon':->
