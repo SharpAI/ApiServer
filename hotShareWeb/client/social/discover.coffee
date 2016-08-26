@@ -129,12 +129,12 @@ if Meteor.isClient
           Router.go '/posts/'+postId
         ,300
     Template.lpcomments.helpers
-     isCommentShare:->
+      isCommentShare:->
        if this.eventType is "pcommentShare"
          true
        else
          false
-     isShareFeed:->
+      isShareFeed:->
         if this.eventType is "share"
           true
         else
@@ -146,6 +146,8 @@ if Meteor.isClient
           "点评了您的故事"
         else
           "也点评了此故事"
+      hasLpcoments:()->
+        Feeds.find({followby:Meteor.userId(),checked:false, createdAt:{$gt:new Date((new Date()).getTime() - 7 * 24 * 3600 * 1000)}},{sort: {createdAt: -1}, limit:20}).count() > 0
       lpcomments:()->
         Feeds.find({followby:Meteor.userId(),checked:false, createdAt:{$gt:new Date((new Date()).getTime() - 7 * 24 * 3600 * 1000)}},{sort: {createdAt: -1}, limit:20})
       time_diff: (created)->

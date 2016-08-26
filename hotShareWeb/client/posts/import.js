@@ -73,6 +73,7 @@ Template.importPost.events({
         $('.posts .title').html($('#import-post-url').val());
         progress.set(5);
         var xmlhttp = jQuery.ajaxSettings.xhr();
+        xmlhttp.timeout = 30000;
         var hasDone = false;
         var submitDone = function (res) {
           var result = res.split('\r\n');
@@ -104,6 +105,18 @@ Template.importPost.events({
               break;
           }
         };
+        xmlhttp.ontimeout = function(e) {
+          //console.log('>>> in xhr timeout, will cancel the import job! ');
+          var xmlhttp = jQuery.ajaxSettings.xhr();
+          xmlhttp.open("GET", '/import-cancel/' + task_id, true);
+          xmlhttp.send(null);
+              
+          Session.set('import-post-info', null);
+          Session.set('import-post-info-url', '');
+          hasCancel = true;
+          progress.set(100);
+          alert('导入超时，请重试~');
+        };        
         xmlhttp.onreadystatechange = function () {
           if(xmlhttp.readyState === 4 && xmlhttp.status === 200 && !hasDone && !hasCancel){
             submitDone(xmlhttp.responseText);

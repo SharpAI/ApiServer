@@ -1,5 +1,5 @@
 <template name="discover">
-  <div class="comFadeIn discover">
+  <div class="comFadeIn discover" style="background:#efeff4;">
     {{#if hasDiscover}}
       <!--朋友圈 start-->
       <!--
@@ -15,15 +15,17 @@
         </div>
       </div>
       -->
+      <div  style="background:#fff;padding: 10px 0;"> 
+      {{>lpcomments}}
+      </div>
       <div class="discover-top">
-          <div class="discover-bg"></div>
-          <div class="discover-con">
+          <div class="discover-bg" style="background:#efeff4;"></div>
+          <div class="discover-con" style="background:#efeff4;">
             <img src="/book-icon.png">
             <span>{{_ "RecommendReadMore"}}</span>
           </div>
       </div>
       {{> recommends}}
-      {{>lpcomments}}
       {{>moments}}
       <!--朋友圈 end-->
     {{/if}}
@@ -33,23 +35,19 @@
     <div class="recommends">
         <ul id="wrapper">
             {{#each recommends}}
-            <li class="elementBox" id="{{recommendPostId}}">
+                <li class="elementBox" id="{{recommendPostId}}" style="border-bottom: 1px dashed #d9d9d9;">
                 <a id="list" class="swipeElement">
                     <div class="icon">
-                        <img src="{{recommendUserIcon}}" width="40" height="40"/>
+                        <img src="{{recommendUserIcon}}" width="40" height="40" style="border-radius:20px;"/>
                     </div>
-                    <div class="user_name">
-                        <h2>{{recommendUserName}}&nbsp;
-                            <span>{{_ "recommendA"}}</span>
-                            <span id="{{targetPostId}}" style="color: deepskyblue">{{targetPostTitle}}</span>
-                            <span>{{_ "recommendB"}}</span>
-                            <span id="{{recommendPostId}}" style="color: deepskyblue">{{recommendPostTitle}}</span>
-                        </h2>
+                    <div class="user_name" style="background:#efeff4;">
+                        <h2>{{ownerName}}&nbsp;</h2>
+                        <h3>{{_ "recommend"}}</h3>
                         <div class="readpost">
-                            <dl>
+                            <dl style="color:#999;">
                                 <dt>
                                     <img class="post_pic" src="{{recommendPostMainImage}}" width="40" height="40"/>
-                                    <div class="red_spot"></div>
+                                    <!--<div class="red_spot"></div>-->
                                 </dt>
                                 <dd>{{recommendPostTitle}}</dd>
                             </dl>
@@ -64,7 +62,15 @@
     </div>
 </template>
 <template name="lpcomments">
-    <div class="lpcomments">
+    {{#if hasLpcoments}}
+    <div class="discover-top"  style="background:#fff;">
+          <div class="discover-bg"></div>
+          <div class="discover-con">
+            <img src="/frends-msg.svg">
+            <span>{{_ "theStoryGroupMsg"}}</span>
+          </div>
+    </div>
+    <div class="lpcomments" style="background:#fff;">
         <ul id="wrapper"  class="swipe-delete">
             {{#each lpcomments}}
                 {{#if isShareFeed}}
@@ -171,9 +177,10 @@
         })
     });
     </script>
+    {{/if}}
 </template>
 <template name="moments">
-      <div class="moments">
+      <div class="moments" style="background:#efeff4;">
             {{#if loading}}
                 <div>{{_ "isLoading"}}</div>
             {{/if}}

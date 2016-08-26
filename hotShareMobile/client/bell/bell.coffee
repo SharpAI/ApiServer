@@ -53,6 +53,8 @@ if Meteor.isClient
       eventType is 'pfavourite'
     isPcommentOwner:(eventType)->
       eventType is 'pcommentowner'
+    isPersonalletter:(eventType)->
+      eventType is 'personalletter'
     isGetRequest:(eventType)->
       eventType is 'getrequest'
     isSendRequest:(eventType)->
@@ -79,6 +81,11 @@ if Meteor.isClient
       else 
          return true
   Template.bell.events
+    'click .bellAlertBackground': ()->
+      $('.personalLetterContent,.bellAlertBackground').fadeOut 300
+    'click #personalLetter': (e)->
+      document.getElementById(this._id + 'content').style.display='block'
+      $(".bellAlertBackground").fadeIn 300
     'click .contentList': (e)->
       if this.pindex?
         Session.set("pcurrentIndex",this.pindex)
