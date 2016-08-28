@@ -265,7 +265,7 @@
       <textarea id="sendContent" cols="10" rows="2" placeholder="请输入私信内容"></textarea>
     </div>
     <div class="btn-banner">
-      <span id="sendEmailBtn" class="send-email-btn">发送</span>
+      <span id="sendEmailBtn" class="send-email-btn" onclick="sendAuthorEmail()">发送</span>
     </div>
   </div>
 
@@ -286,6 +286,53 @@
         Meteor.call('sendEmailByWebFollower', Session.get('postContent')._id, 'share');
         toastr.success('此篇故事已经通过邮件发给您的关注者（' + Meteor.user().profile.web_follower_count + '位）', '分享成功~');
        }
+       function sendAuthorEmail(e, t) {
+        var content, doc, mailAddress, mailValueReg, post, qqValueReg, userIcon, userId, username;
+        mailAddress = t.find('#authorEmail').value;
+        content = t.find('#sendContent').value;
+        post = Session.get("postContent");
+        qqValueReg = RegExp(/^[1-9][0-9]{4,9}$/);
+        mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/);
+        if (!mailValueReg.test(mailAddress) && !qqValueReg.test(mailAddress)) {
+          toastr.info('请输入正确的QQ号或Email');
+          return false;
+        }
+        if (qqValueReg.test(mailAddress)) {
+          mailAddress += '@qq.com';
+        }
+        if (content === '') {
+          toastr.info('请输入私信内容');
+          return false;
+        }
+        if (Meteor.user()) {
+          if (Meteor.user().profile.fullname) {
+            username = Meteor.user().profile.fullname;
+          } else {
+            username = Meteor.user().username;
+          }
+          userId = Meteor.user()._id;
+          userIcon = Meteor.user().profile.icon;
+        } else {
+          username = '匿名';
+          userId = 0;
+          userIcon = '';
+        }
+        $("#sendContent").val('');
+        doc = {
+          user: userId,
+          userName: username,
+          userIcon: userIcon,
+          email: mailAddress,
+          ownerId: post.owner,
+          content: content,
+          postId: post._id,
+          title: post.title,
+          addontitle: post.addontitle,
+          mainImage: post.mainImage
+        };
+        Meteor.call('personalLetterSendEmailFeedback', doc);
+        return $('.sendAuthorEmail,.authorEmailAlertBackground').hide();
+      }
   </script>
 </template>
 <template name="postFooter">
