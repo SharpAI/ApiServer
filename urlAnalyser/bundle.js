@@ -104,7 +104,7 @@ REGEXPS = {
   specialClass: /note-content|rich_media_content|WBA_content/i
 };
 
-specialClassNameForPopularMobileSite = ['.note-content', '.rich_media_content', '.WBA_content', '#cont-wrapper', '#j-body', '.article', '.main_box', '#page-content', '#BODYCON', '.yaow > p'];
+specialClassNameForPopularMobileSite = ['.note-content', '.rich_media_content', '.WBA_content', '#cont-wrapper', '#j-body', '.article', '.main_box', '#page-content', '#BODYCON', '.yaow > p', '#pageletArticleContent'];
 
 specialClassNameExcludeMobileSites = ['techcrunch.com'];
 
@@ -607,7 +607,7 @@ extract = function(page) {
         }
       }
     }
-    console.log("rootNode =" + rootNode);
+    console.log("rootNode ==" + rootNode);
     if (rootNode !== null) {
       treeWalker = document.createTreeWalker(rootNode, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, {
         acceptNode: function(node) {

@@ -6,6 +6,7 @@ var async = require('async');
 var crypto = require('crypto');
 var url = require('url');
 var download = require('download');
+var upload_failed_retry_count = 3; // 上传失败的重试次数
 
 module.exports = filedownup
 
@@ -45,8 +46,6 @@ var get_image_size_from_URI = function(url, cb) {
 
 
 var downloadFromBCS = function(source, callback){
-  console.log('download img: ' + source);
-  
   var nameHash=crypto.createHash('md5').update(source).digest("hex");
   var target = os.tmpdir() + '/' + 'imagecache' + '/';
   if (fs.existsSync(target)) {
@@ -206,7 +205,7 @@ var client = new OSS({
   accessKeyId: 'Vh0snNA4Orv3emBj',
   accessKeySecret: 'd7p2eNO8GuMl1GtIZ0at4wPDyED4Nz'
 });
-var fileUploader = function (item,callback){
+var fileUploader = function (item,callback){ 
   showDebug && console.log('uploading ' + JSON.stringify(item));
   // if (Session.get('terminateUpload')) {
   //     if (Session.get('flag')){
@@ -261,6 +260,11 @@ var fileUploader = function (item,callback){
   //});
 
 
+  if(!item.upload_count)
+    item.upload_count = 1;
+  else
+    item.upload_count += 1;   
+
   co(function* () {
     var timestamp = new Date().getTime();
     var key = timestamp+'_'+mongoid();
@@ -283,6 +287,10 @@ var fileUploader = function (item,callback){
     //console.log(result);
   }).catch(function (err) {
     item.uploaded = false;
+    
+    if(item.upload_count > upload_failed_retry_count)
+      return callback && callback(null,item);
+      
     setTimeout( function() {
       fileUploader(item, callback)
     },1000);
