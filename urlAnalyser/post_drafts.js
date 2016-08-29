@@ -271,7 +271,8 @@ function PostDrafts(_id, user, threadsNumber) {
         data_row: '1',
         data_col: '1',
         data_sizex: '6',
-        data_sizey: sizey.toString()
+        data_sizey: sizey.toString(),
+        souImgUrl: imageExternalURL
       });
     }
   };
@@ -526,6 +527,7 @@ function PostDrafts(_id, user, threadsNumber) {
         pub[i].data_sizey = parseInt(pub[i].data_sizey);
         pub[i].data_wait_init = true;
         if(i > 0){pub[i].data_row = pub[i-1].data_row + pub[i-1].data_sizey;}
+        if(pub[i].uploaded === false && pub[i].souImgUrl){pub[i].imgUrl=pub[i].souImgUrl}
       }
     }
     

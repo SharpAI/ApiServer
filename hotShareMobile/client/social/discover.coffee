@@ -136,9 +136,9 @@ if Meteor.isClient
         else
           "也点评了此故事"
       hasLpcoments:()->
-        Feeds.find({followby:Meteor.userId(),checked:false, eventType: {$ne: 'share'}, createdAt:{$gt:new Date((new Date()).getTime() - 7 * 24 * 3600 * 1000)}},{sort: {createdAt: -1}, limit:20}).count() > 0
+        Feeds.find({followby:Meteor.userId(),checked:false, eventType: {$nin: ['share','personalletter']}, createdAt:{$gt:new Date((new Date()).getTime() - 7 * 24 * 3600 * 1000)}},{sort: {createdAt: -1}, limit:20}).count() > 0
       lpcomments:()->
-        Feeds.find({followby:Meteor.userId(),checked:false, eventType: {$ne: 'share'}, createdAt:{$gt:new Date((new Date()).getTime() - 7 * 24 * 3600 * 1000)}},{sort: {createdAt: -1}, limit:20})
+        Feeds.find({followby:Meteor.userId(),checked:false, eventType: {$nin: ['share','personalletter']}, createdAt:{$gt:new Date((new Date()).getTime() - 7 * 24 * 3600 * 1000)}},{sort: {createdAt: -1}, limit:20})
       time_diff: (created)->
         GetTime0(new Date() - created)
     Template.lpcomments.events

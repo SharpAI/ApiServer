@@ -1284,7 +1284,7 @@ if Meteor.isClient
         document.getElementById('default'+cropDraftId).innerHTML=""
       ,120
       $('#'+cropDraftId).css('z-index',"2")
-      if Posts.find({_id:Drafts.find().fetch()[0]._id}).count() > 0
+      if !Session.equals('fromDraftPost',true) and Posts.find({_id:Drafts.find().fetch()[0]._id}).count() > 0
         Session.set 'isReviewMode','2'
       else
         Session.set 'isReviewMode','0'
