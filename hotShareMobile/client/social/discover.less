@@ -153,30 +153,32 @@
   }
 }
 
-.recommends #wrapper { min-width:300px; padding:0 10px; margin-top:20px; margin-bottom:30px; background-color:#efeff4;}
-.recommends #wrapper #list { border-bottom:1px solid #efefef; padding-bottom:10px; margin-top:15px; width:100%; position:relative;background-color: #fff;}
+.recommends #wrapper { min-width:300px; padding:0 10px; margin-top:20px; margin-bottom:30px; background-color:#efeff4;font-family: "RobotoDraft", "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;}
+.recommends #wrapper #list { border-bottom:1px solid #efefef; padding-bottom:10px; margin-top:15px; width:100%; position:relative;background-color: #fff;letter-spacing: 1px;}
 .recommends .icon { position:absolute;}
-
+.recommends img {object-fit: cover;}
 .recommends .user_name { position:relative; margin-left:50px;background-color: #fff;border-bottom: 1px solid #efefef; margin-top: 10px;}
-.recommends .user_name h2 { font-size:16px; margin: 0;margin-top:4px; color:#07519a;}
-.recommends .user_name h3 { font-size:14px; margin-top:4px; color:#999;}
-.recommends .user_name span { margin-left:4px; margin-right: 4px; color:#999; }
+.recommends .user_name h2 { font-size:16px; margin: 0;margin-top:4px; color:#07519a;font-weight: bold;}
+.recommends .user_name h3 { font-size:14px; line-height: 20px; margin-top:4px; color: black; }
+.recommends .user_name span { margin-left:4px; margin-right: 4px; color:#07519a; }
 
 .recommends .user_name .readpost {
   font-size:15px;
   width: 100%;
   float: left;
-  margin-right: 2%;
-  height: 56px;
+  margin-right: 10px;
+  height: 80px;
   overflow: hidden;
   position: relative;}
-.recommends .user_name dl { background:#dedfd7; padding:5px; margin-top:6px; min-height:50px;margin-bottom:1px;}
-.recommends .user_name dl dt {float:right; margin-left:10px;}
+.recommends .user_name dl { background:none; padding:0; margin:0; min-height:80px;}
+.recommends .user_name dl dt {float:left; margin-right:10px;}
 .recommends .user_name dl dd {
-  color: black;
-  font-size:15px;
+  color: #07519a;
+  font-size:14px;
+  font-weight: bold;
+  h2{max-height: 64px; color: #07519a;font-size:14px; line-height: 22px; overflow: hidden;overflow : hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;}
 }
-.recommends .user_name p { color:#999; margin-top:5px;}
+.recommends .user_name p { color:black; font-weight: normal; line-height: 18px; margin: 4px;}
 .recommends .clear {clear: both;}
 .recommends {background:#fff;}
 .recommends #wrapper .elementBox {
