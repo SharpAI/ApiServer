@@ -38,21 +38,23 @@
                 <li class="elementBox" id="{{recommendPostId}}" style="border-bottom: 1px dashed #d9d9d9;">
                 <a id="list" class="swipeElement">
                     <div class="icon">
-                        <img src="{{recommendUserIcon}}" width="40" height="40" style="border-radius:20px;"/>
+                        <img src="{{recommendUserIcon}}" width="40" height="40" style="border-radius:4px;"/>
                     </div>
                     <div class="user_name" style="background:#efeff4;">
-                        <h2>{{ownerName}}&nbsp;</h2>
-                        <h3>看过该帖后，推荐您阅读：</h3>
+                        <h2 style="padding-top:2px;">{{recommendUserName}}&nbsp;</h2>
+                        <h3>看过<span>{{targetPostTitle}}</span>后，推荐您阅读</h3>
                         <div class="readpost">
-                            <dl style="color:#999;">
+                            <dl>
                                 <dt>
-                                    <img class="post_pic" src="{{recommendPostMainImage}}" width="40" height="40"/>
+                                    <img class="post_pic" src="{{recommendPostMainImage}}" width="64" height="64"/>
                                     <!--<div class="red_spot"></div>-->
                                 </dt>
-                                <dd style="margin: 0;">{{recommendPostTitle}}</dd>
+                               <dd>
+                                    <h2>{{recommendPostTitle}}</h2>
+                                    <p>发表：{{time_diff recommendPostCreatedAt}}</p>
+                                </dd>
                             </dl>
                         </div>
-                        <span style="margin:0;">&nbsp;<!--{{time_diff createdAt}}--></span>
                     </div>
                     <div class="clear"></div>
                 </a>
