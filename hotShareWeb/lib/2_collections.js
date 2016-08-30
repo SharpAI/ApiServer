@@ -1757,6 +1757,12 @@ if(Meteor.isServer){
       else
           return Feeds.find({followby:this.userId,checked:false});
   });
+  Meteor.publish('postOwnerInfo', function (userId){
+    if(this.userId === null)
+        return this.ready();
+    else
+        return Meteor.users.find({_id:userId});
+  });
   Meteor.publish("myCounter",function(){
       if(this.userId === null)
           return this.ready();

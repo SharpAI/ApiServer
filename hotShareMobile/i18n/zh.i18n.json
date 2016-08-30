@@ -86,6 +86,8 @@
   "draft": " 份草稿",
   "checkAll": "查看全部 ",
   "numOfStory": " 个故事",
+  "follow":"关注",
+  "unFollow": "已关注",
   //end
   //savedDrafts.html
   "draftTxt": "草稿",

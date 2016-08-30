@@ -261,7 +261,11 @@ if Meteor.isClient
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
     $('.page').addClass('scrollable')
+    if PostFriends.find({ta: Session.get("ProfileUserId1")}).count() is 0
+      Meteor.subscribe "postOwnerInfo",Session.get("ProfileUserId1")
   Template.userProfilePage1.helpers
+    isFollowedTheAuthor: ()->
+      Follower.find({followerId: Session.get("ProfileUserId1"), userId: Meteor.userId()}).count()>0
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
     isMale:(sex)->
@@ -293,7 +297,13 @@ if Meteor.isClient
     withChat:->
       withChat
     profile:->
-      PostFriends.findOne {ta: Session.get("ProfileUserId1")}
+      if Session.get("ProfileUserId1") is Meteor.userId()
+        Meteor.user()
+      else
+        if PostFriends.findOne {ta: Session.get("ProfileUserId1")}
+          PostFriends.findOne {ta: Session.get("ProfileUserId1")}
+        else
+          Meteor.users.findOne {_id: Session.get("ProfileUserId1")}
     location:->
       getLocation(Session.get("ProfileUserId1"))
     isFollowed:()->
@@ -324,6 +334,35 @@ if Meteor.isClient
       else
         false
   Template.userProfilePage1.events
+    'click #followAuthor': (e)->
+      if Meteor.user().profile.fullname
+        username = Meteor.user().profile.fullname
+      else
+        username = Meteor.user().username
+      profile = Template.userProfilePage1.__helpers.get('profile')()
+      followerName = ''
+      if profile and profile.profile and profile.profile.fullname
+        followerName = profile.profile.fullname
+      else if profile
+        followerName = profile.username
+      Follower.insert {
+        userId: Meteor.userId()
+        #这里存放fullname
+        userName: username
+        userIcon: Meteor.user().profile.icon
+        userDesc: Meteor.user().profile.desc
+        followerId: Session.get("ProfileUserId1")
+        #这里存放fullname
+        followerName: followerName
+        followerIcon: profile.profile.icon
+        followerDesc: profile.profile.desc
+        createAt: new Date()
+      }
+    'click #unFollowAuthor': (e)->
+      followId = Follower.findOne({followerId: Session.get("ProfileUserId1"), userId: Meteor.userId()})._id
+      Follower.remove {
+        _id: followId
+      }
     'click .userProfile .back':()->
       if window.userProfileTrackerHandler
         window.userProfileTrackerHandler.stop()
@@ -355,6 +394,8 @@ if Meteor.isClient
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
   Template.userProfilePage2.helpers
+    isFollowedTheAuthor: ()->
+      Follower.find({followerId: Session.get("ProfileUserId2"), userId: Meteor.userId()}).count()>0
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
     isMale:(sex)->
@@ -385,7 +426,10 @@ if Meteor.isClient
     withChat:->
       withChat
     profile:->
-      PostFriends.findOne {ta: Session.get("ProfileUserId2")}
+      if Session.get("ProfileUserId2") is Meteor.userId()
+        Meteor.user()
+      else
+        PostFriends.findOne {ta: Session.get("ProfileUserId2")}
     location:->
       getLocation(Session.get("ProfileUserId2"))
     isFollowed:()->
@@ -416,6 +460,35 @@ if Meteor.isClient
       else
         false
   Template.userProfilePage2.events
+    'click #followAuthor': (e)->
+      if Meteor.user().profile.fullname
+        username = Meteor.user().profile.fullname
+      else
+        username = Meteor.user().username
+      profile = Template.userProfilePage2.__helpers.get('profile')()
+      followerName = ''
+      if profile and profile.profile and profile.profile.fullname
+        followerName = profile.profile.fullname
+      else if profile
+        followerName = profile.username
+      Follower.insert {
+        userId: Meteor.userId()
+        #这里存放fullname
+        userName: username
+        userIcon: Meteor.user().profile.icon
+        userDesc: Meteor.user().profile.desc
+        followerId: Session.get("ProfileUserId2")
+        #这里存放fullname
+        followerName: followerName
+        followerIcon: profile.profile.icon
+        followerDesc: profile.profile.desc
+        createAt: new Date()
+      }
+    'click #unFollowAuthor': (e)->
+      followId = Follower.findOne({followerId: Session.get("ProfileUserId2"), userId: Meteor.userId()})._id
+      Follower.remove {
+        _id: followId
+      }
     'click .userProfile .back':()->
       if window.userProfileTrackerHandler
         window.userProfileTrackerHandler.stop()
@@ -447,6 +520,8 @@ if Meteor.isClient
     $('.userProfile').css('min-height', $(window).height() - 40)
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
   Template.userProfilePage3.helpers
+    isFollowedTheAuthor: ()->
+      Follower.find({followerId: Session.get("ProfileUserId3"), userId: Meteor.userId()}).count()>0
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
     isMale:(sex)->
@@ -476,7 +551,10 @@ if Meteor.isClient
     withChat:->
       withChat
     profile:->
-      PostFriends.findOne {ta: Session.get("ProfileUserId3")}
+      if Session.get("ProfileUserId3") is Meteor.userId()
+        Meteor.user()
+      else
+        PostFriends.findOne {ta: Session.get("ProfileUserId3")}
     location:->
       getLocation(Session.get("ProfileUserId3"))
     isFollowed:()->
@@ -507,6 +585,35 @@ if Meteor.isClient
       else
         false
   Template.userProfilePage3.events
+    'click #followAuthor': (e)->
+      if Meteor.user().profile.fullname
+        username = Meteor.user().profile.fullname
+      else
+        username = Meteor.user().username
+      profile = Template.userProfilePage3.__helpers.get('profile')()
+      followerName = ''
+      if profile and profile.profile and profile.profile.fullname
+        followerName = profile.profile.fullname
+      else if profile
+        followerName = profile.username
+      Follower.insert {
+        userId: Meteor.userId()
+        #这里存放fullname
+        userName: username
+        userIcon: Meteor.user().profile.icon
+        userDesc: Meteor.user().profile.desc
+        followerId: Session.get("ProfileUserId3")
+        #这里存放fullname
+        followerName: followerName
+        followerIcon: profile.profile.icon
+        followerDesc: profile.profile.desc
+        createAt: new Date()
+      }
+    'click #unFollowAuthor': (e)->
+      followId = Follower.findOne({followerId: Session.get("ProfileUserId3"), userId: Meteor.userId()})._id
+      Follower.remove {
+        _id: followId
+      }
     'click .userProfile .back':()->
       if window.userProfileTrackerHandler
         window.userProfileTrackerHandler.stop()
@@ -540,6 +647,8 @@ if Meteor.isClient
     $('.viewPostImages ul li').css('height',$(window).width()*0.168)
     $('.page').addClass('scrollable')
   Template.userProfilePage.helpers
+    isFollowedTheAuthor: ()->
+      Follower.find({followerId: Session.get("ProfileUserId"), userId: Meteor.userId()}).count()>0
     showPostSuggestionToUser: ()->
       withPostSuggestionToUser
     isMale:(sex)->
@@ -569,7 +678,10 @@ if Meteor.isClient
     withChat:->
       withChat
     profile:->
-      UserDetail.findOne {_id: Session.get("ProfileUserId")}
+      if Session.get("ProfileUserId") is Meteor.userId()
+        Meteor.user()
+      else
+        UserDetail.findOne {_id: Session.get("ProfileUserId")}
     location:->
       getLocation(Session.get("ProfileUserId"))
     isFollowed:()->
@@ -600,6 +712,35 @@ if Meteor.isClient
       else
         false
   Template.userProfilePage.events
+    'click #followAuthor': (e)->
+      if Meteor.user().profile.fullname
+        username = Meteor.user().profile.fullname
+      else
+        username = Meteor.user().username
+      profile = Template.userProfilePage.__helpers.get('profile')()
+      followerName = ''
+      if profile and profile.profile and profile.profile.fullname
+        followerName = profile.profile.fullname
+      else if profile
+        followerName = profile.username
+      Follower.insert {
+        userId: Meteor.userId()
+        #这里存放fullname
+        userName: username
+        userIcon: Meteor.user().profile.icon
+        userDesc: Meteor.user().profile.desc
+        followerId: Session.get("ProfileUserId")
+        #这里存放fullname
+        followerName: followerName
+        followerIcon: profile.profile.icon
+        followerDesc: profile.profile.desc
+        createAt: new Date()
+      }
+    'click #unFollowAuthor': (e)->
+      followId = Follower.findOne({followerId: Session.get("ProfileUserId"), userId: Meteor.userId()})._id
+      Follower.remove {
+        _id: followId
+      }
     'click .userProfile .back':()->
       if window.userProfileTrackerHandler
         window.userProfileTrackerHandler.stop()
