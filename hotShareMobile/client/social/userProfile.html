@@ -30,6 +30,17 @@
           </span>
         <span class="location">{{location}}</span>
         <span class="desc">{{profile.profile.desc}}</span>
+        {{#unless isMyself}}
+            {{#if isFollowedTheAuthor}}
+            <div id="unFollowAuthor" class="followMe" style="border:none;">
+                <div class="followBtn"><i class="fa fa-check"></i>&nbsp;{{_ "unFollow"}}</div>
+            </div>
+            {{else}}
+            <div id="followAuthor" class="followMe">
+                <div class="followBtn"><i class="fa fa-plus"></i>&nbsp;{{_ "follow"}}</div>
+            </div>
+            {{/if}}
+        {{/unless}}
     </div>
     <div class="showPostsLine"></div>
     <div class="post">
@@ -85,6 +96,17 @@
           </span>
         <span class="location">{{location}}</span>
         <span class="desc">{{profile.profile.desc}}</span>
+        {{#unless isMyself}}
+            {{#if isFollowedTheAuthor}}
+            <div id="unFollowAuthor" class="followMe" style="border:none;">
+                <div class="followBtn"><i class="fa fa-check"></i>&nbsp;{{_ "unFollow"}}</div>
+            </div>
+            {{else}}
+            <div id="followAuthor" class="followMe">
+                <div class="followBtn"><i class="fa fa-plus"></i>&nbsp;{{_ "follow"}}</div>
+            </div>
+            {{/if}}
+        {{/unless}}
     </div>
     <div class="showPostsLine"></div>
     <div class="post">
@@ -140,6 +162,17 @@
           </span>
         <span class="location">{{location}}</span>
         <span class="desc">{{profile.profile.desc}}</span>
+        {{#unless isMyself}}
+            {{#if isFollowedTheAuthor}}
+            <div id="unFollowAuthor" class="followMe" style="border:none;">
+                <div class="followBtn"><i class="fa fa-check"></i>&nbsp;{{_ "unFollow"}}</div>
+            </div>
+            {{else}}
+            <div id="followAuthor" class="followMe">
+                <div class="followBtn"><i class="fa fa-plus"></i>&nbsp;{{_ "follow"}}</div>
+            </div>
+            {{/if}}
+        {{/unless}}
     </div>
     <div class="showPostsLine"></div>
     <div class="post">
@@ -195,6 +228,17 @@
           </span>
             <span class="location">{{location}}</span>
             <span class="desc">{{profile.profile.desc}}</span>
+            {{#unless isMyself}}
+            {{#if isFollowedTheAuthor}}
+            <div id="unFollowAuthor" class="followMe" style="border:none;">
+                <div class="followBtn"><i class="fa fa-check"></i>&nbsp;{{_ "unFollow"}}</div>
+            </div>
+            {{else}}
+            <div id="followAuthor" class="followMe">
+                <div class="followBtn"><i class="fa fa-plus"></i>&nbsp;{{_ "follow"}}</div>
+            </div>
+            {{/if}}
+        {{/unless}}
         </div>
         <div class="showPostsLine"></div>
         <div class="post">

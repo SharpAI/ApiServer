@@ -1757,6 +1757,12 @@ if(Meteor.isServer){
       else
           return Feeds.find({followby:this.userId,checked:false});
   });
+  Meteor.publish('postOwnerInfo', function (userId){
+    if(this.userId === null)
+        return this.ready();
+    else
+        return Meteor.users.find({_id:userId});
+  });
   Meteor.publish("myCounter",function(){
       if(this.userId === null)
           return this.ready();
@@ -2053,6 +2059,23 @@ if(Meteor.isServer){
         })
         return [
             ReaderPopularPosts.find({userId: this.userId},{limit:5}),
+            Posts.find({_id:{$in: postIds}})
+        ]
+    }
+    else {
+        return this.ready();
+    }
+  });
+
+  Meteor.publish('readerpopularpostsbyuid', function(uid) {
+    if(this.userId) {
+        // return ReaderPopularPosts.find({userId: this.userId},{limit:3});
+        var postIds = [];
+        ReaderPopularPosts.find({userId: uid},{limit:5}).forEach(function(item){
+            postIds.push(item.postId)
+        })
+        return [
+            ReaderPopularPosts.find({userId: uid},{limit:5}),
             Posts.find({_id:{$in: postIds}})
         ]
     }

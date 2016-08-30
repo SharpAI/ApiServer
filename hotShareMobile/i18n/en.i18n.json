@@ -87,6 +87,8 @@
   "draft": " drafts",
    "checkAll": "Read all ",
   "numOfStory": " stories",
+  "follow":"follow",
+  "unFollow": "unFollow",
   //end
   //savedDrafts.html
   "draftTxt": "Draft",

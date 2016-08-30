@@ -10,8 +10,11 @@ if Meteor.isClient
        Topics.find({type:"topic"}, {sort: {posts: -1}, limit:20})
     groups: ()->
       # ReaderPopularPosts.find({userId: Meteor.userId()})
+      uid = Meteor.userId()
+      if Session.get('post-publish-user-id') and Session.get('post-publish-user-id') isnt ''
+        uid = Session.get('post-publish-user-id')
       posts = []
-      ReaderPopularPosts.find({}).forEach (item)->
+      ReaderPopularPosts.find({userId: uid}).forEach (item)->
         post = Posts.findOne({_id: item.postId})
         if post
           item.mainImage = post.mainImage
@@ -56,7 +59,7 @@ if Meteor.isClient
        else
          $save.html($save.html() + '<i style="font-size:18px; margin-left: 10px;" class="fa fa-refresh fa-spin fa-3x fa-fw"></i>')
          # return
-        
+
       #  if($('#share-follower').prop('checked'))
       #    Meteor.call('sendEmailByWebFollower', Session.get('TopicPostId'), 'push')
 

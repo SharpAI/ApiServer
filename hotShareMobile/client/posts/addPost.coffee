@@ -153,7 +153,7 @@ if Meteor.isClient
                 #console.log('resizeImage, filename: ' + data.filename + 'width: ' + data.width + ',height: ' + data.height)
               #,(error)->
                 #console.log("Error : \r\n" + error)
-              #,file.toURL(), 64, 0, {imageDataType:ImageResizer.IMAGE_DATA_TYPE_URL, resizeType:ImageResizer.RESIZE_TYPE_MIN_PIXEL, #format: imageType, storeImage: true, filename: fileName, directory: fileDir});      
+              #,file.toURL(), 64, 0, {imageDataType:ImageResizer.IMAGE_DATA_TYPE_URL, resizeType:ImageResizer.RESIZE_TYPE_MIN_PIXEL, #format: imageType, storeImage: true, filename: fileName, directory: fileDir});
   insertVideoWithDownloadedImage = (videoInfo, linkInfo,imageExternalURL,found,inputUrl,file,width,height)->
     if file
       sizey = Math.round( 6 * height / width )
@@ -472,13 +472,13 @@ if Meteor.isClient
         else if Session.get('importProcedure') is 95
           if(isTimeout)
             return
-            
+
           isTimeout = true
           Meteor.setTimeout(
             ()->
               if(isRes is true)
                 return
-              
+
               popupProgressBar.close()
               Session.set('cancelImport', true)
               abortFastImport()
@@ -715,7 +715,7 @@ if Meteor.isClient
 
     modalUserId = $('#chooseAssociatedUser .modal-body dt.active').attr('userId')
     ownerUser = null
-    
+
     if modalUserId is Meteor.userId() or !modalUserId
       ownerUser = Meteor.user()
     else
@@ -727,8 +727,9 @@ if Meteor.isClient
           fullname: $('#chooseAssociatedUser .modal-body dt.active').attr('userName')
         }
       }
-      
+
     Session.set 'post-publish-user-id', ownerUser._id
+    Meteor.subscribe "readerpopularpostsbyuid", ownerUser._id
     ownerName = if ownerUser.profile and ownerUser.profile.fullname then ownerUser.profile.fullname else ownerUser.username
     ownerIcon = if ownerUser.profile and ownerUser.profile.icon then ownerUser.profile.icon else '/userPicture.png'
 
@@ -787,7 +788,7 @@ if Meteor.isClient
     pub.sort((a, b)->
       sortBy('data_row', a, b)
     )
-    
+
     # remove data_wait_init status
     new_pub = []
     if pub.length > 0
@@ -798,7 +799,7 @@ if Meteor.isClient
             row[key] = pub[i][key]
         new_pub.push(row)
     pub = new_pub
-    
+
     if Session.get('isReviewMode') is '2' or Posts.find({_id:postId}).count()>0
       Posts.update(
         {
@@ -994,25 +995,25 @@ if Meteor.isClient
       Session.set('textareaFocused', false)
       $(".head").css 'position','fixed'
     ###
-    'paste [name=textarea]' : (e)-> 
+    'paste [name=textarea]' : (e)->
       #Session.set('textareaPaste', true)
-      currentData = e.currentTarget.value  
+      currentData = e.currentTarget.value
       console.log ("currentData:"+currentData)
       pastedData = e.originalEvent.clipboardData.getData('Text')
-      console.log("textarea paste ："+pastedData)  
+      console.log("textarea paste ："+pastedData)
       totalData = currentData + pastedData
       paragraphArray = []
       paragraphArrayTmp = []
       paragraphArrayTmp = totalData.split('\n')
       if paragraphArrayTmp.length > 0
-        for i in [0..paragraphArrayTmp.length-1]                
-          unless (paragraphArrayTmp[i].length == 0 or paragraphArrayTmp[i] == ' ') 
+        for i in [0..paragraphArrayTmp.length-1]
+          unless (paragraphArrayTmp[i].length == 0 or paragraphArrayTmp[i] == ' ')
             paragraphArray.push(paragraphArrayTmp[i])
       if paragraphArray.length > 0
         console.log("paragraphArray.length="+paragraphArray.length)
-        for i in [0..paragraphArray.length-1]               
+        for i in [0..paragraphArray.length-1]
           console.log('paragraphArray['+i+']='+paragraphArray[i])
-          if i == 0  
+          if i == 0
             e.currentTarget.value  = paragraphArray[i]
             Drafts.update({_id: this._id}, {$set: {text: paragraphArray[i]}})
             if paragraphArray.length>1
@@ -1406,7 +1407,7 @@ if Meteor.isClient
     #     if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
     #         userIds.push(item.userIdB)
     # )
-    
+
     # Meteor.subscribe('associateduserdetails', userIds)
     Meteor.subscribe('userRelation')
 
@@ -1420,7 +1421,7 @@ if Meteor.isClient
       #     if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
       #         userIds.push(item.userIdB)
       # )
-      
+
       # return Meteor.users.find({_id: {'$in': userIds}})
       return UserRelation.find({userId: Meteor.userId()})
 
