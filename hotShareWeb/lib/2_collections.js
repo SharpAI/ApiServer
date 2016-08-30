@@ -2061,6 +2061,23 @@ if(Meteor.isServer){
     }
   });
 
+  Meteor.publish('readerpopularpostsbyuid', function(uid) {
+    if(this.userId) {
+        // return ReaderPopularPosts.find({userId: this.userId},{limit:3});
+        var postIds = [];
+        ReaderPopularPosts.find({userId: uid},{limit:5}).forEach(function(item){
+            postIds.push(item.postId)
+        })
+        return [
+            ReaderPopularPosts.find({userId: uid},{limit:5}),
+            Posts.find({_id:{$in: postIds}})
+        ]
+    }
+    else {
+        return this.ready();
+    }
+  });
+
   Meteor.publish('associatedusers', function() {
     if(!this.userId){
         return this.ready()
