@@ -81,9 +81,11 @@ if Meteor.isClient
       else 
          return true
   Template.bell.events
-    'click .bellAlertBackground': ()->
+    'click .closePersonalLetter': ()->
+      $('body').css('overflow-y','auto')
       $('.personalLetterContent,.bellAlertBackground').fadeOut 300
     'click #personalLetter': (e)->
+      $('body').css('overflow-y','hidden')
       document.getElementById(this._id + 'content').style.display='block'
       $(".bellAlertBackground").fadeIn 300
     'click .contentList': (e)->

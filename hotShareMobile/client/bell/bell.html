@@ -46,8 +46,12 @@
                 <div class="createAt">{{time_diff createdAt}}</div>
             </a>
             <div id="{{_id}}content" class="personalLetterContent">
-              {{content}}
-              <div class="show-user-email">联系邮箱：{{userEmail}}</div>
+              <div class="LetterHead">来自 <strong>{{userName}}</strong> 的私信</div>
+              <div class="closePersonalLetter"><i class="fa fa-angle-left fa-fw"></i></div>
+              <div class="LetterContent">{{content}}</div>
+              <a href="mailto:{{userEmail}}?subject=Re:{{userName}}"><div class="LetterFooter">
+                <div class="show-user-email">联系邮箱：{{userEmail}}</div>
+              </div></a>
             </div>
             <div class="line">
                 <span></span>
