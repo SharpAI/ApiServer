@@ -798,8 +798,8 @@ if(Meteor.isServer){
             try {
                 var recommendUserIds = [];
                 Recommends.find({relatedUserId: doc.owner, relatedPostId: {$exists: false}}).forEach(function(item) {
-                    if (!~recommendUserIds.indexOf(item.recommandUserId)) {
-                        recommendUserIds.push(item.recommandUserId);
+                    if (!~recommendUserIds.indexOf(item.recommendUserId)) {
+                        recommendUserIds.push(item.recommendUserId);
                         Recommends.update({_id: item._id}, {$set: {relatedPostId: doc._id}});
                     }
                 });
