@@ -661,6 +661,7 @@ if Meteor.isClient
       }
       Meteor.call('personalLetterSendEmailFeedback',doc)
       $('.sendAuthorEmail,.authorEmailAlertBackground').hide();
+      trackEvent("PrivateMsgAuthor","Private Msg author")
     'click #SubscribeAuthor': ->
       $('.subscribeAutorPage').show()
     'click .userDashboard,.authorInfoIcon':->
