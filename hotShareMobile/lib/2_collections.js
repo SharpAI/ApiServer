@@ -1435,7 +1435,11 @@ if(Meteor.isServer){
             return this.ready();
         }
         else {
-            return Recommends.find({relatedPostId: postId});
+            if(Recommends.find({relatedPostId: postId,readUsers: {$exists: true}}).count() > 0){
+                return Recommends.find({relatedPostId: postId,readUsers:{$nin:[this.userId]}});
+            } else {
+                return Recommends.find({relatedPostId: postId})
+            } 
             /*
             var self = this;
             var handle = Recommends.find({relatedPostId: postId}, {
@@ -2208,6 +2212,14 @@ if(Meteor.isServer){
     return SavedDrafts.find({owner: this.userId}, {sort: {createdAt: -1}});
   });
 
+  Recommends.allow({
+      update: function(userId, doc, fieldNames, modifier) {
+        if(modifier.$set["readUsers"]){
+            return true;
+        }   
+        return false;
+      }
+  });
 
   FavouritePosts.allow({
     insert: function(userId, doc) {
