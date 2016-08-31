@@ -155,10 +155,10 @@
   //search.html
   "searchTopic": "探索",
   "popTopics" :"流行话题",
-  "searchPeople": "搜索人和#话题#",
+  "searchPeople": "搜索作者和#话题#",
   "plainTopic": "话题",
-  "discoverPeople": "查找值得关注的人",
-  "plainPeople": "人",
+  "discoverPeople": "查找值得关注的作者",
+  "plainPeople": "作者",
   "recommandUser": "建议用户",
   //end
   //listPosts.html
