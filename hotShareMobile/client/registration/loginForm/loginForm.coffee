@@ -7,6 +7,40 @@ Template.loginForm.events
       $('#login').css('display',"block")
       $('.recovery').css('display',"none")
 #      $('.authOverlay').css('-webkit-filter',"none")
+    'click .forgetPwdBtn': (e)->
+      menus = ['忘记密码？','联系客服']
+      menuTitle = ''
+      callback = (buttonIndex)->
+        if buttonIndex is 1
+          $('.login').css('display',"none")
+          $('#register').css('display',"none")
+          $('#weibo').css('display',"none")
+          $('#login').css('display',"none")
+          $('.recovery').css('display',"block")
+          $('.agreeDeal').css('display',"none")
+        else if buttonIndex is 2
+          $('.customerService,.customerServiceBackground').fadeIn(300)
+      PUB.actionSheet(menus, menuTitle, callback)
+    'click .btnClose' :->
+      $('.customerService,.customerServiceBackground').hide()
+    'click #sendEmailBtn' :(e,t)->
+      mailAddress = t.find('#customerEmail').value
+      content = t.find('#sendContent').value
+      qqValueReg = RegExp(/^[1-9][0-9]{4,9}$/)
+      mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) 
+      subject = '用户' + mailAddress + '需要人工客服！'
+      if !mailValueReg.test(mailAddress) and !qqValueReg.test(mailAddress)
+        PUB.toast('请输入正确的QQ号或Email')
+        return false
+      if qqValueReg.test(mailAddress)
+        mailAddress += '@qq.com'
+      if content is ''
+        PUB.toast('请说明申诉原因。')
+        return false
+      $("#sendContent").val('')
+      Meteor.call('sendEmailToAdmin', mailAddress,subject ,content)
+      PUB.toast('邮件已经发送，请等待客服与您联系。')
+      $('.customerService,.customerServiceBackground').hide();
     'click .forgetPassword' :->
       $('.login').css('display',"none")
       $('#register').css('display',"none")

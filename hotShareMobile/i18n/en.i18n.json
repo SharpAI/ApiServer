@@ -64,6 +64,7 @@
   //loginForm.html
   "logIn": "Log in",
   "forgotPassword": "Forgot your password?",
+  "forgetPwd": "Forgot password?",
   //end
    //registerFollow.html
   "chooseAtLeast": "Choose at least ",
