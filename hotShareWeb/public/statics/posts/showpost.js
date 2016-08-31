@@ -179,26 +179,7 @@
 
         calcLayoutForEachPubElement();
 
-        var $showPosts, $test;
-        $showPosts = $('.showPosts');
-        $test = $('.showPosts').find('.content .gridster #test');
-        if ($test.height() > 1000) {
-            $('.showPosts').get(0).style.overflow = 'hidden';
-            $('.showPosts').get(0).style.maxHeight = '1500px';
-            $('.showPosts').get(0).style.position = 'relative';
-
-            $showPosts.after('<div class="readmore"><div class="readMoreContent"><i class="fa fa-plus-circle"></i>继续阅读</div></div>');
-        }
-
         initLazyload();
-
-        $('.showPostsBox .readmore').click(function (e) {
-            e.stopPropagation();
-            $('.showPosts').get(0).style.overflow = '';
-            $('.showPosts').get(0).style.maxHeight = '';
-            $('.showPosts').get(0).style.position = '';
-            $('.readmore').remove();
-        });
 
         // register window scroll callback
         function toggleHeaderNav(show) {
@@ -239,7 +220,7 @@
 
             // reach bottom
             if ((st + $(window).height()) === getDocHeight()) {
-                fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
+                //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
             }            
             //if ((st + $(window).height()) === getDocHeight()) {
             if ((getDocHeight() - (st + $(window).height())) < 150) {
@@ -292,7 +273,7 @@
                 $video.get(0).paused ? $video.get(0).play() : $video.get(0).pause();
             }
         });
-
+        /*
         $(".chatBtn").click(function() {
             var chat_server_url = 'testchat.tiegushi.com';
             var postId = window.location.pathname.split('/static/')[1];
@@ -302,7 +283,7 @@
             if (userId) url += '/userid/' + userId;
             window.open(url,'_blank')
         });
-
-        fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
+        */
+        //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
     };
 })(window);
