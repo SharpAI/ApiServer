@@ -1857,7 +1857,16 @@ if(Meteor.isServer){
         publicPostsPublisherDeferHandle(userId,postId,self);
         updateMomentsDeferHandle(self,postId);
         mqttPostViewHook(self.userId,postId);
-        return Posts.find({_id: postId});
+
+        Counts.publish(this, 'post_viewer_count', Viewers.find({
+          postId: postId, userId: this.userId
+        }), {countFromField: 'count'});
+
+        return [
+          Posts.find({_id: postId}),
+          //Viewers.find({postId: postId, userId: this.userId}, {sort: {count: -1}, limit: tip_follower_read_count}),
+          Follower.find({userId: this.userId})
+        ];
       }
   });
   /*Meteor.publish("drafts", function() {

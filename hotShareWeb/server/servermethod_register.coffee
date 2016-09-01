@@ -103,6 +103,7 @@ if Meteor.isServer
               browseTimes = post.browse + 1
             Meteor.defer ()->
               Posts.update({_id:postId},{$set:{browse:browseTimes}})
+              Viewers.update({postId: postId, userId: userId}, {$inc: {count: 1}}); 
               pushnotification("read",post,userId)
               unless NoUpdateShare
                 Feeds.update({postId:postId,eventType: 'share'},{

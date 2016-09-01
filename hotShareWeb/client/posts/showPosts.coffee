@@ -81,6 +81,12 @@ if Meteor.isClient
     
   Session.setDefault('hottestPosts', [])
   Template.showPosts.onRendered ->
+    viewer = Viewers.findOne({postId: Session.get('postContent')._id, userId: Meteor.userId()})
+    if Counts.get('post_viewer_count') >= 3 and Follower.find({userId: Meteor.userId(), followerId: Session.get('postContent').owner}).count() <= 0 and localStorage.getItem('tip_auto_follower') != Meteor.userId()
+      localStorage.setItem('tip_auto_follower', Meteor.userId())
+      Session.set('subscribeAutorPageType', 'auto')
+      $('.subscribeAutorPage').show()
+
     Meteor.subscribe 'usersById', Session.get('postContent').owner
     Meteor.call 'getHottestPosts', (err,res)->
       unless err
@@ -663,6 +669,7 @@ if Meteor.isClient
       $('.sendAuthorEmail,.authorEmailAlertBackground').hide();
       trackEvent("PrivateMsgAuthor","Private Msg author")
     'click #SubscribeAuthor': ->
+      Session.set('subscribeAutorPageType', 'click')
       $('.subscribeAutorPage').show()
     'click .userDashboard,.authorInfoIcon':->
       Session.set("ProfileUserId1", this.owner)
@@ -1179,6 +1186,8 @@ if Meteor.isClient
   Template.SubscribeAuthor.onRendered ->
     Meteor.subscribe 'follower'
   Template.SubscribeAuthor.helpers
+    hasType: (val)->
+      return Session.equals('subscribeAutorPageType', val)
     oldMail: ->
       postId = Session.get("postContent")._id
       post = Posts.findOne()
