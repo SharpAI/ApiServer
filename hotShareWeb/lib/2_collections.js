@@ -1412,7 +1412,11 @@ if(Meteor.isServer){
             return this.ready();
         }
         else {
-            return Recommends.find({relatedPostId: postId});
+            if(Recommends.find({relatedPostId: postId,readUsers: {$exists: true}}).count() > 0){
+                return Recommends.find({relatedPostId: postId,readUsers:{$nin:[this.userId]}});
+            } else {
+                return Recommends.find({relatedPostId: postId})
+            } 
             /*
             var self = this;
             var handle = Recommends.find({relatedPostId: postId}, {
@@ -2210,6 +2214,15 @@ if(Meteor.isServer){
     return Posts.find({owner: this.userId}, {sort: {createdAt: -1}, limit: limit});
   });
 
+  Recommends.allow({
+    update: function(userId, doc, fieldNames, modifier) {
+      if(modifier.$set["readUsers"]){
+          return true;
+      }   
+      return false;
+    }
+  });
+
   FavouritePosts.allow({
     insert: function(userId, doc) {
         return doc.userId === userId;
@@ -2791,8 +2804,8 @@ if(Meteor.isServer){
       var selector = {'text': regExp};
       return Topics.find(selector, options).fetch();
     } else {
-      return this.ready();
-      //return Topics.find({}, options).fetch();
+    //   return this.ready();
+      return Topics.find({}, options).fetch();
     }
   });
 
@@ -2807,8 +2820,8 @@ if(Meteor.isServer){
       ]};
       return Meteor.users.find(selector, options).fetch();
     } else {
-      return this.ready();
-      //return Meteor.users.find({}, options).fetch();
+    //   return this.ready();
+      return Meteor.users.find({}, options).fetch();
     }
   });
 
@@ -2820,7 +2833,8 @@ if(Meteor.isServer){
       var selector = { owner: this.userId,'title': regExp };
       return Posts.find(selector, options).fetch();
     } else {
-      return this.ready();
+    //   return this.ready();
+        return Posts.find({}, options).fetch();
     }
   });
 

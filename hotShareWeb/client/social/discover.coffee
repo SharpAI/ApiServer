@@ -199,6 +199,17 @@ if Meteor.isClient
         Session.set('postContentTwo', postId)
         $(window).children().off()
         $(window).unbind('scroll')
+        userLists = []
+        recommend = Recommends.findOne({recommendPostId:postId})
+        if recommend and recommend.readUsers
+          userLists = recommend.readUsers
+        userLists.push(Meteor.userId())
+        Recommends.update({_id:recommend._id},{$set: {readUsers: userLists}})
         if typeof PopUpBox isnt "undefined"
           PopUpBox.close()
-        Router.go '/posts/' + postId
+        Meteor.setTimeout ()->
+          Session.set("Social.LevelOne.Menu",'contactsList')
+          Session.set("needBindScroll", true)
+          Router.go '/posts/'+postId
+        ,300
+        # Router.go '/posts/' + postId

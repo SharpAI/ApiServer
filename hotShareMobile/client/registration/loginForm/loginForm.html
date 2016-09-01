@@ -15,8 +15,26 @@
             <input type="password" id="login-password" class="form-control" placeholder={{_ "passWord"}} /><br />
         </div>
         <input type="submit" value={{_ "logIn"}} id="sub-login">
-        <div class="forgetPassword">{{_ "forgotPassword"}}</div>
+        <div class="forgetPwdBtn">{{_ "forgetPwd"}}</div>
+        <!-- <div class="forgetPassword">{{_ "forgotPassword"}}</div> -->
     </form>
+    <div class="customerServiceBackground"></div>
+    <div class="customerService">
+        <div class="customerService-head">
+          <h5 class="title">联系故事贴客服</h5>
+          <div class="btnClose">&times;</div>
+        </div>
+        <div class="customer-email">
+          <input id="customerEmail" type="text" placeholder="请输入邮箱地址" value="{{oldMail}}">
+        </div>
+        <div class="alert-email" style="padding-left: 10px; padding-top: 10px;">邮箱地址用于人工客服与您联系，请正确填写</div>
+        <div class="content">
+          <textarea id="sendContent" cols="10" rows="2" placeholder="请输入您要申诉的内容，以便客服与您沟通。"></textarea>
+        </div>
+        <div class="btn-banner">
+          <span id="sendEmailBtn" class="send-email-btn">发送</span>
+        </div>
+    </div>
 </div>
 </template>
 <template name="recoveryForm">

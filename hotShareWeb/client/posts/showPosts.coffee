@@ -283,7 +283,7 @@ if Meteor.isClient
     withPostTTS: withPostTTS
     authorInfo: ()->
       user = Meteor.users.findOne({_id: @owner})
-      authorName = if user.profile.fullname then user.profile.fullname else user.profile.username
+      authorName = if user.profile.fullname then user.profile.fullname else user.username
       authorIcon = user.profile.icon
       authorInfo = {
         authorName: authorName
@@ -661,6 +661,7 @@ if Meteor.isClient
       }
       Meteor.call('personalLetterSendEmailFeedback',doc)
       $('.sendAuthorEmail,.authorEmailAlertBackground').hide();
+      trackEvent("PrivateMsgAuthor","Private Msg author")
     'click #SubscribeAuthor': ->
       $('.subscribeAutorPage').show()
     'click .userDashboard,.authorInfoIcon':->
