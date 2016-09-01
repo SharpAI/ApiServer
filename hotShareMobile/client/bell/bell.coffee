@@ -82,9 +82,11 @@ if Meteor.isClient
          return true
   Template.bell.events
     'click .closePersonalLetter': ()->
+      Session.set('inPersonalLetterView',false)
       $('body').css('overflow-y','auto')
       $('.personalLetterContent,.bellAlertBackground').fadeOut 300
     'click #personalLetter': (e)->
+      Session.set('inPersonalLetterView',true)
       $('body').css('overflow-y','hidden')
       document.getElementById(this._id + 'content').style.display='block'
       $(".bellAlertBackground").fadeIn 300

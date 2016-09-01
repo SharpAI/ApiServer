@@ -142,7 +142,13 @@ if (Meteor.isCordova) {
                 Template.addPost.__helpers.get('saveDraft')()
             }
         }
-
+      
+      // 阅读私信时返回
+      if(Session.equals('inPersonalLetterView',true)) {
+        Session.set('inPersonalLetterView',false);
+        $('body').css('overflow-y','auto');
+        $('.personalLetterContent,.bellAlertBackground').fadeOut(300);
+      }
       var currentRoute = Router.current().route.getName();
       if (currentRoute == undefined || currentRoute =="search" || currentRoute =="add" || currentRoute =="bell" || currentRoute =="user" || currentRoute == "authOverlay") {
         window.plugins.toast.showShortBottom('再点击一次退出!');
