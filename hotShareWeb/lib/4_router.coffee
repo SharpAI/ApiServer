@@ -275,6 +275,16 @@ if Meteor.isServer
             0
           else
             this.dislikeSum
+        hasPcomments: ->
+          if this.pcomments isnt undefined
+            return true
+          else
+            return false
+        pcomment:->
+          if this.pcomments isnt undefined
+            return this.pcomments
+          else
+            return ''            
         pcomments:->
           if this.pcomments is undefined
             0

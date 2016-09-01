@@ -110,7 +110,8 @@ if Meteor.isClient
         Session.set("postBack",postBack)
         Meteor.setTimeout ()->
           Session.set("lastPost",postId)
-          Router.go '/posts/'+postId
+          #Router.go '/posts/'+postId
+          location.pathname = '/posts/'+postId
         ,300
       'click .masonry_element':(e)->
         Session.set("historyForwardDisplay", false)
@@ -126,7 +127,8 @@ if Meteor.isClient
         Session.set("postBack",postBack)
         Meteor.setTimeout ()->
           Session.set("lastPost",postId)
-          Router.go '/posts/'+postId
+          #Router.go '/posts/'+postId
+          location.pathname = '/posts/'+postId
         ,300
     Template.lpcomments.helpers
       isCommentShare:->
@@ -176,7 +178,8 @@ if Meteor.isClient
           Session.set("postBack",postBack)
           Meteor.setTimeout ()->
             Session.set("lastPost",postId)
-            Router.go '/posts/'+postId
+            #Router.go '/posts/'+postId
+            location.pathname = '/posts/'+postId
           ,300
         else
           document.body.scrollTop = 0
@@ -201,4 +204,5 @@ if Meteor.isClient
         $(window).unbind('scroll')
         if typeof PopUpBox isnt "undefined"
           PopUpBox.close()
-        Router.go '/posts/' + postId
+        #Router.go '/posts/' + postId
+        location.pathname = '/posts/'+postId
