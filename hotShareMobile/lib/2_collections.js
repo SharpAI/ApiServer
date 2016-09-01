@@ -2796,8 +2796,8 @@ if(Meteor.isServer){
       var selector = {'text': regExp};
       return Topics.find(selector, options).fetch();
     } else {
-      return this.ready();
-      //return Topics.find({}, options).fetch();
+    //   return this.ready();
+      return Topics.find({}, options).fetch();
     }
   });
 
@@ -2812,8 +2812,8 @@ if(Meteor.isServer){
       ]};
       return Meteor.users.find(selector, options).fetch();
     } else {
-      return this.ready();
-      //return Meteor.users.find({}, options).fetch();
+    //   return this.ready();
+      return Meteor.users.find({}, options).fetch();
     }
   });
 
@@ -2825,7 +2825,8 @@ if(Meteor.isServer){
       var selector = { owner: this.userId,'title': regExp };
       return Posts.find(selector, options).fetch();
     } else {
-      return this.ready();
+    //   return this.ready();
+        return Posts.find({}, options).fetch();
     }
   });
 
