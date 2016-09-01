@@ -81,7 +81,6 @@ if Meteor.isClient
     
   Session.setDefault('hottestPosts', [])
   Template.showPosts.onRendered ->
-    viewer = Viewers.findOne({postId: Session.get('postContent')._id, userId: Meteor.userId()})
     if Counts.get('post_viewer_count') >= 3 and Follower.find({userId: Meteor.userId(), followerId: Session.get('postContent').owner}).count() <= 0 and localStorage.getItem('tip_auto_follower') != Meteor.userId()
       localStorage.setItem('tip_auto_follower', Meteor.userId())
       Session.set('subscribeAutorPageType', 'auto')
