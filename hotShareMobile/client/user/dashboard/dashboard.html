@@ -5,30 +5,34 @@
       <div class="rightButton back" style="margin-top:0px;">{{_ "done"}}</div>
     </div>
     <div class="content">
-      <div class="accounts-management box boxTitle"><div class='accounts-management'>{{_ "Account"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div></div>
-      {{#unless anonymous}}
-          <div class="emailPasswd box">
+      <div class="userInfo box">
+        <div class='accounts-management bottomBorder boxTitle'>{{_ "Account"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+        {{#unless anonymous}}
+          <!--<div class="emailPasswd">-->
             <div class='email bottomBorder boxTitle'>{{_ "email"}}<span>{{userEmail}}<i class="fa fa-angle-right fa-fw"></i></span></div>
-            <div class='changePasswd boxTitle'>{{_ "changePass"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
-          </div>
-      {{/unless}}
-      <div class="userinfo box">
+            <div class='changePasswd bottomBorder boxTitle'>{{_ "changePass"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+          <!--</div>-->
+        {{/unless}}
+        <div class="blacklist boxTitle">{{_ "blacklist"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+      </div>
+      <div class="appSetting box">
         <!--
         <div class='info bottomBorder boxTitle'>编辑个人资料<span><i class="fa fa-angle-right fa-fw"></i></span></div>
         <div class='accounts bottomBorder boxTitle'>已连接的账户<span><i class="fa fa-angle-right fa-fw"></i></span></div>
         -->
-        <div class='notice boxTitle'>{{_ "notification"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
-      </div>
-      <div class="blacklist box boxTitle">{{_ "blacklist"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
-      <div class="language box boxTitle">{{_ "language"}}
-        {{#if isEnglish}}
-          <span class="right" style="margin-right: 28px;margin-top: 2px;color: #a1a1a1;">English</span>
-        {{else}}
-          <span class="right" style="margin-right: 28px;margin-top: 2px;color: #a1a1a1;">中文</span>
-        {{/if}}
-        <span><i class="fa fa-angle-right fa-fw"></i></span>
-      </div>
-      <div class="about box boxTitle"><div class='about'>{{_ "about"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div></div>
+        <div class='notice bottomBorder boxTitle'>{{_ "notification"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+      
+        <!--<div class="blacklist box boxTitle">{{_ "blacklist"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>-->
+        <div class="language  bottomBorder boxTitle">{{_ "language"}}
+          {{#if isEnglish}}
+            <span class="right" style="margin-right: 28px;color: #a1a1a1;">English</span>
+          {{else}}
+            <span class="right" style="margin-right: 28px;color: #a1a1a1;">中文</span>
+          {{/if}}
+          <span><i class="fa fa-angle-right fa-fw"></i></span>
+        </div>
+      <div class='about boxTitle'>{{_ "about"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+     </div>
       <!--<div class="clear box boxTitle boxCenter">清除缓存</div>-->
       <div class="logout box boxTitle boxCenter">{{_ "logOut"}}</div>
     </div>
@@ -180,14 +184,14 @@
       <div>{{_ "language"}}</div>
       <div id="about_btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
     </div>
-    <div class="content" style="position: absolute; top:0; right:0; bottom:0; left:0; background:#fff;">
+    <div class="content" style="position: absolute; top:0; right:0; bottom:0; left:0; background:#efeff4;">
       <div class="box">
         {{#if isEnglish}}
           <div class="boxTitle bottomBorder" id="english" >{{_ "English"}}<span class="value"><i class="fa fa-check"></i></span></div>
-          <div class="boxTitle bottomBorder" id="chinese">{{_ "Chinese"}}<span class="value"></span></div>
+          <div class="boxTitle" id="chinese">{{_ "Chinese"}}<span class="value"></span></div>
         {{else}}
           <div class="boxTitle bottomBorder" id="english">{{_ "English"}}<span class="value"></span></div>
-          <div class="boxTitle bottomBorder" id="chinese">{{_ "Chinese"}}<span class="value"><i class="fa fa-check"></i></span></div>
+          <div class="boxTitle" id="chinese">{{_ "Chinese"}}<span class="value"><i class="fa fa-check"></i></span></div>
         {{/if}}
       </div>
        <div class="ver"></div>

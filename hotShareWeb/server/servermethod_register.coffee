@@ -231,6 +231,7 @@ if Meteor.isServer
                 recommendPostTitle: feed.postTitle
                 recommendPostMainImage: feed.mainImage
                 recommendPostCreatedAt: feed.createdAt
+                readUsers: []
                 createdAt: new Date()
               }
               Recommends.insert(recommendItem)

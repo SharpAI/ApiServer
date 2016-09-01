@@ -54,7 +54,7 @@
   "loading": "加载中...",
   "publishTo": "同读每一篇故事的朋友们都有一个朋友圈",
   "readerUnit": "位读者",
-  "noMessages": "暂无任何消息",
+  "noMessages": "暂无任何消息:(",
   //end
   //signupForm.html
   "createAccount": "创建账户",
@@ -66,6 +66,7 @@
   //loginForm.html
   "logIn": "登录",
   "forgotPassword": "忘了密码?",
+  "forgetPwd": "登录遇到问题?",
   //end
   //registerFollow.html
   "followPeople": "关注您喜欢的人",
@@ -154,10 +155,10 @@
   //search.html
   "searchTopic": "探索",
   "popTopics" :"流行话题",
-  "searchPeople": "搜索人和#话题#",
+  "searchPeople": "搜索作者和#话题#",
   "plainTopic": "话题",
-  "discoverPeople": "查找值得关注的人",
-  "plainPeople": "人",
+  "discoverPeople": "查找值得关注的作者",
+  "plainPeople": "作者",
   "recommandUser": "建议用户",
   //end
   //listPosts.html

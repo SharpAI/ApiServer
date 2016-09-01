@@ -151,7 +151,7 @@ if Meteor.isClient
        Session.get('is_people')
     placeHolder:->
        if Session.get('is_people')
-          "搜索人"
+          "搜索作者"
        else
           "搜索话题"
     isFollowedUser:(follow)->
