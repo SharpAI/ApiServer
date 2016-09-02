@@ -8,6 +8,8 @@ if Meteor.isClient
   Template.dashboard.onDestroyed ()->
     $('body').css('height', '100%')
   Template.dashboard.helpers
+    showFollowTips: ->
+      return Meteor.user().profile.followTips isnt false
     userEmail :->
       if Meteor.user()
         Meteor.user().emails[0].address
@@ -31,6 +33,11 @@ if Meteor.isClient
     }
     Session.set "history_view", history
   Template.dashboard.events
+    'click .readFollowTips': ->
+      Meteor.users.update(
+        {_id: Meteor.userId()}
+        {$set: {'profile.followTips': !(Meteor.user().profile.followTips isnt false)}}
+      )
     'click .email' :->
       addDashboardIntoHistory()
       Router.go '/my_email'

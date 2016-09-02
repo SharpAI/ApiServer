@@ -270,6 +270,7 @@
   "postedastory": "发布了一个故事",
   "readedastory": "阅读了一个故事",
   "recentlyviewedstories": "最近浏览的故事",
+  "readFollowTips": "阅读超过3次后提示读者关注",
   // end
 
   //dynamic js file contents

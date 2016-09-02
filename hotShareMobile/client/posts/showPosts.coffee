@@ -165,7 +165,65 @@ if Meteor.isClient
     if $('.tts-stoper').is(':visible')
       $('.tts-stoper').hide()
       window.currentTTS.stop()
+  
+  Template.SubscribeAuthor.onRendered ->
+    Meteor.subscribe 'follower'
+  Template.SubscribeAuthor.helpers
+    hasType: (val)->
+      return Session.equals('subscribeAutorPageType', val)
+    oldMail: ->
+      postId = Session.get("postContent")._id
+      post = Posts.findOne()
+      followMailAddr = Meteor.user().profile.followMailAddr
+      follower = Follower.findOne({userId: Meteor.userId(), followerId: post.owner})
+      userEmail = if follower then follower.userEmail else ''
+      if userEmail
+        return userEmail
+      else if followMailAddr
+        return followMailAddr
+      else
+        return ''
+  Template.SubscribeAuthor.events
+    'click .subscribeAutorPage_okBtn':(e,t)->
+      owner = Meteor.users.findOne({_id: Session.get('postContent').owner})
+      Follower.insert {
+        userId: Meteor.userId()
+        userName: Meteor.user().profile.fullname || Meteor.user().username
+        userIcon: Meteor.user().profile.icon || '/userPicture.png'
+        userDesc: Meteor.user().profile.desc
+
+        followerId: owner._id
+        followerName: owner.profile.fullname || Meteor.user().username
+        followerIcon: owner.profile.icon || '/userPicture.png'
+        followerDesc: owner.profile.desc
+
+        createAt: new Date()
+      }
+      PUB.toast('注关成功~')
+    'click .subscribeAutorPage_cannelBtn, click .subscribeAutorPage_bg':->
+      $('.subscribeAutorPage').hide()
+
   Template.showPosts.onRendered ->
+    owner = Meteor.users.findOne({_id: Session.get('postContent').owner})
+    showFollowTips = ()->
+      # if localStorage.getItem('tip_auto_follower') is Meteor.userId()
+      #   if localStorage.getItem('tip_auto_follower') isnt !(owner.profile.followTips isnt false)
+      #     localStorage.removeItem('tip_auto_follower')
+      if Meteor.userId() is owner._id
+        return
+      if Follower.find({userId: Meteor.userId(), followerId: owner._id}).count() > 0
+        return
+      if localStorage.getItem('tip_auto_follower') is Meteor.userId()
+        return
+      if Counts.get('post_viewer_count') < 3
+        return
+      if Counts.get('post_viewer_count') >= 3
+        $('.subscribeAutorPage').show()
+        if !(owner.profile.followTips isnt false)
+          localStorage.setItem('tip_auto_follower', Meteor.userId())
+          localStorage.setItem('tip_auto_follower_flag', !(owner.profile.followTips isnt false))
+    showFollowTips()
+
     getHotPostsData()
     #if !amplify.store('chatNotify')
     #  amplify.store('chatNotify',1)

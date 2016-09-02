@@ -16,6 +16,16 @@
         <div class="blacklist boxTitle">{{_ "blacklist"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
       </div>
       <div class="appSetting box">
+        <div class="readFollowTips  bottomBorder boxTitle">{{_ "readFollowTips"}}
+          <span class="right" style="margin-right: 18px;color: #a1a1a1;">
+            {{#if showFollowTips}}
+            <i class="fa fa-toggle-on" aria-hidden="true" style="font-size:40px; color:#00c4ff"></i>
+            {{else}}
+            <i class="fa fa-toggle-off" aria-hidden="true" style="font-size:40px;"></i>
+            {{/if}}
+          </span>
+        </div>
+
         <!--
         <div class='info bottomBorder boxTitle'>编辑个人资料<span><i class="fa fa-angle-right fa-fw"></i></span></div>
         <div class='accounts bottomBorder boxTitle'>已连接的账户<span><i class="fa fa-angle-right fa-fw"></i></span></div>
@@ -197,4 +207,20 @@
        <div class="ver"></div>
     </div>
   </div>    
+</template>
+
+<template name="SubscribeAuthor">
+  <div class="subscribeAutorPage">
+    <div class="subscribeAutorPage_bg"></div>
+    <div class="subscribeAutorPage_content">
+        <div class="subscribeAutorPage_header">关注作者</div>
+        <div class="subscribeAutorPage_body">
+          您多次阅读了此作者的文章，关注TA，您将收到作者的相关消息
+        </div>
+        <div class="subscribeAutorPage_footer">
+          <div class="subscribeAutorPage_btn subscribeAutorPage_cannelBtn">取消</div>
+          <div class="subscribeAutorPage_btn subscribeAutorPage_okBtn">确定</div>
+        </div>
+    </div>
+  </div>
 </template>

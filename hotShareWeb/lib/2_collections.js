@@ -1871,6 +1871,7 @@ if(Meteor.isServer){
         return [
           Posts.find({_id: postId}),
           //Viewers.find({postId: postId, userId: this.userId}, {sort: {count: -1}, limit: tip_follower_read_count}),
+          Meteor.users.find({_id: Posts.findOne({_id: postId}).owner}),
           Follower.find({userId: this.userId})
         ];
       }

@@ -81,10 +81,30 @@ if Meteor.isClient
     
   Session.setDefault('hottestPosts', [])
   Template.showPosts.onRendered ->
-    if Counts.get('post_viewer_count') >= 3 and Follower.find({userId: Meteor.userId(), followerId: Session.get('postContent').owner}).count() <= 0 and localStorage.getItem('tip_auto_follower') != Meteor.userId()
-      localStorage.setItem('tip_auto_follower', Meteor.userId())
-      Session.set('subscribeAutorPageType', 'auto')
-      $('.subscribeAutorPage').show()
+    owner = Meteor.users.findOne({_id: Session.get('postContent').owner})
+    showFollowTips = ()->
+      # if localStorage.getItem('tip_auto_follower') is Meteor.userId()
+      #   if localStorage.getItem('tip_auto_follower') isnt !(owner.profile.followTips isnt false)
+      #     localStorage.removeItem('tip_auto_follower')
+      if Meteor.userId() is owner._id
+        return
+      if Follower.find({userId: Meteor.userId(), followerId: owner._id}).count() > 0
+        return
+      if localStorage.getItem('tip_auto_follower') is Meteor.userId()
+        return
+      if Counts.get('post_viewer_count') < 3
+        return
+      if Counts.get('post_viewer_count') >= 3
+        $('.subscribeAutorPage').show()
+        if !(owner.profile.followTips isnt false)
+          localStorage.setItem('tip_auto_follower', Meteor.userId())
+          localStorage.setItem('tip_auto_follower_flag', !(owner.profile.followTips isnt false))
+    showFollowTips()
+
+    # if Counts.get('post_viewer_count') >= 3 and Follower.find({userId: Meteor.userId(), followerId: Session.get('postContent').owner}).count() <= 0 and localStorage.getItem('tip_auto_follower') != Meteor.userId()
+    #   localStorage.setItem('tip_auto_follower', Meteor.userId())
+    #   Session.set('subscribeAutorPageType', 'auto')
+    #   $('.subscribeAutorPage').show()
 
     Meteor.subscribe 'usersById', Session.get('postContent').owner
     Meteor.call 'getHottestPosts', (err,res)->
