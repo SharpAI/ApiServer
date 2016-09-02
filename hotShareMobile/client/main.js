@@ -148,6 +148,7 @@ if (Meteor.isCordova) {
         Session.set('inPersonalLetterView',false);
         $('body').css('overflow-y','auto');
         $('.personalLetterContent,.bellAlertBackground').fadeOut(300);
+        return;
       }
       var currentRoute = Router.current().route.getName();
       if (currentRoute == undefined || currentRoute =="search" || currentRoute =="add" || currentRoute =="bell" || currentRoute =="user" || currentRoute == "authOverlay") {

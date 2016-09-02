@@ -2598,10 +2598,24 @@ if(Meteor.isServer){
                       FollowPosts.update({owner: userId}, {$set: {'ownerName': modifier.$set["profile.fullname"]}},{ multi: true});
                       Comment.update({userId: userId}, {$set: {'username': modifier.$set["profile.fullname"]}},{ multi: true});
                       TopicPosts.update({owner: userId}, {$set: {'ownerName': modifier.$set["profile.fullname"]}},{ multi: true});
+                      UserRelation.update({toUserId:userId},{$set:{'toName': modifier.$set["profile.fullname"]}},{ multi: true});
                   }
                   catch(error){
                       //console.log("update Posts and FollowPost get error:"+error);
                   }
+              });
+          }
+          if(fieldNames.toString() === 'profile' && doc._id === userId && modifier.$set["profile.icon"] !== undefined && doc.profile.icon !== modifier.$set["profile.icon"])
+          {
+              Meteor.defer(function(){
+                  try{
+                      Posts.update({owner: userId}, {$set: {'ownerIcon': modifier.$set["profile.icon"]}},{ multi: true});
+                      FollowPosts.update({owner: userId}, {$set: {'ownerIcon': modifier.$set["profile.icon"]}},{ multi: true});
+                      Comment.update({userId: userId}, {$set: {'userIcon': modifier.$set["profile.icon"]}},{ multi: true});
+                      TopicPosts.update({owner: userId}, {$set: {'ownerIcon': modifier.$set["profile.icon"]}},{ multi: true});
+                      UserRelation.update({toUserId:userId},{$set:{'toIcon': modifier.$set["profile.icon"]}},{ multi: true});
+                  }
+                  catch(error){}
               });
           }
           return doc._id !== userId
@@ -2796,8 +2810,8 @@ if(Meteor.isServer){
       var selector = {'text': regExp};
       return Topics.find(selector, options).fetch();
     } else {
-      return this.ready();
-      //return Topics.find({}, options).fetch();
+    //   return this.ready();
+      return Topics.find({}, options).fetch();
     }
   });
 
@@ -2812,8 +2826,8 @@ if(Meteor.isServer){
       ]};
       return Meteor.users.find(selector, options).fetch();
     } else {
-      return this.ready();
-      //return Meteor.users.find({}, options).fetch();
+    //   return this.ready();
+      return Meteor.users.find({}, options).fetch();
     }
   });
 
@@ -2825,7 +2839,8 @@ if(Meteor.isServer){
       var selector = { owner: this.userId,'title': regExp };
       return Posts.find(selector, options).fetch();
     } else {
-      return this.ready();
+    //   return this.ready();
+        return Posts.find({}, options).fetch();
     }
   });
 
