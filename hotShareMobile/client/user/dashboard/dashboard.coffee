@@ -21,22 +21,36 @@ if Meteor.isClient
     isEnglish: ->
       if Cookies.check("display-lang")
         return Cookies.get("display-lang") is 'en'
-      else 
+      else
         return false
+  addDashboardIntoHistory = ()->
+    history = []
+    history.push {
+        view: 'dashboard'
+        scrollTop: 0
+    }
+    Session.set "history_view", history
   Template.dashboard.events
     'click .email' :->
+      addDashboardIntoHistory()
       Router.go '/my_email'
     'click .accounts-management' :->
-      Router.go '/my_accounts_management'      
+      addDashboardIntoHistory()
+      Router.go '/my_accounts_management'
     'click .changePasswd' :->
+      addDashboardIntoHistory()
       Router.go '/my_password'
     'click .blacklist' :->
+      addDashboardIntoHistory()
       Router.go '/my_blacklist'
     'click .notice' :->
+      addDashboardIntoHistory()
       Router.go '/my_notice'
     'click .language' :->
+      addDashboardIntoHistory()
       Router.go '/display_lang'
     'click .about' :->
+      addDashboardIntoHistory()
       Router.go '/my_about'
     'click .back' :->
       Router.go '/user'
@@ -89,10 +103,10 @@ if Meteor.isClient
           else
             PUB.toast "邮箱修改成功！"
             Router.go '/dashboard'
-        
+
     'click #btn_back' :->
       Router.go '/dashboard'
-  
+
   Template.my_password.rendered=->
     $('.dashboard').css 'min-height', $(window).height()
     return
@@ -240,12 +254,12 @@ if Meteor.isClient
   Template.my_about.events
     'click #about_btn_back' :->
       Router.go '/dashboard'
-   
+
   Template.display_lang.helpers
     isEnglish: ->
       if Cookies.check("display-lang")
         return Cookies.get("display-lang") is 'en'
-      else 
+      else
         return false
   Template.display_lang.events
     'click #about_btn_back' :->
