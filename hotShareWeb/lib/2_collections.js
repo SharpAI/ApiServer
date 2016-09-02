@@ -577,7 +577,10 @@ if(Meteor.isServer){
                     }
                 }
            }
-
+           
+           if(content.length > 100){
+               content = content.slice(0,100);
+           }
             text = text.replace('{{post-content}}', content);
             
             try {
@@ -659,6 +662,9 @@ if(Meteor.isServer){
                                 break;
                             }
                         }
+                    }
+                    if(content.length > 100){
+                        content = content.slice(0,100);
                     }
                     mailText = mailText.replace('{{post-content}}', content);
                     // sendEmailToFollower mail html end
