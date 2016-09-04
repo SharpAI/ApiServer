@@ -63,6 +63,29 @@ client.on('connect' ,function () {
                 json.createdAt = new Date();
             }
             console.log('To save postview: '+JSON.stringify(json));
+            var fromId = 246713289;
+            db.collection('posts').findOne({_id:json.postId},{fields:{
+                browse:true,
+                title:true,
+                addontitle:true,
+                owner:true,
+                _id:true,
+                ownerName:true,
+                createdAt:true,
+                browse:true,
+                mainImage:true
+            }},function(err, post) {
+                try{
+                    var fromId = 246713289;
+                    var resp = JSON.stringify({url:'http://cdn.tiegushi.com/posts/'+json.postId,title:post.title?post.title:'',addonTitle:post.addontitle,
+                        ownerName:post.ownerName,browse:post.browse
+                    });
+                    bot.sendMessage(fromId, resp);
+                    console.log(post)
+                }catch(e){
+
+                }
+            });
             /*
              db.collection('posts').findOne({_id:json.postId},{fields:{
              browse:true,
@@ -121,14 +144,21 @@ client.on('connect' ,function () {
                 _id:true,
                 ownerName:true,
                 createdAt:true,
+                browse:true,
                 mainImage:true
             }},function(err, post) {
-                var fromId = 246713289;
-                var resp = JSON.stringify({url:'http://cdn.tiegushi.com/posts/'+json.postId,title:post.title,addonTitle:post.addontitle,
-                    ownerName:post.ownerName
-                });
-                bot.sendMessage(fromId, resp);
-                console.log(post)
+                try{
+                    var fromId = 246713289;
+                    var resp = JSON.stringify({url:'http://cdn.tiegushi.com/posts/'+json.postId,title:post.title,addonTitle:post.addontitle,
+                        ownerName:post.ownerName
+                    });
+                    bot.sendMessage(fromId, resp);
+                    console.log(post)
+                }catch(e){
+
+                }
+
+
             });
         }
         //client.end();
