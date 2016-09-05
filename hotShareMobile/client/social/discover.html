@@ -33,7 +33,7 @@
 </template>
 <template name="recommends">
     <div class="recommends">
-        <ul id="wrapper" class="swipe-delete">
+        <ul id="wrapper" class="recommends-swipe-delete">
             {{#each recommends}}
                 <li class="elementBox" id="{{recommendPostId}}" style="border-bottom: 1px dashed #d9d9d9;">
                     <div class="behind">
@@ -67,60 +67,46 @@
     </div>
     <script>
       $(function() {
-        function prevent_default(e) {
-            e.preventDefault();
-        }
-        function disable_scroll() {
-            $(document).on('touchmove', prevent_default);
-        }
-        function enable_scroll() {
-            $(document).unbind('touchmove', prevent_default)
-        }
-        var x, elementId;
-        $('body')
-            .on('touchstart','.swipe-delete li > a', function(e) {
-                console.log(e.originalEvent.pageX)
-                $('.swipe-delete li > a.open').css('left', '0px').removeClass('open') // close em all
-                $(e.currentTarget).addClass('open')
-                x = e.originalEvent.targetTouches[0].pageX // anchor point
-            })
-            .on('touchmove','.swipe-delete li > a', function(e) {
-                var change = e.originalEvent.targetTouches[0].pageX - x
-                change = Math.min(Math.max(-100, change), 0) // restrict to -100px left, 0px right
-                e.currentTarget.style.left = change + 'px'
-                if (change < -10) disable_scroll() // disable scroll once we hit 10px horizontal slide
-            })
-            .on('touchend','.swipe-delete li > a', function(e) {
-                var left = parseInt(e.currentTarget.style.left)
-                var new_left;
-                if (left < -35) {
-                    new_left = '-100px'
-                } else if (left > 35) {
-                    new_left = '0px' //右滑动
-                } else {
-                    new_left = '0px'
-                }
-                // e.currentTarget.style.left = new_left
-                $(e.currentTarget).animate({left: new_left}, 200)
-                enable_scroll()
-            });
-        $('body').on('touchend','.swipe-delete .delete-btn', function(e) {
-            e.preventDefault()
-            console.log(e.currentTarget.id);
-            elementId = e.currentTarget.id;
-            console.log(elementId);
+        var x,elementId;
+        touch.on('body', 'swipeup swipedown',function(ev){
+            console.log("swipe", ev.type);
+            $('.recommends-swipe-delete li > a.open').css('left', '0px').removeClass('open'); // close em all
+        });
+        touch.live('.recommends-swipe-delete', 'swipeup swipedown',function(ev){
+            console.log("swipe", ev.type);
+            $('.recommends-swipe-delete li > a.open').css('left', '0px').removeClass('open'); // close em all
+        });
+        touch.live('.recommends-swipe-delete', 'swipeleft swipeing','li > a',function(ev){
+            $('.recommends-swipe-delete li > a.open').css('left', '0px').removeClass('open'); // close em all
+            $(ev.target).parents('a').addClass('open');
+            console.log("swipe", ev.type);
+            x = ev.x;
+            if(x < -40){
+                x = -100;
+            } else{
+                x = 0;
+            }
+            $(ev.target).parents('a').animate({left:x+"px"},100);
+        });
+        touch.live('.recommends-swipe-delete', 'swiperight swipeing','li > a',function(ev){
+            console.log("swipe", ev.type);
+            var left =  parseInt($(ev.target).parents('a').css('left'));            
+            $(ev.target).parents('a').animate({left:"0px"},100);
+            $(ev.target).parents('a').removeClass('open');
+        });
+        touch.live('.recommends-swipe-delete','tap', '.delete-btn',function(ev){
+            console.log(ev.target.id);
+            elementId = ev.target.id;
             var userLists = [];
             var readUsers = Recommends.findOne({_id:elementId}).readUsers;
             if(readUsers){
                userLists = readUsers;
             }
-            userLists.push(Meteor.userId());
-            $(this).parents('li').slideUp('fast', function() {
-                $(this).remove()
+            $(ev.target).parents('li').slideUp('fast', function() {
+                $(ev.target).remove();
                 Recommends.update({_id:elementId},{$set: {readUsers: userLists}});
-                // Feeds.update({_id:elementId},{$set: {checked:true}})
-            })
-        })
+            });
+        });
     });
     </script>
 </template>
@@ -192,52 +178,41 @@
     </div>
     <script>
       $(function() {
-        function prevent_default(e) {
-            e.preventDefault();
-        }
-        function disable_scroll() {
-            $(document).on('touchmove', prevent_default);
-        }
-        function enable_scroll() {
-            $(document).unbind('touchmove', prevent_default)
-        }
-        var x, elementId;
-        $('body')
-            .on('touchstart','.swipe-delete li > a', function(e) {
-                console.log(e.originalEvent.pageX)
-                $('.swipe-delete li > a.open').css('left', '0px').removeClass('open') // close em all
-                $(e.currentTarget).addClass('open')
-                x = e.originalEvent.targetTouches[0].pageX // anchor point
-            })
-            .on('touchmove','.swipe-delete li > a', function(e) {
-                var change = e.originalEvent.targetTouches[0].pageX - x
-                change = Math.min(Math.max(-100, change), 0) // restrict to -100px left, 0px right
-                e.currentTarget.style.left = change + 'px'
-                if (change < -10) disable_scroll() // disable scroll once we hit 10px horizontal slide
-            })
-            .on('touchend','.swipe-delete li > a', function(e) {
-                var left = parseInt(e.currentTarget.style.left)
-                var new_left;
-                if (left < -35) {
-                    new_left = '-100px'
-                } else if (left > 35) {
-                    new_left = '0px' //右滑动
-                } else {
-                    new_left = '0px'
-                }
-                // e.currentTarget.style.left = new_left
-                $(e.currentTarget).animate({left: new_left}, 200)
-                enable_scroll()
+        var x,elementId;
+        touch.on('body', 'swipeup swipedown',function(ev){
+            console.log("swipe", ev.type);
+            $('.swipe-delete li > a.open').css('left', '0px').removeClass('open'); // close em all
+        });
+        touch.live('.swipe-delete', 'swipeup swipedown',function(ev){
+            console.log("swipe", ev.type);
+            $('.swipe-delete li > a.open').css('left', '0px').removeClass('open'); // close em all
+        });
+        touch.live('.swipe-delete', 'swipeleft swipeing','li > a',function(ev){
+            $('.swipe-delete li > a.open').css('left', '0px').removeClass('open'); // close em all
+            $(ev.target).parents('a').addClass('open');
+            console.log("swipe", ev.type);
+            x = ev.x;
+            if(x < -40){
+                x = -100;
+            } else{
+                x = 0;
+            }
+            $(ev.target).parents('a').animate({left:x+"px"},100);
+        });
+        touch.live('.swipe-delete', 'swiperight swipeing','li > a',function(ev){
+            console.log("swipe", ev.type);
+            var left =  parseInt($(ev.target).parents('a').css('left'));            
+            $(ev.target).parents('a').animate({left:"0px"},100);
+            $(ev.target).parents('a').removeClass('open');
+        });
+        touch.live('.swipe-delete','tap', '.delete-btn',function(ev){
+            console.log(ev.target.id);
+            elementId = ev.target.id;
+            $(ev.target).parents('li').slideUp('fast', function() {
+                $(ev.target).remove();
+                Feeds.update({_id:elementId},{$set: {checked:true}});
             });
-        $('body').on('touchend','.swipe-delete .delete-btn', function(e) {
-            e.preventDefault()
-            console.log(e.currentTarget.id);
-            elementId = e.currentTarget.id;
-            $(this).parents('li').slideUp('fast', function() {
-                $(this).remove()
-                Feeds.update({_id:elementId},{$set: {checked:true}})
-            })
-        })
+        });
     });
     </script>
     {{/if}}

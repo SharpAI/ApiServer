@@ -57,3 +57,4 @@ service-configuration
 tap:i18n-bundler
 mkarliner:mqtt
 xolvio:backdoor
+baidu:touch
