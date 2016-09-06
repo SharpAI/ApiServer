@@ -279,11 +279,15 @@
             var self = this;
             if (e.target.className === "fa fa-thumbs-up thumbsUp") {
               e.target.className = "fa fa-thumbs-o-up thumbsUp";
+              e.target.parentNode.parentElement.style.color = "rgb(0,0,0)";
+              $(self).text($(self).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
             } else {
               e.target.className = "fa fa-thumbs-up thumbsUp";
               e.target.parentNode.parentElement.style.color = "rgb(243,11,68)";
+              $(self).text($(self).text().replace(/\d/g, function(m) {return parseInt(m) +1;}));
 
               if (e.target.nextElementSibling.className === "fa fa-thumbs-down thumbsDown") {
+                $(self.nextElementSibling).text($(self.nextElementSibling).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
                 e.target.nextElementSibling.className = "fa fa-thumbs-o-down thumbsDown";
               }
             }
@@ -313,9 +317,7 @@
                   updateAt: new Date()
                 });
               }
-              console.log('>>>>> post[i] i:', i);
-              console.log(post[i]);
-              console.log('------------------------------');
+
               if (!post[i].likeUserId) {
                 likeUserId = {};
                 post[i].likeUserId = likeUserId;
@@ -439,10 +441,14 @@
             var self = this;
             if (e.target.className === "fa fa-thumbs-down thumbsDown") {
               e.target.className = "fa fa-thumbs-o-down thumbsDown";
+              e.target.parentNode.parentElement.style.color = "rgb(0,0,0)";
+              $(self).text($(self).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
             } else {
               e.target.className = "fa fa-thumbs-down thumbsDown";
               e.target.parentNode.parentElement.style.color = "rgb(243,11,68)";
+              $(self).text($(self).text().replace(/\d/g, function(m) {return parseInt(m) +1;}));
               if (e.target.previousElementSibling.className === "fa fa-thumbs-up thumbsUp") {
+                $(self.previousElementSibling).text($(self.previousElementSibling).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
                 e.target.previousElementSibling.className = "fa fa-thumbs-o-up thumbsUp";
               }
             }

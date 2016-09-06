@@ -1,5 +1,8 @@
 if Meteor.isServer
   myCrypto = Meteor.npmRequire "crypto"
+  aliyun = Meteor.npmRequire "aliyun-sdk"
+  aliyun_access_key_id = process.env.ALIYUN_ACCESS_KEY_ID
+  aliyun_access_key_secret = process.env.ALIYUN_ACCESS_KEY_SECRET
   @nodemailer = Meteor.npmRequire('nodemailer');
   if (Meteor.absoluteUrl().toLowerCase().indexOf('host2.tiegushi.com') >= 0)
     process.env['HTTP_FORWARDED_COUNT'] = 1
@@ -509,3 +512,24 @@ if Meteor.isServer
           catch ex
             console.log(ex)
         return
+
+      'refreshCDNObjectCaches': (postId)->
+        if !Match.test(postId, String) or !Match.test(aliyun_access_key_id, String) or !Match.test(aliyun_access_key_secret, String)
+          return
+        this.unblock()
+        cdn = new aliyun.CDN({
+            accessKeyId: aliyun_access_key_id || '',
+            secretAccessKey: aliyun_access_key_secret || '',
+            endpoint: 'https://cdn.aliyuncs.com',
+            apiVersion: '2014-11-11'
+          }
+        );
+
+        objectPath = 'http://cdn.tiegushi.com/posts/' + postId + '\r\n' + 'http://cdcdn.tiegushi.com/posts/' + postId;
+
+        cdn.refreshObjectCaches({
+          ObjectType: 'File',
+          ObjectPath: objectPath
+        }, (err, res)-> 
+          console.log(err, res);
+        );

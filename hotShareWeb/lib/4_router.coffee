@@ -211,6 +211,117 @@ if Meteor.isServer
           InjectData.pushData(res, "wechatsign",  signature);
     catch error
       return null
+
+  SSR.compileTemplate('postItem', Assets.getText('static/postItem.html'))
+  Template.postItem.helpers
+      hasVideoInfo: (videoInfo)->
+        if videoInfo
+          return true
+        else
+          false
+      myselfClickedUpStyle:->
+        userId = null
+        if userId and this.likeUserId isnt undefined and this.likeUserId[userId] is true
+          return 'fa-thumbs-up'
+        else
+          return 'fa-thumbs-o-up'
+      myselfClickedDownStyle:->
+        userId = null
+        if userId and this.dislikeUserId isnt undefined and this.dislikeUserId[userId] is true
+          return 'fa-thumbs-down'
+        else
+          return 'fa-thumbs-o-down'
+      calcStyle: ()->
+        # For backforward compatible. Only older version set style directly
+        if this.style and this.style isnt ''
+          ''
+        else
+          calcTextItemStyle(this.layout)
+      isTextLength:(text)->
+        if(text.trim().length>20)
+          return true
+        else if  text.split(/\r\n|\r|\n/).length > 1
+          return true
+        else
+          return false
+      pcIndex:->
+        pcindex = 0
+        index = parseInt(this.index)
+        if index is pcindex
+          'dCurrent'
+        else
+          ''
+      scIndex:->
+        scindex = 0
+        index = parseInt(this.index)
+        if index is scindex
+          'sCurrent'
+        else
+          ''
+      plike:->
+        if this.likeSum is undefined
+          0
+        else
+          this.likeSum
+      pdislike:->
+        if this.dislikeSum is undefined
+          0
+        else
+          this.dislikeSum
+      getStyle:->
+        self=this
+        pclength=0
+        if self.pcomments
+          pclength=self.pcomments.length
+        userId=""
+        scolor="#F30B44"
+        if userId and userId isnt ""
+          if self.likeUserId and self.likeUserId[userId] is true
+            scolor="#304EF5"
+          if scolor is "#F30B44" and self.dislikeUserId and self.dislikeUserId[userId] is true
+            scolor="#304EF5"
+          if scolor is "#F30B44" and pclength>0
+            for icomment in self.pcomments
+              if icomment["userId"] is userId
+                scolor="#304EF5"
+                break
+        if scolor is "#304EF5"
+          if Session.get("toasted") is false
+            Session.set "toasted",true
+            Session.set("needToast",true)
+        dislikeSum = 0
+        if self.dislikeSum
+          dislikeSum=self.dislikeSum
+        likeSum=0
+        if self.likeSum
+          likeSum=self.likeSum
+        if dislikeSum + likeSum + pclength is 0
+          self.style
+        else
+          if self.style is undefined or self.style.length is 0
+            "color: "+scolor+";"
+          else
+            self.style.replace("grey",scolor).replace("rgb(128, 128, 128)",scolor).replace("rgb(0, 0, 0)",scolor).replace("#F30B44",scolor)
+
+  SSR.compileTemplate('post', Assets.getText('static/post.html'))
+  Template.post.helpers
+      time_diff: (created)->
+          GetTime0(new Date() - created)
+      getPub:->
+        self = this
+        self.pub = self.pub || []
+        if withSponserLinkAds
+          position = 1+(self.pub.length / 2)
+          self.pub.splice(position,0,{adv:true,type:'insertedLink',data_col:1,data_sizex:6,urlinfo:'http://cdn.tiegushi.com/posts/qwWdWJPMAbyeo8tiJ'})
+          _.map self.pub, (doc, index, cursor)->
+            if position < index
+              _.extend(doc, {index: index-1})
+            else
+              _.extend(doc, {index: index})
+        else
+          _.map self.pub, (doc, index, cursor)->
+            _.extend(doc, {index: index})
+
   Router.configure {
     waitOn: ()->
       if this and this.path
@@ -227,123 +338,6 @@ if Meteor.isServer
   }
 
   Router.route '/posts/:_id', (req, res, next)->
-    SSR.compileTemplate('postItem', Assets.getText('static/postItem.html'))
-    Template.postItem.helpers
-        hasVideoInfo: (videoInfo)->
-          if videoInfo
-            return true
-          else
-            false
-        myselfClickedUp:->
-            false
-        myselfClickedDown:->
-            return false
-        calcStyle: ()->
-          # For backforward compatible. Only older version set style directly
-          if this.style and this.style isnt ''
-            ''
-          else
-            calcTextItemStyle(this.layout)
-        isTextLength:(text)->
-          if(text.trim().length>20)
-            return true
-          else if  text.split(/\r\n|\r|\n/).length > 1
-            return true
-          else
-            return false
-        pcIndex:->
-          pcindex = 0
-          index = parseInt(this.index)
-          if index is pcindex
-            'dCurrent'
-          else
-            ''
-        scIndex:->
-          scindex = 0
-          index = parseInt(this.index)
-          if index is scindex
-            'sCurrent'
-          else
-            ''
-        plike:->
-          if this.likeSum is undefined
-            0
-          else
-            this.likeSum
-        pdislike:->
-          if this.dislikeSum is undefined
-            0
-          else
-            this.dislikeSum
-        hasPcomments: ->
-          if this.pcomments isnt undefined
-            return true
-          else
-            return false
-        pcomment:->
-          if this.pcomments isnt undefined
-            return this.pcomments
-          else
-            return ''            
-        pcomments:->
-          if this.pcomments is undefined
-            0
-          else
-            this.pcomments.length
-        getStyle:->
-          self=this
-          pclength=0
-          if self.pcomments
-            pclength=self.pcomments.length
-          userId=""
-          scolor="#F30B44"
-          if userId and userId isnt ""
-            if self.likeUserId and self.likeUserId[userId] is true
-              scolor="#304EF5"
-            if scolor is "#F30B44" and self.dislikeUserId and self.dislikeUserId[userId] is true
-              scolor="#304EF5"
-            if scolor is "#F30B44" and pclength>0
-              for icomment in self.pcomments
-                if icomment["userId"] is userId
-                  scolor="#304EF5"
-                  break
-          if scolor is "#304EF5"
-            if Session.get("toasted") is false
-              Session.set "toasted",true
-              Session.set("needToast",true)
-          dislikeSum = 0
-          if self.dislikeSum
-            dislikeSum=self.dislikeSum
-          likeSum=0
-          if self.likeSum
-            likeSum=self.likeSum
-          if dislikeSum + likeSum + pclength is 0
-            self.style
-          else
-            if self.style is undefined or self.style.length is 0
-              "color: "+scolor+";"
-            else
-              self.style.replace("grey",scolor).replace("rgb(128, 128, 128)",scolor).replace("rgb(0, 0, 0)",scolor).replace("#F30B44",scolor)
-
-    SSR.compileTemplate('post', Assets.getText('static/post.html'))
-    Template.post.helpers
-        time_diff: (created)->
-            GetTime0(new Date() - created)
-        getPub:->
-          self = this
-          self.pub = self.pub || []
-          if withSponserLinkAds
-            position = 1+(self.pub.length / 2)
-            self.pub.splice(position,0,{adv:true,type:'insertedLink',data_col:1,data_sizex:6,urlinfo:'http://cdn.tiegushi.com/posts/qwWdWJPMAbyeo8tiJ'})
-            _.map self.pub, (doc, index, cursor)->
-              if position < index
-                _.extend(doc, {index: index-1})
-              else
-                _.extend(doc, {index: index})
-          else
-            _.map self.pub, (doc, index, cursor)->
-              _.extend(doc, {index: index})                
-
     postItem = Posts.findOne({_id: this.params._id})
     postHtml = SSR.render('post', postItem)
     #postItem = Posts.findOne({_id: this.params._id},{fields:{title:1,mainImage:1,addontitle:1}});
@@ -364,7 +358,9 @@ if Meteor.isServer
     next()
   , {where: 'server'}
   Router.route '/posts/:_id/:index', (req, res, next)->
-    postItem = Posts.findOne({_id: this.params._id},{fields:{title:1,mainImage:1,addontitle:1}});
+    postItem = Posts.findOne({_id: this.params._id})
+    postHtml = SSR.render('post', postItem)
+    #postItem = Posts.findOne({_id: this.params._id},{fields:{title:1,mainImage:1,addontitle:1}});
     Inject.rawModHtml('addxmlns', (html) ->
       return html.replace(/<html>/, '<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:fb="http://ogp.me/ns/fb#">');
@@ -376,7 +372,8 @@ if Meteor.isServer
     Inject.rawHead("inject-width", "<meta property=\"og:image:width\" content=\"400\" />",res);
     Inject.rawHead("inject-height", "<meta property=\"og:image:height\" content=\"300\" />",res);
     Inject.rawHead("inject-height", "<meta property=\"fb:app_id\" content=\"1759413377637096\" />",res);
-
+    Inject.rawBody("inject-posthtml", postHtml, res);
+    
     injectSignData(req,res)
     next()
   , {where: 'server'}

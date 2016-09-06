@@ -842,6 +842,8 @@ if(Meteor.isServer){
     };
     var updateServerSidePcommentsHookDeferHandle = function(userId,doc,ptype,pindex){
         Meteor.defer(function(){
+            Meteor.call('refreshCDNObjectCaches', doc._id);
+
             try{
                 var set_notifiedUsersId = [];
                 var userinfo = Meteor.users.findOne({_id: userId },{'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1});
