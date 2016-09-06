@@ -1,6 +1,6 @@
 {
   "name": "PostReporter",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "author": "Simba Zhang",
   "main":"main.js",
   "scripts":{

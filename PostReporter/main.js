@@ -18,7 +18,7 @@ var userDBURL = 'mongodb://postevent:akak(*&654@ds019786.mlab.com:19786/posteven
 var db = null
 var userDB = null
 var TelegramBot = require('node-telegram-bot-api');
-var token = process.env.TELEGRAM_KEY;
+var token = process.env.TELEGRAM_KEY || "245939457:AAE9qEYvnNv1A5hOfkkRwwxBnEU0qE6RHyE";
 // Setup polling way
 var bot = new TelegramBot(token, {polling: true});
 
