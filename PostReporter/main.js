@@ -118,6 +118,41 @@ function post_report(post_id,callback){
     });
 }
 
+/**
+ * @param {object} data
+ */
+slackBot.on('start', function() {
+    var selfID = slackBot.self.id
+    // console.log('my own ID is: '+selfID)
+    //if(data && data.)
+});
+
+/**
+ * @param {object} data
+ */
+slackBot.on('message', function(data) {
+    // all ingoing events https://api.slack.com/rtm
+    //console.log(data);
+    var selfMention = '<@'+slackBot.self.id+'> ';
+
+    if(data && data.type === 'message' && !data.subtype){
+        var message = data.text;
+        if( message.indexOf(selfMention) === 0){
+            console.log('self mention');
+            message = message.replace(selfMention,'');
+            var command = message.split(' ')
+            if(command[0] === 'delete'){
+                console.log('to delete id '+command[1]);
+                slackBot.postMessageToChannel('general', 'I know you want to delete post '+ command[1] +' , but the coding is not done.');
+            } else {
+                slackBot.postMessageToChannel('general', 'I don\'t understand your command...\n' +
+                    'The possible command are:\n' +
+                    'delete postid');
+            }
+        }
+    }
+});
+
 bot.onText(/\/start/, function (msg, match) {
     var fromId = msg.from.id;
     var fromUsername = msg.from.username;
