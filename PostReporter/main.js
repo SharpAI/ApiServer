@@ -13,12 +13,12 @@ var client  = mqtt.connect('ws://rpcserver.raidcdn.com:80');
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var url = 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare';
-var userDBURL = 'mongodb://postevent:akak(*&654@ds019786.mlab.com:19786/postevent'
+var userDBURL = 'mongodb://postevent:akak(*&654@ds019786.mlab.com:19786/postevent';
 //var url = 'mongodb://localhost:27017/localdb';
 var db = null
 var userDB = null
 var TelegramBot = require('node-telegram-bot-api');
-var token = '245939457:AAE9qEYvnNv1A5hOfkkRwwxBnEU0qE6RHyE';
+var token = process.env.TELEGRAM_KEY;
 // Setup polling way
 var bot = new TelegramBot(token, {polling: true});
 
@@ -49,16 +49,20 @@ var telegram_password = '98216cka';
 var send_list = [];
 
 function add_auth_user_info_to_db (username,chat_id,callback){
-    userDB.collection('auth_users').insert({username:username,chat_id:chat_id},callback);
+    if(username){
+        userDB.collection('auth_users').insert({chat_id:chat_id,username:username},callback);
+    } else {
+        userDB.collection('auth_users').insert({chat_id:chat_id},callback);
+    }
 }
 function update_auth_user_info_to_db (username,chat_id,callback){
-    userDB.collection('auth_users').update({username:username},{chat_id:chat_id},{upsert:true},callback);
+    userDB.collection('auth_users').update({chat_id:chat_id},{username:username},{upsert:true},callback);
 }
 function remove_auth_user_info_to_db (username,chat_id,callback){
-    userDB.collection('auth_users').remove({username:username},callback);
+    userDB.collection('auth_users').remove({chat_id:chat_id},callback);
 }
-function check_if_legit_user(username,callback){
-    userDB.collection('auth_users').findOne({username:username},callback)
+function check_if_legit_user(chat_id,callback){
+    userDB.collection('auth_users').findOne({chat_id:chat_id},callback)
 }
 function get_auth_userlist(callback){
     userDB.collection('auth_users').find({}).toArray(callback);
@@ -119,8 +123,8 @@ bot.onText(/\/start/, function (msg, match) {
 bot.onText(/\/all/, function (msg, match) {
     var fromId = msg.from.id;
     var fromUsername = msg.from.username;
-    check_if_legit_user(fromUsername,function(err,user){
-        if(!err && user && user.username===fromUsername){
+    check_if_legit_user(fromId,function(err,user){
+        if(!err && user && user.chat_id ===fromId){
             get_auth_userlist(function(err,userlist){
                 console.log(userlist)
                 var resp = ''
@@ -129,9 +133,12 @@ bot.onText(/\/all/, function (msg, match) {
                     if(item && item.username && item.chat_id){
                         resp += item.username + '/' + item.chat_id + '  ';
                         count ++;
+                    } else if(item && item.chat_id){
+                        resp += item.chat_id + '  ';
+                        count ++;
                     }
                 })
-                bot.sendMessage(fromId, resp + (count>1 ? 'are' : 'is') + ' in the send list', {parse_mode:"Markdown"});
+                bot.sendMessage(fromId, resp +'('+ count +')  '+ (count>1 ? 'are' : 'is') + ' in the send list', {parse_mode:"Markdown"});
             })
         } else {
             bot.sendMessage(fromId, 'Please run /auth [password] first.',{parse_mode:"Markdown"});
@@ -141,12 +148,16 @@ bot.onText(/\/all/, function (msg, match) {
 bot.onText(/\/remove/, function (msg, match) {
     var fromId = msg.from.id;
     var fromUsername = msg.from.username;
-    check_if_legit_user(fromUsername,function(err,user){
-        if(!err && user && user.username===fromUsername){
+    check_if_legit_user(fromId,function(err,user){
+        if(!err && user && user.chat_id===fromId){
             remove_auth_user_info_to_db(fromUsername,fromId,function(){
                 update_send_list();
             });
-            bot.sendMessage(fromId, "*You* ("+fromUsername+"/"+fromId+")  were successfully removed from send list.",{parse_mode:"Markdown"});
+            if(fromUsername){
+                bot.sendMessage(fromId, "*You* ("+fromUsername+"/"+fromId+")  were successfully removed from send list.",{parse_mode:"Markdown"});
+            } else {
+                bot.sendMessage(fromId, "*You* ("+fromId+")  were successfully removed from send list.",{parse_mode:"Markdown"});
+            }
         } else {
             bot.sendMessage(fromId, 'Please run /auth [password] first.',{parse_mode:"Markdown"});
         }
@@ -157,17 +168,11 @@ bot.onText(/\/auth (.+)/, function (msg, match) {
     var fromUsername = msg.from.username;
     var passwd = match[1];
 
-    check_if_legit_user(fromUsername,function(err, user) {
+    check_if_legit_user(fromId,function(err, user) {
         console.log(user)
         if (user){
             if(user.chat_id === fromId){
                 bot.sendMessage(fromId, "*You* ("+fromUsername+"/"+fromId+") have already been in send list.",{parse_mode:"Markdown"});
-            } else {
-                bot.sendMessage(fromId, "You ("+fromUsername+"/"+fromId+") have already been in send list. Chat ID changed from "+
-                    user.chat_id +" to "+fromId,{parse_mode:"Markdown"});
-                update_auth_user_info_to_db(fromUsername,fromId,function(){
-                    update_send_list();
-                })
             }
         } else {
             if(passwd && passwd === telegram_password){
