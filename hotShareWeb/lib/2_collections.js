@@ -1850,11 +1850,16 @@ if(Meteor.isServer){
         return Posts.find({_id: postId});
   });
   Meteor.publish('postViewCounter', function(postId) {
-    Counts.publish(this, 'post_viewer_count', Viewers.find({
+    Counts.publish(this, 'post_viewer_count_'+this.userId, Viewers.find({
         postId: postId, userId: this.userId
-    }), {countFromField: 'count'},{ noReady: true });
+    },{limit:1,fields: { '_id': 1, 'count': 1 }}), {countFromField: function(doc){
+        return doc.count;
+    }});
   });
-
+  Meteor.publish('postsAuthor', function(postId) {
+    var owner = Posts.findOne({_id:postId}).owner;
+    return Meteor.users.find({_id:owner},{fields:{'username': 1,'profile.fullname': 1,'profile.icon': 1,'profile.followTips':1}});
+  });
   Meteor.publish("publicPosts", function(postId) {
       if(this.userId === null || !Match.test(postId, String))
         return this.ready();

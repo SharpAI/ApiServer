@@ -109,6 +109,7 @@ if Meteor.isClient
         waitOn: ->
           [subs.subscribe("publicPosts",this.params._id),
            subs.subscribe("postViewCounter",this.params._id),
+           subs.subscribe("postsAuthor",this.params._id),
            subs.subscribe "pcomments"]
         loadingTemplate: 'loadingPost'
         action: ->
@@ -147,6 +148,7 @@ if Meteor.isClient
       waitOn: ->
         [Meteor.subscribe("publicPosts",this.params._id),
         Meteor.subscribe("postViewCounter",this.params._id),
+        Meteor.subscribe("postsAuthor",this.params._id),
         Meteor.subscribe "pcomments"]
       loadingTemplate: 'loadingPost'
       action: ->
@@ -311,5 +313,6 @@ if Meteor.isServer
       waitOn: ->
           [Meteor.subscribe("publicPosts",this.params._id),
            Meteor.subscribe("postViewCounter",this.params._id),
+           Meteor.subscribe("postsAuthor",this.params._id),
            Meteor.subscribe "pcomments"]
     }
