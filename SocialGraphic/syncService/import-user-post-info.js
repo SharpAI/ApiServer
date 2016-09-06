@@ -7,13 +7,48 @@ module.exports.save_post_node=save_post_node
 
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
-//var url = 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare';
-var url = 'mongodb://localhost:27017/localdb';
+var url = 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare';
+// var url = 'mongodb://localhost:27017/localdb';
 
 var dbGraph = require("seraph")({ server: "http://120.24.247.107:7474",
     endpoint: "/db/data",
     user: "neo4j",
     pass: "5MW-wU3-V9t-bF6" });
+
+function update_remove_post(db){
+    var latestPost = new Date()
+    latestPost.setHours(latestPost.getHours() - 48)
+    latestPost = latestPost.getTime()
+
+    latestView = new Date()
+    latestView.setHours(latestView.getHours() - 24)
+    latestView = latestView.getTime()
+
+    // dbGraph.query('MATCH (u:User)-[v:VIEWER]->(p:Post) WITH v,p,length(()--p) AS views RETURN DISTINCT p.postId,p,length(()--p) AS views LIMIT 10', function(err, results) {
+    //     var item = results[0];
+    //     console.log(item);
+    //     dbGraph.delete(item.p.id, true, function(err) {console.log(err)});
+    //     console.log('remove node:', item);
+    // });
+    
+    dbGraph.query('MATCH (u:User)-[v:VIEWER]->(p:Post) WITH v,p,length(()--p) AS views WHERE v.by > '+latestView+' AND views > 50 AND p.createdAt > '+latestView+'  RETURN DISTINCT p.postId,p,length(()--p) AS views  ORDER BY views DESC LIMIT 10', function(err, results) {
+        console.log('update_remove_post: ' + results.length)
+        results.forEach(function(item){
+            db.collection('posts').findOne({_id: item.p.postId},{fields:{_id: true}}, function(err, post) {
+                if(!err && !post){
+                    dbGraph.delete(item.p.id, true, function(err) {if(err){console.log(err)}});
+                    console.log('remove node:', item.p.postId);
+                }
+            });
+        });
+    });
+}
+MongoClient.connect(url, function(err, db) {
+    update_remove_post(db);
+    setTimeout(function() {
+        update_remove_post(db);
+    }, 1000*60*10);
+});
 
 function check_user_existing(id,cb){
     if(id && id !='' && cb){
@@ -200,6 +235,7 @@ function grab_postsInfo_in_hotshare(db){
     }
     cursor.next(eachPostsInfo)
 }
+
 if(process.env.RUN_IMPORT_USER_POST){
     MongoClient.connect(url, function(err, db) {
         assert.equal(null, err);

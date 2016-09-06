@@ -1,6 +1,6 @@
 if Meteor.isServer
   Meteor.startup ()->
-    Accounts.emailTemplates.from = '故事贴 <no-reply@tiegushi.com>'
+    Accounts.emailTemplates.from = '故事贴 <notify@mail.tiegushi.com>'
     Accounts.emailTemplates.siteName = '故事贴'
 
     #A Function that takes a user object and returns a String for the subject line of the email.

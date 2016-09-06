@@ -378,12 +378,12 @@ if Meteor.isClient
     'click .postImageItem': (e,t)->
       swipedata = []
       i = 0
-      selected = this.index - 1
+      selected = 0
       console.log "=============click on image index is: " + this.index
       for image in Session.get('postContent').pub
         if image.imgUrl
-          # if image.imgUrl is this.imgUrl
-          #   selected = i
+          if image.imgUrl is this.imgUrl
+            selected = i
           if image.imgUrl.indexOf('file://') > -1
             if t.findAll('.lazy')[i]
               swipedata.push
