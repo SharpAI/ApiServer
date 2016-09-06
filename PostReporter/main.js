@@ -64,6 +64,7 @@ function get_auth_userlist(callback){
     userDB.collection('auth_users').find({}).toArray(callback);
 }
 function update_send_list(callback){
+    send_list = [];
     userDB.collection('auth_users').find({}).toArray(function(err,userlist){
         userlist.forEach(function(item){
             if(item && item.chat_id){
@@ -77,7 +78,7 @@ function send_new_post_info_to_send_list(post,callback){
         send_list.forEach(function(chat_id){
             try{
                 var fromId = chat_id;
-                var resp = JSON.stringify({url:'http://cdn.tiegushi.com/posts/'+json.postId,title:post.title,addonTitle:post.addontitle,
+                var resp = JSON.stringify({url:'http://cdn.tiegushi.com/posts/'+post._id,title:post.title,addonTitle:post.addontitle,
                     ownerName:post.ownerName
                 });
                 bot.sendMessage(fromId, resp);
@@ -86,6 +87,23 @@ function send_new_post_info_to_send_list(post,callback){
             }
         })
     }
+}
+function post_report(post_id,callback){
+    db.collection('posts').findOne({_id:post_id},{fields:{
+        browse:true,
+        title:true,
+        addontitle:true,
+        owner:true,
+        _id:true,
+        ownerName:true,
+        createdAt:true,
+        browse:true,
+        mainImage:true
+    }},function(err, post) {
+        if(!err && post) {
+            send_new_post_info_to_send_list(post)
+        }
+    });
 }
 
 bot.onText(/\/start/, function (msg, match) {
@@ -184,7 +202,8 @@ client.on('connect' ,function () {
             if (!json.createdAt){
                 json.createdAt = new Date();
             }
-            console.log('To save postview: '+JSON.stringify(json));
+            //console.log('To save postview: '+JSON.stringify(json));
+            //post_report(json.postId);
         } else if(topic === 'newUser'){
             db.collection('users').findOne({_id:json.userId},{fields:{
                 username: true,
@@ -199,21 +218,7 @@ client.on('connect' ,function () {
             }},function(err, user) {
             });
         } else if(topic === 'publishPost'){
-            db.collection('posts').findOne({_id:json.postId},{fields:{
-                browse:true,
-                title:true,
-                addontitle:true,
-                owner:true,
-                _id:true,
-                ownerName:true,
-                createdAt:true,
-                browse:true,
-                mainImage:true
-            }},function(err, post) {
-                if(!err && post) {
-                    send_new_post_info_to_send_list(post)
-                }
-            });
+            post_report(json.postId);
         }
     });
 
