@@ -1,15 +1,15 @@
 {
   "name": "PostReporter",
   "version": "0.0.2",
-  "author": "RAID CDN Team",
+  "author": "Simba Zhang",
   "main":"main.js",
   "scripts":{
-    "run":"node main.js"
+    "start": "node main.js"
   },
+  "private": true,
   "dependencies": {
     "mqtt":"^1.7.3",
     "node-telegram-bot-api": "~0.23.3",
-    "nedb": "~1.8.0",
     "mongodb":"^2.1.8"
   },
   "devDependencies": {
