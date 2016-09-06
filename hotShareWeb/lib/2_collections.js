@@ -1849,6 +1849,12 @@ if(Meteor.isServer){
       else
         return Posts.find({_id: postId});
   });
+  Meteor.publish('postViewCounter', function(postId) {
+    Counts.publish(this, 'post_viewer_count', Viewers.find({
+        postId: postId, userId: this.userId
+    }), {countFromField: 'count'},{ noReady: true });
+  });
+
   Meteor.publish("publicPosts", function(postId) {
       if(this.userId === null || !Match.test(postId, String))
         return this.ready();
@@ -1863,10 +1869,6 @@ if(Meteor.isServer){
         publicPostsPublisherDeferHandle(userId,postId,self);
         updateMomentsDeferHandle(self,postId);
         mqttPostViewHook(self.userId,postId);
-
-        Counts.publish(this, 'post_viewer_count', Viewers.find({
-          postId: postId, userId: this.userId
-        }), {countFromField: 'count'});
 
         return [
           Posts.find({_id: postId}),
