@@ -5,6 +5,8 @@
  * Created by simba on 5/13/16.
  */
 
+require('./openshift')
+
 var mqtt    = require('mqtt');
 //var client  = mqtt.connect('mqtt://broker.mqttdashboard.com');
 //var client  = mqtt.connect('mqtt://broker.raidcdn.org');
@@ -21,7 +23,13 @@ var TelegramBot = require('node-telegram-bot-api');
 var token = process.env.TELEGRAM_KEY || "245939457:AAE9qEYvnNv1A5hOfkkRwwxBnEU0qE6RHyE";
 // Setup polling way
 var bot = new TelegramBot(token, {polling: true});
+var SlackBot = require('slackbots');
 
+// create a bot
+var slackBot = new SlackBot({
+    token: 'xoxb-76820722259-dlvZ74CLXLN60rie25DGM64w', // Add a bot https://my.slack.com/services/new/bot and put the token
+    name: 'Post Reporter'
+});
 
 process.addListener('uncaughtException', function (err) {
     var msg = err.message;
@@ -78,19 +86,19 @@ function update_send_list(callback){
     });
 }
 function send_new_post_info_to_send_list(post,callback){
+    var resp = JSON.stringify({url:'http://cdn.tiegushi.com/posts/'+post._id,title:post.title,addonTitle:post.addontitle,
+        ownerName:post.ownerName
+    });
     if (send_list.length > 0){
         send_list.forEach(function(chat_id){
             try{
                 var fromId = chat_id;
-                var resp = JSON.stringify({url:'http://cdn.tiegushi.com/posts/'+post._id,title:post.title,addonTitle:post.addontitle,
-                    ownerName:post.ownerName
-                });
                 bot.sendMessage(fromId, resp);
             }catch(e){
-
             }
         })
     }
+    slackBot.postMessageToChannel('general', resp);
 }
 function post_report(post_id,callback){
     db.collection('posts').findOne({_id:post_id},{fields:{
