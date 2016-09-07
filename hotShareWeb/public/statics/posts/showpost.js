@@ -274,13 +274,30 @@
             }
         });
 
+
+        var isRemoveParentColor = function(target, parent, isLike) {
+          if(parseInt($(target).text()) > 0) {
+            return false;
+          }
+          if($(parent).siblings('.pcomment').length > 0) {
+            return false;
+          }
+          if(isLike && parseInt($(target.nextElementSibling).text()) > 0) {
+            return false;
+          }
+          
+          if(!isLike && parseInt($(target.previousElementSibling).text()) > 0) {
+            return false;
+          }
+          return true;
+        };
         // register for click thumb event
         $(".thumbsUp").click(function(e) {
             var self = this;
             if (e.target.className === "fa fa-thumbs-up thumbsUp") {
               e.target.className = "fa fa-thumbs-o-up thumbsUp";
-              e.target.parentNode.parentElement.style.color = "rgb(0,0,0)";
               $(self).text($(self).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
+              if(isRemoveParentColor(self, e.target.parentNode.parentElement, true)) e.target.parentNode.parentElement.style.color = "rgb(0,0,0)";
             } else {
               e.target.className = "fa fa-thumbs-up thumbsUp";
               e.target.parentNode.parentElement.style.color = "rgb(243,11,68)";
@@ -441,8 +458,8 @@
             var self = this;
             if (e.target.className === "fa fa-thumbs-down thumbsDown") {
               e.target.className = "fa fa-thumbs-o-down thumbsDown";
-              e.target.parentNode.parentElement.style.color = "rgb(0,0,0)";
               $(self).text($(self).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
+              if(isRemoveParentColor(self, e.target.parentNode.parentElement, false))  e.target.parentNode.parentElement.style.color = "rgb(0,0,0)";
             } else {
               e.target.className = "fa fa-thumbs-down thumbsDown";
               e.target.parentNode.parentElement.style.color = "rgb(243,11,68)";
@@ -596,6 +613,20 @@
             return Session.set("pcommentIndexNum", $(self).data('index'));            
         });
         
+        $("#test .inlineScoring").each(function() {
+          var self = this;
+          var index = $(self).data('index');
+          var item = Session.get("postContent").pub[index];
+
+          if (item && item.likeUserId && item.likeUserId[Meteor.userId()]) {
+            $(self).find("i:eq(0)").get(0).className = "fa fa-thumbs-up thumbsUp";
+          }
+
+          if (item && item.dislikeUserId && item.dislikeUserId[Meteor.userId()]) {
+            $(self).find("i:eq(1)").get(0).className = "fa fa-thumbs-down thumbsDown";
+          }          
+        });
+
         /*
         $(".chatBtn").click(function() {
             var chat_server_url = 'testchat.tiegushi.com';

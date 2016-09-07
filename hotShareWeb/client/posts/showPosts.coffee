@@ -512,7 +512,8 @@ if Meteor.isClient
         Session.set("doSectionForward",true)
         toastr.success('将在微信分享时引用本段内容', '您选定了本段文字')
         console.log('Selected index '+self.index)
-        Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
+        #Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
+        location.pathname = '/posts/'+ postId + '/' + self.index
   Template.showPosts.events
     'click .authorReadPopularPostItem': (e)->
       postId = e.currentTarget.id
@@ -525,7 +526,8 @@ if Meteor.isClient
       Session.set("postBack",postBack)
       Session.set("lastPost",postId)
       Session.set('postContentTwo', postId)
-      Router.go '/posts/' + postId
+      #Router.go '/posts/' + postId
+      location.pathname = '/posts/'+postId
     # 'click .shareTheReadingRoom .btnYes': ()->
     #   $('.shareTheReadingRoom,.shareAlertBackground').hide()
     #   Router.go '/hotPosts/' + Session.get('postContent')._id
@@ -603,6 +605,7 @@ if Meteor.isClient
         toolbar = $self.data('toolbarObj')
         unless toolbar
           self = this
+          self.index = parseInt($self.attr('index'))
           $self.toolbar
             content: '.section-toolbar'
             position: 'bottom'

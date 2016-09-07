@@ -285,10 +285,10 @@ if Meteor.isServer
               if icomment["userId"] is userId
                 scolor="#304EF5"
                 break
-        if scolor is "#304EF5"
-          if Session.get("toasted") is false
-            Session.set "toasted",true
-            Session.set("needToast",true)
+        #if scolor is "#304EF5"
+        #  if Session.get("toasted") is false
+        #    Session.set "toasted",true
+        #    Session.set("needToast",true)
         dislikeSum = 0
         if self.dislikeSum
           dislikeSum=self.dislikeSum
@@ -305,6 +305,12 @@ if Meteor.isServer
 
   SSR.compileTemplate('post', Assets.getText('static/post.html'))
   Template.post.helpers
+      getAbstractSentence:->
+        console.log('>>> abstractSentenceIndex: ', this.abstractSentenceIndex)
+        if this.abstractSentenceIndex isnt undefined
+          this.pub[this.abstractSentenceIndex].text
+        else
+          null  
       time_diff: (created)->
           GetTime0(new Date() - created)
       getPub:->
@@ -359,6 +365,7 @@ if Meteor.isServer
   , {where: 'server'}
   Router.route '/posts/:_id/:index', (req, res, next)->
     postItem = Posts.findOne({_id: this.params._id})
+    postItem.abstractSentenceIndex = parseInt(this.params.index)
     postHtml = SSR.render('post', postItem)
     #postItem = Posts.findOne({_id: this.params._id},{fields:{title:1,mainImage:1,addontitle:1}});
     Inject.rawModHtml('addxmlns', (html) ->

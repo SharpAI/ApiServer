@@ -7,6 +7,14 @@
     </div>
 </div>
 <div class="content">
+    {{#if getAbstractSentence}}
+      <div class="post_header">
+          <div class="post_abstract">
+              <div class="abstract_sentence"><span style="white-space: pre-wrap;">{{getAbstractSentence}}</span></div>
+              <div class="abstract_chapter">――节选自 第{{abstractSentenceIndex}}段{{title}}{{#if addontitle}}：{{addontitle}}{{/if}}</div>
+          </div>
+      </div>
+    {{/if}}
     <div id="wrapper">
         <div class="mainImage" id="{{_id}}">
             <img id="wx-img" class="scale item" src="{{mainImage}}" draggable="false" style="min-height: 100%;position:absolute;{{mainImageStyle}}" >
