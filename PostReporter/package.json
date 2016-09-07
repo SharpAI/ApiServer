@@ -12,6 +12,7 @@
     "mqtt":"^1.7.3",
     "node-telegram-bot-api": "~0.23.3",
     "slackbots": "~0.5.2",
+    "neo4j": "~2.0.0-RC2",
     "mongodb":"^2.1.8"
   },
   "devDependencies": {

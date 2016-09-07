@@ -25,6 +25,8 @@ var token = process.env.TELEGRAM_KEY || "245939457:AAE9qEYvnNv1A5hOfkkRwwxBnEU0q
 var bot = new TelegramBot(token, {polling: true});
 var SlackBot = require('slackbots');
 
+var getHottestPost = require('./hottestPosts');
+
 // create a bot
 var slackBot = new SlackBot({
     token: 'xoxb-76820722259-dlvZ74CLXLN60rie25DGM64w', // Add a bot https://my.slack.com/services/new/bot and put the token
@@ -118,14 +120,6 @@ function post_report(post_id,callback){
     });
 }
 
-/**
- * @param {object} data
- */
-slackBot.on('start', function() {
-    var selfID = slackBot.self.id
-    // console.log('my own ID is: '+selfID)
-    //if(data && data.)
-});
 
 /**
  * @param {object} data
@@ -144,10 +138,21 @@ slackBot.on('message', function(data) {
             if(command[0] === 'delete'){
                 console.log('to delete id '+command[1]);
                 slackBot.postMessageToChannel('general', 'I know you want to delete post '+ command[1] +' , but the coding is not done.');
-            } else {
+            } else if( command[0] === 'hot' ){
+                slackBot.postMessageToChannel('general', 'Calculating Hottest Posts from NEO4J Database...');
+                getHottestPost(function(hottestPost){
+                    hottestPost.forEach(function(item){
+                       if(item){
+                           slackBot.postMessageToChannel('general', JSON.stringify(item));
+                       }
+                    });
+                });
+            }
+            else {
                 slackBot.postMessageToChannel('general', 'I don\'t understand your command...\n' +
                     'The possible command are:\n' +
-                    'delete postid');
+                    'delete postid\n' +
+                    'hot');
             }
         }
     }
@@ -160,8 +165,25 @@ bot.onText(/\/start/, function (msg, match) {
     var usage = '*Command list:*\n' +
         '*/auth [password]*  Add yourself to send list\n' +
         '*/remove*                Remove yourself from send list\n' +
-        '*/all*                   Show all user in the send list\n';
+        '*/all*                   Show all user in the send list\n' +
+        '*/hot*                   Show Hottest Posts\n';
     bot.sendMessage(fromId, usage,{parse_mode:"Markdown"});
+});
+bot.onText(/\/hot/, function (msg, match) {
+    var fromId = msg.from.id;
+    var fromUsername = msg.from.username;
+    check_if_legit_user(fromId,function(err,user){
+        if(!err && user && user.chat_id ===fromId){
+            bot.sendMessage(fromId, '*Calculating* Hottest Posts from NEO4J Database...',{parse_mode:"Markdown"});
+            getHottestPost(function(hottestPost){
+                hottestPost.forEach(function(item){
+                    bot.sendMessage(fromId, JSON.stringify(item));
+                })
+            });
+        } else {
+            bot.sendMessage(fromId, 'Please run /auth [password] first.',{parse_mode:"Markdown"});
+        }
+    });
 });
 bot.onText(/\/all/, function (msg, match) {
     var fromId = msg.from.id;
