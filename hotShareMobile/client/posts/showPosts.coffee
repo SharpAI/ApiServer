@@ -208,23 +208,27 @@ if Meteor.isClient
   Template.showPosts.onRendered ->
     owner = Meteor.users.findOne({_id: Session.get('postContent').owner})
     console.table(owner)
-    showFollowTips = ()->
-      console.log('viewer_counts = '+Counts.get('post_viewer_count_'+Meteor.userId()))
-      # off
-      if !(owner.profile.followTips isnt false)
-        return
-      # slef
-      if Meteor.userId() is owner._id
-        return
-      # follower
-      if Follower.find({userId: Meteor.userId(), followerId: owner._id}).count() > 0
-        return
-      # < 3
-      if Counts.get('post_viewer_count_'+Meteor.userId()) < 3
-        return
-      if Counts.get('post_viewer_count_'+Meteor.userId()) >= 3
-        $('.subscribeAutorPage').show()
-    showFollowTips()
+    if Counts.has('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id)
+      console.log('has Counts of PostViewer')
+      showFollowTips = ()->
+        console.log('viewer_counts = '+Counts.get('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id))
+        # off
+        if !(owner.profile.followTips isnt false)
+          return
+        # slef
+        if Meteor.userId() is owner._id
+          return
+        # follower
+        if Follower.find({userId: Meteor.userId(), followerId: owner._id}).count() > 0
+          return
+        # < 3
+        if Counts.get('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id) < 3
+          return
+        if Counts.get('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id) >= 3
+          $('.subscribeAutorPage').show()
+      showFollowTips()
+    else
+      console.log('Counts not Ready')
 
     getHotPostsData()
     #if !amplify.store('chatNotify')

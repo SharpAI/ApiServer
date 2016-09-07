@@ -1850,7 +1850,7 @@ if(Meteor.isServer){
         return Posts.find({_id: postId});
   });
   Meteor.publish('postViewCounter', function(postId) {
-    Counts.publish(this, 'post_viewer_count_'+this.userId, Viewers.find({
+    Counts.publish(this, 'post_viewer_count_'+this.userId+'_'+postId, Viewers.find({
         postId: postId, userId: this.userId
     },{limit:1,fields: { '_id': 1, 'count': 1 }}), {countFromField: function(doc){
         return doc.count;
