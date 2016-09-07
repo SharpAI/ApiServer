@@ -81,9 +81,14 @@ if Meteor.isClient
     
   Session.setDefault('hottestPosts', [])
   Template.showPosts.onRendered ->
-    owner = Meteor.users.findOne({_id: Session.get('postContent').owner})
-    if Counts.has('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id)
       showFollowTips = ()->
+        owner = Meteor.users.findOne({_id: Session.get('postContent').owner}) 
+        
+        if !owner
+          return
+        # is 0
+        if !(Counts.has('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id))
+          return
         console.log('viewer_counts = '+Counts.get('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id))
         # off
         if !(owner.profile.followTips isnt false)

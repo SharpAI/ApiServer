@@ -206,11 +206,14 @@ if Meteor.isClient
       $('.subscribeAutorPage').hide()
 
   Template.showPosts.onRendered ->
-    owner = Meteor.users.findOne({_id: Session.get('postContent').owner})
-    console.table(owner)
-    if Counts.has('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id)
-      console.log('has Counts of PostViewer')
-      showFollowTips = ()->
+    showFollowTips = ()->
+        owner = Meteor.users.findOne({_id: Session.get('postContent').owner}) 
+        
+        if !owner
+          return
+        # is 0
+        if !(Counts.has('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id))
+          return
         console.log('viewer_counts = '+Counts.get('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id))
         # off
         if !(owner.profile.followTips isnt false)
@@ -227,8 +230,6 @@ if Meteor.isClient
         if Counts.get('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id) >= 3
           $('.subscribeAutorPage').show()
       showFollowTips()
-    else
-      console.log('Counts not Ready')
 
     getHotPostsData()
     #if !amplify.store('chatNotify')
