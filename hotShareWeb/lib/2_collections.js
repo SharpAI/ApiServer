@@ -426,6 +426,7 @@ if(Meteor.isServer){
             var needUpdateMeetCount = false;
             try {
                 if(userId && postId ){
+                    var postInfo=Posts.findOne({_id:postId},{fields:{owner:1}});
                     if( Viewers.find({postId:postId,userId:userId}).count() === 0 ){
                         needUpdateMeetCount = true;
                         var userinfo = Meteor.users.findOne({_id: userId },{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
@@ -436,13 +437,14 @@ if(Meteor.isServer){
                                 userId:userId,
                                 userIcon: userinfo.profile.icon,
                                 anonymous: userinfo.profile.anonymous,
+                                owner: postInfo.owner,
                                 createdAt: new Date()
                             });
                         }
                     } else {
                         userinfo = Meteor.users.findOne({_id: userId},{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
                         if(userinfo) {
-                            Viewers.update({postId: postId, userId: userId}, {$set: {createdAt: new Date()}});
+                            Viewers.update({postId: postId, userId: userId}, {$set: {createdAt: new Date()}, owner: postInfo.owner});
                         }
                     }
                 }
