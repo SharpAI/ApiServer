@@ -59,6 +59,7 @@ if Meteor.isClient
       fastRender: true
     }
   Router.route '/posts/:_id/:_index', {
+    name: 'post_index'
     waitOn: ->
       [Meteor.subscribe("publicPosts",this.params._id),
        Meteor.subscribe("postViewCounter",this.params._id),

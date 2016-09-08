@@ -212,15 +212,18 @@ if Meteor.isClient
     Deps.autorun (h)->
       if Meteor.userId() and Meteor.userId() isnt ''
         h.stop()
+        if location.pathname.split('/').length is 3 
+          Session.set('section_forward_flag', false)
+          
         if Session.get("NoUpdateShare") is true
           Session.set "NoUpdateShare",false
           Meteor.call 'readPostReport',postContent._id,Meteor.userId(),true, (err, res)->
-            if !err and res is true
+            if !err and res is true and !Session.equals('section_forward_flag', true)
               console.log 'readPostReport:', res
               $('.subscribeAutorPage').show()
         else
           Meteor.call 'readPostReport',postContent._id,Meteor.userId(),false, (err, res)->
-            if !err and res is true
+            if !err and res is true and !Session.equals('section_forward_flag', true)
               console.log 'readPostReport:', res
               $('.subscribeAutorPage').show()
 #    $('.textDiv1Link').linkify();
@@ -550,7 +553,9 @@ if Meteor.isClient
         Session.set("doSectionForward",true)
         toastr.success('将在微信分享时引用本段内容', '您选定了本段文字')
         console.log('Selected index '+self.index)
-        Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
+        Session.set('section_forward_flag', true)
+        Router.go('post_index', {_id: Session.get('postContent')._id, _index: self.index})
+        #Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
   Template.showPosts.events
     'click .authorReadPopularPostItem': (e)->
       postId = e.currentTarget.id
