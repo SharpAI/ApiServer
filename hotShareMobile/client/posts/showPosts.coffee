@@ -206,30 +206,32 @@ if Meteor.isClient
       $('.subscribeAutorPage').hide()
 
   Template.showPosts.onRendered ->
+    postId = this.data._id
+    ownerId = this.data.ownerId
     showFollowTips = ()->
-        owner = Meteor.users.findOne({_id: Session.get('postContent').owner}) 
-        
-        if !owner
-          return
-        # is 0
-        if !(Counts.has('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id))
-          return
-        console.log('viewer_counts = '+Counts.get('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id))
-        # off
-        if !(owner.profile.followTips isnt false)
-          return
-        # slef
-        if Meteor.userId() is owner._id
-          return
-        # follower
-        if Follower.find({userId: Meteor.userId(), followerId: owner._id}).count() > 0
-          return
-        # < 3
-        if Counts.get('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id) < 3
-          return
-        if Counts.get('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id) >= 3
-          $('.subscribeAutorPage').show()
-      showFollowTips()
+      owner = Meteor.users.findOne({_id: ownerId}) 
+      
+      if !owner
+        return
+      # is 0
+      if !(Counts.has('post_viewer_count_'+Meteor.userId()+'_'+postId))
+        return
+      console.log('viewer_counts = '+Counts.get('post_viewer_count_'+Meteor.userId()+'_'+postId))
+      # off
+      if !(owner.profile.followTips isnt false)
+        return
+      # slef
+      if Meteor.userId() is owner._id
+        return
+      # follower
+      if Follower.find({userId: Meteor.userId(), followerId: owner._id}).count() > 0
+        return
+      # < 3
+      if Counts.get('post_viewer_count_'+Meteor.userId()+'_'+postId) < 3
+        return
+      if Counts.get('post_viewer_count_'+Meteor.userId()+'_'+postId) >= 3
+        $('.subscribeAutorPage').show()
+    showFollowTips()
 
     getHotPostsData()
     #if !amplify.store('chatNotify')
@@ -1000,7 +1002,7 @@ if Meteor.isClient
           if error
             console.log(error.reason);
           else
-            console.log("success");
+            console.log("success");ownerId
         )
         $('#pcommitReport').val('')
         $("#pcommitReport").attr("placeholder", "评论")
