@@ -2329,10 +2329,11 @@ if(Meteor.isServer){
       //if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
         //postsInsertHookDeferHandle(userId,doc);
         postsInsertHookDeferHandle(doc.owner,doc);
+          /* Don't report link to baidu.
           try{
               postsInsertHookPostToBaiduDeferHandle(doc._id);
           }catch(err){
-          }
+          }*/
           try{
               mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
           }catch(err){}
