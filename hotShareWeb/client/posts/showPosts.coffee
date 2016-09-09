@@ -81,32 +81,39 @@ if Meteor.isClient
     
   Session.setDefault('hottestPosts', [])
   Template.showPosts.onRendered ->
-    owner = Meteor.users.findOne({_id: Session.get('postContent').owner})
-    if Counts.has('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id)
-      showFollowTips = ()->
-        console.log('viewer_counts = '+Counts.get('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id))
-        # off
-        if !(owner.profile.followTips isnt false)
-          return
-        # slef
-        if Meteor.userId() is owner._id
-          return
-        # follower
-        if Follower.find({userId: Meteor.userId(), followerId: owner._id}).count() > 0
-          return
-        # < 3
-        if Counts.get('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id) < 3
-          return
-        if Counts.get('post_viewer_count_'+Meteor.userId()+'_'+Session.get('postContent')._id) >= 3
-          $('.subscribeAutorPage').show()
-      showFollowTips()
+    postId = this.data._id
+    ownerId = this.data.ownerId
+    # showFollowTips = ()->
+    #   owner = Meteor.users.findOne({_id: ownerId}) 
+      
+    #   if !owner
+    #     return
+    #   # is 0
+    #   if !(Counts.has('post_viewer_count_'+Meteor.userId()+'_'+postId))
+    #     return
+    #   console.log('viewer_counts = '+Counts.get('post_viewer_count_'+Meteor.userId()+'_'+postId))
+    #   # off
+    #   if !(owner.profile.followTips isnt false)
+    #     return
+    #   # slef
+    #   if Meteor.userId() is owner._id
+    #     return
+    #   # follower
+    #   if Follower.find({userId: Meteor.userId(), followerId: owner._id}).count() > 0
+    #     return
+    #   # < 3
+    #   if Counts.get('post_viewer_count_'+Meteor.userId()+'_'+postId) < 3
+    #     return
+    #   if Counts.get('post_viewer_count_'+Meteor.userId()+'_'+postId) >= 3
+    #     $('.subscribeAutorPage').show()
+    # showFollowTips()
 
     # if Counts.get('post_viewer_count') >= 3 and Follower.find({userId: Meteor.userId(), followerId: Session.get('postContent').owner}).count() <= 0 and localStorage.getItem('tip_auto_follower') != Meteor.userId()
     #   localStorage.setItem('tip_auto_follower', Meteor.userId())
     #   Session.set('subscribeAutorPageType', 'auto')
     #   $('.subscribeAutorPage').show()
 
-    Meteor.subscribe 'usersById', Session.get('postContent').owner
+    Meteor.subscribe 'usersById', ownerId
     Meteor.call 'getHottestPosts', (err,res)->
       unless err
         Session.set('hottestPosts', res)
@@ -205,11 +212,20 @@ if Meteor.isClient
     Deps.autorun (h)->
       if Meteor.userId() and Meteor.userId() isnt ''
         h.stop()
+        if location.pathname.split('/').length is 3 
+          Session.set('section_forward_flag', false)
+          
         if Session.get("NoUpdateShare") is true
           Session.set "NoUpdateShare",false
-          Meteor.call('readPostReport',postContent._id,Meteor.userId(),true)
+          Meteor.call 'readPostReport',postContent._id,Meteor.userId(),true, (err, res)->
+            if !err and res is true and !Session.equals('section_forward_flag', true)
+              console.log 'readPostReport:', res
+              $('.subscribeAutorPage').show()
         else
-          Meteor.call('readPostReport',postContent._id,Meteor.userId(),false)
+          Meteor.call 'readPostReport',postContent._id,Meteor.userId(),false, (err, res)->
+            if !err and res is true and !Session.equals('section_forward_flag', true)
+              console.log 'readPostReport:', res
+              $('.subscribeAutorPage').show()
 #    $('.textDiv1Link').linkify();
     $("a[target='_blank']").click((e)->
       e.preventDefault();
@@ -537,7 +553,9 @@ if Meteor.isClient
         Session.set("doSectionForward",true)
         toastr.success('将在微信分享时引用本段内容', '您选定了本段文字')
         console.log('Selected index '+self.index)
-        Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
+        Session.set('section_forward_flag', true)
+        Router.go('post_index', {_id: Session.get('postContent')._id, _index: self.index})
+        #Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
   Template.showPosts.events
     'click .authorReadPopularPostItem': (e)->
       postId = e.currentTarget.id

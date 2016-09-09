@@ -426,6 +426,7 @@ if(Meteor.isServer){
             var needUpdateMeetCount = false;
             try {
                 if(userId && postId ){
+                    var postInfo=Posts.findOne({_id:postId},{fields:{owner:1}});
                     if( Viewers.find({postId:postId,userId:userId}).count() === 0 ){
                         needUpdateMeetCount = true;
                         var userinfo = Meteor.users.findOne({_id: userId },{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
@@ -436,13 +437,14 @@ if(Meteor.isServer){
                                 userId:userId,
                                 userIcon: userinfo.profile.icon,
                                 anonymous: userinfo.profile.anonymous,
+                                owner: postInfo.owner,
                                 createdAt: new Date()
                             });
                         }
                     } else {
                         userinfo = Meteor.users.findOne({_id: userId},{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
                         if(userinfo) {
-                            Viewers.update({postId: postId, userId: userId}, {$set: {createdAt: new Date()}});
+                            Viewers.update({postId: postId, userId: userId}, {$set: {createdAt: new Date()}, owner: postInfo.owner});
                         }
                     }
                 }
@@ -1857,8 +1859,14 @@ if(Meteor.isServer){
     }});
   });
   Meteor.publish('postsAuthor', function(postId) {
-    var owner = Posts.findOne({_id:postId}).owner;
-    return Meteor.users.find({_id:owner},{fields:{'username': 1,'profile.fullname': 1,'profile.icon': 1,'profile.followTips':1}});
+    var post,owner;
+    post = Posts.findOne({_id:postId})
+    if(post && post.owner){
+        owner = post.owner;
+        return Meteor.users.find({_id:owner},{fields:{'username': 1,'profile.fullname': 1,'profile.icon': 1,'profile.followTips':1}});
+    } else {
+        return this.ready();
+    }
   });
   Meteor.publish("publicPosts", function(postId) {
       if(this.userId === null || !Match.test(postId, String))
@@ -1878,7 +1886,7 @@ if(Meteor.isServer){
         return [
           Posts.find({_id: postId}),
           //Viewers.find({postId: postId, userId: this.userId}, {sort: {count: -1}, limit: tip_follower_read_count}),
-          Meteor.users.find({_id: Posts.findOne({_id: postId}).owner}),
+        //   Meteor.users.find({_id: Posts.findOne({_id: postId}).owner}),
           Follower.find({userId: this.userId})
         ];
       }

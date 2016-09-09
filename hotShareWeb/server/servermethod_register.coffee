@@ -99,17 +99,37 @@ if Meteor.isServer
           post = Posts.findOne({_id:postId},{fields:{owner:1,browse:1,title:1}})
           browseTimes = 1;
           if post
+            # ======是否显示关注框=========
+            view_count = 0
+            views= Viewers.find({owner: post.owner, userId: this.userId}, {fields: {count: 1}}).fetch()
+            if(views.length > 0)
+              for item in views
+                view_count += item.count
+            view_count += 1
+
+            has_follower = Follower.find({userId: Meteor.userId(), followerId: post.owner}).count() > 0
+            has_slef = post.owner is this.userId
+
+            owner_user = Meteor.users.findOne({_id: post.owner})
+            has_show_tip = owner_user && owner_user.followTips isnt false ? true : false
+
+            return_result = view_count >= 3 and !has_follower and !has_slef and has_show_tip
+            console.log('show follow tip:', return_result)
+            # ===========================
+
             if post.browse isnt undefined
               browseTimes = post.browse + 1
             Meteor.defer ()->
               Posts.update({_id:postId},{$set:{browse:browseTimes}})
-              Viewers.update({postId: postId, userId: userId}, {$inc: {count: 1}}); 
+              Viewers.update({postId: postId, userId: userId}, {$inc: {count: 1}, $set: {owner: post.owner}}); 
               pushnotification("read",post,userId)
               unless NoUpdateShare
                 Feeds.update({postId:postId,eventType: 'share'},{
                   $inc: { ReadAfterShare: 1 },
                   $set:{checked:false}
                 });
+
+            return return_result
         catch error
           console.log('Error on RedpostReport' + error)
         return

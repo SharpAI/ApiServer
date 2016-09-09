@@ -377,23 +377,25 @@ if Meteor.isClient
       ,animatePageTrasitionTimeout
     'click .postImageItem': (e,t)->
       swipedata = []
-      i = 0
       selected = 0
-      console.log "=============click on image index is: " + this.index
-      for image in Session.get('postContent').pub
-        if image.imgUrl
-          if image.imgUrl is this.imgUrl
+      console.log "=============click on image index is: " + e.currentTarget.id
+
+      # find imgs
+      $('.postImageItem').each (index, item)->
+        $img = $(this).find('img')
+        if $img.attr('data-original')
+          swipedata.push({id: $img.attr('id'), href: $img.attr('data-original')})
+        else
+          swipedata.push({id: $img.attr('id'), href: $img.attr('src')})
+
+      # get selected
+      if swipedata.length > 0
+        for i in [0..swipedata.length-1]
+          if swipedata[i].id is e.currentTarget.id + 'img'
             selected = i
-          if image.imgUrl.indexOf('file://') > -1
-            if t.findAll('.lazy')[i]
-              swipedata.push
-                href: t.findAll('.lazy')[i].src
-                title: image.text
-          else
-            swipedata.push
-              href: image.imgUrl
-              title: image.text
-          i++
+            break
+      console.log('length:', swipedata.length, 'selected:', selected);
+
       $.swipebox swipedata,{
         initialIndexOnArray: selected
         hideCloseButtonOnMobile : true
