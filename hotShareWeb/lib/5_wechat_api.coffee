@@ -36,6 +36,7 @@ if Meteor.isClient
       else
         FavouritePosts.insert({postId: postId, userId: Meteor.userId(), createdAt: new Date(), updateAt: new Date()})
     wechatSetup = (signatureResult)->
+      console.log('wechat_sign:', signatureResult)
       wx.config {
         debug: false,
         appId: signatureResult.appid,
@@ -174,6 +175,49 @@ if Meteor.isClient
         Session.set('sign_status_'+url,'starting')
       else if Session.equals('sign_status_'+url,'starting') or Session.equals('sign_status_'+url,'done')
         return
+
+      # setWXReady = (data)->
+      #   console.log('data:', data)
+      #   if data
+      #     console.log('Signature from inject-data:')
+      #     console.log(data)
+      #     signatureResult = data
+      #     localStorage.setItem('savedsignature'+url, signatureResult);
+      #     Session.set('sign_status_'+url,'done')
+
+      #     wechatSetup(signatureResult)
+      #     wx.ready(wechatReady)
+      #   else
+      #     HTTP.get sign_server_url+encodeURIComponent(url),(error,result)->
+      #       #FeedAfterShare(Session.get('postContent'))
+      #       if error
+      #         if localStorage.getItem('savedsignature'+url)
+      #           signatureResult = localStorage.getItem('savedsignature'+url)
+      #           Session.set('sign_status_'+url,'failed')
+      #           console.log('Got Post signature Result from localStorage ' + signatureResult)
+      #       else
+      #         signatureResult = JSON.parse(result.content)
+      #         Session.set('sign_status_'+url,'done')
+      #         # console.log('Got Post signature signatureResult1 ' + signatureResult)
+      #         localStorage.setItem('savedsignature'+url, signatureResult);
+      #       console.log(result)
+      #       console.log('Got Post signature ' + JSON.stringify(signatureResult))
+      #       wechatSetup(signatureResult)
+      #       wx.ready(wechatReady)
+
+      # wechat_sign = JSON.parse(localStorage.getItem('_wechat_sign'))
+      # if(true)
+      # #if(!wechat_sign or wechat_sign.expires < new Date())
+      #   Meteor.call 'getSignatureFromServer', 'http://' + server_domain_name + location.pathname, (err, res)->
+      #     console.log('getSignatureFromServer')
+      #     now = new Date()
+      #     now.setMinutes(now.getMinutes()+30) # 有效期30分钟
+      #     console.log(res)
+      #     localStorage.setItem('_wechat_sign', JSON.stringify({sign: res, expires: now}))
+      #     setWXReady(res)
+      # else
+      #   console.log('getSignatureFromLocal')
+      #   setWXReady(wechat_sign.sign)
 
       InjectData.getData "wechatsign", (data)->
         if data
