@@ -25,6 +25,10 @@ UserRelation = new Meteor.Collection('userrelation'); // 用户关系，为了�
 
 Recommends = new Meteor.Collection('recommends');
 
+// 删除帖子
+LockedUsers = new Meteor.Collection('lockedUsers');
+BackUpPosts = new Meteor.Collection('backUpPosts');
+
 if(Meteor.isServer)
   PushSendLogs = new Meteor.Collection('pushSendLogs');
 
@@ -2191,6 +2195,19 @@ if(Meteor.isServer){
         return this.ready();
     }
   });
+
+//   监控
+  Meteor.publish('rpOwner', function(userId) {
+      Meteor.users.findOne({_id: userId}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}});
+  });
+  Meteor.publish('rpPosts', function(type,options) {
+      if(type == 'montior'){
+            return Posts.find({},options);
+      } else {
+            return BackUpPosts.find({},options)
+      } 
+  });
+  
   function publishTheFavouritePosts(self,userId,limit){
       var pub = self
       var cursorHandle=FavouritePosts.find({userId: userId}, {sort: {createdAt: -1}, limit: limit}).observeChanges({
@@ -2306,7 +2323,16 @@ if(Meteor.isServer){
   Posts.allow({
     insert: function (userId, doc) {
       var userIds = [];
-
+      //   禁止相关用户发帖
+      if(doc.owner){
+          var postOwner;
+          postOwner = Meteor.users.findOne({_id: doc.owner})
+           LockedUsers.find({}).forEach(function(item){
+               if(postOwner.token && postOwner.token === item.userToken){
+                   return false;
+               }
+           });
+      }
       if(doc.owner != userId){
         Meteor.defer(function(){
           var me = Meteor.users.findOne({_id: userId});

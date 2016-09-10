@@ -1,0 +1,122 @@
+<template name="reporter">
+<div class="reporter">
+  <div class="rp-header">
+    <div class="rp-nav">
+      <h1> 故事贴监控系统</h1>
+      <ul>
+        <li id="montior" class="rp-nav rp-curr">监控</li>
+        <li id="recover" class="rp-nav">误删恢复</li>
+        <!--<li id="unblock" class="rp-nav">用户解禁</li>-->
+      </ul>
+      <!-- 时间范围选择 -->
+      <div class="rp-data-select">
+
+      </div>
+    </div>
+    <!-- 筛选Start-->
+    <div class="rp-db">
+      <div style="float: left;  display:inline-blok;">
+    每页<input id="limit" type="text" style="width:30px;" value="{{limit}}"/>条， 从<input id="startDate" type="date"/> 到<input id="endDate" type="date"/>,
+    第<input id="page" type="text" style="width:30px;" value="{{page}}"/>页 
+      <span id="submit" style="background: deepskyblue;color:#fff; padding:4px 12px; line-height:32px; height:32px; border-radius:4px; cursor:pointer;">确定</span>
+      </div>
+      <div style="float: right; display:inline-blok;margin-right: 40px;">
+        <a href="#" id="prev" style="line-height:32px;">上一页</a>
+        <a href="#" id="next" style="line-height:32px;">下一页</a>
+      </div>
+    </div>
+    <!--筛选End-->
+  </div>
+
+  <div class="rp-main">
+    <table class="table table-striped" border="0">
+      <thead>
+        <tr>
+          <th style="width:60px;">#</th>
+          <th style="width:200px;">Title</th>
+          <th style="width:200px;">addonTitle</th>
+          <th style="width:80px;">Owner</th>
+          <th class="sort">CreatedAt &nbsp;<i class="fa fa-plus"></i></th>
+          <th style="width:80px;">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each posts}}
+        <tr>
+          <td style="text-align:center;">{{@index}}</td> 
+          <td><a href="/posts/{{_id}}" target="_blank" class="view">{{title}}</a></td>
+          <td>{{addontitle}}</td>
+          <td id="{{owner}}" class="viewOwner" style="text-align:center;">{{ownerName}}</td>
+          <td style="text-align:center;">{{createdAt}}</td>
+          {{#if isMontior}}
+          <td id="{{_id}}" class="remove" style="text-align:center;">删除</td>
+          {{else}}
+          <td id="{{_id}}" class="restore" style="text-align:center;">恢复</td>
+          {{/if}}
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{> reporterViewOwner}}
+  </div>
+</div>
+
+</template>
+
+<!--监控-->
+<template name="reporterMonitor">
+
+<table class="table table-striped" border="0">
+  <thead>
+    <tr>
+      <th style="width:60px;">#</th>
+      <th style="width:200px;">Title</th>
+      <th style="width:200px;">addonTitle</th>
+      <th style="width:80px;">Owner</th>
+      <th class="sort">CreatedAt &nbsp;<i class="fa fa-plus"></i></th>
+      <th style="width:80px;">操作</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each posts}}
+    <tr>
+      <td style="text-align:center;">{{@index}}</td> 
+      <td><a href="http://cdn.tiegushi.com/posts/{{_id}}" target="_blank" class="view">{{title}}</a></td>
+      <td>{{addontitle}}</td>
+      <td id="{{owner}}" class="viewOwner" style="text-align:center;">{{ownerName}}</td>
+      <td style="text-align:center;">{{formatTime createdAt}}</td>
+      <td id="{{_id}}" class="remove" style="text-align:center;">删除</td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+{{> reporterViewOwner}}
+</template>
+
+<!--误删恢复-->
+<template name="reporterRecover">
+误删恢复
+</template>
+
+<!--用户解禁-->
+<template name="reporterUnBlock">
+用户解禁
+</template>
+
+
+<template name="reporterViewOwner">
+  <div class="rp-viewOwner">
+  <h2 style="text-align:center; border-bottom:1px solid #ccc;">owner Info</h2>
+  <div style="padding:8px 16px;">
+    <p>id: {{owner._id}}</p>
+    <p>token: {{owner.token}}</p>
+    <p>anonymous: {{owner.anonymous}}</p>
+    <p>username: {{owner.username}}</p>
+    <p>fullname: {{owner.profile.fullname}}</p>
+    <p>ip: {{owner.profile.lastLogonIP}}</p>
+    <p>location: {{owner.profile.location}}</p>
+    <p>system: {{owner.type}}</p>
+    <div class="close" style="text-align:center; height:32px;line-height:32px;border-top:1px solid #ccc;">关闭</div>
+  </div>
+  </div>
+</template>

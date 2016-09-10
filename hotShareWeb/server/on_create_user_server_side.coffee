@@ -26,3 +26,9 @@ if Meteor.isServer
         mqttUserCreateHook(user._id,user.profile.fullname,user.username)
 
       return user
+    # 禁止相关设备创建用户
+    Accounts.validateNewUser (user)->
+      if user.token
+        LockedUsers.find({}).forEach (item)->
+          if options.token is item.userToken
+            throw new Meteor.Error(403, "设备被禁用")

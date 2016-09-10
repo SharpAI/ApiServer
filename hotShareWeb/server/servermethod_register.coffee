@@ -6,6 +6,25 @@ if Meteor.isServer
   console.log("process.env.HTTP_FORWARDED_COUNT="+process.env.HTTP_FORWARDED_COUNT);
   Meteor.startup ()->
     Meteor.methods
+      'delectPostAndBackUp': (postId)->
+        post = Posts.findOne({_id:postId})
+        if post
+          # backup
+          BackUpPosts.insert(post)
+          # remove
+          Posts.remove(postId)
+        # 禁止用户登录或者发帖
+        if post and post.owner
+          owner = Meteor.users.findOne({_id: post.owner})
+          LockedUsers.insert({userToken: owner.token})
+      'restorePost': (postId)->
+        post = BackUpPosts.findOne({_id:postId})
+        if post
+          Posts.insert(post)
+          BackUpPosts.remove(postId)
+        if post and post.owner
+          owner = Meteor.users.findOne({_id: post.owner})
+          LockedUsers.remove({userToken: owner.token})
       'updateTopicPostsAfterComment':(topicPostId,topic,topicPostObj)->
         if Topics.find({text:topic}).count() > 0
           topicData = Topics.find({text:topic}).fetch()[0]
