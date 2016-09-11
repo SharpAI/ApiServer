@@ -25,6 +25,10 @@ if Meteor.isServer
         if post and post.owner
           owner = Meteor.users.findOne({_id: post.owner})
           LockedUsers.remove({userToken: owner.token})
+      'delPostfromDB': (postId)->
+        post = BackUpPosts.findOne({_id:postId})
+        if post
+          BackUpPosts.remove(postId)
       'updateTopicPostsAfterComment':(topicPostId,topic,topicPostObj)->
         if Topics.find({text:topic}).count() > 0
           topicData = Topics.find({text:topic}).fetch()[0]

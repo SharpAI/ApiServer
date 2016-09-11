@@ -37,18 +37,21 @@
     tr:nth-child(even){background: #eee; border: none;}
     td{ border-bottom: 1px solid #eee;}
     input{height: 28px; line-height: 28px; text-align: center; border: 1px solid #ccc; outline: none;}
-    .remove{color: deeppink; cursor: pointer;}
+    .remove,.restore,.showPostURI{color: deeppink; cursor: pointer;}
+    .del{color: red; cursor: pointer;}
     .viewOwner{color: deepskyblue; cursor: pointer;}
   }
 }
 .rp-viewOwner{
   width: 300px;
   position: fixed;
-  left: 0;
-  bottom: 0;
+  left: 16px;
+  bottom: 16px;
   display: none;
   z-index: 99;
   background: #fff;
   border-radius: 8px;
+  border: 1px solid #ccc;
   box-shadow: 1px 3px 13px #ccc;
+  p{display: block; word-wrap: break-word;}
 }

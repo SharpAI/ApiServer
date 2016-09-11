@@ -4,9 +4,15 @@
     <div class="rp-nav">
       <h1> 故事贴监控系统</h1>
       <ul>
+        {{#if isMontior}}
         <li id="montior" class="rp-nav rp-curr">监控</li>
         <li id="recover" class="rp-nav">误删恢复</li>
+        {{else}}
+        <li id="montior" class="rp-nav">监控</li>
+        <li id="recover" class="rp-nav  rp-curr">误删恢复</li>
+        {{/if}}
         <!--<li id="unblock" class="rp-nav">用户解禁</li>-->
+        {{loginButtons}}
       </ul>
       <!-- 时间范围选择 -->
       <div class="rp-data-select">
@@ -21,6 +27,7 @@
       <span id="submit" style="background: deepskyblue;color:#fff; padding:4px 12px; line-height:32px; height:32px; border-radius:4px; cursor:pointer;">确定</span>
       </div>
       <div style="float: right; display:inline-blok;margin-right: 40px;">
+        <a href="#" id="refCDN" style="line-height:32px; margin-right:8px;">刷新CDN</a>
         <a href="#" id="prev" style="line-height:32px;">上一页</a>
         <a href="#" id="next" style="line-height:32px;">下一页</a>
       </div>
@@ -36,22 +43,29 @@
           <th style="width:200px;">Title</th>
           <th style="width:200px;">addonTitle</th>
           <th style="width:80px;">Owner</th>
-          <th class="sort">CreatedAt &nbsp;<i class="fa fa-plus"></i></th>
-          <th style="width:80px;">操作</th>
+          <th class="sort" style="width:200px;">CreatedAt &nbsp;<i class="fa fa-plus"></i></th>
+          <th style="width:120px; text-align:center;">操作</th>
         </tr>
       </thead>
       <tbody>
         {{#each posts}}
-        <tr>
+        <tr id="{{_id}}">
           <td style="text-align:center;">{{@index}}</td> 
+          {{#if isMontior}}
           <td><a href="/posts/{{_id}}" target="_blank" class="view">{{title}}</a></td>
+          {{else}}
+          <td id="{{_id}}" class="showPostURI">{{title}}</td>
+          {{/if}}
           <td>{{addontitle}}</td>
           <td id="{{owner}}" class="viewOwner" style="text-align:center;">{{ownerName}}</td>
           <td style="text-align:center;">{{createdAt}}</td>
           {{#if isMontior}}
           <td id="{{_id}}" class="remove" style="text-align:center;">删除</td>
           {{else}}
-          <td id="{{_id}}" class="restore" style="text-align:center;">恢复</td>
+          <td>
+            <a href="#" id="{{_id}}" class="restore" style="text-align:center; margin-right:8px;">恢复</a>
+            <a href="#" id="{{_id}}" class="del" style="text-align:center;">彻底删除</a>
+          </td>
           {{/if}}
         </tr>
         {{/each}}
@@ -64,7 +78,7 @@
 </template>
 
 <!--监控-->
-<template name="reporterMonitor">
+<!--<template name="reporterMonitor">
 
 <table class="table table-striped" border="0">
   <thead>
@@ -91,7 +105,7 @@
   </tbody>
 </table>
 {{> reporterViewOwner}}
-</template>
+</template>-->
 
 <!--误删恢复-->
 <template name="reporterRecover">

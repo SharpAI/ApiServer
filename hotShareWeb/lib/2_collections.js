@@ -2198,13 +2198,17 @@ if(Meteor.isServer){
 
 //   监控
   Meteor.publish('rpOwner', function(userId) {
-      Meteor.users.findOne({_id: userId}, {fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1}});
+      return Meteor.users.find({_id: userId}, {
+          fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1,'token':1,'profile.location':1,'profile.lastLogonIP':1,'type':1,'anonymous':1}});
   });
-  Meteor.publish('rpPosts', function(type,options) {
+  Meteor.publish('rpPosts', function(type,selects,options) {
+      console.log ('type='+type)
+      console.log(type == 'montior')
       if(type == 'montior'){
-            return Posts.find({},options);
+            return Posts.find(selects,options);
       } else {
-            return BackUpPosts.find({},options)
+          console.log(JSON.stringify(BackUpPosts.find(selects,options).fetch()))
+            return BackUpPosts.find(selects,options)
       } 
   });
   

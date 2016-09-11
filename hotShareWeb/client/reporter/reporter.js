@@ -33,11 +33,21 @@ ReporterController = RouteController.extend({
       skip: this.postsSkip()
     };
   },
+  findSelects: function(){
+    if(Session.get('reporter-startDate') &&  Session.set('reporter-endDate')){
+      return {createdAt:{
+          $gte: Session.get('reporter-startDate'),
+          $lte: Session.get('reporter-startDate')}
+      };
+    } else {
+      return {};
+    }
+  },
   posts: function(){
-    return Posts.find({}, this.findOptions());
+      return Posts.find(this.findSelects(), this.findOptions());
   },
   removedPosts: function() {
-    BackUpPosts.find({}, this.findOptions());
+      return BackUpPosts.find(this.findSelects(), this.findOptions());
   },
   waitOn: function(){
     if(!Session.get('reporterLayout')){
@@ -50,9 +60,9 @@ ReporterController = RouteController.extend({
       Session.set('reporter-limit',this.increment)
     }
     if(Session.get('reporterLayout') ==='montior'){
-      return Meteor.subscribe('rpPosts','montior',this.findOptions());
+      return Meteor.subscribe('rpPosts','montior',this.findSelects(),this.findOptions());
     } else {
-      return Meteor.subscribe('rpPosts','recover',this.findOptions());
+      return Meteor.subscribe('rpPosts','recover',this.findSelects(),this.findOptions());
     }
     
   },
@@ -72,6 +82,7 @@ Template.reporter.onRendered(function () {
   // } else {
   //   Meteor.subscribe('rpPosts',2)
   // }
+  console.log('curr ='+Session.get('reporterLayout'))
 });
 
 Template.reporter.helpers({
@@ -92,25 +103,32 @@ Template.reporter.helpers({
 Template.reporter.events({
   'click #montior': function(e,t){
     Session.set('reporterLayout','montior');
-    console.log(e.currentTarget.id)
-    $('.rp-nav').removeClass('rp-curr');
-    $('#montior').addClass('rp-curr');
   },
   'click #recover': function(e,t){
     Session.set('reporterLayout','recover');
-    console.log(e.currentTarget.id)
-    $('.rp-nav').removeClass('rp-curr');
-    $('#recover').addClass('rp-curr');
+  },
+  'click .showPostURI': function(e){
+    alert('http://cdn.tiegushi.com/posts/'+e.currentTarget.id);
   },
   'click .remove': function(e,t){
     Meteor.call('delectPostAndBackUp',e.currentTarget.id);
+    $('tr#' + e.currentTarget.id).remove();
     toastr.info('已删除')
   },
-  'click #restore': function(e,t){
+  'click .restore': function(e,t){
     Meteor.call('restorePost',e.currentTarget.id);
-    toastr.info('已删除')
+    $('tr#' + e.currentTarget.id).remove();
+    toastr.info('已恢复')
+  },
+  'click .del': function(e,t) {
+    PUB.confirm('将从数据库中完全删除，并且无法恢复请确认！',function(){
+      Meteor.call('delPostfromDB',e.currentTarget.id);
+      $('tr#' + e.currentTarget.id).remove();
+      toastr.info('删除成功！');
+    })
   },
   'click .viewOwner': function(e,t){
+    Meteor.subscribe('rpOwner',e.currentTarget.id);
     Session.set('rp-viewOwner-id',e.currentTarget.id);
     $('.rp-viewOwner').show();
   },
@@ -118,14 +136,16 @@ Template.reporter.events({
     var page,limit,startDate,endDate;
     page = $('#page').val();
     limit = $('#limit').val();
-    startDate = $('#startDate').val();
-    startDate = new Date(startDate).getTime();
-    endDate = $('#endDate').val();
-    endDate = new Date(endDate).getTime();
     Session.set('reporter-page',Number(page));
     Session.set('reporter-limit',Number(limit));
-    Session.set('reporter-startDate',startDate);
-    Session.set('reporter-endDate',endDate);
+    startDate = $('#startDate').val();
+    endDate = $('#endDate').val();
+    if(startDate && endDate){
+      startDate = new Date(startDate).getTime();
+      endDate = new Date(endDate).getTime();
+      Session.set('reporter-startDate',startDate);
+      Session.set('reporter-endDate',endDate);
+    }
     console.log(endDate);
     // Router.go('reporter');
 
@@ -152,12 +172,12 @@ Template.reporter.events({
 
 // ownerInfo
 Template.reporterViewOwner.onRendered(function() {
-  Meteor.subscribe('rpOwner', Session.get('rp-viewOwner-id'));
+  // Meteor.subscribe('rpOwner', Session.get('rp-viewOwner-id'));
 });
 
 Template.reporterViewOwner.helpers({
   owner: function(){
-    Meteor.subscribe('rpOwner', Session.get('rp-viewOwner-id'));
+    // Meteor.subscribe('rpOwner', Session.get('rp-viewOwner-id'));
     return Meteor.users.findOne({
       _id: Session.get('rp-viewOwner-id')
     })
