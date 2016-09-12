@@ -3042,6 +3042,13 @@ if(Meteor.isClient){
           }
       });
   },2000);
+
+  Tracker.autorun(function() {
+    if(Meteor.isCordova) {
+        Meteor.subscribe('versions');        
+    }    
+  });
+
   Tracker.autorun(function() {
     if (Meteor.userId()) {
         if (Meteor.isCordova){

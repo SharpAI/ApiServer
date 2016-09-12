@@ -25,6 +25,12 @@ if Meteor.isClient
         return Cookies.get("display-lang") is 'en'
       else
         return false
+    isLatestVersion: ->
+      version = Versions.findOne({})
+      if version and version.android isnt version_of_build
+        return false
+      else
+        return true        
   addDashboardIntoHistory = ()->
     history = []
     history.push {
@@ -56,6 +62,11 @@ if Meteor.isClient
     'click .language' :->
       addDashboardIntoHistory()
       Router.go '/display_lang'
+    'click #updateToLatestVersion .btn-primary' :->
+      window.location.href = 'http://180.153.105.143/imtt.dd.qq.com/16891/346CBF0E04862CA542EA8AD714643FB6.apk?mkey=57d128030673c190&f=188a&c=0&fsname=org.hotshare.everywhere_1.3.10_103102.apk&hsr=4d5s&p=.apkhttp://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere'
+      setTimeout(()->
+        $("#updateToLatestVersion .btn-default").trigger('click');
+      , 200)
     'click .about' :->
       addDashboardIntoHistory()
       Router.go '/my_about'

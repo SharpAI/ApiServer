@@ -42,6 +42,7 @@ hot-code-push@1.0.0
 html-tools@1.0.5
 htmljs@1.0.5
 http@1.1.1
+hybrid:dialogs@1.0.3
 id-map@1.0.4
 iron:controller@1.0.12
 iron:core@1.0.11
