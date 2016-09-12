@@ -2204,11 +2204,41 @@ if(Meteor.isServer){
   Meteor.publish('rpPosts', function(type,selects,options) {
       console.log ('type='+type)
       console.log(type == 'montior')
+      console.log(JSON.stringify(selects));
+
       if(type == 'montior'){
-            return Posts.find(selects,options);
+        if(selects.startDate && selects.endDate){
+            console.log('1')
+            Counts.publish(this,'rpPostsCounts',Posts.find({
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate),
+                    $exists: true
+                }},options),{noReady: true});
+            return Posts.find({
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate)}
+                },options);
+        }
+        Counts.publish(this,'rpPostsCounts',Posts.find({createdAt:{$exists: true}}),{noReady: true});
+        return Posts.find({},options);
       } else {
-          console.log(JSON.stringify(BackUpPosts.find(selects,options).fetch()))
-            return BackUpPosts.find(selects,options)
+          if(selects.startDate && selects.endDate){
+            Counts.publish(this,'rpPostsCounts',BackUpPosts.find({
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate),
+                    $exists: true}
+                },options),{noReady: true});
+            return BackUpPosts.find({
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate)}
+                },options);
+        }
+        Counts.publish(this,'rpPostsCounts',BackUpPosts.find({createdAt:{$exists: true}}),{noReady: true});
+        return BackUpPosts.find({},options)
       } 
   });
   

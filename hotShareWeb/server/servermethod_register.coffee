@@ -4,9 +4,25 @@ if Meteor.isServer
   if (Meteor.absoluteUrl().toLowerCase().indexOf('host2.tiegushi.com') >= 0)
     process.env['HTTP_FORWARDED_COUNT'] = 1
   console.log("process.env.HTTP_FORWARDED_COUNT="+process.env.HTTP_FORWARDED_COUNT);
+  # 权限验证
+  @confirmReporterAuth = (userId)->
+    console.log(userId)
+    user = Meteor.users.findOne({_id: userId})
+    return user.profile.reporterSystemAuth
   Meteor.startup ()->
     Meteor.methods
-      'delectPostAndBackUp': (postId)->
+      'delectPostAndBackUp': (postId,userId)->
+        if !confirmReporterAuth(userId)
+          return false
+        post = Posts.findOne({_id:postId})
+        if post
+          # backup
+          BackUpPosts.insert(post)
+          # remove
+          Posts.remove(postId)
+      'delectPostWithUserAndBackUp': (postId,userId)->
+        if !confirmReporterAuth(userId)
+          return false
         post = Posts.findOne({_id:postId})
         if post
           # backup
@@ -17,15 +33,23 @@ if Meteor.isServer
         if post and post.owner
           owner = Meteor.users.findOne({_id: post.owner})
           LockedUsers.insert({userToken: owner.token})
-      'restorePost': (postId)->
+      'restorePost': (postId,userId)->
+        if !confirmReporterAuth(userId)
+          return false
         post = BackUpPosts.findOne({_id:postId})
         if post
           Posts.insert(post)
           BackUpPosts.remove(postId)
+      'restoreUser': (postId,userId)->
+        if !confirmReporterAuth(userId)
+          return false
+        post = BackUpPosts.findOne({_id:postId})
         if post and post.owner
           owner = Meteor.users.findOne({_id: post.owner})
           LockedUsers.remove({userToken: owner.token})
-      'delPostfromDB': (postId)->
+      'delPostfromDB': (postId,userId)->
+        if !confirmReporterAuth(userId)
+          return false
         post = BackUpPosts.findOne({_id:postId})
         if post
           BackUpPosts.remove(postId)

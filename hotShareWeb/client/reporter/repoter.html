@@ -2,7 +2,12 @@
 <div class="reporter">
   <div class="rp-header">
     <div class="rp-nav">
-      <h1> 故事贴监控系统</h1>
+      <h1> 故事贴监控系统&nbsp;&nbsp;</h1>
+      {{#if isLogin}}
+        <p class="user">{{userName}}</p>
+      {{else}}
+        <p class="user">登录</p>
+      {{/if}}
       <ul>
         {{#if isMontior}}
         <li id="montior" class="rp-nav rp-curr">监控</li>
@@ -12,7 +17,6 @@
         <li id="recover" class="rp-nav  rp-curr">误删恢复</li>
         {{/if}}
         <!--<li id="unblock" class="rp-nav">用户解禁</li>-->
-        {{loginButtons}}
       </ul>
       <!-- 时间范围选择 -->
       <div class="rp-data-select">
@@ -22,9 +26,10 @@
     <!-- 筛选Start-->
     <div class="rp-db">
       <div style="float: left;  display:inline-blok;">
-    每页<input id="limit" type="text" style="width:30px;" value="{{limit}}"/>条， 从<input id="startDate" type="date"/> 到<input id="endDate" type="date"/>,
-    第<input id="page" type="text" style="width:30px;" value="{{page}}"/>页 
-      <span id="submit" style="background: deepskyblue;color:#fff; padding:4px 12px; line-height:32px; height:32px; border-radius:4px; cursor:pointer;">确定</span>
+    每页<input id="limit" type="text" style="width:30px;" value="{{limit}}"/>条， 
+    从<input id="startDate" type="date" value="{{startDate}}"/> 到<input id="endDate" type="date" value="{{endDate}}"/>,
+    第<input id="page" type="text" style="width:30px;" value="{{page}}"/>页, 共{{totalPage}}页
+      <span id="submit" style="background: deepskyblue;color:#fff; margin-left:8px; padding:4px 12px; line-height:32px; height:32px; border-radius:4px; cursor:pointer;">确定</span>
       </div>
       <div style="float: right; display:inline-blok;margin-right: 40px;">
         <a href="#" id="refCDN" style="line-height:32px; margin-right:8px;">刷新CDN</a>
@@ -34,7 +39,7 @@
     </div>
     <!--筛选End-->
   </div>
-
+  {{#if reporterSystemAuth}}
   <div class="rp-main">
     <table class="table table-striped" border="0">
       <thead>
@@ -60,11 +65,14 @@
           <td id="{{owner}}" class="viewOwner" style="text-align:center;">{{ownerName}}</td>
           <td style="text-align:center;">{{createdAt}}</td>
           {{#if isMontior}}
-          <td id="{{_id}}" class="remove" style="text-align:center;">删除</td>
+          <td style="text-align:center;">
+            <a href="#" id="{{_id}}" class="remove" style="margin-right:8px;">删除</a>
+            <a href="#" id="{[_id]}" class="removeWithUser">删除并禁止用户</a>
+          </td>
           {{else}}
-          <td>
-            <a href="#" id="{{_id}}" class="restore" style="text-align:center; margin-right:8px;">恢复</a>
-            <a href="#" id="{{_id}}" class="del" style="text-align:center;">彻底删除</a>
+          <td style="text-align:center;">
+            <a href="#" id="{{_id}}" class="restore" style=" margin-right:8px;">恢复</a>
+            <a href="#" id="{{_id}}" class="del">彻底删除</a>
           </td>
           {{/if}}
         </tr>
@@ -73,51 +81,20 @@
     </table>
     {{> reporterViewOwner}}
   </div>
+  {{else}}
+  <div id="notAccess" style="margin:20px auto; margin-top:260px; text-align:center;">
+    <h1 style="color:red; font-size:28px;">
+      你无权进行此项操作！请
+      <a href="#" id="getAccess" style="color:red; font-size:28px;">登录</a>
+    </h1>
+  </div>
+  {{/if}}
+  {{> loginToReportSystem}}
 </div>
 
 </template>
 
-<!--监控-->
-<!--<template name="reporterMonitor">
-
-<table class="table table-striped" border="0">
-  <thead>
-    <tr>
-      <th style="width:60px;">#</th>
-      <th style="width:200px;">Title</th>
-      <th style="width:200px;">addonTitle</th>
-      <th style="width:80px;">Owner</th>
-      <th class="sort">CreatedAt &nbsp;<i class="fa fa-plus"></i></th>
-      <th style="width:80px;">操作</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{#each posts}}
-    <tr>
-      <td style="text-align:center;">{{@index}}</td> 
-      <td><a href="http://cdn.tiegushi.com/posts/{{_id}}" target="_blank" class="view">{{title}}</a></td>
-      <td>{{addontitle}}</td>
-      <td id="{{owner}}" class="viewOwner" style="text-align:center;">{{ownerName}}</td>
-      <td style="text-align:center;">{{formatTime createdAt}}</td>
-      <td id="{{_id}}" class="remove" style="text-align:center;">删除</td>
-    </tr>
-    {{/each}}
-  </tbody>
-</table>
-{{> reporterViewOwner}}
-</template>-->
-
-<!--误删恢复-->
-<template name="reporterRecover">
-误删恢复
-</template>
-
-<!--用户解禁-->
-<template name="reporterUnBlock">
-用户解禁
-</template>
-
-
+<!--owner Info-->
 <template name="reporterViewOwner">
   <div class="rp-viewOwner">
   <h2 style="text-align:center; border-bottom:1px solid #ccc;">owner Info</h2>
@@ -132,5 +109,22 @@
     <p>system: {{owner.type}}</p>
     <div class="close" style="text-align:center; height:32px;line-height:32px;border-top:1px solid #ccc;">关闭</div>
   </div>
+  </div>
+</template>
+
+<!--login system-->
+<template name="loginToReportSystem">
+  <div class="loginToReportSystem">
+    <div style="padding:16px;">
+    {{#if isLogin}}
+    <div class="username" style="height:32px;line-height:32px;overflow:hidden;">用户：{{userName}}</div>
+    <div class="auth">权限：{{auth}}</div>
+    <div id="logout" style="text-align:center; height:32px;line-height:32px;border-top:1px solid #ccc;position:absolute;bottom:0; left:0;right:0; cursor:pointer;">退出</div>
+    {{else}}
+    <div>用户名：<input id="username" type="text"/></div>
+    <div>密码: <input id="pass" type="password"/></div>
+    <div id="login" style="text-align:center; height:32px;line-height:32px;border-top:1px solid #ccc;position:absolute;bottom:0; left:0;right:0; cursor:pointer;">登录</div>
+    {{/if}}
+    </div>
   </div>
 </template>

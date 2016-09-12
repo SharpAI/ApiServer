@@ -34,20 +34,32 @@ ReporterController = RouteController.extend({
     };
   },
   findSelects: function(){
-    if(Session.get('reporter-startDate') &&  Session.set('reporter-endDate')){
-      return {createdAt:{
-          $gte: Session.get('reporter-startDate'),
-          $lte: Session.get('reporter-startDate')}
-      };
-    } else {
-      return {};
-    }
+    return {
+      startDate: Session.get('reporter-startDate'),
+      endDate:Session.get('reporter-endDate')
+    };
   },
   posts: function(){
-      return Posts.find(this.findSelects(), this.findOptions());
+      if(Session.get('reporter-startDate') && !Session.get('reporter-endDate')){
+          return Posts.find({
+            createdAt:{
+              $gt:new Date(Session.get('reporter-startDate')),
+              $lte:new Date(Session.get('reporter-endDate')),
+              $exists: true}
+            },this.findOptions());
+      } 
+      return Posts.find({createdAt:{$exists: true}}, this.findOptions());
   },
   removedPosts: function() {
-      return BackUpPosts.find(this.findSelects(), this.findOptions());
+    if(Session.get('reporter-startDate') && !Session.get('reporter-endDate')){
+        return BackUpPosts.find({
+          createdAt:{
+            $gt:new Date(Session.get('reporter-startDate')),
+            $lte:new Date(Session.get('reporter-endDate')),
+            $exists: true}
+          },this.findOptions());
+    } 
+    return BackUpPosts.find({createdAt:{$exists: true}}, this.findOptions());
   },
   waitOn: function(){
     if(!Session.get('reporterLayout')){
@@ -86,6 +98,9 @@ Template.reporter.onRendered(function () {
 });
 
 Template.reporter.helpers({
+  reporterSystemAuth: function(){
+    return Meteor.user().profile.reporterSystemAuth;
+  },
   isMontior:function(){
     return Session.get('reporterLayout') === 'montior';
   },
@@ -97,10 +112,34 @@ Template.reporter.helpers({
   },
   limit: function(){
     return Session.get('reporter-limit');
+  },
+  isLogin: function(){
+    return Meteor.userId() 
+  },
+  userName: function(){
+    var user;
+    user = Meteor.user();
+    return user.profile.username || user.username || '匿名';
+  },
+  startDate: function(){
+    return Session.get('reporter-startDate');
+  },
+  endDate: function(){
+    return Session.get('reporter-endDate');
+  },
+  totalPage: function(){
+    var limit,postsCount,totalPage;
+    limit = parseInt(Session.get('reporter-limit'));
+    postsCount = Counts.get('rpPostsCounts');
+    totalPage = Math.ceil(postsCount/limit);
+    return totalPage;
   }
 });
 
 Template.reporter.events({
+  'click .user': function(){
+    $('.loginToReportSystem').toggle();
+  },
   'click #montior': function(e,t){
     Session.set('reporterLayout','montior');
   },
@@ -111,18 +150,23 @@ Template.reporter.events({
     alert('http://cdn.tiegushi.com/posts/'+e.currentTarget.id);
   },
   'click .remove': function(e,t){
-    Meteor.call('delectPostAndBackUp',e.currentTarget.id);
+    Meteor.call('delectPostAndBackUp',e.currentTarget.id,Meteor.userId());
+    $('tr#' + e.currentTarget.id).remove();
+    toastr.info('已删除')
+  },
+  'click .removeWithUser': function(e){
+    Meteor.call('delectPostWithUserAndBackUp',e.currentTarget.id,Meteor.userId());
     $('tr#' + e.currentTarget.id).remove();
     toastr.info('已删除')
   },
   'click .restore': function(e,t){
-    Meteor.call('restorePost',e.currentTarget.id);
+    Meteor.call('restorePost',e.currentTarget.id,Meteor.userId());
     $('tr#' + e.currentTarget.id).remove();
     toastr.info('已恢复')
   },
   'click .del': function(e,t) {
     PUB.confirm('将从数据库中完全删除，并且无法恢复请确认！',function(){
-      Meteor.call('delPostfromDB',e.currentTarget.id);
+      Meteor.call('delPostfromDB',e.currentTarget.id,Meteor.userId());
       $('tr#' + e.currentTarget.id).remove();
       toastr.info('删除成功！');
     })
@@ -140,11 +184,12 @@ Template.reporter.events({
     Session.set('reporter-limit',Number(limit));
     startDate = $('#startDate').val();
     endDate = $('#endDate').val();
-    if(startDate && endDate){
-      startDate = new Date(startDate).getTime();
-      endDate = new Date(endDate).getTime();
+    if(startDate.length>2 && endDate.length>2){
       Session.set('reporter-startDate',startDate);
       Session.set('reporter-endDate',endDate);
+    } else {
+      Session.set('reporter-startDate',false);
+      Session.set('reporter-endDate',false);
     }
     console.log(endDate);
     // Router.go('reporter');
@@ -153,18 +198,31 @@ Template.reporter.events({
   'click #prev': function(){
     var page;
     page = Session.get('reporter-page');
-    if(page>1){
-      page -= 1;
-      Session.set('reporter-page',page);
+    if(page<=1){
+      toastr.info('已经是第一页了～');
+      return
     }
+    page -= 1;
+    Session.set('reporter-page',page);
     // Router.go('reporter');
   },
   'click #next': function(){
-    var page;
-    page = Session.get('reporter-page');
+    var page,limit,postsCount;
+    page = parseInt(Session.get('reporter-page'));
+    limit = parseInt(Session.get('reporter-limit'));
+    postsCount = Counts.get('rpPostsCounts');
+    if(postsCount<=(limit*page)){
+      toastr.info('已经是最后一页了～');
+      return
+    }
     page += 1;
     Session.set('reporter-page',page);
     // Router.go('reporter');
+  },
+  'click #getAccess':function(){
+    Meteor.logout(function(){
+      $('.loginToReportSystem').toggle();
+    });
   }
 });
 
@@ -188,3 +246,40 @@ Template.reporterViewOwner.events({
     $('.rp-viewOwner').hide();
   }
 });
+
+
+// login system
+Template.loginToReportSystem.helpers({
+  isLogin: function(){
+    return Meteor.userId() 
+  },
+  userName: function(){
+    var user;
+    user = Meteor.user();
+    return user.profile.username || user.username || '匿名';
+  },
+  auth: function(){
+    return "'"+Meteor.user().profile.reporterSystemAuth+"'"
+  }
+});
+
+Template.loginToReportSystem.events({
+  'click #login': function(){
+    var user = $('#username').val();
+    var password = $('#pass').val();
+    Meteor.loginWithPassword(user, password, function(err){
+      if(err){
+        toastr.info('登录失败');
+      } else {
+        $('.loginToReportSystem').toggle();
+        toastr.info('登录成功');
+      }
+    });
+  },
+  'click #logout': function(){
+    Meteor.logout(function(){
+      $('.loginToReportSystem').toggle();
+      toastr.info('退出成功');
+    });
+  }
+})
