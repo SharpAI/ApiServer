@@ -184,6 +184,28 @@ if Meteor.isClient
       unless err
         Session.set('hottestPosts', res)
   Template.showPosts.onRendered ->
+    Meteor.setTimeout(
+      ()->
+        if location.search.indexOf('pub_pcom') != -1
+          querys = location.search.substr(1).split('&')
+          pub_pcom = ''
+          if querys.length > 0
+            _.map querys, (item)->
+              if item.split('=')[0] is 'pub_pcom'
+                pub_pcom = item.split('=')[1]
+        if pub_pcom
+          # show full
+          $showPosts = $('.showPosts')
+          $('.showPosts').get(0).style.overflow = ''
+          $('.showPosts').get(0).style.maxHeight = ''
+          $('.showPosts').get(0).style.position = ''
+          $('.readmore').remove()
+
+          # set top
+          $("html,body").animate({scrollTop: $('#'+pub_pcom+' .pcomment').offset().top-50}, 300);
+      600
+    )
+  Template.showPosts.onRendered ->
     Meteor.call 'getHottestPosts', (err,res)->
       unless err
         Session.set('hottestPosts', res)
@@ -319,6 +341,20 @@ if Meteor.isClient
       $(window).scroll(scrollEventCallback)
 
   Template.showPosts.helpers
+    msgs_count: ->
+      result  = 0
+      pub = Posts.findOne({_id: Session.get('postContent')._id}).pub
+      console.log 'pub:', pub
+      _.map pub, (item)->
+        if item.pcomments and item.pcomments.length > 0
+          _.map item.pcomments, (pcom)->
+            if pcom.read isnt true and pcom.createdAt >= new Date('2016-09-12 00:00:00')
+              result += 1
+
+      console.log 'msgs:', result
+      return result
+    has_msgs: (val)->
+      return val > 0
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
@@ -557,6 +593,8 @@ if Meteor.isClient
         Router.go('post_index', {_id: Session.get('postContent')._id, _index: self.index})
         #Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
   Template.showPosts.events
+    'click .show-post-new-message': ->
+      Router.go('/posts_msg/' + Session.get("postContent")._id)
     'click .authorReadPopularPostItem': (e)->
       postId = e.currentTarget.id
       if postId is undefined
