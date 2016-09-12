@@ -2358,14 +2358,14 @@ if(Meteor.isServer){
     insert: function (userId, doc) {
       var userIds = [];
       //   禁止相关用户发帖
-      if(doc.owner){
+      if(userId){
           var postOwner;
-          postOwner = Meteor.users.findOne({_id: doc.owner})
-           LockedUsers.find({}).forEach(function(item){
-               if(postOwner.token && postOwner.token === item.userToken){
-                   return false;
-               }
-           });
+          postOwner = Meteor.users.findOne({_id: userId})
+          if(postOwner && postOwner.token){
+            if(LockedUsers.find({userToken: postOwner.token}).count() > 0){
+                return false;
+            }
+          }
       }
       if(doc.owner != userId){
         Meteor.defer(function(){

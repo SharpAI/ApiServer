@@ -15,15 +15,15 @@ if Meteor.isServer
 
   # cdn 刷新
   @refreshPostsCDNCaches = (postId)->
-    this.unblock()
+    # this.unblock()
     cdn = new aliyun.CDN({
-        accessKeyId: aliyun_access_key_id || '',
-        secretAccessKey: aliyun_access_key_secret || '',
+        accessKeyId: aliyun_access_key_id || 'Vh0snNA4Orv3emBj',
+        secretAccessKey: aliyun_access_key_secret || 'd7p2eNO8GuMl1GtIZ0at4wPDyED4Nz',
         endpoint: 'https://cdn.aliyuncs.com',
         apiVersion: '2014-11-11'
       }
     );
-    objectPath = 'http://cdn.tiegushi.com/posts/' + postId + '\r\n' + 'http://cdcdn.tiegushi.com/posts/' + postId + '\r\n' + 'http://cdntestgst.tiegushi.com/posts/' + postId;
+    objectPath = 'http://cdn.tiegushi.com/posts/' + postId + '\r\n' + 'http://cdcdn.tiegushi.com/posts/' + postId;
 
     cdn.refreshObjectCaches({
       ObjectType: 'File',
@@ -33,10 +33,10 @@ if Meteor.isServer
     )
   # 删除阿里云图片
   @delectAliyunPictureObject = (postId)->
-    this.unblock()
+    # this.unblock()
     oss = new aliyun.OSS({
-      accessKeyId: aliyun_access_key_id || '',
-      secretAccessKey: aliyun_access_key_secret || '',
+      accessKeyId: aliyun_access_key_id || 'Vh0snNA4Orv3emBj',
+      secretAccessKey: aliyun_access_key_secret || 'd7p2eNO8GuMl1GtIZ0at4wPDyED4Nz',
       endpoint: 'https://cdn.aliyuncs.com',
       apiVersion: '2014-11-11'
     })
