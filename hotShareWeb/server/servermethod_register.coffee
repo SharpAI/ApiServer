@@ -1,5 +1,8 @@
 if Meteor.isServer
   myCrypto = Meteor.npmRequire "crypto"
+  aliyun = Meteor.npmRequire "aliyun-sdk"
+  aliyun_access_key_id = process.env.ALIYUN_ACCESS_KEY_ID
+  aliyun_access_key_secret = process.env.ALIYUN_ACCESS_KEY_SECRET
   @nodemailer = Meteor.npmRequire('nodemailer');
   if (Meteor.absoluteUrl().toLowerCase().indexOf('host2.tiegushi.com') >= 0)
     process.env['HTTP_FORWARDED_COUNT'] = 1
@@ -9,6 +12,48 @@ if Meteor.isServer
     console.log(userId)
     user = Meteor.users.findOne({_id: userId})
     return user.profile.reporterSystemAuth
+
+  # cdn 刷新
+  @refreshPostsCDNCaches = (postId)->
+    this.unblock()
+    cdn = new aliyun.CDN({
+        accessKeyId: aliyun_access_key_id || '',
+        secretAccessKey: aliyun_access_key_secret || '',
+        endpoint: 'https://cdn.aliyuncs.com',
+        apiVersion: '2014-11-11'
+      }
+    );
+    objectPath = 'http://cdn.tiegushi.com/posts/' + postId + '\r\n' + 'http://cdcdn.tiegushi.com/posts/' + postId + '\r\n' + 'http://cdntestgst.tiegushi.com/posts/' + postId;
+
+    cdn.refreshObjectCaches({
+      ObjectType: 'File',
+      ObjectPath: objectPath
+    }, (err, res)-> 
+      console.log(err, res)
+    )
+  # 删除阿里云图片
+  @delectAliyunPictureObject = (postId)->
+    this.unblock()
+    oss = new aliyun.OSS({
+      accessKeyId: aliyun_access_key_id || '',
+      secretAccessKey: aliyun_access_key_secret || '',
+      endpoint: 'https://cdn.aliyuncs.com',
+      apiVersion: '2014-11-11'
+    })
+    post =  BackUpPosts.findOne({_id: postId});
+    images = []
+    if post and post.pub
+      post.pub.forEach (item)->
+        if item.isImage
+          uri = item.imgUrl.split('/')
+          filename = uri[uri.length-1]
+          images.push {key:filename}
+      oss.deleteObjects({
+        Bucket: 'tiegushi',
+        Delete: {images,Quiet:true}
+      }, (err,data)->
+        console.log(err, data)
+      )
   Meteor.startup ()->
     Meteor.methods
       'delectPostAndBackUp': (postId,userId)->
@@ -20,6 +65,7 @@ if Meteor.isServer
           BackUpPosts.insert(post)
           # remove
           Posts.remove(postId)
+          refreshPostsCDNCaches(postId)
       'delectPostWithUserAndBackUp': (postId,userId)->
         if !confirmReporterAuth(userId)
           return false
@@ -29,6 +75,7 @@ if Meteor.isServer
           BackUpPosts.insert(post)
           # remove
           Posts.remove(postId)
+          refreshPostsCDNCaches(postId)
         # 禁止用户登录或者发帖
         if post and post.owner
           owner = Meteor.users.findOne({_id: post.owner})
@@ -40,6 +87,7 @@ if Meteor.isServer
         if post
           Posts.insert(post)
           BackUpPosts.remove(postId)
+          refreshPostsCDNCaches(postId)
       'restoreUser': (postId,userId)->
         if !confirmReporterAuth(userId)
           return false
@@ -53,6 +101,7 @@ if Meteor.isServer
         post = BackUpPosts.findOne({_id:postId})
         if post
           BackUpPosts.remove(postId)
+          delectAliyunPictureObject(postId)
       'updateTopicPostsAfterComment':(topicPostId,topic,topicPostObj)->
         if Topics.find({text:topic}).count() > 0
           topicData = Topics.find({text:topic}).fetch()[0]
