@@ -9,14 +9,11 @@
         <p class="user">登录</p>
       {{/if}}
       <ul>
-        {{#if isMontior}}
-        <li id="montior" class="rp-nav rp-curr">监控</li>
-        <li id="recover" class="rp-nav">误删恢复</li>
-        {{else}}
-        <li id="montior" class="rp-nav">监控</li>
-        <li id="recover" class="rp-nav  rp-curr">误删恢复</li>
-        {{/if}}
-        <!--<li id="unblock" class="rp-nav">用户解禁</li>-->
+       
+        <li id="montior" class="rp-nav {{isCurrTab 'montior'}}">监控</li>
+        <li id="recover" class="rp-nav {{isCurrTab 'recover'}}">误删恢复</li>
+         <li id="review" class="rp-nav {{isCurrTab 'review'}}">审核</li>
+         <li id="unblock" class="rp-nav {{isCurrTab 'unblock'}}">恢复用户</li>
       </ul>
       <!-- 时间范围选择 -->
       <div class="rp-data-select">
@@ -43,6 +40,18 @@
   <div class="rp-main">
     <table class="table table-striped" border="0">
       <thead>
+        {{#if isUnBlock}}
+        <tr>
+          <th style="width:60px;">#</th>
+          <th style="width:100px;">username</th>
+          <th style="width:100px;">fullname</th>
+          <th style="width:100px;">location</th>
+          <th style="width:100px;">IP</th>
+          <th style="width:100px;">type</th>
+          <th class="sort" style="width:200px;">CreatedAt &nbsp;<i class="fa fa-plus"></i></th>
+          <th style="width:120px; text-align:center;">操作</th>
+        </tr>
+        {{else}}
         <tr>
           <th style="width:60px;">#</th>
           <th style="width:200px;">Title</th>
@@ -51,32 +60,55 @@
           <th class="sort" style="width:200px;">CreatedAt &nbsp;<i class="fa fa-plus"></i></th>
           <th style="width:120px; text-align:center;">操作</th>
         </tr>
+        {{/if}}
       </thead>
       <tbody>
-        {{#each posts}}
-        <tr id="{{_id}}">
-          <td style="text-align:center;">{{@index}}</td> 
-          {{#if isMontior}}
-          <td><a href="/posts/{{_id}}" target="_blank" class="view">{{title}}</a></td>
-          {{else}}
-          <td id="{{_id}}" class="showPostURI">{{title}}</td>
-          {{/if}}
-          <td>{{addontitle}}</td>
-          <td id="{{owner}}" class="viewOwner" style="text-align:center;">{{ownerName}}</td>
-          <td style="text-align:center;">{{createdAt}}</td>
-          {{#if isMontior}}
-          <td style="text-align:center;">
-            <a href="#" id="{{_id}}" class="remove" style="margin-right:8px;">删除</a>
-            <a href="#" id="{{_id}}" class="removeWithUser">删除并禁止用户</a>
-          </td>
-          {{else}}
-          <td style="text-align:center;">
-            <a href="#" id="{{_id}}" class="restore" style=" margin-right:8px;">恢复</a>
-            <a href="#" id="{{_id}}" class="del">彻底删除</a>
-          </td>
-          {{/if}}
-        </tr>
-        {{/each}}
+        {{#if isUnBlock}}
+          {{#each posts}}
+          <tr id="{{_id}}">
+            <td style="text-align:center;">{{@index}}</td> 
+            <td style="text-align:center;">{{username}}</td>
+            <td style="text-align:center;">{{profile.fullname}}</td>
+            <td style="text-align:center;">{{profile.location}}</td>
+            <td style="text-align:center;">{{profile.lastLogonIP}}</td>
+            <td style="text-align:center;">{{type}}</td>
+            <td>{{createdAt}}</td>
+            <td id="{{_id}}" style="text-align:center;" class="restoreUser rp-c-red">恢复用户</td>
+          </tr>
+          {{/each}}
+        {{else}}
+          {{#each posts}}
+          <tr id="{{_id}}">
+            <td style="text-align:center;">{{@index}}</td> 
+            {{#if isMontior}}
+            <td><a href="/posts/{{_id}}" target="_blank" class="view">{{title}}</a></td>
+            {{else}}
+            <td id="{{_id}}" class="showPostURI">{{title}}</td>
+            {{/if}}
+            <td>{{addontitle}}</td>
+            <td id="{{owner}}" class="viewOwner" style="text-align:center;">{{ownerName}}</td>
+            <td style="text-align:center;">{{createdAt}}</td>
+            {{#if isMontior}}
+            <td style="text-align:center;">
+              <a href="#" id="{{_id}}" class="remove" style="margin-right:8px;">删除</a>
+              <a href="#" id="{{_id}}" class="removeWithUser">删除并禁止用户</a>
+            </td>
+            {{/if}}
+            {{#if isRecover}}
+            <td style="text-align:center;">
+              <a href="#" id="{{_id}}" class="restore" style=" margin-right:8px;">恢复</a>
+              <a href="#" id="{{_id}}" class="del">彻底删除</a>
+            </td>
+            {{/if}}
+            {{#if isReview}}
+            <td style="text-align:center;">
+              <a href="#" id="{{_id}}" class="reviewPostPass" style=" margin-right:8px;">通过</a>
+              <a href="#" id="{{_id}}" class="reviewPostMiss">不通过</a>
+            </td>
+            {{/if}}
+          </tr>
+          {{/each}}
+        {{/if}}
       </tbody>
     </table>
     {{> reporterViewOwner}}

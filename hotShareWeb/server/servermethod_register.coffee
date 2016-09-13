@@ -23,7 +23,7 @@ if Meteor.isServer
         apiVersion: '2014-11-11'
       }
     );
-    objectPath = 'http://cdn.tiegushi.com/posts/' + postId + '\r\n' + 'http://cdcdn.tiegushi.com/posts/' + postId;
+    objectPath = 'http://cdcdn.tiegushi.com/posts/' + postId;
 
     cdn.refreshObjectCaches({
       ObjectType: 'File',
@@ -56,6 +56,19 @@ if Meteor.isServer
       )
   Meteor.startup ()->
     Meteor.methods
+      # Reporter START
+      'reviewPostPass':(userId,postId)->
+        if !confirmReporterAuth(userId)
+          return false
+        url = 'http://192.168.1.67:9000/restapi/postInsertHook/'+userId+'/'+postId
+        return HTTP.get(url)
+      'reviewPostMiss':(userId,postId)->
+        if !confirmReporterAuth(userId)
+          return false
+        post = Posts.findOne(postId)
+        Posts.remove(postId)
+        if post
+          return BackUpPosts.insert(post)
       'delectPostAndBackUp': (postId,userId)->
         if !confirmReporterAuth(userId)
           return false
@@ -79,7 +92,7 @@ if Meteor.isServer
         # 禁止用户登录或者发帖
         if post and post.owner
           owner = Meteor.users.findOne({_id: post.owner})
-          LockedUsers.insert({userToken: owner.token})
+          LockedUsers.insert(owner)
       'restorePost': (postId,userId)->
         if !confirmReporterAuth(userId)
           return false
@@ -88,13 +101,10 @@ if Meteor.isServer
           Posts.insert(post)
           BackUpPosts.remove(postId)
           refreshPostsCDNCaches(postId)
-      'restoreUser': (postId,userId)->
-        if !confirmReporterAuth(userId)
+      'restoreUser': (userA,userB)->
+        if !confirmReporterAuth(userA)
           return false
-        post = BackUpPosts.findOne({_id:postId})
-        if post and post.owner
-          owner = Meteor.users.findOne({_id: post.owner})
-          LockedUsers.remove({userToken: owner.token})
+        LockedUsers.remove({_id: userB})
       'delPostfromDB': (postId,userId)->
         if !confirmReporterAuth(userId)
           return false
@@ -102,6 +112,7 @@ if Meteor.isServer
         if post
           BackUpPosts.remove(postId)
           delectAliyunPictureObject(postId)
+      # reporter END
       'updateTopicPostsAfterComment':(topicPostId,topic,topicPostObj)->
         if Topics.find({text:topic}).count() > 0
           topicData = Topics.find({text:topic}).fetch()[0]

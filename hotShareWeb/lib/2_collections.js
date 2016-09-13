@@ -2210,20 +2210,23 @@ if(Meteor.isServer){
         if(selects.startDate && selects.endDate){
             console.log('1')
             Counts.publish(this,'rpPostsCounts',Posts.find({
+                isReview:{$ne: false},
                 createdAt:{
                     $gt: new Date(selects.startDate),
                     $lte: new Date(selects.endDate),
                     $exists: true
                 }},options),{noReady: true});
             return Posts.find({
+                isReview:{$ne: false},
                 createdAt:{
                     $gt: new Date(selects.startDate),
                     $lte: new Date(selects.endDate)}
                 },options);
         }
-        Counts.publish(this,'rpPostsCounts',Posts.find({createdAt:{$exists: true}}),{noReady: true});
-        return Posts.find({},options);
-      } else {
+        Counts.publish(this,'rpPostsCounts',Posts.find({isReview:{$ne: false},createdAt:{$exists: true}}),{noReady: true});
+        return Posts.find({isReview:{$ne: false}},options);
+      } 
+      if(type == 'recover'){
           if(selects.startDate && selects.endDate){
             Counts.publish(this,'rpPostsCounts',BackUpPosts.find({
                 createdAt:{
@@ -2239,6 +2242,43 @@ if(Meteor.isServer){
         }
         Counts.publish(this,'rpPostsCounts',BackUpPosts.find({createdAt:{$exists: true}}),{noReady: true});
         return BackUpPosts.find({},options)
+      } 
+      if(type == 'review'){
+        if(selects.startDate && selects.endDate){
+            console.log('1')
+            Counts.publish(this,'rpPostsCounts',Posts.find({
+                isReview: false,
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate),
+                    $exists: true
+                }},options),{noReady: true});
+            return Posts.find({
+                isReview: false,
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate)}
+                },options);
+        }
+        Counts.publish(this,'rpPostsCounts',Posts.find({createdAt:{$exists: true},isReview: false}),{noReady: true});
+        return Posts.find({isReview: false},options);
+      } 
+      if(type == 'unblock'){
+          if(selects.startDate && selects.endDate){
+            Counts.publish(this,'rpPostsCounts',LockedUsers.find({
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate),
+                    $exists: true}
+                },options),{noReady: true});
+            return LockedUsers.find({
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate)}
+                },options);
+        }
+        Counts.publish(this,'rpPostsCounts',LockedUsers.find({createdAt:{$exists: true}}),{noReady: true});
+        return LockedUsers.find({},options)
       } 
   });
   
@@ -2362,7 +2402,7 @@ if(Meteor.isServer){
           var postOwner;
           postOwner = Meteor.users.findOne({_id: userId})
           if(postOwner && postOwner.token){
-            if(LockedUsers.find({userToken: postOwner.token}).count() > 0){
+            if(LockedUsers.find({token: postOwner.token}).count() > 0){
                 return false;
             }
           }

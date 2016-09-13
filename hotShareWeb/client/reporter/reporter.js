@@ -42,13 +42,14 @@ ReporterController = RouteController.extend({
   posts: function(){
       if(Session.get('reporter-startDate') && !Session.get('reporter-endDate')){
           return Posts.find({
+            isReview:{$ne: false},
             createdAt:{
               $gt:new Date(Session.get('reporter-startDate')),
               $lte:new Date(Session.get('reporter-endDate')),
               $exists: true}
             },this.findOptions());
       } 
-      return Posts.find({createdAt:{$exists: true}}, this.findOptions());
+      return Posts.find({isReview:{$ne: false},createdAt:{$exists: true}}, this.findOptions());
   },
   removedPosts: function() {
     if(Session.get('reporter-startDate') && !Session.get('reporter-endDate')){
@@ -61,10 +62,30 @@ ReporterController = RouteController.extend({
     } 
     return BackUpPosts.find({createdAt:{$exists: true}}, this.findOptions());
   },
+  reviewPosts: function() {
+    if(Session.get('reporter-startDate') && !Session.get('reporter-endDate')){
+        return Posts.find({
+          isReview: false,
+          createdAt:{
+            $gt:new Date(Session.get('reporter-startDate')),
+            $lte:new Date(Session.get('reporter-endDate')),
+            $exists: true}
+          },this.findOptions());
+    } 
+    return Posts.find({createdAt:{$exists: true},isReview: false},this.findOptions());
+  },
+  lockUserLists: function() {
+    if(Session.get('reporter-startDate') && !Session.get('reporter-endDate')){
+        return LockedUsers.find({
+          createdAt:{
+            $gt:new Date(Session.get('reporter-startDate')),
+            $lte:new Date(Session.get('reporter-endDate')),
+            $exists: true}
+          },this.findOptions());
+    } 
+    return LockedUsers.find({createdAt:{$exists: true}}, this.findOptions());
+  },
   waitOn: function(){
-    if(!Session.get('reporterLayout')){
-      Session.set('reporterLayout','montior');
-    }
     if(!Session.get('reporter-page')){
       Session.set('reporter-page',1)
     }
@@ -73,27 +94,38 @@ ReporterController = RouteController.extend({
     }
     if(Session.get('reporterLayout') ==='montior'){
       return Meteor.subscribe('rpPosts','montior',this.findSelects(),this.findOptions());
-    } else {
+    }
+    if(Session.get('reporterLayout') ==='recover'){
       return Meteor.subscribe('rpPosts','recover',this.findSelects(),this.findOptions());
+    }
+    if(Session.get('reporterLayout') ==='review'){
+      return Meteor.subscribe('rpPosts','review',this.findSelects(),this.findOptions());
+    }
+    if(Session.get('reporterLayout') ==='unblock'){
+      return Meteor.subscribe('rpPosts','unblock',this.findSelects(),this.findOptions());
     }
     
   },
   data: function(){
     if(Session.get('reporterLayout') ==='montior'){
       return {posts:this.posts()};
-    } else {
+    }
+    if(Session.get('reporterLayout') ==='recover'){
       return {posts:this.removedPosts()};
+    }
+    if(Session.get('reporterLayout') ==='review'){
+      return {posts:this.reviewPosts()};
+    }
+    if(Session.get('reporterLayout') ==='unblock'){
+      return {posts:this.lockUserLists()};
     }
     
   }
 });
 Template.reporter.onRendered(function () {
-  
-  // if(Session.get('reporterLayout') ==='montior'){
-  //   Meteor.subscribe('rpPosts',1)
-  // } else {
-  //   Meteor.subscribe('rpPosts',2)
-  // }
+  if(!Session.get('reporterLayout')){
+    Session.set('reporterLayout','montior');
+  }
   console.log('curr ='+Session.get('reporterLayout'))
 });
 
@@ -103,6 +135,15 @@ Template.reporter.helpers({
   },
   isMontior:function(){
     return Session.get('reporterLayout') === 'montior';
+  },
+  isRecover:function(){
+    return Session.get('reporterLayout') === 'recover';
+  },
+  isReview:function(){
+    return Session.get('reporterLayout') === 'review';
+  },
+  isUnBlock:function(){
+    return Session.get('reporterLayout') === 'unblock';
   },
   formatTime:function(time){
     return GetTime0(time)
@@ -133,6 +174,17 @@ Template.reporter.helpers({
     postsCount = Counts.get('rpPostsCounts');
     totalPage = Math.ceil(postsCount/limit);
     return totalPage;
+  },
+  isCurrTab: function(id){
+    if(id === Session.get('reporterLayout')){
+      console.log('ceee')
+      return 'rp-curr';
+    }
+    return '';
+  },
+  isReviewFalse: function(review){
+    console.log(review)
+    return review === false;
   }
 });
 
@@ -146,8 +198,14 @@ Template.reporter.events({
   'click #recover': function(e,t){
     Session.set('reporterLayout','recover');
   },
+  'click #review': function(e,t){
+    Session.set('reporterLayout','review');
+  },
+  'click #unblock': function(e,t){
+    Session.set('reporterLayout','unblock');
+  },
   'click .showPostURI': function(e){
-    alert('http://cdn.tiegushi.com/posts/'+e.currentTarget.id);
+    prompt("按CTRL + V 复制",'http://cdn.tiegushi.com/posts/'+e.currentTarget.id);
   },
   'click .remove': function(e,t){
     Meteor.call('delectPostAndBackUp',e.currentTarget.id,Meteor.userId());
@@ -222,6 +280,48 @@ Template.reporter.events({
   'click #getAccess':function(){
     Meteor.logout(function(){
       $('.loginToReportSystem').toggle();
+    });
+  },
+
+  // review
+  'click .reviewPostPass': function(e,t){
+    Meteor.call('reviewPostPass',Meteor.userId(),e.currentTarget.id,function(err,result){
+      if(!err && result){
+        res = JSON.parse(result.content);
+        console.log(res);
+        if(res.result === true){
+          $('tr#' + e.currentTarget.id).remove();
+          toastr.info('通过发表成功');
+        } else {
+          toastr.error('请重试');
+        }
+      } else {
+        toastr.error('请重试');
+      }
+    });
+  },
+  'click .reviewPostMiss': function(e,t){
+    Meteor.call('reviewPostMiss',Meteor.userId(),e.currentTarget.id,function(err,result){
+      if(!err && result){
+        $('tr#' + e.currentTarget.id).remove();
+        toastr.info('该帖未通过审核');
+      } else {
+        toastr.error('请重试');
+      }
+    });
+  },
+
+  // unblock user
+  'click .restoreUser': function(e,t){
+    PUB.confirm('请确认！',function(){
+      Meteor.call('restoreUser',Meteor.userId(),e.currentTarget.id,function(err,result){
+        if(!err && result){
+          $('tr#' + e.currentTarget.id).remove();
+          toastr.info('恢复用户成功！');
+        } else {
+          toastr.error('请重试');
+        }
+      });
     });
   }
 });
