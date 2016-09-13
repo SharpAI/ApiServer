@@ -3,5 +3,6 @@
   "jpush-sdk" : "3.1.0",
   "seedrandom" : "2.3.11",
   "request": "2.74.0",
+  "slackbots": "0.5.2",
   "nodemailer": "2.5.0"
 }
