@@ -24,7 +24,11 @@ Meteor.startup ()->
           postInfo.views = postViews
           postInfo.hasPush = false
           hottestPosts.push(postInfo)
-
+  @getRawHottestPosts=()->
+    if hottestPosts and hottestPosts.length > 0
+      return hottestPosts
+    else
+      return null
   @getHottestPosts=()->
     if(hottestPosts.length > 0)
       # 查找此故事是否推荐过，后面直接在neo4j里计算会更好
