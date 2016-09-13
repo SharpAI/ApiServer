@@ -627,6 +627,22 @@ if(Meteor.isServer){
 
     var postsInsertHookDeferHandle = function(userId,doc){
         Meteor.defer(function(){
+            try{
+                var postInfo = {
+                    browse:doc.browse,
+                    title:doc.title,
+                    addontitle:doc.addontitle,
+                    owner:doc.owner,
+                    _id:doc._id,
+                    ownerName:doc.ownerName,
+                    createdAt:doc.createdAt,
+                    browse:doc.browse,
+                    mainImage:doc.mainImage
+                }
+                postMessageToGeneralChannel(postInfo)
+            } catch(e){
+
+            }
             try{ 
                 var follows=Follower.find({followerId:userId});
                 if(follows.count()>0){
