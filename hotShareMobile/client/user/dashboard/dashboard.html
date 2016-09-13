@@ -33,20 +33,42 @@
         <div class='notice bottomBorder boxTitle'>{{_ "notification"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
       
         <!--<div class="blacklist box boxTitle">{{_ "blacklist"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>-->
-        <div class="language  bottomBorder boxTitle">{{_ "language"}}
-          {{#if isEnglish}}
-            <span class="right" style="margin-right: 28px;color: #a1a1a1;">English</span>
-          {{else}}
-            <span class="right" style="margin-right: 28px;color: #a1a1a1;">中文</span>
-          {{/if}}
-          <span><i class="fa fa-angle-right fa-fw"></i></span>
+        <div class='language bottomBorder boxTitle'>{{_ "language"}}
+            {{#if isEnglish}}
+              <span class="right" style="margin-right: 28px;color: #a1a1a1;">English</span>
+            {{else}}
+              <span class="right" style="margin-right: 28px;color: #a1a1a1;">中文</span>
+            {{/if}}
+            <span><i class="fa fa-angle-right fa-fw"></i></span>
         </div>
-      <div class='about boxTitle'>{{_ "about"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
-     </div>
+        <div class="update  bottomBorder boxTitle">新版本检测
+          {{#if isLatestVersion}}
+            <span class="right" style="margin-right: 28px;color: #a1a1a1;">好赞，当前已是最新版本</span>
+          {{else}}
+            <span class="right" style="margin-right: 28px;color: red;">有新版本</span>
+          {{/if}}
+            <span ><i class="fa fa-angle-right fa-fw"></i></span>
+        </div>
+        <div class='about boxTitle'>{{_ "about"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+       </div>
       <!--<div class="clear box boxTitle boxCenter">清除缓存</div>-->
       <div class="logout box boxTitle boxCenter">{{_ "logOut"}}</div>
     </div>
   </div>
+  <div class="modal fade" id="updateToLatestVersion" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">新版本已准备好</h4>
+        </div>
+        <div class="modal-body"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">稍后安装</button>
+          <button type="button" class="btn btn-primary">立刻安装</button>
+        </div>
+      </div>
+    </div>
+  </div>  
 </template>
 <template name="my_email">
   <div class="dashboard">
