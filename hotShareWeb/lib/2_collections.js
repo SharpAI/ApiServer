@@ -24,6 +24,7 @@ AssociatedUsers = new Meteor.Collection('associatedusers');
 UserRelation = new Meteor.Collection('userrelation'); // 用户关系，为了不和以前的产生冲突，使用新表
 
 Recommends = new Meteor.Collection('recommends');
+LogonIPLogs = new Meteor.Collection('loginiplogs');
 
 if(Meteor.isServer)
   PushSendLogs = new Meteor.Collection('pushSendLogs');
@@ -2268,6 +2269,18 @@ if(Meteor.isServer){
       }   
       return false;
     }
+  });
+
+  LogonIPLogs.allow({
+      insert: function (userId, doc) {
+          return doc.userId === userId;
+      },
+      update: function (userId, doc, fields, modifier) {
+          return doc.userId === userId;
+      },
+      remove: function (userId, doc) {
+          return doc.userId === userId;
+      }
   });
 
   FavouritePosts.allow({

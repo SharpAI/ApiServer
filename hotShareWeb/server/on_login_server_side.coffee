@@ -17,3 +17,4 @@ if Meteor.isServer
         ###
         if object.connection and object.connection.clientAddress
           Meteor.users.update {_id:object.user._id},{$set:{'profile.lastLogonIP':object.connection.clientAddress}}
+          LogonIPLogs.insert({userid: object.user._id, ip: object.connection.clientAddress, createdAt: new Date()})
