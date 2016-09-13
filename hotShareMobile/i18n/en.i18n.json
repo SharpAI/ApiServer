@@ -268,7 +268,7 @@
   "postedastory": "posted a story",
   "readedastory": "readed a story",
   "recentlyviewedstories": "Recently viewed stories",
-  "readFollowTips": "Display follow tips(read 3 times)",
+  "readFollowTips": "阅读超过3次后提示读者关注",
   // end
 
   //dynamic js file contents
