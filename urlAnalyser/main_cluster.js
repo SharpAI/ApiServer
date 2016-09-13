@@ -341,6 +341,7 @@ MongoClient.connect(DB_CONN_STR, function(err, db) {
     users = db.collection('users');
     //Follower = db.collection('follower');
     FollowPosts = db.collection('followposts');
+    FollowPosts.insert = function(data, callback){callback && callback(new Error('error'))};
     TopicPoss = db.collection('topicposs');
     //Feeds = db.collection('feeds');
     serverImportLog = db.collection('serverImportLog');
@@ -544,6 +545,7 @@ var insert_data = function(user, url, data, draftsObj, cb) {
         'ownerIcon':user.profile.icon || '/userPicture.png',
         'createdAt': new Date(),
         'publish': true,
+        "isReview": false
         }];
 
       posts.insert(data_insert, function(err, result) {
