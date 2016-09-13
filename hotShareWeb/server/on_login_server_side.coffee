@@ -1,5 +1,11 @@
 if Meteor.isServer
   Meteor.startup ()->
+    # 禁止相关用户登录
+    Accounts.validateLoginAttempt (object)->
+      if object.user and object.user.token
+        if LockedUsers.find({token: object.user.token}).count() > 0
+          throw new Meteor.Error(403, "设备被禁用")
+      return true
     Accounts.onLogin (object)->
       # if Anonymous user with default icon, changed to a better one.
       if object.user

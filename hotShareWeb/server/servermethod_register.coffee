@@ -1,11 +1,118 @@
 if Meteor.isServer
   myCrypto = Meteor.npmRequire "crypto"
+  aliyun = Meteor.npmRequire "aliyun-sdk"
+  aliyun_access_key_id = process.env.ALIYUN_ACCESS_KEY_ID
+  aliyun_access_key_secret = process.env.ALIYUN_ACCESS_KEY_SECRET
   @nodemailer = Meteor.npmRequire('nodemailer');
   if (Meteor.absoluteUrl().toLowerCase().indexOf('host2.tiegushi.com') >= 0)
     process.env['HTTP_FORWARDED_COUNT'] = 1
   console.log("process.env.HTTP_FORWARDED_COUNT="+process.env.HTTP_FORWARDED_COUNT);
+  # 权限验证
+  @confirmReporterAuth = (userId)->
+    console.log(userId)
+    user = Meteor.users.findOne({_id: userId})
+    return user.profile.reporterSystemAuth
+
+  # cdn 刷新
+  @refreshPostsCDNCaches = (postId)->
+    # this.unblock()
+    cdn = new aliyun.CDN({
+        accessKeyId: aliyun_access_key_id || 'Vh0snNA4Orv3emBj',
+        secretAccessKey: aliyun_access_key_secret || 'd7p2eNO8GuMl1GtIZ0at4wPDyED4Nz',
+        endpoint: 'https://cdn.aliyuncs.com',
+        apiVersion: '2014-11-11'
+      }
+    );
+    objectPath = 'http://cdcdn.tiegushi.com/posts/' + postId;
+
+    cdn.refreshObjectCaches({
+      ObjectType: 'File',
+      ObjectPath: objectPath
+    }, (err, res)-> 
+      console.log(err, res)
+    )
+  # 删除阿里云图片
+  @delectAliyunPictureObject = (postId)->
+    # this.unblock()
+    oss = new aliyun.OSS({
+      accessKeyId: aliyun_access_key_id || 'Vh0snNA4Orv3emBj',
+      secretAccessKey: aliyun_access_key_secret || 'd7p2eNO8GuMl1GtIZ0at4wPDyED4Nz',
+      endpoint: 'https://cdn.aliyuncs.com',
+      apiVersion: '2014-11-11'
+    })
+    post =  BackUpPosts.findOne({_id: postId});
+    images = []
+    if post and post.pub
+      post.pub.forEach (item)->
+        if item.isImage
+          uri = item.imgUrl.split('/')
+          filename = uri[uri.length-1]
+          images.push {key:filename}
+      oss.deleteObjects({
+        Bucket: 'tiegushi',
+        Delete: {images,Quiet:true}
+      }, (err,data)->
+        console.log(err, data)
+      )
   Meteor.startup ()->
     Meteor.methods
+      # Reporter START
+      'reviewPostPass':(userId,postId)->
+        if !confirmReporterAuth(userId)
+          return false
+        url = 'http://192.168.1.67:9000/restapi/postInsertHook/'+userId+'/'+postId
+        return HTTP.get(url)
+      'reviewPostMiss':(userId,postId)->
+        if !confirmReporterAuth(userId)
+          return false
+        post = Posts.findOne(postId)
+        Posts.remove(postId)
+        if post
+          return BackUpPosts.insert(post)
+      'delectPostAndBackUp': (postId,userId)->
+        if !confirmReporterAuth(userId)
+          return false
+        post = Posts.findOne({_id:postId})
+        if post
+          # backup
+          BackUpPosts.insert(post)
+          # remove
+          Posts.remove(postId)
+          refreshPostsCDNCaches(postId)
+      'delectPostWithUserAndBackUp': (postId,userId)->
+        if !confirmReporterAuth(userId)
+          return false
+        post = Posts.findOne({_id:postId})
+        if post
+          # backup
+          BackUpPosts.insert(post)
+          # remove
+          Posts.remove(postId)
+          refreshPostsCDNCaches(postId)
+        # 禁止用户登录或者发帖
+        if post and post.owner
+          owner = Meteor.users.findOne({_id: post.owner})
+          LockedUsers.insert(owner)
+      'restorePost': (postId,userId)->
+        if !confirmReporterAuth(userId)
+          return false
+        post = BackUpPosts.findOne({_id:postId})
+        if post
+          Posts.insert(post)
+          BackUpPosts.remove(postId)
+          refreshPostsCDNCaches(postId)
+      'restoreUser': (userA,userB)->
+        if !confirmReporterAuth(userA)
+          return false
+        LockedUsers.remove({_id: userB})
+      'delPostfromDB': (postId,userId)->
+        if !confirmReporterAuth(userId)
+          return false
+        post = BackUpPosts.findOne({_id:postId})
+        if post
+          BackUpPosts.remove(postId)
+          delectAliyunPictureObject(postId)
+      # reporter END
       'updateTopicPostsAfterComment':(topicPostId,topic,topicPostObj)->
         if Topics.find({text:topic}).count() > 0
           topicData = Topics.find({text:topic}).fetch()[0]

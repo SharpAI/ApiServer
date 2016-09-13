@@ -26,6 +26,10 @@ UserRelation = new Meteor.Collection('userrelation'); // 用户关系，为了�
 Recommends = new Meteor.Collection('recommends');
 LogonIPLogs = new Meteor.Collection('loginiplogs');
 
+// 删除帖子
+LockedUsers = new Meteor.Collection('lockedUsers');
+BackUpPosts = new Meteor.Collection('backUpPosts');
+
 if(Meteor.isServer)
   PushSendLogs = new Meteor.Collection('pushSendLogs');
 
@@ -2208,6 +2212,93 @@ if(Meteor.isServer){
         return this.ready();
     }
   });
+
+//   监控
+  Meteor.publish('rpOwner', function(userId) {
+      return Meteor.users.find({_id: userId}, {
+          fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1,'token':1,'profile.location':1,'profile.lastLogonIP':1,'type':1,'anonymous':1}});
+  });
+  Meteor.publish('rpPosts', function(type,selects,options) {
+      console.log ('type='+type)
+      console.log(type == 'montior')
+      console.log(JSON.stringify(selects));
+
+      if(type == 'montior'){
+        if(selects.startDate && selects.endDate){
+            console.log('1')
+            Counts.publish(this,'rpPostsCounts',Posts.find({
+                isReview:{$ne: false},
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate),
+                    $exists: true
+                }},options),{noReady: true});
+            return Posts.find({
+                isReview:{$ne: false},
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate)}
+                },options);
+        }
+        Counts.publish(this,'rpPostsCounts',Posts.find({isReview:{$ne: false},createdAt:{$exists: true}}),{noReady: true});
+        return Posts.find({isReview:{$ne: false}},options);
+      } 
+      if(type == 'recover'){
+          if(selects.startDate && selects.endDate){
+            Counts.publish(this,'rpPostsCounts',BackUpPosts.find({
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate),
+                    $exists: true}
+                },options),{noReady: true});
+            return BackUpPosts.find({
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate)}
+                },options);
+        }
+        Counts.publish(this,'rpPostsCounts',BackUpPosts.find({createdAt:{$exists: true}}),{noReady: true});
+        return BackUpPosts.find({},options)
+      } 
+      if(type == 'review'){
+        if(selects.startDate && selects.endDate){
+            console.log('1')
+            Counts.publish(this,'rpPostsCounts',Posts.find({
+                isReview: false,
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate),
+                    $exists: true
+                }},options),{noReady: true});
+            return Posts.find({
+                isReview: false,
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate)}
+                },options);
+        }
+        Counts.publish(this,'rpPostsCounts',Posts.find({createdAt:{$exists: true},isReview: false}),{noReady: true});
+        return Posts.find({isReview: false},options);
+      } 
+      if(type == 'unblock'){
+          if(selects.startDate && selects.endDate){
+            Counts.publish(this,'rpPostsCounts',LockedUsers.find({
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate),
+                    $exists: true}
+                },options),{noReady: true});
+            return LockedUsers.find({
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate)}
+                },options);
+        }
+        Counts.publish(this,'rpPostsCounts',LockedUsers.find({createdAt:{$exists: true}}),{noReady: true});
+        return LockedUsers.find({},options)
+      } 
+  });
+  
   function publishTheFavouritePosts(self,userId,limit){
       var pub = self
       var cursorHandle=FavouritePosts.find({userId: userId}, {sort: {createdAt: -1}, limit: limit}).observeChanges({
@@ -2338,7 +2429,16 @@ if(Meteor.isServer){
       return true;
 
       var userIds = [];
-
+      //   禁止相关用户发帖
+      if(userId){
+          var postOwner;
+          postOwner = Meteor.users.findOne({_id: userId})
+          if(postOwner && postOwner.token){
+            if(LockedUsers.find({token: postOwner.token}).count() > 0){
+                return false;
+            }
+          }
+      }
       if(doc.owner != userId){
         Meteor.defer(function(){
           var me = Meteor.users.findOne({_id: userId});
