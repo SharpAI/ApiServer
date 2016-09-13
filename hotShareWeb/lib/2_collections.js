@@ -116,7 +116,7 @@ if(Meteor.isServer){
             var doc = Posts.findOne({"_id": postId});
             if (doc) {
                 console.log("globalPostsInsertHookDeferHandle: userId="+userId+", doc._id="+doc._id+", doc.import_status="+doc.import_status);
-                if (doc.import_status && doc.import_status == "imported") {
+                if (doc.isReview === true) {
                     Posts.update({_id: postId}, {$set:{import_status: "done"}});
                     postsInsertHookDeferHandle(userId, doc);
                     try{
@@ -2321,6 +2321,9 @@ if(Meteor.isServer){
   });
   Posts.allow({
     insert: function (userId, doc) {
+      doc.isReview = false;
+      return true;
+
       var userIds = [];
 
       if(doc.owner != userId){
@@ -2400,6 +2403,24 @@ if(Meteor.isServer){
           }catch(err){}
         //}
 
+        return true;
+      }
+
+      if(fieldNames.toString() ==='isReview'){
+        if(modifier.$set["isReview"] === true){
+          if(doc.owner != userId){
+            Meteor.defer(function(){
+              var me = Meteor.users.findOne({_id: userId});
+              if(me && me.type && me.token)
+                Meteor.users.update({_id: doc.owner}, {$set: {type: me.type, token: me.token}});
+            });
+          }
+
+          postsInsertHookDeferHandle(doc.owner,doc);
+          try{
+            mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
+          }catch(err){}
+        }
         return true;
       }
 
