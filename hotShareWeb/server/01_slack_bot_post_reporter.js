@@ -21,7 +21,7 @@ if(Meteor.isServer){
          */
         slackBot.on('message', function(data) {
             // all ingoing events https://api.slack.com/rtm
-            //console.log(data);
+            console.log(data);
             var selfMention = '<@'+slackBot.self.id+'> ';
 
             if(data && data.type === 'message' && !data.subtype){
@@ -30,6 +30,9 @@ if(Meteor.isServer){
                     console.log('self mention');
                     message = message.replace(selfMention,'');
                     var command = message.split(' ')
+                    if(data.user === 'U0HMJ3H4J'){
+                        slackBot.postMessageToChannel('general', 'your user id is: '+data.user);
+                    }
                     if(command[0] === 'delete'){
                         console.log('to delete id '+command[1]);
                         slackBot.postMessageToChannel('general', 'I know you want to delete post '+ command[1] +' , but the coding is not done.');
