@@ -28,6 +28,7 @@ var FollowPosts = null;
 var TopicPoss = null;
 var Feeds = null;
 var serverImportLog = null;
+var lockedUsers = null;
 
 var kue = require('kue'), 
     cluster = require('cluster'),
@@ -342,6 +343,7 @@ MongoClient.connect(DB_CONN_STR, function(err, db) {
     //Follower = db.collection('follower');
     FollowPosts = db.collection('followposts');
     TopicPoss = db.collection('topicposs');
+    lockedUsers = db.collection('lockedUsers');
     //Feeds = db.collection('feeds');
     serverImportLog = db.collection('serverImportLog');
     Task.setCollection({posts: posts, serverImportLog: serverImportLog, followPosts: FollowPosts});
@@ -920,11 +922,33 @@ if (cluster.isMaster) {
 
   router.route('/:_id/:url')
     .get(function(req, res) {
-        routerCallback(req, res);
+      users.findOne({_id: req.params._id}, function(err, user){
+        if(err || !user)
+          return res.end(JSON.stringify({status:'failed'}));
+        if(!user.token)
+          return routerCallback(req, res);
+
+        lockedUsers.findOne({token: user.token}, function(error, lock){
+          if(error || !lock)
+            return routerCallback(req, res);
+          res.end(JSON.stringify({status:'failed'}));
+        })
+      });
     });
   router.route('/:_id/:url/:unique_id')
     .get(function(req, res) {
-        routerCallback(req, res);
+        users.findOne({_id: req.params._id}, function(err, user){
+          if(err || !user)
+            return res.end(JSON.stringify({status:'failed'}));
+          if(!user.token)
+            return routerCallback(req, res);
+
+          lockedUsers.findOne({token: user.token}, function(error, lock){
+            if(error || !lock)
+              return routerCallback(req, res);
+            res.end(JSON.stringify({status:'failed'}));
+          })
+        });
     });
   function routerCallback(req, res) {
       var chunked = req.query['chunked'] && req.query['chunked'] === 'true' ? true : false;;
@@ -936,6 +960,7 @@ if (cluster.isMaster) {
       showDebug && console.log('[');
       showDebug && console.log('   req.params=' + JSON.stringify(req.params));
       showDebug && console.log('   req.query=' + JSON.stringify(req.query));
+
       if (checkIPAddr(ip) == 'CN') {
         console.log("   create task for CN");
         job = createTaskToKueQueue(redis_prefix, req.params._id, req.params.url, server, unique_id, isMobile, chunked);
