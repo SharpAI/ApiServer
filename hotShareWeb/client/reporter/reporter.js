@@ -372,6 +372,7 @@ Template.loginToReportSystem.events({
         toastr.info('登录失败');
       } else {
         $('.loginToReportSystem').toggle();
+        amplify.store('uuid','');
         toastr.info('登录成功');
       }
     });

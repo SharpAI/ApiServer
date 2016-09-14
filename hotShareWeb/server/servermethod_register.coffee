@@ -60,7 +60,7 @@ if Meteor.isServer
       'reviewPostPass':(userId,postId)->
         if !confirmReporterAuth(userId)
           return false
-        url = 'http://192.168.1.67:9000/restapi/postInsertHook/'+userId+'/'+postId
+        url = 'http://'+server_domain_name+'/restapi/postInsertHook/'+userId+'/'+postId
         return HTTP.get(url)
       'reviewPostMiss':(userId,postId)->
         if !confirmReporterAuth(userId)
