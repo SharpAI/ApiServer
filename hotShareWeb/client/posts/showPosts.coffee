@@ -342,6 +342,9 @@ if Meteor.isClient
 
   Template.showPosts.helpers
     msgs_count: ->
+      if Posts.findOne({_id: Session.get('postContent')._id}).owner isnt Meteor.userId()
+        return 0
+
       result  = 0
       pub = Posts.findOne({_id: Session.get('postContent')._id}).pub
       console.log 'pub:', pub
