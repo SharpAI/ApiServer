@@ -18,6 +18,7 @@
       width: 90px;
       float: left;
       height: 48px;
+      margin-left: 32px;
       overflow: hidden;
       color: deepskyblue;
       cursor: pointer;
@@ -93,6 +94,24 @@
   color: deepskyblue;
   cursor: pointer;
 }
+.rp-c-pink-btn{
+  color: deeppink;
+  cursor: pointer;
+  border: 1px solid deeppink;
+  border-radius: 4px;
+}
+.rp-c-red-btn{
+  color: red;
+  cursor: pointer;
+  border: 1px solid red;
+  border-radius: 4px;
+}
+.rp-c-blue-btn{
+  color: deepskyblue;
+  cursor: pointer;
+  border: 1px solid deepskyblue;
+  border-radius: 4px;
+}
 
 // review post content 
 .reviewPostContent{
@@ -126,5 +145,19 @@
     bottom: 0;
     border-top: 1px solid #5f5e5e;
     text-align: center;
+  }
+}
+.rp-user-mobile{display: none;}
+
+// for mobile
+@media screen and (max-width:700px ){
+  .reporter{
+    .rp-only-pc{display: none;}
+    .user{width: 60px!important; margin-left: 16px !important;}
+    .loginToReportSystem{left:32px!important;top:100px!important;}
+    .reviewPostContent{ width: 300px!important;}
+    .reviewPostContent img{ width: 240px !important;} 
+    .rp-header ul li{padding: 0 16px !important;}
+    .rp-user-mobile{display: block;}
   }
 }

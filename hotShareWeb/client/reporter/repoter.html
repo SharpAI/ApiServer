@@ -2,11 +2,11 @@
 <div class="reporter">
   <div class="rp-header">
     <div class="rp-nav">
-      <h1> 故事贴监控系统&nbsp;&nbsp;</h1>
+      <h1 class="rp-only-pc"> 故事贴监控系统&nbsp;&nbsp;</h1>
       {{#if isLogin}}
-        <p class="user">{{userName}}</p>
+        <p class="user rp-only-pc">{{userName}}</p>
       {{else}}
-        <p class="user">登录</p>
+        <p class="user rp-only-pc">登录</p>
       {{/if}}
       <ul>
        
@@ -22,7 +22,12 @@
     </div>
     <!-- 筛选Start-->
     <div class="rp-db">
-      <div style="float: left;  display:inline-blok;">
+      {{#if isLogin}}
+        <p class="user rp-user-mobile">{{userName}}</p>
+      {{else}}
+        <p class="user rp-user-mobile">登录</p>
+      {{/if}}
+      <div style="float: left;  display:inline-blok;" class="rp-only-pc">
     每页<input id="limit" type="text" style="width:30px;" value="{{limit}}"/>条， 
     从<input id="startDate" type="date" value="{{startDate}}"/> 到<input id="endDate" type="date" value="{{endDate}}"/>,
     第<input id="page" type="text" style="width:30px;" value="{{page}}"/>页, 共{{totalPage}}页
@@ -47,8 +52,8 @@
           <th style="width:100px;">fullname</th>
           <th style="width:100px;">location</th>
           <th style="width:100px;">IP</th>
-          <th style="width:100px;">type</th>
-          <th class="sort" style="width:200px;">CreatedAt &nbsp;<i class="fa fa-plus"></i></th>
+          <th style="width:100px;" class="rp-only-pc">type</th>
+          <th class="sort rp-only-pc" style="width:200px;">CreatedAt &nbsp;<i class="fa fa-plus"></i></th>
           <th style="width:120px; text-align:center;">操作</th>
         </tr>
         {{else}}
@@ -57,8 +62,12 @@
           <th style="width:200px;">Title</th>
           <th style="width:200px;">addonTitle</th>
           <th style="width:80px;">Owner</th>
-          <th class="sort" style="width:200px;">CreatedAt &nbsp;<i class="fa fa-plus"></i></th>
+          <th class="sort rp-only-pc" style="width:200px;">CreatedAt &nbsp;<i class="fa fa-plus"></i></th>
+          {{#if isMontior}}
           <th style="width:120px; text-align:center;">操作</th>
+          {{else}}
+          <th style="width:120px; text-align:center;" class="rp-only-pc">操作</th>
+          {{/if}}
         </tr>
         {{/if}}
       </thead>
@@ -71,8 +80,8 @@
             <td style="text-align:center;">{{profile.fullname}}</td>
             <td style="text-align:center;">{{profile.location}}</td>
             <td style="text-align:center;">{{profile.lastLogonIP}}</td>
-            <td style="text-align:center;">{{type}}</td>
-            <td>{{createdAt}}</td>
+            <td style="text-align:center;" class="rp-only-pc">{{type}}</td>
+            <td class="rp-only-pc">{{createdAt}}</td>
             <td id="{{_id}}" style="text-align:center;" class="restoreUser rp-c-red">恢复用户</td>
           </tr>
           {{/each}}
@@ -87,21 +96,21 @@
             {{/if}}
             <td>{{addontitle}}</td>
             <td id="{{owner}}" class="viewOwner" style="text-align:center;">{{ownerName}}</td>
-            <td style="text-align:center;">{{createdAt}}</td>
+            <td style="text-align:center;" class="rp-only-pc">{{createdAt}}</td>
             {{#if isMontior}}
-            <td style="text-align:center;">
+            <td style="text-align:center;" >
               <a href="#" id="{{_id}}" class="remove" style="margin-right:8px;">删除</a>
               <a href="#" id="{{_id}}" class="removeWithUser">删除并禁止用户</a>
             </td>
             {{/if}}
             {{#if isRecover}}
-            <td style="text-align:center;">
+            <td style="text-align:center;" class="rp-only-pc">
               <a href="#" id="{{_id}}" class="restore" style=" margin-right:8px;">恢复</a>
               <a href="#" id="{{_id}}" class="del">彻底删除</a>
             </td>
             {{/if}}
             {{#if isReview}}
-            <td style="text-align:center;">
+            <td style="text-align:center;" class="rp-only-pc">
               <a href="#" id="{{_id}}" class="reviewPostPass" style=" margin-right:8px;">通过</a>
               <a href="#" id="{{_id}}" class="reviewPostMiss">不通过</a>
               <a href="#" id="{{_id}}" class="removeWithUser rp-c-red">不通过并禁止用户</a>
@@ -116,8 +125,8 @@
   </div>
   {{else}}
   <div id="notAccess" style="margin:20px auto; margin-top:260px; text-align:center;">
-    <h1 style="color:red; font-size:28px;">
-      你无权进行此项操作！请
+    <h1 style="color:red; font-size:28px; line-height:44px;">
+      你无权进行此项操作！<br/>请
       <a href="#" id="getAccess" style="color:red; font-size:28px;">登录</a>
     </h1>
   </div>
@@ -183,15 +192,15 @@
   </div>
   {{#if isReview}}
   <div class="review-footer">
-    <p id={{posts._id}} class="reviewPostPass rp-c-blue" style="padding:8px 16px; display:inline-block;">通过</p>
-    <p id={{posts._id}} class="reviewPostMiss rp-c-blue" style="padding:8px 16px; display:inline-block;">不通过</p>  
-    <p id="{{posts._id}}" class="removeWithUser rp-c-red" style="padding:8px 16px; display:inline-block;">不通过并禁止用户</p>  
+    <p id={{posts._id}} class="reviewPostPass rp-c-blue-btn" style="padding:8px 16px; display:inline-block;">通过</p>
+    <p id={{posts._id}} class="reviewPostMiss rp-c-blue-btn" style="padding:8px 16px; display:inline-block;">不通过</p>  
+    <p id="{{posts._id}}" class="removeWithUser rp-c-red-btn" style="padding:8px 16px; display:inline-block;">不通过并禁止用户</p>  
   </div>
   {{/if}}
   {{#if isRecover}}
   <div class="review-footer">
-    <p id={{posts._id}} class="restore rp-c-pink" style="padding:8px 16px; display:inline-block;">恢复</p>
-    <p id={{posts._id}} class="del rp-c-red" style="padding:8px 16px; display:inline-block;">彻底删除</p>  
+    <p id={{posts._id}} class="restore rp-c-pink-btn" style="padding:8px 16px; display:inline-block;">恢复</p>
+    <p id={{posts._id}} class="del rp-c-red-btn" style="padding:8px 16px; display:inline-block;">彻底删除</p>  
   </div>
   {{/if}}
 </div>
