@@ -6,6 +6,7 @@ var SlackBot = Meteor.npmRequire('slackbots');
 
 if(Meteor.isServer){
     Meteor.startup(function(){
+        var slackCommander = new Meteor.Collection('slackcommanders');
         var slackBot = new SlackBot({
             token: 'xoxb-76820722259-dlvZ74CLXLN60rie25DGM64w', // Add a bot https://my.slack.com/services/new/bot and put the token
             name: 'Post Reporter'
@@ -16,6 +17,11 @@ if(Meteor.isServer){
             slackBot.postMessageToChannel('general', 'Meteor server(web) of HotShare restarted (Test or Local Server)');
         }
 
+        // Example to show how to add slackID into commanders list
+        if(!slackCommander.findOne({slackId:'U0HMJ3H4J'})){
+            slackCommander._ensureIndex({slackId:true});
+            slackCommander.insert({slackId:'U0HMJ3H4J'});
+        }
         /**
          * @param {object} data
          */
@@ -30,9 +36,12 @@ if(Meteor.isServer){
                     console.log('self mention');
                     message = message.replace(selfMention,'');
                     var command = message.split(' ')
-                    if(data.user === 'U0HMJ3H4J'){
-                        slackBot.postMessageToChannel('general', 'your user id is: '+data.user);
+
+                    if(!slackCommander.findOne({slackId:data.user})){
+                        slackBot.postMessageToChannel('general', 'You are not allowed to operate from slack channel, your user id is: '+data.user);
+                        return
                     }
+
                     if(command[0] === 'delete'){
                         console.log('to delete id '+command[1]);
                         slackBot.postMessageToChannel('general', 'I know you want to delete post '+ command[1] +' , but the coding is not done.');
@@ -59,7 +68,6 @@ if(Meteor.isServer){
                 }
             }
         });
-
         postMessageToGeneralChannel=function(message){
             slackBot.postMessageToChannel('general', message);
         }
