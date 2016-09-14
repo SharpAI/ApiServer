@@ -341,7 +341,6 @@ MongoClient.connect(DB_CONN_STR, function(err, db) {
     users = db.collection('users');
     //Follower = db.collection('follower');
     FollowPosts = db.collection('followposts');
-    FollowPosts.insert = function(data, callback){callback && callback(new Error('error'))};
     TopicPoss = db.collection('topicposs');
     //Feeds = db.collection('feeds');
     serverImportLog = db.collection('serverImportLog');
@@ -361,44 +360,44 @@ var postsInsertHookDeferHandle = function(userId,doc){
                 follows.forEach(function(data){
                     if(data.userId === suggestPostsUserId)
                     {
-                        FollowPosts.insert({
-                            _id:doc._id,
-                            postId:doc._id,
-                            title:doc.title,
-                            addontitle:doc.addontitle,
-                            mainImage: doc.mainImage,
-                            mainImageStyle:doc.mainImageStyle,
-                            heart:0,
-                            retweet:0,
-                            comment:0,
-                            browse: 0,
-                            publish: doc.publish,
-                            owner:doc.owner,
-                            ownerName:doc.ownerName,
-                            ownerIcon:doc.ownerIcon,
-                            createdAt: doc.createdAt,
-                            followby: data.userId
-                        });
+                        // FollowPosts.insert({
+                        //     _id:doc._id,
+                        //     postId:doc._id,
+                        //     title:doc.title,
+                        //     addontitle:doc.addontitle,
+                        //     mainImage: doc.mainImage,
+                        //     mainImageStyle:doc.mainImageStyle,
+                        //     heart:0,
+                        //     retweet:0,
+                        //     comment:0,
+                        //     browse: 0,
+                        //     publish: doc.publish,
+                        //     owner:doc.owner,
+                        //     ownerName:doc.ownerName,
+                        //     ownerIcon:doc.ownerIcon,
+                        //     createdAt: doc.createdAt,
+                        //     followby: data.userId
+                        // });
                     }
                     else
                     {
-                        FollowPosts.insert({
-                            postId:doc._id,
-                            title:doc.title,
-                            addontitle:doc.addontitle,
-                            mainImage: doc.mainImage,
-                            mainImageStyle:doc.mainImageStyle,
-                            heart:0,
-                            retweet:0,
-                            comment:0,
-                            browse: 0,
-                            publish: doc.publish,
-                            owner:doc.owner,
-                            ownerName:doc.ownerName,
-                            ownerIcon:doc.ownerIcon,
-                            createdAt: doc.createdAt,
-                            followby: data.userId
-                        });
+                        // FollowPosts.insert({
+                        //     postId:doc._id,
+                        //     title:doc.title,
+                        //     addontitle:doc.addontitle,
+                        //     mainImage: doc.mainImage,
+                        //     mainImageStyle:doc.mainImageStyle,
+                        //     heart:0,
+                        //     retweet:0,
+                        //     comment:0,
+                        //     browse: 0,
+                        //     publish: doc.publish,
+                        //     owner:doc.owner,
+                        //     ownerName:doc.ownerName,
+                        //     ownerIcon:doc.ownerIcon,
+                        //     createdAt: doc.createdAt,
+                        //     followby: data.userId
+                        // });
                     }
 
                     Feeds.insert({
@@ -428,44 +427,44 @@ var postsInsertHookDeferHandle = function(userId,doc){
             if(userId === suggestPostsUserId)
             {    
                 console.log("22222");               
-                FollowPosts.insert({
-                    _id:doc._id,
-                    postId:doc._id,
-                    title:doc.title,
-                    addontitle:doc.addontitle,
-                    mainImage: doc.mainImage,
-                    mainImageStyle:doc.mainImageStyle,
-                    heart:0,
-                    retweet:0,
-                    comment:0,
-                    browse: 0,
-                    publish: doc.publish,
-                    owner:doc.owner,
-                    ownerName:doc.ownerName,
-                    ownerIcon:doc.ownerIcon,
-                    createdAt: doc.createdAt,
-                    followby: userId
-                });
+                // FollowPosts.insert({
+                //     _id:doc._id,
+                //     postId:doc._id,
+                //     title:doc.title,
+                //     addontitle:doc.addontitle,
+                //     mainImage: doc.mainImage,
+                //     mainImageStyle:doc.mainImageStyle,
+                //     heart:0,
+                //     retweet:0,
+                //     comment:0,
+                //     browse: 0,
+                //     publish: doc.publish,
+                //     owner:doc.owner,
+                //     ownerName:doc.ownerName,
+                //     ownerIcon:doc.ownerIcon,
+                //     createdAt: doc.createdAt,
+                //     followby: userId
+                // });
             }
             else
             {         
-                FollowPosts.insert({
-                    postId:doc._id,
-                    title:doc.title,
-                    addontitle:doc.addontitle,
-                    mainImage: doc.mainImage,
-                    mainImageStyle:doc.mainImageStyle,
-                    heart:0,
-                    retweet:0,
-                    comment:0,
-                    browse: 0,
-                    publish: doc.publish,
-                    owner:doc.owner,
-                    ownerName:doc.ownerName,
-                    ownerIcon:doc.ownerIcon,
-                    createdAt: doc.createdAt,
-                    followby: userId
-                });
+                // FollowPosts.insert({
+                //     postId:doc._id,
+                //     title:doc.title,
+                //     addontitle:doc.addontitle,
+                //     mainImage: doc.mainImage,
+                //     mainImageStyle:doc.mainImageStyle,
+                //     heart:0,
+                //     retweet:0,
+                //     comment:0,
+                //     browse: 0,
+                //     publish: doc.publish,
+                //     owner:doc.owner,
+                //     ownerName:doc.ownerName,
+                //     ownerIcon:doc.ownerIcon,
+                //     createdAt: doc.createdAt,
+                //     followby: userId
+                // });
             }
         });
     }
@@ -481,9 +480,9 @@ var update_mainImage = function(userId, postId, mainImageUrl, style){
   /*posts.update({_id: postId},{$set: {mainImage: mainImageUrl}}, function(err, number){
     console.log("update_mainImage: err="+err+", number="+number)
   });*/
-  FollowPosts.update({followby:userId, postId:postId}, {$set: {mainImage: mainImageUrl, mainImageStyle:style}}, function(err, number){
-    console.log("update_mainImage2: err="+err+", number="+number)
-  });
+  // FollowPosts.update({followby:userId, postId:postId}, {$set: {mainImage: mainImageUrl, mainImageStyle:style}}, function(err, number){
+  //   console.log("update_mainImage2: err="+err+", number="+number)
+  // });
   
   TopicPoss.update({owner:userId, postId:postId}, {$set: {mainImage: mainImageUrl, mainImageStyle:style}});
 }
@@ -590,38 +589,39 @@ var insert_data = function(user, url, data, draftsObj, cb) {
               data_insert2._id = doc._id;
             }
           }
-          FollowPosts.insert(data_insert2, function(err, result) {
-            if(err || !result.insertedCount || !result.insertedIds || !result.insertedIds[0]) {
-              console.log("Warning: FollowPosts.insert failed, postId="+doc._id+", followby="+user._id);
-            } else {
-              console.log("Warning: FollowPosts.insert suc, postId="+doc._id+", followby="+user._id);
-            }
-          });
+          // FollowPosts.insert(data_insert2, function(err, result) {
+          //   if(err || !result.insertedCount || !result.insertedIds || !result.insertedIds[0]) {
+          //     console.log("Warning: FollowPosts.insert failed, postId="+doc._id+", followby="+user._id);
+          //   } else {
+          //     console.log("Warning: FollowPosts.insert suc, postId="+doc._id+", followby="+user._id);
+          //   }
+          // });
       });
    });
 }
 var updateMyPost = function(userId, doc, cb) {
-    FollowPosts.insert({
-        postId:doc._id,
-        title:doc.title,
-        addontitle:doc.addontitle,
-        mainImage: doc.mainImage,
-        mainImageStyle:doc.mainImageStyle,
-        heart:0,
-        retweet:0,
-        comment:0,
-        browse: 0,
-        publish: doc.publish,
-        owner:doc.owner,
-        ownerName:doc.ownerName,
-        ownerIcon:doc.ownerIcon,
-        createdAt: doc.createdAt,
-        followby: userId
-    }, function(err, result) {
-        if(cb){
-            cb(null,result.insertedIds[0]);
-        }
-    });
+    // FollowPosts.insert({
+    //     postId:doc._id,
+    //     title:doc.title,
+    //     addontitle:doc.addontitle,
+    //     mainImage: doc.mainImage,
+    //     mainImageStyle:doc.mainImageStyle,
+    //     heart:0,
+    //     retweet:0,
+    //     comment:0,
+    //     browse: 0,
+    //     publish: doc.publish,
+    //     owner:doc.owner,
+    //     ownerName:doc.ownerName,
+    //     ownerIcon:doc.ownerIcon,
+    //     createdAt: doc.createdAt,
+    //     followby: userId
+    // }, function(err, result) {
+    //     if(cb){
+    //         cb(null,result.insertedIds[0]);
+    //     }
+    // });
+    cb && cb(new Error('error'));
 }
 var updatePosts = function(postId, post, taskId, callback){
   post.import_status = 'imported';
@@ -645,17 +645,18 @@ var updatePosts = function(postId, post, taskId, callback){
 };
 var updateFollowPosts = function(userId, postId, post, callback){
   //console.log("userId="+userId+", postId="+postId+", post="+JSON.stringify(post));
-  FollowPosts.update({followby:userId, postId:postId}, {$set: {
-                    mainImage: post.mainImage,
-                    mainImageStyle:post.mainImageStyle,
-                    publish: post.publish,
-                    owner:post.owner,
-                    ownerName:post.ownerName,
-                    ownerIcon:post.ownerIcon,
-                }
-            }, function(err, number){
-    callback && callback(err, number);
-  });
+  // FollowPosts.update({followby:userId, postId:postId}, {$set: {
+  //                   mainImage: post.mainImage,
+  //                   mainImageStyle:post.mainImageStyle,
+  //                   publish: post.publish,
+  //                   owner:post.owner,
+  //                   ownerName:post.ownerName,
+  //                   ownerIcon:post.ownerIcon,
+  //               }
+  //           }, function(err, number){
+  //   callback && callback(err, number);
+  // });
+  callback && callback(new Error(''));
 };
 
 
@@ -829,7 +830,7 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
                           }
                           var url = tmpServer+'/restapi/postInsertHook/'+user._id+'/'+postId;
                           console.log("httpget url="+url);
-                          httpget(url);
+                          // httpget(url);
                       });                 
                       
                       // updatePosts(postId, postObj, function(err, number){
