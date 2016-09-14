@@ -2425,10 +2425,6 @@ if(Meteor.isServer){
   });
   Posts.allow({
     insert: function (userId, doc) {
-      doc.isReview = false;
-      return true;
-
-      var userIds = [];
       //   禁止相关用户发帖
       if(userId){
           var postOwner;
@@ -2439,6 +2435,10 @@ if(Meteor.isServer){
             }
           }
       }
+      doc.isReview = false;
+      return true;
+
+      var userIds = [];
       if(doc.owner != userId){
         Meteor.defer(function(){
           var me = Meteor.users.findOne({_id: userId});
