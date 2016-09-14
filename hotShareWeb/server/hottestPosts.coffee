@@ -12,7 +12,16 @@ Meteor.startup ()->
     latestView = latestView.getTime()
 
     queryString = "MATCH (u:User)-[v:VIEWER]->(p:Post) WITH v,p,length(()--p) AS views WHERE v.by > #{latestView} AND views > 50 AND p.createdAt > #{latestPost}  RETURN DISTINCT p.postId,p,length(()--p) AS views  ORDER BY views DESC LIMIT 5"
-    queryResult = Neo4j.query queryString
+    try
+      queryResult = Neo4j.query queryString
+    catch e
+      console.log("Can't query hot post from neo4j server")
+      if postMessageToGeneralChannel
+        if process.env.PRODUCTION
+          postMessageToGeneralChannel("@everyone Can't query hot post from neo4j server, this is reporting from Production server.")
+        else
+          postMessageToGeneralChannel("@everyone Can't query hot post from neo4j server, this is reporting from Test/Local  server.")
+      return null
     console.log queryString
     if queryResult and queryResult.length > 0
       queryResult.forEach (item)->
