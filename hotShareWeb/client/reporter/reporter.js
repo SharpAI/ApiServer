@@ -205,7 +205,9 @@ Template.reporter.events({
     Session.set('reporterLayout','unblock');
   },
   'click .showPostURI': function(e){
-    prompt("按CTRL + V 复制",'http://cdn.tiegushi.com/posts/'+e.currentTarget.id);
+    Session.set('review-post-id',e.currentTarget.id);
+    $('.reviewPostContent').show();
+    // prompt("按CTRL + V 复制",'http://cdn.tiegushi.com/posts/'+e.currentTarget.id);
   },
   'click .remove': function(e,t){
     Meteor.call('delectPostAndBackUp',e.currentTarget.id,Meteor.userId());
@@ -215,16 +217,19 @@ Template.reporter.events({
   'click .removeWithUser': function(e){
     Meteor.call('delectPostWithUserAndBackUp',e.currentTarget.id,Meteor.userId());
     $('tr#' + e.currentTarget.id).remove();
+    $('.reviewPostContent').hide();
     toastr.info('已删除')
   },
   'click .restore': function(e,t){
     Meteor.call('restorePost',e.currentTarget.id,Meteor.userId());
+    $('.reviewPostContent').hide();
     $('tr#' + e.currentTarget.id).remove();
     toastr.info('已恢复')
   },
   'click .del': function(e,t) {
     PUB.confirm('将从数据库中完全删除，并且无法恢复请确认！',function(){
       Meteor.call('delPostfromDB',e.currentTarget.id,Meteor.userId());
+      $('.reviewPostContent').hide();
       $('tr#' + e.currentTarget.id).remove();
       toastr.info('删除成功！');
     })
@@ -290,6 +295,7 @@ Template.reporter.events({
         res = JSON.parse(result.content);
         console.log(res);
         if(res.result === true){
+          $('.reviewPostContent').hide();
           $('tr#' + e.currentTarget.id).remove();
           toastr.info('通过发表成功');
         } else {
@@ -303,6 +309,7 @@ Template.reporter.events({
   'click .reviewPostMiss': function(e,t){
     Meteor.call('reviewPostMiss',Meteor.userId(),e.currentTarget.id,function(err,result){
       if(!err && result){
+        $('.reviewPostContent').hide();
         $('tr#' + e.currentTarget.id).remove();
         toastr.info('该帖未通过审核');
       } else {
@@ -382,5 +389,21 @@ Template.loginToReportSystem.events({
       $('.loginToReportSystem').toggle();
       toastr.info('退出成功');
     });
+  }
+})
+
+
+Template.ReviewPostContent.helpers({
+  posts: function(){
+    if(Session.get('reporterLayout') === 'recover'){
+      return BackUpPosts.findOne({_id: Session.get('review-post-id')});
+    } else {
+      return Posts.findOne({_id: Session.get('review-post-id')});
+    }
+  },isRecover:function(){
+    return Session.get('reporterLayout') === 'recover';
+  },
+  isReview:function(){
+    return Session.get('reporterLayout') === 'review';
   }
 })

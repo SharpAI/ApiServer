@@ -104,6 +104,7 @@
             <td style="text-align:center;">
               <a href="#" id="{{_id}}" class="reviewPostPass" style=" margin-right:8px;">通过</a>
               <a href="#" id="{{_id}}" class="reviewPostMiss">不通过</a>
+              <a href="#" id="{{_id}}" class="removeWithUser rp-c-red">不通过并禁止用户</a>
             </td>
             {{/if}}
           </tr>
@@ -122,6 +123,7 @@
   </div>
   {{/if}}
   {{> loginToReportSystem}}
+  {{> ReviewPostContent}}
 </div>
 
 </template>
@@ -159,4 +161,38 @@
     {{/if}}
     </div>
   </div>
+</template>
+
+
+<!-- review post content-->
+
+<template name="ReviewPostContent">
+<div class="reviewPostContent">
+  <div class="review-content">
+  <h2 style="font-size:32px; line-height:44px; font-weight:700''">{{posts.title}}</h2>
+  <h4 style="font-size:26px; line-height:30px; font-weight:600">{{posts.addonTitle}}</h4>
+  <div style="margin-bottom:16px;"><img src="{{posts.mainImage}}" style="width:540px; min-height:200px;"/></div>
+  <hr/>
+  {{# each posts.pub}}
+  {{#if isImage}}
+  <div style="margin-bottom:16px;"><img src="{{imgUrl}}" style="width:540px; min-height:200px;"/></div>
+  {{else}}
+  <div style="margin-bottom:16px;">{{text}}</div>
+  {{/if}}
+  {{/each}}
+  </div>
+  {{#if isReview}}
+  <div class="review-footer">
+    <p id={{posts._id}} class="reviewPostPass rp-c-blue" style="padding:8px 16px; display:inline-block;">通过</p>
+    <p id={{posts._id}} class="reviewPostMiss rp-c-blue" style="padding:8px 16px; display:inline-block;">不通过</p>  
+    <p id="{{posts._id}}" class="removeWithUser rp-c-red" style="padding:8px 16px; display:inline-block;">不通过并禁止用户</p>  
+  </div>
+  {{/if}}
+  {{#if isRecover}}
+  <div class="review-footer">
+    <p id={{posts._id}} class="restore rp-c-pink" style="padding:8px 16px; display:inline-block;">恢复</p>
+    <p id={{posts._id}} class="del rp-c-red" style="padding:8px 16px; display:inline-block;">彻底删除</p>  
+  </div>
+  {{/if}}
+</div>
 </template>
