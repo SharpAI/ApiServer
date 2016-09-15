@@ -18,9 +18,9 @@ if Meteor.isClient
     )
     .on("move.pulltorefresh", (percent)->
         if ($('.commentBar').scrollTop() is 0) && window.pullstart
-          Meteor.setTimeout ()->
-              $('#finish').click()
-            ,300
+          setTimeout ()->
+            $('#finish').click()
+          ,300
         window.pullstart = false
     )
   Template.commentBar.helpers
@@ -54,13 +54,13 @@ if Meteor.isClient
       #$.silentScroll($('input:focus').offset().top - 100)
       
       console.log 'Window height is ' + window.innerHeight
-      Meteor.setTimeout ()->
+      setTimeout ()->
           $('.commentBar').animate({ scrollTop: $('.commentBar .content').height() }, "fast")
           $("html, body").animate({ scrollTop: $(document).height() }, "fast")
-        ,300
+      ,300
     'blur #comment':->
       console.log("#comment lost focus");
-      Meteor.setTimeout ()->
+      setTimeout ()->
           $('.commentBar').animate({ scrollTop: $('.commentBar .content').height() }, "fast")
           #console.log 'Window height is ' + window.innerHeight
         ,300
@@ -129,7 +129,7 @@ if Meteor.isClient
 #      scrollHeight = document.getElementById("comment").scrollHeight
 #      height = scrollHeight + 10;
 #      $('#new-reply').css("height", height)
-      Meteor.setTimeout ()->
-          $('.commentBar').animate({ scrollTop: $('.commentBar .content').height() }, "fast")
-        ,0
+      setTimeout ()->
+        $('.commentBar').animate({ scrollTop: $('.commentBar .content').height() }, "fast")
+      ,0
       false

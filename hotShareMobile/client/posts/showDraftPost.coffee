@@ -70,7 +70,7 @@ if Meteor.isClient
         else
           newLoadedCount = contentList.length
         if Session.get("content_loadedCount") isnt newLoadedCount
-          Meteor.setTimeout(()->
+          setTimeout(()->
             Session.set("content_loadedCount", newLoadedCount)
           , 0)
       contentList.slice(1, newLoadedCount)
@@ -365,7 +365,7 @@ if Meteor.isClient
         return
     'click .showDraftback' :->
       Session.set('fromDraftPost',false)
-      Meteor.setTimeout ()->
+      setTimeout ()->
         if Session.get("backtoalldrafts") is true
           Session.set("backtoalldrafts",false)
           PUB.page('/allDrafts')
@@ -446,7 +446,7 @@ if Meteor.isClient
         # removeImagesFromCache(draftImageData)
         # Drafts.remove {owner: Meteor.userId()}
         # $('.addPost').addClass('animated ' + animateOutUpperEffect);
-        Meteor.setTimeout ()->
+        setTimeout ()->
           if Session.get("backtoMyPosts") is true
             Session.set("backtoMyPosts",false)
             PUB.page('/myPosts')

@@ -45,7 +45,7 @@ if Meteor.isClient
           return false
       $('.home').addClass('animated ' + animateOutLowerEffect);
       postId = this.postId
-      Meteor.setTimeout ()->
+      setTimeout ()->
         PUB.page '/posts/'+postId
       ,animatePageTrasitionTimeout
       console.log this.postId

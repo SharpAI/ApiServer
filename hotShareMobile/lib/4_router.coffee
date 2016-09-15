@@ -9,7 +9,7 @@ if Meteor.isClient
   @refreshPostContent=()->
     layoutHelperInit()
     Session.set("displayPostContent",false)
-    Meteor.setTimeout ()->
+    setTimeout ()->
       Session.set("displayPostContent",true)
       calcPostSignature(window.location.href.split('#')[0])
     ,300
@@ -18,7 +18,7 @@ if Meteor.isClient
       channel = Session.get 'channel'
       $(window).off('scroll')
       console.log('channel changed to '+channel+' Off Scroll')
-      Meteor.setTimeout ->
+      setTimeout ->
           Session.set 'focusOn',channel
         ,300
     Tracker.autorun ()->

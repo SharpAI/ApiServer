@@ -61,7 +61,7 @@ if Meteor.isClient
         return true
     display_footer:()->
       console.log "document_body_scrollTop=" + Session.get("document_body_scrollTop")
-      Meteor.setTimeout(
+      setTimeout(
         ()->
             document.body.scrollTop = Session.get("document_body_scrollTop")
         0
@@ -88,7 +88,7 @@ if Meteor.isClient
         ), ->
             console.log 'setUserInfo was Error!'
             return
-        Meteor.setTimeout(()->
+        setTimeout(()->
             waitImportCount = ShareURLs.find().count()
             console.log 'waitImportCount :' + waitImportCount
             if waitImportCount > 0
@@ -105,7 +105,7 @@ if Meteor.isClient
     console.log 'type is ' + data.type
     console.log  'content'+data.content[0]
     if data.type is 'url'
-       Meteor.setTimeout(()->
+       setTimeout(()->
           handleDirectLinkImport(data.content[0])
        ,100)
        return
@@ -120,11 +120,11 @@ if Meteor.isClient
               console.log 'Local is ' + result.smallImage
               Drafts.insert {type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
               if currentCount >= totalCount
-                Meteor.setTimeout(()->
+                setTimeout(()->
                   Template.addPost.__helpers.get('saveDraft')()
                 ,100)
           )
-    Meteor.setTimeout(()->
+    setTimeout(()->
       handleDirectLinkImport(url)
     ,100)
   Template.footer.events

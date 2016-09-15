@@ -56,7 +56,7 @@ if Meteor.isClient
   Template.myPosts.events
     'click .back':(event)->
         $('.home').addClass('animated ' + animateOutUpperEffect);
-        Meteor.setTimeout ()->
+        setTimeout ()->
           PUB.back()
         ,animatePageTrasitionTimeout
     'click .mainImage':(e)->
@@ -67,7 +67,7 @@ if Meteor.isClient
             return false
         postId = this._id
         $('.home').addClass('animated ' + animateOutUpperEffect);
-        Meteor.setTimeout ()->
+        setTimeout ()->
           PUB.page '/posts/'+postId
         ,animatePageTrasitionTimeout
         Session.set 'FollowPostsId',this._id

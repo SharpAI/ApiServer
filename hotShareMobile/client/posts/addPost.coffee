@@ -227,7 +227,7 @@ if Meteor.isClient
     if data.title
       console.log 'Title is ' + data.title
       Session.set('importProcedure',100)
-      Meteor.setTimeout ()->
+      setTimeout ()->
         unless ($('#title').val() and $('#title').val() isnt '')
           $('#title').val(data.title)
           $('#title').trigger('keyup')
@@ -291,7 +291,7 @@ if Meteor.isClient
         ,1,true
       else
         insertVideoInfo(item.videoInfo)
-    Meteor.setTimeout ()->
+    setTimeout ()->
       callback(null,item)
     ,10
   renderResortedArticleAsync = (data,inputUrl,resortedObj)->
@@ -422,12 +422,12 @@ if Meteor.isClient
     iabHandle.addEventListener 'hide',handleHideBrowser
     console.log('Load Error' + JSON.stringify(e))
     window.plugins.toast.showShortCenter("访问导入链接超时，请点击右上角\"导入\"再试一次。");
-    Meteor.setTimeout ()->
+    setTimeout ()->
       iabHandle.show()
     ,500
   @handlerLoadStopEvent = (e)->
     Session.set('importProcedure',4)
-    Meteor.setTimeout ()->
+    setTimeout ()->
       getURL(e)
     ,1200
   @hanldeDirectLinkServerImport = (url)->
@@ -464,7 +464,7 @@ if Meteor.isClient
       #    '温馨提示', ['是', '否']
       #)
     )
-    intrval = Meteor.setInterval(()->
+    intrval = setInterval(()->
         if Session.get('importProcedure') is 100 or Session.get('cancelImport')
           return Meteor.clearInterval(intrval)
         if Session.get('importProcedure') < 95
@@ -474,7 +474,7 @@ if Meteor.isClient
             return
 
           isTimeout = true
-          Meteor.setTimeout(
+          setTimeout(
             ()->
               if(isRes is true)
                 return
@@ -1103,7 +1103,7 @@ if Meteor.isClient
           console.log 'image url is ' + result.smallImage
           Drafts.insert {type:'image', currentCount:currentCount, totalCount:totalCount,isImage:true, owner: Meteor.userId(),imgUrl:result.smallImage, filename:result.filename, URI:result.URI, data_row:'1', data_col:'3', data_sizex:'3', data_sizey:'3'}
           if (currentCount >= totalCount)
-            Meteor.setTimeout ()->
+            setTimeout ()->
               Template.addPost.__helpers.get('saveDraft')()
             ,100
       )
@@ -1128,7 +1128,7 @@ if Meteor.isClient
           Drafts.remove {owner: Meteor.userId()}
           Session.set('fromDraftPost',false)
           $('.addPost').addClass('animated ' + animateOutUpperEffect);
-          Meteor.setTimeout ()->
+          setTimeout ()->
             PUB.back()
           ,animatePageTrasitionTimeout
           return
@@ -1136,7 +1136,7 @@ if Meteor.isClient
       else
         Drafts.remove {owner: Meteor.userId()}
         $('.addPost').addClass('animated ' + animateOutUpperEffect);
-        Meteor.setTimeout ()->
+        setTimeout ()->
           PUB.back()
         ,animatePageTrasitionTimeout
         return
@@ -1160,7 +1160,7 @@ if Meteor.isClient
         removeImagesFromCache(draftImageData)
         Drafts.remove {owner: Meteor.userId()}
         $('.addPost').addClass('animated ' + animateOutUpperEffect);
-        Meteor.setTimeout ()->
+        setTimeout ()->
           PUB.back()
         ,animatePageTrasitionTimeout
         return
@@ -1180,7 +1180,7 @@ if Meteor.isClient
           TempDrafts.remove {owner: Meteor.userId()}
           Session.set('fromDraftPost',false)
           $('.addPost').addClass('animated ' + animateOutUpperEffect);
-          Meteor.setTimeout ()->
+          setTimeout ()->
             Router.go('/')
           ,animatePageTrasitionTimeout
           return
@@ -1201,7 +1201,7 @@ if Meteor.isClient
           removeImagesFromCache(draftImageData)
           Drafts.remove {owner: Meteor.userId()}
           $('.addPost').addClass('animated ' + animateOutUpperEffect);
-          Meteor.setTimeout ()->
+          setTimeout ()->
             Router.go('/')
           ,animatePageTrasitionTimeout
           return
@@ -1216,7 +1216,7 @@ if Meteor.isClient
       $('#isImage'+cropDraftId).css('display',"block")
       $('#'+cropDraftId).css('display',"block")
       $('#crop'+cropDraftId).css('display',"none")
-      Meteor.setTimeout ()->
+      setTimeout ()->
         document.getElementById('default'+cropDraftId).innerHTML=""
       ,120
       $('#'+cropDraftId).css('z-index',"2")
@@ -1281,7 +1281,7 @@ if Meteor.isClient
       $('#isImage'+cropDraftId).css('display',"block")
       $('#'+cropDraftId).css('display',"block")
       $('#crop'+cropDraftId).css('display',"none")
-      Meteor.setTimeout ()->
+      setTimeout ()->
         document.getElementById('default'+cropDraftId).innerHTML=""
       ,120
       $('#'+cropDraftId).css('z-index',"2")
