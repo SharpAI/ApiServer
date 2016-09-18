@@ -22,6 +22,10 @@ Template.newPostMsg.onRendered(function(){
       for(var ii=0;ii<pub[i].pcomments.length;ii++)
         pub[i].pcomments[ii].read = true;
     }
+    if(pub[i].links && pub[i].links.length > 0){
+      for(var ii=0;ii<pub[i].links.length;ii++)
+        pub[i].links[ii].read = true;
+    }
   }
   Posts.update({_id: this.data._id}, {$set: {pub: pub}}, function(err, res){
     // if(err || res <= 0)
@@ -37,9 +41,23 @@ Template.newPostMsg.helpers({
       _.map(Session.get('new-posts-msg').pub, function(item){
         if(item.pcomments && item.pcomments.length > 0){
           _.map(item.pcomments, function(pcom){
-            if(pcom.read != true && pcom.createdAt >= new Date('2016-09-12 00:00:00')){
+            if(pcom.read != true && pcom.createdAt >= new Date('2016-09-12 00:00:00') && pcom.userId != Meteor.userId()){
               pcom.pub_id = item._id || new Mongo.ObjectID()._str;
               result.push(pcom);
+            }
+          });
+        }
+        if(item.links && item.links.length > 0){
+          _.map(item.links, function(link){
+            console.log(link);
+            if(link.read === false && link.enable === true && link.userId != Meteor.userId()){
+              result.push({
+                _id: item._id || new Mongo.ObjectID()._str,
+                content: link.action === 'like' ? '觉得很赞' : '踩了一下',
+                createdAt: link.createdAt,
+                userId: link.userId,
+                username: link.username
+              });
             }
           });
         }

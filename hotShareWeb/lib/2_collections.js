@@ -2545,6 +2545,29 @@ if(Meteor.isServer){
           //console.log("=========ptype:"+modifier.$set["ptype"]+"==========");
           //console.log("=========pindex:"+modifier.$set["pindex"]+"==========");
 
+          // 处理点赞/踩/取消
+          var pub = modifier.$set["pub"][modifier.$set["pindex"]];
+          var user = Meteor.users.findOne({_id: userId});
+          pub.links = pub.links || [];
+          var link_index = _.pluck(pub.links, 'userId').indexOf(userId);
+          if(link_index === -1){
+            pub.links.push({
+              userId: userId,
+              username: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+              action: modifier.$set["ptype"],
+              enable: pub.likeUserId[userId] === true || pub.dislikeUserId[userId] === true,
+              createAt: new Date(),
+              read: false
+            })
+          }else{
+            pub.links[link_index].enable = pub.likeUserId[userId] === true || pub.dislikeUserId[userId] === true;
+            pub.links[link_index].action = modifier.$set["ptype"];
+            if(pub.likeUserId[userId] === true || pub.dislikeUserId[userId] === true)
+              pub.links[link_index].read = false;
+          }
+          console.log('pub:', modifier.$set["pub"]);
+          modifier.$set["pub"][modifier.$set["pindex"]] = pub;
+
           updateServerSidePcommentsHookDeferHandle(userId,doc,modifier.$set["ptype"],modifier.$set["pindex"]);
           return true;
       }
