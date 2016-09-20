@@ -513,8 +513,8 @@ if Meteor.isServer
             console.log(ex)
         return
 
-      'refreshCDNObjectCaches': (postId)->
-        if !Match.test(postId, String) or !Match.test(aliyun_access_key_id, String) or !Match.test(aliyun_access_key_secret, String)
+      'refreshCDNObjectCaches': (postId,ptype)->
+        if !Match.test(postId, String) or !Match.test(aliyun_access_key_id, String) or !Match.test(aliyun_access_key_secret, String) or !(['pcomments', 'like', 'dislike'].indexOf(ptype) > -1)
           return
         this.unblock()
         cdn = new aliyun.CDN({
@@ -525,7 +525,7 @@ if Meteor.isServer
           }
         );
 
-        objectPath = 'http://cdn.tiegushi.com/posts/' + postId + '\r\n' + 'http://cdcdn.tiegushi.com/posts/' + postId;
+        objectPath = 'http://cdntestgst.tiegushi.com/posts/' + postId;
 
         cdn.refreshObjectCaches({
           ObjectType: 'File',

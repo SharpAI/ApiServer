@@ -182,6 +182,25 @@ if Meteor.isClient
             location.pathname = '/posts/'+postId
           ,300
         else
+          # 设置段落蓝色标识
+          scolor="#F30B44"
+          userId = this.owner
+          pub = Session.get('postContent').pub
+          self = pub[this.pindex]
+          if userId and userId isnt ""
+            if self.likeUserId and self.likeUserId[userId] is true
+              scolor="#304EF5"
+            if scolor is "#F30B44" and self.dislikeUserId and self.dislikeUserId[userId] is true
+              scolor="#304EF5"
+            if scolor is "#F30B44" and pclength>0
+              for icomment in self.pcomments
+                if icomment["userId"] is userId
+                  scolor="#304EF5"
+                  break
+          $('.textDiv1').css('color',"#F30B44")
+          $('#'+self._id+' .textDiv1').css('color',scolor)
+          Session.set("toasted",true)
+          Session.set("needToast",true)
           document.body.scrollTop = 0
     Template.recommends.helpers
       recommends: ()->

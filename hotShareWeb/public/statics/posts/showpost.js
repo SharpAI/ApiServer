@@ -174,6 +174,8 @@
     };
 
     gushitie.showpost.init = function () {
+        Session.set("postForward",[]);
+        Session.set("postBack",[]);
         $("#wrapper .mainImage").css("height", ($(window).height() * 0.55) + "px");
         $('.textDiv1Link').linkify();
 
@@ -639,5 +641,42 @@
         });
         */
         //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
+
+        // 标注点评段落
+        // $('.readpost').click(function(){
+        //   // 标注段落
+        //   var pub = Session.get('postContent').pub;
+        //   var pIndex = Session.get("pcurrentIndex");
+        //   var pUser = Session.get("pcommetsId");
+        //   var scolor = "#F30B44";
+        //   console.table(this);
+        //   console.table($(this));
+        //   if(pUser && pub){
+        //     // 设置提示标识
+        //     if(Session.get("toasted") === false){
+        //     Session.set("toasted",true);
+        //     Session.set("needToast",true);
+        //     }
+        //     if(pub[pIndex].likeUserId[pUser] === true){
+        //       scolor = "#304EF5";
+        //     }
+        //     if( scolor === "#F30B44" && pub[pIndex].dislikeUserId[pUser] === true){
+        //       scolor = "#304EF5";
+        //     }
+        //     if(scolor === "#F30B44" && pub[pIndex].pcomments.length > 0){
+        //       var _ref = pub[pIndex].pcomments;
+        //       for(var i=0;i< _ref.length; i++){
+        //         icomment = _ref[i];
+        //         if (icomment["userId"] === pUser){
+        //           scolor = "#304EF5";
+        //           break;
+        //         }
+        //       }
+        //     }
+        //     console.log('-=-=-=-=scolor--='+scolor);
+        //     console.log(pub[pIndex]._id)
+        //     $('#'+pub[pIndex]._id+' .textDiv1').css('color',scolor);
+        //   }
+        // });
     };
 })(window);

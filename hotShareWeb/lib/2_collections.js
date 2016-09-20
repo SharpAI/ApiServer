@@ -842,7 +842,7 @@ if(Meteor.isServer){
     };
     var updateServerSidePcommentsHookDeferHandle = function(userId,doc,ptype,pindex){
         Meteor.defer(function(){
-            Meteor.call('refreshCDNObjectCaches', doc._id);
+            // Meteor.call('refreshCDNObjectCaches', doc._id, ptype);
 
             try{
                 var set_notifiedUsersId = [];
@@ -3094,6 +3094,63 @@ if(Meteor.isClient){
                 Session.set('favouritepostsCollection3_getmore','done');
             }
         });
+    }
+  });
+
+
+  //   静态页面点评，点赞数据同步
+  Tracker.autorun(function () {
+      var pcommentsHTML;
+      if (Session.get('postContent')) {
+          Meteor.subscribe('publicPosts', Session.get('postContent')._id);
+            Posts.find({ _id: Session.get('postContent')._id }).observe({
+                changed: function (newDoc, oldDoc) {
+                    console.log('===type is ===' + newDoc.ptype);
+                    console.log('===pindex is ===' + newDoc.pindex);
+                    try{
+                        if (newDoc.ptype === 'like' || newDoc.ptype === 'dislike') {
+                            $('#' + newDoc.pub[newDoc.pindex]._id + ' .thumbsUp').html(newDoc.pub[newDoc.pindex].likeSum + '&nbsp;&nbsp;');
+                            $('#' + newDoc.pub[newDoc.pindex]._id+ ' .thumbsDown').html(newDoc.pub[newDoc.pindex].dislikeSum + '&nbsp;&nbsp;');
+                        }
+                        if (newDoc.ptype === 'pcomments') {
+                            pcommentsHTML = '<div class="pcomment">';
+                            newDoc.pub[newDoc.pindex].pcomments.forEach(function (pcomment) {
+                                pcommentsHTML += '<div class="eachComment">\
+                                                  <div class="bubble"><span class="personName">'+ pcomment.username +
+                                                 '</span>：<span class="personSay">' + pcomment.content + '</span></div>\
+                                                  </div>';
+                            });
+                            pcommentsHTML += '</div>';
+                            $('#' + newDoc.pub[newDoc.pindex]._id + ' .pcomment').remove();
+                            $('#' + newDoc.pub[newDoc.pindex]._id + ' .textDiv1').after(pcommentsHTML);
+                            gushitie.showpost.init();
+                        } 
+                    } catch (error) {console.log(error);}
+                }
+            });
+      }
+  });
+
+  //  点评段落标注
+  Tracker.autorun(function() {
+    var scrolltop;
+    if (Session.get("needToast") === true) {
+        Session.set("needToast", false);
+        scrolltop = 0;
+        return Meteor.setTimeout(function() {
+            var userName;
+            $('.showPosts').get(0).style.overflow = '';
+            $('.showPosts').get(0).style.maxHeight = '';
+            $('.showPosts').get(0).style.position = '';
+            $('.readmore').remove();
+            if ($('.dCurrent').length) {
+                scrolltop = $('.dCurrent').offset().top;
+                Session.set("postPageScrollTop", scrolltop);
+                document.body.scrollTop = Session.get("postPageScrollTop");
+            }
+            userName = Session.get("pcommentsName");
+            return toastr.info(userName + "点评过的段落已为您用蓝色标注！");
+        }, 1000);
     }
   });
 }
