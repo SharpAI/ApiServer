@@ -34,6 +34,15 @@
       </array>
     </config-file>
 
+    <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
+      <string>Hotshare uses camera</string>
+    </config-file>
+
+    <config-file target="*-Info.plist" parent="NSPhotoLibraryUsageDescription">
+      <string>hotshare uses photo library</string>
+    </config-file>
+
+
     <config-file target="*-Info.plist" parent="CFBundleDisplayName">
       <string>故事贴</string>
     </config-file>
