@@ -346,6 +346,27 @@ if Meteor.isClient
     , 600
 
   Template.showPosts.helpers
+    msgs_count: ->
+      if Posts.findOne({_id: Session.get('postContent')._id}).owner isnt Meteor.userId()
+        return 0
+
+      result  = 0
+      pub = Posts.findOne({_id: Session.get('postContent')._id}).pub
+      console.log 'pub:', pub
+      _.map pub, (item)->
+        if item.pcomments and item.pcomments.length > 0
+          _.map item.pcomments, (pcom)->
+            if pcom.read isnt true and pcom.createdAt >= new Date('2016-09-12 00:00:00') and pcom.userId != Meteor.userId()
+              result += 1
+        if item.links and item.links.length > 0
+          _.map item.links, (link)->
+            if link.enable is true and link.read is false and link.userId != Meteor.userId()
+              result += 1
+
+      console.log 'msgs:', result
+      return result
+    has_msgs: (val)->
+      return val > 0
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
@@ -548,6 +569,8 @@ if Meteor.isClient
     else if action is 'post-tts'
       startPostTTS(self.index)
   Template.showPosts.events
+    'click .show-post-new-message': ->
+      Router.go('/posts_msg/' + Session.get("postContent")._id)
     'click .readmore': (e, t)->
       # if e.target is e.currentTarget
       $showPosts = $('.showPosts')
