@@ -19,7 +19,7 @@ if Meteor.isClient
     )
   subscribeCommentAndViewers = ()->
     if Session.get("postContent")
-      Meteor.setTimeout ()->
+      setTimeout ()->
         Meteor.subscribe "comment",Session.get("postContent")._id
         #Meteor.subscribe "viewers",Session.get("postContent")._id
       ,500
@@ -131,7 +131,7 @@ if Meteor.isClient
   Tracker.autorun ()->
     if Session.get("needBindScroll") is true
       Session.set("needBindScroll", false)
-      Meteor.setTimeout ()->
+      setTimeout ()->
         Session.set('displayDiscoverContent',true)
         if withSocialBar
           $(window).scroll(scrollEventCallback)
@@ -139,7 +139,7 @@ if Meteor.isClient
   Tracker.autorun ()->
     if Session.get("needToast") is true
       Session.set("needToast",false)
-      Meteor.setTimeout ()->
+      setTimeout ()->
         scrolltop = 0
         $('.showPosts').get(0).style.overflow = ''
         $('.showPosts').get(0).style.maxHeight = ''
@@ -268,7 +268,7 @@ if Meteor.isClient
     #Calc Wechat token after post rendered.
     calcPostSignature(window.location.href.split('#')[0]);
     if Session.get("postPageScrollTop") isnt undefined and Session.get("postPageScrollTop") isnt 0
-      Meteor.setTimeout ()->
+      setTimeout ()->
           document.body.scrollTop = Session.get("postPageScrollTop")
         , 280
   Template.showPosts.onRendered ->
@@ -329,12 +329,12 @@ if Meteor.isClient
       $('.div_discover').css('display',"none")
       $('.div_me').css('display',"block")
       Session.set('changeUserNameBck', false)
-      Meteor.setTimeout ()->
+      setTimeout ()->
           document.body.scrollTop = Session.get("changeNameBckScroll")
         , 450
 
 
-    Meteor.setTimeout ()->
+    setTimeout ()->
       $showPosts = $('.showPosts')
       $test = $('.showPosts').find('.content .gridster #test')
 
@@ -430,7 +430,7 @@ if Meteor.isClient
         else
           newLoadedCount = contentList.length
         if Session.get("content_loadedCount") isnt newLoadedCount
-          Meteor.setTimeout(()->
+          setTimeout(()->
               Session.set("content_loadedCount", newLoadedCount)
             , 0)
       contentList.slice(0, newLoadedCount)
@@ -653,7 +653,7 @@ if Meteor.isClient
 
       # here need to subscribe refcomments again, otherwise cannot get refcomments data
       Meteor.subscribe "refcomments", ()->
-        Meteor.setTimeout ()->
+        setTimeout ()->
           refComment = RefComments.find()
           if refComment.count() > 0
             Session.set("refComment",refComment.fetch())
@@ -714,7 +714,7 @@ if Meteor.isClient
       $(window).unbind('scroll')
       $('.showPosts').addClass('animated ' + animateOutUpperEffect)
       $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect)
-      Meteor.setTimeout ()->
+      setTimeout ()->
         #PUB.back()
         if Session.get("backtoMyPosts") is true
           Session.set("backtoMyPosts",false)
@@ -867,7 +867,7 @@ if Meteor.isClient
         return true
   heartOnePost = ->
     Meteor.subscribe "refcomments", ()->
-      Meteor.setTimeout ()->
+      setTimeout ()->
         refComment = RefComments.find()
         if refComment.count() > 0
           Session.set("refComment",refComment.fetch())
@@ -896,7 +896,7 @@ if Meteor.isClient
         Session.set('displayCommentInputBox',false)
       onOpen: ->
         Session.set('displayCommentInputBox',true)
-        Meteor.setTimeout ->
+        setTimeout ->
             $('.commentArea').focus()
           ,300
         console.log 'Modal opened'
@@ -929,7 +929,7 @@ if Meteor.isClient
           return
     'click .blueHeart':->
       Meteor.subscribe "refcomments", ()->
-          Meteor.setTimeout ()->
+          setTimeout ()->
             refComment = RefComments.find()
             if refComment.count() > 0
               Session.set("refComment",refComment.fetch())
