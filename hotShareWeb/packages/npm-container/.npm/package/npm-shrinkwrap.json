@@ -1,5 +1,13 @@
 {
   "dependencies": {
+    "aliyun-cdi": {
+      "version": "0.1.4",
+      "dependencies": {
+        "crypto": {
+          "version": "0.0.3"
+        }
+      }
+    },
     "aliyun-sdk": {
       "version": "1.9.6",
       "dependencies": {
