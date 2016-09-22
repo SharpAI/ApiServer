@@ -641,8 +641,8 @@ if(Meteor.isServer){
                     _id:doc._id,
                     ownerName:doc.ownerName,
                     createdAt:doc.createdAt,
-                    browse:doc.browse,
-                    mainImage:doc.mainImage
+                    mainImage:doc.mainImage,
+                    status: '已审核'
                 }
                 postMessageToGeneralChannel(postInfo)
             } catch(e){
@@ -2436,6 +2436,22 @@ if(Meteor.isServer){
           }
       }
       doc.isReview = false;
+
+     Meteor.defer(function(){
+        var postInfo = {
+            browse:doc.browse,
+            title:doc.title,
+            addontitle:doc.addontitle,
+            owner:doc.owner,
+            _id:doc._id,
+            ownerName:doc.ownerName,
+            createdAt:doc.createdAt,
+            mainImage:doc.mainImage,
+            status: '待审核'
+        }
+        postMessageToGeneralChannel(postInfo)
+     });
+
       return true;
 
       var userIds = [];
