@@ -2,6 +2,7 @@ const spawn = require('child_process').spawn;
 const http = require('http');
 var nodemailer = require('nodemailer');
 var Connection = require('ssh2');
+var SlackBot = require('slackbots');
 
 var mail_receivers = 'xfang@actiontec.com, xning@actiontec.com, jliao@actiontec.com, zhzhang@actiontec.com';
 //var mail_receivers = 'xning@actiontec.com';
@@ -28,7 +29,7 @@ var mailOptions = {
     text: 'It seems something wrong with hotShare server. Please check if it is down!'
 };
 
-var c = new Connection();
+/*var c = new Connection();
 c.on('connect', function() {
   console.log('Connection :: connect');
 });
@@ -67,6 +68,11 @@ c.on('end', function() {
 });
 c.on('close', function(had_error) {
   console.log('Connection :: close');
+});*/
+
+var slackBot = new SlackBot({
+  token: 'xoxb-76820722259-dlvZ74CLXLN60rie25DGM64w', // Add a bot https://my.slack.com/services/new/bot and put the token
+  name: 'Post Reporter'
 });
 
 function connectServer() {
@@ -86,6 +92,8 @@ function connectServer() {
           console.log('Message sent: ' + info.response);
 
       });
+
+      slackBot.postMessageToChannel('general', 'It seems something wrong with hotShare server. Please check if it is down!');
     }
     // consume response body
     res.resume();
@@ -98,6 +106,8 @@ function connectServer() {
         console.log('Message sent: ' + info.response);
 
     });
+
+    slackBot.postMessageToChannel('general', 'It seems something wrong with hotShare server. Please check if it is down!');
   });
 }
 
