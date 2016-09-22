@@ -12,6 +12,15 @@ if Meteor.isClient
        Router.go '/searchFollow'
     'click .clickHelp':(event)->
       PUB.page '/help'
+    'click .closebtn':()->
+      $('.app-rate').fadeOut()
+      promptForRatingWindowButtonClickHandler(2)
+    'click .btn-rate1':()->
+      $('.app-rate').fadeOut()
+      promptForRatingWindowButtonClickHandler(3)
+    'click .btn-rate2':()->
+      $('.app-rate').fadeOut()
+      promptForRatingWindowButtonClickHandler(3)
   Template.home.rendered=->
     flag = window.localStorage.getItem("firstLog") == 'first'
     Session.set('isFlag', !flag)

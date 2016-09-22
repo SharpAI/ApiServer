@@ -112,13 +112,16 @@ class AppRate
   # Confirm popup button click handler
   # @param {Integer} buttonIndex
   # @return {AppRate} counter
-  promptForRatingWindowButtonClickHandler = (buttonIndex) =>
+  @promptForRatingWindowButtonClickHandler = (buttonIndex) =>
+    console.log 44444444444
     switch buttonIndex
       when 1
         updateCounter 'stop'
       when 2
+        console.log 5555555555
         updateCounter 'reset'
       when 3
+        console.log 66666666666
         updateCounter 'stop'
         @navigateToAppStore()
 
@@ -143,12 +146,17 @@ class AppRate
   # Show confirm dialog
   # @return [AppRate]
   showDialog = (immediately) =>
+    console.log 33333333333333
     if counter.countdown is @preferences.usesUntilPrompt or immediately
+      console.log 2222222222222
       if !@preferences.useCustomRateDialog
         localeObj = @preferences.customLocale or Locales.getLocale(@preferences.useLanguage, @preferences.displayAppName)
-        navigator.notification.confirm localeObj.message, promptForRatingWindowButtonClickHandler, localeObj.title, [localeObj.cancelButtonLabel,
-                                                                                                                     localeObj.laterButtonLabel,
-                                                                                                                     localeObj.rateButtonLabel]
+        console.log '1111111111111111'
+        # navigator.notification.confirm localeObj.message, promptForRatingWindowButtonClickHandler, localeObj.title, [localeObj.cancelButtonLabel,
+        #                                                                                                              localeObj.laterButtonLabel,
+        #                                                                                                              localeObj.rateButtonLabel]
+        $('.app-rate').fadeOut()
+        $('.app-rate').fadeIn()
       @preferences.callbacks.onRateDialogShow? promptForRatingWindowButtonClickHandler
     @
 
