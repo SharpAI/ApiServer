@@ -27,7 +27,7 @@ if(Meteor.isServer){
          */
         slackBot.on('message', function(data) {
             // all ingoing events https://api.slack.com/rtm
-            console.log(data);
+            console.log('slack data:', data);
             var selfMention = '<@'+slackBot.self.id+'> ';
 
             if(data && data.type === 'message' && !data.subtype){
@@ -68,8 +68,9 @@ if(Meteor.isServer){
                 }
             }
         });
-        postMessageToGeneralChannel=function(message){
-            slackBot.postMessageToChannel('general', message);
+
+        postMessageToGeneralChannel=function(message, params, callback){
+            slackBot.postMessageToChannel('general', message, params, callback);
         }
     })
 }

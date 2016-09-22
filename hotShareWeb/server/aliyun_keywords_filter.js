@@ -18,14 +18,26 @@ checkKeywords = function(text,callback){
             var result = JSON.parse(body);
             console.log(result);
             if(result.Hit){
-                console.log('Keywords issue!')
+                console.log('Keywords issue!');
+                return callback && callback(null, false);
             } else {
-                console.log('Keywords safe!')
+                console.log('Keywords safe!');
+                return callback && callback(null, true);
             }
         } else {
             console.log(res.statusCode, err);
+            return callback && callback(err || new Error('error'));
         }
     });
+};
+syncCheckKeywords = function(text){
+  return Async.runSync(function(callback) {
+    checkKeywords(text, function(err, res){
+      if(err)
+        return callback(err);
+      callback(res);
+    });
+  }).result;
 };
 
 
