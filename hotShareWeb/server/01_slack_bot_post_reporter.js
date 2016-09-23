@@ -26,6 +26,10 @@ if(Meteor.isServer){
          * @param {object} data
          */
         slackBot.on('message', Meteor.bindEnvironment(function (data) {
+          // 只在测试服务器使用
+          if(process.env.PRODUCTION){
+            return false;
+          }
           // all ingoing events https://api.slack.com/rtm
             console.log('slack data:', data);
             var selfMention = '<@'+slackBot.self.id+'> ';
@@ -44,6 +48,43 @@ if(Meteor.isServer){
 
                     console.log('slack command:', command[0]);
                     switch(command[0]){
+                      case 'verfily':
+                        Meteor.call('isTrustedUser',command[1],function(err,result){
+                          if(!err && result){
+                            if(!result.hasUser){
+                              return slackBot.postMessageToChannel('general','用户不存在！');
+                            } else {
+                              if(result.isTrusted){
+                                slackBot.postMessageToChannel('general','用户在白名单中！');
+                              } else {
+                                slackBot.postMessageToChannel('general','用户不在白名单中！');
+                              }
+                            }
+                          } 
+                        });
+                        break;
+                      case 'trust':
+                        Meteor.call('markUserAsTrusted',command[1],function(err,result){
+                          if(!err && result){
+                            if(result.isTrusted){
+                              slackBot.postMessageToChannel('general','用户已添加到白名单～');
+                            } else {
+                              slackBot.postMessageToChannel('general','添加到白名单失败！');
+                            }
+                          } 
+                        });
+                        break;
+                      case 'mistrust':
+                        Meteor.call('markUserAsMistrusted',command[1],function(err,result){
+                          if(!err && result){
+                            if(result.success){
+                              slackBot.postMessageToChannel('general','用户已从白名单移除～');
+                            } else {
+                              slackBot.postMessageToChannel('general','从白名单中移除用户失败！');
+                            }
+                          } 
+                        });
+                        break;
                       case 'delete':
                         if(command[1] === 'user')
                           LockedUsers.insert(Meteor.users.findOne({_id: command[2]}), function(err, _id){
@@ -108,7 +149,12 @@ if(Meteor.isServer){
                         postMessageToGeneralChannel('I don\'t understand your command...\n' + 
                           'delete [user/post] <id>   删除贴子/用户\n' + 
                           'restore [user/post] <id>  恢复贴子/用户\n' + 
-                          'check id                  绿网检查贴子\n' + 
+                          'check <postId>            绿网检查贴子\n' + 
+                          'miss <postId>             通过帖子审核\n'+
+                          'pass <postId>             不通过帖子审核\n'+
+                          'verfily <userId>          验证用户是否在白名单\n'+
+                          'trust <userId>            添加用户到白名单\n'+
+                          'mistrust <userId>         从白名单移除用户\n'+
                           'server                    获取服务器状态'
                         );
                         break;

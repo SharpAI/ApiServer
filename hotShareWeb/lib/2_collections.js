@@ -29,7 +29,34 @@ LogonIPLogs = new Meteor.Collection('loginiplogs');
 // 删除帖子
 LockedUsers = new Meteor.Collection('lockedUsers');
 BackUpPosts = new Meteor.Collection('backUpPosts');
-
+// 绿网检查帖子内容
+isPostSafe = function(title,addontitle,mainImage,pub){
+    // check title
+    if(syncCheckKeywords(title)){
+        return false;
+    }
+    // check addontitle
+    if(syncCheckKeywords(addontitle)){
+        return false;
+    }
+    // check mainImage
+    
+    // check pub
+    for(var i=0;i<pub.length; i++){
+        // check text
+        if(pub[i].type === 'text'){
+            if(syncCheckKeywords(pub[i].text)){
+                console.log('检测到不安全内容');
+                return false;
+            }
+        }
+        // check image
+        // if(pub[i].type === 'image'){
+            
+        // }
+    }
+    return true;
+}
 if(Meteor.isServer)
   PushSendLogs = new Meteor.Collection('pushSendLogs');
 
@@ -2426,6 +2453,7 @@ if(Meteor.isServer){
   });
   Posts.allow({
     insert: function (userId, doc) {
+        var user;
       //   禁止相关用户发帖
       if(userId){
           var postOwner;
@@ -2436,6 +2464,13 @@ if(Meteor.isServer){
             }
           }
       }
+    //  跳过审核
+    user = Meteor.user.findOne({_id: doc.owner});
+    if(user && user.profile && user.profile.isTrusted){ // 是受信用户
+        if(isPostSafe(doc.title,doc.addontitle,doc.mainImage,doc.pub)){
+            return true;
+        }
+    }
       doc.isReview = false;
 
      Meteor.defer(function(){
