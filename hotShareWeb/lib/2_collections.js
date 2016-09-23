@@ -2465,12 +2465,15 @@ if(Meteor.isServer){
           }
       }
     //  跳过审核
+    var postSafe = false;
     user = Meteor.user.findOne({_id: doc.owner});
     if(user && user.profile && user.profile.isTrusted){ // 是受信用户
         if(isPostSafe(doc.title,doc.addontitle,doc.mainImage,doc.pub)){
-            return true;
+            postSafe =true;
         }
     }
+
+    if(!postSafe){
       doc.isReview = false;
 
      Meteor.defer(function(){
@@ -2490,6 +2493,9 @@ if(Meteor.isServer){
      });
 
       return true;
+    }
+
+    doc.isReview = true;
 
       var userIds = [];
       if(doc.owner != userId){

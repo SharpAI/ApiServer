@@ -155,7 +155,7 @@ if(Meteor.isServer){
                           'verfily <userId>          验证用户是否在白名单\n'+
                           'trust <userId>            添加用户到白名单\n'+
                           'mistrust <userId>         从白名单移除用户\n'+
-                          'server                    获取服务器状态'
+                          'server                    获取服务器状态(暂未启用)'
                         );
                         break;
                     }
