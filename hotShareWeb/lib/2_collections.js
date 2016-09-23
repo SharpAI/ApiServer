@@ -634,7 +634,7 @@ if(Meteor.isServer){
         Meteor.defer(function(){
             try{
                 var postInfo = {
-                    post：'http://cdn.tiegushi.com/posts/'+doc._id,
+                    post:'http://cdn.tiegushi.com/posts/'+doc._id,
                     browse:doc.browse,
                     title:doc.title,
                     addontitle:doc.addontitle,
@@ -2440,7 +2440,7 @@ if(Meteor.isServer){
 
      Meteor.defer(function(){
         var postInfo = {
-            post：'http://cdn.tiegushi.com/posts/'+doc._id,
+            post:'http://cdn.tiegushi.com/posts/'+doc._id,
             browse:doc.browse,
             title:doc.title,
             addontitle:doc.addontitle,
