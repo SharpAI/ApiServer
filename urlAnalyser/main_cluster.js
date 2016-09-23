@@ -525,8 +525,9 @@ var insert_data = function(user, url, data, draftsObj, cb) {
     
     /*filedownup.EalyMainImage(data, function (mainImageURL) {*/
     draftsObj.EalyMainImage(data, url, function (mainImageURL) {
+      var _post_id = mongoid();
       var data_insert = [{
-        '_id':mongoid(),
+        '_id': _post_id,
         'ownerId': user._id,
         'pub': data.resortedArticle,
         'title': data.title,
@@ -555,6 +556,7 @@ var insert_data = function(user, url, data, draftsObj, cb) {
           if(cb){
             cb(err,null)
           }
+          httpget('http://cdcdn.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + _post_id);
           return null;
         }
         console.log("data_insert[0]._id="+data_insert[0]._id);
