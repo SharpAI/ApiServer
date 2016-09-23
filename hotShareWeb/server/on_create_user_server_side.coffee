@@ -38,3 +38,5 @@ if Meteor.isServer
           return true
         else
           throw new Meteor.Error(403, "不能匿名登录")
+      else
+        return true
