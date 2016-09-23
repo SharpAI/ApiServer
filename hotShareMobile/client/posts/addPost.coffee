@@ -260,7 +260,7 @@ if Meteor.isClient
         ,150,true
     else if item.type is 'iframe'
       Drafts.insert {
-        type:'image',
+        type:'iframe',
         isImage:true,
         inIframe:true,
         owner: Meteor.userId(),
@@ -455,6 +455,29 @@ if Meteor.isClient
         console.log('cancel import res: ' + JSON.stringify(res))
       cordovaHTTP.get Meteor.absoluteUrl('import-cancel/') + unique_id, {}, {}, request_return, request_return
       console.log("import-cancel: unique_id="+unique_id);
+    showIframePage = (url)->
+      link = {}
+      link.title = ''
+      link.host = ''
+      insertDefaultImage(link,'http://data.tiegushi.com/res/defaultMainImage1.jpg',false,url)
+      iframeHtml = '<iframe id="iframeTiegushi" src="'+url+'"></iframe>'
+      height = window.innerHeight || $(window).height()
+      height = (height-48-54) * 0.9
+      grid_size=Math.floor(getDisplayElementWidth() / 6-baseGap*2)
+      sizeY = height / grid_size
+      Drafts.insert {
+        type:'image',
+        isImage:true,
+        inIframe:true,
+        owner: Meteor.userId(),
+        toTheEnd: true,
+        text:'',
+        iframe: iframeHtml,
+        imgUrl:'http://data.tiegushi.com/res/video_old_version.jpg',
+        data_row:'1',
+        data_col:'3',
+        data_sizex:'6',
+        data_sizey:sizeY.toString()}
     showPopupProgressBar(()->
       # cancel server import
       abortFastImport()
@@ -482,6 +505,7 @@ if Meteor.isClient
               popupProgressBar.close()
               Session.set('cancelImport', true)
               abortFastImport()
+              showIframePage(url)
               PUB.toast('快速导入失败啦，请尝试高级导入吧。')
               Router.go('/')
               # navigator.notification.confirm('快速导入不成功，是否尝试高级导入？'
@@ -533,6 +557,7 @@ if Meteor.isClient
             console.log("Error: import Cancelled.");
             return
           abortFastImport()
+          showIframePage(url)
           PUB.toast('快速导入失败啦，请尝试高级导入吧。')
           popupProgressBar.close()
           Router.go('/')

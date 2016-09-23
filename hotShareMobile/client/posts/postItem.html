@@ -1,7 +1,7 @@
 <template name="postItem">
     {{#if isImage}}
         {{#if inIframe}}
-            <div class='postIframeItem element' id="{{_id}}">
+            <div class='postIframeItem element' id="{{_id}}" style="overflow: auto!important; -webkit-overflow-scrolling: touch!important;">
                 {{{iframe}}}
             </div>
         {{else}}
