@@ -19,10 +19,10 @@ checkKeywords = function(text,callback){
             console.log(result);
             if(result.Hit){
                 console.log('Keywords issue!');
-                return callback && callback(null, false);
+                return callback && callback(null, true);
             } else {
                 console.log('Keywords safe!');
-                return callback && callback(null, true);
+                return callback && callback(null, false);
             }
         } else {
             console.log(res.statusCode, err);
