@@ -25,11 +25,10 @@ if(Meteor.isServer){
         /**
          * @param {object} data
          */
-        slackBot.on('message', function(data) {
-            // all ingoing events https://api.slack.com/rtm
+        slackBot.on('message', Meteor.bindEnvironment(function (data) {
+          // all ingoing events https://api.slack.com/rtm
             console.log('slack data:', data);
             var selfMention = '<@'+slackBot.self.id+'> ';
-
 
             if(data && data.type === 'message' && !data.subtype){
                 var message = data.text;
@@ -73,8 +72,22 @@ if(Meteor.isServer){
                             Meteor.Slack.sendPostRemove(command.length === 2 ? command[1] : command[2]);
                           });
                         break;
+                      case 'pass':
+                        Meteor.call('reviewPostPass', 'YjwXmChf6tfbF772y', command[2], function(err, res){
+                            if(err)
+                              return postMessageToGeneralChannel('操作失败，请重试~');
+                            Meteor.Slack.sendPostReview(command[2]);
+                          });
+                        break;
+                      case 'miss':
+                        Meteor.call('reviewPostMiss', 'YjwXmChf6tfbF772y', command[2], function(err, res){
+                            if(err)
+                              return postMessageToGeneralChannel('操作失败，请重试~');
+                            Meteor.Slack.sendPostReview(command[2]);
+                          });
+                        break;
                       case 'check':
-                        console.log(Meteor.users.findOne());
+                        console.log('user:', Meteor.users.findOne());
                         Meteor.Slack.sendPostCheck(command[1]);
                         break;
                       case 'server':
@@ -102,10 +115,12 @@ if(Meteor.isServer){
                     }
                 }
             }
-        });
+        }, function(e) {
+          console.log('slack mesage error:', e);
+        }));
 
         postMessageToGeneralChannel=function(message, params, callback){
-          slackBot.postMessageToChannel('server-repoeter', message, params);
+          slackBot.postMessageToChannel('general', message, params);
           callback && callback(null, '');
 
           // slackBot.postMessageToChannel('server-repoeter', message, params, function(){
