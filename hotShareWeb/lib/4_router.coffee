@@ -60,6 +60,46 @@ if Meteor.isClient
         Session.set 'channel','posts/'+'BsePZkipnxtCLiQWE'
       fastRender: true
     }
+  Router.route '/view_posts/:_id', {
+      waitOn: ->
+          [subs.subscribe("publicPosts", this.params._id),
+           subs.subscribe("postViewCounter",this.params._id),
+           subs.subscribe("postsAuthor",this.params._id),
+           subs.subscribe "pcomments"]
+      loadingTemplate: 'loadingPost'
+      action: ->
+        post = Posts.findOne({_id: this.params._id})
+        # if !post or (post.isReview is false and post.owner isnt Meteor.userId())
+        #   return this.render 'postNotFound'
+        unless post
+          console.log "Cant find the request post"
+          this.render 'postNotFound'
+          return
+        Session.set("refComment",[''])
+        if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
+          Session.set('postContent',post)
+          refreshPostContent()
+          toastr.info('作者修改了帖子内容.')
+        else
+          Session.set('postContent',post)
+        Session.set('focusedIndex',undefined)
+        if post.addontitle and (post.addontitle isnt '')
+          documentTitle = post.title + "：" + post.addontitle
+        else
+          documentTitle = post.title
+        Session.set("DocumentTitle",documentTitle)
+        favicon = document.createElement('link')
+        favicon.id = 'icon'
+        favicon.rel = 'icon'
+        favicon.href = post.mainImage
+        document.head.appendChild(favicon)
+
+        unless Session.equals('channel','posts/'+'BsePZkipnxtCLiQWE')
+          refreshPostContent()
+        this.render 'showPosts', {data: post}
+        Session.set 'channel','posts/'+'BsePZkipnxtCLiQWE'
+      fastRender: true
+    }
   Router.route '/posts/:_id/:_index', {
     name: 'post_index'
     waitOn: ->

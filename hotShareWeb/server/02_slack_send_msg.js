@@ -27,7 +27,7 @@ var slack = function(){
     if(!post)
       return null;
 
-    return makerMsg(color, message, post.ownerName, [post.title, post.addontitle], post.mainImage, 'http://cdcdn.tiegushi.com/posts/' + post._id + '?check=true', [{
+    return makerMsg(color, message, post.ownerName, [post.title, post.addontitle], post.mainImage, 'http://cdcdn.tiegushi.com/view_posts/' + post._id + '?check=true', [{
         title: '贴子',
         value: post._id,
         short: true
