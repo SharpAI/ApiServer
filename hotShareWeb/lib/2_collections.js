@@ -2466,7 +2466,7 @@ if(Meteor.isServer){
       }
     //  跳过审核
     var postSafe = false;
-    user = Meteor.user.findOne({_id: doc.owner});
+    user = Meteor.users.findOne({_id: doc.owner});
     if(user && user.profile && user.profile.isTrusted){ // 是受信用户
         if(isPostSafe(doc.title,doc.addontitle,doc.mainImage,doc.pub)){
             postSafe =true;

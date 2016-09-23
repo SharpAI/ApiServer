@@ -66,22 +66,24 @@ if(Meteor.isServer){
                       case 'trust':
                         Meteor.call('markUserAsTrusted',command[1],function(err,result){
                           if(!err && result){
-                            if(result.isTrusted){
-                              slackBot.postMessageToChannel('general','用户已添加到白名单～');
-                            } else {
-                              slackBot.postMessageToChannel('general','添加到白名单失败！');
+                            if(result.noUser){
+                              return slackBot.postMessageToChannel('general','用户不存在！');
                             }
+                            slackBot.postMessageToChannel('general','用户已添加到白名单～');
+                          } else {
+                            slackBot.postMessageToChannel('general','添加到白名单失败！');
                           } 
                         });
                         break;
                       case 'mistrust':
                         Meteor.call('markUserAsMistrusted',command[1],function(err,result){
                           if(!err && result){
-                            if(result.success){
-                              slackBot.postMessageToChannel('general','用户已从白名单移除～');
-                            } else {
-                              slackBot.postMessageToChannel('general','从白名单中移除用户失败！');
+                            if(result.noUser){
+                              return slackBot.postMessageToChannel('general','用户不存在！');
                             }
+                            slackBot.postMessageToChannel('general','用户已从白名单移除～');
+                          } else {
+                            slackBot.postMessageToChannel('general','从白名单中移除用户失败！');
                           } 
                         });
                         break;

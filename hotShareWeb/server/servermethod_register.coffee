@@ -68,23 +68,19 @@ if Meteor.isServer
             return {isTrusted:false,hasUser: true}
       # mark as trusted
       'markUserAsTrusted': (userId)->
-        Meteor.users.update {_id: userId},{
+        user = Meteor.users.findOne({_id: userId})
+        if !user
+          return {noUser: true}
+        return Meteor.users.update {_id: userId},{
           $set:{'profile.isTrusted': true}
         }
-        ,(err,result)->
-          if !err
-            return {success:true}
-          else
-            return {success:false}
       'markUserAsMistrusted': (userId)->
-        Meteor.users.update {_id: userId},{
+        user = Meteor.users.findOne({_id: userId})
+        if !user
+          return {noUser: true}
+        return Meteor.users.update {_id: userId},{
           $set:{'profile.isTrusted': false}
         }
-        ,(err,result)->
-          if !err
-            return {success:true}
-          else
-            return {success:false}
       'reviewPostPass':(userId,postId)->
         if !confirmReporterAuth(userId)
           return false
