@@ -556,7 +556,7 @@ var insert_data = function(user, url, data, draftsObj, cb) {
           if(cb){
             cb(err,null)
           }
-          httpget('http://cdcdn.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + _post_id);
+
           return null;
         }
         console.log("data_insert[0]._id="+data_insert[0]._id);
@@ -834,6 +834,12 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
                           }
                           var url = tmpServer+'/restapi/postInsertHook/'+user._id+'/'+postId;
                           console.log("httpget url="+url);
+
+                          console.log('==============================');
+                          console.log('http://cdcdn.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
+                          httpget('http://cdcdn.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
+                          console.log('==============================');
+
                           // httpget(url);
                       });                 
                       
