@@ -31,7 +31,7 @@
         <div class='accounts bottomBorder boxTitle'>已连接的账户<span><i class="fa fa-angle-right fa-fw"></i></span></div>
         -->
         <div class='notice bottomBorder boxTitle'>{{_ "notification"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
-      
+
         <!--<div class="blacklist box boxTitle">{{_ "blacklist"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>-->
         <div class='language bottomBorder boxTitle'>{{_ "language"}}
             {{#if isEnglish}}
@@ -59,16 +59,24 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">新版本已准备好</h4>
+          <!--<h4 class="modal-title">新版本已准备好</h4>-->
+          <div>
+            <img src="/logo.png" />
+          </div>
         </div>
-        <div class="modal-body"></div>
+        <div class="modal-body">
+          <div class="update-content-box">
+            <h4 class="modal-title">发现新版本</h4>
+          </div>
+          <h5 class="modal-title">亲，故事贴有新版本了．　诚邀您参与故事贴{{newVersion}}版本的优先体验！</h5>          
+        </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">稍后安装</button>
-          <button type="button" class="btn btn-primary">立刻安装</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">稍后再说</button>
+          <button type="button" class="btn btn-primary">立刻下载</button>
         </div>
       </div>
     </div>
-  </div>  
+  </div>
 </template>
 <template name="my_email">
   <div class="dashboard">
@@ -80,7 +88,7 @@
     <div class="content">
       <div class="box">
         <div class='boxTitle'>{{_ "email"}}<span class="input"><input type="text" id="my_edit_email" placeholder="{{_ 'enterEmail'}}" value="{{userEmail}}"/></span></div>
-        
+
         <!--input type="password" id="my_edit_password" placeholder="输入密码" style="width:95%;border-top:0px;margin-left:5px;height:25px;"/-->
       </div>
     </div>
@@ -228,7 +236,7 @@
       </div>
        <div class="ver"></div>
     </div>
-  </div>    
+  </div>
 </template>
 
 <template name="SubscribeAuthor">
