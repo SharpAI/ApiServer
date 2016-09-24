@@ -6,6 +6,52 @@ if Meteor.isClient
   Session.setDefault('itemInAddPostPending',0)
   @getDisplayElementWidth=()->
     $('.addPost').width()*0.9
+  localUploading = false
+  processLocalImage = ()->
+    if localUploading
+      return
+    if Drafts.find({type:'image'}).count() <= 0
+      return
+    localUploading = true
+    items = Drafts.find({type:'image'}).fetch()
+    localItem = items.filter((item)->
+      item.imgUrl and item.imgUrl.indexOf('cdvfile://') is 0
+    )
+    remoteCount = items.filter((item)->
+      !item.imgUrl or item.imgUrl.indexOf('http') is 0
+    ).length
+
+    console.log('Local: '+localItem.length + ' Remote: ' + remoteCount + ' Total: '+items.length)
+
+    if localItem.length <= 0
+      localUploading = false
+      return
+    toUpload = localItem[0]
+    console.log('To upload: '+toUpload);
+    multiThreadUploadFileCallback = (err, result) ->
+      if !err
+        console.log(result)
+        for retItem in result
+          if retItem.uploaded and retItem._id
+            if retItem.type is 'image' and retItem.imgUrl
+              Drafts.update({_id: retItem._id}, {$set: {imgUrl:retItem.imgUrl,URI:''}});
+
+        window.plugins.toast.showShortBottom('本帖'+(remoteCount+1)+'张图片上传成功，总计'+items.length+'张')
+      else
+        showDebug and console.log('multiThreadUploadFile, failed')
+        window.plugins.toast.showShortBottom('本帖图片上传异常，稍后重传')
+
+      localUploading = false
+      Meteor.setTimeout processLocalImage,1000
+    if toUpload
+      multiThreadUploadFile_new [toUpload], 1, multiThreadUploadFileCallback
+    else
+      localUploading = false
+
+  Meteor.startup ()->
+    Deps.autorun ()->
+      if Drafts.find({type:'image'}).count() > 0
+        processLocalImage()
   handleSaveDraft = ()->
     layout = JSON.stringify(gridster.serialize())
     pub=[]

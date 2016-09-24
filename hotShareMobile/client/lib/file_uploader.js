@@ -422,7 +422,7 @@ if (Meteor.isCordova){
             }
         }
     };
-    var multiThreadUploadFile_new = function(draftData, maxThreads, callback) {
+    multiThreadUploadFile_new = function(draftData, maxThreads, callback) {
         var uploadObj = {
             fileUploader : fileUploader,
             draftData : draftData,
@@ -461,7 +461,6 @@ if (Meteor.isCordova){
         multiThreadUploadFile_new(draftData, 1, multiThreadUploadFileCallback);
         return;
     };
-
     uploadFileWhenPublishInCordova = function(draftData, postId){
         if(device.platform === 'testAndroid' ){
             Router.go('/posts/'+postId);
