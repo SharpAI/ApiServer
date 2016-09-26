@@ -181,12 +181,11 @@ if Meteor.isClient
       HTTP.get sign_server_url+encodeURIComponent(url),(error,result)->
         #FeedAfterShare(Session.get('postContent'))
         if error
-          if localStorage.getItem('savedsignature'+url)
-            Session.set('sign_status_'+url,'failed')
-            console.log('Got Post signature Result from localStorage ' + signatureResult)
-            Meteor.setTimeout ()->
-              setupWeichat(url)
-            ,3000
+          Session.set('sign_status_'+url,'failed')
+          console.log('Get Post signature failed')
+          Meteor.setTimeout ()->
+            setupWeichat(url)
+          ,3000
         else
           signatureResult = JSON.parse(result.content)
           Session.set('sign_status_'+url,'done')
