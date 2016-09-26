@@ -303,7 +303,7 @@ if Meteor.isClient
         Meteor.call 'readPostReport',postContent._id,Meteor.userId(), null, (err, res)->
           if !err and res is true
             console.log 'readPostReport:', res
-            $('.subscribeAutorPage').show()
+            # $('.subscribeAutorPage').show()
 #    $('.textDiv1Link').linkify();
     $("a[target='_blank']").click((e)->
       e.preventDefault();
