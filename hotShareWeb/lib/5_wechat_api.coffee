@@ -170,15 +170,31 @@ if Meteor.isClient
       wx.onMenuShareQZone(chatShareData);
 
     setupWeichat = (url)->
+      #Meteor.call 'getSignatureFromServer',url,(error,result)->
+      if !Session.get('sign_status_'+url)
+        Session.set('sign_status_'+url,'starting')
+      else if Session.equals('sign_status_'+url,'starting')
+        return
+      else if Session.equals('sign_status_'+url,'done')
+        return
+
       HTTP.get sign_server_url+encodeURIComponent(url),(error,result)->
+        #FeedAfterShare(Session.get('postContent'))
         if error
-          Meteor.setTimeout ()->
-            setupWeichat url
-          ,5000
+          if localStorage.getItem('savedsignature'+url)
+            Session.set('sign_status_'+url,'failed')
+            console.log('Got Post signature Result from localStorage ' + signatureResult)
+            Meteor.setTimeout ()->
+              setupWeichat(url)
+            ,3000
         else
           signatureResult = JSON.parse(result.content)
-          console.log(result)
+          Session.set('sign_status_'+url,'done')
           console.log('Got Post signature ' + JSON.stringify(signatureResult))
+
+          Meteor.setTimeout ()->
+            Session.set('sign_status_'+url,'expired')
+          ,30000
           wechatSetup(signatureResult)
           wx.ready(wechatReady)
     @calcPostSignature = (url)->
