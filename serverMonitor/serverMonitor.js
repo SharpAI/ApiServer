@@ -29,6 +29,13 @@ var mailOptions = {
     text: 'It seems something wrong with hotShare server. Please check if it is down!'
 };
 
+var mailChatOptions = {
+    from: 'gushitie<notify@mail.tiegushi.com>', // sender address mailfrom must be same with the user
+    to: mail_receivers, // list of receivers
+    subject: 'HotShare Chat Server maybe Down', // Subject line
+    text: 'It seems something wrong with hotShare chat server. Please check if it is down!'
+};
+
 /*var c = new Connection();
 c.on('connect', function() {
   console.log('Connection :: connect');
@@ -75,6 +82,36 @@ var slackBot = new SlackBot({
   name: 'Post Reporter'
 });
 
+function connectChatServer() {
+  http.get('http://chat.cdn.tiegushi.com/home', function(res) {
+    console.log('Got response: ' + res.statusCode);
+    if (res.statusCode != 200) {
+      transporter.sendMail(mailChatOptions, function(error, info){
+          if(error){
+              return console.log(error);
+          }
+          console.log('Message sent: ' + info.response);
+
+      });
+
+      slackBot.postMessageToChannel('general', 'It seems something wrong with hotShare chat server. Please check if it is down!');
+    }
+    // consume response body
+    res.resume();
+  }).on('error', function(e) {
+    console.log('Got error: ' + e.message);
+    transporter.sendMail(mailOptions, function(error, info){
+        if(error){
+            return console.log(error);
+        }
+        console.log('Message sent: ' + info.response);
+
+    });
+
+    slackBot.postMessageToChannel('general', 'It seems something wrong with hotShare chat server. Please check if it is down!');
+  });
+}
+
 function connectServer() {
   /*c.connect({
     host: '120.24.244.253',
@@ -112,8 +149,10 @@ function connectServer() {
 }
 
 connectServer();
+connectChatServer();
 setInterval(function() {
   connectServer();
+  connectChatServer();
   /*ping = spawn('ping', ['-n', '-c', '3', '120.24.244.253']);
 
   ping.stdout.on('data', (data) => {
