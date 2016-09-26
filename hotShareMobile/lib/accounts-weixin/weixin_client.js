@@ -1,6 +1,6 @@
 if (Meteor.isClient) {
-  var getUserInfo = function(succes, error) {
-    
+  this.getWechatUserInfo = function(succes, error) {
+    console.log('get wechat  user info.')
     var _getUserInfo = function(){
       if(Meteor.isCordova){
         var redirectUrl = "http://host2.tiegushi.com/oauth2/wechat";
@@ -48,7 +48,7 @@ if (Meteor.isClient) {
   };
   
   Meteor.loginWithWeixin = function (callback) {
-    getUserInfo(function(result){
+    getWechatUserInfo(function(result){
       if(result && result.openid){
         var options;
         console.log('获取微信用户信息的结果为' + result.nickname);

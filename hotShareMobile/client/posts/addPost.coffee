@@ -786,7 +786,8 @@ if Meteor.isClient
 
     modalUserId = $('#chooseAssociatedUser .modal-body dt.active').attr('userId')
     ownerUser = null
-
+    wechat = Session.get 'userWechatInfo'
+    console.log 'wechat info is ' + wechat
     if modalUserId is Meteor.userId() or !modalUserId
       ownerUser = Meteor.user()
     else
@@ -883,6 +884,7 @@ if Meteor.isClient
             heart:[],  #点赞
             retweet:[],#转发
             comment:[], #评论
+            wechatInfo: wechat, #微信信息
             addontitle:addontitle,
             mainImage: mainImage,
             mainImageStyle:mainImageStyle,
@@ -906,6 +908,7 @@ if Meteor.isClient
         heart:[],  #点赞
         retweet:[],#转发
         comment:[], #评论
+        wechatInfo: wechat, #微信信息
         commentsCount:0,
         addontitle:addontitle,
         mainImage: mainImage,
@@ -1382,6 +1385,26 @@ if Meteor.isClient
 
 
     'click #publish, click #modalPublish': (e)->
+      console.log 'hereeeeeee'
+      if Meteor.user() and Meteor.user().services and Meteor.user().services.weixin or Meteor.user().profile.wechat
+        if Meteor.user().services.weixin
+          Session.set 'userWechatInfo', Meteor.user().services.weixin
+        if Meteor.user().profile.wechat
+          Session.set 'userWechatInfo', Meteor.user().profile.wechat
+        console.log 'wechat session is ' + Session.get 'userWechatInfo'
+      else
+        getWechatUserInfo((result)->
+          console.log 'callback result is '
+          console.log result
+          if result and result.openid
+            console.log 'result here.'
+            Session.set 'userWechatInfo',result
+            Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.wechat': result}})
+            console.log 'user wechat info 2 is ' + Session.get 'userWechatInfo'
+          else
+            console.log 'weixin logon failure.'
+            callback("The Weixin logon failure.")
+        )
       Session.set('fromDraftPost',false)
       if Session.get('isReviewMode') is '0' and e.currentTarget.id is "publish" and Template.addPost.__helpers.get('hasAssocaitedUsers')()
         return
