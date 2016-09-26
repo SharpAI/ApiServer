@@ -12,7 +12,6 @@ if Meteor.isClient
     Session.set("displayPostContent",false)
     Meteor.setTimeout ()->
       Session.set("displayPostContent",true)
-      calcPostSignature(window.location.href.split('#')[0])
     ,300
   Router.route '/redirect/:_id',()->
     Session.set('nextPostID',this.params._id)
@@ -28,6 +27,9 @@ if Meteor.isClient
            subs.subscribe "pcomments"]
       loadingTemplate: 'loadingPost'
       action: ->
+        Meteor.setTimeout ()->
+          calcPostSignature(window.location.href.split('#')[0])
+        ,300
         post = Posts.findOne({_id: this.params._id})
         if !post or (post.isReview is false and post.owner isnt Meteor.userId())
           return this.render 'postNotFound'
@@ -109,6 +111,9 @@ if Meteor.isClient
        Meteor.subscribe "pcomments"]
     loadingTemplate: 'loadingPost'
     action: ->
+      Meteor.setTimeout ()->
+        calcPostSignature(window.location.href.split('#')[0])
+      ,300
       if Session.get("doSectionForward") is true
         Session.set("doSectionForward",false)
         Session.set("postPageScrollTop",0)
@@ -272,7 +277,7 @@ if Meteor.isServer
       Inject.rawHead("inject-height", "<meta property=\"og:image:height\" content=\"300\" />",res);
       Inject.rawHead("inject-height", "<meta property=\"fb:app_id\" content=\"1759413377637096\" />",res);
 
-      injectSignData(req,res)
+      #injectSignData(req,res)
       next()
   , {where: 'server'}
   Router.route '/posts/:_id/:index', (req, res, next)->
@@ -296,7 +301,7 @@ if Meteor.isServer
     Inject.rawHead("inject-height", "<meta property=\"og:image:height\" content=\"300\" />",res);
     Inject.rawHead("inject-height", "<meta property=\"fb:app_id\" content=\"1759413377637096\" />",res);
 
-    injectSignData(req,res)
+    #injectSignData(req,res)
     next()
   , {where: 'server'}
   ###
