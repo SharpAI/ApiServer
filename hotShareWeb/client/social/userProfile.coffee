@@ -401,11 +401,12 @@ if Meteor.isClient
       postBack.push(currentPostId)
       Session.set("postForward",[])
       Session.set("postBack",postBack)
-      if PopUpBox
-        PopUpBox.close()
+      #if PopUpBox
+      #  PopUpBox.close()
       Meteor.setTimeout ()->
-        Session.set("Social.LevelOne.Menu",'contactsList')
-        Router.go '/posts/'+postId
+        #Session.set("Social.LevelOne.Menu",'contactsList')
+        #Router.go '/posts/'+postId
+        location.pathname = '/posts/'+postId
       ,300
     'click #addToContactList': ()->
       addToContactList("ProfileUserId1")
