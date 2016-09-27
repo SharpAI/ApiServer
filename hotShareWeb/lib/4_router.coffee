@@ -27,9 +27,6 @@ if Meteor.isClient
            subs.subscribe "pcomments"]
       loadingTemplate: 'loadingPost'
       action: ->
-        Meteor.setTimeout ()->
-          calcPostSignature(window.location.href.split('#')[0])
-        ,300
         post = Posts.findOne({_id: this.params._id})
         if !post or (post.isReview is false and post.owner isnt Meteor.userId())
           return this.render 'postNotFound'
@@ -58,6 +55,9 @@ if Meteor.isClient
 
         unless Session.equals('channel','posts/'+'BsePZkipnxtCLiQWE')
           refreshPostContent()
+        Meteor.setTimeout ()->
+          calcPostSignature(window.location.href.split('#')[0])
+        ,300
         this.render 'showPosts', {data: post}
         Session.set 'channel','posts/'+'BsePZkipnxtCLiQWE'
       fastRender: true
@@ -111,9 +111,6 @@ if Meteor.isClient
        Meteor.subscribe "pcomments"]
     loadingTemplate: 'loadingPost'
     action: ->
-      Meteor.setTimeout ()->
-        calcPostSignature(window.location.href.split('#')[0])
-      ,300
       if Session.get("doSectionForward") is true
         Session.set("doSectionForward",false)
         Session.set("postPageScrollTop",0)
@@ -154,6 +151,9 @@ if Meteor.isClient
 
       unless Session.equals('channel','posts/'+this.params._id+'/'+this.params._index)
         refreshPostContent()
+      Meteor.setTimeout ()->
+        calcPostSignature(window.location.href.split('#')[0])
+      ,300
       this.render 'showPosts', {data: post}
       Session.set('channel','posts/'+this.params._id+'/'+this.params._index)
     fastRender: true
