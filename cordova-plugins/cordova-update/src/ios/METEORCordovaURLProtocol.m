@@ -94,6 +94,11 @@ NSDictionary *MimeTypeMappings = nil;
 - (NSString *)filePathForURI:(NSString *)path allowDirectory:(BOOL)allowDirectory
 {
   NSString *documentRoot = METEORDocumentRoot;
+  if ([path rangeOfString:@"remote_server"].location != NSNotFound) {
+      NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        
+      documentRoot = [paths objectAtIndex:0];     
+  }
   // Part 1: Strip parameters from the url
   // E.g.: /page.html?q=22&var=abc -> /page.html
 

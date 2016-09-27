@@ -51,5 +51,6 @@
 
 - (void)setNotificationMessage:(NSDictionary *)notification;
 - (void)notificationReceived;
+-(void)getServerURLFromLocalDataBase;
 
 @end
