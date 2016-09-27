@@ -48,13 +48,25 @@
 <script type="text/javascript" src="/statics/posts/showpost.js"></script>
 <script type="text/javascript">
     $(function() {
-        var i = setInterval(function() {
+        Session.set('staticPostHtml',false);
+        var initPostInterVal = setInterval(function() {
           if($('.showPosts').length) {
-            clearInterval(i);
-            $('.showPosts').html($('#postbody').html());
-            $('#postbody').remove();
-            gushitie.showpost.init();
+            clearInterval(initPostInterVal);
+             Session.set('staticPostHtml',$('#postbody').html())
+            console.log('===post body length-==='+$('#postbody').length);
+                // $('.showPosts').html($('#postbody').html());
+                $('#postbody').remove();
+                gushitie.showpost.init();
+                
           } 
         }, 100);
+        var intCount = 0;
+        var initLayout = setInterval(function() {           
+            gushitie.showpost.init();
+            intCount++;
+            if(intCount > 20){
+                clearInterval(initLayout);   
+            } 
+        }, 300);
     });
 </script>

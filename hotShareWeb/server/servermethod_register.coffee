@@ -514,12 +514,14 @@ if Meteor.isServer
         return
 
       'refreshCDNObjectCaches': (postId,ptype)->
-        if !Match.test(postId, String) or !Match.test(aliyun_access_key_id, String) or !Match.test(aliyun_access_key_secret, String) or !(['pcomments', 'like', 'dislike'].indexOf(ptype) > -1)
-          return
+        # if !(['pcomments', 'like', 'dislike'].indexOf(ptype) > -1)
+        #   return 
+        # if !Match.test(postId, String) or !Match.test(aliyun_access_key_id, String) or !Match.test(aliyun_access_key_secret, String) 
+        #   return
         this.unblock()
         cdn = new aliyun.CDN({
-            accessKeyId: aliyun_access_key_id || '',
-            secretAccessKey: aliyun_access_key_secret || '',
+            accessKeyId: 'Vh0snNA4Orv3emBj',
+            secretAccessKey: 'd7p2eNO8GuMl1GtIZ0at4wPDyED4Nz',
             endpoint: 'https://cdn.aliyuncs.com',
             apiVersion: '2014-11-11'
           }
@@ -533,3 +535,4 @@ if Meteor.isServer
         }, (err, res)-> 
           console.log(err, res);
         );
+        return true

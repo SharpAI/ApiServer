@@ -2306,6 +2306,7 @@ if(Meteor.isServer){
           return false;
       },
     update: function(userId, doc, fieldNames, modifier) {
+    //   Meteor.call('refreshCDNObjectCaches', doc._id);
       // 第一次web导入成功后执行insert的处理，也便触发推送之类的操作
       if(fieldNames.indexOf('webImport') != -1){
         var  ownerUser = Meteor.users.findOne({_id: userId});
@@ -2366,6 +2367,8 @@ if(Meteor.isServer){
       }
 
       if(doc.owner === userId){
+        // 静态页面需要刷新阿里CDN缓存
+        Meteor.call('refreshCDNObjectCaches', doc._id);
         postsUpdateHookDeferHandle(userId,doc,fieldNames, modifier);
         return true;
       }

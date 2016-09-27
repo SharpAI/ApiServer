@@ -78,9 +78,16 @@ if Meteor.isClient
     Session.set("postPageScrollTop", 0)
     Session.set("showSuggestPosts",false)
     $('.tool-container').remove()
+    $('#postbody').remove()
     
   Session.setDefault('hottestPosts', [])
   Template.showPosts.onRendered ->
+    setTimeout ()->
+      gushitie.showpost.init()
+    ,300
+    setTimeout ()->
+      $('.textDiv1Link').show()
+    ,500
     Meteor.subscribe 'usersById', Session.get('postContent').owner
     Meteor.call 'getHottestPosts', (err,res)->
       unless err
@@ -281,10 +288,19 @@ if Meteor.isClient
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
+    showPostsHtml: ()->
+      if Session.get('staticPostHtml')
+        return Session.get('staticPostHtml')
+      else 
+        return $('#postbody').html()
     authorInfo: ()->
       user = Meteor.users.findOne({_id: @owner})
-      authorName = if user.profile.fullname then user.profile.fullname else user.profile.username
-      authorIcon = user.profile.icon
+      if user
+        authorName = if user.profile and user.profile.fullname then user.profile.fullname else user.username
+        authorIcon = if user.profile and  user.profile.icon then user.profile.icon else '/userPicture.png'
+      else
+        authorName = '匿名'
+        authorIcon = '/userPicture.png'
       authorInfo = {
         authorName: authorName
         authorIcon: authorIcon
@@ -555,6 +571,7 @@ if Meteor.isClient
     'click .readmore': (e, t)->
       # if e.target is e.currentTarget
       $showPosts = $('.showPosts')
+      gushitie.showpost.init()
       $('.showPosts').get(0).style.overflow = ''
       $('.showPosts').get(0).style.maxHeight = ''
       $('.showPosts').get(0).style.position = ''
