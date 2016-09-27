@@ -64,7 +64,7 @@ AccountsClient = class AccountsClient extends AccountsCommon {
   logout(callback) {
     var self = this;
     self.connection.apply('logout', [], {
-      wait: true
+      wait: false
     }, function (error, result) {
       if (error) {
         callback && callback(error);
