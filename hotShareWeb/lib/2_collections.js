@@ -2352,7 +2352,7 @@ if(Meteor.isServer){
           //console.log("=========pindex:"+doc.pindex+"=================");
           //console.log("=========ptype:"+modifier.$set["ptype"]+"==========");
           //console.log("=========pindex:"+modifier.$set["pindex"]+"==========");
-
+          Meteor.call('refreshCDNObjectCaches', doc._id);
           updateServerSidePcommentsHookDeferHandle(userId,doc,modifier.$set["ptype"],modifier.$set["pindex"]);
           return true;
       }

@@ -86,7 +86,8 @@ if Meteor.isClient
       gushitie.showpost.init()
     ,300
     setTimeout ()->
-      $('.textDiv1Link').show()
+      $('.element').css('visibility','visible')
+      gushitie.showpost.initLazyload()
     ,500
     Meteor.subscribe 'usersById', Session.get('postContent').owner
     Meteor.call 'getHottestPosts', (err,res)->
@@ -572,6 +573,7 @@ if Meteor.isClient
       # if e.target is e.currentTarget
       $showPosts = $('.showPosts')
       gushitie.showpost.init()
+      gushitie.showpost.initLazyload()
       $('.showPosts').get(0).style.overflow = ''
       $('.showPosts').get(0).style.maxHeight = ''
       $('.showPosts').get(0).style.position = ''

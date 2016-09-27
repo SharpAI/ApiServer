@@ -527,11 +527,17 @@ if Meteor.isServer
           }
         );
 
-        objectPath = 'http://cdntestgst.tiegushi.com/posts/' + postId;
-
+        cdnObjectPath = 'http://cdn.tiegushi.com/posts/' + postId;
+        cdcdnObjectPath = 'http://cdcdn.tiegushi.com/posts/' + postId;
         cdn.refreshObjectCaches({
           ObjectType: 'File',
-          ObjectPath: objectPath
+          ObjectPath: cdnObjectPath
+        }, (err, res)-> 
+          console.log(err, res);
+        );
+        cdn.refreshObjectCaches({
+          ObjectType: 'File',
+          ObjectPath: cdcdnObjectPath
         }, (err, res)-> 
           console.log(err, res);
         );

@@ -172,7 +172,9 @@
             });
         });
     };
-
+    gushitie.showpost.initLazyload = function() {
+      initLazyload();
+    }
     gushitie.showpost.init = function () {
         Session.set("postForward",[]);
         Session.set("postBack",[]);
@@ -181,7 +183,7 @@
 
         calcLayoutForEachPubElement();
 
-        initLazyload();
+        // initLazyload();
 
         // register window scroll callback
         function toggleHeaderNav(show) {
