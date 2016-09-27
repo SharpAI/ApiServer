@@ -48,6 +48,21 @@ if(Meteor.isServer){
 
                     console.log('slack command:', command[0]);
                     switch(command[0]){
+                      case 'startAutoReview':
+                        autoReview = true;
+                        Configs.update({name: 'reviewConfig'}, {$set: {'items.autoReview': true}});
+                        slackBot.postMessageToChannel('general','自动审核开启成功！');
+                        break;
+                      case 'stopAutoReview':
+                        autoReview = false;
+                        Configs.update({name: 'reviewConfig'}, {$set: {'items.autoReview': false}});
+                        slackBot.postMessageToChannel('general','自动审核关闭！');
+                      case 'queryAutoReview':
+                        if (autoReview)
+                          resp = '自动审核当前为开启状态！';
+                        else
+                          resp = '自动审核当前为关闭状态！';
+                        slackBot.postMessageToChannel('general',resp);
                       case 'verfily':
                         Meteor.call('isTrustedUser',command[1],function(err,result){
                           if(!err && result){
@@ -60,7 +75,7 @@ if(Meteor.isServer){
                                 slackBot.postMessageToChannel('general','用户不在白名单中！');
                               }
                             }
-                          } 
+                          }
                         });
                         break;
                       case 'trust':
@@ -72,7 +87,7 @@ if(Meteor.isServer){
                             slackBot.postMessageToChannel('general','用户已添加到白名单～');
                           } else {
                             slackBot.postMessageToChannel('general','添加到白名单失败！');
-                          } 
+                          }
                         });
                         break;
                       case 'mistrust':
@@ -84,7 +99,7 @@ if(Meteor.isServer){
                             slackBot.postMessageToChannel('general','用户已从白名单移除～');
                           } else {
                             slackBot.postMessageToChannel('general','从白名单中移除用户失败！');
-                          } 
+                          }
                         });
                         break;
                       case 'delete':
@@ -135,29 +150,32 @@ if(Meteor.isServer){
                         break;
                       case 'server':
                         // TODO: server status
-                        break;   
+                        break;
                       case 'hot':
                         slackBot.postMessageToChannel('Calculating Hottest Posts from NEO4J Database...');
                         var hottestPost = getRawHottestPosts();
                         if(hottestPost)
                           return postMessageToGeneralChannel('Wow, something wrong? No Hottest Posts in List!!!!');
-                        
+
                         hottestPost.forEach(function(item){
                           if(item)
                             postMessageToGeneralChannel(JSON.stringify(item));
                         });
-                        break;                   
+                        break;
                       default:
-                        postMessageToGeneralChannel('I don\'t understand your command...\n' + 
-                          'delete [user/post] <id>   删除贴子/用户\n' + 
-                          'restore [user/post] <id>  恢复贴子/用户\n' + 
-                          'check <postId>            绿网检查贴子\n' + 
+                        postMessageToGeneralChannel('I don\'t understand your command...\n' +
+                          'delete [user/post] <id>   删除贴子/用户\n' +
+                          'restore [user/post] <id>  恢复贴子/用户\n' +
+                          'check <postId>            绿网检查贴子\n' +
                           'miss <postId>             通过帖子审核\n'+
                           'pass <postId>             不通过帖子审核\n'+
                           'verfily <userId>          验证用户是否在白名单\n'+
                           'trust <userId>            添加用户到白名单\n'+
                           'mistrust <userId>         从白名单移除用户\n'+
-                          'server                    获取服务器状态(暂未启用)'
+                          'server                    获取服务器状态(暂未启用)'+
+                          'startAutoReview           开启自动审核'+
+                          'stopAutoReview            关闭自动审核'+
+                          'queryAutoReview           查询当前自动审核状态'
                         );
                         break;
                     }

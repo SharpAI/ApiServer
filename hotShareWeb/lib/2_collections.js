@@ -26,6 +26,8 @@ UserRelation = new Meteor.Collection('userrelation'); // 用户关系，为了�
 Recommends = new Meteor.Collection('recommends');
 LogonIPLogs = new Meteor.Collection('loginiplogs');
 
+Configs = new Meteor.Collection('configs');
+
 // 删除帖子
 LockedUsers = new Meteor.Collection('lockedUsers');
 BackUpPosts = new Meteor.Collection('backUpPosts');
@@ -40,7 +42,7 @@ isPostSafe = function(title,addontitle,mainImage,pub){
         return false;
     }
     // check mainImage
-    
+
     // check pub
     for(var i=0;i<pub.length; i++){
         // check text
@@ -52,7 +54,7 @@ isPostSafe = function(title,addontitle,mainImage,pub){
         }
         // check image
         // if(pub[i].type === 'image'){
-            
+
         // }
     }
     return true;
@@ -80,6 +82,17 @@ if(Meteor.isServer){
   RefNames = new Meteor.Collection("refnames");
   PComments = new Meteor.Collection("pcomments");
   PShares = new Meteor.Collection("pshares");
+}
+
+if (Meteor.isServer) {
+  autoReview = false;
+  cfg = Configs.findOne({name: 'reviewConfig'});
+  if (cfg) {
+    autoReview = cfg.items.autoReview;
+  }
+  else {
+    Configs.insert({name: 'reviewConfig', items: {autoReview: false}});
+  }
 }
 
 // 为老版本计算默认 topicpost 数据
@@ -578,7 +591,7 @@ if(Meteor.isServer){
                 subject = '有人踩了此故事：《' + title + '》';
                 action = '踩';
             }
-           
+
            text = Assets.getText('email/comment-post.html');
            //text = text.replace('{{post.title}}', antiSpam(post.title));
            //text = text.replace('{{post.subtitle}}', antiSpam(post.addontitle));
@@ -602,7 +615,7 @@ if(Meteor.isServer){
            if(pindex != null) {
                 content = ref[pindex].text;
            }
-           else {        
+           else {
                for (i = 0, len = ref.length; i < len; i++) {
                    item = ref[i];
                    if (item.type === 'text') {
@@ -611,12 +624,12 @@ if(Meteor.isServer){
                     }
                 }
            }
-           
+
            if(content.length > 100){
                content = content.slice(0,100);
            }
             text = text.replace('{{post-content}}', content);
-            
+
             try {
                 Email.send({
                     to: notifyUser.userEmail,
@@ -638,7 +651,7 @@ if(Meteor.isServer){
         });
     };
 
-    
+
     var sendEmailToFollower = function(userEmail, subject, mailText){
         console.log('给web关注者发送邮件')
         Meteor.defer(function () {
@@ -676,7 +689,7 @@ if(Meteor.isServer){
             } catch(e){
 
             }
-            try{ 
+            try{
                 var follows=Follower.find({followerId:userId});
                 if(follows.count()>0){
                     //  sendEmailToFollower mail html start
@@ -861,7 +874,7 @@ if(Meteor.isServer){
                     }
                 });
             }
-            catch(error) {}            
+            catch(error) {}
         });
     };
     var postsRemoveHookDeferHandle = function(userId,doc){
@@ -1276,7 +1289,7 @@ if(Meteor.isServer){
                     body: '成功关注作者：'+doc.followerName + ',我们会不定期的为您推送关注作者的新文章！',
                     html: text
                 });
-                
+
             } catch (e){
                 console.log(e);
             }
@@ -1464,6 +1477,13 @@ if(Meteor.isServer){
         });
     };
 
+    Meteor.publish('configs', function() {
+      if(this.userId === null){
+          return this.ready();
+      }
+      return Configs.find();
+    });
+
     Meteor.publish("list_recommends", function(postId) {
         if(this.userId === null){
             return this.ready();
@@ -1473,7 +1493,7 @@ if(Meteor.isServer){
                 return Recommends.find({relatedPostId: postId,readUsers:{$nin:[this.userId]}});
             } else {
                 return Recommends.find({relatedPostId: postId})
-            } 
+            }
             /*
             var self = this;
             var handle = Recommends.find({relatedPostId: postId}, {
@@ -1490,7 +1510,7 @@ if(Meteor.isServer){
             self.onStop(function () {
                 handle.stop();
             });*/
-        }        
+        }
     });
 
     Meteor.publish("suggestPosts", function (limit) {
@@ -2270,7 +2290,7 @@ if(Meteor.isServer){
         }
         Counts.publish(this,'rpPostsCounts',Posts.find({isReview:{$ne: false},createdAt:{$exists: true}}),{noReady: true});
         return Posts.find({isReview:{$ne: false}},options);
-      } 
+      }
       if(type == 'recover'){
           if(selects.startDate && selects.endDate){
             Counts.publish(this,'rpPostsCounts',BackUpPosts.find({
@@ -2287,7 +2307,7 @@ if(Meteor.isServer){
         }
         Counts.publish(this,'rpPostsCounts',BackUpPosts.find({createdAt:{$exists: true}}),{noReady: true});
         return BackUpPosts.find({},options)
-      } 
+      }
       if(type == 'review'){
         if(selects.startDate && selects.endDate){
             console.log('1')
@@ -2307,7 +2327,7 @@ if(Meteor.isServer){
         }
         Counts.publish(this,'rpPostsCounts',Posts.find({createdAt:{$exists: true},isReview: false}),{noReady: true});
         return Posts.find({isReview: false},options);
-      } 
+      }
       if(type == 'unblock'){
           if(selects.startDate && selects.endDate){
             Counts.publish(this,'rpPostsCounts',LockedUsers.find({
@@ -2324,9 +2344,9 @@ if(Meteor.isServer){
         }
         Counts.publish(this,'rpPostsCounts',LockedUsers.find({createdAt:{$exists: true}}),{noReady: true});
         return LockedUsers.find({},options)
-      } 
+      }
   });
-  
+
   function publishTheFavouritePosts(self,userId,limit){
       var pub = self
       var cursorHandle=FavouritePosts.find({userId: userId}, {sort: {createdAt: -1}, limit: limit}).observeChanges({
@@ -2385,7 +2405,7 @@ if(Meteor.isServer){
     update: function(userId, doc, fieldNames, modifier) {
       if(modifier.$set["readUsers"]){
           return true;
-      }   
+      }
       return false;
     }
   });
@@ -2466,12 +2486,21 @@ if(Meteor.isServer){
       }
     //  跳过审核
     var postSafe = false;
-    user = Meteor.users.findOne({_id: doc.owner});
-    if(user && user.profile && user.profile.isTrusted){ // 是受信用户
-        if(isPostSafe(doc.title,doc.addontitle,doc.mainImage,doc.pub)){
-            postSafe =true;
-        }
+    //如果开启自动审核，　通过绿网检查即为通过审核
+    if (autoReview) {
+      if(isPostSafe(doc.title,doc.addontitle,doc.mainImage,doc.pub)){
+          postSafe =true;
+      }
     }
+    else {
+      user = Meteor.users.findOne({_id: doc.owner});
+      if(user && user.profile && user.profile.isTrusted){ // 是受信用户
+          if(isPostSafe(doc.title,doc.addontitle,doc.mainImage,doc.pub)){
+              postSafe =true;
+          }
+      }
+    }
+
 
     if(!postSafe){
       doc.isReview = false;
@@ -3285,8 +3314,8 @@ if(Meteor.isClient){
 
   Tracker.autorun(function() {
     if(Meteor.isCordova) {
-        Meteor.subscribe('versions');        
-    }    
+        Meteor.subscribe('versions');
+    }
   });
 
   Tracker.autorun(function() {
