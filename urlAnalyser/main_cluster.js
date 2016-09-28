@@ -991,7 +991,7 @@ if (cluster.isMaster) {
           console.log("Master: import cancel - 1.");
         }
         res.end(JSON.stringify({status:'failed'}));
-        Task.failed(unique_id, errorMessage);
+        // Task.failed(unique_id, errorMessage);
         // Task.update(unique_id, 'failed');
       }).on('failed', function(errorMessage){
         console.log('Job failed');
@@ -1000,7 +1000,7 @@ if (cluster.isMaster) {
           console.log("Master: import cancel - 2.");
         }
         res.end(JSON.stringify({status:'failed'}));
-        Task.failed(unique_id, errorMessage);
+        // Task.failed(unique_id, errorMessage);
         // Task.update(unique_id, 'failed');
       // }).on('importing', function(result){
       //   console.log('Job result');
