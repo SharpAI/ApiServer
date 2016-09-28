@@ -1,3 +1,37 @@
+var formatTime = function(time, str) {
+  var UTC = 8; // 启用北京时间
+  var date = new Date(time);
+  if(UTC){
+    date.setUTCHours(date.getUTCHours()+UTC);
+  }
+  var Y,M,D,h,m,s,result;
+  var addZero = function(val) {
+    val = val.toString();
+    if(val.length < 2){
+      return '0'+val;
+    } else {
+      return val;
+    }
+  };
+  Y = date.getUTCFullYear();
+  M = addZero(date.getUTCMonth() + 1);
+  D = addZero(date.getUTCDate());
+  h = addZero(date.getUTCHours());
+  m = addZero(date.getUTCMinutes());
+  s = addZero(date.getUTCSeconds());
+
+  switch (str) {
+    case 'yyyy-mm-dd H:m:s':
+      result = Y+'-'+M+'-'+D+' '+h+':'+m+':'+s;
+      break;
+    case 'yyyy-mm-dd':
+      result = Y+'-'+M+'-'+D;
+      break;
+    default:
+      result = Y+'-'+M+'-'+D+' '+h+':'+m+':'+s;
+  }
+  return result;
+}
 Router.route('/reporter',{
   name:'reporter'
 });
@@ -146,7 +180,23 @@ Template.reporter.helpers({
     return Session.get('reporterLayout') === 'unblock';
   },
   formatTime:function(time){
-    return GetTime0(time)
+    if(time instanceof Date){
+      return formatTime(time);
+    } else {
+      return '暂无数据';
+    }
+  },
+  formatReviewTime:function(created,review){
+    var result;
+    if(review instanceof Date){
+      result =  formatTime(review);
+      var T = new Date(review.getTime() - created.getTime());
+      T = T.getMinutes();
+      result += "("+T +" min)";
+    } else {
+      result = '暂无数据';
+    }
+    return result;
   },
   page: function(){
     return Session.get('reporter-page');
@@ -189,6 +239,9 @@ Template.reporter.helpers({
 });
 
 Template.reporter.events({
+  'click #closeReviewContent': function(){
+    $('.reviewPostContent').hide();
+  },
   'click .user': function(){
     $('.loginToReportSystem').toggle();
   },
@@ -400,7 +453,11 @@ Template.ReviewPostContent.helpers({
     } else {
       return Posts.findOne({_id: Session.get('review-post-id')});
     }
-  },isRecover:function(){
+  },
+  isMontior:function(){
+    return Session.get('reporterLayout') === 'montior';
+  },
+  isRecover:function(){
     return Session.get('reporterLayout') === 'recover';
   },
   isReview:function(){
