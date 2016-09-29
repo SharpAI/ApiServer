@@ -5,6 +5,7 @@
 var SlackBot = Meteor.npmRequire('slackbots');
 var os = Meteor.npmRequire("os");
 var hostname = os.hostname();
+var production = process.env.PRODUCTION;
 
 var usage = '===============================================================\n' +
     'delete [user/post] <id>   删除贴子/用户\n' +
@@ -24,14 +25,18 @@ var usage = '===============================================================\n' 
 if(Meteor.isServer){
     Meteor.startup(function(){
         var slackCommander = new Meteor.Collection('slackcommanders');
-        var slackBot = new SlackBot({
-            token: 'xoxb-76820722259-dlvZ74CLXLN60rie25DGM64w', // Add a bot https://my.slack.com/services/new/bot and put the token
-            name: 'Post Reporter'
-        });
-        if(process.env.PRODUCTION){
+        if(production){
+            var slackBot = new SlackBot({
+                token: 'xoxb-76820722259-dlvZ74CLXLN60rie25DGM64w', // Add a bot https://my.slack.com/services/new/bot and put the token
+                name: 'Post Reporter'
+            });
             slackBot.postMessageToChannel('general', 'Meteor server(web) of HotShare restarted (Production Server) '+hostname);
         } else {
-            slackBot.postMessageToChannel('general', 'Meteor server(web) of HotShare restarted (Test or Local Server) '+hostname);
+            var slackBot = new SlackBot({
+                token: 'xoxb-85358136278-3gwGbIcbaeqZu8wOjefmLWma', // Add a bot https://my.slack.com/services/new/bot and put the token
+                name: 'Post Reporter Tester'
+            });
+            slackBot.postMessageToChannel('test_server_message', 'Meteor server(web) of HotShare restarted (Test or Local Server) '+hostname);
         }
 
         // Example to show how to add slackID into commanders list
@@ -193,7 +198,11 @@ if(Meteor.isServer){
         }));
 
         postMessageToGeneralChannel=function(message, params, callback){
-          slackBot.postMessageToChannel('general', '<'+hostname+'>: '+message, params);
+            if(production){
+                slackBot.postMessageToChannel('general', '<'+hostname+'>: '+message, params);
+            } else {
+                slackBot.postMessageToChannel('test_server_message', '<'+hostname+'>: '+message, params);
+            }
           callback && callback(null, '');
 
           // slackBot.postMessageToChannel('server-repoeter', message, params, function(){
