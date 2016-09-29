@@ -24,3 +24,8 @@ globle_init = function(){
         }
     });
 };
+
+wechat_sign = function(){
+    console.log('Need continue to do the sign based on url and body content, session will not working here')
+};
+
