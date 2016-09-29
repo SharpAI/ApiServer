@@ -30,13 +30,15 @@ if(Meteor.isServer){
                 token: 'xoxb-76820722259-dlvZ74CLXLN60rie25DGM64w', // Add a bot https://my.slack.com/services/new/bot and put the token
                 name: 'Post Reporter'
             });
-            slackBot.postMessageToChannel('general', 'Meteor server(web) of HotShare restarted (Production Server) '+hostname);
+            slackBot.postMessageToChannel('general',
+                'Meteor server(web) of HotShare restarted (Production Server) '+hostname+' AutoReview: '+autoReview);
         } else {
             var slackBot = new SlackBot({
                 token: 'xoxb-85358136278-3gwGbIcbaeqZu8wOjefmLWma', // Add a bot https://my.slack.com/services/new/bot and put the token
                 name: 'Post Reporter Tester'
             });
-            slackBot.postMessageToChannel('test_server_message', 'Meteor server(web) of HotShare restarted (Test or Local Server) '+hostname);
+            slackBot.postMessageToChannel('test_server_message',
+                'Meteor server(web) of HotShare restarted (Test/Local Server) '+hostname+' AutoReview: '+autoReview);
         }
 
         // Example to show how to add slackID into commanders list
