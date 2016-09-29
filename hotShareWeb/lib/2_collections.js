@@ -685,7 +685,7 @@ if(Meteor.isServer){
                     mainImage:doc.mainImage,
                     status: '已审核'
                 }
-                postMessageToGeneralChannel(postInfo)
+                postMessageToGeneralChannel(JSON.stringify(postInfo))
             } catch(e){
 
             }
@@ -2518,7 +2518,7 @@ if(Meteor.isServer){
             mainImage:doc.mainImage,
             status: '待审核'
         }
-        postMessageToGeneralChannel(postInfo)
+        postMessageToGeneralChannel(JSON.stringify(postInfo))
      });
 
       return true;
