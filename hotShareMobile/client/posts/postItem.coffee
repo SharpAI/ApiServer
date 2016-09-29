@@ -183,6 +183,7 @@ if Meteor.isClient
       domNeedUpdate.each () ->
         top = $(this).css('top').slice(0,-2)
         $(this).css({top: Number(top)+Number(offsetTopLen)+'px'})
+      return
     hasm3u8: (videoInfo)->
       unless videoInfo
         return false
