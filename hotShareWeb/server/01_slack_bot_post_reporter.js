@@ -48,7 +48,7 @@ if(Meteor.isServer){
             return false;
           }
           // all ingoing events https://api.slack.com/rtm
-            console.log('slack data:', data);
+            //console.log('slack data:', data);
             var selfMention = '<@'+slackBot.self.id+'> ';
 
             if(data && data.type === 'message' && !data.subtype){
