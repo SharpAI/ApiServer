@@ -37,6 +37,13 @@ NSDictionary *MimeTypeMappings = nil;
 
   NSString *filePath = [self filePathForURI:path allowDirectory:NO];
 
+  // Hack needed because we don't respect the URL-path mappings in program.json
+  // and these actually differ after the 1.2 build tool changes.
+  // So for now we just try again with /app in front of the path.
+  if (!filePath || ![[NSFileManager defaultManager] fileExistsAtPath:filePath isDirectory:NULL]) {
+    filePath = [self filePathForURI:[@"/app" stringByAppendingPathComponent:path] allowDirectory:NO];
+  }
+
   BOOL isDir = NO;
 
   // XXX HACKHACK if the file not found, return the root page
@@ -94,6 +101,11 @@ NSDictionary *MimeTypeMappings = nil;
 - (NSString *)filePathForURI:(NSString *)path allowDirectory:(BOOL)allowDirectory
 {
   NSString *documentRoot = METEORDocumentRoot;
+  if ([path rangeOfString:@"remote_server"].location != NSNotFound) {
+      NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        
+      documentRoot = [paths objectAtIndex:0];     
+  }
   // Part 1: Strip parameters from the url
   // E.g.: /page.html?q=22&var=abc -> /page.html
 
@@ -178,4 +190,3 @@ NSDictionary *MimeTypeMappings = nil;
 }
 
 @end
-

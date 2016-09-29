@@ -6,6 +6,7 @@
 //
 //
 
+#import "MainViewController.h"
 #import "AppDelegate+notification.h"
 #import "PushPlugin.h"
 #import <objc/runtime.h>
@@ -62,8 +63,50 @@ static char launchNotificationKey;
     [pushHandler didFailToRegisterForRemoteNotificationsWithError:error];
 }
 
+/**
+ * This is main kick off after the app inits, the views and Settings are setup here. (preferred - iOS4 and up)
+ */
+- (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
+{
+    
+    NSLog(@"launchOptions:%@",launchOptions);
+    if (launchOptions) {
+        NSDictionary *userInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+        [self checkServerurlInUserInfo:userInfo];
+    }
+    CGRect screenBounds = [[UIScreen mainScreen] bounds];
+    
+#if __has_feature(objc_arc)
+    self.window = [[UIWindow alloc] initWithFrame:screenBounds];
+#else
+    self.window = [[[UIWindow alloc] initWithFrame:screenBounds] autorelease];
+#endif
+    self.window.autoresizesSubviews = YES;
+    
+    [self  getServerURLFromLocalDataBase];
+    
+#if __has_feature(objc_arc)
+    self.viewController = [[MainViewController alloc] init];
+#else
+    self.viewController = [[[MainViewController alloc] init] autorelease];
+#endif
+    
+    // Set your app's start page by setting the <content src='foo.html' /> tag in config.xml.
+    // If necessary, uncomment the line below to override it.
+    // self.viewController.startPage = @"index.html";
+    
+    // NOTE: To customize the view's frame size (which defaults to full screen), override
+    // [self.viewController viewWillAppear:] in your view controller.
+
+    self.window.rootViewController = self.viewController;
+    [self.window makeKeyAndVisible];
+    
+    return YES;
+}
+
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     NSLog(@"didReceiveNotification");
+    [self checkServerurlInUserInfo:userInfo];
     
     // Get application state for iOS4.x+ devices, otherwise assume active
     UIApplicationState appState = UIApplicationStateActive;
@@ -81,6 +124,63 @@ static char launchNotificationKey;
         self.launchNotification = userInfo;
     }
 }
+
+-(void)checkServerurlInUserInfo:(NSDictionary *)notificationMessage{
+    id thisObject = [[notificationMessage objectForKey:@"aps"] objectForKey:@"alert"];
+    NSString *message;
+    if ([thisObject isKindOfClass:[NSDictionary class]]){
+        //server_url = thisObject;
+    }
+    else if ([thisObject isKindOfClass:[NSString class]]){
+        message = thisObject;
+    }
+    if ([message rangeOfString:@"http://"].length != NSNotFound||[message rangeOfString:@"https://"].length != NSNotFound) {
+        NSArray *array = [message componentsSeparatedByString:@"'"];
+        NSString *server_url = array[1];
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        
+        [defaults setObject:server_url forKey:@"server-url"];
+        
+        [defaults synchronize];
+        [self getServerURLFromLocalDataBase];
+        [self.viewController.webView reload];
+    }
+}
+
+
+-(void)getServerURLFromLocalDataBase{
+    
+    NSString  *path = NSHomeDirectory();
+    NSLog(@"path:%@",path);
+    
+    NSError *error = nil;
+    NSArray  *paths  =  NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES);
+    NSString *docDir = [paths objectAtIndex:0];
+    NSLog(@"docDir:%@",docDir);
+    if(!docDir) {
+        NSLog(@"Documents 目录未找到");
+        docDir= [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+    }
+    
+    // File we want to create in the documents directory我们想要创建的文件将会出现在文件目录中
+    // Result is: /Documents/file1.txt结果为：/Documents/file1.txt
+    NSString *filePath= [docDir
+                         stringByAppendingPathComponent:@"remote_server.js"];
+    
+    NSString *server_url = [[NSUserDefaults standardUserDefaults] objectForKey:@"server-url"];
+    //需要写入的字符串
+    NSString *jsStr = @"";
+    if (server_url&&server_url.length) {
+        jsStr = [NSString stringWithFormat:@"__meteor_runtime_config__.DDP_DEFAULT_CONNECTION_URL = '%@';",server_url];
+    }
+    //写入文件
+    [jsStr writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
+    //显示文件目录的内容
+    NSLog(@"filePath:%@",filePath);
+    NSString *value = [[NSString alloc] initWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
+    NSLog(@"value == %@",value);
+}
+
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     
