@@ -3,6 +3,8 @@
  */
 
 var SlackBot = Meteor.npmRequire('slackbots');
+var os = Meteor.npmRequire("os");
+var hostname = os.hostname();
 
 if(Meteor.isServer){
     Meteor.startup(function(){
@@ -12,9 +14,9 @@ if(Meteor.isServer){
             name: 'Post Reporter'
         });
         if(process.env.PRODUCTION){
-            slackBot.postMessageToChannel('general', 'Meteor server(web) of HotShare restarted (Production Server)');
+            slackBot.postMessageToChannel('general', 'Meteor server(web) of HotShare restarted (Production Server) '+hostname);
         } else {
-            slackBot.postMessageToChannel('general', 'Meteor server(web) of HotShare restarted (Test or Local Server)');
+            slackBot.postMessageToChannel('general', 'Meteor server(web) of HotShare restarted (Test or Local Server) '+hostname);
         }
 
         // Example to show how to add slackID into commanders list
