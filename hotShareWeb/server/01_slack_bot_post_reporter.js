@@ -54,7 +54,7 @@ if(Meteor.isServer){
             if(data && data.type === 'message' && !data.subtype){
                 var message = data.text;
                 if( message.indexOf(selfMention) === 0){
-                    console.log('self mention');
+                    //console.log('self mention');
                     message = message.replace(selfMention,'');
                     var command = message.split(' ')
 
