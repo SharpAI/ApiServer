@@ -43,10 +43,10 @@ if(Meteor.isServer){
          * @param {object} data
          */
         slackBot.on('message', Meteor.bindEnvironment(function (data) {
-          // 只在测试服务器使用
-          if(process.env.PRODUCTION){
+          // 只在测试服务器使用 Are you mad ?
+          /*if(process.env.PRODUCTION){
             return false;
-          }
+          }*/
           // all ingoing events https://api.slack.com/rtm
             //console.log('slack data:', data);
             var selfMention = '<@'+slackBot.self.id+'> ';
