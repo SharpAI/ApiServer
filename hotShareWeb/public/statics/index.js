@@ -23,6 +23,12 @@ globle_init = function(){
             console.log("Logged in!");
         }
     });
+    ddp.on("ready",function(message){
+      console.log('ready: '+ JSON.stringify( message));
+    });
+    ddp.on("added", message => {
+        console.log('added: '+ JSON.stringify( message));
+    });
 };
 
 wechat_sign = function(){
