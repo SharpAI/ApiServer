@@ -242,12 +242,12 @@ if Meteor.isClient
           Meteor.call 'readPostReport',postContent._id,Meteor.userId(),true, (err, res)->
             if !err and res is true and !Session.equals('section_forward_flag', true)
               console.log 'readPostReport:', res
-              # $('.subscribeAutorPage').show()
+              $('.subscribeAutorPage').show()
         else
           Meteor.call 'readPostReport',postContent._id,Meteor.userId(),false, (err, res)->
             if !err and res is true and !Session.equals('section_forward_flag', true)
               console.log 'readPostReport:', res
-              # $('.subscribeAutorPage').show()
+              $('.subscribeAutorPage').show()
 #    $('.textDiv1Link').linkify();
     $("a[target='_blank']").click((e)->
       e.preventDefault();

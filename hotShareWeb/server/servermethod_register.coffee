@@ -244,7 +244,7 @@ if Meteor.isServer
             owner_user = Meteor.users.findOne({_id: post.owner})
             has_show_tip = owner_user && owner_user.followTips isnt false ? true : false
 
-            return_result = view_count >= 3 and !has_follower and !has_slef and has_show_tip
+            return_result = view_count%5 == 0 and !has_follower and !has_slef and has_show_tip
             console.log('show follow tip:', return_result)
             # ===========================
 

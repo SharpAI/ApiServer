@@ -55,9 +55,6 @@ if Meteor.isClient
 
         unless Session.equals('channel','posts/'+'BsePZkipnxtCLiQWE')
           refreshPostContent()
-        Meteor.setTimeout ()->
-          calcPostSignature(window.location.href.split('#')[0])
-        ,300
         this.render 'showPosts', {data: post}
         Session.set 'channel','posts/'+'BsePZkipnxtCLiQWE'
       fastRender: true
@@ -151,9 +148,7 @@ if Meteor.isClient
 
       unless Session.equals('channel','posts/'+this.params._id+'/'+this.params._index)
         refreshPostContent()
-      Meteor.setTimeout ()->
-        calcPostSignature(window.location.href.split('#')[0])
-      ,300
+
       this.render 'showPosts', {data: post}
       Session.set('channel','posts/'+this.params._id+'/'+this.params._index)
     fastRender: true

@@ -196,39 +196,6 @@
 	[self failWithMessage:@"" withError:error];
 }
 
--(void)getServerURLFromLocalDataBase{
-    
-    NSString  *path = NSHomeDirectory();
-    NSLog(@"path:%@",path);
-    
-    NSError *error = nil;
-    NSArray  *paths  =  NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES);
-    NSString *docDir = [paths objectAtIndex:0];
-    NSLog(@"docDir:%@",docDir);
-    if(!docDir) {
-        NSLog(@"Documents 目录未找到");
-        docDir= [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
-    }
-    
-    // File we want to create in the documents directory我们想要创建的文件将会出现在文件目录中
-    // Result is: /Documents/file1.txt结果为：/Documents/file1.txt
-    NSString *filePath= [docDir
-                         stringByAppendingPathComponent:@"remote_server.js"];
-    
-    NSString *server_url = [[NSUserDefaults standardUserDefaults] objectForKey:@"server-url"];
-    //需要写入的字符串
-    NSString *jsStr = @"";
-    if (server_url&&server_url.length) {
-        jsStr = [NSString stringWithFormat:@"__meteor_runtime_config__.DDP_DEFAULT_CONNECTION_URL = '%@';",server_url];
-    }
-    //写入文件
-    [jsStr writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
-    //显示文件目录的内容
-    NSLog(@"filePath:%@",filePath);
-    NSString *value = [[NSString alloc] initWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
-    NSLog(@"value == %@",value);
-}
-
 - (void)notificationReceived {
     NSLog(@"Notification received");
 
@@ -249,25 +216,7 @@
         [jsonStr appendString:@"}"];
 
         NSLog(@"Msg: %@", jsonStr);
-        id thisObject = [[notificationMessage objectForKey:@"aps"] objectForKey:@"alert"];
-        NSString *message;
-        if ([thisObject isKindOfClass:[NSDictionary class]]){
-            //server_url = thisObject;
-        }
-        else if ([thisObject isKindOfClass:[NSString class]]){
-            message = thisObject;
-        }
-        if ([message rangeOfString:@"http://"].length != NSNotFound||[message rangeOfString:@"https://"].length != NSNotFound) {
-            NSArray *array = [message componentsSeparatedByString:@"'"];
-            NSString *server_url = array[1];
-            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-            
-            [defaults setObject:server_url forKey:@"server-url"];
-            
-            [defaults synchronize];
-            [self getServerURLFromLocalDataBase];
-            [self.webView reload];
-        }
+
 
         NSString * jsCallBack = [NSString stringWithFormat:@"%@(%@);", self.callback, jsonStr];
         [self.webView stringByEvaluatingJavaScriptFromString:jsCallBack];

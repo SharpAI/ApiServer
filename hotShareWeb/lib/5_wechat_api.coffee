@@ -1,5 +1,12 @@
 if Meteor.isClient
   Meteor.startup ()->
+    saved_channel = ''
+    Deps.autorun ()->
+      unless Session.equals('channel',saved_channel)
+        saved_channel = Session.get('channel')
+        Meteor.setTimeout ()->
+          calcPostSignature(window.location.href.split('#')[0])
+        ,300
     loadScript =  (url, callback)->
       jQuery.ajax({
           url: url,

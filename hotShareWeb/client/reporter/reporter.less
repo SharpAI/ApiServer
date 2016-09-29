@@ -115,34 +115,39 @@
 
 // review post content 
 .reviewPostContent{
-  position: relative;
-  padding: 16px;
-  width: 600px;
-  top: 100px;
-  height: 80%;
+  position: fixed;
+  padding: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
   margin:  0 auto !important;
   display: none;
   background: #fff;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  // border-radius: 4px;
   box-shadow: 1px 3px 13px #ccc;
   z-index: 9;
   overflow-y: auto;
   img{border: 1px solid #5f5e5e;}
-  div{margin: 10px 0;}
+  // div{margin: 10px 0;}
   .review-content{
-    margin: 16px;
+    width: 600px;
+    margin: 16px auto;
     top: 0;
     left: 0;
     right: 0;
     margin-bottom: 80px;
+    overflow-y: auto;
   }
   .review-footer{
+    position: fixed;
     height: 64px;
     line-height: 64px;
     left: 0;
     right: 0;
     bottom: 0;
+    background: #f0f0f0;
     border-top: 1px solid #5f5e5e;
     text-align: center;
   }
@@ -155,8 +160,8 @@
     .rp-only-pc{display: none;}
     .user{width: 60px!important; margin-left: 16px !important;}
     .loginToReportSystem{left:32px!important;top:100px!important;}
-    .reviewPostContent{ width: 300px!important;}
-    .reviewPostContent img{ width: 240px !important;} 
+    .review-content{ width: 300px!important;}
+    // .reviewPostContent img{ width: 240px !important;} 
     .rp-header ul li{padding: 0 16px !important;}
     .rp-user-mobile{display: block;}
   }
