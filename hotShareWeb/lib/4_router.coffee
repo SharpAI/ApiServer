@@ -53,10 +53,10 @@ if Meteor.isClient
         favicon.href = post.mainImage
         document.head.appendChild(favicon)
 
-        unless Session.equals('channel','posts/'+'BsePZkipnxtCLiQWE')
+        unless Session.equals('channel','posts/'+this.params._id)
           refreshPostContent()
         this.render 'showPosts', {data: post}
-        Session.set 'channel','posts/'+'BsePZkipnxtCLiQWE'
+        Session.set 'channel','posts/'+this.params._id
       fastRender: true
     }
   Router.route '/view_posts/:_id', {
@@ -93,10 +93,10 @@ if Meteor.isClient
         favicon.href = post.mainImage
         document.head.appendChild(favicon)
 
-        unless Session.equals('channel','posts/'+'BsePZkipnxtCLiQWE')
+        unless Session.equals('channel','posts/'+this.params._id)
           refreshPostContent()
         this.render 'showPosts', {data: post}
-        Session.set 'channel','posts/'+'BsePZkipnxtCLiQWE'
+        Session.set 'channel','posts/'+this.params._id
       fastRender: true
     }
   Router.route '/posts/:_id/:_index', {
