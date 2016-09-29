@@ -1,0 +1,43 @@
+<template name="bell_pcomments">
+  <div class="bell">
+    <div class="bellAlertBackground"></div>
+    <div class="head">
+        <strong>{{_ "newInfo"}}</strong>
+      <div id="back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+    </div>
+    <div class="content">
+      {{#each eventFeeds}}
+        <a href="/posts/{{postId}}" class="contentList">
+            {{#if notRead isRead checked @index createdAt}}
+            <div class="readTips"></div>
+            {{/if}}
+            <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+            {{#if isAlsoComment eventType}}
+            <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "alsoCommentThisStory"}} 《{{postTitle}}》</div>
+            {{/if}}
+            {{#if isAlsoFavourite eventType}}
+            <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "alsoFavouriteThisStory"}} 《{{postTitle}}》</div>
+            {{/if}}
+            {{#if isPcommentOwner eventType}}
+            <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "commentYourStory"}} 《{{postTitle}}》</div>
+            {{/if}}
+            {{#if isReComment eventType}}
+            <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "replyStoryYouJoin"}} 《{{postTitle}}》</div>
+            {{/if}}
+            {{#if isComment eventType}}
+            <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "replyYourStory"}} 《{{postTitle}}》</div>
+            {{/if}}
+            <div class="createAt">{{time_diff createdAt}}</div>
+        </a>
+        <div class="line">
+            <span></span>
+        </div>
+      {{/each}}
+    </div>
+    {{#if moreResults}}
+      <div id="showMoreFeedsResults" style="margin-left: 25px;">
+        <span class="loading">{{_ "loading"}}</span>
+      </div>
+      {{/if}}
+  </div>
+</template>
