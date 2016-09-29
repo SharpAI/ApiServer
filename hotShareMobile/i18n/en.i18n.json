@@ -235,6 +235,11 @@
   "language": "Language",
   "English": "English",
   "Chinese": "中文",
+
+  "version":"New version testing ",
+  "latestversion":"Latest version ",
+  "Newversion":"A new version",
+
   "about": "About",
   "aboutTitle": "About hotShare",
   "ver": "Ver.",

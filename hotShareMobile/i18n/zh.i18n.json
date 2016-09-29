@@ -237,6 +237,11 @@
   "language": "语言",
   "English": "English",
   "Chinese": "中文",
+  
+  "version":"新版本检测",
+  "latestversion":"当前已是最新版本",
+  "Newversion":"有新版本",
+
   "about": "关于故事贴",
   "aboutTitle": "关于 故事贴",
   "ver": "版本",
