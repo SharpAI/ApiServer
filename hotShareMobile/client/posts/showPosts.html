@@ -61,6 +61,15 @@
         {{#if showImporting}}
           <div class="importing">故事贴中的图片正在处理中，完成后此消息会消失...</div>
         {{/if}}
+        
+        {{#if has_msgs msgs_count}}
+        <div class="show-post-new-message">
+          <div class="msg-box">
+            <div class="icon"><img src="/userPicture.png" /></div>
+            <div class="tips">{{msgs_count}}条新消息</div>
+          </div>
+        </div>
+        {{/if}}
 
         <div id="wrapper">
           <div class="mainImage" id="{{_id}}" style="height:{{getMainImageHeight}}px;">

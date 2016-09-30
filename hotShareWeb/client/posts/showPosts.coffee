@@ -78,22 +78,11 @@ if Meteor.isClient
     Session.set("postPageScrollTop", 0)
     Session.set("showSuggestPosts",false)
     $('.tool-container').remove()
-    $('#postbody').remove()
     
   Session.setDefault('hottestPosts', [])
   Template.showPosts.onRendered ->
     postId = this.data._id
     ownerId = this.data.ownerId
-    setTimeout ()->
-      gushitie.showpost.initLayout()
-      gushitie.showpost.init()
-    ,300
-    setTimeout ()->
-      $('.element').css('visibility','visible')
-      gushitie.showpost.initLazyload()
-      gushitie.showpost.init()
-    ,500
-    Meteor.subscribe 'usersById', Session.get('postContent').owner
     # showFollowTips = ()->
     #   owner = Meteor.users.findOne({_id: ownerId}) 
       
@@ -376,11 +365,6 @@ if Meteor.isClient
     withSectionMenu: withSectionMenu
     withSectionShare: withSectionShare
     withPostTTS: withPostTTS
-    showPostsHtml: ()->
-      if Session.get('staticPostHtml')
-        return Session.get('staticPostHtml')
-      else 
-        return $('#postbody').html()
     authorInfo: ()->
       user = Meteor.users.findOne({_id: @owner})
       authorName = if user.profile.fullname then user.profile.fullname else user.username
@@ -613,9 +597,11 @@ if Meteor.isClient
         toastr.success('将在微信分享时引用本段内容', '您选定了本段文字')
         console.log('Selected index '+self.index)
         Session.set('section_forward_flag', true)
-        # Router.go('post_index', {_id: Session.get('postContent')._id, _index: self.index})
-        location.pathname = '/posts/'+ postId + '/' + self.index
+        Router.go('post_index', {_id: Session.get('postContent')._id, _index: self.index})
+        #Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
   Template.showPosts.events
+    'click .show-post-new-message': ->
+      Router.go('/posts_msg/' + Session.get("postContent")._id)
     'click .authorReadPopularPostItem': (e)->
       postId = e.currentTarget.id
       if postId is undefined
@@ -627,8 +613,7 @@ if Meteor.isClient
       Session.set("postBack",postBack)
       Session.set("lastPost",postId)
       Session.set('postContentTwo', postId)
-      #Router.go '/posts/' + postId
-      location.pathname = '/posts/'+postId
+      Router.go '/posts/' + postId
     # 'click .shareTheReadingRoom .btnYes': ()->
     #   $('.shareTheReadingRoom,.shareAlertBackground').hide()
     #   Router.go '/hotPosts/' + Session.get('postContent')._id
@@ -656,8 +641,6 @@ if Meteor.isClient
     'click .readmore': (e, t)->
       # if e.target is e.currentTarget
       $showPosts = $('.showPosts')
-      gushitie.showpost.init()
-      gushitie.showpost.initLazyload()
       $('.showPosts').get(0).style.overflow = ''
       $('.showPosts').get(0).style.maxHeight = ''
       $('.showPosts').get(0).style.position = ''
@@ -708,7 +691,6 @@ if Meteor.isClient
         toolbar = $self.data('toolbarObj')
         unless toolbar
           self = this
-          self.index = parseInt($self.attr('index'))
           $self.toolbar
             content: '.section-toolbar'
             position: 'bottom'
@@ -1149,7 +1131,6 @@ if Meteor.isClient
         #$('.showBgColor').removeAttr('style')
         $(window).scrollTop(0-Session.get('backgroundTop'))
         $('.pcommentsList,.alertBackground').fadeOut 300
-        gushitie.showpost.initLayout()
         false
 
 

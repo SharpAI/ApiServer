@@ -1,0 +1,4 @@
+npm install ddp.js
+browserify main.js > bundle.js
+
+cp bundle to HotShareWeb/public/static/lib

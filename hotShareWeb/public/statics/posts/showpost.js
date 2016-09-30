@@ -172,24 +172,33 @@
             });
         });
     };
-    gushitie.showpost.initLazyload = function() {
-      initLazyload();
-    };
-    gushitie.showpost.initLayout = function() {
-      $("#wrapper .mainImage").css("height", ($(window).height() * 0.55) + "px");
-      $('.textDiv1Link').linkify();
 
-      calcLayoutForEachPubElement();
-    };
     gushitie.showpost.init = function () {
-        Session.set("postForward",[]);
-        Session.set("postBack",[]);
-        // $("#wrapper .mainImage").css("height", ($(window).height() * 0.55) + "px");
-        // $('.textDiv1Link').linkify();
+        $("#wrapper .mainImage").css("height", ($(window).height() * 0.55) + "px");
+        $('.textDiv1Link').linkify();
 
-        // calcLayoutForEachPubElement();
+        calcLayoutForEachPubElement();
 
-        // initLazyload();
+        var $showPosts, $test;
+        $showPosts = $('.showPosts');
+        $test = $('.showPosts').find('.content .gridster #test');
+        if ($test.height() > 1000) {
+            $('.showPosts').get(0).style.overflow = 'hidden';
+            $('.showPosts').get(0).style.maxHeight = '1500px';
+            $('.showPosts').get(0).style.position = 'relative';
+
+            $showPosts.after('<div class="readmore"><div class="readMoreContent"><i class="fa fa-plus-circle"></i>继续阅读</div></div>');
+        }
+
+        initLazyload();
+
+        $('.showPostsBox .readmore').click(function (e) {
+            e.stopPropagation();
+            $('.showPosts').get(0).style.overflow = '';
+            $('.showPosts').get(0).style.maxHeight = '';
+            $('.showPosts').get(0).style.position = '';
+            $('.readmore').remove();
+        });
 
         // register window scroll callback
         function toggleHeaderNav(show) {
@@ -230,7 +239,7 @@
 
             // reach bottom
             if ((st + $(window).height()) === getDocHeight()) {
-                //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
+                fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
             }            
             //if ((st + $(window).height()) === getDocHeight()) {
             if ((getDocHeight() - (st + $(window).height())) < 150) {
@@ -284,371 +293,6 @@
             }
         });
 
-
-        var isRemoveParentColor = function(target, parent, isLike) {
-          if(parseInt($(target).text()) > 0) {
-            return false;
-          }
-          if($(parent).siblings('.pcomment').length > 0) {
-            return false;
-          }
-          if(isLike && parseInt($(target.nextElementSibling).text()) > 0) {
-            return false;
-          }
-          
-          if(!isLike && parseInt($(target.previousElementSibling).text()) > 0) {
-            return false;
-          }
-          return true;
-        };
-        // register for click thumb event
-        $(".thumbsUp").click(function(e) {
-            var self = this;
-            if (e.target.className === "fa fa-thumbs-up thumbsUp") {
-              e.target.className = "fa fa-thumbs-o-up thumbsUp";
-              $(self).text($(self).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
-              if(isRemoveParentColor(self, e.target.parentNode.parentElement, true)) e.target.parentNode.parentElement.style.color = "rgb(0,0,0)";
-            } else {
-              e.target.className = "fa fa-thumbs-up thumbsUp";
-              e.target.parentNode.parentElement.style.color = "rgb(243,11,68)";
-              $(self).text($(self).text().replace(/\d/g, function(m) {return parseInt(m) +1;}));
-
-              if (e.target.nextElementSibling.className === "fa fa-thumbs-down thumbsDown") {
-                $(self.nextElementSibling).text($(self.nextElementSibling).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
-                e.target.nextElementSibling.className = "fa fa-thumbs-o-down thumbsDown";
-              }
-            }
-
-            Meteor.defer(function() {
-              var dislikeSum, dislikeUserId, favp, i, likeSum, likeUserId, pclength, post, postId, userId;
-              i = $(self).data('index');
-              postId = Session.get("postContent")._id;
-              post = Session.get("postContent").pub;
-              userId = Meteor.userId();
-              if ((favp = FavouritePosts.findOne({
-                postId: postId,
-                userId: userId
-              }))) {
-                FavouritePosts.update({
-                  _id: favp._id
-                }, {
-                  $set: {
-                    updateAt: new Date()
-                  }
-                });
-              } else {
-                FavouritePosts.insert({
-                  postId: postId,
-                  userId: userId,
-                  createdAt: new Date(),
-                  updateAt: new Date()
-                });
-              }
-
-              if (!post[i].likeUserId) {
-                likeUserId = {};
-                post[i].likeUserId = likeUserId;
-              }
-              if (!post[i].likeSum) {
-                likeSum = 0;
-                post[i].likeSum = likeSum;
-              }
-              if (!post[i].dislikeUserId) {
-                dislikeUserId = {};
-                post[i].dislikeUserId = dislikeUserId;
-              }
-              if (!post[i].dislikeSum) {
-                dislikeSum = 0;
-                post[i].dislikeSum = dislikeSum;
-              }
-              if (post[i].likeUserId.hasOwnProperty(userId) !== true) {
-                post[i].likeUserId[Meteor.userId()] = false;
-              }
-              if (post[i].dislikeUserId.hasOwnProperty(userId) !== true) {
-                post[i].dislikeUserId[userId] = false;
-              }
-              if (post[i].likeUserId[userId] !== true && post[i].dislikeUserId[userId] !== true) {
-                post[i].likeSum += 1;
-                post[i].likeUserId[userId] = true;
-                pclength = 0;
-                if (post[i].pcomments) {
-                  pclength = post[i].pcomments.length;
-                }
-                if (post[i].dislikeSum + post[i].likeSum + pclength === 0) {
-                  if (post[i].style && post[i].style.length > 100) {
-                    post[i].style = post[i].style.replace("#F30B44", "grey");
-                  } else {
-                    post[i].style = "";
-                  }
-                }
-                return Posts.update({
-                  _id: postId
-                }, {
-                  "$set": {
-                    "pub": post,
-                    "ptype": "like",
-                    "pindex": i
-                  }
-                }, function(error, result) {
-                  triggerToolbarShowOnThumb($(e.target));
-                  if (error) {
-                    return console.log(error.reason);
-                  } else {
-                    return console.log("success");
-                  }
-                });
-              } else if (post[i].dislikeUserId[userId] === true && post[i].likeUserId[userId] !== true) {
-                post[i].likeSum += 1;
-                post[i].likeUserId[userId] = true;
-                post[i].dislikeSum -= 1;
-                post[i].dislikeUserId[Meteor.userId()] = false;
-                pclength = 0;
-                if (post[i].pcomments) {
-                  pclength = post[i].pcomments.length;
-                }
-                if (post[i].dislikeSum + post[i].likeSum + pclength === 0) {
-                  if (post[i].style && post[i].style.length > 100) {
-                    post[i].style = post[i].style.replace("#F30B44", "grey");
-                  } else {
-                    post[i].style = "";
-                  }
-                }
-                return Posts.update({
-                  _id: postId
-                }, {
-                  "$set": {
-                    "pub": post,
-                    "ptype": "like",
-                    "pindex": i
-                  }
-                }, function(error, result) {
-                  triggerToolbarShowOnThumb($(e.target));
-                  if (error) {
-                    return console.log(error.reason);
-                  } else {
-                    return console.log("success");
-                  }
-                });
-              } else if (post[i].likeUserId[userId] === true && post[i].dislikeUserId[userId] !== true) {
-                post[i].likeSum -= 1;
-                post[i].likeUserId[userId] = false;
-                pclength = 0;
-                if (post[i].pcomments) {
-                  pclength = post[i].pcomments.length;
-                }
-                if (post[i].dislikeSum + post[i].likeSum + pclength === 0) {
-                  if (post[i].style && post[i].style.length > 100) {
-                    post[i].style = post[i].style.replace("#F30B44", "grey");
-                  } else {
-                    post[i].style = "";
-                  }
-                }
-                return Posts.update({
-                  _id: postId
-                }, {
-                  "$set": {
-                    "pub": post,
-                    "ptype": "like",
-                    "pindex": i
-                  }
-                }, function(error, result) {
-                  triggerToolbarShowOnThumb($(e.target));
-                  if (error) {
-                    return console.log(error.reason);
-                  } else {
-                    return console.log("success");
-                  }
-                });
-              } else {
-                triggerToolbarShowOnThumb($(e.target));
-              }
-            });            
-        });
-        $(".thumbsDown").click(function(e) {
-            var self = this;
-            if (e.target.className === "fa fa-thumbs-down thumbsDown") {
-              e.target.className = "fa fa-thumbs-o-down thumbsDown";
-              $(self).text($(self).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
-              if(isRemoveParentColor(self, e.target.parentNode.parentElement, false))  e.target.parentNode.parentElement.style.color = "rgb(0,0,0)";
-            } else {
-              e.target.className = "fa fa-thumbs-down thumbsDown";
-              e.target.parentNode.parentElement.style.color = "rgb(243,11,68)";
-              $(self).text($(self).text().replace(/\d/g, function(m) {return parseInt(m) +1;}));
-              if (e.target.previousElementSibling.className === "fa fa-thumbs-up thumbsUp") {
-                $(self.previousElementSibling).text($(self.previousElementSibling).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
-                e.target.previousElementSibling.className = "fa fa-thumbs-o-up thumbsUp";
-              }
-            }
-            Meteor.defer(function() {
-              var dislikeSum, dislikeUserId, i, likeSum, likeUserId, pclength, post, postId, userId;
-              i = $(self).data('index');
-              postId = Session.get("postContent")._id;
-              post = Session.get("postContent").pub;
-              userId = Meteor.userId();
-              if (!post[i].likeUserId) {
-                likeUserId = {};
-                post[i].likeUserId = likeUserId;
-              }
-              if (!post[i].likeSum) {
-                likeSum = 0;
-                post[i].likeSum = likeSum;
-              }
-              if (!post[i].dislikeUserId) {
-                dislikeUserId = {};
-                post[i].dislikeUserId = dislikeUserId;
-              }
-              if (!post[i].dislikeSum) {
-                dislikeSum = 0;
-                post[i].dislikeSum = dislikeSum;
-              }
-              if (post[i].likeUserId.hasOwnProperty(userId) !== true) {
-                post[i].likeUserId[Meteor.userId()] = false;
-              }
-              if (post[i].dislikeUserId.hasOwnProperty(userId) !== true) {
-                post[i].dislikeUserId[userId] = false;
-              }
-              if (post[i].likeUserId[userId] !== true && post[i].dislikeUserId[userId] !== true) {
-                post[i].dislikeSum += 1;
-                post[i].dislikeUserId[userId] = true;
-                pclength = 0;
-                if (post[i].pcomments) {
-                  pclength = post[i].pcomments.length;
-                }
-                if (post[i].dislikeSum + post[i].likeSum + pclength === 0) {
-                  if (post[i].style && post[i].style.length > 100) {
-                    post[i].style = post[i].style.replace("#F30B44", "grey");
-                  } else {
-                    post[i].style = "";
-                  }
-                }
-                return Posts.update({
-                  _id: postId
-                }, {
-                  "$set": {
-                    "pub": post,
-                    "ptype": "dislike",
-                    "pindex": i
-                  }
-                }, function(error, result) {
-                  triggerToolbarShowOnThumb($(e.target));
-                  if (error) {
-                    return console.log(error.reason);
-                  } else {
-                    return console.log("success");
-                  }
-                });
-              } else if (post[i].dislikeUserId[userId] !== true && post[i].likeUserId[userId] === true) {
-                post[i].dislikeSum += 1;
-                post[i].dislikeUserId[userId] = true;
-                post[i].likeSum -= 1;
-                post[i].likeUserId[Meteor.userId()] = false;
-                pclength = 0;
-                if (post[i].pcomments) {
-                  pclength = post[i].pcomments.length;
-                }
-                if (post[i].dislikeSum + post[i].likeSum + pclength === 0) {
-                  if (post[i].style && post[i].style.length > 100) {
-                    post[i].style = post[i].style.replace("#F30B44", "grey");
-                  } else {
-                    post[i].style = "";
-                  }
-                }
-                return Posts.update({
-                  _id: postId
-                }, {
-                  "$set": {
-                    "pub": post,
-                    "ptype": "dislike",
-                    "pindex": i
-                  }
-                }, function(error, result) {
-                  triggerToolbarShowOnThumb($(e.target));
-                  if (error) {
-                    return console.log(error.reason);
-                  } else {
-                    return console.log("success");
-                  }
-                });
-              } else if (post[i].likeUserId[userId] !== true && post[i].dislikeUserId[userId] === true) {
-                post[i].dislikeSum -= 1;
-                post[i].dislikeUserId[userId] = false;
-                pclength = 0;
-                if (post[i].pcomments) {
-                  pclength = post[i].pcomments.length;
-                }
-                if (post[i].dislikeSum + post[i].likeSum + pclength === 0) {
-                  if (post[i].style && post[i].style.length > 100) {
-                    post[i].style = post[i].style.replace("#F30B44", "grey");
-                  } else {
-                    post[i].style = "";
-                  }
-                }
-                return Posts.update({
-                  _id: postId
-                }, {
-                  "$set": {
-                    "pub": post,
-                    "ptype": "dislike",
-                    "pindex": i
-                  }
-                }, function(error, result) {
-                  triggerToolbarShowOnThumb($(e.target));
-                  if (error) {
-                    return console.log(error.reason);
-                  } else {
-                    return console.log("success");
-                  }
-                });
-              } else {
-                triggerToolbarShowOnThumb($(e.target));
-              }
-            });
-        });
-
-        $(".pcomments").click(function(e) {
-            var self = this;
-            var backgroundTop, bgheight;
-            $(e.currentTarget).parent().parent().parent().addClass('post-pcomment-current-pub-item').attr({
-              'data-height': $(e.currentTarget).parent().parent().parent().height()
-            });
-            bgheight = $(window).height() + $(window).scrollTop();
-            $('.showBgColor').attr('style', 'overflow:hidden;min-width:' + $(window).width() + 'px;' + 'height:' + bgheight + 'px;');
-            Session.set("pcommetsId", "");
-            backgroundTop = 0 - $(window).scrollTop();
-            Session.set('backgroundTop', backgroundTop);
-            $('.pcommentInput,.alertBackground').fadeIn(300, function() {
-              return $('#pcommitReport').focus();
-            });
-            $('#pcommitReport').focus();
-            return Session.set("pcommentIndexNum", $(self).data('index'));            
-        });
-        $("#test .postTextItem").each(function() {
-          var self = this;
-          var index = $(self).attr('index');
-          var item = Session.get("postContent").pub[index];
-          if(item) {
-            if(item.likeSum > 0 || item.dislikeSum > 0) {
-              $(self).find(".textDiv1:eq(0)").get(0).style.color = "#F30B44";
-            } else {
-              $(self).find(".textDiv1:eq(0)").get(0).style.color = "#000000";
-            }
-          }
-        });
-        $("#test .inlineScoring").each(function() {
-          var self = this;
-          var index = $(self).data('index');
-          var item = Session.get("postContent").pub[index];
-          
-          if (item && item.likeUserId && item.likeUserId[Meteor.userId()]) {
-            $(self).find("i:eq(0)").get(0).className = "fa fa-thumbs-up thumbsUp";
-          } 
-
-          if (item && item.dislikeUserId && item.dislikeUserId[Meteor.userId()]) {
-            $(self).find("i:eq(1)").get(0).className = "fa fa-thumbs-down thumbsDown";
-          }          
-        });
-
-        /*
         $(".chatBtn").click(function() {
             var chat_server_url = 'testchat.tiegushi.com';
             var postId = window.location.pathname.split('/static/')[1];
@@ -658,7 +302,7 @@
             if (userId) url += '/userid/' + userId;
             window.open(url,'_blank')
         });
-        */
-        //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
+
+        fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
     };
 })(window);

@@ -1969,12 +1969,6 @@ if(Meteor.isServer){
     else
       return SavedDrafts.find({owner: this.userId},{sort: {createdAt: -1}});
   });
-  Meteor.publish("loginFeeds", function() {
-    if(this.userId === null)
-      return this.ready();
-    else
-      return Feeds.find({followby: this.userId}, {sort: {createdAt: -1}, limit:50});
-  });
   Meteor.publish("feeds", function(limit) {
     if(this.userId === null || !Match.test(limit, Number))
       return this.ready();
@@ -2670,7 +2664,6 @@ if(Meteor.isServer){
           modifier.$set["pub"][modifier.$set["pindex"]] = pub;
         }
 
-          Meteor.call('refreshCDNObjectCaches', doc._id);
           updateServerSidePcommentsHookDeferHandle(userId,doc,modifier.$set["ptype"],modifier.$set["pindex"]);
           return true;
       }
@@ -2685,8 +2678,6 @@ if(Meteor.isServer){
       }
 
       if(doc.owner === userId){
-        // 静态页面需要刷新阿里CDN缓存
-        Meteor.call('refreshCDNObjectCaches', doc._id);
         postsUpdateHookDeferHandle(userId,doc,fieldNames, modifier);
         return true;
       }
@@ -3437,68 +3428,6 @@ if(Meteor.isClient){
                 Session.set('favouritepostsCollection3_getmore','done');
             }
         });
-    }
-  });
-
-
-  //   静态页面点评，点赞数据同步
-  Tracker.autorun(function () {
-      var pcommentsHTML;
-      if (Session.get('postContent')) {
-          Meteor.subscribe('publicPosts', Session.get('postContent')._id);
-            Posts.find({ _id: Session.get('postContent')._id }).observe({
-                changed: function (newDoc, oldDoc) {
-                    console.log('===type is ===' + newDoc.ptype);
-                    console.log('===pindex is ===' + newDoc.pindex);
-                    try{
-                        if (newDoc.ptype === 'like' || newDoc.ptype === 'dislike') {
-                            $('#' + newDoc.pub[newDoc.pindex]._id + ' .thumbsUp').html(newDoc.pub[newDoc.pindex].likeSum + '&nbsp;&nbsp;');
-                            $('#' + newDoc.pub[newDoc.pindex]._id+ ' .thumbsDown').html(newDoc.pub[newDoc.pindex].dislikeSum + '&nbsp;&nbsp;');
-                            if(newDoc.pub[newDoc.pindex].likeSum === 0 && newDoc.pub[newDoc.pindex].dislikeSum === 0){
-                                $('#' + newDoc.pub[newDoc.pindex]._id + ' .textDiv1').css('color','#000000');
-                            } else {
-                                $('#' + newDoc.pub[newDoc.pindex]._id + ' .textDiv1').css('color','#F30B44');
-                            }
-                        }
-                        if (newDoc.ptype === 'pcomments') {
-                            pcommentsHTML = '<div class="pcomment">';
-                            newDoc.pub[newDoc.pindex].pcomments.forEach(function (pcomment) {
-                                pcommentsHTML += '<div class="eachComment">\
-                                                  <div class="bubble"><span class="personName">'+ pcomment.username +
-                                                 '</span>：<span class="personSay">' + pcomment.content + '</span></div>\
-                                                  </div>';
-                            });
-                            pcommentsHTML += '</div>';
-                            $('#' + newDoc.pub[newDoc.pindex]._id + ' .pcomment').remove();
-                            $('#' + newDoc.pub[newDoc.pindex]._id + ' .textDiv1').after(pcommentsHTML);
-                            gushitie.showpost.initLayout();
-                        } 
-                    } catch (error) {}
-                }
-            });
-      }
-  });
-
-  //  点评段落标注
-  Tracker.autorun(function() {
-    var scrolltop;
-    if (Session.get("needToast") === true) {
-        Session.set("needToast", false);
-        // scrolltop = 0;
-        return Meteor.setTimeout(function() {
-            var userName;
-            $('.showPosts').get(0).style.overflow = '';
-            $('.showPosts').get(0).style.maxHeight = '';
-            $('.showPosts').get(0).style.position = '';
-            $('.readmore').remove();
-            // if ($('.dCurrent').length) {
-            //     scrolltop = $('.dCurrent').offset().top;
-            //     Session.set("postPageScrollTop", scrolltop);
-                document.body.scrollTop = Session.get("pcommentsTopAt");
-            // }
-            userName = Session.get("pcommentsName");
-            return toastr.info(userName + "点评过的段落已为您用蓝色标注！");
-        }, 1000);
     }
   });
 }

@@ -6,7 +6,6 @@ if Meteor.isClient
       else
         false
     Template.discover.rendered=->
-      Meteor.subscribe "pcomments"
       if withDiscover
         spanOuterWidth = $(".discover .discover-top .discover-con span").outerWidth() || 0
         $(".discover .discover-top .discover-con").css({'width': (spanOuterWidth + 40) + 'px'});
@@ -111,8 +110,7 @@ if Meteor.isClient
         Session.set("postBack",postBack)
         Meteor.setTimeout ()->
           Session.set("lastPost",postId)
-          #Router.go '/posts/'+postId
-          location.pathname = '/posts/'+postId
+          Router.go '/posts/'+postId
         ,300
       'click .masonry_element':(e)->
         Session.set("historyForwardDisplay", false)
@@ -128,8 +126,7 @@ if Meteor.isClient
         Session.set("postBack",postBack)
         Meteor.setTimeout ()->
           Session.set("lastPost",postId)
-          #Router.go '/posts/'+postId
-          location.pathname = '/posts/'+postId
+          Router.go '/posts/'+postId
         ,300
     Template.lpcomments.helpers
       isCommentShare:->
@@ -179,34 +176,10 @@ if Meteor.isClient
           Session.set("postBack",postBack)
           Meteor.setTimeout ()->
             Session.set("lastPost",postId)
-            #Router.go '/posts/'+postId
-            location.pathname = '/posts/'+postId
+            Router.go '/posts/'+postId
           ,300
         else
-          # 设置段落蓝色标识
-          scolor="#F30B44"
-          pclength = 0
-          userId = this.owner
-          pub = Session.get('postContent').pub
-          self = pub[this.pindex]
-          if self.pcomments
-            pclength = self.pcomments.length
-          if userId and userId isnt ""
-            if self.likeUserId and self.likeUserId[userId] is true
-              scolor="#304EF5"
-            if scolor is "#F30B44" and self.dislikeUserId and self.dislikeUserId[userId] is true
-              scolor="#304EF5"
-            if scolor is "#F30B44" and pclength>0
-              for icomment in self.pcomments
-                if icomment["userId"] is userId
-                  scolor="#304EF5"
-                  break
-          $('.textDiv1').css('color',"#F30B44")
-          Session.set('pcommentsTopAt',parseInt($('#'+self._id).css('top')))
-          $('#'+self._id+' .textDiv1').css('color',scolor)
-          Session.set("toasted",true)
-          Session.set("needToast",true)
-          
+          document.body.scrollTop = 0
     Template.recommends.helpers
       recommends: ()->
         Meteor.subscribe('list_recommends', Session.get("postContent")._id);
@@ -237,7 +210,6 @@ if Meteor.isClient
         Meteor.setTimeout ()->
           Session.set("Social.LevelOne.Menu",'contactsList')
           Session.set("needBindScroll", true)
-          # Router.go '/posts/'+postId
-          location.pathname = '/posts/'+postId
+          Router.go '/posts/'+postId
         ,300
         # Router.go '/posts/' + postId

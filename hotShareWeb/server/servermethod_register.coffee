@@ -662,33 +662,3 @@ if Meteor.isServer
           catch ex
             console.log(ex)
         return
-
-      'refreshCDNObjectCaches': (postId,ptype)->
-        # if !(['pcomments', 'like', 'dislike'].indexOf(ptype) > -1)
-        #   return 
-        # if !Match.test(postId, String) or !Match.test(aliyun_access_key_id, String) or !Match.test(aliyun_access_key_secret, String) 
-        #   return
-        this.unblock()
-        cdn = new aliyun.CDN({
-            accessKeyId: 'Vh0snNA4Orv3emBj',
-            secretAccessKey: 'd7p2eNO8GuMl1GtIZ0at4wPDyED4Nz',
-            endpoint: 'https://cdn.aliyuncs.com',
-            apiVersion: '2014-11-11'
-          }
-        );
-
-        cdnObjectPath = 'http://cdn.tiegushi.com/posts/' + postId;
-        cdcdnObjectPath = 'http://cdcdn.tiegushi.com/posts/' + postId;
-        cdn.refreshObjectCaches({
-          ObjectType: 'File',
-          ObjectPath: cdcdnObjectPath
-        }, (err, res)-> 
-          console.log(err, res);
-        );
-        cdn.refreshObjectCaches({
-          ObjectType: 'File',
-          ObjectPath: cdnObjectPath
-        }, (err, res)-> 
-          console.log(err, res);
-        );
-        return true
