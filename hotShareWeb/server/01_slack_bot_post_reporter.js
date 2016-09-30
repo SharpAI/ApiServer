@@ -200,28 +200,10 @@ if(Meteor.isServer){
         }));
 
         postMessageToGeneralChannel=function(message, params, callback){
-            try{
-                if(production){
-                    slackBot.postMessageToChannel('general', '<'+hostname+'>: '+message, params,function(result){
-                        if(result && result.ok){
-                            console.log('Send Success of message')
-                        } else {
-                            console.log('Send Failed of message: '+result)
-                        }
-                    });
-                } else {
-                    slackBot.postMessageToChannel('test_server_message', '<'+hostname+'>: '+message, params,function(result){
-                        if(result && result.ok){
-                            console.log('Send Success of message')
-                        } else {
-                            console.log('Send Failed of message: '+result)
-                        }
-                    });
-                }
-                console.log('Sending message: '+message)
-            } catch (e){
-                console.log('Send message exception: '+e);
-                console.log(message)
+            if(production){
+                slackBot.postMessageToChannel('general', '<'+hostname+'>: '+message, params);
+            } else {
+                slackBot.postMessageToChannel('test_server_message', '<'+hostname+'>: '+message, params);
             }
           callback && callback(null, '');
 

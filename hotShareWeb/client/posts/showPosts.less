@@ -15,6 +15,7 @@
       color: gray !important;
     }
   }
+  .element{visibility:hidden;}
 }
 
 .showPosts .head .dropdown{position:absolute; right: 0px; top:0px; cursor:pointer;text-align:right;}
@@ -775,13 +776,14 @@
 }
 
 .show-post-new-message{
-  padding: 4px 0px;
+  padding: 4px 0px; position: absolute; top: 500px; left: 50%; margin-left: -90px; z-index: 999;
   .msg-box{
-    width: 150px; height: 48px; margin: 0px auto; background-color: #333; color: #fff; border-radius: 3px; padding: 5px; box-sizing: border-box;
+    width: 180px; height: 48px; margin: 0px auto; background-color: #333; color: #fff; border-radius: 3px; padding: 5px; box-sizing: border-box; position: relative;
     .icon{
       width: 38px; height: 38px; float: left;
       img{width: 100%; height: 100%;}
     }
-    .tips{ width: 98px; height: 38px; line-height: 38px; float: left; text-align: center;}
+    .tips{ width: 110px; height: 38px; line-height: 38px; float: left; text-align: center;}
+    .count{width: 26px; height: 26px; line-height: 26px; text-align:  center; position: absolute; right: 10px; top: 50%; margin-top: -13px; background-color: red; color: #fff; border-radius: 50%; font-size: 12px;}
   }
 }

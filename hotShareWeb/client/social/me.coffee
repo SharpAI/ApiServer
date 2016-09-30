@@ -46,6 +46,8 @@ if Meteor.isClient
       Session.set("Social.LevelTwo.Me.Menu","setNickname")
     'click .sex':(e)->
       Session.set("Social.LevelTwo.Me.Menu","setSex")
+    'click .bell':(e)->
+      Router.go('/bell');
   ###
     Set Nickname View
   ###
