@@ -164,10 +164,10 @@ if(Meteor.isServer){
                 if (doc.isReview === true) {
                     Posts.update({_id: postId}, {$set:{import_status: "done"}});
                     postsInsertHookDeferHandle(userId, doc);
-                    try{
+                    /*try{
                         postsInsertHookPostToBaiduDeferHandle(doc._id);
                     }catch(err){
-                    }
+                    }*/
                     try{
                         mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
                     }catch(err){
