@@ -151,6 +151,8 @@ if Meteor.isServer
 
         SSR.compileTemplate('post', Assets.getText('static/post.html'))
         Template.post.helpers
+            getDDPUrl: ()->
+              ddp_alter_url
             time_diff: (created)->
                 GetTime0(new Date() - created)
             getPub:->
