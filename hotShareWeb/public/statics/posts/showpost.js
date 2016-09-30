@@ -417,6 +417,35 @@
             $('.pcommentInput,.alertBackground').fadeOut(300);
         });
         // --- 评论/点评 END ---
+        // --- 查看大图 ---
+        $(".postImageItem").click(function() {
+            var i, image, j, len, ref, selected, swipedata;
+            swipedata = [];
+            i = 0;
+            selected = 0;
+            console.log("=============click on image index is: " + this.index);
+            ref = postdata.pub;
+            for (j = 0, len = ref.length; j < len; j++) {
+              image = ref[j];
+              if (image.imgUrl) {
+                if (image.imgUrl === this.imgUrl) {
+                  selected = i;
+                }
+                swipedata.push({
+                  href: image.imgUrl,
+                  title: image.text
+                });
+                i++;
+              }
+            }
+            return $.swipebox(swipedata, {
+              initialIndexOnArray: selected,
+              hideCloseButtonOnMobile: true,
+              loopAtEnd: false
+            });
+        });
+
+        // --查看大图 END --- 
         fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
     };
 })(window);
