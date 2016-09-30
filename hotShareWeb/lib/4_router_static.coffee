@@ -1,4 +1,6 @@
 if Meteor.isServer
+    html_minifier = Meteor.npmRequire "html-minifier"
+    minify = html_minifier.minify
     postFontStyleDefault='font-size:large;';
     postFontStyleNormal='font-size:large;';
     postFontStyleQuota='font-size:15px;background:#F5F5F5;padding-left:3%;padding-right:3%;color:grey;';
@@ -172,7 +174,7 @@ if Meteor.isServer
         res.writeHead(200, {
             'Content-Type': 'text/html'
         })
-        res.end(postHtml)
+        res.end(minify(postHtml, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
     , {where: 'server'}
 
     Router.route '/static/data/suggestposts/:_id/:skip/:limit', (req, res, next)->
@@ -244,5 +246,5 @@ if Meteor.isServer
 
       res.writeHead(200, {'Content-Type': 'text/html'})
       postHtml = SSR.render('bell')
-      res.end(postHtml)
+      res.end(minify(postHtml, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
     , {where: 'server'}  
