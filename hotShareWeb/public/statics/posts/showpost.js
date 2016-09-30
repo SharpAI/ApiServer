@@ -324,6 +324,99 @@
           }, 'html');
         });
 
+        // --- 评论/点评 START---
+        var isRemoveParentColor = function(target, parent, isLike) {
+          if(parseInt($(target).text()) > 0) {
+            return false;
+          }
+          if($(parent).siblings('.pcomment').length > 0) {
+            return false;
+          }
+          if(isLike && parseInt($(target.nextElementSibling).text()) > 0) {
+            return false;
+          }
+          
+          if(!isLike && parseInt($(target.previousElementSibling).text()) > 0) {
+            return false;
+          }
+          return true;
+        };
+        $(".thumbsUp").click(function(e) {
+            var self = this;
+            if (e.target.className === "fa fa-thumbs-up thumbsUp") {
+              e.target.className = "fa fa-thumbs-o-up thumbsUp";
+              $(self).text($(self).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
+              if(isRemoveParentColor(self, e.target.parentNode.parentElement, true)) e.target.parentNode.parentElement.style.color = "rgb(0,0,0)";
+            } else {
+              e.target.className = "fa fa-thumbs-up thumbsUp";
+              e.target.parentNode.parentElement.style.color = "rgb(243,11,68)";
+              $(self).text($(self).text().replace(/\d/g, function(m) {return parseInt(m) +1;}));
+
+              if (e.target.nextElementSibling.className === "fa fa-thumbs-down thumbsDown") {
+                $(self.nextElementSibling).text($(self.nextElementSibling).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
+                e.target.nextElementSibling.className = "fa fa-thumbs-o-down thumbsDown";
+              }
+            }           
+        });
+        $(".thumbsDown").click(function(e) {
+            var self = this;
+            if (e.target.className === "fa fa-thumbs-down thumbsDown") {
+              e.target.className = "fa fa-thumbs-o-down thumbsDown";
+              $(self).text($(self).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
+              if(isRemoveParentColor(self, e.target.parentNode.parentElement, false))  e.target.parentNode.parentElement.style.color = "rgb(0,0,0)";
+            } else {
+              e.target.className = "fa fa-thumbs-down thumbsDown";
+              e.target.parentNode.parentElement.style.color = "rgb(243,11,68)";
+              $(self).text($(self).text().replace(/\d/g, function(m) {return parseInt(m) +1;}));
+              if (e.target.previousElementSibling.className === "fa fa-thumbs-up thumbsUp") {
+                $(self.previousElementSibling).text($(self.previousElementSibling).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
+                e.target.previousElementSibling.className = "fa fa-thumbs-o-up thumbsUp";
+              }
+            }
+        });
+
+        $(".pcomments").click(function(e) {
+            var self = this;
+            var backgroundTop, bgheight;
+            localStorage.setItem('pcommentParagraph',$(e.currentTarget).parent().parent().parent().attr('id'));
+            $('.showBgColor').attr('style', 'overflow:hidden;min-width:' + $(window).width() + 'px;' + 'height:' + bgheight + 'px;');
+            $('.pcommentInput,.alertBackground').fadeIn(300, function() {
+              return $('#pcommitReport').focus();
+            });
+            $('#pcommitReport').focus();         
+        });
+        
+        $('.alertBackground').click(function(e) {
+            $('.showBgColor').removeAttr('style');
+            $('.pcommentInput,.alertBackground').fadeOut(300);
+        });
+
+        $('#pcommitReportBtn').click(function(e) {
+            var self = this;
+            var pcommitContent,pcommitContentHTML1,pcommitContentHTML2;
+            var userName = "匿名";
+            var id = localStorage.getItem('pcommentParagraph');
+            pcommitContent = $('#pcommitReport').val();
+            console.log('==评论内容是=='+pcommitContent); 
+            $('#pcommitReport').val('');
+            $('.showBgColor').removeAttr('style');
+            //  添加内容
+            pcommitContentHTML1 = '<div class="pcomment">\
+                                    <div class="eachComment">\
+                                     <div class="bubble">';
+            pcommitContentHTML1 += '<span class="personName">'+userName+'</span>:'+
+                                    '<span class="personSay">'+pcommitContent+'</span></div></div></div>';
+            pcommitContentHTML2 = '<div class="bubble"><span class="personName">'+userName+'</span>:'+
+                                    '<span class="personSay">'+pcommitContent+'</span></div>';
+            if($('#'+id).children('.pcomment').length > 0){
+                $('#'+id + ' .pcomment').append(pcommitContentHTML2);
+            } else {
+                $('#'+id + ' .inlineScoring').after(pcommitContentHTML1);
+            }
+            calcLayoutForEachPubElement();
+            $('.pcommentInput,.alertBackground').fadeOut(300);
+        });
+        // --- 评论/点评 END ---
         fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
     };
 })(window);

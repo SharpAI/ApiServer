@@ -19,6 +19,13 @@
 </head>
 <body>
 <div class="_bell-box"><div class="_bell-box-main"></div></div>
+<div class="pcommentInput" style="display:none;">
+    <div class="input-group">
+    <input type="text" id="pcommitReport" autofocus="autofocus" class="form-control" maxlength="180" placeholder="评论" />
+    <div id="pcommitReportBtn">发送</div>
+    </div>
+</div>
+<div class="alertBackground"></div>
 <div class="showBgColor">
     <div class="showPostsBox">
         <div class="showPosts">
@@ -43,7 +50,7 @@
                     {{#if mainText}}
                         <div class="text" style="height: initial;">{{mainText}}</div>
                     {{/if}}
-                </div>
+                    </div>
                 <div class="show-post-new-message">
                     <div class="msg-box">
                         <div class="icon"><img src="/userPicture.png" /></div>
