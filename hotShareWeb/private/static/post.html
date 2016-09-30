@@ -5,6 +5,7 @@
     <meta name="description" content="{{title}}, {{addontitle}}, 故事贴">
     <link rel="stylesheet" type="text/css" href="/statics/styles/43617b92206b6142541826d265fdd2489a2907bd.css">
     <link rel="stylesheet" type="text/css" href="/statics/styles/b7325e71f5621546e6acb8a0a04de62da6a8ba79.css">
+    <link rel="stylesheet" type="text/css" href="/statics/styles/main.css">
     <link rel="stylesheet" type="text/css" href="/statics/libs/wookmark/css/main.css">
     <link rel="stylesheet" type="text/css" href="/statics/libs/wookmark/css/overview.css">
     <link rel="icon" href="{{mainImage}}">
@@ -17,6 +18,7 @@
     </style>
 </head>
 <body>
+<div class="_bell-box"><div class="_bell-box-main"></div></div>
 <div class="showBgColor">
     <div class="showPostsBox">
         <div class="showPosts">
@@ -41,6 +43,13 @@
                     {{#if mainText}}
                         <div class="text" style="height: initial;">{{mainText}}</div>
                     {{/if}}
+                </div>
+                <div class="show-post-new-message">
+                    <div class="msg-box">
+                        <div class="icon"><img src="/userPicture.png" /></div>
+                        <div class="tips">0条新消息</div>
+                        <div class="_count">15</div>
+                    </div>
                 </div>
                 <div class="gridster">
                     <div id="test">

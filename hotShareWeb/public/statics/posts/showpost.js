@@ -303,6 +303,27 @@
             window.open(url,'_blank')
         });
 
+        $(".show-post-new-message").click(function() {
+          var userId = 'u8MRTTcXLoTzs9oXn';
+          jQuery.get('/static/bell/' + userId, {}, function(data){
+            console.log('get ajax bell data:', data);
+            $('._bell-box-main').html(data);
+            $('._bell-box').slideDown(300);
+
+            // 显示消息页
+            var $main = $('._bell-box-main');
+            $main.find('#follow').click(function(){
+              $('._bell-box').css('display', 'none');
+            });
+            $main.find('.contentList').click(function(){
+              $('._bell-box').css('display', 'none');
+            });
+            $main.find('.acceptrequest').click(function(){
+              $('._bell-box').css('display', 'none');
+            });
+          }, 'html');
+        });
+
         fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
     };
 })(window);
