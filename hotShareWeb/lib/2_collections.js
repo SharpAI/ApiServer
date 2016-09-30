@@ -1477,6 +1477,37 @@ if(Meteor.isServer){
         });
     };
 
+    Meteor.publish('userNewBellCount', function(userId) {
+      var self = this;
+      var count = 0;
+      var initializing = true;
+
+      var handle = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).observeChanges({
+        added: function (id) {
+          count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
+          self.changed("userNewBellCount", userId, {count: count});
+        },
+        changed: function (id) {
+          count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
+          self.changed("userNewBellCount", userId, {count: count});
+        },
+        removed: function (id) {
+          count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
+          self.changed("userNewBellCount", userId, {count: count});
+        }
+      });
+
+      initializing = false;
+      count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
+      self.added("userNewBellCount", userId, {count: count});
+    //   self.added("userNewBellCount", userId, {count: count});
+      self.ready();
+
+      self.onStop(function () {
+        handle.stop();
+      });
+    });
+
     Meteor.publish('configs', function() {
       if(this.userId === null){
           return this.ready();

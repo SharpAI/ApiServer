@@ -732,3 +732,6 @@ if Meteor.isServer
           catch ex
             console.log(ex)
         return
+      'readFeedsStatus': (id)->
+        console.log('readFeedsStatus:', id);
+        Feeds.update({_id:id},{$set: {checked:true}})

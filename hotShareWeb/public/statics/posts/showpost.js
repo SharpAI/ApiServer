@@ -316,11 +316,17 @@
               $('._bell-box').css('display', 'none');
             });
             $main.find('.contentList').click(function(){
+              console.log('feed id:', $(this).attr('data-id'));
+              window._bell.contentList($(this).attr('data-id'));
               $('._bell-box').css('display', 'none');
+              // calcLayoutForEachPubElement();
+              if($(this).attr('data-id'))
+                location = '/static/' + $(this).attr('data-id');
             });
-            $main.find('.acceptrequest').click(function(){
-              $('._bell-box').css('display', 'none');
-            });
+            // $main.find('.acceptrequest').click(function(){
+            //   window._bell.acceptrequest('');
+            //   $('._bell-box').css('display', 'none');
+            // });
           }, 'html');
         });
 

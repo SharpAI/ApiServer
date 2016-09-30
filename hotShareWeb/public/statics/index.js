@@ -4,7 +4,7 @@
 
 globle_init = function(){
     const options = {
-        endpoint: "ws://localhost:3000/websocket",
+        endpoint: "ws://localhost:5000/websocket",
         SocketConstructor: WebSocket
     };
     const ddp = new appUtils.ddp(options);
@@ -21,6 +21,10 @@ globle_init = function(){
     postid = location.pathname.replace(/[\/]static[\/]/g, "");
     console.log('postid is ' + postid);
 
+    var userId = window._loginUserId || 'u8MRTTcXLoTzs9oXn';
+    var userNewBellCountId = ddp.sub("userNewBellCount", [userId]);
+    var $bellHtml = $('.show-post-new-message ._count');
+
     const postContent = ddp.sub("staticPost",[postid]);
     console.log('get post content is ' + postContent);
 
@@ -34,14 +38,55 @@ globle_init = function(){
         if (message.subs.includes(postContent)) {
             console.log("mySubscription ready");
         }
+        if (message.subs.includes(userNewBellCountId)) {
+            console.log("userNewBellCount ready");
+        }
     });
     ddp.on("added", message => {
-        postdata = message.fields;
-        console.log('postdata is ' + postdata);
-        console.log('added: '+ JSON.stringify( message));
-        console.log('message collection is ' + message.collection);
+      console.log('collection:', JSON.stringify(message.collection));
+      switch(message.collection){
+        case 'posts':
+          postdata = message.fields;
+          break;
+        case 'userNewBellCount':
+          console.log(message.fields);
+          var count = message.fields.count;
+          if(count <= 0)
+            return $('.show-post-new-message').hide();
+          $bellHtml.html(count);
+          window.bellNewCount = count;
+          $('.show-post-new-message').show();
+          break;
+      }
+    });
+    ddp.on("changed", message => {
+      console.log('collection:', JSON.stringify(message.collection));
+      switch(message.collection){
+        case 'posts':
+          postdata = message.fields;
+          break;
+        case 'userNewBellCount':
+          console.log(message.fields);
+          var count = message.fields.count;
+          if(count <= 0)
+            return $('.show-post-new-message').hide();
+          $bellHtml.html(count);
+          window.bellNewCount = count;
+          $('.show-post-new-message').show();
+          break;
+      }
+    });
+    ddp.on("removed", message => {
     });
 
+
+    window._bell = {
+      contentList: function(feedId){
+        console.log('contentList:', feedId);
+        ddp.method('readFeedsStatus', [feedId]);
+        ddp.method('updataFeedsWithMe', [userId]);
+      }
+    };
 };
 
 wechat_sign = function(){
