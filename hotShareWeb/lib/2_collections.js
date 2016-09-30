@@ -1969,6 +1969,12 @@ if(Meteor.isServer){
     else
       return SavedDrafts.find({owner: this.userId},{sort: {createdAt: -1}});
   });
+  Meteor.publish("loginFeeds", function() {
+    if(this.userId === null)
+      return this.ready();
+    else
+      return Feeds.find({followby: this.userId}, {sort: {createdAt: -1}, limit:50});
+  });
   Meteor.publish("feeds", function(limit) {
     if(this.userId === null || !Match.test(limit, Number))
       return this.ready();

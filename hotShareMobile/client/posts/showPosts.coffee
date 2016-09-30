@@ -569,8 +569,6 @@ if Meteor.isClient
     else if action is 'post-tts'
       startPostTTS(self.index)
   Template.showPosts.events
-    'click .show-post-new-message': ->
-      Router.go('/posts_msg/' + Session.get("postContent")._id)
     'click .readmore': (e, t)->
       # if e.target is e.currentTarget
       $showPosts = $('.showPosts')

@@ -13,6 +13,10 @@ if Meteor.isClient
     Meteor.setTimeout ()->
       Session.set("displayPostContent",true)
     ,300
+  Router.route '/bell',()->
+    this.render 'bell'
+    Session.set 'channel','bell'
+    return
   Router.route '/redirect/:_id',()->
     Session.set('nextPostID',this.params._id)
     this.render 'redirect'
