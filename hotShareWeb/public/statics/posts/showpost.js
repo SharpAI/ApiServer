@@ -341,13 +341,44 @@
           }
           return true;
         };
+        var syncThumbs = function(pindex,type){
+            const options = {
+                endpoint: "ws://localhost:3000/websocket",
+                SocketConstructor: WebSocket
+            };
+            const ddp = new appUtils.ddp(options);
+            ddp.on("connected", () => {
+                console.log("Connected");
+            });
+            postid = location.pathname.replace(/[\/]static[\/]/g, "");
+            userId = 'testuser';
+            const methodUpdatePcommit = ddp.method("updateThumbs", [postid,userId,pindex,type]);
+
+            ddp.on("result", message => {
+                if (message.id === methodUpdatePcommit && !message.error) {
+                    console.log("点评成功!");
+                }
+            });
+            ddp.on("ready",function(message){
+                console.log('ready: '+ JSON.stringify( message));
+            });
+            ddp.on("added", message => {
+                postdata = message.fields;
+                console.log('added: '+ JSON.stringify( message));
+            });
+        }
         $(".thumbsUp").click(function(e) {
             var self = this;
+            var pindex = $(e.currentTarget).parent().parent().parent().attr('index');
+            pindex = pindex.toString();
+            console.log('==点评index=='+pindex);
             if (e.target.className === "fa fa-thumbs-up thumbsUp") {
+              syncThumbs(pindex,'likeDel');
               e.target.className = "fa fa-thumbs-o-up thumbsUp";
               $(self).text($(self).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
               if(isRemoveParentColor(self, e.target.parentNode.parentElement, true)) e.target.parentNode.parentElement.style.color = "rgb(0,0,0)";
             } else {
+              syncThumbs(pindex,'likeAdd');
               e.target.className = "fa fa-thumbs-up thumbsUp";
               e.target.parentNode.parentElement.style.color = "rgb(243,11,68)";
               $(self).text($(self).text().replace(/\d/g, function(m) {return parseInt(m) +1;}));
@@ -360,11 +391,16 @@
         });
         $(".thumbsDown").click(function(e) {
             var self = this;
+            var pindex = $(e.currentTarget).parent().parent().parent().attr('index');
+            pindex = pindex.toString();
+            console.log('==点评index=='+pindex);
             if (e.target.className === "fa fa-thumbs-down thumbsDown") {
+              syncThumbs(pindex,'dislikeDel');
               e.target.className = "fa fa-thumbs-o-down thumbsDown";
               $(self).text($(self).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
               if(isRemoveParentColor(self, e.target.parentNode.parentElement, false))  e.target.parentNode.parentElement.style.color = "rgb(0,0,0)";
             } else {
+              syncThumbs(pindex,'dislikeAdd');
               e.target.className = "fa fa-thumbs-down thumbsDown";
               e.target.parentNode.parentElement.style.color = "rgb(243,11,68)";
               $(self).text($(self).text().replace(/\d/g, function(m) {return parseInt(m) +1;}));
@@ -378,6 +414,7 @@
         $(".pcomments").click(function(e) {
             var self = this;
             var backgroundTop, bgheight;
+            localStorage.setItem('pcommentPindex',$(e.currentTarget).parent().parent().parent().attr('index'));
             localStorage.setItem('pcommentParagraph',$(e.currentTarget).parent().parent().parent().attr('id'));
             $('.showBgColor').attr('style', 'overflow:hidden;min-width:' + $(window).width() + 'px;' + 'height:' + bgheight + 'px;');
             $('.pcommentInput,.alertBackground').fadeIn(300, function() {
@@ -390,12 +427,38 @@
             $('.showBgColor').removeAttr('style');
             $('.pcommentInput,.alertBackground').fadeOut(300);
         });
+        var syncPcommitContent = function(pindex,pcommitContent){
+            const options = {
+                endpoint: "ws://localhost:3000/websocket",
+                SocketConstructor: WebSocket
+            };
+            const ddp = new appUtils.ddp(options);
+            ddp.on("connected", () => {
+                console.log("Connected");
+            });
+            postid = location.pathname.replace(/[\/]static[\/]/g, "");
+            userId = null;
+            const methodUpdatePcommit = ddp.method("updatePcommitContent", [postid,userId,pindex,pcommitContent]);
 
+            ddp.on("result", message => {
+                if (message.id === methodUpdatePcommit && !message.error) {
+                    console.log("评论成功!");
+                }
+            });
+            ddp.on("ready",function(message){
+                console.log('ready: '+ JSON.stringify( message));
+            });
+            ddp.on("added", message => {
+                postdata = message.fields;
+                console.log('added: '+ JSON.stringify( message));
+            });
+        }
         $('#pcommitReportBtn').click(function(e) {
             var self = this;
-            var pcommitContent,pcommitContentHTML1,pcommitContentHTML2;
+            var pcommitContent,pcommitContentHTML1,pcommitContentHTML2,pindex;
             var userName = "匿名";
             var id = localStorage.getItem('pcommentParagraph');
+            pindex = localStorage.getItem('pcommentPindex');
             pcommitContent = $('#pcommitReport').val();
             console.log('==评论内容是=='+pcommitContent); 
             $('#pcommitReport').val('');
@@ -414,9 +477,11 @@
                 $('#'+id + ' .inlineScoring').after(pcommitContentHTML1);
             }
             calcLayoutForEachPubElement();
+            syncPcommitContent(pindex,pcommitContent);
             $('.pcommentInput,.alertBackground').fadeOut(300);
         });
         // --- 评论/点评 END ---
+
         // --- 查看大图 ---
         $(".postImageItem").click(function() {
             var i, image, j, len, ref, selected, swipedata;

@@ -56,6 +56,76 @@ if Meteor.isServer
       )
   Meteor.startup ()->
     Meteor.methods
+      'updateThumbs': (postId,userId,pindex,type)->
+        if postId is undefined or userId is undefined or pindex is undefined or type is undefined
+          return false
+        post = Posts.findOne({_id: postId})
+        if post
+          pub = post.pub
+          console.log('===userId=='+pub[pindex].likeSum)
+          console.log('===type==='+pub[pindex].dislikeSum)
+          if pub and pub[pindex]
+            # 喜欢
+            if type is 'likeAdd'
+              if pub[pindex].likeSum isnt 0
+                pub[pindex].likeSum = pub[pindex].likeSum +1
+              if pub[pindex].likeUserId
+                pub[pindex].likeUserId.userId = true
+              else
+                pub[pindex].likeUserId = {}
+                pub[pindex].likeUserId.userId = true
+            if type is 'likeDel'
+              if pub[pindex].likeSum isnt 0
+                pub[pindex].likeSum = pub[pindex].likeSum -1
+              if pub[pindex].likeUserId
+                  pub[pindex].likeUserId.userId = false
+              else
+                pub[pindex].likeUserId = {}
+                pub[pindex].likeUserId.userId = false
+            # 不喜欢
+            if type is 'dislikeAdd'
+              if pub[pindex].dislikeSum isnt 0
+                pub[pindex].dislikeSum = pub[pindex].dislikeSum +1
+              if pub[pindex].dislikeUserId
+                  pub[pindex].dislikeUserId.userId = false
+              else
+                pub[pindex].dislikeUserId = {}
+                pub[pindex].dislikeUserId.userId = false
+            if type is 'dislikeDel'
+              if pub[pindex].dislikeSum isnt 0
+                pub[pindex].dislikeSum = pub[pindex].dislikeSum -1
+              if pub[pindex].dislikeUserId
+                  pub[pindex].dislikeUserId.userId = false
+              else
+                pub[pindex].dislikeUserId = {}
+                pub[pindex].dislikeUserId.userId = false
+
+            Posts.update({_id: postId},{$set:{'pub':pub}})
+      'updatePcommitContent': (postId, userId, pindex,content)->
+        if postId is undefined or userId is undefined or pindex is undefined or content is undefined
+          return false
+        post = Posts.findOne({_id: postId})
+        user = Meteor.users.findOne({_id: userId})
+        if user 
+          userIcon = user.profile.icon
+          if user.profile and user.profile.fullname
+            userName = user.profile.fullname
+          else 
+            username = username
+        pcomment = {
+          content: content,
+          createdAt: new Date(),
+          userIcon: userIcon,
+          userId: userId,
+          username: userName
+        }
+        if post 
+          pub = post.pub
+          if pub and pub[pindex]
+            if !pub[pindex].pcomments
+              pub[pindex].pcomments = []
+            pub[pindex].pcomments.push(pcomment)
+          Posts.update({_id: postId},{$set:{'pub':pub}})
       # Reporter START
       'isTrustedUser': (userId)->
         user = Meteor.users.findOne({_id: userId})
