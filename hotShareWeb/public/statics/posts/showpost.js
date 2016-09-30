@@ -304,7 +304,7 @@
         });
 
         $(".show-post-new-message").click(function() {
-          var userId = 'u8MRTTcXLoTzs9oXn';
+          var userId = window._loginUserId || 'u8MRTTcXLoTzs9oXn';
           jQuery.get('/static/bell/' + userId, {}, function(data){
             console.log('get ajax bell data:', data);
             $('._bell-box-main').html(data);
