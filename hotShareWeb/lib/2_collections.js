@@ -1832,6 +1832,9 @@ if(Meteor.isServer){
     else
       return Posts.find({owner: this.userId},{sort: {createdAt: -1}});
   });
+  Meteor.publish("staticPost", function(postId) {
+    return Posts.find({_id: postId},{sort: {createdAt: -1}});
+  });
   Meteor.publish('pcomments', function() {
       if(this.userId === null)
           return this.ready();

@@ -4,7 +4,7 @@
 
 globle_init = function(){
     const options = {
-        endpoint: "ws://localhost:5000/websocket",
+        endpoint: "ws://localhost:3000/websocket",
         SocketConstructor: WebSocket
     };
     const ddp = new appUtils.ddp(options);
@@ -18,17 +18,30 @@ globle_init = function(){
         password: "123456"
     };
     const methodId = ddp.method("login", [myLoginParams]);
+    postid = location.pathname.replace(/[\/]static[\/]/g, "");
+    console.log('postid is ' + postid);
+
+    const postContent = ddp.sub("staticPost",[postid]);
+    console.log('get post content is ' + postContent);
+
     ddp.on("result", message => {
         if (message.id === methodId && !message.error) {
             console.log("Logged in!");
         }
     });
     ddp.on("ready",function(message){
-      console.log('ready: '+ JSON.stringify( message));
+        console.log('ready: '+ JSON.stringify( message));
+        if (message.subs.includes(postContent)) {
+            console.log("mySubscription ready");
+        }
     });
     ddp.on("added", message => {
+        postdata = message.fields;
+        console.log('postdata is ' + postdata);
         console.log('added: '+ JSON.stringify( message));
+        console.log('message collection is ' + message.collection);
     });
+
 };
 
 wechat_sign = function(){
