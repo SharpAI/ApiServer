@@ -202,7 +202,7 @@ if(Meteor.isServer){
         postMessageToGeneralChannel=function(message, params, callback){
             try{
                 if(production){
-                    slackBot.postMessageToChannel('general', '<'+hostname+'>: '+message, params,function(result){
+                    slackBot.postMessageToChannel('general', '@everyone ('+hostname+'): '+message, params,function(result){
                         if(result && result.ok){
                             console.log('Send Success of message')
                         } else {
@@ -210,7 +210,7 @@ if(Meteor.isServer){
                         }
                     });
                 } else {
-                    slackBot.postMessageToChannel('test_server_message', '<'+hostname+'>: '+message, params,function(result){
+                    slackBot.postMessageToChannel('test_server_message', '@everyone ('+hostname+'): '+message, params,function(result){
                         if(result && result.ok){
                             console.log('Send Success of message')
                         } else {
