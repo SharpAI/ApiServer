@@ -154,7 +154,7 @@ if Meteor.isClient
       else
         imgurl
     isLocalImgUrlType: (imgUrl)->
-      if imgUrl.indexOf('file://') > -1
+      if imgUrl and imgUrl.indexOf('file://') > -1
         return true
       else 
         return false

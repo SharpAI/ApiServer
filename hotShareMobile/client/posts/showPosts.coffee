@@ -832,11 +832,14 @@ if Meteor.isClient
             href: image.imgUrl
             title: image.text
           i++
-      $.swipebox swipedata,{
-        initialIndexOnArray: selected
-        hideCloseButtonOnMobile : true
-        loopAtEnd: false
-      }
+      if swipedata.length > 0
+        $.swipebox swipedata,{
+          initialIndexOnArray: selected
+          hideCloseButtonOnMobile : true
+          loopAtEnd: false
+        }
+      else
+        pub.toast('打开图片失败。')
   Template.postFooter.helpers
     refcomment:->
       RC = Session.get 'RC'
