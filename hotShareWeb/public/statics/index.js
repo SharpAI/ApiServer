@@ -4,7 +4,7 @@
 
 globle_init = function(){
     const options = {
-        endpoint: "ws://localhost:5000/websocket",
+        endpoint: ddpUrl, //"ws://localhost:5000/websocket",
         SocketConstructor: WebSocket
     };
     const ddp = new appUtils.ddp(options);
