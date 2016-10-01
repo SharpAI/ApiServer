@@ -482,9 +482,9 @@ var update_mainImage = function(userId, postId, mainImageUrl, style){
   /*posts.update({_id: postId},{$set: {mainImage: mainImageUrl}}, function(err, number){
     console.log("update_mainImage: err="+err+", number="+number)
   });*/
-  // FollowPosts.update({followby:userId, postId:postId}, {$set: {mainImage: mainImageUrl, mainImageStyle:style}}, function(err, number){
-  //   console.log("update_mainImage2: err="+err+", number="+number)
-  // });
+   FollowPosts.update({followby:userId, postId:postId}, {$set: {mainImage: mainImageUrl, mainImageStyle:style}}, function(err, number){
+     console.log("update_mainImage2: err="+err+", number="+number)
+   });
   
   TopicPoss.update({owner:userId, postId:postId}, {$set: {mainImage: mainImageUrl, mainImageStyle:style}});
 }
@@ -519,6 +519,7 @@ var insert_data = function(user, url, data, draftsObj, cb) {
         data.resortedArticle[i].data_sizex = parseInt(data.resortedArticle[i].data_sizex);
         data.resortedArticle[i].data_sizey = parseInt(data.resortedArticle[i].data_sizey);
         data.resortedArticle[i].data_wait_init = true;
+        data.resortedArticle[i].imgUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
         if(i > 0){data.resortedArticle[i].data_row = data.resortedArticle[i-1].data_row + data.resortedArticle[i-1].data_sizey;}
       }
     }
@@ -547,7 +548,7 @@ var insert_data = function(user, url, data, draftsObj, cb) {
         'ownerIcon':user.profile.icon || '/userPicture.png',
         'createdAt': new Date(),
         'publish': true,
-        "isReview": false
+        "isReview": true
         }];
 
       posts.insert(data_insert, function(err, result) {
@@ -835,12 +836,11 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
                           var url = tmpServer+'/restapi/postInsertHook/'+user._id+'/'+postId;
                           console.log("httpget url="+url);
 
+                          httpget(url);
                           console.log('==============================');
-                          console.log('http://cdcdn.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
-                          httpget('http://cdcdn.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
+                          console.log('http://cdn.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
+                          httpget('http://cdn.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
                           console.log('==============================');
-
-                          // httpget(url);
                       });                 
                       
                       // updatePosts(postId, postObj, function(err, number){

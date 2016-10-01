@@ -319,14 +319,14 @@ if Meteor.isServer
       })
       res.end(JSON.stringify({result: result}))
     _user = Meteor.users.findOne({_id: this.params._userId})
-    unless _user and _user.profile and _user.profile.reporterSystemAuth
+    #unless _user and _user.profile and _user.profile.reporterSystemAuth
       #console.log('sep1');
-      return return_result(false)
+    #  return return_result(false)
 
     _post = Posts.findOne({_id: this.params._postId})
-    if !_post or _post.isReview is true or _post.isReview is null or _post.isReview is undefined
+    #if !_post or _post.isReview is true or _post.isReview is null or _post.isReview is undefined
       #console.log('sep2:', _post.isReview);
-      return return_result(false)
+    #  return return_result(false)
     
     # review
     Posts.update {_id: this.params._postId}, {$set: {isReview: true}}, (err, num)->
@@ -334,6 +334,7 @@ if Meteor.isServer
         #console.log('sep3');
         return return_result(false)
 
+      _post.isReview = true
       doc = _post
       userId = doc.owner
       if doc.owner != userId
