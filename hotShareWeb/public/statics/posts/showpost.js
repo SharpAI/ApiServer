@@ -348,7 +348,8 @@
           return true;
         };
         var syncThumbs = function(pindex,type){
-            const options = {
+            // It will be very hard to maintain the DDP connection if you initial it from everywhere in the code.
+            /*const options = {
                 endpoint: "ws://localhost:3000/websocket",
                 SocketConstructor: WebSocket
             };
@@ -371,7 +372,7 @@
             ddp.on("added", message => {
                 postdata = message.fields;
                 console.log('added: '+ JSON.stringify( message));
-            });
+            });*/
         }
         $(".thumbsUp").click(function(e) {
             var self = this;
@@ -434,7 +435,8 @@
             $('.pcommentInput,.alertBackground').fadeOut(300);
         });
         var syncPcommitContent = function(pindex,pcommitContent){
-            const options = {
+            // It will be very hard to maintain the DDP connection if you initial it from everywhere in the code.
+            /*const options = {
                 endpoint: "ws://localhost:3000/websocket",
                 SocketConstructor: WebSocket
             };
@@ -457,7 +459,7 @@
             ddp.on("added", message => {
                 postdata = message.fields;
                 console.log('added: '+ JSON.stringify( message));
-            });
+            });*/
         }
         $('#pcommitReportBtn').click(function(e) {
             var self = this;
