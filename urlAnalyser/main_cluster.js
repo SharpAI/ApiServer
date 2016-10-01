@@ -838,8 +838,8 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
 
                           httpget(url);
                           console.log('==============================');
-                          console.log('http://cdn.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
-                          httpget('http://cdn.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
+                          console.log('http://host1.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
+                          httpget('http://host1.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
                           console.log('==============================');
                       });                 
                       
