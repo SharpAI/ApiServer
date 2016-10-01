@@ -495,6 +495,7 @@
             i = 0;
             selected = 0;
             console.log("=============click on image index is: " + this.index);
+            console.log("Need query image url from html through JQUERY")
             ref = postdata.pub;
             for (j = 0, len = ref.length; j < len; j++) {
               image = ref[j];
