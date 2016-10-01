@@ -1,0 +1,33 @@
+{
+  "name": "ddp-bundle",
+  "version": "1.0.0",
+  "description": "to do ddp thing for hotshare",
+  "main": "main.js",
+  "scripts": {
+    "build": "browserify main.js -o bundle.js && browserify main.js | uglifyjs -p 10 -c -m > bundle-min.js && cp bundle*.js ../hotShareWeb/public/statics/libs/"
+  },
+  "repository": {
+    "type": "git+https",
+    "url": "https://github.com/solderzzc/HotShare"
+  },
+  "keywords": [
+    "HotShare"
+  ],
+  "author": {
+    "name": "HotShare Team",
+    "email": "admin@tiegushi.com",
+    "url": "http://tiegushi.com"
+  },
+  "license": "",
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "http://tiegushi.com",
+  "dependencies": {
+    "ddp.js": "^2.2.0"
+  },
+  "devDependencies": {
+    "bootlint": "^0.12.0",
+    "browserify": "^13.1.0"
+  }
+}
