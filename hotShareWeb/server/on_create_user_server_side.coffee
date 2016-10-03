@@ -32,6 +32,7 @@ if Meteor.isServer
         if LockedUsers.find({token: user.token}).count() > 0
           throw new Meteor.Error(403, "设备被禁用")
       # 禁止匿名登录(only mobile)
+      ###
       console.log('create='+JSON.stringify(user.profile))
       if user and user.profile and user.profile.anonymous is true
         if user.profile.browser is true
@@ -39,4 +40,5 @@ if Meteor.isServer
         else
           throw new Meteor.Error(403, "不能匿名登录")
       else
-        return true
+      ###
+      return true

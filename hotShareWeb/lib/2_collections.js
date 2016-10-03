@@ -164,10 +164,10 @@ if(Meteor.isServer){
                 if (doc.isReview === true) {
                     Posts.update({_id: postId}, {$set:{import_status: "done"}});
                     postsInsertHookDeferHandle(userId, doc);
-                    try{
+                    /*try{
                         postsInsertHookPostToBaiduDeferHandle(doc._id);
                     }catch(err){
-                    }
+                    }*/
                     try{
                         mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
                     }catch(err){
@@ -685,7 +685,7 @@ if(Meteor.isServer){
                     mainImage:doc.mainImage,
                     status: '已审核'
                 }
-                postMessageToGeneralChannel(postInfo)
+                postMessageToGeneralChannel(JSON.stringify(postInfo))
             } catch(e){
 
             }
@@ -1477,6 +1477,37 @@ if(Meteor.isServer){
         });
     };
 
+    Meteor.publish('userNewBellCount', function(userId) {
+      var self = this;
+      var count = 0;
+      var initializing = true;
+
+      var handle = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).observeChanges({
+        added: function (id) {
+          count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
+          self.changed("userNewBellCount", userId, {count: count});
+        },
+        changed: function (id) {
+          count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
+          self.changed("userNewBellCount", userId, {count: count});
+        },
+        removed: function (id) {
+          count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
+          self.changed("userNewBellCount", userId, {count: count});
+        }
+      });
+
+      initializing = false;
+      count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
+      self.added("userNewBellCount", userId, {count: count});
+    //   self.added("userNewBellCount", userId, {count: count});
+      self.ready();
+
+      self.onStop(function () {
+        handle.stop();
+      });
+    });
+
     Meteor.publish('configs', function() {
       if(this.userId === null){
           return this.ready();
@@ -1832,6 +1863,9 @@ if(Meteor.isServer){
     else
       return Posts.find({owner: this.userId},{sort: {createdAt: -1}});
   });
+  Meteor.publish("staticPost", function(postId) {
+    return Posts.find({_id: postId},{sort: {createdAt: -1}});
+  });
   Meteor.publish('pcomments', function() {
       if(this.userId === null)
           return this.ready();
@@ -1968,6 +2002,12 @@ if(Meteor.isServer){
       return this.ready();
     else
       return SavedDrafts.find({owner: this.userId},{sort: {createdAt: -1}});
+  });
+  Meteor.publish("loginFeeds", function() {
+    if(this.userId === null)
+      return this.ready();
+    else
+      return Feeds.find({followby: this.userId}, {sort: {createdAt: -1}, limit:50});
   });
   Meteor.publish("feeds", function(limit) {
     if(this.userId === null || !Match.test(limit, Number))
@@ -2518,7 +2558,7 @@ if(Meteor.isServer){
             mainImage:doc.mainImage,
             status: '待审核'
         }
-        postMessageToGeneralChannel(postInfo)
+        postMessageToGeneralChannel(JSON.stringify(postInfo))
      });
 
       return true;

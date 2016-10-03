@@ -600,8 +600,6 @@ if Meteor.isClient
         Router.go('post_index', {_id: Session.get('postContent')._id, _index: self.index})
         #Router.go('/posts/'+Session.get('postContent')._id+'/'+self.index)
   Template.showPosts.events
-    'click .show-post-new-message': ->
-      Router.go('/posts_msg/' + Session.get("postContent")._id)
     'click .authorReadPopularPostItem': (e)->
       postId = e.currentTarget.id
       if postId is undefined

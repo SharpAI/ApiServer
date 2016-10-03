@@ -303,6 +303,223 @@
             window.open(url,'_blank')
         });
 
+        $(".show-post-new-message").click(function() {
+          var userId = window._loginUserId || 'u8MRTTcXLoTzs9oXn';
+          jQuery.get('/static/bell/' + userId, {}, function(data){
+            console.log('get ajax bell data:', data);
+            $('._bell-box-main').html(data);
+            $('._bell-box').slideDown(300);
+
+            // 显示消息页
+            var $main = $('._bell-box-main');
+            $main.find('#follow').click(function(){
+              $('._bell-box').css('display', 'none');
+            });
+            $main.find('.contentList').click(function(){
+              console.log('feed id:', $(this).attr('data-id'));
+              window._bell.contentList($(this).attr('data-id'));
+              $('._bell-box').css('display', 'none');
+              // calcLayoutForEachPubElement();
+              if($(this).attr('data-id'))
+                location = '/static/' + $(this).attr('data-id');
+            });
+            // $main.find('.acceptrequest').click(function(){
+            //   window._bell.acceptrequest('');
+            //   $('._bell-box').css('display', 'none');
+            // });
+          }, 'html');
+        });
+
+        // --- 评论/点评 START---
+        var isRemoveParentColor = function(target, parent, isLike) {
+          if(parseInt($(target).text()) > 0) {
+            return false;
+          }
+          if($(parent).siblings('.pcomment').length > 0) {
+            return false;
+          }
+          if(isLike && parseInt($(target.nextElementSibling).text()) > 0) {
+            return false;
+          }
+          
+          if(!isLike && parseInt($(target.previousElementSibling).text()) > 0) {
+            return false;
+          }
+          return true;
+        };
+        var syncThumbs = function(pindex,type){
+            // It will be very hard to maintain the DDP connection if you initial it from everywhere in the code.
+            /*const options = {
+                endpoint: "ws://localhost:3000/websocket",
+                SocketConstructor: WebSocket
+            };
+            const ddp = new appUtils.ddp(options);
+            ddp.on("connected", () => {
+                console.log("Connected");
+            });
+            postid = location.pathname.replace(/[\/]static[\/]/g, "");
+            userId = 'testuser';
+            const methodUpdatePcommit = ddp.method("updateThumbs", [postid,userId,pindex,type]);
+
+            ddp.on("result", message => {
+                if (message.id === methodUpdatePcommit && !message.error) {
+                    console.log("点评成功!");
+                }
+            });
+            ddp.on("ready",function(message){
+                console.log('ready: '+ JSON.stringify( message));
+            });
+            ddp.on("added", message => {
+                postdata = message.fields;
+                console.log('added: '+ JSON.stringify( message));
+            });*/
+        }
+        $(".thumbsUp").click(function(e) {
+            var self = this;
+            var pindex = $(e.currentTarget).parent().parent().parent().attr('index');
+            pindex = pindex.toString();
+            console.log('==点评index=='+pindex);
+            if (e.target.className === "fa fa-thumbs-up thumbsUp") {
+              syncThumbs(pindex,'likeDel');
+              e.target.className = "fa fa-thumbs-o-up thumbsUp";
+              $(self).text($(self).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
+              if(isRemoveParentColor(self, e.target.parentNode.parentElement, true)) e.target.parentNode.parentElement.style.color = "rgb(0,0,0)";
+            } else {
+              syncThumbs(pindex,'likeAdd');
+              e.target.className = "fa fa-thumbs-up thumbsUp";
+              e.target.parentNode.parentElement.style.color = "rgb(243,11,68)";
+              $(self).text($(self).text().replace(/\d/g, function(m) {return parseInt(m) +1;}));
+
+              if (e.target.nextElementSibling.className === "fa fa-thumbs-down thumbsDown") {
+                $(self.nextElementSibling).text($(self.nextElementSibling).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
+                e.target.nextElementSibling.className = "fa fa-thumbs-o-down thumbsDown";
+              }
+            }           
+        });
+        $(".thumbsDown").click(function(e) {
+            var self = this;
+            var pindex = $(e.currentTarget).parent().parent().parent().attr('index');
+            pindex = pindex.toString();
+            console.log('==点评index=='+pindex);
+            if (e.target.className === "fa fa-thumbs-down thumbsDown") {
+              syncThumbs(pindex,'dislikeDel');
+              e.target.className = "fa fa-thumbs-o-down thumbsDown";
+              $(self).text($(self).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
+              if(isRemoveParentColor(self, e.target.parentNode.parentElement, false))  e.target.parentNode.parentElement.style.color = "rgb(0,0,0)";
+            } else {
+              syncThumbs(pindex,'dislikeAdd');
+              e.target.className = "fa fa-thumbs-down thumbsDown";
+              e.target.parentNode.parentElement.style.color = "rgb(243,11,68)";
+              $(self).text($(self).text().replace(/\d/g, function(m) {return parseInt(m) +1;}));
+              if (e.target.previousElementSibling.className === "fa fa-thumbs-up thumbsUp") {
+                $(self.previousElementSibling).text($(self.previousElementSibling).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
+                e.target.previousElementSibling.className = "fa fa-thumbs-o-up thumbsUp";
+              }
+            }
+        });
+
+        $(".pcomments").click(function(e) {
+            var self = this;
+            var backgroundTop, bgheight;
+            localStorage.setItem('pcommentPindex',$(e.currentTarget).parent().parent().parent().attr('index'));
+            localStorage.setItem('pcommentParagraph',$(e.currentTarget).parent().parent().parent().attr('id'));
+            $('.showBgColor').attr('style', 'overflow:hidden;min-width:' + $(window).width() + 'px;' + 'height:' + bgheight + 'px;');
+            $('.pcommentInput,.alertBackground').fadeIn(300, function() {
+              return $('#pcommitReport').focus();
+            });
+            $('#pcommitReport').focus();         
+        });
+        
+        $('.alertBackground').click(function(e) {
+            $('.showBgColor').removeAttr('style');
+            $('.pcommentInput,.alertBackground').fadeOut(300);
+        });
+        var syncPcommitContent = function(pindex,pcommitContent){
+            // It will be very hard to maintain the DDP connection if you initial it from everywhere in the code.
+            /*const options = {
+                endpoint: "ws://localhost:3000/websocket",
+                SocketConstructor: WebSocket
+            };
+            const ddp = new appUtils.ddp(options);
+            ddp.on("connected", () => {
+                console.log("Connected");
+            });
+            postid = location.pathname.replace(/[\/]static[\/]/g, "");
+            userId = null;
+            const methodUpdatePcommit = ddp.method("updatePcommitContent", [postid,userId,pindex,pcommitContent]);
+
+            ddp.on("result", message => {
+                if (message.id === methodUpdatePcommit && !message.error) {
+                    console.log("评论成功!");
+                }
+            });
+            ddp.on("ready",function(message){
+                console.log('ready: '+ JSON.stringify( message));
+            });
+            ddp.on("added", message => {
+                postdata = message.fields;
+                console.log('added: '+ JSON.stringify( message));
+            });*/
+        }
+        $('#pcommitReportBtn').click(function(e) {
+            var self = this;
+            var pcommitContent,pcommitContentHTML1,pcommitContentHTML2,pindex;
+            var userName = "匿名";
+            var id = localStorage.getItem('pcommentParagraph');
+            pindex = localStorage.getItem('pcommentPindex');
+            pcommitContent = $('#pcommitReport').val();
+            console.log('==评论内容是=='+pcommitContent); 
+            $('#pcommitReport').val('');
+            $('.showBgColor').removeAttr('style');
+            //  添加内容
+            pcommitContentHTML1 = '<div class="pcomment">\
+                                    <div class="eachComment">\
+                                     <div class="bubble">';
+            pcommitContentHTML1 += '<span class="personName">'+userName+'</span>:'+
+                                    '<span class="personSay">'+pcommitContent+'</span></div></div></div>';
+            pcommitContentHTML2 = '<div class="bubble"><span class="personName">'+userName+'</span>:'+
+                                    '<span class="personSay">'+pcommitContent+'</span></div>';
+            if($('#'+id).children('.pcomment').length > 0){
+                $('#'+id + ' .pcomment').append(pcommitContentHTML2);
+            } else {
+                $('#'+id + ' .inlineScoring').after(pcommitContentHTML1);
+            }
+            calcLayoutForEachPubElement();
+            syncPcommitContent(pindex,pcommitContent);
+            $('.pcommentInput,.alertBackground').fadeOut(300);
+        });
+        // --- 评论/点评 END ---
+
+        // --- 查看大图 ---
+        $(".postImageItem").click(function() {
+            var i, image, j, len, ref, selected, swipedata;
+            swipedata = [];
+            i = 0;
+            selected = 0;
+            console.log("=============click on image index is: " + this.index);
+            console.log("Need query image url from html through JQUERY")
+            ref = postdata.pub;
+            for (j = 0, len = ref.length; j < len; j++) {
+              image = ref[j];
+              if (image.imgUrl) {
+                if (image.imgUrl === this.imgUrl) {
+                  selected = i;
+                }
+                swipedata.push({
+                  href: image.imgUrl,
+                  title: image.text
+                });
+                i++;
+              }
+            }
+            return $.swipebox(swipedata, {
+              initialIndexOnArray: selected,
+              hideCloseButtonOnMobile: true,
+              loopAtEnd: false
+            });
+        });
+
+        // --查看大图 END --- 
         fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
     };
 })(window);

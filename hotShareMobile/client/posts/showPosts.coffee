@@ -569,8 +569,6 @@ if Meteor.isClient
     else if action is 'post-tts'
       startPostTTS(self.index)
   Template.showPosts.events
-    'click .show-post-new-message': ->
-      Router.go('/posts_msg/' + Session.get("postContent")._id)
     'click .readmore': (e, t)->
       # if e.target is e.currentTarget
       $showPosts = $('.showPosts')
@@ -832,11 +830,14 @@ if Meteor.isClient
             href: image.imgUrl
             title: image.text
           i++
-      $.swipebox swipedata,{
-        initialIndexOnArray: selected
-        hideCloseButtonOnMobile : true
-        loopAtEnd: false
-      }
+      if swipedata.length > 0
+        $.swipebox swipedata,{
+          initialIndexOnArray: selected
+          hideCloseButtonOnMobile : true
+          loopAtEnd: false
+        }
+      else
+        pub.toast('打开图片失败。')
   Template.postFooter.helpers
     refcomment:->
       RC = Session.get 'RC'

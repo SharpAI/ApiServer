@@ -4,3 +4,8 @@ if (Meteor.isClient) {
     document.title = Session.get("DocumentTitle");
   });
 }
+
+Tracker.autorun(function(){
+  if(Meteor.userId())
+    Meteor.subscribe('loginFeeds');
+});

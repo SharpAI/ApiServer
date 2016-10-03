@@ -1,0 +1,159 @@
+<div class="bell">
+  <div class="bellAlertBackground"></div>
+  <div class="head">
+    <strong>我的消息</strong>
+    <div id="follow" class="leftButton"><i class="fa fa-angle-left"></i></div>
+  </div>
+  <div class="content">
+    {{#each eventFeeds}}
+      {{#if isAlsoComment eventType}}
+          <a href="javascript:void(0);" class="contentList" data-id="{{_id}}" data-post="{{postId}}">
+              {{#if notRead isRead checked @index createdAt}}
+              <div class="readTips"></div>
+              {{/if}}
+              <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+              <div id="{{postId}}" class="alarm">{{ownerName}} 也点评了此故事 《{{postTitle}}》</div>
+              <div class="createAt">{{time_diff createdAt}}</div>
+          </a>
+          <div class="line">
+              <span></span>
+          </div>
+      {{/if}}
+      {{#if isPersonalletter eventType}}
+          <a href="javascript:void(0);" id="personalLetter" class="contentList" data-id="{{_id}}" data-post="{{postId}}">
+              {{#if notRead isRead checked @index createdAt}}
+              <div class="readTips"></div>
+              {{/if}}
+              <img class="icon" src="{{userIcon}}" width='30' height='30'>
+              <div id="{{_id}}" class="alarm">{{userName}} 给您发来一条私信</div>
+              <div class="createAt">{{time_diff createdAt}}</div>
+          </a>
+          <div id="{{_id}}content" class="personalLetterContent">
+            <div class="LetterHead">来自 <strong>{{userName}}</strong> 的私信</div>
+            <div class="closePersonalLetter"><i class="fa fa-angle-left fa-fw"></i></div>
+            <div class="LetterContent">{{content}}</div>
+            <a href="mailto:{{userEmail}}?subject=Re:{{userName}}"><div class="LetterFooter">
+              <div class="show-user-email">联系邮箱：{{userEmail}}</div>
+            </div></a>
+          </div>
+          <div class="line">
+              <span></span>
+          </div>
+      {{/if}}
+      {{#if isAlsoFavourite eventType}}
+          <a href="javascript:void(0);" class="contentList" data-id="{{_id}}" data-post="{{postId}}">
+              {{#if notRead isRead checked @index createdAt}}
+              <div class="readTips"></div>
+              {{/if}}
+              <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+              <div id="{{postId}}" class="alarm">{{ownerName}} 也赞了此故事 《{{postTitle}}》</div>
+              <div class="createAt">{{time_diff createdAt}}</div>
+          </a>
+          <div class="line">
+              <span></span>
+          </div>
+      {{/if}}
+      {{#if isPcommentOwner eventType}}
+          <a href="javascript:void(0);" class="contentList" data-id="{{_id}}" data-post="{{postId}}">
+              {{#if notRead isRead checked @index createdAt}}
+              <div class="readTips"></div>
+              {{/if}}
+              <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+              <div id="{{postId}}" class="alarm">{{ownerName}} 点评了您的故事 《{{postTitle}}》</div>
+              <div class="createAt">{{time_diff createdAt}}</div>
+          </a>
+          <div class="line">
+              <span></span>
+          </div>
+      {{/if}}
+      {{#if isReComment eventType}}
+        <a href="javascript:void(0);" class="contentList" data-id="{{_id}}" data-post="{{postId}}">
+        {{#if notRead isRead checked @index createdAt}}
+              <div class="readTips" style="background: green; width:10px; height:10px;"></div>
+              {{/if}}
+          <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+          <div id="{{postId}}" class="alarm">{{ownerName}} 回复了您参与讨论的故事 《{{postTitle}}》</div>
+          <div class="createAt">{{time_diff createdAt}}</div>
+        </a>
+        <div class="line">
+          <span></span>
+        </div>
+      {{/if}}
+      {{#if isComment eventType}}
+        <a href="javascript:void(0);" class="contentList" data-id="{{_id}}" data-post="{{postId}}">
+          {{#if notRead isRead checked @index createdAt}}
+              <div class="readTips"></div>
+              {{/if}}
+          <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+          <div id="{{postId}}" class="alarm">{{ownerName}} 回复了您的故事 《{{postTitle}}》</div>
+          <div class="createAt">{{time_diff createdAt}}</div>
+        </a>
+        <div class="line">
+          <span></span>
+        </div>
+      {{/if}}
+      {{#if selfPosted eventType}}
+        <a href="javascript:void(0);" class="contentList" data-id="{{_id}}" data-post="{{postId}}">
+        {{#if notRead isRead checked @index createdAt}}
+              <div class="readTips"></div>
+              {{/if}}
+          <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+          <div id="{{postId}}" class="alarm">{{ownerName}} 发布了新故事 《{{postTitle}}》</div>
+          <div class="createAt">{{time_diff createdAt}}</div>
+        </a>
+        <div class="line">
+          <span></span>
+        </div>
+      {{/if}}
+      {{#if isRecommand eventType}}
+        <a href="javascript:void(0);" class="contentList" data-id="{{_id}}" data-post="{{postId}}">
+        {{#if notRead isRead checked @index createdAt}}
+              <div class="readTips"></div>
+              {{/if}}
+          <img class="icon" src="{{recommanderIcon}}" width='30' height='30'>
+          <div id="{{postId}}" class="alarm">{{recommander}} 推荐您一个新故事 《{{postTitle}}》</div>
+          <div class="createAt">{{time_diff createdAt}}</div>
+        </a>
+        <div class="line">
+          <span></span>
+        </div>
+      {{/if}}
+      {{#if isGetRequest eventType}}
+        <div id="{{requesterId}}" class="contentList" data-id="{{_id}}">
+          {{#if notRead isRead checked @index createdAt}}
+              <div class="readTips"></div>
+              {{/if}}
+          <img class="icon" src="{{requesterIcon}}" width='30' height='30'>
+          <div id="{{requesterId}}" class="alarm">{{requester}}邀请您加为好友</div>
+          <div class="createAt">{{time_diff createdAt}}</div>
+          {{#if isFriend requesterId}}
+          <div class='button'>已添加</div>
+          {{else}}
+          <div class='button acceptrequest'>接受邀请</div>
+          {{/if}}
+        </div>
+        <div class="line">
+          <span></span>
+        </div>
+      {{/if}}
+      {{#if isSendRequest eventType}}
+        <div id="{{requesteeId}}" class="contentList" data-id="{{_id}}">
+          {{#if notRead isRead checked @index createdAt}}
+              <div class="readTips"></div>
+              {{/if}}
+          <img class="icon" src="{{requesteeIcon}}" width='30' height='30'>
+          <div id="{{requesteeId}}" class="alarm">{{requestee}}</div>
+          <div class="createAt">{{time_diff createdAt}}</div>
+          {{#if isFriend requesteeId}}
+          <div class='button'>已添加</div>
+          {{else}}
+          <div class='button'>已发送邀请</div>
+          {{/if}}
+        </div>
+        <div class="line">
+          <span></span>
+        </div>
+      {{/if}}
+    {{/each}}
+  </div>
+</div>

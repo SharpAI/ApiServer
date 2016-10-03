@@ -41,11 +41,11 @@
             {{/if}}
             <span><i class="fa fa-angle-right fa-fw"></i></span>
         </div>
-        <div class="update  bottomBorder boxTitle">新版本检测
+        <div class="update  bottomBorder boxTitle">{{_ "version"}}
           {{#if isLatestVersion}}
-            <span class="right" style="margin-right: 28px;color: #a1a1a1;">好赞，当前已是最新版本</span>
+            <span class="right" style="margin-right: 28px;color: #a1a1a1;">{{_ "latestversion"}}</span>
           {{else}}
-            <span class="right" style="margin-right: 28px;color: red;">有新版本</span>
+            <span class="right" style="margin-right: 28px;color: red;">{{_ "Newversion"}}</span>
           {{/if}}
             <span ><i class="fa fa-angle-right fa-fw"></i></span>
         </div>

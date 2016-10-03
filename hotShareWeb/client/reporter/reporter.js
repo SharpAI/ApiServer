@@ -190,7 +190,7 @@ Template.reporter.helpers({
     var result;
     if(review instanceof Date){
       result =  formatTime(review);
-      var T = new Date(review.getTime() - created.getTime());
+      var T = new Date(new Date(review.toUTCString()).getTime() - new Date(created.toUTCString()).getTime());
       T = T.getMinutes();
       result += "("+T +" min)";
     } else {

@@ -154,7 +154,7 @@ if Meteor.isClient
       else
         imgurl
     isLocalImgUrlType: (imgUrl)->
-      if imgUrl.indexOf('file://') > -1
+      if imgUrl and imgUrl.indexOf('file://') > -1
         return true
       else 
         return false
@@ -183,6 +183,7 @@ if Meteor.isClient
       domNeedUpdate.each () ->
         top = $(this).css('top').slice(0,-2)
         $(this).css({top: Number(top)+Number(offsetTopLen)+'px'})
+      return
     hasm3u8: (videoInfo)->
       unless videoInfo
         return false
