@@ -19,6 +19,7 @@ window.CallMethod = function(method,param,callback){
 };
 window.Subscribe = function(collection,param,callback){
     if(ddp){
+        document.removeEventListener(collection,callback);
         if(callback){
             document.addEventListener(collection,callback,false);
         }
