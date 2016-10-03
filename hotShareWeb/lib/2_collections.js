@@ -2381,32 +2381,6 @@ if(Meteor.isServer){
         console.log('=================');
         console.log(modifier.$set["ptype"]);
         console.log('=================');
-        if(modifier.$set["ptype"] != 'pcomments'){
-          var pub = modifier.$set["pub"][modifier.$set["pindex"]];
-          var user = Meteor.users.findOne({_id: userId});
-          pub.links = pub.links || [];
-          var link_index = _.pluck(pub.links, 'userId').indexOf(userId);
-          if(link_index === -1){
-            pub.links.push({
-              userId: userId,
-              username: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
-              userIcon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
-              action: modifier.$set["ptype"],
-              enable: pub.likeUserId[userId] === true || pub.dislikeUserId[userId] === true,
-              createAt: new Date(),
-              read: false
-            })
-          }else{
-            pub.links[link_index].enable = pub.likeUserId[userId] === true || pub.dislikeUserId[userId] === true;
-            pub.links[link_index].action = modifier.$set["ptype"];
-            pub.links[link_index].username = user.profile && user.profile.fullname ? user.profile.fullname : user.username;
-            pub.links[link_index].userIcon = user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png';
-            if(pub.likeUserId[userId] === true || pub.dislikeUserId[userId] === true)
-              pub.links[link_index].read = false;
-          }
-          console.log('pub:', modifier.$set["pub"]);
-          modifier.$set["pub"][modifier.$set["pindex"]] = pub;
-        }
 
           updateServerSidePcommentsHookDeferHandle(userId,doc,modifier.$set["ptype"],modifier.$set["pindex"]);
           return true;
