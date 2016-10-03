@@ -52,7 +52,7 @@ ddp.on("connected", function(){
 
 ddp.on("result", function(message){
     if (method_callback[message.id] && typeof method_callback[message.id] === 'function' ){
-        method_callback[message.id]("result",message);
+        method_callback[message.id]("result",message.result);
         //delete method_callback[message.id];
     }
 });
