@@ -2,6 +2,9 @@
  * Created by simba on 10/3/16.
  */
 if (Meteor.isServer){
+    Meteor.startup(function(){
+        Meteor.methods
+    })
     updateServerSidePcommentsHookDeferHandle = function(userId,doc,ptype,pindex){
         Meteor.defer(function(){
             try{
