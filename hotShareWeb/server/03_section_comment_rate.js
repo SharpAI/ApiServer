@@ -11,11 +11,11 @@ if (Meteor.isServer){
             if (section.hasOwnProperty(prop)) {
 
                 if(socialKeywords.indexOf(prop.toString()) > -1){
-                    hasSocialData = true;
                     console.log(JSON.stringify(section[prop]));
                     if(prop.toString().indexOf('UserId')>-1){
                         for(var userid in section[prop]){
                             if(userid.toString() === userId){
+                                hasSocialData = true;
                                 item[prop.toString()] = {};
                                 item[prop.toString()]['userId'] = true;
                                 item[prop.toString()][userId] = true;
@@ -23,8 +23,23 @@ if (Meteor.isServer){
                                 console.log('We need return this user id back:'+ JSON.stringify(item));
                             }
                         }
-                    } else {
-                        item[prop.toString()] = section[prop];
+                    } else if(section[prop]){
+                        hasSocialData = true;
+                        if(prop.toString() === 'pcomments'){
+                            var pcomments = item[prop.toString()];
+                            item[prop.toString()] = [];
+                            pcomments.forEach(function(comment){
+                                item[prop.toString()].push({
+                                    content:comment.content,
+                                    username:comment.username
+                                })
+                            });
+                            if(item[prop.toString()].length <=0){
+                                delete item[prop.toString()];
+                            }
+                        } else {
+                            item[prop.toString()] = section[prop];
+                        }
                     }
                 }
             }
