@@ -473,7 +473,7 @@
             var pcommitContent,pcommitContentHTML1,pcommitContentHTML2,pindex;
             var userName = "匿名";
             var id = localStorage.getItem('pcommentParagraph');
-            pindex = localStorage.getItem('pcommentPindex');
+            pindex = parseInt(localStorage.getItem('pcommentPindex'));
             pcommitContent = $('#pcommitReport').val();
             console.log('==评论内容是=='+pcommitContent); 
             $('#pcommitReport').val('');
