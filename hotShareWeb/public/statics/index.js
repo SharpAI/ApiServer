@@ -25,10 +25,10 @@ globle_init = function(){
 
         LoginWithEmail("Test@163.com","123456",function(type,message){
             console.log('login response:' + JSON.stringify(message));
-            if(type === 'result' && message && message.result){
-                window._loginUserId = message.result.id;
-                window._loginUserToken = message.result.token;
-                window._loginUsertokenExpires = message.result.tokenExpires;
+            if(type === 'result' && message ){
+                window._loginUserId = message.id;
+                window._loginUserToken = message.token;
+                window._loginUsertokenExpires = message.tokenExpires;
                 console.log('user id:'+_loginUserId);
             }
 
