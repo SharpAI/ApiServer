@@ -96,13 +96,13 @@
         });
     };
 
-    var initLazyload = function() {
+    global.initLazyload = function() {
         $(".padding-overlay").siblings("img.lazy").each(function() {
             var $lazyItem = $(this);
             $lazyItem.lazyload({
                 effect: "fadeIn",
                 effectspeed: 600,
-                threshold: 800,
+                threshold: 200,
                 placeholder: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=",
                 load: function() {
                     $(this).parent().actImageFitCover('style');
@@ -187,7 +187,7 @@
 
     gushitie.showpost.init = function () {
         $("#wrapper .mainImage").css("height", ($(window).height() * 0.55) + "px");
-        $('.textDiv1Link').linkify();
+        //$('.textDiv1Link').linkify();
 
         calcLayoutForEachPubElement();
 
@@ -201,8 +201,6 @@
 
             $showPosts.after('<div class="readmore"><div class="readMoreContent"><i class="fa fa-plus-circle"></i>继续阅读</div></div>');
         }
-
-        initLazyload();
 
         $('.showPostsBox .readmore').click(function (e) {
             e.stopPropagation();
