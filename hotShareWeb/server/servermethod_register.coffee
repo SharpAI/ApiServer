@@ -56,9 +56,16 @@ if Meteor.isServer
       )
   Meteor.startup ()->
     Meteor.methods
+      'socialData': (postId)->
+        if !Match.test(postId, String)
+          return []
+        this.unblock();
+        socialData = getSocialDataFromPostId(postId,this.userId)
+        socialData
       'updateThumbs': (postId,userId,pindex,type)->
-        if postId is undefined or userId is undefined or pindex is undefined or type is undefined
+        if !Match.test(postId, String) or !Match.test(userId, String) or !Match.test(pindex, Number) or !Match.test(type, String)
           return false
+        this.unblock();
         post = Posts.findOne({_id: postId})
         if post
           pub = post.pub
@@ -67,51 +74,59 @@ if Meteor.isServer
           if pub and pub[pindex]
             # 喜欢
             if type is 'likeAdd'
-              if pub[pindex].likeSum isnt 0
-                pub[pindex].likeSum = pub[pindex].likeSum +1
-              if pub[pindex].likeUserId
-                pub[pindex].likeUserId.userId = true
+              if typeof pub[pindex].likeSum isnt 'undefined'
+                pub[pindex].likeSum = pub[pindex].likeSum+1
               else
+                pub[pindex].likeSum = 1
+              unless pub[pindex].likeUserId
                 pub[pindex].likeUserId = {}
-                pub[pindex].likeUserId.userId = true
+              pub[pindex].likeUserId['userId'] = true
+              pub[pindex].likeUserId[userId] = true
             if type is 'likeDel'
-              if pub[pindex].likeSum isnt 0
-                pub[pindex].likeSum = pub[pindex].likeSum -1
-              if pub[pindex].likeUserId
-                  pub[pindex].likeUserId.userId = false
+              if typeof pub[pindex].likeSum isnt 'undefined'
+                pub[pindex].likeSum = pub[pindex].likeSum-1
               else
-                pub[pindex].likeUserId = {}
-                pub[pindex].likeUserId.userId = false
+                pub[pindex].likeSum = 0
+              if pub[pindex].likeSum is 0
+                delete pub[pindex].likeUserId
+              else
+                delete pub[pindex].likeUserId[userId]
             # 不喜欢
             if type is 'dislikeAdd'
-              if pub[pindex].dislikeSum isnt 0
-                pub[pindex].dislikeSum = pub[pindex].dislikeSum +1
-              if pub[pindex].dislikeUserId
-                  pub[pindex].dislikeUserId.userId = false
+              if typeof pub[pindex].dislikeSum isnt 'undefined'
+                pub[pindex].dislikeSum = pub[pindex].dislikeSum+1
               else
+                pub[pindex].dislikeSum = 1
+              unless pub[pindex].dislikeUserId
                 pub[pindex].dislikeUserId = {}
-                pub[pindex].dislikeUserId.userId = false
+              pub[pindex].dislikeUserId['userId'] = true
+              pub[pindex].dislikeUserId[userId] = true
             if type is 'dislikeDel'
-              if pub[pindex].dislikeSum isnt 0
-                pub[pindex].dislikeSum = pub[pindex].dislikeSum -1
-              if pub[pindex].dislikeUserId
-                  pub[pindex].dislikeUserId.userId = false
+              if typeof pub[pindex].dislikeSum isnt 'undefined'
+                pub[pindex].dislikeSum = pub[pindex].dislikeSum-1
               else
-                pub[pindex].dislikeUserId = {}
-                pub[pindex].dislikeUserId.userId = false
+                pub[pindex].dislikeSum = 0
+              if pub[pindex].dislikeSum is 0
+                delete pub[pindex].dislikeUserId
+              else
+                delete pub[pindex].dislikeUserId[userId]
 
             Posts.update({_id: postId},{$set:{'pub':pub}})
+            updateServerSidePcommentsHookDeferHandle(userId,post,type,pindex)
+            return true
+        false
       'updatePcommitContent': (postId, userId, pindex,content)->
-        if postId is undefined or userId is undefined or pindex is undefined or content is undefined
+        if !Match.test(postId, String) or !Match.test(userId, String) or !Match.test(pindex, Number) or !Match.test(content, String)
           return false
+        this.unblock();
         post = Posts.findOne({_id: postId})
         user = Meteor.users.findOne({_id: userId})
         if user 
           userIcon = user.profile.icon
           if user.profile and user.profile.fullname
             userName = user.profile.fullname
-          else 
-            username = username
+          else
+            userName = user.username
         pcomment = {
           content: content,
           createdAt: new Date(),
@@ -126,6 +141,7 @@ if Meteor.isServer
               pub[pindex].pcomments = []
             pub[pindex].pcomments.push(pcomment)
           Posts.update({_id: postId},{$set:{'pub':pub}})
+          updateServerSidePcommentsHookDeferHandle(userId,post,'pcomment',pindex)
       # Reporter START
       'isTrustedUser': (userId)->
         user = Meteor.users.findOne({_id: userId})

@@ -353,10 +353,6 @@ if Meteor.isClient
           _.map item.pcomments, (pcom)->
             if pcom.read isnt true and pcom.createdAt >= new Date('2016-09-12 00:00:00') and pcom.userId != Meteor.userId()
               result += 1
-        if item.links and item.links.length > 0
-          _.map item.links, (link)->
-            if link.enable is true and link.read is false and link.userId != Meteor.userId()
-              result += 1
 
       console.log 'msgs:', result
       return result
