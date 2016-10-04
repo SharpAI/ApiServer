@@ -31,6 +31,21 @@ window.Subscribe = function(collection,param,callback){
     }
     return -1;
 };
+window.SubToCol = function(subName,collection,param,callback){
+    if(ddp){
+        document.removeEventListener(collection,callback);
+        if(callback){
+            document.addEventListener(collection,callback,false);
+        }
+        if(param){
+            var subId = ddp.sub(subName,param);
+        } else {
+            var subId = ddp.sub(subName,[]);
+        }
+        return subId
+    }
+    return -1;
+};
 window.LoginWithEmail = function(email,password,callback){
     CallMethod("login", [{
         user: {
