@@ -14,19 +14,14 @@ if (Meteor.isServer){
                     hasSocialData = true;
                     console.log(JSON.stringify(section[prop]));
                     if(prop.toString().indexOf('UserId')>-1){
-                        console.log( 'User Like/Dislike ID' + section[prop][userId]);
                         for(var userid in section[prop]){
                             if(userid.toString() === userId){
-                                console.log('Posted comment on the same post:'+userId)
-                            } else {
-                                console.log('Posted comment NOT on the same post:'+userid+'!=='+userId);
-                                delete section[prop][userid];
+                                item[prop.toString()] = {};
+                                item[prop.toString()]['userId'] = true;
+                                item[prop.toString()][userId] = true;
+
+                                console.log('We need return this user id back:'+ JSON.stringify(item));
                             }
-                        }
-                        if(section[prop].length > 0){
-                            console.log('We need return this user id back:'+ JSON.stringify(section[prop]));
-                            section[prop]['userId'] = true;
-                            item[prop.toString()] = section[prop];
                         }
                     } else {
                         item[prop.toString()] = section[prop];
