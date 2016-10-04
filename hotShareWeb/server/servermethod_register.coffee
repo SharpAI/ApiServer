@@ -116,7 +116,7 @@ if Meteor.isServer
             return true
         false
       'updatePcommitContent': (postId, userId, pindex,content)->
-        if postId is undefined or userId is undefined or pindex is undefined or content is undefined
+        if !Match.test(postId, String) or !Match.test(userId, String) or !Match.test(pindex, Number) or !Match.test(content, String)
           return false
         this.unblock();
         post = Posts.findOne({_id: postId})
@@ -125,8 +125,8 @@ if Meteor.isServer
           userIcon = user.profile.icon
           if user.profile and user.profile.fullname
             userName = user.profile.fullname
-          else 
-            username = username
+          else
+            userName = user.username
         pcomment = {
           content: content,
           createdAt: new Date(),
@@ -141,6 +141,7 @@ if Meteor.isServer
               pub[pindex].pcomments = []
             pub[pindex].pcomments.push(pcomment)
           Posts.update({_id: postId},{$set:{'pub':pub}})
+          updateServerSidePcommentsHookDeferHandle(userId,post,'pcomment',pindex)
       # Reporter START
       'isTrustedUser': (userId)->
         user = Meteor.users.findOne({_id: userId})
