@@ -357,7 +357,6 @@
             ddp.on("connected", () => {
                 console.log("Connected");
             });
-            postid = location.pathname.replace(/[\/]static[\/]/g, "");
             userId = 'testuser';
             const methodUpdatePcommit = ddp.method("updateThumbs", [postid,userId,pindex,type]);
 
@@ -373,11 +372,15 @@
                 postdata = message.fields;
                 console.log('added: '+ JSON.stringify( message));
             });*/
+            postid = location.pathname.replace(/[\/]static[\/]/g, "");
+            CallMethod("updateThumbs", [postid,window._loginUserId,pindex,type],function(result,message){
+                console.log(message)
+            })
         }
         $(".thumbsUp").click(function(e) {
             var self = this;
             var pindex = $(e.currentTarget).parent().parent().parent().attr('index');
-            pindex = pindex.toString();
+            pindex = parseInt(pindex);
             console.log('==点评index=='+pindex);
             if (e.target.className === "fa fa-thumbs-up thumbsUp") {
               syncThumbs(pindex,'likeDel');
@@ -399,7 +402,7 @@
         $(".thumbsDown").click(function(e) {
             var self = this;
             var pindex = $(e.currentTarget).parent().parent().parent().attr('index');
-            pindex = pindex.toString();
+            pindex = parseInt(pindex);
             console.log('==点评index=='+pindex);
             if (e.target.className === "fa fa-thumbs-down thumbsDown") {
               syncThumbs(pindex,'dislikeDel');
@@ -460,6 +463,10 @@
                 postdata = message.fields;
                 console.log('added: '+ JSON.stringify( message));
             });*/
+            postid = location.pathname.replace(/[\/]static[\/]/g, "");
+            CallMethod("updatePcommitContent", [postid,window._loginUserId,pindex,pcommitContent],function(result,message){
+                console.log(message)
+            })
         }
         $('#pcommitReportBtn').click(function(e) {
             var self = this;

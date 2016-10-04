@@ -56,9 +56,15 @@ if Meteor.isServer
       )
   Meteor.startup ()->
     Meteor.methods
+      'socialData': (postId)->
+        if !Match.test(postId, String)
+          return []
+        socialData = getSocialDataFromPostId(postId,this.userId)
+        socialData
       'updateThumbs': (postId,userId,pindex,type)->
         if postId is undefined or userId is undefined or pindex is undefined or type is undefined
           return false
+        this.unblock();
         post = Posts.findOne({_id: postId})
         if post
           pub = post.pub
@@ -104,6 +110,7 @@ if Meteor.isServer
       'updatePcommitContent': (postId, userId, pindex,content)->
         if postId is undefined or userId is undefined or pindex is undefined or content is undefined
           return false
+        this.unblock();
         post = Posts.findOne({_id: postId})
         user = Meteor.users.findOne({_id: userId})
         if user 

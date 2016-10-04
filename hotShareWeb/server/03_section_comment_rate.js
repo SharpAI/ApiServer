@@ -2,9 +2,65 @@
  * Created by simba on 10/3/16.
  */
 if (Meteor.isServer){
-    Meteor.startup(function(){
-        Meteor.methods
-    })
+    var socialDataOfSection = function (section,userId){
+        var item={};
+        var hasSocialData=false;
+        var socialKeywords = ['likeSum','dislikeSum','likeUserId','dislikeUserId','pcomments'];
+
+        for (var prop in section) {
+            if (section.hasOwnProperty(prop)) {
+
+                if(socialKeywords.indexOf(prop.toString()) > -1){
+                    hasSocialData = true;
+                    console.log(JSON.stringify(section[prop]));
+                    if(prop.toString().indexOf('UserId')>-1){
+                        console.log( 'User Like/Dislike ID' + section[prop][userId]);
+                        for(var userid in section[prop]){
+                            if(userid.toString() === userId){
+                                console.log('Posted comment on the same post:'+userId)
+                            } else {
+                                console.log('Posted comment NOT on the same post:'+userid+'!=='+userId);
+                                delete section[prop][userid];
+                            }
+                        }
+                        if(section[prop].length > 0){
+                            console.log('We need return this user id back:'+ JSON.stringify(section[prop]));
+                            section[prop]['userId'] = true;
+                            item[prop.toString()] = section[prop];
+                        }
+                    } else {
+                        item[prop.toString()] = section[prop];
+                    }
+                }
+            }
+        }
+
+        if(hasSocialData){
+            return item;
+        } else{
+            return false;
+        }
+    };
+    getSocialDataFromPostId = function(postId,userId){
+        var post = Posts.findOne({_id: postId});
+        if(!post){
+            return [];
+        }
+        var socialData=[];
+        var pub = post.pub;
+
+        pub.forEach(function(item,index){
+            if(item && item.type && item.type === 'text'){
+                var data=socialDataOfSection(item,userId);
+                if(data){
+                    data.index = index;
+                    socialData.push(data);
+                }
+            }
+        });
+        console.log(socialData);
+        return socialData;
+    };
     updateServerSidePcommentsHookDeferHandle = function(userId,doc,ptype,pindex){
         Meteor.defer(function(){
             try{
