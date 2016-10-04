@@ -26,7 +26,7 @@ if (Meteor.isServer){
                     } else if(section[prop]){
                         hasSocialData = true;
                         if(prop.toString() === 'pcomments'){
-                            var pcomments = item[prop.toString()];
+                            var pcomments = section[prop];
                             item[prop.toString()] = [];
                             pcomments.forEach(function(comment){
                                 item[prop.toString()].push({
