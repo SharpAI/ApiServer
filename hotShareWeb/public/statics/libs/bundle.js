@@ -1,7 +1,484 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/**
+ * Created by simba on 10/5/16.
+ */
+
+
+// We use cryptographically strong PRNGs (crypto.getRandomBytes() on the server,
+// window.crypto.getRandomValues() in the browser) when available. If these
+// PRNGs fail, we fall back to the Alea PRNG, which is not cryptographically
+// strong, and we seed it with various sources such as the date, Math.random,
+// and window size on the client.  When using crypto.getRandomValues(), our
+// primitive is hexString(), from which we construct fraction(). When using
+// window.crypto.getRandomValues() or alea, the primitive is fraction and we use
+// that to construct hex string.
+
+
+// see http://baagoe.org/en/wiki/Better_random_numbers_for_javascript
+// for a full discussion and Alea implementation.
+var Alea = function () {
+    function Mash() {
+        var n = 0xefc8249d;
+
+        var mash = function(data) {
+            data = data.toString();
+            for (var i = 0; i < data.length; i++) {
+                n += data.charCodeAt(i);
+                var h = 0.02519603282416938 * n;
+                n = h >>> 0;
+                h -= n;
+                h *= n;
+                n = h >>> 0;
+                h -= n;
+                n += h * 0x100000000; // 2^32
+            }
+            return (n >>> 0) * 2.3283064365386963e-10; // 2^-32
+        };
+
+        mash.version = 'Mash 0.9';
+        return mash;
+    }
+
+    return (function (args) {
+        var s0 = 0;
+        var s1 = 0;
+        var s2 = 0;
+        var c = 1;
+
+        if (args.length == 0) {
+            args = [+new Date];
+        }
+        var mash = Mash();
+        s0 = mash(' ');
+        s1 = mash(' ');
+        s2 = mash(' ');
+
+        for (var i = 0; i < args.length; i++) {
+            s0 -= mash(args[i]);
+            if (s0 < 0) {
+                s0 += 1;
+            }
+            s1 -= mash(args[i]);
+            if (s1 < 0) {
+                s1 += 1;
+            }
+            s2 -= mash(args[i]);
+            if (s2 < 0) {
+                s2 += 1;
+            }
+        }
+        mash = null;
+
+        var random = function() {
+            var t = 2091639 * s0 + c * 2.3283064365386963e-10; // 2^-32
+            s0 = s1;
+            s1 = s2;
+            return s2 = t - (c = t | 0);
+        };
+        random.uint32 = function() {
+            return random() * 0x100000000; // 2^32
+        };
+        random.fract53 = function() {
+            return random() +
+                (random() * 0x200000 | 0) * 1.1102230246251565e-16; // 2^-53
+        };
+        random.version = 'Alea 0.9';
+        random.args = args;
+        return random;
+
+    } (Array.prototype.slice.call(arguments)));
+};
+
+var UNMISTAKABLE_CHARS = "23456789ABCDEFGHJKLMNPQRSTWXYZabcdefghijkmnopqrstuvwxyz";
+var BASE64_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+    "0123456789-_";
+
+// `type` is one of `RandomGenerator.Type` as defined below.
+//
+// options:
+// - seeds: (required, only for RandomGenerator.Type.ALEA) an array
+//   whose items will be `toString`ed and used as the seed to the Alea
+//   algorithm
+var RandomGenerator = function (type, options) {
+    var self = this;
+    self.type = type;
+
+    if (!RandomGenerator.Type[type]) {
+        throw new Error("Unknown random generator type: " + type);
+    }
+
+    if (type === RandomGenerator.Type.ALEA) {
+        if (!options.seeds) {
+            throw new Error("No seeds were provided for Alea PRNG");
+        }
+        self.alea = Alea.apply(null, options.seeds);
+    }
+};
+
+// Types of PRNGs supported by the `RandomGenerator` class
+RandomGenerator.Type = {
+    // Use Node's built-in `crypto.getRandomBytes` (cryptographically
+    // secure but not seedable, runs only on the server). Reverts to
+    // `crypto.getPseudoRandomBytes` in the extremely uncommon case that
+    // there isn't enough entropy yet
+    NODE_CRYPTO: "NODE_CRYPTO",
+
+    // Use non-IE browser's built-in `window.crypto.getRandomValues`
+    // (cryptographically secure but not seedable, runs only in the
+    // browser).
+    BROWSER_CRYPTO: "BROWSER_CRYPTO",
+
+    // Use the *fast*, seedaable and not cryptographically secure
+    // Alea algorithm
+    ALEA: "ALEA",
+};
+
+/**
+ * @name Random.fraction
+ * @summary Return a number between 0 and 1, like `Math.random`.
+ * @locus Anywhere
+ */
+RandomGenerator.prototype.fraction = function () {
+    var self = this;
+    if (self.type === RandomGenerator.Type.ALEA) {
+        return self.alea();
+    } else if (self.type === RandomGenerator.Type.NODE_CRYPTO) {
+        var numerator = parseInt(self.hexString(8), 16);
+        return numerator * 2.3283064365386963e-10; // 2^-32
+    } else if (self.type === RandomGenerator.Type.BROWSER_CRYPTO) {
+        var array = new Uint32Array(1);
+        window.crypto.getRandomValues(array);
+        return array[0] * 2.3283064365386963e-10; // 2^-32
+    } else {
+        throw new Error('Unknown random generator type: ' + self.type);
+    }
+};
+
+/**
+ * @name Random.hexString
+ * @summary Return a random string of `n` hexadecimal digits.
+ * @locus Anywhere
+ * @param {Number} n Length of the string
+ */
+RandomGenerator.prototype.hexString = function (digits) {
+    var self = this;
+    if (self.type === RandomGenerator.Type.NODE_CRYPTO) {
+        var numBytes = Math.ceil(digits / 2);
+        var bytes;
+        // Try to get cryptographically strong randomness. Fall back to
+        // non-cryptographically strong if not available.
+        try {
+            bytes = nodeCrypto.randomBytes(numBytes);
+        } catch (e) {
+            // XXX should re-throw any error except insufficient entropy
+            bytes = nodeCrypto.pseudoRandomBytes(numBytes);
+        }
+        var result = bytes.toString("hex");
+        // If the number of digits is odd, we'll have generated an extra 4 bits
+        // of randomness, so we need to trim the last digit.
+        return result.substring(0, digits);
+    } else {
+        return this._randomString(digits, "0123456789abcdef");
+    }
+};
+
+RandomGenerator.prototype._randomString = function (charsCount,
+                                                    alphabet) {
+    var self = this;
+    var digits = [];
+    for (var i = 0; i < charsCount; i++) {
+        digits[i] = self.choice(alphabet);
+    }
+    return digits.join("");
+};
+
+/**
+ * @name Random.id
+ * @summary Return a unique identifier, such as `"Jjwjg6gouWLXhMGKW"`, that is
+ * likely to be unique in the whole world.
+ * @locus Anywhere
+ * @param {Number} [n] Optional length of the identifier in characters
+ *   (defaults to 17)
+ */
+RandomGenerator.prototype.id = function (charsCount) {
+    var self = this;
+    // 17 characters is around 96 bits of entropy, which is the amount of
+    // state in the Alea PRNG.
+    if (charsCount === undefined)
+        charsCount = 17;
+
+    return self._randomString(charsCount, UNMISTAKABLE_CHARS);
+};
+
+/**
+ * @name Random.secret
+ * @summary Return a random string of printable characters with 6 bits of
+ * entropy per character. Use `Random.secret` for security-critical secrets
+ * that are intended for machine, rather than human, consumption.
+ * @locus Anywhere
+ * @param {Number} [n] Optional length of the secret string (defaults to 43
+ *   characters, or 256 bits of entropy)
+ */
+RandomGenerator.prototype.secret = function (charsCount) {
+    var self = this;
+    // Default to 256 bits of entropy, or 43 characters at 6 bits per
+    // character.
+    if (charsCount === undefined)
+        charsCount = 43;
+    return self._randomString(charsCount, BASE64_CHARS);
+};
+
+/**
+ * @name Random.choice
+ * @summary Return a random element of the given array or string.
+ * @locus Anywhere
+ * @param {Array|String} arrayOrString Array or string to choose from
+ */
+RandomGenerator.prototype.choice = function (arrayOrString) {
+    var index = Math.floor(this.fraction() * arrayOrString.length);
+    if (typeof arrayOrString === "string")
+        return arrayOrString.substr(index, 1);
+    else
+        return arrayOrString[index];
+};
+
+// instantiate RNG.  Heuristically collect entropy from various sources when a
+// cryptographic PRNG isn't available.
+
+// client sources
+var height = (typeof window !== 'undefined' && window.innerHeight) ||
+    (typeof document !== 'undefined'
+    && document.documentElement
+    && document.documentElement.clientHeight) ||
+    (typeof document !== 'undefined'
+    && document.body
+    && document.body.clientHeight) ||
+    1;
+
+var width = (typeof window !== 'undefined' && window.innerWidth) ||
+    (typeof document !== 'undefined'
+    && document.documentElement
+    && document.documentElement.clientWidth) ||
+    (typeof document !== 'undefined'
+    && document.body
+    && document.body.clientWidth) ||
+    1;
+
+var agent = (typeof navigator !== 'undefined' && navigator.userAgent) || "";
+
+function createAleaGeneratorWithGeneratedSeed() {
+    return new RandomGenerator(
+        RandomGenerator.Type.ALEA,
+        {seeds: [new Date, height, width, agent, Math.random()]});
+};
+
+
+if (typeof window !== "undefined" && window.crypto &&
+    window.crypto.getRandomValues) {
+    Random = new RandomGenerator(RandomGenerator.Type.BROWSER_CRYPTO);
+} else {
+    // On IE 10 and below, there's no browser crypto API
+    // available. Fall back to Alea
+    //
+    // XXX looks like at the moment, we use Alea in IE 11 as well,
+    // which has `window.msCrypto` instead of `window.crypto`.
+    Random = createAleaGeneratorWithGeneratedSeed();
+}
+
+// Create a non-cryptographically secure PRNG with a given seed (using
+// the Alea algorithm)
+/*Random.createWithSeeds = function (...seeds) {
+    if (seeds.length === 0) {
+        throw new Error("No seeds were provided");
+    }
+    return new RandomGenerator(RandomGenerator.Type.ALEA, {seeds: seeds});
+};*/
+
+// Used like `Random`, but much faster and not cryptographically
+// secure
+Random.insecure = createAleaGeneratorWithGeneratedSeed();
+},{}],2:[function(require,module,exports){
+/**
+ * Created by simba on 10/5/16.
+ */
+'use strict';
+
+
+/**
+ * SHA-256 hash function reference implementation.
+ *
+ * @namespace
+ */
+var Sha256 = {};
+
+
+/**
+ * Generates SHA-256 hash of string.
+ *
+ * @param   {string} msg - String to be hashed
+ * @returns {string} Hash of msg as hex character string
+ */
+Sha256.hash = function(msg) {
+    // convert string to UTF-8, as SHA only deals with byte-streams
+    msg = msg.utf8Encode();
+
+    // constants [§4.2.2]
+    var K = [
+        0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+        0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+        0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+        0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+        0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+        0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+        0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+        0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2 ];
+    // initial hash value [§5.3.1]
+    var H = [
+        0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19 ];
+
+    // PREPROCESSING
+
+    msg += String.fromCharCode(0x80);  // add trailing '1' bit (+ 0's padding) to string [§5.1.1]
+
+    // convert string msg into 512-bit/16-integer blocks arrays of ints [§5.2.1]
+    var l = msg.length/4 + 2; // length (in 32-bit integers) of msg + ‘1’ + appended length
+    var N = Math.ceil(l/16);  // number of 16-integer-blocks required to hold 'l' ints
+    var M = new Array(N);
+
+    for (var i=0; i<N; i++) {
+        M[i] = new Array(16);
+        for (var j=0; j<16; j++) {  // encode 4 chars per integer, big-endian encoding
+            M[i][j] = (msg.charCodeAt(i*64+j*4)<<24) | (msg.charCodeAt(i*64+j*4+1)<<16) |
+                (msg.charCodeAt(i*64+j*4+2)<<8) | (msg.charCodeAt(i*64+j*4+3));
+        } // note running off the end of msg is ok 'cos bitwise ops on NaN return 0
+    }
+    // add length (in bits) into final pair of 32-bit integers (big-endian) [§5.1.1]
+    // note: most significant word would be (len-1)*8 >>> 32, but since JS converts
+    // bitwise-op args to 32 bits, we need to simulate this by arithmetic operators
+    M[N-1][14] = ((msg.length-1)*8) / Math.pow(2, 32); M[N-1][14] = Math.floor(M[N-1][14]);
+    M[N-1][15] = ((msg.length-1)*8) & 0xffffffff;
+
+
+    // HASH COMPUTATION [§6.1.2]
+
+    var W = new Array(64); var a, b, c, d, e, f, g, h;
+    for (var i=0; i<N; i++) {
+
+        // 1 - prepare message schedule 'W'
+        for (var t=0;  t<16; t++) W[t] = M[i][t];
+        for (var t=16; t<64; t++) W[t] = (Sha256.σ1(W[t-2]) + W[t-7] + Sha256.σ0(W[t-15]) + W[t-16]) & 0xffffffff;
+
+        // 2 - initialise working variables a, b, c, d, e, f, g, h with previous hash value
+        a = H[0]; b = H[1]; c = H[2]; d = H[3]; e = H[4]; f = H[5]; g = H[6]; h = H[7];
+
+        // 3 - main loop (note 'addition modulo 2^32')
+        for (var t=0; t<64; t++) {
+            var T1 = h + Sha256.Σ1(e) + Sha256.Ch(e, f, g) + K[t] + W[t];
+            var T2 =     Sha256.Σ0(a) + Sha256.Maj(a, b, c);
+            h = g;
+            g = f;
+            f = e;
+            e = (d + T1) & 0xffffffff;
+            d = c;
+            c = b;
+            b = a;
+            a = (T1 + T2) & 0xffffffff;
+        }
+        // 4 - compute the new intermediate hash value (note 'addition modulo 2^32')
+        H[0] = (H[0]+a) & 0xffffffff;
+        H[1] = (H[1]+b) & 0xffffffff;
+        H[2] = (H[2]+c) & 0xffffffff;
+        H[3] = (H[3]+d) & 0xffffffff;
+        H[4] = (H[4]+e) & 0xffffffff;
+        H[5] = (H[5]+f) & 0xffffffff;
+        H[6] = (H[6]+g) & 0xffffffff;
+        H[7] = (H[7]+h) & 0xffffffff;
+    }
+
+    return Sha256.toHexStr(H[0]) + Sha256.toHexStr(H[1]) + Sha256.toHexStr(H[2]) + Sha256.toHexStr(H[3]) +
+        Sha256.toHexStr(H[4]) + Sha256.toHexStr(H[5]) + Sha256.toHexStr(H[6]) + Sha256.toHexStr(H[7]);
+};
+
+
+/**
+ * Rotates right (circular right shift) value x by n positions [§3.2.4].
+ * @private
+ */
+Sha256.ROTR = function(n, x) {
+    return (x >>> n) | (x << (32-n));
+};
+
+/**
+ * Logical functions [§4.1.2].
+ * @private
+ */
+Sha256.Σ0  = function(x) { return Sha256.ROTR(2,  x) ^ Sha256.ROTR(13, x) ^ Sha256.ROTR(22, x); };
+Sha256.Σ1  = function(x) { return Sha256.ROTR(6,  x) ^ Sha256.ROTR(11, x) ^ Sha256.ROTR(25, x); };
+Sha256.σ0  = function(x) { return Sha256.ROTR(7,  x) ^ Sha256.ROTR(18, x) ^ (x>>>3);  };
+Sha256.σ1  = function(x) { return Sha256.ROTR(17, x) ^ Sha256.ROTR(19, x) ^ (x>>>10); };
+Sha256.Ch  = function(x, y, z) { return (x & y) ^ (~x & z); };
+Sha256.Maj = function(x, y, z) { return (x & y) ^ (x & z) ^ (y & z); };
+
+
+/**
+ * Hexadecimal representation of a number.
+ * @private
+ */
+Sha256.toHexStr = function(n) {
+    // note can't use toString(16) as it is implementation-dependant,
+    // and in IE returns signed numbers when used on full words
+    var s='', v;
+    for (var i=7; i>=0; i--) { v = (n>>>(i*4)) & 0xf; s += v.toString(16); }
+    return s;
+};
+
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+
+/** Extend String object with method to encode multi-byte string to utf8
+ *  - monsur.hossa.in/2012/07/20/utf-8-in-javascript.html */
+if (typeof String.prototype.utf8Encode == 'undefined') {
+    String.prototype.utf8Encode = function() {
+        return unescape( encodeURIComponent( this ) );
+    };
+}
+
+/** Extend String object with method to decode utf8 string to multi-byte */
+if (typeof String.prototype.utf8Decode == 'undefined') {
+    String.prototype.utf8Decode = function() {
+        try {
+            return decodeURIComponent( escape( this ) );
+        } catch (e) {
+            return this; // invalid UTF-8? return as-is
+        }
+    };
+}
+
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+if (typeof module != 'undefined' && module.exports) module.exports = Sha256; // CommonJs export
+},{}],3:[function(require,module,exports){
 var appUtils = window.appUtils || {};
 appUtils.ddp = require("ddp.js").default;
 //window.appUtils = appUtils;
+
+var Sha256 = require('./libs/sha256');
+require('./libs/random');
+
+var uuid = function () {
+    var HEX_DIGITS = "0123456789abcdef";
+    var s = [];
+    for (var i = 0; i < 36; i++) {
+        s[i] = Random.choice(HEX_DIGITS);
+    }
+    s[14] = "4";
+    s[19] = HEX_DIGITS.substr((parseInt(s[19],16) & 0x3) | 0x8, 1);
+    s[8] = s[13] = s[18] = s[23] = "-";
+
+    var uuid = s.join("");
+    return uuid;
+};
 
 const options = {
     endpoint: ddpUrl, //"ws://localhost:5000/websocket",
@@ -52,12 +529,98 @@ window.LoginWithEmail = function(email,password,callback){
         user: {
             email: email
         },
-        password: password
+        password: {
+            digest: Sha256.hash(password),
+            algorithm:"sha-256"
+        }
     }],callback);
 };
-window.LoginWithToken = function(token,callback){
-};
-window.LoginWithUsername = function(username,password,callback){
+
+
+/*
+ * Login sequence:
+ * 1. Create User if not token/username saved
+ * 2. Login with username if no token saved, or token expired
+ * 3. Login with Token
+ *
+ * Protocol Buffer:
+ *
+ * 1. Create User: ["{\"msg\":\"method\",\"method\":\"createUser\",\"params\":[{\"username\":\"194c4aeb-1b5c-48b6-8c68-1c9a9de64004\",\"password\":{\"digest\":\"8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92\",\"algorithm\":\"sha-256\"},\"profile\":{\"fullname\":\"匿名\",\"icon\":\"/userPicture.png\",\"anonymous\":true,\"browser\":true}}],\"id\":\"1\"}"]
+ * 2. Login with username: ["{\"msg\":\"method\",\"method\":\"login\",\"params\":[{\"username\":\"194c4aeb-1b5c-48b6-8c68-1c9a9de64004\",\"password\":{\"digest\":\"8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92\",\"algorithm\":\"sha-256\"}}],\"id\":\"1\"}"]
+ * 3. Login with token: ["{\"msg\":\"method\",\"method\":\"login\",\"params\":[{\"resume\":\"HKCS60-5A5xVT7LbpisufeSQSG_Dl1tfK3E-10M3oRK\"}],\"id\":\"1\"}"]
+ */
+function createNewAutoUser(username,callback){
+    CallMethod("createUser", [{
+        username:username,
+        password:{
+            digest:"8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+            algorithm:"sha-256"},
+        profile:{
+            fullname:"匿名",
+            icon:"/userPicture.png"
+            ,anonymous:true,
+            browser:true
+        }
+    }],callback);
+}
+function loginErrorHandle(callback){
+    localStorage.clear('savedUsername');
+    localStorage.clear('loginToken');
+    localStorage.clear('loginTokenExpires');
+    setTimeout(function(){
+        autoLogin(callback);
+    },5000);
+}
+function loginHandle(type,result,callback){
+    console.log('type: '+type+' result:'+result)
+    if(type ==='result' && result && result.token && result.tokenExpires && result.tokenExpires.$date ){
+        /*
+         id:"LApaRD39Ziz2EcpTm"
+         token:"eXoFSIulKAjjezmQ8weQuwhqVqYhY7MFBWj02nzit-z"
+         tokenExpires:{$date: 1483485599652}
+         */
+        console.log('login success');
+        localStorage.setItem('loginToken',result.token);
+        localStorage.setItem('loginTokenExpires',result.tokenExpires.$date);
+        if(callback){
+            callback(type,result);
+        }
+    } else {
+        console.log('login Not Success, need retry.');
+        loginErrorHandle(callback);
+    }
+}
+window.autoLogin = function(callback){
+    var loginToken = localStorage.getItem('loginToken');
+    var loginTokenExpires = localStorage.getItem('loginTokenExpires');
+    if(loginToken && loginToken !=='' && (loginTokenExpires - new Date())>10000){
+        CallMethod("login", [{
+            resume: loginToken
+        }],function(type,result){
+            loginHandle(type,result,callback)
+        });
+        return
+    }
+    var savedUsername = localStorage.getItem('savedUsername');
+    if(savedUsername && savedUsername !== ''){
+        CallMethod("login", [{
+            user:{
+                username:savedUsername
+            },
+            password: {
+                digest: '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92',
+                algorithm:"sha-256"
+            }
+        }],function(type,result){
+            loginHandle(type,result,callback)
+        });
+        return
+    }
+    var randomUsername=uuid();
+    localStorage.setItem('savedUsername',randomUsername);
+    createNewAutoUser(randomUsername,function(type,result){
+        loginHandle(type,result,callback)
+    });
 };
 
 ddp.on("connected", function(){
@@ -69,7 +632,11 @@ ddp.on("connected", function(){
 
 ddp.on("result", function(message){
     if (method_callback[message.id] && typeof method_callback[message.id] === 'function' ){
-        method_callback[message.id]("result",message.result);
+        if(message.result){
+            method_callback[message.id]("result",message.result);
+        } else if(message.error){
+            method_callback[message.id]("error",message.error);
+        }
         //delete method_callback[message.id];
     }
 });
@@ -100,7 +667,7 @@ ddp.on("removed", function(message){
     document.dispatchEvent(event);
 });
 
-},{"ddp.js":2}],2:[function(require,module,exports){
+},{"./libs/random":1,"./libs/sha256":2,"ddp.js":4}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -276,7 +843,7 @@ var DDP = function (_EventEmitter) {
 }(_wolfy87Eventemitter2.default);
 
 exports.default = DDP;
-},{"./queue":3,"./socket":4,"./utils":5,"wolfy87-eventemitter":6}],3:[function(require,module,exports){
+},{"./queue":5,"./socket":6,"./utils":7,"wolfy87-eventemitter":8}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -331,7 +898,7 @@ var Queue = function () {
 }();
 
 exports.default = Queue;
-},{}],4:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -457,7 +1024,7 @@ var Socket = function (_EventEmitter) {
 }(_wolfy87Eventemitter2.default);
 
 exports.default = Socket;
-},{"wolfy87-eventemitter":6}],5:[function(require,module,exports){
+},{"wolfy87-eventemitter":8}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -473,7 +1040,7 @@ function uniqueId() {
 function contains(array, element) {
     return array.indexOf(element) !== -1;
 }
-},{}],6:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /*!
  * EventEmitter v4.2.11 - git.io/ee
  * Unlicense - http://unlicense.org/
@@ -949,4 +1516,4 @@ function contains(array, element) {
     }
 }.call(this));
 
-},{}]},{},[1]);
+},{}]},{},[3]);
