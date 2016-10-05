@@ -19,15 +19,15 @@ globle_init = function(){
         $('.show-post-new-message').show();
         console.log(message)
     };
-    var postFriendHandle = function (e1){
-        var message = e1.detail;
-        console.log('postFriendHandle:'+JSON.stringify(message));
-    };
     var update_read_status = function(){
         if(typeof window.read_report === 'undefined'){
             window.read_report = true;
             CallMethod('readPostReport',[postid,window._loginUserId],function(type,result){
                 console.log('readPostReport, result: '+result)
+            });
+            Subscribe("reading", [post],function(e){
+                var message = e1.detail;
+                console.log('reading: '+JSON.stringify(message));
             });
         }
     };
@@ -49,7 +49,9 @@ globle_init = function(){
                 console.log('Social data is: '+JSON.stringify(message));
             });
 
-            var postFriendsSubId = SubToCol("postFriendsV2","postfriends",[window._loginUserId,postid,20],postFriendHandle);
+            CallMethod("getPostFriends",[postid,0,20],function (type,result){
+                console.log('postFriendHandle:'+JSON.stringify(result));
+            });
             // Post Information is on the page
             /*var postContent = Subscribe("staticPost",[postid]);
              document.addEventListener('posts', function (e) {
