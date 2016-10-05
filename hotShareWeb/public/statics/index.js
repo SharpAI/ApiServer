@@ -25,7 +25,7 @@ globle_init = function(){
             CallMethod('readPostReport',[postid,window._loginUserId],function(type,result){
                 console.log('readPostReport, result: '+result)
             });
-            Subscribe("reading", [post],function(e){
+            Subscribe("reading", [postid],function(e){
                 var message = e1.detail;
                 console.log('reading: '+JSON.stringify(message));
             });
