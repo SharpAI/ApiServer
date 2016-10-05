@@ -555,7 +555,15 @@
               loopAtEnd: false
             });
         });
-
+        $(".postBtn").click(function(){
+            if($('.contactsList .head').is(':visible')){
+                $('.contactsList .head').fadeOut(300);
+            }
+            document.body.scrollTop = 0
+        });
+        $(".discoverBtn").click(function(){
+            document.body.scrollTop = $(".showPostsBox").height();
+        });
         // --查看大图 END --- 
         //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
     };
