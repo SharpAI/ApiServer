@@ -19,6 +19,18 @@ globle_init = function(){
         $('.show-post-new-message').show();
         console.log(message)
     };
+    var update_read_status = function(){
+        if(typeof window.read_report === 'undefined'){
+            window.read_report = true;
+            CallMethod('readPostReport',[postid,window._loginUserId],function(type,result){
+                console.log('readPostReport, result: '+result)
+            });
+            Subscribe("reading", [postid],function(e){
+                var message = e1.detail;
+                console.log('reading: '+JSON.stringify(message));
+            });
+        }
+    };
     var DDPConnectedHandle =  function (e) {
         console.log(e);
         console.log(e.message);
@@ -31,10 +43,14 @@ globle_init = function(){
                 window._loginUsertokenExpires = message.tokenExpires;
                 console.log('user id:'+_loginUserId);
             }
-
+            update_read_status();
             var userNewBellCountId = Subscribe("userNewBellCount", [window._loginUserId],userNewBellCountHandle);
             CallMethod("socialData", [postid],function (result,message){
                 console.log('Social data is: '+JSON.stringify(message));
+            });
+
+            CallMethod("getPostFriends",[postid,0,20],function (type,result){
+                console.log('postFriendHandle:'+JSON.stringify(result));
             });
             // Post Information is on the page
             /*var postContent = Subscribe("staticPost",[postid]);
@@ -54,6 +70,10 @@ globle_init = function(){
                  }*/
                 if (message.subs.includes(userNewBellCountId)) {
                     console.log("userNewBellCount ready");
+                }
+
+                if (message.subs.includes(postFriendsSubId)) {
+                    console.log("postFriendsSubId ready");
                 }
             };
             document.addEventListener('subReady', subReadyHandle , false);

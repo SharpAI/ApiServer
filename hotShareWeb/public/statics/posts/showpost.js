@@ -6,7 +6,7 @@
 
 
     var SUGGEST_POSTS_SKIP = 0;
-    var SUGGEST_POSTS_LIMIT = 10;
+    var SUGGEST_POSTS_LIMIT = 5;
     var SUGGEST_POSTS_LOADING = false;
     var predefineColors = ["#55303e", "#503f32", "#7e766c", "#291d13", "#d59a73", "#a87c5f", "#282632", "#ca9e92", "#a7a07d", "#846843", "#6ea89e", "#292523", "#637168", "#573e1b", "#925f3e", "#786b53", "#aaa489", "#a5926a", "#6a6b6d", "#978d69", "#a0a1a1", "#4b423c", "#5f4a36", "#b6a2a9", "#1c1c4e", "#e0d9dc", "#393838", "#c5bab3", "#a46d40", "#735853", "#3c3c39"];
 
@@ -39,14 +39,14 @@
     var getLayoutTop = function(helper, col, sizeX) {
       var max;
       max = 0;
-      for (i = col; i <= col+sizeX -1; i++) {
+      for (var i = col; i <= col+sizeX -1; i++) {
         max = Math.max(max, helper[(i - 1)]);
       }
       return max;
     };
 
     var updateLayoutData = function(helper, col, sizeX, bottom) {
-      for (i = col; i <= col+sizeX -1; i++) {
+      for (var i = col; i <= col+sizeX -1; i++) {
         helper[(i - 1)] = bottom;
       }
     };
@@ -96,13 +96,13 @@
         });
     };
 
-    var initLazyload = function() {
+    global.initLazyload = function() {
         $(".padding-overlay").siblings("img.lazy").each(function() {
             var $lazyItem = $(this);
             $lazyItem.lazyload({
                 effect: "fadeIn",
                 effectspeed: 600,
-                threshold: 800,
+                threshold: 200,
                 placeholder: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=",
                 load: function() {
                     $(this).parent().actImageFitCover('style');
@@ -187,7 +187,7 @@
 
     gushitie.showpost.init = function () {
         $("#wrapper .mainImage").css("height", ($(window).height() * 0.55) + "px");
-        $('.textDiv1Link').linkify();
+        //$('.textDiv1Link').linkify();
 
         calcLayoutForEachPubElement();
 
@@ -201,8 +201,6 @@
 
             $showPosts.after('<div class="readmore"><div class="readMoreContent"><i class="fa fa-plus-circle"></i>继续阅读</div></div>');
         }
-
-        initLazyload();
 
         $('.showPostsBox .readmore').click(function (e) {
             e.stopPropagation();
@@ -313,6 +311,29 @@
             var userId = localStorage.getItem("Meteor.userId");
             if (userId) url += '/userid/' + userId;
             window.open(url,'_blank')
+        });
+        $(".postTextItem").click(function() {
+            console.log('Need trigger section repost.')
+            var $self, toolbar;
+
+            $self = $(this);
+
+            toolbar = $self.data('toolbarObj');
+
+            if (!toolbar) {
+                $self.toolbar({
+                    content: '.section-toolbar',
+                    position: 'bottom',
+                    hideOnClick: true
+                });
+                $self.on('toolbarItemClick', function(event, buttonClicked) {
+                    //sectionToolbarClickHandler(self, event, buttonClicked);
+                    console.log($self.attr('index'));
+                    console.log('Event: '+event+' Button: '+buttonClicked);
+                });
+
+                $self.data('toolbarObj').show();
+            }
         });
 
         $(".show-post-new-message").click(function() {
@@ -511,33 +532,38 @@
 
         // --- 查看大图 ---
         $(".postImageItem").click(function() {
-            var i, image, j, len, ref, selected, swipedata;
+            var selected, swipedata;
             swipedata = [];
-            i = 0;
             selected = 0;
-            console.log("=============click on image index is: " + this.index);
-            console.log("Need query image url from html through JQUERY")
-            ref = postdata.pub;
-            for (j = 0, len = ref.length; j < len; j++) {
-              image = ref[j];
-              if (image.imgUrl) {
-                if (image.imgUrl === this.imgUrl) {
-                  selected = i;
+
+            var selectedImage = $(this).find('img').attr('data-original');
+            $('.postImageItem').map(function(index,item){
+                var imgUrl = $(item).find('img').attr('data-original');
+                if(imgUrl){
+                    if(selectedImage === imgUrl){
+                        selected = index
+                    }
+                    swipedata.push({
+                        href: imgUrl,
+                        title: ''
+                    });
                 }
-                swipedata.push({
-                  href: image.imgUrl,
-                  title: image.text
-                });
-                i++;
-              }
-            }
+            });
             return $.swipebox(swipedata, {
               initialIndexOnArray: selected,
               hideCloseButtonOnMobile: true,
               loopAtEnd: false
             });
         });
-
+        $(".postBtn").click(function(){
+            if($('.contactsList .head').is(':visible')){
+                $('.contactsList .head').fadeOut(300);
+            }
+            document.body.scrollTop = 0
+        });
+        $(".discoverBtn").click(function(){
+            document.body.scrollTop = $(".showPostsBox").height();
+        });
         // --查看大图 END --- 
         //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
     };

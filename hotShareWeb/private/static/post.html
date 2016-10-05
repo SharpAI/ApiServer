@@ -10,6 +10,7 @@
     <link rel="stylesheet" type="text/css" href="/statics/libs/wookmark/css/main.css">
     <link rel="stylesheet" type="text/css" href="/statics/libs/wookmark/css/overview.css">
     <link rel="stylesheet" type="text/css" href="/statics/libs/swipebox.1.3.0.css">
+    <link rel="stylesheet" type="text/css" href="/statics/libs/jquery.toolbars.css">
     <link rel="icon" href="{{mainImage}}">
 
     <style type="text/css">
@@ -158,24 +159,25 @@
         </div>
     </div>
     <!--  end footer -->
+    {{#if withSectionMenu}}
+        <div class="section-toolbar" id="{{_id}}" style='visibility: hidden;'>
+            <a href="#" class='section-forward' action="section-forward"><i>转发本段</i></a>
+        </div>
+    {{/if}}
 </div>
 <script type="text/javascript" src="/statics/libs/jquery/jquery-1.12.4.min.js"></script>
-<script type="text/javascript" src="/statics/libs/jquery.lazyload.1.9.3.js"></script>
-<script type="text/javascript" src="/statics/libs/jquery.linkify.js"></script>
+<script type="text/javascript" onload="gushitie.showpost.init()" src="/statics/posts/showpost.js"></script>
+
+<script type="text/javascript" onload="$('.textDiv1Link').linkify()" src="/statics/libs/jquery.linkify.js"></script>
+<script type="text/javascript" onload="initLazyload()" src="/statics/libs/jquery.lazyload.1.9.3.js"></script>
 <script type="text/javascript" src="/statics/libs/hammer.min.js"></script>
 <script type="text/javascript" src="/statics/libs/image-fit-cover.js"></script>
 
 <script type="text/javascript" src="/statics/libs/imagesloaded.pkgd.min.js"></script>
 <script type="text/javascript" src="/statics/libs/wookmark/wookmark.min.js"></script>
 <script type="text/javascript" src="/statics/libs/jquery.swipebox.1.3.0.2.js"></script>
-<script type="text/javascript" src="/statics/posts/padding.js"></script>
-<script type="text/javascript" src="/statics/posts/showpost.js"></script>
-
-<script type="text/javascript">
-    $(function() {
-        gushitie.showpost.init();
-    });
-</script>
+<script type="text/javascript" src="/statics/libs/scrollMonitor.1.0.12.js"></script>
+<script type="text/javascript" src="/statics/libs/jquery.toolbar.js"></script>
 
 <script type="text/javascript" src="/statics/index.js"></script>
 <script async type="text/javascript" onload="globle_init()" src="/statics/libs/bundle.js"></script>

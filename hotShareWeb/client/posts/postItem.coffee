@@ -22,7 +22,9 @@ if Meteor.isClient
     parentNode=element.parentNode
     if myData.index is 0
       #Initial the layoutHelper
-      updateLayoutData(layoutHelper,1,6,parentNode.offsetTop)
+      console.log("!!!parentNode.offsetTop = "+parentNode.offsetTop)
+      msgBoxHeight = if Feeds.find({followby: Meteor.userId(), isRead:{$ne: true}, checked:{$ne: true}}).count() > 0 then 65 else 0
+      updateLayoutData(layoutHelper,1,6,parentNode.offsetTop+msgBoxHeight)
     element.style.top=getLayoutTop(layoutHelper,myData.data_col,myData.data_sizex)+imageMarginPixel+'px'
     if myData.data_col isnt 1
       element.style.left=(parentNode.offsetLeft+(myData.data_col-1)*getBaseWidth()+imageMarginPixel)+'px'

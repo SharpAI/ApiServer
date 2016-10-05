@@ -4,7 +4,7 @@
   "description": "to do ddp thing for hotshare",
   "main": "main.js",
   "scripts": {
-    "build": "browserify main.js -o bundle.js && browserify main.js | uglifyjs -p 10 -c -m > bundle-min.js && cp bundle*.js ../hotShareWeb/public/statics/libs/"
+    "build": "browserify main.js -o bundle.js && browserify main.js | uglifyjs -p 10 -c -m > bundle-min.js && cp bundle*.js ../hotShareWeb/public/statics/libs/ && rm bundle*.js"
   },
   "repository": {
     "type": "git+https",
