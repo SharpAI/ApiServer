@@ -532,26 +532,23 @@
 
         // --- 查看大图 ---
         $(".postImageItem").click(function() {
-            var i, image, j, len, ref, selected, swipedata;
+            var selected, swipedata;
             swipedata = [];
-            i = 0;
             selected = 0;
-            console.log("=============click on image index is: " + this.index);
-            console.log("Need query image url from html through JQUERY")
-            ref = postdata.pub;
-            for (j = 0, len = ref.length; j < len; j++) {
-              image = ref[j];
-              if (image.imgUrl) {
-                if (image.imgUrl === this.imgUrl) {
-                  selected = i;
+
+            var selectedImage = $(this).find('img').attr('data-original');
+            $('.postImageItem').map(function(index,item){
+                var imgUrl = $(item).find('img').attr('data-original');
+                if(imgUrl){
+                    if(selectedImage === imgUrl){
+                        selected = index
+                    }
+                    swipedata.push({
+                        href: imgUrl,
+                        title: ''
+                    });
                 }
-                swipedata.push({
-                  href: image.imgUrl,
-                  title: image.text
-                });
-                i++;
-              }
-            }
+            });
             return $.swipebox(swipedata, {
               initialIndexOnArray: selected,
               hideCloseButtonOnMobile: true,
