@@ -39,14 +39,14 @@
     var getLayoutTop = function(helper, col, sizeX) {
       var max;
       max = 0;
-      for (i = col; i <= col+sizeX -1; i++) {
+      for (var i = col; i <= col+sizeX -1; i++) {
         max = Math.max(max, helper[(i - 1)]);
       }
       return max;
     };
 
     var updateLayoutData = function(helper, col, sizeX, bottom) {
-      for (i = col; i <= col+sizeX -1; i++) {
+      for (var i = col; i <= col+sizeX -1; i++) {
         helper[(i - 1)] = bottom;
       }
     };
