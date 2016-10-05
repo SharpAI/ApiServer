@@ -4,7 +4,7 @@ var renderPage = function(){
     var $wrapper = $('#wrapper');
     var $gridster = $('.gridster');
     var $span = $('.bell-post-tips-span');
-    var $test = $('#test');
+    var $test = $('.gridster #test');
 
     console.log('render post-tips:', $box.length > 0 ? 'show' : 'hide');
     if($box.length > 0){
@@ -24,9 +24,34 @@ var renderPage = function(){
   }, 300);
 };
 
+Session.setDefault("TEST_AAA", true);
 Template.bellPostTips.helpers({
   hasNew: function(){
-    return Template.bellPostTips.__helpers.get('feedsCount')() > 0;
+    var feedsCount = Template.bellPostTips.__helpers.get('feedsCount')();
+    var imageMarginPixel=5;
+    var $test = $('.gridster #test');
+    var test = $('.gridster #test')[0];
+    var firstChild = $('.gridster #test .element').first()[0];
+    if (feedsCount > 0) {
+        if ($test && (parseInt(firstChild.style.top) <= test.offsetTop+imageMarginPixel)) {
+            $test.children('.element').each(function () {
+                if (this.style.top.indexOf('px') >= 0) {
+                    this.style.top = (parseInt(this.style.top)+65).toString() + 'px';
+                }
+            });
+            test.style.height = (parseInt(test.style.height)+65).toString() + 'px';
+        }
+    } else {
+        if ($test && (parseInt(firstChild.style.top) > test.offsetTop+imageMarginPixel)) {
+            $test.children('.element').each(function () {
+                if (this.style.top.indexOf('px') >= 0) {
+                    this.style.top = (parseInt(this.style.top)-65).toString() + 'px';
+                }
+            });
+            test.style.height = (parseInt(test.style.height)-65).toString() + 'px';
+        }
+    }
+    return feedsCount > 0;
   },
   feedsCount: function(){
     
@@ -41,7 +66,7 @@ Template.bellPostTips.helpers({
 });
 
 Template.bellPostTips.events({
-  'click .show-post-new-message': function(){
+  'click .msg-box': function(){
     Router.go('/bell');
   }
 });
