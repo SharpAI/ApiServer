@@ -35,7 +35,7 @@ globle_init = function(){
         console.log(e);
         console.log(e.message);
 
-        LoginWithEmail("Test@163.com","123456",function(type,message){
+        autoLogin(function(type,message){
             console.log('login response:' + JSON.stringify(message));
             if(type === 'result' && message ){
                 window._loginUserId = message.id;
@@ -52,28 +52,13 @@ globle_init = function(){
             CallMethod("getPostFriends",[postid,0,20],function (type,result){
                 console.log('postFriendHandle:'+JSON.stringify(result));
             });
-            // Post Information is on the page
-            /*var postContent = Subscribe("staticPost",[postid]);
-             document.addEventListener('posts', function (e) {
-             var message = e.detail;
-             postdata = message.fields;
-             console.log('posts:'+JSON.stringify(message))
-             }, false);*/
             if(typeof subReadyHandle !== 'undefined'){
                 document.removeEventListener('subReady', subReadyHandle);
             }
             subReadyHandle = function (e1) {
                 var message = e1.detail;
-                console.log(message);
-                /*if (message.subs.includes(postContent)) {
-                 console.log("mySubscription ready");
-                 }*/
                 if (message.subs.includes(userNewBellCountId)) {
                     console.log("userNewBellCount ready");
-                }
-
-                if (message.subs.includes(postFriendsSubId)) {
-                    console.log("postFriendsSubId ready");
                 }
             };
             document.addEventListener('subReady', subReadyHandle , false);
