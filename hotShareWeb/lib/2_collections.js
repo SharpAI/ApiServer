@@ -1695,6 +1695,20 @@ if(Meteor.isServer){
         ];
       }
   });
+
+  //Added for the static web to trigger post reading related operation
+  Meteor.publish("reading", function (postId) {
+      if(this.userId === null || !Match.test(postId, String)){
+          return this.ready();
+      }
+      var self = this;
+      self.count = 0;
+      self.meeterIds=[];
+      publicPostsPublisherDeferHandle(userId,postId,self);
+      updateMomentsDeferHandle(self,postId);
+      mqttPostViewHook(self.userId,postId);
+      return this.ready();
+  });
   /*Meteor.publish("drafts", function() {
         return Drafts.find({owner: this.userId});
   });*/
