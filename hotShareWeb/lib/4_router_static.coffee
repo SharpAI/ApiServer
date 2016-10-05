@@ -151,6 +151,7 @@ if Meteor.isServer
 
         SSR.compileTemplate('post', Assets.getText('static/post.html'))
         Template.post.helpers
+            withSectionMenu: withSectionMenu
             getDDPUrl: ()->
               ddp_alter_url
             time_diff: (created)->

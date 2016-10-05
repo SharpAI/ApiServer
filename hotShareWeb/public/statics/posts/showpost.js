@@ -312,6 +312,29 @@
             if (userId) url += '/userid/' + userId;
             window.open(url,'_blank')
         });
+        $(".postTextItem").click(function() {
+            console.log('Need trigger section repost.')
+            var $self, toolbar;
+
+            $self = $(this);
+
+            toolbar = $self.data('toolbarObj');
+
+            if (!toolbar) {
+                $self.toolbar({
+                    content: '.section-toolbar',
+                    position: 'bottom',
+                    hideOnClick: true
+                });
+                $self.on('toolbarItemClick', function(event, buttonClicked) {
+                    //sectionToolbarClickHandler(self, event, buttonClicked);
+                    console.log($self.attr('index'));
+                    console.log('Event: '+event+' Button: '+buttonClicked);
+                });
+
+                $self.data('toolbarObj').show();
+            }
+        });
 
         $(".show-post-new-message").click(function() {
           var userId = window._loginUserId || 'u8MRTTcXLoTzs9oXn';
