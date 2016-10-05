@@ -2,6 +2,8 @@ var appUtils = window.appUtils || {};
 appUtils.ddp = require("ddp.js").default;
 //window.appUtils = appUtils;
 
+var Sha256 = require('./libs/sha256');
+
 const options = {
     endpoint: ddpUrl, //"ws://localhost:5000/websocket",
     SocketConstructor: WebSocket
@@ -51,12 +53,29 @@ window.LoginWithEmail = function(email,password,callback){
         user: {
             email: email
         },
-        password: password
+        password: {
+            digest: Sha256.hash(password),
+            algorithm:"sha-256"
+        }
     }],callback);
 };
-window.LoginWithToken = function(token,callback){
-};
-window.LoginWithUsername = function(username,password,callback){
+
+
+/*
+ * Login sequence:
+ * 1. Create User if not token/username saved
+ * 2. Login with username if no token saved, or token expired
+ * 3. Login with Token
+ *
+ * Protocol Buffer:
+ *
+ * 1. Create User: ["{\"msg\":\"method\",\"method\":\"createUser\",\"params\":[{\"username\":\"194c4aeb-1b5c-48b6-8c68-1c9a9de64004\",\"password\":{\"digest\":\"8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92\",\"algorithm\":\"sha-256\"},\"profile\":{\"fullname\":\"匿名\",\"icon\":\"/userPicture.png\",\"anonymous\":true,\"browser\":true}}],\"id\":\"1\"}"]
+ * 2. Login with username: ["{\"msg\":\"method\",\"method\":\"login\",\"params\":[{\"username\":\"194c4aeb-1b5c-48b6-8c68-1c9a9de64004\",\"password\":{\"digest\":\"8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92\",\"algorithm\":\"sha-256\"}}],\"id\":\"1\"}"]
+ * 3. Login with token: ["{\"msg\":\"method\",\"method\":\"login\",\"params\":[{\"resume\":\"HKCS60-5A5xVT7LbpisufeSQSG_Dl1tfK3E-10M3oRK\"}],\"id\":\"1\"}"]
+ */
+
+window.anonymousLogin = function(){
+
 };
 
 ddp.on("connected", function(){
