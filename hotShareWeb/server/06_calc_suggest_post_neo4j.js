@@ -2,12 +2,6 @@
  * Created by simba on 10/5/16.
  */
 
-
-
-
-'MATCH (u:User)-[v:VIEWER]->(p:Post),(u)-[VIEWER]->(p1:Post) ' +
-'WHERE p.postId="jJrjmtpmvH3dRb3oX" and u.userId<>"tFZYoZjQ5JqPTMNBm" return p1.postId ORDER BY p1.createdBy DESC SKIP 2 LIMIT 5'
-
 if(Meteor.isServer){
     Meteor.startup(function(){
 
@@ -18,10 +12,10 @@ if(Meteor.isServer){
                     return false;
                 }
                 this.unblock();
-                var queryString = 'MATCH (u:User)-[v:VIEWER]->(p:Post),(u)-[VIEWER]->(p1:Post) ' +
+                var queryString = 'MATCH (u:User)-[v:VIEWER]->(p:Post),(u)-[v1:VIEWER]->(p1:Post) ' +
                     'WHERE p.postId="'+ postId +'" and ' +
                     'u.userId<>"'+this.userId+'" ' +
-                    'return u,p1.postId ORDER BY p1.createdBy DESC SKIP '+skip+' LIMIT '+limit;
+                    'return u,p1.postId ORDER BY v1.by DESC SKIP '+skip+' LIMIT '+limit;
                 var e, queryResult;
 
                 try {
