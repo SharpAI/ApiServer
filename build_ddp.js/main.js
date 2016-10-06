@@ -4,6 +4,7 @@ appUtils.ddp = require("ddp.js").default;
 
 var Sha256 = require('./libs/sha256');
 require('./libs/random');
+require('./libs/wechatapi');
 
 var uuid = function () {
     var HEX_DIGITS = "0123456789abcdef";
