@@ -113,6 +113,7 @@
     };
 
     var fetchSuggestPosts = function(skip, limit) {
+        window.fetchedSuggestPosts = true;
         if(SUGGEST_POSTS_LOADING) return;
         SUGGEST_POSTS_LOADING = true;
         console.log('>>> Begin to fetch suggest posts <<<');
@@ -563,6 +564,9 @@
         });
         $(".discoverBtn").click(function(){
             document.body.scrollTop = $(".showPostsBox").height();
+            if(typeof window.fetchedSuggestPosts === 'undefined'){
+                fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
+            }
         });
         // --查看大图 END --- 
         //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
