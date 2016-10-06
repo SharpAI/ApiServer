@@ -169,3 +169,26 @@ if Meteor.isServer
         else
           _.map self.pub, (doc, index, cursor)->
             _.extend(doc, {index: index})
+      metaTitle: ()->
+        title =  this.title
+        if this.addontitle
+          title += ': '+ this.addontitle
+        title
+      description: ()->
+        patagraphLength = this.pub.length
+        invalidString = "您当前程序不支持视频观看"
+        if  patagraphLength > 0 and patagraphLength < 2
+          textArr = this.pub
+          for i in [patagraphLength - 1..0]
+            if textArr[i].text is invalidString
+              descriptionFirstParagraph = "转自《故事贴》"
+            else if textArr[i].text
+              descriptionFirstParagraph = textArr[i].text.substring(0, 100)
+        else if  patagraphLength >= 2
+          textArr = this.pub
+          for i in [patagraphLength - 1..0]
+            if textArr[i].text and textArr[i].text isnt invalidString
+              descriptionFirstParagraph = textArr[i].text.substring(0, 100)
+        else
+          descriptionFirstParagraph = this.title
+        descriptionFirstParagraph
