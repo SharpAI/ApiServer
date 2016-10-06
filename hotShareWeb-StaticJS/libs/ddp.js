@@ -1,10 +1,13 @@
+/**
+ * Created by simba on 10/6/16.
+ */
+
 var appUtils = window.appUtils || {};
 appUtils.ddp = require("ddp.js").default;
 //window.appUtils = appUtils;
 
-var Sha256 = require('./libs/sha256');
-require('./libs/random');
-require('./libs/wechatapi');
+var Sha256 = require('./sha256');
+require('./random');
 
 var uuid = function () {
     var HEX_DIGITS = "0123456789abcdef";

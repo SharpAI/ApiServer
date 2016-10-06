@@ -1,4 +1,11 @@
 (function(global) {
+    window.$ = window.jQuery = require("jquery");
+    require("./libs/jquery.lazyload.1.9.3");
+    require("./libs/jquery.linkify");
+    require("./libs/image-fit-cover");
+    require('./libs/wechatapi');
+    var imagesLoaded = require("imagesloaded");
+
     if (!global.gushitie) global.gushitie = {};
 
     var gushitie = global.gushitie;
@@ -96,7 +103,7 @@
         });
     };
 
-    global.initLazyload = function() {
+    function initLazyload() {
         $(".padding-overlay").siblings("img.lazy").each(function() {
             var $lazyItem = $(this);
             $lazyItem.lazyload({
@@ -110,7 +117,7 @@
             });
             padding.setRandomlyBackgroundColor($lazyItem);
         });
-    };
+    }
     var processSuggestPostsData = function(data){
         var posts = data;
         var counter = posts.length;
@@ -203,12 +210,12 @@
         */
     };
 
-    gushitie.showpost.init = function () {
+    function init() {
         $("#wrapper .mainImage").css("height", ($(window).height() * 0.55) + "px");
-        //$('.textDiv1Link').linkify();
+        $('.textDiv1Link').linkify();
 
         calcLayoutForEachPubElement();
-
+        initLazyload();
         var $showPosts, $test;
         $showPosts = $('.showPosts');
         $test = $('.showPosts').find('.content .gridster #test');
@@ -606,4 +613,5 @@
         // --查看大图 END --- 
         //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
     };
+    init();
 })(window);
