@@ -584,6 +584,24 @@
             if(typeof window.fetchedSuggestPosts === 'undefined'){
                 fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
             }
+            $('.div_contactsList').css('display',"none");
+            $('.div_discover').css('display',"block");
+            $('.div_me').css('display',"none");
+        });
+        $(".contactsBtn").click(function(){
+            //trackEvent("socialBar","Newfrineds");
+            $('.div_contactsList').css('display',"block");
+            $('.div_discover').css('display',"none");
+            $('.div_me').css('display',"none");
+            document.body.scrollTop = $(".showPostsBox").height()
+        });
+        $(".meBtn").click(function(){
+            //trackEvent("socialBar","Me")
+            //Session.set('favouritepostsLimit', 0);
+            $('.div_contactsList').css('display',"none");
+            $('.div_discover').css('display',"none");
+            $('.div_me').css('display',"block");
+            document.body.scrollTop = $(".showPostsBox").height()
         });
         // --查看大图 END --- 
         //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
