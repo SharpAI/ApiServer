@@ -111,79 +111,96 @@
             padding.setRandomlyBackgroundColor($lazyItem);
         });
     };
+    var processSuggestPostsData = function(data){
+        var posts = data;
+        var counter = posts.length;
+        var html = '';
+        posts.forEach(function(post) {
+            if(post.ownerName){
+                var poster =  '<h1 class="username">' + post.ownerName + '<span>发布</span><button class="suggestAlreadyRead"><i class="fa fa-times"></i></button></h1>'
+            } else if(post.reader){
+                var poster =  '<h1 class="username">' + post.reader + '<span>读过</span><button class="suggestAlreadyRead"><i class="fa fa-times"></i></button></h1>'
+            }
+            html += '<div class="newLayout_element" data-postid="' + post.postId + '">'
+                + '<div class="img_placeholder">'
+                + '<img class="mainImage" src="' + post.mainImage+ '" />'
+                + '</div>'
+                + '<div class="pin_content">'
+                + '<p class="title">' + post.title + '</p>'
+                + '<p class="addontitle">' + post.addontitle + '</p>'
+                + poster
+                + '</div>'
+                + '</div>';
+        });
 
+        var $container = $(".moments .newLayout_container");
+
+        if($container.length > 0) {
+            $container.append(html);
+        }
+        else {
+            html = '<div class="newLayout_container">' + html + '</div>';
+            $(".div_discover .moments").append(html);
+            $container = $(".moments .newLayout_container");
+        }
+
+
+        $(".moments .newLayout_element").not('.loaded').each(function() {
+            var elem = this, $elem = $(this);
+            $elem.click(function() {
+                var postid = $(this).data('postid');
+                window.open('/static/' + postid, '_blank');
+            });
+            $elem.detach();
+
+            var imgLoad = imagesLoaded(elem);
+
+            imgLoad.on('done', function() {
+                console.log('>>> img load done!!!');
+                elem.style.display = 'block';
+                //$elem.css('opacity', 0);
+                $elem.addClass('loaded');
+
+                $container.append($elem);
+
+                if (--counter < 1) {
+                    var wookmark = new Wookmark('.newLayout_container', {
+                        autoResize: false,
+                        itemSelector: '.newLayout_element',
+                        itemWidth: "48%",
+                        flexibleWidth: true,
+                        direction: 'left',
+                        align: 'center'
+                    }, true);
+                    SUGGEST_POSTS_LOADING = false;
+                }
+            });
+
+            imgLoad.on('fail', function() {
+                console.error('>>> img load failed!!!');
+            });
+        });
+    }
     var fetchSuggestPosts = function(skip, limit) {
+        if(typeof CallMethod === 'undefined'){
+            return
+        }
         window.fetchedSuggestPosts = true;
         if(SUGGEST_POSTS_LOADING) return;
         SUGGEST_POSTS_LOADING = true;
         console.log('>>> Begin to fetch suggest posts <<<');
+        SUGGEST_POSTS_SKIP += SUGGEST_POSTS_LIMIT;
+        CallMethod('getSuggestedPosts',[postid,skip,limit],function(type,result){
+            console.log('getSuggestedPosts: '+JSON.stringify(result));
+            processSuggestPostsData(result);
+        });
+        /*
         var url = '/static/data/suggestposts/123/' + skip + '/' + limit;
         SUGGEST_POSTS_SKIP += SUGGEST_POSTS_LIMIT;
         $.getJSON(url, function(data) {
-            var posts = data.data;
-            var counter = posts.length;
-            var html = '';
-            posts.forEach(function(post) {
-                html += '<div class="newLayout_element" data-postid="' + post.postId + '">'
-                          + '<div class="img_placeholder">'
-                          + '<img class="mainImage" src="' + post.mainImage+ '" />'
-                          + '</div>'
-                          + '<div class="pin_content">'
-                          + '<p class="title">' + post.title + '</p>'
-                          + '<p class="addontitle">' + post.addontitle + '</p>'
-                          + '<h1 class="username">' + post.ownerName + '<span>发布</span><button class="suggestAlreadyRead"><i class="fa fa-times"></i></button></h1>'
-                          + '</div>'
-                          + '</div>';
-            });
-
-            var $container = $(".moments .newLayout_container");
-
-            if($container.length > 0) {
-                $container.append(html);
-            }
-            else {
-                html = '<div class="newLayout_container">' + html + '</div>';
-                $(".div_discover .moments").append(html);
-                $container = $(".moments .newLayout_container");
-            }
-
-
-            $(".moments .newLayout_element").not('.loaded').each(function() {
-                var elem = this, $elem = $(this);
-                $elem.click(function() {
-                    var postid = $(this).data('postid');
-                    window.open('/static/' + postid, '_blank');
-                });
-                $elem.detach();
-
-                var imgLoad = imagesLoaded(elem);
-
-                imgLoad.on('done', function() {
-                    console.log('>>> img load done!!!');
-                    elem.style.display = 'block';
-                    //$elem.css('opacity', 0);
-                    $elem.addClass('loaded');
-
-                    $container.append($elem);
-
-                    if (--counter < 1) {
-                        var wookmark = new Wookmark('.newLayout_container', {
-                            autoResize: false,
-                            itemSelector: '.newLayout_element',
-                            itemWidth: "48%",
-                            flexibleWidth: true,
-                            direction: 'left',
-                            align: 'center'
-                        }, true);
-                        SUGGEST_POSTS_LOADING = false;
-                    }
-                });
-
-                imgLoad.on('fail', function() {
-                    console.error('>>> img load failed!!!');
-                });
-            });
+            processSuggestPostsData(data.data);
         });
+        */
     };
 
     gushitie.showpost.init = function () {

@@ -24,6 +24,7 @@ if Meteor.isServer
 
         suggestPostsUserId = Meteor.users.findOne({'username': 'suggestPosts'})._id
         suggestPosts = FollowPosts.find({followby: suggestPostsUserId}, {sort: {createdAt: -1}, skip: skip, limit: limit}).fetch()
+        console.log(suggestPosts);
         res.writeHead(200, {
             'Content-Type': 'application/json'
         })
