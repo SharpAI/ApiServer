@@ -2,7 +2,7 @@ require("./libs/ddp");
 require("./libs/hammer.min");
 require("./libs/wookmark");
 require("./libs/jquery.swipebox.1.3.0.2");
-require("./libs/scrollMonitor.1.0.12");
+window.scrollMonitor = require("./libs/scrollMonitor.1.0.12");
 require("./libs/jquery.toolbar");
 
 postid = location.pathname.replace(/[\/]static[\/]/g, "");
