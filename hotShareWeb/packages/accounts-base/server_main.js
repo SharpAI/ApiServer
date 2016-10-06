@@ -1,3 +1,7 @@
+import {AccountsServer} from "./accounts_server.js";
+import "./accounts_rate_limit.js";
+import "./url_server.js";
+
 /**
  * @namespace Accounts
  * @summary The namespace for all server-side accounts-related methods.
@@ -12,5 +16,14 @@ Accounts = new AccountsServer(Meteor.server);
  * @summary A [Mongo.Collection](#collections) containing user documents.
  * @locus Anywhere
  * @type {Mongo.Collection}
- */
+ * @importFromPackage meteor
+*/
 Meteor.users = Accounts.users;
+
+export {
+  // Since this file is the main module for the server version of the
+  // accounts-base package, properties of non-entry-point modules need to
+  // be re-exported in order to be accessible to modules that import the
+  // accounts-base package.
+  AccountsServer
+};
