@@ -71,7 +71,7 @@ if (Meteor.isServer){
         console.log(socialData);
         return socialData;
     };
-    updateServerSidePcommentsHookDeferHandle = function(userId,doc,ptype,pindex){
+    updateServerSidePcommentsHookDeferHandle = function(userId,doc,ptype,pindex,commentMsg){
         Meteor.defer(function(){
             try{
                 var set_notifiedUsersId = [];
@@ -143,6 +143,8 @@ if (Meteor.isServer){
                                         ownerName: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
                                         ownerIcon: userinfo.profile.icon,
                                         eventType: 'pcomment',
+                                        subType: ptype,
+                                        commentMsg: commentMsg?commentMsg:'',
                                         postId: data.postId,
                                         postTitle: doc.title,
                                         addontitle: doc.addontitle,

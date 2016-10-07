@@ -2323,8 +2323,16 @@ if(Meteor.isServer){
         console.log('=================');
         console.log(modifier.$set["ptype"]);
         console.log('=================');
-
-          updateServerSidePcommentsHookDeferHandle(userId,doc,modifier.$set["ptype"],modifier.$set["pindex"]);
+        var index = modifier.$set["pindex"];
+        var comment = null;
+        if (modifier.$push && (modifier.$set["ptype"] === 'pcomments')) {
+            var pubPush = modifier.$push['pub.'+index+'.pcomments'];
+            if (modifier.$set["ptype"] === 'pcomments') {
+                comment = pubPush.content;
+            }
+            console.log("comment = "+comment);
+        }
+          updateServerSidePcommentsHookDeferHandle(userId,doc,modifier.$set["ptype"],modifier.$set["pindex"], comment);
           return true;
       }
       if (fieldNames.toString() === 'pub' || fieldNames.toString() === 'heart' || fieldNames.toString() === 'retweet' && modifier.$set !== void 0) {
