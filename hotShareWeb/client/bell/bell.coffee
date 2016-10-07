@@ -47,6 +47,8 @@ if Meteor.isClient
         return feeds
       else
         Session.get('persistentFeedsForMe')
+    isPComment:(eventType)->
+      eventType is 'pcomments'
     isAlsoComment:(eventType)->
       eventType is 'pcomment'
     isAlsoFavourite:(eventType)->

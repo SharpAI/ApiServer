@@ -13,7 +13,11 @@
                 <div class="readTips"></div>
                 {{/if}}
                 <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
-                <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "alsoCommentThisStory"}} 《{{postTitle}}》</div>
+                {{#if isPComment subType}}
+                    <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "alsoCommentThisStory"}} 《{{postTitle}}》 "{{commentMsg}}"</div>
+                {{else}}
+                    <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "alsoCommentThisStory"}} 《{{postTitle}}》</div>
+                {{/if}}
                 <div class="createAt">{{time_diff createdAt}}</div>
             </a>
             <div class="line">
