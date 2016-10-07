@@ -1,4 +1,11 @@
 (function(global) {
+    window.$ = window.jQuery = require("jquery");
+    require("./libs/jquery.lazyload.1.9.3");
+    require("./libs/jquery.linkify");
+    require("./libs/image-fit-cover");
+    require('./libs/wechatapi');
+    var imagesLoaded = require("imagesloaded");
+
     if (!global.gushitie) global.gushitie = {};
 
     var gushitie = global.gushitie;
@@ -96,7 +103,7 @@
         });
     };
 
-    global.initLazyload = function() {
+    function initLazyload() {
         $(".padding-overlay").siblings("img.lazy").each(function() {
             var $lazyItem = $(this);
             $lazyItem.lazyload({
@@ -110,87 +117,105 @@
             });
             padding.setRandomlyBackgroundColor($lazyItem);
         });
-    };
+    }
+    var processSuggestPostsData = function(data){
+        var posts = data;
+        var counter = posts.length;
+        var html = '';
+        posts.forEach(function(post) {
+            if(post.ownerName){
+                var poster =  '<h1 class="username">' + post.ownerName + '<span>发布</span><button class="suggestAlreadyRead"><i class="fa fa-times"></i></button></h1>'
+            } else if(post.reader){
+                var poster =  '<h1 class="username">' + post.reader + '<span>读过</span><button class="suggestAlreadyRead"><i class="fa fa-times"></i></button></h1>'
+            }
+            html += '<div class="newLayout_element" data-postid="' + post.postId + '">'
+                + '<div class="img_placeholder">'
+                + '<img class="mainImage" src="' + post.mainImage+ '" />'
+                + '</div>'
+                + '<div class="pin_content">'
+                + '<p class="title">' + post.title + '</p>'
+                + '<p class="addontitle">' + post.addontitle + '</p>'
+                + poster
+                + '</div>'
+                + '</div>';
+        });
 
+        var $container = $(".moments .newLayout_container");
+
+        if($container.length > 0) {
+            $container.append(html);
+        }
+        else {
+            html = '<div class="newLayout_container">' + html + '</div>';
+            $(".div_discover .moments").append(html);
+            $container = $(".moments .newLayout_container");
+        }
+
+
+        $(".moments .newLayout_element").not('.loaded').each(function() {
+            var elem = this, $elem = $(this);
+            $elem.click(function() {
+                var postid = $(this).data('postid');
+                window.open('/static/' + postid, '_blank');
+            });
+            $elem.detach();
+
+            var imgLoad = imagesLoaded(elem);
+
+            imgLoad.on('done', function() {
+                console.log('>>> img load done!!!');
+                elem.style.display = 'block';
+                //$elem.css('opacity', 0);
+                $elem.addClass('loaded');
+
+                $container.append($elem);
+
+                if (--counter < 1) {
+                    var wookmark = new Wookmark('.newLayout_container', {
+                        autoResize: false,
+                        itemSelector: '.newLayout_element',
+                        itemWidth: "48%",
+                        flexibleWidth: true,
+                        direction: 'left',
+                        align: 'center'
+                    }, true);
+                    SUGGEST_POSTS_LOADING = false;
+                }
+            });
+
+            imgLoad.on('fail', function() {
+                console.error('>>> img load failed!!!');
+            });
+        });
+    }
     var fetchSuggestPosts = function(skip, limit) {
+        if(typeof CallMethod === 'undefined'){
+            return
+        }
+        window.fetchedSuggestPosts = true;
         if(SUGGEST_POSTS_LOADING) return;
         SUGGEST_POSTS_LOADING = true;
         console.log('>>> Begin to fetch suggest posts <<<');
+        SUGGEST_POSTS_SKIP += SUGGEST_POSTS_LIMIT;
+        CallMethod('getSuggestedPosts',[postid,skip,limit],function(type,result){
+            console.log('getSuggestedPosts: '+JSON.stringify(result));
+            processSuggestPostsData(result);
+        });
+        /*
         var url = '/static/data/suggestposts/123/' + skip + '/' + limit;
         SUGGEST_POSTS_SKIP += SUGGEST_POSTS_LIMIT;
         $.getJSON(url, function(data) {
-            var posts = data.data;
-            var counter = posts.length;
-            var html = '';
-            posts.forEach(function(post) {
-                html += '<div class="newLayout_element" data-postid="' + post.postId + '">'
-                          + '<div class="img_placeholder">'
-                          + '<img class="mainImage" src="' + post.mainImage+ '" />'
-                          + '</div>'
-                          + '<div class="pin_content">'
-                          + '<p class="title">' + post.title + '</p>'
-                          + '<p class="addontitle">' + post.addontitle + '</p>'
-                          + '<h1 class="username">' + post.ownerName + '<span>发布</span><button class="suggestAlreadyRead"><i class="fa fa-times"></i></button></h1>'
-                          + '</div>'
-                          + '</div>';
-            });
-
-            var $container = $(".moments .newLayout_container");
-
-            if($container.length > 0) {
-                $container.append(html);
-            }
-            else {
-                html = '<div class="newLayout_container">' + html + '</div>';
-                $(".div_discover .moments").append(html);
-                $container = $(".moments .newLayout_container");
-            }
-
-
-            $(".moments .newLayout_element").not('.loaded').each(function() {
-                var elem = this, $elem = $(this);
-                $elem.click(function() {
-                    var postid = $(this).data('postid');
-                    window.open('/static/' + postid, '_blank');
-                });
-                $elem.detach();
-
-                var imgLoad = imagesLoaded(elem);
-
-                imgLoad.on('done', function() {
-                    console.log('>>> img load done!!!');
-                    elem.style.display = 'block';
-                    //$elem.css('opacity', 0);
-                    $elem.addClass('loaded');
-
-                    $container.append($elem);
-
-                    if (--counter < 1) {
-                        var wookmark = new Wookmark('.newLayout_container', {
-                            autoResize: false,
-                            itemSelector: '.newLayout_element',
-                            itemWidth: "48%",
-                            flexibleWidth: true,
-                            direction: 'left',
-                            align: 'center'
-                        }, true);
-                        SUGGEST_POSTS_LOADING = false;
-                    }
-                });
-
-                imgLoad.on('fail', function() {
-                    console.error('>>> img load failed!!!');
-                });
-            });
+            processSuggestPostsData(data.data);
         });
+        */
     };
 
-    gushitie.showpost.init = function () {
+    function init() {
         $("#wrapper .mainImage").css("height", ($(window).height() * 0.55) + "px");
-        //$('.textDiv1Link').linkify();
+        $('.textDiv1Link').linkify();
 
         calcLayoutForEachPubElement();
-
+        initLazyload();
         var $showPosts, $test;
         $showPosts = $('.showPosts');
         $test = $('.showPosts').find('.content .gridster #test');
@@ -563,8 +588,30 @@
         });
         $(".discoverBtn").click(function(){
             document.body.scrollTop = $(".showPostsBox").height();
+            if(typeof window.fetchedSuggestPosts === 'undefined'){
+                fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
+            }
+            $('.div_contactsList').css('display',"none");
+            $('.div_discover').css('display',"block");
+            $('.div_me').css('display',"none");
+        });
+        $(".contactsBtn").click(function(){
+            //trackEvent("socialBar","Newfrineds");
+            $('.div_contactsList').css('display',"block");
+            $('.div_discover').css('display',"none");
+            $('.div_me').css('display',"none");
+            document.body.scrollTop = $(".showPostsBox").height()
+        });
+        $(".meBtn").click(function(){
+            //trackEvent("socialBar","Me")
+            //Session.set('favouritepostsLimit', 0);
+            $('.div_contactsList').css('display',"none");
+            $('.div_discover').css('display',"none");
+            $('.div_me').css('display',"block");
+            document.body.scrollTop = $(".showPostsBox").height()
         });
         // --查看大图 END --- 
         //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
     };
+    init();
 })(window);

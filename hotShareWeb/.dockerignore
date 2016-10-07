@@ -1,0 +1,4 @@
+.meteor/local
+packages/*/.build*
+packages/*/.npm*
+

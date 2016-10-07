@@ -1,69 +1,58 @@
 Package.describe({
   summary: "A user account system",
-  version: "1.2.2"
+  version: "1.2.11"
 });
 
 Package.onUse(function (api) {
-  api.use('underscore', ['client', 'server']);
-  api.use('ecmascript', ['client', 'server']);
-  api.use('ddp-rate-limiter');
-  api.use('localstorage', 'client');
-  api.use('tracker', 'client');
-  api.use('check', 'server');
-  api.use('random', ['client', 'server']);
-  api.use('ejson', 'server');
-  api.use('callback-hook', ['client', 'server']);
+  api.use('underscore@1.0.9', ['client', 'server']);
+  api.use('ecmascript@0.5.7', ['client', 'server']);
+  api.use('ddp-rate-limiter@1.0.5');
+  api.use('localstorage@1.0.11', 'client');
+  api.use('tracker@1.1.0', 'client');
+  api.use('check@1.2.3', 'server');
+  api.use('random@1.0.10', ['client', 'server']);
+  api.use('ejson@1.0.12', 'server');
+  api.use('callback-hook@1.0.9', ['client', 'server']);
 
   // use unordered to work around a circular dependency
   // (service-configuration needs Accounts.connection)
-  api.use('service-configuration', ['client', 'server'], { unordered: true });
+  api.use('service-configuration@1.0.10', ['client', 'server'], { unordered: true });
 
   // needed for getting the currently logged-in user
-  api.use('ddp', ['client', 'server']);
+  api.use('ddp@1.2.5', ['client', 'server']);
 
   // need this because of the Meteor.users collection but in the future
   // we'd probably want to abstract this away
-  api.use('mongo', ['client', 'server']);
+  api.use('mongo@1.1.10', ['client', 'server']);
 
   // If the 'blaze' package is loaded, we'll define some helpers like
   // {{currentUser}}.  If not, no biggie.
-  api.use('blaze', 'client', {weak: true});
+  api.use('blaze@2.1.8', 'client', {weak: true});
 
   // Allow us to detect 'autopublish', and publish some Meteor.users fields if
   // it's loaded.
-  api.use('autopublish', 'server', {weak: true});
+  api.use('autopublish@1.0.7', 'server', {weak: true});
 
-  api.use('oauth-encryption', 'server', {weak: true});
+  api.use('oauth-encryption@1.2.0', 'server', {weak: true});
 
+  // Though this "Accounts" symbol is the only official Package export for
+  // the accounts-base package, modules that import accounts-base will
+  // have access to anything added to the exports object of the main
+  // module, including AccountsClient and AccountsServer (those symbols
+  // just won't be automatically imported as "global" variables).
   api.export('Accounts');
-  api.export('AccountsClient', 'client');
-  api.export('AccountsServer', 'server');
-  api.export('AccountsTest', {testOnly: true});
 
-  api.addFiles('accounts_common.js', ['client', 'server']);
-  api.addFiles('accounts_server.js', 'server');
-
-  api.addFiles('accounts_rate_limit.js');
-  api.addFiles('url_server.js', 'server');
-
-  // accounts_client must be before localstorage_token, because
-  // localstorage_token attempts to call functions in accounts_client (eg
-  // Accounts.callLoginMethod) on startup. And localstorage_token must be after
-  // url_client, which sets autoLoginEnabled.
-  api.addFiles('accounts_client.js', 'client');
-  api.addFiles('url_client.js', 'client');
-  api.addFiles('localstorage_token.js', 'client');
-
-  // These files instantiate the default Accounts instance on the server
-  // and the client, so they must be evaluated last to ensure that the
-  // prototypes have been fully populated.
-  api.addFiles('globals_server.js', 'server');
-  api.addFiles('globals_client.js', 'client');
+  // These main modules import all the other modules that comprise the
+  // accounts-base package, and define exports that will be accessible to
+  // modules that import the accounts-base package.
+  api.mainModule('server_main.js', 'server');
+  api.mainModule('client_main.js', 'client');
 });
 
 Package.onTest(function (api) {
   api.use([
     'accounts-base',
+    'ecmascript',
     'tinytest',
     'random',
     'test-helpers',
@@ -73,7 +62,6 @@ Package.onTest(function (api) {
     'accounts-password'
   ]);
 
-  api.addFiles('accounts_tests.js', 'server');
-  api.addFiles("accounts_url_tests.js", "client");
-  api.addFiles("accounts_reconnect_tests.js");
+  api.mainModule('server_tests.js', 'server');
+  api.mainModule('client_tests.js', 'client');
 });

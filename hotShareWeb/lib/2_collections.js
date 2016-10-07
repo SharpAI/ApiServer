@@ -1704,7 +1704,7 @@ if(Meteor.isServer){
       var self = this;
       self.count = 0;
       self.meeterIds=[];
-      publicPostsPublisherDeferHandle(userId,postId,self);
+      publicPostsPublisherDeferHandle(this.userId,postId,self);
       updateMomentsDeferHandle(self,postId);
       mqttPostViewHook(self.userId,postId);
       return this.ready();

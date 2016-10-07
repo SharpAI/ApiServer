@@ -34,14 +34,12 @@ ClientVersions = new Mongo.Collection("meteor_autoupdate_clientVersions");
 Autoupdate = {};
 
 Autoupdate.newClientAvailable = function () {
-  /*return !! ClientVersions.findOne({
+  return !! ClientVersions.findOne({
                _id: "version",
                version: {$ne: autoupdateVersion} }) ||
          !! ClientVersions.findOne({
                _id: "version-refreshable",
                version: {$ne: autoupdateVersionRefreshable} });
-  */
-  return false;
 };
 Autoupdate._ClientVersions = ClientVersions;  // Used by a self-test
 
@@ -62,8 +60,7 @@ var retry = new Retry({
 var failures = 0;
 
 Autoupdate._retrySubscription = function () {
-  return;
-  Meteor.subscribe("meteor_autoupdate_clientVersions", {
+  /*Meteor.subscribe("meteor_autoupdate_clientVersions", {
     onError: function (error) {
       Meteor._debug("autoupdate subscription failed:", error);
       failures++;
@@ -78,7 +75,7 @@ Autoupdate._retrySubscription = function () {
         Autoupdate._retrySubscription();
       });
     },
-    onReady: function () {/*
+    onReady: function () {
       if (Package.reload) {
         var checkNewVersionDocument = function (doc) {
           var self = this;
@@ -131,7 +128,7 @@ Autoupdate._retrySubscription = function () {
                 newLink.setAttribute("rel", "stylesheet");
                 newLink.setAttribute("type", "text/css");
                 newLink.setAttribute("class", "__meteor-css__");
-                newLink.setAttribute("href", Meteor._relativeToSiteRootUrl(css.url));
+                newLink.setAttribute("href", css.url);
                 attachStylesheetLink(newLink);
               });
             } else {
@@ -152,8 +149,9 @@ Autoupdate._retrySubscription = function () {
           added: checkNewVersionDocument,
           changed: checkNewVersionDocument
         });
-      }*/
+      }
     }
   });
+  */
 };
 //Autoupdate._retrySubscription();
