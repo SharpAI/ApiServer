@@ -40,6 +40,7 @@
   "newInfo": "Moment",
   "loadFailNotification": "Fail to load. Please check your network connection and retry again.",
   "commentYourStory": "commented your story.",
+  "alsoCommentThisStory": "also commented your story.",
   "replyStoryYouJoin": "also commented on the stroies you have commented.",
   "replyYourStory": "replied on your story",
   "publishNewStory": "post a new story",
