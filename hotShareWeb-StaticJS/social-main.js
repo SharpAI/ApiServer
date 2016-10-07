@@ -33,6 +33,11 @@ var update_read_status = function(){
         });
     }
 };
+var userHandle = function(e){
+    var message = e.detail;
+    console.log('users: '+JSON.stringify(message));
+};
+document.addEventListener('users', userHandle , false);
 var DDPConnectedHandle =  function (e) {
     console.log(e);
     console.log(e.message);

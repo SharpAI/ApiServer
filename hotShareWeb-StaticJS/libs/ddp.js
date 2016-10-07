@@ -195,7 +195,7 @@ ddp.on("ready",function(message){
     document.dispatchEvent(event);
 });
 ddp.on("added", function(message){
-    //console.log('collection:', JSON.stringify(message.collection));
+    console.log('collection added:', JSON.stringify(message.collection));
     var event = new CustomEvent(message.collection, { 'detail': message });
     document.dispatchEvent(event);
 });
