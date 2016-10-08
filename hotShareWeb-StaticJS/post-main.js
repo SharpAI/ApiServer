@@ -619,6 +619,56 @@
             document.body.scrollTop = $(".showPostsBox").height()
         });
         // --查看大图 END --- 
+        // ---- Profile START ----
+        var preProfileInfo = function(userId) {
+            window.CallMethod('profileData',[userId],function (type,result){
+                console.log('profileData is ==:'+JSON.stringify(result));
+                // 写入user数据
+                $(".theprofileName").html(result.userProfile.name);
+                $(".userProfileTop .icon").attr('src',result.userProfile.icon);
+                $(".userProfileTop .location").html(result.userProfile.location);
+                $(".userProfileTop .desc").html(result.userProfile.desc);
+                // 写入最近浏览的故事
+                var recentReviewPost = '';
+                var favouriteposts = '';
+                result.recentViewPosts.forEach(function(item){
+                    recentReviewPost += '<a href="http://'+window.location.host+'/static/'+item._id+'" style="color: #5A5A5A;"><li id="'+item.postId+'">'+
+                                        '<div class="postMainImage no-swipe" style="background-image:url('+item.mainImage+')"></div>'+
+                                        '<h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">'+
+                                        item.title+'</h6></li></a>';
+                });
+                
+                // 写入喜欢的故事
+                
+                result.favouritePosts.forEach(function(item) {
+                    favouriteposts += '<a href="http://'+window.location.host+'/static/'+item._id+'" style="color: #5A5A5A;"><div id="'+item._id+'" style="border-radius: 5px; background-color: #f7f7f7;">'+
+                                        '<div class="img_placeholder" style="'+
+                                        'margin: 0 0.125em 1em;-moz-page-break-inside: avoid;-webkit-column-break-inside: avoid;break-inside: avoid;background: white;border-radius:4px;">'+
+                                            '<img class="mainImage" src="'+item.mainImage+'" style="width: 100%;border-radius: 4px 4px 0 0;"/>'+
+                                        '<p class="title" style="font-size: 16px;font-weight: bold;white-space: pre-line;word-wrap: break-word;margin: 10px;">'+item.title+'</p>'+
+                                        '<p class="addontitle" style="font-size:11px;margin: 10px;">'+item.addontitle+'</p>'+
+                                        '</div></div></a>';
+                });
+                $(".recentViewPosts").html(recentReviewPost);
+                $(".favoritePosts").html(favouriteposts);
+                
+            });
+        };
+        var showProfilePage = function(userId) {
+            localStorage.setItem('documentCurrTop',document.body.scrollTop);
+            document.body.scrollTop = 0;
+            preProfileInfo(userId);
+            $(".userProfileBox").show();
+        }
+        $(".showPosts .user").click(function(){
+            showProfilePage($(".showPosts .user").attr("id"));
+        });
+
+        $(".userProfileBox .leftButton").click(function(){
+            document.body.scrollTop = localStorage.getItem('documentCurrTop');
+            $(".userProfileBox").hide();
+        });
+        // ---- Profile END ----
         //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
 
         // 作者热门文章
