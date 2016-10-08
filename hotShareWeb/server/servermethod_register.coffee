@@ -77,8 +77,13 @@ if Meteor.isServer
           userName = user.username
           userIcon = '/userPicture.png'
         
-        # recentViewPosts = ViewLists.find({userId: userId},{fields:{mainImage:1,addontitle:1,title:1},sort: {createdAt: -1}, limit:3}).fetch()
-        recentViewPosts = []
+        viewPostIds = []
+        viewers = Viewers.find({userId: userId}).forEach((item) ->
+          if !~viewPostIds.indexOf(item.postId)
+            viewPostIds.push(item.postId)
+        )
+        console.log(JSON.stringify(viewers))
+        recentViewPosts = Posts.find({_id: {$in: viewPostIds}},{fields:{mainImage:1,addontitle:1,title:1},limit: 3}).fetch()
         postIds = []
         FavouritePosts.find({userId: userId}).forEach((item) ->
           if !~postIds.indexOf(item.postId)
