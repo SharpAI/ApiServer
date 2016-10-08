@@ -56,6 +56,47 @@ if Meteor.isServer
       )
   Meteor.startup ()->
     Meteor.methods
+      'profileData': (userId)->
+        if !Match.test(userId, String)
+          return []
+        this.unblock()
+        user = Meteor.users.findOne({_id: userId})
+        if !user
+          return []
+        userName = '匿名'
+        sex = ''
+        location = ''
+        desc = ''
+        if user.profile 
+          name = user.profile.fullname
+          icon = user.profile.icon
+          sex = if user.profile.sex then user.profile.sex else ''
+          location: if user.profile.location then user.profile.location else ''
+          desc: if user.profile.desc then user.profile.desc else ''
+        else
+          userName = user.username
+          userIcon = '/userPicture.png'
+        
+        # recentViewPosts = ViewLists.find({userId: userId},{fields:{mainImage:1,addontitle:1,title:1},sort: {createdAt: -1}, limit:3}).fetch()
+        recentViewPosts = []
+        postIds = []
+        FavouritePosts.find({userId: userId}).forEach((item) ->
+          if !~postIds.indexOf(item.postId)
+            postIds.push(item.postId)
+        )
+        favouritePosts = Posts.find({_id: {$in: postIds}},{fields:{mainImage:1,addontitle:1,title:1},limit: 10}).fetch()
+        profileData = {
+           userProfile: {
+            name: name,
+            icon: icon,
+            sex: sex,
+            location:location,
+            desc: desc
+          },
+          recentViewPosts: recentViewPosts,
+          favouritePosts: favouritePosts
+        }
+        return profileData
       'socialData': (postId)->
         if !Match.test(postId, String)
           return []

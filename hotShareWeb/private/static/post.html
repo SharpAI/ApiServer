@@ -22,7 +22,7 @@
             background-color: #fff;
         }
     </style>
-
+    
     <script type="text/javascript">
         ddpUrl={{getDDPUrl}};
         sign_server_url="{{sign_server_url}}";
@@ -42,7 +42,7 @@
         <div class="showPosts">
             <div class="head">
                 <div class="rightButton" style="font-weight:bold; color: red;" onclick="window.open('http://cdn.tiegushi.com', '_system');">点我创作</div>
-                <div class="user">
+                <div class="user" id="{{owner}}">
                     <span class="name userDashboard">{{ownerName}}</span>
                     <div class="createAt userDashboard">{{time_diff createdAt}}</div>
                 </div>
@@ -198,7 +198,56 @@
             <a href="#" class='section-forward' action="section-forward"><i>转发本段</i></a>
         </div>
     {{/if}}
+
+    <!-- Profile START-->
+   <div class="userProfileBox" style="display:none; z-index:999;">
+    <div class="wrapper">
+        <div class="userProfileSwipe">
+            <div class="pages">
+                <div class="page userProfilePage scrollable" style="display: block; transform: translate3d(0px, 0px, 0px);position: fixed;">
+                    <div class="userProfile userProfileMarginTop" style="min-height: 528px;">
+                        <div class="head">
+                            <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+                            <div class="theprofileName"></div>
+                        </div>
+                        <div class="userProfileTop">
+                            <img class="icon" src="/userPicture.png" width="70" height="70">
+                            <span class="userName theprofileName"></span>
+                            <span class="location"></span>
+                            <span class="desc"></span>
+                        </div>
+                        <div class="showPostsLine"></div>
+                        <div class="post">
+                            <span class="postLeft">最近浏览的故事</span>
+                        </div>
+
+                        <div class="postImages swipe-control">
+                            <ul class="recentViewPosts"></ul>
+                        </div>
+                        <div class="showPostsLine"></div>
+                        <div class="post">
+                            <span class="postLeft">喜欢的故事</span>
+                        </div>
+                        <div class="favoritePosts" style="padding: 10px;background: #F1F1F1;
+                        -moz-column-count: 2;-webkit-column-count: 2;column-count: 2;
+                        -moz-column-width: 10em;-webkit-column-width: 10em;column-width: 10em;
+                        -moz-column-gap: 1em;-webkit-column-gap: 1em;column-gap: 1em;"> </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+<!-- Profile END -->
+</div>
+<!-- wait START-->
+<div class="wait-loading" style="display:none; position: absolute; top: 0; left:0; right:0; bottom:0; background:rgba(0,0,0,.16);">
+<div style="height:64px; text-align: center;">
+    <img src="/loading-2.gif" style="width: 32px; height:32px; display:block;"/>
+    <p>加载中...</p>
+</div>
+</div>
+<!--wait END -->
 <script type="text/javascript" src="/statics/bundle-post.min.js"></script>
 <script async type="text/javascript" src="/statics/bundle-social.min.js"></script>
 <script async type="text/javascript" onload="wechat_sign()" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
