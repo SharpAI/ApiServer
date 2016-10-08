@@ -32,23 +32,26 @@ Template.bellPostTips.helpers({
     var $test = $('.gridster #test');
     var test = $('.gridster #test')[0];
     var firstChild = $('.gridster #test .element').first()[0];
-    if (feedsCount > 0) {
-        if ($test && (parseInt(firstChild.style.top) <= test.offsetTop+imageMarginPixel)) {
-            $test.children('.element').each(function () {
-                if (this.style.top.indexOf('px') >= 0) {
-                    this.style.top = (parseInt(this.style.top)+65).toString() + 'px';
-                }
-            });
-            test.style.height = (parseInt(test.style.height)+65).toString() + 'px';
-        }
-    } else {
-        if ($test && (parseInt(firstChild.style.top) > test.offsetTop+imageMarginPixel)) {
-            $test.children('.element').each(function () {
-                if (this.style.top.indexOf('px') >= 0) {
-                    this.style.top = (parseInt(this.style.top)-65).toString() + 'px';
-                }
-            });
-            test.style.height = (parseInt(test.style.height)-65).toString() + 'px';
+    console.log("feedsCount = "+feedsCount);
+    if (firstChild) {
+        if (feedsCount > 0) {
+            if ($test && (parseInt(firstChild.style.top) <= test.offsetTop+imageMarginPixel)) {
+                $test.children('.element').each(function () {
+                    if (this.style.top.indexOf('px') >= 0) {
+                        this.style.top = (parseInt(this.style.top)+65).toString() + 'px';
+                    }
+                });
+                test.style.height = (parseInt(test.style.height)+65).toString() + 'px';
+            }
+        } else {
+            if ($test && (parseInt(firstChild.style.top) > test.offsetTop+imageMarginPixel)) {
+                $test.children('.element').each(function () {
+                    if (this.style.top.indexOf('px') >= 0) {
+                        this.style.top = (parseInt(this.style.top)-65).toString() + 'px';
+                    }
+                });
+                test.style.height = (parseInt(test.style.height)-65).toString() + 'px';
+            }
         }
     }
     return feedsCount > 0;

@@ -14,9 +14,17 @@
                 {{/if}}
                 <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
                 {{#if isPComment subType}}
-                    <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "alsoCommentThisStory"}} 《{{postTitle}}》 "{{commentMsg}}"</div>
+                    <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "alsoCommentThisStory"}} 《{{postTitle}}》: "{{commentMsg}}"</div>
                 {{else}}
-                    <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "alsoCommentThisStory"}} 《{{postTitle}}》</div>
+                    {{#if isPLike subType}}
+                        <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "likeThisStory"}} 《{{postTitle}}》</div>
+                    {{else}}
+                        {{#if isPDislike subType}}
+                            <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "dislikeThisStory"}} 《{{postTitle}}》</div>
+                        {{else}}
+                            <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "alsoCommentThisStory"}} 《{{postTitle}}》</div>
+                        {{/if}}
+                    {{/if}}
                 {{/if}}
                 <div class="createAt">{{time_diff createdAt}}</div>
             </a>

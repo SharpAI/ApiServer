@@ -562,7 +562,7 @@ if(Meteor.isServer){
         })
     }
 
-  var sendEmailToSubscriber = function(ptype, pindex, postId, fromUserId, toUserId) {
+  sendEmailToSubscriber = function(ptype, pindex, postId, fromUserId, toUserId) {
         Meteor.defer(function() {
             var content, i, item, len, post, ref, text;
             post = Posts.findOne({

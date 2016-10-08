@@ -11,7 +11,9 @@ if Meteor.isClient
   getLayoutTop=(helper,col,sizeX)->
     max=0
     for i in [col..(col+sizeX-1)]
-      max=Math.max(max,helper[(i-1)])
+      console.log("helper[(i-1)]="+helper[(i-1)])
+      value = if helper[(i-1)] then helper[(i-1)] else 0
+      max=Math.max(max,value)
     max
   updateLayoutData=(helper,col,sizeX,bottom)->
     for i in [col..(col+sizeX-1)]
@@ -22,10 +24,12 @@ if Meteor.isClient
     parentNode=element.parentNode
     if myData.index is 0
       #Initial the layoutHelper
-      console.log("!!!parentNode.offsetTop = "+parentNode.offsetTop)
       msgBoxHeight = if Feeds.find({followby: Meteor.userId(), isRead:{$ne: true}, checked:{$ne: true}}).count() > 0 then 65 else 0
+      console.log("!!!parentNode.offsetTop = "+parentNode.offsetTop+", msgBoxHeight="+msgBoxHeight)
       updateLayoutData(layoutHelper,1,6,parentNode.offsetTop+msgBoxHeight)
+    console.log("myData.data_col="+myData.data_col+", myData.data_sizex="+myData.data_sizex+", "+getLayoutTop(layoutHelper,myData.data_col,myData.data_sizex))
     element.style.top=getLayoutTop(layoutHelper,myData.data_col,myData.data_sizex)+imageMarginPixel+'px'
+    console.log("element.style.top="+element.style.top)
     if myData.data_col isnt 1
       element.style.left=(parentNode.offsetLeft+(myData.data_col-1)*getBaseWidth()+imageMarginPixel)+'px'
       element.style.width=(myData.data_sizex*getBaseWidth()-imageMarginPixel)+'px'
@@ -111,6 +115,8 @@ if Meteor.isClient
 
   Template.postItem.helpers
     isOverLapping: (id)->
+      unless id
+        return
       rect1 = document.getElementById(id).getBoundingClientRect()
       console.log("the next node id is >>> "+$("#"+id).nextAll('.element')[0].id)
       console.log("the node is>>> "+document.getElementById($("#"+id).nextAll('.element')[0].id))

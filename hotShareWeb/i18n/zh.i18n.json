@@ -41,6 +41,8 @@
   "loadFailNotification": "加载失败，请检查网络设置或稍后重试",
   "commentYourStory": "点评了您的故事",
   "alsoCommentThisStory": "也点评了此故事",
+  "likeThisStory": "赞了",
+  "dislikeThisStory": "踩了",
   "alsoFavouriteThisStory": "也赞了此故事",
   "replyStoryYouJoin": "回复了您参与讨论的故事",
   "replyYourStory": "回复了您的故事",
