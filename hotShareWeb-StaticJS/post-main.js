@@ -353,6 +353,14 @@
                 });
                 $self.on('toolbarItemClick', function(event, buttonClicked) {
                     //sectionToolbarClickHandler(self, event, buttonClicked);
+                    var pindex;
+                    pindex = parseInt($self.attr('index')) +1;
+                    var newLineHTML = '第'+pindex+'段 '+$('#wx-title').html();
+                    $(".newline a").html(newLineHTML);
+                    $(".newLine-paragraph").html($('#'+$self.attr('id')+' .textDiv1Link').html());
+                    $(".head-top-border").show();
+                    calcLayoutForEachPubElement();
+                    document.body.scrollTop = 0;
                     console.log($self.attr('index'));
                     console.log('Event: '+event+' Button: '+buttonClicked);
                 });

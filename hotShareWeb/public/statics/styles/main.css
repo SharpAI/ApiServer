@@ -239,6 +239,40 @@ a:focus {
 .personalLetterContent .LetterFooter div a {
   color: deepskyblue;
 }
+ .head-top-border{
+            width: 80%;
+            height: auto;
+            border: 1px solid #ccc;
+            margin-left:10%;
+            margin-top: 30%;
+            padding: 3px;
+            font-size: 16px;
+             
+        }
+       .head-top-border .top-boeders{
+           width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+            padding:5% 10% 15% 10%;
+            overflow:hidden;
+            zoom:1;
+       }
+       .head-top-border .top-boeders p span a{
+           text-decoration: underline;
+       }
+       .head-top-border .top-boeders p span a:hover{
+           color: pink;
+       }
+       .head-top-border .top-boeders p .newline{
+           display: block;
+           float: right;
+           font-size: 14px;
+           color: #999;
+           margin-top:5%;
+       }
+       .head-top-border .top-boeders p .newline-top{
+           float: right;
+       }
 /*==================*/
 
 
