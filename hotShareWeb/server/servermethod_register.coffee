@@ -56,6 +56,12 @@ if Meteor.isServer
       )
   Meteor.startup ()->
     Meteor.methods
+      'updateUserNike': (id, val)->
+        Meteor.users.update({_id: id}, {$set: {'profile.fullname': val}})
+        return;
+      'updateUserSex': (id, val)->
+        Meteor.users.update({_id: id}, {$set: {'profile.sex': val}})
+        return;
       'profileData': (userId)->
         if !Match.test(userId, String)
           return []

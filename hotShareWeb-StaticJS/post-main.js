@@ -616,9 +616,11 @@
             $('.div_contactsList').css('display',"none");
             $('.div_discover').css('display',"none");
             $('.div_me').css('display',"block");
-            document.body.scrollTop = $(".showPostsBox").height()
+            //document.body.scrollTop = $(".showPostsBox").height();
+            $('body').scrollTop($('.div_me').offset().top);        
         });
         // --查看大图 END --- 
+        
         // ---- Profile START ----
         var preProfileInfo = function(userId) {
             window.CallMethod('profileData',[userId],function (type,result){
@@ -669,9 +671,9 @@
             $(".userProfileBox").hide();
         });
         // ---- Profile END ----
-        //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
+        //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);        
 
-        // 作者热门文章
+        // --作者热门文章--
         $("#author-hot-posts").load("/static/author-hot-posts/"+location.pathname.replace(/[\/]static[\/]/g, "")+"?r=" + Math.random(), function(){
           $("#author-hot-posts dl").each(function(){
             $(this).click(function(e){
@@ -679,6 +681,67 @@
             });
           });
         });
+
+        // --我--
+        $('.div_me .set-up .nickname').click(function(){
+          $('.div_me').hide(0, function(){
+            $('.div_me_set-up-nike').show(0, function(){
+              $('body').scrollTop($('.div_me_set-up-nike').offset().top);
+            });
+          });
+        });
+        $('.div_me_set-up-nike .left-btn').click(function(){$('.div_me').show(0);$('.div_me_set-up-nike').hide(0)});
+        $('.div_me_set-up-nike .right-btn').click(function(){
+          if(!$('#div_me_set-up-nike-input').val())
+            return alert('请输入昵称~');
+
+          window.CallMethod('updateUserNike', [window._loginUser._id, $('#div_me_set-up-nike-input').val()]);
+          $('.div_me').show(0);$('.div_me_set-up-nike').hide(0);
+        });
+
+        $('.div_me .set-up .sex').click(function(){
+          $('.div_me').hide(0, function(){
+            $('.div_me_set-up-sex').show(0, function(){
+              $('body').scrollTop($('.div_me_set-up-sex').offset().top);
+            });
+          });
+        });
+        $('.div_me_set-up-sex .left-btn').click(function(){$('.div_me').show(0);$('.div_me_set-up-sex').hide(0)});
+        $('.div_me_set-up-sex .setMale').click(function(){
+          window.CallMethod('updateUserSex', [window._loginUser._id, 'male']);
+          $('.div_me').show(0);$('.div_me_set-up-sex').hide(0);
+        });
+        $('.div_me_set-up-sex .setFemale').click(function(){
+          window.CallMethod('updateUserSex', [window._loginUser._id, 'female']);
+          $('.div_me').show(0);$('.div_me_set-up-sex').hide(0);
+        });
+        document.addEventListener('users', function(e){
+          var message = e.detail;
+          window._loginUser = message.fields;
+          // window._loginUser._id = 'n6uTgF6TbHdtqQbYK';
+          window._loginUser._id = message.id;
+
+          $('.div_me .nickname .value').html(window._loginUser.profile.fullname + '<i class="fa fa-angle-right"></i>'); 
+          $('#div_me_set-up-nike-input').val(window._loginUser.profile.fullname);
+          $('.div_me .sex .value').html((window._loginUser.profile.sex ? (window._loginUser.profile.sex === 'male' ? '男' : '女') : '[未知]') + '<i class="fa fa-angle-right"></i>');
+
+          // 喜欢故事
+          window.CallMethod('profileData', [window._loginUser._id], function(type,result){
+            console.log("==============", result);
+            var favouriteposts = '';
+            result.favouritePosts.forEach(function(item) {
+                favouriteposts += '<a href="http://'+window.location.host+'/static/'+item._id+'" style="color: #5A5A5A;"><div id="'+item._id+'" style="border-radius: 5px; background-color: #f7f7f7;">'+
+                    '<div class="img_placeholder" style="'+
+                    'margin: 0 0.125em 1em;-moz-page-break-inside: avoid;-webkit-column-break-inside: avoid;break-inside: avoid;background: white;border-radius:4px;">'+
+                        '<img class="mainImage" src="'+item.mainImage+'" style="width: 100%;border-radius: 4px 4px 0 0;"/>'+
+                    '<p class="title" style="font-size: 16px;font-weight: bold;white-space: pre-line;word-wrap: break-word;margin: 10px;">'+item.title+'</p>'+
+                    '<p class="addontitle" style="font-size:11px;margin: 10px;">'+item.addontitle+'</p>'+
+                    '</div></div></a>';
+            });
+            $('.favposts').attr('style', 'padding: 10px;background: #F1F1F1;-moz-column-count: 2;-webkit-column-count: 2;column-count: 2;-moz-column-width: 10em;-webkit-column-width: 10em;column-width: 10em;-moz-column-gap: 1em;-webkit-column-gap: 1em;column-gap: 1em;')
+            $(".favposts").html(favouriteposts);
+          }); 
+        }, false);
     };
     init();
 })(window);
