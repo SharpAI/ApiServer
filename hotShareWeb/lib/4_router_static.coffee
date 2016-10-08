@@ -31,6 +31,20 @@ if Meteor.isServer
         res.end(JSON.stringify({data: suggestPosts}))        
     , {where: 'server'}  
 
+    Router.route '/static/author-hot-posts/:_id', (req, res, next)->
+      id = this.params._id
+      SSR.compileTemplate('hot_posts', Assets.getText('static/author-hot-posts.html'))
+
+      Template.hot_posts.helpers
+        authorReadPopularPosts: ()->
+          post = Posts.findOne({_id: id})
+          return Posts.find({_id: {$ne: id},owner: post.owner, publish: {$ne: false}},{sort: {browse: -1},limit: 3})
+
+      res.writeHead(200, {'Content-Type': 'text/html'})
+      html = SSR.render('hot_posts')
+      res.end(minify(html, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
+    , {where: 'server'}
+
     Router.route '/static/bell/:userId', (req, res, next)->
       userId = this.params.userId
       limit = 30 # max 30 count

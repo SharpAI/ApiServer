@@ -620,6 +620,15 @@
         });
         // --查看大图 END --- 
         //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
+
+        // 作者热门文章
+        $("#author-hot-posts").load("/static/author-hot-posts/"+location.pathname.replace(/[\/]static[\/]/g, "")+"?r=" + Math.random(), function(){
+          $("#author-hot-posts dl").each(function(){
+            $(this).click(function(e){
+              location = '/static/' + $(event.currentTarget).attr('data-id');
+            });
+          });
+        });
     };
     init();
 })(window);

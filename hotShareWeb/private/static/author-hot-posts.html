@@ -1,0 +1,12 @@
+<div class="showPostsLine"></div>
+<!--authorInfo Start-->
+<div class="authorInfos">
+  {{#if authorReadPopularPosts}}
+  <div class="tipAuthorHotPosts">—&nbsp;热门文章&nbsp;—</div>
+  <ul>
+    {{#each authorReadPopularPosts}}
+    <dl data-id="{{_id}}" class="authorReadPopularPostItem"><dd>《{{title}}》</dd></dl>
+    {{/each}}
+  </ul>
+  {{/if}}
+</div>
