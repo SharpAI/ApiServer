@@ -71,7 +71,26 @@ if (Meteor.isServer){
         console.log(socialData);
         return socialData;
     };
+
     updateServerSidePcommentsHookDeferHandle = function(userId,doc,ptype,pindex,commentMsg){
+        function removeDuplicatedUser(ar, key) {
+            var ret = [];
+            var found = 0;
+            for (var i = 0; i < ar.length; i++) {
+                found = 0;
+                for (var j = 0; j < ret.length; j++) {
+                    if (ret[j][key] == ar[i][key]) {
+                        found = 1;
+                        break;
+                    }
+                }
+                //console.log("found="+found+", ar[i][key]="+ar[i][key]+", ar[i]="+JSON.stringify(ar[i]));
+                if (found === 0) {
+                    ret.push(ar[i]);
+                }
+            }
+            return ret;
+        }
         Meteor.defer(function(){
             try{
                 var set_notifiedUsersId = [];
@@ -81,7 +100,6 @@ if (Meteor.isServer){
                     needRemove = true;
                 if(ptype ==="dislike" && doc.pub[pindex].dislikeUserId && doc.pub[pindex].dislikeUserId[userId] === true)
                     needRemove = true;
-
                 // 段落转发
                 if(ptype === 'pshare'){
                     if(PShares.find({postId:doc._id,pindex:pindex,userId: userId}).count() > 0)
@@ -116,6 +134,7 @@ if (Meteor.isServer){
                 //console.log("=======pcs.count=="+pcs.count()+"======================");
                 if(pcs.count()>0)
                 {
+                    pcs = removeDuplicatedUser(pcs.fetch(), 'commentUserId');
                     //有人点评了您点评过的帖子
                     pcs.forEach(function(data) {
                         if(data.commentUserId !== userId && data.commentUserId !== doc.owner)
@@ -124,8 +143,7 @@ if (Meteor.isServer){
                                 set_notifiedUsersId.push(data.commentUserId);
                                 sendEmailToSubscriber(ptype, pindex, doc._id, userId, data.commentUserId);
                             }
-
-                            var pfeeds = Feeds.findOne({
+                            /*var pfeeds = Feeds.findOne({
                                 owner: userId,
                                 followby: data.commentUserId,
                                 checked: false,
@@ -133,10 +151,10 @@ if (Meteor.isServer){
                                 pindex: pindex
                             });
                             if (pfeeds || needRemove) {
-                                //console.log("==================already have feed==========");
+                                console.log("==================already have feed==========");
                                 if (pfeeds && needRemove)
                                     Feeds.remove(pfeeds);
-                            } else {
+                            } else {*/
                                 if (userinfo) {
                                     Feeds.insert({
                                         owner: userId,
@@ -174,7 +192,7 @@ if (Meteor.isServer){
                                         pushnotification("palsocomment", doc, data.commentUserId);
                                     }
                                 }
-                            }
+                            //}
                         }
                         //别人赞了你评论的帖子
                         if(doc.pub[pindex].likeUserId && (Object.keys(doc.pub[pindex].likeUserId)).length > 0) {
