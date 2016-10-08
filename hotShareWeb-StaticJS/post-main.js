@@ -68,7 +68,7 @@
         };
     };
 
-    var calcLayoutForEachPubElement = function() {
+    this.calcLayoutForEachPubElement = function() {
         var layoutHelper = [0, 0, 0, 0, 0, 0];
         var imageMarginPixel = 5;
 

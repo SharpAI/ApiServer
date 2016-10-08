@@ -54,6 +54,30 @@ var DDPConnectedHandle =  function (e) {
         var userNewBellCountId = Subscribe("userNewBellCount", [window._loginUserId],userNewBellCountHandle);
         CallMethod("socialData", [postid],function (result,message){
             console.log('Social data is: '+JSON.stringify(message));
+            $.each(message,function(index,content){
+                var html = '';
+                var pcomments = '';
+                // console.log('socialData index is ' + index + ' . this.index is  ' +　this.index + ' . content is ' + JSON.stringify(content) + ' this is ' + JSON.stringify(this) + '  ..dan ');
+                $node = $('[index='+ this.index +']')
+                if(this.pcomments && this.pcomments.length > 0){
+                    for(i=0;i<=this.pcomments.length-1;i++){
+                        pcomments += '<div class="eachComment">'
+                            + '<div class="bubble">'
+                            + '<span class="personName">' + this.pcomments[i].username + '</span>:'
+                            + '<span class="personSay">' + this.pcomments[i].content + '</span>'
+                            + '</div>'
+                            + '</div>';
+                        // console.log('each pcomments is ' + pcomments);
+                    }
+                    // console.log('final pcomments is ' + pcomments);
+                }
+                 
+                html += '<div class="pcomment">'
+                    + pcomments
+                    + '</div>';
+                $node.append(html);
+            });
+            calcLayoutForEachPubElement();
         });
 
         CallMethod("getPostFriends",[postid,0,20],function (type,result){
