@@ -187,12 +187,13 @@ var DDPConnectedHandle =  function (e) {
                         // console.log('each pcomments is ' + pcomments);
                     }
                     // console.log('final pcomments is ' + pcomments);
-                }
+                
                  
                 html += '<div class="pcomment">'
                     + pcomments
                     + '</div>';
                 $node.append(html);
+                }
             });
             calcLayoutForEachPubElement();
         });
