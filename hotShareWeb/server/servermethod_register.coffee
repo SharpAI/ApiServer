@@ -69,20 +69,20 @@ if Meteor.isServer
         user = Meteor.users.findOne({_id: userId})
         if !user
           return []
-        userName = '匿名'
+        name = '匿名'
         sex = ''
         location = ''
         desc = ''
-        if user.profile 
+        if user.profile
           name = user.profile.fullname
           icon = user.profile.icon
-          sex = if user.profile.sex then user.profile.sex else ''
-          location: if user.profile.location then user.profile.location else ''
-          desc: if user.profile.desc then user.profile.desc else ''
+          sex = user.profile.sex
+          location = user.profile.location
+          desc = user.profile.desc
         else
-          userName = user.username
-          userIcon = '/userPicture.png'
-        
+          name = user.username
+          icon = '/userPicture.png'
+        console.log("==lovation=="+location)
         viewPostIds = []
         viewers = Viewers.find({userId: userId}).forEach((item) ->
           if !~viewPostIds.indexOf(item.postId)
