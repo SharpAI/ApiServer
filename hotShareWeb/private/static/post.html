@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="/statics/libs/wookmark/css/overview.css">
     <link rel="stylesheet" type="text/css" href="/statics/libs/swipebox.1.3.0.css">
     <link rel="stylesheet" type="text/css" href="/statics/libs/jquery.toolbars.css">
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="icon" href="{{mainImage}}">
     <meta property="og:type" content="article" />
     <meta property="og:title" content="{{title}}" />
@@ -57,6 +58,7 @@
                     <span class="name userDashboard">{{ownerName}}</span>
                     <div class="createAt userDashboard">{{time_diff createdAt}}</div>
                 </div>
+                <div id="SubscribeAuthor" onclick="$('.subscribeAutorPage').show();"><i class="fa fa-plus"></i> 关注</div>
             </div>
 
             <!--2016/10/8-->
@@ -302,6 +304,22 @@
     </div>
 </div>
 <!-- Profile END -->
+<!-- subscribeAutorPage START -->
+<div class="subscribeAutorPage">
+    <div class="bg"></div>
+    <div class="content">
+        <div class="header">关注作者</div>
+        <div class="body">
+          <textarea id="email" cols="10" rows="3" placeholder="想实时阅读该作者最新文章吗？点击这里留下您的QQ号或者邮箱地址，然后选择“确定”完成关注。我们将把它们送给您！">{{oldMail}}</textarea>
+          <p class="help-block"></p>
+        </div>
+        <div class="footer">
+          <div class="btn cannelBtn">取消</div>
+          <div class="btn okBtn">确定</div>
+        </div>
+    </div>
+  </div>
+  <!-- subscribeAutorPage END -->
 </div>
 <!-- wait START-->
 <div class="wait-loading" onclick="this.style.display='none';">
@@ -312,6 +330,7 @@
 <!--wait END -->
 <script type="text/javascript" src="/statics/bundle-post.min.js"></script>
 <script async type="text/javascript" src="/statics/bundle-social.min.js"></script>
+<script async type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script async type="text/javascript" onload="wechat_sign()" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
 
 </body>

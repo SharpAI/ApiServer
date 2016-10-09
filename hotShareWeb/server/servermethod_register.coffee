@@ -56,6 +56,56 @@ if Meteor.isServer
       )
   Meteor.startup ()->
     Meteor.methods
+      'updateSubscribeAutorEmail':(author,userId,email)->
+        try
+          if !email
+            console.log("null userEmail")
+            return 0
+          followerCount = Follower.find({followerId: author, userId: userId,userEmail: {$exists: true}}).count()
+          owner = Meteor.users.findOne({_id: author})
+          ownerName = if owner.profile.fullname and owner.profile.fullname isnt '' then owner.profile.fullname else owner.username
+          if followerCount > 0
+            upFollowId = Follower.findOne({followerId:author,userId: userId})._id
+            return Follower.update {
+              _id: upFollowId
+            },
+            {
+              $set:{
+                userEmail: email 
+                fromWeb: true 
+              }
+            }
+          else
+            user = Meteor.users.findOne({_id: userId})
+            Meteor.users.update({_id: author}, {$inc: {'profile.web_follower_count': 1}});
+            return Follower.insert {
+              userId: userId
+              #这里存放fullname
+              userName: if user.profile.fullname and user.profile.fullname isnt '' then user.profile.fullname else user.username
+              userIcon: user.profile.icon
+              userDesc: user.profile.desc
+              # 存放关注者的Email
+              userEmail: email 
+              followerId: author
+              #这里存放fullname
+              followerName: ownerName
+              followerIcon: owner.profile.icon
+              followerDesc: owner.profile.desc
+              # 存放关注来源
+              fromWeb: true 
+              createAt: new Date()
+            }
+          text = Assets.getText('email/follower-notify.html')
+          Email.send {
+              to: email,
+              from: '故事贴<notify@mail.tiegushi.com>',
+              subject: '成功关注作者：'+ownerName + '',
+              body: '成功关注作者：'+ownerName + ',我们会不定期的为您推送关注作者的新文章！',
+              html: text
+          }
+        catch error
+          console.log(error)
+          return 0
       'getMoreFavouritePosts': (userId, skip, limit)->
         postIds = []
         FavouritePosts.find({userId: userId}).forEach((item) ->

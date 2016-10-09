@@ -813,6 +813,36 @@
             $(".mePosts").html(favouriteposts);
           }); 
         }, false);
+
+        // ---- 关注作者 START----
+        $('.subscribeAutorPage .cannelBtn,.subscribeAutorPage .bg').on('click', function(){
+            $('.subscribeAutorPage').hide();
+        });
+        $('.subscribeAutorPage .okBtn').on('click', function(){
+            // var $self = $('.subscribeAutorPage');
+            var email,qqValueReg,mailValueReg;
+            email = $('#email').val();
+            console.log(email);
+            // 验证电子邮件合法性
+            qqValueReg = new RegExp(/^[1-9][0-9]{4,9}$/);
+            mailValueReg = new RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/);
+            if (email === '' || !mailValueReg.test(email) && !qqValueReg.test(email)){
+                $('.subscribeAutorPage .help-block').html('请输入正确的QQ号或Email');
+                return false;
+            }
+            if (qqValueReg.test(email)){
+                email += '@qq.com';
+            } 
+            $('.subscribeAutorPage').hide();
+            // 更新关注Email,  updateSubscribeAutorEmail params[author,userId,email]
+            window.CallMethod('updateSubscribeAutorEmail',[$(".showPosts .user").attr("id"),window._loginUser._id,email],function (type,result){
+                console.log('profileData is ==:'+JSON.stringify(result));
+                if(result !== 0) {
+                    toastr.success('您已成功关注作者'+$(".showPosts .user .name").html()+'，确认邮件将很快（10分钟左右）送达，谢谢！','关注成功')
+                }
+            });
+        });
+        // ---- 关注作者 END----
     };
     init();
 })(window);

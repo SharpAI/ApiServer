@@ -39,6 +39,16 @@ if Meteor.isServer
         authorReadPopularPosts: ()->
           post = Posts.findOne({_id: id})
           return Posts.find({_id: {$ne: id},owner: post.owner, publish: {$ne: false}},{sort: {browse: -1},limit: 3})
+        authorInfo: ()->
+          post = Posts.findOne({_id: id})
+          user = Meteor.users.findOne({_id: post.owner})
+          authorName = if user.profile.fullname then user.profile.fullname else user.username
+          authorIcon = user.profile.icon
+          authorInfo = {
+            authorName: authorName
+            authorIcon: authorIcon
+          }
+          return authorInfo
 
       res.writeHead(200, {'Content-Type': 'text/html'})
       html = SSR.render('hot_posts')
