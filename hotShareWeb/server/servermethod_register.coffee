@@ -105,7 +105,8 @@ if Meteor.isServer
             desc: desc
           },
           recentViewPosts: recentViewPosts,
-          favouritePosts: favouritePosts
+          favouritePosts: favouritePosts,
+          mePosts: Posts.find({owner: userId},{fields:{mainImage:1,addontitle:1,title:1},limit: 10}).fetch()
         }
         return profileData
       'socialData': (postId)->
