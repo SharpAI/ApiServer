@@ -370,35 +370,39 @@
         });
 
         var showBellBox = function() {
-          var userId = window._loginUserId || 'u8MRTTcXLoTzs9oXn';
-          $('.wait-loading').show();
-          jQuery.get('/static/bell/' + userId, {}, function(data){
-            $('.wait-loading').hide();
-            console.log('get ajax bell data:', data);
-            $('._bell-box-main').html(data);
-            $('._bell-box').slideDown(300);
+          $('._bell-box').slideDown(300);
+        //   var userId = window._loginUserId || 'u8MRTTcXLoTzs9oXn';
+        //   $('.wait-loading').show();
+        //   jQuery.get('/static/bell/' + userId, {}, function(data){
+        //     $('.wait-loading').hide();
+        //     console.log('get ajax bell data:', data);
+        //     $('._bell-box-main').html(data);
+        //     $('._bell-box').slideDown(300);
 
-            // 显示消息页
-            var $main = $('._bell-box-main');
-            $main.find('#follow').click(function(){
-              $('._bell-box').css('display', 'none');
-            });
-            $main.find('.contentList').click(function(){
-              console.log('feed id:', $(this).attr('data-id'));
-              window._bell.contentList($(this).attr('data-id'));
-              $('._bell-box').css('display', 'none');
-              // calcLayoutForEachPubElement();
-              if($(this).attr('data-id'))
-                location = '/static/' + $(this).attr('data-id');
-            });
-            // $main.find('.acceptrequest').click(function(){
-            //   window._bell.acceptrequest('');
-            //   $('._bell-box').css('display', 'none');
-            // });
-          }, 'html');
+        //     // 显示消息页
+        //     var $main = $('._bell-box-main');
+        //     $main.find('#follow').click(function(){
+        //       $('._bell-box').css('display', 'none');
+        //     });
+        //     $main.find('.contentList').click(function(){
+        //       console.log('feed id:', $(this).attr('data-id'));
+        //       window._bell.contentList($(this).attr('data-id'));
+        //       $('._bell-box').css('display', 'none');
+        //       // calcLayoutForEachPubElement();
+        //       if($(this).attr('data-id'))
+        //         location = '/static/' + $(this).attr('data-id');
+        //     });
+        //     // $main.find('.acceptrequest').click(function(){
+        //     //   window._bell.acceptrequest('');
+        //     //   $('._bell-box').css('display', 'none');
+        //     // });
+        //   }, 'html');
         };
         $(".show-post-new-message").click(function(){showBellBox()});
         $(".div_me .set-up .bell").click(function(){showBellBox()});
+        $('._bell-box .head').click(function(){
+          $('._bell-box').css('display', 'none');
+        });
 
         // --- 评论/点评 START---
         var isRemoveParentColor = function(target, parent, isLike) {

@@ -1181,26 +1181,31 @@ if(Meteor.isServer){
     Meteor.publish('userNewBellCount', function(userId) {
       var self = this;
       var count = 0;
+      var feeds = [];
       var initializing = true;
 
       var handle = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).observeChanges({
         added: function (id) {
           count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
-          self.changed("userNewBellCount", userId, {count: count});
+          feeds = Feeds.find({followby: userId}, {sort: {createdAt: -1}, limit: 30}).fetch();
+          self.changed("userNewBellCount", userId, {count: count, feeds: feeds});
         },
         changed: function (id) {
           count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
-          self.changed("userNewBellCount", userId, {count: count});
+          feeds = Feeds.find({followby: userId}, {sort: {createdAt: -1}, limit: 30}).fetch();
+          self.changed("userNewBellCount", userId, {count: count, feeds: feeds});
         },
         removed: function (id) {
           count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
-          self.changed("userNewBellCount", userId, {count: count});
+          feeds = Feeds.find({followby: userId}, {sort: {createdAt: -1}, limit: 30}).fetch();
+          self.changed("userNewBellCount", userId, {count: count, feeds: feeds});
         }
       });
 
       initializing = false;
       count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
-      self.added("userNewBellCount", userId, {count: count});
+      feeds = Feeds.find({followby: userId}, {sort: {createdAt: -1}, limit: 30}).fetch();
+      self.added("userNewBellCount", userId, {count: count, feeds: feeds});
     //   self.added("userNewBellCount", userId, {count: count});
       self.ready();
 
@@ -1729,6 +1734,12 @@ if(Meteor.isServer){
       return this.ready();
     else
       return Feeds.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
+  });
+  Meteor.publish("feedsByUserId", function(userId, limit) {
+    if(this.userId === null || !Match.test(limit, Number))
+      return this.ready();
+    else
+      return Feeds.find({followby: userId}, {sort: {createdAt: -1}, limit:limit});
   });
   Meteor.publish("userFeeds", function(followId,postId) {
     if(this.userId === null || !Match.test(followId, String) || !Match.test(postId, String))
