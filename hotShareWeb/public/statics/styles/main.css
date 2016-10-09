@@ -6,7 +6,7 @@
 .show-post-new-message .msg-box .tips{ width: 110px; height: 38px; line-height: 38px; float: left; text-align: center;}
 .show-post-new-message .msg-box ._count{width: 26px; height: 26px; line-height: 26px; text-align:  center; position: absolute; right: 10px; top: 50%; margin-top: -13px; background-color: red; color: #fff; border-radius: 50%; font-size: 12px;}
 
-._bell-box{position: absolute; left: 0; right: 0; bottom: 0; top: 0; z-index: 999999999999999; background-color: #fff; display: none;}
+._bell-box{position: fixed; left: 0; right: 0; bottom: 0; top: 0; z-index: 999999999999999; background-color: #fff; display: none;}
 ._bell-box ._bell-box-main{width: 100%;; height: 100%; position: relative;}
 
 .bell .content {
@@ -317,3 +317,4 @@ a:focus {
 .wait-loading{ display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.16); z-index: 9999;}
 .wait-loading div{text-align: center; height: 42px; width: 42px; position: absolute; background: rgba(0, 0, 0, 0.45);  border-radius: 8px; top: 50%; left: 50%; padding: 5px; margin-left: -21px; margin-top: -21px;}
 /*========waitLoading END==========*/
+.gridster{position: relative; margin-top: 0px;}

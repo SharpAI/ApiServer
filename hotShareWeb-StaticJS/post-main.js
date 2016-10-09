@@ -369,9 +369,11 @@
             }
         });
 
-        $(".show-post-new-message").click(function() {
+        var showBellBox = function() {
           var userId = window._loginUserId || 'u8MRTTcXLoTzs9oXn';
+          $('.wait-loading').show();
           jQuery.get('/static/bell/' + userId, {}, function(data){
+            $('.wait-loading').hide();
             console.log('get ajax bell data:', data);
             $('._bell-box-main').html(data);
             $('._bell-box').slideDown(300);
@@ -394,7 +396,9 @@
             //   $('._bell-box').css('display', 'none');
             // });
           }, 'html');
-        });
+        };
+        $(".show-post-new-message").click(function(){showBellBox()});
+        $(".div_me .set-up .bell").click(function(){showBellBox()});
 
         // --- 评论/点评 START---
         var isRemoveParentColor = function(target, parent, isLike) {
