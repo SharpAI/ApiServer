@@ -631,6 +631,8 @@
         
         // ---- Profile START ----
         var preProfileInfo = function(userId) {
+            $('.wait-loading').show();
+            localStorage.setItem('favouritepostsCounts',10);
             window.CallMethod('profileData',[userId],function (type,result){
                 console.log('profileData is ==:'+JSON.stringify(result));
                 // 写入user数据
@@ -661,6 +663,8 @@
                 });
                 $(".recentViewPosts").html(recentReviewPost);
                 $(".favoritePosts").html(favouriteposts);
+                $('.wait-loading').hide();
+                $(".userProfileBox .loadMore").html("加载更多");
                 
             });
         };
@@ -671,12 +675,44 @@
             $(".userProfileBox").show();
         }
         $(".showPosts .user").click(function(){
-            showProfilePage($(".showPosts .user").attr("id"));
+            var profileUserId = $(".showPosts .user").attr("id");
+            localStorage.setItem('profileUserId',profileUserId);
+            showProfilePage(profileUserId);
         });
 
         $(".userProfileBox .leftButton").click(function(){
             document.body.scrollTop = localStorage.getItem('documentCurrTop');
             $(".userProfileBox").hide();
+        });
+        // 加载更多喜欢的故事
+        $(".userProfileBox .loadMore").on('click', function(){
+            var $self = $(this);
+            var favouritepostsCounts;
+            favouritepostsCounts = parseInt(localStorage.getItem('favouritepostsCounts'));
+            $self.html('<img src="/loading-2.gif" style="width: 28px; height:28px;"/> 加载中...');
+            // getMoreFavouritePosts params[userId,skip,limit]
+            window.CallMethod('getMoreFavouritePosts',[localStorage.getItem('profileUserId'),favouritepostsCounts,10],function (type,result){
+                console.log('profileData is ==:'+JSON.stringify(result));
+                var favouriteposts = '';
+                favouritepostsCounts += 10;
+                localStorage.setItem('favouritepostsCounts',favouritepostsCounts);
+                if(result.length === 0){
+                    $self.html('没有更多数据了');
+                    $self.unbind();
+                } else {
+                    for(var i = 0; i< result.length; i++){
+                        favouriteposts += '<a href="http://'+window.location.host+'/static/'+result[i]._id+'" style="color: #5A5A5A;"><div id="'+result[i]._id+'" style="border-radius: 5px; background-color: #f7f7f7;">'+
+                                        '<div class="img_placeholder" style="'+
+                                        'margin: 0 0.125em 1em;-moz-page-break-inside: avoid;-webkit-column-break-inside: avoid;break-inside: avoid;background: white;border-radius:4px;">'+
+                                            '<img class="mainImage" src="'+result[i].mainImage+'" style="width: 100%;border-radius: 4px 4px 0 0;"/>'+
+                                        '<p class="title" style="font-size: 16px;font-weight: bold;white-space: pre-line;word-wrap: break-word;margin: 10px;">'+result[i].title+'</p>'+
+                                        '<p class="addontitle" style="font-size:11px;margin: 10px;">'+result[i].addontitle+'</p>'+
+                                        '</div></div></a>';
+                    }
+                    $(".favoritePosts").append(favouriteposts);
+                    $self.html('加载更多');
+                }
+            });
         });
         // ---- Profile END ----
         //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);        

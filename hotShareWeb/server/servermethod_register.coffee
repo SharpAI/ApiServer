@@ -56,6 +56,14 @@ if Meteor.isServer
       )
   Meteor.startup ()->
     Meteor.methods
+      'getMoreFavouritePosts': (userId, skip, limit)->
+        postIds = []
+        FavouritePosts.find({userId: userId}).forEach((item) ->
+          if !~postIds.indexOf(item.postId)
+            postIds.push(item.postId)
+        )
+        favouritePosts = Posts.find({_id: {$in: postIds}},{fields:{mainImage:1,addontitle:1,title:1},limit: limit,skip:skip}).fetch()
+        return favouritePosts
       'updateUserNike': (id, val)->
         Meteor.users.update({_id: id}, {$set: {'profile.fullname': val}})
         return;
