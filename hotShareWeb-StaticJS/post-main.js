@@ -664,7 +664,7 @@
                 
             });
         };
-        var showProfilePage = function(userId) {
+        this.showProfilePage = function(userId) {
             localStorage.setItem('documentCurrTop',document.body.scrollTop);
             document.body.scrollTop = 0;
             preProfileInfo(userId);

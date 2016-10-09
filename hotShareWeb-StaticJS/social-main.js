@@ -82,6 +82,22 @@ var DDPConnectedHandle =  function (e) {
 
         CallMethod("getPostFriends",[postid,0,20],function (type,result){
             console.log('postFriendHandle:'+JSON.stringify(result));
+            var html = '';
+            $.each(result,function(index,content){
+                $node = $('.addNewFriends #wrapper');
+                html += '<div id=' + this.ta + ' class="eachViewer newFriends">'
+                    + '<img class="icon" src=' + this.icon + ' width="30" height="30">'
+                    + '<span class="userName">' + this.name + '</span>'
+                    + '<div class="meet_count">缘分啊，我们已偶遇' + this.count + '次了！</div>'
+                    + '<div class="red_spot"></div>'
+                    + '</div>'
+                    + '<div class="chatContentLine"></div>';
+            });
+            $node.append(html);
+            $(".newFriends").click(function(e) {
+                // console.log('target id is ' + $(e.currentTarget).attr("id"))
+                showProfilePage($(e.currentTarget).attr("id"));
+            });
         });
         if(typeof subReadyHandle !== 'undefined'){
             document.removeEventListener('subReady', subReadyHandle);
