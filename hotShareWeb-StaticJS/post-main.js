@@ -213,6 +213,7 @@
     function init() {
         $("#wrapper .mainImage").css("height", ($(window).height() * 0.55) + "px");
         $('.textDiv1Link').linkify();
+        localStorage.setItem('newFriendsCounts',20);
 
         calcLayoutForEachPubElement();
         initLazyload();
@@ -403,7 +404,53 @@
         $('._bell-box .head').click(function(){
           $('._bell-box').css('display', 'none');
         });
-
+        // 加载更多新朋友
+        this.loadMoreNewFriends = function () {
+            var getScrollEvent = true;
+            $(window).scroll(function(event) {
+                var $pullDownAddMore = $('#pullDownAddMore');
+                var newFriendCounts;
+                newFriendCounts = parseInt(localStorage.getItem('newFriendsCounts'));
+                var target = $("#showMorePostFriendsResults");
+                if (!target.length) {
+                  return;
+                }
+                threshold = $(window).scrollTop() + $(window).height() - target.height();
+                // console.log("threshold: " + threshold);
+                // console.log("target.top: " + target.offset().top);
+                if (target.offset().top < threshold && getScrollEvent && $(".div_contactsList").is(':visible')) {
+                    $pullDownAddMore.html('加载中...');
+                    // getPostFriends params[postid,skip,limit]
+                    window.CallMethod('getPostFriends',[postid,newFriendCounts,20],function (type,result){
+                        console.log('load more postFriendHandle is ==:'+JSON.stringify(result));
+                        var html = '';
+                        newFriendCounts += 20;
+                        localStorage.setItem('newFriendsCounts',newFriendCounts);
+                        if(result.length === 0){
+                            $pullDownAddMore.html('没有更多数据了');
+                            return getScrollEvent = false;
+                        } else {
+                            $.each(result,function(index,content){
+                                $node = $('.addNewFriends #wrapper');
+                                html += '<div id=' + this.ta + ' class="eachViewer newFriends">'
+                                    + '<img class="icon" src=' + this.icon + ' width="30" height="30">'
+                                    + '<span class="userName">' + this.name + '</span>'
+                                    + '<div class="meet_count">缘分啊，我们已偶遇' + this.count + '次了！</div>'
+                                    + '<div class="red_spot"></div>'
+                                    + '</div>'
+                                    + '<div class="chatContentLine"></div>';
+                            });
+                            $node.append(html);
+                            $pullDownAddMore.html('加载更多');
+                            $(".newFriends").click(function(e) {
+                                // console.log('target id is ' + $(e.currentTarget).attr("id"))
+                                showProfilePage($(e.currentTarget).attr("id"));
+                            });
+                        }
+                    });
+                }
+            });
+        };
         // --- 评论/点评 START---
         var isRemoveParentColor = function(target, parent, isLike) {
           if(parseInt($(target).text()) > 0) {

@@ -216,6 +216,10 @@ var DDPConnectedHandle =  function (e) {
                 // console.log('target id is ' + $(e.currentTarget).attr("id"))
                 showProfilePage($(e.currentTarget).attr("id"));
             });
+            if(result.length >= 20){
+                $('#showMorePostFriendsResults').show();
+                loadMoreNewFriends();
+            }
         });
 
         if(typeof subReadyHandle !== 'undefined'){
