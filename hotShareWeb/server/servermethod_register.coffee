@@ -82,7 +82,10 @@ if Meteor.isServer
         location = ''
         desc = ''
         if user.profile
-          name = user.profile.fullname
+          if user.profile.fullname and user.profile.fullname isnt ''
+            name = user.profile.fullname
+          else
+            name = user.username
           icon = user.profile.icon
           sex = user.profile.sex
           location = user.profile.location
