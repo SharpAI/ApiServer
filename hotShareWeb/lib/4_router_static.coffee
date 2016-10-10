@@ -4,6 +4,14 @@ if Meteor.isServer
 
   Router.route '/static/:_id', (req, res, next)->
         postItem = Posts.findOne({_id: this.params._id})
+        if(!postItem)
+          SSR.compileTemplate('no-post', Assets.getText('static/no-post.html'))
+          html = SSR.render('no-post')
+          res.writeHead(404, {
+            'Content-Type': 'text/html'
+          })
+          return res.end(minify(html, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
+
         postHtml = SSR.render('post', postItem)
 
         res.writeHead(200, {
