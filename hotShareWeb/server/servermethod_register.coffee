@@ -54,19 +54,31 @@ if Meteor.isServer
       }, (err,data)->
         console.log(err, data)
       )
+  # 发送关注成功邮件
+  @sendSubscribeAutorEmail = (ownerName,email)->
+    text = Assets.getText('email/follower-notify.html')
+    try
+      Email.send {
+        to: email,
+        from: '故事贴<notify@mail.tiegushi.com>',
+        subject: '成功关注作者：'+ownerName + '',
+        body: '成功关注作者：'+ownerName + ',我们会不定期的为您推送关注作者的新文章！',
+        html: text
+      }
+    catch error
+      console.log("sendSubscribeAutorEmail Error===:"+error)
   Meteor.startup ()->
     Meteor.methods
       'updateSubscribeAutorEmail':(author,userId,email)->
-        try
-          if !email
-            console.log("null userEmail")
-            return 0
+        if !Match.test(author, String) or !Match.test(userId, String) or !Match.test(email, String)
+            return {msg: 'failed'}
+        try 
           followerCount = Follower.find({followerId: author, userId: userId,userEmail: {$exists: true}}).count()
           owner = Meteor.users.findOne({_id: author})
           ownerName = if owner.profile.fullname and owner.profile.fullname isnt '' then owner.profile.fullname else owner.username
           if followerCount > 0
             upFollowId = Follower.findOne({followerId:author,userId: userId})._id
-            return Follower.update {
+            result =  Follower.update {
               _id: upFollowId
             },
             {
@@ -75,10 +87,13 @@ if Meteor.isServer
                 fromWeb: true 
               }
             }
+            if result is 1
+              sendSubscribeAutorEmail(ownerName,email)
+            return {msg: 'success'}
           else
             user = Meteor.users.findOne({_id: userId})
             Meteor.users.update({_id: author}, {$inc: {'profile.web_follower_count': 1}});
-            return Follower.insert {
+            result =  Follower.insert {
               userId: userId
               #这里存放fullname
               userName: if user.profile.fullname and user.profile.fullname isnt '' then user.profile.fullname else user.username
@@ -95,17 +110,12 @@ if Meteor.isServer
               fromWeb: true 
               createAt: new Date()
             }
-          text = Assets.getText('email/follower-notify.html')
-          Email.send {
-              to: email,
-              from: '故事贴<notify@mail.tiegushi.com>',
-              subject: '成功关注作者：'+ownerName + '',
-              body: '成功关注作者：'+ownerName + ',我们会不定期的为您推送关注作者的新文章！',
-              html: text
-          }
+            if Match.test(result, String)
+              sendSubscribeAutorEmail(ownerName,email)
+            return {msg: 'success'}
+          return {msg: 'failed'}
         catch error
           console.log(error)
-          return 0
       'getMoreFavouritePosts': (userId, skip, limit)->
         postIds = []
         FavouritePosts.find({userId: userId}).forEach((item) ->

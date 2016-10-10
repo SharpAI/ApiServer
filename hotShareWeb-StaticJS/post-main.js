@@ -884,8 +884,10 @@
             // 更新关注Email,  updateSubscribeAutorEmail params[author,userId,email]
             window.CallMethod('updateSubscribeAutorEmail',[$(".showPosts .user").attr("id"),window._loginUser._id,email],function (type,result){
                 console.log('profileData is ==:'+JSON.stringify(result));
-                if(result !== 0) {
+                if(result.msg === 'success') {
                     toastr.success('您已成功关注作者'+$(".showPosts .user .name").html()+'，确认邮件将很快（10分钟左右）送达，谢谢！','关注成功')
+                } else {
+                    toastr.error('关注失败，再试一次吧~')
                 }
             });
         });
