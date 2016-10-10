@@ -630,8 +630,13 @@ if Meteor.isClient
       if withServerImport is true
           Router.go('/import')
       else
-          trackEvent('Download','from Post Header')
-          window.open('http://www.tiegushi.com/', '_system')
+          if isIOS
+            trackEvent('Download','from Post Header, IOS')
+          else if isAndroidFunc()
+            trackEvent('Download','from Post Header, Android')
+          else
+            trackEvent('Download','from Post Header, Outside Wechat')
+          window.open('http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere', '_system')
     'click .readmore': (e, t)->
       # if e.target is e.currentTarget
       $showPosts = $('.showPosts')
