@@ -124,44 +124,31 @@
         var html = '';
         posts.forEach(function(post) {
             if(post.ownerName){
-                var poster =  '<h1 class="username">' + post.ownerName + '<span>发布</span><button class="suggestAlreadyRead"><i class="fa fa-times"></i></button></h1>'
+                var poster =  '<h1 class="username" style="margin: 0;padding: 4% 1% 4% 5%;font-size: 12px;top: 8px;color: #07519a;letter-spacing: 1px;font-weight: normal; border-top: 1px solid #ddd;position: relative;top: -5px;">' 
+                + post.ownerName + '<span style="color:#999;">发布</span><button class="suggestAlreadyRead" data-postid="' + post.postId + '" style="position: absolute;top:0;right: 0;"><i class="fa fa-times"></i></button></h1>'
             } else if(post.reader){
-                var poster =  '<h1 class="username">' + post.reader + '<span>读过</span><button class="suggestAlreadyRead"><i class="fa fa-times"></i></button></h1>'
+                var poster =  '<h1 class="username" style="margin: 0;padding: 4% 1% 4% 5%;font-size: 12px;top: 8px;color: #07519a;letter-spacing: 1px;font-weight: normal; border-top: 1px solid #ddd;position: relative;top: -5px;">' 
+                + post.reader + '<span  style="color:#999;">读过</span><button class="suggestAlreadyRead" data-postid="' + post.postId + '" style="position: absolute;top:0;right: 0;"><i class="fa fa-times"></i></button></h1>'
             }
-            html += '<div class="newLayout_element" data-postid="' + post.postId + '">'
-                + '<div class="img_placeholder">'
-                + '<img class="mainImage" src="' + post.mainImage+ '" />'
-                + '</div>'
-                + '<div class="pin_content">'
-                + '<p class="title">' + post.title + '</p>'
-                + '<p class="addontitle">' + post.addontitle + '</p>'
-                + poster
-                + '</div>'
-                + '</div>';
+
+            if (!localStorage.getItem('hideSuggestPost_'+post.postId) === true){
+                html +='<a href="/static/' + post.postId + '" target="_blank" style="color: #5A5A5A;" class="newLayout_element">'
+                        +'<div id="'+post.postId+'" style="border-radius: 5px; background-color: #f7f7f7;">'
+                        +'<div class="img_placeholder" style="'
+                        +'margin: 0 0.125em 1em;-moz-page-break-inside: avoid;-webkit-column-break-inside: avoid;break-inside: avoid;background: white;border-radius:4px;">'
+                        +'<img class="mainImage" src="'+post.mainImage+'" style="width: 100%;border-radius: 4px 4px 0 0;"/>'
+                        +'<p class="title" style="font-size: 16px;font-weight: bold;white-space: pre-line;word-wrap: break-word;margin: 10px;">'+post.title+'</p>'
+                        +'<p class="addontitle" style="font-size:11px;margin: 10px;">'+post.addontitle+'</p>'
+                        + poster
+                        +'</div></div></a>';
+            }
         });
-
-        var $container = $(".moments .newLayout_container");
-
-        if($container.length > 0) {
-            $container.append(html);
-        }
-        else {
-            html = '<div class="newLayout_container">' + html + '</div>';
-            $(".div_discover .moments").append(html);
-            $container = $(".moments .newLayout_container");
-        }
-
-
+        $(".div_discover .moments").append(html);
+        var $container = $(".div_discover .moments");
         $(".moments .newLayout_element").not('.loaded').each(function() {
             var elem = this, $elem = $(this);
-            $elem.click(function() {
-                var postid = $(this).data('postid');
-                window.open('/static/' + postid, '_blank');
-            });
             $elem.detach();
-
             var imgLoad = imagesLoaded(elem);
-
             imgLoad.on('done', function() {
                 console.log('>>> img load done!!!');
                 elem.style.display = 'block';
@@ -169,24 +156,13 @@
                 $elem.addClass('loaded');
 
                 $container.append($elem);
-
-                if (--counter < 1) {
-                    var wookmark = new Wookmark('.newLayout_container', {
-                        autoResize: false,
-                        itemSelector: '.newLayout_element',
-                        itemWidth: "48%",
-                        flexibleWidth: true,
-                        direction: 'left',
-                        align: 'center'
-                    }, true);
-                    SUGGEST_POSTS_LOADING = false;
-                }
+                SUGGEST_POSTS_LOADING = false;
             });
 
             imgLoad.on('fail', function() {
                 console.error('>>> img load failed!!!');
             });
-        });
+        });            
     }
     var fetchSuggestPosts = function(skip, limit) {
         if(typeof CallMethod === 'undefined'){
@@ -683,7 +659,17 @@
             $('body').scrollTop($('.div_me').offset().top);        
         });
         // --查看大图 END --- 
-        
+
+        // ---- 动态部分事件处理 START ----
+        $(".div_discover .moments").on('click','.suggestAlreadyRead',function(e){
+            e.preventDefault();
+            var postid = $(this).data('postid');
+            console.log(postid)
+            localStorage.setItem('hideSuggestPost_'+postid,true);
+            $(this).parent().parent().parent().remove();
+        })
+        // ---- 动态部分事件处理 END ----
+
         // ---- Profile START ----
         var preProfileInfo = function(userId) {
             $('.userProfileTop').html('<img class="icon" src="/userPicture.png" width="70" height="70">\
