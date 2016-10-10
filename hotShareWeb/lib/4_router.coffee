@@ -32,8 +32,9 @@ if Meteor.isClient
       loadingTemplate: 'loadingPost'
       action: ->
         post = Posts.findOne({_id: this.params._id})
-        if !post or (post.isReview is false and post.owner isnt Meteor.userId())
-          return this.render 'postNotFound'
+        # Server won't push data if post not review
+        #if !post or (post.isReview is false and post.owner isnt Meteor.userId())
+        #  return this.render 'postNotFound'
         unless post
           console.log "Cant find the request post"
           this.render 'postNotFound'
