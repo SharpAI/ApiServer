@@ -53,11 +53,18 @@ if(Meteor.isServer){
                         }
                     });
                 } else {
-                    if(typeof this.start_to_use_suggest_publisher === 'undefined'){
-                        this.start_to_use_suggest_publisher = skip;
-                    }
-                    skip -= this.start_to_use_suggest_publisher;
-                    var suggestPosts = FollowPosts.find({followby: suggestPostsUserId}, {sort: {createdAt: -1}, skip: skip, limit: limit},{fields:{mainImage:1,title:1,addontitle:1,ownerName:1,postId:1}}).fetch();
+                    var suggestPosts = FollowPosts.find({
+                        followby: suggestPostsUserId
+                    }, {
+                        sort: {
+                            createdAt: -1
+                        },
+                        skip: skip,
+                        limit: limit,
+                        fields:{
+                            mainImage:1,title:1,addontitle:1,ownerName:1,postId:1
+                        }
+                    }).fetch();
                     if(suggestPosts.length > 0){
                         console.log(suggestPosts)
                         suggestPosts.forEach(function(item) {
