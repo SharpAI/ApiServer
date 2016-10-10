@@ -878,6 +878,38 @@
             });
         });
         // ---- 关注作者 END----
+
+        // ---- 私信作者 START ----
+        $('#sendEmail').click(function(){
+            $('.sendAuthorEmail,.authorEmailAlertBackground').show();
+        });
+        this.hideAuthorEmail = function(){
+            $('.sendAuthorEmail,.authorEmailAlertBackground').hide();
+        }
+        this.sendAuthorEmail = function() {
+            var content, doc, mailAddress, mailValueReg, post, qqValueReg, userIcon, userId, username;
+            mailAddress = $('#authorEmail').val();
+            content = $('#sendContent').val();
+            // post = Session.get("postContent");
+            qqValueReg = RegExp(/^[1-9][0-9]{4,9}$/);
+            mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/);
+            if (!mailValueReg.test(mailAddress) && !qqValueReg.test(mailAddress)) {
+                toastr.info('请输入正确的QQ号或Email');
+                return false;
+            }
+            if (qqValueReg.test(mailAddress)) {
+                mailAddress += '@qq.com';
+            }
+            if (content === '') {
+                toastr.info('请输入私信内容');
+            return false;
+            }
+            $("#sendContent").val('');
+            $('.sendAuthorEmail,.authorEmailAlertBackground').hide();
+            // sendAuthorEmail params[author,postid,email,content]
+            window.CallMethod('sendAuthorEmail',[window._loginUser._id,window.postid,mailAddress,content]);
+        }
+        // ---- 私信作者 END ---
     };
     init();
 })(window);

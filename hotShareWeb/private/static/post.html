@@ -106,11 +106,19 @@
             </div>
         </div>
     </div>
-    <div id="author-hot-posts"></div>
+    <div class="globe-envelope-box">
+      {{#if fromUrl}}
+      <div id="ViewOnWeb" onclick="window.open('{{fromUrl}}', '_system');"><i class="fa fa-globe"></i>     阅读原文</div>
+      {{else}}
+      <div id="block"></div>
+      {{/if}}
+      <div id="sendEmail"><i class="fa fa-envelope-o"></i>     私信作者</div>
+    </div>
     <div onclick="window.open('http://cdn.tiegushi.com', '_system');"><img src="/img/download.png" style="width:90%;margin-left:5%;"></div>
     <div class="showPostsFollowMe">
         <p>更多精彩内容，请搜索关注<span><a><i class="fa fa-weixin"></i>故事贴</a></span>微信公众号</p>
     </div>
+    <div id="author-hot-posts"></div>
     <!--  footer -->
     <div class="socialContent">
         <div class="showPostsLine" id="socialContentDivider"></div>
@@ -326,6 +334,26 @@
     </div>
   </div>
   <!-- subscribeAutorPage END -->
+
+  <!-- 私信作者 START -->
+  <div class="authorEmailAlertBackground" onclick="hideAuthorEmail()"></div>
+  <div class="sendAuthorEmail">
+    <div class="sendAuthorEmail-head">
+      <h3 class="title">给<span>{{ownerName}}</span>发私信</h3>
+      <div class="btnClose" onclick="hideAuthorEmail()">&times;</div>
+    </div>
+    <div class="author-email">
+      <input id="authorEmail" type="text" placeholder="QQ号或邮箱地址" value="{{oldMail}}">
+    </div>
+    <div class="alert-email" style="padding-left: 10px; padding-top: 10px;">QQ号或邮箱地址用于作者联系你，只有作者能看到，请放心使用</div>
+    <div class="content">
+      <textarea id="sendContent" cols="10" rows="2" placeholder="给{{ownerName}}的私信内容"></textarea>
+    </div>
+    <div class="btn-banner">
+      <span id="sendEmailBtn" class="send-email-btn" onclick="sendAuthorEmail()">发送</span>
+    </div>
+  </div>
+  <!-- 私信作者 END -->
 </div>
 <!-- wait START-->
 <div class="wait-loading" onclick="this.style.display='none';">

@@ -69,6 +69,30 @@ if Meteor.isServer
       console.log("sendSubscribeAutorEmail Error===:"+error)
   Meteor.startup ()->
     Meteor.methods
+      'sendAuthorEmail': (userId,postId,email,content)->
+        user = Meteor.users.findOne({_id: userId})
+        post = Posts.findOne({_id: postId})
+        if user
+          if user.profile.fullname
+            username = user.profile.fullname
+          else
+            username = user.username
+          userIcon = user.profile.icon
+        else
+          return false
+        doc = {
+          user: userId,
+          userName: username,
+          userIcon: userIcon,
+          email: email,
+          ownerId: post.owner,
+          content: content,
+          postId: postId,
+          title: post.title,
+          addontitle: post.addontitle,
+          mainImage: post.mainImage
+        }
+        Meteor.call('personalLetterSendEmailFeedback', doc)
       'updateSubscribeAutorEmail':(author,userId,email)->
         if !Match.test(author, String) or !Match.test(userId, String) or !Match.test(email, String)
             return {msg: 'failed'}
