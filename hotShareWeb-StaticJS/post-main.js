@@ -445,30 +445,6 @@
           return true;
         };
         var syncThumbs = function(pindex,type){
-            // It will be very hard to maintain the DDP connection if you initial it from everywhere in the code.
-            /*const options = {
-                endpoint: "ws://localhost:3000/websocket",
-                SocketConstructor: WebSocket
-            };
-            const ddp = new appUtils.ddp(options);
-            ddp.on("connected", () => {
-                console.log("Connected");
-            });
-            userId = 'testuser';
-            const methodUpdatePcommit = ddp.method("updateThumbs", [postid,userId,pindex,type]);
-
-            ddp.on("result", message => {
-                if (message.id === methodUpdatePcommit && !message.error) {
-                    console.log("点评成功!");
-                }
-            });
-            ddp.on("ready",function(message){
-                console.log('ready: '+ JSON.stringify( message));
-            });
-            ddp.on("added", message => {
-                postdata = message.fields;
-                console.log('added: '+ JSON.stringify( message));
-            });*/
             postid = location.pathname.replace(/[\/]static[\/]/g, "");
             CallMethod("updateThumbs", [postid,window._loginUserId,pindex,type],function(result,message){
                 console.log(message)
@@ -535,31 +511,6 @@
             $('.pcommentInput,.alertBackground').fadeOut(300);
         });
         var syncPcommitContent = function(pindex,pcommitContent){
-            // It will be very hard to maintain the DDP connection if you initial it from everywhere in the code.
-            /*const options = {
-                endpoint: "ws://localhost:3000/websocket",
-                SocketConstructor: WebSocket
-            };
-            const ddp = new appUtils.ddp(options);
-            ddp.on("connected", () => {
-                console.log("Connected");
-            });
-            postid = location.pathname.replace(/[\/]static[\/]/g, "");
-            userId = null;
-            const methodUpdatePcommit = ddp.method("updatePcommitContent", [postid,userId,pindex,pcommitContent]);
-
-            ddp.on("result", message => {
-                if (message.id === methodUpdatePcommit && !message.error) {
-                    console.log("评论成功!");
-                }
-            });
-            ddp.on("ready",function(message){
-                console.log('ready: '+ JSON.stringify( message));
-            });
-            ddp.on("added", message => {
-                postdata = message.fields;
-                console.log('added: '+ JSON.stringify( message));
-            });*/
             postid = location.pathname.replace(/[\/]static[\/]/g, "");
             CallMethod("updatePcommitContent", [postid,window._loginUserId,pindex,pcommitContent],function(result,message){
                 console.log(message)
