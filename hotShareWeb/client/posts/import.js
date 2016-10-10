@@ -62,7 +62,7 @@ Template.importPost.events({
       
       hasCancel = false;
       task_id = new Mongo.ObjectID()._str;
-      api_url += '/' + Meteor.userId();
+      api_url += '/' + (window.localStorage.getItem('static_login_userId') || Meteor.userId());
       api_url += '/' + encodeURIComponent($('#import-post-url').val());
       api_url += '?task_id=' + task_id;
       Session.set('import-post-info-url', $('#import-post-url').val());
@@ -94,7 +94,7 @@ Template.importPost.events({
             case 'succ':
               progress.set(100);
               hasDone = true;
-              Router.go('/posts/' + result.json.substr(result.json.lastIndexOf('/')+1));
+              Router.go('/static/' + result.json.substr(result.json.lastIndexOf('/')+1));
               break;
             default:
               hasCancel = true;
@@ -124,7 +124,7 @@ Template.importPost.events({
             submitDone(xmlhttp.responseText);
           }
         };
-        xmlhttp.open("GET", '/import-server/' + Meteor.userId() + '/' + encodeURIComponent($('#import-post-url').val()), true);
+        xmlhttp.open("GET", '/import-server/' + (window.localStorage.getItem('static_login_userId') || Meteor.userId()) + '/' + encodeURIComponent($('#import-post-url').val()), true);
         xmlhttp.send(null);
       }else{
         var intrval = Meteor.setInterval(function () {

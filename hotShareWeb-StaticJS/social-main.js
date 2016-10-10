@@ -166,6 +166,7 @@ var DDPConnectedHandle =  function (e) {
             window._loginUserToken = message.token;
             window._loginUsertokenExpires = message.tokenExpires;
             console.log('user id:'+_loginUserId);
+            window.localStorage.setItem('static_login_userId', message.id);
         }
         update_read_status();
         var userNewBellCountId = Subscribe("userNewBellCount", [window._loginUserId],userNewBellCountHandle);
