@@ -164,6 +164,7 @@ if Meteor.isServer
 
     SSR.compileTemplate('post', Assets.getText('static/post.html'))
     Template.post.helpers
+      version_of_build: version_of_build
       withSectionMenu: withSectionMenu
       sign_server_url: sign_server_url
       getDDPUrl: ()->
