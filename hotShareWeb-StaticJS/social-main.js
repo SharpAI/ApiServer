@@ -4,6 +4,7 @@ require("./libs/wookmark");
 require("./libs/jquery.swipebox.1.3.0.2");
 window.scrollMonitor = require("./libs/scrollMonitor.1.0.12");
 require("./libs/jquery.toolbar");
+require("./libs/toastr.min");
 
 postid = location.pathname.replace(/[\/]static[\/]/g, "");
 console.log('postid is ' + postid);
