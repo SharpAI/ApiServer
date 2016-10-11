@@ -318,3 +318,35 @@ a:focus {
 .wait-loading div{text-align: center; height: 42px; width: 42px; position: absolute; background: rgba(0, 0, 0, 0.45);  border-radius: 8px; top: 50%; left: 50%; padding: 5px; margin-left: -21px; margin-top: -21px;}
 /*========waitLoading END==========*/
 .gridster{position: relative; margin-top: 0px;}
+
+/*========新朋友&我 START ===========*/
+.singelPageModal{
+  position: fixed;top: 0;left: 0;right: 0;bottom: 0;z-index: 1000;background: #f1f1f1;overflow-y:auto;
+}
+.singelPageModal .head{display: block !important; position: fixed; top: 0;}
+.div_contactsList .head{display: none;}
+.div_contactsList .head .socialTitle{position: relative;width: 100%;margin: auto;height: 40px;}
+.div_contactsList .head .socialTitle .Contacts{font-size: 16px;font-weight: bold;position: relative;color:white;}
+.div_contactsList .head .socialTitle .right-btn{
+  position: absolute; right: 10px; top: 0px;color: #04BE02;
+}
+.div_contactsList .head .socialTitle .right-btn i{color: #fff;}
+.div_contactsList .head .socialTitle .left-btn{position: absolute; left: 10px; top: 0px;color: #fff;}
+.div_contactsList .head .socialTitle .disable{color:#ccc;}
+.div_contactsList .showPostsLine{line-height: 20px; font-size: 10px;color: #8E8E93; padding-left: 10px;}
+.addNewFriends .meet_count{z-index: 20; width: 155px; line-height: 18px;position: absolute;right:20px; top:12px;border-radius: 5%;font-size:12px; text-align: right;color: #000; }
+.addNewFriends .red_spot{z-index: 20; width: 12px; height: 12px; line-height: 12px;position: absolute;left:30px; top:2px;border-radius: 50%;font-size:8px; text-align: center;background: #FF0000; color: #fff; }
+.eachViewer {
+    position: relative;
+}
+.eachViewer .icon{margin: 10px;}
+.eachViewer .choose{
+    text-align: right;position: absolute; right: 10px; top: 15px;
+  }
+.eachViewer .choose i{font-size: 20px; color: #C9C9C9;}
+.chatContentLine {
+    background-color: #efeff4;
+    height: 1px;
+    margin-left: 10px;
+}
+/*========新朋友&我 END ===========*/

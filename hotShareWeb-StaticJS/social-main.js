@@ -199,7 +199,7 @@ var DDPConnectedHandle =  function (e) {
             });
             calcLayoutForEachPubElement();
         });
-
+        
         CallMethod("getPostFriends",[postid,0,20],function (type,result){
             console.log('postFriendHandle:'+JSON.stringify(result));
             var html = '';
@@ -214,6 +214,7 @@ var DDPConnectedHandle =  function (e) {
                     + '<div class="chatContentLine"></div>';
             });
             $node.append(html);
+            $('.wait-loading').hide();
             $(".newFriends").click(function(e) {
                 // console.log('target id is ' + $(e.currentTarget).attr("id"))
                 showProfilePage($(e.currentTarget).attr("id"));

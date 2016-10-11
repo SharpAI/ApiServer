@@ -383,7 +383,7 @@
         // 加载更多新朋友
         this.loadMoreNewFriends = function () {
             var getScrollEvent = true;
-            $(window).scroll(function(event) {
+            $('.div_contactsList').scroll(function(event) {
                 var $pullDownAddMore = $('#pullDownAddMore');
                 var newFriendCounts;
                 newFriendCounts = parseInt(localStorage.getItem('newFriendsCounts'));
@@ -576,7 +576,10 @@
             if($('.contactsList .head').is(':visible')){
                 $('.contactsList .head').fadeOut(300);
             }
-            document.body.scrollTop = 0
+            $('body').css('overflow-y','auto');
+            $('.div_contactsList').css('display',"none");
+            $('.div_me').css('display',"none");
+            document.body.scrollTop = localStorage.getItem('documentCurrTop');
         });
         $(".discoverBtn").click(function(){
             document.body.scrollTop = $(".showPostsBox").height();
@@ -588,26 +591,31 @@
             $('.div_contactsList').css('display',"none");
             $('.div_discover').css('display',"block");
             $('.div_me').css('display',"none");
+            $('body').css('overflow-y','auto');
         });
         $(".contactsBtn").click(function(){
+            localStorage.setItem('documentCurrTop',document.body.scrollTop);
+            if($('.eachViewer').length <= 1){
+                $('.wait-loading').show();
+            }
+            $('.socialContent .chatFooter').fadeIn(300);
+            $('body').css('overflow-y','hidden');
             //trackEvent("socialBar","Newfrineds");
             $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');
             $(".contactsBtn").addClass('focusColor');
             $('.div_contactsList').css('display',"block");
-            $('.div_discover').css('display',"none");
             $('.div_me').css('display',"none");
-            document.body.scrollTop = $(".showPostsBox").height()
         });
         $(".meBtn").click(function(){
+            localStorage.setItem('documentCurrTop',document.body.scrollTop);
+            $('.socialContent .chatFooter').fadeIn(300);
+            $('body').css('overflow-y','hidden');
             //trackEvent("socialBar","Me")
             //Session.set('favouritepostsLimit', 0);
             $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');
             $(".meBtn").addClass('focusColor');
             $('.div_contactsList').css('display',"none");
-            $('.div_discover').css('display',"none");
-            $('.div_me').css('display',"block");
-            //document.body.scrollTop = $(".showPostsBox").height();
-            $('body').scrollTop($('.div_me').offset().top);        
+            $('.div_me').css('display',"block");      
         });
         // --查看大图 END --- 
 

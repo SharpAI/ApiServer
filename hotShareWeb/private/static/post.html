@@ -125,27 +125,7 @@
         <div class="content">
             <div class="chatBox">
                 <div class="chatBoxContent" style="min-height: 0px;">
-                    <div class="div_contactsList" style="display:none">
-                        <div class="comFadeIn contactsList">
-                            <div class="head" style="display: block;">
-                                <div class="socialTitle">
-                                    <span class="Contacts">联系人</span>
-                                </div>
-                            </div>
-                            <div id="addNewFriends" class="eachViewer">
-                                <img class="icon" src="/userPlus.png" width="30`" height="30">
-                                <span class="userName">新的朋友</span>
-                            </div>
-                            <div class="chatContentLine"></div>
-                            <div class="addNewFriends">
-                                <div id="wrapper" style="position: relative;">
-                                    <div id="showMorePostFriendsResults" style="position: absolute;display:none;bottom: -30px;margin: auto;left: 10%;right: 10%;text-align: center;">
-                                        <span id="pullDownAddMore" class="loading">下拉加载更多</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    
                     <div class="div_discover" style="display:block">
                         <div class="comFadeIn discover">
                             <div class="discover-top">
@@ -170,79 +150,10 @@
                             <!--朋友圈 end-->
                         </div>
                     </div><!-- end div_contactsList -->
-                    <div class="div_me" style="display:none">
-                            <div class="me">
-                                <div class="contactsList comFadeIn"><div class="head" style="display:block;">
-                                    <div class="socialTitle">
-                                        <span class="Contacts">我</span>
-                                    </div>
-                                </div></div>
-                                <ul class="set-up comFadeIn">
-                                    <li class="nickname">
-                                        <label>昵称</label>
-                                        <div class="value"><i class="fa fa-angle-right"></i></div>
-                                    </li>
-                                    <li class="sex">
-                                        <label>性别</label>
-                                        <div class="value">[未知]<i class="fa fa-angle-right"></i></div>
-                                    </li>
-                                    <li class="bell">
-                                        <label>我的消息</label>
-                                        <div class="value">查看<i class="fa fa-angle-right"></i></div>
-                                    </li>
-                                </ul>
-                                <div class="myPubPosts">
-                                    <p style="background-color: white; padding-left: 10px; font-size: 16px; padding-top: 10px; border-top: 1px solid #D9D9D9; margin-bottom: 7px;">我的故事</p> 
-                                    <ul class="mePosts">
-                                    </ul>
-                                </div>
-                                <p style="background-color: white; padding-left: 10px; font-size: 16px; padding-top: 10px; border-top: 1px solid #D9D9D9; margin-bottom: 7px;">喜欢的故事</p>
-                                <div class="favposts">
-                                    <div class="newLayout_container newLayout_container_favposts_joY9o2c4tLmHntcZw">
-                                    </div>
-                                </div>
-                            </div><!-- end div_me -->
-                    </div>
-                    <div class="div_me_set-up-nike" style="display:none">
-                        <div class="me">
-                            <div class="contactsList comFadeIn"><div class="head" style="display:block;">
-                                <div class="socialTitle">
-                                    <div class="left-btn">取消</div>
-                                    <span class="Contacts">昵称</span>
-                                    <div class="right-btn">保存</div>
-                                </div>
-                            </div></div>
-                            <ul class="set-up">
-                                <li>
-                                <div class="input"><form class="setNickname-form"><input maxlength="10" class="text" type="text" id="div_me_set-up-nike-input" placeholder="输入新昵称"></form></div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="div_me_set-up-sex" style="display: none;">
-                        <div class="me">
-                          <div class="contactsList comFadeIn">
-                            <div class="head" style="display:block;">
-                              <div class="socialTitle">
-                                <div class="left-btn">取消</div>
-                                <span class="Contacts">性别</span>
-                              </div>
-                            </div>
-                        </div>
-                        <ul class="set-up comFadeIn">
-                          <li class="nickname setMale">
-                          <label>男</label>
-                          <div class="value select"></div>
-                          </li>
-                          <li class="sex setFemale">
-                          <label>女</label>
-                          <div class="value select"></div>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
+                    
+                    
                 </div><!-- end chatBoxContent -->
-                <div class="chatFooter" style="display: block;">
+                <div class="chatFooter" style="display: block;z-index: 1100;">
                     <div class="postBtn focusColor">
                         <i class="fa fa-file-image-o"></i>
                         <div>故事贴</div>
@@ -278,7 +189,7 @@
     {{/if}}
 
     <!-- Profile START-->
-   <div class="userProfileBox" style="display:none; z-index:999;">
+   <div class="userProfileBox" style="display:none; z-index:9990;">
     <div class="wrapper">
         <div class="userProfileSwipe">
             <div class="pages">
@@ -355,6 +266,111 @@
   </div>
   <!-- 私信作者 END -->
 </div>
+
+<!-- 新朋友 START -->
+<div class="div_contactsList singelPageModal" style="display:none;">
+    <div class="comFadeIn contactsList" style="padding-bottom:110px;">
+        <div class="head" style="display: block;">
+            <div class="socialTitle">
+                <span class="Contacts">联系人</span>
+            </div>
+        </div>
+        <div id="addNewFriends" class="eachViewer" style="margin-top: 64px;">
+            <img class="icon" src="/userPlus.png" width="30`" height="30">
+            <span class="userName">新的朋友</span>
+        </div>
+        <div class="chatContentLine"></div>
+        <div class="addNewFriends">
+            <div id="wrapper" style="position: relative;">
+                <div id="showMorePostFriendsResults" style="position: absolute;display:none;bottom: -30px;margin: auto;left: 10%;right: 10%;text-align: center;">
+                    <span id="pullDownAddMore" class="loading">下拉加载更多</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 新朋友 END -->
+<!-- 我 START -->
+<div class="div_me singelPageModal" style="display:none;">
+    <div class="me div_me_bg" style="top:0;">
+        <div class="contactsList comFadeIn">
+            <div class="head" style="display:block; z-index:9990;">
+                <div class="socialTitle">
+                    <span class="Contacts">我</span>
+                </div>
+            </div>
+        </div>
+        <ul class="set-up comFadeIn">
+            <li class="nickname">
+                <label>昵称</label>
+                <div class="value"><i class="fa fa-angle-right"></i></div>
+            </li>
+            <li class="sex">
+                <label>性别</label>
+                <div class="value">[未知]<i class="fa fa-angle-right"></i></div>
+            </li>
+            <li class="bell">
+                <label>我的消息</label>
+                <div class="value">查看<i class="fa fa-angle-right"></i></div>
+            </li>
+        </ul>
+        <div class="myPubPosts">
+            <p style="background-color: white; padding-left: 10px; font-size: 16px; padding-top: 10px; border-top: 1px solid #D9D9D9; margin-bottom: 7px;">我的故事</p>
+            <ul class="mePosts">
+            </ul>
+        </div>
+        <p style="background-color: white; padding-left: 10px; font-size: 16px; padding-top: 10px; border-top: 1px solid #D9D9D9; margin-bottom: 7px;">喜欢的故事</p>
+        <div class="favposts">
+            <div class="newLayout_container newLayout_container_favposts_joY9o2c4tLmHntcZw">
+            </div>
+        </div>
+    </div>
+    <!-- end div_me -->
+
+</div>
+<div class="div_me_set-up-nike singelPageModal" style="display:none">
+    <div class="me">
+        <div class="contactsList comFadeIn">
+            <div class="head" style="display:block;">
+                <div class="socialTitle">
+                    <div class="left-btn">取消</div>
+                    <span class="Contacts">昵称</span>
+                    <div class="right-btn">保存</div>
+                </div>
+            </div>
+        </div>
+        <ul class="set-up">
+            <li>
+                <div class="input">
+                    <form class="setNickname-form"><input maxlength="10" class="text" type="text" id="div_me_set-up-nike-input" placeholder="输入新昵称"></form>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="div_me_set-up-sex singelPageModal" style="display: none;">
+    <div class="me">
+        <div class="contactsList comFadeIn">
+            <div class="head" style="display:block;">
+                <div class="socialTitle">
+                    <div class="left-btn">取消</div>
+                    <span class="Contacts">性别</span>
+                </div>
+            </div>
+        </div>
+        <ul class="set-up comFadeIn">
+            <li class="nickname setMale">
+                <label>男</label>
+                <div class="value select"></div>
+            </li>
+            <li class="sex setFemale">
+                <label>女</label>
+                <div class="value select"></div>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- 我 END -->
 <!-- wait START-->
 <div class="wait-loading" onclick="this.style.display='none';">
 <div>
