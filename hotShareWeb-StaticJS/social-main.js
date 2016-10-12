@@ -323,10 +323,19 @@ var DDPConnectedHandle =  function (e) {
             processSuggestPostsData(data);
           });
         };
+        var scrollAction = {x: 'undefined', y: 'undefined'};
         $(window).scroll(function(){
-          if($(window).scrollTop() >= $('.div_discover').offset().top-$(window).height()-40 && $('.div_discover').css('display') === 'block'){
+          if (typeof scrollAction.x == 'undefined') {
+            scrollAction.x = window.pageXOffset;
+            scrollAction.y = window.pageYOffset;
+          }
+
+          if($(window).scrollTop() >= $('.div_discover').offset().top-$(window).height()-40 && $('.div_discover').css('display') === 'block' && diffY < 0){
             fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
           }
+
+          scrollAction.x = window.pageXOffset;
+          scrollAction.y = window.pageYOffset;
         });
         $(".discoverBtn").click(function(){
           document.body.scrollTop = $('.div_discover').offset().top - 45;

@@ -68,8 +68,10 @@
         var layoutHelper = [0, 0, 0, 0, 0, 0];
         var imageMarginPixel = 5;
 
-        var ele_len = $("#test .element").length;
+        $('#test').css('display', 'block');
         $("#test .element").each(function(index) {
+            console.log('render pub:', index);
+            
             var elem = this, $elem= $(this), parentNode = this.parentNode;
             var pubInfo = fetchPubInfo($elem);
 
@@ -96,12 +98,7 @@
 
             var elemBottom = elem.offsetTop + elem.offsetHeight;
             updateLayoutData(layoutHelper, pubInfo.data_col, pubInfo.data_sizex, elemBottom);
-            parentNode.style.height = getLayoutTop(layoutHelper, 1, 6) - parentNode.offsetTop + 'px';     
-
-            if(index >= ele_len-1){
-                $('.test_loading').css('display', 'none');
-                $('#test').css('display', 'block');
-            }     
+            parentNode.style.height = getLayoutTop(layoutHelper, 1, 6) - parentNode.offsetTop + 'px';         
         });
     };
 
