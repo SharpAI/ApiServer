@@ -223,9 +223,20 @@
             }
         });
         
-        $(".postVideoItem.element .play_area").click(function() {
-            var _self = this, $_self = $(this), $video = $_self.find("video");
-
+        $('video')[0].onplaying=function(e) {
+            var $curVideo, $node;
+            $node = $(e.currentTarget).parent();
+            if ($node) {
+              $curVideo = $node.find("video");
+              if ($curVideo && $curVideo.get(0)) {
+                return $curVideo.siblings('.video_thumb').fadeOut(100);
+              }
+            }
+        };
+        $(".postVideoItem.element .play_area").click(function(e) {
+            var _self = this, $_self = $(this);
+            var $node=$(e.currentTarget);
+            var $video = $node.find("video");
             if ($video.get(0)) {
                 $video.siblings('.video_thumb').fadeOut(100);
                 $video.get(0).paused ? $video.get(0).play() : $video.get(0).pause();
