@@ -68,7 +68,8 @@
         var layoutHelper = [0, 0, 0, 0, 0, 0];
         var imageMarginPixel = 5;
 
-        $("#test .element").each(function() {
+        var ele_len = $("#test .element").length;
+        $("#test .element").each(function(index) {
             var elem = this, $elem= $(this), parentNode = this.parentNode;
             var pubInfo = fetchPubInfo($elem);
 
@@ -95,7 +96,12 @@
 
             var elemBottom = elem.offsetTop + elem.offsetHeight;
             updateLayoutData(layoutHelper, pubInfo.data_col, pubInfo.data_sizex, elemBottom);
-            parentNode.style.height = getLayoutTop(layoutHelper, 1, 6) - parentNode.offsetTop + 'px';            
+            parentNode.style.height = getLayoutTop(layoutHelper, 1, 6) - parentNode.offsetTop + 'px';     
+
+            if(index >= ele_len-1){
+                $('.test_loading').css('display', 'none');
+                $('#test').css('display', 'block');
+            }     
         });
     };
 

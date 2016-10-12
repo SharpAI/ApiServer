@@ -91,11 +91,12 @@
                     </div>
                 </div>
                 <div class="gridster">
-                    <div id="test">
+                    <div id="test" style="display:none;">
                         {{#each getPub}}
                             {{>postItem}}
                         {{/each}}
                     </div>
+                    <div class="test_loading" style="text-align: center; padding-top: 20px; min-height: 400px;">加载中，请稍候...</div>
                 </div>
             </div>
         </div>
