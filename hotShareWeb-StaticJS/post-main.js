@@ -223,9 +223,20 @@
             }
         });
         
-        $(".postVideoItem.element .play_area").click(function() {
-            var _self = this, $_self = $(this), $video = $_self.find("video");
-
+        $('video')[0].onplaying=function(e) {
+            var $curVideo, $node;
+            $node = $(e.currentTarget).parent();
+            if ($node) {
+              $curVideo = $node.find("video");
+              if ($curVideo && $curVideo.get(0)) {
+                return $curVideo.siblings('.video_thumb').fadeOut(100);
+              }
+            }
+        };
+        $(".postVideoItem.element .play_area").click(function(e) {
+            var _self = this, $_self = $(this);
+            var $node=$(e.currentTarget);
+            var $video = $node.find("video");
             if ($video.get(0)) {
                 $video.siblings('.video_thumb').fadeOut(100);
                 $video.get(0).paused ? $video.get(0).play() : $video.get(0).pause();
@@ -329,11 +340,11 @@
                         var html = '';
                         newFriendCounts += 20;
                         localStorage.setItem('newFriendsCounts',newFriendCounts);
-                        if(result.length === 0){
+                        if(result[1].length === 0){
                             $pullDownAddMore.html('没有更多数据了');
                             return getScrollEvent = false;
                         } else {
-                            $.each(result,function(index,content){
+                            $.each(result[1],function(index,content){
                                 $node = $('.addNewFriends #wrapper');
                                 html += '<div id=' + this.ta + ' class="eachViewer newFriends">'
                                     + '<img class="icon" src=' + this.icon + ' width="30" height="30">'
