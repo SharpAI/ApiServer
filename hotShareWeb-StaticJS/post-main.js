@@ -11,10 +11,6 @@
     var gushitie = global.gushitie;
     gushitie.showpost = {};
 
-
-    var SUGGEST_POSTS_SKIP = 0;
-    var SUGGEST_POSTS_LIMIT = 5;
-    var SUGGEST_POSTS_LOADING = false;
     var predefineColors = ["#55303e", "#503f32", "#7e766c", "#291d13", "#d59a73", "#a87c5f", "#282632", "#ca9e92", "#a7a07d", "#846843", "#6ea89e", "#292523", "#637168", "#573e1b", "#925f3e", "#786b53", "#aaa489", "#a5926a", "#6a6b6d", "#978d69", "#a0a1a1", "#4b423c", "#5f4a36", "#b6a2a9", "#1c1c4e", "#e0d9dc", "#393838", "#c5bab3", "#a46d40", "#735853", "#3c3c39"];
 
     var colorIndex = 0, colorLength = predefineColors.length;
@@ -118,73 +114,6 @@
             padding.setRandomlyBackgroundColor($lazyItem);
         });
     }
-    var processSuggestPostsData = function(data){
-        var posts = data;
-        var counter = posts.length;
-        var html = '';
-        posts.forEach(function(post) {
-            if(post.ownerName){
-                var poster =  '<h1 class="username" style="margin: 0;padding: 4% 1% 4% 5%;font-size: 12px;top: 8px;color: #07519a;letter-spacing: 1px;font-weight: normal; border-top: 1px solid #ddd;position: relative;top: -5px;">' 
-                + post.ownerName + '<span style="color:#999;">发布</span><button class="suggestAlreadyRead" data-postid="' + post.postId + '" style="position: absolute;top:0;right: 0;"><i class="fa fa-times"></i></button></h1>'
-            } else if(post.reader){
-                var poster =  '<h1 class="username" style="margin: 0;padding: 4% 1% 4% 5%;font-size: 12px;top: 8px;color: #07519a;letter-spacing: 1px;font-weight: normal; border-top: 1px solid #ddd;position: relative;top: -5px;">' 
-                + post.reader + '<span  style="color:#999;">读过</span><button class="suggestAlreadyRead" data-postid="' + post.postId + '" style="position: absolute;top:0;right: 0;"><i class="fa fa-times"></i></button></h1>'
-            }
-
-            if (!localStorage.getItem('hideSuggestPost_'+post.postId) === true){
-                html +='<a href="/static/' + post.postId + '" target="_blank" style="color: #5A5A5A;" class="newLayout_element">'
-                        +'<div id="'+post.postId+'" style="border-radius: 5px; background-color: #f7f7f7;">'
-                        +'<div class="img_placeholder" style="'
-                        +'margin: 0 0.125em 1em;-moz-page-break-inside: avoid;-webkit-column-break-inside: avoid;break-inside: avoid;background: white;border-radius:4px;">'
-                        +'<img class="mainImage" src="'+post.mainImage+'" style="width: 100%;border-radius: 4px 4px 0 0;"/>'
-                        +'<p class="title" style="font-size: 16px;font-weight: bold;white-space: pre-line;word-wrap: break-word;margin: 10px;">'+post.title+'</p>'
-                        +'<p class="addontitle" style="font-size:11px;margin: 10px;">'+post.addontitle+'</p>'
-                        + poster
-                        +'</div></div></a>';
-            }
-        });
-        $(".div_discover .moments").append(html);
-        var $container = $(".div_discover .moments");
-        $(".moments .newLayout_element").not('.loaded').each(function() {
-            var elem = this, $elem = $(this);
-            $elem.detach();
-            var imgLoad = imagesLoaded(elem);
-            imgLoad.on('done', function() {
-                console.log('>>> img load done!!!');
-                elem.style.display = 'block';
-                //$elem.css('opacity', 0);
-                $elem.addClass('loaded');
-
-                $container.append($elem);
-                SUGGEST_POSTS_LOADING = false;
-            });
-
-            imgLoad.on('fail', function() {
-                console.error('>>> img load failed!!!');
-            });
-        });            
-    }
-    var fetchSuggestPosts = function(skip, limit) {
-        if(typeof CallMethod === 'undefined'){
-            return
-        }
-        window.fetchedSuggestPosts = true;
-        if(SUGGEST_POSTS_LOADING) return;
-        SUGGEST_POSTS_LOADING = true;
-        console.log('>>> Begin to fetch suggest posts <<<');
-        SUGGEST_POSTS_SKIP += SUGGEST_POSTS_LIMIT;
-        CallMethod('getSuggestedPosts',[postid,skip,limit],function(type,result){
-            console.log('getSuggestedPosts: '+JSON.stringify(result));
-            processSuggestPostsData(result);
-        });
-        /*
-        var url = '/static/data/suggestposts/123/' + skip + '/' + limit;
-        SUGGEST_POSTS_SKIP += SUGGEST_POSTS_LIMIT;
-        $.getJSON(url, function(data) {
-            processSuggestPostsData(data.data);
-        });
-        */
-    };
 
     function init() {
         $("#wrapper .mainImage").css("height", ($(window).height() * 0.55) + "px");
@@ -248,11 +177,7 @@
                 window.lastScroll = st;
                 return;
             }
-
-            // reach bottom
-            if ((st + $(window).height()) === getDocHeight()) {
-                fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
-            }            
+          
             //if ((st + $(window).height()) === getDocHeight()) {
             if ((getDocHeight() - (st + $(window).height())) < 150) {
                 toggleHeaderNav(true);
@@ -593,19 +518,6 @@
             $('.div_me').css('display',"none");
             $('body').css('overflow-y','auto');
         });
-        $(".contactsBtn").click(function(){
-            localStorage.setItem('documentCurrTop',document.body.scrollTop);
-            if($('.eachViewer').length <= 1){
-                $('.wait-loading').show();
-            }
-            $('.socialContent .chatFooter').fadeIn(300);
-            $('body').css('overflow-y','hidden');
-            //trackEvent("socialBar","Newfrineds");
-            $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');
-            $(".contactsBtn").addClass('focusColor');
-            $('.div_contactsList').css('display',"block");
-            $('.div_me').css('display',"none");
-        });
         $(".meBtn").click(function(){
             localStorage.setItem('documentCurrTop',document.body.scrollTop);
             $('.socialContent .chatFooter').fadeIn(300);
@@ -618,16 +530,6 @@
             $('.div_me').css('display',"block");      
         });
         // --查看大图 END --- 
-
-        // ---- 动态部分事件处理 START ----
-        $(".div_discover .moments").on('click','.suggestAlreadyRead',function(e){
-            e.preventDefault();
-            var postid = $(this).data('postid');
-            console.log(postid)
-            localStorage.setItem('hideSuggestPost_'+postid,true);
-            $(this).parent().parent().parent().remove();
-        })
-        // ---- 动态部分事件处理 END ----
 
         // ---- Profile START ----
         var preProfileInfo = function(userId) {

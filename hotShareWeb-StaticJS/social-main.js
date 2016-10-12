@@ -5,6 +5,7 @@ require("./libs/jquery.swipebox.1.3.0.2");
 window.scrollMonitor = require("./libs/scrollMonitor.1.0.12");
 require("./libs/jquery.toolbar");
 window.toastr = require("./libs/toastr.min");
+var imagesLoaded = require("imagesloaded");
 
 postid = location.pathname.replace(/[\/]static[\/]/g, "");
 console.log('postid is ' + postid);
@@ -199,7 +200,7 @@ var DDPConnectedHandle =  function (e) {
             });
             calcLayoutForEachPubElement();
         });
-        
+
         CallMethod("getPostFriends",[postid,0,20],function (type,result){
             console.log('postFriendHandle:'+JSON.stringify(result));
             var html = '';
@@ -224,6 +225,132 @@ var DDPConnectedHandle =  function (e) {
                 loadMoreNewFriends();
             }
         });
+
+        // ==========动态 start=================
+        var SUGGEST_POSTS_SKIP = 0;
+        var SUGGEST_POSTS_LIMIT = 5;
+        var SUGGEST_POSTS_LOADING = false;
+        var processSuggestPostsData = function(data){
+          var posts = data;
+          var counter = posts.length;
+          var html = '';
+          posts.forEach(function(post) {
+            if(post.ownerName){
+                var poster =  '<h1 class="username">' + post.ownerName + '<span>发布</span><button class="suggestAlreadyRead"><i class="fa fa-times"></i></button></h1>'
+            } else if(post.reader){
+                var poster =  '<h1 class="username">' + post.reader + '<span>读过</span><button class="suggestAlreadyRead"><i class="fa fa-times"></i></button></h1>'
+            }
+            html += '<div class="newLayout_element" data-postid="' + post.postId + '">'
+                + '<div class="img_placeholder">'
+                + '<img class="mainImage" src="' + post.mainImage+ '" />'
+                + '</div>'
+                + '<div class="pin_content">'
+                + '<p class="title">' + post.title + '</p>'
+                + '<p class="addontitle">' + post.addontitle + '</p>'
+                + poster
+                + '</div>'
+                + '</div>';
+          });
+
+          var $container = $(".moments .newLayout_container");
+
+          if($container.length > 0) {
+              $container.append(html);
+          }
+          else {
+              html = '<div class="newLayout_container">' + html + '</div>';
+              $(".div_discover .moments").append(html);
+              $container = $(".moments .newLayout_container");
+          }
+
+
+          $(".moments .newLayout_element").not('.loaded').each(function() {
+              var elem = this, $elem = $(this);
+              $elem.find('.img_placeholder').click(function() {
+                  var postid = $elem.data('postid');
+                  window.open('/static/' + postid, '_blank');
+              });
+              $elem.find('.pin_content .title').click(function() {
+                  var postid = $elem.data('postid');
+                  window.open('/static/' + postid, '_blank');
+              });
+              $elem.detach();
+
+              var imgLoad = imagesLoaded(elem);
+
+              imgLoad.on('done', function() {
+                  console.log('>>> img load done!!!');
+                  elem.style.display = 'block';
+                  //$elem.css('opacity', 0);
+                  $elem.addClass('loaded');
+
+                  $container.append($elem);
+
+                  if (--counter < 1) {
+                      var wookmark = new Wookmark('.newLayout_container', {
+                          autoResize: false,
+                          itemSelector: '.newLayout_element',
+                          itemWidth: "48%",
+                          flexibleWidth: true,
+                          direction: 'left',
+                          align: 'center'
+                      }, true);
+                      SUGGEST_POSTS_LOADING = false;
+                  }
+              });
+
+              imgLoad.on('fail', function() {
+                  console.error('>>> img load failed!!!');
+              });
+          });
+        }
+        var fetchSuggestPosts = function(skip, limit) {
+          window.fetchedSuggestPosts = true;
+          if(SUGGEST_POSTS_LOADING) return;
+          SUGGEST_POSTS_LOADING = true;
+          SUGGEST_POSTS_SKIP += SUGGEST_POSTS_LIMIT;
+          CallMethod('getSuggestedPosts',[postid,skip,limit],function(type,result){
+            console.log('getSuggestedPosts: '+JSON.stringify(result));
+            var data = [];
+            if(result.length > 0){
+              for(var i=0;i<result.length;i++){
+                if(!window.localStorage.getItem('hideSuggestPost_'+result[i].postId))
+                  data.push(result[i]);
+              }
+            }
+            processSuggestPostsData(data);
+          });
+        };
+        $(window).scroll(function(){
+          if($(window).scrollTop() >= $('.div_discover').offset().top-$(window).height()-40 && $('.div_discover').css('display') === 'block'){
+            fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
+          }
+        });
+        $(".discoverBtn").click(function(){
+          document.body.scrollTop = $('.div_discover').offset().top - 45;
+          fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
+          $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');
+          $(".discoverBtn").addClass('focusColor');
+          $('.div_contactsList').css('display',"none");
+          $('.div_discover').css('display',"block");
+          $('.div_me').css('display',"none");
+        });
+        $(".div_discover .moments").on('click','.suggestAlreadyRead',function(e){
+            var postid = $(this).parent().parent().parent().data('postid');
+            console.log(postid)
+            localStorage.setItem('hideSuggestPost_'+postid,true);
+            $(this).parent().parent().parent().remove();
+            var wookmark = new Wookmark('.newLayout_container', {
+              autoResize: false,
+              itemSelector: '.newLayout_element',
+              itemWidth: "48%",
+              flexibleWidth: true,
+              direction: 'left',
+              align: 'center'
+            }, true);
+            return false;
+        });
+        // ==========动态 end=================
 
         if(typeof subReadyHandle !== 'undefined'){
             document.removeEventListener('subReady', subReadyHandle);
