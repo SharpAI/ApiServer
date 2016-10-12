@@ -285,6 +285,12 @@ if Meteor.isServer
   , {where: 'server'}
   Router.route '/posts/:_id/:index', (req, res, next)->
     _post = Posts.findOne({_id: this.params._id})
+    if _post is null or _post is ''
+      res.writeHead(404, {
+        'Content-Type': 'text/html'
+      })
+      return res.end(Assets.getText('page-not-found.html'))
+
     if _post and _post.isReview is false
       res.writeHead(404, {
         'Content-Type': 'text/html'
