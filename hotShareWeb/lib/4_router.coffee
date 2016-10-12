@@ -188,6 +188,9 @@ if Meteor.isClient
   Router.route '/hotPosts/:_id',()->
     this.render 'hotPosts'
     return
+  Router.route 'recommendStory',()->
+    this.render 'recommendStory'
+    return
 if Meteor.isServer
   ###
   Router.route '/posts/:_id', {

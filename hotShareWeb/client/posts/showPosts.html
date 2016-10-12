@@ -122,6 +122,9 @@
       <div id="sendEmail"><i class="fa fa-envelope-o"></i>     私信作者</div>
       {{/if}}
     </div>
+    <div class="recommendstory">
+        <div class="description">100人读过，分享您的故事给他们吧！<input type="submit" value="分享" id="shareStoryBtn" /></div>
+    </div>
     {{#if withAfterPostIntroduce}}
       <div class="write">
         <p class="author">Write by <span class="spc">{{ownerName}}</span></p>
@@ -562,4 +565,36 @@
         </div>
     </div>
   </div>
+</template>
+
+<template name="recommendStory">
+    <div class="recommendStory">
+        <div class="fastImport">
+            <div class="shareNewStory">分享新故事:</div>
+            <div class="input-group">
+                <input type="text" id="importUrl" autofocus="autofocus" class="form-control" maxlength="180" placeholder="输入或粘贴一格链接" />
+                <input type="submit" value="导入分享" id="importBtn">
+            </div>
+        </div>
+
+        <div class="storySource">
+            <input type="radio" class="radio" name="where" value="x" id="publishedStories" />
+            <label for="x">我发布的故事</label>
+            <input type="radio" class="radio" name="where" value="y" id="favoriteStories" />
+            <label for="y">我收藏的故事</label>
+            <!--<each getContent>
+                {{>recommendContent}}
+            </each>-->
+        </div>
+    </div>
+</template>
+<template name="recommendContent">
+    <a href="/posts/{{postId}}" class="contentList">
+        <!--{{#if notRead isRead checked @index createdAt}}
+            <div class="readTips" style="background: green; width:10px; height:10px;"></div>
+        {{/if}}-->
+        <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+        <div id="{{postId}}" class="alarm">{{ownerName}} {{_ "replyStoryYouJoin"}} 《{{postTitle}}》</div>
+        <div class="createAt">{{time_diff createdAt}}</div>
+    </a>
 </template>

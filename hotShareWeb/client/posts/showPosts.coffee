@@ -706,6 +706,8 @@ if Meteor.isClient
           handleAddedLink(Session.get("postContent").fromUrl)
         else
           window.location.href=Session.get("postContent").fromUrl
+    'click #shareStoryBtn' :->
+      PUB.page '/recommendStory'
     'click #sendEmail' :->
       $('.sendAuthorEmail,.authorEmailAlertBackground').fadeIn(300)
     'click #sendEmailBtn' :(e,t)->
@@ -1366,7 +1368,10 @@ if Meteor.isClient
     'click .cannelBtn, click .bg':->
       $('.subscribeAutorPage').hide()
     
-      
+    Template.recommendStory.onRendered ->
+      console.log("Template.recommendStory.onRendered");
+    #Template.recommendStory.helpers
+
       
 
 
