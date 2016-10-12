@@ -62,15 +62,19 @@ if Meteor.isServer
 
     SSR.compileTemplate('postItem', Assets.getText('static/postItem.html'))
     Template.postItem.helpers
+      getText: ()->
+        newText = this.text.replace(/\n/g, "<br />")
+        console.log(newText)
+        newText
       hasVideoInfo: (videoInfo)->
         if videoInfo
-          return true
+          true
         else
           false
       myselfClickedUp:->
         false
       myselfClickedDown:->
-        return false
+        false
       calcStyle: ()->
   # For backforward compatible. Only older version set style directly
         if this.style and this.style isnt ''
@@ -79,11 +83,11 @@ if Meteor.isServer
           calcTextItemStyle(this.layout)
       isTextLength:(text)->
         if(text.trim().length>20)
-          return true
+          true
         else if  text.split(/\r\n|\r|\n/).length > 1
-          return true
+          true
         else
-          return false
+          false
       pcIndex:->
         pcindex = 0
         index = parseInt(this.index)
