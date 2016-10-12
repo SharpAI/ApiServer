@@ -1,5 +1,4 @@
 (function(global) {
-    window.$ = window.jQuery = require("jquery");
     require("./libs/jquery.lazyload.1.9.3");
     require("./libs/jquery.linkify");
     require("./libs/image-fit-cover");

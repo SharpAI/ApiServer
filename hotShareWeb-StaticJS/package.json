@@ -1,9 +1,9 @@
 {
   "name": "hotshare-static-web-js-bundles",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "js code for the static page with NPM builder",
   "scripts": {
-    "build": "browserify post-main.js | uglifyjs -p 10 -c -m > bundle-post.min.js && browserify social-main.js | uglifyjs -p 10 -c -m > bundle-social.min.js && cp bundle*.js ../hotShareWeb/public/statics/ && rm bundle*.js",
+    "build": "browserify post-main.js | uglifyjs -p 10 -c -m > bundle-post-$npm_package_version.min.js && browserify social-main.js | uglifyjs -p 10 -c -m > bundle-social-$npm_package_version.min.js && cp bundle*.js ../hotShareWeb/public/statics/ && rm bundle*.js",
     "build-debug": "browserify post-main.js -o bundle-post.js && browserify social-main.js -o bundle-social.js && cp bundle*.js ../hotShareWeb/public/statics/ && rm bundle*.js"
   },
   "repository": {
@@ -24,7 +24,6 @@
   },
   "homepage": "http://tiegushi.com",
   "dependencies": {
-    "jquery": "^1.12.4",
     "imagesloaded":"^4.1.1",
     "ddp.js": "^2.2.0"
   },
