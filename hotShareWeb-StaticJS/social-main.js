@@ -329,13 +329,14 @@ var DDPConnectedHandle =  function (e) {
             scrollAction.x = window.pageXOffset;
             scrollAction.y = window.pageYOffset;
           }
+          var diffY = window.pageYOffset - scrollAction.y;
 
           if($(window).scrollTop() >= $('.div_discover').offset().top-$(window).height()-40 && $('.div_discover').css('display') === 'block' && diffY < 0){
             fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
+            scrollAction.x = window.pageXOffset;
+            scrollAction.y = window.pageYOffset;
           }
 
-          scrollAction.x = window.pageXOffset;
-          scrollAction.y = window.pageYOffset;
         });
         $(".discoverBtn").click(function(){
           document.body.scrollTop = $('.div_discover').offset().top - 45;
