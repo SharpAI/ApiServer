@@ -506,18 +506,19 @@
             $('.div_me').css('display',"none");
             document.body.scrollTop = localStorage.getItem('documentCurrTop');
         });
-        $(".discoverBtn").click(function(){
-            document.body.scrollTop = $(".showPostsBox").height();
-            if(typeof window.fetchedSuggestPosts === 'undefined'){
-                fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
-            }
-            $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');
-            $(".discoverBtn").addClass('focusColor');
-            $('.div_contactsList').css('display',"none");
-            $('.div_discover').css('display',"block");
-            $('.div_me').css('display',"none");
-            $('body').css('overflow-y','auto');
-        });
+        $(".contactsBtn").click(function(){		
+             localStorage.setItem('documentCurrTop',document.body.scrollTop);		
+             if($('.eachViewer').length <= 1){		
+                 $('.wait-loading').show();		
+             }		
+             $('.socialContent .chatFooter').fadeIn(300);		
+             $('body').css('overflow-y','hidden');		
+             //trackEvent("socialBar","Newfrineds");		
+             $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');		
+             $(".contactsBtn").addClass('focusColor');		
+             $('.div_contactsList').css('display',"block");		
+             $('.div_me').css('display',"none");	
+         });
         $(".meBtn").click(function(){
             localStorage.setItem('documentCurrTop',document.body.scrollTop);
             $('.socialContent .chatFooter').fadeIn(300);

@@ -334,6 +334,7 @@ var DDPConnectedHandle =  function (e) {
           $('.div_contactsList').css('display',"none");
           $('.div_discover').css('display',"block");
           $('.div_me').css('display',"none");
+           $('body').css('overflow-y','auto');
         });
         $(".div_discover .moments").on('click','.suggestAlreadyRead',function(e){
             var postid = $(this).parent().parent().parent().data('postid');
