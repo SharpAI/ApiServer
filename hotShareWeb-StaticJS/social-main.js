@@ -1,3 +1,5 @@
+
+require('./libs/wechatapi');
 require("./libs/ddp");
 require("./libs/hammer.min");
 require("./libs/wookmark");
@@ -9,6 +11,25 @@ var imagesLoaded = require("imagesloaded");
 
 postid = location.pathname.replace(/[\/]static[\/]/g, "");
 console.log('postid is ' + postid);
+function loadScript(url, callback){
+    jQuery.ajax({
+        url: url,
+        dataType: 'script',
+        success: callback,
+        async: true,
+        cache: true
+    });
+}
+function isWeiXinFunc() {
+    var M, ua;
+    ua = window.navigator.userAgent.toLowerCase();
+    M = ua.match(/MicroMessenger/i);
+    if (M && M[0] === 'micromessenger') {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 const GetTime0 = function(dateM){
     var MinMilli = 1000 * 60;         // 初始化变量。
@@ -390,4 +411,13 @@ window._bell = {
     }
 };
 
+if (isWeiXinFunc()) {
+    if (typeof wx === 'undefined') {
+        return loadScript('http://res.wx.qq.com/open/js/jweixin-1.0.0.js', function() {
+            wechat_sign();
+        });
+    } else {
+        return wechat_sign();
+    }
+}
 

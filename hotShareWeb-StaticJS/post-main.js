@@ -2,8 +2,6 @@
     require("./libs/jquery.lazyload.1.9.3");
     require("./libs/jquery.linkify");
     require("./libs/image-fit-cover");
-    require('./libs/wechatapi');
-    var imagesLoaded = require("imagesloaded");
 
     if (!global.gushitie) global.gushitie = {};
 
