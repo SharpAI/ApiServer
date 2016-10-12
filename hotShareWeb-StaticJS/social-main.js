@@ -258,7 +258,7 @@ var DDPConnectedHandle =  function (e) {
               $container.append(html);
           }
           else {
-              html = '<div class="newLayout_container">' + html + '</div>';
+              html = '<div class="newLayout_container" style="display:none;">' + html + '</div>';
               $(".div_discover .moments").append(html);
               $container = $(".moments .newLayout_container");
           }
@@ -295,6 +295,8 @@ var DDPConnectedHandle =  function (e) {
                           direction: 'left',
                           align: 'center'
                       }, true);
+                      $container.css('display', 'block');
+                      $('.div_discover .loading').hide();
                       SUGGEST_POSTS_LOADING = false;
                   }
               });
