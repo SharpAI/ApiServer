@@ -222,17 +222,21 @@
                 $audio.trigger('play');
             }
         });
-        
-        $('video')[0].onplaying=function(e) {
-            var $curVideo, $node;
-            $node = $(e.currentTarget).parent();
-            if ($node) {
-              $curVideo = $node.find("video");
-              if ($curVideo && $curVideo.get(0)) {
-                return $curVideo.siblings('.video_thumb').fadeOut(100);
-              }
-            }
-        };
+
+        try{
+            $('video')[0].onplaying=function(e) {
+                var $curVideo, $node;
+                $node = $(e.currentTarget).parent();
+                if ($node) {
+                    $curVideo = $node.find("video");
+                    if ($curVideo && $curVideo.get(0)) {
+                        return $curVideo.siblings('.video_thumb').fadeOut(100);
+                    }
+                }
+            };
+        } catch (e){
+            console.log("Why you don't care about no Video case, 张志越！")
+        }
         $(".postVideoItem.element .play_area").click(function(e) {
             var _self = this, $_self = $(this);
             var $node=$(e.currentTarget);
