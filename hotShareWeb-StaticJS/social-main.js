@@ -204,7 +204,11 @@ var DDPConnectedHandle =  function (e) {
         CallMethod("getPostFriends",[postid,0,20],function (type,result){
             console.log('postFriendHandle:'+JSON.stringify(result));
             var html = '';
-            $.each(result,function(index,content){
+            if(result[0].totalCount>0){
+              $('#newFriendRedSpot').show();
+              $('#newFriendRedSpot').html(result[0].totalCount);
+            }
+            $.each(result[1],function(index,content){
                 $node = $('.addNewFriends #wrapper');
                 html += '<div id=' + this.ta + ' class="eachViewer newFriends">'
                     + '<img class="icon" src=' + this.icon + ' width="30" height="30">'
@@ -220,7 +224,7 @@ var DDPConnectedHandle =  function (e) {
                 // console.log('target id is ' + $(e.currentTarget).attr("id"))
                 showProfilePage($(e.currentTarget).attr("id"));
             });
-            if(result.length >= 20){
+            if(result[1].length >= 20){
                 $('#showMorePostFriendsResults').show();
                 loadMoreNewFriends();
             }
