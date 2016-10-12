@@ -707,6 +707,7 @@ if Meteor.isClient
         else
           window.location.href=Session.get("postContent").fromUrl
     'click #shareStoryBtn' :->
+      Session.set('isRecommendStory',true)
       PUB.page '/recommendStory'
     'click #sendEmail' :->
       $('.sendAuthorEmail,.authorEmailAlertBackground').fadeIn(300)
@@ -1369,8 +1370,48 @@ if Meteor.isClient
       $('.subscribeAutorPage').hide()
     
     Template.recommendStory.onRendered ->
-      console.log("Template.recommendStory.onRendered");
-    #Template.recommendStory.helpers
+      $('body').css('overflow-y','hidden')
+      Session.set('storyListsLimit',10)
+      Session.set('storyListsLoaded',false);
+      Meteor.subscribe 'userRecommendStory', Session.get('storyListsLimit'), {
+        onReady: ->
+          Session.set('storyListsLoaded',true)
+        onError: ->
+          Session.set('storyListsLoaded',true)
+      }
+    Template.recommendStory.onDestroyed ->
+      $('body').css('overflow-y','auto')
+      Session.set('isRecommendStory',false)
+    Template.recommendStory.helpers
+      storyListsLoaded: ()->
+        return Session.get('storyListsLoaded') is true
+      storyListsHasMore: ()->
+        return Session.get('storyListsHasMore') is true
+      storyLists:()->
+        return Posts.find({owner: Meteor.userId()})
+      getFirstParagraph:(pub)->
+        text = ''
+        pub.forEach (item)->
+          console.log(item.text)
+          if item.type is 'text'
+            text = item.text
+        return text
+    Template.recommendStory.events
+      'click .leftButton':(e)->
+        return window.history.back()
+      'click #importBtn': (e)->
+        originUrl = $('#importUrl').val()
+        console.log('originUrl=='+originUrl)
+        # 调用导入相关方法
+      'click .storyLists li':(e)->
+        console.log('target_postId=='+e.currentTarget.id)
+        # 准备分享到相关群
+
+      'click #loadMore': (e)->
+        limit = parseInt(Session.get('storyListsLimit'))
+        limit += 10
+        Session.set('storyListsLoaded',false)
+        Session.set('storyListsLimit',limit)
 
       
 

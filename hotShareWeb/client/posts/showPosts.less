@@ -174,16 +174,18 @@
 
 .recommendstory{
   .description{
-    text-align: center;
-    color: red;
-    font-size: 20px;
-    font-weight: bold;
+    text-align: justify;
+    font-size: 14px;
+    margin: 10px 16px;
     #shareStoryBtn{
-      font-size: 20px;
-      font-weight: bold;
-      color: red;
-      height: 200px;
-      width: 100px;
+      display: inline-block;
+      font-size: 14px;
+      color: #fff;
+      border: 1px solid #00c4ff;
+      border-radius: 4px;
+      padding: 6px 12px;
+      background: #00c4ff;
+      cursor: pointer;
       cursor: pointer;
     }
   }
@@ -807,19 +809,22 @@
 
 .recommendStory {
   .fastImport{
+    padding-top: 40px;
     .shareNewStory{
       padding-left: 10px;
       font-size: 16px;
       font-family: "BorderWeb";
       font-weight: bold;
+      padding:10px;
+      color: #166fff;
     }
     .input-group{
       padding:10px;
       #importUrl{
-        display: block;
-        width: 100%;
-        height: 34px;
-        padding: 6px 12px;
+        display: inline-block;
+        width: 70%;
+        height: 48px;
+        padding: 10px 12px;
         font-size: 14px;
         line-height: 1.42857143;
         color: #555;
@@ -831,23 +836,40 @@
         transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
       }
       #importBtn{
-        height: 40px;
-        line-height: 40px;
-        margin-top: 10px;
-        width: 100%;
-        background-color: #3FADE8;
+        display: inline-block;
+        margin-top: 6px;
+        padding: 10px 12px;
+        background-color: #166fff;
         color: #fff;
-        border-radius: 20px;
+        border-radius: 6px;
+        float: right;
+        cursor: pointer;
         border: 0px;
       }
     }
   }
   .storySource{
-    padding-left: 10px;
+    padding: 16px; padding-right: 6px;
     label{
       font-size: 16px;
       font-weight: bold;
       font-family: "BorderWeb";
+    }
+    .storyLists{
+      padding: 0 !important;
+      font-size: 14px;
+      overflow-y: auto;
+      position: absolute;
+      bottom: 0;
+      left: 16px;
+      right: 16px;
+      top: 210px;
+      li{list-style: none; margin-bottom: 16px;}
+      .imgPlaceHolder{ float: left;}
+      .postContent{margin-left: 120px;}
+      h2 {font-size: 16px; font-weight: bold; height: 30px; line-height: 30px; overflow: hidden; white-space: nowrap;text-overflow: ellipsis;margin: 0;}
+      p{height: 50px;line-height: 25px;overflow: hidden;margin: 0; color: gray;}
+      img{height: 80px;width: 110px;object-fit: cover;}
     }
   }
 }
