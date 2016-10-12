@@ -3,6 +3,23 @@ if Meteor.isServer
   minify = html_minifier.minify
 
   Router.route '/static/:_id', (req, res, next)->
+    postItem = Posts.findOne({_id: this.params._id})
+    if(!postItem)
+      SSR.compileTemplate('no-post', Assets.getText('static/no-post.html'))
+      html = SSR.render('no-post')
+      res.writeHead(404, {
+        'Content-Type': 'text/html'
+      })
+      return res.end(minify(html, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
+
+    postHtml = SSR.render('post', postItem)
+
+    res.writeHead(200, {
+      'Content-Type': 'text/html'
+    })
+    res.end(minify(postHtml, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
+  , {where: 'server'}
+  Router.route '/t/:_id', (req, res, next)->
         postItem = Posts.findOne({_id: this.params._id})
         if(!postItem)
           SSR.compileTemplate('no-post', Assets.getText('static/no-post.html'))
