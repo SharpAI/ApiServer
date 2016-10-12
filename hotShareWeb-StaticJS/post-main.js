@@ -504,7 +504,7 @@
             $('body').css('overflow-y','auto');
             $('.div_contactsList').css('display',"none");
             $('.div_me').css('display',"none");
-            document.body.scrollTop = localStorage.getItem('documentCurrTop');
+            document.body.scrollTop = 0;
         });
         $(".contactsBtn").click(function(){		
              localStorage.setItem('documentCurrTop',document.body.scrollTop);		
@@ -620,12 +620,16 @@
         $(".showPosts .user").click(function(){
             var profileUserId = $(".showPosts .user").attr("id");
             localStorage.setItem('profileUserId',profileUserId);
+            localStorage.setItem('userProfile_BoxFromPostsPage',true);
             showProfilePage(profileUserId);
         });
 
         $(".userProfileBox .leftButton").click(function(){
             document.body.scrollTop = localStorage.getItem('documentCurrTop');
-            $('body').css('overflow-y','auto');
+            if(localStorage.getItem('userProfile_BoxFromPostsPage') === true){
+                $('body').css('overflow-y','auto');
+            }
+            localStorage.setItem('userProfile_BoxFromPostsPage',false);
             $(".userProfileBox").hide();
         });
         // ---- Profile END ----
