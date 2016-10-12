@@ -3,6 +3,7 @@ ADD hotShareWeb.tar.gz /bundle/
 RUN mv /bundle/bundle /built_app
 WORKDIR /built_app/programs/server
 RUN npm i
+RUN npm install bcrypt
 RUN rm -rf /bundle
 RUN node -v
 RUN ls -alh
