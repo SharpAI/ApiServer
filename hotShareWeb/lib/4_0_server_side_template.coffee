@@ -210,3 +210,16 @@ if Meteor.isServer
         else
           descriptionFirstParagraph = this.title
         descriptionFirstParagraph
+      getAbstractSentence:->
+        if this.focusedIndex isnt undefined
+          this.pub[this.focusedIndex].text
+        else
+          null
+      getAbstractSentenceIndex:->
+        pub = this.pub
+        index = this.focusedIndex
+        count = 0
+        for i in [0..index]
+          if pub[i].type is 'text'
+            count++
+        count
