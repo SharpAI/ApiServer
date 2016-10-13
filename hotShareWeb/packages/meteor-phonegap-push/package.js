@@ -10,7 +10,7 @@ Package.describe({
 
 // Server-side push deps 
 Npm.depends({
-        'apn' : '1.4.2', // 1.3.8
+        'apn' : '1.6.2', // 1.3.8
         //'debug': '0.7.3', // DEBUG
         'node-gcm' : '0.9.15' // 0.9.15
 });
