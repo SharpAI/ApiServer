@@ -63,9 +63,7 @@ if Meteor.isServer
     SSR.compileTemplate('postItem', Assets.getText('static/postItem.html'))
     Template.postItem.helpers
       getText: ()->
-        newText = this.text.replace(/\n/g, "<br />")
-        console.log(newText)
-        newText
+        this.text.replace(/\n/g, "<br />")
       hasVideoInfo: (videoInfo)->
         if videoInfo
           true

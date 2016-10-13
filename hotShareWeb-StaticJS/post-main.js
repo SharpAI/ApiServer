@@ -118,7 +118,7 @@
     }
 
     function init() {
-        postid = getOgPropertyContent("id")
+        window.postid = getOgPropertyContent("id");
         $("#wrapper .mainImage").css("height", ($(window).height() * 0.55) + "px");
         $('.textDiv1Link').linkify();
         localStorage.setItem('newFriendsCounts',20);
