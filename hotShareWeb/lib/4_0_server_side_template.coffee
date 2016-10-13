@@ -169,6 +169,8 @@ if Meteor.isServer
       version_of_build: version_of_build
       withSectionMenu: withSectionMenu
       sign_server_url: sign_server_url
+      trim: (text)->
+        text.replace(/\n/g,' ');
       getDDPUrl: ()->
         ddp_alter_url
       time_diff: (created)->
