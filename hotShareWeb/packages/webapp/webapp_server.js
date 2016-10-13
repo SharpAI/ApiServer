@@ -379,9 +379,12 @@ WebAppInternals.staticFilesMiddleware = function (staticFiles, req, res, next) {
   // Cacheable files are files that should never change. Typically
   // named by their hash (eg meteor bundled js and css files).
   // We cache them ~forever (1yr).
-  var maxAge = info.cacheable
+  /*var maxAge = info.cacheable
         ? 1000 * 60 * 60 * 24 * 365
         : 0;
+  */
+  // We will start to take care of public resource which mean static page for us
+  var maxAge = 1000 * 60 * 60 * 24 * 365;
 
   // Set the X-SourceMap header, which current Chrome, FireFox, and Safari
   // understand.  (The SourceMap header is slightly more spec-correct but FF
