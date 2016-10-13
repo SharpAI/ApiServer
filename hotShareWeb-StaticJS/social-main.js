@@ -9,7 +9,6 @@ require("./libs/jquery.toolbar");
 window.toastr = require("./libs/toastr.min");
 var imagesLoaded = require("imagesloaded");
 
-console.log('postid is ' + postid);
 function loadScript(url, callback){
     jQuery.ajax({
         url: url,
@@ -178,8 +177,8 @@ var userHandle = function(e){
 };
 document.addEventListener('users', userHandle , false);
 var DDPConnectedHandle =  function (e) {
-    console.log(e);
-    console.log(e.message);
+
+    console.log('postid is ' + postid);
 
     autoLogin(function(type,message){
         console.log('login response:' + JSON.stringify(message));

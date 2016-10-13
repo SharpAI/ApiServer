@@ -60,9 +60,6 @@
             "data_sizey": Number($elem.attr('sizey'))
         };
     };
-    function getOgPropertyContent(name){
-        return document.querySelector("meta[property=\"og:"+name+"\"").getAttribute('content')
-    }
     this.calcLayoutForEachPubElement = function() {
         var layoutHelper = [0, 0, 0, 0, 0, 0];
         var imageMarginPixel = 5;
@@ -118,7 +115,6 @@
     }
 
     function init() {
-        window.postid = getOgPropertyContent("id");
         $("#wrapper .mainImage").css("height", ($(window).height() * 0.55) + "px");
         $('.textDiv1Link').linkify();
         localStorage.setItem('newFriendsCounts',20);
