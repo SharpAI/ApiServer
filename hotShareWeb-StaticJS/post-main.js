@@ -653,13 +653,13 @@
         //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);        
 
         // --作者热门文章--
-        $("#author-hot-posts").load("/static/author-hot-posts/"+postid, function(){
+        /*$("#author-hot-posts").load("/static/author-hot-posts/"+postid, function(){
           $("#author-hot-posts dl").each(function(){
             $(this).click(function(e){
               location = '/t/' + $(event.currentTarget).attr('data-id');
             });
           });
-        });
+        });*/
 
         // --我--
         $('.div_me .set-up .nickname').click(function(){
