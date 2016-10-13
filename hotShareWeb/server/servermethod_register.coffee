@@ -69,6 +69,8 @@ if Meteor.isServer
       console.log("sendSubscribeAutorEmail Error===:"+error)
   Meteor.startup ()->
     Meteor.methods
+      'clearUserBellWaitReadCount': (userId)->
+        Feeds.update({followby: userId},{$set:{isRead: true,checked: true}},{multi: true})
       'sendAuthorEmail': (userId,postId,email,content)->
         user = Meteor.users.findOne({_id: userId})
         post = Posts.findOne({_id: postId})

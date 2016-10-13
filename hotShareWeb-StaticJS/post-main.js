@@ -314,7 +314,8 @@
         $(".show-post-new-message").click(function(){showBellBox()});
         $(".div_me .set-up .bell").click(function(){showBellBox()});
         $('._bell-box .head').click(function(){
-          $('._bell-box').css('display', 'none');
+          window.CallMethod('clearUserBellWaitReadCount',[window._loginUserId]);
+          $('._bell-box,.msg-box, _bell-box .readTips').css('display', 'none');
         });
         // 加载更多新朋友
         this.loadMoreNewFriends = function () {
