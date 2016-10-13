@@ -22,7 +22,7 @@ function sendSectionShareDataToServer(type,section){
 function wechatSetup(signatureResult) {
     console.log('wechat_sign:', signatureResult);
     return wx.config({
-        debug: true,
+        debug: false,
         appId: signatureResult.appid,
         timestamp: signatureResult.timestamp,
         nonceStr: signatureResult.nonceStr,
