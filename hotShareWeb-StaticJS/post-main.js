@@ -507,6 +507,7 @@
             });
         });
         $(".postBtn").click(function(){
+            $('.div_me_set-up-sex,.div_me_set-up-nike').css('display', 'none');
             $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');
             $(".postBtn").addClass('focusColor');
             if($('.contactsList .head').is(':visible')){
@@ -518,6 +519,7 @@
             document.body.scrollTop = 0;
         });
         $(".contactsBtn").click(function(){		
+             $('.div_me_set-up-sex,.div_me_set-up-nike').css('display', 'none');
              localStorage.setItem('documentCurrTop',document.body.scrollTop);			
              if($('.eachViewer').length <= 1){		
                  $('.wait-loading').show();		

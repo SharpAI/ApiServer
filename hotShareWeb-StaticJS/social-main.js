@@ -366,6 +366,7 @@ var DDPConnectedHandle =  function (e) {
           fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
           $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');
           $(".discoverBtn").addClass('focusColor');
+          $('.div_me_set-up-sex,.div_me_set-up-nike').css('display', 'none');
           $('.div_contactsList').css('display',"none");
           $('.div_discover').css('display',"block");
           $('.div_me').css('display',"none");
