@@ -43,7 +43,7 @@ function wechatReady() {
     timelineData = {
         title: title,
         desc: title,
-        link: window.location.href,
+        link: window.location.href.split('#')[0],
         imgUrl: image,
         success: function() {
             var hotPosts;
@@ -65,7 +65,7 @@ function wechatReady() {
     chatShareData = {
         title: title,
         desc: desc,
-        link: window.location.href,
+        link: window.location.href.split('#')[0],
         imgUrl: image,
         success: function() {
             var hotPosts;
@@ -93,13 +93,13 @@ function wechatReady() {
 function setupWeichat(url) {
     /*HTTP.get(sign_server_url + encodeURIComponent(url), function(error, result) {
     });*/
+    jQuery.ajaxSetup({ cache: false });
     jQuery.getJSON(sign_server_url + encodeURIComponent(url), function(data){
         console.log('get json wechat sign data:', data);
         var signatureResult = data;
         //signatureResult = JSON.parse(result.content);
         console.log('data: '+data)
         wechatSetup(signatureResult);
-        wechatReady();
         wx.ready(wechatReady);
     });
 };
@@ -107,5 +107,5 @@ function getOgPropertyContent(name){
     return document.querySelector("meta[property=\"og:"+name+"\"").getAttribute('content')
 }
 wechat_sign = function(){
-    setupWeichat(window.location.href.split('#')[0].split('?')[0]);
+    setupWeichat(window.location.href.split('#')[0]);
 };
