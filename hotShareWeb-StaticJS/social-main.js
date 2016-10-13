@@ -291,12 +291,12 @@ var DDPConnectedHandle =  function (e) {
           $(".moments .newLayout_element").not('.loaded').each(function() {
               var elem = this, $elem = $(this);
               $elem.find('.img_placeholder').click(function() {
-                  var postid = $elem.data('postid');
-                  window.open('/t/' + postid, '_blank');
+                  var the_postid = $elem.data('postid');
+                  window.open('/t/' + the_postid, '_blank');
               });
               $elem.find('.pin_content .title').click(function() {
-                  var postid = $elem.data('postid');
-                  window.open('/t/' + postid, '_blank');
+                  var the_postid = $elem.data('postid');
+                  window.open('/t/' + the_postid, '_blank');
               });
               $elem.detach();
 
@@ -373,9 +373,9 @@ var DDPConnectedHandle =  function (e) {
            $('body').css('overflow-y','auto');
         });
         $(".div_discover .moments").on('click','.suggestAlreadyRead',function(e){
-            var postid = $(this).parent().parent().parent().data('postid');
-            console.log(postid)
-            localStorage.setItem('hideSuggestPost_'+postid,true);
+            var the_postid = $(this).parent().parent().parent().data('postid');
+            console.log(the_postid)
+            localStorage.setItem('hideSuggestPost_'+the_postid,true);
             $(this).parent().parent().parent().remove();
             var wookmark = new Wookmark('.newLayout_container', {
               autoResize: false,
