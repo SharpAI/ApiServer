@@ -794,5 +794,7 @@
         }
         // ---- 私信作者 END ---
     };
-    init();
+    $(document).ready(function(){
+        init();
+    })
 })(window);

@@ -392,7 +392,7 @@ var DDPConnectedHandle =  function (e) {
         document.addEventListener('subReady', subReadyHandle , false);
     });
 };
-document.addEventListener('ddpConnected',DDPConnectedHandle, false);
+
 window._bell = {
     contentList: function(feedId){
         console.log('contentList:', feedId);
@@ -400,14 +400,16 @@ window._bell = {
         window.CallMethod('updataFeedsWithMe',[window._loginUserId]);
     }
 };
+$(document).ready(function(){
+    document.addEventListener('ddpConnected',DDPConnectedHandle, false);
 
-if (isWeiXinFunc()) {
-    if (typeof wx === 'undefined') {
-        return loadScript('http://res.wx.qq.com/open/js/jweixin-1.0.0.js', function() {
-            wechat_sign();
-        });
-    } else {
-        return wechat_sign();
+    if (isWeiXinFunc()) {
+        if (typeof wx === 'undefined') {
+            return loadScript('http://res.wx.qq.com/open/js/jweixin-1.0.0.js', function() {
+                wechat_sign();
+            });
+        } else {
+            return wechat_sign();
+        }
     }
-}
-
+})
