@@ -107,5 +107,5 @@ function getOgPropertyContent(name){
     return document.querySelector("meta[property=\"og:"+name+"\"").getAttribute('content')
 }
 wechat_sign = function(){
-    setupWeichat(window.location.href.split('#')[0]);
+    setupWeichat(window.location.href.split('#')[0].split('?')[0]);
 };

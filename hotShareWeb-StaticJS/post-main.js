@@ -60,7 +60,9 @@
             "data_sizey": Number($elem.attr('sizey'))
         };
     };
-
+    function getOgPropertyContent(name){
+        return document.querySelector("meta[property=\"og:"+name+"\"").getAttribute('content')
+    }
     this.calcLayoutForEachPubElement = function() {
         var layoutHelper = [0, 0, 0, 0, 0, 0];
         var imageMarginPixel = 5;
@@ -116,6 +118,7 @@
     }
 
     function init() {
+        postid = getOgPropertyContent("id")
         $("#wrapper .mainImage").css("height", ($(window).height() * 0.55) + "px");
         $('.textDiv1Link').linkify();
         localStorage.setItem('newFriendsCounts',20);
@@ -247,8 +250,7 @@
 
         $(".chatBtn").click(function() {
             var chat_server_url = 'testchat.tiegushi.com';
-            var postId = window.location.pathname.split('/static/')[1];
-            var url = 'http://'+chat_server_url+'/channel/' + postId;
+            var url = 'http://'+chat_server_url+'/channel/' + postid;
 
             var userId = localStorage.getItem("Meteor.userId");
             if (userId) url += '/userid/' + userId;
@@ -385,7 +387,6 @@
           return true;
         };
         var syncThumbs = function(pindex,type){
-            postid = location.pathname.replace(/[\/]static[\/]/g, "");
             CallMethod("updateThumbs", [postid,window._loginUserId,pindex,type],function(result,message){
                 console.log(message)
             })
@@ -451,7 +452,6 @@
             $('.pcommentInput,.alertBackground').fadeOut(300);
         });
         var syncPcommitContent = function(pindex,pcommitContent){
-            postid = location.pathname.replace(/[\/]static[\/]/g, "");
             CallMethod("updatePcommitContent", [postid,window._loginUserId,pindex,pcommitContent],function(result,message){
                 console.log(message)
             })
@@ -569,7 +569,7 @@
                 var recentReviewPost = '';
                 var favouriteposts = '';
                 result.recentViewPosts.forEach(function(item){
-                    recentReviewPost += '<a href="http://'+window.location.host+'/static/'+item._id+'" style="color: #5A5A5A;"><li id="'+item.postId+'">'+
+                    recentReviewPost += '<a href="http://'+window.location.host+'/t/'+item._id+'" style="color: #5A5A5A;"><li id="'+item.postId+'">'+
                                         '<div class="postMainImage no-swipe" style="background-image:url('+item.mainImage+')"></div>'+
                                         '<h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">'+
                                         item.title+'</h6></li></a>';
@@ -651,10 +651,10 @@
         //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);        
 
         // --作者热门文章--
-        $("#author-hot-posts").load("/static/author-hot-posts/"+location.pathname.replace(/[\/]static[\/]/g, "")+"?r=" + Math.random(), function(){
+        $("#author-hot-posts").load("/static/author-hot-posts/"+postid+"?r=" + Math.random(), function(){
           $("#author-hot-posts dl").each(function(){
             $(this).click(function(e){
-              location = '/static/' + $(event.currentTarget).attr('data-id');
+              location = '/t/' + $(event.currentTarget).attr('data-id');
             });
           });
         });
@@ -719,7 +719,7 @@
             // 发表的故事
             favouriteposts = '';
             result.mePosts.forEach(function(item) {
-                favouriteposts += '<a href="http://'+window.location.host+'/static/'+item._id+'" style="color: #5A5A5A;"><li id="'+item.postId+'">'+
+                favouriteposts += '<a href="http://'+window.location.host+'/t/'+item._id+'" style="color: #5A5A5A;"><li id="'+item.postId+'">'+
                     '<div class="img" style="background-image: url('+item.mainImage+');"></div>'+
                     '<h1>'+item.title+'</h1></li></a>';
             });
