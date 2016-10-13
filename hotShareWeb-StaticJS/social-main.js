@@ -9,7 +9,6 @@ require("./libs/jquery.toolbar");
 window.toastr = require("./libs/toastr.min");
 var imagesLoaded = require("imagesloaded");
 
-postid = location.pathname.replace(/[\/]static[\/]/g, "");
 console.log('postid is ' + postid);
 function loadScript(url, callback){
     jQuery.ajax({
@@ -293,11 +292,11 @@ var DDPConnectedHandle =  function (e) {
               var elem = this, $elem = $(this);
               $elem.find('.img_placeholder').click(function() {
                   var postid = $elem.data('postid');
-                  window.open('/static/' + postid, '_blank');
+                  window.open('/t/' + postid, '_blank');
               });
               $elem.find('.pin_content .title').click(function() {
                   var postid = $elem.data('postid');
-                  window.open('/static/' + postid, '_blank');
+                  window.open('/t/' + postid, '_blank');
               });
               $elem.detach();
 
