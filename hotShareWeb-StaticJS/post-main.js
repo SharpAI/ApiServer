@@ -65,9 +65,7 @@
         var imageMarginPixel = 5;
 
         // $('#test').css('display', 'block');
-        $("#test .element").each(function(index) {
-            console.log('render pub:', index);
-            
+        $("#test .element").each(function(index) {            
             var elem = this, $elem= $(this), parentNode = this.parentNode;
             var pubInfo = fetchPubInfo($elem);
 
@@ -139,6 +137,10 @@
             $('.showPosts').get(0).style.position = '';
             $('.readmore').remove();
         });
+
+        console.log('post rended.');
+        console.log('test height:', $('#test').height());
+        $('.full-wait-loading').hide();
 
         // register window scroll callback
         function toggleHeaderNav(show) {
