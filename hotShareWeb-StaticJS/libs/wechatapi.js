@@ -22,7 +22,7 @@ function sendSectionShareDataToServer(type,section){
 function wechatSetup(signatureResult) {
     console.log('wechat_sign:', signatureResult);
     return wx.config({
-        debug: false,
+        debug: true,
         appId: signatureResult.appid,
         timestamp: signatureResult.timestamp,
         nonceStr: signatureResult.nonceStr,
@@ -33,12 +33,9 @@ function wechatSetup(signatureResult) {
 function wechatReady() {
     var chatShareData,timelineData;
 
-    var title = getOgPropertyContent("title");
-    var desc = getOgPropertyContent("description");
-    var image = getOgPropertyContent("image");
-    console.log("desc: "+desc)
-    console.log("title: "+title)
-    console.log("image: "+image)
+    var title = post_title;
+    var desc = post_desc;
+    var image = post_image;
 
     timelineData = {
         title: title,
@@ -101,11 +98,11 @@ function setupWeichat(url) {
         console.log('data: '+data)
         wechatSetup(signatureResult);
         wx.ready(wechatReady);
+        wx.error(function(res){
+            console.log(res)
+        });
     });
 };
-function getOgPropertyContent(name){
-    return document.querySelector("meta[property=\"og:"+name+"\"").getAttribute('content')
-}
 wechat_sign = function(){
     setupWeichat(window.location.href.split('#')[0]);
 };

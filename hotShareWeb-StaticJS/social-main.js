@@ -405,11 +405,11 @@ $(document).ready(function(){
 
     if (isWeiXinFunc()) {
         if (typeof wx === 'undefined') {
-            return loadScript('http://res.wx.qq.com/open/js/jweixin-1.0.0.js', function() {
+            loadScript('http://res.wx.qq.com/open/js/jweixin-1.0.0.js', function() {
                 wechat_sign();
             });
         } else {
-            return wechat_sign();
+            wechat_sign();
         }
     }
 })
