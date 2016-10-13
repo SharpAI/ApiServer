@@ -358,7 +358,7 @@ var DDPConnectedHandle =  function (e) {
         fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
         $(".discoverBtn").click(function(){
           document.body.scrollTop = $('.div_discover').offset().top - 45;
-          fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
+          //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
           $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');
           $(".discoverBtn").addClass('focusColor');
           $('.div_me_set-up-sex,.div_me_set-up-nike').css('display', 'none');
