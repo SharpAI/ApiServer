@@ -291,7 +291,7 @@ if Meteor.isServer
               pub[pindex].pcomments = []
             pub[pindex].pcomments.push(pcomment)
           Posts.update({_id: postId},{$set:{'pub':pub}})
-          updateServerSidePcommentsHookDeferHandle(userId,post,'pcomment',pindex)
+          updateServerSidePcommentsHookDeferHandle(userId,post,'pcomments',pindex)
       # Reporter START
       'isTrustedUser': (userId)->
         user = Meteor.users.findOne({_id: userId})
