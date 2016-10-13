@@ -1,6 +1,6 @@
 {
   "name": "hotshare-static-web-js-bundles",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "js code for the static page with NPM builder",
   "scripts": {
     "build": "browserify post-main.js | uglifyjs -p 10 -c -m > bundle-post-$npm_package_version.min.js && browserify social-main.js | uglifyjs -p 10 -c -m > bundle-social-$npm_package_version.min.js && cp bundle*.js ../hotShareWeb/public/statics/ && rm bundle*.js",
