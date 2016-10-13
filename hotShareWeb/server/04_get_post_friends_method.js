@@ -18,14 +18,10 @@ if(Meteor.isServer){
                     skip: skip,
                     limit: limit
                 });
-                var totalCount = Meets.find({me: this.userId, meetOnPostId: postId}).count();
-                console.log('totalCount is ' + totalCount);
                 if(handle.count()<=0){
                     return false
                 }
                 var postFriendsList=[];
-                var total = {totalCount:totalCount};
-                var result = [];
                 handle.fetch().forEach(function (fields) {
                     var taId = fields.ta;
                     if (taId !== userId) {
@@ -58,8 +54,7 @@ if(Meteor.isServer){
                         }
                     }
                 });
-                result = [total,postFriendsList];
-                return result;
+                return postFriendsList;
             }
         });
     });
