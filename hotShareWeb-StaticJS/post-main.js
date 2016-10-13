@@ -518,7 +518,7 @@
             document.body.scrollTop = 0;
         });
         $(".contactsBtn").click(function(){		
-             localStorage.setItem('documentCurrTop',document.body.scrollTop);		
+             localStorage.setItem('documentCurrTop',document.body.scrollTop);			
              if($('.eachViewer').length <= 1){		
                  $('.wait-loading').show();		
              }		
@@ -540,6 +540,11 @@
             $(".meBtn").addClass('focusColor');
             $('.div_contactsList').css('display',"none");
             $('.div_me').css('display',"block");      
+        });
+        $(".div_contactsList .left-btn").click(function() {
+            $('.div_contactsList').css('display',"none");
+            $(".contactsBtn").removeClass('focusColor');
+            $(".postBtn").addClass('focusColor');
         });
         // --查看大图 END --- 
 
