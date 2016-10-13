@@ -281,7 +281,7 @@ var DDPConnectedHandle =  function (e) {
               $container.append(html);
           }
           else {
-              html = '<div class="newLayout_container" style="display:none;">' + html + '</div>';
+              html = '<div class="newLayout_container" style="position:relative;">' + html + '</div>';
               $(".div_discover .moments").append(html);
               $container = $(".moments .newLayout_container");
           }
@@ -318,24 +318,29 @@ var DDPConnectedHandle =  function (e) {
                           direction: 'left',
                           align: 'center'
                       }, true);
-                      $container.css('display', 'block');
-                      $('.div_discover .loading').hide();
                       SUGGEST_POSTS_LOADING = false;
+                      console.log('SUGGEST_POSTS_LOADING:', SUGGEST_POSTS_LOADING);
+                      $('.moments-loading').hide();
                   }
               });
 
               imgLoad.on('fail', function() {
                   console.error('>>> img load failed!!!');
+                  SUGGEST_POSTS_LOADING = false;
+                    console.log('SUGGEST_POSTS_LOADING:', SUGGEST_POSTS_LOADING);
+                    $('.moments-loading').hide();
               });
           });
         }
         var fetchSuggestPosts = function(skip, limit) {
+          console.log('getSuggestedPosts start');
           window.fetchedSuggestPosts = true;
           if(SUGGEST_POSTS_LOADING) return;
           SUGGEST_POSTS_LOADING = true;
           SUGGEST_POSTS_SKIP += SUGGEST_POSTS_LIMIT;
+          $('.moments-loading').show();
           CallMethod('getSuggestedPosts',[postid,skip,limit],function(type,result){
-            console.log('getSuggestedPosts: '+JSON.stringify(result));
+            console.log('getSuggestedPosts result: '+JSON.stringify(result));
             var data = [];
             if(result.length > 0){
               for(var i=0;i<result.length;i++){
@@ -346,21 +351,11 @@ var DDPConnectedHandle =  function (e) {
             processSuggestPostsData(data);
           });
         };
-        var scrollAction = {x: 'undefined', y: 'undefined'};
         $(window).scroll(function(){
-          if (typeof scrollAction.x == 'undefined') {
-            scrollAction.x = window.pageXOffset;
-            scrollAction.y = window.pageYOffset;
-          }
-          var diffY = window.pageYOffset - scrollAction.y;
-
-          if($(window).scrollTop() >= $('.div_discover').offset().top-$(window).height()-40 && $('.div_discover').css('display') === 'block'){
+          if($(window).scrollTop()>=$(document).height()-$(window).height() && $('.div_discover').css('display') === 'block')
             fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
-            scrollAction.x = window.pageXOffset;
-            scrollAction.y = window.pageYOffset;
-          }
-
         });
+        fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
         $(".discoverBtn").click(function(){
           document.body.scrollTop = $('.div_discover').offset().top - 45;
           fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
