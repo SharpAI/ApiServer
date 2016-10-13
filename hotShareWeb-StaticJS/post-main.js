@@ -339,11 +339,11 @@
                         var html = '';
                         newFriendCounts += 20;
                         localStorage.setItem('newFriendsCounts',newFriendCounts);
-                        if(result[1].length === 0){
+                        if(result.length === 0){
                             $pullDownAddMore.html('没有更多数据了');
                             return getScrollEvent = false;
                         } else {
-                            $.each(result[1],function(index,content){
+                            $.each(result,function(index,content){
                                 $node = $('.addNewFriends #wrapper');
                                 html += '<div id=' + this.ta + ' class="eachViewer newFriends">'
                                     + '<img class="icon" src=' + this.icon + ' width="30" height="30">'
