@@ -64,7 +64,7 @@
         var layoutHelper = [0, 0, 0, 0, 0, 0];
         var imageMarginPixel = 5;
 
-        $('#test').css('display', 'block');
+        // $('#test').css('display', 'block');
         $("#test .element").each(function(index) {
             console.log('render pub:', index);
             

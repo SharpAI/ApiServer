@@ -354,7 +354,7 @@ var DDPConnectedHandle =  function (e) {
           }
           var diffY = window.pageYOffset - scrollAction.y;
 
-          if($(window).scrollTop() >= $('.div_discover').offset().top-$(window).height()-40 && $('.div_discover').css('display') === 'block' && diffY < 0){
+          if($(window).scrollTop() >= $('.div_discover').offset().top-$(window).height()-40 && $('.div_discover').css('display') === 'block'){
             fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
             scrollAction.x = window.pageXOffset;
             scrollAction.y = window.pageYOffset;
