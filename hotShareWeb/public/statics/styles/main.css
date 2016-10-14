@@ -351,4 +351,13 @@ a:focus {
 }
 /*========新朋友&我 END ===========*/
 
+/*=========== PUB ===========*/
+.showPostsBox.default .element{overflow: auto !important; position: static !important; margin: 5px 0px !important; padding: 5px !important;}
+.showPostsBox.default .element .textDiv1,.showPostsBox.default .element img{height: auto !important;}
+.showPostsBox.default  .content .gridster  img{height: 150px  !important;position: relative !important; background-color: rgb(85, 48, 62);}
+.showPostsBox.default #wrapper .mainImage{overflow: auto !important;}
+.showPostsBox.default #wrapper .mainImage img{position: static !important;}
+.showPosts .content .gridster .postImageItem{}
+/*============================*/
+
 html{background-color: #fff;}

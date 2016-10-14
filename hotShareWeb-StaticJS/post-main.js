@@ -140,7 +140,8 @@
 
         console.log('post rended.');
         console.log('test height:', $('#test').height());
-        $('.full-wait-loading').hide();
+        //$('.full-wait-loading').hide();
+        $('.showPostsBox').removeClass('default');
 
         // register window scroll callback
         function toggleHeaderNav(show) {
