@@ -73,29 +73,6 @@ if Meteor.isServer
       res.end(JSON.stringify({data: suggestPosts}))
   , {where: 'server'}
 
-  Router.route '/static/author-hot-posts/:_id', (req, res, next)->
-    id = this.params._id
-
-    Template.hot_posts.helpers
-      authorReadPopularPosts: ()->
-        post = Posts.findOne({_id: id})
-        return Posts.find({_id: {$ne: id},owner: post.owner, publish: {$ne: false}},{sort: {browse: -1},limit: 3})
-      authorInfo: ()->
-        post = Posts.findOne({_id: id})
-        user = Meteor.users.findOne({_id: post.owner})
-        authorName = if user.profile.fullname then user.profile.fullname else user.username
-        authorIcon = user.profile.icon
-        authorInfo = {
-          authorName: authorName
-          authorIcon: authorIcon
-        }
-        return authorInfo
-
-    res.writeHead(200, {'Content-Type': 'text/html'})
-    html = SSR.render('hot_posts')
-    res.end(minify(html, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
-  , {where: 'server'}
-
   Router.route '/static/bell/:userId', (req, res, next)->
     userId = this.params.userId
     limit = 30 # max 30 count

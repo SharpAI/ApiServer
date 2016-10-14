@@ -731,6 +731,13 @@
         }, false);
 
         // ---- 关注作者 START----
+        if ($('.authorInfos .subscribe').attr('id') !== window._loginUserId){
+            $('#SubscribeAuthor').show();
+        }
+        $('.authorReadPopularPostItem').click(function(){
+            var url = '/static/'+ $(this).attr('id');
+            window.open(url,'_system');
+        });
         $('.subscribeAutorPage .cannelBtn,.subscribeAutorPage .bg').on('click', function(){
             $('.subscribeAutorPage').hide();
         });

@@ -58,7 +58,7 @@
                     <span class="name userDashboard">{{ownerName}}</span>
                     <div class="createAt userDashboard">{{time_diff createdAt}}</div>
                 </div>
-                <div id="SubscribeAuthor" onclick="$('.subscribeAutorPage').show();"><i class="fa fa-plus"></i> 关注</div>
+                <div id="SubscribeAuthor" style="display: none;" onclick="$('.subscribeAutorPage').show();"><i class="fa fa-plus"></i> 关注</div>
             </div>
 
 
@@ -116,7 +116,28 @@
     <div class="showPostsFollowMe">
         <p>更多精彩内容，请搜索关注<span><a><i class="fa fa-weixin"></i>故事贴</a></span>微信公众号</p>
     </div>
-    <div id="author-hot-posts"></div>
+    <!--<div id="author-hot-posts"></div>-->
+    <div class="showPostsLine"></div>
+    <!--authorInfo Start-->
+    <div class="authorInfos">
+      <div class="icon authorInfoIcon">
+        <img src="{{ownerIcon}}" width="70" height="70"/>
+      </div>
+      <div class="authorNike  authorInfoIcon">{{ownerName}}</div>
+      <div id="{{owner}}" class="subscribe" style="display:none;">
+        <div id="SubscribeAuthor" style="margin: 0 auto; position:relative; left:0;z-index: 0;" onclick="$('.subscribeAutorPage').show();"><i class="fa fa-plus"></i> 关注</div>
+      </div>
+      {{#if authorReadPopularPosts}}
+      <div class="tipAuthorHotPosts">—&nbsp;热门文章&nbsp;—</div>
+      <ul>
+        {{#each authorReadPopularPosts}}
+        <dl id="{{_id}}" class="authorReadPopularPostItem"><dd>《{{title}}》</dd></dl>
+        {{/each}}
+      </ul>
+      {{/if}}
+    </div>
+    <div class="showPostsLine"></div>
+    <!--authorInfo End-->
     <!--  footer -->
     <div class="socialContent">
         <div class="showPostsLine" id="socialContentDivider"></div>

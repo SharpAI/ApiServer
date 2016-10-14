@@ -225,3 +225,5 @@ if Meteor.isServer
           if pub[i].type is 'text'
             count++
         count
+      authorReadPopularPosts: ()->
+        return Posts.find({_id: {$ne: this._id},owner: this.owner, publish: {$ne: false}},{sort: {browse: -1},limit: 3})
