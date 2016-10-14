@@ -115,20 +115,6 @@ if Meteor.isServer
           0
         else
           this.pcomments.length
-      hasPcomments: ->
-        i = this.index
-        pcomments = this.pcomments
-        if pcomments isnt undefined
-          return true
-        else
-          return false
-      pcomment:->
-        i = this.index
-        pcomments = this.pcomments
-        if pcomments isnt undefined
-          return pcomments
-        else
-          return ''
       getStyle:->
         self=this
         pclength=0
