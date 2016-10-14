@@ -1372,25 +1372,37 @@ if Meteor.isClient
     Template.recommendStory.onRendered ->
       $('body').css('overflow-y','hidden')
       Session.set('storyListsLimit',10)
-      Session.set('storyListsLoaded',false);
-      Meteor.subscribe 'userRecommendStory', Session.get('storyListsLimit'), {
-        onReady: ->
-          Session.set('storyListsLoaded',true)
-        onError: ->
-          Session.set('storyListsLoaded',true)
-      }
+      Session.set('storyListsLoaded',false)
+      Session.set('storyListsType','publishedStories')
     Template.recommendStory.onDestroyed ->
       $('body').css('overflow-y','auto')
       Session.set('isRecommendStory',false)
     Template.recommendStory.helpers
       storyListsLoaded: ()->
-        return Session.get('storyListsLoaded') is true
-      storyListsHasMore: ()->
-        return Session.get('storyListsHasMore') is true
+        if Session.get('storyListsType') is 'publishedStories'
+          return Session.get('storyListsLoaded') is true
+        else
+          return favouritepostsCollection_getmore is 'done'
+      isStoryListsLoadedAll: ()->
+        if Session.get('storyListsType') is 'publishedStories'
+          return Session.get('storyListsCounts') < Session.get('storyListsLimit')
+        else
+          return FavouritePosts.find({userId: Meteor.userId()}).count() < Session.get("favouritepostsLimit")
       storyLists:()->
-        return Posts.find({owner: Meteor.userId()})
+        if Session.get('storyListsType') is 'publishedStories'
+          posts = Posts.find({owner: Meteor.userId()})
+        else
+          postIds = []
+          FavouritePosts.find({userId: Meteor.userId()}).forEach((item) ->
+            if !~postIds.indexOf(item.postId)
+              postIds.push(item.postId)
+          )
+          posts = Posts.find({_id: {$in: postIds}})
+        return posts
       getFirstParagraph:(pub)->
         text = ''
+        if !pub
+          return ''
         pub.forEach (item)->
           console.log(item.text)
           if item.type is 'text'
@@ -1408,10 +1420,18 @@ if Meteor.isClient
         # 准备分享到相关群
 
       'click #loadMore': (e)->
-        limit = parseInt(Session.get('storyListsLimit'))
-        limit += 10
+        if Session.get('storyListsType') is 'publishedStories'
+          limit = parseInt(Session.get('storyListsLimit'))
+          limit += 10
+          Session.set('storyListsLimit',limit)
+        else
+          favouritepostsLimit = Session.get('favouritepostsLimit')
+          favouritepostsLimit += 10
+          Session.set('favouritepostsLimit',favouritepostsLimit)
         Session.set('storyListsLoaded',false)
-        Session.set('storyListsLimit',limit)
+      'click .storySource .radio': (e)->
+        Session.set('storyListsType',e.currentTarget.id)
+        
 
       
 

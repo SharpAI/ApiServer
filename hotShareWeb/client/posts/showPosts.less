@@ -174,19 +174,22 @@
 
 .recommendstory{
   .description{
-    text-align: justify;
-    font-size: 14px;
-    margin: 10px 16px;
-    #shareStoryBtn{
+    text-align: center;
+    font-size: 16px;
+    margin: 32px 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    line-height: 32px;
+    cursor: pointer;
+    .shareStoryBtn{
       display: inline-block;
       font-size: 14px;
       color: #fff;
-      border: 1px solid #00c4ff;
+      border: 1px solid #166FFF;
       border-radius: 4px;
       padding: 6px 12px;
-      background: #00c4ff;
-      cursor: pointer;
-      cursor: pointer;
+      background: #166FFF;
+      line-height: 16px;
     }
   }
 }
@@ -838,7 +841,7 @@
       #importBtn{
         display: inline-block;
         margin-top: 6px;
-        padding: 10px 12px;
+        padding: 8px 12px;
         background-color: #166fff;
         color: #fff;
         border-radius: 6px;
@@ -873,3 +876,4 @@
     }
   }
 }
+.storySource input[type="radio"]:checked + label{color: #166fff;}

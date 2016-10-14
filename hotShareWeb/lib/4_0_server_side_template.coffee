@@ -115,20 +115,6 @@ if Meteor.isServer
           0
         else
           this.pcomments.length
-      hasPcomments: ->
-        i = this.index
-        pcomments = this.pcomments
-        if pcomments isnt undefined
-          return true
-        else
-          return false
-      pcomment:->
-        i = this.index
-        pcomments = this.pcomments
-        if pcomments isnt undefined
-          return pcomments
-        else
-          return ''
       getStyle:->
         self=this
         pclength=0
@@ -225,3 +211,5 @@ if Meteor.isServer
           if pub[i].type is 'text'
             count++
         count
+      authorReadPopularPosts: ()->
+        return Posts.find({_id: {$ne: this._id},owner: this.owner, publish: {$ne: false}},{sort: {browse: -1},limit: 3})

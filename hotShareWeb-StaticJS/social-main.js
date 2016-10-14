@@ -151,11 +151,10 @@ var userNewBellCountHandle = function (e1){
     // $('._bell-box').slideDown(300);
     $('._bell-box .contentList').each(function(){
       $(this).click(function(){
-        console.log('feed id:', $(this).attr('data-id'));
-        window._bell.contentList($(this).attr('data-id'));
-        $('._bell-box').css('display', 'none');
-        if($(this).attr('data-id'))
-          location = '/static/' + $(this).attr('data-id');
+        console.log('post id:', $(this).attr('data-post'));
+        window._bell.contentList($(this).attr('data-post'));
+        if($(this).attr('data-post'))
+          location = '/static/' + $(this).attr('data-post');
       });
     });
 };

@@ -122,8 +122,8 @@
       <div id="sendEmail"><i class="fa fa-envelope-o"></i>     私信作者</div>
       {{/if}}
     </div>
-    <div class="recommendstory">
-        <div class="description">{{browse}}人读过，分享您的故事给他们吧！<input type="submit" value="分享" id="shareStoryBtn" /></div>
+    <div class="recommendstory"  id="shareStoryBtn">
+        <div class="description">{{browse}}人读过，分享您的故事给他们吧！<span class="shareStoryBtn">分享</span></div>
     </div>
     {{#if withAfterPostIntroduce}}
       <div class="write">
@@ -579,17 +579,17 @@
         <div class="fastImport">
             <div class="shareNewStory">分享新故事</div>
             <div class="input-group">
-                <input type="text" id="importUrl" autofocus="autofocus" class="form-control" maxlength="180" placeholder="输入或粘贴一格链接" />
-                <input type="submit" value="导入分享" id="importBtn">
+                <input type="text" id="importUrl" autofocus="autofocus" class="form-control" maxlength="180" placeholder="输入或粘贴一个链接" />
+                <div id="importBtn">导入分享</div>
             </div>
         </div>
         <div class="showPostsLine"></div>
         <div class="storySource">
-            <div style="color: #166fff; font-size:16px;font-weight: bold;">或选择已发布的故事</div>
-            <!--<input type="radio" class="radio" name="where" value="x" id="publishedStories" />
+            <!--<div style="color: #166fff; font-size:16px;font-weight: bold;">或选择已发布的故事</div>-->
+            <input type="radio" class="radio" name="where" value="x" id="publishedStories" checked/>
             <label for="publishedStories">我发布的故事</label>
             <input type="radio" class="radio" name="where" value="y" id="favoriteStories" />
-            <label for="favoriteStories">我收藏的故事</label>-->
+            <label for="favoriteStories">我收藏的故事</label>
             <ul class="storyLists" style="overflow-y: auto;">
               {{#each storyLists}}
               <li id="{{_id}}">
@@ -602,10 +602,13 @@
                 </div>
               </li>
               {{/each}}
-              {{#if storyListsLoaded}}
-              <div id="loadMore" style="text-align:center;">点击加载更多</div>
+              {{#if isStoryListsLoadedAll}}
               {{else}}
-              <div style="text-align:center;"><img src="/loading-2.gif" style="width: 32px; height:32px; display:inline-block;"/>加载中...</div>
+                {{#if storyListsLoaded}}
+                <div id="loadMore" style="text-align:center;">点击加载更多</div>
+                {{else}}
+                <div style="text-align:center;"><img src="/loading-2.gif" style="width: 32px; height:32px; display:inline-block;"/>加载中...</div>
+                {{/if}}
               {{/if}}
             </ul>
         </div>
