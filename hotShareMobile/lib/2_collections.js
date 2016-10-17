@@ -1801,6 +1801,14 @@ if(Meteor.isServer){
           Counts.publish(this, 'myEmailFollowerCount-'+this.userId, Follower.find({followerId:this.userId, userEmail: {$exists: true}}), {noReady: true });
       }
   });
+  Meteor.publish("userRecommendStory", function(limit) {
+      if(this.userId === null|| !Match.test(limit, Number)) {
+          return this.ready();
+      }
+      else{
+          return Posts.find({owner: this.userId, publish: {$ne: false}},{sort: {createdAt: -1},limit:limit,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1,pub:1}});
+      }
+  });
   Meteor.publish("postsWithLimit", function(limit) {
       if(this.userId === null|| !Match.test(limit, Number)) {
           return this.ready();
@@ -3130,6 +3138,23 @@ if(Meteor.isClient){
                 window.favouritepostsCollection3_getmore = 'done';
                 Session.set('favouritepostsCollection3','loaded');
                 Session.set('favouritepostsCollection3_getmore','done');
+            }
+        });
+    }
+  });
+
+  Tracker.autorun(function() {
+    if (Session.get('storyListsType') === 'publishedStories') {
+        Meteor.subscribe('userRecommendStory', Session.get('storyListsLimit'), {
+            onReady: function(){
+                count = Posts.find({owner: Meteor.userId()}).count()
+                Session.set('storyListsCounts',count)
+                Session.set('storyListsLoaded',true)
+            },
+            onError: function(){
+                count = Posts.find({owner: Meteor.userId()}).count()
+                Session.set('storyListsCounts',count)
+                Session.set('storyListsLoaded',true)
             }
         });
     }

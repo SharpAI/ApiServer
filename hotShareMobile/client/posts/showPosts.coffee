@@ -10,6 +10,32 @@ if Meteor.isClient
   @isAndroidFunc = ()->
     userAgent = navigator.userAgent.toLowerCase()
     return (userAgent.indexOf('android') > -1) or (userAgent.indexOf('linux') > -1)
+  @pushPostToReaderOrHotPostGroups = (postIds)->
+    groups = []
+    postItem = Session.get('postContent')
+    feedItem = {
+      owner: Meteor.userId(),
+      ownerName: postItem.ownerName,
+      ownerIcon: postItem.ownerIcon,
+      eventType:'SelfPosted',
+      postId: postItem._id,
+      postTitle: postItem.title,
+      mainImage: postItem.mainImage,
+      createdAt: postItem.createdAt,
+      heart: 0,
+      retweet: 0,
+      comment: 0
+    }
+    postIds.forEach (item)->
+      groups.push(item)
+    ###
+    # 推荐到故事贴群
+    Meteor.call 'pushPostToHotPostGroups', feedItem, groups, (err)->
+      console.log('pushPostToHotPostGroups:', err)
+    ###
+    # 推荐到读友圈
+    Meteor.call 'pushPostToReaderGroups', feedItem, groups, (err)->
+      console.log('pushPostToReaderGroups:', err)
   window.getDocHeight = ->
     D = document
     Math.max(
@@ -569,6 +595,9 @@ if Meteor.isClient
     else if action is 'post-tts'
       startPostTTS(self.index)
   Template.showPosts.events
+    'click #shareStoryBtn' :->
+      Session.set('isRecommendStory',true)
+      PUB.page '/recommendStory'
     'click .readmore': (e, t)->
       # if e.target is e.currentTarget
       $showPosts = $('.showPosts')
@@ -1172,3 +1201,91 @@ if Meteor.isClient
       $('.shareReaderClub,.shareReaderClubBackground').hide()
       Meteor.call('sendEmailByWebFollower', Session.get('postContent')._id, 'share')
       navigator.notification.confirm('分享成功~', `function(){}`, '提示', ['知道了'])
+  Template.recommendStory.onRendered ->
+    $('body').css('overflow-y','hidden')
+    Session.set('storyListsLimit',10)
+    Session.set('storyListsLoaded',false)
+    Session.set('storyListsType','publishedStories')
+  Template.recommendStory.onDestroyed ->
+    $('body').css('overflow-y','auto')
+    Session.set('isRecommendStory',false)
+  Template.recommendStory.helpers
+    storyListsLoaded: ()->
+      if Session.get('storyListsType') is 'publishedStories'
+        return Session.get('storyListsLoaded') is true
+      else
+        return favouritepostsCollection_getmore is 'done'
+    isStoryListsLoadedAll: ()->
+      if Session.get('storyListsType') is 'publishedStories'
+        return Session.get('storyListsCounts') < Session.get('storyListsLimit')
+      else
+        return FavouritePosts.find({userId: Meteor.userId()}).count() < Session.get("favouritepostsLimit")
+    storyLists:()->
+      if Session.get('storyListsType') is 'publishedStories'
+        posts = Posts.find({owner: Meteor.userId()})
+      else
+        postIds = []
+        FavouritePosts.find({userId: Meteor.userId()}).forEach((item) ->
+          if !~postIds.indexOf(item.postId)
+            postIds.push(item.postId)
+        )
+        posts = Posts.find({_id: {$in: postIds}})
+      return posts
+    getFirstParagraph:(pub)->
+      text = ''
+      if !pub
+        return ''
+      pub.forEach (item)->
+        console.log(item.text)
+        if item.type is 'text'
+          text = item.text
+      return text
+  Template.recommendStory.events
+    'click .leftButton':(e)->
+      return window.history.back()
+    'click #importBtn': (e)->
+      originUrl = $('#importUrl').val()
+      console.log('originUrl=='+originUrl)
+      # 调用导入相关方法
+      url = '/import-server/' + Meteor.userId() + '/' + encodeURIComponent(originUrl)
+      console.log('url=='+url)
+      $('.importing-mask,.importing').show()
+      HTTP.get url,(error, result)->
+        if !error
+          data = result.content
+          if result.statusCode is 200
+            data = data.split("\n")
+            data = JSON.parse(data[data.length-1])
+            postId = data.json.split("/")
+            postId = postId[postId.length-1]
+            console.log("data is ==",data)
+            console.log("postId is ==",postId)
+            $('.importing-mask,.importing').hide()
+            pushPostToReaderOrHotPostGroups([postId])
+            PUB.toast('推荐成功！')
+            return window.history.back()
+          else
+            data = result.content
+            console.log("data is ==",data)
+            $('.importing-mask,.importing').hide()
+        PUB.toast('导入失败，请重试！')
+    'click .storyLists li':(e)->
+      console.log('target_postId=='+e.currentTarget.id)
+      # 准备分享到相关读友圈
+      groups = []
+      if !Session.get('postContent')
+        pushPostToReaderOrHotPostGroups([e.currentTarget.id])
+      PUB.toast('推荐成功！')
+      return window.history.back()
+    'click #loadMore': (e)->
+      if Session.get('storyListsType') is 'publishedStories'
+        limit = parseInt(Session.get('storyListsLimit'))
+        limit += 10
+        Session.set('storyListsLimit',limit)
+      else
+        favouritepostsLimit = Session.get('favouritepostsLimit')
+        favouritepostsLimit += 10
+        Session.set('favouritepostsLimit',favouritepostsLimit)
+      Session.set('storyListsLoaded',false)
+    'click .storySource .radio': (e)->
+      Session.set('storyListsType',e.currentTarget.id)

@@ -93,6 +93,9 @@
     {{#if haveUrl}}
     <div id="ViewOnWeb"><i class="fa fa-globe"></i>{{_ "readOriginalText"}}</div>
     {{/if}}
+    <div class="recommendstory"  id="shareStoryBtn">
+        <div class="description">{{browse}}人读过，分享您的故事给他们吧！<span class="shareStoryBtn">分享</span></div>
+    </div>
     {{#if withAfterPostIntroduce}}
       <div class="write">
         <p class="author">Write by <span class="spc">{{ownerName}}</span></p>
@@ -295,4 +298,57 @@
     <p>马上分享给您的朋友们吧！</p>
   </div>
   <div class="share-room-background" style="background: rgba(0, 0, 0, 0.5);"></div>
+</template>
+
+<template name="recommendStory">
+    <div class="recommendStory">
+        <div class="head">
+          <div class="leftButton" style="left: 0;margin: 0;">
+            <i class="fa fa-angle-left fa-fw back" style="padding: 0;margin-top: 3px;width: auto;padding-left: 10px;"></i>
+            <span class="back" style="font-size: 14px;color: #fff;bottom: 5px;">返回</span>
+          </div>
+        </div>
+
+        <div class="fastImport">
+            <div class="shareNewStory">分享新故事</div>
+            <div class="input-group">
+                <input type="text" id="importUrl" autofocus="autofocus" class="form-control" maxlength="180" placeholder="输入或粘贴一个链接" />
+                <div id="importBtn">导入分享</div>
+            </div>
+        </div>
+        <div class="showPostsLine"></div>
+        <div class="storySource">
+            <!--<div style="color: #166fff; font-size:16px;font-weight: bold;">或选择已发布的故事</div>-->
+            <input type="radio" class="radio" name="where" value="x" id="publishedStories" checked/>
+            <label for="publishedStories">我发布的故事</label>
+            <input type="radio" class="radio" name="where" value="y" id="favoriteStories" style="margin-left: 16px;"/>
+            <label for="favoriteStories">我收藏的故事</label>
+            <ul class="storyLists" style="overflow-y: auto;">
+              {{#each storyLists}}
+              <li id="{{_id}}">
+                <div class="imgPlaceHolder">
+                  <img id="" class="lazy" src="{{mainImage}}" style="display: block; background-color: rgb(80, 63, 50);">
+                </div>
+                <div class="postContent">
+                  <h2>{{title}}</h2>
+                  <p>{{getFirstParagraph pub}}</p>
+                </div>
+              </li>
+              {{/each}}
+              {{#if isStoryListsLoadedAll}}
+              {{else}}
+                {{#if storyListsLoaded}}
+                <div id="loadMore" style="text-align:center;">点击加载更多</div>
+                {{else}}
+                <div style="text-align:center;"><img src="/loading-2.gif" style="width: 32px; height:32px; display:inline-block;"/>加载中...</div>
+                {{/if}}
+              {{/if}}
+            </ul>
+        </div>
+        <div class="importing-mask"></div>
+        <div class="importing">
+          <div class="img"><img src="http://data.tiegushi.com/res/defaultMainImage1.jpg" style="width:100%; border-radius:4px 4px 0 0;"/></div>
+          <div class="remark" style="height:54px; line-height:52px;"><img src="/loading-2.gif" width="32" style="display: inline-block;"/> 正在导入，请稍候...</div>
+        </div>
+    </div>
 </template>
