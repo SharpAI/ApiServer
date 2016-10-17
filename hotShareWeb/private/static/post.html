@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="/statics/styles/43617b92206b6142541826d265fdd2489a2907bd.css">
     <link rel="stylesheet" href="/statics/libs/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/statics/styles/main.css">
+    <link rel="stylesheet" href="/statics/styles/swiper-3.3.1.min.css">
     <link rel="icon" href="{{mainImage}}">
     <meta property="og:type" content="article" />
     <meta property="og:title" content="{{title}}" />
@@ -205,45 +206,47 @@
         </div>
     {{/if}}
 
-    <!-- Profile START-->
-   <div class="userProfileBox" style="display:none; z-index:9990;">
-    <div class="wrapper">
-        <div class="userProfileSwipe">
-            <div class="pages">
-                <div class="page userProfilePage scrollable" style="display: block; transform: translate3d(0px, 0px, 0px);position: fixed;">
-                    <div class="userProfile userProfileMarginTop" style="min-height: 528px;">
-                        <div class="head">
-                            <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
-                            <div class="theprofileName"></div>
-                        </div>
-                        <div class="userProfileTop">
-                            <img class="icon" src="/userPicture.png" width="70" height="70">
-                            <span class="userName theprofileName"></span>
-                            <span class="location"></span>
-                            <span class="desc"></span>
-                        </div>
-                        <div class="showPostsLine"></div>
-                        <div class="post">
-                            <span class="postLeft">最近浏览的故事</span>
-                        </div>
-
-                        <div class="postImages swipe-control">
-                            <ul class="recentViewPosts"></ul>
-                        </div>
-                        <div class="showPostsLine"></div>
-                        <div class="post">
-                            <span class="postLeft">喜欢的故事</span>
-                        </div>
-                        <div class="favoritePosts" style="padding: 10px;background: #F1F1F1;
-                        -moz-column-count: 2;-webkit-column-count: 2;column-count: 2;
-                        -moz-column-width: 10em;-webkit-column-width: 10em;column-width: 10em;
-                        -moz-column-gap: 1em;-webkit-column-gap: 1em;column-gap: 1em;"> </div>
-                        <div class="loadMore" style="height: 32px;line-height: 32px;text-align: center;"></div>
-                    </div>
-                </div>
-            </div>
+<!-- Profile START-->
+<div class="user-profile-template" style="display:none;">
+  <!--<div class="swiper-slide">-->
+    <div class="userProfile userProfileMarginTop" style="margin-top:0px;">
+        <div class="swiper_head">
+            <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+            <div class="theprofileName"></div>
         </div>
+        <div class="swiper_userinfo" style="display:none;">
+          <div class="icon" style="background-image: url(/userPicture.png);"></div>
+          <div class="username"></div>
+          <div class="location"></div>
+          <div class="desc"></div>
+        </div>
+        <div class="swiper_showPostsLine"></div>
+        <div class="post">
+            <span class="postLeft">最近浏览的故事</span>
+        </div>
+        <div class="postImages swipe-control">
+            <ul class="recentViewPosts"></ul>
+        </div>
+        <div class="swiper_showPostsLine"></div>
+        <div class="post">
+            <span class="postLeft">喜欢的故事</span>
+        </div>
+        <div class="favoritePosts" style="padding: 10px;background: #F1F1F1;
+            -moz-column-count: 2;-webkit-column-count: 2;column-count: 2;
+            -moz-column-width: 10em;-webkit-column-width: 10em;column-width: 10em;
+            -moz-column-gap: 1em;-webkit-column-gap: 1em;column-gap: 1em;"> </div>
+        <div class="loadMore" style="height: 32px;line-height: 32px;text-align: center;"></div>
     </div>
+  <!--</div>-->
+</div>
+<div class="userProfileBox" style="display:none; z-index:9990;">
+  <div class="wrapper">
+    <div class="swiper-container">
+      <div class="swiper-wrapper">
+          
+      </div>
+    </div>
+  </div>
 </div>
 <!-- Profile END -->
 <!-- subscribeAutorPage START -->
@@ -403,6 +406,7 @@
 <!--wait END -->
 
 <script type="text/javascript" src="/statics/bundle-post-1.2.8.min.js"></script>
+<script async type="text/javascript" src="/statics/swiper-3.3.1.jquery.min.js"></script>
 <script async type="text/javascript" src="/statics/bundle-social-1.2.8.min.js"></script>
 
 <!-- Piwik -->

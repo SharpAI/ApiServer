@@ -617,23 +617,25 @@
         // --查看大图 END --- 
 
         // ---- Profile START ----
-        var preProfileInfo = function(userId) {
-            $('.userProfileTop').html('<img class="icon" src="/userPicture.png" width="70" height="70">\
-                            <span class="userName theprofileName"></span>\
-                            <span class="location"></span>\
-                            <span class="desc"></span>');
-            $(".recentViewPosts").html('');
-            $(".favoritePosts").html('');
-            $('body').css('overflow-y','hidden');
+        var preProfileInfo = function($active, userId) {
+            // $active.find('.swiper_userinfo').html('<div class="icon" style="background-image: url(/userPicture.png);"></div>\
+            //                 <span class="username"></span>\
+            //                 <span class="location"></span>\
+            //                 <span class="desc"></span>');
+            $active.find(".recentViewPosts").html('');
+            $active.find(".favoritePosts").html('');
+            $active.find('body').css('overflow-y','hidden');
             $('.wait-loading').show();
             localStorage.setItem('favouritepostsCounts',10);
             window.CallMethod('profileData',[userId],function (type,result){
                 console.log('profileData is ==:'+JSON.stringify(result));
                 // 写入user数据
-                $(".theprofileName").html(result.userProfile.name);
-                $(".userProfileTop .icon").attr('src',result.userProfile.icon);
-                $(".userProfileTop .location").html(result.userProfile.location);
-                $(".userProfileTop .desc").html(result.userProfile.desc);
+                $active.find(".swiper_head .theprofileName").html(result.userProfile.name);
+                $active.find(".swiper_userinfo .username").html(result.userProfile.name);
+                console.log('icon:', result.userProfile.icon);
+                $active.find(".swiper_userinfo .icon").attr('style','background-image:url(' + result.userProfile.icon + ')');
+                $active.find(".swiper_userinfo .location").html(result.userProfile.location);
+                $active.find(".swiper_userinfo .desc").html(result.userProfile.desc);
                 // 写入最近浏览的故事
                 var recentReviewPost = '';
                 var favouriteposts = '';
@@ -655,22 +657,22 @@
                                         '<p class="addontitle" style="font-size:11px;margin: 10px;">'+item.addontitle+'</p>'+
                                         '</div></div></a>';
                 });
-                $(".recentViewPosts").html(recentReviewPost);
-                $(".favoritePosts").html(favouriteposts);
+                $active.find(".recentViewPosts").html(recentReviewPost);
+                $active.find(".favoritePosts").html(favouriteposts);
                 $('.wait-loading').hide();
-                $(".userProfileBox .loadMore").html("加载更多");
+                $active.find(".userProfileBox .loadMore").html("加载更多");
                 
             });
         };
         // 加载更多喜欢的故事
-        var loadMoreFavouriteposts = function () {
-            $(".userProfileBox .loadMore").on('click', function(){
+        var loadMoreFavouriteposts = function ($active, userId) {
+            $active.find(".userProfileBox .loadMore").on('click', function(){
                 var $self = $(this);
                 var favouritepostsCounts;
                 favouritepostsCounts = parseInt(localStorage.getItem('favouritepostsCounts'));
                 $self.html('<img src="/loading-2.gif" style="width: 28px; height:28px;"/> 加载中...');
                 // getMoreFavouritePosts params[userId,skip,limit]
-                window.CallMethod('getMoreFavouritePosts',[localStorage.getItem('profileUserId'),favouritepostsCounts,10],function (type,result){
+                window.CallMethod('getMoreFavouritePosts',[userId,favouritepostsCounts,10],function (type,result){
                     console.log('profileData is ==:'+JSON.stringify(result));
                     var favouriteposts = '';
                     favouritepostsCounts += 10;
@@ -694,28 +696,103 @@
                 });
             });
         };
-        this.showProfilePage = function(userId) {
+        this.$user_profile_tempalte = $('.user-profile-template');
+        this.$user_profile_swiper_wrapper = $('.swiper-wrapper');
+        this.showProfilePage = function(userId, showMe) {
             localStorage.setItem('documentCurrTop',document.body.scrollTop);
             document.body.scrollTop = 0;
-            preProfileInfo(userId);
             $(".userProfileBox").show();
-            loadMoreFavouriteposts();
+            var index = 0;
+
+            // init swiper html
+            $user_profile_swiper_wrapper.html('');
+            $user_profile_swiper_wrapper.css('transform', 'translate3d(0px, 0px, 0px)');
+
+            // 显示作者的信息
+            console.log('showMe:', showMe);
+            if(showMe === true){
+              $user_profile_swiper_wrapper.append('<div class="swiper-slide swiper_'+userId+'" data-id="'+userId+'">' + $user_profile_tempalte.html() + '</div>');
+              // $('.swiper_' + userId + ' .swiper_userinfo').css('display', 'block');
+              $('.swiper_' + userId + ' .leftButton').click(function(){
+                if(this.mySwiper){this.mySwiper.destroy(true, true)}
+                $user_profile_swiper_wrapper.html('');
+                document.body.scrollTop = localStorage.getItem('documentCurrTop');
+                if(localStorage.getItem('userProfile_BoxFromPostsPage') === true){
+                    $('body').css('overflow-y','auto');
+                }
+                localStorage.setItem('userProfile_BoxFromPostsPage',false);
+                $(".userProfileBox").hide();
+              });
+            }else{
+              $('.addNewFriends .newFriends').each(function(i){
+                $user_profile_swiper_wrapper.append('<div class="swiper-slide swiper_'+$(this).attr('id')+'" data-id="'+$(this).attr('id')+'">' + $user_profile_tempalte.html() + '</div>');
+                $('.swiper_' + $(this).attr('id') + ' .leftButton').click(function(){
+                  if(this.mySwiper){this.mySwiper.destroy(true, true)}
+                  $user_profile_swiper_wrapper.html('');
+                  document.body.scrollTop = localStorage.getItem('documentCurrTop');
+                  if(localStorage.getItem('userProfile_BoxFromPostsPage') === true){
+                      $('body').css('overflow-y','auto');
+                  }
+                  localStorage.setItem('userProfile_BoxFromPostsPage',false);
+                  $(".userProfileBox").hide();
+                });
+                if($(this).attr('id') === userId){index = i}
+              });
+            }
+
+            // swiper init
+            var isInit = false;
+            this.mySwiper = new Swiper ('.swiper-container', {
+              direction: 'horizontal',
+              // loop: true,
+              onInit: function(swiper){
+                isInit = true;
+                swiper.slideTo(index, 0, true);
+
+                if(index === 0){
+                  var $active = $('.swiper-slide-active');
+                  $active.attr('data-load', 'true');
+                  $active.find('.swiper_userinfo').css('display', 'block')
+                  var _userId = $active.attr('data-id');
+                  console.log('userId:', _userId);
+                  preProfileInfo($active, _userId);
+                  loadMoreFavouriteposts($active, _userId);
+                }
+              },
+              onSlideChangeEnd: function(swiper){
+                if(!isInit)
+                  return;
+
+                console.log('onSlideChangeEnd:', swiper.activeIndex);
+                var $active = $('.swiper-slide:eq('+swiper.activeIndex+')');
+                console.log('data-load:', $active.attr('data-load'));
+
+                if($active.attr('data-load') != 'true'){
+                  $active.attr('data-load', 'true');
+                  $active.find('.swiper_userinfo').css('display', 'block')
+                  var _userId = $active.attr('data-id');
+                  console.log('userId:', _userId);
+                  preProfileInfo($active, _userId);
+                  loadMoreFavouriteposts($active, _userId);
+                }
+              }
+            });
         }
         $(".showPosts .user").click(function(){
             var profileUserId = $(".showPosts .user").attr("id");
             localStorage.setItem('profileUserId',profileUserId);
             localStorage.setItem('userProfile_BoxFromPostsPage',true);
-            showProfilePage(profileUserId);
+            showProfilePage(profileUserId, true);
         });
 
-        $(".userProfileBox .leftButton").click(function(){
-            document.body.scrollTop = localStorage.getItem('documentCurrTop');
-            if(localStorage.getItem('userProfile_BoxFromPostsPage') === true){
-                $('body').css('overflow-y','auto');
-            }
-            localStorage.setItem('userProfile_BoxFromPostsPage',false);
-            $(".userProfileBox").hide();
-        });
+        // $(".userProfileBox .leftButton").click(function(){
+        //     document.body.scrollTop = localStorage.getItem('documentCurrTop');
+        //     if(localStorage.getItem('userProfile_BoxFromPostsPage') === true){
+        //         $('body').css('overflow-y','auto');
+        //     }
+        //     localStorage.setItem('userProfile_BoxFromPostsPage',false);
+        //     $(".userProfileBox").hide();
+        // });
         // ---- Profile END ----
         //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);        
 
