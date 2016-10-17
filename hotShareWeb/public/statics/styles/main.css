@@ -360,15 +360,8 @@ a:focus {
 .showPosts .content .gridster .postImageItem{}
 /*============================*/
 
-html{background-color: #fff;}
 /*========看过该帖的朋友还看过 START =========*/
 .newLayout_element{float:left; width:48%; margin-left:4px; box-sizing:border-box;}
 /*========看过该帖的朋友还看过 END ===========*/
-.swiper_head{height: 48px;line-height: 48px;text-align: center;background-color: #000;color: #fff;position: relative;}
-.swiper_head .leftButton{width: 60px;height: 48px;line-height: 48px;position: absolute;left: 0px;top: 0px;text-align: left;}
-.swiper_head .leftButton i{line-height: 48px;font-size: 30px;}
-.swiper_userinfo{min-height: 90px; background-color: #fff; box-sizing: border-box; padding: 10px;position: relative;padding-left: 90px;box-sizing: border-box;color: grey;}
-.swiper_userinfo .icon{height: 70px;width: 70px;border-radius: 10px;position: absolute;left: 10px;top: 10px;background-size: cover;}
-.swiper_userinfo .username{color: #000;font-size: large;}
-.swiper_userinfo .desc{font-size: 12px;}
-.swiper_showPostsLine{height: 20px; background-color: #efeff4;}
+
+html{background-color: #fff;}
