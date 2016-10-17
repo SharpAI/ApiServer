@@ -14,6 +14,7 @@
 
     var padding = {};
 
+
     padding.setRandomlyBackgroundColor = function($node) {
         $node.css("background-color", predefineColors[colorIndex]);
         if (++colorIndex >= colorLength) colorIndex = 0;
@@ -59,6 +60,52 @@
             "data_sizex": Number($elem.attr('sizex')),
             "data_sizey": Number($elem.attr('sizey'))
         };
+    };
+
+    this.getNewFriendReadCount = function(data){
+      try{
+        var newFriendReadCount = parseInt($('#newFriendRedSpot').html());
+        var datacount = data.length;
+        console.log('newFriendReadCount is ' + newFriendReadCount);
+        var totalCount = newFriendReadCount + datacount;
+        if(newFriendReadCount && newFriendReadCount > 0){
+            console.log('newFriendReadCount');
+            if(datacount > 0) {
+                $.each(data,function(index,content){
+                    var userId = this.ta;
+                    if(window.localStorage.getItem('newFriendRead_'+userId)){
+                        $('#'+ userId +' .red_spot').hide();
+                        console.log('count plus 1');
+                        totalCount-=1;
+                    }
+                });
+                if(totalCount > 0){
+                    $('#newFriendRedSpot').show();
+                    $('#newFriendRedSpot').html(totalCount);
+                }else{
+                    $('#newFriendRedSpot').hide();
+                }
+            }
+            console.log('final count is ' + newFriendReadCount);
+        }else{
+            if(datacount > 0) {
+                $.each(data,function(index,content){
+                    var userId = this.ta;
+                    if(window.localStorage.getItem('newFriendRead_'+userId)){
+                        datacount--;
+                    }
+                });
+                if(datacount > 0){
+                    $('#newFriendRedSpot').show();
+                    $('#newFriendRedSpot').html(datacount);
+                }else{
+                    $('#newFriendRedSpot').hide();
+                }
+            }
+        }
+      }catch (e){
+        return;
+      }
     };
     this.calcLayoutForEachPubElement = function() {
         var layoutHelper = [0, 0, 0, 0, 0, 0];
@@ -235,7 +282,7 @@
                 }
             };
         } catch (e){
-            console.log("Why you don't care about no Video case, 张志越！")
+            console.log("no Video");
         }
         $(".postVideoItem.element .play_area").click(function(e) {
             var _self = this, $_self = $(this);
@@ -337,8 +384,10 @@
                     // getPostFriends params[postid,skip,limit]
                     window.CallMethod('getPostFriends',[postid,newFriendCounts,20],function (type,result){
                         console.log('load more postFriendHandle is ==:'+JSON.stringify(result));
+                        var clientTotalCount = result.length;
                         var html = '';
                         newFriendCounts += 20;
+                        getNewFriendReadCount(result);
                         localStorage.setItem('newFriendsCounts',newFriendCounts);
                         if(result.length === 0){
                             $pullDownAddMore.html('没有更多数据了');
@@ -346,11 +395,15 @@
                         } else {
                             $.each(result,function(index,content){
                                 $node = $('.addNewFriends #wrapper');
+                                var redSpot = '';
+                                if(!window.localStorage.getItem('newFriendRead_'+this.ta)){
+                                    redSpot = '<div class="red_spot"></div>';
+                                }
                                 html += '<div id=' + this.ta + ' class="eachViewer newFriends">'
                                     + '<img class="icon" src=' + this.icon + ' width="30" height="30">'
                                     + '<span class="userName">' + this.name + '</span>'
                                     + '<div class="meet_count">缘分啊，我们已偶遇' + this.count + '次了！</div>'
-                                    + '<div class="red_spot"></div>'
+                                    + redSpot
                                     + '</div>'
                                     + '<div class="chatContentLine"></div>';
                             });
@@ -358,7 +411,20 @@
                             $pullDownAddMore.html('加载更多');
                             $(".newFriends").click(function(e) {
                                 // console.log('target id is ' + $(e.currentTarget).attr("id"))
-                                showProfilePage($(e.currentTarget).attr("id"));
+                                var userId = $(e.currentTarget).attr("id");
+                                var newFriendReadUser = window.localStorage.getItem('newFriendRead_'+userId);
+                                if(!newFriendReadUser){
+                                    window.localStorage.setItem('newFriendRead_'+userId,true);
+                                    $('#'+ userId +' .red_spot').hide();
+                                    var totalCount = parseInt($('#newFriendRedSpot').html()) - 1;
+                                    if(totalCount > 0){
+                                        $('#newFriendRedSpot').html(totalCount);
+                                    }else{
+                                        $('#newFriendRedSpot').hide();
+                                    }
+                                    // console.log('add item')
+                                }
+                                showProfilePage(userId);
                             });
                         }
                     });

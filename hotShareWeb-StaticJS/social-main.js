@@ -174,6 +174,7 @@ var userHandle = function(e){
     var message = e.detail;
     console.log('users: '+JSON.stringify(message));
 };
+
 document.addEventListener('users', userHandle , false);
 var DDPConnectedHandle =  function (e) {
 
@@ -221,14 +222,19 @@ var DDPConnectedHandle =  function (e) {
 
         CallMethod("getPostFriends",[postid,0,20],function (type,result){
             console.log('postFriendHandle:'+JSON.stringify(result));
+            getNewFriendReadCount(result);
             var html = '';
             $.each(result,function(index,content){
                 $node = $('.addNewFriends #wrapper');
+                var redSpot = '';
+                if(!window.localStorage.getItem('newFriendRead_'+this.ta)){
+                    redSpot = '<div class="red_spot"></div>';
+                }
                 html += '<div id=' + this.ta + ' class="eachViewer newFriends">'
                     + '<img class="icon" src=' + this.icon + ' width="30" height="30">'
                     + '<span class="userName">' + this.name + '</span>'
                     + '<div class="meet_count">缘分啊，我们已偶遇' + this.count + '次了！</div>'
-                    + '<div class="red_spot"></div>'
+                    + redSpot
                     + '</div>'
                     + '<div class="chatContentLine"></div>';
             });
@@ -236,7 +242,20 @@ var DDPConnectedHandle =  function (e) {
             $('.wait-loading').hide();
             $(".newFriends").click(function(e) {
                 // console.log('target id is ' + $(e.currentTarget).attr("id"))
-                showProfilePage($(e.currentTarget).attr("id"));
+                var userId = $(e.currentTarget).attr("id");
+                var newFriendReadUser = window.localStorage.getItem('newFriendRead_'+userId);
+                if(!newFriendReadUser){
+                    window.localStorage.setItem('newFriendRead_'+userId,true);
+                    $('#'+ userId +' .red_spot').hide();
+                    var totalCount = parseInt($('#newFriendRedSpot').html()) - 1;
+                    if(totalCount > 0){
+                        $('#newFriendRedSpot').html(totalCount);
+                    }else{
+                        $('#newFriendRedSpot').hide();
+                    }
+                    // console.log('add item')
+                }
+                showProfilePage(userId);
             });
             if(result.length >= 20){
                 $('#showMorePostFriendsResults').show();
