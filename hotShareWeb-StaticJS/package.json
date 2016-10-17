@@ -1,10 +1,13 @@
 {
   "name": "hotshare-static-web-js-bundles",
   "version": "1.2.8",
+  "socialVersion":"1.2.9",
+  "postVersion":"1.2.9",
+  "cssVersion":"1.2.8",
   "description": "js code for the static page with NPM builder",
   "scripts": {
-    "build": "browserify post-main.js | uglifyjs -p 10 -c -m > bundle-post-$npm_package_version.min.js && browserify social-main.js | uglifyjs -p 10 -c -m > bundle-social-$npm_package_version.min.js && cp bundle*.js ../hotShareWeb/public/statics/ && rm bundle*.js",
-    "build-debug": "browserify post-main.js -o bundle-post.js && browserify social-main.js -o bundle-social.js && cp bundle*.js ../hotShareWeb/public/statics/ && rm bundle*.js"
+    "build": "browserify -t [ coffeeify --bare false --header true ] --extension=\".coffee\" post-main.js | uglifyjs -p 10 -c -m > bundle-post-$npm_package_postVersion.min.js && browserify -t [ coffeeify --bare false --header true ] --extension=\".coffee\" social-main.js | uglifyjs -p 10 -c -m > bundle-social-$npm_package_socialVersion.min.js && cp bundle*.js ../hotShareWeb/public/statics/ && rm bundle*.js",
+    "build-debug": "browserify -t [ coffeeify --bare false --header true ] --extension=\".coffee\" post-main.js -o bundle-post.js && browserify -t [ coffeeify --bare false --header true ] --extension=\".coffee\" social-main.js -o bundle-social.js && cp bundle*.js ../hotShareWeb/public/statics/ && rm bundle*.js"
   },
   "repository": {
     "type": "git+https",
@@ -29,6 +32,7 @@
   },
   "devDependencies": {
     "bootlint": "^0.12.0",
-    "browserify": "^13.1.0"
+    "browserify": "^13.1.0",
+    "coffeeify": "^2.0.1"
   }
 }
