@@ -1525,7 +1525,7 @@ if(Meteor.isServer){
       );
   });
   Meteor.publish('allBlackList', function () {
-    return BlackList.find({},{limit: 10});
+    return BlackList.find({blackBy:this.userId},{limit: 1});
   });
   Meteor.publish("refcomments", function() {
     Max = RefComments.find().count()-8;

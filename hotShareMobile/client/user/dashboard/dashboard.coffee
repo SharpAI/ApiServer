@@ -255,7 +255,11 @@ if Meteor.isClient
       e.stopPropagation()
   Template.my_blacklist.events
     'click #about_btn_back' :->
-      Router.go '/dashboard'
+      if Session.get('fromeaddblacllist') is true
+        Session.set('fromeaddblacllist', false)
+        Router.go '/'
+      else
+        Router.go '/dashboard'
   Template.my_about.helpers
     version:->
       if isIOS.true is false

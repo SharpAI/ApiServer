@@ -805,16 +805,21 @@ if Meteor.isClient
         else if buttonIndex is 2
           if BlackList.find({blackBy: Meteor.userId(), blacker:{$in: [blackerId]}}).count() is 0
             if BlackList.find({blackBy: Meteor.userId()}).count() is 0
-              Meteor.call('addBlackList', blackerId, Meteor.userId())
+              #Meteor.call('addBlackList', blackerId, Meteor.userId())
+              BlackList.insert({blacker: [blackerId],blackBy: Meteor.userId()})
               if FollowerId
                 Follower.remove(FollowerId._id)
+              Session.set('fromeaddblacllist', true)
+              Router.go '/my_blacklist'
             else
               id = BlackList.findOne({blackBy: Meteor.userId()})._id
               BlackList.update({_id: id}, {$addToSet: {blacker: blackerId}})
               if FollowerId
                 Follower.remove(FollowerId._id)
+              Session.set('fromeaddblacllist', true)
+              Router.go '/my_blacklist'
           else
-            id = BlackList.findOne({blackBy: Meteor.userId()})._id
+            id = BlackList.findOne({blackBy: Meteor.userId(), blacker:{$in: [blackerId]}})._id
             BlackList.update({_id: id}, {$pull: {blacker: blackerId}})
       PUB.actionSheet(menus, menuTitle, callback)
     'click .postImageItem': (e)->
