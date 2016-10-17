@@ -2306,7 +2306,7 @@ img.flip
 .showPosts .content .post_abstract .abstract_sentence:before
 {
   background: no-repeat;
-  background-image: url("data:image/png;
+  background-image: url("data:image/png");
   background-size: 100%;
   color: #797979;
   content: "";
@@ -2324,7 +2324,7 @@ img.flip
   .showPosts .content .post_abstract .abstract_sentence:after
   {
   background: no-repeat;
-  background-image: url("data:image/png;
+  background-image: url("data:image/png");
   background-size: 100%;
   bottom: 3px;
   color: #797979;
