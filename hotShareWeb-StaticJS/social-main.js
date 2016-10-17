@@ -369,7 +369,7 @@ var DDPConnectedHandle =  function (e) {
           if($(window).scrollTop()>=$(document).height()-$(window).height() && $('.div_discover').css('display') === 'block')
             fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
         });
-        fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
+        //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
         $(".discoverBtn").click(function(){
           document.body.scrollTop = $('.div_discover').offset().top - 45;
           //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
