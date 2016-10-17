@@ -5,7 +5,7 @@
       <strong>我的消息</strong>
       <div id="follow" class="leftButton"><i class="fa fa-angle-left"></i></div>
     </div>
-    <div class="content">
+    <div class="content" id="content_msgs">
       {{#each eventFeeds}}
         {{#if isAlsoComment eventType}}
             <a href="/posts/{{postId}}" class="contentList">
