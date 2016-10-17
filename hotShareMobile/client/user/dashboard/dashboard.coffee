@@ -250,6 +250,21 @@ if Meteor.isClient
       callback = (buttonIndex)->
         if buttonIndex is 1
           BlackList.update({_id: blackId}, {$pull: {blacker: id}})
+          blacker = Meteor.users.findOne({_id: id})
+          blackerName = if blacker.profile.fullname then blacker.profile.fullname else blacker.username
+          Follower.insert {
+            userId: Meteor.userId()
+            userName: Meteor.user().profile.fullname || Meteor.user().username
+            userIcon: Meteor.user().profile.icon || '/userPicture.png'
+            userDesc: Meteor.user().profile.desc
+
+            followerId: blacker._id
+            followerName: blackerName
+            followerIcon: blacker.profile.icon || '/userPicture.png'
+            followerDesc: blacker.profile.desc
+
+            createAt: new Date()
+          }
       PUB.actionSheet(menus, menuTitle, callback)
       e.preventDefault()
       e.stopPropagation()
