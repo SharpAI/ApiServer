@@ -327,8 +327,13 @@ var DDPConnectedHandle =  function (e) {
             console.log('user id:'+_loginUserId);
             window.localStorage.setItem('static_login_userId', message.id);
         }
-        update_read_status();
         var userNewBellCountId = Subscribe("userNewBellCount", [window._loginUserId],userNewBellCountHandle);
+        if( typeof window.alreadyInit !== 'undefined'){
+            console.log('skip duplicated initialize');
+            return;
+        }
+        window.alreadyInit = true;
+        update_read_status();
         CallMethod("socialData", [postid],function (result,message){
             console.log('Social data is: '+JSON.stringify(message));
             $.each(message,function(index,content){
