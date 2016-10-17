@@ -875,5 +875,24 @@
       img{height: 80px;width: 110px;object-fit: cover;}
     }
   }
+  .importing-mask,.importing{
+    position: absolute;
+    top: 0;  right: 0; bottom: 0; left: 0; background: rgba(0,0,0,.36);
+    z-index: 9;
+    display: none;
+  }
+  .importing{
+     background: white;
+     color: #6B6A6A;
+     width: 200px;
+     height: 200px;
+     top: 50%;
+     padding: 0;
+     margin-top: -100px;
+     left: 50%;
+     margin-left: -100px;
+     text-align: center;
+     border-radius: 4px;
+  }
 }
 .storySource input[type="radio"]:checked + label{color: #166fff;}

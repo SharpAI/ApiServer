@@ -10,6 +10,32 @@ if Meteor.isClient
   @isAndroidFunc = ()->
     userAgent = navigator.userAgent.toLowerCase()
     return (userAgent.indexOf('android') > -1) or (userAgent.indexOf('linux') > -1)
+  @pushPostToReaderOrHotPostGroups = (postIds)->
+    groups = []
+    postItem = Session.get('postContent')
+    feedItem = {
+      owner: Meteor.userId(),
+      ownerName: postItem.ownerName,
+      ownerIcon: postItem.ownerIcon,
+      eventType:'SelfPosted',
+      postId: postItem._id,
+      postTitle: postItem.title,
+      mainImage: postItem.mainImage,
+      createdAt: postItem.createdAt,
+      heart: 0,
+      retweet: 0,
+      comment: 0
+    }
+    postIds.forEach (item)->
+      groups.push(item)
+    ###
+    # 推荐到故事贴群
+    Meteor.call 'pushPostToHotPostGroups', feedItem, groups, (err)->
+      console.log('pushPostToHotPostGroups:', err)
+    ###
+    # 推荐到读友圈
+    Meteor.call 'pushPostToReaderGroups', feedItem, groups, (err)->
+      console.log('pushPostToReaderGroups:', err)
   window.getDocHeight = ->
     D = document
     Math.max(
@@ -1415,10 +1441,36 @@ if Meteor.isClient
         originUrl = $('#importUrl').val()
         console.log('originUrl=='+originUrl)
         # 调用导入相关方法
+        url = '/import-server/' + Meteor.userId() + '/' + encodeURIComponent(originUrl)
+        console.log('url=='+url)
+        $('.importing-mask,.importing').show()
+        HTTP.get url,(error, result)->
+          if !error
+            data = result.content
+            if result.statusCode is 200
+              data = data.split("\n")
+              data = JSON.parse(data[data.length-1])
+              postId = data.json.split("/")
+              postId = postId[postId.length-1]
+              console.log("data is ==",data)
+              console.log("postId is ==",postId)
+              $('.importing-mask,.importing').hide()
+              pushPostToReaderOrHotPostGroups([postId])
+              PUB.toast('推荐成功！')
+              return window.history.back()
+            else
+              data = result.content
+              console.log("data is ==",data)
+              $('.importing-mask,.importing').hide()
+          PUB.toast('导入失败，请重试！')
       'click .storyLists li':(e)->
         console.log('target_postId=='+e.currentTarget.id)
-        # 准备分享到相关群
-
+        # 准备分享到相关读友圈
+        groups = []
+        if !Session.get('postContent')
+          pushPostToReaderOrHotPostGroups([e.currentTarget.id])
+        PUB.toast('推荐成功！')
+        return window.history.back()
       'click #loadMore': (e)->
         if Session.get('storyListsType') is 'publishedStories'
           limit = parseInt(Session.get('storyListsLimit'))
