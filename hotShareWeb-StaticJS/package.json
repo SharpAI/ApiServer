@@ -1,13 +1,13 @@
 {
   "name": "hotshare-static-web-js-bundles",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "socialVersion":"1.2.9",
-  "postVersion":"1.2.9",
-  "cssVersion":"1.2.8",
+  "postVersion":"1.2.10",
+  "cssVersion":"1.2.9",
   "description": "js code for the static page with NPM builder",
   "scripts": {
-    "build": "browserify -t [ coffeeify --bare false --header true ] --extension=\".coffee\" post-main.js | uglifyjs -p 10 -c -m > bundle-post-$npm_package_postVersion.min.js && browserify -t [ coffeeify --bare false --header true ] --extension=\".coffee\" social-main.js | uglifyjs -p 10 -c -m > bundle-social-$npm_package_socialVersion.min.js && cp bundle*.js ../hotShareWeb/public/statics/ && rm bundle*.js",
-    "build-debug": "browserify -t [ coffeeify --bare false --header true ] --extension=\".coffee\" post-main.js -o bundle-post.js && browserify -t [ coffeeify --bare false --header true ] --extension=\".coffee\" social-main.js -o bundle-social.js && cp bundle*.js ../hotShareWeb/public/statics/ && rm bundle*.js"
+    "build": "cleancss -o ../hotShareWeb/public/statics/main-$npm_package_cssVersion.css ./styles/main.css && browserify -t [ coffeeify --bare false --header true ] --extension=\".coffee\" post-main.js | uglifyjs -p 10 -c -m > bundle-post-$npm_package_postVersion.min.js && browserify -t [ coffeeify --bare false --header true ] --extension=\".coffee\" social-main.js | uglifyjs -p 10 -c -m > bundle-social-$npm_package_socialVersion.min.js && cp bundle*.js ../hotShareWeb/public/statics/ && rm bundle*.js",
+    "build-debug": "cleancss -o ../hotShareWeb/public/statics/main-$npm_package_cssVersion.css ./styles/main.css && browserify -t [ coffeeify --bare false --header true ] --extension=\".coffee\" post-main.js -o bundle-post.js && browserify -t [ coffeeify --bare false --header true ] --extension=\".coffee\" social-main.js -o bundle-social.js && cp bundle*.js ../hotShareWeb/public/statics/ && rm bundle*.js"
   },
   "repository": {
     "type": "git+https",
@@ -33,6 +33,7 @@
   "devDependencies": {
     "bootlint": "^0.12.0",
     "browserify": "^13.1.0",
-    "coffeeify": "^2.0.1"
+    "coffeeify": "^2.0.1",
+    "clean-css": "^3.4.20"
   }
 }

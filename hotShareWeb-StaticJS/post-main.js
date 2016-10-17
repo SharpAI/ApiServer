@@ -160,7 +160,7 @@
     }
 
     function init() {
-        $("#wrapper .mainImage").css("height", ($(window).height() * 0.55) + "px");
+        $("#wrapper .mainImage").css("height", (window.screen.height * 0.55) + "px");
         $('.textDiv1Link').linkify();
         localStorage.setItem('newFriendsCounts',20);
 
