@@ -228,12 +228,14 @@ var processSuggestPostsData = function(data){
 
         imgLoad.on('done', function() {
             console.log('>>> img load done!!!');
-            elem.style.display = 'block';
-            //$elem.css('opacity', 0);
+            elem.style.display = 'hidden';
+            $elem.css('opacity', 0);
             $elem.addClass('loaded');
 
             $container.append($elem);
-
+            $elem.animate({
+                opacity: 1
+            },400);
             if (--counter < 1) {
                 var wookmark = new Wookmark('.newLayout_container', {
                     autoResize: false,
