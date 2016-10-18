@@ -1246,8 +1246,21 @@ if Meteor.isClient
     'click #importBtn': (e)->
       originUrl = $('#importUrl').val()
       console.log('originUrl=='+originUrl)
+      if originUrl is ''
+        if Meteor.isCordova
+          cordova.plugins.clipboard.paste (text)->  
+            if text and text isnt '' and text.indexOf('http') > -1
+              originUrl = text
+            else
+              return PUB.toast('请输入或粘贴一个链接~') 
+        else
+          return PUB.toast('请输入或粘贴一个链接~') 
+      # 判断url格式
+      urlReg = new RegExp("(http[s]{0,1}|ftp)://[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?", "gi")
+      if !originUrl.match(urlReg)
+        return PUB.toast('链接格式错误~') 
       # 调用导入相关方法
-      url = '/import-server/' + Meteor.userId() + '/' + encodeURIComponent(originUrl)
+      url = 'http://'+window.location.host+'/import-server/' + Meteor.userId() + '/' + encodeURIComponent(originUrl)
       console.log('url=='+url)
       $('.importing-mask,.importing').show()
       HTTP.get url,(error, result)->

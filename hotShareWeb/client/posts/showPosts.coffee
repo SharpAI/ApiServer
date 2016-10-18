@@ -1440,9 +1440,16 @@ if Meteor.isClient
       'click #importBtn': (e)->
         originUrl = $('#importUrl').val()
         console.log('originUrl=='+originUrl)
+        if originUrl is ''
+          return toastr.info('请输入或粘贴一个链接~')
+        # 判断url格式
+        urlReg = new RegExp("(http[s]{0,1}|ftp)://[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?", "gi")
+        alert(!originUrl.match(urlReg))
+        if !originUrl.match(urlReg)
+          return toastr.info('链接格式错误~')
         # 调用导入相关方法
         url = '/import-server/' + Meteor.userId() + '/' + encodeURIComponent(originUrl)
-        console.log('url=='+url)
+        console.log('url=='+url) 
         $('.importing-mask,.importing').show()
         HTTP.get url,(error, result)->
           if !error
@@ -1456,20 +1463,20 @@ if Meteor.isClient
               console.log("postId is ==",postId)
               $('.importing-mask,.importing').hide()
               pushPostToReaderOrHotPostGroups([postId])
-              PUB.toast('推荐成功！')
+              toastr.info('推荐成功！')
               return window.history.back()
             else
               data = result.content
               console.log("data is ==",data)
               $('.importing-mask,.importing').hide()
-          PUB.toast('导入失败，请重试！')
+          toastr.info('导入失败，请重试！')
       'click .storyLists li':(e)->
         console.log('target_postId=='+e.currentTarget.id)
         # 准备分享到相关读友圈
         groups = []
         if !Session.get('postContent')
           pushPostToReaderOrHotPostGroups([e.currentTarget.id])
-        PUB.toast('推荐成功！')
+        toastr.info('推荐成功！')
         return window.history.back()
       'click #loadMore': (e)->
         if Session.get('storyListsType') is 'publishedStories'
