@@ -178,6 +178,20 @@ var userHandle = function(e){
 window.SUGGEST_POSTS_SKIP = 0;
 window.SUGGEST_POSTS_LIMIT = 5;
 window.SUGGEST_POSTS_LOADING = false;
+
+var colorIndex, colorLength, predefineColors;
+predefineColors = ["#55303e", "#503f32", "#7e766c", "#291d13", "#d59a73", "#a87c5f", "#282632", "#ca9e92", "#a7a07d", "#846843", "#6ea89e", "#292523", "#637168", "#573e1b", "#925f3e", "#786b53", "#aaa489", "#a5926a", "#6a6b6d", "#978d69", "#a0a1a1", "#4b423c", "#5f4a36", "#b6a2a9", "#1c1c4e", "#e0d9dc", "#393838", "#c5bab3", "#a46d40", "#735853", "#3c3c39"];
+colorLength = predefineColors.length;
+colorIndex = 0;
+window.newLayoutWatchIdList={};
+
+setRandomlyBackgroundColor = function($node) {
+    $node.css("background-color", predefineColors[colorIndex]);
+    if (++colorIndex >= colorLength) {
+        return colorIndex = 0;
+    }
+};
+
 var processSuggestPostsData = function(data){
     var posts = data;
     var counter = posts.length;
@@ -214,12 +228,11 @@ var processSuggestPostsData = function(data){
 
     $(".moments .newLayout_element").not('.loaded').each(function() {
         var elem = this, $elem = $(this);
+        var the_postid = $elem.data('postid');
         $elem.find('.img_placeholder').click(function() {
-            var the_postid = $elem.data('postid');
             window.open('/t/' + the_postid, '_blank');
         });
         $elem.find('.pin_content .title').click(function() {
-            var the_postid = $elem.data('postid');
             window.open('/t/' + the_postid, '_blank');
         });
         $elem.detach();
@@ -233,6 +246,40 @@ var processSuggestPostsData = function(data){
             $elem.addClass('loaded');
 
             $container.append($elem);
+            var $img, $parent, src, watcher;
+
+            if (!window.newLayoutWatchIdList['watcher_' + the_postid]) {
+                $img = $elem.find('img');
+                src = $img.attr('src');
+                $parent = $img.parent();
+                setRandomlyBackgroundColor($parent);
+                watcher = scrollMonitor.create($img, {
+                    top: 1600,
+                    bottom: 1600
+                });
+                window.newLayoutWatchIdList['watcher_' + the_postid] = watcher;
+                watcher.enterViewport(function() {
+                    console.log('I have entered the viewport ' + the_postid + ' src: ' + src);
+                    if (!$img.hasClass('entered')) {
+                        $img.addClass('entered');
+                    }
+                    if (!$img.is(':visible')) {
+                        return $img.show();
+                    }
+                });
+                watcher.exitViewport(function() {
+                    var height, width;
+                    console.log('I have left the viewport ' + the_postid + ' src: ' + src);
+                    if ($img.hasClass('entered') && $img.is(':visible')) {
+                        width = $img.width();
+                        height = $img.height();
+                        $parent.width(width);
+                        $parent.height(height);
+                        return $img.hide();
+                    }
+                });
+            }
+
             $elem.animate({
                 opacity: 1
             },400);
