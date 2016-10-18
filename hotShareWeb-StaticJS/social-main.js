@@ -389,9 +389,9 @@ var DDPConnectedHandle =  function (e) {
                 var html = '';
                 var pcomments = '';
                 // console.log('socialData index is ' + index + ' . this.index is  ' +　this.index + ' . content is ' + JSON.stringify(content) + ' this is ' + JSON.stringify(this) + '  ..dan ');
-                $node = $('[index='+ this.index +']')
+                var $node = $('[index='+ this.index +']')
                 if(this.pcomments && this.pcomments.length > 0){
-                    for(i=0;i<=this.pcomments.length-1;i++){
+                    for(var i=0;i<=this.pcomments.length-1;i++){
                         pcomments += '<div class="eachComment">'
                             + '<div class="bubble">'
                             + '<span class="personName">' + this.pcomments[i].username + '</span>:'
