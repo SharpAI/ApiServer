@@ -206,7 +206,7 @@ var processSuggestPostsData = function(data){
         $container.append(html);
     }
     else {
-        html = '<div class="newLayout_container" style="position:relative;">' + html + '</div>';
+        html = '<div class="newLayout_container" style="display:none;position:relative;">' + html + '</div>';
         $(".div_discover .moments").append(html);
         $container = $(".moments .newLayout_container");
     }
