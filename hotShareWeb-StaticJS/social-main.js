@@ -312,7 +312,7 @@ var fetchSuggestPosts = function(skip, limit) {
     window.fetchedSuggestPosts = true;
     if(SUGGEST_POSTS_LOADING) return;
     SUGGEST_POSTS_LOADING = true;
-    SUGGEST_POSTS_SKIP += SUGGEST_POSTS_LIMIT;
+    SUGGEST_POSTS_SKIP += limit;
     $('.moments-loading').show();
     CallMethod('getSuggestedPosts',[postid,skip,limit],function(type,result){
         console.log('getSuggestedPosts result: '+JSON.stringify(result));
@@ -333,7 +333,9 @@ var initDiscover = function(){
         if($(window).scrollTop()>=$(document).height()-$(window).height() && $('.div_discover').css('display') === 'block')
             fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
     });
-    //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
+    setTimeout(function(){
+        fetchSuggestPosts(SUGGEST_POSTS_SKIP, 2);
+    },3000);
     $(".discoverBtn").click(function(){
         document.body.scrollTop = $('.div_discover').offset().top - 45;
         //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
@@ -417,7 +419,7 @@ var DDPConnectedHandle =  function (e) {
             $.each(result,function(index,content){
                 $node = $('.addNewFriends #wrapper');
                 var redSpot = '';
-                if(!window.localStorage.getItem('newFriendRead_'+this.ta)){
+                if(this.count && this.count === 1){
                     redSpot = '<div class="red_spot"></div>';
                 }
                 html += '<div id=' + this.ta + ' class="eachViewer newFriends">'

@@ -367,7 +367,7 @@
           $('._bell-box,.msg-box, _bell-box .readTips').css('display', 'none');
         });
         // 加载更多新朋友
-        this.loadMoreNewFriends = function () {
+        window.loadMoreNewFriends = function () {
             var getScrollEvent = true;
             $('.div_contactsList').scroll(function(event) {
                 var $pullDownAddMore = $('#pullDownAddMore');
@@ -697,7 +697,7 @@
                 });
             });
         };
-        this.showProfilePage = function(userId) {
+        window.showProfilePage = function(userId) {
             localStorage.setItem('documentCurrTop',document.body.scrollTop);
             document.body.scrollTop = 0;
             preProfileInfo(userId);
