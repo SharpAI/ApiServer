@@ -156,7 +156,13 @@ if Meteor.isServer
       withSectionMenu: withSectionMenu
       sign_server_url: sign_server_url
       trim: (text)->
-        text.replace(/\n/g,' ');
+        if text and text isnt ''
+          try
+            text.replace(/\n/g,' ');
+          catch e
+            text
+        else
+          ''
       getDDPUrl: ()->
         ddp_alter_url
       time_diff: (created)->
