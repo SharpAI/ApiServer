@@ -2,6 +2,7 @@
     require("./libs/jquery.lazyload.1.9.3");
     require("./libs/jquery.linkify");
     require("./libs/image-fit-cover");
+    require("./libs/swipe");
 
     if (!global.gushitie) global.gushitie = {};
 
@@ -702,6 +703,12 @@
             preProfileInfo(userId);
             $(".userProfileBox").show();
             loadMoreFavouriteposts();
+
+            // test
+            // var swipe = new window.Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'], true, $('.swipe-tmp'));
+            // swipe.setInitialPage('userProfilePage2');
+            // swipe.setInitialPage('userProfilePage3');
+            // $('.userProfileBox').show()
         }
         $(".showPosts .user").click(function(){
             var profileUserId = $(".showPosts .user").attr("id");

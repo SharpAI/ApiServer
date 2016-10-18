@@ -11,13 +11,39 @@ debugPrint = (msg) ->
   if false
     console.log msg
 
-class Swipe
-  constructor: (@templates, arrowKeys=true) ->
+class ReactiveDict
+  _names = [];
+  _values = [];
+
+  constructor: ()->
+  set: (name, value)->
+    index = _names.indexOf(name)
+    if(index >= 0)
+      return _values[index] = value
+    _names.push(name)
+    _values.push(value)
+
+  get: (name)->
+    index = _names.indexOf(name)
+    if(index >= 0)
+      return _values[index]
+    return null
+
+  equals: (name, value)->
+    index = _names.indexOf(name)
+    if(index >= 0)
+      return _values[index] is value
+    return false
+
+class window.Swipe
+  _template = null
+  constructor: (@templates, arrowKeys=true, @t) ->
+    _template = new template(@)
 # @templates is a list of template name strings that will be used by
 # the Swiper
 
 # Create a reactive dictionary so the current page can be a reactive variable
-    @state = new Package['reactive-dict'].ReactiveDict()
+    @state = new ReactiveDict
     @state.set 'page', null
     # Handle the left and right pages manually. Otherwise every transition will trigger
     # multiple reactive autoruns
@@ -30,7 +56,7 @@ class Swipe
     # within the template and manage template variables.
     # The template manages all the touch events and drag-swiping. The swiper manages
     # the pages.
-    @t = null # template
+    #@t = null # template
 
     self = @
     # When the window resizes, reposition the left and right
@@ -163,8 +189,8 @@ class Swipe
     # place this page in the center
     @displayCenter name
 
-  setTemplate: (t) ->
-    @t = t
+  # setTemplate: (t) ->
+  #   @t = t
 
   getPage: () ->
     @state.get 'page'
@@ -266,223 +292,154 @@ class Swipe
 #     if e.currentTarget is Swiper.element
 #       Swiper.moveRight()
 
-  click: (template, selector, handler) ->
-    Swiper = @
-    mouseup = 'mouseup ' + selector
-    touchend = 'touchend ' + selector
-    eventMap = {}
+  # click: (tmp, selector, handler) ->
+  #   Swiper = @
+  #   mouseup = 'mouseup ' + selector
+  #   touchend = 'touchend ' + selector
+  #   eventMap = {}
 
-    eventMap[mouseup] = (e,t) ->
-      if Swiper.shouldControl() and not Swiper.t.touchDown
-        eventPrint "mouseup control"
-        handler.bind(@)(e,t)
+  #   eventMap[mouseup] = (e,t) ->
+  #     if Swiper.shouldControl() and not Swiper.t.touchDown
+  #       eventPrint "mouseup control"
+  #       handler.bind(@)(e,t)
 
-    eventMap[touchend] = (e,t) ->
-      if e.currentTarget is Swiper.element and Swiper.shouldControl()
-        eventPrint "touchend control"
-        e.stopPropagation()
-        handler.bind(@)(e,t)
+  #   eventMap[touchend] = (e,t) ->
+  #     if e.currentTarget is Swiper.element and Swiper.shouldControl()
+  #       eventPrint "touchend control"
+  #       e.stopPropagation()
+  #       handler.bind(@)(e,t)
 
-    t = Template[template]
-    if t
-      t.events eventMap
-    else
-      console.log "WARNING: Template '" + template + "' not found."
+  #   if _template
+  #     _template.events eventMap
+  #   else
+  #     console.log "WARNING: Template '" + tmp + "' not found."
 
+  # register the page names to dynamically render each page
+class template
+  constructor: (@swiper) ->
+    @rendered()
+    
+  # @helpers: 
+  #   pageNames: -> _.map @Swiper?.templates, (name) -> {name: name}
+  rendered: ->
+    # keep track of the width so we know where to place pages to the left
+    # and the right
+    @width = $(@swiper.t.find('.pages')).width()
+    for key, value of @events
+      params = key.split(' ')
+      @swiper.t.find(params[1]).on(params[0], value)
+    # keep track of scrolling
+    @mouseDown = false
+    @touchDown = false
+    @startX = 0
+    @mouseX = 0
+    @posX = 0
+    @startY = 0
+    @mouseY = 0
+    @posY = 0
 
-
-
-# register the page names to dynamically render each page
-Template.swipe.helpers
-  pageNames: -> _.map @Swiper?.templates, (name) -> {name: name}
-
-
-Template.swipe.rendered = ->
-# check that templates is passed
-  if not @data.Swiper
-    console.log("ERROR: must pass a Swipe object.")
-  else
-# Bind the Swiper to this template and the template to the swiper
-    @Swiper = @data.Swiper
-    @Swiper.setTemplate(@)
-
-  # keep track of the width so we know where to place pages to the left
-  # and the right
-  @width = $(@find('.pages')).width()
-
-  # keep track of scrolling
-  @mouseDown = false
-  @touchDown = false
-  @startX = 0
-  @mouseX = 0
-  @posX = 0
-  @startY = 0
-  @mouseY = 0
-  @posY = 0
-
-  # We need to keep track of whether the user is scrolling or swiping.
-  @scrollableCSS = false
-  @mightBeScrolling = false
-  @scrolling = false
-
-
-targetInClass = (name, target) ->
-  $(target).hasClass(name) or $(target).parentsUntil('body', '.' + name).length
-
-Template.swipe.events
-  'mousedown .pages': (e,t) ->
-# if we're the user has already touched down, we want to ignore mouse events
-    if t.touchDown
-      return true
-
-    eventPrint "mousedown"
-    noSwipeCSS = targetInClass 'no-swipe', e.target
-
-    unless noSwipeCSS
-# remove stop all animations in this swiper
-      t.Swiper.clearAnimate()
-      clickX = e.pageX
-      clickY = e.pageY
-
-      t.startX = clickX # beginning of the swipe
-      t.mouseX = clickX # current position of the swipe
-      t.startY = clickY # beginning of the swipe
-      t.mouseY = clickY # current position of the swipe
-      t.mouseDown = true # click swipe has begun
-      t.touchDown = false
-
-      return true
-
-  'touchstart .pages': (e,t) ->
-    eventPrint "touchstart"
-
-    noSwipeCSS = targetInClass 'no-swipe', e.target
-    scrollableCSS = targetInClass 'scrollable', e.target
-
-    # Check to see if the user touched inside of a scrollable div. If so,
-    # then the user might be scrolling depending on whether he moves his finger
-    # to the side to swipe or up and down to scroll. Once we have determined the
-    # direction of the gesture, we can be certain of whether the user is scrolling
-    # or not.
-    if scrollableCSS
-      t.scrollableCSS = true
-      t.mightBeScrolling = true
-      t.scrolling = false
-    else
-      t.scrollableCSS = false
-      t.mightBeScrolling = false
-      t.scrolling = false
-
-    unless noSwipeCSS
-# keep track of what element the pointer is over for touchend
-      x = e.originalEvent.touches[0].pageX - window.pageXOffset
-      y = e.originalEvent.touches[0].pageY - window.pageYOffset
-      target = document.elementFromPoint(x, y)
-      t.Swiper.element = target
-
-      # remove stop all animations in this swiper
-      t.Swiper.clearAnimate()
-      # key track of Y for calculating scroll
-      clickX = e.originalEvent.touches[0].pageX
-      clickY = e.originalEvent.touches[0].pageY
-      t.startX = clickX # beginning of the swipe
-      t.mouseX = clickX # current position of the swipe
-      t.startY = clickY # beginning of the swipe
-      t.mouseY = clickY # current position of the swipe
-      # we must distinguish between mouse and touch because sometimes
-      # touch will induce a click; touchend => mouseup
-      t.mouseDown = false
-      t.touchDown = true
-
-    return true
-
-  'mousemove .pages': (e,t) ->
-# if the mouse is pressed, we need to keep track of the swipe.
-# note that you cannot scroll by clicking the mouse!
-    if t.mouseDown
-      eventPrint "mousemove"
-      newMouseX = e.pageX
-      oldMouseX = t.mouseX
-      t.velX = newMouseX - oldMouseX
-      t.changeX = newMouseX - t.startX
-      posX = t.changeX + t.posX
-      t.mouseX = newMouseX
-
-      newMouseY = e.pageY
-      oldMouseY = t.mouseY
-      t.velY = newMouseY - oldMouseY
-      t.changeY = newMouseY - t.startY
-      posY = t.changeY + t.posY
-      t.mouseY = newMouseY
-
-      t.Swiper.drag(posX)
-
-    return true
-
-  'touchmove .pages': (e,t) ->
-    eventPrint "touchmove"
-    noSwipeCSS = targetInClass 'no-swipe', e.target
-
-    # If we're not sure if the user is scrolling or not, then we need to check to
-    # see if the first motion is left-right, or up-down.
-    if t.mightBeScrolling
-# keep track of what element the pointer is over for touchend
-      x = e.originalEvent.touches[0].pageX - window.pageXOffset
-      y = e.originalEvent.touches[0].pageY - window.pageYOffset
-      target = document.elementFromPoint(x, y)
-      t.Swiper.element = target
-
-      newMouseX = e.originalEvent.touches[0].pageX
-      oldMouseX = t.mouseX
-      t.velX = newMouseX - oldMouseX
-      t.changeX = newMouseX - t.startX
-      posX = t.changeX + t.posX
-      t.mouseX = newMouseX
-
-      newMouseY = e.originalEvent.touches[0].pageY
-      oldMouseY = t.mouseY
-      t.velY = newMouseY - oldMouseY
-      t.changeY = newMouseY - t.startY
-      posY = t.changeY + t.posY
-      t.mouseY = newMouseY
-
-      speedX = 10*t.velX
-      flickX = t.changeX + speedX
-
-      speedY = 10*t.velY
-      flickY = t.changeY + speedY
-
-      # compute the relative angles of up-down or left-right
-      if Math.abs(flickY*1.66) > Math.abs(flickX)
-# we've determined that the user is definitely scrolling
-# so we don't want to compute this all over again. on the next
-# touchmove, just compute the scroll position.
-        t.mightBeScrolling = false
-        t.scrolling = true
+    # We need to keep track of whether the user is scrolling or swiping.
+    @scrollableCSS = false
+    @mightBeScrolling = false
+    @scrolling = false
+  @events:
+    'mousedown .pages': (e,t) ->
+      # if we're the user has already touched down, we want to ignore mouse events
+      if t.touchDown
         return true
+
+      eventPrint "mousedown"
+      noSwipeCSS = targetInClass 'no-swipe', e.target
+
+      unless noSwipeCSS
+      # remove stop all animations in this swiper
+        t.Swiper.clearAnimate()
+        clickX = e.pageX
+        clickY = e.pageY
+
+        t.startX = clickX # beginning of the swipe
+        t.mouseX = clickX # current position of the swipe
+        t.startY = clickY # beginning of the swipe
+        t.mouseY = clickY # current position of the swipe
+        t.mouseDown = true # click swipe has begun
+        t.touchDown = false
+
+        return true
+
+    'touchstart .pages': (e,t) ->
+      eventPrint "touchstart"
+
+      noSwipeCSS = targetInClass 'no-swipe', e.target
+      scrollableCSS = targetInClass 'scrollable', e.target
+
+      # Check to see if the user touched inside of a scrollable div. If so,
+      # then the user might be scrolling depending on whether he moves his finger
+      # to the side to swipe or up and down to scroll. Once we have determined the
+      # direction of the gesture, we can be certain of whether the user is scrolling
+      # or not.
+      if scrollableCSS
+        t.scrollableCSS = true
+        t.mightBeScrolling = true
+        t.scrolling = false
       else
-# if the user is swiping, not scrolling, we can set the appropriate values
+        t.scrollableCSS = false
         t.mightBeScrolling = false
         t.scrolling = false
-        if noSwipeCSS
-# if you
-          return true
-        else
-# prevent the default scrolling functionality
-          e.preventDefault()
-          t.Swiper.drag(posX)
-          return false
-    else if t.scrolling
-# if we know the user is scrolling, we can just let the default
-# functionality handle it.
-      return true
-    else
-      unless noSwipeCSS
-# if the user is swiping, then we need to prevent the default functionality
-# of scrolling.
-        e.preventDefault()
 
-        # keep track of what element the pointer is over for touchend
+      unless noSwipeCSS
+  # keep track of what element the pointer is over for touchend
+        x = e.originalEvent.touches[0].pageX - window.pageXOffset
+        y = e.originalEvent.touches[0].pageY - window.pageYOffset
+        target = document.elementFromPoint(x, y)
+        t.Swiper.element = target
+
+        # remove stop all animations in this swiper
+        t.Swiper.clearAnimate()
+        # key track of Y for calculating scroll
+        clickX = e.originalEvent.touches[0].pageX
+        clickY = e.originalEvent.touches[0].pageY
+        t.startX = clickX # beginning of the swipe
+        t.mouseX = clickX # current position of the swipe
+        t.startY = clickY # beginning of the swipe
+        t.mouseY = clickY # current position of the swipe
+        # we must distinguish between mouse and touch because sometimes
+        # touch will induce a click; touchend => mouseup
+        t.mouseDown = false
+        t.touchDown = true
+
+      return true
+
+    'mousemove .pages': (e,t) ->
+  # if the mouse is pressed, we need to keep track of the swipe.
+  # note that you cannot scroll by clicking the mouse!
+      if t.mouseDown
+        eventPrint "mousemove"
+        newMouseX = e.pageX
+        oldMouseX = t.mouseX
+        t.velX = newMouseX - oldMouseX
+        t.changeX = newMouseX - t.startX
+        posX = t.changeX + t.posX
+        t.mouseX = newMouseX
+
+        newMouseY = e.pageY
+        oldMouseY = t.mouseY
+        t.velY = newMouseY - oldMouseY
+        t.changeY = newMouseY - t.startY
+        posY = t.changeY + t.posY
+        t.mouseY = newMouseY
+
+        t.Swiper.drag(posX)
+
+      return true
+
+    'touchmove .pages': (e,t) ->
+      eventPrint "touchmove"
+      noSwipeCSS = targetInClass 'no-swipe', e.target
+
+      # If we're not sure if the user is scrolling or not, then we need to check to
+      # see if the first motion is left-right, or up-down.
+      if t.mightBeScrolling
+  # keep track of what element the pointer is over for touchend
         x = e.originalEvent.touches[0].pageX - window.pageXOffset
         y = e.originalEvent.touches[0].pageY - window.pageYOffset
         target = document.elementFromPoint(x, y)
@@ -495,8 +452,6 @@ Template.swipe.events
         posX = t.changeX + t.posX
         t.mouseX = newMouseX
 
-        # keep track of y, so we know if the `shouldControl` and we can measure both
-        # x and y directions.
         newMouseY = e.originalEvent.touches[0].pageY
         oldMouseY = t.mouseY
         t.velY = newMouseY - oldMouseY
@@ -504,21 +459,99 @@ Template.swipe.events
         posY = t.changeY + t.posY
         t.mouseY = newMouseY
 
-        t.Swiper.drag(posX)
-      return false
+        speedX = 10*t.velX
+        flickX = t.changeX + speedX
 
-  'mouseup .pages': (e,t) ->
+        speedY = 10*t.velY
+        flickY = t.changeY + speedY
 
-    if t.mouseDown
-      eventPrint "mouseup"
-      posX = t.changeX + t.posX
-      momentum = Math.abs(10*t.velX)
-      momentum = Math.min(momentum, t.width/2)
-      momentum = momentum*sign(t.velX)
-      distance = posX + momentum
-      swipeControlCSS = targetInClass 'swipe-control', e.target
-      # run the swiping event
-      if swipeControlCSS and (e.target is t.Swiper.element) and t.Swiper.shouldControl()
+        # compute the relative angles of up-down or left-right
+        if Math.abs(flickY*1.66) > Math.abs(flickX)
+  # we've determined that the user is definitely scrolling
+  # so we don't want to compute this all over again. on the next
+  # touchmove, just compute the scroll position.
+          t.mightBeScrolling = false
+          t.scrolling = true
+          return true
+        else
+  # if the user is swiping, not scrolling, we can set the appropriate values
+          t.mightBeScrolling = false
+          t.scrolling = false
+          if noSwipeCSS
+  # if you
+            return true
+          else
+  # prevent the default scrolling functionality
+            e.preventDefault()
+            t.Swiper.drag(posX)
+            return false
+      else if t.scrolling
+  # if we know the user is scrolling, we can just let the default
+  # functionality handle it.
+        return true
+      else
+        unless noSwipeCSS
+  # if the user is swiping, then we need to prevent the default functionality
+  # of scrolling.
+          e.preventDefault()
+
+          # keep track of what element the pointer is over for touchend
+          x = e.originalEvent.touches[0].pageX - window.pageXOffset
+          y = e.originalEvent.touches[0].pageY - window.pageYOffset
+          target = document.elementFromPoint(x, y)
+          t.Swiper.element = target
+
+          newMouseX = e.originalEvent.touches[0].pageX
+          oldMouseX = t.mouseX
+          t.velX = newMouseX - oldMouseX
+          t.changeX = newMouseX - t.startX
+          posX = t.changeX + t.posX
+          t.mouseX = newMouseX
+
+          # keep track of y, so we know if the `shouldControl` and we can measure both
+          # x and y directions.
+          newMouseY = e.originalEvent.touches[0].pageY
+          oldMouseY = t.mouseY
+          t.velY = newMouseY - oldMouseY
+          t.changeY = newMouseY - t.startY
+          posY = t.changeY + t.posY
+          t.mouseY = newMouseY
+
+          t.Swiper.drag(posX)
+        return false
+
+    'mouseup .pages': (e,t) ->
+
+      if t.mouseDown
+        eventPrint "mouseup"
+        posX = t.changeX + t.posX
+        momentum = Math.abs(10*t.velX)
+        momentum = Math.min(momentum, t.width/2)
+        momentum = momentum*sign(t.velX)
+        distance = posX + momentum
+        swipeControlCSS = targetInClass 'swipe-control', e.target
+        # run the swiping event
+        if swipeControlCSS and (e.target is t.Swiper.element) and t.Swiper.shouldControl()
+          t.velX = 0
+          t.startX = 0
+          t.mouseX = 0
+          t.changeX = 0
+          t.velY = 0
+          t.startY = 0
+          t.mouseY = 0
+          t.changeY = 0
+          t.mouseDown = false
+          return
+
+        # otherwise, snap the page where it should go
+        index = Math.round(distance / t.width)
+        if index is -1
+          t.Swiper.moveRight()
+        else if index is 1
+          t.Swiper.moveLeft()
+        else
+          t.Swiper.animateBack()
+
         t.velX = 0
         t.startX = 0
         t.mouseX = 0
@@ -528,40 +561,39 @@ Template.swipe.events
         t.mouseY = 0
         t.changeY = 0
         t.mouseDown = false
-        return
 
-      # otherwise, snap the page where it should go
-      index = Math.round(distance / t.width)
-      if index is -1
-        t.Swiper.moveRight()
-      else if index is 1
-        t.Swiper.moveLeft()
-      else
-        t.Swiper.animateBack()
+    'touchend .pages': (e,t) ->
+      if t.touchDown
+        eventPrint "touchend"
 
-      t.velX = 0
-      t.startX = 0
-      t.mouseX = 0
-      t.changeX = 0
-      t.velY = 0
-      t.startY = 0
-      t.mouseY = 0
-      t.changeY = 0
-      t.mouseDown = false
+        posX = t.changeX + t.posX
+        momentum = Math.abs(10*t.velX)
+        momentum = Math.min(momentum, t.width/2)
+        momentum = momentum*sign(t.velX)
+        distance = posX + momentum
 
-  'touchend .pages': (e,t) ->
-    if t.touchDown
-      eventPrint "touchend"
+        swipeControlCSS = targetInClass 'swipe-control', e.target
+        # run the swiping event
+        if swipeControlCSS and (e.target is t.Swiper.element) and t.Swiper.shouldControl()
+          t.velX = 0
+          t.startX = 0
+          t.mouseX = 0
+          t.changeX = 0
+          t.velY = 0
+          t.startY = 0
+          t.mouseY = 0
+          t.changeY = 0
+          t.touchDown = false
+          return true
 
-      posX = t.changeX + t.posX
-      momentum = Math.abs(10*t.velX)
-      momentum = Math.min(momentum, t.width/2)
-      momentum = momentum*sign(t.velX)
-      distance = posX + momentum
+        index = Math.round(distance / t.width)
+        if index is -1
+          t.Swiper.moveRight()
+        else if index is 1
+          t.Swiper.moveLeft()
+        else
+          t.Swiper.animateBack()
 
-      swipeControlCSS = targetInClass 'swipe-control', e.target
-      # run the swiping event
-      if swipeControlCSS and (e.target is t.Swiper.element) and t.Swiper.shouldControl()
         t.velX = 0
         t.startX = 0
         t.mouseX = 0
@@ -571,27 +603,10 @@ Template.swipe.events
         t.mouseY = 0
         t.changeY = 0
         t.touchDown = false
-        return true
+      return true
 
-      index = Math.round(distance / t.width)
-      if index is -1
-        t.Swiper.moveRight()
-      else if index is 1
-        t.Swiper.moveLeft()
-      else
-        t.Swiper.animateBack()
-
-      t.velX = 0
-      t.startX = 0
-      t.mouseX = 0
-      t.changeX = 0
-      t.velY = 0
-      t.startY = 0
-      t.mouseY = 0
-      t.changeY = 0
-      t.touchDown = false
-    return true
-
+targetInClass = (name, target) ->
+  $(target).hasClass(name) or $(target).parentsUntil('body', '.' + name).length
 
 sign = (x) ->
   if x >= 0 then return 1 else return -1
@@ -609,3 +624,5 @@ wrap = (min, max, n) ->
 
 
 delay = (ms, func) -> setTimeout func, ms
+
+console.log('swipe js.');
