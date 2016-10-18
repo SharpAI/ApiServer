@@ -1,7 +1,7 @@
 
 require('./libs/wechatapi');
 require("./libs/ddp");
-require("./libs/hammer.min");
+window.Hammer = require("./libs/hammer.min");
 require("./libs/wookmark");
 require("./libs/jquery.swipebox.1.3.0.2");
 window.scrollMonitor = require("./libs/scrollMonitor.1.0.12");
