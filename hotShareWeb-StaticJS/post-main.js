@@ -610,7 +610,9 @@
             $('.div_me').css('display',"block");      
         });
         $(".div_contactsList .left-btn").click(function() {
+            document.body.scrollTop = 0;
             $('.div_contactsList').css('display',"none");
+            $('body').css('overflow-y','auto');
             $(".contactsBtn").removeClass('focusColor');
             $(".postBtn").addClass('focusColor');
         });
@@ -709,8 +711,8 @@
         });
 
         $(".userProfileBox .leftButton").click(function(){
-            document.body.scrollTop = localStorage.getItem('documentCurrTop');
-            if(localStorage.getItem('userProfile_BoxFromPostsPage') === true){
+            document.body.scrollTop = 0;
+            if(localStorage.getItem('userProfile_BoxFromPostsPage') === 'true'){
                 $('body').css('overflow-y','auto');
             }
             localStorage.setItem('userProfile_BoxFromPostsPage',false);
@@ -735,6 +737,13 @@
               $('body').scrollTop($('.div_me_set-up-nike').offset().top);
             });
           });
+        });
+        $('.div_me .socialTitle .left-btn').click(function(){
+            document.body.scrollTop = 0;
+            $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');
+            $('body').css('overflow-y','auto');
+            $(".postBtn").addClass('focusColor');
+            $('.div_me').css('display', 'none');
         });
         $('.div_me_set-up-nike .left-btn').click(function(){$('.div_me').css('display', 'block');$('.div_me_set-up-nike').css('display', 'none')});
         $('.div_me_set-up-nike .right-btn').click(function(){
