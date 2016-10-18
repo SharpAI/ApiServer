@@ -4814,7 +4814,7 @@ ul.set-up li:first-child
 }
 .newLayout_container
 {
-  background-color: rgb(231,231,231);
+  background-color: rgba(0, 0, 0, 0.05);
   display: block;
   padding-bottom: 50px;
   position: absolute;
