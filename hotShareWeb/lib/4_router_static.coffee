@@ -5,23 +5,7 @@ if Meteor.isServer
   SSR.compileTemplate('no-post', Assets.getText('static/no-post.html'))
   SSR.compileTemplate('hot_posts', Assets.getText('static/author-hot-posts.html'))
   SSR.compileTemplate('bell', Assets.getText('static/bell.html'))
-  Router.route '/static/:_id', (req, res, next)->
-    postItem = Posts.findOne({_id: this.params._id})
-    if(!postItem)
-      html = SSR.render('no-post')
-      res.writeHead(404, {
-        'Content-Type': 'text/html'
-      })
-      return res.end(minify(html, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
-
-    postHtml = SSR.render('post', postItem)
-    res.writeHead(200, {
-      'Content-Type': 'text/html'
-    })
-    res.end(minify(postHtml, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
-  , {where: 'server'}
-
-  Router.route '/static/:_id/:_index', (req, res, next)->
+  Router.route '/t/:_id/:_index', (req, res, next)->
     postItem = Posts.findOne({_id: this.params._id})
     if(!postItem)
       html = SSR.render('no-post')
@@ -47,9 +31,9 @@ if Meteor.isServer
       return res.end(minify(html, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
 
     postHtml = SSR.render('post', postItem)
-
+    
     res.writeHead(200, {
-        'Content-Type': 'text/html'
+      'Content-Type': 'text/html'
     })
     res.end(minify(postHtml, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
   , {where: 'server'}

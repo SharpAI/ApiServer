@@ -320,7 +320,7 @@
                     //sectionToolbarClickHandler(self, event, buttonClicked);
                     var pindex,url;
                     pindex = parseInt($self.attr('index'));
-                    url = '/static/'+postid+'/'+pindex;
+                    url = '/t/'+postid+'/'+pindex;
                     console.log($self.attr('index'));
                     console.log('Event: '+event+' Button: '+buttonClicked);
                     window.location.href = url;
@@ -334,7 +334,7 @@
           $('._bell-box').slideDown(300);
         //   var userId = window._loginUserId || 'u8MRTTcXLoTzs9oXn';
         //   $('.wait-loading').show();
-        //   jQuery.get('/static/bell/' + userId, {}, function(data){
+        //   jQuery.get('/t/bell/' + userId, {}, function(data){
         //     $('.wait-loading').hide();
         //     console.log('get ajax bell data:', data);
         //     $('._bell-box-main').html(data);
@@ -351,7 +351,7 @@
         //       $('._bell-box').css('display', 'none');
         //       // calcLayoutForEachPubElement();
         //       if($(this).attr('data-id'))
-        //         location = '/static/' + $(this).attr('data-id');
+        //         location = '/t/' + $(this).attr('data-id');
         //     });
         //     // $main.find('.acceptrequest').click(function(){
         //     //   window._bell.acceptrequest('');
@@ -649,7 +649,7 @@
                 // 写入喜欢的故事
                 
                 result.favouritePosts.forEach(function(item) {
-                    favouriteposts += '<a href="http://'+window.location.host+'/static/'+item._id+'" style="color: #5A5A5A;"><div id="'+item._id+'" style="border-radius: 5px; background-color: #f7f7f7;">'+
+                    favouriteposts += '<a href="http://'+window.location.host+'/t/'+item._id+'" style="color: #5A5A5A;"><div id="'+item._id+'" style="border-radius: 5px; background-color: #f7f7f7;">'+
                                         '<div class="img_placeholder" style="'+
                                         'margin: 0 0.125em 1em;-moz-page-break-inside: avoid;-webkit-column-break-inside: avoid;break-inside: avoid;background: white;border-radius:4px;">'+
                                             '<img class="mainImage" src="'+item.mainImage+'" style="width: 100%;border-radius: 4px 4px 0 0;"/>'+
@@ -682,7 +682,7 @@
                         $self.off("click");
                     } else {
                         for(var i = 0; i< result.length; i++){
-                            favouriteposts += '<a href="http://'+window.location.host+'/static/'+result[i]._id+'" style="color: #5A5A5A;"><div id="'+result[i]._id+'" style="border-radius: 5px; background-color: #f7f7f7;">'+
+                            favouriteposts += '<a href="http://'+window.location.host+'/t/'+result[i]._id+'" style="color: #5A5A5A;"><div id="'+result[i]._id+'" style="border-radius: 5px; background-color: #f7f7f7;">'+
                                             '<div class="img_placeholder" style="'+
                                             'margin: 0 0.125em 1em;-moz-page-break-inside: avoid;-webkit-column-break-inside: avoid;break-inside: avoid;background: white;border-radius:4px;">'+
                                                 '<img class="mainImage" src="'+result[i].mainImage+'" style="width: 100%;border-radius: 4px 4px 0 0;"/>'+
@@ -722,7 +722,7 @@
         //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);        
 
         // --作者热门文章--
-        /*$("#author-hot-posts").load("/static/author-hot-posts/"+postid, function(){
+        /*$("#author-hot-posts").load("/t/author-hot-posts/"+postid, function(){
           $("#author-hot-posts dl").each(function(){
             $(this).click(function(e){
               location = '/t/' + $(event.currentTarget).attr('data-id');
@@ -783,7 +783,7 @@
             // 喜欢故事
             var favouriteposts = '';
             result.favouritePosts.forEach(function(item) {
-                favouriteposts += '<a href="http://'+window.location.host+'/static/'+item._id+'" style="color: #5A5A5A;"><div id="'+item._id+'" style="border-radius: 5px; background-color: #f7f7f7;">'+
+                favouriteposts += '<a href="http://'+window.location.host+'/t/'+item._id+'" style="color: #5A5A5A;"><div id="'+item._id+'" style="border-radius: 5px; background-color: #f7f7f7;">'+
                     '<div class="img_placeholder" style="'+
                     'margin: 0 0.125em 1em;-moz-page-break-inside: avoid;-webkit-column-break-inside: avoid;break-inside: avoid;background: white;border-radius:4px;">'+
                         '<img class="mainImage" src="'+item.mainImage+'" style="width: 100%;border-radius: 4px 4px 0 0;"/>'+
@@ -811,7 +811,7 @@
             $('#SubscribeAuthor').show();
         }
         $('.authorReadPopularPostItem').click(function(){
-            var url = '/static/'+ $(this).attr('id');
+            var url = '/t/'+ $(this).attr('id');
             window.open(url,'_system');
         });
         $('.subscribeAutorPage .cannelBtn,.subscribeAutorPage .bg').on('click', function(){

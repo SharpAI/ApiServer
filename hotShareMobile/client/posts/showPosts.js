@@ -76,6 +76,8 @@ getSharingTitle = function(self){
 };
 getPostSharingPath = function(){
     var url = "http://" + server_domain_name +'/'+Session.get('channel');
+    // 发布静态页面版本使用下面的url
+    // var url = "http://" + server_domain_name +'/t/'+Session.get('postContent')._id;
     return url;
 };
 getFirstParagraph = function(){

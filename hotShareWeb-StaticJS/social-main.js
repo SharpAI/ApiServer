@@ -154,7 +154,7 @@ var userNewBellCountHandle = function (e1){
         console.log('post id:', $(this).attr('data-post'));
         window._bell.contentList($(this).attr('data-post'));
         if($(this).attr('data-post'))
-          location = '/static/' + $(this).attr('data-post');
+          location = '/t/' + $(this).attr('data-post');
       });
     });
 };
