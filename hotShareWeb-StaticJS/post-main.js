@@ -483,31 +483,6 @@
         });
         // --- 评论/点评 END ---
 
-        // --- 查看大图 ---
-        $(".postImageItem").click(function() {
-            var selected, swipedata;
-            swipedata = [];
-            selected = 0;
-
-            var selectedImage = $(this).find('img').attr('data-original');
-            $('.postImageItem').map(function(index,item){
-                var imgUrl = $(item).find('img').attr('data-original');
-                if(imgUrl){
-                    if(selectedImage === imgUrl){
-                        selected = index
-                    }
-                    swipedata.push({
-                        href: imgUrl,
-                        title: ''
-                    });
-                }
-            });
-            return $.swipebox(swipedata, {
-              initialIndexOnArray: selected,
-              hideCloseButtonOnMobile: true,
-              loopAtEnd: false
-            });
-        });
         $(".postBtn").click(function(){
             $('.div_me_set-up-sex,.div_me_set-up-nike').css('display', 'none');
             $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');
