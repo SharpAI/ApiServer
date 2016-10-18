@@ -364,6 +364,106 @@ var initDiscover = function(){
     });
     // ==========动态 end=================
 };
+var newFriendCounts = 0;
+// 加载更多新朋友
+var grabNewFriendsFromServer = function(){
+    window.CallMethod('getPostFriends',[postid,newFriendCounts,20],function (type,result){
+        console.log('load more postFriendHandle is ==:'+JSON.stringify(result));
+        var html = '';
+        var $node;
+        newFriendCounts += 20;
+        getNewFriendReadCount(result);
+        if(result.length === 0){
+            $pullDownAddMore = $('#pullDownAddMore').html('没有更多数据了');
+            return getScrollEvent = false;
+        } else {
+            $.each(result,function(index,content){
+                $node = $('.addNewFriends #wrapper');
+                var redSpot = '';
+                if(this.count && this.count === 1){
+                    if(!window.localStorage.getItem('newFriendRead_'+this.ta)){
+                        redSpot = '<div class="red_spot"></div>';
+                    }
+                }
+                html += '<div id=' + this.ta + ' class="eachViewer newFriends">'
+                    + '<img class="icon" src=' + this.icon + ' width="30" height="30">'
+                    + '<span class="userName">' + this.name + '</span>'
+                    + '<div class="meet_count">缘分啊，我们已偶遇' + this.count + '次了！</div>'
+                    + redSpot
+                    + '</div>'
+                    + '<div class="chatContentLine"></div>';
+            });
+            $node.append(html);
+            $('#pullDownAddMore').html('没有更多数据了');
+            $(".newFriends").click(function(e) {
+                var userId = $(e.currentTarget).attr("id");
+                var newFriendReadUser = window.localStorage.getItem('newFriendRead_'+userId);
+                if(!newFriendReadUser){
+                    window.localStorage.setItem('newFriendRead_'+userId,true);
+                    $('#'+ userId +' .red_spot').hide();
+                    var totalCount = parseInt($('#newFriendRedSpot').html()) - 1;
+                    if(totalCount > 0){
+                        $('#newFriendRedSpot').html(totalCount);
+                    }else{
+                        $('#newFriendRedSpot').hide();
+                    }
+                }
+                showProfilePage(userId);
+            });
+        }
+    });
+};
+
+var loadMoreNewFriends = function () {
+    var getScrollEvent = true;
+    $('.div_contactsList').scroll(function(event) {
+        var $pullDownAddMore = $('#pullDownAddMore');
+        var target = $("#showMorePostFriendsResults");
+        if (!target.length) {
+            return;
+        }
+        var threshold = $(window).scrollTop() + $(window).height() - target.height();
+        // console.log("threshold: " + threshold);
+        // console.log("target.top: " + target.offset().top);
+        if (target.offset().top < threshold && getScrollEvent && $(".div_contactsList").is(':visible')) {
+            $pullDownAddMore.html('加载中...');
+            grabNewFriendsFromServer()
+        }
+    });
+};
+
+var initPullToRefreshOnNewFriends = function (){
+    loadMoreNewFriends();
+};
+
+var getPostCommentData = function(){
+    CallMethod("socialData", [postid],function (result,message){
+        console.log('Social data is: '+JSON.stringify(message));
+        $.each(message,function(index,content){
+            var html = '';
+            var pcomments = '';
+            // console.log('socialData index is ' + index + ' . this.index is  ' +　this.index + ' . content is ' + JSON.stringify(content) + ' this is ' + JSON.stringify(this) + '  ..dan ');
+            var $node = $('[index='+ this.index +']')
+            if(this.pcomments && this.pcomments.length > 0){
+                for(var i=0;i<=this.pcomments.length-1;i++){
+                    pcomments += '<div class="eachComment">'
+                        + '<div class="bubble">'
+                        + '<span class="personName">' + this.pcomments[i].username + '</span>:'
+                        + '<span class="personSay">' + this.pcomments[i].content + '</span>'
+                        + '</div>'
+                        + '</div>';
+                    // console.log('each pcomments is ' + pcomments);
+                }
+                // console.log('final pcomments is ' + pcomments);
+                html += '<div class="pcomment">'
+                    + pcomments
+                    + '</div>';
+                $node.append(html);
+            }
+        });
+        calcLayoutForEachPubElement();
+    });
+};
 document.addEventListener('users', userHandle , false);
 var DDPConnectedHandle =  function (e) {
 
@@ -378,84 +478,27 @@ var DDPConnectedHandle =  function (e) {
             console.log('user id:'+_loginUserId);
             window.localStorage.setItem('static_login_userId', message.id);
         }
+        getPostCommentData();
+
+        initPullToRefreshOnNewFriends();
+
         var userNewBellCountId = Subscribe("userNewBellCount", [window._loginUserId],userNewBellCountHandle);
         if( typeof window.alreadyInit !== 'undefined'){
             console.log('skip duplicated initialize');
             return;
         }
         window.alreadyInit = true;
-        update_read_status();
-        CallMethod("socialData", [postid],function (result,message){
-            console.log('Social data is: '+JSON.stringify(message));
-            $.each(message,function(index,content){
-                var html = '';
-                var pcomments = '';
-                // console.log('socialData index is ' + index + ' . this.index is  ' +　this.index + ' . content is ' + JSON.stringify(content) + ' this is ' + JSON.stringify(this) + '  ..dan ');
-                var $node = $('[index='+ this.index +']')
-                if(this.pcomments && this.pcomments.length > 0){
-                    for(var i=0;i<=this.pcomments.length-1;i++){
-                        pcomments += '<div class="eachComment">'
-                            + '<div class="bubble">'
-                            + '<span class="personName">' + this.pcomments[i].username + '</span>:'
-                            + '<span class="personSay">' + this.pcomments[i].content + '</span>'
-                            + '</div>'
-                            + '</div>';
-                        // console.log('each pcomments is ' + pcomments);
-                    }
-                    // console.log('final pcomments is ' + pcomments);
-                html += '<div class="pcomment">'
-                    + pcomments
-                    + '</div>';
-                $node.append(html);
-                }
-            });
-            calcLayoutForEachPubElement();
-        });
 
-        CallMethod("getPostFriends",[postid,0,20],function (type,result){
-            console.log('postFriendHandle:'+JSON.stringify(result));
-            getNewFriendReadCount(result);
-            var html = '';
-            $.each(result,function(index,content){
-                $node = $('.addNewFriends #wrapper');
-                var redSpot = '';
-                if(this.count && this.count === 1){
-                    redSpot = '<div class="red_spot"></div>';
-                }
-                html += '<div id=' + this.ta + ' class="eachViewer newFriends">'
-                    + '<img class="icon" src=' + this.icon + ' width="30" height="30">'
-                    + '<span class="userName">' + this.name + '</span>'
-                    + '<div class="meet_count">缘分啊，我们已偶遇' + this.count + '次了！</div>'
-                    + redSpot
-                    + '</div>'
-                    + '<div class="chatContentLine"></div>';
-            });
-            $node.append(html);
-            $('.wait-loading').hide();
-            $(".newFriends").click(function(e) {
-                // console.log('target id is ' + $(e.currentTarget).attr("id"))
-                var userId = $(e.currentTarget).attr("id");
-                var newFriendReadUser = window.localStorage.getItem('newFriendRead_'+userId);
-                if(!newFriendReadUser){
-                    window.localStorage.setItem('newFriendRead_'+userId,true);
-                    $('#'+ userId +' .red_spot').hide();
-                    var totalCount = parseInt($('#newFriendRedSpot').html()) - 1;
-                    if(totalCount > 0){
-                        $('#newFriendRedSpot').html(totalCount);
-                    }else{
-                        $('#newFriendRedSpot').hide();
-                    }
-                    // console.log('add item')
-                }
-                showProfilePage(userId);
-            });
-            if(result.length >= 20){
-                $('#showMorePostFriendsResults').show();
-                loadMoreNewFriends();
-            }
-        });
+        setTimeout(function(){
+            update_read_status();
+        },1000);
 
-        initDiscover();
+        setTimeout(function(){
+            grabNewFriendsFromServer();
+        },3000);
+        setTimeout(function(){
+            initDiscover();
+        },4000);
 
         if(typeof subReadyHandle !== 'undefined'){
             document.removeEventListener('subReady', subReadyHandle);

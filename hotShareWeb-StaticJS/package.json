@@ -1,8 +1,8 @@
 {
   "name": "hotshare-static-web-js-bundles",
   "version": "1.2.9",
-  "socialVersion":"1.2.11",
-  "postVersion":"1.2.11",
+  "socialVersion":"1.2.12",
+  "postVersion":"1.2.12",
   "cssVersion":"1.2.11",
   "description": "js code for the static page with NPM builder",
   "scripts": {

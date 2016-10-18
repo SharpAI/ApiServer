@@ -366,72 +366,7 @@
           window.CallMethod('clearUserBellWaitReadCount',[window._loginUserId]);
           $('._bell-box,.msg-box, _bell-box .readTips').css('display', 'none');
         });
-        // 加载更多新朋友
-        window.loadMoreNewFriends = function () {
-            var getScrollEvent = true;
-            $('.div_contactsList').scroll(function(event) {
-                var $pullDownAddMore = $('#pullDownAddMore');
-                var newFriendCounts;
-                newFriendCounts = parseInt(localStorage.getItem('newFriendsCounts'));
-                var target = $("#showMorePostFriendsResults");
-                if (!target.length) {
-                  return;
-                }
-                threshold = $(window).scrollTop() + $(window).height() - target.height();
-                // console.log("threshold: " + threshold);
-                // console.log("target.top: " + target.offset().top);
-                if (target.offset().top < threshold && getScrollEvent && $(".div_contactsList").is(':visible')) {
-                    $pullDownAddMore.html('加载中...');
-                    // getPostFriends params[postid,skip,limit]
-                    window.CallMethod('getPostFriends',[postid,newFriendCounts,20],function (type,result){
-                        console.log('load more postFriendHandle is ==:'+JSON.stringify(result));
-                        var clientTotalCount = result.length;
-                        var html = '';
-                        newFriendCounts += 20;
-                        getNewFriendReadCount(result);
-                        localStorage.setItem('newFriendsCounts',newFriendCounts);
-                        if(result.length === 0){
-                            $pullDownAddMore.html('没有更多数据了');
-                            return getScrollEvent = false;
-                        } else {
-                            $.each(result,function(index,content){
-                                $node = $('.addNewFriends #wrapper');
-                                var redSpot = '';
-                                if(!window.localStorage.getItem('newFriendRead_'+this.ta)){
-                                    redSpot = '<div class="red_spot"></div>';
-                                }
-                                html += '<div id=' + this.ta + ' class="eachViewer newFriends">'
-                                    + '<img class="icon" src=' + this.icon + ' width="30" height="30">'
-                                    + '<span class="userName">' + this.name + '</span>'
-                                    + '<div class="meet_count">缘分啊，我们已偶遇' + this.count + '次了！</div>'
-                                    + redSpot
-                                    + '</div>'
-                                    + '<div class="chatContentLine"></div>';
-                            });
-                            $node.append(html);
-                            $pullDownAddMore.html('加载更多');
-                            $(".newFriends").click(function(e) {
-                                // console.log('target id is ' + $(e.currentTarget).attr("id"))
-                                var userId = $(e.currentTarget).attr("id");
-                                var newFriendReadUser = window.localStorage.getItem('newFriendRead_'+userId);
-                                if(!newFriendReadUser){
-                                    window.localStorage.setItem('newFriendRead_'+userId,true);
-                                    $('#'+ userId +' .red_spot').hide();
-                                    var totalCount = parseInt($('#newFriendRedSpot').html()) - 1;
-                                    if(totalCount > 0){
-                                        $('#newFriendRedSpot').html(totalCount);
-                                    }else{
-                                        $('#newFriendRedSpot').hide();
-                                    }
-                                    // console.log('add item')
-                                }
-                                showProfilePage(userId);
-                            });
-                        }
-                    });
-                }
-            });
-        };
+
         // --- 评论/点评 START---
         var isRemoveParentColor = function(target, parent, isLike) {
           if(parseInt($(target).text()) > 0) {
