@@ -1,4 +1,7 @@
 if Meteor.isClient
+  Meteor.startup ()->
+    @UserProfilesSwiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
+    return
   hasMoreResult = ()->
     if NewDynamicMoments.find({currentPostId:Session.get("postContent")._id},{sort: {createdAt: -1}}).count() > 0
       !(NewDynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() < Session.get("momentsitemsLimit"))
@@ -136,32 +139,6 @@ if Meteor.isClient
       requesterIcon:Meteor.user().profile.icon
       requesterId:Meteor.userId()
     }
-  ###  
-  openPostbyPostId = (postId)->
-    if PopUpBox
-      PopUpBox.close()
-    if postId isnt Session.get('postContent')._id
-      $(window).children().off()
-      $(window).unbind('scroll')
-      #Meteor.setTimeout ()->
-      Session.set("lastPost",postId)
-      Router.go '/posts/'+postId
-      #,300
-  ###
-  # Initialize the Swiper
-  Meteor.startup ()->
-    @UserProfilesSwiper = new Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'])
-    #@UserProfilesSwiper = new Swipe(['userProfilePage'])
-    ###
-    UserProfilesSwiper.click 'userProfilePage','.postImages ul li',(e,t)->
-      openPostbyPostId(e.currentTarget.id)
-    UserProfilesSwiper.click 'userProfilePage1','.postImages ul li',(e,t)->
-      openPostbyPostId(e.currentTarget.id)
-    UserProfilesSwiper.click 'userProfilePage2','.postImages ul li',(e,t)->
-      openPostbyPostId(e.currentTarget.id)
-    UserProfilesSwiper.click 'userProfilePage3','.postImages ul li',(e,t)->
-      openPostbyPostId(e.currentTarget.id)
-    ###
   Template.userProfile.helpers
     Swiper: -> UserProfilesSwiper
   Template.userProfile.onRendered ->
