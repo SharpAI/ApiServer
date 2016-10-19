@@ -298,7 +298,7 @@ class window.Swipe
 
 # Template.page1.events
 #   'mouseup .next': (e,t) ->
-#     console.log e
+#     debugPrint e
 #     Swiper.moveRight()
 #
 #   'touchend .next': (e,t) ->
@@ -325,12 +325,12 @@ class window.Swipe
   #   if _template
   #     _template.events eventMap
   #   else
-  #     console.log "WARNING: Template '" + tmp + "' not found."
+  #     debugPrint "WARNING: Template '" + tmp + "' not found."
 
   # register the page names to dynamically render each page
 class template
   constructor: (@swiper) ->
-    console.log('swipe tempate init');
+    debugPrint('swipe tempate init');
     @rendered()
     
   # @helpers: 
@@ -338,13 +338,13 @@ class template
   rendered: ->
     # keep track of the width so we know where to place pages to the left
     # and the right
-    console.log('swipe tempate rendered');
+    debugPrint('swipe tempate rendered');
     @swiper.t.width = $(@swiper.t.find('.pages:first')).width()
 
-    console.log('swipe tempate events');
+    debugPrint('swipe tempate events');
     for key, value of @events
       params = key.split(' ')
-      console.log('on event:', params[0]);
+      debugPrint('on event:', params[0]);
       @swiper.t.find(params[1] + ':first').on(params[0], null, @swiper.t, value)
     # keep track of scrolling
     @swiper.t.mouseDown = false
@@ -363,7 +363,7 @@ class template
   events:
     'mousedown .pages': (e) ->
       t = e.data
-      console.log(t);
+      debugPrint(t);
       # if we're the user has already touched down, we want to ignore mouse events
       if t.touchDown
         return true
@@ -649,4 +649,4 @@ wrap = (min, max, n) ->
 
 delay = (ms, func) -> setTimeout func, ms
 
-console.log('swipe js.');
+debugPrint('swipe js.');

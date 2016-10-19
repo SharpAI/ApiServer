@@ -14,6 +14,11 @@
 
     var padding = {};
 
+    var debugPrint = function(msg) {
+        if (false) {
+            console.log(msg);
+        }
+    };
 
     padding.setRandomlyBackgroundColor = function($node) {
         $node.css("background-color", predefineColors[colorIndex]);
@@ -66,16 +71,16 @@
       try{
         var newFriendReadCount = parseInt($('#newFriendRedSpot').html());
         var datacount = data.length;
-        console.log('newFriendReadCount is ' + newFriendReadCount);
+        debugPrint('newFriendReadCount is ' + newFriendReadCount);
         var totalCount = newFriendReadCount + datacount;
         if(newFriendReadCount && newFriendReadCount > 0){
-            console.log('newFriendReadCount');
+            debugPrint('newFriendReadCount');
             if(datacount > 0) {
                 $.each(data,function(index,content){
                     var userId = this.ta;
                     if(window.localStorage.getItem('newFriendRead_'+userId)){
                         $('#'+ userId +' .red_spot').hide();
-                        console.log('count plus 1');
+                        debugPrint('count plus 1');
                         totalCount-=1;
                     }
                 });
@@ -86,7 +91,7 @@
                     $('#newFriendRedSpot').hide();
                 }
             }
-            console.log('final count is ' + newFriendReadCount);
+            debugPrint('final count is ' + newFriendReadCount);
         }else{
             if(datacount > 0) {
                 $.each(data,function(index,content){
@@ -112,7 +117,7 @@
         var imageMarginPixel = 5;
 
         // $('#test').css('display', 'block');
-        $("#test .element").each(function(index) {            
+        $("#test .element").each(function(index) {
             var elem = this, $elem= $(this), parentNode = this.parentNode;
             var pubInfo = fetchPubInfo($elem);
 
@@ -139,7 +144,7 @@
 
             var elemBottom = elem.offsetTop + elem.offsetHeight;
             updateLayoutData(layoutHelper, pubInfo.data_col, pubInfo.data_sizex, elemBottom);
-            parentNode.style.height = getLayoutTop(layoutHelper, 1, 6) - parentNode.offsetTop + 'px';         
+            parentNode.style.height = getLayoutTop(layoutHelper, 1, 6) - parentNode.offsetTop + 'px';
         });
     };
 
@@ -185,8 +190,8 @@
             $('.readmore').remove();
         });
 
-        console.log('post rended.');
-        console.log('test height:', $('#test').height());
+        debugPrint('post rended.');
+        debugPrint('test height:', $('#test').height());
         //$('.full-wait-loading').hide();
         $('.showPostsBox').removeClass('default');
 
@@ -213,7 +218,7 @@
             else {
                 if ($('.socialContent .chatFooter').is(':visible')) {
                     $('.socialContent .chatFooter').fadeOut(300);
-                }           
+                }
             }
         }
 
@@ -226,7 +231,7 @@
                 window.lastScroll = st;
                 return;
             }
-          
+
             //if ((st + $(window).height()) === getDocHeight()) {
             if ((getDocHeight() - (st + $(window).height())) < 150) {
                 toggleHeaderNav(true);
@@ -282,7 +287,7 @@
                 }
             };
         } catch (e){
-            console.log("no Video");
+            debugPrint("no Video");
         }
         $(".postVideoItem.element .play_area").click(function(e) {
             var _self = this, $_self = $(this);
@@ -303,7 +308,7 @@
             window.open(url,'_blank')
         });
         $(".postTextItem").click(function() {
-            console.log('Need trigger section repost.')
+            debugPrint('Need trigger section repost.')
             var $self, toolbar;
 
             $self = $(this);
@@ -321,8 +326,8 @@
                     var pindex,url;
                     pindex = parseInt($self.attr('index'));
                     url = '/t/'+postid+'/'+pindex;
-                    console.log($self.attr('index'));
-                    console.log('Event: '+event+' Button: '+buttonClicked);
+                    debugPrint($self.attr('index'));
+                    debugPrint('Event: '+event+' Button: '+buttonClicked);
                     window.location.href = url;
                 });
 
@@ -336,7 +341,7 @@
         //   $('.wait-loading').show();
         //   jQuery.get('/t/bell/' + userId, {}, function(data){
         //     $('.wait-loading').hide();
-        //     console.log('get ajax bell data:', data);
+        //     debugPrint('get ajax bell data:', data);
         //     $('._bell-box-main').html(data);
         //     $('._bell-box').slideDown(300);
 
@@ -346,7 +351,7 @@
         //       $('._bell-box').css('display', 'none');
         //     });
         //     $main.find('.contentList').click(function(){
-        //       console.log('feed id:', $(this).attr('data-id'));
+        //       debugPrint('feed id:', $(this).attr('data-id'));
         //       window._bell.contentList($(this).attr('data-id'));
         //       $('._bell-box').css('display', 'none');
         //       // calcLayoutForEachPubElement();
@@ -377,7 +382,7 @@
           if(isLike && parseInt($(target.nextElementSibling).text()) > 0) {
             return false;
           }
-          
+
           if(!isLike && parseInt($(target.previousElementSibling).text()) > 0) {
             return false;
           }
@@ -385,14 +390,14 @@
         };
         var syncThumbs = function(pindex,type){
             CallMethod("updateThumbs", [postid,window._loginUserId,pindex,type],function(result,message){
-                console.log(message)
+                debugPrint(message)
             })
         }
         $(".thumbsUp").click(function(e) {
             var self = this;
             var pindex = $(e.currentTarget).parent().parent().parent().attr('index');
             pindex = parseInt(pindex);
-            console.log('==点评index=='+pindex);
+            debugPrint('==点评index=='+pindex);
             if (e.target.className === "fa fa-thumbs-up thumbsUp") {
               syncThumbs(pindex,'likeDel');
               e.target.className = "fa fa-thumbs-o-up thumbsUp";
@@ -408,13 +413,13 @@
                 $(self.nextElementSibling).text($(self.nextElementSibling).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
                 e.target.nextElementSibling.className = "fa fa-thumbs-o-down thumbsDown";
               }
-            }           
+            }
         });
         $(".thumbsDown").click(function(e) {
             var self = this;
             var pindex = $(e.currentTarget).parent().parent().parent().attr('index');
             pindex = parseInt(pindex);
-            console.log('==点评index=='+pindex);
+            debugPrint('==点评index=='+pindex);
             if (e.target.className === "fa fa-thumbs-down thumbsDown") {
               syncThumbs(pindex,'dislikeDel');
               e.target.className = "fa fa-thumbs-o-down thumbsDown";
@@ -441,16 +446,16 @@
             $('.pcommentInput,.alertBackground').fadeIn(300, function() {
               return $('#pcommitReport').focus();
             });
-            $('#pcommitReport').focus();         
+            $('#pcommitReport').focus();
         });
-        
+
         $('.alertBackground').click(function(e) {
             $('.showBgColor').removeAttr('style');
             $('.pcommentInput,.alertBackground').fadeOut(300);
         });
         var syncPcommitContent = function(pindex,pcommitContent){
             CallMethod("updatePcommitContent", [postid,window._loginUserId,pindex,pcommitContent],function(result,message){
-                console.log(message)
+                debugPrint(message)
             })
         }
         $('#pcommitReportBtn').click(function(e) {
@@ -460,7 +465,7 @@
             var id = localStorage.getItem('pcommentParagraph');
             pindex = parseInt(localStorage.getItem('pcommentPindex'));
             pcommitContent = $('#pcommitReport').val();
-            console.log('==评论内容是=='+pcommitContent); 
+            debugPrint('==评论内容是=='+pcommitContent);
             $('#pcommitReport').val('');
             $('.showBgColor').removeAttr('style');
             //  添加内容
@@ -494,19 +499,19 @@
             $('.div_me').css('display',"none");
             document.body.scrollTop = 0;
         });
-        $(".contactsBtn").click(function(){		
+        $(".contactsBtn").click(function(){
              $('.div_me_set-up-sex,.div_me_set-up-nike').css('display', 'none');
-             localStorage.setItem('documentCurrTop',document.body.scrollTop);			
-             if($('.eachViewer').length <= 1){		
-                 $('.wait-loading').show();		
-             }		
-             $('.socialContent .chatFooter').fadeIn(300);		
-             $('body').css('overflow-y','hidden');		
-             //trackEvent("socialBar","Newfrineds");		
-             $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');		
-             $(".contactsBtn").addClass('focusColor');		
-             $('.div_contactsList').css('display',"block");		
-             $('.div_me').css('display',"none");	
+             localStorage.setItem('documentCurrTop',document.body.scrollTop);
+             if($('.eachViewer').length <= 1){
+                 $('.wait-loading').show();
+             }
+             $('.socialContent .chatFooter').fadeIn(300);
+             $('body').css('overflow-y','hidden');
+             //trackEvent("socialBar","Newfrineds");
+             $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');
+             $(".contactsBtn").addClass('focusColor');
+             $('.div_contactsList').css('display',"block");
+             $('.div_me').css('display',"none");
          });
         $(".meBtn").click(function(){
             localStorage.setItem('documentCurrTop',document.body.scrollTop);
@@ -517,7 +522,7 @@
             $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');
             $(".meBtn").addClass('focusColor');
             $('.div_contactsList').css('display',"none");
-            $('.div_me').css('display',"block");      
+            $('.div_me').css('display',"block");
         });
         $(".div_contactsList .left-btn").click(function() {
             document.body.scrollTop = 0;
@@ -526,9 +531,9 @@
             $(".contactsBtn").removeClass('focusColor');
             $(".postBtn").addClass('focusColor');
         });
-        // --查看大图 END --- 
+        // --查看大图 END ---
 
-        //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);        
+        //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);
 
         // --作者热门文章--
         /*$("#author-hot-posts").load("/t/author-hot-posts/"+postid, function(){
@@ -583,12 +588,12 @@
           // window._loginUser._id = 'PEc8YjSCheMN4qzcC';
           window._loginUser._id = message.id;
 
-          $('.div_me .nickname .value').html(window._loginUser.profile.fullname + '<i class="fa fa-angle-right"></i>'); 
+          $('.div_me .nickname .value').html(window._loginUser.profile.fullname + '<i class="fa fa-angle-right"></i>');
           $('#div_me_set-up-nike-input').val(window._loginUser.profile.fullname);
           $('.div_me .sex .value').html((window._loginUser.profile.sex ? (window._loginUser.profile.sex === 'male' ? '男' : '女') : '[未知]') + '<i class="fa fa-angle-right"></i>');
 
           window.CallMethod('profileData', [window._loginUser._id], function(type,result){
-            console.log('profileData:', result);
+            debugPrint('profileData:', result);
             // 喜欢故事
             var favouriteposts = '';
             result.favouritePosts.forEach(function(item) {
@@ -612,7 +617,7 @@
             });
             favouriteposts += '<div class="clear"></div>';
             $(".mePosts").html(favouriteposts);
-          }); 
+          });
         }, false);
 
         // ---- 关注作者 START----
@@ -630,7 +635,7 @@
             // var $self = $('.subscribeAutorPage');
             var email,qqValueReg,mailValueReg;
             email = $('#email').val();
-            console.log(email);
+            debugPrint(email);
             // 验证电子邮件合法性
             qqValueReg = new RegExp(/^[1-9][0-9]{4,9}$/);
             mailValueReg = new RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/);
@@ -640,11 +645,11 @@
             }
             if (qqValueReg.test(email)){
                 email += '@qq.com';
-            } 
+            }
             $('.subscribeAutorPage').hide();
             // 更新关注Email,  updateSubscribeAutorEmail params[author,userId,email]
             window.CallMethod('updateSubscribeAutorEmail',[$(".showPosts .user").attr("id"),window._loginUser._id,email],function (type,result){
-                console.log('profileData is ==:'+JSON.stringify(result));
+                debugPrint('profileData is ==:'+JSON.stringify(result));
                 if(result.msg === 'success') {
                     toastr.success('您已成功关注作者'+$(".showPosts .user .name").html()+'，确认邮件将很快（10分钟左右）送达，谢谢！','关注成功')
                 } else {

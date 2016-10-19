@@ -8,6 +8,11 @@ appUtils.ddp = require("ddp.js").default;
 
 var Sha256 = require('./sha256');
 require('./random');
+var debugPrint = function(msg) {
+    if (false) {
+        console.log(msg);
+    }
+};
 
 var uuid = function () {
     var HEX_DIGITS = "0123456789abcdef";
@@ -115,21 +120,21 @@ function loginErrorHandle(callback){
     },5000);
 }
 function loginHandle(type,result,callback){
-    console.log('type: '+type+' result:'+result)
+    debugPrint('type: '+type+' result:'+result)
     if(type ==='result' && result && result.token && result.tokenExpires && result.tokenExpires.$date ){
         /*
          id:"LApaRD39Ziz2EcpTm"
          token:"eXoFSIulKAjjezmQ8weQuwhqVqYhY7MFBWj02nzit-z"
          tokenExpires:{$date: 1483485599652}
          */
-        console.log('login success');
+        debugPrint('login success');
         localStorage.setItem('loginToken',result.token);
         localStorage.setItem('loginTokenExpires',result.tokenExpires.$date);
         if(callback){
             callback(type,result);
         }
     } else {
-        console.log('login Not Success, need retry.');
+        debugPrint('login Not Success, need retry.');
         loginErrorHandle(callback);
     }
 }
@@ -167,7 +172,7 @@ window.autoLogin = function(callback){
 };
 
 ddp.on("connected", function(){
-    console.log("Connected");
+    debugPrint("Connected");
     window.ddp_connected = true;
     var event = new Event('ddpConnected');
     document.dispatchEvent(event);
@@ -190,18 +195,18 @@ ddp.on("updated", function(message){
     }
 });
 ddp.on("ready",function(message){
-    //console.log('ready: '+ JSON.stringify( message));
+    //debugPrint('ready: '+ JSON.stringify( message));
     var event = new CustomEvent('subReady', { 'detail': message });
     document.dispatchEvent(event);
 });
 ddp.on("added", function(message){
-    console.log('collection added:', JSON.stringify(message.collection));
+    debugPrint('collection added:', JSON.stringify(message.collection));
     var event = new CustomEvent(message.collection, { 'detail': message });
     document.dispatchEvent(event);
 });
 
 ddp.on("changed", function(message){
-    //console.log('collection:', JSON.stringify(message.collection));
+    //debugPrint('collection:', JSON.stringify(message.collection));
     var event = new CustomEvent(message.collection, { 'detail': message });
     document.dispatchEvent(event);
 });
