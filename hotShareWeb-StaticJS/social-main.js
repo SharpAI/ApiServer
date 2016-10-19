@@ -741,69 +741,70 @@
         $("." + name + " .userProfileTop .location").html(usersInformation[userId].location);
         //$("." + name + " .userProfileTop .desc").html(result.userProfile.desc);
 
-        localStorage.setItem('favouritepostsCounts', 10);
-        window.CallMethod('profileData', [userId], function (type, result) {
-            debugPrint('profileData is ==:' + JSON.stringify(result));
-            // 写入最近浏览的故事
-            var recentReviewPost = '';
-            var favouriteposts = '';
-            result.recentViewPosts.forEach(function (item) {
-                recentReviewPost += '<a href="http://' + window.location.host + '/t/' + item._id + '" style="color: #5A5A5A;"><li id="' + item.postId + '">' +
-                    '<div class="postMainImage no-swipe" style="background-image:url(' + item.mainImage + ')"></div>' +
-                    '<h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">' +
-                    item.title + '</h6></li></a>';
-            });
-
+        if(usersInformation[userId].recentViewPosts && usersInformation[userId].favouritePosts){
+            displayRecentViewPosts(name,userId,usersInformation[userId].recentViewPosts);
             // 写入喜欢的故事
-
-            result.favouritePosts.forEach(function (item) {
-                favouriteposts += '<a href="http://' + window.location.host + '/t/' + item._id + '" style="color: #5A5A5A;"><div id="' + item._id + '" style="border-radius: 5px; background-color: #f7f7f7;">' +
-                    '<div class="img_placeholder" style="' +
-                    'margin: 0 0.125em 1em;-moz-page-break-inside: avoid;-webkit-column-break-inside: avoid;break-inside: avoid;background: white;border-radius:4px;">' +
-                    '<img class="mainImage" src="' + item.mainImage + '" style="width: 100%;border-radius: 4px 4px 0 0;"/>' +
-                    '<p class="title" style="font-size: 16px;font-weight: bold;white-space: pre-line;word-wrap: break-word;margin: 10px;">' + item.title + '</p>' +
-                    '<p class="addontitle" style="font-size:11px;margin: 10px;">' + item.addontitle + '</p>' +
-                    '</div></div></a>';
-            });
-            $("." + name + " .recentViewPosts").html(recentReviewPost);
-            $("." + name + " .favoritePosts").html(favouriteposts);
-            $('.' + name + ' .wait-loading').hide();
-            $("." + name + " .userProfileBox .loadMore").html("加载更多");
-
-        });
-    };
-// 加载更多喜欢的故事
-    var loadMoreFavouriteposts = function (name, userId) {
-        $("." + name + " .userProfileBox .loadMore").on('click', function () {
-            var $self = $(this);
-            var favouritepostsCounts;
-            favouritepostsCounts = parseInt(localStorage.getItem('favouritepostsCounts'));
-            $self.html('<img src="/loading-2.gif" style="width: 28px; height:28px;"/> 加载中...');
-            // getMoreFavouritePosts params[userId,skip,limit]
-            window.CallMethod('getMoreFavouritePosts', [userId, favouritepostsCounts, 10], function (type, result) {
+            displayFavouriteposts(name,userId,usersInformation[userId].favouritePosts);
+        } else {
+            window.CallMethod('profileData', [userId], function (type, result) {
                 debugPrint('profileData is ==:' + JSON.stringify(result));
-                var favouriteposts = '';
-                favouritepostsCounts += 10;
-                localStorage.setItem('favouritepostsCounts', favouritepostsCounts);
+                usersInformation[userId].favouritePosts = result.favouritePosts;
+                usersInformation[userId].recentViewPosts = result.recentViewPosts;
+                // 写入最近浏览的故事
+                displayRecentViewPosts(name,userId,usersInformation[userId].recentViewPosts);
+                // 写入喜欢的故事
+                displayFavouriteposts(name,userId,usersInformation[userId].favouritePosts);
+                $('.' + name + ' .wait-loading').hide();
+                //$("." + name + " .userProfileBox .loadMore").html("加载更多");
+            });
+        }
+    };
+    var displayRecentViewPosts = function(name,userId,posts){
+        var recentReviewPost = '';
+        $("." + name + " .recentViewPosts").html('');
+        posts.forEach(function (item) {
+            recentReviewPost += '<a href="http://' + window.location.host + '/t/' + item._id + '" style="color: #5A5A5A;"><li id="' + item.postId + '">' +
+                '<div class="postMainImage no-swipe" style="background-image:url(' + item.mainImage + ')"></div>' +
+                '<h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">' +
+                item.title + '</h6></li></a>';
+        });
+        $("." + name + " .recentViewPosts").html(recentReviewPost);
+    };
+    var displayFavouriteposts = function(name,userId,posts){
+        var favouriteposts = '';
+        $("." + name + " .recentViewPosts").html('');
+        for (var i = 0; i < posts.length; i++) {
+            favouriteposts += '<a href="http://' + window.location.host + '/t/' + posts[i]._id + '" style="color: #5A5A5A;"><div id="' + posts[i]._id + '" style="border-radius: 5px; background-color: #f7f7f7;">' +
+                '<div class="img_placeholder" style="' +
+                'margin: 0 0.125em 1em;-moz-page-break-inside: avoid;-webkit-column-break-inside: avoid;break-inside: avoid;background: white;border-radius:4px;">' +
+                '<img class="mainImage" src="' + posts[i].mainImage + '" style="width: 100%;border-radius: 4px 4px 0 0;"/>' +
+                '<p class="title" style="font-size: 16px;font-weight: bold;white-space: pre-line;word-wrap: break-word;margin: 10px;">' + posts[i].title + '</p>' +
+                '<p class="addontitle" style="font-size:11px;margin: 10px;">' + posts[i].addontitle + '</p>' +
+                '</div></div></a>';
+        }
+        $("." + name + " .favoritePosts").html(favouriteposts);
+    };
+    // 加载更多喜欢的故事
+    /*var loadMoreFavouriteposts = function (name, userId) {
+        var $self = $(this);
+        $self.html('<img src="/loading-2.gif" style="width: 28px; height:28px;"/> 加载中...');
+        // getMoreFavouritePosts params[userId,skip,limit]
+        if (usersInformation[userId].favouritePosts){
+            displayFavouriteposts(name,userId,usersInformation[userId].favouritePosts)
+        } else {
+            window.CallMethod('getMoreFavouritePosts', [userId, 0, 10], function (type, result) {
+                debugPrint('profileData is ==:' + JSON.stringify(result));
+                usersInformation[userId].favouritePosts = result;
                 if (result.length === 0) {
-                    $self.html('没有更多数据了');
-                    $self.off("click");
+                    //$self.html('没有更多数据了');
+                    //$self.off("click");
                 } else {
-                    for (var i = 0; i < result.length; i++) {
-                        favouriteposts += '<a href="http://' + window.location.host + '/t/' + result[i]._id + '" style="color: #5A5A5A;"><div id="' + result[i]._id + '" style="border-radius: 5px; background-color: #f7f7f7;">' +
-                            '<div class="img_placeholder" style="' +
-                            'margin: 0 0.125em 1em;-moz-page-break-inside: avoid;-webkit-column-break-inside: avoid;break-inside: avoid;background: white;border-radius:4px;">' +
-                            '<img class="mainImage" src="' + result[i].mainImage + '" style="width: 100%;border-radius: 4px 4px 0 0;"/>' +
-                            '<p class="title" style="font-size: 16px;font-weight: bold;white-space: pre-line;word-wrap: break-word;margin: 10px;">' + result[i].title + '</p>' +
-                            '<p class="addontitle" style="font-size:11px;margin: 10px;">' + result[i].addontitle + '</p>' +
-                            '</div></div></a>';
-                    }
-                    $("." + name + " .favoritePosts").append(favouriteposts);
-                    $self.html('加载更多');
+                    //$self.html('加载更多');
+                    displayFavouriteposts(name,userId,usersInformation[userId].favouritePosts)
                 }
             });
-        });
-    };
+        }
+    };*/
     var newFriendProfile = {
         ids: [],
         profile: {},
@@ -849,7 +850,7 @@
             $profile.find('.userName').html(newFriendProfile.profile[id].fullname);
             $page.find('.head div:eq(1)').html(newFriendProfile.profile[id].fullname);
             preProfileInfo(name, id);
-            loadMoreFavouriteposts(name, id);
+            //loadMoreFavouriteposts(name, id);
         }
     };
     window.showProfilePage = function (userId, isOwner) {
@@ -865,7 +866,7 @@
             swipe.leftRight(null, null);
             swipe.setInitialPage('userProfilePage2');
             preProfileInfo('userProfilePage2', userId);
-            loadMoreFavouriteposts('userProfilePage2', userId);
+            //loadMoreFavouriteposts('userProfilePage2', userId);
             return;
         }
 
