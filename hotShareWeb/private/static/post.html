@@ -204,8 +204,7 @@
     <!-- Profile START-->
    <div class="userProfileBox" style="display:none; z-index:9990;">
     <div class="wrapper">
-        <div class="userProfileSwipe">
-        <!--<div class="userProfileSwipe swipe-tmp">
+        <div class="userProfileSwipe swipe-tmp">
             <div class="pages">
                 <div class="page userProfilePage1">
                     <div class="userProfile userProfileMarginTop">
@@ -312,31 +311,23 @@
                         <div class="post">
                             <span class="postLeft">最近浏览的故事</span>
                         </div>
-                            <div class="postImages swipe-control">
-                            <ul>
-                                <li id="{{postId}}">
-                                <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
-                                <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
-                                    {{title}}
-                                </h6>
-                                </li>
-                                <li id="{{postId}}">
-                                <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
-                                <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
-                                    {{title}}
-                                </h6>
-                                </li>
-                            </ul>
-                            </div>
+                        <div class="postImages swipe-control">
+                            <ul class="recentViewPosts"></ul>
+                        </div>
                         <div class="showPostsLine"></div>      
                         <div class="post">
                             <span class="postLeft">喜欢的故事</span>
                         </div>
-                        {{favoritePosts1}}
+                        <div class="favoritePosts" style="padding: 10px;background: #F1F1F1;
+                        -moz-column-count: 2;-webkit-column-count: 2;column-count: 2;
+                        -moz-column-width: 10em;-webkit-column-width: 10em;column-width: 10em;
+                        -moz-column-gap: 1em;-webkit-column-gap: 1em;column-gap: 1em;"> </div>
+                        <div class="loadMore" style="height: 32px;line-height: 32px;text-align: center;"></div>
                     </div>
                 </div>
             </div>
-        </div>-->
+        </div>
+        <!--<div class="userProfileSwipe">
             <div class="pages">
                 <div class="head">
                     <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
@@ -370,7 +361,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>-->
     </div>
 </div>
 <!-- Profile END -->

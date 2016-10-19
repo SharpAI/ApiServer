@@ -2,7 +2,6 @@
     require("./libs/jquery.lazyload.1.9.3");
     require("./libs/jquery.linkify");
     require("./libs/image-fit-cover");
-    require("./libs/swipe");
 
     if (!global.gushitie) global.gushitie = {};
 
@@ -529,113 +528,6 @@
         });
         // --查看大图 END --- 
 
-        // ---- Profile START ----
-        var preProfileInfo = function(userId) {
-            $('.userProfileTop').html('<img class="icon" src="/userPicture.png" width="70" height="70">\
-                            <span class="userName theprofileName"></span>\
-                            <span class="location"></span>\
-                            <span class="desc"></span>');
-            $(".recentViewPosts").html('');
-            $(".favoritePosts").html('');
-            $('body').css('overflow-y','hidden');
-            $('.wait-loading').show();
-            localStorage.setItem('favouritepostsCounts',10);
-            window.CallMethod('profileData',[userId],function (type,result){
-                console.log('profileData is ==:'+JSON.stringify(result));
-                // 写入user数据
-                $(".theprofileName").html(result.userProfile.name);
-                $(".userProfileTop .icon").attr('src',result.userProfile.icon);
-                $(".userProfileTop .location").html(result.userProfile.location);
-                $(".userProfileTop .desc").html(result.userProfile.desc);
-                // 写入最近浏览的故事
-                var recentReviewPost = '';
-                var favouriteposts = '';
-                result.recentViewPosts.forEach(function(item){
-                    recentReviewPost += '<a href="http://'+window.location.host+'/t/'+item._id+'" style="color: #5A5A5A;"><li id="'+item.postId+'">'+
-                                        '<div class="postMainImage no-swipe" style="background-image:url('+item.mainImage+')"></div>'+
-                                        '<h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">'+
-                                        item.title+'</h6></li></a>';
-                });
-                
-                // 写入喜欢的故事
-                
-                result.favouritePosts.forEach(function(item) {
-                    favouriteposts += '<a href="http://'+window.location.host+'/t/'+item._id+'" style="color: #5A5A5A;"><div id="'+item._id+'" style="border-radius: 5px; background-color: #f7f7f7;">'+
-                                        '<div class="img_placeholder" style="'+
-                                        'margin: 0 0.125em 1em;-moz-page-break-inside: avoid;-webkit-column-break-inside: avoid;break-inside: avoid;background: white;border-radius:4px;">'+
-                                            '<img class="mainImage" src="'+item.mainImage+'" style="width: 100%;border-radius: 4px 4px 0 0;"/>'+
-                                        '<p class="title" style="font-size: 16px;font-weight: bold;white-space: pre-line;word-wrap: break-word;margin: 10px;">'+item.title+'</p>'+
-                                        '<p class="addontitle" style="font-size:11px;margin: 10px;">'+item.addontitle+'</p>'+
-                                        '</div></div></a>';
-                });
-                $(".recentViewPosts").html(recentReviewPost);
-                $(".favoritePosts").html(favouriteposts);
-                $('.wait-loading').hide();
-                $(".userProfileBox .loadMore").html("加载更多");
-                
-            });
-        };
-        // 加载更多喜欢的故事
-        var loadMoreFavouriteposts = function () {
-            $(".userProfileBox .loadMore").on('click', function(){
-                var $self = $(this);
-                var favouritepostsCounts;
-                favouritepostsCounts = parseInt(localStorage.getItem('favouritepostsCounts'));
-                $self.html('<img src="/loading-2.gif" style="width: 28px; height:28px;"/> 加载中...');
-                // getMoreFavouritePosts params[userId,skip,limit]
-                window.CallMethod('getMoreFavouritePosts',[localStorage.getItem('profileUserId'),favouritepostsCounts,10],function (type,result){
-                    console.log('profileData is ==:'+JSON.stringify(result));
-                    var favouriteposts = '';
-                    favouritepostsCounts += 10;
-                    localStorage.setItem('favouritepostsCounts',favouritepostsCounts);
-                    if(result.length === 0){
-                        $self.html('没有更多数据了');
-                        $self.off("click");
-                    } else {
-                        for(var i = 0; i< result.length; i++){
-                            favouriteposts += '<a href="http://'+window.location.host+'/t/'+result[i]._id+'" style="color: #5A5A5A;"><div id="'+result[i]._id+'" style="border-radius: 5px; background-color: #f7f7f7;">'+
-                                            '<div class="img_placeholder" style="'+
-                                            'margin: 0 0.125em 1em;-moz-page-break-inside: avoid;-webkit-column-break-inside: avoid;break-inside: avoid;background: white;border-radius:4px;">'+
-                                                '<img class="mainImage" src="'+result[i].mainImage+'" style="width: 100%;border-radius: 4px 4px 0 0;"/>'+
-                                            '<p class="title" style="font-size: 16px;font-weight: bold;white-space: pre-line;word-wrap: break-word;margin: 10px;">'+result[i].title+'</p>'+
-                                            '<p class="addontitle" style="font-size:11px;margin: 10px;">'+result[i].addontitle+'</p>'+
-                                            '</div></div></a>';
-                        }
-                        $(".favoritePosts").append(favouriteposts);
-                        $self.html('加载更多');
-                    }
-                });
-            });
-        };
-        window.showProfilePage = function(userId) {
-            localStorage.setItem('documentCurrTop',document.body.scrollTop);
-            document.body.scrollTop = 0;
-            preProfileInfo(userId);
-            $(".userProfileBox").show();
-            loadMoreFavouriteposts();
-
-            // test
-            // var swipe = new window.Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'], true, $('.swipe-tmp'));
-            // swipe.setInitialPage('userProfilePage2');
-            // swipe.setInitialPage('userProfilePage3');
-            // $('.userProfileBox').show()
-        }
-        $(".showPosts .user").click(function(){
-            var profileUserId = $(".showPosts .user").attr("id");
-            localStorage.setItem('profileUserId',profileUserId);
-            localStorage.setItem('userProfile_BoxFromPostsPage',true);
-            showProfilePage(profileUserId);
-        });
-
-        $(".userProfileBox .leftButton").click(function(){
-            document.body.scrollTop = 0;
-            if(localStorage.getItem('userProfile_BoxFromPostsPage') === 'true'){
-                $('body').css('overflow-y','auto');
-            }
-            localStorage.setItem('userProfile_BoxFromPostsPage',false);
-            $(".userProfileBox").hide();
-        });
-        // ---- Profile END ----
         //fetchSuggestPosts(SUGGEST_POSTS_SKIP, SUGGEST_POSTS_LIMIT);        
 
         // --作者热门文章--

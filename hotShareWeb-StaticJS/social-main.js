@@ -7,6 +7,7 @@ require("./libs/jquery.swipebox.1.3.0.2");
 window.scrollMonitor = require("./libs/scrollMonitor.1.0.12");
 require("./libs/jquery.toolbar");
 window.toastr = require("./libs/toastr.min");
+require("./libs/swipe");
 var imagesLoaded = require("imagesloaded");
 
 function loadScript(url, callback){
@@ -704,6 +705,201 @@ window._bell = {
         window.CallMethod('updataFeedsWithMe',[window._loginUserId]);
     }
 };
+
+// ---- Profile START ----
+var preProfileInfo = function(name, userId) {
+    $('.'+name+' .userProfileTop').html('<img class="icon" src="/userPicture.png" width="70" height="70">\
+                    <span class="userName theprofileName"></span>\
+                    <span class="location"></span>\
+                    <span class="desc"></span>');
+    $("."+name+" .recentViewPosts").html('');
+    $("."+name+" .favoritePosts").html('');
+    $('body').css('overflow-y','hidden');
+    $('.'+name+' .wait-loading').show();
+    localStorage.setItem('favouritepostsCounts',10);
+    window.CallMethod('profileData',[userId],function (type,result){
+        console.log('profileData is ==:'+JSON.stringify(result));
+        // 写入user数据
+        $("."+name+" .head div:eq(1)").html(result.userProfile.name);
+        $("."+name+" .theprofileName").html(result.userProfile.name);
+        $("."+name+" .userProfileTop .icon").attr('src',result.userProfile.icon);
+        $("."+name+" .userProfileTop .location").html(result.userProfile.location);
+        $("."+name+" .userProfileTop .desc").html(result.userProfile.desc);
+        // 写入最近浏览的故事
+        var recentReviewPost = '';
+        var favouriteposts = '';
+        result.recentViewPosts.forEach(function(item){
+            recentReviewPost += '<a href="http://'+window.location.host+'/t/'+item._id+'" style="color: #5A5A5A;"><li id="'+item.postId+'">'+
+                                '<div class="postMainImage no-swipe" style="background-image:url('+item.mainImage+')"></div>'+
+                                '<h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">'+
+                                item.title+'</h6></li></a>';
+        });
+        
+        // 写入喜欢的故事
+        
+        result.favouritePosts.forEach(function(item) {
+            favouriteposts += '<a href="http://'+window.location.host+'/t/'+item._id+'" style="color: #5A5A5A;"><div id="'+item._id+'" style="border-radius: 5px; background-color: #f7f7f7;">'+
+                                '<div class="img_placeholder" style="'+
+                                'margin: 0 0.125em 1em;-moz-page-break-inside: avoid;-webkit-column-break-inside: avoid;break-inside: avoid;background: white;border-radius:4px;">'+
+                                    '<img class="mainImage" src="'+item.mainImage+'" style="width: 100%;border-radius: 4px 4px 0 0;"/>'+
+                                '<p class="title" style="font-size: 16px;font-weight: bold;white-space: pre-line;word-wrap: break-word;margin: 10px;">'+item.title+'</p>'+
+                                '<p class="addontitle" style="font-size:11px;margin: 10px;">'+item.addontitle+'</p>'+
+                                '</div></div></a>';
+        });
+        $("."+name+" .recentViewPosts").html(recentReviewPost);
+        $("."+name+" .favoritePosts").html(favouriteposts);
+        $('.'+name+' .wait-loading').hide();
+        $("."+name+" .userProfileBox .loadMore").html("加载更多");
+        
+    });
+};
+// 加载更多喜欢的故事
+var loadMoreFavouriteposts = function (name, userId) {
+    $("."+name+" .userProfileBox .loadMore").on('click', function(){
+        var $self = $(this);
+        var favouritepostsCounts;
+        favouritepostsCounts = parseInt(localStorage.getItem('favouritepostsCounts'));
+        $self.html('<img src="/loading-2.gif" style="width: 28px; height:28px;"/> 加载中...');
+        // getMoreFavouritePosts params[userId,skip,limit]
+        window.CallMethod('getMoreFavouritePosts',[userId,favouritepostsCounts,10],function (type,result){
+            console.log('profileData is ==:'+JSON.stringify(result));
+            var favouriteposts = '';
+            favouritepostsCounts += 10;
+            localStorage.setItem('favouritepostsCounts',favouritepostsCounts);
+            if(result.length === 0){
+                $self.html('没有更多数据了');
+                $self.off("click");
+            } else {
+                for(var i = 0; i< result.length; i++){
+                    favouriteposts += '<a href="http://'+window.location.host+'/t/'+result[i]._id+'" style="color: #5A5A5A;"><div id="'+result[i]._id+'" style="border-radius: 5px; background-color: #f7f7f7;">'+
+                                    '<div class="img_placeholder" style="'+
+                                    'margin: 0 0.125em 1em;-moz-page-break-inside: avoid;-webkit-column-break-inside: avoid;break-inside: avoid;background: white;border-radius:4px;">'+
+                                        '<img class="mainImage" src="'+result[i].mainImage+'" style="width: 100%;border-radius: 4px 4px 0 0;"/>'+
+                                    '<p class="title" style="font-size: 16px;font-weight: bold;white-space: pre-line;word-wrap: break-word;margin: 10px;">'+result[i].title+'</p>'+
+                                    '<p class="addontitle" style="font-size:11px;margin: 10px;">'+result[i].addontitle+'</p>'+
+                                    '</div></div></a>';
+                }
+                $("."+name+" .favoritePosts").append(favouriteposts);
+                $self.html('加载更多');
+            }
+        });
+    });
+};
+var newFriendProfile = {
+  ids: [],
+  profile: {},
+  browses: {},
+  links: {},
+  init: function(){
+    newFriendProfile.ids = [];
+    newFriendProfile.profile = {};
+    newFriendProfile.browses = {};
+    newFriendProfile.links = {};
+    $('.newFriends').each(function(){
+      var id = $(this).attr('id');
+      if(newFriendProfile.ids.indexOf(id) === -1){
+        newFriendProfile.ids.push(id);
+        newFriendProfile.profile[id] = {
+          icon: $(this).find('img.icon').attr('src'),
+          fullname: $(this).find('.userName').html(),
+          sex: '/male.png',
+          location: '',
+          desc: ''
+        };
+      }
+      console.log('profile:', newFriendProfile.profile);
+    });
+  },
+  prev: function(id){
+    var index = newFriendProfile.ids.indexOf(id);
+    if(index === -1)
+      return null;
+    return index - 1 >= 0 ? newFriendProfile.ids[index-1] : null;
+  },
+  next: function(id){
+    var index = newFriendProfile.ids.indexOf(id);
+    if(index === -1)
+      return null;
+    return index + 1 < newFriendProfile.ids.length ? newFriendProfile.ids[index+1] : null;
+  },
+  render: function(name, id){
+    var $page = $('.' + name);
+    var $profile = $page.find('.userProfileTop');
+
+    $profile.find('.icon').attr('src', newFriendProfile.profile[id].icon);
+    $profile.find('.userName').html(newFriendProfile.profile[id].fullname);
+    $page.find('.head div:eq(1)').html(newFriendProfile.profile[id].fullname);
+    preProfileInfo(name, id);
+    loadMoreFavouriteposts(name, id);
+  }
+};
+window.showProfilePage = function(userId, isOwner) {
+    localStorage.setItem('documentCurrTop',document.body.scrollTop);
+    document.body.scrollTop = 0;
+    // preProfileInfo(userId);
+    // $(".userProfileBox").show();
+    // loadMoreFavouriteposts();
+    $('.userProfileBox').show();
+
+    if(isOwner){
+      var swipe = new window.Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'], true, $('.swipe-tmp'));
+      swipe.leftRight(null, null);
+      swipe.setInitialPage('userProfilePage2');
+      preProfileInfo('userProfilePage2', userId);
+      loadMoreFavouriteposts('userProfilePage2', userId);
+      return;
+    }
+
+    newFriendProfile.init();
+    var swipe = new window.Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'], true, $('.swipe-tmp'));
+    swipe.onPageChanged(function(obj, name){
+      console.log('swipe:', obj);
+      console.log('page changed:', name);
+      
+      var id = $('.' + name).attr('data-id');
+      newFriendProfile.render(name, id);
+
+      switch(name){
+        case 'userProfilePage1':
+          swipe.leftRight(newFriendProfile.prev(id) ? 'userProfilePage3' : null,  newFriendProfile.next(id) ? 'userProfilePage2' : null);
+          $('.userProfilePage1').attr('data-id', id);
+          $('.userProfilePage3').attr('data-id', newFriendProfile.prev(id) || '');
+          $('.userProfilePage2').attr('data-id', newFriendProfile.next(id) || '');
+          break;
+        case 'userProfilePage2':
+          swipe.leftRight(newFriendProfile.prev(id) ? 'userProfilePage1' : null,  newFriendProfile.next(id) ? 'userProfilePage3' : null);
+          $('.userProfilePage2').attr('data-id', id);
+          $('.userProfilePage1').attr('data-id', newFriendProfile.prev(id) || '');
+          $('.userProfilePage3').attr('data-id', newFriendProfile.next(id) || '');
+          break;
+        case 'userProfilePage3':
+          swipe.leftRight(newFriendProfile.prev(id) ? 'userProfilePage1' : null,  newFriendProfile.next(id) ? 'userProfilePage2' : null);
+          $('.userProfilePage3').attr('data-id', id);
+          $('.userProfilePage1').attr('data-id', newFriendProfile.prev(id) || '');
+          $('.userProfilePage2').attr('data-id', newFriendProfile.next(id) || '');
+          break;
+      }
+    });
+    $('.userProfilePage2').attr('data-id', userId);
+    swipe.setInitialPage('userProfilePage2');
+}
+$(".showPosts .user").click(function(){
+    var profileUserId = $(".showPosts .user").attr("id");
+    localStorage.setItem('profileUserId',profileUserId);
+    localStorage.setItem('userProfile_BoxFromPostsPage',true);
+    showProfilePage(profileUserId, true);
+});
+
+$(".userProfileBox .leftButton").click(function(){
+    document.body.scrollTop = 0;
+    if(localStorage.getItem('userProfile_BoxFromPostsPage') === 'true'){
+        $('body').css('overflow-y','auto');
+    }
+    localStorage.setItem('userProfile_BoxFromPostsPage',false);
+    $(".userProfileBox").hide();
+});
+// ---- Profile END ----
+
 $(document).ready(function(){
     document.addEventListener('ddpConnected',DDPConnectedHandle, false);
 

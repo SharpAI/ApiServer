@@ -1,4 +1,3 @@
-
 print = (msg) ->
   if false
     console.log msg
@@ -37,8 +36,11 @@ class ReactiveDict
 
 class window.Swipe
   _template = null
+  _pages = []
   constructor: (@templates, arrowKeys=true, @t) ->
+    @t.Swiper = @
     _template = new template(@)
+    _pages = []
 # @templates is a list of template name strings that will be used by
 # the Swiper
 
@@ -63,7 +65,7 @@ class window.Swipe
     $(window).resize ->
 # set the width of the page so the template knows where to position
 # the left and right pages
-      self.t?.width = $(self.t?.find('.pages')).width()
+      self.t?.width = $(self.t?.find('.pages:first')).width()
       # do not animate the window resizing
       $(self.t.findAll('.animate')).removeClass('animate')
       # re-position the left and right pages.
@@ -90,40 +92,40 @@ class window.Swipe
           self.moveRight()
 
   clearAnimate: ->
-    $(@t?.findAll('.animate')).removeClass('animate')
+    $(@t?.find('.animate')).removeClass('animate')
 
   animateAll: ->
-    $(@t.findAll('.page')).addClass('animate')
+    $(@t.find('.page')).addClass('animate')
 
   unanimate: (name) ->
-    $(@t.find('.page.'+name)).removeClass('animate')
+    $(@t.find('.page.'+name + ':first')).removeClass('animate')
 
   animate: (name) ->
-    $(@t.find('.page.'+name)).addClass('animate')
+    $(@t.find('.page.'+name + ':first')).addClass('animate')
 
   animateRight: (name) ->
-    $(@t.find('.page.'+name)).addClass('animate').css 'transform',
+    $(@t.find('.page.'+name + ':first')).addClass('animate').css 'transform',
       'translate3d('+@t.width+'px,0,0)'
 
   animateLeft: (name) ->
-    $(@t.find('.page.'+name)).addClass('animate').css 'transform',
+    $(@t.find('.page.'+name + ':first')).addClass('animate').css 'transform',
       'translate3d(-'+@t.width+'px,0,0)'
 
   animateCenter: (name) ->
-    $(@t.find('.page.'+name)).addClass('animate').css 'transform',
+    $(@t.find('.page.'+name + ':first')).addClass('animate').css 'transform',
       'translate3d(0px,0,0)'
 
 # set position regardless of animation
   displayRight: (name) ->
-    $(@t.find('.page.'+name)).css('display', 'block').css 'transform',
+    $(@t.find('.page.'+name + ':first')).css('display', 'block').css 'transform',
       'translate3d('+@t.width+'px,0,0)'
 
   displayLeft: (name) ->
-    $(@t.find('.page.'+name)).css('display', 'block').css 'transform',
+    $(@t.find('.page.'+name + ':first')).css('display', 'block').css 'transform',
       'translate3d(-'+@t.width+'px,0,0)'
 
   displayCenter: (name) ->
-    $(@t.find('.page.'+name)).css('display', 'block').css 'transform',
+    $(@t.find('.page.'+name + ':first')).css('display', 'block').css 'transform',
       'translate3d(0px,0,0)'
 
   transitionRight: (name) ->
@@ -166,19 +168,26 @@ class window.Swipe
       @animateCenter @right
       @setPage @right
 
+  onPageChanged: (func)->
+    _pages.push(func)
   setPage: (name) ->
 # this method will simply trigger any functions that autorun reactively on
 # the current page. This assumes whatever function is calling it will
 # take cre of any animations or transitions.
     @previousPage = @getPage()
     @state.set 'page', name
+    for item in _pages
+      item(@, name);
 
   hideAllBut: (names...) ->
-    for n in _.partial(_.without, @templates).apply(this, names)
-      @hidePage n
+    for item in @templates
+      if names.indexOf(item) is -1
+        @hidePage item
+    # for n in _.partial(_.without, @templates).apply(this, names)
+    #   @hidePage n
 
   hidePage: (name) ->
-    $(@t.find('.page.'+name)).css('display', 'none')
+    $(@t.find('.page.'+name + ':first')).css('display', 'none')
 
   setInitialPage: (name) ->
 # hide everything when placing the initial page
@@ -225,13 +234,13 @@ class window.Swipe
 
     # update the page positions
     if @left
-      $(@t.find('.page.'+@left)).css 'transform',
+      $(@t.find('.page.'+@left + ':first')).css 'transform',
         'translate3d(-' + (width - posX) + 'px,0,0)'
     if @right
-      $(@t.find('.page.'+@right)).css 'transform',
+      $(@t.find('.page.'+@right + ':first')).css 'transform',
         'translate3d(' + (width + posX) + 'px,0,0)'
 
-    $(@t.find('.page.'+@getPage())).css 'transform',
+    $(@t.find('.page.'+@getPage() + ':first')).css 'transform',
       'translate3d(' + posX + 'px,0,0)'
 
   animateBack: () ->
@@ -241,14 +250,14 @@ class window.Swipe
     @animate @getPage()
 
     if @left
-      $(@t.find('.page.'+@left)).css 'transform',
+      $(@t.find('.page.'+@left + ':first')).css 'transform',
         'translate3d(-' + @t.width + 'px,0,0)'
 
     if @right
-      $(@t.find('.page.'+@right)).css 'transform',
+      $(@t.find('.page.'+@right + ':first')).css 'transform',
         'translate3d(' + @t.width + 'px,0,0)'
 
-    $(@t.find('.page.'+@getPage())).css 'transform',
+    $(@t.find('.page.'+@getPage() + ':first')).css 'transform',
       'translate3d(0px,0,0)'
 
   leftRight: (left, right) ->
@@ -260,7 +269,11 @@ class window.Swipe
     # dont hide the old center to give it time to animate offscreen just in case
     # it is removed.
     dontHide = [left, center, right, @previousPage]
-    hideThese = _.difference(@templates, dontHide)
+    hideThese = []
+    for item in dontHide
+      if @templates.indexOf(item) is -1
+        hideThese.push(item)
+    # hideThese = _.difference(@templates, dontHide)
 
     for name in hideThese
       @hidePage name
@@ -317,6 +330,7 @@ class window.Swipe
   # register the page names to dynamically render each page
 class template
   constructor: (@swiper) ->
+    console.log('swipe tempate init');
     @rendered()
     
   # @helpers: 
@@ -324,26 +338,32 @@ class template
   rendered: ->
     # keep track of the width so we know where to place pages to the left
     # and the right
-    @width = $(@swiper.t.find('.pages')).width()
+    console.log('swipe tempate rendered');
+    @swiper.t.width = $(@swiper.t.find('.pages:first')).width()
+
+    console.log('swipe tempate events');
     for key, value of @events
       params = key.split(' ')
-      @swiper.t.find(params[1]).on(params[0], value)
+      console.log('on event:', params[0]);
+      @swiper.t.find(params[1] + ':first').on(params[0], null, @swiper.t, value)
     # keep track of scrolling
-    @mouseDown = false
-    @touchDown = false
-    @startX = 0
-    @mouseX = 0
-    @posX = 0
-    @startY = 0
-    @mouseY = 0
-    @posY = 0
+    @swiper.t.mouseDown = false
+    @swiper.t.touchDown = false
+    @swiper.t.startX = 0
+    @swiper.t.mouseX = 0
+    @swiper.t.posX = 0
+    @swiper.t.startY = 0
+    @swiper.t.mouseY = 0
+    @swiper.t.posY = 0
 
     # We need to keep track of whether the user is scrolling or swiping.
-    @scrollableCSS = false
-    @mightBeScrolling = false
-    @scrolling = false
-  @events:
-    'mousedown .pages': (e,t) ->
+    @swiper.t.scrollableCSS = false
+    @swiper.t.mightBeScrolling = false
+    @swiper.t.scrolling = false
+  events:
+    'mousedown .pages': (e) ->
+      t = e.data
+      console.log(t);
       # if we're the user has already touched down, we want to ignore mouse events
       if t.touchDown
         return true
@@ -366,7 +386,8 @@ class template
 
         return true
 
-    'touchstart .pages': (e,t) ->
+    'touchstart .pages': (e) ->
+      t = e.data
       eventPrint "touchstart"
 
       noSwipeCSS = targetInClass 'no-swipe', e.target
@@ -409,7 +430,8 @@ class template
 
       return true
 
-    'mousemove .pages': (e,t) ->
+    'mousemove .pages': (e) ->
+      t = e.data
   # if the mouse is pressed, we need to keep track of the swipe.
   # note that you cannot scroll by clicking the mouse!
       if t.mouseDown
@@ -432,7 +454,8 @@ class template
 
       return true
 
-    'touchmove .pages': (e,t) ->
+    'touchmove .pages': (e) ->
+      t = e.data
       eventPrint "touchmove"
       noSwipeCSS = targetInClass 'no-swipe', e.target
 
@@ -520,8 +543,8 @@ class template
           t.Swiper.drag(posX)
         return false
 
-    'mouseup .pages': (e,t) ->
-
+    'mouseup .pages': (e) ->
+      t = e.data
       if t.mouseDown
         eventPrint "mouseup"
         posX = t.changeX + t.posX
@@ -562,7 +585,8 @@ class template
         t.changeY = 0
         t.mouseDown = false
 
-    'touchend .pages': (e,t) ->
+    'touchend .pages': (e) ->
+      t = e.data
       if t.touchDown
         eventPrint "touchend"
 
