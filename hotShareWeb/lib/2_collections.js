@@ -1188,17 +1188,17 @@ if(Meteor.isServer){
         added: function (id) {
           count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
           feeds = Feeds.find({followby: userId}, {sort: {createdAt: -1}, limit: 30}).fetch();
-          self.changed("userNewBellCount", userId, {count: count, feeds: feeds});
+          self.added("userNewBellCount", id, {count: count, feeds: feeds});
         },
         changed: function (id) {
           count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
           feeds = Feeds.find({followby: userId}, {sort: {createdAt: -1}, limit: 30}).fetch();
-          self.changed("userNewBellCount", userId, {count: count, feeds: feeds});
+          self.changed("userNewBellCount", id, {count: count, feeds: feeds});
         },
         removed: function (id) {
           count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
           feeds = Feeds.find({followby: userId}, {sort: {createdAt: -1}, limit: 30}).fetch();
-          self.changed("userNewBellCount", userId, {count: count, feeds: feeds});
+          self.removed("userNewBellCount", id, {count: count, feeds: feeds});
         }
       });
 
