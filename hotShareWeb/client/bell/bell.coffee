@@ -17,16 +17,14 @@ if Meteor.isClient
         else
             if (target.data("visible"))
                 target.data("visible", false);
-    #Xing: Disable readmore button
-    ###
     ctt_msgs = $('#content_msgs')
     if (Feeds.find().count() > 3)
       ctt_msgs.css('overflow', 'hidden')
       ctt_msgs.css('minHeight', '50px')
       ctt_msgs.css('maxHeight', '240px')
       ctt_msgs.css('position', 'relative')
-      ctt_msgs.after('<div class="readmore"><div class="readMoreContent"><i class="fa fa-chevron-down"></i>查看更多</div></div>')
-    ###
+      ctt_msgs.after('<div style="cursor: pointer;" class="readmore"><div class="readMoreContent"><i class="fa fa-chevron-down"></i>查看更多</div></div>')
+
   Template.bell.helpers
     notReadCount: ()->
       Feeds.find({isRead:{$ne: true}, checked:{$ne: true}}).count()
@@ -97,8 +95,6 @@ if Meteor.isClient
       else
          return true
   Template.bell.events
-    #Xing: Disable readmore button
-    ###
     'click .readmore': (e, t)->
       ctt_msgs = $('#content_msgs')
       ctt_msgs.css('overflow', '')
@@ -106,7 +102,6 @@ if Meteor.isClient
       ctt_msgs.css('maxHeight', '')
       ctt_msgs.css('position', '')
       $('.readmore').remove()
-    ###
     'click .closePersonalLetter': ()->
       Session.set('inPersonalLetterView',false)
       $('body').css('overflow-y','auto')
