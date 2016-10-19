@@ -15,6 +15,8 @@
         }
     };
 
+    var usersInformation = {};
+
     function loadScript(url, callback) {
         jQuery.ajax({
             url: url,
@@ -380,6 +382,15 @@
             var $node;
             newFriendCounts += 20;
             getNewFriendReadCount(result);
+            result.forEach(function(item){
+                if(item && item.ta && item.ta !==''){
+                    usersInformation[item.ta] = {
+                        name: item.name,
+                        location: item.location,
+                        icon: item.icon
+                    }
+                }
+            });
             if (result.length === 0) {
                 $pullDownAddMore = $('#pullDownAddMore').html('没有更多数据了');
                 return getScrollEvent = false;
@@ -722,15 +733,17 @@
         $("." + name + " .favoritePosts").html('');
         $('body').css('overflow-y', 'hidden');
         $('.' + name + ' .wait-loading').show();
+
+        // 写入user数据
+        $("." + name + " .head div:eq(1)").html(usersInformation[userId].name);
+        $("." + name + " .theprofileName").html(usersInformation[userId].name);
+        $("." + name + " .userProfileTop .icon").attr('src', usersInformation[userId].icon);
+        $("." + name + " .userProfileTop .location").html(usersInformation[userId].location);
+        //$("." + name + " .userProfileTop .desc").html(result.userProfile.desc);
+
         localStorage.setItem('favouritepostsCounts', 10);
         window.CallMethod('profileData', [userId], function (type, result) {
             debugPrint('profileData is ==:' + JSON.stringify(result));
-            // 写入user数据
-            $("." + name + " .head div:eq(1)").html(result.userProfile.name);
-            $("." + name + " .theprofileName").html(result.userProfile.name);
-            $("." + name + " .userProfileTop .icon").attr('src', result.userProfile.icon);
-            $("." + name + " .userProfileTop .location").html(result.userProfile.location);
-            $("." + name + " .userProfileTop .desc").html(result.userProfile.desc);
             // 写入最近浏览的故事
             var recentReviewPost = '';
             var favouriteposts = '';
