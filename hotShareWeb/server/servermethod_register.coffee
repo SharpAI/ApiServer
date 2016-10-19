@@ -171,47 +171,20 @@ if Meteor.isServer
         if !Match.test(userId, String)
           return []
         this.unblock()
-        user = Meteor.users.findOne({_id: userId})
-        if !user
-          return []
-        name = '匿名'
-        sex = ''
-        location = ''
-        desc = ''
-        if user.profile
-          if user.profile.fullname and user.profile.fullname isnt ''
-            name = user.profile.fullname
-          else
-            name = user.username
-          icon = user.profile.icon
-          sex = user.profile.sex
-          location = user.profile.location
-          desc = user.profile.desc
-        else
-          name = user.username
-          icon = '/userPicture.png'
-        console.log("==lovation=="+location)
         viewPostIds = []
-        viewers = Viewers.find({userId: userId}).forEach((item) ->
+        viewers = Viewers.find({userId: userId},{limit:10}).forEach((item) ->
           if !~viewPostIds.indexOf(item.postId)
             viewPostIds.push(item.postId)
         )
         console.log(JSON.stringify(viewers))
         recentViewPosts = Posts.find({_id: {$in: viewPostIds}},{fields:{mainImage:1,addontitle:1,title:1},limit: 3}).fetch()
         postIds = []
-        FavouritePosts.find({userId: userId}).forEach((item) ->
+        FavouritePosts.find({userId: userId},{limit:10}).forEach((item) ->
           if !~postIds.indexOf(item.postId)
             postIds.push(item.postId)
         )
         favouritePosts = Posts.find({_id: {$in: postIds}},{fields:{mainImage:1,addontitle:1,title:1},limit: 10}).fetch()
         profileData = {
-           userProfile: {
-            name: name,
-            icon: icon,
-            sex: sex,
-            location:location,
-            desc: desc
-          },
           recentViewPosts: recentViewPosts,
           favouritePosts: favouritePosts,
           mePosts: Posts.find({owner: userId},{fields:{mainImage:1,addontitle:1,title:1},limit: 10}).fetch()
