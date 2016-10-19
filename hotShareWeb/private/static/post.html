@@ -104,6 +104,9 @@
       {{/if}}
       <div id="sendEmail"><i class="fa fa-envelope-o"></i>     私信作者</div>
     </div>
+    <div id="shareStoryBtn">
+        <div class="description">{{browse}}人读过，分享您的故事给他们吧！<span class="shareStoryBtn">分享</span></div>
+    </div>
     <div onclick="window.open('http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere', '_system')">
           <img src="/img/download.png" style="width:90%;margin-left:5%;"></div>
     <div class="showPostsFollowMe">
@@ -528,6 +531,38 @@
 </div>-->
 <!--wait END -->
 
+<!-- 分享到故事贴读友圈 START -->
+<div class="recommendStory" style="display: none;">
+    <div class="head">
+      <div class="leftButton" style="left: 0;margin: 0;width: 80px;">
+        <i class="fa fa-angle-left fa-fw back" style="padding: 0;margin-top: 3px;width: auto;padding-left: 10px;"></i>
+      </div>
+    </div>
+    <div class="fastImport">
+        <div class="shareNewStory">分享新故事</div>
+        <div class="input-group">
+            <input type="text" id="importUrl" autofocus="autofocus" class="form-control" maxlength="180" placeholder="输入或粘贴一个链接" />
+            <div id="importBtn">导入分享</div>
+        </div>
+    </div>
+    <div class="showPostsLine"></div>
+    <div class="storySource">
+        <!--<div style="color: #166fff; font-size:16px;font-weight: bold;">或选择已发布的故事</div>-->
+        <input type="radio" class="radio" name="where" value="x" id="publishedStories" checked/>
+        <label for="publishedStories">我发布的故事</label>
+        <input type="radio" class="radio" name="where" value="y" id="favoriteStories" />
+        <label for="favoriteStories">我收藏的故事</label>
+        <ul class="storyLists publishedStoriesLists" style="overflow-y: auto;"></ul>
+        <ul class="storyLists favoriteStoriesLists" style="overflow-y: auto; display:none;"></ul>
+    </div>
+    <div class="storySourceLoading"><img src="/loading-2.gif" style="width: 32px; height:32px; display:inline-block;"/> 加载中...</div>
+    <div class="importing-mask"></div>
+    <div class="importing">
+      <div class="img"><img src="http://data.tiegushi.com/res/defaultMainImage1.jpg" style="width:100%; border-radius:4px 4px 0 0;"/></div>
+      <div class="remark" style="height:54px; line-height:52px;"><img src="/loading-2.gif" width="32" style="display: inline-block;"/> 正在导入，请稍候...</div>
+    </div>
+</div>
+<!-- 分享到故事贴读友圈 END -->
 <script type="text/javascript" src="/statics/bundle-post-1.2.12.min.js"></script>
 <script async type="text/javascript" src="/statics/bundle-social-1.2.12.min.js"></script>
 

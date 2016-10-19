@@ -493,6 +493,158 @@ var initImageSwipeView = function (){
     });
 };
 
+//==== 分享到故事贴读友圈 START ====
+window.RECOMMEND_USER_STORY_COUNT = 0;
+window.RECOMMEND_FAV_STORY_COUNT = 0;
+window.RECOMMEND_STORY_LIMIT = 5;
+window.RECOMMEND_USER_STORY_LOADALL = false;
+window.RECOMMEND_FAV_STORY_LOADALL = false;
+window.IS_RECOMMEND_FAV_STORY_TABLE = false;
+
+var pushPostToReaderOrHotPostGroups = function(postIds) {
+  var feedItem = {};
+  window.CallMethod('pushPostToReaderGroups', [feedItem, postIds,postid]);
+};
+
+var getRecommendStorys = function (){
+    var skip = 0;
+    if(IS_RECOMMEND_FAV_STORY_TABLE){
+        if(RECOMMEND_FAV_STORY_LOADALL){
+            return false;
+        }
+        skip += RECOMMEND_FAV_STORY_COUNT;
+    } else {
+        if(RECOMMEND_USER_STORY_LOADALL){
+            return false;
+        }
+        skip += RECOMMEND_USER_STORY_COUNT;
+    }
+    $('.storySourceLoading').show();
+    window.CallMethod('getRecommendStorys',[window._loginUserId,RECOMMEND_STORY_LIMIT,skip,IS_RECOMMEND_FAV_STORY_TABLE],function (type,result){
+        console.table('RecommendStory result is ===', result);
+        var html = '';
+        var firstParagraph = '';
+        if(result){
+            if(result.length > 0){
+                result.forEach(function(post){
+                    if(post.pub){
+                        post.pub.forEach(function(item){
+                            if(item.type === 'text'){
+                                firstParagraph = item.text;
+                            }
+                        });
+                    }
+                    html += '<li id="'+post._id+'">'+
+                                '<div class="imgPlaceHolder">'+
+                                '<img id="" class="lazy" src="'+post.mainImage+'" style="display: block; background-color: rgb(80, 63, 50);">'+
+                                '</div>'+
+                                '<div class="postContent">'+
+                                '<h2>'+post.title+'</h2>'+
+                                '<p>'+firstParagraph+'</p>'+
+                                '</div>'+
+                            '</li>';
+                });
+                if(IS_RECOMMEND_FAV_STORY_TABLE){
+                    RECOMMEND_FAV_STORY_COUNT += result.length;
+                    $('.favoriteStoriesLists').append(html);
+                } else {
+                    RECOMMEND_USER_STORY_COUNT += result.length;
+                    $('.publishedStoriesLists').append(html);
+                }
+            } else {
+                if(IS_RECOMMEND_FAV_STORY_TABLE){
+                    RECOMMEND_FAV_STORY_LOADALL = true;
+                } else {
+                    RECOMMEND_USER_STORY_LOADALL = true;
+                }
+            }
+        }
+        $('.storySourceLoading').hide();
+    });
+};
+
+var closeRecommendStorysPage = function() {
+    $('body').css('overflow-y','auto');
+    $('.recommendStory').fadeOut(100);
+};
+var initRecommendStorys = function(){
+    $(".storyLists").scroll(function(){
+        var nScrollHight = $(this)[0].scrollHeight;
+        var nScrollTop = $(this)[0].scrollTop;
+        if(nScrollTop + $(this).height()>= nScrollHight)
+            getRecommendStorys();
+     });
+    $('#shareStoryBtn').click(function(){
+        $('body').css('overflow-y','hidden');
+        $('.recommendStory').fadeIn(100);
+        getRecommendStorys();
+    });
+    $('.recommendStory .leftButton').click(function(){
+        closeRecommendStorysPage();
+    });
+    $('.storySource input[type="radio"]').click(function(e){
+        console.log(e.currentTarget.id);
+        $('.storyLists').toggle();
+        if (e.currentTarget.id === 'publishedStories'){
+            IS_RECOMMEND_FAV_STORY_TABLE = false;
+            if(RECOMMEND_USER_STORY_COUNT === 0){
+                getRecommendStorys();
+            }
+        } else {
+            IS_RECOMMEND_FAV_STORY_TABLE = true;
+            if(RECOMMEND_FAV_STORY_COUNT === 0){
+                getRecommendStorys();
+            }
+        }
+    });
+
+    // 选择故事分享
+    $('.recommendStory').on('click','.storyLists li',function(e){
+        console.log(e.currentTarget.id);
+        pushPostToReaderOrHotPostGroups([e.currentTarget.id]);
+        toastr.info('推荐成功！');
+        closeRecommendStorysPage();
+    });
+    
+    // 导入分享
+    $('.recommendStory #importBtn').click(function(e){
+        var originUrl, url, urlReg;
+        originUrl = $('.recommendStory #importUrl').val();
+        console.log('originUrl==' + originUrl);
+        if (originUrl === '') {
+            return toastr.info('请输入或粘贴一个链接~');
+        }
+        urlReg = new RegExp("(http[s]{0,1}|ftp)://[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?", "gi");
+        if (!originUrl.match(urlReg)) {
+            return toastr.info('链接格式错误~');
+        }
+        url = 'http://'+window.location.host+'/import-server/' + window._loginUserId + '/' + encodeURIComponent(originUrl);
+        console.log('url==' + url);
+        $('.importing-mask,.importing').show();
+        $.get(url, function(result, status) {
+            console.log(JSON.stringify(result));
+            console.log(status);
+            var data, postId;
+            if (result && status === 'success') {
+                data = result.split("\r\n");
+                data = JSON.parse(data[data.length - 1]);
+                postId = data.json.split("/");
+                postId = postId[postId.length - 1];
+                console.log("data is ==", data);
+                console.log("postId is ==", postId);
+                $('.importing-mask,.importing').hide();
+                if(data.status === "succ"){
+                    pushPostToReaderOrHotPostGroups([postId]);
+                    toastr.info('推荐成功！');
+                    return closeRecommendStorysPage();
+                }
+            }
+            return toastr.info('导入失败，请重试！');
+        });
+    });
+}
+
+//==== 分享到故事贴读友圈 END ====
 document.addEventListener('users', userHandle , false);
 var DDPConnectedHandle =  function (e) {
 
@@ -522,6 +674,7 @@ var DDPConnectedHandle =  function (e) {
 
         setTimeout(function(){
             update_read_status();
+            initRecommendStorys();
         },1000);
 
         setTimeout(function(){
@@ -530,7 +683,7 @@ var DDPConnectedHandle =  function (e) {
         setTimeout(function(){
             initDiscover();
         },4000);
-
+        
         if(typeof subReadyHandle !== 'undefined'){
             document.removeEventListener('subReady', subReadyHandle);
         }

@@ -69,6 +69,17 @@ if Meteor.isServer
       console.log("sendSubscribeAutorEmail Error===:"+error)
   Meteor.startup ()->
     Meteor.methods
+      'getRecommendStorys': (userId,limit,skip,isFav)->
+        if isFav
+          postIds = []
+          FavouritePosts.find({userId: userId}).forEach((item) ->
+            if !~postIds.indexOf(item.postId)
+              postIds.push(item.postId)
+          )
+          options = {_id: {$in: postIds}}
+        else
+          options = {owner: userId}
+        posts = Posts.find(options,{fields:{mainImage:1,addontitle:1,title:1},limit: limit,skip:skip}).fetch()
       'clearUserBellWaitReadCount': (userId)->
         Feeds.update({followby: userId},{$set:{isRead: true,checked: true}},{multi: true})
       'sendAuthorEmail': (userId,postId,email,content)->
@@ -581,7 +592,7 @@ if Meteor.isServer
             ReaderPopularPosts.insert({userId: userId, postId: item._id, title: item.title, browse: item.browse, createdAt: new Date()})
           )
         true
-      'pushPostToReaderGroups': (feed, groups)->
+      'pushPostToReaderGroups': (feed, groups, postId)->
         if this.userId is null or feed is undefined or feed is null or groups is undefined or groups is null or groups.length is 0
           return false
         self = this
@@ -589,6 +600,22 @@ if Meteor.isServer
         Meteor.defer ()->
           feeds = []
           readers = []
+          if postId
+            postItem = Posts.findOne({_id: postId})
+            feedItem = {
+              owner: Meteor.userId(),
+              ownerName: postItem.ownerName,
+              ownerIcon: postItem.ownerIcon,
+              eventType: 'SelfPosted',
+              postId: postItem._id,
+              postTitle: postItem.title,
+              mainImage: postItem.mainImage,
+              createdAt: postItem.createdAt,
+              heart: 0,
+              retweet: 0,
+              comment: 0
+            }
+            console.log('feedItem is ===',JSON.stringify(feedItem))
           Viewers.find({postId: {$in: groups}}).forEach((item)->
             if !~readers.indexOf(item.userId) and item.userId isnt self.userId
               readers.push(item.userId)
