@@ -12,10 +12,20 @@ if(Meteor.isServer){
                     return false;
                 }
                 this.unblock();
-                var queryString = 'MATCH (u:User)-[v:VIEWER]->(p:Post),(u)-[v1:VIEWER]->(p1:Post) ' +
-                    'WHERE p.postId="'+ postId +'" and ' +
-                    'u.userId<>"'+this.userId+'" ' +
-                    'return u,p1.postId ORDER BY v1.by DESC SKIP '+skip+' LIMIT '+limit;
+                var queryString = '' +
+                    'MATCH (u:User)-[v:VIEWER]->(p:Post)<--(u1:User),(u1:User)-[v1:VIEWER]->(p1:Post) ' +
+                    'WHERE p.postId="'+ postId + '" and ' +
+                        'u.userId="'+ this.userId + '" and ' +
+                        'u1.userId <>"'+ this.userId + '" and ' +
+                        'not(u-->p1) ' +
+                    'WITH distinct p1.postId as postId, ' +
+                        'p1.createdAt as createdAt,' +
+                        'collect(distinct u1) as readers,' +
+                        'collect(distinct v1.by) as readsBy ' +
+                    'UNWIND readers[0..1] AS reader ' +
+                    'UNWIND readsBy[0..1] AS readBy ' +
+                    'RETURN reader,postId ORDER BY readBy DESC SKIP '+skip+' LIMIT '+limit;
+
                 var e, queryResult;
 
                 try {
