@@ -462,6 +462,16 @@
             var self = this;
             var pcommitContent,pcommitContentHTML1,pcommitContentHTML2,pindex;
             var userName = "匿名";
+            if (typeof getMyUserInfo !== 'undefined'){
+                var myInfo = getMyUserInfo();
+                if (myInfo){
+                    if (myInfo.profile && myInfo.profile.fullname) {
+                        userName = myInfo.profile.fullname;
+                    } else if(myInfo.username){
+                        userName = myInfo.username;
+                    }
+                }
+            }
             var id = localStorage.getItem('pcommentParagraph');
             pindex = parseInt(localStorage.getItem('pcommentPindex'));
             pcommitContent = $('#pcommitReport').val();

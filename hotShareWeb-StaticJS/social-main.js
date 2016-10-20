@@ -16,6 +16,7 @@
     };
 
     var usersInformation = {};
+    var userCollection = {};
 
     function loadScript(url, callback) {
         jQuery.ajax({
@@ -178,10 +179,6 @@
                 debugPrint('reading: ' + JSON.stringify(message));
             });
         }
-    };
-    var userHandle = function (e) {
-        var message = e.detail;
-        debugPrint('users: ' + JSON.stringify(message));
     };
 
     window.SUGGEST_POSTS_SKIP = 0;
@@ -660,9 +657,18 @@
                 return toastr.info('导入失败，请重试！');
             });
         });
-    }
+    }//==== 分享到故事贴读友圈 END ====
 
-//==== 分享到故事贴读友圈 END ====
+    var userHandle = function (e) {
+        var message = e.detail;
+        console.log('users: ' + JSON.stringify(message));
+        if(message.id && message.id !== '' && message.fields && message.fields._id && message.fields._id===message.id){
+            userCollection[message.id] = message.fields;
+        }
+        if(window._loginUserId){
+            console.log(window._loginUserId+' is user id')
+        }
+    };
     document.addEventListener('users', userHandle, false);
     var DDPConnectedHandle = function (e) {
 
@@ -852,6 +858,13 @@
             preProfileInfo(name, id);
             //loadMoreFavouriteposts(name, id);
         }
+    };
+    window.getMyUserInfo=function(){
+        if(window._loginUserId && userCollection[window._loginUserId]){
+            return userCollection[window._loginUserId]
+        }
+
+        return null;
     };
     window.showProfilePage = function (userId, isOwner) {
         localStorage.setItem('documentCurrTop', document.body.scrollTop);
