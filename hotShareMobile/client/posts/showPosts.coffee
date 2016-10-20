@@ -10,32 +10,6 @@ if Meteor.isClient
   @isAndroidFunc = ()->
     userAgent = navigator.userAgent.toLowerCase()
     return (userAgent.indexOf('android') > -1) or (userAgent.indexOf('linux') > -1)
-  @pushPostToReaderOrHotPostGroups = (postIds)->
-    groups = []
-    postItem = Session.get('postContent')
-    feedItem = {
-      owner: Meteor.userId(),
-      ownerName: postItem.ownerName,
-      ownerIcon: postItem.ownerIcon,
-      eventType:'SelfPosted',
-      postId: postItem._id,
-      postTitle: postItem.title,
-      mainImage: postItem.mainImage,
-      createdAt: postItem.createdAt,
-      heart: 0,
-      retweet: 0,
-      comment: 0
-    }
-    postIds.forEach (item)->
-      groups.push(item)
-    ###
-    # 推荐到故事贴群
-    Meteor.call 'pushPostToHotPostGroups', feedItem, groups, (err)->
-      console.log('pushPostToHotPostGroups:', err)
-    ###
-    # 推荐到读友圈
-    Meteor.call 'pushPostToReaderGroups', feedItem, groups, (err)->
-      console.log('pushPostToReaderGroups:', err)
   window.getDocHeight = ->
     D = document
     Math.max(
@@ -1266,16 +1240,20 @@ if Meteor.isClient
       HTTP.get url,(error, result)->
         if !error
           data = result.content
-          if result.statusCode is 200
+          if result.statusCode is 200 and Session.get('postContent')._id
             data = data.split("\n")
             data = JSON.parse(data[data.length-1])
-            postId = data.json.split("/")
-            postId = postId[postId.length-1]
+            storyId = data.json.split("/")
+            storyId = storyId[storyId.length-1]
             console.log("data is ==",data)
-            console.log("postId is ==",postId)
+            console.log("storyId is ==",storyId)
             $('.importing-mask,.importing').hide()
-            pushPostToReaderOrHotPostGroups([postId])
-            PUB.toast('推荐成功！')
+            # 推荐到读友圈
+            Meteor.call 'pushRecommendStoryToReaderGroups', Session.get('postContent')._id, storyId, (err)->
+              if !err
+                PUB.toast('推荐成功！')
+              else
+                console.log('pushRecommendStoryToReaderGroups:', err)
             return window.history.back()
           else
             data = result.content
@@ -1284,11 +1262,13 @@ if Meteor.isClient
         PUB.toast('导入失败，请重试！')
     'click .storyLists li':(e)->
       console.log('target_postId=='+e.currentTarget.id)
-      # 准备分享到相关读友圈
-      groups = []
-      if !Session.get('postContent')
-        pushPostToReaderOrHotPostGroups([e.currentTarget.id])
-      PUB.toast('推荐成功！')
+      if Session.get('postContent')._id
+        # 推荐到读友圈
+        Meteor.call 'pushRecommendStoryToReaderGroups', Session.get('postContent')._id, e.currentTarget.id, (err)->
+          if !err
+            PUB.toast('推荐成功！')
+          else
+            console.log('pushRecommendStoryToReaderGroups:', err)
       return window.history.back()
     'click #loadMore': (e)->
       if Session.get('storyListsType') is 'publishedStories'

@@ -867,11 +867,24 @@
       left: 16px;
       right: 16px;
       top: 210px;
-      li{list-style: none; margin-bottom: 16px;}
+      li{list-style: none; margin-bottom: 16px;position: relative;}
+      li::after {
+        content: '分享';
+        position: absolute;
+        bottom: 4px;
+        right: 0;
+        border-left: 1px dashed #808080;
+        color: #166FFF;
+        padding-left: 10px;
+        background: #fff;
+        line-height: 40px;
+        width: 32px;
+        text-align: center;
+      }
       .imgPlaceHolder{ float: left;}
       .postContent{margin-left: 120px;}
       h2 {font-size: 16px; font-weight: bold; height: 30px; line-height: 30px; overflow: hidden; white-space: nowrap;text-overflow: ellipsis;margin: 0;}
-      p{height: 50px;line-height: 25px;overflow: hidden;margin: 0; color: gray;}
+      p{height: 50px;line-height: 25px;overflow: hidden;margin: 0; color: gray; margin-right: 50px;}
       img{height: 80px;width: 110px;object-fit: cover;}
     }
   }

@@ -128,8 +128,8 @@
                         <div class="line"><span></span></div>';
             } else if(feed.eventType === 'recommand'){
                 html += '<a href="javascript:void(0);" class="contentList" data-id="' + feed._id + '" data-post="' + feed.postId + '">' + (notRead(feed.isRead, feed.checked, index, feed.createdAt) ? '<div class="readTips"></div>' : '') + '\
-                        <img class="icon" src="' + feed.recommendUserIcon + '" width="30" height="30">\
-                        <div id="' + feed.postId + '" class="alarm">' + feed.recommendUserName + ' 推荐您一个新故事 《' + feed.postTitle + '》</div>\
+                        <img class="icon" src="' + feed.recommanderIcon + '" width="30" height="30">\
+                        <div id="' + feed.postId + '" class="alarm">' + feed.recommander + ' 推荐您一个新故事 《' + feed.postTitle + '》</div>\
                         <div class="createAt">' + time_diff(feed.createdAt) + '</div>\
                         </a><div class="line"><span></span></div>';
             } else {

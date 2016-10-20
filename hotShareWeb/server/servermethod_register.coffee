@@ -82,10 +82,10 @@ if Meteor.isServer
             owner: story.owner,
             ownerName: story.ownerName,
             ownerIcon: story.ownerIcon,
-            # recommend 推荐者信息
-            recommendUserId: post.owner,
-            recommendUserName: post.ownerName,
-            recommendUserIcon: post.ownerIcon,
+            # recommander 推荐者信息
+            recommanderId: post.owner,
+            recommander: post.ownerName,
+            recommanderIcon: post.ownerIcon,
             eventType: 'recommand',
             postId: story._id,
             postTitle: story.title,
@@ -117,9 +117,9 @@ if Meteor.isServer
                 relatedUserId: item.owner
                 relatedUserName: item.ownerName
                 relatedUserIcon: item.ownerIcon
-                recommendUserId: feed.recommendUserId
-                recommendUserName: feed.recommendUserName
-                recommendUserIcon: feed.recommendUserIcon
+                recommendUserId: feed.recommanderId
+                recommendUserName: feed.recommander
+                recommendUserIcon: feed.recommanderIcon
                 recommendPostId: feed.postId
                 recommendPostTitle: feed.postTitle
                 recommendPostMainImage: feed.mainImage
