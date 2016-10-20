@@ -75,11 +75,12 @@ getSharingTitle = function(self){
     return title;
 };
 getPostSharingPath = function(){
-  if withStaticPosts
+  if (withStaticPosts){
     // 发布静态页面版本使用下面的url
     var url = "http://" + server_domain_name +'/t/'+Session.get('postContent')._id;
-  else
+  }else{
     var url = "http://" + server_domain_name +'/'+Session.get('channel');
+  }
   return url;
 };
 getFirstParagraph = function(){
