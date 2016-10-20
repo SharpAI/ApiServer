@@ -2,55 +2,56 @@
 if(Meteor.isServer){
     Meteor.startup(function(){
         Meteor.methods({
-            "getPostFriends": function (postId,skip,limit) {
+            "getPostFriends":function (postId,skip,limit){
                 if (this.userId === null || !Match.test(postId, String) || !Match.test(skip, Number) || !Match.test(limit, Number)) {
                     return [];
                 }
                 this.unblock();
-                var self = this;
-                var userId = this.userId;
-                self.count = 0;
-                if(!self.meeterIds){
-                    self.meeterIds = [];
+                var queryString = 'MATCH (u:User)-[v:VIEWER]->(p:Post)<-[v1:VIEWER]-(u1:User) ' +
+                    'WHERE p.postId="'+postId+'" and u.userId="'+this.userId+'" ' +
+                        'and u1.userId <>"'+this.userId+'" ' +
+                    'WITH distinct u1 as meeter,u ' +
+                    'MATCH meeter-[v2:VIEWER]->(p1:Post)<-[v3:VIEWER]-u ' +
+                    'WITH distinct meeter as meeter1,size(collect(distinct p1)) as meetsCount ' +
+                    'RETURN distinct meeter1.userId,meetsCount ORDER BY meetsCount DESC SKIP '+skip+' LIMIT '+limit;
+                try {
+                    var queryResult = Neo4j.query(queryString);
+                } catch (_error) {
+                    console.log("Can't query hot post from neo4j server");
+                    if (postMessageToGeneralChannel) {
+                        if (process.env.PRODUCTION) {
+                            postMessageToGeneralChannel("@everyone Can't query hot post from neo4j server, this is reporting from Production server.");
+                        } else {
+                            postMessageToGeneralChannel("@everyone Can't query hot post from neo4j server, this is reporting from Test/Local  server.");
+                        }
+                    }
+                    return [];
                 }
-                var handle = Meets.find({me: this.userId, meetOnPostId: postId}, {
-                    sort: {createdAt: -1},
-                    skip: skip,
-                    limit: limit
-                });
-                if(handle.count()<=0){
-                    return false
-                }
+                console.log('Query String for getPostFriends is: '+queryString);
                 var postFriendsList=[];
-                handle.fetch().forEach(function (fields) {
-                    var taId = fields.ta;
-                    if (taId !== userId) {
-                        if (!~self.meeterIds.indexOf(taId)) {
-                            self.meeterIds.push(taId);
-                            var taInfo = Meteor.users.findOne({_id: taId},{fields: {'username':1,'email':1,'profile.fullname':1,
-                                'profile.icon':1, 'profile.desc':1, 'profile.location':1,'profile.lastLogonIP':1,'profile.profile.sex':1}});
-                            if (taInfo){
-                                try{
-                                    var userName = taInfo.username;
-                                    if(taInfo.profile.fullname){
-                                        userName = taInfo.profile.fullname;
-                                    }
-                                    fields.name = userName;
-                                    fields.location = taInfo.profile.location;
-                                    fields.icon = taInfo.profile.icon;
-                                    //fields.profile.lastLogonIP = taInfo.profile.lastLogonIP;
-                                    fields.sex = taInfo.profile.sex;
-                                    delete fields['meetOnPostId'];
-                                    delete fields['createdAt'];
-                                    delete fields['me'];
-                                    delete fields['_id'];
-
-                                } catch (error){
+                queryResult.forEach(function (item) {
+                    if(item && item[0] && item[1] && Match.test(item[0], String) && Match.test(item[1], Number)){
+                        var taId = item[0];
+                        var taInfo = Meteor.users.findOne({_id: taId},{fields: {'username':1,'profile.fullname':1,
+                            'profile.icon':1, 'profile.desc':1, 'profile.location':1,'profile.profile.sex':1}});
+                        if (taInfo){
+                            try{
+                                var userName = taInfo.username;
+                                if(taInfo.profile.fullname){
+                                    userName = taInfo.profile.fullname;
                                 }
+                                var fields = {
+                                    ta:item[0],
+                                    name:userName,
+                                    location:taInfo.profile.location?taInfo.profile.location:'未知',
+                                    icon:taInfo.profile.icon,
+                                    sex:taInfo.profile.sex,
+                                    count:item[1]
+                                };
                                 postFriendsList.push(fields)
+                            } catch (error){
+                                console.log('Exception for the post neo4j query'+error);
                             }
-                            //getViewLists(self,taId,3);
-                            //self.added("postfriends", id, fields);
                         }
                     }
                 });
