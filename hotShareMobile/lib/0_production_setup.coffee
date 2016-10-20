@@ -20,3 +20,4 @@
 @withShareStoryGroup = true
 @withDirectDraftShow = true
 @withMobileBackendUploading = false
+@withStaticPosts = false
