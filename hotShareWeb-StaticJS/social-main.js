@@ -111,48 +111,57 @@
         };
 
         message.fields.feeds.forEach(function (feed) {
-            switch (feed.eventType) {
-                case 'personalletter':
-                    html += '<a href="javascript:void(0);" class="contentList" data-id="' + feed._id + '" data-post="' + feed.postId + '">' + (notRead(feed.isRead, feed.checked, index, feed.createdAt) ? '<div class="readTips"></div>' : '') + '\
-            <img class="icon" src="' + feed.ownerIcon + '" width="30" height="30" />\
-            <div id="' + feed.postId + '" class="alarm">' + feed.ownerName + ' 给您发来一条私信 《' + feed.postTitle + '》</div>\
-            <div class="createAt">' + time_diff(feed.createdAt) + '</div>\
-            </a>\
-            <div id="' + feed._id + 'content" class="personalLetterContent">\
-            <div class="LetterHead">来自 <strong>' + feed.userName + '</strong> 的私信</div>\
-            <div class="closePersonalLetter"><i class="fa fa-angle-left fa-fw"></i></div>\
-            <div class="LetterContent">' + feed.content + '</div>\
-            <a href="mailto:' + feed.userEmail + '?subject=Re:' + feed.userName + '"><div class="LetterFooter">\
-            <div class="show-user-email">联系邮箱：' + feed.userEmail + '</div>\
-            </div></a>\
-            /div>\
-            <div class="line"><span></span></div>';
-                    break;
-                case 'pcomment':
+            if (feed.eventType === 'personalletter'){
+                html += '<a href="javascript:void(0);" class="contentList" data-id="' + feed._id + '" data-post="' + feed.postId + '">' + (notRead(feed.isRead, feed.checked, index, feed.createdAt) ? '<div class="readTips"></div>' : '') + '\
+                        <img class="icon" src="' + feed.ownerIcon + '" width="30" height="30" />\
+                        <div id="' + feed.postId + '" class="alarm">' + feed.ownerName + ' 给您发来一条私信 《' + feed.postTitle + '》</div>\
+                        <div class="createAt">' + time_diff(feed.createdAt) + '</div>\
+                        </a>\
+                        <div id="' + feed._id + 'content" class="personalLetterContent">\
+                        <div class="LetterHead">来自 <strong>' + feed.userName + '</strong> 的私信</div>\
+                        <div class="closePersonalLetter"><i class="fa fa-angle-left fa-fw"></i></div>\
+                        <div class="LetterContent">' + feed.content + '</div>\
+                        <a href="mailto:' + feed.userEmail + '?subject=Re:' + feed.userName + '"><div class="LetterFooter">\
+                        <div class="show-user-email">联系邮箱：' + feed.userEmail + '</div>\
+                        </div></a>\
+                        /div>\
+                        <div class="line"><span></span></div>';
+            } else if(feed.eventType === 'recommand'){
+                html += '<a href="javascript:void(0);" class="contentList" data-id="' + feed._id + '" data-post="' + feed.postId + '">' + (notRead(feed.isRead, feed.checked, index, feed.createdAt) ? '<div class="readTips"></div>' : '') + '\
+                        <img class="icon" src="' + feed.recommendUserIcon + '" width="30" height="30">\
+                        <div id="' + feed.postId + '" class="alarm">' + feed.recommendUserName + ' 推荐您一个新故事 《' + feed.postTitle + '》</div>\
+                        <div class="createAt">' + time_diff(feed.createdAt) + '</div>\
+                        </a><div class="line"><span></span></div>';
+            } else {
+                if (feed.eventType === 'pcomment'){
                     typeName = '也点评了此故事';
-                case 'pcommentowner':
+                }
+                if (feed.eventType === 'pcommentowner'){
                     typeName = '点评了您的故事';
-                case 'pfavourite':
+                }
+                if (feed.eventType === 'pfavourite'){
                     typeName = '也赞了此故事';
-                case 'SelfPosted':
+                }
+                if (feed.eventType === 'SelfPosted'){
                     typeName = '发布了新故事';
-                case 'recommand':
-                    typeName = '推荐您一个新故事';
-                case 'comment':
+                }
+                if (feed.eventType === 'comment'){
                     typeName = '回复了您的故事';
-                case 'recomment':
-                    html += '<a href="javascript:void(0);" class="contentList" data-id="' + feed._id + '" data-post="' + feed.postId + '">' + (notRead(feed.isRead, feed.checked, index, feed.createdAt) ? '<div class="readTips"></div>' : '') + '\
-            <img class="icon" src="' + feed.ownerIcon + '" width="30" height="30">\
-            <div id="' + feed.postId + '" class="alarm">' + feed.ownerName + ' ' + (feed.eventType === 'recomment' ? '回复了您参与讨论的故事' : typeName) + ' 《' + feed.postTitle + '》</div>\
-            <div class="createAt">' + time_diff(feed.createdAt) + '</div>\
-            </a><div class="line"><span></span></div>';
-                    break;
-                case 'getrequest':
+                }
+                if (feed.eventType === 'recomment'){
+                    typeName = '回复了您参与讨论的故事';
+                }
+                if (feed.eventType === 'getrequest'){
                     // TODO: 邀请您加为好友
-                    break;
-                case 'sendrequest':
+                }
+                if (feed.eventType === 'sendrequest'){
                     // TODO: 已添加/已发送邀请
-                    break;
+                }
+                html += '<a href="javascript:void(0);" class="contentList" data-id="' + feed._id + '" data-post="' + feed.postId + '">' + (notRead(feed.isRead, feed.checked, index, feed.createdAt) ? '<div class="readTips"></div>' : '') + '\
+                        <img class="icon" src="' + feed.ownerIcon + '" width="30" height="30">\
+                        <div id="' + feed.postId + '" class="alarm">' + feed.ownerName + ' ' + typeName + ' 《' + feed.postTitle + '》</div>\
+                        <div class="createAt">' + time_diff(feed.createdAt) + '</div>\
+                        </a><div class="line"><span></span></div>';
             }
 
             index += 1;
@@ -515,11 +524,7 @@
     window.RECOMMEND_USER_STORY_LOADALL = false;
     window.RECOMMEND_FAV_STORY_LOADALL = false;
     window.IS_RECOMMEND_FAV_STORY_TABLE = false;
-
-    var pushPostToReaderOrHotPostGroups = function (postIds) {
-        var feedItem = {};
-        window.CallMethod('pushPostToReaderGroups', [feedItem, postIds, postid]);
-    };
+    window.RecommendStorysInit = false;
 
     var getRecommendStorys = function () {
         var skip = 0;
@@ -536,7 +541,6 @@
         }
         $('.storySourceLoading').show();
         window.CallMethod('getRecommendStorys', [window._loginUserId, RECOMMEND_STORY_LIMIT, skip, IS_RECOMMEND_FAV_STORY_TABLE], function (type, result) {
-            console.table('RecommendStory result is ===', result);
             var html = '';
             var firstParagraph = '';
             if (result) {
@@ -583,6 +587,7 @@
         $('.recommendStory').fadeOut(100);
     };
     var initRecommendStorys = function () {
+        RecommendStorysInit = true;
         $(".storyLists").scroll(function () {
             var nScrollHight = $(this)[0].scrollHeight;
             var nScrollTop = $(this)[0].scrollTop;
@@ -616,7 +621,7 @@
         // 选择故事分享
         $('.recommendStory').on('click', '.storyLists li', function (e) {
             debugPrint(e.currentTarget.id);
-            pushPostToReaderOrHotPostGroups([e.currentTarget.id]);
+            window.CallMethod('pushRecommendStoryToReaderGroups', [postid, e.currentTarget.id]);
             toastr.info('推荐成功！');
             closeRecommendStorysPage();
         });
@@ -639,17 +644,17 @@
             $.get(url, function (result, status) {
                 debugPrint(JSON.stringify(result));
                 debugPrint(status);
-                var data, postId;
+                var data, storyId;
                 if (result && status === 'success') {
                     data = result.split("\r\n");
                     data = JSON.parse(data[data.length - 1]);
-                    postId = data.json.split("/");
-                    postId = postId[postId.length - 1];
+                    storyId = data.json.split("/");
+                    storyId = storyId[storyId.length - 1];
                     debugPrint("data is ==", data);
-                    debugPrint("postId is ==", postId);
+                    debugPrint("storyId is ==", storyId);
                     $('.importing-mask,.importing').hide();
                     if (data.status === "succ") {
-                        pushPostToReaderOrHotPostGroups([postId]);
+                        window.CallMethod('pushRecommendStoryToReaderGroups', [postid, storyId]);
                         toastr.info('推荐成功！');
                         return closeRecommendStorysPage();
                     }
@@ -940,7 +945,9 @@
             $('body').css('overflow-y','hidden');
             $('.recommendStory').fadeIn(100);
             getRecommendStorys();
-            initRecommendStorys();
+            if(!RecommendStorysInit){
+                initRecommendStorys();
+            }
         });
 
         if (isWeiXinFunc()) {

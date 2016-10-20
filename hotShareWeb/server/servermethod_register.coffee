@@ -69,6 +69,67 @@ if Meteor.isServer
       console.log("sendSubscribeAutorEmail Error===:"+error)
   Meteor.startup ()->
     Meteor.methods
+      'pushRecommendStoryToReaderGroups': (postId, storyId)->
+        if this.userId is null or postId is undefined or postId is null or storyId is undefined or storyId is null
+          return false
+        self = this
+        this.unblock()
+        Meteor.defer ()->
+          readers = []
+          post = Posts.findOne({_id: postId})
+          story = Posts.findOne({_id: storyId})
+          feed = {
+            owner: story.owner,
+            ownerName: story.ownerName,
+            ownerIcon: story.ownerIcon,
+            # recommend 推荐者信息
+            recommendUserId: post.owner,
+            recommendUserName: post.ownerName,
+            recommendUserIcon: post.ownerIcon,
+            eventType: 'recommand',
+            postId: story._id,
+            postTitle: story.title,
+            mainImage: story.mainImage,
+            createdAt: story.createdAt,
+            heart: 0,
+            retweet: 0,
+            comment: 0
+          }
+          Viewers.find({postId: postId}).forEach((item)->
+            if !~readers.indexOf(item.userId) and item.userId isnt self.userId
+              readers.push(item.userId)
+              console.log(item.userId)
+              feedItem = _.extend(feed, {followby: item.userId})
+              Feeds.insert(feedItem)
+              Meteor.users.update({_id: item.userId}, {$inc: {'profile.waitReadCount': 1}})
+              pushnotification("newpost", {_id: feedItem.postId, ownerName: feedItem.ownerName, title: feedItem.postTitle}, item.userId)
+          )
+
+          relatedUserIds = []
+          Posts.find({_id: postId}).forEach((item)->
+            if !~relatedUserIds.indexOf(item.owner)
+              relatedUserIds.push(item.owner)
+
+              recommendItem = {
+                targetPostId: item._id
+                targetPostTitle: item.title
+                targetPostAddonTitle: item.addontitle
+                relatedUserId: item.owner
+                relatedUserName: item.ownerName
+                relatedUserIcon: item.ownerIcon
+                recommendUserId: feed.recommendUserId
+                recommendUserName: feed.recommendUserName
+                recommendUserIcon: feed.recommendUserIcon
+                recommendPostId: feed.postId
+                recommendPostTitle: feed.postTitle
+                recommendPostMainImage: feed.mainImage
+                recommendPostCreatedAt: feed.createdAt
+                readUsers: []
+                createdAt: new Date()
+              }
+              Recommends.insert(recommendItem)
+          )          
+        true
       'getRecommendStorys': (userId,limit,skip,isFav)->
         if isFav
           postIds = []
@@ -79,7 +140,7 @@ if Meteor.isServer
           options = {_id: {$in: postIds}}
         else
           options = {owner: userId}
-        posts = Posts.find(options,{fields:{mainImage:1,addontitle:1,title:1},limit: limit,skip:skip}).fetch()
+        posts = Posts.find(options,{fields:{mainImage:1,addontitle:1,title:1, pub:1},limit: limit,skip:skip}).fetch()
       'clearUserBellWaitReadCount': (userId)->
         Feeds.update({followby: userId},{$set:{isRead: true,checked: true}},{multi: true})
       'sendAuthorEmail': (userId,postId,email,content)->
@@ -565,7 +626,7 @@ if Meteor.isServer
             ReaderPopularPosts.insert({userId: userId, postId: item._id, title: item.title, browse: item.browse, createdAt: new Date()})
           )
         true
-      'pushPostToReaderGroups': (feed, groups, postId)->
+      'pushPostToReaderGroups': (feed, groups)->
         if this.userId is null or feed is undefined or feed is null or groups is undefined or groups is null or groups.length is 0
           return false
         self = this
@@ -573,22 +634,6 @@ if Meteor.isServer
         Meteor.defer ()->
           feeds = []
           readers = []
-          if postId
-            postItem = Posts.findOne({_id: postId})
-            feedItem = {
-              owner: Meteor.userId(),
-              ownerName: postItem.ownerName,
-              ownerIcon: postItem.ownerIcon,
-              eventType: 'SelfPosted',
-              postId: postItem._id,
-              postTitle: postItem.title,
-              mainImage: postItem.mainImage,
-              createdAt: postItem.createdAt,
-              heart: 0,
-              retweet: 0,
-              comment: 0
-            }
-            console.log('feedItem is ===',JSON.stringify(feedItem))
           Viewers.find({postId: {$in: groups}}).forEach((item)->
             if !~readers.indexOf(item.userId) and item.userId isnt self.userId
               readers.push(item.userId)
