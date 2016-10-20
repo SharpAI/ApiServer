@@ -5522,7 +5522,7 @@ a:focus {
 /*============================*/
 
 /*========看过该帖的朋友还看过 START =========*/
-.newLayout_element{float:left; width:48%; margin-left:4px; box-sizing:border-box;background-color: #fff;}
+.newLayout_element{background-color: #fff;width: 48%;}
 /*========看过该帖的朋友还看过 END ===========*/
 
 html{background-color: #fff;}
