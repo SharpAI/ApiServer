@@ -589,11 +589,11 @@
             if (nScrollTop + $(this).height() >= nScrollHight)
                 getRecommendStorys();
         });
-        $('#shareStoryBtn').click(function () {
+        /*$('#shareStoryBtn').click(function () {
             $('body').css('overflow-y', 'hidden');
             $('.recommendStory').fadeIn(100);
             getRecommendStorys();
-        });
+        });*/
         $('.recommendStory .leftButton').click(function () {
             closeRecommendStorysPage();
         });
@@ -698,7 +698,7 @@
 
             setTimeout(function () {
                 update_read_status();
-                initRecommendStorys();
+                //initRecommendStorys();
             }, 1000);
 
             setTimeout(function () {
@@ -935,6 +935,13 @@
 
     $(document).ready(function () {
         document.addEventListener('ddpConnected', DDPConnectedHandle, false);
+
+        $('#shareStoryBtn').click(function(){
+            $('body').css('overflow-y','hidden');
+            $('.recommendStory').fadeIn(100);
+            getRecommendStorys();
+            initRecommendStorys();
+        });
 
         if (isWeiXinFunc()) {
             if (typeof wx === 'undefined') {
