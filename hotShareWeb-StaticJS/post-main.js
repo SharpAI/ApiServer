@@ -2,6 +2,7 @@
     require("./libs/jquery.lazyload.1.9.3");
     require("./libs/jquery.linkify");
     require("./libs/image-fit-cover");
+    require("./libs/isInViewport.min");
 
     if (!global.gushitie) global.gushitie = {};
 
@@ -224,7 +225,7 @@
 
         function scrollEventCallback() {
             var st = $(window).scrollTop();
-
+            var $discover = $('.discover .newLayout_element');
             if (st <= 40) {
                 toggleHeaderNav(true);
                 toggleFooterNav(true);
@@ -233,7 +234,7 @@
             }
 
             //if ((st + $(window).height()) === getDocHeight()) {
-            if ((getDocHeight() - (st + $(window).height())) < 150) {
+            if (!$discover.is( ':in-viewport' ) && (getDocHeight() - (st + $(window).height())) < 150) {
                 toggleHeaderNav(true);
                 toggleFooterNav(true);
                 window.lastScroll = st;
