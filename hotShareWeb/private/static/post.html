@@ -48,7 +48,7 @@
             <div class="head">
                 <div class="rightButton" style="font-weight:bold; color: red;" onclick="location='/import';">点我创作</div>
                 <div class="user" id="{{owner}}">
-                    <span class="name userDashboard">{{ownerName}}</span>
+                    <span class="name userDashboard" data-icon="{{ownerIcon}}">{{ownerName}}</span>
                     <div class="createAt userDashboard">{{time_diff createdAt}}</div>
                 </div>
                 <div id="SubscribeAuthor" style="display: none;" onclick="$('.subscribeAutorPage').show();"><i class="fa fa-plus"></i> 关注</div>
@@ -202,54 +202,46 @@
     {{/if}}
 
     <!-- Profile START-->
+   <div class="swip-page-tempate" style="display:none;">
+        <div class="userProfile userProfileMarginTop">
+            <div class="head">
+            <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+                <div>{{profile.username}}3</div>
+            </div>
+            <div class="page-main">
+                <div class="userProfileTop">
+                    <img class="icon" src="{{profile.profile.icon}}" width='70' height='70'>
+                    <span class="userName">
+                        {{profile.username}}
+                        <img src="/male.png" width='20' height='20'>
+                    </span>
+                    <span class="location">{{location}}</span>
+                    <span class="desc">{{profile.profile.desc}}</span>
+                </div>
+                <div class="showPostsLine"></div>
+                <div class="post">
+                    <span class="postLeft">最近浏览的故事</span>
+                </div>
+                <div class="postImages swipe-control">
+                    <ul class="recentViewPosts"></ul>
+                </div>
+                <div class="showPostsLine"></div>      
+                <div class="post">
+                    <span class="postLeft">喜欢的故事</span>
+                </div>
+                <div class="favoritePosts" style="padding: 10px;background: #F1F1F1;
+                -moz-column-count: 2;-webkit-column-count: 2;column-count: 2;
+                -moz-column-width: 10em;-webkit-column-width: 10em;column-width: 10em;
+                -moz-column-gap: 1em;-webkit-column-gap: 1em;column-gap: 1em;"> </div>
+                <div class="loadMore" style="height: 32px;line-height: 32px;text-align: center;"></div>
+            </div>
+        </div>
+   </div>
    <div class="userProfileBox" style="display:none; z-index:9990;">
     <div class="wrapper">
         <div class="userProfileSwipe swipe-tmp">
             <div class="pages">
-                <div class="page userProfilePage1">
-                    <div class="userProfile userProfileMarginTop">
-                        <div class="head">
-                        <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
-                            <div>{{profile.username}}1</div>
-                        </div>
-                        <div class="userProfileTop">
-                            <img class="icon" src="{{profile.profile.icon}}" width='70' height='70'>
-                            <span class="userName">
-                                {{profile.username}}
-                                <img src="/male.png" width='20' height='20'>
-                            </span>
-                            <span class="location">{{location}}</span>
-                            <span class="desc">{{profile.profile.desc}}</span>
-                        </div>
-                        <div class="showPostsLine"></div>
-                        <div class="post">
-                            <span class="postLeft">最近浏览的故事</span>
-                        </div>
-                            <div class="postImages swipe-control">
-                            <ul>
-                                <li id="{{postId}}">
-                                <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
-                                <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
-                                    {{title}}
-                                </h6>
-                                </li>
-                                <li id="{{postId}}">
-                                <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
-                                <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
-                                    {{title}}
-                                </h6>
-                                </li>
-                            </ul>
-                            </div>
-                        <div class="showPostsLine"></div>      
-                        <div class="post">
-                            <span class="postLeft">喜欢的故事</span>
-                        </div>
-                        {{favoritePosts1}}
-                    </div>
-                </div>
-
-                <div class="page userProfilePage2">
+                <!--<div class="page userProfilePage2">
                     <div class="userProfile userProfileMarginTop">
                         <div class="head">
                         <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
@@ -324,7 +316,7 @@
                         -moz-column-gap: 1em;-webkit-column-gap: 1em;column-gap: 1em;"> </div>
                         <div class="loadMore" style="height: 32px;line-height: 32px;text-align: center;"></div>
                     </div>
-                </div>
+                </div>-->
             </div>
         </div>
         <!--<div class="userProfileSwipe">

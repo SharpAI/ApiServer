@@ -10,9 +10,7 @@
     require("./libs/swipe");
     var imagesLoaded = require("imagesloaded");
     var debugPrint = function (msg) {
-        if (false) {
-            console.log(msg);
-        }
+        // console.log(msg);
     };
 
     var usersInformation = {};
@@ -757,33 +755,34 @@
             // 写入喜欢的故事
             displayFavouriteposts(name,userId,usersInformation[userId].favouritePosts);
         } else {
-            window.CallMethod('profileData', [userId], function (type, result) {
+            $('.wait-loading').show();
+            window.CallMethod('profileData', [userId.substr(0,1) === '_' ? userId.substr(1) :  userId], function (type, result) {
+                $('.wait-loading').hide();
                 debugPrint('profileData is ==:' + JSON.stringify(result));
                 usersInformation[userId].favouritePosts = result.favouritePosts;
                 usersInformation[userId].recentViewPosts = result.recentViewPosts;
+
                 // 写入最近浏览的故事
                 displayRecentViewPosts(name,userId,usersInformation[userId].recentViewPosts);
                 // 写入喜欢的故事
                 displayFavouriteposts(name,userId,usersInformation[userId].favouritePosts);
                 $('.' + name + ' .wait-loading').hide();
-                //$("." + name + " .userProfileBox .loadMore").html("加载更多");
+                $("." + name + " .loadMore").html("加载更多");
             });
         }
     };
     var displayRecentViewPosts = function(name,userId,posts){
         var recentReviewPost = '';
-        $("." + name + " .recentViewPosts").html('');
         posts.forEach(function (item) {
             recentReviewPost += '<a href="http://' + window.location.host + '/t/' + item._id + '" style="color: #5A5A5A;"><li id="' + item.postId + '">' +
                 '<div class="postMainImage no-swipe" style="background-image:url(' + item.mainImage + ')"></div>' +
                 '<h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">' +
                 item.title + '</h6></li></a>';
         });
-        $("." + name + " .recentViewPosts").html(recentReviewPost);
+        $('.' + name + ' .recentViewPosts').html(recentReviewPost);
     };
     var displayFavouriteposts = function(name,userId,posts){
         var favouriteposts = '';
-        $("." + name + " .recentViewPosts").html('');
         for (var i = 0; i < posts.length; i++) {
             favouriteposts += '<a href="http://' + window.location.host + '/t/' + posts[i]._id + '" style="color: #5A5A5A;"><div id="' + posts[i]._id + '" style="border-radius: 5px; background-color: #f7f7f7;">' +
                 '<div class="img_placeholder" style="' +
@@ -796,74 +795,25 @@
         $("." + name + " .favoritePosts").html(favouriteposts);
     };
     // 加载更多喜欢的故事
-    /*var loadMoreFavouriteposts = function (name, userId) {
-        var $self = $(this);
+    var loadMoreFavouriteposts = function (name) {
+        console.log(name);
+        var $self = $("."+name+" .loadMore");
+        var userId = $("."+name).attr('data-id');
         $self.html('<img src="/loading-2.gif" style="width: 28px; height:28px;"/> 加载中...');
-        // getMoreFavouritePosts params[userId,skip,limit]
-        if (usersInformation[userId].favouritePosts){
-            displayFavouriteposts(name,userId,usersInformation[userId].favouritePosts)
-        } else {
-            window.CallMethod('getMoreFavouritePosts', [userId, 0, 10], function (type, result) {
-                debugPrint('profileData is ==:' + JSON.stringify(result));
-                usersInformation[userId].favouritePosts = result;
-                if (result.length === 0) {
-                    //$self.html('没有更多数据了');
-                    //$self.off("click");
-                } else {
-                    //$self.html('加载更多');
-                    displayFavouriteposts(name,userId,usersInformation[userId].favouritePosts)
-                }
-            });
-        }
-    };*/
-    var newFriendProfile = {
-        ids: [],
-        profile: {},
-        browses: {},
-        links: {},
-        init: function () {
-            newFriendProfile.ids = [];
-            newFriendProfile.profile = {};
-            newFriendProfile.browses = {};
-            newFriendProfile.links = {};
-            $('.newFriends').each(function () {
-                var id = $(this).attr('id');
-                if (newFriendProfile.ids.indexOf(id) === -1) {
-                    newFriendProfile.ids.push(id);
-                    newFriendProfile.profile[id] = {
-                        icon: $(this).find('img.icon').attr('src'),
-                        fullname: $(this).find('.userName').html(),
-                        sex: '/male.png',
-                        location: '',
-                        desc: ''
-                    };
-                }
-                debugPrint('profile:', newFriendProfile.profile);
-            });
-        },
-        prev: function (id) {
-            var index = newFriendProfile.ids.indexOf(id);
-            if (index === -1)
-                return null;
-            return index - 1 >= 0 ? newFriendProfile.ids[index - 1] : null;
-        },
-        next: function (id) {
-            var index = newFriendProfile.ids.indexOf(id);
-            if (index === -1)
-                return null;
-            return index + 1 < newFriendProfile.ids.length ? newFriendProfile.ids[index + 1] : null;
-        },
-        render: function (name, id) {
-            var $page = $('.' + name);
-            var $profile = $page.find('.userProfileTop');
-
-            $profile.find('.icon').attr('src', newFriendProfile.profile[id].icon);
-            $profile.find('.userName').html(newFriendProfile.profile[id].fullname);
-            $page.find('.head div:eq(1)').html(newFriendProfile.profile[id].fullname);
-            preProfileInfo(name, id);
-            //loadMoreFavouriteposts(name, id);
-        }
-    };
+        console.log(userId);
+        window.CallMethod('getMoreFavouritePosts', [userId.substr(0,1) === '_' ? userId.substr(1) :  userId, usersInformation[userId].favouritePosts.length, 10], function (type, result) {
+            debugPrint('profileData is ==:' + JSON.stringify(result));
+            if (result.length === 0) {
+                $self.html('没有更多数据了');
+                $self.off("click");
+            } else {
+                $self.html('加载更多');
+                for(var i=0;i<result.length;i++)
+                  usersInformation[userId].favouritePosts.push(result[i]);
+                displayFavouriteposts(name,userId,usersInformation[userId].favouritePosts)
+            }
+        });
+    }
     window.getMyUserInfo=function(){
         if(window._loginUserId && userCollection[window._loginUserId]){
             return userCollection[window._loginUserId]
@@ -871,6 +821,23 @@
 
         return null;
     };
+
+    var renderProfile = function(name, id){
+      var $page = $('.' + name);
+      var $profile = $page.find('.userProfileTop');
+      var profile = usersInformation[id];
+
+      $profile.find('.icon').attr('src', profile.icon);
+      $profile.find('.userName').html(profile.name);
+      $profile.find('.location').html(profile.location);
+      $page.find('.head div:eq(1)').html(profile.name);
+      //preProfileInfo(name, id);
+      //loadMoreFavouriteposts(name, userId);
+    };
+
+    var $swiper = $('.swipe-tmp');
+    var $swiper_tempate = $('.swip-page-tempate');
+    var $swiper_page = $swiper.find('.pages');
     window.showProfilePage = function (userId, isOwner) {
         localStorage.setItem('documentCurrTop', document.body.scrollTop);
         document.body.scrollTop = 0;
@@ -878,48 +845,84 @@
         // $(".userProfileBox").show();
         // loadMoreFavouriteposts();
         $('.userProfileBox').show();
+        $swiper_page.html('');
+
+        var ownerId = '_' + $('.showPostsBox .head .user').attr('id');
+        if(!usersInformation[ownerId]){
+          usersInformation[ownerId] = {
+            name: $('.showPostsBox .head .name').html(),
+            location: '',
+            icon: $('.showPostsBox .head .name').attr('data-icon')
+          };
+        }
 
         if (isOwner) {
-            var swipe = new window.Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'], true, $('.swipe-tmp'));
+            var html = '<div class="page userProfilePage0" data-index="0" data-id="'+ownerId+'">' + $swiper_tempate.html() + '</div>';
+            $swiper_page.append(html);
+            $(".userProfilePage0 .page-main").attr('style', 'height:'+($(window).height()-40)+'px;overflow:scroll;');
+            renderProfile('userProfilePage0', ownerId);
+            $(".userProfilePage0 .leftButton").click(function () {
+                document.body.scrollTop = 0;
+                if (localStorage.getItem('userProfile_BoxFromPostsPage') === 'true') {
+                    $('body').css('overflow-y', 'auto');
+                }
+                localStorage.setItem('userProfile_BoxFromPostsPage', false);
+                $(".userProfileBox").hide();
+            });
+            $(".userProfilePage0 .loadMore").click(function (e) {
+              loadMoreFavouriteposts("userProfilePage0");
+            });
+
+            var swipe = new window.Swipe(['userProfilePage0'], true, $('.swipe-tmp'));
             swipe.leftRight(null, null);
-            swipe.setInitialPage('userProfilePage2');
-            preProfileInfo('userProfilePage2', userId);
-            //loadMoreFavouriteposts('userProfilePage2', userId);
+            swipe.setInitialPage('userProfilePage0');
+            preProfileInfo('userProfilePage0', ownerId);
             return;
         }
 
-        newFriendProfile.init();
-        var swipe = new window.Swipe(['userProfilePage1', 'userProfilePage2', 'userProfilePage3'], true, $('.swipe-tmp'));
+        var tempates = [];
+        var defaultPage = '';
+        var i = 0;
+        for(var key in usersInformation){
+          if(key === ownerId)
+            continue;
+
+          var html = '<div class="page userProfilePage'+i+'" data-index="'+i+'" data-id="'+key+'">' + $swiper_tempate.html() + '</div>';
+          $swiper_page.append(html);
+          $(".userProfilePage"+i+" .page-main").attr('style', 'height:'+($(window).height()-40)+'px;overflow:scroll;');
+          tempates.push('userProfilePage' + i);
+          renderProfile('userProfilePage' + i, key);
+          if(key === userId)
+            defaultPage = 'userProfilePage' + i;
+
+          $(".userProfilePage"+i+" .leftButton").click(function () {
+              document.body.scrollTop = 0;
+              if (localStorage.getItem('userProfile_BoxFromPostsPage') === 'true') {
+                  $('body').css('overflow-y', 'auto');
+              }
+              localStorage.setItem('userProfile_BoxFromPostsPage', false);
+              $(".userProfileBox").hide();
+          });
+          $(".userProfilePage"+i+" .loadMore").click(function (e) {
+            console.log($(e.currentTarget).parent().parent().parent());
+            loadMoreFavouriteposts("userProfilePage"+$(e.currentTarget).parent().parent().parent().attr('data-index'));
+          });
+          i+=1;
+        }
+
+        var swipe = new window.Swipe(tempates, true, $swiper);
         swipe.onPageChanged(function (obj, name) {
-            debugPrint('swipe:', obj);
-            debugPrint('page changed:', name);
-
-            var id = $('.' + name).attr('data-id');
-            newFriendProfile.render(name, id);
-
-            switch (name) {
-                case 'userProfilePage1':
-                    swipe.leftRight(newFriendProfile.prev(id) ? 'userProfilePage3' : null, newFriendProfile.next(id) ? 'userProfilePage2' : null);
-                    $('.userProfilePage1').attr('data-id', id);
-                    $('.userProfilePage3').attr('data-id', newFriendProfile.prev(id) || '');
-                    $('.userProfilePage2').attr('data-id', newFriendProfile.next(id) || '');
-                    break;
-                case 'userProfilePage2':
-                    swipe.leftRight(newFriendProfile.prev(id) ? 'userProfilePage1' : null, newFriendProfile.next(id) ? 'userProfilePage3' : null);
-                    $('.userProfilePage2').attr('data-id', id);
-                    $('.userProfilePage1').attr('data-id', newFriendProfile.prev(id) || '');
-                    $('.userProfilePage3').attr('data-id', newFriendProfile.next(id) || '');
-                    break;
-                case 'userProfilePage3':
-                    swipe.leftRight(newFriendProfile.prev(id) ? 'userProfilePage1' : null, newFriendProfile.next(id) ? 'userProfilePage2' : null);
-                    $('.userProfilePage3').attr('data-id', id);
-                    $('.userProfilePage1').attr('data-id', newFriendProfile.prev(id) || '');
-                    $('.userProfilePage2').attr('data-id', newFriendProfile.next(id) || '');
-                    break;
-            }
+            var index = parseInt($('.' + name).attr('data-index'));
+            var left = null;
+            var right = null;
+            if(index > 0)
+              left = 'userProfilePage' + (index-1);
+            if(index+1 < i)
+              right = 'userProfilePage' + (index+1);
+            swipe.leftRight(left, right);
+            preProfileInfo(name, $('.' + name).attr('data-id'));
         });
-        $('.userProfilePage2').attr('data-id', userId);
-        swipe.setInitialPage('userProfilePage2');
+        swipe.setInitialPage(defaultPage);
     }
     $(".showPosts .user").click(function () {
         var profileUserId = $(".showPosts .user").attr("id");
