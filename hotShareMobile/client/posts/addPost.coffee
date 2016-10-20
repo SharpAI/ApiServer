@@ -60,6 +60,8 @@ if Meteor.isClient
     console.log "title = " + title
     addontitle = $("#addontitle").val()
     draftData = Drafts.find().fetch()
+    if (draftData is undefined or draftData is null or draftData.length <= 0)
+      return
     draftId = draftData[0]._id;
     for i in [0..(draftData.length-1)]
       if i is 0
