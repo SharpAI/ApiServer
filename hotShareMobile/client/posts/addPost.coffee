@@ -48,10 +48,11 @@ if Meteor.isClient
     else
       localUploading = false
 
-  Meteor.startup ()->
-    Deps.autorun ()->
-      if Drafts.find({type:'image'}).count() > 0
-        processLocalImage()
+  if withMobileBackendUploading
+    Meteor.startup ()->
+      Deps.autorun ()->
+        if Drafts.find({type:'image'}).count() > 0
+          processLocalImage()
   handleSaveDraft = ()->
     layout = JSON.stringify(gridster.serialize())
     pub=[]

@@ -19,3 +19,4 @@
 @withServerImport = true
 @withShareStoryGroup = true
 @withDirectDraftShow = true
+@withMobileBackendUploading = false
