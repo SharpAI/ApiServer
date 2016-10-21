@@ -11,7 +11,7 @@ Meteor.startup ()->
     latestView.setHours(latestView.getHours() - 24)
     latestView = latestView.getTime()
 
-    queryString = "MATCH (u:User)-[v:VIEWER]->(p:Post) WITH v,p,length(()--p) AS views WHERE v.by > #{latestView} AND views > 50 AND p.createdAt > #{latestPost}  RETURN DISTINCT p.postId,p,length(()--p) AS views  ORDER BY views DESC LIMIT 5"
+    queryString = "MATCH (u:User)-[v:VIEWER]->(p:Post) WITH v,p,length(()--p) AS views WHERE v.by > #{latestView} AND views > 50 AND p.createdAt > #{latestPost}  RETURN DISTINCT p.postId,p,length(()--p) AS views  ORDER BY views DESC LIMIT 15"
     try
       queryResult = Neo4j.query queryString
     catch e
@@ -23,16 +23,23 @@ Meteor.startup ()->
           postMessageToGeneralChannel("@everyone Can't query hot post from neo4j server, this is reporting from Test/Local  server.")
       return null
     console.log queryString
+    #console.log('ne4j:', queryResult)
     if queryResult and queryResult.length > 0
+      #console.log('hotPost:', queryResult)
+      hottestPosts = []
       queryResult.forEach (item)->
+        if hottestPosts.length > 5
+          return
+
         postId=item[0]
         postInfo=item[1]
         postViews=item[2]
-        console.log('postViews: '+postViews+' PostInfo '+JSON.stringify(postInfo))
-        if postInfo and postInfo.postId and postInfo.name
+        #console.log('postViews: '+postViews+' PostInfo '+JSON.stringify(postInfo))
+        if postInfo and postInfo.postId and postInfo.name and _.pluck(hottestPosts, 'postId').indexOf(postId) is -1
           postInfo.views = postViews
           postInfo.hasPush = false
           hottestPosts.push(postInfo)
+      console.log('hotPosts:', hottestPosts)       
   @getRawHottestPosts=()->
     if hottestPosts and hottestPosts.length > 0
       return hottestPosts
