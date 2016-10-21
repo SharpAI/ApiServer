@@ -33,12 +33,14 @@ Template.bellPostTips.helpers({
     var test = $('.gridster #test')[0];
     var firstChild = $('.gridster #test .element').first()[0];
     console.log("feedsCount = "+feedsCount);
-    if (firstChild) {
+    if (firstChild && firstChild.style && test.style) {
         if (feedsCount > 0) {
             if ($test && (parseInt(firstChild.style.top) <= test.offsetTop+imageMarginPixel)) {
                 $test.children('.element').each(function () {
-                    if (this.style.top.indexOf('px') >= 0) {
-                        this.style.top = (parseInt(this.style.top)+65).toString() + 'px';
+                    if (this.style && this.style.top) {
+                        if (this.style.top.indexOf('px') >= 0) {
+                            this.style.top = (parseInt(this.style.top)+65).toString() + 'px';
+                        }
                     }
                 });
                 test.style.height = (parseInt(test.style.height)+65).toString() + 'px';
@@ -46,8 +48,10 @@ Template.bellPostTips.helpers({
         } else {
             if ($test && (parseInt(firstChild.style.top) > test.offsetTop+imageMarginPixel)) {
                 $test.children('.element').each(function () {
-                    if (this.style.top.indexOf('px') >= 0) {
-                        this.style.top = (parseInt(this.style.top)-65).toString() + 'px';
+                    if (this.style && this.style.top) {
+                        if (this.style.top.indexOf('px') >= 0) {
+                            this.style.top = (parseInt(this.style.top)-65).toString() + 'px';
+                        }
                     }
                 });
                 test.style.height = (parseInt(test.style.height)-65).toString() + 'px';
