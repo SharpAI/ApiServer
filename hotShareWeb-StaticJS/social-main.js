@@ -662,6 +662,75 @@
         });
     }//==== 分享到故事贴读友圈 END ====
 
+    //==== server Import START ====
+    window.importTaskID = null;
+    window.setCookie = function (c_name,value,expiredays) {
+        var exdate=new Date()
+        exdate.setDate(exdate.getDate()+expiredays);
+        document.cookie=c_name+ "=" +escape(value)+((expiredays==null) ? "" : ";expires="+exdate.toGMTString());
+    };
+    var initServerImport = function(){
+        // 导入
+        $('.submit-import').click(function(){
+            var url,originUrl;
+            originUrl = $('#import-post-url').val();
+            debugPrint('originUrl==' + originUrl);
+            urlReg = new RegExp("(http[s]{0,1}|ftp)://[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?", "gi");
+            if (originUrl === '') {
+                toastr.remove();
+                return toastr.info('请输入或粘贴一个链接~');
+            }
+            if (!originUrl.match(urlReg)) {
+                toastr.remove();
+                return toastr.info('链接格式错误~');
+            }
+            $('.import-post').css('overflow-y','hidden');
+            $('.import-post .loading').show();
+            importTaskID = window._loginUserId + '_'+(new Date()).getTime();
+            url = '/import-server/' + window._loginUserId + '/' + encodeURIComponent(originUrl);
+            url += '?task_id=' + importTaskID;
+            debugPrint('url='+url);
+            $.ajax({
+                url:url,
+                async:true,
+                success:function(result){
+                    var data,postId;
+                    setCookie('loginUserId',window._loginUserId,360);
+                    debugPrint('import succ=='+ JSON.stringify(result));
+                    data = result.split("\r\n");
+                    data = JSON.parse(data[data.length - 1]);
+                    postId = data.json.split("/");
+                    postId = postId[postId.length - 1];
+                    debugPrint("data is ==", data);
+                    debugPrint("postId is ==", postId);
+                    toastr.remove();
+                    toastr.success('导入成功,稍后跳转到导入的帖子...','导入成功!');
+                    $('.import-post .loading').hide();
+                    $('.import-post').css('overflow-y','auto');
+                    window.open('/t/'+postId, '_system');
+                },
+                error: function(result){
+                    toastr.remove();
+                    toastr.info('导入失败!');
+                    $('.import-post .loading').hide();
+                    $('.import-post').css('overflow-y','auto');
+                }
+            });
+        });
+        // 取消导入
+        $('.cancel-import').click(function(){
+            $.ajax({url:'/import-cancel/' + importTaskID, async:true});
+            $('.import-post .loading').hide();
+            $('.import-post').css('overflow-y','auto');
+        });
+        // back 
+        $('.import-post .left-btn').click(function(){
+            $('body').scrollTop(0);
+            $('.import-post').hide();
+        });
+    };
+    
+    //==== server Import END ====
     var userHandle = function (e) {
         var message = e.detail;
         console.log('users: ' + JSON.stringify(message));
@@ -943,7 +1012,7 @@
 
     $(document).ready(function () {
         document.addEventListener('ddpConnected', DDPConnectedHandle, false);
-
+        initServerImport();
         $('#shareStoryBtn').click(function(){
             $('body').css('overflow-y','hidden');
             $('.recommendStory').fadeIn(100);

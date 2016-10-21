@@ -1,10 +1,20 @@
 if Meteor.isServer
   html_minifier = Meteor.npmRequire "html-minifier"
   minify = html_minifier.minify
-
+  getCookie = (c_name,cookies) ->
+    if cookies and cookies.length > 0
+      c_start =cookies.indexOf(c_name + '=')
+      if c_start != -1
+        c_start = c_start + c_name.length + 1
+        c_end =cookies.indexOf(';', c_start)
+        if c_end == -1
+          c_end = cookies.length
+        return unescape(cookies.substring(c_start, c_end))
+    return ''
   SSR.compileTemplate('no-post', Assets.getText('static/no-post.html'))
   SSR.compileTemplate('hot_posts', Assets.getText('static/author-hot-posts.html'))
   SSR.compileTemplate('bell', Assets.getText('static/bell.html'))
+  SSR.compileTemplate('post-no-review', Assets.getText('static/post-no-review.html'))
   Router.route '/static/:_id', (req, res, next)->
     postItem = Posts.findOne({_id: this.params._id})
     if(!postItem)
@@ -39,13 +49,23 @@ if Meteor.isServer
 
   Router.route '/t/:_id', (req, res, next)->
     postItem = Posts.findOne({_id: this.params._id})
+    cookies = req.headers.cookie
+    loginUserId = getCookie('loginUserId',cookies).toString()
     if(!postItem)
       html = SSR.render('no-post')
       res.writeHead(404, {
         'Content-Type': 'text/html'
       })
       return res.end(minify(html, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
-
+    
+    if postItem and postItem.isReview is false
+      if !(loginUserId  and loginUserId isnt '' and postItem.owner is loginUserId)
+        html = SSR.render('post-no-review')
+        res.writeHead(404, {
+          'Content-Type': 'text/html'
+        })
+        return res.end(minify(html, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
+    
     postHtml = SSR.render('post', postItem)
     res.writeHead(200, {
         'Content-Type': 'text/html'
@@ -55,12 +75,21 @@ if Meteor.isServer
 
   Router.route '/t/:_id/:_index', (req, res, next)->
     postItem = Posts.findOne({_id: this.params._id})
+    cookies = req.headers.cookie
+    loginUserId = getCookie('loginUserId',cookies).toString()
     if(!postItem)
       html = SSR.render('no-post')
       res.writeHead(404, {
         'Content-Type': 'text/html'
       })
       return res.end(minify(html, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
+    if postItem and postItem.isReview is false
+      if !(loginUserId  and loginUserId isnt '' and postItem.owner is loginUserId)
+        html = SSR.render('post-no-review')
+        res.writeHead(404, {
+          'Content-Type': 'text/html'
+        })
+        return res.end(minify(html, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
     postItem.focusedIndex = this.params._index
     postHtml = SSR.render('post', postItem)
     res.writeHead(200, {
