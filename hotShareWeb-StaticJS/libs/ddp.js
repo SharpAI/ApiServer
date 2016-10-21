@@ -112,9 +112,10 @@ function createNewAutoUser(username,callback){
     }],callback);
 }
 function loginErrorHandle(callback){
-    localStorage.clear('savedUsername');
-    localStorage.clear('loginToken');
-    localStorage.clear('loginTokenExpires');
+    localStorage.clear('Meteor.loginToken');
+    localStorage.clear('Meteor.loginTokenExpires');
+    localStorage.clear('__amplify__uuid');
+    localStorage.clear('Meteor.userId');
     setTimeout(function(){
         autoLogin(callback);
     },5000);
@@ -128,8 +129,9 @@ function loginHandle(type,result,callback){
          tokenExpires:{$date: 1483485599652}
          */
         debugPrint('login success');
-        localStorage.setItem('loginToken',result.token);
-        localStorage.setItem('loginTokenExpires',result.tokenExpires.$date);
+        localStorage.setItem('Meteor.loginToken',result.token);
+        localStorage.setItem('Meteor.loginTokenExpires',new Date(result.tokenExpires.$date).toUTCString());
+        localStorage.setItem('Meteor.userId',result.id);
         if(callback){
             callback(type,result);
         }
@@ -139,17 +141,26 @@ function loginHandle(type,result,callback){
     }
 }
 window.autoLogin = function(callback){
-    var loginToken = localStorage.getItem('loginToken');
-    var loginTokenExpires = localStorage.getItem('loginTokenExpires');
-    if(loginToken && loginToken !=='' && (loginTokenExpires - new Date())>10000){
-        CallMethod("login", [{
-            resume: loginToken
-        }],function(type,result){
-            loginHandle(type,result,callback)
-        });
+    var loginToken = localStorage.getItem('Meteor.loginToken');
+    var loginTokenExpires = localStorage.getItem('Meteor.loginTokenExpires');
+    if(loginToken && loginToken !=='' && loginTokenExpires){
+        if ((new Date(loginTokenExpires) - new Date())>10000){
+            CallMethod("login", [{
+                resume: loginToken
+            }],function(type,result){
+                loginHandle(type,result,callback)
+            });
+        }
         return
     }
-    var savedUsername = localStorage.getItem('savedUsername');
+    var __amplify__uuid = localStorage.getItem('__amplify__uuid');
+    var savedUsername = '';
+    if (__amplify__uuid){
+        __amplify__uuid = JSON.parse(__amplify__uuid)
+        if(__amplify__uuid && __amplify__uuid.data){
+            savedUsername = __amplify__uuid.data
+        }
+    }
     if(savedUsername && savedUsername !== ''){
         CallMethod("login", [{
             user:{
@@ -165,7 +176,7 @@ window.autoLogin = function(callback){
         return
     }
     var randomUsername=uuid();
-    localStorage.setItem('savedUsername',randomUsername);
+    localStorage.setItem('__amplify__uuid',JSON.stringify({data:randomUsername.toString(),expires:null}));
     createNewAutoUser(randomUsername,function(type,result){
         loginHandle(type,result,callback)
     });
