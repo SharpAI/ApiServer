@@ -190,7 +190,10 @@ if Meteor.isClient
                 comment: 0
             }
             Meteor.call('pushPostToReaderGroups', feedItem, groups)
-
+       if Session.get('recommendStoryShare') is true
+          Meteor.defer ()->
+            Meteor.call('pushRecommendStoryToReaderGroups', Session.get('recommendStoryShareFromId'), topicPostId)
+          Session.set('recommendStoryShare',false)
        Session.set("mynewpostId",topicPostId)
        Router.go('/posts/'+topicPostId)
        false

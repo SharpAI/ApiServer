@@ -1234,32 +1234,13 @@ if Meteor.isClient
       if !originUrl.match(urlReg)
         return PUB.toast('链接格式错误~') 
       # 调用导入相关方法
-      url = 'http://'+window.location.host+'/import-server/' + Meteor.userId() + '/' + encodeURIComponent(originUrl)
-      console.log('url=='+url)
-      $('.importing-mask,.importing').show()
-      HTTP.get url,(error, result)->
-        if !error
-          data = result.content
-          if result.statusCode is 200 and Session.get('postContent')._id
-            data = data.split("\n")
-            data = JSON.parse(data[data.length-1])
-            storyId = data.json.split("/")
-            storyId = storyId[storyId.length-1]
-            console.log("data is ==",data)
-            console.log("storyId is ==",storyId)
-            $('.importing-mask,.importing').hide()
-            # 推荐到读友圈
-            Meteor.call 'pushRecommendStoryToReaderGroups', Session.get('postContent')._id, storyId, (err)->
-              if !err
-                PUB.toast('推荐成功！')
-              else
-                console.log('pushRecommendStoryToReaderGroups:', err)
-            return window.history.back()
-          else
-            data = result.content
-            console.log("data is ==",data)
-            $('.importing-mask,.importing').hide()
-        PUB.toast('导入失败，请重试！')
+      prepareToEditorMode()
+      Session.set('recommendStoryShare', true)
+      Session.set('recommendStoryShareFromId',Session.get('postContent')._id)
+      PUB.page '/add'
+      Meteor.setTimeout(()->
+        handleDirectLinkImport(originUrl)
+      ,100)
     'click .storyLists li':(e)->
       console.log('target_postId=='+e.currentTarget.id)
       if Session.get('postContent')._id
