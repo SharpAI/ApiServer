@@ -755,9 +755,9 @@
             // 写入喜欢的故事
             displayFavouriteposts(name,userId,usersInformation[userId].favouritePosts);
         } else {
-            $('.wait-loading').show();
+            $("." + name + " .user-profile-loading").show();
             window.CallMethod('profileData', [userId.substr(0,1) === '_' ? userId.substr(1) :  userId], function (type, result) {
-                $('.wait-loading').hide();
+                $("." + name + " .user-profile-loading").hide();
                 debugPrint('profileData is ==:' + JSON.stringify(result));
                 usersInformation[userId].favouritePosts = result.favouritePosts;
                 usersInformation[userId].recentViewPosts = result.recentViewPosts;
@@ -788,7 +788,7 @@
                 '<div class="img_placeholder" style="' +
                 'margin: 0 0.125em 1em;-moz-page-break-inside: avoid;-webkit-column-break-inside: avoid;break-inside: avoid;background: white;border-radius:4px;">' +
                 '<img class="mainImage" src="' + posts[i].mainImage + '" style="width: 100%;border-radius: 4px 4px 0 0;"/>' +
-                '<p class="title" style="font-size: 16px;font-weight: bold;white-space: pre-line;word-wrap: break-word;margin: 10px;">' + posts[i].title + '</p>' +
+                '<p class="title" style="font-size: 16px;font-weight: bold;word-wrap: break-word;margin: 10px;">' + posts[i].title + '</p>' +
                 '<p class="addontitle" style="font-size:11px;margin: 10px;">' + posts[i].addontitle + '</p>' +
                 '</div></div></a>';
         }
