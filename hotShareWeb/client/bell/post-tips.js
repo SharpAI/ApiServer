@@ -31,6 +31,8 @@ Template.bellPostTips.helpers({
     var imageMarginPixel=5;
     var $test = $('.gridster #test');
     var test = $('.gridster #test')[0];
+    if (test == undefined || test == null)
+      return false;
     var firstChild = $('.gridster #test .element').first()[0];
     console.log("feedsCount = "+feedsCount);
     if (firstChild && firstChild.style && test.style) {
@@ -61,7 +63,7 @@ Template.bellPostTips.helpers({
     return feedsCount > 0;
   },
   feedsCount: function(){
-    
+
     return Feeds.find({followby: Meteor.userId(), isRead:{$ne: true}, checked:{$ne: true}}).count();
   },
   lsatFeed: function(){
