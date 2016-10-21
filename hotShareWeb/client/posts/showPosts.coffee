@@ -711,9 +711,9 @@ if Meteor.isClient
       PUB.page '/recommendStory'
     'click #sendEmail' :->
       $('.sendAuthorEmail,.authorEmailAlertBackground').fadeIn(300)
-    'click #sendEmailBtn' :(e,t)->
-      mailAddress = t.find('#authorEmail').value
-      content = t.find('#sendContent').value
+    'click #sendEmailBtn_INVALID' :(e,t)->
+      mailAddress = t.find('#authorEmail').val()
+      content = t.find('#sendContent').val()
       post = Session.get("postContent")
       qqValueReg = RegExp(/^[1-9][0-9]{4,9}$/)
       mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) 
