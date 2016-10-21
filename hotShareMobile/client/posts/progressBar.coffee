@@ -27,15 +27,6 @@ if Meteor.isClient
         'click #delayPublish':->
             Session.set('terminateUpload', true);
             Template.progressBar.__helpers.get('close')()
+    Template.postNotFound.events
         'click .postNotFoundBack':->
-            setTimeout ()->
-                #PUB.back()
-                if Session.get("backtoMyPosts") is true
-                  Session.set("backtoMyPosts",false)
-                  PUB.page('/myPosts')
-                else if Session.get("backtopageuser") is true
-                  Session.set('backtopageuser', false)
-                  PUB.page('/user')
-                else
-                  PUB.postPageBack()
-              ,animatePageTrasitionTimeout
+            Router.go('/');
