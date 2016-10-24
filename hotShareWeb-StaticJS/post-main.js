@@ -263,6 +263,14 @@
         $(window).scroll(scrollEventCallback);
 
 
+        this.disablePostScroll = function(){
+            $('body').css('overflow-y', 'hidden');
+            $('.showBgColor').css('position','fixed');
+        };
+        this.enablePostScroll = function(){
+            $('body').css('overflow-y', 'auto');
+            $('.showBgColor').css('position','relative');
+        }
         // register for audio/video play
         $(".postAudioItem.element .play_area").click(function() {
             var _self = this, $_self = $(this), $audio= $_self.find('audio');
@@ -505,7 +513,7 @@
             if($('.contactsList .head').is(':visible')){
                 $('.contactsList .head').fadeOut(300);
             }
-            $('body').css('overflow-y','auto');
+            enablePostScroll();
             $('.div_contactsList').css('display',"none");
             $('.div_me').css('display',"none");
             document.body.scrollTop = 0;
@@ -517,7 +525,7 @@
             //      $('.wait-loading').show();
             //  }
              $('.socialContent .chatFooter').fadeIn(300);
-             $('body').css('overflow-y','hidden');
+            disablePostScroll();
              //trackEvent("socialBar","Newfrineds");
              $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');
              $(".contactsBtn").addClass('focusColor');
@@ -527,7 +535,7 @@
         $(".meBtn").click(function(){
             localStorage.setItem('documentCurrTop',document.body.scrollTop);
             $('.socialContent .chatFooter').fadeIn(300);
-            $('body').css('overflow-y','hidden');
+            disablePostScroll();
             //trackEvent("socialBar","Me")
             //Session.set('favouritepostsLimit', 0);
             $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');
@@ -538,7 +546,7 @@
         $(".div_contactsList .left-btn").click(function() {
             document.body.scrollTop = 0;
             $('.div_contactsList').css('display',"none");
-            $('body').css('overflow-y','auto');
+            enablePostScroll();
             $(".contactsBtn").removeClass('focusColor');
             $(".postBtn").addClass('focusColor');
         });
@@ -566,7 +574,7 @@
         $('.div_me .socialTitle .left-btn').click(function(){
             document.body.scrollTop = 0;
             $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');
-            $('body').css('overflow-y','auto');
+            enablePostScroll();
             $(".postBtn").addClass('focusColor');
             $('.div_me').css('display', 'none');
         });

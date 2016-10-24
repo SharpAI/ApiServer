@@ -36,7 +36,7 @@
             return false;
         }
     }
-
+    
     const GetTime0 = function (dateM) {
         var MinMilli = 1000 * 60;         // 初始化变量。
         var HrMilli = MinMilli * 60;
@@ -358,7 +358,7 @@
             $('.div_contactsList').css('display', "none");
             $('.div_discover').css('display', "block");
             $('.div_me').css('display', "none");
-            $('body').css('overflow-y', 'auto');
+            enablePostScroll();
         });
         $(".div_discover .moments").on('click', '.suggestAlreadyRead', function (e) {
             var the_postid = $(this).parent().parent().parent().data('postid');
@@ -585,7 +585,7 @@
     };
 
     var closeRecommendStorysPage = function () {
-        $('body').css('overflow-y', 'auto');
+        enablePostScroll();
         $('.recommendStory').fadeOut(100);
     };
     var initRecommendStorys = function () {
@@ -597,7 +597,7 @@
                 getRecommendStorys();
         });
         /*$('#shareStoryBtn').click(function () {
-            $('body').css('overflow-y', 'hidden');
+            disablePostScroll();
             $('.recommendStory').fadeIn(100);
             getRecommendStorys();
         });*/
@@ -813,7 +813,7 @@
                     <span class="desc"></span>');
         $("." + name + " .recentViewPosts").html('');
         $("." + name + " .favoritePosts").html('');
-        $('body').css('overflow-y', 'hidden');
+        disablePostScroll();
         $('.' + name + ' .wait-loading').show();
 
         // 写入user数据
@@ -930,14 +930,14 @@
         }
 
         if (isOwner) {
-            var html = '<div class="page userProfilePage0" data-index="0" data-id="'+ownerId+'">' + $swiper_tempate.html() + '</div>';
+            var html = '<div class="page scrollable userProfilePage0 " data-index="0" data-id="'+ownerId+'">' + $swiper_tempate.html() + '</div>';
             $swiper_page.append(html);
-            $(".userProfilePage0 .page-main").attr('style', 'height:'+($(window).height()-40)+'px;overflow:scroll;');
+            $(".userProfilePage0 .page-main").attr('style', 'height:'+($(window).height()-40)+'px;');
             renderProfile('userProfilePage0', ownerId);
             $(".userProfilePage0 .leftButton").click(function () {
                 document.body.scrollTop = 0;
                 if (localStorage.getItem('userProfile_BoxFromPostsPage') === 'true') {
-                    $('body').css('overflow-y', 'auto');
+                    enablePostScroll();
                 }
                 localStorage.setItem('userProfile_BoxFromPostsPage', false);
                 $(".userProfileBox").hide();
@@ -960,9 +960,9 @@
           if(key === ownerId)
             continue;
 
-          var html = '<div class="page userProfilePage'+i+'" data-index="'+i+'" data-id="'+key+'">' + $swiper_tempate.html() + '</div>';
+          var html = '<div class="page scrollable userProfilePage'+i+'" data-index="'+i+'" data-id="'+key+'">' + $swiper_tempate.html() + '</div>';
           $swiper_page.append(html);
-          $(".userProfilePage"+i+" .page-main").attr('style', 'height:'+($(window).height()-40)+'px;overflow:scroll;');
+          $(".userProfilePage"+i+" .page-main").attr('style', 'height:'+($(window).height()-40)+'px;');
           tempates.push('userProfilePage' + i);
           renderProfile('userProfilePage' + i, key);
           if(key === userId)
@@ -971,7 +971,7 @@
           $(".userProfilePage"+i+" .leftButton").click(function () {
               document.body.scrollTop = 0;
               if (localStorage.getItem('userProfile_BoxFromPostsPage') === 'true') {
-                  $('body').css('overflow-y', 'auto');
+                  enablePostScroll();
               }
               localStorage.setItem('userProfile_BoxFromPostsPage', false);
               $(".userProfileBox").hide();
@@ -1007,7 +1007,7 @@
     $(".userProfileBox .leftButton").click(function () {
         document.body.scrollTop = 0;
         if (localStorage.getItem('userProfile_BoxFromPostsPage') === 'true') {
-            $('body').css('overflow-y', 'auto');
+            enablePostScroll();
         }
         localStorage.setItem('userProfile_BoxFromPostsPage', false);
         $(".userProfileBox").hide();
@@ -1018,7 +1018,7 @@
         document.addEventListener('ddpConnected', DDPConnectedHandle, false);
         initServerImport();
         $('#shareStoryBtn').click(function(){
-            $('body').css('overflow-y','hidden');
+            disablePostScroll();
             $('.recommendStory').fadeIn(100);
             getRecommendStorys();
             if(!RecommendStorysInit){

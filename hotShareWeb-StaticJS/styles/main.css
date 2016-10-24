@@ -4,6 +4,14 @@
   font-style: normal;
   font-weight: normal;
 }
+.userProfileSwipe{
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+}
 .userProfileSwipe .pages
 {
   box-sizing: border-box;
@@ -29,7 +37,7 @@
 .userProfileSwipe .scrollable
 {
   overflow-y: scroll;
-  webkit-overflow-scrolling: touch;
+  -webkit-overflow-scrolling: touch;
 }
 .userProfileSwipe .swipe-control
 {
