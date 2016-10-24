@@ -91,6 +91,8 @@ class window.Swipe
           self.clearAnimate()
           self.moveRight()
 
+  dispose: ->
+      _template.dispose();
   clearAnimate: ->
     $(@t?.find('.animate')).removeClass('animate')
 
@@ -360,6 +362,12 @@ class template
     @swiper.t.scrollableCSS = false
     @swiper.t.mightBeScrolling = false
     @swiper.t.scrolling = false
+  dispose: ->
+    $('.pages').off()
+    for key, value of @events
+      params = key.split(' ')
+      debugPrint('off event:', params[0]);
+      @swiper.t.find(params[1] + ':first').off(params[0], null, @swiper.t, value)
   events:
     'mousedown .pages': (e) ->
       t = e.data

@@ -930,11 +930,13 @@
         }
 
         if (isOwner) {
+	    var swipe = null;
             var html = '<div class="page scrollable userProfilePage0 " data-index="0" data-id="'+ownerId+'">' + $swiper_tempate.html() + '</div>';
             $swiper_page.append(html);
             $(".userProfilePage0 .page-main").attr('style', 'height:'+($(window).height()-40)+'px;');
             renderProfile('userProfilePage0', ownerId);
             $(".userProfilePage0 .leftButton").click(function () {
+                swipe.dispose();
                 document.body.scrollTop = 0;
                 if (localStorage.getItem('userProfile_BoxFromPostsPage') === 'true') {
                     enablePostScroll();
@@ -946,7 +948,7 @@
               loadMoreFavouriteposts("userProfilePage0");
             });
 
-            var swipe = new window.Swipe(['userProfilePage0'], true, $('.swipe-tmp'));
+            swipe = new window.Swipe(['userProfilePage0'], true, $('.swipe-tmp'));
             swipe.leftRight(null, null);
             swipe.setInitialPage('userProfilePage0');
             preProfileInfo('userProfilePage0', ownerId);
@@ -956,6 +958,7 @@
         var tempates = [];
         var defaultPage = '';
         var i = 0;
+        var swipe = null;
         for(var key in usersInformation){
           if(key === ownerId)
             continue;
@@ -969,6 +972,7 @@
             defaultPage = 'userProfilePage' + i;
 
           $(".userProfilePage"+i+" .leftButton").click(function () {
+              swipe.dispose();
               document.body.scrollTop = 0;
               if (localStorage.getItem('userProfile_BoxFromPostsPage') === 'true') {
                   enablePostScroll();
