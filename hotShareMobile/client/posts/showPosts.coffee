@@ -66,6 +66,27 @@ if Meteor.isClient
     console.log('Event from remote event is '+e)
     if e is 'nextTrack'
       toNextPost()
+  keyboardShowHandler = (e) ->
+    console.log 'Keyboard height is: ' + e.keyboardHeight
+    lastKeyboardHeight = Session.get('keyboardHeight')
+    Session.set 'keyboardHeight', e.keyboardHeight
+    if lastKeyboardHeight is undefined
+        return
+    # if Math.abs(e.keyboardHeight - lastKeyboardHeight) < 5
+    #     returns
+    unless Session.get("pcommetsClicked") is true
+        return
+    offset = e.keyboardHeight - lastKeyboardHeight
+    console.log 'Keyboard offset is: ' + offset
+    if offset <= 5
+        return
+    scrollTop = $(window).scrollTop()+offset
+    Session.set('backgroundTop', 0-scrollTop);
+    console.log 'scrollTop is: ' + scrollTop
+    $(window).scrollTop(scrollTop)
+   
+  window.addEventListener 'native.keyboardshow', keyboardShowHandler
+
   hookRemoteEvent = ()->
     if Meteor.isCorodva and device.platform is 'iOS'
       remoteControls.receiveRemoteEvent = remoteEventHandler

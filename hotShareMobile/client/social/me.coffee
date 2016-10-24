@@ -75,7 +75,10 @@ if Meteor.isClient
     document.ontouchmove = (e) ->
       e.preventDefault()
       return
-    $('.text').focus()
+    #$('.text').focus()
+    Meteor.setTimeout(()->
+       $('.text').focus()
+    ,5)
   Template.setNickname.destroyed=->
     document.ontouchmove = (e) ->
       true
@@ -156,7 +159,27 @@ if Meteor.isClient
           if window.favouritepostsCollection_getmore is 'done' and (window.newLayoutImageInDownloading < 5)
             console.log('Triggered data source refresh');
             window.favouritepostsCollection_getmore = 'inprogress'
-            Session.set("favouritepostsLimit",Session.get("favouritepostsLimit") + FAVOURITE_POSTS_INCREMENT);      
+            Session.set("favouritepostsLimit",Session.get("favouritepostsLimit") + FAVOURITE_POSTS_INCREMENT); 
+      unless device.platform is 'iOS' 
+        return
+      if window.timeOut != null
+        window.clearTimeout(window.timeOut)
+      if Session.get("Social.LevelTwo.Me.Menu") is 'setNickname'
+        window.timeOut = window.setTimeout((->
+          distance = $('.me .setNickname .head').offset().top - ($(window).scrollTop())
+          distance = '-' + distance + 'px'
+          lastDistance =  $('.me .setNickname .head').css('margin-top')
+          distance = parseInt(lastDistance) + parseInt(distance) 
+          distance =  distance + 'px'
+          $('.me .setNickname .head').css 'margin-top', distance
+          $('.showPosts .head').css('display','none')
+        ), 500)
+      if Session.get("Social.LevelTwo.Me.Menu") is 'setSex'
+        window.timeOut = window.setTimeout((->
+          $('.showPosts .head').css('display','none')
+        ), 500)
+      if Session.get("Social.LevelTwo.Me.Menu") is 'information'
+        $('.showPosts .head').css('display','block')
 
   Template.myFavouritePosts.helpers
     isLoading:()->

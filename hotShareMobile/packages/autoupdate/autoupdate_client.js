@@ -60,7 +60,7 @@ var retry = new Retry({
 var failures = 0;
 
 Autoupdate._retrySubscription = function () {
-  Meteor.subscribe("meteor_autoupdate_clientVersions", {
+  /*Meteor.subscribe("meteor_autoupdate_clientVersions", {
     onError: function (error) {
       Meteor._debug("autoupdate subscription failed:", error);
       failures++;
@@ -128,7 +128,7 @@ Autoupdate._retrySubscription = function () {
                 newLink.setAttribute("rel", "stylesheet");
                 newLink.setAttribute("type", "text/css");
                 newLink.setAttribute("class", "__meteor-css__");
-                newLink.setAttribute("href", Meteor._relativeToSiteRootUrl(css.url));
+                newLink.setAttribute("href", css.url);
                 attachStylesheetLink(newLink);
               });
             } else {
@@ -152,5 +152,6 @@ Autoupdate._retrySubscription = function () {
       }
     }
   });
+  */
 };
-Autoupdate._retrySubscription();
+//Autoupdate._retrySubscription();

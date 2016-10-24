@@ -1,5 +1,7 @@
 为了实现ａｎｄｒｏｉｄ系统共享功能．　ｂｕｉｌｄ　ａｎｄｒｏｉｄ　ａｐｋ时需要用以下方法：
 
+确保Ａｎｄｒｏｉｄ　ｓｄｋ安装了ｇｏｏｇｌｅ　ｐｌａｙ　ｓｅｒｖｉｃｅ版本大于９．０．２　用Ａｎｄｒｏｉｄ　ＳＤＫ　Ｍａｎａｇｅｒ去安装
+
 ./cleanbuild.sh
 ./build.sh
 cd ~/build-hot-share/android/project
@@ -41,6 +43,12 @@ cp /home/roger/hotShare/ShareExtension/Android/MainActivity.java ./src/org/hotsh
 
 修改Ａｐｐ的名字为中文：
 编辑res/values/strings.xml文件，　把app_name那一项从ｈｏｔＳｈａｒｅ改为故事贴
+
+在ｐｒｏｊｅｃｔ目录下创建一个文件ｇｒａｄｌｅ．ｐｒｏｐｅｒｔｉｅｓ，　加入一下内容：
+android.useDeprecatedNdk=true
+
+生成ｇｒａｄｌｅｗ文件
+gradle wrapper
 
 最后，　用这个命令来ｂｕｉｌｄ　ａｐｋ
 ANDROID_HOME=~/.meteor/android_bundle/android-sdk ./gradlew assembleRelease -Pandroid.injected.signing.store.file=/home/roger/workspace/hotShare/hotShareMobile/keystore -Pandroid.injected.signing.store.password=actiontec -Pandroid.injected.signing.key.alias="wifi whiteboard" -Pandroid.injected.signing.key.password=actiontec
