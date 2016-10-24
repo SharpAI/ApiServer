@@ -1,8 +1,5 @@
-ionic-plugin-keyboard@2.2.1
 com.leon.cordova.wechat@https://github.com/PluginCordova/wechat/tarball/95546b610dbec32f944b52c28236946cb36456ea
 com.moya.imagebase64@https://github.com/PluginCordova/imagebase64/tarball/1ca00955ab6e0de1bd7f7130bd5de4568570ba51
-jpush-phonegap-plugin@https://github.com/PluginCordova/jpush-phonegap-plugin/tarball/a850c8db42120364c0847ca1a7348f78a9bc9c81
-phonegap-plugin-push@1.8.2
 com.raananw.imageResizer@https://github.com/PluginCordova/imageresizer/tarball/6cd03b21069ee4d2166b8701cbfd69b7f1244c24
 com.share.wechatShare@https://github.com/PluginCordova/wechatShare/tarball/d0fdedcef017e08e9bf0e5626a16b3e6292feb7f
 com.synconset.imagepicker@https://github.com/PluginCordova/imagepicker/tarball/df97bbcee3a35279f821038a09a4ae9209ba1097
@@ -18,13 +15,16 @@ cordova-plugin-file@4.1.1
 cordova-plugin-file-transfer@1.6.0
 cordova-plugin-http@1.2.0
 cordova-plugin-inappbrowser@https://github.com/PluginCordova/inappbrowser/tarball/ab46f8db23960940d7bfd861b0809842860dc5d1
+cordova-plugin-iosaudiopicker@https://github.com/PluginCordova/iosaudiopicker/tarball/06e86b12b05564c12782f3f9d8ec37ca6754273a
 cordova-plugin-media@https://github.com/PluginCordova/media/tarball/2d158b0ef7173cad2b2f84c05c62727932635f8e
 cordova-plugin-meteor-webapp@1.4.1
 cordova-plugin-network-information@1.2.0
 cordova-plugin-themeablebrowser@https://github.com/PluginCordova/cordova-plugin-themeablebrowser/tarball/12117b16548e0ad309280c2a4b8c82cf313e2693
-cordova-plugin-iosaudiopicker@https://github.com/PluginCordova/iosaudiopicker/tarball/06e86b12b05564c12782f3f9d8ec37ca6754273a
-nl.x-services.plugins.backgroundaudio@https://github.com/PluginCordova/backgroundaudio/tarball/5fbd1d623640980cd0adcafdaa5efcdae6e3b751
 cordova-plugin-x-socialsharing@5.1.3
+ionic-plugin-keyboard@2.2.1
+jpush-phonegap-plugin@https://github.com/PluginCordova/jpush-phonegap-plugin/tarball/a850c8db42120364c0847ca1a7348f78a9bc9c81
+meteor-ios10-csp-fix@0.1.0
+nl.x-services.plugins.backgroundaudio@https://github.com/PluginCordova/backgroundaudio/tarball/5fbd1d623640980cd0adcafdaa5efcdae6e3b751
 nl.x-services.plugins.toast@2.5.2
 org.apache.cordova.plugin.tts@https://github.com/PluginCordova/tts/tarball/befd838419d210fc7d85f171fabb243734b546a9
 org.hotshare.customDialog@https://github.com/PluginCordova/customDialog/tarball/3faf6ccfbede32c85a47c91dd2e0cf257243ba30
@@ -32,3 +32,4 @@ org.hotshare.everywhere.appsetup@https://github.com/PluginCordova/appsetup/tarba
 org.hotshare.shareExtension@https://github.com/PluginCordova/share-extension/tarball/2cde17f067b5856d8261f0e5154ca64ae2ec2a0b
 org.hotshare.userinfo@https://github.com/PluginCordova/userInfo/tarball/1f7cee2f71cefb88a272186c28f9707f8b71c97c
 org.zy.yuancheng.qq@https://github.com/PluginCordova/qq/tarball/9fccd8e93e2a75ea8bb2ad887ad84f1d32dbc52b
+phonegap-plugin-push@1.8.2
