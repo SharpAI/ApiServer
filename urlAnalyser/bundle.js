@@ -785,8 +785,10 @@ console.log('inject code');
         }else{
           analyserHTML(window.location.href,returnJson,function(result){
               //window.document.body.insertAdjacentHTML( 'beforeBegin', '<div id="detected_json_from_gushitie" style="color:blue;"> With some data...</div>' );
+              
               $('body').append('<div id="detected_json_from_gushitie" style="color:blue;"></div>');
               window.detected_json_from_gushitie=result;
+              
               /*const {ipcRenderer} = require('electron');
               //console.log(ipcRenderer.sendSync('synchronous-message', 'ping')); // prints "pong"
 
@@ -2580,7 +2582,7 @@ musicExtactorMappingV2 = [
   }
 ];
 
-this.getMusicFromNode = function(node, body) {
+getMusicFromNode = function(node, body) {
   var findNone, isExist, j, len, musicElement, musicInfo, s;
   for (j = 0, len = musicExtactorMappingV2.length; j < len; j++) {
     s = musicExtactorMappingV2[j];
