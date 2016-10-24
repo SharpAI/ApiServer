@@ -513,9 +513,9 @@
         $(".contactsBtn").click(function(){
              $('.div_me_set-up-sex,.div_me_set-up-nike').css('display', 'none');
              localStorage.setItem('documentCurrTop',document.body.scrollTop);
-             if($('.eachViewer').length <= 1){
-                 $('.wait-loading').show();
-             }
+            //  if($('.eachViewer').length <= 1){
+            //      $('.wait-loading').show();
+            //  }
              $('.socialContent .chatFooter').fadeIn(300);
              $('body').css('overflow-y','hidden');
              //trackEvent("socialBar","Newfrineds");

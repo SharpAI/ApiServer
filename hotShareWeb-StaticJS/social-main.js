@@ -379,7 +379,9 @@
     };
     var newFriendCounts = 0;
 // 加载更多新朋友
+    window.newFriendsLoadedAll = false;
     var grabNewFriendsFromServer = function () {
+        $('#pullDownAddMore').html('加载中...');
         window.CallMethod('getPostFriends', [postid, newFriendCounts, 20], function (type, result) {
             debugPrint('load more postFriendHandle is ==:' + JSON.stringify(result));
             var html = '';
@@ -397,6 +399,7 @@
             });
             if (result.length === 0) {
                 $pullDownAddMore = $('#pullDownAddMore').html('没有更多数据了');
+                newFriendsLoadedAll = true;
                 return getScrollEvent = false;
             } else {
                 $.each(result, function (index, content) {
@@ -447,8 +450,9 @@
             var threshold = $(window).scrollTop() + $(window).height() - target.height();
             // debugPrint("threshold: " + threshold);
             // debugPrint("target.top: " + target.offset().top);
-            if (target.offset().top < threshold && getScrollEvent && $(".div_contactsList").is(':visible')) {
-                $pullDownAddMore.html('加载中...');
+
+            // 110:.contactsList 的 padding-bottom 为110px, 64:#addNewFriends 的 margin-top为64px
+            if ($('.div_contactsList ').scrollTop() >= ($('.contactsList').height() - $('.div_contactsList ').height() +64 +110 ) && $(".div_contactsList").is(':visible') && !newFriendsLoadedAll){
                 grabNewFriendsFromServer()
             }
         });
