@@ -24,9 +24,10 @@ if Meteor.isClient
     parentNode=element.parentNode
     if myData.index is 0
       #Initial the layoutHelper
-      msgBoxHeight = if Feeds.find({followby: Meteor.userId(), isRead:{$ne: true}, checked:{$ne: true}}).count() > 0 then 65 else 0
-      console.log("!!!parentNode.offsetTop = "+parentNode.offsetTop+", msgBoxHeight="+msgBoxHeight)
-      updateLayoutData(layoutHelper,1,6,parentNode.offsetTop+msgBoxHeight)
+      #msgBoxHeight = if Feeds.find({followby: Meteor.userId(), isRead:{$ne: true}, checked:{$ne: true}}).count() > 0 then 65 else 0
+      #console.log("!!!parentNode.offsetTop = "+parentNode.offsetTop+", msgBoxHeight="+msgBoxHeight)
+      #updateLayoutData(layoutHelper,1,6,parentNode.offsetTop+msgBoxHeight)
+      updateLayoutData(layoutHelper,1,6,parentNode.offsetTop)
     console.log("myData.data_col="+myData.data_col+", myData.data_sizex="+myData.data_sizex+", "+getLayoutTop(layoutHelper,myData.data_col,myData.data_sizex))
     element.style.top=getLayoutTop(layoutHelper,myData.data_col,myData.data_sizex)+imageMarginPixel+'px'
     console.log("element.style.top="+element.style.top)
