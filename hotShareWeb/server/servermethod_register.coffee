@@ -67,6 +67,12 @@ if Meteor.isServer
       }
     catch error
       console.log("sendSubscribeAutorEmail Error===:"+error)
+  @addToUserFavPosts = (postId,userId)->
+    favp = FavouritePosts.findOne({postId: postId, userId: userId})
+    if favp
+      FavouritePosts.update({_id: favp._id}, {$set: {updateAt: new Date()}})
+    else
+      FavouritePosts.insert({postId: postId, userId: userId, createdAt: new Date(), updateAt: new Date()})
   Meteor.startup ()->
     Meteor.methods
       'pushRecommendStoryToReaderGroups': (postId, storyId)->
@@ -269,6 +275,8 @@ if Meteor.isServer
           if pub and pub[pindex]
             # 喜欢
             if type is 'likeAdd'
+              Meteor.defer ()->
+                addToUserFavPosts(postId, userId)
               if typeof pub[pindex].likeSum isnt 'undefined'
                 pub[pindex].likeSum = pub[pindex].likeSum+1
               else
@@ -314,6 +322,8 @@ if Meteor.isServer
         if !Match.test(postId, String) or !Match.test(userId, String) or !Match.test(pindex, Number) or !Match.test(content, String)
           return false
         this.unblock();
+        Meteor.defer ()->
+          addToUserFavPosts(postId, userId)
         post = Posts.findOne({_id: postId})
         user = Meteor.users.findOne({_id: userId})
         if user 
