@@ -3,6 +3,7 @@ window.trackEvent=(category, action)->
     console.log('Track Event')
     unless typeof(piwik) is 'undefined'
       piwik.trackEvent(category, action)
+      piwik1.trackEvent(category, action)
   catch error
     console.log('trackevent exception')
 
@@ -16,6 +17,11 @@ window.trackPage=(url,title)->
       piwik.setReferrerUrl(url)
       piwik.setDocumentTitle(title)
       piwik.trackPageView()
+
+      piwik1.setCustomUrl(url)
+      piwik1.setReferrerUrl(url)
+      piwik1.setDocumentTitle(title)
+      piwik1.trackPageView()
   catch error
     console.log('trackpage exception')
 
@@ -39,4 +45,10 @@ initPiwik=(url,title)->
       piwik.setReferrerUrl(url)
       piwik.setDocumentTitle(title)
       piwik.trackPageView()
+
+      window.piwik1 = Piwik.getTracker( 'http://piwik.tiegushi.com/piwik.php', 10 )
+      piwik1.setCustomUrl(url)
+      piwik1.setReferrerUrl(url)
+      piwik1.setDocumentTitle(title)
+      piwik1.trackPageView()
     )
