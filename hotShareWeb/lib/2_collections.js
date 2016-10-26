@@ -1445,7 +1445,8 @@ if(Meteor.isServer){
                     self.count++;
                 },
                 changed: function (id,fields) {
-                    self.changed("postfriends", id, fields);
+                    // self.changed("postfriends", id, fields);
+                    self.changed("postfriendsV2", id, fields);
                 }/*,
                  removed:function (id,fields) {
                  self.removed("postfriends", id, fields);
