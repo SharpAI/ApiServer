@@ -52,6 +52,7 @@ if Meteor.isClient
     focus_style:(channelName)->
       channel = Session.get "focusOn"
       if channel is channelName
+        $('.foot-btn').removeClass('focus')
         return "focus"
       else
         return ""
