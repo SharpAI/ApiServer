@@ -309,7 +309,7 @@
         });
 
         $(".chatBtn").click(function() {
-            var chat_server_url = 'testchat.tiegushi.com';
+            var chat_server_url = 'chat.tiegushi.com';
             var url = 'http://'+chat_server_url+'/channel/' + postid;
 
             var userId = localStorage.getItem("Meteor.userId");
