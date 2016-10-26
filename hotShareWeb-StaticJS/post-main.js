@@ -309,7 +309,7 @@
         });
 
         $(".chatBtn").click(function() {
-            var chat_server_url = 'testchat.tiegushi.com';
+            var chat_server_url = 'chat.tiegushi.com';
             var url = 'http://'+chat_server_url+'/channel/' + postid;
 
             var userId = localStorage.getItem("Meteor.userId");
@@ -659,7 +659,8 @@
             qqValueReg = new RegExp(/^[1-9][0-9]{4,9}$/);
             mailValueReg = new RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/);
             if (email === '' || !mailValueReg.test(email) && !qqValueReg.test(email)){
-                $('.subscribeAutorPage .help-block').html('请输入正确的QQ号或Email');
+                toastr.remove();
+                toastr.info('请输入正确的QQ号或Email');
                 return false;
             }
             if (qqValueReg.test(email)){
@@ -669,6 +670,7 @@
             // 更新关注Email,  updateSubscribeAutorEmail params[author,userId,email]
             window.CallMethod('updateSubscribeAutorEmail',[$(".showPosts .user").attr("id"),window._loginUser._id,email],function (type,result){
                 debugPrint('profileData is ==:'+JSON.stringify(result));
+                toastr.remove();
                 if(result.msg === 'success') {
                     toastr.success('您已成功关注作者'+$(".showPosts .user .name").html()+'，确认邮件将很快（10分钟左右）送达，谢谢！','关注成功')
                 } else {
@@ -692,6 +694,7 @@
             // post = Session.get("postContent");
             qqValueReg = RegExp(/^[1-9][0-9]{4,9}$/);
             mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/);
+            toastr.remove();
             if (!mailValueReg.test(mailAddress) && !qqValueReg.test(mailAddress)) {
                 toastr.info('请输入正确的QQ号或Email');
                 return false;

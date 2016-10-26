@@ -804,7 +804,7 @@ if Meteor.isClient
       }
 
     Session.set 'post-publish-user-id', ownerUser._id
-    Meteor.subscribe "readerpopularpostsbyuid", ownerUser._id
+    #Meteor.subscribe "readerpopularpostsbyuid", ownerUser._id
     ownerName = if ownerUser.profile and ownerUser.profile.fullname then ownerUser.profile.fullname else ownerUser.username
     ownerIcon = if ownerUser.profile and ownerUser.profile.icon then ownerUser.profile.icon else '/userPicture.png'
 

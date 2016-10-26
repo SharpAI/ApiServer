@@ -3,6 +3,8 @@ if Meteor.isClient
     Meteor.subscribe "topics"
     Meteor.subscribe "ViewPostsList", Session.get("TopicPostId")
     Session.set("comment","")
+    uid = Session.get('post-publish-user-id') || Meteor.userId()
+    Meteor.subscribe "readerpopularpostsbyuid" , uid
   Template.addTopicComment.helpers
     comment:()->
       Session.get("comment")
@@ -10,9 +12,7 @@ if Meteor.isClient
        Topics.find({type:"topic"}, {sort: {posts: -1}, limit:20})
     groups: ()->
       # ReaderPopularPosts.find({userId: Meteor.userId()})
-      uid = Meteor.userId()
-      if Session.get('post-publish-user-id') and Session.get('post-publish-user-id') isnt ''
-        uid = Session.get('post-publish-user-id')
+      uid = Session.get('post-publish-user-id') || Meteor.userId()
       posts = []
       ReaderPopularPosts.find({userId: uid}).forEach (item)->
         post = Posts.findOne({_id: item.postId})
@@ -21,7 +21,8 @@ if Meteor.isClient
           posts.push(item)
       return posts
     isShowPublish: ()->
-      return ReaderPopularPosts.find({userId: Meteor.userId()}).count()
+      uid = Session.get('post-publish-user-id') || Meteor.userId()
+      return ReaderPopularPosts.find({userId: uid}).count()
       # return true
     has_share_push: ()->
       return Meteor.user().profile and Meteor.user().profile.web_follower_count and Meteor.user().profile.web_follower_count > 0
@@ -199,7 +200,8 @@ if Meteor.isClient
        false
 
   Template.publishReadersList.rendered=->
-     Meteor.subscribe "readerpopularposts",(ready)->
+     uid = Session.get('post-publish-user-id') || Meteor.userId()
+     Meteor.subscribe "readerpopularpostsbyuid", uid,(ready)->
       handler = $('.newLayout_container')
       options={
         align: 'left',
