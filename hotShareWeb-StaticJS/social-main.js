@@ -676,7 +676,7 @@
     var initServerImport = function(){
         // 导入
         $('.submit-import').click(function(){
-            var url,originUrl;
+            var url,originUrl,postId;
             originUrl = $('#import-post-url').val();
             debugPrint('originUrl==' + originUrl);
             urlReg = new RegExp("(http[s]{0,1}|ftp)://[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?", "gi");
@@ -694,32 +694,47 @@
             url = '/import-server/' + window._loginUserId + '/' + encodeURIComponent(originUrl);
             url += '?task_id=' + importTaskID;
             debugPrint('url='+url);
-            $.ajax({
-                url:url,
-                async:true,
-                success:function(result){
-                    var data,postId;
-                    setCookie('loginUserId',window._loginUserId,360);
-                    debugPrint('import succ=='+ JSON.stringify(result));
-                    data = result.split("\r\n");
-                    data = JSON.parse(data[data.length - 1]);
-                    postId = data.json.split("/");
-                    postId = postId[postId.length - 1];
-                    debugPrint("data is ==", data);
-                    debugPrint("postId is ==", postId);
-                    toastr.remove();
-                    toastr.success('导入成功,稍后跳转到导入的帖子...','导入成功!');
-                    $('.import-post .loading').hide();
-                    $('.import-post').css('overflow-y','auto');
-                    window.open('/t/'+postId, '_system');
-                },
-                error: function(result){
-                    toastr.remove();
-                    toastr.info('导入失败!');
-                    $('.import-post .loading').hide();
-                    $('.import-post').css('overflow-y','auto');
+            // var newPostWindow = window.open();
+            setTimeout(function() {
+                $.ajax({
+                    url:url,
+                    async:false,
+                    type: "GET",
+                    success:function(result){
+                        var data;
+                        setCookie('loginUserId',window._loginUserId,360);
+                        debugPrint('import succ=='+ JSON.stringify(result));
+                        data = result.split("\r\n");
+                        data = JSON.parse(data[data.length - 1]);
+                        debugPrint('datais=='+JSON.stringify(data));
+                        if(data.status === 'succ'){
+                            postId = data.json.split("/");
+                            postId = postId[postId.length - 1];
+                            debugPrint("data is ==", data);
+                            debugPrint("postId is ==", postId);
+                            toastr.remove();
+                            toastr.success('导入成功,稍后跳转到导入的帖子...','导入成功!');
+                            $('.import-post .loading').hide();
+                            $('.import-post').css('overflow-y','auto');
+                        } else{
+                            toastr.remove();
+                            toastr.info('导入失败!');
+                            $('.import-post .loading').hide();
+                            $('.import-post').css('overflow-y','auto');
+                            return false;
+                        }
+                    },
+                    error: function(result){
+                        toastr.remove();
+                        toastr.info('导入失败!');
+                        $('.import-post .loading').hide();
+                        $('.import-post').css('overflow-y','auto');
+                    }
+                });
+                if(postId && postId !== ''){
+                    window.open('/t/'+postId.toString(), '_self');
                 }
-            });
+            }, 100);
         });
         // 取消导入
         $('.cancel-import').click(function(){
