@@ -201,7 +201,7 @@ if Meteor.isClient
 
   Template.publishReadersList.rendered=->
      uid = Session.get('post-publish-user-id') || Meteor.userId()
-     Meteor.subscribe "readerpopularpostsbyuid"， uid,(ready)->
+     Meteor.subscribe "readerpopularpostsbyuid", uid,(ready)->
       handler = $('.newLayout_container')
       options={
         align: 'left',
