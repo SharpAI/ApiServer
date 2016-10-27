@@ -405,45 +405,63 @@
         $(".thumbsUp").click(function(e) {
             var self = this;
             var pindex = $(e.currentTarget).parent().parent().parent().attr('index');
+            var num = parseInt($(self).text());
             pindex = parseInt(pindex);
             debugPrint('==点评index=='+pindex);
             if (e.target.className === "fa fa-thumbs-up thumbsUp") {
               syncThumbs(pindex,'likeDel');
               e.target.className = "fa fa-thumbs-o-up thumbsUp";
-              $(self).text($(self).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
+              e.target.style.fontSize = "small";
+              // $(self).text($(self).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
+              $(self).text($(self).text().replace(/\d+/g, function() {return num > 0 ? num -1 : 0;}));
               if(isRemoveParentColor(self, e.target.parentNode.parentElement, true)) e.target.parentNode.parentElement.style.color = "rgb(0,0,0)";
             } else {
               syncThumbs(pindex,'likeAdd');
               e.target.className = "fa fa-thumbs-up thumbsUp";
+              e.target.style.fontSize = "larger";
               e.target.parentNode.parentElement.style.color = "rgb(243,11,68)";
-              $(self).text($(self).text().replace(/\d/g, function(m) {return parseInt(m) +1;}));
+              // $(self).text($(self).text().replace(/\d/g, function(m) {return parseInt(m) +1;}));
+              $(self).text($(self).text().replace(/\d+/g, function(m) {return num +1;}));
 
               if (e.target.nextElementSibling.className === "fa fa-thumbs-down thumbsDown") {
-                $(self.nextElementSibling).text($(self.nextElementSibling).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
+                var downNum = parseInt($(self.nextElementSibling).text());
+                // $(self.nextElementSibling).text($(self.nextElementSibling).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
+                $(self.nextElementSibling).text($(self.nextElementSibling).text().replace(/\d+/g, function() {return downNum > 0 ? downNum -1 : 0;}));
                 e.target.nextElementSibling.className = "fa fa-thumbs-o-down thumbsDown";
+                e.target.nextElementSibling.style.color = 'rgb(243,11,68)';
               }
             }
+            // calcLayoutForEachPubElement();
         });
         $(".thumbsDown").click(function(e) {
             var self = this;
             var pindex = $(e.currentTarget).parent().parent().parent().attr('index');
+            var num = parseInt($(self).text());
             pindex = parseInt(pindex);
             debugPrint('==点评index=='+pindex);
             if (e.target.className === "fa fa-thumbs-down thumbsDown") {
               syncThumbs(pindex,'dislikeDel');
               e.target.className = "fa fa-thumbs-o-down thumbsDown";
-              $(self).text($(self).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
+              e.target.style.color = 'rgb(243,11,68)';
+              // $(self).text($(self).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
+              $(self).text($(self).text().replace(/\d+/g, function() {return num > 0 ? num -1 : 0;}));
               if(isRemoveParentColor(self, e.target.parentNode.parentElement, false))  e.target.parentNode.parentElement.style.color = "rgb(0,0,0)";
             } else {
               syncThumbs(pindex,'dislikeAdd');
               e.target.className = "fa fa-thumbs-down thumbsDown";
+              e.target.style.color = 'blue';
               e.target.parentNode.parentElement.style.color = "rgb(243,11,68)";
-              $(self).text($(self).text().replace(/\d/g, function(m) {return parseInt(m) +1;}));
+              // $(self).text($(self).text().replace(/\d/g, function(m) {return parseInt(m) +1;}));
+              $(self).text($(self).text().replace(/\d+/g, function() {return num +1;}));
               if (e.target.previousElementSibling.className === "fa fa-thumbs-up thumbsUp") {
-                $(self.previousElementSibling).text($(self.previousElementSibling).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
+                var upNum = parseInt($(self.previousElementSibling).text());
+                // $(self.previousElementSibling).text($(self.previousElementSibling).text().replace(/\d/g, function(m) {return m > 0 ? parseInt(m) -1 : 0;}));
+                $(self.previousElementSibling).text($(self.previousElementSibling).text().replace(/\d+/g, function() {return upNum > 0 ? upNum -1 : 0;}));
                 e.target.previousElementSibling.className = "fa fa-thumbs-o-up thumbsUp";
+                e.target.previousElementSibling.style.fontSize = "small";
               }
             }
+            // calcLayoutForEachPubElement();
         });
 
         $(".pcomments").click(function(e) {
@@ -490,7 +508,7 @@
             //  添加内容
             pcommitContentHTML1 = '<div class="pcomment">\
                                     <div class="eachComment">\
-                                     <div class="bubble">';
+                                     <div class="bubble" style="font-size: 14px;">';
             pcommitContentHTML1 += '<span class="personName">'+userName+'</span>:'+
                                     '<span class="personSay">'+pcommitContent+'</span></div></div></div>';
             pcommitContentHTML2 = '<div class="bubble"><span class="personName">'+userName+'</span>:'+
