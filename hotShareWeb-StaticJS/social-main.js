@@ -673,6 +673,21 @@
         exdate.setDate(exdate.getDate()+expiredays);
         document.cookie=c_name+ "=" +escape(value)+((expiredays==null) ? "" : ";expires="+exdate.toGMTString());
     };
+    var serverImportHandle = function(e1) {
+        var message = e1.detail;
+        debugPrint('serverImportHandle:' + JSON.stringify(message));
+        var import_status = message.fields.import_status;
+        var pub;
+        if(import_status === 'done'){
+            pub = message.fields.pub;
+            // 处理图片src
+            pub.forEach(function(item){
+                $('#'+item._id).attr('src',item.imgUrl);
+            });
+            
+            window.localStorage.removeItem('waitForServerImportStatus');
+        }
+    }
     var initServerImport = function(){
         // 导入
         $('.submit-import').click(function(){
@@ -713,7 +728,7 @@
                             debugPrint("data is ==", data);
                             debugPrint("postId is ==", postId);
                             toastr.remove();
-                            toastr.success('导入成功,稍后跳转到导入的帖子...','导入成功!');
+                            toastr.success('正在对图片进行自动优化,稍后跳转到导入的帖子...','导入成功!');
                             $('.import-post .loading').hide();
                             $('.import-post').css('overflow-y','auto');
                         } else{
@@ -732,6 +747,7 @@
                     }
                 });
                 if(postId && postId !== ''){
+                    window.localStorage.setItem('waitForServerImportStatus', true);
                     window.open('/t/'+postId.toString(), '_self');
                 }
             }, 100);
@@ -781,6 +797,10 @@
             initImageSwipeView();
 
             var userNewBellCountId = Subscribe("userNewBellCount", [window._loginUserId], userNewBellCountHandle);
+            if(window.localStorage.getItem('waitForServerImportStatus') && window.localStorage.getItem('waitForServerImportStatus') === 'true') {
+                toastr.remove();
+                var serverImportId = Subscribe("serverImportPostStatus", [postid], serverImportHandle);
+            }
             if (typeof window.alreadyInit !== 'undefined') {
                 debugPrint('skip duplicated initialize');
                 return;

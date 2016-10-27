@@ -1214,6 +1214,69 @@ if(Meteor.isServer){
       });
     });
 
+    Meteor.publish('serverImportPostStatus',function(postId){
+        var self = this;
+        var initializing = true;
+        var post = [];
+        var pub = [];
+        
+        var handle = Posts.find({_id: postId}).observeChanges({
+            added: function (id) {
+                post = Posts.findOne({_id: postId});
+                status = post.import_status;
+                if(post && post.import_status === 'done'){
+                    pub = [];
+                    post.pub.forEach(function(item){
+                        if(item.isImage){
+                            pub.push({_id: item._id, imgUrl:item.imgUrl,index:item.index})
+                        }
+                    });
+                   self.added("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub}); 
+                }
+            },
+            changed: function (id) {
+                post = Posts.findOne({_id: postId});
+                if(post && post.import_status === 'done'){
+                    pub = [];
+                    post.pub.forEach(function(item){
+                        if(item.isImage){
+                            pub.push({_id: item._id, imgUrl:item.imgUrl,index:item.index})
+                        }
+                    });
+                   self.changed("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub}); 
+                }
+            },
+            removed: function (id) {
+                post = Posts.findOne({_id: postId});
+                if(post && post.import_status === 'done'){
+                    pub = [];
+                    post.pub.forEach(function(item){
+                        if(item.isImage){
+                            pub.push({_id: item._id, imgUrl:item.imgUrl,index:item.index})
+                        }
+                    });
+                   self.removed("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub}); 
+                }
+            }
+        });
+        initializing = false;
+        post = Posts.findOne({_id: postId});
+        if(post && post.import_status === 'done'){
+            pub = [];
+            post.pub.forEach(function(item){
+                if(item.isImage){
+                    pub.push({_id: item._id, imgUrl:item.imgUrl,index:item.index})
+                }
+            });
+            self.added("serverImportPostStatus", postId, {import_status:post.import_status,mainImage: post.mainImage, pub: pub}); 
+        }
+        self.ready();
+
+        self.onStop(function () {
+            handle.stop();
+        });
+    });
+
     Meteor.publish('configs', function() {
       if(this.userId === null){
           return this.ready();
