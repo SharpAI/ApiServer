@@ -381,6 +381,7 @@
         });
 
         // --- 评论/点评 START---
+        window.latestFavPostId = '';
         var isRemoveParentColor = function(target, parent, isLike) {
           if(parseInt($(target).text()) > 0) {
             return false;
@@ -416,6 +417,7 @@
               $(self).text($(self).text().replace(/\d+/g, function() {return num > 0 ? num -1 : 0;}));
               if(isRemoveParentColor(self, e.target.parentNode.parentElement, true)) e.target.parentNode.parentElement.style.color = "rgb(0,0,0)";
             } else {
+              latestFavPostId = postid;
               syncThumbs(pindex,'likeAdd');
               e.target.className = "fa fa-thumbs-up thumbsUp";
               e.target.style.fontSize = "larger";
@@ -503,6 +505,7 @@
             pindex = parseInt(localStorage.getItem('pcommentPindex'));
             pcommitContent = $('#pcommitReport').val();
             debugPrint('==评论内容是=='+pcommitContent);
+            latestFavPostId = postid;
             $('#pcommitReport').val('');
             $('.showBgColor').removeAttr('style');
             //  添加内容
@@ -556,6 +559,23 @@
             disablePostScroll();
             //trackEvent("socialBar","Me")
             //Session.set('favouritepostsLimit', 0);
+            // 添加喜欢的故事，当前页面点评
+            if(latestFavPostId !== '' && $('.favposts .'+latestFavPostId).length === 0){
+                var favouriteposts = '';
+                var latestPostMainImage = $('.mainImage img').attr('src');
+                var latestPostTitle = $('#wx-title').html();
+                var latestPostAddonTitle = $('#wx-con').html();
+                favouriteposts += '<a href="http://'+window.location.host+'/t/'+latestFavPostId+'" style="color: #5A5A5A;"><div id="'+latestFavPostId+'" class="'+latestFavPostId+'" style="border-radius: 5px; background-color: #f7f7f7;">'+
+                    '<div class="img_placeholder" style="'+
+                    'margin: 0 0.125em 1em;-moz-page-break-inside: avoid;-webkit-column-break-inside: avoid;break-inside: avoid;background: white;border-radius:4px;">'+
+                        '<img class="mainImage" src="'+latestPostMainImage+'" style="width: 100%;border-radius: 4px 4px 0 0;"/>'+
+                    '<p class="title" style="font-size: 16px;font-weight: bold;white-space: pre-line;word-wrap: break-word;margin: 10px;">'+latestPostTitle+'</p>'+
+                    '<p class="addontitle" style="font-size:11px;margin: 10px;">'+latestPostAddonTitle+'</p>'+
+                    '</div></div></a>';
+                $('.favposts').attr('style', 'padding: 10px;background: #F1F1F1;-moz-column-count: 2;-webkit-column-count: 2;column-count: 2;-moz-column-width: 10em;-webkit-column-width: 10em;column-width: 10em;-moz-column-gap: 1em;-webkit-column-gap: 1em;column-gap: 1em;')
+                $(".favposts").append(favouriteposts);
+            }
+            latestFavPostId = '';
             $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');
             $(".meBtn").addClass('focusColor');
             $('.div_contactsList').css('display',"none");
@@ -634,7 +654,7 @@
             // 喜欢故事
             var favouriteposts = '';
             result.favouritePosts.forEach(function(item) {
-                favouriteposts += '<a href="http://'+window.location.host+'/t/'+item._id+'" style="color: #5A5A5A;"><div id="'+item._id+'" style="border-radius: 5px; background-color: #f7f7f7;">'+
+                favouriteposts += '<a href="http://'+window.location.host+'/t/'+item._id+'" style="color: #5A5A5A;"><div id="'+item._id+'" class="'+item._id+'" style="border-radius: 5px; background-color: #f7f7f7;">'+
                     '<div class="img_placeholder" style="'+
                     'margin: 0 0.125em 1em;-moz-page-break-inside: avoid;-webkit-column-break-inside: avoid;break-inside: avoid;background: white;border-radius:4px;">'+
                         '<img class="mainImage" src="'+item.mainImage+'" style="width: 100%;border-radius: 4px 4px 0 0;"/>'+
