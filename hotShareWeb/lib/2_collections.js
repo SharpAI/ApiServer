@@ -1750,9 +1750,11 @@ if(Meteor.isServer){
     }
   });
   Meteor.publish("publicPosts", function(postId) {
-      if(this.userId === null || !Match.test(postId, String))
-        return this.ready();
-      else{
+      if(!Match.test(postId, String)){
+          return this.ready();
+      }else if(this.userId === null){
+          return Posts.find({_id: postId})
+      }else{
         var self = this;
         var userId = this.userId;
         //publicPostsPublisherDeferHandle(self.userId,postId);
