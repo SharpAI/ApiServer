@@ -5,6 +5,7 @@
 var mqtt    = require('mqtt');
 var savePostUser = require('./import-user-post-info');
 var save_viewer_node = require('./import-viewer-info').save_viewer_node;
+var async = require('async');
 //var client  = mqtt.connect('mqtt://broker.mqttdashboard.com');
 //var client  = mqtt.connect('mqtt://broker.raidcdn.org');
 var client  = mqtt.connect('ws://rpcserver.raidcdn.com:80');
@@ -35,6 +36,83 @@ client.on('connect' ,function () {
     client.subscribe('publishPost',{qos:2});
     client.subscribe('newUser',{qos:2});
 
+    function new_usernode(doc, cb){
+        db.collection('users').findOne({_id:doc.userId},{fields:{
+            username: true,
+            createdAt:true,
+            'profile.fullname': true,
+            type: true,
+            'profile.sex':true,
+            'profile.lastLogonIP':true,
+            'profile.anonymous':true,
+            'profile.browser':true,
+            'profile.location':true
+        }},function(err, user) {
+            if(err || (!user)) {
+                return cb(err)
+            }
+            else {
+                savePostUser.save_user_node(user,function(){
+                    console.log('User Info saved')
+                    return cb(null);
+                })
+            }
+        });
+    }
+
+    function new_postnode(doc, cb){
+        db.collection('posts').findOne({_id:doc.postId},{fields:{
+            browse:true,
+            title:true,
+            addontitle:true,
+            owner:true,
+            _id:true,
+            ownerName:true,
+            createdAt:true,
+            mainImage:true
+        }},function(err, post) {
+            if(err || (!post)) {
+                return cb(err)
+            }
+            else {
+                savePostUser.save_post_node(post,function(){
+                    console.log('Post Info saved')
+                    return cb(null);
+                })
+            }
+        });
+    }
+
+    function check_existing(doc, cb){
+        async.series({
+            user: function(callback){
+                savePostUser.check_user_existing(doc.userId, function(result) {
+                    if(!result) {
+                        new_usernode(doc, function(err){
+                            callback(null, 'new usernode');
+                        })
+                    }
+                    else
+                        callback(null, 'usernode existing');
+                })
+            },
+            post: function(callback){
+                savePostUser.check_post_existing(doc.postId, function(result) {
+                    if(!result) {
+                        new_postnode(doc, function(err){
+                            callback(null, 'new postnode');
+                        })
+                    }
+                    else
+                        callback(null, 'postnode existing');
+                })
+            }
+        },function(err, results) {
+            console.log(results);
+            cb(err)
+        });
+    }
+
     client.on('message', function (topic, message) {
         // message is Buffer
         console.log(topic+': '+message.toString());
@@ -49,8 +127,10 @@ client.on('connect' ,function () {
             if (!json.createdAt){
                 json.createdAt = new Date();
             }
-            console.log('To save postview: '+JSON.stringify(json));
-            save_viewer_node(json,function(){
+            check_existing(json, function(err){
+                console.log('To save postview: '+JSON.stringify(json));
+                save_viewer_node(json,function(){
+                })
             })
             /*
             db.collection('posts').findOne({_id:json.postId},{fields:{

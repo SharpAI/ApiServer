@@ -4,6 +4,8 @@
 
 module.exports.save_user_node=save_user_node
 module.exports.save_post_node=save_post_node
+module.exports.check_user_existing=check_user_existing
+module.exports.check_post_existing=check_post_existing
 
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
