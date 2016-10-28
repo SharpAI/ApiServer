@@ -59,11 +59,28 @@ if Meteor.isServer
           prefix = seconds+"秒 前"
 
       return prefix
-
+    String::SymbolEscape = ->
+      strArr = this.split('')
+      htmlChar = '&<>'
+      i = 0
+      while i < strArr.length 
+        if htmlChar.indexOf(this.charAt(i)) != -1
+          switch this.charAt(i)
+            when '<'
+              strArr.splice i, 1, '&#60;'
+            when '>'
+              strArr.splice i, 1, '&#62;'
+            when '&'
+              strArr.splice i, 1, '&#38;'
+        i++
+      strArr.join ''
     SSR.compileTemplate('postItem', Assets.getText('static/postItem.html'))
     Template.postItem.helpers
       getText: ()->
-        this.text.replace(/\n/g, "<br />")
+        text = this.text.SymbolEscape()
+        text = text.replace(/\n/g, "<br />")
+        console.log('text after replace ==='+ text)
+        return text
       hasVideoInfo: (videoInfo)->
         if videoInfo
           true
