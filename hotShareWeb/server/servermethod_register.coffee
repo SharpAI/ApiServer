@@ -226,7 +226,7 @@ if Meteor.isServer
           if !~postIds.indexOf(item.postId)
             postIds.push(item.postId)
         )
-        favouritePosts = Posts.find({_id: {$in: postIds}},{fields:{mainImage:1,addontitle:1,title:1},limit: limit,skip:skip}).fetch()
+        favouritePosts = Posts.find({_id: {$in: postIds}},{fields:{mainImage:1,addontitle:1,title:1},sort:{createdAt:-1},limit: limit,skip:skip}).fetch()
         return favouritePosts
       'updateUserNike': (id, val)->
         Meteor.users.update({_id: id}, {$set: {'profile.fullname': val}})
@@ -244,17 +244,18 @@ if Meteor.isServer
             viewPostIds.push(item.postId)
         )
         console.log(JSON.stringify(viewers))
-        recentViewPosts = Posts.find({_id: {$in: viewPostIds}},{fields:{mainImage:1,addontitle:1,title:1},limit: 3}).fetch()
+        recentViewPosts = Posts.find({_id: {$in: viewPostIds}},{fields:{mainImage:1,addontitle:1,title:1},sort:{createdAt:-1},limit: 3}).fetch()
         postIds = []
         FavouritePosts.find({userId: userId},{limit:10}).forEach((item) ->
           if !~postIds.indexOf(item.postId)
             postIds.push(item.postId)
         )
-        favouritePosts = Posts.find({_id: {$in: postIds}},{fields:{mainImage:1,addontitle:1,title:1},limit: 10}).fetch()
+        favouritePosts = Posts.find({_id: {$in: postIds}},{fields:{mainImage:1,addontitle:1,title:1},sort:{createdAt:-1},limit: 10}).fetch()
+        console.log('favouritePosts=='+JSON.stringify(favouritePosts))
         profileData = {
           recentViewPosts: recentViewPosts,
           favouritePosts: favouritePosts,
-          mePosts: Posts.find({owner: userId},{fields:{mainImage:1,addontitle:1,title:1},limit: 10}).fetch()
+          mePosts: Posts.find({owner: userId},{fields:{mainImage:1,addontitle:1,title:1},sort:{createdAt:-1},limit: 10}).fetch()
         }
         return profileData
       'socialData': (postId)->

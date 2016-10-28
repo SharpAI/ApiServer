@@ -842,7 +842,7 @@
     };
 
 // ---- Profile START ----
-    var preProfileInfo = function (name, userId) {
+    var preProfileInfo = function (name, userId, displayLoadMore) {
         $('.' + name + ' .userProfileTop').html('<img class="icon" src="/userPicture.png" width="70" height="70">\
                     <span class="userName theprofileName"></span>\
                     <span class="location"></span>\
@@ -876,7 +876,9 @@
                 // 写入喜欢的故事
                 displayFavouriteposts(name,userId,usersInformation[userId].favouritePosts);
                 $('.' + name + ' .wait-loading').hide();
-                $("." + name + " .loadMore").html("加载更多");
+                if(displayLoadMore && result.favouritePosts.length === 10){
+                    $("." + name + " .loadMore").html("加载更多");
+                }
             });
         }
     };
@@ -987,7 +989,7 @@
             swipe = new window.Swipe(['userProfilePage0'], true, $('.swipe-tmp'));
             swipe.leftRight(null, null);
             swipe.setInitialPage('userProfilePage0');
-            preProfileInfo('userProfilePage0', ownerId);
+            preProfileInfo('userProfilePage0', ownerId, true);
             return;
         }
 
@@ -1016,10 +1018,10 @@
               localStorage.setItem('userProfile_BoxFromPostsPage', false);
               $(".userProfileBox").hide();
           });
-          $(".userProfilePage"+i+" .loadMore").click(function (e) {
-            console.log($(e.currentTarget).parent().parent().parent());
-            loadMoreFavouriteposts("userProfilePage"+$(e.currentTarget).parent().parent().parent().attr('data-index'));
-          });
+        //   $(".userProfilePage"+i+" .loadMore").click(function (e) {
+        //     console.log($(e.currentTarget).parent().parent().parent());
+        //     loadMoreFavouriteposts("userProfilePage"+$(e.currentTarget).parent().parent().parent().attr('data-index'));
+        //   });
           i+=1;
         }
 
