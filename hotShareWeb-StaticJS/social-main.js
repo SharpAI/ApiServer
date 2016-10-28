@@ -681,8 +681,9 @@
         if(import_status === 'done'){
             pub = message.fields.pub;
             // 处理图片src
+            $('#wx-img').attr('src',message.fields.mainImage);
             pub.forEach(function(item){
-                $('#'+item._id).attr('src',item.imgUrl);
+                $('#'+item._id+' img').attr('data-original',item.imgUrl);
             });
             
             window.localStorage.removeItem('waitForServerImportStatus');
