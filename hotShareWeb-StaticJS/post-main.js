@@ -298,6 +298,25 @@
         } catch (e){
             debugPrint("no Video");
         }
+        try{
+            if($('.goChapter').length > 0){
+                var chapterId = $('.goChapter').attr('chapterid');
+                $(".goChapter").click(function(e) {
+                    var $showPosts, scrolltop;
+                    $showPosts = $('.showPosts');
+                    $('.showPosts').get(0).style.overflow = '';
+                    $('.showPosts').get(0).style.maxHeight = '';
+                    $('.showPosts').get(0).style.position = '';
+                    $('.readmore').remove();
+                    scrolltop = $('#' + chapterId).offset().top;
+                    console.log('index is ' + chapterId);
+                    console.log(scrolltop);
+                    document.body.scrollTop = scrolltop;
+                });
+            }
+        } catch (e){
+            debugPrint("no chapter");
+        }
         $(".postVideoItem.element .play_area").click(function(e) {
             var _self = this, $_self = $(this);
             var $node=$(e.currentTarget);

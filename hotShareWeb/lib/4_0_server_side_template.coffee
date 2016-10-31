@@ -226,6 +226,11 @@ if Meteor.isServer
           this.pub[this.focusedIndex].text
         else
           null
+      getChapterId:->
+        if this.focusedIndex isnt undefined
+          this.pub[this.focusedIndex]._id
+        else
+          null
       getAbstractSentenceIndex:->
         pub = this.pub
         index = this.focusedIndex
