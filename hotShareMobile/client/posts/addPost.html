@@ -149,7 +149,7 @@
 </template>
 
 <template name="chooseAssociatedUser">
-  <div class="modal fade" id="chooseAssociatedUser" tabindex="-1" role="dialog">
+  <div class="modal fade" id="chooseAssociatedUser" tabindex="-1" role="dialog" style="display:none;">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -167,7 +167,7 @@
             </dd>
           </dl>
           {{#each accountList}}
-            <dl>
+            <dl class="account-list-dl">
               <dt userId="{{toUserId}}" userIcon="{{toIcon}}" userName="{{toName}}"><img src="{{toIcon}}" alt="Avatar"><i class="fa fa-check-circle"></i></dt>
               <dd>
                   {{toName}}
