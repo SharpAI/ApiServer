@@ -519,6 +519,7 @@ var insert_data = function(user, url, data, draftsObj, cb) {
         data.resortedArticle[i].data_sizex = parseInt(data.resortedArticle[i].data_sizex);
         data.resortedArticle[i].data_sizey = parseInt(data.resortedArticle[i].data_sizey);
         data.resortedArticle[i].data_wait_init = true;
+        data.resortedArticle[i].originImgUrl = data.resortedArticle[i].imageUrl;
         data.resortedArticle[i].imgUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
         if(i > 0){data.resortedArticle[i].data_row = data.resortedArticle[i-1].data_row + data.resortedArticle[i-1].data_sizey;}
       }

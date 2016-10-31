@@ -677,17 +677,24 @@
         var message = e1.detail;
         debugPrint('serverImportHandle:' + JSON.stringify(message));
         var import_status = message.fields.import_status;
-        var pub;
-        if(import_status === 'done'){
-            pub = message.fields.pub;
-            // 处理图片src
-            $('#wx-img').attr('src',message.fields.mainImage);
-            pub.forEach(function(item){
-                $('#'+item._id+' img').attr('data-original',item.imgUrl);
-            });
-            
-            window.localStorage.removeItem('waitForServerImportStatus');
+        var pub,$elem;
+        pub = message.fields.pub;
+        $elem = $('.element img.lazy');
+        // 处理图片src
+        $('#wx-img').attr('src',message.fields.mainImage);
+        for(var i =0;i<$elem.length;i++){
+            for(var j=0;j<pub.length;j++){
+                if(pub[j].souImgUrl === $('#'+$elem[i].id).data('originimgurl')){
+                    $('#'+$elem[i].id).attr({
+                        'data-original':pub[j].imgUrl,
+                        'src':pub[j].imgUrl
+                    });
+                }
+                continue;
+            }
         }
+        
+        window.localStorage.removeItem('waitForServerImportStatus');
     }
     var initServerImport = function(){
         // 导入
