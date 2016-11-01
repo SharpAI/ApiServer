@@ -101,19 +101,19 @@
             <td style="text-align:center;" class="rp-only-pc">{{formatTime createdAt}}</td>
             <td style="text-align:center;" class="rp-only-pc">{{formatReviewTime createdAt reviewAt}}</td>
             {{#if isMontior}}
-            <td style="text-align:center;" >
+            <td style="text-align:center;" class="rp-click-area rp-click-area">
               <a href="#" id="{{_id}}" class="remove" style="margin-right:8px;">删除</a>
               <a href="#" id="{{_id}}" class="removeWithUser">删除并禁止用户</a>
             </td>
             {{/if}}
             {{#if isRecover}}
-            <td style="text-align:center;" class="rp-only-pc">
+            <td style="text-align:center;" class="rp-only-pc rp-click-area">
               <a href="#" id="{{_id}}" class="restore" style=" margin-right:8px;">恢复</a>
               <a href="#" id="{{_id}}" class="del">彻底删除</a>
             </td>
             {{/if}}
             {{#if isReview}}
-            <td style="text-align:center;" class="rp-only-pc">
+            <td style="text-align:center;" class="rp-only-pc rp-click-area">
               <a href="#" id="{{_id}}" class="reviewPostPass" style=" margin-right:8px;">通过</a>
               <a href="#" id="{{_id}}" class="reviewPostMiss">不通过</a>
               <a href="#" id="{{_id}}" class="removeWithUser rp-c-red">不通过并禁止用户</a>
@@ -193,7 +193,7 @@
   {{/if}}
   {{/each}}
   </div>
-  <div class="review-footer">
+  <div class="review-footer rp-click-area">
   {{#if isReview}}
     <p id={{posts._id}} class="reviewPostPass rp-c-blue-btn" style="padding:8px 16px; display:inline-block;">通过</p>
     <p id={{posts._id}} class="reviewPostMiss rp-c-blue-btn" style="padding:8px 16px; display:inline-block;">不通过</p>  
@@ -207,7 +207,7 @@
     <p id={{posts._id}} class="remove rp-c-pink-btn" style="padding:8px 16px; display:inline-block;">删除</p>
     <p id={{posts._id}} class="removeWithUser rp-c-red-btn" style="padding:8px 16px; display:inline-block;">删除并禁止用户</p>  
   {{/if}}
-  <p id="closeReviewContent" class="rp-c-red-btn" style="padding:8px 16px; display:inline-block;">关闭</p>
+  <p id="closeReviewContent" class="rp-c-red-btn" style="padding:8px 16px; display:inline-block;position: absolute;z-index: 9; margin: 12px;">关闭</p>
   </div>
 </div>
 </template>

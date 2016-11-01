@@ -263,28 +263,40 @@ Template.reporter.events({
     // prompt("按CTRL + V 复制",'http://cdn.tiegushi.com/posts/'+e.currentTarget.id);
   },
   'click .remove': function(e,t){
+    toastr.remove();
+    $('.rp-click-area').addClass('rp-click-area-disable');
     Meteor.call('delectPostAndBackUp',e.currentTarget.id,Meteor.userId());
     $('tr#' + e.currentTarget.id).remove();
-    toastr.info('已删除')
+    toastr.info('已删除');
+    $('.rp-click-area').removeClass('rp-click-area-disable');
   },
   'click .removeWithUser': function(e){
+    toastr.remove();
+    $('.rp-click-area').addClass('rp-click-area-disable');
     Meteor.call('delectPostWithUserAndBackUp',e.currentTarget.id,Meteor.userId());
     $('tr#' + e.currentTarget.id).remove();
     $('.reviewPostContent').hide();
-    toastr.info('已删除')
+    toastr.info('已删除');
+    $('.rp-click-area').removeClass('rp-click-area-disable');
   },
   'click .restore': function(e,t){
+    toastr.remove();
+    $('.rp-click-area').addClass('rp-click-area-disable');
     Meteor.call('restorePost',e.currentTarget.id,Meteor.userId());
     $('.reviewPostContent').hide();
     $('tr#' + e.currentTarget.id).remove();
-    toastr.info('已恢复')
+    toastr.info('已恢复');
+    $('.rp-click-area').removeClass('rp-click-area-disable');
   },
   'click .del': function(e,t) {
     PUB.confirm('将从数据库中完全删除，并且无法恢复请确认！',function(){
+      toastr.remove();
+      $('.rp-click-area').addClass('rp-click-area-disable');
       Meteor.call('delPostfromDB',e.currentTarget.id,Meteor.userId());
       $('.reviewPostContent').hide();
       $('tr#' + e.currentTarget.id).remove();
       toastr.info('删除成功！');
+      $('.rp-click-area').removeClass('rp-click-area-disable');
     })
   },
   'click .viewOwner': function(e,t){
@@ -315,6 +327,7 @@ Template.reporter.events({
     var page;
     page = Session.get('reporter-page');
     if(page<=1){
+      toastr.remove();
       toastr.info('已经是第一页了～');
       return
     }
@@ -328,6 +341,7 @@ Template.reporter.events({
     limit = parseInt(Session.get('reporter-limit'));
     postsCount = Counts.get('rpPostsCounts');
     if(postsCount<=(limit*page)){
+      toastr.remove();
       toastr.info('已经是最后一页了～');
       return
     }
@@ -343,6 +357,8 @@ Template.reporter.events({
 
   // review
   'click .reviewPostPass': function(e,t){
+    toastr.remove();
+    $('.rp-click-area').addClass('rp-click-area-disable');
     Meteor.call('reviewPostPass',Meteor.userId(),e.currentTarget.id,function(err,result){
       if(!err && result){
         res = JSON.parse(result.content);
@@ -351,22 +367,29 @@ Template.reporter.events({
           $('.reviewPostContent').hide();
           $('tr#' + e.currentTarget.id).remove();
           toastr.info('通过发表成功');
+          $('.rp-click-area').removeClass('rp-click-area-disable');
         } else {
           toastr.error('请重试');
+          $('.rp-click-area').removeClass('rp-click-area-disable');
         }
       } else {
         toastr.error('请重试');
+        $('.rp-click-area').removeClass('rp-click-area-disable');
       }
     });
   },
   'click .reviewPostMiss': function(e,t){
+    toastr.remove();
+    $('.rp-click-area').addClass('rp-click-area-disable');
     Meteor.call('reviewPostMiss',Meteor.userId(),e.currentTarget.id,function(err,result){
       if(!err && result){
         $('.reviewPostContent').hide();
         $('tr#' + e.currentTarget.id).remove();
         toastr.info('该帖未通过审核');
+        $('.rp-click-area').removeClass('rp-click-area-disable');
       } else {
         toastr.error('请重试');
+        $('.rp-click-area').removeClass('rp-click-area-disable');
       }
     });
   },
@@ -374,12 +397,16 @@ Template.reporter.events({
   // unblock user
   'click .restoreUser': function(e,t){
     PUB.confirm('请确认！',function(){
+      toastr.remove();
+      $('.rp-click-area').addClass('rp-click-area-disable');
       Meteor.call('restoreUser',Meteor.userId(),e.currentTarget.id,function(err,result){
         if(!err && result){
           $('tr#' + e.currentTarget.id).remove();
           toastr.info('恢复用户成功！');
+          $('.rp-click-area').removeClass('rp-click-area-disable');
         } else {
           toastr.error('请重试');
+          $('.rp-click-area').removeClass('rp-click-area-disable');
         }
       });
     });

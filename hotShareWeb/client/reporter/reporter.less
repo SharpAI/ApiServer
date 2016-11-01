@@ -45,7 +45,7 @@
     bottom: 0;
     overflow: auto;
     tr:nth-child(even){background: #eee; border: none;}
-    td{ border-bottom: 1px solid #eee;}
+    td{ border-bottom: 1px solid #eee; position: relative;}
     input{height: 28px; line-height: 28px; text-align: center; border: 1px solid #ccc; outline: none;}
     .remove,.restore,.showPostURI{color: deeppink; cursor: pointer;}
     .del,.removeWithUser{color: red; cursor: pointer;}
@@ -153,7 +153,17 @@
   }
 }
 .rp-user-mobile{display: none;}
-
+.rp-click-area-disable::after{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  content: "处理中...";
+  text-align: center;
+  left: 0;
+  top: 0;
+  cursor: not-allowed;
+  background: rgba(255,255,255,.78);
+}
 // for mobile
 @media screen and (max-width:700px ){
   .reporter{
