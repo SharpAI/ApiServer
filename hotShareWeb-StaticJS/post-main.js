@@ -365,6 +365,7 @@
 
         var showBellBox = function() {
           $('._bell-box').slideDown(300);
+          location.hash = '#bell';
         //   var userId = window._loginUserId || 'u8MRTTcXLoTzs9oXn';
         //   $('.wait-loading').show();
         //   jQuery.get('/t/bell/' + userId, {}, function(data){
@@ -395,9 +396,12 @@
         $(".show-post-new-message").click(function(){showBellBox()});
         $(".div_me .set-up .bell").click(function(){showBellBox()});
         $('._bell-box .head').click(function(){
+          location.hash = '';
           window.CallMethod('clearUserBellWaitReadCount',[window._loginUserId]);
           $('._bell-box,.msg-box, _bell-box .readTips').css('display', 'none');
         });
+        if(location.hash === '#bell')
+          showBellBox();
 
         // --- 评论/点评 START---
         window.latestFavPostId = '';
