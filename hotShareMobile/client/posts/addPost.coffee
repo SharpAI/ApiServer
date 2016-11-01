@@ -1448,15 +1448,6 @@ if Meteor.isClient
           draftToBeUploadedImageData.push(video)
         #uploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId)
         #Don't add addpost page into history
-
-        # 右上角的发表按钮（且有多帐号）
-        if e.currentTarget.id is "publish" and $('#chooseAssociatedUser .account-list-dl').length > 0
-          $('#chooseAssociatedUser').css('display', 'block')
-          return
-        # 选择多帐号的发表按钮
-        else if e.currentTarget.id is "modalPublish"
-          $('#chooseAssociatedUser').css('display', 'none')
-
         Session.set('terminateUpload', false)
         if draftToBeUploadedImageData.length > 0
           multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, null, (err, result)->
