@@ -23,33 +23,39 @@ if Meteor.isClient
                     'onMenuShareQZone']
       }
     wechatReady = ()->
-      timelineData = {
-        title: if document.title then document.title else '故事贴主题阅览室',
-        desc: "来自故事贴",
-        link: window.location.href,
-        imgUrl: if document.images and document.images.length > 0 then document.images[0].src else 'http://cdn.tiegushi.com/images/logo.png',
-        success: () ->
-          console.log('Share success');
-        cancel: ()->
-          console.log('Share cancled');
-      }
-      chatShareData = {
-        title: if document.title then document.title else '故事贴主题阅览室',
-        desc: "来自故事贴",
-        link: window.location.href,
-        imgUrl: if document.images and document.images.length > 0 then document.images[0].src else 'http://cdn.tiegushi.com/images/logo.png',
-        success: () ->
-          console.log('Share success');
-        cancel: ()->
-          console.log('Share cancled');
-      }
-      
-      if(window.frames.length is parent.frames.length)
-        wx.onMenuShareTimeline(timelineData)
-        wx.onMenuShareQQ(chatShareData)
-        wx.onMenuShareWeibo(chatShareData)
-        wx.onMenuShareAppMessage(chatShareData)
-        wx.onMenuShareQZone(chatShareData)
+      Meteor.call 'getPostInfo',Session.get('openedRoom'),(err,data)->
+        if !err and data
+          title = data.title
+          image = data.mainImage
+        unless image and image isnt '' and iamge isnt undefined and image isnt null
+          image = 'http://cdn.tiegushi.com/images/logo.png'
+        timelineData = {
+          title: if title then title else '故事贴主题阅览室',
+          desc: "来自故事贴",
+          link: window.location.href,
+          imgUrl: image,
+          success: () ->
+            console.log('Share success');
+          cancel: ()->
+            console.log('Share cancled');
+        }
+        chatShareData = {
+          title: if title then title else '故事贴主题阅览室',
+          desc: "来自故事贴",
+          link: window.location.href,
+          imgUrl: image,
+          success: () ->
+            console.log('Share success');
+          cancel: ()->
+            console.log('Share cancled');
+        }
+        
+        if(window.frames.length is parent.frames.length)
+          wx.onMenuShareTimeline(timelineData)
+          wx.onMenuShareQQ(chatShareData)
+          wx.onMenuShareWeibo(chatShareData)
+          wx.onMenuShareAppMessage(chatShareData)
+          wx.onMenuShareQZone(chatShareData)
 
     setupWeichat = (url)->
       Meteor.call 'getSignatureFromServer',url,(error,result)->
