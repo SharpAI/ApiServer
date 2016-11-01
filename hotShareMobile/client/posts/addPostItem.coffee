@@ -226,6 +226,12 @@ if Meteor.isClient
       else
         size_y = 4
       grid.add_widget(node, 6, size_y, 1)
+    else if type is 'iframe'
+      if sizeY
+        size_y = sizeY
+      else
+        size_y = 4
+      grid.add_widget(node, 6, size_y, 1)
     else if type is "image"
       if insertedObj.data_wait_init is true
         grid.add_widget(node, parseInt(insertedObj.data_sizex,baseGap*2), parseInt(insertedObj.data_sizey,baseGap*2))

@@ -74,7 +74,7 @@ EOF
 		echo -e "\tconfig.xml patch failed !!! "
 	else
 		sed -i 's/xmlns:cdv/ xmlns:gap=\"http:\/\/phonegap.com\/ns\/1.0\" xmlns:android=\"http:\/\/schemas.android.com\/apk\/res\/android\" xmlns:cdv/' $CONFIG_FILE
-		sed -i "$2 r ${PATCH_FILE2}" $CONFIG_FILE
+		sed -i "2 r ${PATCH_FILE2}" $CONFIG_FILE
 	fi
 
 	grep "android:debuggable" $TAGET_FILE > /dev/null 2>&1
