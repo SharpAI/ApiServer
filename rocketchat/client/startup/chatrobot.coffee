@@ -412,6 +412,15 @@ if Meteor.isClient
                         ownerName:"微尘"
                         ###
                         console.log data
+                        #检测此room的帖子是否违规
+                        if data.isReview isnt true or data.publish isnt true
+                            console.log '帖子违规或已被删除'
+                            Session.set 'thisPostInfo', false
+                            $('.room-container').children().remove()
+                            $('.room-container').addClass('no-data-container')
+                            $('.room-container').text('没有数据或已关闭.')
+                        else
+                            Session.set 'thisPostInfo', true
                         document.title =TAPi18n.__('rrbMsg_document_title',{title: data.title})
                         amplify.store('postTitle_'+currentRoomId,data.title)
 
@@ -443,6 +452,12 @@ if Meteor.isClient
                           'http://cdn.tiegushi.com/posts/'+data._id, data.title, description, data.mainImage, false, 'current')
                         if Meteor.user() and amplify.store('hotshareUserID') and data.owner is amplify.store('hotshareUserID')
                             sendPostStatToOwner(data._id)
+                    else
+                        console.log 'no data;;;;'
+                        Session.set 'thisPostInfo', false
+                        $('.room-container').children().remove()
+                        $('.room-container').addClass('no-data-container')
+                        $('.room-container').text('没有数据或已关闭.')
             else if amplify.store('postTitle_'+currentRoomId)
                 document.title = TAPi18n.__('rrbMsg_document_title',{title: amplify.store('postTitle_'+currentRoomId)})
         Tracker.autorun (t)->

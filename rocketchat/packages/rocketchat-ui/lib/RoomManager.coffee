@@ -195,15 +195,23 @@ RocketChat.Notifications.onUser 'message', (msg) ->
 		room = openedRooms[typeName]
 		if not room?
 			return
-
 		if not room.dom? and rid?
-			room.dom = document.createElement 'div'
-			room.dom.classList.add 'room-container'
-			contentAsFunc = (content) ->
-				return -> content
+			if Session.get 'thisPostInfo' is false
+				room.dom = document.createElement 'div'
+				room.dom.classList.add 'no-data-container'
+				contentAsFunc = (content) ->
+					return -> content
 
-			room.template = Blaze._TemplateWith { _id: rid }, contentAsFunc(Template.room)
-			Blaze.render room.template, room.dom #, nextNode, parentView
+				room.template = Blaze._TemplateWith { _id: rid }, contentAsFunc('没有数据或已关闭')
+				Blaze.render room.template, room.dom
+			else
+				room.dom = document.createElement 'div'
+				room.dom.classList.add 'room-container'
+				contentAsFunc = (content) ->
+					return -> content
+
+				room.template = Blaze._TemplateWith { _id: rid }, contentAsFunc(Template.room)
+				Blaze.render room.template, room.dom #, nextNode, parentView
 
 		return room.dom
 

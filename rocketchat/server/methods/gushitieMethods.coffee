@@ -66,7 +66,7 @@ Meteor.startup ()->
       return result
     'getPostInfo':(postId)->
       this.unblock()
-      postinfo = GushitiePosts.findOne({_id:postId},{fields:{mainImage:1,owner:1,ownerName:1,title:1,addontitle:1,createdAt:1}})
+      postinfo = GushitiePosts.findOne({_id:postId},{fields:{mainImage:1,owner:1,ownerName:1,title:1,addontitle:1,createdAt:1,isReview:1,publish:1}})
       return postinfo
     'getMyPostStat': (postId)->
       this.unblock()
