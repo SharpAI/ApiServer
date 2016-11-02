@@ -1448,6 +1448,10 @@ if Meteor.isClient
           draftToBeUploadedImageData.push(video)
         #uploadFileWhenPublishInCordova(draftToBeUploadedImageData, postId)
         #Don't add addpost page into history
+
+        if e.currentTarget.id is "modalPublish"
+          $('#chooseAssociatedUser').modal('hide')
+
         Session.set('terminateUpload', false)
         if draftToBeUploadedImageData.length > 0
           multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, null, (err, result)->
