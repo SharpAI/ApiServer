@@ -5642,7 +5642,7 @@ html{background-color: #fff;}
 /*==== server Import start ====*/
 .import-post {
   background-color: #F5F5F5;
-  position: fixed;
+  /*position: fixed;*/
   display: none;
   left: 0;
   top: 0;

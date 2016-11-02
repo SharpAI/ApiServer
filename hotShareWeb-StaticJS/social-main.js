@@ -770,6 +770,7 @@
         $('.import-post .left-btn').click(function(){
             $('body').scrollTop(0);
             $('.import-post').hide();
+            $('.import-post-bg').hide();
         });
     };
     
