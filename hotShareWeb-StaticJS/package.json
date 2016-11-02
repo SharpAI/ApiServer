@@ -1,9 +1,9 @@
 {
   "name": "hotshare-static-web-js-bundles",
-  "version": "1.2.19",
-  "socialVersion":"1.2.19",
-  "postVersion":"1.2.20",
-  "cssVersion":"1.2.19",
+  "version": "1.2.21",
+  "socialVersion":"1.2.21",
+  "postVersion":"1.2.21",
+  "cssVersion":"1.2.21",
   "description": "js code for the static page with NPM builder",
   "scripts": {
     "build": "cleancss -o ../hotShareWeb/public/statics/main-$npm_package_cssVersion.css ./styles/main.css && browserify -t [ coffeeify --bare false --header true ] --extension=\".coffee\" post-main.js | uglifyjs -p 10 -c -m > bundle-post-$npm_package_postVersion.min.js && browserify -t [ coffeeify --bare false --header true ] --extension=\".coffee\" social-main.js | uglifyjs -p 10 -c -m > bundle-social-$npm_package_socialVersion.min.js && cp bundle*.js ../hotShareWeb/public/statics/ && rm bundle*.js",
