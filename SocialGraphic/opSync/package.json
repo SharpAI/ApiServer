@@ -1,6 +1,6 @@
 {
   "name": "socialSync",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "author": "RAID CDN Team",
   "main":"main.js",
   "scripts":{
@@ -11,6 +11,7 @@
   "dependencies": {
     "mongo-oplog":"1.0.1",
     "seraph":"^0.14.2",
+    "async": "^2.1.2",
     "mongodb":"^2.1.8"
   },
   "devDependencies": {

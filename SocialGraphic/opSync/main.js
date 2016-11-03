@@ -228,7 +228,10 @@ function get_doc(ns, id, cb) {
 
 function sync_to_neo4j(ns, postDoc, userDoc, viewerDoc) {
   if(ns === conn.oplog_opts_v.ns) {
-    if(postDoc && postDoc._id && userDoc && userDoc._id)
+    if(postDoc && postDoc._id && userDoc && userDoc._id && viewerDoc) {
+      if (!viewerDoc.createdAt)
+        viewerDoc.createdAt = new Date();
+
       savePostUser.save_user_node(userDoc,function(){
         savePostUser.save_post_node(postDoc,function(){
           save_viewer_node(viewerDoc, function(){
@@ -236,6 +239,7 @@ function sync_to_neo4j(ns, postDoc, userDoc, viewerDoc) {
           })
         })
       })
+    }
     else
       console.log(ns + ', failed with: id=' + postDoc._id + ' uid=' + userDoc._id)
   }
