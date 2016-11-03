@@ -385,5 +385,74 @@ if Meteor.isServer
     # return
   , {where: 'server'})
 
+  Router.route('/download-reporter-logs', (req, res, next)->
+    data = reporterLogs.find({},{sort:{createdAt:-1}}).fetch()
+    fields = [
+      {
+        key:'postId',
+        title:'帖子Id',
+      },
+      {
+        key:'postTitle',
+        title:'帖子标题',
+      },
+      {
+        key:'postCreatedAt',
+        title:'帖子创建时间',
+        transform: (val, doc)->
+          d = new Date(val)
+          return d.toLocaleString()
+      },
+      {
+        key: 'userId',
+        title: '用户Id(涉及帖子操作时，为帖子Owner)'
+      },
+      {
+        key:'userName',
+        title:'用户昵称'
+      },
+      {
+        key:'userEmails',
+        title:'用户Email',
+        transform: (val, doc)->
+          emails = ''
+          if val and val isnt null
+            val.forEach (item)->
+              emails += item.address + '\r\n'
+          return emails;
+      },
+      {
+        key:'eventType',
+        title: '操作类型'
+      },
+      {
+        key:'loginUser',
+        title: '操作人员',
+        transform: (val, doc)->
+          user = Meteor.users.findOne({_id: val})
+          userInfo = '_id: '+val+'\r\n username: '+user.username
+          return userInfo
+      },
+      {
+        key: 'createdAt',
+        title: '操作时间',
+        transform: (val, doc)->
+          d = new Date(val)
+          return d.toLocaleString()
+      },
+
+    ]
+
+    title = 'hotShareReporterLogs-'+ (new Date()).toLocaleDateString()
+    file = Excel.export(title, fields, data)
+    headers = {
+      'Content-type': 'application/vnd.openxmlformats',
+      'Content-Disposition': 'attachment; filename=' + title + '.xlsx'
+    }
+
+    this.response.writeHead(200, headers)
+    this.response.end(file, 'binary')
+  , { where: 'server' })
+
 
 

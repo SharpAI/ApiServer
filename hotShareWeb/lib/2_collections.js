@@ -28,6 +28,7 @@ Configs = new Meteor.Collection('configs');
 // 删除帖子
 LockedUsers = new Meteor.Collection('lockedUsers');
 BackUpPosts = new Meteor.Collection('backUpPosts');
+reporterLogs = new Meteor.Collection('reporterLogs');
 // 绿网检查帖子内容
 isPostSafe = function(title,addontitle,mainImage,pub){
     // check title

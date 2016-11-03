@@ -382,13 +382,37 @@ if Meteor.isServer
         if !confirmReporterAuth(userId)
           return false
         post = Posts.findOne(postId)
+        owner = Meteor.users.findOne({_id: post.owner})
         Posts.remove(postId)
+        reporterLogs.insert({
+          userId:post.owner,
+          userName: post.ownerName,
+          userEmails: owner.emails,
+          postId: postId,
+          postTitle: post.title,
+          postCreatedAt: post.createdAt,
+          eventType: '不通过帖子审核',
+          loginUser: userId,
+          createdAt: new Date()
+        })
         if post
           return BackUpPosts.insert(post)
       'delectPostAndBackUp': (postId,userId)->
         if !confirmReporterAuth(userId)
           return false
         post = Posts.findOne({_id:postId})
+        owner = Meteor.users.findOne({_id: post.owner})
+        reporterLogs.insert({
+          userId:post.owner,
+          userName: post.ownerName,
+          userEmails: owner.emails,
+          postId: postId,
+          postTitle: post.title,
+          postCreatedAt: post.createdAt,
+          eventType: '删除帖子',
+          loginUser: userId,
+          createdAt: new Date()
+        })
         if post
           # backup
           BackUpPosts.insert(post)
@@ -399,6 +423,18 @@ if Meteor.isServer
         if !confirmReporterAuth(userId)
           return false
         post = Posts.findOne({_id:postId})
+        owner = Meteor.users.findOne({_id: post.owner})
+        reporterLogs.insert({
+          userId:post.owner,
+          userName: post.ownerName,
+          userEmails: owner.emails,
+          postId: postId,
+          postTitle: post.title,
+          postCreatedAt: post.createdAt,
+          eventType: '删除帖子并禁止用户登录',
+          loginUser: userId,
+          createdAt: new Date()
+        })
         if post
           # backup
           BackUpPosts.insert(post)
@@ -413,6 +449,18 @@ if Meteor.isServer
         if !confirmReporterAuth(userId)
           return false
         post = BackUpPosts.findOne({_id:postId})
+        owner = Meteor.users.findOne({_id: post.owner})
+        reporterLogs.insert({
+          userId:post.owner,
+          userName: post.ownerName,
+          userEmails: owner.emails,
+          postId: postId,
+          postTitle: post.title,
+          postCreatedAt: post.createdAt,
+          eventType: '恢复帖子',
+          loginUser: userId,
+          createdAt: new Date()
+        })
         if post
           Posts.insert(post)
           BackUpPosts.remove(postId)
@@ -420,11 +468,35 @@ if Meteor.isServer
       'restoreUser': (userA,userB)->
         if !confirmReporterAuth(userA)
           return false
+        owner = Meteor.users.findOne({_id: userB})
+        reporterLogs.insert({
+          userId:post.owner,
+          userName: post.ownerName,
+          userEmails: owner.emails,
+          postId: null,
+          postTitle: null,
+          postCreatedAt: null,
+          eventType: '恢复用户',
+          loginUser: userA,
+          createdAt: new Date()
+        })
         LockedUsers.remove({_id: userB})
       'delPostfromDB': (postId,userId)->
         if !confirmReporterAuth(userId)
           return false
         post = BackUpPosts.findOne({_id:postId})
+        owner = Meteor.users.findOne({_id: post.owner})
+        reporterLogs.insert({
+          userId:post.owner,
+          userName: post.ownerName,
+          userEmails: owner.emails,
+          postId: postId,
+          postTitle: post.title,
+          postCreatedAt: post.createdAt,
+          eventType: '彻底删除帖子',
+          loginUser: userId,
+          createdAt: new Date()
+        })
         if post
           BackUpPosts.remove(postId)
           delectAliyunPictureObject(postId)
