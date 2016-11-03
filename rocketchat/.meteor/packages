@@ -146,6 +146,7 @@ mkarliner:mqtt
 ccorcos:neo4j
 rikonor:env
 meteorhacks:npm
+meteorhacks:kadira
 
 
 npm-container
