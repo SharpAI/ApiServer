@@ -37,3 +37,8 @@ CREATE (a)-[:MEET]->(b);
 
 看过当前帖子的人还看过最新的（8AfMD9Qy4fsFNPLrZ）：
 MATCH (u:User)-[:VIEWER]->(p:Post),(u)-[vi:VIEWER]->(p1:Post) WHERE p.postId="8AfMD9Qy4fsFNPLrZ" return u,p1,p ORDER BY vi.by DESC LIMIT 20;
+
+3. How to docker build/run
+   rm -rf node_modules/
+   docker build -t yourname/appname .
+   docker run -t yourname/appname
