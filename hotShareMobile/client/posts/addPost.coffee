@@ -653,6 +653,8 @@ if Meteor.isClient
         console.log("ERROR: httpCall, api_url="+api_url);
 
   @handleDirectLinkImport = (url, clientSide)->
+    if url.match(/localhost/g)
+      url = "about:blank"
     if withServerImport and clientSide is undefined
       console.log("Import url on server side...")
       hanldeDirectLinkServerImport(url)
@@ -681,7 +683,7 @@ if Meteor.isClient
     if url and url isnt ''
       window.iabHandle = window.open(url, '_blank', 'hidden=no,toolbarposition=top')
     else
-      window.iabHandle = window.open('', '_blank', 'hidden=no,toolbarposition=top')
+      window.iabHandle = window.open('about:blank', '_blank', 'hidden=no,toolbarposition=top')
     if Session.get('isReviewMode') isnt '1'
       iabHandle.addEventListener 'import',getURL
       #iabHandle.addEventListener 'exit',handleExitBrowser
