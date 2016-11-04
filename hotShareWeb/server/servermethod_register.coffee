@@ -75,23 +75,29 @@ if Meteor.isServer
       FavouritePosts.insert({postId: postId, userId: userId, createdAt: new Date(), updateAt: new Date()})
   Meteor.startup ()->
     Meteor.methods
-      'pushRecommendStoryToReaderGroups': (postId, storyId)->
+      'pushRecommendStoryToReaderGroups': (postId, storyId, userId)->
         if this.userId is null or postId is undefined or postId is null or storyId is undefined or storyId is null
           return false
         self = this
         this.unblock()
+
+        # login user
+        if(!userId)
+          userId = this.userId
+        me = Meteor.users.findOne({_id: userId})
+
         Meteor.defer ()->
           readers = []
-          post = Posts.findOne({_id: postId})
+          # post = Posts.findOne({_id: postId})
           story = Posts.findOne({_id: storyId})
           feed = {
             owner: story.owner,
             ownerName: story.ownerName,
             ownerIcon: story.ownerIcon,
             # recommander 推荐者信息
-            recommanderId: story.owner,
-            recommander: story.ownerName,
-            recommanderIcon: story.ownerIcon,
+            recommanderId: userId,
+            recommander: if me.profile and me.profile.fullname then me.profile.fullname else me.username,
+            recommanderIcon: if me.profile and me.profile.icon then me.profile.icon else '/userPicture.png',
             eventType: 'recommand',
             postId: story._id,
             postTitle: story.title,
@@ -108,7 +114,7 @@ if Meteor.isServer
               feedItem = _.extend(feed, {followby: item.userId})
               Feeds.insert(feedItem)
               Meteor.users.update({_id: item.userId}, {$inc: {'profile.waitReadCount': 1}})
-              pushnotification("newpost", {_id: feedItem.postId, ownerName: feedItem.ownerName, title: feedItem.postTitle}, item.userId)
+              pushnotification("recommand", {postId: postId, ownerName: feedItem.ownerName, title: feedItem.postTitle, recommander: feedItem.recommander, followby: item.userId}, item.userId)
           )
 
           relatedUserIds = []

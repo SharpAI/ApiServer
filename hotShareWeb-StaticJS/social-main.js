@@ -623,7 +623,7 @@
         // 选择故事分享
         $('.recommendStory').on('click', '.storyLists li', function (e) {
             debugPrint(e.currentTarget.id);
-            window.CallMethod('pushRecommendStoryToReaderGroups', [postid, e.currentTarget.id]);
+            window.CallMethod('pushRecommendStoryToReaderGroups', [postid, e.currentTarget.id, window._loginUserId]);
             toastr.info('推荐成功！');
             closeRecommendStorysPage();
         });
@@ -656,7 +656,7 @@
                     debugPrint("storyId is ==", storyId);
                     $('.importing-mask,.importing').hide();
                     if (data.status === "succ") {
-                        window.CallMethod('pushRecommendStoryToReaderGroups', [postid, storyId]);
+                        window.CallMethod('pushRecommendStoryToReaderGroups', [postid, storyId, window._loginUserId]);
                         toastr.info('推荐成功！');
                         return closeRecommendStorysPage();
                     }
