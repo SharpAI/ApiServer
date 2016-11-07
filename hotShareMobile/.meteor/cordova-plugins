@@ -22,7 +22,7 @@ cordova-plugin-network-information@1.2.0
 cordova-plugin-themeablebrowser@https://github.com/PluginCordova/cordova-plugin-themeablebrowser/tarball/12117b16548e0ad309280c2a4b8c82cf313e2693
 cordova-plugin-x-socialsharing@https://github.com/PluginCordova/SocialSharing-PhoneGap-Plugin/tarball/1830766342b4383458046fa8d27bddbbe662a048
 ionic-plugin-keyboard@2.2.1
-jpush-phonegap-plugin@https://github.com/PluginCordova/jpush-phonegap-plugin/tarball/a850c8db42120364c0847ca1a7348f78a9bc9c81
+jpush-phonegap-plugin@https://github.com/PluginCordova/jpush-phonegap-plugin/tarball/1a8567b6aaf2847ce8f1c211af6816835603c2ee
 meteor-ios10-csp-fix@0.1.0
 nl.x-services.plugins.backgroundaudio@https://github.com/PluginCordova/backgroundaudio/tarball/5fbd1d623640980cd0adcafdaa5efcdae6e3b751
 nl.x-services.plugins.toast@2.5.2
