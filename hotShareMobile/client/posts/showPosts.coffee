@@ -1237,7 +1237,7 @@ if Meteor.isClient
       return text
   Template.recommendStory.events
     'click .leftButton':(e)->
-      return window.history.back()
+      return Router.go('/posts/'+Session.get('postContent')._id)
     'click #importBtn': (e)->
       originUrl = $('#importUrl').val()
       console.log('originUrl=='+originUrl)
@@ -1271,7 +1271,7 @@ if Meteor.isClient
             PUB.toast('推荐成功！')
           else
             console.log('pushRecommendStoryToReaderGroups:', err)
-      return window.history.back()
+      return Router.go('/posts/'+Session.get('postContent')._id)
     'click #loadMore': (e)->
       if Session.get('storyListsType') is 'publishedStories'
         limit = parseInt(Session.get('storyListsLimit'))
