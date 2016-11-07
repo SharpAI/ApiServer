@@ -23,7 +23,7 @@ if Meteor.isServer
         apiVersion: '2014-11-11'
       }
     );
-    objectPath = 'http://cdcdn.tiegushi.com/posts/' + postId;
+    objectPath = 'http://cdn.tiegushi.com/posts/' + postId;
 
     cdn.refreshObjectCaches({
       ObjectType: 'File',
@@ -382,7 +382,7 @@ if Meteor.isServer
       'reviewPostPass':(userId,postId)->
         if !confirmReporterAuth(userId)
           return false
-        url = 'http://cdcdn.tiegushi.com/restapi/postInsertHook/'+userId+'/'+postId
+        url = 'http://cdn.tiegushi.com/restapi/postInsertHook/'+userId+'/'+postId
         return HTTP.get(url)
       'reviewPostMiss':(userId,postId)->
         if !confirmReporterAuth(userId)
