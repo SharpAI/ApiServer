@@ -57,7 +57,7 @@ if Meteor.isServer
       }
       toUserId = doc.owner
     else if type is "recommand"
-      content = doc.recommander + '推荐您阅读' + doc.ownerName + '的故事\n《' + doc.postTitle + '》'
+      content = doc.recommander + '推荐您阅读' + doc.ownerName + '的故事\n《' + doc.title + '》'
       extras = {
         type: "recommand"
         postId: doc.postId

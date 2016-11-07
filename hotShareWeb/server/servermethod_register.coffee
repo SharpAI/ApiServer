@@ -102,7 +102,7 @@ if Meteor.isServer
             postId: story._id,
             postTitle: story.title,
             mainImage: story.mainImage,
-            createdAt: story.createdAt,
+            createdAt: new Date(),
             heart: 0,
             retweet: 0,
             comment: 0
