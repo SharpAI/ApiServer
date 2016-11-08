@@ -139,7 +139,7 @@
             elem.style.left = left + 'px';
             elem.style.width = width + 'px';
 
-            if (pubInfo.type === 'image' || pubInfo.type === 'video') {
+            if (pubInfo.type === 'image' || pubInfo.type === 'video' || pubInfo.type === 'iframe') {
                 elem.style.height = pubInfo.data_sizey * getBaseHeight() + 'px';
             }
 
