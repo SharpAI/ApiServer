@@ -124,6 +124,9 @@ if (Meteor.isCordova) {
       }
     }
     function eventResume(){
+        if (Meteor.status().connected !== true)
+          Meteor.reconnect();
+
         if (Meteor.user()) {
             console.log('Refresh Main Data Source when resume');
             if (Meteor.isCordova) {
