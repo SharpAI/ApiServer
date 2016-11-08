@@ -37,7 +37,7 @@ if(Meteor.isServer){
                 token: 'xoxb-85358136278-3gwGbIcbaeqZu8wOjefmLWma', // Add a bot https://my.slack.com/services/new/bot and put the token
                 name: 'Post Reporter Tester'
             });
-            slackBot.postMessageToChannel('test_server_message',
+            slackBot.postMessageToChannel('general',
                 'Meteor server(web) of HotShare restarted (Test/Local Server) '+hostname+' AutoReview: '+autoReview);
         }
 
@@ -210,7 +210,7 @@ if(Meteor.isServer){
                         }
                     });
                 } else {
-                    slackBot.postMessageToChannel('test_server_message', '@everyone ('+hostname+'): '+message, params,function(result){
+                    slackBot.postMessageToChannel('general', '@everyone ('+hostname+'): '+message, params,function(result){
                         if(result && result.ok){
                             console.log('Send Success of message')
                         } else {
