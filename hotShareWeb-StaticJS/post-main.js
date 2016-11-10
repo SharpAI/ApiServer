@@ -5,7 +5,7 @@
     require("./libs/isInViewport.min");
 
     if (!global.gushitie) global.gushitie = {};
-
+    window.CANNOT_SHOW_HEADER = false;
     var gushitie = global.gushitie;
     gushitie.showpost = {};
 
@@ -198,7 +198,7 @@
 
         // register window scroll callback
         function toggleHeaderNav(show) {
-            if(show) {
+            if(show && !CANNOT_SHOW_HEADER) {
                 if (!$('.showPosts .head').is(':visible')) {
                     $('.showPosts .head').fadeIn(300);
                 }
@@ -492,9 +492,15 @@
         $(".pcomments").click(function(e) {
             var self = this;
             var backgroundTop, bgheight;
+            window.CANNOT_SHOW_HEADER = true;
+            backgroundTop = $('.alertBackground').height()-$('.showBgColor').height()
+            bgheight = $(window).height()+$(window).scrollTop();
+            $('.showPosts .head').fadeOut(300);
+            $(e.currentTarget).parent().parent().parent().addClass('post-pcomment-current-pub-item').attr('data-height', $(e.currentTarget).parent().parent().parent().height())
             localStorage.setItem('pcommentPindex',$(e.currentTarget).parent().parent().parent().attr('index'));
             localStorage.setItem('pcommentParagraph',$(e.currentTarget).parent().parent().parent().attr('id'));
             $('.showBgColor').attr('style', 'overflow:hidden;min-width:' + $(window).width() + 'px;' + 'height:' + bgheight + 'px;');
+            // $('body').attr('style','position:fixed;top:'+backgroundTop+'px;');
             $('.pcommentInput,.alertBackground').fadeIn(300, function() {
               return $('#pcommitReport').focus();
             });
@@ -502,6 +508,8 @@
         });
 
         $('.alertBackground').click(function(e) {
+            window.CANNOT_SHOW_HEADER = false;
+            $('.showPosts .head').fadeIn(300);
             $('.showBgColor').removeAttr('style');
             $('.pcommentInput,.alertBackground').fadeOut(300);
         });
@@ -531,21 +539,25 @@
             latestFavPostId = postid;
             $('#pcommitReport').val('');
             $('.showBgColor').removeAttr('style');
-            //  添加内容
-            pcommitContentHTML1 = '<div class="pcomment">\
-                                    <div class="eachComment">\
-                                     <div class="bubble" style="font-size: 14px;">';
-            pcommitContentHTML1 += '<span class="personName">'+userName+'</span>:'+
-                                    '<span class="personSay">'+pcommitContent+'</span></div></div></div>';
-            pcommitContentHTML2 = '<div class="bubble"><span class="personName">'+userName+'</span>:'+
-                                    '<span class="personSay">'+pcommitContent+'</span></div>';
-            if($('#'+id).children('.pcomment').length > 0){
-                $('#'+id + ' .pcomment').append(pcommitContentHTML2);
-            } else {
-                $('#'+id + ' .inlineScoring').after(pcommitContentHTML1);
+            if(pcommitContent != '' && pcommitContent != null){
+                //  添加内容
+                pcommitContentHTML1 = '<div class="pcomment">\
+                                        <div class="eachComment">\
+                                        <div class="bubble" style="font-size: 14px;">';
+                pcommitContentHTML1 += '<span class="personName">'+userName+'</span>:'+
+                                        '<span class="personSay">'+pcommitContent+'</span></div></div></div>';
+                pcommitContentHTML2 = '<div class="bubble"><span class="personName">'+userName+'</span>:'+
+                                        '<span class="personSay">'+pcommitContent+'</span></div>';
+                if($('#'+id).children('.pcomment').length > 0){
+                    $('#'+id + ' .pcomment').append(pcommitContentHTML2);
+                } else {
+                    $('#'+id + ' .inlineScoring').after(pcommitContentHTML1);
+                }
+                calcLayoutForEachPubElement();
+                syncPcommitContent(pindex,pcommitContent);
             }
-            calcLayoutForEachPubElement();
-            syncPcommitContent(pindex,pcommitContent);
+            window.CANNOT_SHOW_HEADER = false;
+            $('.showPosts .head').fadeIn(300);
             $('.pcommentInput,.alertBackground').fadeOut(300);
         });
         // --- 评论/点评 END ---
