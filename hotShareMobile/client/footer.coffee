@@ -142,6 +142,11 @@ if Meteor.isClient
       PUB.page('/bell')
     'click #user':(e)->
       PUB.page('/user')
+    'click #add': (e)->
+      if Session.get('persistentLoginStatus') and !Meteor.userId() and !Meteor.loggingIn()
+        window.plugins.toast.showLongCenter("登录超时，需要重新登录~");
+        e.stopPropagation()
+        PUB.page('/')
     'click #album-select':(e)->
       Meteor.defer ()->
         $('.modal-backdrop.in').remove()

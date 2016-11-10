@@ -1,8 +1,14 @@
 postPageArr = []
+pages = ['/user', '/bell', '/search']
+
 #公共函数
 @PUB =
     # 该方法实现页面切换
     'page':(pageName)->
+        if Session.get('persistentLoginStatus') and !Meteor.userId() and !Meteor.loggingIn() and pages.indexOf(pageName) isnt -1
+            window.plugins.toast.showLongCenter("登录超时，需要重新登录~");
+            return Router.go('/')
+
         history = Session.get("history_view")
         view = Session.get("channel")
         if history is undefined or history is ""
