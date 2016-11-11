@@ -15,6 +15,10 @@ if Meteor.isServer
   SSR.compileTemplate('hot_posts', Assets.getText('static/author-hot-posts.html'))
   SSR.compileTemplate('bell', Assets.getText('static/bell.html'))
   SSR.compileTemplate('post-no-review', Assets.getText('static/post-no-review.html'))
+  WebApp.rawConnectHandlers.use (req, res, next)->
+    res.setHeader("Access-Control-Allow-Origin", "*")
+    next()
+
   Router.route '/static/:_id', (req, res, next)->
     postItem = Posts.findOne({_id: this.params._id})
     if(!postItem)
@@ -45,6 +49,23 @@ if Meteor.isServer
       'Content-Type': 'text/html'
     })
     res.end(minify(postHtml, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
+  , {where: 'server'}
+
+  Router.route '/raw/:_id', (req, res, next)->
+    postItem = Posts.findOne({_id: this.params._id})
+    cookies = req.headers.cookie
+    loginUserId = getCookie('loginUserId',cookies).toString()
+    if(!postItem)
+      res.writeHead(404, {
+        'Content-Type': 'application/json'
+      })
+      return res.end(JSON.stringify({status:'Not Found'}))
+
+
+    res.writeHead(200, {
+      'Content-Type': 'application/json'
+    })
+    res.end(JSON.stringify({status:'ok',data: postItem}))
   , {where: 'server'}
 
   Router.route '/t/:_id', (req, res, next)->
