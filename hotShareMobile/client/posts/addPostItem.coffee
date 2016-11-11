@@ -9,7 +9,7 @@ if Meteor.isClient
       if $selector and $selector.attr('src') and $selector.attr('src') isnt '' and $selector.attr('src').indexOf('data:') is 0
         return $selector.attr('src')
       fileExtension = uri.replace(/^.*\./, '')
-      console.log('Path need to be replaced ' + path + ' this URI ' + uri + ' extension ' + fileExtension)
+      console.log('[addPostItem]Path need to be replaced ' + path + ' this URI ' + uri + ' extension ' + fileExtension)
       `
           window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function() {
               window.resolveLocalFileSystemURL(uri, function (fileEntry) {
@@ -20,7 +20,15 @@ if Meteor.isClient
                           //retCount++;
                           var smallImage = event.target.result;
                           console.log('got small image ');
-                          $(".image_"+id).attr('src',smallImage);
+                          $(".image_"+id).each(function(){
+                            var $img = $(this);
+                            if($img.attr('data-type') === 'mainImage'){
+                              if(!$img.attr('src'))
+                                $img.attr('src',smallImage);
+                            }else{
+                              $img.attr('src',smallImage);
+                            }
+                          });
                       };
                       reader.readAsDataURL(file);
                   }, function (e) {
