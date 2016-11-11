@@ -294,6 +294,7 @@ if Meteor.isClient
         , 280
   Template.showPosts.onRendered ->
     getHotPostsData()
+    Session.set 'showDraft', false
     Session.setDefault "displayPostContent",true
     Session.setDefault "toasted",false
     Session.set('postfriendsitemsLimit', 10)

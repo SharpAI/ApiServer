@@ -159,6 +159,8 @@ if Meteor.isClient
         return true
       else 
         return false
+    isDraft: ()->
+      Session.get('showDraft')
     DraftImageItem: (path,uri,id)->
       getLocalImagePath(path,uri,id)
     isOverLapping: (id)->

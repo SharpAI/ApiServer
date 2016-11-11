@@ -6,6 +6,8 @@ if Meteor.isClient
     layoutHelperInit()
     Session.set("content_loadedCount", 0)
   Template.showDraftPosts.onRendered ->
+    console.log('open draft.')
+    Session.set 'showDraft', true
     if Session.get('postContent') and Session.get('postContent')._id
       unless Posts.find({_id:Session.get('postContent')._id}).count() > 0
         Meteor.subscribe("ViewPostsList",Session.get('postContent')._id)
@@ -362,9 +364,11 @@ if Meteor.isClient
           #Delete the Drafts
           cleanDraft()
           Router.go('/posts/'+postId)
+        Session.set 'showDraft', false
         return
     'click .showDraftback' :->
       Session.set('fromDraftPost',false)
+      Session.set 'showDraft', false
       setTimeout ()->
         if Session.get("backtoalldrafts") is true
           Session.set("backtoalldrafts",false)
@@ -427,6 +431,7 @@ if Meteor.isClient
         deferedProcessAddPostItemsWithEditingProcessBar(pub)
       Session.set('fromDraftPost',true)
       Session.set('isReviewMode','0')
+      Session.set 'showDraft', false
       Router.go('/add')
     'click #delete':(event)->
       navigator.notification.confirm('您是否要删除草稿？', (r)->
@@ -442,6 +447,7 @@ if Meteor.isClient
           Session.setPersistent('mySavedDraftsCount',0)
           Session.setPersistent('persistentMySavedDrafts',null)
         SavedDrafts.remove draftId
+        Session.set 'showDraft', false
         # draftImageData = Drafts.find({type:'image'}).fetch()
         # removeImagesFromCache(draftImageData)
         # Drafts.remove {owner: Meteor.userId()}
