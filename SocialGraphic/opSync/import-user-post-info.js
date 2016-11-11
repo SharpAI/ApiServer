@@ -122,7 +122,7 @@ function save_user_node(doc,cb){
             }
             dbGraph.label(nodeL, ['User'], function(err) {
                 if(cb){
-                    cb()
+                    cb(null)
                 }
             });
         });
