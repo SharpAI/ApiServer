@@ -8,28 +8,33 @@ if Meteor.isClient
     Session.setDefault('myFollowToCount',0)
     ###
     Tracker.autorun ()->
-      if Counts.get('myFollowedByCount') > 0
-        Session.setPersistent('myFollowedByCount',Counts.get('myFollowedByCount'))
-      if Counts.get('mySavedDraftsCount') > 0
-        Session.setPersistent('mySavedDraftsCount',Counts.get('mySavedDraftsCount'))
-      if Counts.get('myPostsCount') > 0
-        Session.setPersistent('myPostsCount',Counts.get('myPostsCount'))
-      if Counts.get('myFollowToCount') > 0
-        Session.setPersistent('myFollowToCount',Counts.get('myFollowToCount'))
-      if Counts.get('myEmailFollowerCount') > 0
-        Session.setPersistent('myEmailFollowerCount',Counts.get('myEmailFollowerCount'))
-
-    Tracker.autorun ()->
+      ###
+      Meteor.subscribe "myCounter",{
+        onReady:()->
+          Session.set('myCounterCollection','loaded')
+      }
+      ###
       if Meteor.user() and Session.equals('channel','user')
         Session.set('myCounterCollection','loading')
+        Meteor.call('getMyProfileData',(err,json)->
+          if(!err && json)
+            Session.set('myCounterCollection','loaded')
+            console.log(json)
+            Session.setPersistent('myPostsCount',json['myPostsCount'])
+            Session.setPersistent('mySavedDraftsCount',json['mySavedDraftsCount'])
+            Session.setPersistent('myFollowedByCount',json['myFollowedByCount'])
+            Session.setPersistent('myFollowedByCount-'+Meteor.userId(),json['myFollowedByCount-'+Meteor.userId()])
+            Session.setPersistent('myFollowToCount',json['myFollowToCount'])
+            Session.setPersistent('myEmailFollowerCount',json['myEmailFollowerCount'])
+            Session.setPersistent('myEmailFollowerCount-'+Meteor.userId(),json['myEmailFollowerCount-'+Meteor.userId()])
+          console.log('Issue on getMyProfileData')
+        )
+    Tracker.autorun ()->
+      if Meteor.user() and Session.equals('channel','user')
         Session.set('postsWithLimitCollection','loading')
         Session.set('savedDraftsWithLimitCollection','loading')
         Session.set('followedByWithLimitCollection','loading')
         Session.set('followToWithLimitCollection','loading')
-        Meteor.subscribe "myCounter",{
-          onReady:()->
-            Session.set('myCounterCollection','loaded')
-        }
         Meteor.subscribe("postsWithLimit",4,{
           onReady:()->
             Session.set('postsWithLimitCollection','loaded')
@@ -48,6 +53,8 @@ if Meteor.isClient
         })
   Template.user.helpers
     isLoading:->
+      if Session.get('myPostsCount') isnt undefined
+        return false
       if (
         Session.get('persistentProfileIcon') is undefined or
         Session.get('persistentProfileName') is undefined or
@@ -83,37 +90,33 @@ if Meteor.isClient
     followers:->
       #Follower存放用户间关注记录， Follows是推荐偶像列表
       #followerId是偶像userId, userId是粉丝userId
-      # myFollowedByCount = Session.get('myFollowedByCount')
-      # if myFollowedByCount
-      #   myFollowedByCount
-      # else
-      #   0
-      Counts.get('myEmailFollowerCount-'+Meteor.userId()) + Counts.get('myFollowedByCount-'+Meteor.userId())
-    emailFollowerCount:->
-      # myEmailFollowedByCount = Session.get('myEmailFollowerCount')
-      # if myEmailFollowedByCount
-      #   myEmailFollowedByCount
-      # else
-      #   0
-      Counts.get('myEmailFollowerCount-'+Meteor.userId())
-    appFollowerCount:->
-      # myFollowedByCount = Session.get('myFollowedByCount')
-      # myEmailFollowedByCount = Session.get('myEmailFollowerCount')
+      myFollowedByCount = Session.get('myEmailFollowerCount-'+Meteor.userId()) + Session.get('myFollowedByCount-'+Meteor.userId())
+      if myFollowedByCount
+        myFollowedByCount
+      else
+        0
 
-      # if myFollowedByCount and myEmailFollowedByCount
-      #     console.log "-----------enter app follower count func ----------"
-      #     myAppFollowerByCount = myFollowedByCount - myEmailFollowedByCount
-      #     myAppFollowerByCount
-      # else
-      #     0
-      Counts.get('myFollowedByCount-'+Meteor.userId())
+    emailFollowerCount:->
+      myEmailFollowedByCount = Session.get('myEmailFollowerCount-'+Meteor.userId())
+      if myEmailFollowedByCount
+        myEmailFollowedByCount
+      else
+        0
+
+    appFollowerCount:->
+      myFollowedByCount = Session.get('myFollowedByCount-'+Meteor.userId())
+
+      if myFollowedByCount
+        myFollowedByCount
+      else
+        0
+
     draftsCount:->
-      return SavedDrafts.find({owner: Meteor.userId()}).count()
-      # mySavedDraftsCount = Session.get('mySavedDraftsCount')
-      # if mySavedDraftsCount
-      #   mySavedDraftsCount
-      # else
-      #   0
+      mySavedDraftsCount = Session.get('mySavedDraftsCount')
+      if mySavedDraftsCount
+        mySavedDraftsCount
+      else
+        0
     compareDraftsCount:(value)->
       if (Session.get('mySavedDraftsCount')> value)
         true
@@ -135,7 +138,7 @@ if Meteor.isClient
       return value > 0
     postsCount:->
       #return  Posts.find({owner: Meteor.userId(), publish: {$ne: false}}).count()
-      myPostsCount = Counts.get('myPostsCount')
+      myPostsCount = Session.get('myPostsCount')
       if myPostsCount
         myPostsCount
       else
