@@ -88,99 +88,80 @@ function check_post_existing(id,cb){
 }
 function save_user_node(doc,cb){
     if (doc !== null) {
-        console.log('createdAt:doc.createdAt '+ doc.createdAt.getTime())
-        check_user_existing(doc._id,function(result){
-            if(result){
-                console.log('Existing node');
+        try{
+            var userInfo={
+                userId:doc._id,
+                createdAt:doc.createdAt.getTime(),
+                fullname: doc.profile.fullname,
+                device: doc.type,
+                sex: doc.profile.sex?doc.profile.sex:'',
+                lastLogonIP:doc.profile.lastLogonIP,
+                anonymous:doc.profile.anonymous?true:false,
+                browser:doc.profile.browser?true:false,
+                location:doc.profile.location
+            }
+            if(doc.services &&doc.services.weixin){
+                userInfo.wechatLogin = true
+            } else {
+                userInfo.username = doc.username
+            }
+        } catch (e){
+            if(cb){
+                cb('Cant Build userInfo')
+            }
+            return;
+        }
+        dbGraph.save(userInfo, function(err, nodeL) {
+            if (err) {
+                console.log(err)
+                console.log(nodeL)
                 if(cb){
-                    cb('Existing node')
+                    cb('Cant Save userInfo')
                 }
                 return;
             }
-            try{
-                var userInfo={
-                    userId:doc._id,
-                    createdAt:doc.createdAt.getTime(),
-                    fullname: doc.profile.fullname,
-                    device: doc.type,
-                    sex: doc.profile.sex?doc.profile.sex:'',
-                    lastLogonIP:doc.profile.lastLogonIP,
-                    anonymous:doc.profile.anonymous?true:false,
-                    browser:doc.profile.browser?true:false,
-                    location:doc.profile.location
-                }
-                if(doc.services &&doc.services.weixin){
-                    userInfo.wechatLogin = true
-                } else {
-                    userInfo.username = doc.username
-                }
-            } catch (e){
+            dbGraph.label(nodeL, ['User'], function(err) {
                 if(cb){
-                    cb('Cant Build userInfo')
+                    cb()
                 }
-                return;
-            }
-            dbGraph.save(userInfo, function(err, nodeL) {
-                if (err) {
-                    console.log(err)
-                    console.log(nodeL)
-                    if(cb){
-                        cb('Cant Save userInfo')
-                    }
-                    return;
-                }
-                dbGraph.label(nodeL, ['User'], function(err) {
-                    if(cb){
-                        cb()
-                    }
-                });
             });
-        })
+        });
     }
 }
 function save_post_node(doc,cb){
     if (doc !== null) {
-        check_post_existing(doc._id,function(result) {
-            if (result) {
-                console.log('Existing node');
-                if(cb){
-                    cb('Existing Node')
-                }
-                return;
+        try {
+            var postInfo = {
+                postId: doc._id,
+                createdAt: doc.createdAt.getTime(),
+                name: doc.title,
+                addonTitle: doc.addontitle,
+                ownerName: doc.ownerName,
+                ownerId: doc.owner,
+                mainImage: doc.mainImage
             }
-            try {
-                var postInfo = {
-                    postId: doc._id,
-                    createdAt: doc.createdAt.getTime(),
-                    name: doc.title,
-                    addonTitle: doc.addontitle,
-                    ownerName: doc.ownerName,
-                    ownerId: doc.owner,
-                    mainImage: doc.mainImage
-                }
-            } catch (e) {
+        } catch (e) {
+            if(cb){
+                cb('Cant build postInfo')
+            }
+            return
+        }
+        dbGraph.save(postInfo, function (err, nodeL) {
+            if (err) {
+                console.log(err)
+                console.log(nodeL)
                 if(cb){
-                    cb('Cant build postInfo')
+                    cb('Cant Save it')
                 }
                 return
             }
-            dbGraph.save(postInfo, function (err, nodeL) {
-                if (err) {
-                    console.log(err)
-                    console.log(nodeL)
-                    if(cb){
-                        cb('Cant Save it')
-                    }
-                    return
+            dbGraph.label(nodeL, ['Post'], function (err) {
+                // `node` is now labelled with "Car" and "Hatchback"!
+                if(cb){
+                    cb(null)
                 }
-                dbGraph.label(nodeL, ['Post'], function (err) {
-                    // `node` is now labelled with "Car" and "Hatchback"!
-                    if(cb){
-                        cb(null)
-                    }
-                });
             });
-        })
+        });
     }
 }
 function grab_userInfo_in_hotshare(db){

@@ -28,13 +28,16 @@ process.addListener('uncaughtException', function (err) {
 MongoClient.connect(conn.mongo, function(err, tdb) {
     assert.equal(null, err);
     db=tdb
+    console.log('db connected!')
 });
 mongo_connect();
 
 function mongo_connect() {
   var oplog_v = MongoOplog(conn.oplog, conn.oplog_opts_v).tail();
   oplog_v.on('op', function (data) {
-    get_id(data);
+    get_doc(data, function (ns, postDoc, userDoc, viewerDoc) {
+      sync_to_neo4j(ns, postDoc, userDoc, viewerDoc);
+    })
   });
   oplog_v.on('error', function (error) {
     console.log('>>> error: ' + error);
@@ -48,7 +51,9 @@ function mongo_connect() {
 
   var oplog_p = MongoOplog(conn.oplog, conn.oplog_opts_p).tail();
   oplog_p.on('op', function (data) {
-    get_id(data);
+    get_doc(data, function (ns, postDoc, userDoc, viewerDoc) {
+      sync_to_neo4j(ns, postDoc, userDoc, viewerDoc);
+    })
   });
   oplog_p.on('error', function (error) {
     console.log('>>> error: ' + error);
@@ -62,7 +67,9 @@ function mongo_connect() {
 
   var oplog_u = MongoOplog(conn.oplog, conn.oplog_opts_u).tail();
   oplog_u.on('op', function (data) {
-    get_id(data);
+    get_doc(data, function (ns, postDoc, userDoc, viewerDoc) {
+      sync_to_neo4j(ns, postDoc, userDoc, viewerDoc);
+    })
   });
   oplog_u.on('error', function (error) {
     console.log('>>> error: ' + error);
@@ -75,103 +82,39 @@ function mongo_connect() {
   });
 }
 
-function get_id(doc) {
-  var postId = null;
-  var userId = null;
-  var viewerId = null;
+function get_doc(doc, cb) {
   var postDoc = null;
   var userDoc = null;
   var viewerDoc = null;
 
-  //console.log('>>> ' + JSON.stringify(doc))
-  async.series({
-    getid: function(callback){
-      if(doc.op === 'i') {
-        if(doc.ns === conn.oplog_opts_v.ns && (!!doc.o) && doc.o.postId && doc.o.userId) {
-          postId = doc.o.postId
-          userId = doc.o.userId
-          viewerDoc = doc.o
-          viewerId = doc.o._id
-        }
-        else if(doc.ns === conn.oplog_opts_u.ns && (!!doc.o) && doc.o._id)
-          userId = doc.o._id
-        else if(doc.ns === conn.oplog_opts_p.ns && (!!doc.o) && doc.o._id)
-          postId = doc.o._id
-        else
-          console.log('!!! unknow insert op: ' + JSON.stringify(doc))
+  if(doc.op === 'i') {
+    if(doc.ns === conn.oplog_opts_v.ns && (!!doc.o))
+      viewerDoc = doc.o
+    else if(doc.ns === conn.oplog_opts_u.ns && (!!doc.o))
+      userDoc = doc.o
+    else if(doc.ns === conn.oplog_opts_p.ns && (!!doc.o))
+      postDoc = doc.o
+    else
+      console.log('!!! unknow insert op: ' + JSON.stringify(doc))
 
-        callback(null, 'insert ' + doc.ns + ' pid=' + postId + ' uid=' + userId);
-      }
-      else if(doc.op === 'u') {
-        if(doc.ns === conn.oplog_opts_v.ns && (!!doc.o2) && doc.o2._id) {
-          get_doc(doc.ns, doc.o2._id, function(ns, result) {
-            if(result) {
-              postId = result.postId
-              userId = result.userId
-              viewerDoc = result
-              viewerId = result._id
-            }
-            callback(null, 'update ' + doc.ns + ' pid=' + postId + ' uid=' + userId);
-          })
-        }
-        else if(doc.ns === conn.oplog_opts_u.ns && (!!doc.o2) && doc.o2._id) {
-          userId = doc.o2._id
-          callback(null, 'update ' + doc.ns + ' pid=' + postId + ' uid=' + userId);
-        }
-        else if(doc.ns === conn.oplog_opts_p.ns && (!!doc.o2) && doc.o2._id) {
-          postId = doc.o2._id
-          callback(null, 'update ' + doc.ns + ' pid=' + postId + ' uid=' + userId);
-        }
-        else {
-          console.log('!!! unknow update op: ' + JSON.stringify(doc))
-          callback(null, 'update ' + doc.ns + ' pid=' + postId + ' uid=' + userId);
-        }
-      }
-      else {
-        callback(null, doc.ns + 'other op: ' + JSON.stringify(doc));
-      }
-    },
-    getdoc: function(callback){
-      if(doc.ns === conn.oplog_opts_v.ns) {
-        get_doc('hotShare.users', userId, function(ns1, result1) {
-          if(result1)
-            userDoc = result1;
-          get_doc('hotShare.posts', postId, function(ns2, result2) {
-            if(result2)
-              postDoc = result2;
-
-            callback(null, doc.ns + ' get doc');
-          })
-        })
-      }
-      else if(doc.ns === conn.oplog_opts_u.ns) {
-        get_doc('hotShare.users', userId, function(ns1, result1) {
-          if(result1)
-            userDoc = result1;
-
-          callback(null, doc.ns + ' get doc');
-        })
-      }
-      else if(doc.ns === conn.oplog_opts_p.ns) {
-        get_doc('hotShare.posts', postId, function(ns2, result2) {
-          if(result2)
-            postDoc = result2;
-
-          callback(null, doc.ns + ' get doc');
-        })
-      }
-      else {
-        callback(null, doc.ns + ' not get doc');
-      }
+    return cb && cb(doc.ns, postDoc, userDoc, viewerDoc);
+  }
+  else if(doc.op === 'u') {
+    if(doc.ns === conn.oplog_opts_v.ns && (!!doc.o2) && doc.o2._id) {
+      get_doc_byId(doc.ns, doc.o2._id, function(ns, result) {
+        if(result)
+          viewerDoc = result
+        return cb && cb(doc.ns, postDoc, userDoc, viewerDoc);
+      })
     }
-  },function(err, results) {
-    console.log(results);
-    //console.log('>>> ' + doc.ns + '   \t' + JSON.stringify(postDoc) + ' \t' + JSON.stringify(userDoc) + '\n\n')
-    sync_to_neo4j(doc.ns, postDoc, userDoc, viewerDoc);
-  });
+    else
+      return cb && cb(doc.ns, postDoc, userDoc, viewerDoc);
+  }
+  else
+    return cb && cb(doc.ns, postDoc, userDoc, viewerDoc);
 }
 
-function get_doc(ns, id, cb) {
+function get_doc_byId(ns, id, cb) {
   if(!(!!ns && !!id)) {
     return cb(null, null);
   }
@@ -227,36 +170,63 @@ function get_doc(ns, id, cb) {
 }
 
 function sync_to_neo4j(ns, postDoc, userDoc, viewerDoc) {
-  if(ns === conn.oplog_opts_v.ns) {
-    if(postDoc && postDoc._id && userDoc && userDoc._id && viewerDoc) {
-      if (!viewerDoc.createdAt)
-        viewerDoc.createdAt = new Date();
+  if(ns === conn.oplog_opts_v.ns && (!!viewerDoc)) {
+    if (!viewerDoc.createdAt)
+      viewerDoc.createdAt = new Date();
 
-      savePostUser.save_user_node(userDoc,function(){
-        savePostUser.save_post_node(postDoc,function(){
-          save_viewer_node(viewerDoc, function(){
-            console.log('postview saved: pid=' + postDoc._id + ' uid=' + userDoc._id)
-          })
-        })
-      })
-    }
-    else
-      console.log(ns + ', failed with: id=' + postDoc._id + ' uid=' + userDoc._id)
+    save_viewer_node(viewerDoc, function(err){
+      if(err === null)
+        console.log('postview saved: pid=' + viewerDoc.postId + ' uid=' + viewerDoc.userId)
+      else
+        resave_viewer_node(viewerDoc)
+    })
   }
-  else if(ns === conn.oplog_opts_u.ns) {
-    if(userDoc && userDoc._id)
-      savePostUser.save_user_node(userDoc,function(){
+  else if(ns === conn.oplog_opts_u.ns && (!!userDoc)) {
+    savePostUser.save_user_node(userDoc,function(err){
+      if(err === null)
         console.log('User Info saved: uid=' + userDoc._id)
-      })
-    else
-      console.log(ns + ', failed with: id=' + postDoc._id + ' uid=' + userDoc._id)
+      else
+        console.log('User Info saved: error:' + err)
+    })
   }
-  else if(ns === conn.oplog_opts_p.ns) {
-    if(postDoc && postDoc._id)
-      savePostUser.save_post_node(postDoc,function(){
+  else if(ns === conn.oplog_opts_p.ns && (!!postDoc)) {
+    savePostUser.save_post_node(postDoc,function(err){
+      if(err === null)
         console.log('Post Info saved: pid=' + postDoc._id)
-      })
-    else
-      console.log(ns + ', failed with: id=' + postDoc._id + ' uid=' + userDoc._id)
+      else
+        console.log('Post Info saved: error:' + err)
+    })
+  }
+}
+
+function resave_viewer_node(viewerDoc) {
+  var postId = null
+  var userId = null
+  var postDoc = null
+  var userDoc = null
+  if((!!viewerDoc) && viewerDoc.postId && viewerDoc.userId) {
+    postId = viewerDoc.postId
+    userId = viewerDoc.userId
+
+    get_doc_byId(conn.oplog_opts_p.ns, postId, function(ns, result1) {
+      if(result1) {
+        postDoc = result1
+        get_doc_byId(conn.oplog_opts_u.ns, userId, function(ns, result2) {
+          if(result2) {
+            userDoc = result2
+            savePostUser.save_user_node(userDoc,function(){
+              savePostUser.save_post_node(postDoc,function(){
+                save_viewer_node(viewerDoc, function(err){
+                  if(err === null)
+                    console.log('postview resaved: pid=' + viewerDoc.postId + ' uid=' + viewerDoc.userId)
+                  else
+                    console.log('postview Info resaved: error:' + err)
+                })
+              })
+            })
+          }
+        })
+      }
+    })
   }
 }

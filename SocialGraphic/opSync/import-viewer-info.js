@@ -15,23 +15,16 @@ var dbGraph = require("seraph")({ server: "http://120.24.247.107:7474",
     pass: "5MW-wU3-V9t-bF6" });
 function save_viewer_node(doc,cb){
     if (doc !== null) {
-        var querystr = 'MATCH (u:User)-[v:VIEWER]->(p:Post) WHERE u.userId="'+doc.userId+
-            '" AND p.postId="'+doc.postId+'" RETURN v;'
-        console.log(querystr)
-        dbGraph.query(querystr, function(err, relationShip) {
-            var createstr = 'MATCH (u:User {userId:"'+doc.userId+'"}),(p:Post {postId:"'+
-                doc.postId+'"}) MERGE  (u)-[v:VIEWER{by:'+doc.createdAt.getTime()+'}]->(p) RETURN v;';
-            console.log(relationShip)
-            if (!relationShip || relationShip.length===0){
-                console.log(createstr)
-                dbGraph.query(createstr, function(err1, result) {
-                    console.log(result)
-                    cb(null)
-                })
-                return
+        var createstr = 'MATCH (u:User {userId:"'+doc.userId+'"}),(p:Post {postId:"'+
+            doc.postId+'"}) MERGE  (u)-[v:VIEWER{by:'+doc.createdAt.getTime()+'}]->(p) RETURN v;';
+        dbGraph.query(createstr, function(err1, result) {
+            //console.log(result)
+            if (err1 || !result || result.length===0){
+                cb('MERGE failed')
             }
-            cb(null)
-        });
+            else
+                cb(null)
+        })
     }
 }
 function grab_viewerInfo_in_hotshare(db){
