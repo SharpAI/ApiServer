@@ -1721,7 +1721,6 @@ if(Meteor.isServer){
       else
         return Posts.find({_id: postId});
   });
-  /*
   Meteor.publish('postViewCounter', function(postId) {
     Counts.publish(this, 'post_viewer_count_'+this.userId+'_'+postId, Viewers.find({
         postId: postId, userId: this.userId
@@ -1729,7 +1728,6 @@ if(Meteor.isServer){
         return doc.count;
     }});
   });
-  */
   Meteor.publish('postsAuthor', function(postId) {
     var post,owner;
     post = Posts.findOne({_id:postId})
