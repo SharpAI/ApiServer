@@ -9,6 +9,8 @@
     window.toastr = require("./libs/toastr.min");
     require("./libs/swipe");
     var imagesLoaded = require("imagesloaded");
+    require("./libs/piwik");
+
     var debugPrint = function (msg) {
         // console.log(msg);
     };
@@ -1085,5 +1087,6 @@
                 wechat_sign();
             }
         }
+        trackPage(window.location.href ,post_title);
     })
 })();
