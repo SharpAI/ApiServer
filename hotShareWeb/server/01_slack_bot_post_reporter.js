@@ -2,27 +2,27 @@
  * Created by simba on 9/12/16.
  */
 
-var SlackBot = Meteor.npmRequire('slackbots');
-var os = Meteor.npmRequire("os");
-var hostname = os.hostname();
-var production = process.env.PRODUCTION;
 
-var usage = '===============================================================\n' +
-    'delete [user/post] <id>   删除贴子/用户\n' +
-    'restore [user/post] <id>  恢复贴子/用户\n' +
-    'check <postId>            绿网检查贴子\n' +
-    'miss <postId>             通过帖子审核\n' +
-    'pass <postId>             不通过帖子审核\n' +
-    'verfily <userId>          验证用户是否在白名单\n'+
-    'trust <userId>            添加用户到白名单\n' +
-    'mistrust <userId>         从白名单移除用户\n' +
-    'server                    获取服务器状态(暂未启用)\n' +
-    'startAutoReview           开启自动审核\n' +
-    'stopAutoReview            关闭自动审核\n' +
-    'queryAutoReview           查询当前自动审核状态\n' +
-    '===============================================================';
+if (withSlackReporter && Meteor.isServer){
+    var SlackBot = Meteor.npmRequire('slackbots');
+    var os = Meteor.npmRequire("os");
+    var hostname = os.hostname();
+    var production = process.env.PRODUCTION;
 
-if(Meteor.isServer){
+    var usage = '===============================================================\n' +
+        'delete [user/post] <id>   删除贴子/用户\n' +
+        'restore [user/post] <id>  恢复贴子/用户\n' +
+        'check <postId>            绿网检查贴子\n' +
+        'miss <postId>             通过帖子审核\n' +
+        'pass <postId>             不通过帖子审核\n' +
+        'verfily <userId>          验证用户是否在白名单\n'+
+        'trust <userId>            添加用户到白名单\n' +
+        'mistrust <userId>         从白名单移除用户\n' +
+        'server                    获取服务器状态(暂未启用)\n' +
+        'startAutoReview           开启自动审核\n' +
+        'stopAutoReview            关闭自动审核\n' +
+        'queryAutoReview           查询当前自动审核状态\n' +
+        '===============================================================';
     Meteor.startup(function(){
         var slackCommander = new Meteor.Collection('slackcommanders');
         if(production){
@@ -231,4 +231,8 @@ if(Meteor.isServer){
           // });
         }
     })
+} else {
+    postMessageToGeneralChannel=function(message, params, callback){
+        console.log('We dont really send slack command.')
+    }
 }
