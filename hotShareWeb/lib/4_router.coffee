@@ -26,7 +26,6 @@ if Meteor.isClient
   Router.route '/posts/:_id', {
       waitOn: ->
           [subs.subscribe("publicPosts", this.params._id),
-           subs.subscribe("postViewCounter",this.params._id),
            subs.subscribe("postsAuthor",this.params._id),
            subs.subscribe "pcomments"]
       loadingTemplate: 'loadingPost'
@@ -67,7 +66,6 @@ if Meteor.isClient
   Router.route '/view_posts/:_id', {
       waitOn: ->
           [subs.subscribe("publicPosts", this.params._id),
-           subs.subscribe("postViewCounter",this.params._id),
            subs.subscribe("postsAuthor",this.params._id),
            subs.subscribe "pcomments"]
       loadingTemplate: 'loadingPost'
@@ -108,7 +106,6 @@ if Meteor.isClient
     name: 'post_index'
     waitOn: ->
       [Meteor.subscribe("publicPosts",this.params._id),
-       Meteor.subscribe("postViewCounter",this.params._id),
        Meteor.subscribe("postsAuthor",this.params._id),
        Meteor.subscribe "pcomments"]
     loadingTemplate: 'loadingPost'
@@ -221,7 +218,6 @@ if Meteor.isServer
           params=params.split('/')
           if params.length > 0
             return [subs.subscribe("publicPosts",params[0]),
-            subs.subscribe("postViewCounter",params[0]),
             subs.subscribe("postsAuthor",params[0]),
             subs.subscribe "pcomments"]
     fastRender: true

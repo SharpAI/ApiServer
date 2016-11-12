@@ -1721,6 +1721,7 @@ if(Meteor.isServer){
       else
         return Posts.find({_id: postId});
   });
+  /*
   Meteor.publish('postViewCounter', function(postId) {
     Counts.publish(this, 'post_viewer_count_'+this.userId+'_'+postId, Viewers.find({
         postId: postId, userId: this.userId
@@ -1728,6 +1729,7 @@ if(Meteor.isServer){
         return doc.count;
     }});
   });
+  */
   Meteor.publish('postsAuthor', function(postId) {
     var post,owner;
     post = Posts.findOne({_id:postId})
@@ -2324,11 +2326,21 @@ if(Meteor.isServer){
       remove: function (userId, doc) {
           if(doc.owner === userId){
               postsRemoveHookDeferHandle(userId,doc);
+              // Need refresh CDN since the post data is going to be removed
+              // Currently our quota is 10k.
+              Meteor.defer(function(){
+                  refreshPostsCDNCaches(doc._id);
+              });
               return true;
           }
           return false;
       },
     update: function(userId, doc, fieldNames, modifier) {
+      // Need refresh CDN since the post data is going to be changed
+      // Currently our quota is 10k.
+      Meteor.defer(function(){
+          refreshPostsCDNCaches(doc._id);
+      });
       // 第一次web导入成功后执行insert的处理，也便触发推送之类的操作
       if(fieldNames.indexOf('webImport') != -1){
         var  ownerUser = Meteor.users.findOne({_id: userId});

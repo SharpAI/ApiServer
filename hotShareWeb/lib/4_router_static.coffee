@@ -53,14 +53,11 @@ if Meteor.isServer
 
   Router.route '/raw/:_id', (req, res, next)->
     postItem = Posts.findOne({_id: this.params._id})
-    cookies = req.headers.cookie
-    loginUserId = getCookie('loginUserId',cookies).toString()
     if(!postItem)
       res.writeHead(404, {
         'Content-Type': 'application/json'
       })
       return res.end(JSON.stringify({status:'Not Found'}))
-
 
     res.writeHead(200, {
       'Content-Type': 'application/json'

@@ -6,3 +6,4 @@ import_cancel_url = 'http://urlanalyser.tiegushi.com:8080/import-cancel';
 ddp_alter_url = (typeof process !== "undefined" && process !== null ? process.env.DDP_ALTER_URL : void 0) || 'ws://localhost:5000/websocket';
 // import_server_url = 'http://192.168.1.84:8080/import';
 // import_cancel_url = 'http://192.168.1.84:8080/import-cancel';
+rest_api_url = "http://"+server_domain_name;

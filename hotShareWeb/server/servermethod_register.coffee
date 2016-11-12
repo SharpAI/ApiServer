@@ -23,7 +23,7 @@ if Meteor.isServer
         apiVersion: '2014-11-11'
       }
     );
-    objectPath = 'http://cdn.tiegushi.com/posts/' + postId;
+    objectPath = 'http://'  +server_domain_name+'/posts/' + postId;
 
     cdn.refreshObjectCaches({
       ObjectType: 'File',
@@ -31,6 +31,15 @@ if Meteor.isServer
     }, (err, res)-> 
       console.log(err, res)
     )
+
+    rawPath = 'http://'  +server_domain_name+'/raw/' + postId;
+    cdn.refreshObjectCaches({
+        ObjectType: 'File',
+        ObjectPath: rawPath
+      }, (err, res)->
+        console.log(err, res)
+    )
+
   # 删除阿里云图片
   @delectAliyunPictureObject = (postId)->
     # this.unblock()

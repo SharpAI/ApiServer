@@ -13,7 +13,8 @@ if (Meteor.isClient) {
           Meteor.call('updateUserLanguage', Meteor.userId(), 'zh');
         }
         console.log("Accounts.onLogin");
-	checkShareUrl();
+        Meteor.subscribe("pcomments");
+	    checkShareUrl();
         if(device.platform === 'Android'){
           window.plugins.shareExtension.getShareData(function(data) {
             console.log("##RDBG getShareData: " + JSON.stringify(data));

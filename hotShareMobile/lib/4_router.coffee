@@ -13,6 +13,27 @@ if Meteor.isClient
       Session.set("displayPostContent",true)
       calcPostSignature(window.location.href.split('#')[0])
     ,300
+  renderPost = (self,post)->
+    if !post
+      return self.render 'postNotFound'
+
+    if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
+      Session.set('postContent',post)
+      refreshPostContent()
+      toastr.info('作者修改了帖子内容.')
+    else
+      Session.set('postContent',post)
+    Session.set('focusedIndex',undefined)
+    if post and post.addontitle and (post.addontitle isnt '')
+      documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
+    else if post
+      documentTitle = "『故事贴』" + post.title
+    Session.set("DocumentTitle",documentTitle)
+    if post
+      self.render 'showPosts', {data: post}
+    else
+      self.render 'unpublish'
+    Session.set 'channel','posts/'+self.params._id
   Meteor.startup ()->
     Tracker.autorun ()->
       channel = Session.get 'channel'
@@ -106,35 +127,20 @@ if Meteor.isClient
       this.render 'redirect'
       return
     Router.route '/posts/:_id', {
-        waitOn: ->
-          [subs.subscribe("publicPosts",this.params._id),
-           subs.subscribe("postViewCounter",this.params._id),
-           subs.subscribe("postsAuthor",this.params._id),
-           subs.subscribe "pcomments"]
-        loadingTemplate: 'loadingPost'
         action: ->
-          post = Posts.findOne({_id: this.params._id})
-          if !post or (post.isReview is false and post.owner isnt Meteor.userId())
-            return this.render 'postNotFound'
-
-          if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
-            Session.set('postContent',post)
-            refreshPostContent()
-            toastr.info('作者修改了帖子内容.')
-          else
-            Session.set('postContent',post)
-          Session.set('focusedIndex',undefined)
-          if post and post.addontitle and (post.addontitle isnt '')
-            documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
-          else if post
-            documentTitle = "『故事贴』" + post.title
-          Session.set("DocumentTitle",documentTitle)
-          if post
-            this.render 'showPosts', {data: post}
-          else
-            this.render 'unpublish'
-          Session.set 'channel','posts/'+this.params._id
+          self = this
+          self.render 'loadingPost'
+          Meteor.subscribe("reading",self.params._id)
+          $.getJSON(rest_api_url+"/raw/"+self.params._id,(json,result)->
+            if(result && result is 'success' && json && json.status && json.status is 'ok' && json.data)
+              post = json.data
+              renderPost(self,post)
+            else
+              post = Meteor.call("getPostContent",self.params._id)
+              renderPost(self,post)
+          )
       }
+
     Router.route '/draftposts/:_id', {
       action: ->
         post = Session.get('postContent')
@@ -150,7 +156,6 @@ if Meteor.isClient
     Router.route '/posts/:_id/:_index', {
       waitOn: ->
         [Meteor.subscribe("publicPosts",this.params._id),
-        Meteor.subscribe("postViewCounter",this.params._id),
         Meteor.subscribe("postsAuthor",this.params._id),
         Meteor.subscribe "pcomments"]
       loadingTemplate: 'loadingPost'
@@ -321,7 +326,6 @@ if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->
           [Meteor.subscribe("publicPosts",this.params._id),
-           Meteor.subscribe("postViewCounter",this.params._id),
            Meteor.subscribe("postsAuthor",this.params._id),
            Meteor.subscribe "pcomments"]
     }
