@@ -1,4 +1,8 @@
 if Meteor.isClient
+  quitInformationEdit = ()->
+    $('.showPostsBox,.showPostsLine,.superChatIntroduce').show()
+    Session.set('isInformationEditing',false)
+    document.body.scrollTop = $(".showPostsBox").height()
   hasMoreFavouritePosts = ()->
     #if FavouritePosts.find({userId: Meteor.userId()}).count() > 0
     #  !(FavouritePosts.find({userId: Meteor.userId()}).count() < Session.get("favouritepostsLimit"))
@@ -43,8 +47,12 @@ if Meteor.isClient
       return []
   Template.information.events
     'click .nickname':(e)->
+      Session.set('isInformationEditing',true)
+      $('.showPostsBox,.showPostsLine,.superChatIntroduce').hide()
       Session.set("Social.LevelTwo.Me.Menu","setNickname")
     'click .sex':(e)->
+      Session.set('isInformationEditing',true)
+      $('.showPostsBox,.showPostsLine,.superChatIntroduce').hide()
       Session.set("Social.LevelTwo.Me.Menu","setSex")
     'click .bell':(e)->
       Router.go('/bell');
@@ -84,6 +92,7 @@ if Meteor.isClient
         $('.me .setNickname .head').css('position', 'fixed').css('margin-top', 0)
         cordova.plugins.Keyboard.disableScroll(false)
     'click .left-btn':(e)->
+      quitInformationEdit()
       Session.set("Social.LevelTwo.Me.Menu","information")
     'click .right-btn':(e)->
       $('.setNickname-form').submit()
@@ -93,7 +102,7 @@ if Meteor.isClient
           console.log 'Change Nick Name to ' + $('#my_edit_nickname').val()
           Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.fullname': e.target.text.value}})
           Session.set("Social.LevelTwo.Me.Menu","information")
-          
+          quitInformationEdit()
       false
   ###
     Set Sex View
@@ -117,14 +126,17 @@ if Meteor.isClient
       return false
   Template.setSex.events
     'click .setMale':(e)->
+      quitInformationEdit()
       if Meteor.user()
         Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.sex': 'male'}})
         Session.set("Social.LevelTwo.Me.Menu","information")
     'click .setFemale':(e)->
+      quitInformationEdit()
       if Meteor.user()
         Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.sex': 'female'}})
-        Session.set("Social.LevelTwo.Me.Menu","information")
+        Session.set("Social.LevelTwo.Me.Menu","information")    
     'click .left-btn': (e)->
+      quitInformationEdit()
       Session.set("Social.LevelTwo.Me.Menu","information")
 
   Template.myFavouritePosts.rendered=->

@@ -4,6 +4,7 @@ if Meteor.isClient
   Template.socialContent.events
     'click .postBtn':->
       #PUB.postPageBack()
+      $('.showPostsBox,.showPostsLine,.superChatIntroduce').show()
       trackEvent("socialBar","Post")
       Session.set("SocialOnButton",'postBtn')
       Session.set("Social.LevelOne.Menu",'discover')
@@ -11,6 +12,7 @@ if Meteor.isClient
         $('.contactsList .head').fadeOut 300
       document.body.scrollTop = 0
     'click .chatBtn': (e)->
+      $('.showPostsBox,.showPostsLine,.superChatIntroduce').show()
       $(".chatBtn .red_spot").hide().html(0)
       trackEvent("socialBar","GroupChat")
       e.stopPropagation()
@@ -21,6 +23,7 @@ if Meteor.isClient
 #Session.set("Social.LevelOne.Menu",'chatContent')
       #Session.set("SocialOnButton",'chatContent')
     'click .contactsBtn':->
+      $('.showPostsBox,.showPostsLine,.superChatIntroduce').show()
       trackEvent("socialBar","Newfrineds")
       Session.set("Social.LevelOne.Menu",'contactsList')
       Session.set("SocialOnButton",'contactsList')
@@ -29,6 +32,7 @@ if Meteor.isClient
       $('.div_me').css('display',"none")
       document.body.scrollTop = $(".showPostsBox").height()
     'click .discoverBtn':->
+      $('.showPostsBox,.showPostsLine,.superChatIntroduce').show()
       trackEvent("socialBar","Discover")
       Session.set("SocialOnButton",'discover')
       Session.set('momentsitemsLimit', 10);
@@ -38,6 +42,10 @@ if Meteor.isClient
       $('.div_me').css('display',"none")
       document.body.scrollTop = $(".showPostsBox").height()
     'click .meBtn':->
+      if Session.equals('isInformationEditing',true)
+        $('.showPostsBox,.showPostsLine,.superChatIntroduce').hide()
+      else
+        $('.showPostsBox,.showPostsLine,.superChatIntroduce').show()
       trackEvent("socialBar","Me")
       Session.set("SocialOnButton",'me')
       Session.set("Social.LevelOne.Menu",'me')
