@@ -361,6 +361,7 @@
             $('.div_discover').css('display', "block");
             $('.div_me').css('display', "none");
             enablePostScroll();
+            trackEvent("socialBar","DisCover");
         });
         $(".div_discover .moments").on('click', '.suggestAlreadyRead', function (e) {
             var the_postid = $(this).parent().parent().parent().data('postid');

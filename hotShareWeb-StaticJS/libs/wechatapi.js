@@ -44,6 +44,7 @@ function wechatReady() {
         imgUrl: image,
         success: function() {
             var hotPosts;
+            trackEvent("Share", "Section to Wechat Timeline");
             sendShareDataToServer('timeline');
 
             /*
@@ -66,7 +67,7 @@ function wechatReady() {
         imgUrl: image,
         success: function() {
             var hotPosts;
-            //trackEvent("Share", "Post to Wechat Chat");
+            trackEvent("Share", "Post to Wechat Chat");
             console.log('shared to chat')
             sendShareDataToServer('chat');
             /*hotPosts = _.filter(Session.get('hottestPosts') || [], function(value) {

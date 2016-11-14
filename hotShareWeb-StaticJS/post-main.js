@@ -21,6 +21,24 @@
         }
     };
 
+    // isIOS
+    global.isIOS = (navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false)
+    // isWeiXinFunc
+    global.isWeiXinFunc = function() {
+        var ua = window.navigator.userAgent.toLowerCase();
+        var M = ua.match(/MicroMessenger/i);
+        if (M && M[0] === 'micromessenger') {
+            return true;
+        } else {
+            return false
+        }
+    };
+    // isAndroidFunc
+    global.isAndroidFunc = function() {
+        var userAgent = navigator.userAgent.toLowerCase();
+        return (userAgent.indexOf('android') > -1) || (userAgent.indexOf('linux') > -1);
+    };
+    
     padding.setRandomlyBackgroundColor = function($node) {
         $node.css("background-color", predefineColors[colorIndex]);
         if (++colorIndex >= colorLength) colorIndex = 0;
@@ -271,6 +289,19 @@
             $('body').css('overflow-y', 'auto');
             $('.showBgColor').css('position','relative');
         }
+
+        // register for download app 
+        $("#downloadApp").click(function() {
+            if(isIOS){
+                trackEvent('Download','from Post Tail, IOS');
+            } else if(isAndroidFunc()) {
+                trackEvent('Download','from Post Tail, Android');
+            } else {
+                trackEvent('Download','from Post Tail, Outside Wechat');
+            }
+            window.open('http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere', '_system');
+        });
+
         // register for audio/video play
         $(".postAudioItem.element .play_area").click(function() {
             var _self = this, $_self = $(this), $audio= $_self.find('audio');
@@ -332,6 +363,7 @@
             var url = 'http://'+chat_server_url+'/channel/' + postid;
 
             var userId = localStorage.getItem("Meteor.userId");
+            trackEvent("socialBar","GroupChat");
             if (userId) url += '/userid/' + userId;
             window.open(url,'_blank')
         });
@@ -573,6 +605,7 @@
             $('.div_contactsList').css('display',"none");
             $('.div_me').css('display',"none");
             document.body.scrollTop = 0;
+            trackEvent("socialBar","Post");
         });
         $(".contactsBtn").click(function(){
              $('.div_me_set-up-sex,.div_me_set-up-nike').css('display', 'none');
@@ -582,7 +615,7 @@
             //  }
              $('.socialContent .chatFooter').fadeIn(300);
             disablePostScroll();
-             //trackEvent("socialBar","Newfrineds");
+             trackEvent("socialBar","Newfrineds");
              $(".contactsBtn, .postBtn, .discoverBtn, .meBtn").removeClass('focusColor');
              $(".contactsBtn").addClass('focusColor');
              $('.div_contactsList').css('display',"block");
@@ -592,7 +625,7 @@
             localStorage.setItem('documentCurrTop',document.body.scrollTop);
             $('.socialContent .chatFooter').fadeIn(300);
             disablePostScroll();
-            //trackEvent("socialBar","Me")
+            trackEvent("socialBar","Me");
             //Session.set('favouritepostsLimit', 0);
             // 添加喜欢的故事，当前页面点评
             if(latestFavPostId !== '' && $('.favposts .'+latestFavPostId).length === 0){
@@ -750,6 +783,7 @@
                     toastr.error('关注失败，再试一次吧~')
                 }
             });
+            trackEvent("Following","Email Follower");
         });
         // ---- 关注作者 END----
 
@@ -783,6 +817,7 @@
             $('.sendAuthorEmail,.authorEmailAlertBackground').hide();
             // sendAuthorEmail params[author,postid,email,content]
             window.CallMethod('sendAuthorEmail',[window._loginUser._id,window.postid,mailAddress,content]);
+            trackEvent("PrivateMsgAuthor", "Private Msg author");
         }
         // ---- 私信作者 END ---
     };
