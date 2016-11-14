@@ -790,14 +790,6 @@
     };
     document.addEventListener('users', userHandle, false);
     var DDPConnectedHandle = function (e) {
-        // 判断贴子是否显示（会有取消发表、通过审核后又取消）
-        window.CallMethod('getPostStatus', [postid], function (type, result) {
-            console.log(result);
-            if(result.isShow != true){
-                $('.no-post .text').html(result.text);
-                $('.no-post').css('display', 'block');
-            }
-        });
 
         debugPrint('postid is ' + postid);
 

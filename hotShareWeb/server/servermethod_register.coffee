@@ -84,13 +84,6 @@ if Meteor.isServer
       FavouritePosts.insert({postId: postId, userId: userId, createdAt: new Date(), updateAt: new Date()})
   Meteor.startup ()->
     Meteor.methods
-      'getPostStatus': (id)->
-        post = Posts.findOne({_id: id})
-        if(!post or post.publish isnt true)
-          return {isShow: false, text: '你访问的故事已被删除^(^'}
-        else if(post.isReview is false)
-          return {isShow: false, text: '故事正在审核，请稍候...'}
-        return {isShow: true}
       'pushRecommendStoryToReaderGroups': (postId, storyId, userId)->
         if this.userId is null or postId is undefined or postId is null or storyId is undefined or storyId is null
           return false

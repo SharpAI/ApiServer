@@ -21,7 +21,7 @@ if Meteor.isServer
 
   Router.route '/static/:_id', (req, res, next)->
     postItem = Posts.findOne({_id: this.params._id})
-    if(!postItem or postItem.publish isnt true)
+    if(!postItem)
       html = SSR.render('no-post')
       res.writeHead(404, {
         'Content-Type': 'text/html'
@@ -37,7 +37,7 @@ if Meteor.isServer
 
   Router.route '/static/:_id/:_index', (req, res, next)->
     postItem = Posts.findOne({_id: this.params._id})
-    if(!postItem or postItem.publish isnt true)
+    if(!postItem)
       html = SSR.render('no-post')
       res.writeHead(404, {
         'Content-Type': 'text/html'
@@ -69,7 +69,7 @@ if Meteor.isServer
     postItem = Posts.findOne({_id: this.params._id})
     cookies = req.headers.cookie
     loginUserId = getCookie('loginUserId',cookies).toString()
-    if(!postItem or postItem.publish isnt true)
+    if(!postItem)
       html = SSR.render('no-post')
       res.writeHead(404, {
         'Content-Type': 'text/html'
@@ -95,7 +95,7 @@ if Meteor.isServer
     postItem = Posts.findOne({_id: this.params._id})
     cookies = req.headers.cookie
     loginUserId = getCookie('loginUserId',cookies).toString()
-    if(!postItem or postItem.publish isnt true)
+    if(!postItem)
       html = SSR.render('no-post')
       res.writeHead(404, {
         'Content-Type': 'text/html'
