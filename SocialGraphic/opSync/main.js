@@ -4,14 +4,14 @@ var savePostUser = require('./import-user-post-info');
 var save_viewer_node = require('./import-viewer-info').save_viewer_node;
 var MongoOplog = require('mongo-oplog');
 var conn = {
-  mongo: 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare',
-  oplog: 'mongodb://oplogger:PasswordForOplogger@host1.tiegushi.com:27017/local?authSource=admin',
-  //FIXME: why not filter?  to much network traffic
+  mongo: process.env.MONGO_URL,
+  oplog: process.env.MONGO_OPLOG,
+
   oplog_opts_v: { ns: 'hotShare.viewers' , server : { reconnectTries : 3000, reconnectInterval: 2000, autoReconnect : true }},
   oplog_opts_p: { ns: 'hotShare.posts'   , server : { reconnectTries : 3000, reconnectInterval: 2000, autoReconnect : true }},
-  oplog_opts_u: { ns: 'hotShare.users'   , server : { reconnectTries : 3000, reconnectInterval: 2000, autoReconnect : true }},
+  oplog_opts_u: { ns: 'hotShare.users'   , server : { reconnectTries : 3000, reconnectInterval: 2000, autoReconnect : true }}
 };
-var db = null
+var db = null;
 var MongoClient = require('mongodb').MongoClient;
 
 process.addListener('uncaughtException', function (err) {

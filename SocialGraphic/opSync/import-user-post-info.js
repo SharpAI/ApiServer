@@ -7,13 +7,13 @@ module.exports.save_post_node=save_post_node
 
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
-var url = 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare';
-// var url = 'mongodb://localhost:27017/localdb';
 
-var dbGraph = require("seraph")({ server: "http://120.24.247.107:7474",
-    endpoint: "/db/data",
-    user: "neo4j",
-    pass: "5MW-wU3-V9t-bF6" });
+var url = process.env.MONGO_URL;
+
+var dbGraph = require("seraph")({ server: process.env.NEO4J_SERVER,
+    endpoint: process.env.NEO4J_ENDPOINT,
+    user: process.env.NEO4J_USER,
+    pass: process.env.NEO4J_PASSWORD });
 
 function update_remove_post(db){
     var latestPost = new Date()

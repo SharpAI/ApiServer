@@ -6,13 +6,13 @@ module.exports.save_viewer_node=save_viewer_node
 
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
-//var url = 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare';
-var url = 'mongodb://localhost:27017/localdb';
+var url = process.env.MONGO_URL;
 
-var dbGraph = require("seraph")({ server: "http://120.24.247.107:7474",
-    endpoint: "/db/data",
-    user: "neo4j",
-    pass: "5MW-wU3-V9t-bF6" });
+var dbGraph = require("seraph")({ server: process.env.NEO4J_SERVER,
+    endpoint: process.env.NEO4J_ENDPOINT,
+    user: process.env.NEO4J_USER,
+    pass: process.env.NEO4J_PASSWORD });
+
 function save_viewer_node(doc,cb){
     if (doc !== null) {
         var createstr = 'MATCH (u:User {userId:"'+doc.userId+'"}),(p:Post {postId:"'+
