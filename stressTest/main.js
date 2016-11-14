@@ -7,9 +7,7 @@ meteorDown.init(function (Meteor) {
         Meteor.call('profileData','KjXj9TtBaRquETXZL',function(err,result){
             console.log(result)
         });
-        Meteor.call('socialData','f6c453c28fe232fe000059',function(err,result){
-            console.log(result)
-        });
+
         Meteor.subscribe('userNewBellCount','KjXj9TtBaRquETXZL', function(err,result){
             console.log(result)
         });
@@ -22,17 +20,20 @@ meteorDown.init(function (Meteor) {
         Meteor.subscribe('reading','57f6c453c28fe232fe000059', function(err,result){
             console.log(result)
         });
-        Meteor.call('getPostFriends',"57f6c453c28fe232fe000059",0,20, function(err,result){
+        Meteor.call('socialData','f6c453c28fe232fe000059',function(err,result){
             console.log(result)
-        });
 
-        Meteor.call('getSuggestedPosts',"57f6c453c28fe232fe000059",0,2, function(err,result){
-            console.log(result)
-        });
+            Meteor.call('getPostFriends',"57f6c453c28fe232fe000059",0,20, function(err,result){
+                console.log(result)
+                Meteor.call('getSuggestedPosts',"57f6c453c28fe232fe000059",0,2, function(err,result){
+                    console.log(result)
+                    setTimeout(function(){
+                        Meteor.kill();
+                    },2000)
+                });
+            });
 
-        setTimeout(function(){
-            Meteor.kill();
-        },2000)
+        });
     });
 });
 
