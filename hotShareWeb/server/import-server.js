@@ -2,10 +2,15 @@ var request = Meteor.npmRequire('request');
 
 Router.route('/import-server/:_id/:url', function (req, res, next) {
   var api_url = import_server_url;
+  var isResErr = false;
     
   res.writeHead(200, {
     'Content-Type' : 'text/html;charset=UTF-8',
     'Transfer-Encoding' : 'chunked'
+  });
+  res.on('error', function(err){
+    isResErr = true;
+    console.log('import-server Error: '+err);
   });
   
   // console.log(api_url + '/' + this.params._id + '/' + encodeURIComponent(this.params.url));
@@ -33,8 +38,9 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
     if(!hasRes){
       hasEnd = true;
       console.log("res.end: failed");
-      res.end('\r\n' + '{"status": "failed"}');
-      
+      if (!isResErr) {
+        res.end('\r\n' + '{"status": "failed"}');
+      }
       request(import_cancel_url + '/' + slef.params.query['task_id'], function(error, response, body){
         // TODO:
       });
@@ -45,12 +51,19 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
     method: 'GET',
     uri: api_url
   })
+  .on('error', function(err){
+    console.log('import-server request Error: '+err);
+  })
   .on('data', function(data) {
     hasRes = true;
     if(hasEnd)
       return;
       
     try{
+      if (isResErr) {
+        console.log('import-server Error: abort disposing data.');
+        return;
+      }
       result = JSON.parse(data);
       if(result.status != 'importing'){
         hasEnd = true;
@@ -62,13 +75,19 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
     }catch(er){
       hasEnd = true;
       console.log("res.end: failed");
-      res.end('\r\n' + '{"status": "failed"}');
+      if (!isResErr) {
+        res.end('\r\n' + '{"status": "failed"}');
+      }
     }
   })
   .on('end', function(data) {
     hasRes = true;
     if(hasEnd)
       return;
+    if (isResErr) {
+        console.log('import-server Error: abort disposing end event.');
+        return;
+    }
     res.end('\r\n' + JSON.stringify(result));
   });
 }, {where: 'server'});
