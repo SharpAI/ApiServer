@@ -456,7 +456,7 @@ if(Meteor.isServer){
         });
     }
     var publicPostsPublisherDeferHandle = function(userId,postId,self) {
-        Meteor.defer(function(){
+        setTimeout(function(){
             try {
                 var postInfo=Posts.findOne({_id:postId},{fields:{owner:1}})
                 if(postInfo){
@@ -549,7 +549,7 @@ if(Meteor.isServer){
                 }
             }
             catch(error){}
-        });
+        }, 0);
     };
     var postsInsertHookPostToBaiduDeferHandle = function(postid) {
         Meteor.defer(function () {
