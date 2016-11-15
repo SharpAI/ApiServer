@@ -143,3 +143,17 @@ Template.accounts_management_addnew.events
       else
         Router.go '/my_accounts_management'
     );
+
+Template.accounts_management_prompt.rendered=->
+  $(".spinner .spinner-blade").css({"width":"0.104em","height":"0.4777em","transform-origin":"center -0.4222em"})
+  $("body,html").css({"overflow":"hidden"})
+  return
+
+Template.accounts_management_prompt.events
+  'click .prompt-close' :->
+    $('.page-accounts-management-prompt').remove()
+
+Template.accounts_management_prompt.destroyed=->
+  $(".spinner .spinner-blade").css({"width":"0.074em","height":"0.2777em","transform-origin":"center -0.2222em"})
+  $("body,html").css({"overflow":""})
+  return

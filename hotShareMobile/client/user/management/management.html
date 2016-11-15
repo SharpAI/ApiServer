@@ -4,11 +4,11 @@
             {{#if connecting}}
             <div class="managementTitle">重新连接中...</div>
             {{else}}
-              {{#if loging}}
+              <!--{{#if loging}}
               <div class="managementTitle">帐号切换中...</div>
-              {{else}}
+              {{else}}-->
               <div class="managementTitle">{{_ "Account"}}</div>
-              {{/if}}
+              <!--{{/if}}-->
             {{/if}}
             <div class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
         </div>
@@ -34,6 +34,9 @@
                 </dl>                
             </div>
             <div class="logout box boxTitle boxCenter">退出当前帐号</div>
+            {{#if loging}}
+                {{> accounts_management_prompt}}
+            {{/if}}
         </div>
         {{/if}}
     </div>
@@ -72,4 +75,21 @@
             </form>
         </div>
     </div>   
+</template>
+
+<template name="accounts_management_prompt">
+    <div class="page-accounts-management-prompt">
+        <div class="management-prompt-content">
+            <div class="prompt-close">
+                <img src="/prompt_close.png" style="right: 3px;top: 3px;position: absolute;width: 28px;">
+            </div>
+            <div class="prompt-animation">
+                {{>spinner}}
+            </div>
+            <div class="prompt-text">
+                <p>帐号切换中，请稍候...</p>
+            </div>
+        </div>
+        <div class="management-prompt-background" style="background: rgba(0, 0, 0, 0.5);"></div>
+    </div>
 </template>
