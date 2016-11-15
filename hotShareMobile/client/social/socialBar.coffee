@@ -4,14 +4,17 @@ if Meteor.isClient
   Template.socialContent.events
     'click .postBtn':->
       #PUB.postPageBack()
+      $('.showPostsBox,.showPostsLine,.superChatIntroduce').show()
       trackEvent("socialBar","Post")
       Session.set("SocialOnButton",'postBtn')
       Session.set("Social.LevelOne.Menu",'discover')
       if $('.contactsList .head').is(':visible')
         $('.contactsList .head').fadeOut 300
       document.body.scrollTop = 0
+      $('.showPosts .head').fadeIn 300
     'click .chatBtn': (e, t)->
       e.stopPropagation()
+      $('.showPostsBox,.showPostsLine,.superChatIntroduce').show()
       $(".chatBtn .red_spot").hide().html(0)
       trackEvent("socialBar","GroupChat")
       url = 'http://'+chat_server_url+'/channel/'+ Session.get('postContent')._id+'/userid/'+Meteor.userId();
@@ -126,6 +129,7 @@ if Meteor.isClient
       #t.chatroom.show()
     'click .contactsBtn':->
       trackEvent("socialBar","Newfrineds")
+      $('.showPostsBox,.showPostsLine,.superChatIntroduce').show()
       Session.set("Social.LevelOne.Menu",'contactsList')
       Session.set("SocialOnButton",'contactsList')
       $('.div_contactsList').css('display',"block")
@@ -134,6 +138,7 @@ if Meteor.isClient
       document.body.scrollTop = $(".showPostsBox").height()
     'click .discoverBtn':->
       trackEvent("socialBar","Discover")
+      $('.showPostsBox,.showPostsLine,.superChatIntroduce').show()
       Session.set("SocialOnButton",'discover')
       Session.set('momentsitemsLimit', 10);
       Session.set("Social.LevelOne.Menu",'discover')
@@ -143,6 +148,10 @@ if Meteor.isClient
       document.body.scrollTop = $(".showPostsBox").height()
     'click .meBtn':->
       trackEvent("socialBar","Me")
+      if Session.equals('isInformationEditing',true)
+        $('.showPostsBox,.showPostsLine,.superChatIntroduce').hide()
+      else
+        $('.showPostsBox,.showPostsLine,.superChatIntroduce').show()
       Session.set("SocialOnButton",'me')
       Session.set("Social.LevelOne.Menu",'me')
       #Session.set('favouritepostsLimit', 0);
