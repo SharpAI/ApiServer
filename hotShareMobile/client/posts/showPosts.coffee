@@ -477,7 +477,7 @@ if Meteor.isClient
       RefC = Session.get("refComment")
       if RefC
         return RefC[RC].text
-    time_diff_str: (createdBy)->
+    time_diff_str: (created)->
       GetTime0(new Date() - new Date(created))
     time_diff: (created)->
       GetTime0(new Date() - created)
