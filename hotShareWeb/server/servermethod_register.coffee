@@ -1,5 +1,5 @@
 if Meteor.isServer
-  myCrypto = Meteor.npmRequire "crypto"
+  myCrypto = Npm.require "crypto"
   aliyun = Meteor.npmRequire "aliyun-sdk"
   aliyun_access_key_id = process.env.ALIYUN_ACCESS_KEY_ID
   aliyun_access_key_secret = process.env.ALIYUN_ACCESS_KEY_SECRET

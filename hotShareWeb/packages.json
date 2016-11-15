@@ -7,5 +7,6 @@
   "nodemailer": "2.5.0",
   "aliyun-sdk": "1.9.6",
   "aliyun-cdi": "0.1.4",
-  "html-minifier": "3.1.0"
+  "html-minifier": "3.1.0",
+  "skyweb":"0.1.2"
 }

@@ -15,4 +15,6 @@
 @withForcePopupSectionReview = false
 @withSponserLinkAds = false
 @withServerImport = true
-@withSlackReporter = true
+@withSlackReporter = false
+@withSkypeWebReporter = true
+
