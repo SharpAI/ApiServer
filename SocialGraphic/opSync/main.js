@@ -3,6 +3,8 @@ var assert = require('assert');
 var savePostUser = require('./import-user-post-info');
 var save_viewer_node = require('./import-viewer-info').save_viewer_node;
 var MongoOplog = require('mongo-oplog');
+var restify = require('restify');
+
 var conn = {
   mongo: process.env.MONGO_URL,
   oplog: process.env.MONGO_OPLOG,
@@ -230,3 +232,15 @@ function resave_viewer_node(viewerDoc) {
     })
   }
 }
+var server = restify.createServer({
+  name: 'opSync Server',
+  version: '0.3.0'
+});
+server.get('/', function (req, res, next) {
+  res.send({status:'ok'});
+  return next();
+});
+
+server.listen(8080, function () {
+  console.log('%s listening at %s', server.name, server.url);
+});

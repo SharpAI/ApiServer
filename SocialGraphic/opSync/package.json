@@ -9,6 +9,7 @@
     "start":"node main.js"
   },
   "dependencies": {
+    "restify":"^4.0.3",
     "mongo-oplog":"1.0.1",
     "seraph":"^0.14.2",
     "async": "^2.1.2",
