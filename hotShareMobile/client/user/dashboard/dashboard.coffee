@@ -27,9 +27,9 @@ if Meteor.isClient
         return false
     newVersion: ->
       version_of_build
-    isLatestVersion: ->
-      version = Versions.findOne({})
-      if version and version.android isnt version_of_build
+    isLatestVersion: ->   
+      # version = Versions.findOne({})
+      if checkNewVersion()
         return false
       else
         return true
