@@ -9,12 +9,16 @@ var conn = {
   mongo: process.env.MONGO_URL,
   oplog: process.env.MONGO_OPLOG,
 
+  mongo_opts: { server : { reconnectTries : 3000, reconnectInterval: 2000, autoReconnect : true }},
   oplog_opts_v: { ns: 'hotShare.viewers' , server : { reconnectTries : 3000, reconnectInterval: 2000, autoReconnect : true }},
   oplog_opts_p: { ns: 'hotShare.posts'   , server : { reconnectTries : 3000, reconnectInterval: 2000, autoReconnect : true }},
   oplog_opts_u: { ns: 'hotShare.users'   , server : { reconnectTries : 3000, reconnectInterval: 2000, autoReconnect : true }}
 };
-var db = null;
 var MongoClient = require('mongodb').MongoClient;
+var db = null;
+var oplog_v = null;
+var oplog_p = null;
+var oplog_u = null;
 
 process.addListener('uncaughtException', function (err) {
     var msg = err.message;
@@ -27,15 +31,43 @@ process.addListener('uncaughtException', function (err) {
     console.log(msg);
     console.trace();
 });
-MongoClient.connect(conn.mongo, function(err, tdb) {
+MongoClient.connect(conn.mongo, conn.mongo_opts, function(err, tdb) {
     assert.equal(null, err);
     db=tdb
     console.log('db connected!')
-});
-mongo_connect();
 
-function mongo_connect() {
-  var oplog_v = MongoOplog(conn.oplog, conn.oplog_opts_v).tail();
+    db.on('timeout',     function(){console.log('MongoClient.connect timeout')});
+    db.on('error',       function(){console.log('MongoClient.connect error')});
+    db.on('close',       function(){console.log('MongoClient.connect close')});
+    db.on('reconnect',   function(){
+        console.log('MongoClient.connect reconnect')
+        oplog_connect();
+    });
+
+    oplog_connect();
+});
+
+function oplog_connect() {
+  if(oplog_v) {
+      oplog_v.destroy(function(){
+          console.log('oplog_v destroyed');
+          oplog_v = null;
+      })
+  }
+  if(oplog_p) {
+      oplog_p.destroy(function(){
+          console.log('oplog_p destroyed');
+          oplog_p = null;
+      })
+  }
+  if(oplog_u) {
+      oplog_u.destroy(function(){
+          console.log('oplog_u destroyed');
+          oplog_u = null;
+      })
+  }
+
+  oplog_v = MongoOplog(conn.oplog, conn.oplog_opts_v).tail();
   oplog_v.on('op', function (data) {
     get_doc(data, function (ns, postDoc, userDoc, viewerDoc) {
       sync_to_neo4j(ns, postDoc, userDoc, viewerDoc);
@@ -51,7 +83,7 @@ function mongo_connect() {
     console.log('>>> stop: server stopped');
   });
 
-  var oplog_p = MongoOplog(conn.oplog, conn.oplog_opts_p).tail();
+  oplog_p = MongoOplog(conn.oplog, conn.oplog_opts_p).tail();
   oplog_p.on('op', function (data) {
     get_doc(data, function (ns, postDoc, userDoc, viewerDoc) {
       sync_to_neo4j(ns, postDoc, userDoc, viewerDoc);
@@ -67,7 +99,7 @@ function mongo_connect() {
     console.log('>>> stop: server stopped');
   });
 
-  var oplog_u = MongoOplog(conn.oplog, conn.oplog_opts_u).tail();
+  oplog_u = MongoOplog(conn.oplog, conn.oplog_opts_u).tail();
   oplog_u.on('op', function (data) {
     get_doc(data, function (ns, postDoc, userDoc, viewerDoc) {
       sync_to_neo4j(ns, postDoc, userDoc, viewerDoc);
