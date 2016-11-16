@@ -89,6 +89,9 @@ function oplog_connect() {
       sync_to_neo4j(ns, postDoc, userDoc, viewerDoc);
     })
   });
+  oplog_p.on('delete', function (doc) {
+    on_post_remove(doc);
+  });
   oplog_p.on('error', function (error) {
     console.log('>>> error: ' + error);
   });
@@ -114,6 +117,13 @@ function oplog_connect() {
   oplog_u.stop(function () {
     console.log('>>> stop: server stopped');
   });
+}
+
+function on_post_remove(doc){
+  var postId = doc.o._id;
+  console.log('on_post_remove:', doc);
+  console.log('on_post_remove[postId]:', postId);
+  savePostUser.remove_post(postId);
 }
 
 function get_doc(doc, cb) {
