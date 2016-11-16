@@ -41,4 +41,4 @@ MATCH (u:User)-[:VIEWER]->(p:Post),(u)-[vi:VIEWER]->(p1:Post) WHERE p.postId="8A
 3. How to docker build/run
    rm -rf node_modules/
    docker build -t yourname/appname .
-   docker run -t yourname/appname
+   docker run  --restart=always --name opsync -e MONGO_URL=mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare -e MONGO_OPLOG=mongodb://oplogger:PasswordForOplogger@host1.tiegushi.com:27017/local?authSource=admin -e NEO4J_SERVER=http://50.233.239.115:7474 -e NEO4J_ENDPOINT=/db/data -e NEO4J_USER=neo4j -e NEO4J_PASSWORD=5MW-wU3-V9t-bF6 -e LIVING_PORT=8083 --log-opt max-size=50m -p 8083:8083 -d sraita/hotshare:opSync0.1.2
