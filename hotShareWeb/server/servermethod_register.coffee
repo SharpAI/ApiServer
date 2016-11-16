@@ -632,7 +632,13 @@ if Meteor.isServer
             Meteor.defer ()->
               Posts.update({_id:postId},{$set:{browse:browseTimes}})
               Viewers.update({postId: postId, userId: userId}, {$inc: {count: 1}, $set: {owner: post.owner}}); 
-              pushnotification("read",post,userId)
+              if(browseTimes < 11)
+                pushnotification("read",post,userId)
+              if(browseTimes > 10 and browseTimes < 101 and (browseTimes % 5) == 0)
+                pushnotification("read",post,userId)
+              if(browseTimes > 100 and (browseTimes % 20) == 0)
+                pushnotification("read",post,userId)
+
               unless NoUpdateShare
                 Feeds.update({postId:postId,eventType: 'share'},{
                   $inc: { ReadAfterShare: 1 },
