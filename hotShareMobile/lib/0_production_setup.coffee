@@ -21,3 +21,4 @@
 @withDirectDraftShow = true
 @withMobileBackendUploading = false
 @withStaticPosts = false
+@withNewFilePath=true

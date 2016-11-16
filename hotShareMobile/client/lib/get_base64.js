@@ -4,6 +4,12 @@
 if(Meteor.isCordova){
     window.getBase64OfImage = function(filename,originalFilename,URI,callback){
         //var params = {filename:filename, originalFilename:originalFilename, URI:URI, smallImage:''};
+        if(withNewFilePath && device.platform === 'iOS'){
+            var libIndex = URI.indexOf('Library');
+            var filePath = URI.substring(libIndex);
+            URI = cordova.file.applicationStorageDirectory+filePath;
+            console.log("new file path: " + URI);
+        }
         var fileExt = filename.split('.').pop();
         //retArray.push(params);
         if(fileExt.toUpperCase()==='GIF'){
