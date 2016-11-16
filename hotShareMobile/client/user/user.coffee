@@ -177,6 +177,7 @@ if Meteor.isClient
         this.mainImage
   Template.user.events
     'focus #search-box': (event)->
+       PostsSearch.cleanHistory()
        PUB.page '/searchMyPosts'
     'click #follow': (event)->
       $('.user').addClass('animated ' + animateOutLowerEffect);
@@ -327,7 +328,8 @@ if Meteor.isClient
          Session.set("searchLoading", false)
          Session.set("noSearchResult", false)
          return
-       PostsSearch.search text
+       options = {userId: Meteor.userId()}
+       PostsSearch.search text,options
     )
 #    if PostsSearch.getStatus().loaded is true
 #      Session.set("searchLoading", false)
