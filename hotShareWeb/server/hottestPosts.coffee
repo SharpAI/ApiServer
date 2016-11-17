@@ -22,7 +22,7 @@ Meteor.startup ()->
         else
           postMessageToGeneralChannel("@everyone Can't query hot post from neo4j server, this is reporting from Test/Local  server.")
       return null
-    console.log queryString
+    # console.log queryString
     #console.log('ne4j:', queryResult)
     if queryResult and queryResult.length > 0
       #console.log('hotPost:', queryResult)
@@ -39,7 +39,7 @@ Meteor.startup ()->
           postInfo.views = postViews
           postInfo.hasPush = false
           hottestPosts.push(postInfo)
-      console.log('hotPosts:', hottestPosts)       
+      # console.log('hotPosts:', hottestPosts)       
   @getRawHottestPosts=()->
     if hottestPosts and hottestPosts.length > 0
       return hottestPosts

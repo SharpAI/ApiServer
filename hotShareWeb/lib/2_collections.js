@@ -460,7 +460,7 @@ if(Meteor.isServer){
             try {
                 var postInfo=Posts.findOne({_id:postId},{fields:{owner:1}})
                 if(postInfo){
-                    console.log('owner is '+postInfo.owner);
+                    // console.log('owner is '+postInfo.owner);
                     newMeetsAddedForPostFriendsDeferHandleV2(self,postInfo.owner,userId,postInfo.owner,{me:userId,ta:postInfo.owner});
                 }
             } catch (error){
@@ -557,7 +557,7 @@ if(Meteor.isServer){
                 var link='http://www.tiegushi.com/posts/'+postid;
                 HTTP.post('http://data.zz.baidu.com/urls?site=www.tiegushi.com&token=sra0FwZC821iV2M0',{content:link},
                     function (error, result) {
-                        console.log('post to baidu '+link+' result '+JSON.stringify(result));
+                        // console.log('post to baidu '+link+' result '+JSON.stringify(result));
                     })
             }
         })
@@ -640,7 +640,7 @@ if(Meteor.isServer){
                     }
                 });
 
-                console.log('send mail to:', notifyUser.userEmail);
+                // console.log('send mail to:', notifyUser.userEmail);
             } catch (_error) {
               ex = _error;
               console.log("err is: ", ex);
@@ -651,17 +651,17 @@ if(Meteor.isServer){
 
 
     var sendEmailToFollower = function(userEmail, subject, mailText){
-        console.log('给web关注者发送邮件')
+        // console.log('给web关注者发送邮件')
         Meteor.defer(function () {
             try {
-                console.log(">>before Send")
+                // console.log(">>before Send")
                 Email.send({
                     bcc: userEmail,
                     from: '故事贴<notify@mail.tiegushi.com>',
                     subject: subject,
                     html: mailText
                 });
-                console.log('send mail to:', userEmail);
+                // console.log('send mail to:', userEmail);
             } catch (error) {
                 console.log("Exception: sendEmailToFollower: err=", error);
             }
@@ -849,7 +849,7 @@ if(Meteor.isServer){
                             followby: userId
                         }, function(error, _id){
                             console.log('error: ' + error);
-                            console.log('_id: ' + _id);
+                            // console.log('_id: ' + _id);
                         });
                     }
                 }
@@ -978,7 +978,7 @@ if(Meteor.isServer){
         return;
       }
 
-      console.log("send mail to: " + userEmail);
+      // console.log("send mail to: " + userEmail);
 
        // send mail
         var text = Assets.getText('email/follower-notify.html');
@@ -2027,13 +2027,13 @@ if(Meteor.isServer){
           fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1,'token':1,'profile.location':1,'profile.lastLogonIP':1,'type':1,'anonymous':1}});
   });
   Meteor.publish('rpPosts', function(type,selects,options) {
-      console.log ('type='+type)
-      console.log(type == 'montior')
-      console.log(JSON.stringify(selects));
+      // console.log ('type='+type)
+      // console.log(type == 'montior')
+      // console.log(JSON.stringify(selects));
 
       if(type == 'montior'){
         if(selects.startDate && selects.endDate){
-            console.log('1')
+            // console.log('1')
             Counts.publish(this,'rpPostsCounts',Posts.find({
                 isReview:{$ne: false},
                 createdAt:{
@@ -2070,7 +2070,7 @@ if(Meteor.isServer){
       }
       if(type == 'review'){
         if(selects.startDate && selects.endDate){
-            console.log('1')
+            // console.log('1')
             Counts.publish(this,'rpPostsCounts',Posts.find({
                 isReview: false,
                 createdAt:{
