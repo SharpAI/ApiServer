@@ -225,9 +225,9 @@ if Meteor.isServer
 
   #SSR.compileTemplate('post', Assets.getText('template/post.html'))
   Router.route '/posts/:_id', (req, res, next)->
-    _post = Posts.findOne({_id: this.params._id})
+    _post = Posts.findOne({_id: this.params._id},{fields:{title:1,mainImage:1,addontitle:1,isReview:1}})
 
-    if _post is null or _post is ''
+    if !_post
       res.writeHead(404, {
         'Content-Type': 'text/html'
       })
@@ -271,15 +271,16 @@ if Meteor.isServer
       res.end(postHtml)
     else
     ###
-    postItem = Posts.findOne({_id: this.params._id},{fields:{title:1,mainImage:1,addontitle:1}});
+    # postItem = Posts.findOne({_id: this.params._id},{fields:{title:1,mainImage:1,addontitle:1}});
+    
     Inject.rawModHtml('addxmlns', (html) ->
       return html.replace(/<html>/, '<html xmlns="http://www.w3.org/1999/xhtml"
     xmlns:fb="http://ogp.me/ns/fb#">');
     )
-    Inject.rawHead("inject-image", "<meta property=\"og:image\" content=\"#{postItem.mainImage}\"/>", res);
-    Inject.rawHead("inject-description", "<meta property=\"og:description\" content=\"#{postItem.title} #{postItem.addontitle} 故事贴\"/>",res);
-    Inject.rawHead("inject-url", "<meta property=\"og:url\" content=\"http://#{server_domain_name}/posts/#{postItem._id}\"/>",res);
-    Inject.rawHead("inject-title", "<meta property=\"og:title\" content=\"#{postItem.title} - 故事贴\"/>",res);
+    Inject.rawHead("inject-image", "<meta property=\"og:image\" content=\"#{_post.mainImage}\"/>", res);
+    Inject.rawHead("inject-description", "<meta property=\"og:description\" content=\"#{_post.title} #{_post.addontitle} 故事贴\"/>",res);
+    Inject.rawHead("inject-url", "<meta property=\"og:url\" content=\"http://#{server_domain_name}/posts/#{_post._id}\"/>",res);
+    Inject.rawHead("inject-title", "<meta property=\"og:title\" content=\"#{_post.title} - 故事贴\"/>",res);
     Inject.rawHead("inject-width", "<meta property=\"og:image:width\" content=\"400\" />",res);
     Inject.rawHead("inject-height", "<meta property=\"og:image:height\" content=\"300\" />",res);
     Inject.rawHead("inject-height", "<meta property=\"fb:app_id\" content=\"1759413377637096\" />",res);
@@ -288,9 +289,9 @@ if Meteor.isServer
     next()
   , {where: 'server'}
   Router.route '/posts/:_id/:index', (req, res, next)->
-    _post = Posts.findOne({_id: this.params._id})
+    _post = Posts.findOne({_id: this.params._id},{fields:{title:1,mainImage:1,addontitle:1,isReview:1}})
 
-    if _post is null or _post is ''
+    if !_post
       res.writeHead(404, {
         'Content-Type': 'text/html'
       })
@@ -302,15 +303,15 @@ if Meteor.isServer
       })
       return res.end(Assets.getText('post-no-review.html'))
 
-    postItem = Posts.findOne({_id: this.params._id},{fields:{title:1,mainImage:1,addontitle:1}});
+    # postItem = Posts.findOne({_id: this.params._id},{fields:{title:1,mainImage:1,addontitle:1}});
     Inject.rawModHtml('addxmlns', (html) ->
       return html.replace(/<html>/, '<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:fb="http://ogp.me/ns/fb#">');
     )
-    Inject.rawHead("inject-image", "<meta property=\"og:image\" content=\"#{postItem.mainImage}\"/>", res);
-    Inject.rawHead("inject-description", "<meta property=\"og:description\" content=\"#{postItem.title} #{postItem.addontitle} 故事贴\"/>",res);
-    Inject.rawHead("inject-url", "<meta property=\"og:url\" content=\"http://#{server_domain_name}/posts/#{postItem._id}\"/>",res);
-    Inject.rawHead("inject-title", "<meta property=\"og:title\" content=\"#{postItem.title} - 故事贴\"/>",res);
+    Inject.rawHead("inject-image", "<meta property=\"og:image\" content=\"#{_post.mainImage}\"/>", res);
+    Inject.rawHead("inject-description", "<meta property=\"og:description\" content=\"#{_post.title} #{_post.addontitle} 故事贴\"/>",res);
+    Inject.rawHead("inject-url", "<meta property=\"og:url\" content=\"http://#{server_domain_name}/posts/#{_post._id}\"/>",res);
+    Inject.rawHead("inject-title", "<meta property=\"og:title\" content=\"#{_post.title} - 故事贴\"/>",res);
     Inject.rawHead("inject-width", "<meta property=\"og:image:width\" content=\"400\" />",res);
     Inject.rawHead("inject-height", "<meta property=\"og:image:height\" content=\"300\" />",res);
     Inject.rawHead("inject-height", "<meta property=\"fb:app_id\" content=\"1759413377637096\" />",res);
