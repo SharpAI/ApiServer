@@ -2,8 +2,9 @@
  * Created by simba on 5/6/16.
  */
 
-module.exports.save_user_node=save_user_node
-module.exports.save_post_node=save_post_node
+module.exports.save_user_node=save_user_node;
+module.exports.save_post_node=save_post_node;
+module.exports.remove_post=remove_post;
 
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
@@ -14,6 +15,12 @@ var dbGraph = require("seraph")({ server: process.env.NEO4J_SERVER,
     endpoint: process.env.NEO4J_ENDPOINT,
     user: process.env.NEO4J_USER,
     pass: process.env.NEO4J_PASSWORD });
+
+function remove_post(id){
+    dbGraph.query('MATCH (p:Post {postId: "'+id+'"}) DETACH DELETE p;', function(err, results) {
+        // TODO:
+    });
+}
 
 function update_remove_post(db){
     var latestPost = new Date()
@@ -45,9 +52,9 @@ function update_remove_post(db){
 }
 MongoClient.connect(url, function(err, db) {
     update_remove_post(db);
-    setTimeout(function() {
-        update_remove_post(db);
-    }, 1000*60*10);
+    // setTimeout(function() {
+    //     update_remove_post(db);
+    // }, 1000*60*10);
 });
 
 function check_user_existing(id,cb){
