@@ -64,20 +64,44 @@ if Meteor.isClient
       fastRender: true
     }
   Router.route '/view_posts/:_id', {
-    action: ->
-      self = this
-      self.render 'loadingPost'
-      ## 这里要确保登录 再调用
-      Meteor.subscribe("reading",self.params._id)
-      $.getJSON(rest_api_url+"/raw/"+self.params._id,(json,result)->
-        if(result && result is 'success' && json && json.status && json.status is 'ok' && json.data)
-          post = json.data
-          renderPost(self,post)
+      waitOn: ->
+          [subs.subscribe("publicPosts", this.params._id),
+           subs.subscribe("postsAuthor",this.params._id),
+           subs.subscribe "pcomments"]
+      loadingTemplate: 'loadingPost'
+      action: ->
+        post = Posts.findOne({_id: this.params._id})
+        # if !post or (post.isReview is false and post.owner isnt Meteor.userId())
+        #   return this.render 'postNotFound'
+        unless post
+          console.log "Cant find the request post"
+          this.render 'postNotFound'
+          return
+        Session.set("refComment",[''])
+        if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
+          Session.set('postContent',post)
+          refreshPostContent()
+          toastr.info('作者修改了帖子内容.')
         else
-          post = Meteor.call("getPostContent",self.params._id)
-          renderPost(self,post)
-      )
-  }
+          Session.set('postContent',post)
+        Session.set('focusedIndex',undefined)
+        if post.addontitle and (post.addontitle isnt '')
+          documentTitle = post.title + "：" + post.addontitle
+        else
+          documentTitle = post.title
+        Session.set("DocumentTitle",documentTitle)
+        favicon = document.createElement('link')
+        favicon.id = 'icon'
+        favicon.rel = 'icon'
+        favicon.href = post.mainImage
+        document.head.appendChild(favicon)
+
+        unless Session.equals('channel','posts/'+this.params._id)
+          refreshPostContent()
+        this.render 'showPosts', {data: post}
+        Session.set 'channel','posts/'+this.params._id
+      fastRender: true
+    }
   Router.route '/posts/:_id/:_index', {
     name: 'post_index'
     waitOn: ->
