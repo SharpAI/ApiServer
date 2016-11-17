@@ -67,22 +67,25 @@ if Meteor.isServer
 
   Router.route '/t/:_id', (req, res, next)->
     postItem = Posts.findOne({_id: this.params._id})
-    cookies = req.headers.cookie
-    loginUserId = getCookie('loginUserId',cookies).toString()
-    if(!postItem or postItem.publish isnt true)
+    #cookies = req.headers.cookie
+    #Cookies 不能够用在后端，因为我们有CDN
+    #loginUserId = getCookie('loginUserId',cookies).toString()
+    console.log(postItem)
+    if(!postItem or postItem.publish is false)
       html = SSR.render('no-post')
       res.writeHead(404, {
         'Content-Type': 'text/html'
       })
       return res.end(minify(html, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
     
-    if postItem and postItem.isReview is false
-      if !(loginUserId  and loginUserId isnt '' and postItem.owner is loginUserId)
-        html = SSR.render('post-no-review')
-        res.writeHead(404, {
-          'Content-Type': 'text/html'
-        })
-        return res.end(minify(html, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
+    if postItem and (typeof postItem.isReview isnt undefined and postItem.isReview is false)
+      #if !(loginUserId  and loginUserId isnt '' and postItem.owner is loginUserId)
+      # 全局变量用在后端，这个代码非常的Buggy
+      html = SSR.render('post-no-review')
+      res.writeHead(404, {
+        'Content-Type': 'text/html'
+      })
+      return res.end(minify(html, {removeComments: true, collapseWhitespace: true, minifyJS: true, minifyCSS: true}))
     
     postHtml = SSR.render('post', postItem)
     res.writeHead(200, {
