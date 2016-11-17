@@ -65,10 +65,10 @@ if Meteor.isClient
     $('.chatBoxContent').css('min-height',$(window).height()-90)
     msg_rest_url = 'http://' + chat_server_url + '/api/gushitie/msgcount/' + Meteor.userId()
     #msg_rest_url = 'http://172.16.10.34:4000/api/gushitie/msgcount/' + Meteor.userId()
-    $.getJSON(msg_rest_url, (data) ->
-      if data? and data.count?
-        inst.reactivevars.chatcount.set(data.count)
-    )        
+    # $.getJSON(msg_rest_url, (data) ->
+    #   if data? and data.count?
+    #     inst.reactivevars.chatcount.set(data.count)
+    # )        
   Template.socialContent.helpers
     newcount:()->
       PostFriends.find({meetOnPostId:Session.get("postContent")._id,count:1,ta:{$ne:null}},{sort: {createdAt: -1}}).count()
