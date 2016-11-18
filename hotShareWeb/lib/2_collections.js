@@ -1489,6 +1489,7 @@ if(Meteor.isServer){
             var self = this;
             self.count = 0;
             self.meeterIds=[];
+            self.docIds=[];
             //publicPostsPublisherDeferHandle(userId,postId,self);
             var handle = Meets.find({me: userId,meetOnPostId:postId},{sort: {createdAt: -1},limit:limit}).observeChanges({
                 added: function (id,fields) {
@@ -1497,6 +1498,7 @@ if(Meteor.isServer){
                     if (taId !== userId){
                         if(!~self.meeterIds.indexOf(taId)){
                             self.meeterIds.push(taId);
+                            self.docIds.push(id);
                             newMeetsAddedForPostFriendsDeferHandleV2(self,taId,userId,id,fields);
                         }
                     }
@@ -1504,7 +1506,9 @@ if(Meteor.isServer){
                 },
                 changed: function (id,fields) {
                     // self.changed("postfriends", id, fields);
-                    self.changed("postFriendsV2", id, fields);
+                    if(~self.docIds.indexOf(id)){
+                        self.changed("postfriends", id, fields);
+                    }
                 }/*,
                  removed:function (id,fields) {
                  self.removed("postfriends", id, fields);
@@ -1514,6 +1518,7 @@ if(Meteor.isServer){
             self.onStop(function () {
                 handle.stop();
                 delete self.meeterIds
+                delete self.docIds
             });
         }
     });
