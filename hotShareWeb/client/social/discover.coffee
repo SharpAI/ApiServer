@@ -97,10 +97,12 @@ if Meteor.isClient
         Session.equals('momentsCollection','error')
     Template.moments.events
       'click .readpost':(e)->
-        Session.set("historyForwardDisplay", false)
         postId = this.readPostId
         if postId is undefined
           postId = this._id
+        PUB.openPost postId
+        ###
+        Session.set("historyForwardDisplay", false)
         $(window).children().off()
         $(window).unbind('scroll')
         currentPostId = Session.get("postContent")._id
@@ -109,14 +111,17 @@ if Meteor.isClient
         Session.set("postForward",[])
         Session.set("postBack",postBack)
         Meteor.setTimeout ()->
-          Session.set("lastPost",postId)
+          #Session.set("lastPost",postId)
           Router.go '/posts/'+postId
         ,300
+        ###
       'click .masonry_element':(e)->
-        Session.set("historyForwardDisplay", false)
         postId = $(e.currentTarget).find('.readPost')[0].id
         if postId is undefined
           postId = this._id
+        PUB.openPost postId
+        ###
+        Session.set("historyForwardDisplay", false)
         $(window).children().off()
         $(window).unbind('scroll')
         currentPostId = Session.get("postContent")._id
@@ -125,9 +130,10 @@ if Meteor.isClient
         Session.set("postForward",[])
         Session.set("postBack",postBack)
         Meteor.setTimeout ()->
-          Session.set("lastPost",postId)
+          #Session.set("lastPost",postId)
           Router.go '/posts/'+postId
         ,300
+        ###
     Template.lpcomments.helpers
       isCommentShare:->
        if this.eventType is "pcommentShare"
