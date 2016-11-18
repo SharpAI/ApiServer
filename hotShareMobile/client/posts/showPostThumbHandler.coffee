@@ -215,12 +215,12 @@ if Meteor.isClient
         return
   @thumbsUpHandler=(e,self)->
     if e.target.className is "fa fa-thumbs-up thumbsUp"
+      e.target.textContent=e.target.textContent-1
       e.target.className="fa fa-thumbs-o-up thumbsUp"
-      #e.target.textContent=e.target.textContent-1
     else
       e.target.className="fa fa-thumbs-up thumbsUp"
       e.target.parentNode.parentElement.style.color="rgb(243,11,68)"
-      #e.target.textContent=e.target.textContent-0+1
+      e.target.textContent=e.target.textContent-0+1
       ###
       mqtt_msg = {"type": "postthumbup", "message": " 觉得此段 \"" + Session.get("postContent").pub[self.index].text + '" 很赞', "postid": Session.get('postContent')._id}
       mqtt_msg.message = Meteor.user().profile.fullname + mqtt_msg.message
@@ -232,8 +232,8 @@ if Meteor.isClient
       )
       ###
       if e.target.nextElementSibling.className is "fa fa-thumbs-down thumbsDown"
+        e.target.nextElementSibling.textContent=e.target.nextElementSibling.textContent-1
         e.target.nextElementSibling.className = "fa fa-thumbs-o-down thumbsDown"
-        #e.target.nextElementSibling.textContent=e.target.nextElementSibling.textContent-1
     Meteor.defer ()->
       i = self.index
       postId = Session.get("postContent")._id
@@ -324,15 +324,15 @@ if Meteor.isClient
         return
   @thumbsDownHandler = (e,self)->
     if e.target.className is "fa fa-thumbs-down thumbsDown"
+      e.target.textContent=e.target.textContent-1
       e.target.className="fa fa-thumbs-o-down thumbsDown"
-      #e.target.textContent=e.target.textContent-1
     else
-      e.target.className="fa fa-thumbs-down thumbsDown"
       e.target.parentNode.parentElement.style.color="rgb(243,11,68)"
-      #e.target.textContent=e.target.textContent-0+1
+      e.target.className="fa fa-thumbs-down thumbsDown"
+      e.target.textContent=e.target.textContent-0+1
       if e.target.previousElementSibling.className is "fa fa-thumbs-up thumbsUp"
+        e.target.previousElementSibling.textContent=e.target.previousElementSibling.textContent-1
         e.target.previousElementSibling.className = "fa fa-thumbs-o-up thumbsUp"
-        #e.target.previousElementSibling.textContent=e.target.previousElementSibling.textContent-1
     Meteor.defer ()->
       i = self.index
       postId = Session.get("postContent")._id

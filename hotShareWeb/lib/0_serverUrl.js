@@ -7,3 +7,5 @@ ddp_alter_url = (typeof process !== "undefined" && process !== null ? process.en
 // import_server_url = 'http://192.168.1.84:8080/import';
 // import_cancel_url = 'http://192.168.1.84:8080/import-cancel';
 rest_api_url = "http://"+server_domain_name;
+review_post_url = "http://"+server_domain_name + '/restapi/postInsertHook/';
+//review_post_url = 'http://192.168.1.65:5000/restapi/postInsertHook/';

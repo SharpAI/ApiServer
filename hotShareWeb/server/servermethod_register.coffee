@@ -391,13 +391,15 @@ if Meteor.isServer
       'reviewPostPass':(userId,postId)->
         if !confirmReporterAuth(userId)
           return false
-        url = 'http://cdn.tiegushi.com/restapi/postInsertHook/'+userId+'/'+postId
+        url = review_post_url+userId+'/'+postId
+        # console.log('reviewPostPass url:', url);
         return HTTP.get(url)
       'reviewPostMiss':(userId,postId)->
         if !confirmReporterAuth(userId)
           return false
         post = Posts.findOne(postId)
         owner = Meteor.users.findOne({_id: post.owner})
+        RePosts.remove(postId)
         Posts.remove(postId)
         reporterLogs.insert({
           userId:post.owner,
@@ -432,6 +434,7 @@ if Meteor.isServer
           # backup
           BackUpPosts.insert(post)
           # remove
+          RePosts.remove(postId)
           Posts.remove(postId)
           refreshPostsCDNCaches(postId)
       'delectPostWithUserAndBackUp': (postId,userId)->
@@ -454,6 +457,7 @@ if Meteor.isServer
           # backup
           BackUpPosts.insert(post)
           # remove
+          RePosts.remove(postId)
           Posts.remove(postId)
           refreshPostsCDNCaches(postId)
         # 禁止用户登录或者发帖
@@ -478,6 +482,9 @@ if Meteor.isServer
         })
         if post
           Posts.insert(post)
+          console.log('isReview:', post.isReview)
+          if(post.isReview is false)
+            RePosts.insert(post)
           BackUpPosts.remove(postId)
           refreshPostsCDNCaches(postId)
       'restoreUser': (userA,userB)->
@@ -514,6 +521,7 @@ if Meteor.isServer
         })
         if post
           BackUpPosts.remove(postId)
+          RePosts.remove(postId)
           delectAliyunPictureObject(postId)
       # reporter END
       'updateTopicPostsAfterComment':(topicPostId,topic,topicPostObj)->

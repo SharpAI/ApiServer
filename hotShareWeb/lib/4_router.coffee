@@ -350,6 +350,7 @@ if Meteor.isServer
         #console.log('sep3');
         return return_result(false)
 
+      RePosts.remove({_id: _post._id})
       _post.isReview = true
       doc = _post
       userId = doc.owner
