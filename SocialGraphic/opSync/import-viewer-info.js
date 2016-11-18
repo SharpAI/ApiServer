@@ -19,7 +19,9 @@ function save_viewer_node(doc,cb){
         'MERGE  (u)-[v:VIEWER]->(p) '+
         'SET v.by = '+doc.createdAt.getTime()+' ' +
         'SET v.count = CASE v.count WHEN NULL THEN 1 ELSE v.count+1 END '+
-        'RETURN v;';
+        'WITH head(collect(v)) as v1, tail(collect(v)) as coll '+
+        'FOREACH(x in coll | delete x) '+
+        'RETURN v1';
 
         console.log(createstr);
         dbGraph.query(createstr, function(err1, result) {
