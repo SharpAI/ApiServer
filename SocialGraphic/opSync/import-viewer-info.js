@@ -15,10 +15,15 @@ var dbGraph = require("seraph")({ server: process.env.NEO4J_SERVER,
 
 function save_viewer_node(doc,cb){
     if (doc !== null) {
-        var createstr = 'MATCH (u:User {userId:"'+doc.userId+'"}),(p:Post {postId:"'+
-            doc.postId+'"}) MERGE  (u)-[v:VIEWER{by:'+doc.createdAt.getTime()+'}]->(p) RETURN v;';
+        var createstr = 'MATCH (u:User {userId:"'+doc.userId+'"}),(p:Post {postId:"'+doc.postId+'"}) '+
+        'MERGE  (u)-[v:VIEWER]->(p) '+
+        'SET v.by = '+doc.createdAt.getTime()+' ' +
+        'SET v.count = CASE v.count WHEN NULL THEN 1 ELSE v.count+1 END '+
+        'RETURN v;';
+
+        console.log(createstr);
         dbGraph.query(createstr, function(err1, result) {
-            //console.log(result)
+            console.log(result);
             if (err1 || !result || result.length===0){
                 cb('MERGE failed')
             }
