@@ -32,6 +32,7 @@ var formatTime = function(time, str) {
   }
   return result;
 }
+Session.setDefault('reporterLayout','review');
 Router.route('/reporter',{
   name:'reporter'
 });
@@ -98,15 +99,24 @@ ReporterController = RouteController.extend({
   },
   reviewPosts: function() {
     if(Session.get('reporter-startDate') && !Session.get('reporter-endDate')){
-        return Posts.find({
-          isReview: false,
+        return RePosts.find({
           createdAt:{
             $gt:new Date(Session.get('reporter-startDate')),
             $lte:new Date(Session.get('reporter-endDate')),
             $exists: true}
           },this.findOptions());
     } 
-    return Posts.find({createdAt:{$exists: true},isReview: false},this.findOptions());
+    return RePosts.find({createdAt:{$exists: true}},this.findOptions());
+    // if(Session.get('reporter-startDate') && !Session.get('reporter-endDate')){
+    //     return Posts.find({
+    //       isReview: false,
+    //       createdAt:{
+    //         $gt:new Date(Session.get('reporter-startDate')),
+    //         $lte:new Date(Session.get('reporter-endDate')),
+    //         $exists: true}
+    //       },this.findOptions());
+    // } 
+    // return Posts.find({createdAt:{$exists: true},isReview: false},this.findOptions());
   },
   lockUserLists: function() {
     if(Session.get('reporter-startDate') && !Session.get('reporter-endDate')){
@@ -367,6 +377,7 @@ Template.reporter.events({
     $('.rp-click-area').addClass('rp-click-area-disable');
     Meteor.call('reviewPostPass',Meteor.userId(),e.currentTarget.id,function(err,result){
       if(!err && result){
+        console.log(err);
         res = JSON.parse(result.content);
         console.log(res);
         if(res.result === true){

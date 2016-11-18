@@ -1,4 +1,5 @@
 Posts = new Meteor.Collection('posts');
+RePosts = new Meteor.Collection('rePosts');
 FollowPosts = new Meteor.Collection('followposts');
 Feeds = new Meteor.Collection('feeds');
 Drafts = new Meteor.Collection(null);
@@ -80,6 +81,11 @@ if(Meteor.isServer){
   RefNames = new Meteor.Collection("refnames");
   PComments = new Meteor.Collection("pcomments");
   PShares = new Meteor.Collection("pshares");
+  var insertRePost = function(doc){
+    Meteor.defer(function(){
+      RePosts.insert(doc);
+    });
+  }
 }
 
 if (Meteor.isServer) {
@@ -2033,7 +2039,6 @@ if(Meteor.isServer){
 
       if(type == 'montior'){
         if(selects.startDate && selects.endDate){
-            // console.log('1')
             Counts.publish(this,'rpPostsCounts',Posts.find({
                 isReview:{$ne: false},
                 createdAt:{
@@ -2071,22 +2076,38 @@ if(Meteor.isServer){
       if(type == 'review'){
         if(selects.startDate && selects.endDate){
             // console.log('1')
-            Counts.publish(this,'rpPostsCounts',Posts.find({
-                isReview: false,
+            Counts.publish(this,'rpPostsCounts',RePosts.find({
                 createdAt:{
                     $gt: new Date(selects.startDate),
                     $lte: new Date(selects.endDate),
                     $exists: true
                 }},options),{noReady: true});
-            return Posts.find({
-                isReview: false,
+            return RePosts.find({
                 createdAt:{
                     $gt: new Date(selects.startDate),
                     $lte: new Date(selects.endDate)}
                 },options);
         }
-        Counts.publish(this,'rpPostsCounts',Posts.find({createdAt:{$exists: true},isReview: false}),{noReady: true});
-        return Posts.find({isReview: false},options);
+        Counts.publish(this,'rpPostsCounts',RePosts.find({createdAt:{$exists: true}}),{noReady: true});
+        return RePosts.find({},options);
+        // if(selects.startDate && selects.endDate){
+        //     // console.log('1')
+        //     Counts.publish(this,'rpPostsCounts',Posts.find({
+        //         isReview: false,
+        //         createdAt:{
+        //             $gt: new Date(selects.startDate),
+        //             $lte: new Date(selects.endDate),
+        //             $exists: true
+        //         }},options),{noReady: true});
+        //     return Posts.find({
+        //         isReview: false,
+        //         createdAt:{
+        //             $gt: new Date(selects.startDate),
+        //             $lte: new Date(selects.endDate)}
+        //         },options);
+        // }
+        // Counts.publish(this,'rpPostsCounts',Posts.find({createdAt:{$exists: true},isReview: false}),{noReady: true});
+        // return Posts.find({isReview: false},options);
       }
       if(type == 'unblock'){
           if(selects.startDate && selects.endDate){
@@ -2233,6 +2254,7 @@ if(Meteor.isServer){
   });
   Posts.allow({
     insert: function (userId, doc) {
+      doc._id = doc._id || new Mongo.ObjectID()._str;
         var user;
       //   禁止相关用户发帖
       if(userId){
@@ -2281,6 +2303,7 @@ if(Meteor.isServer){
         postMessageToGeneralChannel(JSON.stringify(postInfo))
      });
 
+      insertRePost(doc);
       return true;
     }
 
