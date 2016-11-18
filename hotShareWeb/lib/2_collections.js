@@ -1662,7 +1662,7 @@ if(Meteor.isServer){
      if(this.userId === null|| !Match.test(limit, Number)) {
           return this.ready();
       } else {
-          return Posts.find({_id: {$ne: currPostId},owner: owner, publish: {$ne: false}},{sort: {browse: -1},limit: limit,fields:{title:1,publish:1,owner:1,browse:1}});
+          return Posts.find({owner: owner, publish: true},{sort: {browse: -1},limit: limit,fields:{title:1,publish:1,owner:1,browse:1}});
       }
   });
   Meteor.publish("userRecommendStory", function(limit) {
@@ -1670,7 +1670,7 @@ if(Meteor.isServer){
           return this.ready();
       }
       else{
-          return Posts.find({owner: this.userId, publish: {$ne: false}},{sort: {createdAt: -1},limit:limit,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1,pub:1}});
+          return Posts.find({owner: this.userId, publish: true},{sort: {createdAt: -1},limit:limit,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1}});
       }
   });
   Meteor.publish("postsWithLimit", function(limit) {
@@ -1678,7 +1678,7 @@ if(Meteor.isServer){
           return this.ready();
       }
       else{
-          return Posts.find({owner: this.userId, publish: {$ne: false}},{sort: {createdAt: -1},limit:limit,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1}});
+          return Posts.find({owner: this.userId, publish: true},{sort: {createdAt: -1},limit:limit,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1}});
       }
   });
   Meteor.publish("savedDraftsWithLimit", function(limit) {
@@ -2255,6 +2255,7 @@ if(Meteor.isServer){
   Posts.allow({
     insert: function (userId, doc) {
       doc._id = doc._id || new Mongo.ObjectID()._str;
+      doc.publish = doc.publish || true;
         var user;
       //   禁止相关用户发帖
       if(userId){

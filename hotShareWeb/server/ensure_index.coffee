@@ -1,9 +1,10 @@
 if Meteor.isServer
   Meteor.startup ()->
+    Moments._ensureIndex({currentPostId:1})
     Moments._ensureIndex({currentPostId:1, readPostId:1})
     Moments._ensureIndex({currentPostId:1, createdAt: -1})
     Moments._ensureIndex({currentPostId:1, userId: 1})
-    Moments._ensureIndex({currentPostId:1})
+    Moments._ensureIndex({currentPostId:1, userId:1, createdAt: -1})
     Moments._ensureIndex({readPostId:1})
     Viewers._ensureIndex({userId: 1, createdAt: -1})
     Viewers._ensureIndex({userId: 1})
@@ -30,6 +31,8 @@ if Meteor.isServer
     Meets._ensureIndex({me: 1, meetOnPostId: 1, createdAt: -1})
     Posts._ensureIndex({owner: 1, createdAt: -1})
     Posts._ensureIndex({owner: 1, publish: 1})
+    Posts._ensureIndex({owner: 1, publish: 1, createdAt: -1})
+    Posts._ensureIndex({owner: 1, publish: 1, browse: -1})
     Posts._ensureIndex({createdAt: -1})
     Posts._ensureIndex({isReview:1,createdAt: -1})
     Posts._ensureIndex({hasPush: 1})
