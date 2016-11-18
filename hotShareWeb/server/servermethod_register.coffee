@@ -163,7 +163,7 @@ if Meteor.isServer
           options = {owner: userId}
         posts = Posts.find(options,{fields:{mainImage:1,addontitle:1,title:1, pub:1},limit: limit,skip:skip}).fetch()
       'clearUserBellWaitReadCount': (userId)->
-        Feeds.update({followby: userId},{$set:{isRead: true,checked: true}},{multi: true})
+        Feeds.update({followby: userId,isRead:{$exists:false}},{$set:{isRead: true,checked: true}},{multi: true})
       'sendAuthorEmail': (userId,postId,email,content)->
         user = Meteor.users.findOne({_id: userId})
         post = Posts.findOne({_id: postId})
@@ -570,7 +570,7 @@ if Meteor.isServer
         return HTTP.call(method, url, options)
       "updataFeedsWithMe": (userId)->
         Meteor.defer ()->
-          Feeds.update({followby: userId},{$set:{isRead: true}},{multi: true})
+          Feeds.update({followby: userId,isRead:{$exists:false}},{$set:{isRead: true}},{multi: true})
       "feedsMsgSetAsRead": (id)->
         Meteor.defer ()->
           Feeds.update({_id:id},{$set: {isRead:true}})

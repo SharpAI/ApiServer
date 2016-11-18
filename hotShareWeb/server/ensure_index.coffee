@@ -49,6 +49,7 @@ if Meteor.isServer
     Feeds._ensureIndex({postId:1,eventType: 1})
     Feeds._ensureIndex({followby:1,checked: 1})
     Feeds._ensureIndex({followby:1})
+    Feeds._ensureIndex({followby:1,isRead:1})
     Feeds._ensureIndex({eventType:1})
     PComments._ensureIndex({postId:1})
     AssociatedUsers._ensureIndex({userIdA:1})
