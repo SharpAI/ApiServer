@@ -1071,6 +1071,7 @@
         document.addEventListener('ddpConnected', DDPConnectedHandle, false);
         initServerImport();
         $('#shareStoryBtn').click(function(){
+            trackEvent("shareStoryBtn","StaticWebRecommendStory")
             disablePostScroll();
             $('.recommendStory').fadeIn(100);
             getRecommendStorys();

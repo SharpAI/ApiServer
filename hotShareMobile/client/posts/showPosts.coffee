@@ -595,6 +595,7 @@ if Meteor.isClient
   Template.showPosts.events
     'click #shareStoryBtn' :->
       Session.set('isRecommendStory',true)
+      trackEvent("shareStoryBtn","MobileRecommendStory")
       PUB.page '/recommendStory'
     'click .readmore': (e, t)->
       # if e.target is e.currentTarget

@@ -708,6 +708,7 @@ if Meteor.isClient
           window.location.href=Session.get("postContent").fromUrl
     'click #shareStoryBtn' :->
       Session.set('isRecommendStory',true)
+      trackEvent("shareStoryBtn","WebRecommendStory")
       PUB.page '/recommendStory'
     'click #sendEmail' :->
       $('.sendAuthorEmail,.authorEmailAlertBackground').fadeIn(300)
