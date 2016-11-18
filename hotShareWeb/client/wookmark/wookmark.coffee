@@ -166,7 +166,7 @@ Template.newLayoutContainer.events =
     $(window).unbind('scroll')
     if typeof PopUpBox isnt "undefined"
       PopUpBox.close()
-    Router.go '/posts/' + postId
+    PUB.openPost postId
 Template.newLayoutContainer.helpers =
   displayId:()->
     if this.data and this.data.displayId

@@ -24,7 +24,7 @@ Template.myPubPosts.events({
     loading.set(true);
   },
   'click li': function () {
-    Router.go('/posts/' + this._id);
+    PUB.openPost(this._id);
   }
 });
 

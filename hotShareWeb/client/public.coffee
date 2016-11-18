@@ -1,6 +1,8 @@
 postPageArr = []
 #公共函数
 @PUB =
+    'openPost':(postId)->
+        window.open '/posts/'+postId
     # 该方法实现页面切换
     'page':(pageName)->
         history = Session.get("history_view")

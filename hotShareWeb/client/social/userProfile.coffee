@@ -366,10 +366,12 @@ if Meteor.isClient
         $(window).children().off()
         $(window).unbind('scroll')
         #Meteor.setTimeout ()->
-        Router.go '/posts/'+postId
+        PUB.openPost postId
         #,300
     ###
     'click .postImages ul li':(e)->
+      PUB.openPost e.currentTarget.id
+      ###
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
@@ -384,6 +386,7 @@ if Meteor.isClient
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/posts/'+postId
       ,300
+      ###
     'click #addToContactList': ()->
       addToContactList("ProfileUserId1")
   Template.userProfilePage2.rendered=->
@@ -493,10 +496,12 @@ if Meteor.isClient
         $(window).children().off()
         $(window).unbind('scroll')
         #Meteor.setTimeout ()->
-        Router.go '/posts/'+postId
+        PUB.openPost postId
         #,300
     ###
     'click .postImages ul li':(e)->
+      PUB.openPost e.currentTarget.id
+      ###
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
@@ -510,7 +515,8 @@ if Meteor.isClient
       Meteor.setTimeout ()->
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/posts/'+postId
-      ,300    
+      ,300
+      ###
     'click #addToContactList': ()->
       addToContactList("ProfileUserId2")
 
@@ -621,10 +627,12 @@ if Meteor.isClient
         $(window).children().off()
         $(window).unbind('scroll')
         #Meteor.setTimeout ()->
-        Router.go '/posts/'+postId
+        PUB.openPost postId
         #,300
     ###
     'click .postImages ul li':(e)->
+      PUB.openPost e.currentTarget.id
+      ###
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
@@ -639,6 +647,7 @@ if Meteor.isClient
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/posts/'+postId
       ,300
+      ###
     'click #addToContactList': ()->
       addToContactList("ProfileUserId3")
 
@@ -716,6 +725,8 @@ if Meteor.isClient
       if PopUpBox
         PopUpBox.close()
     'click .postImages ul li':(e)->
+      PUB.openPost e.currentTarget.id
+      ###
       postId = e.currentTarget.id
       $(window).children().off()
       $(window).unbind('scroll')
@@ -730,6 +741,7 @@ if Meteor.isClient
         Session.set("Social.LevelOne.Menu",'contactsList')
         Router.go '/posts/'+postId
       ,300
+      ###
   Template.favoritePosts.rendered=->
     $(window).scroll (event)->
       if Session.get("Social.LevelOne.Menu") is 'contactsList'
