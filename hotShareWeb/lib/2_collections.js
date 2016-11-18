@@ -2040,21 +2040,21 @@ if(Meteor.isServer){
       if(type == 'montior'){
         if(selects.startDate && selects.endDate){
             Counts.publish(this,'rpPostsCounts',Posts.find({
-                isReview:{$ne: false},
+                isReview:true,
                 createdAt:{
                     $gt: new Date(selects.startDate),
                     $lte: new Date(selects.endDate),
                     $exists: true
                 }},options),{noReady: true});
             return Posts.find({
-                isReview:{$ne: false},
+                isReview:true,
                 createdAt:{
                     $gt: new Date(selects.startDate),
                     $lte: new Date(selects.endDate)}
                 },options);
         }
-        Counts.publish(this,'rpPostsCounts',Posts.find({isReview:{$ne: false},createdAt:{$exists: true}}),{noReady: true});
-        return Posts.find({isReview:{$ne: false}},options);
+        Counts.publish(this,'rpPostsCounts',Posts.find({isReview:true,createdAt:{$exists: true}}),{noReady: true});
+        return Posts.find({isReview:true},options);
       }
       if(type == 'recover'){
           if(selects.startDate && selects.endDate){

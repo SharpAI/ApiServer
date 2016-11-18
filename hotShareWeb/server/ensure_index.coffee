@@ -33,6 +33,7 @@ if Meteor.isServer
     Posts._ensureIndex({createdAt: -1})
     Posts._ensureIndex({isReview:1,createdAt: -1})
     Posts._ensureIndex({hasPush: 1})
+    RePosts._ensureIndex({createdAt: 1})
     FollowPosts._ensureIndex({followby: 1, createdAt: -1})
     FollowPosts._ensureIndex({followby: 1, postId: 1})
     FollowPosts._ensureIndex({postId: 1})
