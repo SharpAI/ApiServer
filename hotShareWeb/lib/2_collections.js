@@ -2112,7 +2112,7 @@ if(Meteor.isServer){
       var cursorHandle=FavouritePosts.find({userId: userId}, {sort: {createdAt: -1}, limit: limit}).observeChanges({
           added: function(_id, record){
               Meteor.defer(function(){
-                  var postInfo=Posts.findOne({_id: record.postId},{fields:{title:1,addontitle:1,mainImage:1,ownerName:1,pub:1}});
+                  var postInfo=Posts.findOne({_id: record.postId},{fields:{title:1,addontitle:1,mainImage:1,ownerName:1}});
                   if(postInfo){
                       pub.added('favouriteposts', _id, record);
                       var postId=postInfo._id
