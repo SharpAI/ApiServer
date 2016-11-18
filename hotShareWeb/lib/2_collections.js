@@ -806,7 +806,7 @@ if(Meteor.isServer){
                         sendEmailToFollower(userEmail, subject, mailText);
                     }
                 }
-                var isInserted = FollowPosts.findOne({postId:doc._id, followby: userId}) ? true : false;
+                var isInserted = FollowPosts.findOne({followby: userId,postId:doc._id}) ? true : false;
                 if (!isInserted)  {
                     if(userId === suggestPostsUserId)
                     {
@@ -915,7 +915,7 @@ if(Meteor.isServer){
                 if(follows.count()>0){
                     follows.forEach(function(data){
                         FollowPosts.update(
-                            {postId:doc._id, followby:data.userId},
+                            {followby:data.userId,postId:doc._id},
                             {$set:{
                                 title:modifier.$set.title,
                                 addontitle:modifier.$set.addontitle,
@@ -931,7 +931,7 @@ if(Meteor.isServer){
                     });
                 }
                 FollowPosts.update(
-                    {postId:doc._id, followby:userId},
+                    {followby:data.userId,postId:doc._id},
                     {$set:{
                         title:modifier.$set.title,
                         addontitle:modifier.$set.addontitle,
