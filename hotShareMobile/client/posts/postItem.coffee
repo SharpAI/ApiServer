@@ -261,6 +261,11 @@ if Meteor.isClient
       else
         ''
     plike:->
+      if Session.get("postContent").pub and Session.get("postContent").updateAt
+        i=this.index
+        post = Session.get("postContent").pub
+        if post[i] and post[i].likeSum isnt undefined
+          return post[i].likeSum
       if this.likeSum is undefined
         0
       else
@@ -288,6 +293,11 @@ if Meteor.isClient
       else
         return ''
     pdislike:->
+      if Session.get("postContent").pub and Session.get("postContent").updateAt
+        i=this.index
+        post = Session.get("postContent").pub
+        if post[i] and post[i].dislikeSum isnt undefined
+          return post[i].dislikeSum
       if this.dislikeSum is undefined
         0
       else

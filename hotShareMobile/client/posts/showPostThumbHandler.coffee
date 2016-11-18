@@ -1,5 +1,15 @@
 
 if Meteor.isClient
+  # 更新当前看帖子时评论点赞操作的postContent
+  @updatePostsContentSession=(pub,ptype,pindex)->
+    postContent = Session.get('postContent')
+    if postContent && postContent.pub
+      postContent.pub = pub
+      postContent.ptype = ptype
+      postContent.pindex = pindex
+      postContent.updateAt = new Date()
+      Session.set('postContent', postContent)
+      
   @pcommentReportHandler=(i, content)->
     Meteor.defer ()->
         postId = Session.get("postContent")._id
@@ -32,6 +42,7 @@ if Meteor.isClient
           createdAt: new Date()
         }
         post[i].pcomments.push(pcommentJson)
+        updatePostsContentSession(post,"pcomments",i)
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"pcomments","pindex":i}}, (error, result)->
           if error
             console.log(error.reason)
@@ -76,6 +87,7 @@ if Meteor.isClient
             post[i].style=post[i].style.replace("#F30B44","grey")
           else
             post[i].style=""
+        updatePostsContentSession(post,"like",i)
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -95,6 +107,7 @@ if Meteor.isClient
             post[i].style=post[i].style.replace("#F30B44","grey")
           else
             post[i].style=""
+        updatePostsContentSession(post,"like",i)
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -112,6 +125,7 @@ if Meteor.isClient
             post[i].style=post[i].style.replace("#F30B44","grey")
           else
             post[i].style=""
+        updatePostsContentSession(post,"like",i)
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -152,6 +166,7 @@ if Meteor.isClient
             post[i].style=post[i].style.replace("#F30B44","grey")
           else
             post[i].style=""
+        updatePostsContentSession(post,"dislike",i)
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -171,6 +186,7 @@ if Meteor.isClient
             post[i].style=post[i].style.replace("#F30B44","grey")
           else
             post[i].style=""
+        updatePostsContentSession(post,"dislike",i)
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -188,6 +204,7 @@ if Meteor.isClient
             post[i].style=post[i].style.replace("#F30B44","grey")
           else
             post[i].style=""
+        updatePostsContentSession(post,"dislike",i)
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -254,6 +271,7 @@ if Meteor.isClient
             post[i].style=post[i].style.replace("#F30B44","grey")
           else
             post[i].style=""
+        updatePostsContentSession(post,"like",i)
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
           triggerToolbarShowOnThumb($(e.target))
           if error
@@ -274,6 +292,7 @@ if Meteor.isClient
             post[i].style=post[i].style.replace("#F30B44","grey")
           else
             post[i].style=""
+        updatePostsContentSession(post,"like",i)
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
           triggerToolbarShowOnThumb($(e.target))
           if error
@@ -292,6 +311,7 @@ if Meteor.isClient
             post[i].style=post[i].style.replace("#F30B44","grey")
           else
             post[i].style=""
+        updatePostsContentSession(post,"like",i)
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"like","pindex":i}}, (error, result)->
           triggerToolbarShowOnThumb($(e.target))
           if error
@@ -345,6 +365,7 @@ if Meteor.isClient
             post[i].style=post[i].style.replace("#F30B44","grey")
           else
             post[i].style=""
+        updatePostsContentSession(post,"dislike",i)
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
           triggerToolbarShowOnThumb($(e.target))
           if error
@@ -365,6 +386,7 @@ if Meteor.isClient
             post[i].style=post[i].style.replace("#F30B44","grey")
           else
             post[i].style=""
+        updatePostsContentSession(post,"dislike",i)
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
           triggerToolbarShowOnThumb($(e.target))
           if error
@@ -383,6 +405,7 @@ if Meteor.isClient
             post[i].style=post[i].style.replace("#F30B44","grey")
           else
             post[i].style=""
+        updatePostsContentSession(post,"dislike",i)
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"dislike","pindex":i}}, (error, result)->
           triggerToolbarShowOnThumb($(e.target))
           if error

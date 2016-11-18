@@ -1057,6 +1057,7 @@ if Meteor.isClient
           createdAt: new Date()
         }
         post[i].pcomments.push(pcommentJson)
+        updatePostsContentSession(post,"pcomments",i);
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"pcomments","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
@@ -1147,6 +1148,7 @@ if Meteor.isClient
           createdAt: new Date()
         }
         post[i].pcomments.push(pcommentJson)
+        updatePostsContentSession(post,"pcomments",i);
         Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"pcomments","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
