@@ -728,7 +728,7 @@ if Meteor.isClient
 
     if Session.get('itemInAddPostPending') > 0
       showEditingPopupProgressBar()
-    Meteor.subscribe("saveddrafts")
+    #Meteor.subscribe("saveddrafts")
 
     if Session.get('postContent') and Session.get('postContent')._id
       unless Posts.find({_id:Session.get('postContent')._id}).count() > 0
