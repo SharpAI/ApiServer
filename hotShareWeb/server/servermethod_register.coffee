@@ -463,7 +463,9 @@ if Meteor.isServer
         # 禁止用户登录或者发帖
         if post and post.owner
           owner = Meteor.users.findOne({_id: post.owner})
-          LockedUsers.insert(owner)
+          locked = LockedUsers.findOne({_id: owner._id})
+          if locked is undefined
+            LockedUsers.insert(owner)
       'restorePost': (postId,userId)->
         if !confirmReporterAuth(userId)
           return false
@@ -491,9 +493,13 @@ if Meteor.isServer
         if !confirmReporterAuth(userA)
           return false
         owner = Meteor.users.findOne({_id: userB})
+        if owner and owner.profile and owner.profile.fullname
+          userName = owner.profile.fullname
+        else
+          userName = owner.username
         reporterLogs.insert({
-          userId:post.owner,
-          userName: post.ownerName,
+          userId:owner._id,
+          userName: userName,
           userEmails: owner.emails,
           postId: null,
           postTitle: null,
