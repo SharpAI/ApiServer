@@ -496,8 +496,12 @@ Template.ReviewPostContent.helpers({
   posts: function(){
     if(Session.get('reporterLayout') === 'recover'){
       return BackUpPosts.findOne({_id: Session.get('review-post-id')});
-    } else {
+    }
+    else if(Session.get('reporterLayout') === 'montior'){
       return Posts.findOne({_id: Session.get('review-post-id')});
+    }
+    else if(Session.get('reporterLayout') === 'review'){
+      return RePosts.findOne({_id: Session.get('review-post-id')});
     }
   },
   isMontior:function(){
