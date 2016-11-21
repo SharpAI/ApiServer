@@ -61,12 +61,14 @@
         <ul>
             {{#each items}}
                 <li id="{{_id}}" style="background-image:url({{getmainImage}})">
+                  <div class="css-post-title">
                     <h4 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
                         {{title}}
                     </h4>
                     <h6 class="addontitle" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
                         {{addontitle}}
                     </h6>
+                  </div>
                 </li>
             {{/each}}
         </ul>
@@ -85,12 +87,14 @@
         <ul>
                 {{#each postItems}}
                 <li id="{{_id}}" style="background-image:url({{mainImage}})">
+                  <div class="css-post-title">
                     <h4 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
                         {{title}}
                     </h4>
                     <h6 class="addontitle" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
                         {{addontitle}}
                     </h6>
+                  </div>
                 </li>
             {{/each}}
         </ul>
