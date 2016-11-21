@@ -1437,12 +1437,14 @@ if Meteor.isClient
               console.log("storyId is ==",storyId)
               $('.importing-mask,.importing').hide()
               # 推荐到读友圈
+              toastr.remove()
               Meteor.call 'pushRecommendStoryToReaderGroups', Session.get('postContent')._id, storyId, (err)->
                 if !err
                   toastr.info('推荐成功！')
+                  return window.history.back()
                 else
                   console.log('pushRecommendStoryToReaderGroups:', err)
-              return window.history.back()
+                  toastr.info('推荐失败~')
             else
               data = result.content
               console.log("data is ==",data)
@@ -1454,13 +1456,14 @@ if Meteor.isClient
         groups = []
         if Session.get('postContent')._id
           # 推荐到读友圈
+          toastr.remove()
           Meteor.call 'pushRecommendStoryToReaderGroups', Session.get('postContent')._id, e.currentTarget.id, (err)->
             if !err
               toastr.info('推荐成功！')
+              return window.history.back()
             else
               console.log('pushRecommendStoryToReaderGroups:', err)
-        toastr.info('推荐成功！')
-        return window.history.back()
+              toastr.info('推荐失败~')
       'click #loadMore': (e)->
         if Session.get('storyListsType') is 'publishedStories'
           limit = parseInt(Session.get('storyListsLimit'))
