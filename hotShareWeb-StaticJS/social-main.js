@@ -680,9 +680,6 @@
         var message = e1.detail;
         debugPrint('serverImportHandle:' + JSON.stringify(message));
         var import_status = message.fields.import_status;
-        if(import_status === 'importing'){return}
-
-        console.log('inport done');
         var pub,$elem;
         pub = message.fields.pub;
         $elem = $('.element img.lazy');
@@ -812,13 +809,8 @@
             initImageSwipeView();
 
             var userNewBellCountId = Subscribe("userNewBellCount", [window._loginUserId], userNewBellCountHandle);
-            // if(window.localStorage.getItem('waitForServerImportStatus') && window.localStorage.getItem('waitForServerImportStatus') === 'true') {
-            //     toastr.remove();
-            //     var serverImportId = Subscribe("serverImportPostStatus", [postid], serverImportHandle);
-            // }
-            if(post_status === 'importing'){
+            if(window.localStorage.getItem('waitForServerImportStatus') && window.localStorage.getItem('waitForServerImportStatus') === 'true') {
                 toastr.remove();
-                console.log('post inporting...');
                 var serverImportId = Subscribe("serverImportPostStatus", [postid], serverImportHandle);
             }
             if (typeof window.alreadyInit !== 'undefined') {
