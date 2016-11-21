@@ -61,7 +61,29 @@ public class MainActivity extends CordovaActivity
           }
           else if (type.indexOf("image/") >= 0) {
             Uri uri = (Uri)intent.getExtras().get(Intent.EXTRA_STREAM);
-            if (uri != null) {
+            String txt = intent.getStringExtra(Intent.EXTRA_TEXT);
+            Log.i("##RDBG", "image type with txt: " + txt);
+            String url_txt = null;
+            boolean img_txt = false;
+            if (txt != null && txt.length() > 0) {
+              int idx = txt.indexOf("http://");
+              if (idx == -1)
+                idx = txt.indexOf("https://");
+              if (idx != -1)
+                url_txt = txt.substring(idx);
+              if (url_txt != null) {
+                Log.i("##RDBG", "img_txt: " + url_txt);
+                img_txt = true;
+                String content = "[\'" + url_txt + "\']";
+                SharedPreferences settings = getSharedPreferences("org.hotshare.everywhere.sysshare", 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString("shareType", "url");
+                editor.putString("shareContent", content);
+                editor.commit();
+                Log.i("##RDBG", "share content: " + content);
+              }
+            }
+            if (!img_txt && uri != null) {
               String content = "[\'" + getPath(this, uri) + "\']";
               SharedPreferences settings = getSharedPreferences("org.hotshare.everywhere.sysshare", 0);
               SharedPreferences.Editor editor = settings.edit();
