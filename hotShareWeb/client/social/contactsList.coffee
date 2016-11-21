@@ -113,7 +113,7 @@ if Meteor.isClient
         $('#' + currentId + ' .red_spot').remove()
         totalCount = parseInt($('#newFriendRedSpot').html()) - 1
         if totalCount > 0
-          $('#newFriendRedSpot').html(totalCount)
+          $('#newFriendRedSpot').html(totalCount.toString())
         else
           $('#newFriendRedSpot').hide()
       if this.count is 1
