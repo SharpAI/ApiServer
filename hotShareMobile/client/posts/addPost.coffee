@@ -123,7 +123,22 @@ if Meteor.isClient
           mainText: mainText,
           owner:Meteor.userId(),
           createdAt: new Date(),
-        }
+         },(e) ->
+          if e.error
+            console.log 'insert SavedDrafts error:' + e.error
+            SavedDrafts.update(
+              {_id:draftId},
+              {$set:{
+                pub:pub,
+                title:title,
+                addontitle:addontitle,
+                fromUrl:fromUrl,
+                mainImage: mainImage,
+                mainText: mainText,
+                owner:Meteor.userId(),
+                createdAt: new Date(),
+              }}
+            )
     catch error
       console.log("Insert SavedDrafts error! Try update it...");
       SavedDrafts.update(
