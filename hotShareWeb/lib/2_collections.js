@@ -2049,20 +2049,27 @@ if(Meteor.isServer){
       return Meteor.users.find({_id: userId}, {
           fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1,'token':1,'profile.location':1,'profile.lastLogonIP':1,'type':1,'anonymous':1}});
   });
+  Meteor.publish('reporter_post_one', function(id) {
+      return Posts.find({_id: id}, {limit:1});
+  });
   Meteor.publish('rpPosts', function(type,selects,options) {
       // console.log ('type='+type)
       // console.log(type == 'montior')
       // console.log(JSON.stringify(selects));
+      options.limit = options.limit || 10;
+      options.skip = options.skip || 0;
+      console.log('options:', options);
 
       if(type == 'montior'){
+        options.fields = options.fields || {title:1,addontitle:1,ownerName:1,createdAt:1,reviewAt:1,owner:1};
         if(selects.startDate && selects.endDate){
-            Counts.publish(this,'rpPostsCounts',Posts.find({
-                isReview:true,
-                createdAt:{
-                    $gt: new Date(selects.startDate),
-                    $lte: new Date(selects.endDate),
-                    $exists: true
-                }},options),{noReady: true});
+            // Counts.publish(this,'rpPostsCounts',Posts.find({
+            //     isReview:true,
+            //     createdAt:{
+            //         $gt: new Date(selects.startDate),
+            //         $lte: new Date(selects.endDate),
+            //         $exists: true
+            //     }},options),{noReady: true});
             return Posts.find({
                 isReview:true,
                 createdAt:{
@@ -2070,42 +2077,42 @@ if(Meteor.isServer){
                     $lte: new Date(selects.endDate)}
                 },options);
         }
-        Counts.publish(this,'rpPostsCounts',Posts.find({isReview:true,createdAt:{$exists: true}}),{noReady: true});
+        //Counts.publish(this,'rpPostsCounts',Posts.find({isReview:true,createdAt:{$exists: true}}),{noReady: true});
         return Posts.find({isReview:true},options);
       }
       if(type == 'recover'){
           if(selects.startDate && selects.endDate){
-            Counts.publish(this,'rpPostsCounts',BackUpPosts.find({
-                createdAt:{
-                    $gt: new Date(selects.startDate),
-                    $lte: new Date(selects.endDate),
-                    $exists: true}
-                },options),{noReady: true});
+            // Counts.publish(this,'rpPostsCounts',BackUpPosts.find({
+            //     createdAt:{
+            //         $gt: new Date(selects.startDate),
+            //         $lte: new Date(selects.endDate),
+            //         $exists: true}
+            //     },options),{noReady: true});
             return BackUpPosts.find({
                 createdAt:{
                     $gt: new Date(selects.startDate),
                     $lte: new Date(selects.endDate)}
                 },options);
         }
-        Counts.publish(this,'rpPostsCounts',BackUpPosts.find({createdAt:{$exists: true}}),{noReady: true});
+        // Counts.publish(this,'rpPostsCounts',BackUpPosts.find({createdAt:{$exists: true}}),{noReady: true});
         return BackUpPosts.find({},options)
       }
       if(type == 'review'){
         if(selects.startDate && selects.endDate){
             // console.log('1')
-            Counts.publish(this,'rpPostsCounts',RePosts.find({
-                createdAt:{
-                    $gt: new Date(selects.startDate),
-                    $lte: new Date(selects.endDate),
-                    $exists: true
-                }},options),{noReady: true});
+            // Counts.publish(this,'rpPostsCounts',RePosts.find({
+            //     createdAt:{
+            //         $gt: new Date(selects.startDate),
+            //         $lte: new Date(selects.endDate),
+            //         $exists: true
+            //     }},options),{noReady: true});
             return RePosts.find({
                 createdAt:{
                     $gt: new Date(selects.startDate),
                     $lte: new Date(selects.endDate)}
                 },options);
         }
-        Counts.publish(this,'rpPostsCounts',RePosts.find({createdAt:{$exists: true}}),{noReady: true});
+        // Counts.publish(this,'rpPostsCounts',RePosts.find({createdAt:{$exists: true}}),{noReady: true});
         return RePosts.find({},options);
         // if(selects.startDate && selects.endDate){
         //     // console.log('1')
@@ -2128,19 +2135,19 @@ if(Meteor.isServer){
       }
       if(type == 'unblock'){
           if(selects.startDate && selects.endDate){
-            Counts.publish(this,'rpPostsCounts',LockedUsers.find({
-                createdAt:{
-                    $gt: new Date(selects.startDate),
-                    $lte: new Date(selects.endDate),
-                    $exists: true}
-                },options),{noReady: true});
+            // Counts.publish(this,'rpPostsCounts',LockedUsers.find({
+            //     createdAt:{
+            //         $gt: new Date(selects.startDate),
+            //         $lte: new Date(selects.endDate),
+            //         $exists: true}
+            //     },options),{noReady: true});
             return LockedUsers.find({
                 createdAt:{
                     $gt: new Date(selects.startDate),
                     $lte: new Date(selects.endDate)}
                 },options);
         }
-        Counts.publish(this,'rpPostsCounts',LockedUsers.find({createdAt:{$exists: true}}),{noReady: true});
+        // Counts.publish(this,'rpPostsCounts',LockedUsers.find({createdAt:{$exists: true}}),{noReady: true});
         return LockedUsers.find({},options)
       }
   });

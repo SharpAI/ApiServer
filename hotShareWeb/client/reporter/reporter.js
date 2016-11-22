@@ -268,8 +268,10 @@ Template.reporter.events({
     Session.set('reporterLayout','unblock');
   },
   'click .showPostURI': function(e){
-    Session.set('review-post-id',e.currentTarget.id);
-    $('.reviewPostContent').show();
+    Meteor.subscribe('reporter_post_one',e.currentTarget.id,function(){
+      Session.set('review-post-id',e.currentTarget.id);
+      $('.reviewPostContent').show();
+    });
     // prompt("按CTRL + V 复制",'http://cdn.tiegushi.com/posts/'+e.currentTarget.id);
   },
   'click .remove': function(e,t){
@@ -316,9 +318,10 @@ Template.reporter.events({
     })
   },
   'click .viewOwner': function(e,t){
-    Meteor.subscribe('rpOwner',e.currentTarget.id);
-    Session.set('rp-viewOwner-id',e.currentTarget.id);
-    $('.rp-viewOwner').show();
+    Meteor.subscribe('rpOwner',e.currentTarget.id, function(){
+      Session.set('rp-viewOwner-id',e.currentTarget.id);
+      $('.rp-viewOwner').show();
+    });
   },
   'click #submit': function(e,t){
     var page,limit,startDate,endDate;
@@ -351,16 +354,16 @@ Template.reporter.events({
     Session.set('reporter-page',page);
     // Router.go('reporter');
   },
-  'click #next': function(){
+  'click #next': function(e,t){
     var page,limit,postsCount;
     page = parseInt(Session.get('reporter-page'));
     limit = parseInt(Session.get('reporter-limit'));
-    postsCount = Counts.get('rpPostsCounts');
-    if(postsCount<=(limit*page)){
-      toastr.remove();
-      toastr.info('已经是最后一页了～');
-      return
-    }
+    // postsCount = Counts.get('rpPostsCounts');
+    // if(postsCount<=(limit*page)){
+    //   toastr.remove();
+    //   toastr.info('已经是最后一页了～');
+    //   return
+    // }
     page += 1;
     Session.set('reporter-page',page);
     // Router.go('reporter');
@@ -441,6 +444,7 @@ Template.reporterViewOwner.onRendered(function() {
 
 Template.reporterViewOwner.helpers({
   owner: function(){
+    
     // Meteor.subscribe('rpOwner', Session.get('rp-viewOwner-id'));
     return Meteor.users.findOne({
       _id: Session.get('rp-viewOwner-id')
