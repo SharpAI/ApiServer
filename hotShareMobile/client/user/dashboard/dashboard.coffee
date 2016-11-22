@@ -205,7 +205,28 @@ if Meteor.isClient
       Session.set('changePasswordSaveBtnClicked', false)
       Router.go '/dashboard'
     'click #save-user-info-btn' :->
-      Router.go '/authOverlay'
+      Meteor.logout (msg)->
+        Session.set("searchContent","")
+        PostsSearch.cleanHistory()
+        Session.setPersistent('persistentLoginStatus',false)
+        Session.setPersistent('persistentFeedsForMe',null)
+        Session.setPersistent('persistentMyFollowedPosts',null)
+        Session.setPersistent('myFollowedByCount',0)
+        Session.setPersistent('mySavedDraftsCount',0)
+        Session.setPersistent('myPostsCount',0)
+        Session.setPersistent('myFollowToCount',0)
+        Session.setPersistent('persistentProfileIcon',null)
+        Session.setPersistent('persistentProfileName',null)
+        Session.setPersistent('persistentMySavedDrafts',null)
+        Session.setPersistent('persistentMyOwnPosts',null)
+        #console.log msg
+        window.plugins.userinfo.setUserInfo '', ->
+             console.log 'setUserInfo was succeed!'
+             return
+          , ->
+            console.log 'setUserInfo was Error!'
+            return
+        Router.go '/authOverlay'
 
   Template.my_notice.rendered=->
     $('.dashboard').css 'min-height', $(window).height()
