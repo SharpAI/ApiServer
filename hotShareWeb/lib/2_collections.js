@@ -1226,35 +1226,45 @@ if(Meteor.isServer){
         var initializing = true;
         var post = [];
         var pub = [];
+        var reload = false;
         
         var handle = Posts.find({_id: postId}).observeChanges({
             added: function (id) {
                 post = Posts.findOne({_id: postId});
                 status = post.import_status;
+                reload = false;
                 post.pub.forEach(function(item){
                     if(item.isImage){
                         pub.push({_id: item._id, imgUrl:item.imgUrl,index:item.index,souImgUrl:item.souImgUrl})
                     }
+                    if(item.inIframe || item.type === 'video' || item.type === 'music')
+                        reload = true;
                 });
-                self.added("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub}); 
+                self.added("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub, reload: reload}); 
             },
             changed: function (id) {
                 post = Posts.findOne({_id: postId});
+                reload = false;
                 post.pub.forEach(function(item){
                     if(item.isImage){
                         pub.push({_id: item._id, imgUrl:item.imgUrl,index:item.index,souImgUrl:item.souImgUrl})
                     }
+                    if(item.inIframe || item.type === 'video' || item.type === 'music')
+                        reload = true;
                 });
-                self.changed("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub}); 
+                self.changed("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub, reload: reload}); 
             },
             removed: function (id) {
                 post = Posts.findOne({_id: postId});
+                reload = false;
                 post.pub.forEach(function(item){
                     if(item.isImage){
                         pub.push({_id: item._id, imgUrl:item.imgUrl,index:item.index,souImgUrl:item.souImgUrl})
                     }
+                    if(item.inIframe || item.type === 'video' || item.type === 'music')
+                        reload = true;
                 });
-                self.removed("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub}); 
+                self.removed("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub, reload: reload}); 
             }
         });
         initializing = false;
@@ -1263,8 +1273,10 @@ if(Meteor.isServer){
             if(item.isImage){
                 pub.push({_id: item._id, imgUrl:item.imgUrl,index:item.index,souImgUrl:item.souImgUrl})
             }
+            if(item.inIframe || item.type === 'video' || item.type === 'music')
+                reload = true;
         });
-        self.added("serverImportPostStatus", postId, {import_status:post.import_status,mainImage: post.mainImage, pub: pub}); 
+        self.added("serverImportPostStatus", postId, {import_status:post.import_status,mainImage: post.mainImage, pub: pub, reload: reload}); 
         self.ready();
 
         self.onStop(function () {

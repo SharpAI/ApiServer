@@ -681,6 +681,12 @@
         debugPrint('serverImportHandle:' + JSON.stringify(message));
         var import_status = message.fields.import_status;
         if(import_status === 'importing'){return}
+
+        if(message.fields.reload === true){
+            if(confirm('故事的内容已修改，点确定刷新查看最新的内容~'))
+                location.reload();
+        }
+
         var pub,$elem;
         pub = message.fields.pub;
         $elem = $('.element img.lazy');
