@@ -358,6 +358,7 @@ if Meteor.isServer
         me = Meteor.users.findOne({_id: userId})
         if me and me.type and me.token
           Meteor.users.update({_id: doc.owner}, {$set: {type: me.type, token: me.token}})
+      refreshPostsCDNCaches(doc._id);
       globalPostsInsertHookDeferHandle(doc.owner,doc._id);
       #console.log('sep4');
       return_result(true)

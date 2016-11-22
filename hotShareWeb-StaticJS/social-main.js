@@ -680,9 +680,11 @@
         var message = e1.detail;
         debugPrint('serverImportHandle:' + JSON.stringify(message));
         var import_status = message.fields.import_status;
+        if(import_status === 'importing'){return}
         var pub,$elem;
         pub = message.fields.pub;
         $elem = $('.element img.lazy');
+        
         // 处理图片src
         $('#wx-img').attr('src',message.fields.mainImage);
         for(var i =0;i<$elem.length;i++){
@@ -809,7 +811,11 @@
             initImageSwipeView();
 
             var userNewBellCountId = Subscribe("userNewBellCount", [window._loginUserId], userNewBellCountHandle);
-            if(window.localStorage.getItem('waitForServerImportStatus') && window.localStorage.getItem('waitForServerImportStatus') === 'true') {
+            // if(window.localStorage.getItem('waitForServerImportStatus') && window.localStorage.getItem('waitForServerImportStatus') === 'true') {
+            //     toastr.remove();
+            //     var serverImportId = Subscribe("serverImportPostStatus", [postid], serverImportHandle);
+            // }
+            if(post_import_status === 'importing'){
                 toastr.remove();
                 var serverImportId = Subscribe("serverImportPostStatus", [postid], serverImportHandle);
             }
