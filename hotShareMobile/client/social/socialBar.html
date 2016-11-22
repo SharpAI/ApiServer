@@ -31,7 +31,8 @@
           <div class="contactsBtn {{isFocus 'contactsList'}}">
             <i class="fa fa-list">
               {{#if haveNewFriends}}
-              <div id="newFriendRedSpot" class="red_spot">{{newcount}}</div>
+              <div id="newFriendRedSpot" style="display: none;z-index: 99998;" class="red_spot"></div>
+              <div id="newFriendRedSpotReal" class="red_spot">{{newcount}}</div>
               {{/if}}
             </i>
             <div>{{_ "NewFriends"}}</div>
