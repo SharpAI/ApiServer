@@ -174,7 +174,7 @@ if Meteor.isClient
         data_row:'1',
         data_col:'3',
         data_sizex:'6',
-        data_sizey:'6'}
+        data_sizey:'6'} 
   insertDownloadedImage = (linkInfo,imageExternalURL,found,inputUrl,file,width,height)->
     if file
       timestamp = new Date().getTime()
@@ -798,6 +798,23 @@ if Meteor.isClient
         `global_toolbar_hidden = false`
     Session.set('showContentInAddPost',true)
     return
+  @saveDraftHandle = ()->
+    Template.addPost.__helpers.get('saveDraft')()
+    Drafts.remove {owner: Meteor.userId()}
+    TempDrafts.remove {owner: Meteor.userId()}
+    if Session.get('fromDraftPost') is true
+      Session.set('fromDraftPost',false)
+      savedDraftData = SavedDrafts.findOne({_id: Session.get('postContent')._id})
+      if withDirectDraftShow
+        if savedDraftData and savedDraftData.pub and savedDraftData._id
+          Session.set('postContent',savedDraftData)
+          PUB.page('/draftposts/'+savedDraftData._id)
+          return
+        else
+          toastr.error('got wrong')
+          return
+    else
+      history.back()
   @publishPostHandle = ()->
     layout = JSON.stringify(gridster.serialize())
     pub=[]
@@ -1385,22 +1402,64 @@ if Meteor.isClient
         Session.set 'isReviewMode','0'
 
     'click #saveDraft':->
-      Template.addPost.__helpers.get('saveDraft')()
-      Drafts.remove {owner: Meteor.userId()}
-      TempDrafts.remove {owner: Meteor.userId()}
-      if Session.get('fromDraftPost') is true
-        Session.set('fromDraftPost',false)
-        savedDraftData = SavedDrafts.findOne({_id: Session.get('postContent')._id})
-        if withDirectDraftShow
-          if savedDraftData and savedDraftData.pub and savedDraftData._id
-            Session.set('postContent',savedDraftData)
-            PUB.page('/draftposts/'+savedDraftData._id)
-            return
-          else
-            toastr.error('got wrong')
-            return
+      draftImageData = Drafts.find({type:'image'}).fetch()
+      draftMusicData = Drafts.find({type:'music'}).fetch()
+      draftVideoData = Drafts.find({type:'video'}).fetch()
+      draftToBeUploadedImageData = []
+      for i in [0..(draftImageData.length-1)]
+        if draftImageData[i].imgUrl is undefined or draftImageData[i].imgUrl.toLowerCase().indexOf("http://")>= 0 or draftImageData[i].imgUrl.toLowerCase().indexOf("https://")>= 0
+            draftToBeUploadedImageData.unshift({})
+            continue
+        draftToBeUploadedImageData.push(draftImageData[i])
+      for music in draftMusicData
+        if music.musicInfo.playUrl.toLowerCase().indexOf("http://")>= 0 or music.musicInfo.playUrl.toLowerCase().indexOf("https://")>= 0
+          draftToBeUploadedImageData.unshift({})
+          continue
+        draftToBeUploadedImageData.push(music)
+      for video in draftVideoData
+        if video.videoInfo.imageUrl.toLowerCase().indexOf("http://")>= 0 or video.videoInfo.imageUrl.toLowerCase().indexOf("https://")>= 0
+          draftToBeUploadedImageData.unshift({})
+          continue
+        draftToBeUploadedImageData.push(video)
+      Session.set('terminateUpload', false)
+      Session.get("isDelayPublish",false)
+      if draftToBeUploadedImageData.length > 0
+          multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, null, (err, result)->
+            unless result
+              window.plugins.toast.showShortBottom('上传失败，请稍后重试')
+              return
+            if result.length < 1
+              window.plugins.toast.showShortBottom('上传失败，请稍后重试')
+              return
+            for item in result
+              if item.uploaded and item._id
+                if item.type is 'image' and item.imgUrl
+                  Drafts.update({_id: item._id}, {$set: {imgUrl:item.imgUrl,URI:''}});
+                else if item.type is 'music' and item.musicInfo and item.musicInfo.playUrl
+                  Drafts.update({_id: item._id}, {$set: {"musicInfo.playUrl":item.musicInfo.playUrl}});
+                else if item.type is 'video' and item.videoInfo and item.videoInfo.imageUrl
+                  Drafts.update({_id: item._id}, {$set: {"videoInfo.imageUrl":item.videoInfo.imageUrl}});
+            if err
+              window.plugins.toast.showShortBottom('上传失败，请稍后重试')
+              return
+            saveDraftHandle()
+            #removeImagesFromCache(draftImageData)
+          )
       else
-        history.back()
+          saveDraftHandle()
+      # if Session.get('fromDraftPost') is true
+      #   Session.set('fromDraftPost',false)
+      #   savedDraftData = SavedDrafts.findOne({_id: Session.get('postContent')._id})
+      #   if withDirectDraftShow
+      #     if savedDraftData and savedDraftData.pub and savedDraftData._id
+      #       Session.set('postContent',savedDraftData)
+      #       PUB.page('/draftposts/'+savedDraftData._id)
+      #       return
+      #     else
+      #       toastr.error('got wrong')
+      #       return
+      # else
+      #   history.back()
       #PUB.back()
 
 
@@ -1470,6 +1529,7 @@ if Meteor.isClient
           $('#chooseAssociatedUser').modal('hide')
 
         Session.set('terminateUpload', false)
+        Session.get("isDelayPublish",true)
         if draftToBeUploadedImageData.length > 0
           multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, null, (err, result)->
             unless result
