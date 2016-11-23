@@ -45,7 +45,7 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
         // TODO:
       });
     }
-  }, 1000*10);
+  }, 1000*13);
   
   request({
     method: 'GET',
@@ -106,5 +106,8 @@ Router.route('/import-cancel/:id', function (req, res, next) {
     if (!error && response.statusCode == 200)
       res.end('done');
     res.end('error');
+  })
+  .on('error', function(err){
+    console.log('import-cancel request Error: '+err);
   });
 }, {where: 'server'});
