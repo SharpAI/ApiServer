@@ -9,10 +9,13 @@ if Meteor.isClient
     $('body').css('height', '100%')
   Template.dashboard.helpers
     showFollowTips: ->
-      return Meteor.user().profile.followTips isnt false
+      if Meteor.user() and Meteor.user().profile and Meteor.user().profile.followTips
+          return Meteor.user().profile.followTips isnt false
+      else
+          false
     userEmail :->
-      if Meteor.user()
-        Meteor.user().emails[0].address
+      if Meteor.user() and Meteor.user().emails[0] and Meteor.user().emails[0].address
+          Meteor.user().emails[0].address
       else
         ''
     anonymous :->
