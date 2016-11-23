@@ -808,7 +808,7 @@ if Meteor.isClient
       Meteor.call 'unpublish',postId,userId,drafts, (err, res)->
         Meteor.subscribe 'myCounter'
         Meteor.subscribe 'followposts', Session.get('followpostsitemsLimit'), {
-          onStop: subscribeFollowPostsOnStop
+          #onStop: subscribeFollowPostsOnStop
           onReady: ()->
             console.log 'followPostsCollection loaded'
             Session.set 'followPostsCollection', 'loaded'

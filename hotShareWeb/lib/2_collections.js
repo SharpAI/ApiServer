@@ -937,7 +937,7 @@ if(Meteor.isServer){
                     });
                 }
                 FollowPosts.update(
-                    {followby:data.userId,postId:doc._id},
+                    {followby:userId,postId:doc._id},
                     {$set:{
                         title:modifier.$set.title,
                         addontitle:modifier.$set.addontitle,
@@ -951,7 +951,9 @@ if(Meteor.isServer){
                     }
                 );
             }
-            catch(error){}
+            catch(error){
+                console.log('posts update error: ' + error)
+            }
         });
     };
 
