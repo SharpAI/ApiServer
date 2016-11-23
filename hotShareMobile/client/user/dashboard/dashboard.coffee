@@ -14,10 +14,11 @@ if Meteor.isClient
       else
           false
     userEmail :->
-      if Meteor.user() and Meteor.user().emails[0] and Meteor.user().emails[0].address
-          Meteor.user().emails[0].address
-      else
-        ''
+      address = ''
+      if Meteor.user() and Meteor.user().emails
+        if Meteor.user().emails[0] and Meteor.user().emails[0].address
+          address = Meteor.user().emails[0].address
+      return address
     anonymous :->
       if Meteor.user()
         Meteor.user().profile.anonymous
