@@ -1,6 +1,9 @@
 #space 2
 if Meteor.isClient
   toNum = (a) ->
+    if a is null or a is undefined or a is ''
+      return
+      
     c = a.split('.')
     num_place = [
       ''
