@@ -305,6 +305,7 @@ function getIdleNightmare(queue, callback, tryingCount) {
     }
 
     if (tryingCount > 20) {
+        console.log("Try too many times to open nightmare.");
         if (callback) {
             callback(queueMember);
         }
@@ -318,6 +319,7 @@ function getIdleNightmare(queue, callback, tryingCount) {
         }, 1000);
     } else {
         if (callback) {
+            console.log("Get one idle nightmare, call callback");
             callback(queueMember);
         }
     }
@@ -817,7 +819,7 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
                       // console.log('post:', JSON.stringify(postObj));
                       // draftsObj.destroy();
                       
-                      update_mainImage(user._id, postId, postObj.mainImage, postObj.mainImageStyle);
+                      //update_mainImage(user._id, postId, postObj.mainImage, postObj.mainImageStyle);
                       // update pub
                       updatePosts(postId, postObj, unique_id, function(err, number){
                         if (Task.isCancel(unique_id, true)) {
@@ -1008,17 +1010,23 @@ if (cluster.isMaster) {
       //   res.write(JSON.stringify(result));
       }).on('progress', function(progress, data){
         console.log('\r  job #' + job.id + ' ' + progress + '% complete with data ', data);
-        // cancel
-        if(Task.isCancel(unique_id, true)) {
-          console.log("Master: import cancel - 3.");
-        }
-          
+
         if (progress == 100) {
           res.end(data);
-          Task.update(unique_id, 'done');
+          if (data && data.status == 'succ' && data.json) {
+            var postId = data.json.replace(/^.*[\\\/]/, '');
+            console.log("postId = "+postId);
+            Task.update(unique_id, 'done', postId);
+          } else {
+              Task.update(unique_id, 'done');
+          }
         }else {
           res.write(data);
           Task.update(unique_id, 'importing');
+        }
+        // cancel
+        if(Task.isCancel(unique_id, true)) {
+          console.log("Master: import cancel - 3.");
         }
       });
     }
