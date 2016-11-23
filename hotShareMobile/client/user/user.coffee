@@ -261,6 +261,7 @@ if Meteor.isClient
 
     'click .draftRight':(e)->
       $('.user').addClass('animated ' + animateOutLowerEffect);
+      Meteor.subscribe("saveddrafts")
       Meteor.setTimeout ()->
         PUB.page('/allDrafts')
       ,animatePageTrasitionTimeout
