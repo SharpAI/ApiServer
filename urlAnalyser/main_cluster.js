@@ -752,10 +752,16 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
           //.end()
           .then(function (result) {
               function cleanUp() {
-                nightmare.goto("about:blank").then(function (result) {
+                /*nightmare.goto("about:blank").then(function (result) {
                   console.log("Open blank page.");
                   finishNightmare(queueMember);
+                });*/
+                nightmare.end(function() {
+                    console.log("cleanUp: end nightmare, index="+index);
                 });
+                console.log("cleanUp: index="+index);
+                initQueueMember(queueMember);
+                console.error('cleanUp: restart nightmare. queueMember.index='+queueMember.index);
               }
               console.log("unique_id="+unique_id);
               if (Task.isCancel(unique_id, true)) {
