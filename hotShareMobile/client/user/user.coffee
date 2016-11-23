@@ -261,7 +261,11 @@ if Meteor.isClient
 
     'click .draftRight':(e)->
       $('.user').addClass('animated ' + animateOutLowerEffect);
-      Meteor.subscribe("saveddrafts")
+      unless Session.get('savedDraftsCollection') is 'loaded'
+        Meteor.subscribe("saveddrafts",{
+            onReady:()->
+              Session.set('savedDraftsCollection','loaded')
+          })
       Meteor.setTimeout ()->
         PUB.page('/allDrafts')
       ,animatePageTrasitionTimeout
