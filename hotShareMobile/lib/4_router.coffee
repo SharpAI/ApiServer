@@ -161,6 +161,19 @@ if Meteor.isClient
           self = this
           self.render 'loadingPost'
           Meteor.subscribe("reading",self.params._id)
+          newpostsData = Session.get 'newpostsdata'
+          if newpostsData
+            renderPost(self,newpostsData)
+          else
+            post = Meteor.call("getPostContent",self.params._id)
+            renderPost(self,post)
+      }
+
+    Router.route '/newposts1/:_id', {
+        action: ->
+          self = this
+          self.render 'loadingPost'
+          Meteor.subscribe("reading",self.params._id)
           $.getJSON(rest_api_url+"/raw/"+self.params._id,(json,result)->
             if(result && result is 'success' && json && json.status && json.status is 'ok' && json.data)
               post = json.data
@@ -170,7 +183,6 @@ if Meteor.isClient
               renderPost(self,post)
           )
       }
-
     Router.route '/draftposts/:_id', {
       action: ->
         post = Session.get('postContent')

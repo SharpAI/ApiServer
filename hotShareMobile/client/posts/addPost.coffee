@@ -922,14 +922,12 @@ if Meteor.isClient
             heart:[],  #点赞
             retweet:[],#转发
             comment:[], #评论
-            # wechatInfo: wechat, #微信信息
             addontitle:addontitle,
             mainImage: mainImage,
             mainImageStyle:mainImageStyle,
             mainText: mainText,
             fromUrl: fromUrl,
             publish:true,
-            #owner:Meteor.userId(),
             owner:ownerUser._id,
             ownerName:ownerName,
             ownerIcon:ownerIcon,
@@ -946,7 +944,6 @@ if Meteor.isClient
         heart:[],  #点赞
         retweet:[],#转发
         comment:[], #评论
-        # wechatInfo: wechat, #微信信息
         commentsCount:0,
         addontitle:addontitle,
         mainImage: mainImage,
@@ -954,12 +951,30 @@ if Meteor.isClient
         mainText: mainText,
         fromUrl: fromUrl,
         publish:true,
-        #owner:Meteor.userId(),
         owner:ownerUser._id,
         ownerName:ownerName,
         ownerIcon:ownerIcon,
         createdAt: new Date()
       })
+    newPostData = {
+        _id:postId,
+        pub:pub,
+        title:title,
+        heart:[],  #点赞
+        retweet:[],#转发
+        comment:[], #评论
+        addontitle:addontitle,
+        mainImage: mainImage,
+        mainImageStyle:mainImageStyle,
+        mainText: mainText,
+        fromUrl: fromUrl,
+        publish:true,
+        owner:ownerUser._id,
+        ownerName:ownerName,
+        ownerIcon:ownerIcon,
+        createdAt: new Date()
+    }
+    Session.set('newpostsdata', newPostData)
     #Delete from SavedDrafts if it is a saved draft.
     if SavedDrafts.find().count() is 1
       Session.setPersistent('mySavedDraftsCount',0)
@@ -968,8 +983,9 @@ if Meteor.isClient
     #Delete the Drafts
     Drafts.remove({})
     TempDrafts.remove({})
+
     if Session.get('isReviewMode') is '2'
-      Router.go('/posts/'+postId)
+      Router.go('/newposts/'+postId)
     else
       Session.set("TopicPostId", postId)
       Session.set("TopicTitle", title)

@@ -538,4 +538,3 @@ if Meteor.isClient
         calcTextItemStyle(this.layout)
     getImagePath: (path,uri,id)->
       getImagePath(path,uri,id)
-  Template.addPostItem.events
