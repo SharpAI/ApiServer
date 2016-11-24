@@ -772,6 +772,7 @@ if Meteor.isServer
                 targetPostId: item._id
                 targetPostTitle: item.title
                 targetPostAddonTitle: item.addontitle
+                relatedPostId: item._id
                 relatedUserId: item.owner
                 relatedUserName: item.ownerName
                 relatedUserIcon: item.ownerIcon
