@@ -1422,7 +1422,7 @@ if Meteor.isClient
           continue
         draftToBeUploadedImageData.push(video)
       Session.set('terminateUpload', false)
-      Session.get("isDelayPublish",false)
+      Session.set("isDelayPublish",false)
       if draftToBeUploadedImageData.length > 0
           multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, null, (err, result)->
             unless result
@@ -1529,7 +1529,7 @@ if Meteor.isClient
           $('#chooseAssociatedUser').modal('hide')
 
         Session.set('terminateUpload', false)
-        Session.get("isDelayPublish",true)
+        Session.set("isDelayPublish",true)
         if draftToBeUploadedImageData.length > 0
           multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, null, (err, result)->
             unless result
