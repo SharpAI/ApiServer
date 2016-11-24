@@ -1708,6 +1708,12 @@ if(Meteor.isServer){
           return SavedDrafts.find({owner: this.userId},{sort: {createdAt: -1},limit:limit});
       }
   });
+  Meteor.publish("savedDraftsWithID", function(draftId) {
+      if(this.userId === null || !Match.test(draftId, String))
+        return this.ready();
+      else
+        return SavedDrafts.find({_id: draftId});
+  });
   Meteor.publish("followedByWithLimit", function(limit) {
       /*列出自己的粉丝*/
       if(this.userId === null|| !Match.test(limit, Number)){
