@@ -128,8 +128,8 @@ if Meteor.isClient
       return
     Router.route '/posts/:_id', {
         waitOn: ->
-          [subs.subscribe("publicPosts",this.params._id),
-           subs.subscribe("postViewCounter",this.params._id),
+          Meteor.subscribe("publicPosts",this.params._id)
+          [subs.subscribe("postViewCounter",this.params._id),
            subs.subscribe("postsAuthor",this.params._id),
            subs.subscribe "pcomments"]
         loadingTemplate: 'loadingPost'
