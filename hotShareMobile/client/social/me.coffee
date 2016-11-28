@@ -184,14 +184,7 @@ if Meteor.isClient
           distance = parseInt(lastDistance) + parseInt(distance) 
           distance =  distance + 'px'
           $('.me .setNickname .head').css 'margin-top', distance
-          $('.showPosts .head').css('display','none')
         ), 500)
-      if Session.get("Social.LevelTwo.Me.Menu") is 'setSex'
-        window.timeOut = window.setTimeout((->
-          $('.showPosts .head').css('display','none')
-        ), 500)
-      if Session.get("Social.LevelTwo.Me.Menu") is 'information'
-        $('.showPosts .head').css('display','block')
 
   Template.myFavouritePosts.helpers
     isLoading:()->
