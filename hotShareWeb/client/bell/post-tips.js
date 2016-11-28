@@ -77,6 +77,7 @@ Template.bellPostTips.helpers({
 
 Template.bellPostTips.events({
   'click .msg-box': function(){
+    trackEvent("blkMsgBox", "clickBlkMsgBox");
     Router.go('/bell');
   }
 });

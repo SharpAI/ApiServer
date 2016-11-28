@@ -112,6 +112,7 @@ if Meteor.isClient
       document.getElementById(this._id + 'content').style.display='block'
       $(".bellAlertBackground").fadeIn 300
     'click .contentList': (e)->
+      trackEvent("blackMsgBox", "BlkMsgClickEachPost")
       if this.pindex?
         Session.set("pcurrentIndex",this.pindex)
         Session.set("pcommetsId",this.owner)
