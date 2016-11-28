@@ -344,6 +344,14 @@ if Meteor.isServer
       #console.log('sep2:', _post.isReview);
     #  return return_result(false)
     
+    # update topicposs mainImage
+    try
+      topicpossCount = TopicPosts.find({postId: this.params._postId, owner: this.params._userId}).count()
+      if topicpossCount > 0
+        TopicPosts.update({postId: this.params._postId, owner: this.params._userId},{$set:{mainImage: _post.mainImage}})
+    catch error
+      console.log('update topicposs mainImage error, MSG = ',error)
+    
     # review
     Posts.update {_id: this.params._postId}, {$set: {isReview: true}}, (err, num)->
       if err or num <= 0

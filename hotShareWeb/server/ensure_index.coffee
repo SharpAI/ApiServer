@@ -21,6 +21,7 @@ if Meteor.isServer
     Follower._ensureIndex({followerId: 1},{userEmail:1})
     Follows._ensureIndex({index: 1})
     TopicPosts._ensureIndex({postId: 1})
+    TopicPosts._ensureIndex({postId: 1, owner: 1})
     ReComment._ensureIndex({postId: 1, commentUserId: 1})
     ReComment._ensureIndex({postId: 1})
     Meets._ensureIndex({me: 1, count: -1})
