@@ -972,6 +972,7 @@ if Meteor.isClient
         owner:ownerUser._id,
         ownerName:ownerName,
         ownerIcon:ownerIcon,
+        isReview: true,
         createdAt: new Date()
     }
     Session.set('newpostsdata', newPostData)
@@ -985,7 +986,11 @@ if Meteor.isClient
     TempDrafts.remove({})
 
     if Session.get('isReviewMode') is '2'
-      Router.go('/newposts/'+postId)
+      if Session.get('isServerImport')
+        Session.set 'isServerImport', false
+        Router.go('/posts/'+postId)
+      else
+        Router.go('/newposts/'+postId)
     else
       Session.set("TopicPostId", postId)
       Session.set("TopicTitle", title)

@@ -243,6 +243,7 @@ if Meteor.isClient
             importLink = "http://"+matchArray[0]
           Meteor.setTimeout(()->
             if e.currentTarget.id is 'serverImport'
+              Session.set 'isServerImport', true
               handleDirectLinkImport(importLink)
             else
               handleDirectLinkImport(importLink,1)

@@ -196,7 +196,12 @@ if Meteor.isClient
             Meteor.call('pushRecommendStoryToReaderGroups', Session.get('recommendStoryShareFromId'), topicPostId)
           Session.set('recommendStoryShare',false)
        Session.set("mynewpostId",topicPostId)
-       Router.go('/newposts/'+topicPostId)
+       if Session.get('isServerImport')
+        Session.set 'isServerImport', false
+        Router.go('/posts/'+topicPostId)
+       else
+        Router.go('/newposts/'+topicPostId)
+       # Router.go('/newposts/'+topicPostId)
        false
 
   Template.publishReadersList.rendered=->
