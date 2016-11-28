@@ -29,7 +29,7 @@ nl.x-services.plugins.backgroundaudio@https://github.com/PluginCordova/backgroun
 nl.x-services.plugins.toast@2.5.2
 org.apache.cordova.plugin.tts@https://github.com/PluginCordova/tts/tarball/befd838419d210fc7d85f171fabb243734b546a9
 org.hotshare.customDialog@https://github.com/PluginCordova/customDialog/tarball/3faf6ccfbede32c85a47c91dd2e0cf257243ba30
-org.hotshare.everywhere.appsetup@https://github.com/PluginCordova/appsetup/tarball/7c346ea9ec93e5f30413b2b3b41a9380f5c8ca64
+org.hotshare.everywhere.appsetup@https://github.com/PluginCordova/appsetup/tarball/fc810d8977e64153651c7ff927ad86ee520bf3a5
 org.hotshare.shareExtension@https://github.com/PluginCordova/share-extension/tarball/2cde17f067b5856d8261f0e5154ca64ae2ec2a0b
 org.hotshare.userinfo@https://github.com/PluginCordova/userInfo/tarball/1f7cee2f71cefb88a272186c28f9707f8b71c97c
 org.zy.yuancheng.qq@https://github.com/PluginCordova/qq/tarball/9fccd8e93e2a75ea8bb2ad887ad84f1d32dbc52b
