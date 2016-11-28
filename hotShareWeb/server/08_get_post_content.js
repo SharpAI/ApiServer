@@ -10,7 +10,7 @@ if(Meteor.isServer){
                     return false;
                 }
                 this.unblock();
-                var postItem = Posts.findOne({_id: this.params._id});
+                var postItem = Posts.findOne({_id: postId});
 
                 return postItem;
             }
