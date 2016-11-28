@@ -3,6 +3,8 @@ const http = require('http');
 var nodemailer = require('nodemailer');
 var Connection = require('ssh2');
 var SlackBot = require('slackbots');
+var Skyweb = require('skyweb');
+var sky_sendmsg = null;
 
 var mail_receivers = 'xfang@actiontec.com, xning@actiontec.com, jliao@actiontec.com, zhzhang@actiontec.com';
 //var mail_receivers = 'xning@actiontec.com';
@@ -35,6 +37,44 @@ var mailChatOptions = {
     subject: 'HotShare Chat Server maybe Down', // Subject line
     text: 'It seems something wrong with hotShare chat server. Please check if it is down!'
 };
+
+function skyweb_init() {
+    var username = 'solderzzc01@gmail.com';
+    var password = 'Vk190560';
+
+    var conversationId = '19:34d7527a4fdd4d5f80e9e1021fdffae8@thread.skype';
+    skyweb = new Skyweb();
+    var online = false;
+    console.log('Skyweb is initializing... ');
+    skyweb.login(username, password).then(function (skypeAccount) {
+        online = true;
+        console.log('Skyweb is initialized now');
+        console.log('Here is some info about you:' + JSON.stringify(skyweb.skypeAccount.selfInfo, null, 2));
+        console.log('Your contacts : ' + JSON.stringify(skyweb.contactsService.contacts, null, 2));
+        skyweb.setStatus('Online');
+
+        var sendMessage=function(message){
+            skyweb.sendMessage(conversationId, 'serverMonitor: ' + message);
+        };
+        sky_sendmsg = sendMessage;
+        sendMessage('SkyWeb Bot Going Online.');
+
+        if(production){
+            sendMessage('Meteor server(web) of HotShare restarted (Production Server) '+hostname+' AutoReview: '+autoReview);
+        } else {
+            sendMessage('Meteor server(web) of HotShare restarted (Test/Local Server) '+hostname+' AutoReview: '+autoReview);
+        }
+    }).catch(function (reason) {
+        console.log(reason);
+    });
+
+    skyweb.authRequestCallback = function (requests) {
+        requests.forEach(function (request) {
+            skyweb.acceptAuthRequest(request.sender);
+            skyweb.sendMessage("8:" + request.sender, "I accepted you!");
+        });
+    };
+}
 
 /*var c = new Connection();
 c.on('connect', function() {
@@ -82,33 +122,40 @@ var slackBot = new SlackBot({
   name: 'Post Reporter'
 });
 
-function connectChatServer() {
-  http.get('http://chat.cdn.tiegushi.com/home', function(res) {
-    console.log('Got response: ' + res.statusCode);
-    if (res.statusCode != 200) {
-      transporter.sendMail(mailChatOptions, function(error, info){
+function post_msg(msg, mail) {
+    if ((!!transporter) && (!!mail)) {
+      transporter.sendMail(mail, function(error, info){
           if(error){
               return console.log(error);
           }
           console.log('Message sent: ' + info.response);
-
       });
+    }
 
-      slackBot.postMessageToChannel('general', 'It seems something wrong with hotShare chat server. Please check if it is down!');
+    if(!msg) return;
+
+    if(!!slackBot) {
+      slackBot.postMessageToChannel('general', msg);
+    }
+
+    if (!!sky_sendmsg) {
+        sky_sendmsg(':< ' + msg);
+    }
+}
+
+function connectChatServer() {
+  var msg = 'It seems something wrong with hotShare chat server. Please check if it is down!';
+
+  http.get('http://chat.cdn.tiegushi.com/home', function(res) {
+    console.log('ChatServer: Got response: ' + res.statusCode);
+    if (res.statusCode != 200) {
+      post_msg(msg, mailChatOptions)
     }
     // consume response body
     res.resume();
   }).on('error', function(e) {
     console.log('Got error: ' + e.message);
-    transporter.sendMail(mailOptions, function(error, info){
-        if(error){
-            return console.log(error);
-        }
-        console.log('Message sent: ' + info.response);
-
-    });
-
-    slackBot.postMessageToChannel('general', 'It seems something wrong with hotShare chat server. Please check if it is down!');
+    post_msg(msg, mailChatOptions)
   });
 }
 
@@ -119,35 +166,22 @@ function connectServer() {
     username: 'root',
     password: 'wiRN$#sdf284'
   });*/
+  var msg = 'It seems something wrong with hotShare server. Please check if it is down!';
+
   http.get('http://cdn.tiegushi.com/posts/7EQLESsR5gCm9ftzq', function(res) {
-    console.log('Got response: ' + res.statusCode);
+    console.log('Server: Got response: ' + res.statusCode);
     if (res.statusCode != 200) {
-      transporter.sendMail(mailOptions, function(error, info){
-          if(error){
-              return console.log(error);
-          }
-          console.log('Message sent: ' + info.response);
-
-      });
-
-      slackBot.postMessageToChannel('general', 'It seems something wrong with hotShare server. Please check if it is down!');
+      post_msg(msg, mailOptions)
     }
     // consume response body
     res.resume();
   }).on('error', function(e) {
     console.log('Got error: ' + e.message);
-    transporter.sendMail(mailOptions, function(error, info){
-        if(error){
-            return console.log(error);
-        }
-        console.log('Message sent: ' + info.response);
-
-    });
-
-    slackBot.postMessageToChannel('general', 'It seems something wrong with hotShare server. Please check if it is down!');
+    post_msg(msg, mailOptions)
   });
 }
 
+skyweb_init();
 connectServer();
 connectChatServer();
 setInterval(function() {
