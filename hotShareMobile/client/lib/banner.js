@@ -12,7 +12,7 @@ Meteor.startup(function(){
 			return Session.equals('MeteorConnection-wasConnected', true);
 		},
 		'isDisconnected': function(event, template){
-			return Session.equals('MeteorConnection-isConnected', false);
+			return Session.equals('MeteorConnection-isConnected', false) && Meteor.status().retryCount > 1;
 		},
 		'retryTimeSeconds': function(event, template){
 			return Session.get('MeteorConnection-retryTimeSeconds');
