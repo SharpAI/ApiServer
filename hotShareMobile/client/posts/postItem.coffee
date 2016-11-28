@@ -164,6 +164,9 @@ if Meteor.isClient
     DraftImageItem: (path,uri,id)->
       getLocalImagePath(path,uri,id)
     isOverLapping: (id)->
+      element = document.getElementById(id)
+      if element is null
+        return false
       rect1 = document.getElementById(id).getBoundingClientRect()
       rect2 = document.getElementById($("#"+id).nextAll('.element')[0].id).getBoundingClientRect()
       overlapping = !(rect1.right < rect2.left or rect1.left > rect2.right or rect1.bottom < rect2.top or rect1.top > rect2.bottom)
