@@ -93,9 +93,11 @@
     {{#if haveUrl}}
     <div id="ViewOnWeb"><i class="fa fa-globe"></i>{{_ "readOriginalText"}}</div>
     {{/if}}
+    {{#if browse}}
     <div class="recommendstory"  id="shareStoryBtn">
         <div class="description">{{browse}}人读过，分享您的故事给他们吧！<span class="shareStoryBtn">分享</span></div>
     </div>
+    {{/if}}
     {{#if withAfterPostIntroduce}}
       <div class="write">
         <p class="author">Write by <span class="spc">{{ownerName}}</span></p>
