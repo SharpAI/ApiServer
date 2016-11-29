@@ -433,14 +433,15 @@ if Meteor.isClient
       }
     'click #edit': (event)->
       cleanDraft()
-      savedDraftData = SavedDrafts.findOne({_id: Session.get("postContent")._id})
+      draftId = Session.get("postContent")._id
+      savedDraftData = SavedDrafts.findOne({_id:draftId})
       if savedDraftData
         editDraft(savedDraftData)
       else
-        Meteor.subscribe("savedDraftsWithID",{
+        Meteor.subscribe("savedDraftsWithID",draftId,{
             onReady:()->
               console.log('savedDraftsWithIDCollection loaded')
-              savedDraftData = SavedDrafts.findOne({_id: Session.get("postContent")._id})
+              savedDraftData = SavedDrafts.findOne({_id:draftId})
               editDraft(savedDraftData)
           })
 
