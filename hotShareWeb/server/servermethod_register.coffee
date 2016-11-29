@@ -531,6 +531,7 @@ if Meteor.isServer
           delectAliyunPictureObject(postId)
       # reporter END
       'updateTopicPostsAfterComment':(topicPostId,topic,topicPostObj)->
+        _post = Posts.findOne({_id: topicPostId})
         if Topics.find({text:topic}).count() > 0
           topicData = Topics.find({text:topic}).fetch()[0]
           topicId = topicData._id
@@ -541,7 +542,8 @@ if Meteor.isServer
             imgUrl: ""
           }
         topicPostObj.topicId = topicId
-        
+        if _post and _post.mainImage
+          topicPostOb.mainImage = _post.mainImage
         console.log topicId
         unless TopicPosts.findOne({postId:topicPostId,topicId: topicId})
           try
