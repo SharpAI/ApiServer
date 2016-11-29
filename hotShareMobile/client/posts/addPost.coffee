@@ -1609,6 +1609,13 @@ if Meteor.isClient
 
     # Meteor.subscribe('associateduserdetails', userIds)
     Meteor.subscribe('userRelation')
+    height = $(window).height()*0.68
+    height = height + 'px'
+    $('.modal-dialog .modal-body').css({'max-height':height,'overflow-y':'auto'})
+    $('#chooseAssociatedUser').on 'show.bs.modal', ->
+      $('body,html').css 'overflow': 'hidden'
+    $('#chooseAssociatedUser').on 'hide.bs.modal', ->
+      $('body,html').css 'overflow': '' 
 
   Template.chooseAssociatedUser.helpers
     accountList :->
