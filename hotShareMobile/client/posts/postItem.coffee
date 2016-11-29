@@ -53,6 +53,7 @@ if Meteor.isClient
     for i in [col..(col+sizeX-1)]
       helper[(i-1)]=bottom
   Template.postItem.onRendered ()->
+    this.$('img.lazy').lazyload()
     element=this.find('.element')
     myData=this.data
     parentNode=element.parentNode
@@ -121,7 +122,7 @@ if Meteor.isClient
           $video.get(0).play()
         else
           $video.get(0).pause()
-      return   
+      return
     'pause audio':()->
       console.log('Audio Paused')
     'playing audio':()->
@@ -157,7 +158,7 @@ if Meteor.isClient
     isLocalImgUrlType: (imgUrl)->
       if imgUrl and imgUrl.indexOf('file://') > -1
         return true
-      else 
+      else
         return false
     isDraft: ()->
       Session.get('showDraft')
@@ -173,7 +174,7 @@ if Meteor.isClient
       console.log(rect1.height)
       if overlapping
         console.log('被挡住了')
-      else 
+      else
         console.log('没有被挡住')
       return overlapping
     addTopOffsetStyle: (id)->
@@ -200,10 +201,10 @@ if Meteor.isClient
     hasVideoInfo: (videoInfo)->
       unless videoInfo
         return false
-        
+
       playUrl = videoInfo.playUrl
       zhifa_serverURL = "http://data.tiegushi.com"
-      
+
       # m3u8
       if playUrl.length > 5 and playUrl.lastIndexOf('.m3u8') is playUrl.length-5
         if $('head script[tag=mp4]').length > 0
@@ -211,22 +212,22 @@ if Meteor.isClient
           $('head link[tag=mp4]').remove()
         if $('head script[tag=m3u8]').length > 0
           return true
-        
+
         $('head').append('<link tag="m3u8" href="http://data.tiegushi.com/video-js.min.css" rel="stylesheet">')
         $('head').append('<script tag="m3u8">token = "EioJxvLpZHJvcrYdJ"; trafficDisplay = true; </script>')
         $('head').append('<script tag="m3u8" src="http://data.tiegushi.com/bundle-hls.js"></script>')
-      # other video        
+      # other video
       else
         if $('head script[tag=m3u8]').length > 0
           $('head script[tag=m3u8]').remove()
           $('head link[tag=m3u8]').remove()
         if $('head script[tag=mp4]').length > 0
           return true
-      
+
         $('head').append('<link tag="mp4" href="http://data.tiegushi.com/video-js.min.css" rel="stylesheet">')
         $('head').append('<script tag="mp4">token = "7gFCGdcqXw4mSc252"; trafficDisplay = false; </script>')
         $('head').append('<script tag="mp4" src="http://data.tiegushi.com/bundle-raidcdn-mini-2.21.4.js"></script>')
-        
+
       return true
     myselfClickedUp:->
       i = this.index
@@ -290,7 +291,7 @@ if Meteor.isClient
 #        position = 1+(post.length/2)
       if i > position and withSponserLinkAds
         i -= 1
-        return post[i].pcomments 
+        return post[i].pcomments
       else if post[i] isnt undefined
         return post[i].pcomments
       else
