@@ -65,6 +65,9 @@ if Meteor.isClient
         threshold = $(window).scrollTop() + $(window).height() - target.height();
         console.log "threshold: " + threshold
         console.log "target.top: " + target.offset().top
+        if $('#newFriendRedSpotReal').is(":hidden") and parseInt($('#newFriendRedSpotReal').html()) > 0
+          $('#newFriendRedSpotReal').show()
+          $('#newFriendRedSpot').hide()
         if target.offset().top < threshold
           if (!target.data("visible"))
             target.data("visible", true);
@@ -111,11 +114,14 @@ if Meteor.isClient
       currentId =  e.currentTarget.id
       if $('#' + currentId + ' .red_spot').length > 0
         $('#' + currentId + ' .red_spot').remove()
-        totalCount = parseInt($('#newFriendRedSpot').html()) - 1
+        totalCount = parseInt($('#newFriendRedSpotReal').html()) - 1
         if totalCount > 0
           $('#newFriendRedSpot').html(totalCount.toString())
+          $('#newFriendRedSpot').show()
+          $('#newFriendRedSpotReal').hide()
         else
           $('#newFriendRedSpot').hide()
+          $('#newFriendRedSpotReal').hide()
       if this.count is 1
         Meets.update({_id: this._id}, {$set: {count: 2}})
       userProfileList = PostFriends.find({meetOnPostId:Session.get("postContent")._id,ta:{$ne:null}},{sort:{createdAt:-1}}).fetch()
