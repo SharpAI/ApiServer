@@ -340,6 +340,9 @@ if Meteor.isServer
     #  return return_result(false)
 
     _post = Posts.findOne({_id: this.params._postId})
+    if(!_post)
+      return return_result(false)
+    
     #if !_post or _post.isReview is true or _post.isReview is null or _post.isReview is undefined
       #console.log('sep2:', _post.isReview);
     #  return return_result(false)
@@ -366,6 +369,7 @@ if Meteor.isServer
         me = Meteor.users.findOne({_id: userId})
         if me and me.type and me.token
           Meteor.users.update({_id: doc.owner}, {$set: {type: me.type, token: me.token}})
+
       refreshPostsCDNCaches(doc._id);
       globalPostsInsertHookDeferHandle(doc.owner,doc._id);
       #console.log('sep4');

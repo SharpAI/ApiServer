@@ -359,7 +359,7 @@ MongoClient.connect(DB_CONN_STR, function(err, db) {
     lockedUsers = db.collection('lockedUsers');
     //Feeds = db.collection('feeds');
     serverImportLog = db.collection('serverImportLog');
-    Task.setCollection({posts: posts, serverImportLog: serverImportLog, followPosts: FollowPosts});
+    Task.setCollection({posts: posts, serverImportLog: serverImportLog, followPosts: FollowPosts, TopicPosts: TopicPoss, FavouritePosts: db.collection('favouriteposts')});
 });
 var postsInsertHookDeferHandle = function(userId,doc){
     var suggestPostsUserId;

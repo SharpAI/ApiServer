@@ -27,8 +27,8 @@ function taskObj() {
       return;
       
     for(var i=0;i<tasks.length;i++){
-      // remove 6 分钟前的
-      if((new Date()) - tasks[i].startTime >= 1000*60*5)
+      // remove 10 分钟前的
+      if((new Date()) - tasks[i].startTime >= 1000*60*10)
         tasks.splice(i, 1);
     }
   };
@@ -149,6 +149,8 @@ function taskObj() {
       console.log('remove import post.');
       collections.posts.remove({_id: tasks[index].postId});
       collections.followPosts.remove({postId: tasks[index].postId});
+      collections.TopicPosts.remove({postId: tasks[index].postId})
+      collections.FavouritePosts.remove({postId: tasks[index].postId})
     }
   };
   
