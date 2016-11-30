@@ -60,6 +60,9 @@ if Meteor.isClient
         target = $("#showMorePostFriendsResults");
         POSTFRIENDS_ITEMS_INCREMENT = 10;
         console.log "target.length: " + target.length
+        if $('#newFriendRedSpotReal').is(":hidden") and parseInt($('#newFriendRedSpotReal').html()) > 0
+          $('#newFriendRedSpotReal').show()
+          $('#newFriendRedSpot').hide()
         if (!target.length)
           return;
         threshold = $(window).scrollTop() + $(window).height() - target.height();
