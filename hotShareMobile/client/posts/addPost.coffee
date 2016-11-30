@@ -512,12 +512,19 @@ if Meteor.isClient
     api_url += '/' + encodeURIComponent(url)
     api_url += '?task_id=' + unique_id + '&isMobile=true';
     console.log("api_url="+api_url)
-    abortFastImport = ()->
+    abortFastImport = (cancel)->
       isCancel = true
       isRes = true
       request_return = (res)->
         console.log('cancel import res: ' + JSON.stringify(res))
-      cordovaHTTP.get Meteor.absoluteUrl('import-cancel/') + unique_id, {}, {}, request_return, request_return
+      request_return_ok = (res)->
+        res = JSON.parse(res.data)
+        if(res.status is 'cancelled')
+          if(cancel isnt true)
+            PUB.toast('快速导入失败啦，请尝试高级导入吧。')
+          return
+        PUB.toast('服务器正在处理，稍后可以在"我"下面查看。')
+      cordovaHTTP.get Meteor.absoluteUrl('import-cancel/') + unique_id, {}, {}, request_return_ok, request_return
       console.log("import-cancel: unique_id="+unique_id);
     showIframePage = (url)->
       link = {}
@@ -544,7 +551,7 @@ if Meteor.isClient
         data_sizey:sizeY.toString()}
     showPopupProgressBar(()->
       # cancel server import
-      abortFastImport()
+      abortFastImport(true)
       #return navigator.notification.confirm('快速导入不成功，是否尝试高级导入？'
       #    (index)->
       #      if index is 1 then handleDirectLinkImport(url, 1)
@@ -570,7 +577,8 @@ if Meteor.isClient
               Session.set('cancelImport', true)
               abortFastImport()
               showIframePage(url)
-              PUB.toast('快速导入失败啦，请尝试高级导入吧。')
+              #PUB.toast('快速导入失败啦，请尝试高级导入吧。')
+              PUB.toast('服务器正在处理，稍后可以在"我"下面查看。')
               Router.go('/')
               # navigator.notification.confirm('快速导入不成功，是否尝试高级导入？'
               #   (index)->
@@ -972,7 +980,6 @@ if Meteor.isClient
         owner:ownerUser._id,
         ownerName:ownerName,
         ownerIcon:ownerIcon,
-        isReview: true,
         createdAt: new Date()
     }
     Session.set('newpostsdata', newPostData)
@@ -986,11 +993,7 @@ if Meteor.isClient
     TempDrafts.remove({})
 
     if Session.get('isReviewMode') is '2'
-      if Session.get('isServerImport')
-        Session.set 'isServerImport', false
-        Router.go('/posts/'+postId)
-      else
-        Router.go('/newposts/'+postId)
+      Router.go('/newposts/'+postId)
     else
       Session.set("TopicPostId", postId)
       Session.set("TopicTitle", title)
@@ -1609,13 +1612,6 @@ if Meteor.isClient
 
     # Meteor.subscribe('associateduserdetails', userIds)
     Meteor.subscribe('userRelation')
-    height = $(window).height()*0.68
-    height = height + 'px'
-    $('.modal-dialog .modal-body').css({'max-height':height,'overflow-y':'auto'})
-    $('#chooseAssociatedUser').on 'show.bs.modal', ->
-      $('body,html').css 'overflow': 'hidden'
-    $('#chooseAssociatedUser').on 'hide.bs.modal', ->
-      $('body,html').css 'overflow': '' 
 
   Template.chooseAssociatedUser.helpers
     accountList :->

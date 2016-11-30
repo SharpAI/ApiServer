@@ -47,6 +47,17 @@ var prefix = process.env.PREFIX || '';
 var redis_prefix = prefix+'import_task';
 var redis_prefix_us = prefix+'import_task_us';
 var restartKueServiceTimeout = null;
+var writeRes = function(res, str, end){
+  if(!res || res.isEnd === true || res.isResErr === true)
+    return;
+
+  if(end === true){
+    res.isEnd = true;
+    res.end(str);
+  }else{
+    res.write(str);
+  }
+};
 
 process.addListener('uncaughtException', function (err) {
   if (!err) {
@@ -939,31 +950,39 @@ if (cluster.isMaster) {
 
   router.route('/:_id/:url')
     .get(function(req, res) {
+      res.on('error', function(err){
+        res.isResErr = true;
+      });
+
       users.findOne({_id: req.params._id}, function(err, user){
         if(err || !user)
-          return res.end(JSON.stringify({status:'failed'}));
+          return writeRes(res, JSON.stringify({status:'failed'}), true);
         if(!user.token)
           return routerCallback(req, res);
 
         lockedUsers.findOne({token: user.token}, function(error, lock){
           if(error || !lock)
             return routerCallback(req, res);
-          res.end(JSON.stringify({status:'failed'}));
+          writeRes(res, JSON.stringify({status:'failed'}), true);
         })
       });
     });
   router.route('/:_id/:url/:unique_id')
     .get(function(req, res) {
+        res.on('error', function(err){
+          res.isResErr = true;
+        });
+
         users.findOne({_id: req.params._id}, function(err, user){
           if(err || !user)
-            return res.end(JSON.stringify({status:'failed'}));
+            return writeRes(res, JSON.stringify({status:'failed'}), true);
           if(!user.token)
             return routerCallback(req, res);
 
           lockedUsers.findOne({token: user.token}, function(error, lock){
             if(error || !lock)
               return routerCallback(req, res);
-            res.end(JSON.stringify({status:'failed'}));
+            writeRes(res, JSON.stringify({status:'failed'}), true);
           })
         });
     });
@@ -999,7 +1018,7 @@ if (cluster.isMaster) {
         if(Task.isCancel(unique_id, true)) {
           console.log("Master: import cancel - 1.");
         }
-        res.end(JSON.stringify({status:'failed'}));
+        writeRes(res, JSON.stringify({status:'failed'}), true);
         // Task.failed(unique_id, errorMessage);
         // Task.update(unique_id, 'failed');
       }).on('failed', function(errorMessage){
@@ -1008,7 +1027,7 @@ if (cluster.isMaster) {
         if(Task.isCancel(unique_id, true)) {
           console.log("Master: import cancel - 2.");
         }
-        res.end(JSON.stringify({status:'failed'}));
+        writeRes(res, JSON.stringify({status:'failed'}), true);
         // Task.failed(unique_id, errorMessage);
         // Task.update(unique_id, 'failed');
       // }).on('importing', function(result){
@@ -1016,9 +1035,18 @@ if (cluster.isMaster) {
       //   res.write(JSON.stringify(result));
       }).on('progress', function(progress, data){
         console.log('\r  job #' + job.id + ' ' + progress + '% complete with data ', data);
+        // cancel
+        if(Task.isCancel(unique_id, true)) {
+          console.log("Master: import cancel - 3.");
+          writeRes(res, JSON.stringify({status:'failed'}), true);
+          return;
+        }
+
+        if(res.isResErr === true)
+          return Task.cancel(unique_id);
 
         if (progress == 100) {
-          res.end(data);
+          writeRes(res, data, true);
           if (data && data.status == 'succ' && data.json) {
             var postId = data.json.replace(/^.*[\\\/]/, '');
             console.log("postId = "+postId);
@@ -1027,12 +1055,8 @@ if (cluster.isMaster) {
               Task.update(unique_id, 'done');
           }
         }else {
-          res.write(data);
+          writeRes(res, data);
           Task.update(unique_id, 'importing');
-        }
-        // cancel
-        if(Task.isCancel(unique_id, true)) {
-          console.log("Master: import cancel - 3.");
         }
       });
     }
@@ -1043,6 +1067,9 @@ if (cluster.isMaster) {
   app.use(bodyParser.json());
   app.use('/import', router);
   app.get('/import-cancel/:id', function(req, res) {
+    res.on('error', function(err){
+      res.isResErr = true;
+    });
     console.log('import-cancel: ' + req.params.id);
     Task.cancel(req.params.id);
     for (var id in cluster.workers) {
@@ -1050,7 +1077,7 @@ if (cluster.isMaster) {
         console.log("Sending message abortImport to work id: "+id);
         cluster.workers[id].send(JSON.stringify(msg));
     }
-    res.end(JSON.stringify({status:'cancelled'}));
+    writeRes(res, JSON.stringify({status:'cancelled'}), true);
   });
   app.listen(port);
   console.log('Magic happens on port ' + port);
@@ -1068,6 +1095,7 @@ if (cluster.isMaster) {
       console.log("Received abortImport message from Master.");
       Task.add(msg.unique_id, '', '');
       Task.update(msg.unique_id, 'cancel');
+      Task.cancel(msg.unique_id);
     }
   });
   nightmareQueue = initNightmareQueue();
