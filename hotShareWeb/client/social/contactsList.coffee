@@ -111,11 +111,14 @@ if Meteor.isClient
       currentId =  e.currentTarget.id
       if $('#' + currentId + ' .red_spot').length > 0
         $('#' + currentId + ' .red_spot').remove()
-        totalCount = parseInt($('#newFriendRedSpot').html()) - 1
+        totalCount = parseInt($('#newFriendRedSpotReal').html()) - 1
         if totalCount > 0
           $('#newFriendRedSpot').html(totalCount.toString())
+          $('#newFriendRedSpot').show()
+          $('#newFriendRedSpotReal').hide()
         else
           $('#newFriendRedSpot').hide()
+          $('#newFriendRedSpotReal').hide()
       if this.count is 1
         Meets.update({_id: this._id}, {$set: {count: 2}})
       userProfileList = PostFriends.find({meetOnPostId:Session.get("postContent")._id,ta:{$ne:null}},{sort:{createdAt:-1}}).fetch()
