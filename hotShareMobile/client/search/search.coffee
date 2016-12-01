@@ -35,6 +35,8 @@ if Meteor.isClient
        text = $(e.target).val().trim()
        if text.length > 0
          Session.set 'isSearching', true
+         Session.set 'noSearchResult',false
+         Session.set 'searchLoading', true
        else
          Session.set 'isSearching', false
        FollowUsersSearch.search text
@@ -107,6 +109,11 @@ if Meteor.isClient
          false
       else
          true
+    noSearchResult:->
+      return Session.get("noSearchResult")
+    searchLoading:->
+       return Session.get('searchLoading')
+
     follows: ->
       Follows.find({},{sort: {index: 1}})
     isFollowed:(follow)->
@@ -138,8 +145,27 @@ if Meteor.isClient
     Meteor.subscribe("topicposts")
   Template.searchPeopleAndTopic.onRendered ()->
     Session.setDefault('is_people', true)
+    if(Session.get("searchContent") isnt undefined)
+      $("#search-box").val(Session.get("searchContent"))
+    if Session.get("noSearchResult") is true
+      Session.set("searchLoading", false)
+    if($("#search-box").val() is "")
+      Session.set("showSearchStatus", false)
+      Session.set("showSearchItems", false)
+      Session.set("noSearchResult", false)
     $('#search-box').bind('propertychange input',(e)->
        text = $(e.target).val().trim()
+       Session.set("showSearchStatus", true)
+       Session.set("showSearchItems", true)
+       Session.set("searchLoading", true)
+       Session.set("noSearchResult", false)
+       if text is ""
+         Session.set("showSearchStatus", false)
+         Session.set("showSearchItems", false)
+         Session.set("searchLoading", false)
+         Session.set("noSearchResult", false)
+         return
+
        if Session.get('is_people')
           FollowUsersSearch.search text
        else
@@ -149,6 +175,14 @@ if Meteor.isClient
   Template.searchPeopleAndTopic.helpers
     is_people:->
        Session.get('is_people')
+    showSearchStatus:->
+       return Session.get('showSearchStatus')
+    noSearchResult:->
+       return Session.get('noSearchResult')
+    searchLoading:->
+       return Session.get('searchLoading')
+    showSearchItems:->
+       return Session.get('showSearchItems')
     placeHolder:->
        if Session.get('is_people')
           "搜索作者"
@@ -179,14 +213,39 @@ if Meteor.isClient
     'click #search_people': (event)->
       Session.set('is_people', true)
       text = $('#search-box').val().trim()
+      if text is ""
+         Session.set("showSearchStatus", false)
+         Session.set("showSearchItems", false)
+         Session.set("searchLoading", false)
+         Session.set("noSearchResult", false)
+         $('#search-box').trigger('focus')
+         return
+      Session.set("showSearchStatus", true)
+      Session.set("showSearchItems", true)
+      Session.set("searchLoading", true)
+      Session.set("noSearchResult", false)
       FollowUsersSearch.search text
       $('#search-box').trigger('focus')
+      
     'click #search_topic': (event)->
       Session.set('is_people', false)
       text = $('#search-box').val().trim()
+      if text is ""
+         Session.set("showSearchStatus", false)
+         Session.set("showSearchItems", false)
+         Session.set("searchLoading", false)
+         Session.set("noSearchResult", false)
+         $('#search-box').trigger('focus')
+         return
+      Session.set("showSearchStatus", true)
+      Session.set("showSearchItems", true)
+      Session.set("searchLoading", true)
+      Session.set("noSearchResult", false)
       TopicsSearch.search text
       $('#search-box').trigger('focus')
+      
     'click .back': (event)->
+       Session.set("searchContent","")
        history.back()
     'click .delFollow':(e)->
       FollowerId = Follower.findOne({

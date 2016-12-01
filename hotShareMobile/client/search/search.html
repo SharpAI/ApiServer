@@ -49,27 +49,37 @@
           <li id="search_topic">#{{_ "plainTopic"}}#</li>
         </ul>
         <div id="peopleList">
-        {{#each getFollowUsers}}
-          <a href="" id="{{_id}}" class="contentList">
-          <img class="icon" src="{{profile.icon}}" width='30' height='30'>
-          {{#if profile.fullname}}
-          <div class="userName">{{profile.fullname}}</div>
-          {{else}}
-          <div class="userName">{{username}}</div>
+          {{#if showSearchStatus}}
+            {{#if noSearchResult}}
+              <center style="color: gray;">{{_ "NoSearchResults"}}</center>
+            {{/if}}
+            {{#if searchLoading}}
+              <center style="color: gray;">{{_ "Searching"}}<i class="fa fa-spinner fa-pulse"></i></center>
+            {{/if}}
           {{/if}}
-          {{#if notSelf this}}
-          {{#if isFollowedUser this}}
-            <div id="{{_id}}" class="follow delFollow"><span class="fa fa-check"></span><i class="fa fa-user"></i></div>
-          {{else}}
-            <div id="{{_id}}" class="follow addFollow"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
+          {{#if showSearchItems}}
+            {{#each getFollowUsers}}
+              <a href="" id="{{_id}}" class="contentList">
+              <img class="icon" src="{{profile.icon}}" width='30' height='30'>
+              {{#if profile.fullname}}
+              <div class="userName">{{profile.fullname}}</div>
+              {{else}}
+              <div class="userName">{{username}}</div>
+              {{/if}}
+              {{#if notSelf this}}
+              {{#if isFollowedUser this}}
+                <div id="{{_id}}" class="follow delFollow"><span class="fa fa-check"></span><i class="fa fa-user"></i></div>
+              {{else}}
+                <div id="{{_id}}" class="follow addFollow"><span class="fa fa-plus"></span><i class="fa fa-user"></i></div>
+              {{/if}}
+              {{/if}}
+              <div class="desc">{{desc}}</div>
+              </a>
+              <div class="line">
+                <span></span>
+              </div>
+            {{/each}}
           {{/if}}
-          {{/if}}
-          <div class="desc">{{desc}}</div>
-          </a>
-          <div class="line">
-            <span></span>
-          </div>
-        {{/each}}
         </div>
         {{else}}
         <ul class="my_btns my_btn2">
@@ -77,12 +87,22 @@
           <li id="search_topic" class="on">#{{_ "plainTopic"}}#</li>
         </ul>
         <div id="topicList">
-        {{#each getTopics}}
-          <div id="{{_id}}" class='topicTitle'>#{{text}}#<span>{{posts}}{{_ "numOfStory"}}<i class="fa fa-angle-right fa-fw"></i></span></div>
-          <div class="line">
-            <span></span>
-          </div>
-        {{/each}}
+          {{#if showSearchStatus}}
+            {{#if noSearchResult}}
+              <center style="color: gray;">{{_ "NoSearchResults"}}</center>
+            {{/if}}
+            {{#if searchLoading}}
+              <center style="color: gray;">{{_ "Searching"}}<i class="fa fa-spinner fa-pulse"></i></center>
+            {{/if}}
+          {{/if}}
+          {{#if showSearchItems}}
+            {{#each getTopics}}
+              <div id="{{_id}}" class='topicTitle'>#{{text}}#<span>{{posts}}{{_ "numOfStory"}}<i class="fa fa-angle-right fa-fw"></i></span></div>
+              <div class="line">
+                <span></span>
+              </div>
+            {{/each}}
+          {{/if}}
         </div>
         {{/if}}
    </div>
@@ -102,6 +122,14 @@
       </div>
       <div id="followList">
       {{#if isSearching}}
+        {{#if noSearchResult}}
+          <p></p>
+          <center style="color: gray;">{{_ "NoSearchResults"}}</center>
+        {{/if}}
+        {{#if searchLoading}}
+          <p></p>
+          <center style="color: gray;">{{_ "Searching"}}<i class="fa fa-spinner fa-pulse"></i></center>
+        {{/if}}
       {{#each getFollowUsers}}
           <a href="" id="{{_id}}" class="contentList">
           <img class="icon" src="{{profile.icon}}" width='30' height='30'>
