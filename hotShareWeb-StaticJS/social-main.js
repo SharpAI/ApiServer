@@ -157,7 +157,7 @@
                 if (feed.eventType === 'sendrequest'){
                     // TODO: 已添加/已发送邀请
                 }
-                html += '<a href="javascript:void(0);" class="contentList" data-id="' + feed._id + '" data-post="' + feed.postId + '">' + (notRead(feed.isRead, feed.checked, index, feed.createdAt) ? '<div class="readTips"></div>' : '') + '\
+                html += '<a href="javascript:void(0);" class="contentList" data-index="'+feed.pindex+'" data-id="' + feed._id + '" data-post="' + feed.postId + '">' + (notRead(feed.isRead, feed.checked, index, feed.createdAt) ? '<div class="readTips"></div>' : '') + '\
                         <img class="icon" src="' + feed.ownerIcon + '" width="30" height="30">\
                         <div id="' + feed.postId + '" class="alarm">' + feed.ownerName + ' ' + typeName + ' 《' + feed.postTitle + '》</div>\
                         <div class="createAt">' + time_diff(feed.createdAt) + '</div>\
@@ -172,8 +172,11 @@
             $(this).click(function () {
                 debugPrint('post id:', $(this).attr('data-post'));
                 window._bell.contentList($(this).attr('data-post'));
-                if ($(this).attr('data-post'))
-                    location = '/t/' + $(this).attr('data-post');
+                if ($(this).attr('data-post')){
+                    $('.div_me').css('display', 'none');
+                    $('._bell-box,.msg-box, _bell-box .readTips').css('display', 'none');
+                    location = '/t/' + $(this).attr('data-post') + '#index_' + $(this).attr('data-index');
+                }
             });
         });
     };

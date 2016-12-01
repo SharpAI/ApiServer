@@ -164,6 +164,17 @@
             var elemBottom = elem.offsetTop + elem.offsetHeight;
             updateLayoutData(layoutHelper, pubInfo.data_col, pubInfo.data_sizex, elemBottom);
             parentNode.style.height = getLayoutTop(layoutHelper, 1, 6) - parentNode.offsetTop + 'px';
+
+            if($elem.next().length <= 0 && location.hash.indexOf('#index_') != -1){
+                console.log('pub end.');
+                $('.showPosts').get(0).style.overflow = '';
+                $('.showPosts').get(0).style.maxHeight = '';
+                $('.showPosts').get(0).style.position = '';
+                $('.readmore').remove();
+                var go = location.hash.substr(location.hash.indexOf('#index_')+7);
+                console.log('offset:', $("#test .element[index='"+go+"']").offset());
+                setTimeout(function(){document.body.scrollTop = $("#test .element[index='"+go+"']").offset().top;},500);
+            }
         });
     };
 
