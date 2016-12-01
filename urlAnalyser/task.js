@@ -118,6 +118,7 @@ function taskObj() {
     
     // remove post
     debug && console.log('remove post.');
+    console.log('cancel: tasks[index]='+JSON.stringify(tasks[index]));
     if(tasks[index].postId){
       task.removePost(index);
       // tasks.splice(index, 1);
@@ -137,7 +138,8 @@ function taskObj() {
     var index = task.getIndex(id);
     if(index === -1)
       return false;
-      
+    
+    //console.log('isCancel: remove='+remove+', tasks[index]='+JSON.stringify(tasks[index]));
     if(remove === true && tasks[index].status === 'cancel')
       task.removePost(index);
     
@@ -145,12 +147,15 @@ function taskObj() {
   }
   
   task.removePost = function(index){
+    console.log('removePost: tasks[index]='+JSON.stringify(tasks[index]));
     if(tasks[index].postId){
-      console.log('remove import post.');
+      console.log('remove import post suc. postId='+tasks[index].postId);
       collections.posts.remove({_id: tasks[index].postId});
       collections.followPosts.remove({postId: tasks[index].postId});
       collections.TopicPosts.remove({postId: tasks[index].postId})
       collections.FavouritePosts.remove({postId: tasks[index].postId})
+    } else {
+      console.log('remove import post failed.');
     }
   };
   

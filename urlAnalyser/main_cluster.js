@@ -140,7 +140,7 @@ function restartKueService() {
             }
         }
         if (kuequeue) {
-            var timeout = 5000;
+            var timeout = 30000;
             kuequeue.shutdown(Number(timeout), function () {
                 if (cluster.isMaster) {
                     console.log("!!!!!!!!!! restartKueService: Master, shutdown kue queue service! Start again...");
@@ -1035,20 +1035,15 @@ if (cluster.isMaster) {
       //   res.write(JSON.stringify(result));
       }).on('progress', function(progress, data){
         console.log('\r  job #' + job.id + ' ' + progress + '% complete with data ', data);
-        // cancel
-        if(Task.isCancel(unique_id, true)) {
-          console.log("Master: import cancel - 3.");
-          writeRes(res, JSON.stringify({status:'failed'}), true);
-          return;
-        }
+        var dataObj = JSON.parse(data);
 
         if(res.isResErr === true)
           return Task.cancel(unique_id);
 
         if (progress == 100) {
           writeRes(res, data, true);
-          if (data && data.status == 'succ' && data.json) {
-            var postId = data.json.replace(/^.*[\\\/]/, '');
+          if (dataObj && dataObj.status == 'succ' && dataObj.json) {
+            var postId = dataObj.json.replace(/^.*[\\\/]/, '');
             console.log("postId = "+postId);
             Task.update(unique_id, 'done', postId);
           } else {
@@ -1057,6 +1052,13 @@ if (cluster.isMaster) {
         }else {
           writeRes(res, data);
           Task.update(unique_id, 'importing');
+        }
+
+        // cancel
+        if(Task.isCancel(unique_id, true)) {
+          console.log("Master: import cancel - 3.");
+          writeRes(res, JSON.stringify({status:'failed'}), true);
+          return;
         }
       });
     }
