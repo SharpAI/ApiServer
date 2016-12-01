@@ -26,9 +26,11 @@ var renderPage = function(){
 };
 
 Session.setDefault("TEST_AAA", true);
+Session.setDefault('showBellPostTips',true);
 Template.bellPostTips.helpers({
   hasNew: function(){
     var feedsCount = Template.bellPostTips.__helpers.get('feedsCount')();
+    var showBellPostTips = Session.get('showBellPostTips');
     // var imageMarginPixel=5;
     // var $test = $('.gridster #test');
     // var test = $('.gridster #test')[0];
@@ -61,7 +63,7 @@ Template.bellPostTips.helpers({
     //         }
     //     }
     // }
-    return feedsCount > 0;
+    return feedsCount > 0 && showBellPostTips;
   },
   feedsCount: function(){
 
@@ -78,6 +80,7 @@ Template.bellPostTips.helpers({
 Template.bellPostTips.events({
   'click .msg-box': function(){
     trackEvent("blkMsgBox", "clickBlkMsgBox");
+    Session.set('showBellPostTips',false);
     Router.go('/bell');
   }
 });
