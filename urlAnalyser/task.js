@@ -21,6 +21,19 @@ function taskObj() {
     }
     task.removeOld();
   };
+
+  task.setPost = function(id, postId){
+    task.add(id);
+    
+    var index = task.getIndex(id);
+    if(index === -1)
+      return;
+      
+    if(postId){
+      debug && console.log('update postId: ' + postId);
+      tasks[index].postId = postId;
+    }
+  };
   
   task.removeOld = function(){
     if(tasks.length<=0)
@@ -142,6 +155,9 @@ function taskObj() {
     //console.log('isCancel: remove='+remove+', tasks[index]='+JSON.stringify(tasks[index]));
     if(remove === true && tasks[index].status === 'cancel')
       task.removePost(index);
+    if(tasks[index].status === 'cancel'){
+      // TODO:
+    }
     
     return tasks[index].status === 'cancel';
   }
@@ -156,6 +172,24 @@ function taskObj() {
       collections.FavouritePosts.remove({postId: tasks[index].postId})
     } else {
       console.log('remove import post failed.');
+    }
+  };
+
+  task.removeHisCancel = function(time){
+    if(tasks.length<=0)
+      return;
+      
+    for(var i=0;i<tasks.length;i++){
+      if(tasks[i].status === 'cancel' && tasks[index].postId && tasks[index].endTime){
+        if((new Date()) - tasks[i].endTime <= time){
+          console.log('remove import post.');
+          collections.posts.remove({_id: tasks[index].postId});
+          collections.followPosts.remove({postId: tasks[index].postId});
+          collections.TopicPosts.remove({postId: tasks[index].postId})
+          collections.FavouritePosts.remove({postId: tasks[index].postId})
+          // tasks.splice(i, 1);
+        }
+      }
     }
   };
   

@@ -795,6 +795,9 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
 
                 var draftsObj = new drafts.createDrafts(null, user, THREAD_NUMBER);
                 insert_data(user, url, result, draftsObj, function(err, postId, mainUrl){
+                  // 先保存postid
+                  Task.setPost(unique_id, postId);
+
                   if (Task.isCancel(unique_id, true)) {
                     console.log("importUrl: cancel - 2.");
                     return callback && callback({status:'failed'});
@@ -1072,6 +1075,12 @@ if (cluster.isMaster) {
     res.on('error', function(err){
       res.isResErr = true;
     });
+
+    // 检查1分钟内取消的任务状态
+    setTimeout(function(){
+      Task.removeHisCancel(1000*60);
+    }, 1000*60);
+
     console.log('import-cancel: ' + req.params.id);
     Task.cancel(req.params.id);
     for (var id in cluster.workers) {
