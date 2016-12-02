@@ -19,7 +19,8 @@ if Meteor.isClient
         this.mainImage
   Template.allDrafts.events
     'click .back':(event)->
-        PUB.back()
+        #PUB.back()
+        PUB.page('/user')
     'click .rightButton':(event)->
         navigator.notification.confirm('这个操作无法撤销', (r)->
           console.log('r is ' + r)
