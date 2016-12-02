@@ -543,14 +543,14 @@ if Meteor.isServer
           }
         topicPostObj.topicId = topicId
         if _post and _post.mainImage
-          topicPostOb.mainImage = _post.mainImage
+          topicPostObj.mainImage = _post.mainImage
         console.log topicId
         unless TopicPosts.findOne({postId:topicPostId,topicId: topicId})
           try
             TopicPosts.insert topicPostObj,(err,id)->
               console.log(">>>id>>"+id)
               Topics.update({_id: topicId},{$inc: {posts: 1}})
-              return 
+              return
           catch error
             console.log error
       'sendErrorReport':(to, from, subject, text)->
