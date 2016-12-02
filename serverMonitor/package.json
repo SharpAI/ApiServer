@@ -1,10 +1,10 @@
 {
   "name": "serverMonitor",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "RAID CDN Team",
   "main":"main.js",
   "scripts":{
-    "start":"node serverMonitor.js"
+    "start":"node main.js"
   },
   "dependencies": {
     "http":"^0.0.0",
