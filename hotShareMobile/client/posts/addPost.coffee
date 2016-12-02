@@ -980,6 +980,7 @@ if Meteor.isClient
         owner:ownerUser._id,
         ownerName:ownerName,
         ownerIcon:ownerIcon,
+        isReview: true,
         createdAt: new Date()
     }
     Session.set('newpostsdata', newPostData)
@@ -993,7 +994,11 @@ if Meteor.isClient
     TempDrafts.remove({})
 
     if Session.get('isReviewMode') is '2'
-      Router.go('/newposts/'+postId)
+      if Session.get('isServerImport')
+        Session.set 'isServerImport', false
+        Router.go('/posts/'+postId)
+      else
+        Router.go('/newposts/'+postId)
     else
       Session.set("TopicPostId", postId)
       Session.set("TopicTitle", title)
@@ -1612,6 +1617,13 @@ if Meteor.isClient
 
     # Meteor.subscribe('associateduserdetails', userIds)
     Meteor.subscribe('userRelation')
+    height = $(window).height()*0.68		
+    height = height + 'px'		
+    $('.modal-dialog .modal-body').css({'max-height':height,'overflow-y':'auto'})		
+    $('#chooseAssociatedUser').on 'show.bs.modal', ->		
+      $('body,html').css 'overflow': 'hidden'		
+    $('#chooseAssociatedUser').on 'hide.bs.modal', ->		
+      $('body,html').css 'overflow': '' 
 
   Template.chooseAssociatedUser.helpers
     accountList :->
