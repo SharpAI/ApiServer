@@ -180,13 +180,13 @@ function taskObj() {
       return;
       
     for(var i=0;i<tasks.length;i++){
-      if(tasks[i].status === 'cancel' && tasks[index].postId && tasks[index].endTime){
+      if(tasks[i].status === 'cancel' && tasks[i].postId && tasks[i].endTime){
         if((new Date()) - tasks[i].endTime <= time){
           console.log('remove import post.');
-          collections.posts.remove({_id: tasks[index].postId});
-          collections.followPosts.remove({postId: tasks[index].postId});
-          collections.TopicPosts.remove({postId: tasks[index].postId})
-          collections.FavouritePosts.remove({postId: tasks[index].postId})
+          collections.posts.remove({_id: tasks[i].postId});
+          collections.followPosts.remove({postId: tasks[i].postId});
+          collections.TopicPosts.remove({postId: tasks[i].postId})
+          collections.FavouritePosts.remove({postId: tasks[i].postId})
           // tasks.splice(i, 1);
         }
       }

@@ -259,6 +259,8 @@ function setKueProcessCallback() {
                 done();
               } else if (result.status == 'importing') {
                 job.progress(50, 100, JSON.stringify(result));
+              } else if (result.status == 'setPostId') {
+                job.progress(60, 100, JSON.stringify(result));
               } else {
                 done(new Error('failed'));
               }
@@ -796,7 +798,17 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
                 var draftsObj = new drafts.createDrafts(null, user, THREAD_NUMBER);
                 insert_data(user, url, result, draftsObj, function(err, postId, mainUrl){
                   // 先保存postid
-                  Task.setPost(unique_id, postId);
+                  // Task.setPost(unique_id, postId);
+                  // send message to master
+                  var msg = {
+                    status: 'setPostId',
+                    json: {
+                      taskId: unique_id,
+                      postId: postId
+                    }
+                  };
+                  cluster.worker.send(msg);
+                  callback(msg);
 
                   if (Task.isCancel(unique_id, true)) {
                     console.log("importUrl: cancel - 2.");
@@ -939,6 +951,11 @@ if (cluster.isMaster) {
   cluster.on('disconnect', function() {
     console.log('Frank Worker disconnect..');
   });
+  cluster.on('message', function(message) {
+    console.log('master message form worker:', message);
+    if(message && message.status && message.status === 'setPostId')
+      Task.setPost(message.json.taskId, message.json.postId);
+  });
   if (process.env.isClient) {
     console.log("Master: work only for slaver mode.");
     return;
@@ -1052,6 +1069,8 @@ if (cluster.isMaster) {
           } else {
               Task.update(unique_id, 'done');
           }
+        }else if(progress === 60){
+          // TODO: set postId
         }else {
           writeRes(res, data);
           Task.update(unique_id, 'importing');
