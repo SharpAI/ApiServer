@@ -1626,6 +1626,9 @@ if Meteor.isClient
     $('#chooseAssociatedUser').on 'hide.bs.modal', ->		
       $('body,html').css 'overflow': '' 
 
+  Template.chooseAssociatedUser.onDestroyed ()->
+    $('body,html').css 'overflow': '' 
+    
   Template.chooseAssociatedUser.helpers
     accountList :->
       # userIds = []
