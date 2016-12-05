@@ -917,8 +917,10 @@ if Meteor.isClient
             row[key] = pub[i][key]
         new_pub.push(row)
     pub = new_pub
+    browseTimes = 0
 
     if Session.get('isReviewMode') is '2' or Posts.find({_id:postId}).count()>0
+      browseTimes = Posts.findOne({_id:postId}).browse 
       Posts.update(
         {
           _id:postId
@@ -968,7 +970,7 @@ if Meteor.isClient
         _id:postId,
         pub:pub,
         title:title,
-        browse:1,
+        browse:browseTimes+1,
         heart:[],  #点赞
         retweet:[],#转发
         comment:[], #评论
