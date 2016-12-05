@@ -162,6 +162,11 @@ if (Meteor.isCordova) {
                 Template.addPost.__helpers.get('saveDraft')()
             }
         }
+
+        if ($('#swipebox-overlay').length > 0) {
+            $.swipebox.close();
+            return;
+        }
       
       // 阅读私信时返回
       if(Session.equals('inPersonalLetterView',true)) {
