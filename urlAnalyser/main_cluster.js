@@ -9,6 +9,7 @@ var drafts = require('./post_drafts.js');
 var geoip = require('geoip-lite');
 var http = require('http');
 var Task = require('./task.js').Tasks;
+var URL = require('url');
 var THREAD_NUMBER = {
   download: 20,
   upload: 20,
@@ -539,7 +540,7 @@ var insert_data = function(user, url, data, draftsObj, cb) {
         if(i > 0){data.resortedArticle[i].data_row = data.resortedArticle[i-1].data_row + data.resortedArticle[i-1].data_sizey;}
       }
     }
-    
+
     /*filedownup.EalyMainImage(data, function (mainImageURL) {*/
     draftsObj.EalyMainImage(data, url, function (mainImageURL) {
       var _post_id = mongoid();
@@ -566,6 +567,17 @@ var insert_data = function(user, url, data, draftsObj, cb) {
         'publish': true,
         "isReview": true
         }];
+
+      var url = hotshare_web+'/restapi/importPost/insert';
+      return httpost(url, data_insert[0], function(err, data){
+        if(err || !data)
+          return cb('errr');
+        data = JSON.parse(data);
+        if(data.result === 'ok')
+          return cb(null, data_insert[0]._id, mainImageURL);
+        return cb('err')
+      });
+      // 以下为原处理流程
 
       posts.insert(data_insert, function(err, result) {
         if(err || !result.insertedCount || !result.insertedIds || !result.insertedIds[0]) {
@@ -645,10 +657,23 @@ var updateMyPost = function(userId, doc, cb) {
     cb && cb(new Error('error'));
 }
 var updatePosts = function(postId, post, taskId, callback){
+  post._id = postId;
   post.import_status = 'imported';
-  posts.update({_id: postId},{$set: post}, function(err, number){
-    callback && callback(err, number);
+
+  var url = hotshare_web+'/restapi/importPost/update';
+  httpost(url, post, function(err, data){
+    if(err || !data)
+      return callback('errr');
+    data = JSON.parse(data);
+    if(data.result === 'ok')
+      return callback(null, 1);
+    return callback('err')
   });
+
+  // 原处理流程
+  // posts.update({_id: postId},{$set: post}, function(err, number){
+  //   callback && callback(err, number);
+  // });
   
   var task = Task.get(taskId);
   if(task){
@@ -692,6 +717,31 @@ var httpget = function(url) {
         showDebug && console.log('------- End --------');
     });
 }
+
+var httpost = function(url, data, callback){
+  var uri = URL.parse(url);
+  var req = http.request({
+    hostname: uri.hostname,
+    port: uri.port,
+    method: 'POST',
+    path: uri.pathname,
+    // handers: {}
+  }, function(res){
+    res.setEncoding('utf8');
+    res.on('data', function(result){
+      callback && callback(null, result);
+      showDebug && console.log('httppost suc: url='+url+', data:', result);
+      showDebug && console.log('------- End --------');
+    });
+  });
+  req.on('error',function(e){
+    callback && callback(e, null);
+    showDebug && console.log('httppost failed: url='+url+', error: ${e.message}');
+    showDebug && console.log('------- End --------');
+  });
+  req.write(JSON.stringify(data));
+  req.end();
+};
 
 function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
   switch (arguments.length) {
@@ -871,7 +921,9 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
                           var url = tmpServer+'/restapi/postInsertHook/'+user._id+'/'+postId;
                           console.log("httpget url="+url);
 
-                          httpget(url);
+                          // 原处理流程
+                          // httpget(url);
+
                           console.log('==============================');
                           console.log('http://host1.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
                           httpget('http://host1.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
