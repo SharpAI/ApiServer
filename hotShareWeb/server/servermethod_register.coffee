@@ -530,6 +530,16 @@ if Meteor.isServer
           RePosts.remove(postId)
           delectAliyunPictureObject(postId)
       # reporter END
+      'updateTopicPostsAfterUpdatePost':(topicPostId)->
+        _post = Posts.findOne({_id: topicPostId})
+        if TopicPosts.find({postId:topicPostId}).count()>0 and _post
+          try
+            TopicPosts.update({postId:topicPostId},{$set:{mainImage:_post.mainImage,title:_post.title}},{multi: true, upsert:true})
+          catch error
+            console.log error
+        else
+         console.log 'TopicPosts not find with postId:'+topicPostId
+
       'updateTopicPostsAfterComment':(topicPostId,topic,topicPostObj)->
         _post = Posts.findOne({_id: topicPostId})
         if Topics.find({text:topic}).count() > 0
