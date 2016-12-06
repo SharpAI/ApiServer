@@ -190,6 +190,8 @@ if Meteor.isClient
     return
 if Meteor.isServer
   request = Meteor.npmRequire('request')
+  Fiber = Meteor.npmRequire('fibers')
+  
   ###
   Router.route '/posts/:_id', {
       waitOn: ->
@@ -344,7 +346,6 @@ if Meteor.isServer
       if(!req_data)
         return res.end(JSON.stringify({result: 'fail'}))
 
-      Fiber = Meteor.npmRequire('fibers')
       Fiber(()->
         if req_type is 'insert'
           Posts.insert req_data, (err, id)->
