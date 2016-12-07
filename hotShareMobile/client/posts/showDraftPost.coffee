@@ -2,6 +2,24 @@ if Meteor.isClient
   @cleanDraft = ()->
     Drafts.remove({})
     TempDrafts.remove({})
+  updateTopicPost=(topicPostObj)->
+    topicPostId = topicPostObj.postId
+    userId = topicPostObj.owner
+    commentData = Comment.find({postId:topicPostId,userId:userId}, {sort: {createdAt: 1}}).fetch()
+    if commentData and commentData.length > 0
+      comment = ''
+      for index of commentData
+        comment += commentData[index].content
+      r=comment.replace /\#([^\#|.]+)\#/g,(word)->
+        topic = word.replace '#', ''
+        topic = topic.replace '#', ''
+        #console.log word
+        if topic.length > 0 && topic.charAt(0)!=' '
+          haveSpace = topic.indexOf ' ', 0
+          if haveSpace > 0
+              topic = topic[...haveSpace]
+          console.log topic
+          Meteor.call('updateTopicPostsAfterComment', topicPostId, topic, topicPostObj)
   editDraft = (savedDraftData)->
       TempDrafts.insert {
         _id:savedDraftData._id,
@@ -316,6 +334,20 @@ if Meteor.isClient
                 ownerIcon:ownerIcon,
                 createdAt: new Date()
               })
+            topicPostObj = {
+              postId:postId,
+              title:title,
+              addontitle:addontitle,
+              mainImage:mainImage,
+              heart:0,
+              retweet:0,
+              comment:1,
+              owner:ownerUser._id,
+              ownerName:ownerName,
+              ownerIcon:ownerIcon,
+              createdAt: new Date()
+            }
+            updateTopicPost(topicPostObj)
             #Delete from SavedDrafts if it is a saved draft.
             if SavedDrafts.find().count() is 1
               Session.setPersistent('mySavedDraftsCount',0)
@@ -382,6 +414,20 @@ if Meteor.isClient
               ownerIcon:ownerIcon,
               createdAt: new Date()
             })
+          topicPostObj = {
+            postId:postId,
+            title:title,
+            addontitle:addontitle,
+            mainImage:mainImage,
+            heart:0,
+            retweet:0,
+            comment:1,
+            owner:ownerUser._id,
+            ownerName:ownerName,
+            ownerIcon:ownerIcon,
+            createdAt: new Date()
+          }
+          updateTopicPost(topicPostObj)
           #Delete from SavedDrafts if it is a saved draft.
           if SavedDrafts.find().count() is 1
             Session.setPersistent('mySavedDraftsCount',0)

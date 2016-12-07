@@ -2,8 +2,13 @@ if Meteor.isClient
   Template.addTopicComment.rendered=->
     Meteor.subscribe "topics"
     Meteor.subscribe "ViewPostsList", Session.get("TopicPostId")
-    Session.set("comment","")
     uid = Session.get('post-publish-user-id') || Meteor.userId()
+    commentData = Comment.find({postId:Session.get("TopicPostId"),userId:uid}, {sort: {createdAt: 1}}).fetch()
+    commentContent = ''
+    if commentData and commentData.length > 0
+      for index of commentData
+        commentContent += commentData[index].content
+    Session.set("comment",commentContent)
     Meteor.subscribe "readerpopularpostsbyuid" , uid
   Template.addTopicComment.helpers
     comment:()->
@@ -78,31 +83,55 @@ if Meteor.isClient
             if pubuser
               user = pubuser
 
-          if comment != ''
-            if user
-              if user.profile.fullname
-                username = user.profile.fullname
-              else
-                username = user.username
-              userId = user._id
-              userIcon = user.profile.icon
+          if user
+            if user.profile.fullname
+              username = user.profile.fullname
             else
-              username = '匿名'
-              userId = 0
-              userIcon = ''
-            try
-              Comment.insert {
-                postId:topicPostId
-                content:comment
-                username:username
-                userId:userId
-                userIcon:userIcon
-                createdAt: new Date()
-              }
-              #下面这行语句有问题，先注释掉，以后修改
-              #FollowPosts.update {_id: FollowPostId},{$inc: {comment: 1}}
-            catch error
-              console.log error
+              username = user.username
+            userId = user._id
+            userIcon = user.profile.icon
+          else
+            username = '匿名'
+            userId = 0
+            userIcon = ''
+          commentData = Comment.find({postId:topicPostId,userId:userId}, {sort: {createdAt: 1}}).fetch()
+          if commentData.length>0
+            if comment == ''
+              for i in [0..(commentData.length-1)]
+                commentId = commentData[i]._id
+                Comment.remove({_id:commentId})
+            else
+              if commentData.length>1
+                for i in [0..(commentData.length-2)]
+                  commentId = commentData[i]._id
+                  Comment.remove({_id:commentId})
+              try
+                commentObj = {
+                  postId:topicPostId
+                  content:comment
+                  username:username
+                  userId:userId
+                  userIcon:userIcon
+                  createdAt: new Date()
+                }
+                commentId = commentData[commentData.length-1]._id
+                Comment.update({_id:commentId},{$set:commentObj})
+              catch error
+                console.log error
+          else 
+            if comment != ''
+              try
+                Comment.insert {
+                  postId:topicPostId
+                  content:comment
+                  username:username
+                  userId:userId
+                  userIcon:userIcon
+                  createdAt: new Date()
+                }
+              catch error
+                console.log error
+          if comment != ''
             ss = comment
             r=ss.replace /\#([^\#|.]+)\#/g,(word)->
               topic = word.replace '#', ''
