@@ -36,21 +36,40 @@ import org.apache.cordova.*;
 
 public class MainActivity extends CordovaActivity
 {
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-
-        Intent intent = getIntent();
-        Log.i("##RDBG", "action: " + intent.getAction());
-        if (Intent.ACTION_SEND.equals(intent.getAction()))
-        {
-          String type = intent.getType();
-          Log.i("##RDBG", "type: " + intent.getType());
-          if (type.indexOf("text/plain") >= 0) {
-            String txt = intent.getStringExtra(Intent.EXTRA_TEXT);
-            if (txt != null && txt.length() > 0) {
-              String content = "[\'" + txt + "\']";
+    private void handleIntent(Intent intent) {
+      Log.i("##RDBG", "action: " + intent.getAction());
+      if (Intent.ACTION_SEND.equals(intent.getAction()))
+      {
+        String type = intent.getType();
+        Log.i("##RDBG", "type: " + intent.getType());
+        if (type.indexOf("text/plain") >= 0) {
+          String txt = intent.getStringExtra(Intent.EXTRA_TEXT);
+          if (txt != null && txt.length() > 0) {
+            String content = "[\'" + txt + "\']";
+            SharedPreferences settings = getSharedPreferences("org.hotshare.everywhere.sysshare", 0);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString("shareType", "url");
+            editor.putString("shareContent", content);
+            editor.commit();
+            Log.i("##RDBG", "share content: " + content);
+          }
+        }
+        else if (type.indexOf("image/") >= 0) {
+          Uri uri = (Uri)intent.getExtras().get(Intent.EXTRA_STREAM);
+          String txt = intent.getStringExtra(Intent.EXTRA_TEXT);
+          Log.i("##RDBG", "image type with txt: " + txt);
+          String url_txt = null;
+          boolean img_txt = false;
+          if (txt != null && txt.length() > 0) {
+            int idx = txt.indexOf("http://");
+            if (idx == -1)
+              idx = txt.indexOf("https://");
+            if (idx != -1)
+              url_txt = txt.substring(idx);
+            if (url_txt != null) {
+              Log.i("##RDBG", "img_txt: " + url_txt);
+              img_txt = true;
+              String content = "[\'" + url_txt + "\']";
               SharedPreferences settings = getSharedPreferences("org.hotshare.everywhere.sysshare", 0);
               SharedPreferences.Editor editor = settings.edit();
               editor.putString("shareType", "url");
@@ -59,59 +78,8 @@ public class MainActivity extends CordovaActivity
               Log.i("##RDBG", "share content: " + content);
             }
           }
-          else if (type.indexOf("image/") >= 0) {
-            Uri uri = (Uri)intent.getExtras().get(Intent.EXTRA_STREAM);
-            String txt = intent.getStringExtra(Intent.EXTRA_TEXT);
-            Log.i("##RDBG", "image type with txt: " + txt);
-            String url_txt = null;
-            boolean img_txt = false;
-            if (txt != null && txt.length() > 0) {
-              int idx = txt.indexOf("http://");
-              if (idx == -1)
-                idx = txt.indexOf("https://");
-              if (idx != -1)
-                url_txt = txt.substring(idx);
-              if (url_txt != null) {
-                Log.i("##RDBG", "img_txt: " + url_txt);
-                img_txt = true;
-                String content = "[\'" + url_txt + "\']";
-                SharedPreferences settings = getSharedPreferences("org.hotshare.everywhere.sysshare", 0);
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putString("shareType", "url");
-                editor.putString("shareContent", content);
-                editor.commit();
-                Log.i("##RDBG", "share content: " + content);
-              }
-            }
-            if (!img_txt && uri != null) {
-              String content = "[\'" + getPath(this, uri) + "\']";
-              SharedPreferences settings = getSharedPreferences("org.hotshare.everywhere.sysshare", 0);
-              SharedPreferences.Editor editor = settings.edit();
-              editor.putString("shareType", "image");
-              editor.putString("shareContent", content);
-              editor.commit();
-              Log.i("##RDBG", "share content: " + content);
-            }
-          }
-        }
-        else if (Intent.ACTION_SEND_MULTIPLE.equals(intent.getAction()))
-        {
-          ArrayList<Uri> imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-          if (imageUris != null && imageUris.size() > 0) {
-            String content = "[";
-            if (imageUris != null) {
-              boolean first = true;
-              for (Uri uri: imageUris) {
-                if (first) {
-                  first = false;
-                  content = content + "\'" + getPath(this, uri) + "\'";
-                }
-                else {
-                  content = content + ",\'" + getPath(this, uri) + "\'";
-                }
-              }
-            }
-            content =  content + "]";
+          if (!img_txt && uri != null) {
+            String content = "[\'" + getPath(this, uri) + "\']";
             SharedPreferences settings = getSharedPreferences("org.hotshare.everywhere.sysshare", 0);
             SharedPreferences.Editor editor = settings.edit();
             editor.putString("shareType", "image");
@@ -119,6 +87,55 @@ public class MainActivity extends CordovaActivity
             editor.commit();
             Log.i("##RDBG", "share content: " + content);
           }
+        }
+      }
+      else if (Intent.ACTION_SEND_MULTIPLE.equals(intent.getAction()))
+      {
+        ArrayList<Uri> imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+        if (imageUris != null && imageUris.size() > 0) {
+          String content = "[";
+          if (imageUris != null) {
+            boolean first = true;
+            for (Uri uri: imageUris) {
+              if (first) {
+                first = false;
+                content = content + "\'" + getPath(this, uri) + "\'";
+              }
+              else {
+                content = content + ",\'" + getPath(this, uri) + "\'";
+              }
+            }
+          }
+          content =  content + "]";
+          SharedPreferences settings = getSharedPreferences("org.hotshare.everywhere.sysshare", 0);
+          SharedPreferences.Editor editor = settings.edit();
+          editor.putString("shareType", "image");
+          editor.putString("shareContent", content);
+          editor.commit();
+          Log.i("##RDBG", "share content: " + content);
+        }
+      }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.i("##RDBG", "onNewIntent come in");
+        if (intent != null) {
+          Log.i("##RDBG", "onNewIntent handleIntent");
+          handleIntent(intent);
+        }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+
+        Intent intent = getIntent();
+        if (intent != null) {
+          Log.i("##RDBG", "onCreate handleIntent");
+          handleIntent(intent);
         }
         // Set by <content src="index.html" /> in config.xml
         loadUrl(launchUrl);

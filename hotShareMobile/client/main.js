@@ -144,6 +144,16 @@ if (Meteor.isCordova) {
                 window.refreshMainDataSource();
                 checkShareUrl();
                 checkShareExtension();
+
+                if(device.platform === 'Android'){
+                  window.plugins.shareExtension.getShareData(function(data) {
+                    console.log("##RDBG getShareData: " + JSON.stringify(data));
+                      if(data){
+                         editFromShare(data);
+                      }
+                  }, function() {});
+                  window.plugins.shareExtension.emptyData(function(result) {}, function(err) {});
+                }
             }
         }
     }
@@ -167,7 +177,7 @@ if (Meteor.isCordova) {
             $.swipebox.close();
             return;
         }
-      
+
       // 阅读私信时返回
       if(Session.equals('inPersonalLetterView',true)) {
         Session.set('inPersonalLetterView',false);
