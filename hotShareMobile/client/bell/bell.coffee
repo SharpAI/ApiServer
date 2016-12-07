@@ -91,6 +91,12 @@ if Meteor.isClient
       document.getElementById(this._id + 'content').style.display='block'
       $(".bellAlertBackground").fadeIn 300
     'click .contentList': (e)->
+      history = []
+      history.push {
+          view: 'bell'
+          scrollTop: document.body.scrollTop
+      }
+      Session.set "history_view", history
       if this.pindex?
         Session.set("pcurrentIndex",this.pindex)
         Session.set("pcommetsId",this.owner)
