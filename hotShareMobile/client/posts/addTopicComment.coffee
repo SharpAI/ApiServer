@@ -1,4 +1,20 @@
 if Meteor.isClient
+  topicsCountIsBeyond=(comment)->
+    #comment = Session.get("comment")
+    regex = new RegExp('#', 'g')
+    result = comment.match(regex)
+    count = if !result then 0 else result.length
+    count = parseInt(count / 2)
+    #count = count / 2
+    console.log '话题的数量为 ' + count
+    if count>5
+      window.plugins.toast.showWithOptions
+        message: '话题数量不能超过5个'
+        duration: 'short'
+        position: 'center'
+        addPixelsY: -60
+      return true
+    return false
   Template.addTopicComment.rendered=->
     Meteor.subscribe "topics"
     Meteor.subscribe "ViewPostsList", Session.get("TopicPostId")
@@ -10,6 +26,9 @@ if Meteor.isClient
         commentContent += commentData[index].content
     Session.set("comment",commentContent)
     Meteor.subscribe "readerpopularpostsbyuid" , uid
+    $('#comment').bind 'propertychange input', (event) ->
+      console.log '>>>>>>>>>>>>>>>>>' + event.target.value
+      topicsCountIsBeyond event.target.value
   Template.addTopicComment.helpers
     comment:()->
       Session.get("comment")
@@ -57,8 +76,12 @@ if Meteor.isClient
        Session.set("comment",$('#comment').val())
     "click #topic":(event)->
        comment = Session.get("comment")+"#"+this.text+"#"
+       if topicsCountIsBeyond(comment)
+        return
        Session.set("comment",comment)
     "click #save":(event, t)->
+       if topicsCountIsBeyond(Session.get("comment"))
+        return
        $save = $(event.currentTarget)
        if $save.find('i').length > 0
          return
