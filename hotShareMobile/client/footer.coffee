@@ -107,7 +107,7 @@ if Meteor.isClient
     console.log  'content'+data.content[0]
     if data.type is 'url'
        setTimeout(()->
-          handleDirectLinkImport(data.content[0])
+          handleDirectLinkImport(data.content[0],1)
        ,100)
        return
     if data.type is 'image'
@@ -125,9 +125,9 @@ if Meteor.isClient
                   Template.addPost.__helpers.get('saveDraft')()
                 ,100)
           )
-    setTimeout(()->
-      handleDirectLinkImport(url)
-    ,100)
+    # setTimeout(()->
+    #   handleDirectLinkImport(url)
+    # ,100)
   Template.footer.events
     'click #home':(e)->
       PUB.page('/')
