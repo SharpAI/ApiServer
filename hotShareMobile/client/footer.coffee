@@ -143,6 +143,7 @@ if Meteor.isClient
     'click #user':(e)->
       PUB.page('/user')
     'click #add': (e)->
+      Tips.show('_tips_addPost')
       if Session.get('persistentLoginStatus') and !Meteor.userId() and !Meteor.loggingIn()
         window.plugins.toast.showLongCenter("登录超时，需要重新登录~");
         e.stopPropagation()
