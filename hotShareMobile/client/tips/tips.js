@@ -16,8 +16,9 @@ Tips = {
   }
 };
 
+
 Template._tips.events({
-  "click ._tips": function(e, t) {
-    Tips.close();
+    "click ._tips #lastPage": function(e, t) {
+        Tips.close();
   }
 });
