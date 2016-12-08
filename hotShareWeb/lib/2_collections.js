@@ -1521,7 +1521,7 @@ if(Meteor.isServer){
                 changed: function (id,fields) {
                     // self.changed("postfriends", id, fields);
                     if(~self.docIds.indexOf(id)){
-                        self.changed("postfriends", id, fields);
+                        self.changed("postFriendsV2", id, fields);
                     }
                 }/*,
                  removed:function (id,fields) {

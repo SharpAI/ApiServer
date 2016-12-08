@@ -331,38 +331,6 @@ if Meteor.isServer
     }
   ###
 
-  Router.route('/restapi/importPost/:type', (req, res, next)->
-    req_data = null
-    req_type = this.params.type
-
-    res.writeHead(200, {
-      'Content-Type': 'text/html'
-    })
-    req.setEncoding('utf8')
-    req.on 'data', (data)->
-      # console.log(data)
-      req_data = JSON.parse(data)
-    req.on 'end', ()->
-      if(!req_data)
-        return res.end(JSON.stringify({result: 'fail'}))
-
-      Fiber(()->
-        if req_type is 'insert'
-          Posts.insert req_data, (err, id)->
-            if err or !id
-              return res.end(JSON.stringify({result: 'fail'}))
-            res.end(JSON.stringify({result: 'ok'}))
-        else
-          Posts.update {_id: req_data._id}, {$set: req_data}, (err, num)->
-            if err or num <= 0
-              return res.end(JSON.stringify({result: 'fail'}))
-
-            post = Posts.findOne({_id: req_data._id})
-            request({method: 'GET', uri: '/restapi/postInsertHook/' + post.owner + '/' + post._id})
-            res.end(JSON.stringify({result: 'ok'}))
-      ).run()
-  , {where: 'server'})
-
   Router.route('/restapi/postInsertHook/:_userId/:_postId', (req, res, next)->
     return_result = (result)->
       res.writeHead(200, {

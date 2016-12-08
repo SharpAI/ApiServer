@@ -99,7 +99,7 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
   console.log("api_url="+req_url+", Meteor.absoluteUrl()="+Meteor.absoluteUrl());
 
   // 超时处理
-  Meteor.setTimeout(function(){
+  var timeoutHandle = setTimeout(function(){
     if(res.isEnd === true)
       return;
 
@@ -111,6 +111,10 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
     .on('error', function(err){
       importServer.sendRes('{"status": "failed"}', true);
     }).on('data', function(data) {
+      if (timeoutHandle) {
+          clearTimeout(timeoutHandle);
+          timeoutHandle = null;
+      }
       data = JSON.parse(data);
       if(data.status != 'importing')
         return importServer.sendRes(JSON.stringify(data), true);
@@ -133,4 +137,55 @@ Router.route('/import-cancel/:id', function (req, res, next) {
     importServer.cancelImport();
   });
   importServer.cancelImport();
+}, {where: 'server'});
+
+Router.route('/restapi/importPost/:type/:_id', function(req, res, next) {
+    var req_data = null;
+    var req_type = this.params.type;
+    var req_userId = this.params._id;
+
+    res.writeHead(200, {
+      'Content-Type': 'text/html'
+    });
+    req.setEncoding('utf8');
+    req.on('data', function(data) {
+      //console.log(data)
+      req_data = JSON.parse(data);
+    })
+    .on('end', function() {
+        if (!req_data) {
+            return res.end(JSON.stringify({result: 'fail'}));
+        }
+        var Fiber = Meteor.npmRequire('fibers');
+        Fiber(function() {
+            if (req_type === 'insert') {
+                console.log("importPost insert 1, req_userId="+req_userId);
+                var user = Meteor.users.findOne({_id: req_userId});
+                if (!user){
+                    console.log("Find userId failed: req_userId="+req_userId);
+                    return res.end(JSON.stringify({result: 'fail', reason: 'No such user ID!'+req_userId}))
+                }
+                Posts.insert(req_data, function(err, id) {
+                    console.log("importPost insert 2, id="+id);
+                    if (err || !id) {
+                        return res.end(JSON.stringify({result: 'fail', reason:'Insert post failed!'}))
+                    }
+                    res.end(JSON.stringify({result: 'success', user: user}));
+                });
+            } else if (req_type === 'update') {
+                console.log("importPost update 1");
+                Posts.update({_id: req_data._id}, {$set: req_data}, function(err, num) {
+                    console.log("importPost update 2");
+                    if (err || num <= 0) {
+                        return res.end(JSON.stringify({result: 'fail'}));
+                    }
+                    var post = Posts.findOne({_id: req_data._id});
+                    request({method: 'GET', uri: '/restapi/postInsertHook/' + post.owner + '/' + post._id});
+                    res.end(JSON.stringify({result: 'ok'}));
+                });
+            } else {
+                res.end(JSON.stringify({result: 'failed'}));
+            }
+        }).run();
+    });
 }, {where: 'server'});
