@@ -24,6 +24,11 @@ if Meteor.isClient
         Meteor.user().profile.anonymous
       else
         ''
+    allowLanguageSetting:->
+      if withLanguageSetting 
+       return true
+      else 
+       return false
     isEnglish: ->
       if Cookies.check("display-lang")
         return Cookies.get("display-lang") is 'en'

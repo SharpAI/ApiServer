@@ -22,3 +22,4 @@
 @withMobileBackendUploading = false
 @withStaticPosts = false
 @withNewFilePath=true
+@withLanguageSetting=false

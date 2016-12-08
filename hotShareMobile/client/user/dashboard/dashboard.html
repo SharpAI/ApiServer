@@ -33,14 +33,16 @@
         <div class='notice bottomBorder boxTitle'>{{_ "notification"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
 
         <!--<div class="blacklist box boxTitle">{{_ "blacklist"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>-->
-        <div class='language bottomBorder boxTitle'>{{_ "language"}}
+        {{#if allowLanguageSetting}}
+          <div class='language bottomBorder boxTitle'>{{_ "language"}}
             {{#if isEnglish}}
               <span class="right" style="margin-right: 28px;color: #a1a1a1;">English</span>
             {{else}}
               <span class="right" style="margin-right: 28px;color: #a1a1a1;">中文</span>
             {{/if}}
             <span><i class="fa fa-angle-right fa-fw"></i></span>
-        </div>
+          </div>
+        {{/if}}
         <div class="update  bottomBorder boxTitle">{{_ "version"}}
           {{#if isLatestVersion}}
             <span class="right" style="margin-right: 28px;color: #a1a1a1;">{{_ "latestversion"}}</span>
