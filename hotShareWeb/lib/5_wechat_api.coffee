@@ -182,8 +182,9 @@ if Meteor.isClient
         Session.set('sign_status_'+url,'starting')
       else if Session.equals('sign_status_'+url,'starting')
         return
-      else if Session.equals('sign_status_'+url,'done')
-        return
+      # 在微信中多页面切换，使用返回键时会导致触发done而不更新分享的内容，从而导致分享的内容和当前页面不符。
+      # else if Session.equals('sign_status_'+url,'done')
+      #   return
 
       HTTP.get sign_server_url+encodeURIComponent(url),(error,result)->
         #FeedAfterShare(Session.get('postContent'))
