@@ -126,7 +126,7 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
 }, {where: 'server'});
 
 Router.route('/import-cancel/:id', function (req, res, next) {
-  var importServer = new ImportServer(res, this.params._id);
+  var importServer = new ImportServer(res, this.params.id);
 
   res.writeHead(200, {
     'Content-Type' : 'text/html;charset=UTF-8'
