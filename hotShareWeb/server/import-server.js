@@ -159,28 +159,44 @@ Router.route('/restapi/importPost/:type/:_id', function(req, res, next) {
         var Fiber = Meteor.npmRequire('fibers');
         Fiber(function() {
             if (req_type === 'insert') {
-                console.log("importPost insert 1, req_userId="+req_userId);
+                console.log("importPost find user 1, req_userId="+req_userId);
                 var user = Meteor.users.findOne({_id: req_userId});
+                console.log("importPost find user 2");
                 if (!user){
                     console.log("Find userId failed: req_userId="+req_userId);
                     return res.end(JSON.stringify({result: 'fail', reason: 'No such user ID!'+req_userId}))
                 }
+                req_data.ownerId = user._id;
+                req_data.ownerName = user.profile.fullname || user.username;
+                req_data.ownerIcon = user.profile.icon || '/userPicture.png';
+                if (req_data.createdAt) {
+                    req_data.createdAt = new Date(req_data.createdAt);
+                }
+                console.log("importPost insert 1, req_data._id="+req_data._id);
                 Posts.insert(req_data, function(err, id) {
-                    console.log("importPost insert 2, id="+id);
+                    console.log("importPost insert 2, err="+err+", id="+id);
                     if (err || !id) {
+                        console.log("importPost insert failed");
                         return res.end(JSON.stringify({result: 'fail', reason:'Insert post failed!'}))
                     }
-                    res.end(JSON.stringify({result: 'success', user: user}));
+                    var userObj = {_id:user._id, profile:user.profile};
+                    res.write(JSON.stringify({result: 'success', user: userObj}));
+                    res.end();
                 });
             } else if (req_type === 'update') {
                 console.log("importPost update 1");
+                if (req_data.createdAt) {
+                    req_data.createdAt = new Date(req_data.createdAt);
+                }
                 Posts.update({_id: req_data._id}, {$set: req_data}, function(err, num) {
                     console.log("importPost update 2");
                     if (err || num <= 0) {
                         return res.end(JSON.stringify({result: 'fail'}));
                     }
                     var post = Posts.findOne({_id: req_data._id});
-                    request({method: 'GET', uri: '/restapi/postInsertHook/' + post.owner + '/' + post._id});
+                    var uri = Meteor.absoluteUrl() + '/restapi/postInsertHook/' + post.owner + '/' + post._id;
+                    console.log("req_data._id="+req_data._id+", uri = "+uri);
+                    request({method: 'GET', uri: uri});
                     res.end(JSON.stringify({result: 'ok'}));
                 });
             } else {

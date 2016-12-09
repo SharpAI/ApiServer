@@ -55,7 +55,7 @@ function downloadImgsClass(threadsNumber){
   return obj;
 }
 
-function PostDrafts(_id, user, threadsNumber) {
+function PostDrafts(_id, _user, threadsNumber) {
   var drafts = [];
   var title = '';
   var addontitle = '';
@@ -64,6 +64,7 @@ function PostDrafts(_id, user, threadsNumber) {
   var _mainImage = '';
   var id;
   var download = new downloadImgsClass(threadsNumber.download);
+  var user = _user || {};
   
   var imageIndex = function () {
     if(drafts.length <= 0)
@@ -112,6 +113,9 @@ function PostDrafts(_id, user, threadsNumber) {
   var postDrafts = new Object();
   postDrafts.setPostId = function(postId) {
     id = postId;
+  }
+  postDrafts.setUser = function(_user) {
+    user = _user;
   }
   postDrafts.onSuccess = function(callback){
     callback && successCallback.push(callback);

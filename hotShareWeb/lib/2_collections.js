@@ -164,7 +164,7 @@ if(Meteor.isServer){
         Meteor.defer(function(){
             var doc = Posts.findOne({"_id": postId});
             if (doc) {
-                console.log("globalPostsInsertHookDeferHandle: userId="+userId+", doc._id="+doc._id+", doc.import_status="+doc.import_status);
+                console.log("globalPostsInsertHookDeferHandle: userId="+userId+", doc._id="+doc._id+", doc.import_status="+doc.import_status+", doc.isReview="+doc.isReview);
                 if (doc.isReview === true) {
                     Posts.update({_id: postId}, {$set:{import_status: "done"}});
                     postsInsertHookDeferHandle(userId, doc);

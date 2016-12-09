@@ -587,7 +587,7 @@ if Meteor.isClient
               # )
             1000*5
           )
-      , 200);
+      , 300);
 
     try
         succ_return = (res)->

@@ -19,7 +19,7 @@ var THREAD_NUMBER = {
 var showDebug = true;
 
 var port = process.env.PORT || 8080;        // set our port
-var hotshare_web = process.env.HOTSHARE_WEB_HOST || 'http://cdn.tiegushi.com';
+var hotshare_web = process.env.HOTSHARE_WEB_HOST || 'http://cdcdn.tiegushi.com';
 var MongoClient = require('mongodb').MongoClient;
 var DB_CONN_STR = process.env.MONGO_URL || 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare';
 var posts = null;
@@ -48,6 +48,64 @@ var prefix = process.env.PREFIX || '';
 var redis_prefix = prefix+'import_task';
 var redis_prefix_us = prefix+'import_task_us';
 var restartKueServiceTimeout = null;
+
+var origConsoleLog = console.log;
+var origConsoleWarn = console.warn;
+var origConsoleInfo = console.info;
+var origConsoleError = console.error;
+function getFormatedDateTime() {
+    var dt = new Date();
+    var yyyy = dt.getFullYear();
+    var mm = dt.getMonth() + 1;
+    var dd = dt.getDate();
+    var hh = dt.getHours();
+    var min = dt.getMinutes();
+    var ss = dt.getSeconds();
+    var SSS = dt.getMilliseconds();
+    return '[' +
+                [yyyy,
+                 ((mm < 10) ? '0' : '') + mm,
+                 ((dd < 10) ? '0' : '') + dd].join('-') + ' ' +
+                [((hh < 10) ? '0' : '') + hh,
+                 ((min < 10) ? '0' : '') + min,
+                 ((ss < 10) ? '0' : '') + ss].join(':') + '.' +
+                 ('000'+SSS).substr((''+ SSS).length) +
+              ']:';
+}
+
+console.log = function (message) {
+    var dateTime = getFormatedDateTime();
+    Array.prototype.unshift.call(
+        arguments,
+        dateTime
+    );
+    origConsoleLog && origConsoleLog.apply(console, arguments);
+};
+console.warn = function (message) {
+    var dateTime = getFormatedDateTime();
+    Array.prototype.unshift.call(
+        arguments,
+        dateTime
+    );
+    origConsoleWarn && origConsoleWarn.apply(console, arguments);
+};
+console.info = function (message) {
+    var dateTime = getFormatedDateTime();
+    Array.prototype.unshift.call(
+        arguments,
+        dateTime
+    );
+    origConsoleInfo && origConsoleInfo.apply(console, arguments);
+};
+console.error = function (message) {
+    var dateTime = getFormatedDateTime();
+    Array.prototype.unshift.call(
+        arguments,
+        dateTime
+    );
+    origConsoleError && origConsoleError.apply(console, arguments);
+};
+
 var writeRes = function(res, str, end){
   if(!res || res.isEnd === true || res.isResErr === true)
     return;
@@ -201,7 +259,7 @@ function abornalDispose() {
       restartKueService();
     });
 
-    kuequeue.watchStuckJobs(10*1000);
+    kuequeue.watchStuckJobs(30*1000);
 
     kuequeue.inactiveCount(function(err, total){ // others are activeCount, completeCount, failedCount, delayedCount
       if (total > 100000) {
@@ -504,6 +562,78 @@ var update_mainImage = function(userId, postId, mainImageUrl, style){
   
   TopicPoss.update({owner:userId, postId:postId}, {$set: {mainImage: mainImageUrl, mainImageStyle:style}});
 }
+
+function get_insertData(user, url, data, draftsObj, callback) {
+    if (!data) {
+        console.log('Error: null of id or data');
+        if (callback){
+            callback('error', null)
+        }
+        return null;
+    }
+
+    if (data.resortedArticle && data.resortedArticle.length > 0){
+        for(var i=0;i<data.resortedArticle.length;i++){
+            data.resortedArticle[i]._id = mongoid();
+            if(data.resortedArticle[i].type === 'image'){
+              data.resortedArticle[i].isImage = true;
+              data.resortedArticle[i].data_sizey = 3;
+            }else{
+              data.resortedArticle[i].data_sizey = 1;
+            }
+            data.resortedArticle[i].data_row = 1;
+            data.resortedArticle[i].data_col = 1;
+            data.resortedArticle[i].data_sizex = 6;
+        }
+      
+        // format
+        for(var i=0;i<data.resortedArticle.length;i++){
+            data.resortedArticle[i].index = i;
+            data.resortedArticle[i].data_col = parseInt(data.resortedArticle[i].data_col);
+            data.resortedArticle[i].data_row = parseInt(data.resortedArticle[i].data_row);
+            data.resortedArticle[i].data_sizex = parseInt(data.resortedArticle[i].data_sizex);
+            data.resortedArticle[i].data_sizey = parseInt(data.resortedArticle[i].data_sizey);
+            data.resortedArticle[i].data_wait_init = true;
+            data.resortedArticle[i].originImgUrl = data.resortedArticle[i].imageUrl;
+            data.resortedArticle[i].imgUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
+            if (i > 0) {
+                data.resortedArticle[i].data_row = data.resortedArticle[i-1].data_row + data.resortedArticle[i-1].data_sizey;
+            }
+        }
+    }
+
+    /*filedownup.EalyMainImage(data, function (mainImageURL) {*/
+    draftsObj.EalyMainImage(data, url, function (mainImageURL) {
+        var _post_id = mongoid();
+        var data_insert = [{
+            '_id': _post_id,
+            'ownerId': user ? user._id: '',
+            'pub': data.resortedArticle,
+            'title': data.title,
+            'browse': 0,
+            'heart': [],
+            'retweet': [],
+            'comment': [],
+            'commentsCount': 0,
+            'addontitle': '',
+            'mainImage': mainImageURL,
+            'mainImageStyle': '',
+            'mainText': [],
+            'fromUrl': url,
+            'import_status':'importing',
+            'owner':user ? user._id: '',
+            'ownerName':user ? (user.profile.fullname || user.username) : '',
+            'ownerIcon':user ? (user.profile.icon || '/userPicture.png') : '',
+            'createdAt': new Date(),
+            'publish': true,
+            "isReview": true
+        }];
+
+        if (callback) {
+            callback(null, data_insert[0], mainImageURL)
+        }
+    })
+}
 var insert_data = function(user, url, data, draftsObj, cb) {
     if (!user || !data || !url || !posts) {
       console.log('Error: null of id or data');
@@ -567,17 +697,6 @@ var insert_data = function(user, url, data, draftsObj, cb) {
         'publish': true,
         "isReview": true
         }];
-
-      var url = hotshare_web+'/restapi/importPost/insert';
-      return httpost(url, data_insert[0], function(err, data){
-        if(err || !data)
-          return cb('errr');
-        data = JSON.parse(data);
-        if(data.result === 'ok')
-          return cb(null, data_insert[0]._id, mainImageURL);
-        return cb('err')
-      });
-      // 以下为原处理流程
 
       posts.insert(data_insert, function(err, result) {
         if(err || !result.insertedCount || !result.insertedIds || !result.insertedIds[0]) {
@@ -660,8 +779,33 @@ var updatePosts = function(postId, post, taskId, callback){
   post._id = postId;
   post.import_status = 'imported';
 
-  var url = hotshare_web+'/restapi/importPost/update';
-  httpost(url, post, function(err, data){
+  // 原处理流程
+    posts.update({_id: postId},{$set: post}, function(err, number){
+        callback && callback(err, number);
+    });
+  
+  var task = Task.get(taskId);
+  if(task){
+    console.log('task img upload: ' + taskId);
+    try{
+    serverImportLog.update({taskId: taskId}, {$set: {
+      postId: postId,
+      endImgTime: new Date(),
+      execImgTime: ((new Date()) - task.startTime)/1000
+    }});
+    }catch (ex){
+      console.log(ex);
+    }
+  }
+};
+var updatePosts2 = function(postId, post, taskId, callback){
+  post._id = postId;
+  post.import_status = 'imported';
+
+  var url = hotshare_web+'/restapi/importPost/update/NOUSERID';
+  console.log("updateURL="+url+", postId="+postId);
+  httppost(url, post, function(err, data){
+    console.log("update success");
     if(err || !data)
       return callback('errr');
     data = JSON.parse(data);
@@ -718,7 +862,7 @@ var httpget = function(url) {
     });
 }
 
-var httpost = function(url, data, callback){
+var httppost = function(url, data, callback){
   var uri = URL.parse(url);
   var req = http.request({
     hostname: uri.hostname,
@@ -922,7 +1066,7 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
                           console.log("httpget url="+url);
 
                           // 原处理流程
-                          // httpget(url);
+                          httpget(url);
 
                           console.log('==============================');
                           console.log('http://host1.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
@@ -986,7 +1130,142 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
 
           })
   }
-  getIdleNightmare(nightmareQueue, startNavigation, 0);
+
+  //var nightmare = Nightmare({ show: false , openDevTools: false, waitTimeout: 30000});
+  function startNavigation2(queueMember) {
+    if (!queueMember) {
+        if (callback) {
+            console.log("    !!!!!!Error: can't get nightmare from queue!");
+            chunked_result.status = 'failed';
+            callback({status: 'failed'});
+        }
+        return;
+    }
+    var index = queueMember.index;
+    var nightmare = queueMember.nightmare;
+    nightmare
+        .useragent(userAgent)
+        .goto(url)
+        .inject('js','bundle.js')
+        .wait('#detected_json_from_gushitie')
+        .evaluate(function () {
+            return window.detected_json_from_gushitie
+        })
+        .end()
+        .then(function (result) {
+            function cleanUp() {
+                initQueueMember(queueMember);
+                console.log('cleanUp: restart nightmare. queueMember.index='+queueMember.index);
+            }
+            cleanUp();
+            console.log("unique_id="+unique_id);
+            if (Task.isCancel(unique_id, true)) {
+                console.log("importUrl: cancel - 1.");
+                cleanUp();
+                return callback && callback({status:'failed'});
+            }
+
+            var draftsObj = new drafts.createDrafts(null, null, THREAD_NUMBER);
+            get_insertData(null, url, result, draftsObj, function(err, dataJson, mainUrl) {
+                if(err) {
+                    console.log('get_insertData failed! err='+err);
+                    chunked_result.status = 'failed';
+                    return callback && callback({status:'failed'});
+                }
+
+                var insertURL = hotshare_web+'/restapi/importPost/insert/'+_id;
+                console.log("insertURL = "+insertURL);
+                return httppost(insertURL, dataJson, function(err2, data){
+                    var postId = dataJson._id;
+                    var dataObj = JSON.parse(data);
+                    var user = dataObj.user;
+                    if(err2 || !dataObj || dataObj.result != 'success' || !dataObj.user) {
+                        console.log('httppost failed! err2='+err2+', dataObj='+JSON.stringify(dataObj));
+                        chunked_result.status = 'failed';
+                        return callback && callback({status:'failed'});
+                    }
+                    console.log('Insert suc: dataObj='+JSON.stringify(dataObj));
+                    if (Task.isCancel(unique_id, true)) {
+                        console.log("importUrl: cancel - 2.");
+                        return callback && callback({status:'failed'});
+                    }
+                    console.log('Post id is: '+postId);
+
+                    if(!Task.get(unique_id)) {
+                        Task.add(unique_id, _id, url);
+                    }
+                    Task.update(unique_id, 'importing', postId);
+
+                    /*Insert data success, notify kue Master*/
+                    if (callback) {
+                        chunked_result.status = 'succ';
+                        if (hotshare_web)
+                            chunked_result.json = hotshare_web+'/posts/'+postId;
+                        callback({status:'succ',json:hotshare_web+'/posts/'+postId, title:result.title, addontitle:'', mainImage:mainUrl});
+                    }
+
+                    // setTimeout(function(){ // test code
+                    // 图片的下载及排版计算
+                    draftsObj.setUser(dataObj.user);
+                    draftsObj.setPostId(postId);
+                    draftsObj.onSuccess(function(){
+                        if (Task.isCancel(unique_id, true)) {
+                            console.log("importUrl: cancel - 3.");
+                            return callback && callback({status:'failed'});
+                        }
+
+                        draftsObj.uploadFiles(function (err) {
+                            if (Task.isCancel(unique_id, true)) {
+                                console.log("importUrl: cancel - 4.");
+                                return callback && callback({status:'failed'});
+                            }
+
+                            if(err) {
+                                return console.log('upload file error.');
+                            }
+                            
+                            var postObj = draftsObj.getPubObject();
+                            updatePosts2(postId, postObj, unique_id, function(err3, number){
+                                if (Task.isCancel(unique_id, true)) {
+                                    console.log("importUrl: cancel - 5.");
+                                    return callback && callback({status:'failed'});
+                                }
+
+                                if(err3 || number <= 0) {
+                                    return console.log('import error.');
+                                }
+                                  
+                                var tmpServer = hotshare_web;
+                                if (server && (server != '')) {
+                                    if (server.charAt(server.length - 1) == '/')
+                                        tmpServer = server.substring(0, server.length - 1);
+                                }
+                                var url = tmpServer+'/restapi/postInsertHook/'+user._id+'/'+postId;
+                                console.log("httpget url="+url);
+                                //httpget(url);
+
+                                console.log('==============================');
+                                console.log('http://host1.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
+                                httpget('http://host1.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
+                                console.log('==============================');
+                            });                 
+                        });
+                    });
+                    draftsObj.seekOneUsableMainImage(result, url);
+                });
+            });         
+        })
+        .catch(function (error) {
+            if (callback) {
+              chunked_result.status = 'failed';
+              callback({status:'failed'});
+            }
+            console.log("nightmare.catch: index="+index);
+            initQueueMember(queueMember);
+            console.error('Search failed:', error);
+        })
+    }
+    getIdleNightmare(nightmareQueue, startNavigation2, 0);
 }
 
 
@@ -1106,7 +1385,7 @@ if (cluster.isMaster) {
       //   console.log('Job result');
       //   res.write(JSON.stringify(result));
       }).on('progress', function(progress, data){
-        console.log('\r  job #' + job.id + ' ' + progress + '% complete with data ', data);
+        console.log('job #' + job.id + ' ' + progress + '% complete with data ', data);
         var dataObj = JSON.parse(data);
 
         if(res.isResErr === true)
