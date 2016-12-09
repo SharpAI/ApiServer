@@ -329,13 +329,15 @@ if Meteor.isClient
 #    $('.textDiv1Link').linkify();
     $("a[target='_blank']").click((e)->
       e.preventDefault();
-      if Meteor.isCordova
+      if Meteor.isCordova and $(this).attr('class').indexOf('_post_item_a') is -1
         Session.set("isReviewMode","undefined")
         prepareToEditorMode()
         PUB.page '/add'
         handleAddedLink($(e.currentTarget).attr('href'))
       else
-        window.open($(e.currentTarget).attr('href'), '_blank', 'hidden=no,toolbarposition=top')
+        cordova.InAppBrowser.open($(e.currentTarget).attr('href'), '_system')
+        # window.open($(e.currentTarget).attr('href'), '_system')#, 'hidden=no,toolbarposition=top')
+        return false
     )
 
     $('.showBgColor').css('min-height',$(window).height())
