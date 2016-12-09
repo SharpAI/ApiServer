@@ -25,6 +25,11 @@ import android.content.Intent;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import android.support.v4.content.ContextCompat;
+import android.support.v4.app.ActivityCompat;
+import android.Manifest;
+import android.content.pm.PackageManager;
+
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.Set;
@@ -127,10 +132,35 @@ public class MainActivity extends CordovaActivity
         }
     }
 
+    public static final int MY_PERMISSIONS_REQUEST_READ_MEDIA = 5;
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+      switch (requestCode) {
+        case MY_PERMISSIONS_REQUEST_READ_MEDIA:
+            if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                Log.i("##RDBG", "PERMISSION_GRANTED");
+            }
+            else if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_DENIED)) {
+                Log.i("##RDBG", "PERMISSION_DENIED");
+                finish();
+            }
+            break;
+        default:
+            break;
+      }
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+          ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_MEDIA);
+        } else {
+        }
 
         Intent intent = getIntent();
         if (intent != null) {
