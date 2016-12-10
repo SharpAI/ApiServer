@@ -126,7 +126,7 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
 }, {where: 'server'});
 
 Router.route('/import-cancel/:id', function (req, res, next) {
-  var importServer = new ImportServer(res, this.params.id);
+  var importServer = new ImportServer(res, this.params._id);
 
   res.writeHead(200, {
     'Content-Type' : 'text/html;charset=UTF-8'
@@ -140,6 +140,7 @@ Router.route('/import-cancel/:id', function (req, res, next) {
 }, {where: 'server'});
 
 Router.route('/restapi/importPost/:type/:_id', function(req, res, next) {
+    var req_datastr = '';
     var req_data = null;
     var req_type = this.params.type;
     var req_userId = this.params._id;
@@ -150,11 +151,18 @@ Router.route('/restapi/importPost/:type/:_id', function(req, res, next) {
     req.setEncoding('utf8');
     req.on('data', function(data) {
       //console.log(data)
-      req_data = JSON.parse(data);
+      //req_data = JSON.parse(data);
+      req_datastr += data;
     })
     .on('end', function() {
-        if (!req_data) {
-            return res.end(JSON.stringify({result: 'fail'}));
+        if (!req_datastr) {
+            return res.end(JSON.stringify({result: 'failed'}));
+        }
+        try {
+            req_data = JSON.parse(req_datastr);
+        } catch (error) {
+            console.log("importPost: JSON.parse exception! error="+error);
+            return;
         }
         var Fiber = Meteor.npmRequire('fibers');
         Fiber(function() {
@@ -164,7 +172,7 @@ Router.route('/restapi/importPost/:type/:_id', function(req, res, next) {
                 console.log("importPost find user 2");
                 if (!user){
                     console.log("Find userId failed: req_userId="+req_userId);
-                    return res.end(JSON.stringify({result: 'fail', reason: 'No such user ID!'+req_userId}))
+                    return res.end(JSON.stringify({result: 'failed', reason: 'No such user ID!'+req_userId}))
                 }
                 req_data.ownerId = user._id;
                 req_data.ownerName = user.profile.fullname || user.username;
@@ -177,27 +185,30 @@ Router.route('/restapi/importPost/:type/:_id', function(req, res, next) {
                     console.log("importPost insert 2, err="+err+", id="+id);
                     if (err || !id) {
                         console.log("importPost insert failed");
-                        return res.end(JSON.stringify({result: 'fail', reason:'Insert post failed!'}))
+                        return res.end(JSON.stringify({result: 'failed', reason:'Insert post failed!'}))
                     }
                     var userObj = {_id:user._id, profile:user.profile};
                     res.write(JSON.stringify({result: 'success', user: userObj}));
                     res.end();
                 });
             } else if (req_type === 'update') {
-                console.log("importPost update 1");
+                console.log("importPost update 1, req_data._id="+req_data._id);
                 if (req_data.createdAt) {
                     req_data.createdAt = new Date(req_data.createdAt);
                 }
                 Posts.update({_id: req_data._id}, {$set: req_data}, function(err, num) {
-                    console.log("importPost update 2");
+                    console.log("importPost update 2, err="+err+", num="+num);
                     if (err || num <= 0) {
-                        return res.end(JSON.stringify({result: 'fail'}));
+                        return res.end(JSON.stringify({result: 'failed'}));
                     }
                     var post = Posts.findOne({_id: req_data._id});
-                    var uri = Meteor.absoluteUrl() + '/restapi/postInsertHook/' + post.owner + '/' + post._id;
+                    //var position = Meteor.absoluteUrl().length-1;
+                    //var hostAndPortUrl = Meteor.absoluteUrl().substr(0, position) + ":8083" + Meteor.absoluteUrl().substr(position);
+                    var hostAndPortUrl = "http://127.0.0.1";
+                    var uri = hostAndPortUrl + '/restapi/postInsertHook/' + post.owner + '/' + post._id;
                     console.log("req_data._id="+req_data._id+", uri = "+uri);
                     request({method: 'GET', uri: uri});
-                    res.end(JSON.stringify({result: 'ok'}));
+                    res.end(JSON.stringify({result: 'success'}));
                 });
             } else {
                 res.end(JSON.stringify({result: 'failed'}));

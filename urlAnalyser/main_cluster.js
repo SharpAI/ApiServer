@@ -19,7 +19,8 @@ var THREAD_NUMBER = {
 var showDebug = true;
 
 var port = process.env.PORT || 8080;        // set our port
-var hotshare_web = process.env.HOTSHARE_WEB_HOST || 'http://cdcdn.tiegushi.com';
+//var hotshare_web = process.env.HOTSHARE_WEB_HOST || 'http://host1test.tiegushi.com:8083';
+var hotshare_web = process.env.HOTSHARE_WEB_HOST || 'http://cdn.tiegushi.com';
 var MongoClient = require('mongodb').MongoClient;
 var DB_CONN_STR = process.env.MONGO_URL || 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare';
 var posts = null;
@@ -799,19 +800,37 @@ var updatePosts = function(postId, post, taskId, callback){
   }
 };
 var updatePosts2 = function(postId, post, taskId, callback){
+  var dataObj;
   post._id = postId;
   post.import_status = 'imported';
 
   var url = hotshare_web+'/restapi/importPost/update/NOUSERID';
   console.log("updateURL="+url+", postId="+postId);
   httppost(url, post, function(err, data){
-    console.log("update success");
-    if(err || !data)
-      return callback('errr');
-    data = JSON.parse(data);
-    if(data.result === 'ok')
-      return callback(null, 1);
-    return callback('err')
+    try {
+        dataObj = JSON.parse(data);
+    } catch (error) {
+        console.log("updatePosts2: JSON.parse exception! error="+error);
+        return callback('err', -1);;
+    }
+    if(err || !dataObj || dataObj.result != "success") {
+        console.log("httppost update DB failed! Let's try to update DB directly! data="+data);
+        posts.update({_id: postId},{$set: post}, function(err, number){
+            if (err || number <= 0) {
+                console.log("Update DB failed!");
+                return callback && callback(err, number);
+            }
+            console.log("update DB directly success!");
+            return callback && callback(null, 2);
+        });
+        return;
+    }
+    console.log("httppost update DB success!");
+    if(dataObj.result === 'success') {
+        return callback(null, 1);
+    }
+    console.log("dataObj="+JSON.stringify(dataObj));
+    return callback('err', -1);
   });
 
   // 原处理流程
@@ -880,7 +899,7 @@ var httppost = function(url, data, callback){
   });
   req.on('error',function(e){
     callback && callback(e, null);
-    showDebug && console.log('httppost failed: url='+url+', error: ${e.message}');
+    showDebug && console.log('httppost failed: url='+url+', error: '+JSON.stringify(e));
     showDebug && console.log('------- End --------');
   });
   req.write(JSON.stringify(data));
@@ -1133,6 +1152,45 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
 
   //var nightmare = Nightmare({ show: false , openDevTools: false, waitTimeout: 30000});
   function startNavigation2(queueMember) {
+    function ReadWriteDatabase(insertURL, dataJson, cb) {
+        httppost(insertURL, dataJson, function(error, data){
+            var dataObj;
+            try {
+                dataObj = JSON.parse(data);
+            } catch (error) {
+                console.log("ReadWriteDatabase: JSON.parse exception! error="+error);
+                return cb && cb("failed", {result: 'failed', reason:'JSON parse failed!'});
+            }
+            if (error || !dataObj || dataObj.result != 'success' || !dataObj.user) {
+                console.log('ReadWriteDatabase: httppost failed! error='+error+', dataObj='+JSON.stringify(dataObj));
+                console.log("Let's try to write DB directly.");
+                users.findOne({_id: _id}, function (error1, user) {
+                    if(error1 || !user) {
+                        console.log("user not found, error1="+error1);
+                        chunked_result.status = 'failed';
+                        return cb && cb("failed", {result: 'failed', reason:'No such user ID!'});
+                    }
+                    dataJson.ownerId = user._id;
+                    dataJson.ownerName = user.profile.fullname || user.username;
+                    dataJson.ownerIcon = user.profile.icon || '/userPicture.png';
+                    console.log("ReadWriteDatabase: importPost insert 1, dataJson._id="+dataJson._id);
+                    posts.insert(dataJson, function(error2, result) {
+                        if(error2 || !result.insertedCount || !result.insertedIds || !result.insertedIds[0]) {
+                            console.log("importPost insert failed");
+                            return cb && cb("failed", {result: 'failed', reason:'Insert post failed!'})
+                        }
+                        console.log("ReadWriteDatabase: importPost insert 2, error2="+error2+", id="+result.insertedIds[0]);
+                        var userObj = {_id:user._id, profile:user.profile};
+                        console.log("userObj="+JSON.stringify(userObj));
+                        return cb && cb(null, {result: 'success', user: userObj});
+                    });
+                });
+            } else {
+                console.log("ReadWriteDatabase: httppost success.");
+                return cb && cb(null, dataObj);
+            }
+        });
+    }
     if (!queueMember) {
         if (callback) {
             console.log("    !!!!!!Error: can't get nightmare from queue!");
@@ -1175,22 +1233,24 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
 
                 var insertURL = hotshare_web+'/restapi/importPost/insert/'+_id;
                 console.log("insertURL = "+insertURL);
-                return httppost(insertURL, dataJson, function(err2, data){
+                ReadWriteDatabase(insertURL, dataJson, function(err2, dataObj){
                     var postId = dataJson._id;
-                    var dataObj = JSON.parse(data);
-                    var user = dataObj.user;
+                    var user;
+
+                    console.log("dataObj="+JSON.stringify(dataObj));
                     if(err2 || !dataObj || dataObj.result != 'success' || !dataObj.user) {
                         console.log('httppost failed! err2='+err2+', dataObj='+JSON.stringify(dataObj));
                         chunked_result.status = 'failed';
                         return callback && callback({status:'failed'});
                     }
+                    user = dataObj.user;
+
                     console.log('Insert suc: dataObj='+JSON.stringify(dataObj));
                     if (Task.isCancel(unique_id, true)) {
                         console.log("importUrl: cancel - 2.");
                         return callback && callback({status:'failed'});
                     }
                     console.log('Post id is: '+postId);
-
                     if(!Task.get(unique_id)) {
                         Task.add(unique_id, _id, url);
                     }
@@ -1242,7 +1302,9 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
                                 }
                                 var url = tmpServer+'/restapi/postInsertHook/'+user._id+'/'+postId;
                                 console.log("httpget url="+url);
-                                //httpget(url);
+                                if (number == 2) {
+                                    httpget(url);
+                                }
 
                                 console.log('==============================');
                                 console.log('http://host1.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);

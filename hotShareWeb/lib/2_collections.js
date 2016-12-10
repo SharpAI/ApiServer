@@ -398,6 +398,7 @@ if(Meteor.isServer){
                 }
             });
             if (viewposts.count() > 0 && currentpost && userinfo) {
+                try {
                 viewposts.forEach(function (pdata) {
                     if(pdata.postId !== postId)
                     {
@@ -458,6 +459,9 @@ if(Meteor.isServer){
                         }
                     }
                 });
+                } catch (error) {
+                    console.log("Exception: viewposts.forEach, error="+error);
+                }
             }
         });
     }
