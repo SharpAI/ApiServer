@@ -104,7 +104,7 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
       return;
 
     importServer.cancelImport();
-  }, 1000*13);
+  }, 1000*18);
 
   // 请求导入server
   request({method: 'GET', uri: req_url})
