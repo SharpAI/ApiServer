@@ -398,21 +398,21 @@ if Meteor.isServer
         if !confirmReporterAuth(userId)
           return false
         post = Posts.findOne(postId)
-        owner = Meteor.users.findOne({_id: post.owner})
-        RePosts.remove(postId)
-        Posts.remove(postId)
-        reporterLogs.insert({
-          userId:post.owner,
-          userName: post.ownerName,
-          userEmails: owner.emails,
-          postId: postId,
-          postTitle: post.title,
-          postCreatedAt: post.createdAt,
-          eventType: '不通过帖子审核',
-          loginUser: userId,
-          createdAt: new Date()
-        })
         if post
+          owner = Meteor.users.findOne({_id: post.owner})
+          RePosts.remove(postId)
+          Posts.remove(postId)
+          reporterLogs.insert({
+            userId:post.owner,
+            userName: post.ownerName,
+            userEmails: owner.emails,
+            postId: postId,
+            postTitle: post.title,
+            postCreatedAt: post.createdAt,
+            eventType: '不通过帖子审核',
+            loginUser: userId,
+            createdAt: new Date()
+          })
           return BackUpPosts.insert(post)
       'delectPostAndBackUp': (postId,userId)->
         if !confirmReporterAuth(userId)
@@ -542,6 +542,14 @@ if Meteor.isServer
 
       'updateTopicPostsAfterComment':(topicPostId,topic,topicPostObj)->
         _post = Posts.findOne({_id: topicPostId})
+        console.log("帖子是否审核："+_post.isReview)
+        # 处理帖子未审核
+        unless _post and _post.isReview 
+          preTopicPosts.insert({
+            postId: topicPostId,
+            topic: topic
+          })
+          return
         if Topics.find({text:topic}).count() > 0
           topicData = Topics.find({text:topic}).fetch()[0]
           topicId = topicData._id

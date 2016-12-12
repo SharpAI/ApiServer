@@ -367,6 +367,34 @@ if Meteor.isServer
       RePosts.remove({_id: _post._id})
       _post.isReview = true
       doc = _post
+      # set topic and topic posts
+      preTP = preTopicPosts.findOne({postId: doc._id})
+      if preTP
+        if Topics.find({text: preTP.topic}).count() > 0
+          topicDoc = Topics.find({text: preTP.topic}).fetch()[0]
+          topicId = topicDoc._id
+        else
+          topicId = Topics.insert({type: "topic", text: preTP.topic, imgUrl:""})
+        topicPostObj = {
+          topicId: topicId,
+          postId:doc._id,
+          title:doc.title,
+          addontitle:doc.addontitle,
+          mainImage:doc.mainImage,
+          heart:doc.heart,
+          retweet:doc.retweet,
+          comment:doc.comment,
+          owner:doc.owner,
+          ownerName:doc.ownerName,
+          ownerIcon:doc.ownerIcon,
+          createdAt: doc.createdAt
+        }
+        unless TopicPosts.findOne({postId:doc._id,topicId: topicId})
+          try
+            TopicPosts.insert topicPostObj,(err,id)->
+              Topics.update({_id: topicId},{$inc: {posts: 1}})
+              preTopicPosts.remove({postId: doc._id})
+          catch error
       userId = doc.owner
       if doc.owner != userId
         me = Meteor.users.findOne({_id: userId})
