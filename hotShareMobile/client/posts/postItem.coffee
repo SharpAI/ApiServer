@@ -93,6 +93,7 @@ if Meteor.isClient
       thumbsDownHandler(e,this)
     'click .pcomments': (e)->
       Session.set("pcommetsClicked",true)
+      Session.set("pcommetsReply",false)
       bgheight = $(window).height() + $(window).scrollTop()
       $(e.currentTarget).parent().parent().parent().addClass('post-pcomment-current-pub-item').attr('data-height': $(e.currentTarget).parent().parent().parent().height())
       # $('.showBgColor').css('overflow','hidden')
@@ -107,6 +108,27 @@ if Meteor.isClient
 
       # $('.showBgColor').css('min-width',$(window).width())
       Session.set "pcommentIndexNum", this.index
+    'click .bubble':(e)->
+      Session.set "pcommentIndexNum", $(e.currentTarget).parent().parent().parent().index(".element")
+      pcommentSelectedIndex = $(e.currentTarget).parent().index()
+      console.log 'pcommentSelectedIndex >>>'+pcommentSelectedIndex
+      Session.set('pcommentSelectedIndex', pcommentSelectedIndex)
+      $(e.currentTarget).parent().parent().parent().addClass('post-pcomment-current-pub-item').attr('data-height': $(e.currentTarget).parent().parent().parent().height())
+      if this.userId is Meteor.userId()
+        $('.pcommentInputPromptPage').show()
+        return
+      Session.set("pcommetsReply",true)
+      bgheight = $(window).height() + $(window).scrollTop()
+      # $('.showBgColor').css('overflow','hidden')
+      $('.showBgColor').attr('style','overflow:hidden;min-width:' + $(window).width() + 'px;' + 'height:' + bgheight + 'px;')
+      Session.set("pcommetsId","")
+      backgroundTop = 0-$(window).scrollTop()
+      Session.set('backgroundTop', backgroundTop);
+      #$('body').attr('style','position:fixed;top:'+Session.get('backgroundTop')+'px;')
+      $('.pcommentInput,.alertBackground').fadeIn 300, ()->
+        $('#pcommitReport').focus()
+      $('#pcommitReport').focus()
+
     'click .play_area': (e)->
       $node=$(e.currentTarget)
       $audio=$node.find('audio')
@@ -282,7 +304,9 @@ if Meteor.isClient
 #      position = 1+(post.length/2)
 #      if i > position and  withSponserLinkAds then i -= 1 else i = i
       if post and post[i] and post[i].pcomments isnt undefined
-        return true
+        if post[i].pcomments.length > 0
+          return true
+        return false
       else
         return false
     pcomment:->
@@ -298,6 +322,11 @@ if Meteor.isClient
         return post[i].pcomments
       else
         return ''
+    isPcommentReply:->
+      if this.toUsername and this.toUsername isnt ''
+        return true
+      else
+        return false
     pdislike:->
       if Session.get("postContent").pub and Session.get("postContent").updateAt
         i=this.index

@@ -721,6 +721,41 @@
     }
   }
 }
+.pcommentInputPromptPage{
+  z-index: 9999; position: fixed;top: 0; right: 0; bottom: 0; left: 0;display: none; background: none; background-color: rgba(0,0,0,.36);
+  .bg{z-index: 9;position: fixed;top: 0; right: 0; bottom: 0; left: 0;background: none;cursor: pointer;}
+  .content {
+    background: white;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    z-index: 99; 
+    .header{
+      line-height: 58px;
+      font-size: 13px;
+      text-align: center;
+      color: lightgray;
+      border-radius: 4px 4px 0 0;
+    }
+    .deleteComment{
+      line-height: 48px;
+      font-size: 16px;
+      text-align: center;
+      color:red;
+      border-top: 1px solid #f1f1f1;
+      cursor: pointer;
+    }
+    .cancleBtn{
+      line-height: 48px;
+      font-size: 16px;
+      text-align: center;
+      border-top: 6px solid #f1f1f1;
+      cursor: pointer;
+    }
+  }
+}
 
 .subscribeAutorPage{
   z-index: 9999; position: fixed;top: 0; right: 0; bottom: 0; left: 0;display: none; background: none; background-color: rgba(0,0,0,.36);

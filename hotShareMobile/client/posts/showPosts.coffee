@@ -1076,6 +1076,18 @@ if Meteor.isClient
 
 
   Template.pcommentInput.helpers
+      placeHolder:->
+        placeHolderText = '评论' 
+        if Session.get("pcommetsReply") 
+           i = Session.get "pcommentIndexNum"
+           post = Session.get("postContent").pub
+           selectedIndex = Session.get("pcommentSelectedIndex")
+           if post and post[i] and post[i].pcomments isnt undefined
+              pcomments = post[i].pcomments
+              if pcomments[selectedIndex] isnt undefined
+                toUsername = pcomments[selectedIndex].username
+                placeHolderText = '回复'+toUsername+':'
+         return placeHolderText
       time_diff: (created)->
         GetTime0(new Date() - created)
       hasPcomments: ->
@@ -1143,8 +1155,15 @@ if Meteor.isClient
         if not post[i].pcomments or post[i].pcomments is undefined
           pcomments = []
           post[i].pcomments = pcomments
+          
+        toUsername = ''
+        if Session.get("pcommetsReply")
+            selectedIndex = Session.get("pcommentSelectedIndex")
+            pcomments = post[i].pcomments
+            toUsername = pcomments[selectedIndex].username
         pcommentJson = {
           content:content
+          toUsername:toUsername
           username:username
           userId:userId
           userIcon:userIcon
@@ -1178,6 +1197,38 @@ if Meteor.isClient
         $('.pcommentInput,.alertBackground').fadeOut 300
         #refreshPostContent()
         false
+
+  Template.pcommentInputPrompt.events
+    'click .deleteComment':(e,t)->
+      postId = Session.get("postContent")._id
+      post = Session.get("postContent").pub
+      i = Session.get "pcommentIndexNum"
+      pcomments = post[i].pcomments
+      index = Session.get('pcommentSelectedIndex')
+      pcomments.splice( index, 1 )
+      Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"pcomments","pindex":i}}, (error, result)->
+          if error
+            console.log(error.reason);
+          else
+            console.log("success");
+            postItem = $('.post-pcomment-current-pub-item')
+            console.log postItem
+            offsetHeight = postItem.height() - parseInt(postItem.attr('data-height'))
+            console.log offsetHeight
+            # resize nex node top
+            postItem.nextAll().each ->
+              try
+                item = $(this)
+                top = offsetHeight + item.position().top
+                item.css 'top', top + 'px'
+              catch e
+                console.log 'error:' + e
+            postItem.removeClass 'post-pcomment-current-pub-item'
+      )
+      $('.pcommentInputPromptPage').hide()
+    'click .bg, click .cancleBtn':->
+      $('.pcommentInputPromptPage').hide()
+
   Template.shareReaderClub.helpers
     # show_share_reader_club: ->
     #   hotPosts = _.filter Session.get('hottestPosts') || [], (value)->

@@ -1,6 +1,7 @@
 <template name="showPosts">
   <script src="http://qzonestyle.gtimg.cn/qzone/app/qzlike/qzopensl.js#jsdate=20111201" charset="utf-8"></script>
   {{> pcommentInput}}
+  {{> pcommentInputPrompt}}
   {{#if isMynewpost}}
     {{> shareRoom}}
   {{/if}}
@@ -272,11 +273,22 @@
 <template name="pcommentInput">
   <div class="pcommentInput" style="display:none;">
       <div class="input-group">
-        <input type="text" id="pcommitReport" autofocus="autofocus" class="form-control" maxlength="180" placeholder="评论" />
+        <input type="text" id="pcommitReport" autofocus="autofocus" class="form-control" maxlength="180" placeholder="{{placeHolder}}" />
         <div id="pcommitReportBtn">{{_ "send"}}</div>
       </div>
   </div>
   <div class="alertBackground"></div>
+</template>
+
+<template name="pcommentInputPrompt">
+  <div class="pcommentInputPromptPage">
+    <div class="bg"></div>
+    <div class="content">
+        <div class="header">删除我的评论</div>
+        <div class="deleteComment">删除</div>
+        <div class="cancleBtn">取消</div>
+    </div>
+  </div>
 </template>
 
 <!--<template name="shareTheReadingRoom">

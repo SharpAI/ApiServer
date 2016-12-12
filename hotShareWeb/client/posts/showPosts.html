@@ -3,6 +3,7 @@
 		抱歉，您访问的帖子已被删除。
 	</center>
   {{> pcommentInput}}
+  {{> pcommentInputPrompt}}
   <div class="showBgColor">
     <div class="showPostsBox">
     <div class="showPosts">
@@ -411,7 +412,7 @@
 <template name="pcommentInput">
   <div class="pcommentInput" style="display:none;">
       <div class="input-group">
-        <input type="text" id="pcommitReport" autofocus="autofocus" class="form-control" maxlength="180" placeholder="评论" />
+        <input type="text" id="pcommitReport" autofocus="autofocus" class="form-control" maxlength="180" placeholder="{{placeHolder}}" />
         <div onclick="pcommitReport()" id="pcommitReportBtn">发送</div>
       </div>
   </div>
@@ -474,8 +475,15 @@
             pcomments = [];
             post[i].pcomments = pcomments;
           }
+          var toUsername = '';
+          if (Session.get("pcommetsReply")){
+            var selectedIndex = Session.get("pcommentSelectedIndex");
+            var pcomments = post[i].pcomments;
+            toUsername = pcomments[selectedIndex].username;
+          }
           pcommentJson = {
             content: content,
+            toUsername:toUsername,
             username: username,
             userId: userId,
             userIcon: userIcon,
@@ -526,6 +534,18 @@
 
     </script>
 </template>
+
+<template name="pcommentInputPrompt">
+  <div class="pcommentInputPromptPage">
+    <div class="bg"></div>
+    <div class="content">
+        <div class="header">删除我的评论</div>
+        <div class="deleteComment">删除</div>
+        <div class="cancleBtn">取消</div>
+    </div>
+  </div>
+</template>
+
 <template name="SectionReviewBox">
     {{#if displaySectionReviewBox}}
     <div class="commentOverlay">

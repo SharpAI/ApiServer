@@ -87,7 +87,13 @@
                            {{#each pcomment}}
                             <div class="eachComment">
                               <div class="bubble">
-                                <span class="personName">{{username}}</span>:
+                                {{#if isPcommentReply}}
+                                  <span class="personName">{{username}}</span>
+                                  <span>回复</span>
+                                  <span class="personName">{{toUsername}}</span>:
+                                {{else}}
+                                  <span class="personName">{{username}}</span>:
+                                {{/if}}
                                 <span class="personSay">{{content}}</span>
                               </div>
         <!--                      <span class="time round">{{time_diff createdAt}}</span>-->
