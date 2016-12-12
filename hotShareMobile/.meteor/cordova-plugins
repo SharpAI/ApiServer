@@ -14,7 +14,7 @@ cordova-plugin-file@4.1.1
 cordova-plugin-file-transfer@1.6.0
 cordova-plugin-http@1.2.0
 cordova-plugin-camera@https://github.com/PluginCordova/cordova-plugin-camera/tarball/394a5b1dbf9de3a76f64127acaf8366e4cf82920
-cordova-plugin-inappbrowser@https://github.com/PluginCordova/inappbrowser/tarball/ab46f8db23960940d7bfd861b0809842860dc5d1
+cordova-plugin-inappbrowser@https://github.com/PluginCordova/inappbrowser/tarball/47f80b71e47c7beb78afe6075920bd388839490f
 cordova-plugin-iosaudiopicker@https://github.com/PluginCordova/iosaudiopicker/tarball/06e86b12b05564c12782f3f9d8ec37ca6754273a
 cordova-plugin-media@https://github.com/PluginCordova/media/tarball/2d158b0ef7173cad2b2f84c05c62727932635f8e
 cordova-plugin-meteor-webapp@1.4.1
