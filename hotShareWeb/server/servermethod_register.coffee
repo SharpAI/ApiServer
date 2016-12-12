@@ -413,6 +413,15 @@ if Meteor.isServer
             loginUser: userId,
             createdAt: new Date()
           })
+          TPs=TopicPosts.find({postId:postId})
+          if TPs.count()>0
+            TPs.forEach (data)->
+              PostsCount = Topics.findOne({_id:data.topicId}).posts
+              if PostsCount is 1
+                Topics.remove({_id:data.topicId})
+              else if PostsCount > 1
+                Topics.update({_id: data.topicId}, {$set: {'posts': PostsCount-1}})
+          TopicPosts.remove({postId:postId})
           return BackUpPosts.insert(post)
       'delectPostAndBackUp': (postId,userId)->
         if !confirmReporterAuth(userId)
