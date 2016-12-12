@@ -1109,7 +1109,7 @@ if(Meteor.isServer){
                         waitReadCount = 0;
                     }
                     Meteor.users.update({_id: post.owner}, {$set: {'profile.waitReadCount': waitReadCount + 1}});
-                    pushnotification("comment", doc, userId);
+                    //pushnotification("comment", doc, userId);
                     var recomments = ReComment.find({"postId": doc.postId}).fetch();
                     var item;
                     for (item in recomments) {
