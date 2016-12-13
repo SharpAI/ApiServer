@@ -461,6 +461,31 @@ if Meteor.isClient
           console.log("crop "+ node.id)
           cropHandlerOnImage(node)
         return
+    else
+      $(node).toolbar
+        content: '#other-toolbar-options'
+        position: 'top'
+        hideOnClick: true
+      $(node).on 'toolbarItemClick',(event,buttonClicked)->
+        console.log($(buttonClicked).attr('id')+' event on nodeid '+node.id)
+        if buttonClicked.id is "del"
+          console.log("del "+ node.id)
+          if gridster?
+            gridster.remove_widget2(node, false)
+          Drafts.remove node.id
+        else if buttonClicked.id is "delEnd"
+          console.log("delEnd "+ node.id)
+          draftsArr = Drafts.find({}).fetch()
+          if draftsArr.length > 0
+            for i in [0..draftsArr.length - 1]
+              if draftsArr[i]._id is node.id
+                indexNum = i
+            for i in [indexNum..draftsArr.length - 1]
+              thisNode = document.getElementById(draftsArr[i]._id)
+              console.log("thisNode "+ thisNode)
+              if gridster?
+                gridster.remove_widget2(thisNode, false)
+              Drafts.remove draftsArr[i]._id
     if trigger
       $(node).trigger('click')
     return
