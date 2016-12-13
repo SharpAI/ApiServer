@@ -254,18 +254,14 @@ if Meteor.isClient
 
       return true
     myselfClickedUp:->
-      i = this.index
       userId = Meteor.userId()
-      post = Session.get("postContent").pub
-      if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].likeUserId[userId] is true
+      if this.dislikeUserId isnt undefined and this.likeUserId[userId] is true
         return true
       else
         return false
     myselfClickedDown:->
-      i = this.index
       userId = Meteor.userId()
-      post = Session.get("postContent").pub
-      if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].dislikeUserId[userId] is true
+      if this.dislikeUserId isnt undefined and this.dislikeUserId[userId] is true
         return true
       else
         return false
@@ -289,50 +285,24 @@ if Meteor.isClient
       else
         ''
     plike:->
-      if Session.get("postContent").pub and Session.get("postContent").updateAt
-        i=this.index
-        post = Session.get("postContent").pub
-        if post[i] and post[i].likeSum isnt undefined
-          return post[i].likeSum
       if this.likeSum is undefined
         0
       else
         this.likeSum
     hasPcomments: ->
-      i = this.index
-      post = Session.get("postContent").pub
-#      position = 1+(post.length/2)
-#      if i > position and  withSponserLinkAds then i -= 1 else i = i
-      if post and post[i] and post[i].pcomments isnt undefined
-        if post[i].pcomments.length > 0
-          return true
-        return false
+      if this.pcomments isnt undefined and this.pcomments.length > 0
+        return true
       else
         return false
     pcomment:->
-      i = this.index
-      post = Session.get("postContent").pub
-      position = 1+(post.length/2)
-#      if withSponserLinkAds
-#        position = 1+(post.length/2)
-      if i > position and withSponserLinkAds
-        i -= 1
-        return post[i].pcomments
-      else if post[i] isnt undefined
-        return post[i].pcomments
-      else
-        return ''
+      return this.pcomments
+      
     isPcommentReply:->
       if this.toUsername and this.toUsername isnt ''
         return true
       else
         return false
     pdislike:->
-      if Session.get("postContent").pub and Session.get("postContent").updateAt
-        i=this.index
-        post = Session.get("postContent").pub
-        if post[i] and post[i].dislikeSum isnt undefined
-          return post[i].dislikeSum
       if this.dislikeSum is undefined
         0
       else
