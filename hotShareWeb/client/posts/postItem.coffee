@@ -210,16 +210,18 @@ if Meteor.isClient
     myselfClickedUp:->
       i = this.index
       userId = Meteor.userId()
-      post = Session.get("postContent").pub
-      if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].likeUserId[userId] is true
+      #post = Session.get("postContent").pub
+      #if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].likeUserId[userId] is true
+      if this.dislikeUserId isnt undefined and this.likeUserId[userId] is true
         return true
       else
         return false
     myselfClickedDown:->
       i = this.index
       userId = Meteor.userId()
-      post = Session.get("postContent").pub
-      if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].dislikeUserId[userId] is true
+      #post = Session.get("postContent").pub
+      #if post[i] isnt undefined and post[i].dislikeUserId isnt undefined and post[i].dislikeUserId[userId] is true
+      if this.dislikeUserId isnt undefined and this.dislikeUserId[userId] is true
         return true
       else
         return false
@@ -257,10 +259,11 @@ if Meteor.isClient
         this.likeSum
     hasPcomments: ->
       i = this.index
-      post = Session.get("postContent").pub
+      #post = Session.get("postContent").pub
 #      position = 1+(post.length/2)
 #      if i > position and  withSponserLinkAds then i -= 1 else i = i
-      if post and post[i] and post[i].pcomments isnt undefined
+      #if post and post[i] and post[i].pcomments isnt undefined
+      if this.pcomments isnt undefined
         if post[i].pcomments.length > 0
           return true
         return false
@@ -268,7 +271,8 @@ if Meteor.isClient
         return false
     pcomment:->
       i = this.index
-      post = Session.get("postContent").pub
+      return this.pcomments;
+      #post = Session.get("postContent").pub
 #      position = 1+(post.length/2)
 #      if withSponserLinkAds
 #        position = 1+(post.length/2)
@@ -276,10 +280,10 @@ if Meteor.isClient
 #        i -= 1
 #        return post[i].pcomments
 #      else
-      if post[i] isnt undefined
-        return post[i].pcomments
-      else
-        return ''
+      #if post[i] isnt undefined
+      #  return post[i].pcomments
+      #else
+      #  return ''
     isPcommentReply:->
       if this.toUsername and this.toUsername isnt ''
         return true
