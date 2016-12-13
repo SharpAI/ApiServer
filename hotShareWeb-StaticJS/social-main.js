@@ -695,8 +695,11 @@
         $elem = $('.element img.lazy');
         
         // 处理图片src
+        var isExec = false;
+        var isRemove = false;
         $('#wx-img').attr('src',message.fields.mainImage);
         for(var i =0;i<$elem.length;i++){
+            isExec = false;
             for(var j=0;j<pub.length;j++){
                 if(pub[j].souImgUrl === $('#'+$elem[i].id).data('originimgurl')){
                     $('#'+$elem[i].id).attr({
@@ -704,9 +707,18 @@
                         'src':pub[j].imgUrl
                     });
                 }
+                isExec = true;
                 continue;
             }
+
+            if(isExec != true){
+              $('#'+$elem[i].id).parent().remove();
+              isRemove = true;
+            }
         }
+
+        if(isRemove === true)
+          calcLayoutForEachPubElement();
         
         window.localStorage.removeItem('waitForServerImportStatus');
     }
