@@ -264,7 +264,7 @@ if Meteor.isClient
 #      if i > position and  withSponserLinkAds then i -= 1 else i = i
       #if post and post[i] and post[i].pcomments isnt undefined
       if this.pcomments isnt undefined
-        if post[i].pcomments.length > 0
+        if this.pcomments.length > 0
           return true
         return false
       else
