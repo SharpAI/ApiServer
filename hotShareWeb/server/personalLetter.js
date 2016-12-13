@@ -43,6 +43,7 @@ if(Meteor.isServer){
 	            content:doc.content,
 	            owner:doc.ownerId,
 	            followby: doc.ownerId,
+	            ownerName: owner.profile.fullname,
 	            checked: false
 	        });
 	        pushnotification("personalletter", doc, doc.ownerId);
