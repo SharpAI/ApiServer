@@ -24,3 +24,9 @@ Template._tips_addPost.onRendered(function(){
     }
   });
 });
+
+Template._tips_addPost.events({
+  "click ._tips_addPost_three": function(e, t) {
+    Tips.close();
+  }
+});

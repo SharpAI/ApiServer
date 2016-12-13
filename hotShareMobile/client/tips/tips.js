@@ -13,12 +13,8 @@ Tips = {
       Blaze.remove(view);
       view = null;
     }
+  },
+  isShow: function(){
+    return view != null;
   }
 };
-
-
-Template._tips.events({
-    "click ._tips #lastPage": function(e, t) {
-        Tips.close();
-  }
-});

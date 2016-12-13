@@ -166,6 +166,10 @@ if (Meteor.isCordova) {
     }
 
     function eventBackButton(){
+      // 显示tips时
+      if(Tips.isShow())
+        return Tips.close();
+
       // 编辑post时回退
         if(withAutoSavedOnPaused) {
             if (location.pathname === '/add') {
