@@ -551,14 +551,6 @@ if Meteor.isServer
 
       'updateTopicPostsAfterComment':(topicPostId,topic,topicPostObj)->
         _post = Posts.findOne({_id: topicPostId})
-        console.log("帖子是否审核："+_post.isReview)
-        # 处理帖子未审核
-        unless _post and _post.isReview 
-          preTopicPosts.insert({
-            postId: topicPostId,
-            topic: topic
-          })
-          return
         if Topics.find({text:topic}).count() > 0
           topicData = Topics.find({text:topic}).fetch()[0]
           topicId = topicData._id

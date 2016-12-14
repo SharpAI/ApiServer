@@ -25,7 +25,6 @@ Recommends = new Meteor.Collection('recommends');
 LogonIPLogs = new Meteor.Collection('loginiplogs');
 
 Configs = new Meteor.Collection('configs');
-preTopicPosts = new Meteor.Collection('pretopicposts');
 
 // 删除帖子
 LockedUsers = new Meteor.Collection('lockedUsers');

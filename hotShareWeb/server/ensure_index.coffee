@@ -69,5 +69,3 @@ if Meteor.isServer
     UserRelation._ensureIndex({userId:1, toUserId: 1})
     Recommends._ensureIndex({relatedUserId: 1})
     Recommends._ensureIndex({relatedPostId: 1})
-
-    preTopicPosts._ensureIndex({postId: 1})
