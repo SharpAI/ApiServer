@@ -494,6 +494,9 @@ if Meteor.isClient
     setTimeout ()->
       getURL(e)
     ,1200
+  @hanldeDirectLinkServerImportFailed = (url)->
+    handleAddedLink(url)
+    PUB.toast('快速导入失败啦，请尝试点击右上角的『导入』按钮。')
   @hanldeDirectLinkServerImport = (url)->
     isCancel = false;
     isRes = false
@@ -517,13 +520,19 @@ if Meteor.isClient
       isRes = true
       request_return = (res)->
         console.log('cancel import res: ' + JSON.stringify(res))
+        if(cancel is true)
+          return
+        return hanldeDirectLinkServerImportFailed(url)
       request_return_ok = (res)->
         res = JSON.parse(res.data)
-        if(res.status is 'cancelled')
-          if(cancel isnt true)
-            PUB.toast('快速导入失败啦，请尝试高级导入吧。')
+        if(cancel is true)
           return
-        PUB.toast('服务器正在处理，稍后可以在"我"下面查看。')
+        return hanldeDirectLinkServerImportFailed(url)
+        # if(res.status is 'cancelled')
+        #   if(cancel isnt true)
+        #     PUB.toast('快速导入失败啦，请尝试高级导入吧。')
+        #   return
+        # PUB.toast('服务器正在处理，稍后可以在"我"下面查看。')
       cordovaHTTP.get Meteor.absoluteUrl('import-cancel/') + unique_id, {}, {}, request_return_ok, request_return
       console.log("import-cancel: unique_id="+unique_id);
     showIframePage = (url)->
@@ -575,7 +584,7 @@ if Meteor.isClient
 
               popupProgressBar.close()
               Session.set('cancelImport', true)
-              abortFastImport()
+              return abortFastImport()
               showIframePage(url)
               #PUB.toast('快速导入失败啦，请尝试高级导入吧。')
               PUB.toast('服务器正在处理，稍后可以在"我"下面查看。')
@@ -620,6 +629,7 @@ if Meteor.isClient
             if isCancel is true
               console.log("Error: import Cancelled.");
               return
+            return hanldeDirectLinkServerImportFailed(url)
             PUB.toast('快速导入失败啦，请尝试高级导入吧。')
             Router.go('/')
         error_return = (res)->
@@ -628,7 +638,7 @@ if Meteor.isClient
           if isCancel is true
             console.log("Error: import Cancelled.");
             return
-          abortFastImport()
+          return abortFastImport()
           showIframePage(url)
           PUB.toast('快速导入失败啦，请尝试高级导入吧。')
           popupProgressBar.close()
