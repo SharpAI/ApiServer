@@ -599,6 +599,10 @@ if(Meteor.isServer){
                 subject = '有人踩了此故事：《' + title + '》';
                 action = '踩';
             }
+            else if(ptype === 'pcommentReply'){
+                subject = '有人回复了您在：《' + title + '》的评论';
+                action = '回复';
+            }
 
            text = Assets.getText('email/comment-post.html');
            //text = text.replace('{{post.title}}', antiSpam(post.title));
@@ -2472,9 +2476,9 @@ if(Meteor.isServer){
         if (modifier.$push && (modifier.$set["ptype"] === 'pcomments')) {
             var pubPush = modifier.$push['pub.'+index+'.pcomments'];
             if (modifier.$set["ptype"] === 'pcomments') {
-                comment = pubPush.content;
+                comment = pubPush;
             }
-            console.log("comment = "+comment);
+            console.log("comment.content = "+comment.content);
         }
           updateServerSidePcommentsHookDeferHandle(userId,doc,modifier.$set["ptype"],modifier.$set["pindex"], comment);
           return true;

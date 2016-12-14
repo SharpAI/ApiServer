@@ -7,6 +7,19 @@
     </div>
     <div class="content" id="content_msgs">
       {{#each eventFeeds}}
+        {{#if isPCommentReply eventType}}
+            <a href="/posts/{{postId}}" class="contentList">
+                {{#if notRead isRead checked @index createdAt}}
+                  <div class="readTips"></div>
+                {{/if}}
+                <img class="icon" src="{{ownerIcon}}" width='30' height='30'>
+                <div id="{{postId}}" class="alarm">{{ownerName}} 回复了您在《{{postTitle}}》的评论： "{{commentMsg}}"</div>
+                <div class="createAt">{{time_diff createdAt}}</div>
+            </a>
+            <div class="line">
+                <span></span>
+            </div>
+        {{/if}}
         {{#if isAlsoComment eventType}}
             <a href="/posts/{{postId}}" class="contentList">
                 {{#if notRead isRead checked @index createdAt}}

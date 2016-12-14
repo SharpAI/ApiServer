@@ -156,6 +156,11 @@ if Meteor.isClient
         Feeds.find({followby:Meteor.userId(),checked:false, eventType: {$nin: ['share','personalletter']}, createdAt:{$gt:new Date((new Date()).getTime() - 7 * 24 * 3600 * 1000)}},{sort: {createdAt: -1}, limit:20}).count() > 0
       lpcomments:()->
         Feeds.find({followby:Meteor.userId(),checked:false, eventType: {$nin: ['share','personalletter']}, createdAt:{$gt:new Date((new Date()).getTime() - 7 * 24 * 3600 * 1000)}},{sort: {createdAt: -1}, limit:20})
+      commentReply:()->
+        if this.eventType is "pcommentReply"
+          return true
+        else
+          return false
       time_diff: (created)->
         GetTime0(new Date() - created)
     Template.lpcomments.events
@@ -170,6 +175,10 @@ if Meteor.isClient
         Session.set("pcommetsId",this.owner)
         Session.set("pcommentsName",this.ownerName)
         Session.set "toasted",false
+        if this.eventType is 'pcommentReply'
+          Session.set "isPcommetReply",true
+        else
+          Session.set "isPcommetReply",false
         Session.set "NoUpdateShare",true
         Feeds.update({_id:this._id},{$set: {checked:true}})
         id = Session.get("postContent")._id

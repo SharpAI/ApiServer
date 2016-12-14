@@ -135,6 +135,11 @@ if Meteor.isClient
           "点评了您的故事"
         else
           "也点评了此故事"
+      commentReply:->
+        if this.eventType is "pcommentReply"
+          true
+        else
+          false  
       hasLpcoments:()->
         Feeds.find({followby:Meteor.userId(),checked:false, eventType: {$nin: ['share','personalletter']}, createdAt:{$gt:new Date((new Date()).getTime() - 7 * 24 * 3600 * 1000)}},{sort: {createdAt: -1}, limit:20}).count() > 0
       lpcomments:()->
@@ -152,6 +157,10 @@ if Meteor.isClient
         Session.set("pcommetsId",this.owner)
         Session.set("pcommentsName",this.ownerName)
         Session.set "toasted",false
+        if this.eventType is 'pcommentReply'
+          Session.set "isPcommetReply",true
+        else
+          Session.set "isPcommetReply",false
         Feeds.update({_id:this._id},{$set: {checked:true}})
         id = Session.get("postContent")._id
         if postId isnt id

@@ -170,6 +170,8 @@ if Meteor.isClient
           scrolltop=$('.dCurrent').offset().top
           Session.set("postPageScrollTop", scrolltop)
           document.body.scrollTop = Session.get("postPageScrollTop")
+        if Session.get("isPcommetReply") is true
+         return
         userName=Session.get("pcommentsName")
         toastr.info(userName+"点评过的段落已为您用蓝色标注！")
       ,1000
@@ -1157,21 +1159,33 @@ if Meteor.isClient
           post[i].pcomments = pcomments
           
         toUsername = ''
+        toUserId = ''
         if Session.get("pcommetsReply")
             selectedIndex = Session.get("pcommentSelectedIndex")
             pcomments = post[i].pcomments
             toUsername = pcomments[selectedIndex].username
+            toUserId = pcomments[selectedIndex].userId
+        console.log 'toUserId>>>>>>>'+toUserId
         pcommentJson = {
           content:content
           toUsername:toUsername
+          toUserId:toUserId
           username:username
           userId:userId
           userIcon:userIcon
           createdAt: new Date()
         }
-        post[i].pcomments.push(pcommentJson)
+        #post[i].pcomments.push(pcommentJson)
         updatePostsContentSession(post,"pcomments",i);
-        Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"pcomments","pindex":i}}, (error, result)->
+        popUpObj = {}
+        objHelp = 'pub.'+i+'.pcomments';
+        popUpObj[objHelp] = pcommentJson;
+        Posts.update({_id: postId},{
+          $push: popUpObj
+          $set:
+            'ptype': 'pcomments'
+            'pindex': i
+        }, (error, result)->
           if error
             console.log(error.reason);
           else

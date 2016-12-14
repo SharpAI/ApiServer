@@ -157,7 +157,11 @@
                         <img src="{{ownerIcon}}" width="40" height="40"/>
                     </div>
                     <div class="user_name">
-                        <h2>{{ownerName}}&nbsp;<span>{{_ "AlsoComment"}}</span></h2>
+                        {{#if commentReply}}
+                            <h2>{{ownerName}}&nbsp;<span>{{_ "CommentPeply"}}</span></h2>
+                        {{else}}
+                            <h2>{{ownerName}}&nbsp;<span>{{_ "AlsoComment"}}</span></h2>
+                        {{/if}}
                         <div class="readpost">
                             <dl>
                                 <dt>

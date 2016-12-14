@@ -61,6 +61,8 @@ if Meteor.isClient
       eventType is 'like'
     isPDislike:(eventType)->
       eventType is 'dislike'
+    isPCommentReply:(eventType)->
+      eventType is 'pcommentReply'
     isAlsoComment:(eventType)->
       eventType is 'pcomment'
     isAlsoFavourite:(eventType)->
@@ -118,6 +120,10 @@ if Meteor.isClient
         Session.set("pcommetsId",this.owner)
         Session.set("pcommentsName",this.ownerName)
         Session.set "toasted",false
+        if this.eventType is 'pcommentReply'
+          Session.set "isPcommetReply",true
+        else
+          Session.set "isPcommetReply",false
         Feeds.update({_id:this._id},{$set: {checked:true}})
       console.log(this._id)
       Meteor.call 'updataFeedsWithMe', Meteor.userId()

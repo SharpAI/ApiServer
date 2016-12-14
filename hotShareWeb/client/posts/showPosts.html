@@ -476,14 +476,17 @@
             post[i].pcomments = pcomments;
           }
           var toUsername = '';
+          var toUserId = '';
           if (Session.get("pcommetsReply")){
             var selectedIndex = Session.get("pcommentSelectedIndex");
             var pcomments = post[i].pcomments;
             toUsername = pcomments[selectedIndex].username;
+            toUserId = pcomments[selectedIndex].userId;
           }
           pcommentJson = {
             content: content,
             toUsername:toUsername,
+            toUserId:toUserId,
             username: username,
             userId: userId,
             userIcon: userIcon,

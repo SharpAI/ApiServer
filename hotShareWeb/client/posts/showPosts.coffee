@@ -70,6 +70,8 @@ if Meteor.isClient
           scrolltop=$('.dCurrent').offset().top
           Session.set("postPageScrollTop", scrolltop)
           document.body.scrollTop = Session.get("postPageScrollTop")
+        if Session.get("isPcommetReply") is true
+         return
         userName=Session.get("pcommentsName")
         toastr.info(userName+"点评过的段落已为您用蓝色标注！")
       ,1000

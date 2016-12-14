@@ -49,6 +49,8 @@ if Meteor.isClient
         Session.get('persistentFeedsForMe')
     isAlsoComment:(eventType)->
       eventType is 'pcomment'
+    isPCommentReply:(eventType)->
+      eventType is 'pcommentReply'
     isAlsoFavourite:(eventType)->
       eventType is 'pfavourite'
     isPcommentOwner:(eventType)->
@@ -102,6 +104,10 @@ if Meteor.isClient
         Session.set("pcommetsId",this.owner)
         Session.set("pcommentsName",this.ownerName)
         Session.set "toasted",false
+        if this.eventType is 'pcommentReply'
+          Session.set "isPcommetReply",true
+        else
+          Session.set "isPcommetReply",false
         Feeds.update({_id:this._id},{$set: {checked:true}})
       console.log(this._id)
       Meteor.call 'updataFeedsWithMe', Meteor.userId()

@@ -72,7 +72,13 @@ if (Meteor.isServer){
         return socialData;
     };
 
-    updateServerSidePcommentsHookDeferHandle = function(userId,doc,ptype,pindex,commentMsg){
+    updateServerSidePcommentsHookDeferHandle = function(userId,doc,ptype,pindex,comment){
+        var commentMsg = comment?comment.content:'';
+        var toUserId = comment?comment.toUserId:'';
+        //删除自己的评论
+        if(ptype === 'pcomments'&& commentMsg === ''){
+            return;
+        }
         function removeDuplicatedUser(ar, key) {
             var ret = [];
             var found = 0;
@@ -112,6 +118,58 @@ if (Meteor.isServer){
                         userId: userId,
                         createdAt: new Date()
                     });
+                }
+                //回复别人的评论
+                if (toUserId !== '' && commentMsg !== '') {
+                    console.log("=======回复别人的评论======================");
+                    var data = {
+                        postId:doc._id,
+                        pindex:pindex,
+                        ptype:ptype,
+                        commentUserId: toUserId,
+                        createdAt: new Date()
+                    };
+                    if (set_notifiedUsersId.indexOf(data.commentUserId) === -1) {
+                        set_notifiedUsersId.push(data.commentUserId);
+                        sendEmailToSubscriber('pcommentReply', pindex, doc._id, userId, data.commentUserId);
+                    }
+                    if (userinfo) {
+                        Feeds.insert({
+                            owner: userId,
+                            ownerName: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
+                            ownerIcon: userinfo.profile.icon,
+                            eventType: 'pcommentReply',
+                            subType: 'pcommentReply',
+                            commentMsg: commentMsg ? commentMsg : '',
+                            postId: data.postId,
+                            postTitle: doc.title,
+                            addontitle: doc.addontitle,
+                            pindex: pindex,
+                            pindexText: pindex && pindex >= 0 ? doc.pub[pindex].text : '',
+                            meComment: PComments.find({ commentUserId: data.commentUserId, postId: doc._id, pindex: pindex }).count() > 0,//我是否点评过此段落
+                            mainImage: doc.mainImage,
+                            createdAt: new Date(),
+                            heart: 0,
+                            retweet: 0,
+                            comment: 0,
+                            followby: data.commentUserId,
+                            checked: false
+                        });
+                        var notifyUser = Meteor.users.findOne({ _id: data.commentUserId })
+                        var waitReadCount = notifyUser.profile.waitReadCount;
+                        var broswerUser = notifyUser.profile.browser;
+                        if (broswerUser === undefined || isNaN(broswerUser)) {
+                            broswerUser = false;
+                        }
+                        if (waitReadCount === undefined || isNaN(waitReadCount)) {
+                            waitReadCount = 0;
+                        }
+                        if (broswerUser === false) {
+                            Meteor.users.update({ _id: data.commentUserId }, { $set: { 'profile.waitReadCount': waitReadCount + 1 } });
+                            pushnotification("palsocommentReply", doc, data.commentUserId);
+                        }
+                    }
+                    return  
                 }
                 if(needRemove){
                     //console.log('need remove '+needRemove)

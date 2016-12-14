@@ -18,6 +18,13 @@ if Meteor.isServer
         postId: doc._id
       }
       toUserId = userId
+    else if type is "palsocommentReply"
+      content = '有人回复了您在:《' + doc.title + '》的评论'
+      extras = {
+        type: "palsocommentReply"
+        postId: doc._id
+      }
+      toUserId = userId
     else if type is "pcommentowner"
       content = '有人点评了您的故事:《' + doc.title + '》'
       extras = {
