@@ -73,6 +73,58 @@ Template.searchPeopleAndTopic.helpers({
     return followUsersSearchData;
   },
 
+  follows: function() {
+    return Follows.find({}, {
+      sort: {
+        index: 1
+      }
+    });
+  },
+
+  isFollowed: function(follow) {
+    var fcount;
+    Meteor.subscribe("friendFollower", Meteor.userId(), follow.userId);
+    fcount = Follower.find({
+      "userId": Meteor.userId(),
+      "followerId": follow.userId
+    }).count();
+    if (fcount > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  },
+
+  isFollowedUser: function(follow) {
+    var fcount;
+    Meteor.subscribe("friendFollower", Meteor.userId(), follow._id);
+    fcount = Follower.find({
+      "userId": Meteor.userId(),
+      "followerId": follow._id
+    }).count();
+    if (fcount > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  },
+
+  isSelf: function(follow) {
+    if (follow.userId === Meteor.userId()) {
+      return true;
+    } else {
+      return false;
+    }
+  },
+  
+  notSelf: function(follow) {
+    if (follow._id === Meteor.userId()) {
+      return false;
+    } else {
+      return true;
+    }
+  },
+
   isLoading: function() {
     return FollowUsersSearch.getStatus().loading;
   }
