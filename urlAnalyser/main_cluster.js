@@ -162,28 +162,13 @@ function checkIPAddr(ip) {
     var geo = geoip.lookup(ip);
     console.log("geo = "+JSON.stringify(geo));
     if (geo && geo.country == 'US') {
-        return 'US'
+        return 'US';
     }
     return 'CN';
 }
 
 
 /*Kue relative process*/
-function startKueService() {
-    kuequeue = kue.createQueue({
-             //prefix: redis_prefix,
-             redis: {
-                 port: 6379,
-                 host: 'urlanalyser.tiegushi.com',
-                 auth: 'uwAL539mUJ'
-             }});
-    if (cluster.isMaster) {
-        console.log("!!!!!!!!!! startKueService: Master...");
-    } else {
-        console.log("!!!!!!!!!! startKueService: Slaver...");
-        setKueProcessCallback();
-    }
-}
 function restartKueService() {
     if (restartKueServiceTimeout) {
         clearTimeout(restartKueServiceTimeout);
@@ -214,15 +199,15 @@ function restartKueService() {
         }
     }, 5000);
 }
-function createTaskToKueQueue(prefix, _id, url, server, unique_id, isMobile, chunked) {
+function createTaskToKueQueue(prefix, _id, url, fromserver, unique_id, isMobile, chunked) {
     var job = kuequeue.create(prefix, {
       id: _id,
       url: getUrl(url),
-      server: server,
+      fromserver: fromserver,
       unique_id: unique_id,
       isMobile: isMobile,
       chunked: chunked
-    }).priority('critical').removeOnComplete(true).save(function(err){
+    }).priority('critical').attempts(3).ttl(60*1000).removeOnComplete(true).save(function(err){
       if (!err) {
         console.log("   job.id = "+job.id+", unique_id="+unique_id);
       }
@@ -257,7 +242,7 @@ function abornalDispose() {
       } else {
         console.log('Slaver: Oops... ', err);
       }
-      restartKueService();
+      //restartKueService();
     });
 
     kuequeue.watchStuckJobs(30*1000);
@@ -293,53 +278,6 @@ function abornalDispose() {
         done();
       });
     });*/
-}
-function setKueProcessCallback() {
-  function process_callback(job, done){
-    showDebug && console.log('------- Start --------');
-    console.log('worker', cluster.worker.id, 'queue.process', job.data);
-    var data = job.data;
-    var _id = data.id;
-    var url = data.url;
-    var server = data.server;
-    var unique_id = data.unique_id;
-    var isMobile = data.isMobile;
-    var chunked = data.chunked;
-    
-    if(isMobile)
-      job.progress(50, 100, JSON.stringify({status: 'importing'}));
-      
-    setTimeout(function() {
-        try {
-            importUrl(_id, url, server, unique_id, isMobile, chunked, function(result) {
-              //setTimeout(function() { done(); }, jobDelay);
-              console.log('result='+JSON.stringify(result));
-              if (result.status == 'succ') {
-                job.progress(100, 100, JSON.stringify(result));
-                done();
-              } else if (result.status == 'importing') {
-                job.progress(50, 100, JSON.stringify(result));
-              } else if (result.status == 'setPostId') {
-                job.progress(60, 100, JSON.stringify(result));
-              } else {
-                done(new Error('failed'));
-              }
-            });
-        } catch (error) {
-            done(new Error('failed'));
-            console.log("Exception: in importUrl: error="+error);
-            console.log("Exception: in importUrl. job.data="+JSON.stringify(job.data));
-        }
-    }, 0);
-  }
-
-  if (!process.env.SERVER_IN_US) {
-    console.log("cluster Slaver: CN");
-    kuequeue.process(redis_prefix, QUEUE_SIZE, process_callback);
-  } else {
-    console.log("cluster Slaver: US");
-    kuequeue.process(redis_prefix_us, QUEUE_SIZE, process_callback);
-  }
 }
 
 
@@ -1330,6 +1268,75 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
     getIdleNightmare(nightmareQueue, startNavigation2, 0);
 }
 
+function setKueProcessCallback() {
+  function process_callback(job, done){
+    showDebug && console.log('------- Start --------');
+    console.log('worker', cluster.worker.id, 'queue.process', job.data);
+    var data = job.data;
+    var _id = data.id;
+    var url = data.url;
+    var server = data.server;
+    var unique_id = data.unique_id;
+    var isMobile = data.isMobile;
+    var chunked = data.chunked;
+    
+    if(isMobile)
+      job.progress(50, 100, JSON.stringify({status: 'importing'}));
+      
+    setTimeout(function() {
+        try {
+            importUrl(_id, url, server, unique_id, isMobile, chunked, function(result) {
+              //setTimeout(function() { done(); }, jobDelay);
+              console.log('result='+JSON.stringify(result));
+              if (result.status == 'succ') {
+                job.progress(100, 100, JSON.stringify(result));
+                done();
+              } else if (result.status == 'importing') {
+                job.progress(50, 100, JSON.stringify(result));
+              } else if (result.status == 'setPostId') {
+                job.progress(60, 100, JSON.stringify(result));
+              } else {
+                done(new Error('failed'));
+              }
+            });
+        } catch (error) {
+            done(new Error('failed'));
+            console.log("Exception: in importUrl: error="+error);
+            console.log("Exception: in importUrl. job.data="+JSON.stringify(job.data));
+        }
+    }, 0);
+  }
+
+  if (!process.env.SERVER_IN_US) {
+    console.log("cluster Slaver: CN");
+    kuequeue.process(redis_prefix, QUEUE_SIZE, process_callback);
+  } else {
+    console.log("cluster Slaver: US");
+    kuequeue.process(redis_prefix_us, QUEUE_SIZE, process_callback);
+  }
+}
+
+function startKueService() {
+    var redis_server_url;
+    if (process.env.SERVER_IN_US) {
+        redis_server_url = 'usurlanalyser.tiegushi.com';
+    } else {
+        redis_server_url = 'urlanalyser.tiegushi.com';
+    }
+    kuequeue = kue.createQueue({
+             //prefix: redis_prefix,
+             redis: {
+                 port: 6379,
+                 host: redis_server_url,
+                 auth: 'uwAL539mUJ'
+             }});
+    if (cluster.isMaster) {
+        console.log("!!!!!!!!!! startKueService: Master...");
+    } else {
+        console.log("!!!!!!!!!! startKueService: Slaver...");
+        setKueProcessCallback();
+    }
+}
 
 if (cluster.isMaster) {
   console.log("clusterWorkerSize="+clusterWorkerSize);
@@ -1351,7 +1358,7 @@ if (cluster.isMaster) {
   });
   if (process.env.isClient) {
     console.log("Master: work only for slaver mode.");
-    return;
+    //return;
   } else {
     console.log("cluster work both for Master and slaver mode.");
   }
@@ -1367,18 +1374,18 @@ if (cluster.isMaster) {
         res.isResErr = true;
       });
 
-      users.findOne({_id: req.params._id}, function(err, user){
-        if(err || !user)
-          return writeRes(res, JSON.stringify({status:'failed'}), true);
-        if(!user.token)
+      //users.findOne({_id: req.params._id}, function(err, user){
+      //  if(err || !user)
+      //    return writeRes(res, JSON.stringify({status:'failed'}), true);
+      //  if(!user.token)
           return routerCallback(req, res);
 
-        lockedUsers.findOne({token: user.token}, function(error, lock){
+        /*lockedUsers.findOne({token: user.token}, function(error, lock){
           if(error || !lock)
             return routerCallback(req, res);
           writeRes(res, JSON.stringify({status:'failed'}), true);
         })
-      });
+      });*/
     });
   router.route('/:_id/:url/:unique_id')
     .get(function(req, res) {
@@ -1386,44 +1393,59 @@ if (cluster.isMaster) {
           res.isResErr = true;
         });
 
-        users.findOne({_id: req.params._id}, function(err, user){
-          if(err || !user)
-            return writeRes(res, JSON.stringify({status:'failed'}), true);
-          if(!user.token)
+        //users.findOne({_id: req.params._id}, function(err, user){
+        //  if(err || !user)
+        //    return writeRes(res, JSON.stringify({status:'failed'}), true);
+        //  if(!user.token)
             return routerCallback(req, res);
 
-          lockedUsers.findOne({token: user.token}, function(error, lock){
+        /*  lockedUsers.findOne({token: user.token}, function(error, lock){
             if(error || !lock)
               return routerCallback(req, res);
             writeRes(res, JSON.stringify({status:'failed'}), true);
           })
-        });
+        });*/
     });
   function routerCallback(req, res) {
       var chunked = req.query['chunked'] && req.query['chunked'] === 'true' ? true : false;;
       var job;
       var ip = req.query.ip;
-      var server = req.query.server || '';
+      var fromserver = req.query.fromserver || '';
       var unique_id = req.query.task_id || mongoid();
       var isMobile = req.query.isMobile || '';
       showDebug && console.log('[');
       showDebug && console.log('   req.params=' + JSON.stringify(req.params));
       showDebug && console.log('   req.query=' + JSON.stringify(req.query));
 
-      if (checkIPAddr(ip) == 'CN') {
+      /*if (checkIPAddr(ip) == 'CN') {
         console.log("   create task for CN");
-        job = createTaskToKueQueue(redis_prefix, req.params._id, req.params.url, server, unique_id, isMobile, chunked);
+        job = createTaskToKueQueue(redis_prefix, req.params._id, req.params.url, fromserver, unique_id, isMobile, chunked);
         
       } else {
         console.log("   create task for US");
-        job = createTaskToKueQueue(redis_prefix_us, req.params._id, req.params.url, server, unique_id, isMobile, chunked);
+        job = createTaskToKueQueue(redis_prefix_us, req.params._id, req.params.url, fromserver, unique_id, isMobile, chunked);
+      }*/
+      if (process.env.SERVER_IN_US) {
+        console.log("   create task for US");
+        job = createTaskToKueQueue(redis_prefix_us, req.params._id, req.params.url, fromserver, unique_id, isMobile, chunked);
+      } else {
+        if (checkIPAddr(ip) == 'CN') {
+          console.log("   create task for CN");
+          job = createTaskToKueQueue(redis_prefix, req.params._id, req.params.url, fromserver, unique_id, isMobile, chunked);
+        } else {
+          var req_url = 'http://usurlanalyser.tiegushi.com:8080'+req.originalUrl;
+          console.log("   redirect task to US: "+req_url+"   ]");
+          return res.redirect(req_url);
+        }
       }
       
       if (unique_id != '') {
         Task.add(unique_id, req.params._id, req.params.url);
       }
 
-      job.on('complete', function(result){
+      job.on('enqueue', function(id, type) {
+        console.log('Job %s got queued of type %s', id, type); 
+      }).on('complete', function(result){
         console.log('Job completed with data', result);
       }).on('failed attempt', function(errorMessage, doneAttempts){
         console.log('Job attempt failed');

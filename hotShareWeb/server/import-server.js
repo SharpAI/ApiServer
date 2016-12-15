@@ -29,7 +29,7 @@ function ImportServer(res, taskId, chunked){
     res.write((chunked === true ? '\r\n' : '') + str);
   };
   obj.cancelImport = function(auto){
-    console.log('cancel import:', import_cancel_url + '/' + taskId);
+    console.log('cancel import:', import_cancel_url + '/' + taskId +'- 3');
     request({method: 'GET', uri: import_cancel_url + '/' + taskId})
       .on('error', function(err){
         if(auto === true)
@@ -42,6 +42,7 @@ function ImportServer(res, taskId, chunked){
         }).run();
         runCancelTask();
       }).on('end', function(data) {
+        console.log("cancel import: request end.");
         obj.sendRes('{"status": "failed"}', true);
         Fiber(function() {
           cancelImportTask.remove({_id: taskId});
@@ -73,8 +74,8 @@ Meteor.startup(function(){
 
 Router.route('/import-server/:_id/:url', function (req, res, next) {
   var slef = this;
-  var req_url = import_server_url + '/' + this.params._id + '/' + encodeURIComponent(this.params.url) + '?chunked=true';
   var clientIp = getClientIp(req);
+  var req_url = import_server_url + '/' + this.params._id + '/' + encodeURIComponent(this.params.url) + '?chunked=true';
   var taskId = this.params.query['task_id'] || new Mongo.ObjectID()._str;
   var importServer = new ImportServer(res, taskId, true);
 
@@ -91,8 +92,8 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
 
   if (clientIp)
     req_url += '&ip='+clientIp;
-  if (Meteor.absoluteUrl().toLowerCase().indexOf('host2.tiegushi.com') >= 0)
-    req_url += '&server='+encodeURIComponent(Meteor.absoluteUrl());
+  //if (Meteor.absoluteUrl().toLowerCase().indexOf('host2.tiegushi.com') >= 0)
+  req_url += '&fromserver='+encodeURIComponent(Meteor.absoluteUrl());
   req_url += '&task_id=' + taskId;
   if (this.params.query['isMobile'])
     req_url += '&isMobile=' + this.params.query['isMobile']
@@ -109,6 +110,7 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
   // 请求导入server
   request({method: 'GET', uri: req_url})
     .on('error', function(err){
+      console.log("request req_url error: req_url="+req_url);
       importServer.sendRes('{"status": "failed"}', true);
     }).on('data', function(data) {
       if (timeoutHandle) {
@@ -116,18 +118,22 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
           timeoutHandle = null;
       }
       data = JSON.parse(data);
-      if(data.status != 'importing')
+      if(data.status != 'importing') {
+        console.log("data.status is not importing: data="+JSON.stringify(data));
         return importServer.sendRes(JSON.stringify(data), true);
+      }
       importServer.sendRes(JSON.stringify(data));
     }).on('end', function(data) {
+      console.log("request req_url end: req_url="+req_url);
       importServer.sendRes(data, true);
     });
 
 }, {where: 'server'});
 
-Router.route('/import-cancel/:id', function (req, res, next) {
+Router.route('/import-cancel/:_id', function (req, res, next) {
   var importServer = new ImportServer(res, this.params._id);
 
+  console.log("Receved import-cancel request: "+this.params._id+"!!! - 3");
   res.writeHead(200, {
     'Content-Type' : 'text/html;charset=UTF-8'
   });
