@@ -403,6 +403,29 @@ if Meteor.isServer
         return
       'addBlackList': (blacker, blackBy)->
         BlackList.insert({blacker: [blacker],blackBy: blackBy})
+      'updateTopicPostsAfterComment':(topicPostId,topic,topicPostObj)->
+        _post = Posts.findOne({_id: topicPostId})
+        if Topics.find({text:topic}).count() > 0
+          topicData = Topics.find({text:topic}).fetch()[0]
+          topicId = topicData._id
+        else
+          topicId = Topics.insert {
+            type:"topic",
+            text:topic,
+            imgUrl: ""
+          }
+        topicPostObj.topicId = topicId
+        if _post and _post.mainImage
+          topicPostObj.mainImage = _post.mainImage
+        console.log topicId
+        unless TopicPosts.findOne({postId:topicPostId,topicId: topicId})
+          try
+            TopicPosts.insert topicPostObj,(err,id)->
+              console.log(">>>id>>"+id)
+              Topics.update({_id: topicId},{$inc: {posts: 1}})
+              return
+          catch error
+            console.log error
       'refreshAssociatedUserToken': (data)->
         return
         # if data is undefined or data is null

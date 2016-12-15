@@ -34,6 +34,11 @@
 <!--      </div>-->
       {{else}}
       {{/each}}
+      {{#if moreResults}}
+          <div id="topicPostShowMoreResults" style="margin-left: 25px;">
+            <span class="loading">{{_ "loading"}}</span>
+          </div>
+      {{/if}}
     </div>
   </div>
   </div>

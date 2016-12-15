@@ -217,7 +217,7 @@ if (Meteor.isClient) {
   Deps.autorun(function(){
     if(Meteor.userId()){
       Meteor.subscribe("topics");
-      Meteor.subscribe("topicposts");
+      //Meteor.subscribe("topicposts");
       getHotPostsData();
     }
     document.title = Session.get("DocumentTitle");
