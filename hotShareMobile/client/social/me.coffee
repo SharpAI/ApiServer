@@ -37,11 +37,11 @@ if Meteor.isClient
       if Meteor.user()
         if Cookies.check("display-lang")
           if Cookies.get("display-lang") is 'en'
-            Meteor.user().profile.fullname || '[N/A]'
+            Meteor.user().profile.fullname || Meteor.user().username ||'[N/A]'
           else
-            Meteor.user().profile.fullname || '[无]'
+            Meteor.user().profile.fullname || Meteor.user().username ||'[无]'
         else
-          Meteor.user().profile.fullname || '[无]'
+          Meteor.user().profile.fullname || Meteor.user().username ||'[无]'
     sex:()->
       if Meteor.user() and Meteor.user().profile.sex
         if Cookies.check("display-lang")
@@ -60,6 +60,7 @@ if Meteor.isClient
               return '男'
           else if Meteor.user().profile.sex is 'female'
               return '女'
+      return '[未知]'
     favposts: ()->
       return []
   Template.information.events
@@ -77,7 +78,7 @@ if Meteor.isClient
   Template.setNickname.helpers
     nickname:()->
       if Meteor.user()
-        Meteor.user().profile.fullname
+        Meteor.user().profile.fullname || Meteor.user().username
   Template.setNickname.rendered=->
     document.body.scrollTop = document.body.scrollHeight
     document.ontouchmove = (e) ->
