@@ -116,7 +116,7 @@ Template.searchPeopleAndTopic.helpers({
       return false;
     }
   },
-  
+
   notSelf: function(follow) {
     if (follow._id === Meteor.userId()) {
       return false;
@@ -125,7 +125,19 @@ Template.searchPeopleAndTopic.helpers({
     }
   },
 
+  topic: function() {
+    return Session.get('persistentTopics');
+  },
+
   isLoading: function() {
     return FollowUsersSearch.getStatus().loading;
   }
 });
+
+Template.searchFollow.events({
+  'click .topic': function(event) {
+    Session.set("topicId", this._id);
+    Session.set("topicTitle", "#" + this.text + "#");
+    return PUB.page('/topicPosts');
+  }
+})

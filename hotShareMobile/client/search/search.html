@@ -80,7 +80,7 @@
               </div>
             {{/each}}
           {{else}}
-            <div class="stitle">{{_ "recommandUser"}}</div>
+            <div class="stitle" style='text-align: center;'>{{_ "recommandUser"}}</div>
             {{#each follows}}
             <a href="" id="{{userId}}" class="contentList">
             <img class="icon" src="{{icon}}" width='30' height='30'>
@@ -121,6 +121,15 @@
                 <span></span>
               </div>
             {{/each}}
+          {{else}}
+          <div id="topic" style='text-align: center;'>#热门话题#</div>
+          {{#each topic}}
+            <!--li class="topic" id="{{_id}}">#{{text}}#</li-->
+            <div id="{{_id}}" class='topicTitle'>#{{text}}#<span>{{posts}}{{_ "numOfStory"}}<i class="fa fa-angle-right fa-fw"></i></span></div>
+              <div class="line">
+                <span></span>
+              </div>
+          {{/each}}
           {{/if}}
         </div>
         {{/if}}
@@ -171,7 +180,7 @@
           </div>
       {{/each}}
       {{else}}
-       <div class="stitle">{{_ "recommandUser"}}</div>
+       <div class="stitle" style="text-align: center;">{{_ "recommandUser"}}</div>
       {{#each follows}}
           <a href="" id="{{userId}}" class="contentList">
           <img class="icon" src="{{icon}}" width='30' height='30'>
