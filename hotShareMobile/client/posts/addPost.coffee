@@ -495,8 +495,10 @@ if Meteor.isClient
       getURL(e)
     ,1200
   @hanldeDirectLinkServerImportFailed = (url)->
+    Session.set('cancelImport', true)
+    popupProgressBar.close()
     handleAddedLink(url)
-    PUB.toast('快速导入失败啦，请尝试点击右上角的『导入』按钮。')
+    window.plugins.toast.showWithOptions({message: '访问导入链接超时，请点击右上角"导入"再试一次。', duration: '6000', position: 'center'})
   @hanldeDirectLinkServerImport = (url)->
     isCancel = false;
     isRes = false
