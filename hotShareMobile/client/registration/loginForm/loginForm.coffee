@@ -40,14 +40,14 @@ Template.loginForm.events
       $("#sendContent").val('')
       Meteor.call('sendEmailToAdmin', mailAddress,subject ,content)
       PUB.toast('邮件已经发送，请等待客服与您联系。')
-      $('.customerService,.customerServiceBackground').hide();
+      $('.customerService,.customerServiceBackground').hide()
     'click .forgetPassword' :->
       $('.login').css('display',"none")
       $('#register').css('display',"none")
       $('#weibo').css('display',"none")
       $('#login').css('display',"none")
       $('.recovery').css('display',"block")
-      $('.agreeDeal').css('display',"none");
+      $('.agreeDeal').css('display',"none")
     'submit #login-form':(e,t)->
       e.preventDefault()
       if Meteor.status().connected isnt true
