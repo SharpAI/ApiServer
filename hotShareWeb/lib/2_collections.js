@@ -2690,13 +2690,14 @@ if(Meteor.isServer){
       if(doc.username===null)
           return false;
       else {
-          commentInsertHookDeferHandle(userId, doc);
+          //commentInsertHookDeferHandle(userId, doc);
           return true;
       }
     },
     remove: function (userId, doc) {
       if(doc.userId !== userId)
           return false;
+      /*
       Meteor.defer(function(){
           try {
               var post = Posts.findOne({_id: doc.postId});
@@ -2708,7 +2709,7 @@ if(Meteor.isServer){
               Posts.update({_id: doc.postId}, {$set: {'commentsCount': commentsCount}});
           }
           catch(error){}
-      });
+      });*/
       return doc.userId === userId;
     },
     update: function (userId, doc) {
