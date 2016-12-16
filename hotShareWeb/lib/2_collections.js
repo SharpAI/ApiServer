@@ -1195,6 +1195,10 @@ if(Meteor.isServer){
         });
     };
 
+    Meteor.publish('postInfoById', function(id) {
+      return Posts.find({_id: id}, {limit: 1});
+    });
+
     Meteor.publish('userNewBellCount', function(userId) {
       var self = this;
       var count = 0;

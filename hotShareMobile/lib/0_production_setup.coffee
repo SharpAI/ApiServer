@@ -23,3 +23,4 @@
 @withStaticPosts = false
 @withNewFilePath=true
 @withLanguageSetting=false
+@withImportToEdit=false

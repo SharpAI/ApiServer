@@ -78,6 +78,7 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
   var req_url = import_server_url + '/' + this.params._id + '/' + encodeURIComponent(this.params.url) + '?chunked=true';
   var taskId = this.params.query['task_id'] || new Mongo.ObjectID()._str;
   var importServer = new ImportServer(res, taskId, true);
+  var q_ver = this.params.query['v'] || '1';
 
   res.writeHead(200, {
     'Content-Type' : 'text/html;charset=UTF-8',
@@ -95,6 +96,7 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
   //if (Meteor.absoluteUrl().toLowerCase().indexOf('host2.tiegushi.com') >= 0)
   req_url += '&fromserver='+encodeURIComponent(Meteor.absoluteUrl());
   req_url += '&task_id=' + taskId;
+  //req_url += '&v=' + q_ver;
   if (this.params.query['isMobile'])
     req_url += '&isMobile=' + this.params.query['isMobile']
   console.log("api_url="+req_url+", Meteor.absoluteUrl()="+Meteor.absoluteUrl());
@@ -213,7 +215,13 @@ Router.route('/restapi/importPost/:type/:_id', function(req, res, next) {
                     var hostAndPortUrl = "http://127.0.0.1";
                     var uri = hostAndPortUrl + '/restapi/postInsertHook/' + post.owner + '/' + post._id;
                     console.log("req_data._id="+req_data._id+", uri = "+uri);
-                    request({method: 'GET', uri: uri});
+                    request({method: 'GET', uri: uri})
+                      .on('error', function(err){
+                        console.log('/restapi/postInsertHook/ err:', err);
+                      }).on('data', function(data) {
+                      }).on('end', function(data) {
+                        console.log('/restapi/postInsertHook/ ok:', data);
+                      });
                     res.end(JSON.stringify({result: 'success'}));
                 });
             } else {

@@ -499,6 +499,9 @@ if Meteor.isClient
     popupProgressBar.close()
     handleAddedLink(url)
     window.plugins.toast.showWithOptions({message: '访问导入链接超时，请点击右上角"导入"再试一次。', duration: '6000', position: 'center'})
+  
+  _handle = null
+  _handleAutorun = null
   @hanldeDirectLinkServerImport = (url)->
     isCancel = false;
     isRes = false
@@ -614,18 +617,75 @@ if Meteor.isClient
           if result.status is 'succ'
             Session.set('importProcedure', 97)
             Session.set('importProcedure', 100)
-            PUB.toast('导入成功!')
             postId = result.json.substr(result.json.lastIndexOf('/')+1)
-            console.log("postId="+postId);
-            Session.set("TopicPostId", postId)
-            Session.set("TopicTitle", result.title)
-            Session.set("TopicAddonTitle", result.addontitle)
-            Session.set("TopicMainImage", result.mainImage)
-            Router.go('/addTopicComment/')
-            Meteor.subscribe(
-              'publicPosts'
-              postId
-            )
+
+            if !withImportToEdit
+              PUB.toast('导入成功!')
+              console.log("postId="+postId);
+              Session.set("TopicPostId", postId)
+              Session.set("TopicTitle", result.title)
+              Session.set("TopicAddonTitle", result.addontitle)
+              Session.set("TopicMainImage", result.mainImage)
+              Router.go('/addTopicComment/')
+              Meteor.subscribe(
+                'publicPosts'
+                postId
+              )
+            else
+              navigator.notification.confirm(
+                '导入成功，是编辑后发表还是立即发表？',
+                (index)->
+                  if index is 2
+                    PUB.toast('导入成功!')
+                    console.log("postId="+postId);
+                    Session.set("TopicPostId", postId)
+                    Session.set("TopicTitle", result.title)
+                    Session.set("TopicAddonTitle", result.addontitle)
+                    Session.set("TopicMainImage", result.mainImage)
+                    Router.go('/addTopicComment/')
+                    Meteor.subscribe(
+                      'publicPosts'
+                      postId
+                    )
+                  else
+                    showEditingPopupProgressBar()
+                    Meteor.subscribe 'postInfoById',  postId, ()->
+                      if _handle
+                        _handle.stop()
+                        _handle = null
+                      if !_handleAutorun
+                        _handleAutorun = true
+                        Tracker.autorun ()->
+                          if Drafts.find({isPost: true}).count() <= 0 && _handle
+                            _handle.stop()
+                            _handle = null
+                      _handle = Posts.find({_id: postId}).observeChanges
+                        changed: (id, fields)->
+                          _p = Posts.findOne({_id: id})
+                          _d = Drafts.findOne({_id: id})
+                          if !_d or _p.pub.length <= 0
+                            return
+
+                          Drafts.update({_id: id}, {$set: {imgUrl: _p.mainImage}})
+                          for item in _p.pub
+                            if item.souImgUrl and item.imgUrl
+                              Drafts.update({originImgUrl: item.souImgUrl, isPost: {$ne: true}}, {$set: {imgUrl: item.imgUrl}}, {multi: true}) 
+
+                      # if(err)
+                      #   return popupProgressBar.close()
+                      Drafts.remove({})
+                      post = Posts.findOne({_id: postId})
+                      Session.set("postContent", post)
+                      draft0 = {_id:post._id, isPost: true, type:'image', isImage:true, url: url, owner: Meteor.userId(), imgUrl:post.mainImage, filename:post.mainImage.replace(/^.*[\\\/]/, ''), URI:"", data_row:0,style:post.mainImageStyle}
+                      Drafts.insert(draft0)
+                      pub = post.pub;
+                      if pub.length > 0
+                        deferedProcessAddPostItemsWithEditingProcessBar(pub)
+                      Session.set 'isReviewMode','2'
+                      Router.go('/add')    
+                      popupProgressBar.close()                                      
+                '提示', ['编辑后发表','立即发表']
+              )
           else
             console.log 'Server import error: '
             if isCancel is true
@@ -1554,7 +1614,7 @@ if Meteor.isClient
         draftVideoData = Drafts.find({type:'video'}).fetch()
         draftToBeUploadedImageData = []
         for i in [0..(draftImageData.length-1)]
-            if draftImageData[i].imgUrl is undefined or draftImageData[i].imgUrl.toLowerCase().indexOf("http://")>= 0 or draftImageData[i].imgUrl.toLowerCase().indexOf("https://")>= 0
+            if draftImageData[i].imgUrl is undefined or draftImageData[i].imgUrl.toLowerCase().indexOf("http://")>= 0 or draftImageData[i].imgUrl.toLowerCase().indexOf("https://")>= 0 or draftImageData[i].imgUrl.toLowerCase().indexOf("data:image/")>= 0
                 draftToBeUploadedImageData.unshift({})
                 continue
             draftToBeUploadedImageData.push(draftImageData[i])
