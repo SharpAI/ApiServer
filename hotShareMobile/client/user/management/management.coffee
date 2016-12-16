@@ -1,5 +1,5 @@
 is_loading = new ReactiveVar([])
-loginFn = (id)->  
+loginFn = (id)->
   Meteor.loginWithUserId id, false, (err)->
     # 切换帐号时清空PostSearch history
     Session.set("searchContent","")
@@ -18,7 +18,7 @@ loginFn = (id)->
       )
     else if err is 'WAIT_TIME'
       return navigator.notification.confirm '切换帐号太频繁了（间隔至少10秒），请稍后再试！', null, '提示', ['知道了']
-    
+
     window.plugins.userinfo.setUserInfo(
       Meteor.userId()
       ()->
@@ -35,10 +35,10 @@ loginFn = (id)->
       Session.setPersistent('myPostsCount',Counts.get('myPostsCount'))
       Session.setPersistent('myFollowToCount',Counts.get('myFollowToCount'))
       Session.setPersistent('myFollowToCount',Counts.get('myEmailFollowerCount'))
-      
+
     is_loading.set([])
     navigator.notification.confirm '切换帐号成功~', null, '提示', ['知道了']
-            
+
 Template.accounts_management.rendered=->
   is_loading = new ReactiveVar([])
   Tracker.autorun ()->
@@ -57,7 +57,7 @@ Template.accounts_management.rendered=->
   #     if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
   #         userIds.push(item.userIdB)
   # )
-  
+
   # Meteor.subscribe('associateduserdetails', userIds)
 
   # return
@@ -79,7 +79,7 @@ Template.accounts_management.helpers
     #     if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
     #         userIds.push(item.userIdB)
     # )
-    
+
     # return Meteor.users.find({_id: {'$in': userIds}})
 
 Template.accounts_management.events
@@ -92,6 +92,12 @@ Template.accounts_management.events
       return Meteor.reconnect()
     loginFn(@toUserId)
   'click .add-new' :->
+    history = Session.get("history_view")
+    history.push {
+        view: 'my_accounts_management'
+        scrollTop: document.body.scrollTop
+    }
+    Session.set "history_view", history
     Router.go '/my_accounts_management_addnew'
 
   'click .remove': (e, t)->
@@ -107,7 +113,7 @@ Template.accounts_management.events
           id
         )
     )
-      
+
   'click .leftButton' :->
     Router.go '/dashboard'
 
@@ -118,9 +124,9 @@ Template.accounts_management_addnew.rendered=->
   $('.dashboard').css 'min-height', $(window).height()
   return
 
-Template.accounts_management_addnew.events  
+Template.accounts_management_addnew.events
   'click .leftButton' :->
-    Router.go '/my_accounts_management'
+    PUB.back()
   'submit #form-addnew': (e, t)->
     e.preventDefault()
 
@@ -130,7 +136,7 @@ Template.accounts_management_addnew.events
         type: Meteor.user().type,
         token: Meteor.user().token
     }
-    
+
     Meteor.call('addAssociatedUserNew', userInfo, (err, data)->
       if data and data.status is 'ERROR'
         if data.message is 'Invalid Username'
