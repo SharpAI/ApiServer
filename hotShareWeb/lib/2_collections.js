@@ -1512,7 +1512,10 @@ if(Meteor.isServer){
             self.count = 0;
             self.meeterIds=[];
             self.docIds=[];
-            //publicPostsPublisherDeferHandle(userId,postId,self);
+            //此处为了修复再次打开帖子时新朋友消失的问题，需要publicPostsPublisherDeferHandle重新计算相遇次数
+            if(limit <= 10){
+                publicPostsPublisherDeferHandle(userId,postId,self);    
+            }
             var handle = Meets.find({me: userId,meetOnPostId:postId},{sort: {createdAt: -1},limit:limit}).observeChanges({
                 added: function (id,fields) {
                     var taId = fields.ta;
