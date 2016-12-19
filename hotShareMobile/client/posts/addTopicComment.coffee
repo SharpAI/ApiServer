@@ -26,6 +26,7 @@ if Meteor.isClient
         commentContent += commentData[index].content
     Session.set("comment",commentContent)
     Meteor.subscribe "readerpopularpostsbyuid" , uid
+    Meteor.subscribe "usersById", uid
     $('#comment').bind 'propertychange input', (event) ->
       console.log '>>>>>>>>>>>>>>>>>' + event.target.value
       topicsCountIsBeyond event.target.value
