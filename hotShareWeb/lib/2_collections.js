@@ -1214,7 +1214,12 @@ if(Meteor.isServer){
         changed: function (id) {
           count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
           feeds = Feeds.find({followby: userId}, {sort: {createdAt: -1}, limit: 30}).fetch();
-          self.changed("userNewBellCount", id, {count: count, feeds: feeds});
+          try {
+             self.changed("userNewBellCount", id, {count: count, feeds: feeds});
+          }
+          catch (e) {
+          }
+          
         },
         removed: function (id) {
           count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
@@ -1266,7 +1271,10 @@ if(Meteor.isServer){
                     if(item.inIframe || item.type === 'video' || item.type === 'music')
                         reload = true;
                 });
-                self.changed("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub, reload: reload}); 
+                try {
+                        self.changed("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub, reload: reload}); 
+                    } catch (e) {
+                    }
             },
             removed: function (id) {
                 post = Posts.findOne({_id: postId});
@@ -1536,7 +1544,11 @@ if(Meteor.isServer){
                 changed: function (id,fields) {
                     // self.changed("postfriends", id, fields);
                     if(~self.docIds.indexOf(id)){
-                        self.changed("postfriends", id, fields);
+                        try{
+                            self.changed("postfriends", id, fields);
+                        }
+                        catch(error){
+                        }
                     }
                 }/*,
                  removed:function (id,fields) {
@@ -2016,7 +2028,12 @@ if(Meteor.isServer){
               }
           },
           changed: function(_id, record){
-              pub.changed('associatedusers', _id, record);
+              try {
+                    pub.changed('associatedusers', _id, record);
+                  } 
+              catch (e) {
+                  }
+              
           },
           removed: function(_id, record){
               pub.removed('associatedusers', _id, record);
@@ -2037,7 +2054,11 @@ if(Meteor.isServer){
               }
           },
           changed: function(_id, record){
-              pub.changed('associatedusers', _id, record);
+              try {
+                    pub.changed('associatedusers', _id, record);
+                  } 
+              catch (e) {
+                  }
           },
           removed: function(_id, record){
               pub.removed('associatedusers', _id, record);
@@ -2190,7 +2211,12 @@ if(Meteor.isServer){
               })
           },
           changed: function(_id, record){
-              pub.changed('favouriteposts', _id, record);
+              try {
+                   pub.changed('favouriteposts', _id, record);
+                  } 
+              catch (e) {
+                  }
+              
           },
           removed: function(_id, record){
               pub.removed('favouriteposts', _id, record);
