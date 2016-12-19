@@ -1298,6 +1298,7 @@ if Meteor.isClient
     'click #takephoto': ()->
       if Drafts.find().count() > 0
         window.footbarOppration = true
+        Session.set('NewImgAdd','false')
         if window.takePhoto
           window.takePhoto (result)->
             console.log 'result from camera is ' + JSON.stringify(result)
