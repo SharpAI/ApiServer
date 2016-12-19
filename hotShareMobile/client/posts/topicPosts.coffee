@@ -1,9 +1,15 @@
 if Meteor.isClient
   Template.topicPosts.onCreated ()->
     Meteor.subscribe("topics")
-    Meteor.subscribe("topicposts", Session.get('topicId'), 20)
     Session.set("topicPostLimit", 20)
     Session.set('topicPostsCollection','loading')
+    Meteor.subscribe 'topicposts', Session.get('topicId'), 20, onReady: ->
+      if Session.get("topicPostLimit") >= TopicPosts.find({topicId:Session.get('topicId')}).count()
+        console.log 'topicPostsCollection loaded'
+        Meteor.setTimeout (->
+          Session.set 'topicPostsCollection', 'loaded'
+        ), 500
+    
   Template.topicPosts.rendered=->
     $('.content').css 'min-height',$(window).height()
 #    $('.addontitle').css('top',$(window).height()*0.25)
