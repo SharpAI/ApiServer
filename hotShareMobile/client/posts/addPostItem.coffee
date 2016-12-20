@@ -516,6 +516,39 @@ if Meteor.isClient
       unless toolbarObj
         initToolBar(node,data,gridster,true)
     )
+  nodeBGColor = [
+    "#55303e",
+    "#503f32",
+    "#7e766c",
+    "#291d13",
+    "#d59a73",
+    "#a87c5f",
+    "#282632",
+    "#ca9e92",
+    "#a7a07d",
+    "#846843",
+    "#6ea89e",
+    "#292523",
+    "#637168",
+    "#573e1b",
+    "#925f3e",
+    "#786b53",
+    "#aaa489",
+    "#a5926a",
+    "#6a6b6d",
+    "#978d69",
+    "#a0a1a1",
+    "#4b423c",
+    "#5f4a36",
+    "#b6a2a9",
+    "#1c1c4e",
+    "#e0d9dc",
+    "#393838",
+    "#c5bab3",
+    "#a46d40",
+    "#735853",
+    "#3c3c39"
+  ]
   Template.addPostItem.helpers
     hasm3u8: (videoInfo)->
       unless videoInfo
@@ -562,4 +595,6 @@ if Meteor.isClient
       else
         calcTextItemStyle(this.layout)
     getImagePath: (path,uri,id)->
+      if path is 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII='
+        $('#image_'+id).css("background-color", nodeBGColor[Math.round(Math.random()*(nodeBGColor.length-1))])
       getImagePath(path,uri,id)
