@@ -207,7 +207,7 @@ function createTaskToKueQueue(prefix, _id, url, fromserver, unique_id, isMobile,
       unique_id: unique_id,
       isMobile: isMobile,
       chunked: chunked
-    }).priority('critical').attempts(3).ttl(60*1000).removeOnComplete(true).save(function(err){
+    }).priority('critical').ttl(60*1000).removeOnComplete(true).save(function(err){
       if (!err) {
         console.log("   job.id = "+job.id+", unique_id="+unique_id);
       }
@@ -1516,7 +1516,15 @@ if (cluster.isMaster) {
     }, 1000*60);
 
     console.log('import-cancel: ' + req.params.id);
-    Task.cancel(req.params.id);
+    var ret = Task.cancel(req.params.id);
+    if (ret == -1) {
+        if (!process.env.SERVER_IN_US) {
+            var req_url = 'http://usurlanalyser.tiegushi.com:8080'+req.originalUrl;
+            console.log("   redirect cancel task to US: "+req_url);
+            console.log("   ]");
+            res.redirect(req_url);
+        }
+    }
     for (var id in cluster.workers) {
         var msg = {type:'abortImport', unique_id:req.params.id};
         console.log("Sending message abortImport to work id: "+id);
