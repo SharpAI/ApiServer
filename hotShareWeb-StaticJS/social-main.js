@@ -728,7 +728,7 @@
             var url,originUrl,postId;
             originUrl = $('#import-post-url').val();
             debugPrint('originUrl==' + originUrl);
-            urlReg = new RegExp("(http[s]{0,1}|ftp)://[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?", "gi");
+            urlReg = new RegExp("(http[s]{0,1})://[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?", "gi");
             if (originUrl === '') {
                 toastr.remove();
                 return toastr.info('请输入或粘贴一个链接~');
@@ -736,6 +736,8 @@
             if (!originUrl.match(urlReg)) {
                 toastr.remove();
                 return toastr.info('链接格式错误~');
+            }else{
+                originUrl = originUrl.match(urlReg)[0];
             }
             $('.import-post').css('overflow-y','hidden');
             $('.import-post .loading').show();
