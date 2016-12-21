@@ -299,5 +299,11 @@
   "readingRoom": "阅览室",
 
   "emailFollow": "邮件",
-  "appFollow": "应用"
+  "appFollow": "应用",
+
+  // theme blue
+  "theme_blue_anonymous":"匿名使用",
+  "theme_blue_regWithEmail": "注册",
+  "theme_blue_loginWithAccount": "登录",
+  "theme_blue_socialLoginTips": "或用其它方式登录"
 }

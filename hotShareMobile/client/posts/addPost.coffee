@@ -394,6 +394,7 @@ if Meteor.isClient
         popupProgressBar.close()
         handler.stop()
   showEditingPopupProgressBar = ()->
+    Session.set('editProgessBarPercentage',1)
     console.log('showEditingPopupProgressBar')
     preEditingBar = $('.toEditingProgressBar').bPopup
       positionStyle: 'absolute'
@@ -402,10 +403,12 @@ if Meteor.isClient
         updateShowEditPopupProgressBarPercentage(0,0,0)
         Session.set('itemInAddPostPending',0)
       onClose: ()->
+        Session.set('editProgessBarPercentage',0)
         updateShowEditPopupProgressBarPercentage(0,0,0)
     preEditingBar
   updateShowEditPopupProgressBarPercentage=(percentage,i,n)->
-    $('.toEditingProgressBar').find('.progress-bar').css('width', percentage+'%').attr('aria-valuenow', percentage).text(percentage+'%');
+    Session.set 'editProgessBarPercentage', percentage
+    $('.toEditingProgressBar').find('.progress-bar').css('width', percentage+'%').attr('aria-valuenow', percentage);
     $('.toEditingProgressBar').find('.processed').text(i);
     $('.toEditingProgressBar').find('.total').text(n);
   closePreEditingPopup = ()->
@@ -1093,6 +1096,8 @@ if Meteor.isClient
         false
     progressBarWidth:->
       Session.get('importProcedure')
+    editProgessBarPercentage:->
+      Session.get('editProgessBarPercentage')
     displayUrl:->
       if Drafts.findOne({type:'image'}) and Drafts.findOne({type:'image'}).url and Drafts.findOne({type:'image'}).url isnt ''
         ""
@@ -1331,6 +1336,7 @@ if Meteor.isClient
       Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text:'', style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
       return
     'click .back':(event)->
+      $('.importProgressBar, .b-modal, .toEditingProgressBar').remove()
       if Session.get('isReviewMode') is '2'
         navigator.notification.confirm('这个操作无法撤销', (r)->
           console.log('r is ' + r)
@@ -1591,6 +1597,7 @@ if Meteor.isClient
       #       console.log 'weixin logon failure.'
       #       callback("The Weixin logon failure.")
       #   )
+      $('.importProgressBar, .b-modal, .toEditingProgressBar').remove()
       Session.set('fromDraftPost',false)
       if Session.get('isReviewMode') is '0' and e.currentTarget.id is "publish" and Template.addPost.__helpers.get('hasAssocaitedUsers')()
         return

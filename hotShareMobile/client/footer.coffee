@@ -141,8 +141,10 @@ if Meteor.isClient
             Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
       PUB.page('/bell')
     'click #user':(e)->
+      $('.importProgressBar, .b-modal, .toEditingProgressBar').remove()
       PUB.page('/user')
     'click #add': (e)->
+      $('.importProgressBar, .b-modal, .toEditingProgressBar').remove()
       Tips.show('_tips_addPost')
       if Session.get('persistentLoginStatus') and !Meteor.userId() and !Meteor.loggingIn()
         window.plugins.toast.showLongCenter("登录超时，需要重新登录~");

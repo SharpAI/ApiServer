@@ -295,5 +295,12 @@
   "readingRoom": "ReadingRoom",
 
   "emailFollow": "Email",
-  "appFollow": "App"
+  "appFollow": "App",
+
+
+  // theme blue
+  "theme_blue_anonymous":"Anonymously",
+  "theme_blue_regWithEmail": "Register",
+  "theme_blue_loginWithAccount": "Login",
+  "theme_blue_socialLoginTips": "Or Login With"
 }
