@@ -136,6 +136,11 @@ if Meteor.isClient
       return value1 > value2
     gtZero: (value)->
       return value > 0
+    showGrayZone:(draftsCount, postsCount)->
+      if draftsCount > 0 or postsCount > 0
+        return true
+      else
+        return false
     postsCount:->
       #return  Posts.find({owner: Meteor.userId(), publish: {$ne: false}}).count()
       myPostsCount = Session.get('myPostsCount')

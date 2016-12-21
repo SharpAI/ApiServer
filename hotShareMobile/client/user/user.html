@@ -33,9 +33,12 @@
       </div>
       <div class="following">{{_ "following"}} {{followCount}} {{_ "ppl"}}</div>
     </div>
-    <div class="line">
+    <div class="line" style="padding-bottom: 0 !important;">
       <span></span>
     </div>
+    {{#if showGrayZone draftsCount postsCount}}
+    <div style="height: 20px;background: #eee;"></div>
+    {{/if}}
     {{#if isLoading}}
     <div id="loader">
         <div align="center">{{_ "loading"}}</div>
@@ -72,6 +75,9 @@
                 </li>
             {{/each}}
         </ul>
+        {{#if gtZero postsCount}}
+        <div style="height: 20px; background: #eee;"></div>
+        {{/if}}
     </div>
     {{/if}}
     <div class="post">
