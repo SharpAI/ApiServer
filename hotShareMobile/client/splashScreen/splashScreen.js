@@ -1,8 +1,10 @@
 Template.splashScreen.rendered=function(){
+    // StatusBar.backgroundColorByHexString("#ffffff");
+    // StatusBar.styleDefault();
     var swiper = new Swiper('.swiper-container', {
         pagination: '.swiper-pagination',
         paginationClickable: true,
-        direction: 'vertical',
+        direction: 'horizontal',
         onTouchEnd: function(swiper){
            if(swiper.isEnd){
                 window.localStorage.setItem("firstLog", "first");
@@ -12,6 +14,10 @@ Template.splashScreen.rendered=function(){
     });
 };
 
+// Template.authOverlay.onDestroyed(function () {
+//     StatusBar.backgroundColorByHexString("#37a7fe");
+//     StatusBar.styleLightContent();
+// });
 Template.splashScreen.events({
 	"click #lastImg": function(){
                         window.localStorage.setItem("firstLog", "first");

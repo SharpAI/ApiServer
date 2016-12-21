@@ -8,15 +8,22 @@ if (Meteor.isClient) {
       }, function(){});
   });
   Template.authOverlay.onRendered(function () {
+    // StatusBar.backgroundColorByHexString("#ffffff");
+    // StatusBar.styleDefault();
     $('.authOverlay').css('height', $(window).height());
     if (Meteor.user())
       Meteor.subscribe("follows");
     if (isUSVersion == true) {
       document.getElementById("authOverlaybg").style.backgroundImage = "url(loginbg1en.jpg)";
     } else {
-      document.getElementById("authOverlaybg").style.backgroundImage = "url(loginbg1.png)";
+    //   document.getElementById("authOverlaybg").style.backgroundImage = "url(loginbg1.png)";
+      document.getElementById("authOverlaybg").style.backgroundImage = "url(theme_blue/loginbg1.jpg)";
     }  
   });
+  // Template.authOverlay.onDestroyed(function () {
+  //     StatusBar.backgroundColorByHexString("#37a7fe");
+  //     StatusBar.styleLightContent();
+  // });
   Template.authOverlay.helpers({
       isLoggingIn:function() {
           return Meteor.loggingIn();

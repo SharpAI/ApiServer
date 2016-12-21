@@ -14,20 +14,37 @@
       <div>{{>spinner}}</div>
       <div id="loggingIn">{{_ "funnyLogin"}}</div>
     {{else}}
-    <div id="register"><i class="fa fa-envelope"></i>&nbsp;{{_ "regWithEmail"}}</div>
-    <div id="anonymous"><i class="fa fa-user"></i>&nbsp;{{_ "anonymous"}}</div>
+    <!--<div id="register"><i class="fa fa-envelope"></i>&nbsp;{{_ "regWithEmail"}}</div>
+    <div id="anonymous"><i class="fa fa-user"></i>&nbsp;{{_ "anonymous"}}</div>-->  
     <!--
     <div id="weibo"><i class="fa fa-weibo"></i>&nbsp;使用新浪微博登录</div>
     -->
-    {{#if isWXAppInstalled}}
+    <div class="loginActionArea">
+      <div id="login">{{_ "theme_blue_loginWithAccount"}}</div>
+      <div id="register">{{_ "theme_blue_regWithEmail"}}</div>
+      {{#if isWXAppInstalled}}
+      <div class="loginWithSocial">
+        <div class="socialLoginTips">{{_ "theme_blue_socialLoginTips"}}</div>
+        <div id="wechat">
+          <span class="fa-stack fa-2x" aria-hidden="true">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="fa fa-weixin fa-stack-1x fa-inverse"></i>
+          </span>
+        </div>
+      </div>
+      {{/if}}
+    </div>
+    <div id="anonymous">{{_ "theme_blue_anonymous"}}&nbsp;<i class="fa fa-angle-right"></i></div>
+    <!--{{#if isWXAppInstalled}}
     <div id="wechat"><i class="fa fa-weixin"></i>&nbsp;{{_ "loginByWechat"}}</div>
-    {{/if}}
+    {{/if}}-->
+    
     <!--
     <div id="qq"><i class="fa fa-qq"></i>&nbsp;使用QQ登录</div>
     -->
-    <div id="login">{{_ "loginWithAccount"}}</div>
+    <!--<div id="login">{{_ "loginWithAccount"}}</div>-->
     {{/if}}
-    <div class="company">{{_ "kmxdkj"}}</div>
+    <!--<div class="company">{{_ "kmxdkj"}}</div>-->
   </div>
   <div class="register" style="display:none">
     {{> signupForm}}
