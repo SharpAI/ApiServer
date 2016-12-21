@@ -1399,7 +1399,8 @@ if Meteor.isClient
           Session.set('fromDraftPost',false)
           $('.addPost').addClass('animated ' + animateOutUpperEffect);
           setTimeout ()->
-            Router.go('/')
+            #Router.go('/')
+            PUB.back()
           ,animatePageTrasitionTimeout
           return
         , '您确定要放弃未保存的修改吗？', ['放弃修改','继续编辑']);
