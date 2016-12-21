@@ -1,9 +1,12 @@
+userNameLength = signUpUserNameLength || 16
 Template.signupForm.helpers
   names:->
    if Session.get("signUpName")
      Session.get("signUpName")
    else
      ''
+  namesMaxLength:->
+    return userNameLength
   email:->
    if Session.get("signUpMail")
      Session.get("signUpMail")
@@ -15,6 +18,12 @@ Template.signupForm.helpers
    else
      ''
 Template.signupForm.events
+  'keyup #signup-username': (e,t)->
+    names = t.find('#signup-username').value
+    html = ''
+    html += names.length
+    html += '/'+userNameLength
+    $('#signup-username-help').html(html)
   'click .term_notice' :(e,t)->
     names = t.find('#signup-username').value
     email = t.find('#signup-email').value.toLowerCase()

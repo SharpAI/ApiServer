@@ -8,7 +8,8 @@
     <form  class="signupBody" id="signup-form">
         <div class="input-group margin-bottom-sm">
             <!--<span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>-->
-            <input type="text" id="signup-username" class="form-control" placeholder={{_ "userName"}} value="{{names}}"/><br />
+            <input type="text" id="signup-username" class="form-control" placeholder={{_ "userName"}} value="{{names}}" maxlength="{{namesMaxLength}}"/>
+            <p class="help-block" id="signup-username-help" style="position:absolute; color:#c7c7c7; right:10px;margin:0;font-size:12px; bottom:0; z-index:9">0/{{namesMaxLength}}</p><br />
         </div>
         <div class="input-group">
             <!--<span class="input-group-addon"><i class="fa fa-envelope fa-fw"></i></span>-->

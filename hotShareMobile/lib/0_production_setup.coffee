@@ -24,3 +24,4 @@
 @withNewFilePath=true
 @withLanguageSetting=false
 @withImportToEdit=false
+@signUpUserNameLength = 16
