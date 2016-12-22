@@ -86,7 +86,8 @@ pages = ['/user', '/bell', '/search']
                 else
                     currentPostView=''
                 if page.view is currentPostView and history.length >0
-                    page = history.pop()
+                    unless page.parent and page.parent is 'postItem'
+                        page = history.pop()
                 Session.set "document_body_scrollTop", page.scrollTop
                 Session.set "history_view", history
                 #Session.set "view", page.view

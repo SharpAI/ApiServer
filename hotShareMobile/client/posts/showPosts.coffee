@@ -600,6 +600,13 @@ if Meteor.isClient
     'click #shareStoryBtn' :->
       Session.set('isRecommendStory',true)
       trackEvent("shareStoryBtn","MobileRecommendStory")
+      history = Session.get("history_view") || []
+      history.push {
+          view: 'posts/'+Session.get('postContent')._id
+          scrollTop: document.body.scrollTop
+          parent: 'postItem'
+      }
+      Session.set "history_view", history
       PUB.page '/recommendStory'
     'click .readmore': (e, t)->
       # if e.target is e.currentTarget
