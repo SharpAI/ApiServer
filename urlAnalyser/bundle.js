@@ -104,7 +104,7 @@ REGEXPS = {
   specialClass: /note-content|rich_media_content|WBA_content/i
 };
 
-specialClassNameForPopularMobileSite = ['.note-content', '.rich_media_content', '.WBA_content', '#cont-wrapper', '#j-body', '.article', '.main_box', '#page-content', '#BODYCON', '.yaow > p', '#pageletArticleContent'];
+specialClassNameForPopularMobileSite = ['.note-content', '.rich_media_content', '.WBA_content', '#cont-wrapper', '#j-body', '.article', '.main_box', '#page-content', '#BODYCON', '.yaow > p', '#pageletArticleContent', '.tc-card-imagetext-content'];
 
 specialClassNameExcludeMobileSites = ['techcrunch.com'];
 
@@ -734,6 +734,7 @@ extract = function(page) {
   top = scoreAndSelectTop(parified) || asTop(page);
   root = collectSiblings(top);
   removeFragments(root);
+  console.log('root:', root);
   return root;
 };
 
@@ -3405,7 +3406,14 @@ _html2data2 = function(url, data, callback) {
         appendParagraph(resortedArticle, toBeInsertedText, toBeInsertedStyleAlign);
       }
       if (text && text !== '') {
-        toBeInsertedText = text;
+        // 清除头尾的换行
+        var _text = $(node).text();
+        if(_text.length >= 2 && _text.indexOf('\n') === 0)
+          _text = _text.substr(1);
+        if(_text.length >= 2 && _text.indexOf('\n') === _text.length-1)
+          _text = _text.substr(0, _text.length-1);
+        toBeInsertedText = _text;
+        //toBeInsertedText = text;
       } else {
         toBeInsertedText = '';
       }

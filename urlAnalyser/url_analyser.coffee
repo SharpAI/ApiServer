@@ -749,7 +749,14 @@ _html2data2 = (url, data, callback)->
         if toBeInsertedText.length > 0
           appendParagraph(resortedArticle, toBeInsertedText, toBeInsertedStyleAlign)
         if text and text isnt ''
-          toBeInsertedText = text
+          # 清除头尾的换行
+          _text = $(node).text()
+          if(_text.length >= 2 and _text.indexOf('\n') is 0)
+            _text = _text.substr(1)
+          if(_text.length >= 2 and _text.indexOf('\n') is _text.length-1)
+            _text = _text.substr(0, _text.length-1)
+          toBeInsertedText = _text
+          # toBeInsertedText = text
         else
           toBeInsertedText = ''
         toBeInsertedStyleAlign = styleAlign
