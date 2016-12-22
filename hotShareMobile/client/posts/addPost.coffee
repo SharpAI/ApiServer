@@ -1251,7 +1251,7 @@ if Meteor.isClient
       console.log("textarea change "+ e.currentTarget.value)
       Drafts.update({_id: this._id}, {$set: {text: e.currentTarget.value}});
     'click #addAudio': ()->
-      if isIOS
+      if true
         window.plugins.iOSAudioPicker.getAudio((list)->
           ###
           {
