@@ -129,7 +129,8 @@ Template.accounts_management_addnew.events
     PUB.back()
   'submit #form-addnew': (e, t)->
     e.preventDefault()
-
+    # need wait method response
+    $(e.target).find('input[type=submit]').attr('disabled','').removeClass('active').val('添加中...')
     userInfo = {
         username: $(e.target).find('input[name=username]').val(),
         password: Package.sha.SHA256($(e.target).find('input[name=password]').val()),
@@ -138,6 +139,7 @@ Template.accounts_management_addnew.events
     }
 
     Meteor.call('addAssociatedUserNew', userInfo, (err, data)->
+      $(e.target).find('input[type=submit]').removeAttr('disabled').addClass('active').val('添加')
       if data and data.status is 'ERROR'
         if data.message is 'Invalid Username'
           PUB.toast('用户不存在')
