@@ -28,6 +28,8 @@
   </div>
 </template>
 <template name="commentContent">
+  {{#if hasComment}}
+  <div class="showPostsLine"></div>
   <div class="commentContent">
     
     <div class="content">
@@ -46,8 +48,9 @@
           </div>
         {{/each}}
       </div>
-      <div class="showPostsLine"></div>
+      <!--<div class="showPostsLine"></div>-->
     </div>
 <!--    <div class="bottomdirection"></div>-->
   </div>
+  {{/if}}
 </template>

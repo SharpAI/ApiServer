@@ -43,6 +43,8 @@ if Meteor.isClient
         return RefC[RC].text
     time_diff: (created)->
       GetTime0(new Date() - created)
+    hasComment: ()->
+      Comment.find({postId:Session.get("postContent")._id}).count() > 0
     comment: ()->
       Comment.find({postId:Session.get("postContent")._id}, {sort: {createdAt: 1}})
   

@@ -122,6 +122,11 @@ if Meteor.isClient
           Session.set("Social.LevelOne.Menu",'contactsList')
           Router.go '/posts/'+postId
         ,300
+
+    Template.lpcomments.rendered=->
+      if withDiscover
+        spanOuterWidth = $(".discover .discover-top .discover-con span").outerWidth() || 0
+        $(".discover .discover-top .discover-con").css({'width': (spanOuterWidth + 40) + 'px'});
     Template.lpcomments.helpers
       isShareFeed:->
         if this.eventType is "share"
