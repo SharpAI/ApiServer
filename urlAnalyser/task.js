@@ -124,7 +124,7 @@ function taskObj() {
     
     var index = task.getIndex(id);
     if(index === -1)
-      return;
+      return -1;
 
     // update status  
     task.update(id, 'cancel');
@@ -138,6 +138,7 @@ function taskObj() {
     }else{
       // tasks.splice(index, 1);
     }
+    return 0;
   };
   
   task.setCollection = function(params){
