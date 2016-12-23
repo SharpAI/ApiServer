@@ -5,10 +5,10 @@ if Meteor.isClient
         !(NewDynamicMoments.find({currentPostId:Session.get("postContent")._id}).count() < Session.get("momentsitemsLimit"))
       else
         false
-    Template.discover.rendered=->
-      if withDiscover
-        spanOuterWidth = $(".discover .discover-top .discover-con span").outerWidth() || 0
-        $(".discover .discover-top .discover-con").css({'width': (spanOuterWidth + 40) + 'px'});
+    # Template.discover.rendered=->
+    #   if withDiscover
+    #     spanOuterWidth = $(".discover .discover-top .discover-con span").outerWidth() || 0
+    #     $(".discover .discover-top .discover-con").css({'width': (spanOuterWidth + 40) + 'px'});
         
     Template.discover.helpers
       showSuggestPosts:()->
@@ -201,10 +201,6 @@ if Meteor.isClient
         Recommends.find({relatedPostId: Session.get("postContent")._id})
       time_diff: (created)->
         GetTime0(new Date() - created)          
-    Template.recommends.rendered=->
-      if withDiscover
-        spanOuterWidth = $(".discover .discover-top .discover-con span").outerWidth() || 0
-        $(".discover .discover-top .discover-con").css({'width': (spanOuterWidth + 40) + 'px'});
     Template.recommends.events
       'click .elementBox': (e)->
         postId = e.currentTarget.id
