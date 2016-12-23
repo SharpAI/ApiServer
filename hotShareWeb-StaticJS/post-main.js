@@ -561,7 +561,7 @@
                 debugPrint(message)
             })
         }
-        $('#pcommitReportBtn').click(function(e) {
+        var pcommitReportSubmit = function(){
             var self = this;
             var pcommitContent,pcommitContentHTML1,pcommitContentHTML2,pindex;
             var userName = "匿名";
@@ -602,6 +602,13 @@
             window.CANNOT_SHOW_HEADER = false;
             $('.showPosts .head').fadeIn(300);
             $('.pcommentInput,.alertBackground').fadeOut(300);
+        };
+        $('.pcommentInput-form').submit(function(e) {
+            setTimeout(pcommitReportSubmit, 0);
+            return false;
+        });
+        $('#pcommitReportBtn').click(function(e) {
+            pcommitReportSubmit();
         });
         // --- 评论/点评 END ---
 

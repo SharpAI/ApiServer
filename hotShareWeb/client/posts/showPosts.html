@@ -410,14 +410,18 @@
 </template>
 
 <template name="pcommentInput">
-  <div class="pcommentInput" style="display:none;">
+  <div class="pcommentInput" style="display:none;"><form onsubmit="return pcommitSubmit();" class="pcommentInput-form">
       <div class="input-group">
         <input type="text" id="pcommitReport" autofocus="autofocus" class="form-control" maxlength="180" placeholder="{{placeHolder}}" />
         <div onclick="pcommitReport()" id="pcommitReportBtn">发送</div>
       </div>
-  </div>
+  </form></div>
   <div onclick="hidePcomments()" class="alertBackground"></div>
     <script>
+       function pcommitSubmit(){
+         setTimeout(pcommitReport, 0);
+         return false;
+       }
        function hidePcomments(){
          $('.showBgColor').removeAttr('style');
          $(window).scrollTop(0-Session.get('backgroundTop'));
@@ -507,7 +511,8 @@
             }
           }, function(error, result) {
             if (error) {
-              return console.log(error.reason);
+              console.log(error.reason);
+              return false;
             } else {
               var postItem = $('.post-pcomment-current-pub-item');
               var offsetHeight = postItem.height() - parseInt(postItem.attr('data-height'));
@@ -522,7 +527,8 @@
               });
               postItem.removeClass('post-pcomment-current-pub-item');
           
-              return console.log("success");
+              console.log("success");
+              return false;
             }
           });
           $('#pcommitReport').val('');
