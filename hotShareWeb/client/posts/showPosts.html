@@ -410,15 +410,16 @@
 </template>
 
 <template name="pcommentInput">
-  <div class="pcommentInput" style="display:none;"><form onsubmit="return pcommitSubmit();" class="pcommentInput-form">
+  <div class="pcommentInput" style="display:none;">
       <div class="input-group">
-        <input type="text" id="pcommitReport" autofocus="autofocus" class="form-control" maxlength="180" placeholder="{{placeHolder}}" />
+        <form onsubmit="return pcommitSubmit();" class="pcommentInput-form"><input type="text" id="pcommitReport" autofocus="autofocus" class="form-control" maxlength="180" placeholder="{{placeHolder}}" /></form>
         <div onclick="pcommitReport()" id="pcommitReportBtn">发送</div>
       </div>
-  </form></div>
+  </div>
   <div onclick="hidePcomments()" class="alertBackground"></div>
     <script>
        function pcommitSubmit(){
+         $('#pcommitReport').blur();
          setTimeout(pcommitReport, 0);
          return false;
        }
@@ -511,8 +512,7 @@
             }
           }, function(error, result) {
             if (error) {
-              console.log(error.reason);
-              return false;
+              return console.log(error.reason);
             } else {
               var postItem = $('.post-pcomment-current-pub-item');
               var offsetHeight = postItem.height() - parseInt(postItem.attr('data-height'));
@@ -527,8 +527,7 @@
               });
               postItem.removeClass('post-pcomment-current-pub-item');
           
-              console.log("success");
-              return false;
+              return console.log("success");
             }
           });
           $('#pcommitReport').val('');

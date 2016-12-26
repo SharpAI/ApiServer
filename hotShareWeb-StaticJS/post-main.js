@@ -604,6 +604,7 @@
             $('.pcommentInput,.alertBackground').fadeOut(300);
         };
         $('.pcommentInput-form').submit(function(e) {
+            $('#pcommitReport').blur();
             setTimeout(pcommitReportSubmit, 0);
             return false;
         });
