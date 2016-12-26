@@ -394,7 +394,7 @@ if Meteor.isClient
         popupProgressBar.close()
         handler.stop()
   showEditingPopupProgressBar = ()->
-    Session.set('editProgessBarPercentage',1)
+    Session.set('editProgessBarPercentage',[0,0,0])
     console.log('showEditingPopupProgressBar')
     preEditingBar = $('.toEditingProgressBar').bPopup
       positionStyle: 'absolute'
@@ -403,14 +403,14 @@ if Meteor.isClient
         updateShowEditPopupProgressBarPercentage(0,0,0)
         Session.set('itemInAddPostPending',0)
       onClose: ()->
-        Session.set('editProgessBarPercentage',0)
+        Session.set('editProgessBarPercentage',[0,0,0])
         updateShowEditPopupProgressBarPercentage(0,0,0)
     preEditingBar
   updateShowEditPopupProgressBarPercentage=(percentage,i,n)->
-    Session.set 'editProgessBarPercentage', percentage
-    $('.toEditingProgressBar').find('.progress-bar').css('width', percentage+'%').attr('aria-valuenow', percentage);
-    $('.toEditingProgressBar').find('.processed').text(i);
-    $('.toEditingProgressBar').find('.total').text(n);
+    Session.set 'editProgessBarPercentage', [percentage,i,n]
+    # $('.toEditingProgressBar').find('.progress-bar').css('width', percentage+'%').attr('aria-valuenow', percentage);
+    # $('.toEditingProgressBar').find('.processed').text(i);
+    # $('.toEditingProgressBar').find('.total').text(n);
   closePreEditingPopup = ()->
     $('.toEditingProgressBar').bPopup().close()
   @deferedProcessAddPostItemsWithEditingProcessBar = (pub)->
@@ -1096,8 +1096,12 @@ if Meteor.isClient
         false
     progressBarWidth:->
       Session.get('importProcedure')
-    editProgessBarPercentage:->
-      Session.get('editProgessBarPercentage')
+    percentage:->
+      Session.get('editProgessBarPercentage')[0]
+    numOfContent:->
+      Session.get('editProgessBarPercentage')[2]
+    numOfProcessed:->
+      Session.get('editProgessBarPercentage')[1]
     displayUrl:->
       if Drafts.findOne({type:'image'}) and Drafts.findOne({type:'image'}).url and Drafts.findOne({type:'image'}).url isnt ''
         ""
