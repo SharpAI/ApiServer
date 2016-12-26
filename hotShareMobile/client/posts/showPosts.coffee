@@ -1317,6 +1317,7 @@ if Meteor.isClient
       return text
   Template.recommendStory.events
     'click .leftButton':(e)->
+      PUB.pagepop();
       return Router.go('/posts/'+Session.get('postContent')._id)
     'click #importBtn': (e)->
       originUrl = $('#importUrl').val()
@@ -1351,6 +1352,7 @@ if Meteor.isClient
             PUB.toast('推荐成功！')
           else
             console.log('pushRecommendStoryToReaderGroups:', err)
+      PUB.pagepop();
       return Router.go('/posts/'+Session.get('postContent')._id)
     'click #loadMore': (e)->
       if Session.get('storyListsType') is 'publishedStories'
