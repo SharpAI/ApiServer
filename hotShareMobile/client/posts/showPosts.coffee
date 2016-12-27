@@ -1339,8 +1339,10 @@ if Meteor.isClient
       prepareToEditorMode()
       Session.set('recommendStoryShare', true)
       Session.set('recommendStoryShareFromId',Session.get('postContent')._id)
-      PUB.page '/add'
+      PUB.pagepop();
+      Router.go('/add')
       Meteor.setTimeout(()->
+        Session.set 'isServerImport', true
         handleDirectLinkImport(originUrl)
       ,100)
     'click .storyLists li':(e)->
