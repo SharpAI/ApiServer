@@ -42,9 +42,12 @@ vim ./AndroidManifest.xml
 cp /home/roger/hotShare/ShareExtension/Android/MainActivity.java ./src/org/hotshare/everywhere/
 
 修改Ａｐｐ的名字为中文：
-编辑res/values/strings.xml文件，　把app_name那一项从ｈｏｔＳｈａｒｅ改为故事贴
+vim res/values/strings.xml
+把app_name那一项从ｈｏｔＳｈａｒｅ改为故事贴
 
-在ｐｒｏｊｅｃｔ目录下创建一个文件ｇｒａｄｌｅ．ｐｒｏｐｅｒｔｉｅｓ，　加入一下内容：
+在ｐｒｏｊｅｃｔ目录下创建一个文件
+vim gradle.properties 
+加入一下内容：
 android.useDeprecatedNdk=true
 
 生成ｇｒａｄｌｅｗ文件
