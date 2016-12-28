@@ -35,7 +35,8 @@ FavouritePosts = new Meteor.Collection('favouriteposts');
 ShareURLs = new Meteor.Collection('shareURLs');
 
 if(Meteor.isClient){
-  PostFriends = new Meteor.Collection("postfriends")
+  PostFriends = new Meteor.Collection("postfriends");
+  PostFriendsCount = new Meteor.Collection("postfriendsCount");
   Newfriends = new Meteor.Collection("newfriends");
   ViewLists = new Meteor.Collection("viewlists");
   //User detail has duplicated information with postfriends, so only leave one to save traffic
@@ -396,6 +397,7 @@ if(Meteor.isServer){
         });
     }
     var publicPostsPublisherDeferHandle = function(userId,postId) {
+        console.log('publicPostsPublisherDeferHandle...');
         Meteor.defer(function(){
             var needUpdateMeetCount = false;
             try {
@@ -1640,20 +1642,24 @@ if(Meteor.isServer){
             var self = this;
             self.count = 0;
             self.meeterIds=[];
+            self.added("postfriendsCount", userId+'_'+postId, {count: 0});
             publicPostsPublisherDeferHandle(userId,postId);
             var handle = Meets.find({me: userId,meetOnPostId:postId},{sort: {createdAt: -1},limit:limit}).observeChanges({
                 added: function (id,fields) {
+                    console.log(self.meeterIds.length);
                     var taId = fields.ta;
                     //Call defered function here:
                     if (taId !== userId){
-                        if(!~self.meeterIds.indexOf(taId)){
+                        if(self.meeterIds.indexOf(taId) === -1){
                             self.meeterIds.push(taId);
                             newMeetsAddedForPostFriendsDeferHandleV2(self,taId,userId,id,fields);
                         }
                     }
+                    self.changed("postfriendsCount", userId+'_'+postId, {count: Meets.find({me: userId,meetOnPostId:postId}).count()});
                 },
                 changed: function (id,fields) {
                     self.changed("postfriends", id, fields);
+                    self.changed("postfriendsCount", userId+'_'+postId, {count: Meets.find({me: userId,meetOnPostId:postId}).count()});
                 }/*,
                  removed:function (id,fields) {
                  self.removed("postfriends", id, fields);

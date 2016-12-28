@@ -113,7 +113,8 @@ if Meteor.isClient
       else
         true
     moreResults:()->
-      !(PostFriends.find({meetOnPostId:Session.get("postContent")._id}).count()+1 < Session.get("postfriendsitemsLimit"))
+      return PostFriendsCount.findOne({_id:Meteor.userId()+'_'+Session.get("postContent")._id})?.count > Session.get("postfriendsitemsLimit")
+      # !(PostFriends.find({meetOnPostId:Session.get("postContent")._id}).count()+1 < Session.get("postfriendsitemsLimit"))
     loading:()->
       Session.equals('postfriendsCollection','loading')
     loadError:()->

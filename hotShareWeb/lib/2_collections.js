@@ -69,7 +69,8 @@ FavouritePosts = new Meteor.Collection('favouriteposts');
 ShareURLs = new Meteor.Collection('shareURLs');
 
 if(Meteor.isClient){
-  PostFriends = new Meteor.Collection("postfriends")
+  PostFriends = new Meteor.Collection("postfriends");
+  PostFriendsCount = new Meteor.Collection("postfriendsCount");
   Newfriends = new Meteor.Collection("newfriends");
   ViewLists = new Meteor.Collection("viewlists");
   //User detail has duplicated information with postfriends, so only leave one to save traffic
@@ -467,6 +468,7 @@ if(Meteor.isServer){
         });
     }
     var publicPostsPublisherDeferHandle = function(userId,postId,self) {
+        console.log('publicPostsPublisherDeferHandle...');
         Meteor.defer(function(){
             try {
                 var postInfo=Posts.findOne({_id:postId},{fields:{owner:1}})
@@ -1525,6 +1527,7 @@ if(Meteor.isServer){
             self.count = 0;
             self.meeterIds=[];
             self.docIds=[];
+            self.added("postfriendsCount", userId+'_'+postId, {count: 0});
             //此处为了修复再次打开帖子时新朋友消失的问题，需要publicPostsPublisherDeferHandle重新计算相遇次数
             if(limit <= 10){
                 publicPostsPublisherDeferHandle(userId,postId,self);    
@@ -1540,6 +1543,7 @@ if(Meteor.isServer){
                             newMeetsAddedForPostFriendsDeferHandleV2(self,taId,userId,id,fields);
                         }
                     }
+                    self.changed("postfriendsCount", userId+'_'+postId, {count: Meets.find({me: userId,meetOnPostId:postId}).count()});
                     self.count++;
                 },
                 changed: function (id,fields) {
@@ -1551,6 +1555,7 @@ if(Meteor.isServer){
                         catch(error){
                         }
                     }
+                    self.changed("postfriendsCount", userId+'_'+postId, {count: Meets.find({me: userId,meetOnPostId:postId}).count()});
                 }/*,
                  removed:function (id,fields) {
                  self.removed("postfriends", id, fields);
