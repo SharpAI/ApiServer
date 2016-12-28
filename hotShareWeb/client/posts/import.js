@@ -94,7 +94,7 @@ Template.importPost.events({
             case 'succ':
               progress.set(100);
               hasDone = true;
-              Router.go('/static/' + result.json.substr(result.json.lastIndexOf('/')+1));
+              Router.go('/posts/' + result.json.substr(result.json.lastIndexOf('/')+1));
               break;
             default:
               hasCancel = true;
