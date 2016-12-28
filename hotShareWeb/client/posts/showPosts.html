@@ -588,11 +588,13 @@
         <div class="header">关注作者</div>
         <div class="body">
           {{#if hasType 'click'}}
-          <textarea id="email" cols="10" rows="3" placeholder="点击这里留下您的QQ号或者邮箱地址，然后选择“确定”完成关注，此信息不会展示给作者。">{{oldMail}}</textarea>
+          <input id="email" class="form-control" placeholder="QQ/邮箱地址" value="{{oldMail}}"/>
+          <p class="tips">输入您的QQ号或者邮箱地址，然后选择“确定”完成关注，此信息不会展示给作者。</p>
           {{else}}
-          <textarea id="email" cols="10" rows="3" placeholder="想实时阅读该作者最新文章吗？点击这里留下您的QQ号或者邮箱地址，然后选择“确定”完成关注。我们将把它们送给您！">{{oldMail}}</textarea>
+          <input id="email" class="form-control" placeholder="QQ/邮箱地址" value="{{oldMail}}"/>
+          <p class="tips">想实时阅读该作者最新文章吗？点击这里留下您的QQ号或者邮箱地址，然后选择“确定”完成关注。我们将把它们送给您！</p>
           {{/if}}
-          <p class="help-block"></p>
+          <!--<p class="help-block"></p>-->
         </div>
         <div class="footer">
           <div class="btn cannelBtn">取消</div>

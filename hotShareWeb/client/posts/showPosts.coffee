@@ -1331,8 +1331,6 @@ if Meteor.isClient
       else
         return ''
   Template.SubscribeAuthor.events
-    'focus #email':(e,t)->
-      t.find('.help-block').innerHTML = ''
     'click .okBtn':(e,t)->
       mailAddress = t.find('#email').value
       if Session.set('postContentTwo')
@@ -1349,7 +1347,8 @@ if Meteor.isClient
         mailAddress = null
       else
         if !mailValueReg.test(mailAddress) and !qqValueReg.test(mailAddress)
-          t.find('.help-block').innerHTML = '请输入正确的QQ号或Email'
+          toastr.remove()
+          toastr.info('请输入正确的QQ号或Email')
           # $('#email').focus()
           return false
       if qqValueReg.test(mailAddress)

@@ -630,23 +630,26 @@
   .subscribeAutorPage_content {
     background: white; 
     position: absolute; 
-    top: 20%; 
-    left: 10%; 
-    width: 80%;
-    height: 226px;
-    border-radius: 4px;
+    top: 0;
+    right:0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    width: 240px;
+    height: 240px;
+    border-radius: 8px;
     z-index: 99; 
+    text-align: center;
     .subscribeAutorPage_header{
       line-height: 48px;
-      background: #eee;
       font-size: 16px;
-      padding-left: 16px;
       font-weight: 600;
       border-radius: 4px 4px 0 0;
-      color: #909090;
+      color: #00c4ff;
     }
     .subscribeAutorPage_body{
-      padding: 16px;color: #909090;
+      font-size: 12px;
+      color: #909090;
       textarea{ width: 100%; border: none;line-height: 1.5em;resize:none;outline:none; color: #777; font-size: 14px;}
       .subscribeAutorPage_help-block{ margin: 4px 0; color: #909090;}
     }
@@ -654,6 +657,7 @@
       position: absolute;
       width: 100%;
       height: 48px;
+      box-sizing: content-box;
       bottom: 0;
       left: 0;
       border-top: 1px solid #ccc;
@@ -668,8 +672,8 @@
         box-shadow: none;
         -webkit-tap-highlight-color:rgba(0,196,255,.16);
       }
-      .subscribeAutorPage_okBtn{border-bottom-left-radius: 4px; border-left: 1px solid #ccc;}
-      .subscribeAutorPage_cannelBtn{border-bottom-right-radius: 4px;}
+      .subscribeAutorPage_okBtn{border-bottom-right-radius: 8px; border-left: 1px solid #ccc; background-color: #00c4ff; color: #fff;}
+      .subscribeAutorPage_cannelBtn{border-bottom-left-radius: 8px;}
     }
   }
 }
