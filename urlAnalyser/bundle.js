@@ -3418,6 +3418,15 @@ _html2data2 = function(url, data, callback) {
         toBeInsertedText = '';
       }
       return toBeInsertedStyleAlign = styleAlign;
+    }else if(node.tagName === 'HR'){
+      previousIsSpan = false;
+      if (toBeInsertedText.length > 0) {
+        appendParagraph(resortedArticle, toBeInsertedText, toBeInsertedStyleAlign);
+      }
+      if(resortedArticle.length > 0)
+        appendParagraph(resortedArticle, '&nbsp;', {});
+      toBeInsertedText = '';
+      return;
     } else if (text && text !== '') {
       if (node.tagName === 'OL') {
         textArray = text.split('\n');
