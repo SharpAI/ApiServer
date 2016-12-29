@@ -659,7 +659,7 @@ if Meteor.isClient
           handleAddedLink(Session.get("postContent").fromUrl)
         else
           window.location.href=Session.get("postContent").fromUrl
-    'click .user':->
+    'click .post-user':->
       Session.set("ProfileUserId1", this.owner)
       Session.set("currentPageIndex",-1)
       Meteor.subscribe("userinfo", this.owner)
