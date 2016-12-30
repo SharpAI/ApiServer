@@ -2,43 +2,46 @@ if Meteor.isServer
   Meteor.startup ()->
     @JPush = Meteor.npmRequire "jpush-sdk"
     @client = @JPush.buildClient '50e8f00890be941f05784e6f', 'ec9940bbc7fcc646fc492ed8'
-  @_pushnotification = (type, doc, userId)->
-    `var httppost = function(url, data, callback){
-        var URL = Meteor.npmRequire('url');
-        var http = Meteor.npmRequire('http');
-        var uri = URL.parse(url);
-        var receiveData = '';
-        var req = http.request({
-            hostname: uri.hostname,
-            port: uri.port,
-            method: 'POST',
-            path: uri.pathname,
-            // handers: {}
-        }, function(res){
-            res.setEncoding('utf8');
-            res.on('data', function(result){
-                receiveData += result;
-                console.log('httppost suc: url='+url+', data:', result);
-                console.log('------- End --------');
-            });
-            res.on('end', () => {
-                console.log('No more data in response.');
-                if (receiveData.indexOf('502 Bad Gateway') > 0) {
-                    callback && callback('failed', receiveData);
-                } else {
-                    callback && callback(null, receiveData);
-                }
-            });
-        });
-        req.on('error',function(e){
-            callback && callback(e, null);
-            console.log('httppost failed: url='+url+', error: '+JSON.stringify(e));
+  URL = Meteor.npmRequire('url')
+  http = Meteor.npmRequire('http')
+  `var httppost = function(url, data, callback){
+    console.log('_pushnotification:', type)
+    var uri = URL.parse(url);
+    var receiveData = '';
+    var req = http.request({
+        hostname: uri.hostname,
+        port: uri.port,
+        method: 'POST',
+        path: uri.pathname,
+        // handers: {}
+    }, function(res){
+        res.setEncoding('utf8');
+        res.on('data', function(result){
+            receiveData += result;
+            console.log('httppost suc: url='+url+', data:', result);
             console.log('------- End --------');
         });
-        req.write(JSON.stringify(data));
-        req.end();
-     }`
+        res.on('end', () => {
+            console.log('No more data in response.');
+            if (receiveData.indexOf('502 Bad Gateway') > 0) {
+                callback && callback('failed', receiveData);
+            } else {
+                callback && callback(null, receiveData);
+            }
+        });
+    });
+    req.on('error',function(e){
+        callback && callback(e, null);
+        console.log('httppost failed: url='+url+', error: '+JSON.stringify(e));
+        console.log('------- End --------');
+    });
+    Meteor.setTimeout(function(){
+      req.write(JSON.stringify(data));
+      req.end();
+    }, 0);
+  };`
 
+  @_pushnotification = (type, doc, userId)->
     if type is "palsofavourite"
       content = '有人也赞了此故事:《' + doc.title + '》'
       extras = {
@@ -212,7 +215,7 @@ if Meteor.isServer
             if error
                 console.log("ERROR: httppost failed, let's try to send notification directly...")
                 #_pushnotification(type, doc, userId)
-                PushMessages.insert({pushMessage: dataStr});
+                PushMessages.insert({pushMessage: dataArray});
         )
 
   @pushnotification = (type, doc, userId)->
@@ -308,6 +311,7 @@ if Meteor.isServer
       if userId is null or userId is undefined
          return;
       toUserId = userId
+    
     toUserToken = Meteor.users.findOne({_id: toUserId})
 
     unless toUserToken is undefined or toUserToken.type is undefined or toUserToken.token is undefined
