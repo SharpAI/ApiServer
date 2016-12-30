@@ -346,16 +346,20 @@ if(Meteor.isServer){
     };
     var getViewLists = function(obj,userId,limit){
         var views = Viewers.find({userId: userId},{sort:{createdAt: -1},limit:limit});
+        var viewlistsIds = [];
         if (views.count()>0){
             views.forEach(function(fields){
                 var viewItem = Posts.findOne({"_id":fields.postId});
                 if(viewItem)
-                {
-                    fields.mainImage = viewItem.mainImage;
-                    fields.title = viewItem.title;
-                    try{
-                        obj.added("viewlists", fields._id, fields);
-                    }catch(error){
+                {                   
+                    if(viewlistsIds.indexOf(viewItem._id) === -1){
+                        viewlistsIds.push(fields.postId);
+                        fields.mainImage = viewItem.mainImage;
+                        fields.title = viewItem.title;
+                        try{
+                            obj.added("viewlists", fields._id, fields);
+                        }catch(error){
+                        }
                     }
                 }
             });
