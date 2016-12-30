@@ -5,7 +5,6 @@ if Meteor.isServer
   URL = Meteor.npmRequire('url')
   http = Meteor.npmRequire('http')
   `var httppost = function(url, data, callback){
-    console.log('_pushnotification:', type)
     var uri = URL.parse(url);
     var receiveData = '';
     var req = http.request({
