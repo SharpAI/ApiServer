@@ -23,6 +23,7 @@
           <div style="text-align: center; padding-top:50%;">{{_ "noMessages"}}</div>
         {{/if}}
       {{/if}}
+      {{#unless noMessages}}
       {{#each eventFeeds}}
         {{#if isAlsoComment eventType}}
             <a href="/posts/{{postId}}" class="contentList">
@@ -186,6 +187,7 @@
           </div>
         {{/if}}
       {{/each}}
+      {{/unless}}
       {{#if moreResults}}
       <div id="showMoreFeedsResults" style="margin-left: 25px;">
         <span class="loading">{{_ "loading"}}</span>
