@@ -142,6 +142,7 @@ if Meteor.isClient
         true
   Template.searchPeopleAndTopic.onCreated ()->
     Meteor.subscribe("topics")
+    Meteor.subscribe('follows')
     Meteor.subscribe("topicposts")
   Template.searchPeopleAndTopic.onRendered ()->
     Session.setDefault('is_people', true)
