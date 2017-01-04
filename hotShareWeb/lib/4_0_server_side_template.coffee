@@ -172,6 +172,10 @@ if Meteor.isServer
       version_of_build: version_of_build
       withSectionMenu: withSectionMenu
       sign_server_url: sign_server_url
+      formatText: (val)->
+        if val
+          return val.replace(/"/g, "'").trim()
+        return ''
       trim: (text)->
         if text and text isnt ''
           try

@@ -2814,10 +2814,7 @@ if(Meteor.isServer){
 
     if(searchText) {
       var regExp = buildRegExp(searchText);
-      var selector = {$or: [
-        {'username': regExp},
-        {'profile.fullname': regExp}
-      ]};
+      var selector = {'profile.fullname': regExp};
       return Meteor.users.find(selector, options).fetch();
     } else {
     //   return this.ready();
