@@ -1493,7 +1493,8 @@ if Meteor.isClient
               data = result.content
               console.log("data is ==",data)
               $('.importing-mask,.importing').hide()
-          toastr.info('导入失败，请重试！')
+          else
+            toastr.info('导入失败，请重试！')
       'click .storyLists li':(e)->
         console.log('target_postId=='+e.currentTarget.id)
         # 准备分享到相关读友圈
