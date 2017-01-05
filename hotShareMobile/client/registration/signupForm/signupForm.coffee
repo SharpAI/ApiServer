@@ -67,7 +67,7 @@ Template.signupForm.events
         email:email
         password:pass1
         profile:
-          fullname: ''
+          fullname: Session.get('userName')
           icon: '/userPicture.png'
           desc: ''
         (err)->
