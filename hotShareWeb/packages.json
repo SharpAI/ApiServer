@@ -8,6 +8,6 @@
   "aliyun-sdk": "1.9.6",
   "aliyun-cdi": "0.1.4",
   "html-minifier": "3.1.0",
-  "skyweb":"0.1.2",
+  "skyweb":"0.2.0",
   "fibers": "1.0.15"
 }
