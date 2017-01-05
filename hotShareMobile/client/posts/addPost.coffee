@@ -777,7 +777,10 @@ if Meteor.isClient
     if iabHandle
       iabHandle.removeEventListener 'import',getURL
       #iabHandle.removeEventListener 'exit',handleExitBrowser
-      iabHandle.removeEventListener 'hide',handleHideBrowser
+      if device.platform is 'Android'
+        iabHandle.removeEventListener 'exit',handleHideBrowser
+      else
+        iabHandle.removeEventListener 'hide',handleHideBrowser
     if url and url isnt ''
       window.iabHandle = window.open(url, '_blank', 'hidden=no,toolbarposition=top')
     else
@@ -785,7 +788,10 @@ if Meteor.isClient
     if Session.get('isReviewMode') isnt '1'
       iabHandle.addEventListener 'import',getURL
       #iabHandle.addEventListener 'exit',handleExitBrowser
-      iabHandle.addEventListener 'hide',handleHideBrowser
+      if device.platform is 'Android'
+        iabHandle.addEventListener 'exit',handleHideBrowser
+      else
+        iabHandle.addEventListener 'hide',handleHideBrowser
   Template.addPost.onDestroyed ()->
     Session.set('showContentInAddPost',false)
     $('.tool-container').remove();
