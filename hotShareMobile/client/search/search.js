@@ -13,7 +13,7 @@ Template.searchFollow.helpers({
         Meteor.setTimeout (function(){
           Session.set("noSearchResult", true);
           Session.set("searchLoading", false);
-        },2000);
+        },500);
       } else {
         Session.set("noSearchResult", false);
         Session.set("searchLoading", false);
@@ -40,7 +40,7 @@ Template.searchPeopleAndTopic.helpers({
         Meteor.setTimeout (function(){
           Session.set("searchLoading", false);
           Session.set("noSearchResult", true);
-        },2000);
+        },500);
       } else {
         Session.set("showSearchStatus", false);
         Session.set("searchLoading", false);
@@ -63,7 +63,7 @@ Template.searchPeopleAndTopic.helpers({
         Meteor.setTimeout (function(){
           Session.set("searchLoading", false);
           Session.set("noSearchResult", true);
-        },2000);
+        },500);
       } else {
         Session.set("showSearchStatus", false);
         Session.set("searchLoading", false);

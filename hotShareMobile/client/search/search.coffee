@@ -39,6 +39,7 @@ if Meteor.isClient
          Session.set 'searchLoading', true
        else
          Session.set 'isSearching', false
+         return
        FollowUsersSearch.search text
     )
   Template.searchFollow.events
