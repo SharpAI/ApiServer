@@ -12,8 +12,11 @@ if Meteor.isClient
     
   Template.topicPosts.rendered=->
     $('.content').css 'min-height',$(window).height()
-#    $('.addontitle').css('top',$(window).height()*0.25)
     $(window).scroll (event)->
+        tHeight = $('.home').height()
+        nHeight = $(window).scrollTop() + $(window).height() + 300
+        if nHeight > tHeight
+          Session.set('topicPostsCollection','loading')
         target = $("#topicPostShowMoreResults");
         TOPIC_POSTS_ITEMS_INCREMENT = 20;
 

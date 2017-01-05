@@ -10,7 +10,6 @@
     <div id="list">
       {{#each Posts}}
       <div  id="{{_id}}" class="mainImage">
-<!--      <div class="item" id="{{_id}}" style="background-image:url({{mainImage}})">-->
         <img class="scale item" src="{{mainImage}}" draggable="false" >
         <header>
           <h1 class="title">
@@ -25,14 +24,8 @@
         <span><img class="icon" src="{{ownerIcon}}" width='25' height='25'></span>
         <span class="name">{{ownerName}}</span>
         <span class="right">
-<!--          <p>浏览{{getBrowseCount browse}}次</p>-->
-<!--          <i class="fa fa-heart"></i>{{heart}}-->
-          <!--<i class="fa fa-retweet"></i>{{retweet}}-->
-<!--          <i class="fa fa-comment"></i>{{comment}}-->
         </span>
       </div>
-<!--      </div>-->
-      {{else}}
       {{/each}}
       {{#if moreResults}}
           <div id="topicPostShowMoreResults" style="margin-left: 25px;">
