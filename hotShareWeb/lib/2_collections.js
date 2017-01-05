@@ -2810,7 +2810,7 @@ if(Meteor.isServer){
   });
 
   SearchSource.defineSource('followusers', function(searchText, options) {
-    var options = {sort: {createdAt: -1}, limit: 20};
+    var options = {limit: 20};
 
     if(searchText) {
       var regExp = buildRegExp(searchText);
