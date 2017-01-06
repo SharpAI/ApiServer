@@ -28,7 +28,26 @@ if (Meteor.isCordova) {
     var openNotificationInAndroidCallback = function(data){
       try{
         console.log("JPushPlugin:openNotificationInAndroidCallback");
-        console.log(data);
+        if(device.platform === 'Android') {
+          if (data != null && typeof data === 'object') {
+            if (data.alert != null && data.extras && !data.extras.type) {
+              console.log("##RDBG alert: " + data.alert);
+              Meteor.subscribe('postWithTitle', data.alert, {
+                  onStop: function() {},
+                  onReady: function(){
+                      console.log("##RDBG onReady: " + data.alert);
+                      var pst = Posts.findOne({title: data.alert});
+                      if (pst) {
+                        console.log("##RDBG found: " + pst._id);
+                        PUB.page('/posts/'+pst._id);
+                      }
+                  }
+              });
+              return;
+            }
+          }
+        }
+
         data=data.replace('"{','{').replace('}"','}');
         var bToObj=JSON.parse(data);
         var message = bToObj.message;
@@ -126,4 +145,3 @@ if (Meteor.isCordova) {
       }
   });
 }
-

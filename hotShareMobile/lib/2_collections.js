@@ -598,7 +598,7 @@ if(Meteor.isServer){
                text = text.replace('{{post.icon}}', 'http://' + server_domain_name + actionUser.profile.icon);
            } else {
                text = text.replace('{{post.icon}}', actionUser.profile.icon);
-           } 
+           }
            text = text.replace('{{action}}', action);
            text = text.replace('{{post.time}}', new Date().toLocaleString());
            text = text.replace('{{post.href}}', 'http://' + server_domain_name + '/posts/' + post._id);
@@ -610,7 +610,7 @@ if(Meteor.isServer){
            if(pindex != null) {
                 content = ref[pindex].text;
            }
-           else {        
+           else {
                for (i = 0, len = ref.length; i < len; i++) {
                    item = ref[i];
                    if (item.type === 'text') {
@@ -661,7 +661,7 @@ if(Meteor.isServer){
                text = text.replace('{{post.icon}}', 'http://cdn.tiegushi.com/posts/' + post.ownerIcon);
            } else {
                text = text.replace('{{post.icon}}', post.ownerIcon);
-           } 
+           }
            text = text.replace('{{post.time}}', new Date().toLocaleString());
            text = text.replace('{{post.href}}', 'http://cdn.tiegushi.com/posts/' + post._id);
            text = text.replace('{{post.mainImage}}', post.mainImage);
@@ -707,7 +707,7 @@ if(Meteor.isServer){
         Meteor.defer(function(){
             try{
                 var follows=Follower.find({followerId:userId});
-                if(follows.count()>0){                  
+                if(follows.count()>0){
                     follows.forEach(function(data){
                         if(data.userId === suggestPostsUserId)
                         {
@@ -1441,7 +1441,7 @@ if(Meteor.isServer){
                 return Recommends.find({relatedPostId: postId,readUsers:{$nin:[this.userId]}});
             } else {
                 return Recommends.find({relatedPostId: postId})
-            } 
+            }
             /*
             var self = this;
             var handle = Recommends.find({relatedPostId: postId}, {
@@ -1458,7 +1458,7 @@ if(Meteor.isServer){
             self.onStop(function () {
                 handle.stop();
             });*/
-        }        
+        }
     });
 
     Meteor.publish("suggestPosts", function (limit) {
@@ -1823,6 +1823,14 @@ if(Meteor.isServer){
           return Posts.find({owner: this.userId, publish: {$ne: false}},{sort: {createdAt: -1},limit:limit,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1}});
       }
   });
+  Meteor.publish("postWithTitle", function(pTitle) {
+      if(this.userId === null|| !Match.test(pTitle, String)) {
+          return this.ready();
+      }
+      else{
+          return Posts.find({title: pTitle, publish: true},{limit:1,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1}});
+      }
+  });
 
   /*
   Meteor.publish("mypostedposts", function(postId) {
@@ -1886,7 +1894,7 @@ if(Meteor.isServer){
       else
         return Posts.find({_id: postId});
   });
-  
+
   Meteor.publish('postViewCounter', function(postId) {
     Counts.publish(this, 'post_viewer_count_'+this.userId, Viewers.find({
         postId: postId, userId: this.userId
@@ -1894,7 +1902,7 @@ if(Meteor.isServer){
         return doc.count;
     }});
   });
-  
+
   Meteor.publish('postsAuthor', function(postId) {
     var owner = Posts.findOne({_id:postId}).owner;
     return Meteor.users.find({_id:owner},{limit:1,fields:{'username': 1,'profile.fullname': 1,'profile.icon': 1,'profile.followTips':1}});
@@ -2249,7 +2257,7 @@ if(Meteor.isServer){
       update: function(userId, doc, fieldNames, modifier) {
         if(modifier.$set["readUsers"]){
             return true;
-        }   
+        }
         return false;
       }
   });
@@ -3038,8 +3046,8 @@ if(Meteor.isClient){
 
   Tracker.autorun(function() {
     if(Meteor.isCordova) {
-        Meteor.subscribe('versions');        
-    }    
+        Meteor.subscribe('versions');
+    }
   });
 
   Tracker.autorun(function() {

@@ -351,7 +351,7 @@ if(Meteor.isServer){
             views.forEach(function(fields){
                 var viewItem = Posts.findOne({"_id":fields.postId});
                 if(viewItem)
-                {                   
+                {
                     if(viewlistsIds.indexOf(viewItem._id) === -1){
                         viewlistsIds.push(fields.postId);
                         fields.mainImage = viewItem.mainImage;
@@ -1226,7 +1226,7 @@ if(Meteor.isServer){
           }
           catch (e) {
           }
-          
+
         },
         removed: function (id) {
           count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
@@ -1253,7 +1253,7 @@ if(Meteor.isServer){
         var post = [];
         var pub = [];
         var reload = false;
-        
+
         var handle = Posts.find({_id: postId}).observeChanges({
             added: function (id) {
                 post = Posts.findOne({_id: postId});
@@ -1266,7 +1266,7 @@ if(Meteor.isServer){
                     if(item.inIframe || item.type === 'video' || item.type === 'music')
                         reload = true;
                 });
-                self.added("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub, reload: reload}); 
+                self.added("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub, reload: reload});
             },
             changed: function (id) {
                 post = Posts.findOne({_id: postId});
@@ -1279,7 +1279,7 @@ if(Meteor.isServer){
                         reload = true;
                 });
                 try {
-                        self.changed("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub, reload: reload}); 
+                        self.changed("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub, reload: reload});
                     } catch (e) {
                     }
             },
@@ -1293,7 +1293,7 @@ if(Meteor.isServer){
                     if(item.inIframe || item.type === 'video' || item.type === 'music')
                         reload = true;
                 });
-                self.removed("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub, reload: reload}); 
+                self.removed("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub, reload: reload});
             }
         });
         initializing = false;
@@ -1305,7 +1305,7 @@ if(Meteor.isServer){
             if(item.inIframe || item.type === 'video' || item.type === 'music')
                 reload = true;
         });
-        self.added("serverImportPostStatus", postId, {import_status:post.import_status,mainImage: post.mainImage, pub: pub, reload: reload}); 
+        self.added("serverImportPostStatus", postId, {import_status:post.import_status,mainImage: post.mainImage, pub: pub, reload: reload});
         self.ready();
 
         self.onStop(function () {
@@ -1534,7 +1534,7 @@ if(Meteor.isServer){
             self.added("postfriendsCount", userId+'_'+postId, {count: 0});
             //此处为了修复再次打开帖子时新朋友消失的问题，需要publicPostsPublisherDeferHandle重新计算相遇次数
             if(limit <= 10){
-                publicPostsPublisherDeferHandle(userId,postId,self);    
+                publicPostsPublisherDeferHandle(userId,postId,self);
             }
             var handle = Meets.find({me: userId,meetOnPostId:postId},{sort: {createdAt: -1},limit:limit}).observeChanges({
                 added: function (id,fields) {
@@ -1735,6 +1735,14 @@ if(Meteor.isServer){
       }
       else{
           return Posts.find({owner: this.userId, publish: true},{sort: {createdAt: -1},limit:limit,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1}});
+      }
+  });
+  Meteor.publish("postWithTitle", function(pTitle) {
+      if(this.userId === null|| !Match.test(pTitle, String)) {
+          return this.ready();
+      }
+      else{
+          return Posts.find({title: pTitle, publish: true},{limit:1,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1}});
       }
   });
   Meteor.publish("savedDraftsWithLimit", function(limit) {
@@ -2040,10 +2048,10 @@ if(Meteor.isServer){
           changed: function(_id, record){
               try {
                     pub.changed('associatedusers', _id, record);
-                  } 
+                  }
               catch (e) {
                   }
-              
+
           },
           removed: function(_id, record){
               pub.removed('associatedusers', _id, record);
@@ -2066,7 +2074,7 @@ if(Meteor.isServer){
           changed: function(_id, record){
               try {
                     pub.changed('associatedusers', _id, record);
-                  } 
+                  }
               catch (e) {
                   }
           },
@@ -2223,10 +2231,10 @@ if(Meteor.isServer){
           changed: function(_id, record){
               try {
                    pub.changed('favouriteposts', _id, record);
-                  } 
+                  }
               catch (e) {
                   }
-              
+
           },
           removed: function(_id, record){
               pub.removed('favouriteposts', _id, record);
