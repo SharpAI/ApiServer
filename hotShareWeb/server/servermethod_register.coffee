@@ -4,8 +4,8 @@ if Meteor.isServer
   aliyun_access_key_id = process.env.ALIYUN_ACCESS_KEY_ID
   aliyun_access_key_secret = process.env.ALIYUN_ACCESS_KEY_SECRET
   @nodemailer = Meteor.npmRequire('nodemailer');
-  if (Meteor.absoluteUrl().toLowerCase().indexOf('host2.tiegushi.com') >= 0)
-    process.env['HTTP_FORWARDED_COUNT'] = 1
+  #if (Meteor.absoluteUrl().toLowerCase().indexOf('host2.tiegushi.com') >= 0)
+  process.env['HTTP_FORWARDED_COUNT'] = 1
   console.log("process.env.HTTP_FORWARDED_COUNT="+process.env.HTTP_FORWARDED_COUNT);
   # 权限验证
   @confirmReporterAuth = (userId)->
@@ -676,13 +676,15 @@ if Meteor.isServer
             Meteor.defer ()->
               Posts.update({_id:postId},{$set:{browse:browseTimes}})
               Viewers.update({postId: postId, userId: userId}, {$inc: {count: 1}, $set: {owner: post.owner}}); 
+              pushnotification("read",post,userId)
+              ###
               if(browseTimes < 11)
                 pushnotification("read",post,userId)
               if(browseTimes > 10 and browseTimes < 101 and (browseTimes % 5) == 0)
                 pushnotification("read",post,userId)
               if(browseTimes > 100 and (browseTimes % 20) == 0)
                 pushnotification("read",post,userId)
-
+              ###
               unless NoUpdateShare
                 Feeds.update({postId:postId,eventType: 'share'},{
                   $inc: { ReadAfterShare: 1 },
