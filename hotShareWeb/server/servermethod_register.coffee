@@ -614,7 +614,7 @@ if Meteor.isServer
       "unpublish":(postId,userId,drafts)->
         Meteor.defer ()->
           Posts.update({_id:postId},{$set:{publish:false}})
-          SavedDrafts.insert drafts
+          SavedDrafts.update({_id:postId}, {$set:drafts}, {upsert:true})
           FollowPosts.update({postId:postId},{$set:{publish:false}},{multi: true, upsert:true})
           TPs=TopicPosts.find({postId:postId})
           if TPs.count()>0
