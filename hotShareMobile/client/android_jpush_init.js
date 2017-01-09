@@ -32,7 +32,7 @@ if (Meteor.isCordova) {
           if (data != null && typeof data === 'object') {
             if (data.alert != null && data.extras && !data.extras.type) {
               console.log("##RDBG alert: " + data.alert);
-              Meteor.subscribe('postWithTitle', data.alert, {
+              /*Meteor.subscribe('postWithTitle', data.alert, {
                   onStop: function() {},
                   onReady: function(){
                       console.log("##RDBG onReady: " + data.alert);
@@ -42,7 +42,7 @@ if (Meteor.isCordova) {
                         PUB.page('/posts/'+pst._id);
                       }
                   }
-              });
+              });*/
               return;
             }
           }
