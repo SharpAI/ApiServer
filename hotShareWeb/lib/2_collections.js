@@ -1531,7 +1531,7 @@ if(Meteor.isServer){
             self.count = 0;
             self.meeterIds=[];
             self.docIds=[];
-            self.added("postfriendsCount", userId+'_'+postId, {count: 0});
+            try{self.added("postfriendsCount", userId+'_'+postId, {count: 0});}catch(e){}
             //此处为了修复再次打开帖子时新朋友消失的问题，需要publicPostsPublisherDeferHandle重新计算相遇次数
             if(limit <= 10){
                 publicPostsPublisherDeferHandle(userId,postId,self);
@@ -1547,7 +1547,7 @@ if(Meteor.isServer){
                             newMeetsAddedForPostFriendsDeferHandleV2(self,taId,userId,id,fields);
                         }
                     }
-                    self.changed("postfriendsCount", userId+'_'+postId, {count: Meets.find({me: userId,meetOnPostId:postId}).count()});
+                    try{self.changed("postfriendsCount", userId+'_'+postId, {count: Meets.find({me: userId,meetOnPostId:postId}).count()});}catch(e){}
                     self.count++;
                 },
                 changed: function (id,fields) {
@@ -1559,7 +1559,7 @@ if(Meteor.isServer){
                         catch(error){
                         }
                     }
-                    self.changed("postfriendsCount", userId+'_'+postId, {count: Meets.find({me: userId,meetOnPostId:postId}).count()});
+                    try{self.changed("postfriendsCount", userId+'_'+postId, {count: Meets.find({me: userId,meetOnPostId:postId}).count()});}catch(e){}
                 }/*,
                  removed:function (id,fields) {
                  self.removed("postfriends", id, fields);
