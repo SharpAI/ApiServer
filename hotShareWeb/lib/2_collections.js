@@ -59,6 +59,9 @@ isPostSafe = function(title,addontitle,mainImage,pub){
     }
     return true;
 }
+GetStringByteLength = function(str){
+  return str ? str.replace(/[^\x00-\xff]/g, 'xx').length : 0;
+}
 if(Meteor.isServer)
   PushSendLogs = new Meteor.Collection('pushSendLogs');
 

@@ -17,4 +17,6 @@
 @withServerImport = true
 @withSlackReporter = false
 @withSkypeWebReporter = true
+@withPostTitleMaxLength = 90      #byte
+@withPostSubTitleMaxLength = 60   #byte
 

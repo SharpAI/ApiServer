@@ -13,6 +13,20 @@ var request = Meteor.npmRequire('request');
 var Fiber = Meteor.npmRequire('fibers');
 var cancelImportTask = new Meteor.Collection('cancelImportTask');
 var runCancelTaskInterval = null;
+var subStringByte = function(str, length){
+  if(!str)
+    return '';
+  if(length >= GetStringByteLength(str))
+    return str;
+  
+  var tmp = str.substr(0, length > str.length ? str.length : length);
+  for(var i=length;i>1;i--){
+    if(GetStringByteLength(tmp) <= length || tmp.length <= 1)
+      break;    
+    tmp = tmp.substr(0, tmp.length-1);
+  }
+  return tmp;
+};
 
 function ImportServer(res, taskId, chunked){
   var obj = new Object();
@@ -174,6 +188,9 @@ Router.route('/restapi/importPost/:type/:_id', function(req, res, next) {
         }
         var Fiber = Meteor.npmRequire('fibers');
         Fiber(function() {
+            req_data.title = subStringByte(req_data.title, withPostTitleMaxLength);
+            req_data.addontitle = req_data.addontitle ? subStringByte(req_data.addontitle, withPostSubTitleMaxLength) : '';
+
             if (req_type === 'insert') {
                 console.log("importPost find user 1, req_userId="+req_userId);
                 var user = Meteor.users.findOne({_id: req_userId});

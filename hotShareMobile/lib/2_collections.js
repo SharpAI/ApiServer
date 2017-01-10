@@ -25,6 +25,10 @@ UserRelation = new Meteor.Collection('userrelation'); // 用户关系，为了�
 
 Recommends = new Meteor.Collection('recommends');
 
+GetStringByteLength = function(str){
+  return str ? str.replace(/[^\x00-\xff]/g, 'xx').length : 0;
+}
+
 if(Meteor.isServer)
   PushSendLogs = new Meteor.Collection('pushSendLogs');
 

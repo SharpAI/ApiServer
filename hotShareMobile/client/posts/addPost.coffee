@@ -1627,6 +1627,12 @@ if Meteor.isClient
           $("#title").val('')
           window.plugins.toast.showShortBottom('请为您的故事加个标题')
           return
+        if GetStringByteLength(title) > withPostTitleMaxLength
+          window.plugins.toast.showShortBottom('标题最大长度'+withPostTitleMaxLength+'字符（中文算2个）')
+          return
+        if $("#addontitle").val() and GetStringByteLength($("#addontitle").val()) > withPostSubTitleMaxLength
+          window.plugins.toast.showShortBottom('副标题最大长度'+withPostSubTitleMaxLength+'字符（中文算2个）')
+          return
         #get the images to be uploaded
         draftImageData = Drafts.find({type:'image'}).fetch()
         draftMusicData = Drafts.find({type:'music'}).fetch()
