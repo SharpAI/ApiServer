@@ -4,6 +4,8 @@ if Meteor.isServer
     @client = @JPush.buildClient '50e8f00890be941f05784e6f', 'ec9940bbc7fcc646fc492ed8'
   URL = Meteor.npmRequire('url')
   http = Meteor.npmRequire('http')
+  Fiber = Meteor.npmRequire('fibers')
+
   `var httppost = function(url, data, callback){
     var uri = URL.parse(url);
     var receiveData = '';
@@ -214,7 +216,10 @@ if Meteor.isServer
             if error
                 console.log("ERROR: httppost failed, let's try to send notification directly...")
                 #_pushnotification(type, doc, userId)
-                PushMessages.insert({pushMessage: dataArray});
+                Fiber(
+                  ()->
+                    PushMessages.insert({pushMessage: dataArray})
+                ).run()
         )
 
   @pushnotification = (type, doc, userId)->
