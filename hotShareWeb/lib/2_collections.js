@@ -1737,14 +1737,6 @@ if(Meteor.isServer){
           return Posts.find({owner: this.userId, publish: true},{sort: {createdAt: -1},limit:limit,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1}});
       }
   });
-  Meteor.publish("postWithTitle", function(pTitle) {
-      if(this.userId === null|| !Match.test(pTitle, String)) {
-          return this.ready();
-      }
-      else{
-          return Posts.find({title: pTitle, publish: true},{limit:1,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1}});
-      }
-  });
   Meteor.publish("savedDraftsWithLimit", function(limit) {
       if(this.userId === null|| !Match.test(limit, Number)){
           return this.ready();

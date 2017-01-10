@@ -28,33 +28,25 @@ if (Meteor.isCordova) {
     var openNotificationInAndroidCallback = function(data){
       try{
         console.log("JPushPlugin:openNotificationInAndroidCallback");
-        if(device.platform === 'Android') {
-          if (data != null && typeof data === 'object') {
-            if (data.alert != null && data.extras && !data.extras.type) {
-              console.log("##RDBG alert: " + data.alert);
-              /*Meteor.subscribe('postWithTitle', data.alert, {
-                  onStop: function() {},
-                  onReady: function(){
-                      console.log("##RDBG onReady: " + data.alert);
-                      var pst = Posts.findOne({title: data.alert});
-                      if (pst) {
-                        console.log("##RDBG found: " + pst._id);
-                        PUB.page('/posts/'+pst._id);
-                      }
-                  }
-              });*/
-              return;
-            }
-          }
-        }
+        console.log("##RDBG data: " + JSON.stringify(data));
 
-        data=data.replace('"{','{').replace('}"','}');
-        var bToObj=JSON.parse(data);
+        bToObj = data;
         var message = bToObj.message;
         var extras = bToObj.extras;
 
         var type = extras["cn.jpush.android.EXTRA"]["type"];
         switch(type){
+         case "dailyrecommend":
+            var postId = extras["cn.jpush.android.EXTRA"]["postId"];
+            console.log('##RDBG dailyrecommend postid: ' + postId);
+            Meteor.subscribe('postInfoById', postId, {
+                onStop: function() {},
+                onReady: function(){
+                    console.log("##RDBG dailyrecommend onReady");
+                    PUB.page('/posts/'+postId);
+                }
+            });
+            break;
          case "comment":
             if(Meteor.user()){
               //var postId = extras["cn.jpush.android.EXTRA"]["postId"];
@@ -85,8 +77,8 @@ if (Meteor.isCordova) {
     var pushNotificationCallback = function(data){
       try{
         console.log("JPushPlugin:receiveMessageInAndroidCallback");
-        console.log(data);
-        data=data.replace('"{','{').replace('}"','}');
+        console.log("##RDBG data: " + JSON.stringify(data));
+        /*data=data.replace('"{','{').replace('}"','}');
         var bToObj=JSON.parse(data);
         var message = bToObj.message;
         var extras = bToObj.extras;
@@ -94,7 +86,7 @@ if (Meteor.isCordova) {
         console.log(message);
         console.log(extras['cn.jpush.android.MSG_ID']);
         console.log(extras['cn.jpush.android.CONTENT_TYPE']);
-        console.log(extras['cn.jpush.android.EXTRA']);
+        console.log(extras['cn.jpush.android.EXTRA']);*/
       }
       catch(exception){
         console.log("JPushPlugin:pushCallback "+exception);
