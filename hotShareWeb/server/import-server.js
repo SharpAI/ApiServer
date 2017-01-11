@@ -186,6 +186,7 @@ Router.route('/restapi/importPost/:type/:_id', function(req, res, next) {
             console.log("importPost: JSON.parse exception! error="+error);
             return;
         }
+        // console.log(req_type + ':', _.pluck(req_data.pub, '_id'));
         var Fiber = Meteor.npmRequire('fibers');
         Fiber(function() {
             req_data.title = subStringByte(req_data.title, withPostTitleMaxLength);

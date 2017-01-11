@@ -128,7 +128,7 @@ function PostDrafts(_id, _user, threadsNumber) {
       showDebug && console.log(user)
       
       var draftItem = {
-        _id: mongoid(),
+        _id: item._id || mongoid(),
         type: 'text',
         toTheEnd: true,
         noKeyboardPopup: true,
@@ -151,7 +151,7 @@ function PostDrafts(_id, _user, threadsNumber) {
       if (item.imageUrl && item.imageUrl !== '') {
         if(item._download){
           if(item._download.file){
-            postDrafts.insertDownloadedImage(self.data, item._download.source, item._download.found, self.inputUrl, item._download.file, item._download.w, item._download.h);
+            postDrafts.insertDownloadedImage(self.data, item._download.source, item._download.found, self.inputUrl, item._download.file, item._download.w, item._download.h, item._id);
             if(!_mainImage || _mainImage === 'http://data.tiegushi.com/res/defaultMainImage1.jpg')
               _mainImage = item._download.source;
           }
@@ -162,7 +162,7 @@ function PostDrafts(_id, _user, threadsNumber) {
         
         return filedownup.seekSuitableImageFromArrayAndDownloadToLocal([item.imageUrl], function(file, w, h, found, index, total, source) {
           if (file){
-            postDrafts.insertDownloadedImage(self.data, source, found, self.inputUrl, file, w, h);
+            postDrafts.insertDownloadedImage(self.data, source, found, self.inputUrl, file, w, h, item._id);
             if(!_mainImage || _mainImage === 'http://data.tiegushi.com/res/defaultMainImage1.jpg')
               _mainImage = source;
           }
@@ -174,7 +174,7 @@ function PostDrafts(_id, _user, threadsNumber) {
       }
     } else if (item.type === 'iframe') {
         drafts.push({
-        _id: mongoid(),
+        _id: item._id || mongoid(),
         type: 'image',
         isImage: true,
         inIframe: true,
@@ -189,7 +189,7 @@ function PostDrafts(_id, _user, threadsNumber) {
         data_sizey: '4'
       });
     } else if (item.type === 'music') {
-      postDrafts.insertMusicInfo(item.musicInfo);
+      postDrafts.insertMusicInfo(item.musicInfo, item._id);
     } else if (item.type === 'video') {
       if (item.videoInfo.imageUrl) {
         return filedownup.seekSuitableImageFromArrayAndDownloadToLocal([item.videoInfo.imageUrl], function(file, w, h, found, index, total, source) {
@@ -197,16 +197,16 @@ function PostDrafts(_id, _user, threadsNumber) {
             item.videoInfo.imageUrl = 'cdvfile://localhost/persistent/' + file.name;
             item.videoInfo.filename = file.name;
             item.videoInfo.URI = file.toURL();
-            insertVideoWithDownloadedImage(item.videoInfo, self.data, source, found, self.inputUrl, file, w, h);
+            insertVideoWithDownloadedImage(item.videoInfo, self.data, source, found, self.inputUrl, file, w, h, item._id);
           } else {
-            postDrafts.insertVideoInfo(item.videoInfo);
+            postDrafts.insertVideoInfo(item.videoInfo, null, item._id);
           }
           return callback(null, item);
         }, 1, true, function(file){
           localImgs.push(file);
         });
       } else {
-        postDrafts.insertVideoInfo(item.videoInfo);
+        postDrafts.insertVideoInfo(item.videoInfo, null, item._id);
       }
     }
     
@@ -214,7 +214,7 @@ function PostDrafts(_id, _user, threadsNumber) {
       callback && callback(null, item);
     }, 10);
   };
-  postDrafts.insertVideoInfo = function(videoInfo, sizey){
+  postDrafts.insertVideoInfo = function(videoInfo, sizey, id){
     var data_sizey;
     if (sizey)
       data_sizey = sizey;
@@ -223,7 +223,7 @@ function PostDrafts(_id, _user, threadsNumber) {
       
     showDebug && console.log("data_sizey is " + data_sizey);
     drafts.push({
-      _id: mongoid(),
+      _id: id || mongoid(),
       type: 'video',
       owner: user._id,
       toTheEnd: true,
@@ -235,9 +235,9 @@ function PostDrafts(_id, _user, threadsNumber) {
       data_sizey: data_sizey
     });
   };
-  postDrafts.insertMusicInfo = function(musicInfo){
+  postDrafts.insertMusicInfo = function(musicInfo, id){
     drafts.push({
-      _id: mongoid(),
+      _id: id || mongoid(),
       type: 'music',
       owner: user._id,
       toTheEnd: true,
@@ -249,7 +249,7 @@ function PostDrafts(_id, _user, threadsNumber) {
       data_sizey: '1'
     });
   };
-  postDrafts.insertDownloadedImage = function(linkInfo, imageExternalURL, found, inputUrl, file, width, height){
+  postDrafts.insertDownloadedImage = function(linkInfo, imageExternalURL, found, inputUrl, file, width, height, id){
     var sizey, timestamp;
     if (file) {
       timestamp = new Date().getTime();
@@ -261,7 +261,7 @@ function PostDrafts(_id, _user, threadsNumber) {
         sizey = 1;
       }
       drafts.push({
-        _id: mongoid(),
+        _id: id || mongoid(),
         type: 'image',
         isImage: true,
         siteTitle: linkInfo.title,
@@ -493,7 +493,26 @@ function PostDrafts(_id, _user, threadsNumber) {
       callback && callback();
     });
   };
-  postDrafts.getPubObject = function(){
+  postDrafts.getPubObject = function(result){
+    if(result && result.format === true && result.resortedArticle && result.resortedArticle.length > 0){
+      var newDraftData = [];
+      newDraftData.push(drafts[0]);
+      for(var i=0;i<result.resortedArticle.length;i++){
+        var item = null;
+        for(var ii=1;ii<drafts.length;ii++){
+          if(drafts[ii]._id === result.resortedArticle[i]._id){
+            item = drafts[ii];
+            break;
+          }
+        }
+
+        if(item)
+          newDraftData.push(item);
+      }
+      drafts = [];
+      drafts = newDraftData;
+    }
+
     var pub = [];
     var modalUserId = user._id;
     var ownerUser = user;
@@ -575,14 +594,14 @@ function PostDrafts(_id, _user, threadsNumber) {
     
   }
 
-  var insertVideoWithDownloadedImage = function(videoInfo, linkInfo, imageExternalURL, found, inputUrl, file, width, height){
+  var insertVideoWithDownloadedImage = function(videoInfo, linkInfo, imageExternalURL, found, inputUrl, file, width, height, id){
     var sizey;
     if (file) {
       sizey = Math.round(6 * height / width);
       if (sizey <= 0)
         sizey = 1;
 
-      return postDrafts.insertVideoInfo(videoInfo, sizey.toString());
+      return postDrafts.insertVideoInfo(videoInfo, sizey.toString(), id);
     }
   };
   

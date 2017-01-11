@@ -107,6 +107,41 @@ console.error = function (message) {
     origConsoleError && origConsoleError.apply(console, arguments);
 };
 
+var formatResult = function(data){
+  if (data.resortedArticle && data.resortedArticle.length > 0 && data.format != true){
+    for(var i=0;i<data.resortedArticle.length;i++){
+      data.resortedArticle[i]._id = mongoid();
+      if(data.resortedArticle[i].type === 'image'){
+        data.resortedArticle[i].isImage = true;
+        data.resortedArticle[i].data_sizey = 3;
+      }else{
+        data.resortedArticle[i].data_sizey = 1;
+      }
+      data.resortedArticle[i].data_row = 1;
+      data.resortedArticle[i].data_col = 1;
+      data.resortedArticle[i].data_sizex = 6;
+    }
+  
+    // format
+    for(var i=0;i<data.resortedArticle.length;i++){
+      data.resortedArticle[i].index = i;
+      data.resortedArticle[i].data_col = parseInt(data.resortedArticle[i].data_col);
+      data.resortedArticle[i].data_row = parseInt(data.resortedArticle[i].data_row);
+      data.resortedArticle[i].data_sizex = parseInt(data.resortedArticle[i].data_sizex);
+      data.resortedArticle[i].data_sizey = parseInt(data.resortedArticle[i].data_sizey);
+      data.resortedArticle[i].data_wait_init = true;
+      data.resortedArticle[i].originImgUrl = data.resortedArticle[i].imageUrl;
+      data.resortedArticle[i].imgUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
+      if (i > 0) {
+        data.resortedArticle[i].data_row = data.resortedArticle[i-1].data_row + data.resortedArticle[i-1].data_sizey;
+      }
+    }
+
+    data.format = true;
+  }
+  return data;
+}
+
 var writeRes = function(res, str, end){
   if(!res || res.isEnd === true || res.isResErr === true)
     return;
@@ -511,34 +546,36 @@ function get_insertData(user, url, data, draftsObj, callback) {
         return null;
     }
 
-    if (data.resortedArticle && data.resortedArticle.length > 0){
-        for(var i=0;i<data.resortedArticle.length;i++){
-            data.resortedArticle[i]._id = mongoid();
-            if(data.resortedArticle[i].type === 'image'){
-              data.resortedArticle[i].isImage = true;
-              data.resortedArticle[i].data_sizey = 3;
-            }else{
-              data.resortedArticle[i].data_sizey = 1;
-            }
-            data.resortedArticle[i].data_row = 1;
-            data.resortedArticle[i].data_col = 1;
-            data.resortedArticle[i].data_sizex = 6;
-        }
-      
-        // format
-        for(var i=0;i<data.resortedArticle.length;i++){
-            data.resortedArticle[i].index = i;
-            data.resortedArticle[i].data_col = parseInt(data.resortedArticle[i].data_col);
-            data.resortedArticle[i].data_row = parseInt(data.resortedArticle[i].data_row);
-            data.resortedArticle[i].data_sizex = parseInt(data.resortedArticle[i].data_sizex);
-            data.resortedArticle[i].data_sizey = parseInt(data.resortedArticle[i].data_sizey);
-            data.resortedArticle[i].data_wait_init = true;
-            data.resortedArticle[i].originImgUrl = data.resortedArticle[i].imageUrl;
-            data.resortedArticle[i].imgUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
-            if (i > 0) {
-                data.resortedArticle[i].data_row = data.resortedArticle[i-1].data_row + data.resortedArticle[i-1].data_sizey;
-            }
-        }
+    if(data.format != true){
+      if (data.resortedArticle && data.resortedArticle.length > 0){
+          for(var i=0;i<data.resortedArticle.length;i++){
+              data.resortedArticle[i]._id = mongoid();
+              if(data.resortedArticle[i].type === 'image'){
+                data.resortedArticle[i].isImage = true;
+                data.resortedArticle[i].data_sizey = 3;
+              }else{
+                data.resortedArticle[i].data_sizey = 1;
+              }
+              data.resortedArticle[i].data_row = 1;
+              data.resortedArticle[i].data_col = 1;
+              data.resortedArticle[i].data_sizex = 6;
+          }
+        
+          // format
+          for(var i=0;i<data.resortedArticle.length;i++){
+              data.resortedArticle[i].index = i;
+              data.resortedArticle[i].data_col = parseInt(data.resortedArticle[i].data_col);
+              data.resortedArticle[i].data_row = parseInt(data.resortedArticle[i].data_row);
+              data.resortedArticle[i].data_sizex = parseInt(data.resortedArticle[i].data_sizex);
+              data.resortedArticle[i].data_sizey = parseInt(data.resortedArticle[i].data_sizey);
+              data.resortedArticle[i].data_wait_init = true;
+              data.resortedArticle[i].originImgUrl = data.resortedArticle[i].imageUrl;
+              data.resortedArticle[i].imgUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
+              if (i > 0) {
+                  data.resortedArticle[i].data_row = data.resortedArticle[i-1].data_row + data.resortedArticle[i-1].data_sizey;
+              }
+          }
+      }
     }
 
     /*filedownup.EalyMainImage(data, function (mainImageURL) {*/
@@ -1161,6 +1198,9 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
                 return callback && callback({status:'failed'});
             }
 
+            // format pub
+            formatResult(result);
+
             var draftsObj = new drafts.createDrafts(null, null, THREAD_NUMBER);
             get_insertData(null, url, result, draftsObj, function(err, dataJson, mainUrl) {
                 if(err) {
@@ -1222,7 +1262,7 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
                                 return console.log('upload file error.');
                             }
                             
-                            var postObj = draftsObj.getPubObject();
+                            var postObj = draftsObj.getPubObject(result);
                             updatePosts2(postId, postObj, unique_id, function(err3, number){
                                 if (Task.isCancel(unique_id, true)) {
                                     console.log("importUrl: cancel - 5.");
