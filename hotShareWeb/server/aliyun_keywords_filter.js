@@ -14,7 +14,7 @@ checkKeywords = function(text,callback){
         Text: text
     });
     request.post(url, function (err, res, body) {
-        if (res.statusCode == 200) {
+        if (res && res.statusCode == 200) {
             var result = JSON.parse(body);
             console.log(result);
             if(result.Hit){
@@ -25,7 +25,11 @@ checkKeywords = function(text,callback){
                 return callback && callback(null, false);
             }
         } else {
-            console.log(res.statusCode, err);
+            if (res && res.statusCode) {
+                console.log(res.statusCode, err);
+            } else {
+                console.log("res is null or res.statusCode is null.");
+            }
             return callback && callback(err || new Error('error'));
         }
     });

@@ -270,7 +270,7 @@ if (withSlackReporter && Meteor.isServer){
         };
         skyweb.messagesCallback = Meteor.bindEnvironment(function (messages) {
             messages.forEach(function (message) {
-                if (message.resource.imdisplayname.indexOf(username) === -1 && message.resource.messagetype !== 'Control/Typing' && message.resource.messagetype !== 'Control/ClearTyping') {
+                if (message && message.resource && message.resource.imdisplayname && message.resource.imdisplayname.indexOf(username) === -1 && message.resource.messagetype !== 'Control/Typing' && message.resource.messagetype !== 'Control/ClearTyping') {
                     var conversationLink = message.resource.conversationLink;
                     var conversationId = conversationLink.substring(conversationLink.lastIndexOf('/') + 1);
                     console.log(conversationId);
