@@ -4,7 +4,7 @@
 
 var SlackBot = Meteor.npmRequire('slackbots');
 var os = Meteor.npmRequire("os");
-var Skyweb = Meteor.npmRequire('skyweb');
+var Skyweb = Meteor.npmRequire('frkskyweb');
 
 var hostname = os.hostname();
 var production = process.env.PRODUCTION;
