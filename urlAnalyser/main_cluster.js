@@ -827,6 +827,90 @@ var updatePosts2 = function(postId, post, taskId, callback){
     }
   }
 };
+var updatePosts3 = function(postId, post, taskId, callback){
+  var dataObj;
+  post._id = postId;
+  post.import_status = 'imported';
+
+  var url = hotshare_web+'/restapi/importPost/image/NOUSERID';
+  console.log("updateURL="+url+", postId="+postId);
+  httppost(url, post, function(err, data){
+    try {
+        dataObj = JSON.parse(data);
+    } catch (error) {
+        console.log("updatePosts3: JSON.parse exception! error="+error);
+        return callback('err', -1);;
+    }
+    if(err || !dataObj || dataObj.result != "success") {
+        console.log("httppost update DB failed! Let's try to update DB directly! data="+data);
+        posts.findOne({_id: postId}, function (err, old_post) {
+          if(err)
+            return callback && callback(err, 0);
+
+          var new_post = {import_status: 'imported', publish: true};
+
+          // 用户没有修改标题图片
+          if (post.mainImage && old_post.mainImage === 'http://data.tiegushi.com/res/defaultMainImage1.jpg')
+            new_post.mainImage = post.mainImage;
+          if (post.createdAt)
+            new_post.createdAt = new Date(post.createdAt);
+          if (post.fromUrl)
+            new_post.fromUrl = post.fromUrl;
+
+          for(var i=0;i<old_post.pub.length;i++){
+            if(old_post.pub[i].type === 'image'){
+              for(var ii=0;ii<post.pub.length;ii++){
+                if(post.pub[ii]._id === old_post.pub[i]._id){
+                  // 用户没有修改图片
+                  if(old_post.pub[i].imgUrl.startsWith('data:image/')){
+                    new_post['pub.'+i+'.imgUrl'] = post.pub[ii].imgUrl;
+                    new_post['pub.'+i+'.souImgUrl'] = old_post.pub[i].originImgUrl;
+                    new_post['pub.'+i+'.data_sizey'] = post.pub[ii].data_sizey;
+                  }
+                  break;
+                } 
+              }               
+            }
+          }
+
+          posts.update({_id: postId},{$set: new_post}, function(err, number){
+              if (err || number <= 0) {
+                  console.log("Update DB failed!");
+                  return callback && callback(err, number);
+              }
+              console.log("update DB directly success!");
+              return callback && callback(null, 2);
+          });
+        });
+        return;
+    }
+    console.log("httppost update DB success!");
+    if(dataObj.result === 'success') {
+        return callback(null, 1);
+    }
+    console.log("dataObj="+JSON.stringify(dataObj));
+    return callback('err', -1);
+  });
+
+  // 原处理流程
+  // posts.update({_id: postId},{$set: post}, function(err, number){
+  //   callback && callback(err, number);
+  // });
+  
+  var task = Task.get(taskId);
+  if(task){
+    console.log('task img upload: ' + taskId);
+    try{
+    serverImportLog.update({taskId: taskId}, {$set: {
+      postId: postId,
+      endImgTime: new Date(),
+      execImgTime: ((new Date()) - task.startTime)/1000
+    }});
+    }catch (ex){
+      console.log(ex);
+    }
+  }
+};
 var updateFollowPosts = function(userId, postId, post, callback){
   //console.log("userId="+userId+", postId="+postId+", post="+JSON.stringify(post));
   // FollowPosts.update({followby:userId, postId:postId}, {$set: {
@@ -1263,7 +1347,7 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
                             }
                             
                             var postObj = draftsObj.getPubObject(result);
-                            updatePosts2(postId, postObj, unique_id, function(err3, number){
+                            updatePosts3(postId, postObj, unique_id, function(err3, number){
                                 if (Task.isCancel(unique_id, true)) {
                                     console.log("importUrl: cancel - 5.");
                                     return callback && callback({status:'failed'});

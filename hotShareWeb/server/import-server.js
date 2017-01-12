@@ -242,6 +242,54 @@ Router.route('/restapi/importPost/:type/:_id', function(req, res, next) {
                       });
                     res.end(JSON.stringify({result: 'success'}));
                 });
+            } else if(req_type === 'image'){
+              var post = Posts.findOne({_id: req_data._id});
+              var new_post = {import_status: 'imported', publish: true};
+
+              // 用户没有修改标题图片
+              if (req_data.mainImage && post.mainImage === 'http://data.tiegushi.com/res/defaultMainImage1.jpg')
+                new_post.mainImage = req_data.mainImage;
+              if (req_data.createdAt)
+                new_post.createdAt = new Date(req_data.createdAt);
+              if (req_data.fromUrl)
+                new_post.fromUrl = req_data.fromUrl;
+
+              for(var i=0;i<post.pub.length;i++){
+                if(post.pub[i].type === 'image'){
+                  for(var ii=0;ii<req_data.pub.length;ii++){
+                    if(req_data.pub[ii]._id === post.pub[i]._id){
+                      // 用户没有修改图片
+                      if(post.pub[i].imgUrl.startsWith('data:image/')){
+                        new_post['pub.'+i+'.imgUrl'] = req_data.pub[ii].imgUrl;
+                        new_post['pub.'+i+'.souImgUrl'] = post.pub[i].originImgUrl;
+                        new_post['pub.'+i+'.data_sizey'] = req_data.pub[ii].data_sizey;
+                      }
+                      break;
+                    } 
+                  }               
+                }
+              }
+              console.log('import update post:', new_post);
+              Posts.update({_id: req_data._id}, {$set: new_post}, function(err, num) {
+                console.log("importPost update 2, err="+err+", num="+num);
+                if (err || num <= 0) {
+                    return res.end(JSON.stringify({result: 'failed'}));
+                }
+                //var post = Posts.findOne({_id: req_data._id});
+                //var position = Meteor.absoluteUrl().length-1;
+                //var hostAndPortUrl = Meteor.absoluteUrl().substr(0, position) + ":8083" + Meteor.absoluteUrl().substr(position);
+                var hostAndPortUrl = "http://127.0.0.1";
+                var uri = hostAndPortUrl + '/restapi/postInsertHook/' + post.owner + '/' + post._id;
+                console.log("req_data._id="+req_data._id+", uri = "+uri);
+                request({method: 'GET', uri: uri})
+                  .on('error', function(err){
+                    console.log('/restapi/postInsertHook/ err:', err);
+                  }).on('data', function(data) {
+                  }).on('end', function(data) {
+                    console.log('/restapi/postInsertHook/ ok:', data);
+                  });
+                res.end(JSON.stringify({result: 'success'}));
+              });
             } else {
                 res.end(JSON.stringify({result: 'failed'}));
             }
