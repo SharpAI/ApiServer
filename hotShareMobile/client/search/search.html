@@ -34,7 +34,18 @@
            <tr>
              <td>
                <div class="searchForm">
-                 <i class="fa fa-search"></i>
+                  {{#if is_people}}
+                    <div class="dropdown leftDropMenu">
+                      <a class="dropdown-toggle" id="search-people-menu" data-toggle="dropdown">{{is_fullname}}<span class="caret"></span></a>
+                      <ul class="search-people-dropdown-menu dropdown-menu " role="menu" aria-labelledby="search-people-menu">
+                        <li class="dropdown-menu-item" role="presentation"><a id="search_people_fullname" role="menuitem" tabindex="-1" >昵称</a></li>
+                        <li class="divider"></li>
+                        <li class="dropdown-menu-item" role="presentation"><a id="search_people_username" role="menuitem" tabindex="-1" >用户名</a></li>
+                      </ul>
+                    </div>
+                  {{else}}
+                    <i class="fa fa-search"></i>
+                  {{/if}}
                    <label><input id="search-box" type="text" placeholder="{{placeHolder}}"></label>
                </div>
              </td>
@@ -145,7 +156,15 @@
     </div>
     <div class="content">
       <div class="searchForm">
-          <i class="fa fa-search"></i>
+          <!-- <i class="fa fa-search"></i> -->
+          <div class="dropdown leftDropMenu">
+            <a class="dropdown-toggle" id="search-people-menu" data-toggle="dropdown">{{is_fullname}}<span class="caret"></span></a>
+            <ul class="search-people-dropdown-menu dropdown-menu " role="menu" aria-labelledby="search-people-menu">
+              <li class="dropdown-menu-item" role="presentation"><a id="search_people_fullname" role="menuitem" tabindex="-1" >昵称</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-menu-item" role="presentation"><a id="search_people_username" role="menuitem" tabindex="-1" >用户名</a></li>
+            </ul>
+          </div>
           <label><input id="search-box" type="text" placeholder={{_ "searchTopic"}}{{_ "plainPeople"}}></label>
       </div>
       <div id="followList">

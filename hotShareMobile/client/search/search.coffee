@@ -30,6 +30,7 @@ if Meteor.isClient
        PUB.page '/topicPosts'
   Template.searchFollow.onRendered ()->
     Session.set('isSearching', false)
+    Session.set('is_fullname', true)
     Meteor.subscribe 'follows'
     $('#search-box').bind('propertychange input',(e)->
        text = $(e.target).val().trim()
@@ -40,7 +41,8 @@ if Meteor.isClient
        else
          Session.set 'isSearching', false
          return
-       FollowUsersSearch.search text
+       options = {is_fullname:Session.get('is_fullname')}
+       FollowUsersSearch.search text,options
     )
   Template.searchFollow.events
     'focus #search-box':->
@@ -49,7 +51,36 @@ if Meteor.isClient
     'blur #search-box':->
       console.log("#search lost focus");
       $('#footer').css('display',"")
+    'click #search_people_fullname':(event)->
+      Session.set("is_fullname",true)
+      text = $('#search-box').val().trim()
+      if text is ""
+         Session.set 'isSearching', false
+         $('#search-box').trigger('focus')
+         return
+      Session.set 'isSearching', true
+      Session.set 'noSearchResult',false
+      Session.set 'searchLoading', true
+      options = {is_fullname:Session.get('is_fullname')}
+      FollowUsersSearch.search text,options
+      $('#search-box').trigger('focus')
+
+    'click #search_people_username':(event)->
+      Session.set("is_fullname",false)
+      text = $('#search-box').val().trim()
+      if text is ""
+         Session.set 'isSearching', false
+         $('#search-box').trigger('focus')
+         return
+      Session.set 'isSearching', true
+      Session.set 'noSearchResult',false
+      Session.set 'searchLoading', true
+      options = {is_fullname:Session.get('is_fullname')}
+      FollowUsersSearch.search text,options
+      $('#search-box').trigger('focus')
+
     'click .back': (event)->
+       Session.set('is_fullname', true)
        history.back()
     'click .delFollow':(e)->
       FollowerId = Follower.findOne({
@@ -110,6 +141,11 @@ if Meteor.isClient
          false
       else
          true
+    is_fullname:->
+      if Session.get('is_fullname')
+        "昵称"
+      else
+        "用户名"
     noSearchResult:->
       return Session.get("noSearchResult")
     searchLoading:->
@@ -147,6 +183,7 @@ if Meteor.isClient
     Meteor.subscribe("topicposts")
   Template.searchPeopleAndTopic.onRendered ()->
     Session.setDefault('is_people', true)
+    Session.setDefault('is_fullname', true)
     if(Session.get("searchContent") isnt undefined)
       $("#search-box").val(Session.get("searchContent"))
     if Session.get("noSearchResult") is true
@@ -169,7 +206,8 @@ if Meteor.isClient
          return
 
        if Session.get('is_people')
-          FollowUsersSearch.search text
+          options = {is_fullname:Session.get('is_fullname')}
+          FollowUsersSearch.search text,options
        else
           TopicsSearch.search text
     )
@@ -177,6 +215,11 @@ if Meteor.isClient
   Template.searchPeopleAndTopic.helpers
     is_people:->
        Session.get('is_people')
+    is_fullname:->
+       if Session.get('is_fullname')
+         "昵称"
+       else
+         "用户名"
     showSearchStatus:->
        return Session.get('showSearchStatus')
     noSearchResult:->
@@ -226,7 +269,8 @@ if Meteor.isClient
       Session.set("showSearchItems", true)
       Session.set("searchLoading", true)
       Session.set("noSearchResult", false)
-      FollowUsersSearch.search text
+      options = {is_fullname:Session.get('is_fullname')}
+      FollowUsersSearch.search text,options
       $('#search-box').trigger('focus')
       
     'click #search_topic': (event)->
@@ -246,8 +290,43 @@ if Meteor.isClient
       TopicsSearch.search text
       $('#search-box').trigger('focus')
       
+    'click #search_people_fullname':(event)->
+      Session.set("is_fullname",true)
+      text = $('#search-box').val().trim()
+      if text is ""
+         Session.set("showSearchStatus", false)
+         Session.set("showSearchItems", false)
+         Session.set("searchLoading", false)
+         Session.set("noSearchResult", false)
+         $('#search-box').trigger('focus')
+         return
+      Session.set("showSearchStatus", true)
+      Session.set("showSearchItems", true)
+      Session.set("searchLoading", true)
+      Session.set("noSearchResult", false)
+      options = {is_fullname:Session.get('is_fullname')}
+      FollowUsersSearch.search text,options
+      $('#search-box').trigger('focus')
+    'click #search_people_username':(event)->
+      Session.set("is_fullname",false)
+      text = $('#search-box').val().trim()
+      if text is ""
+         Session.set("showSearchStatus", false)
+         Session.set("showSearchItems", false)
+         Session.set("searchLoading", false)
+         Session.set("noSearchResult", false)
+         $('#search-box').trigger('focus')
+         return
+      Session.set("showSearchStatus", true)
+      Session.set("showSearchItems", true)
+      Session.set("searchLoading", true)
+      Session.set("noSearchResult", false)
+      options = {is_fullname:Session.get('is_fullname')}
+      FollowUsersSearch.search text,options
+      $('#search-box').trigger('focus')
     'click .back': (event)->
        Session.set("searchContent","")
+       Session.set('is_fullname', true)
        history.back()
     'click .delFollow':(e)->
       FollowerId = Follower.findOne({

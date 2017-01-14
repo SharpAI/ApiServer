@@ -30,7 +30,49 @@
 .searchFollow .line span{background: #444; width: 100%; height: 1px; display: block;}
 .searchFollow .content a,a:hover,a:focus{text-decoration: none;color: #bbb;}
 .searchFollow .content .stitle{position: relative;margin-top:10px; margin-left:10px;color: #bbb}
-
+.searchFollow .content .searchForm .dropdown{
+	cursor:pointer;
+	#search-people-menu{
+		float: left;
+		margin-left: 9px;
+		margin-top: 3px;
+		color: black;
+	}
+	.search-people-dropdown-menu{
+		position: absolute;
+		padding: 0;
+		top: 46px;
+		font-size: 16px;
+		background:  rgba(51, 51, 51, 1) !important; 
+		border-radius: 5px;
+		li{
+			background-color:transparent !important; 
+			font-size: 16px;
+		}
+		.dropdown-menu-item{
+			padding: 8px;
+			text-align: center;
+		}
+		.divider{
+			background-color: rgba(65, 65, 65, 1)!important;
+			height: 1px;
+			margin: 0px;
+		}
+	}
+	.search-people-dropdown-menu:before{
+    	content: "\f0d8";
+    	position: absolute;
+    	top: -18px;
+		left: 20px;
+    	display: inline-block;
+  		font: normal normal normal 14px/1 FontAwesome;
+  		font-size: 26px;
+  		color:  rgba(51, 51, 51, 1);
+  		text-rendering: auto;
+  		-webkit-font-smoothing: antialiased;
+  		-moz-osx-font-smoothing: grayscale;
+	}
+}
 .searchPeopleAndTopic .content {position:relative;padding-top: 5px;padding-bottom: 55px;}
 .searchPeopleAndTopic .content .searchForm{position:relative; margin:0; padding:0; margin-top:5px; margin-left:10px;margin-right:0px;color:#fff; font-weight: normal;border: solid;border-radius: 20px;border-color: #444;border-width: thin;padding: auto;padding-top: 5px; min-height: 35px;}
 .searchPeopleAndTopic .content .searchForm label{display:block;width:72%;float: left; overflow: hidden}
@@ -60,3 +102,46 @@
 .searchPeopleAndTopic .content .topicTitle{position: relative;padding: 8px 15px;}
 .searchPeopleAndTopic .content .topicTitle span{position: absolute;right: 10px; color: #bbb;}
 .searchPeopleAndTopic .content .topicTitle span i{margin-left: 5px; color:#ffffff;}
+.searchPeopleAndTopic .content .searchForm .dropdown{
+	cursor:pointer;
+	#search-people-menu{
+		float: left;
+		margin-left: 9px;
+		margin-top: 5px;
+		color: black;
+	}
+	.search-people-dropdown-menu{
+		position: absolute;
+		padding: 0;
+		top: 46px;
+		font-size: 16px;
+		background:  rgba(51, 51, 51, 1) !important;
+		border-radius: 5px;
+		li{
+			background-color:transparent !important; 
+			font-size: 16px;
+		}
+		.dropdown-menu-item{
+			padding: 8px;
+			text-align: center;
+		}
+		.divider{
+			background-color: rgba(65, 65, 65, 1)!important;
+			height: 1px;
+			margin: 0px;
+		}
+	}
+	.search-people-dropdown-menu:before{
+    	content: "\f0d8";
+    	position: absolute;
+    	top: -18px;
+		left: 20px;
+    	display: inline-block;
+  		font: normal normal normal 14px/1 FontAwesome;
+  		font-size: 26px;
+  		color:  rgba(51, 51, 51, 1);
+  		text-rendering: auto;
+  		-webkit-font-smoothing: antialiased;
+  		-moz-osx-font-smoothing: grayscale;
+	}
+}

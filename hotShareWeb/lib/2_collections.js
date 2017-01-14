@@ -2813,11 +2813,21 @@ if(Meteor.isServer){
   });
 
   SearchSource.defineSource('followusers', function(searchText, options) {
+    var is_fullname = true;
+    if (options) {
+        is_fullname = options.is_fullname;
+    }
     var options = {limit: 20};
 
     if(searchText) {
       var regExp = buildRegExp(searchText);
-      var selector = {'profile.fullname': regExp};
+      var selector ;
+      if (is_fullname) {
+        selector = {'profile.fullname': regExp};
+      }
+      else{
+        selector = {'username':regExp};
+      }
       return Meteor.users.find(selector, options).fetch();
     } else {
        return this.ready();
