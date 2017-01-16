@@ -345,6 +345,8 @@ if Meteor.isServer
     _post = Posts.findOne({_id: this.params._postId})
     if(!_post)
       return return_result(false)
+    if(_post.insertHook is true)
+      return return_result(true)
     
     #if !_post or _post.isReview is true or _post.isReview is null or _post.isReview is undefined
       #console.log('sep2:', _post.isReview);
@@ -359,7 +361,7 @@ if Meteor.isServer
       console.log('update topicposs mainImage error, MSG = ',error)
     
     # review
-    Posts.update {_id: this.params._postId}, {$set: {isReview: true}}, (err, num)->
+    Posts.update {_id: this.params._postId}, {$set: {isReview: true, insertHook: true}}, (err, num)->
       if err or num <= 0
         #console.log('sep3');
         return return_result(false)

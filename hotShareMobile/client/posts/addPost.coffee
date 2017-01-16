@@ -521,7 +521,9 @@ if Meteor.isClient
     else
       api_url += '/' + Meteor.userId()
     api_url += '/' + encodeURIComponent(url)
-    api_url += '?task_id=' + unique_id + '&isMobile=true';
+    api_url += '?task_id=' + unique_id + '&isMobile=true'
+    if(withImportToEdit is true)
+      api_url += '&v=2'
     console.log("api_url="+api_url)
     abortFastImport = (cancel)->
       isCancel = true
@@ -650,6 +652,7 @@ if Meteor.isClient
                       'publicPosts'
                       postId
                     )
+                    cordovaHTTP.get Meteor.absoluteUrl('restapi/postInsertHook/'+Meteor.userId()+'/'+postId), {}, {}, null, null
                   else
                     showEditingPopupProgressBar()
                     Meteor.subscribe 'postInfoById',  postId, ()->
@@ -1681,10 +1684,12 @@ if Meteor.isClient
               window.plugins.toast.showShortBottom('上传失败，请稍后重试')
               return
             publishPostHandle()
+            cordovaHTTP.get Meteor.absoluteUrl('restapi/postInsertHook/'+Meteor.userId()+'/'+ Drafts.findOne({})._id), {}, {}, null, null
             removeImagesFromCache(draftImageData)
           )
         else
           publishPostHandle()
+          cordovaHTTP.get Meteor.absoluteUrl('restapi/postInsertHook/'+Meteor.userId()+'/'+Drafts.findOne({})._id), {}, {}, null, null
         return
     'click .remove':(event)->
       Drafts.remove this._id

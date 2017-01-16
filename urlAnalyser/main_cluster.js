@@ -250,6 +250,23 @@ function createTaskToKueQueue(prefix, _id, url, fromserver, unique_id, isMobile,
     });
     return job;
 }
+function createTaskToKueQueue2(prefix, _id, url, fromserver, unique_id, isMobile, chunked, q_ver) {
+    var job = kuequeue.create(prefix, {
+      id: _id,
+      url: getUrl(url),
+      fromserver: fromserver,
+      unique_id: unique_id,
+      isMobile: isMobile,
+      chunked: chunked,
+      qVer: q_ver
+    }).priority('critical').ttl(60*1000).removeOnComplete(true).save(function(err){
+      if (!err) {
+        console.log("   job.id = "+job.id+", unique_id="+unique_id);
+      }
+      showDebug && console.log(']');
+    });
+    return job;
+}
 function abornalDispose() {
     /*kuequeue.on('job enqueue', function(id, type){
       if (cluster.isMaster) {
@@ -827,13 +844,14 @@ var updatePosts2 = function(postId, post, taskId, callback){
     }
   }
 };
-var updatePosts3 = function(postId, post, taskId, callback){
+var updatePosts3 = function(postId, post, taskId, callback, qVer){
   var dataObj;
   post._id = postId;
   post.import_status = 'imported';
+  // post.req_ver = qVer || '1';
 
-  var url = hotshare_web+'/restapi/importPost/image/NOUSERID';
-  console.log("updateURL="+url+", postId="+postId);
+  var url = hotshare_web+'/restapi/importPost/image/NOUSERID?v='+qVer;
+  // console.log("updateURL="+url+", postId="+postId);
   httppost(url, post, function(err, data){
     try {
         dataObj = JSON.parse(data);
@@ -965,7 +983,7 @@ var httppost = function(url, data, callback){
   req.end();
 };
 
-function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
+function importUrl(_id, url, server, unique_id, isMobile, chunked, callback, qVer) {
   switch (arguments.length) {
     case 2:
       chunked = false;
@@ -978,6 +996,8 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
 
   var chunked_result = {};
   var userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_2 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12D508 (5752533504)';   //iPhone 8.2 Safari UA
+  qVer = qVer || '1';
+
   console.log("isMobile="+isMobile);
   if (isMobile == '') {
       //var userAgent = 'Mozilla/5.0 (iPhone; U; CPU iPhone OS 8_2 like Mac OS X; en) AppleWebKit/534.46.0 (KHTML, like Gecko) CriOS/19.0.1084.60 Mobile/9B206 Safari/7534.48.3'; //Chrome UA on iPhone
@@ -1363,16 +1383,16 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback) {
                                         tmpServer = server.substring(0, server.length - 1);
                                 }
                                 var url = tmpServer+'/restapi/postInsertHook/'+user._id+'/'+postId;
-                                console.log("httpget url="+url);
-                                if (number == 2) {
+                                // console.log("httpget url="+url);
+                                if (number == 2 && qVer != '2') {
                                     httpget(url);
                                 }
 
-                                console.log('==============================');
-                                console.log('http://host1.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
+                                // console.log('==============================');
+                                // console.log('http://host1.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
                                 httpget('http://host1.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
-                                console.log('==============================');
-                            });                 
+                                // console.log('==============================');
+                            }, qVer);                 
                         });
                     });
                     draftsObj.seekOneUsableMainImage(result, url);
@@ -1403,6 +1423,7 @@ function setKueProcessCallback() {
     var unique_id = data.unique_id;
     var isMobile = data.isMobile;
     var chunked = data.chunked;
+    var q_ver = data.qVer;
     
     if(isMobile)
       job.progress(50, 100, JSON.stringify({status: 'importing'}));
@@ -1422,7 +1443,7 @@ function setKueProcessCallback() {
               } else {
                 done(new Error('failed'));
               }
-            });
+            }, q_ver);
         } catch (error) {
             done(new Error('failed'));
             console.log("Exception: in importUrl: error="+error);
@@ -1537,6 +1558,8 @@ if (cluster.isMaster) {
       var fromserver = req.query.fromserver || '';
       var unique_id = req.query.task_id || mongoid();
       var isMobile = req.query.isMobile || '';
+      var q_ver = req.query.v || '1';
+
       showDebug && console.log('[');
       showDebug && console.log('   req.params=' + JSON.stringify(req.params));
       showDebug && console.log('   req.query=' + JSON.stringify(req.query));
@@ -1551,11 +1574,11 @@ if (cluster.isMaster) {
       }*/
       if (process.env.SERVER_IN_US) {
         console.log("   create task for US");
-        job = createTaskToKueQueue(redis_prefix_us, req.params._id, req.params.url, fromserver, unique_id, isMobile, chunked);
+        job = createTaskToKueQueue2(redis_prefix_us, req.params._id, req.params.url, fromserver, unique_id, isMobile, chunked, q_ver);
       } else {
         if (checkIPAddr(ip) == 'CN') {
           console.log("   create task for CN");
-          job = createTaskToKueQueue(redis_prefix, req.params._id, req.params.url, fromserver, unique_id, isMobile, chunked);
+          job = createTaskToKueQueue2(redis_prefix, req.params._id, req.params.url, fromserver, unique_id, isMobile, chunked, q_ver);
         } else {
           var req_url = 'http://usurlanalyser.tiegushi.com:8080'+req.originalUrl;
           console.log("   redirect task to US: "+req_url+"   ]");

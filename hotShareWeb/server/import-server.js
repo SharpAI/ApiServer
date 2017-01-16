@@ -110,7 +110,7 @@ Router.route('/import-server/:_id/:url', function (req, res, next) {
   //if (Meteor.absoluteUrl().toLowerCase().indexOf('host2.tiegushi.com') >= 0)
   req_url += '&fromserver='+encodeURIComponent(Meteor.absoluteUrl());
   req_url += '&task_id=' + taskId;
-  //req_url += '&v=' + q_ver;
+  req_url += '&v=' + q_ver;
   if (this.params.query['isMobile'])
     req_url += '&isMobile=' + this.params.query['isMobile']
   console.log("api_url="+req_url+", Meteor.absoluteUrl()="+Meteor.absoluteUrl());
@@ -165,7 +165,7 @@ Router.route('/restapi/importPost/:type/:_id', function(req, res, next) {
     var req_datastr = '';
     var req_data = null;
     var req_type = this.params.type;
-    var req_userId = this.params._id;
+    var req_userId = this.params._id;   
 
     res.writeHead(200, {
       'Content-Type': 'text/html'
@@ -186,6 +186,7 @@ Router.route('/restapi/importPost/:type/:_id', function(req, res, next) {
             console.log("importPost: JSON.parse exception! error="+error);
             return;
         }
+
         // console.log(req_type + ':', _.pluck(req_data.pub, '_id'));
         var Fiber = Meteor.npmRequire('fibers');
         Fiber(function() {
@@ -232,14 +233,14 @@ Router.route('/restapi/importPost/:type/:_id', function(req, res, next) {
                     //var hostAndPortUrl = Meteor.absoluteUrl().substr(0, position) + ":8083" + Meteor.absoluteUrl().substr(position);
                     var hostAndPortUrl = "http://127.0.0.1";
                     var uri = hostAndPortUrl + '/restapi/postInsertHook/' + post.owner + '/' + post._id;
-                    console.log("req_data._id="+req_data._id+", uri = "+uri);
-                    request({method: 'GET', uri: uri})
-                      .on('error', function(err){
-                        console.log('/restapi/postInsertHook/ err:', err);
-                      }).on('data', function(data) {
-                      }).on('end', function(data) {
-                        console.log('/restapi/postInsertHook/ ok:', data);
-                      });
+                    // console.log("req_data._id="+req_data._id+", uri = "+uri);
+                    // request({method: 'GET', uri: uri})
+                    //   .on('error', function(err){
+                    //     console.log('/restapi/postInsertHook/ err:', err);
+                    //   }).on('data', function(data) {
+                    //   }).on('end', function(data) {
+                    //     console.log('/restapi/postInsertHook/ ok:', data);
+                    //   });
                     res.end(JSON.stringify({result: 'success'}));
                 });
             } else if(req_type === 'image'){
@@ -280,14 +281,14 @@ Router.route('/restapi/importPost/:type/:_id', function(req, res, next) {
                 //var hostAndPortUrl = Meteor.absoluteUrl().substr(0, position) + ":8083" + Meteor.absoluteUrl().substr(position);
                 var hostAndPortUrl = "http://127.0.0.1";
                 var uri = hostAndPortUrl + '/restapi/postInsertHook/' + post.owner + '/' + post._id;
-                console.log("req_data._id="+req_data._id+", uri = "+uri);
-                request({method: 'GET', uri: uri})
-                  .on('error', function(err){
-                    console.log('/restapi/postInsertHook/ err:', err);
-                  }).on('data', function(data) {
-                  }).on('end', function(data) {
-                    console.log('/restapi/postInsertHook/ ok:', data);
-                  });
+                // console.log("req_data._id="+req_data._id+", uri = "+uri);
+                // request({method: 'GET', uri: uri})
+                //   .on('error', function(err){
+                //     console.log('/restapi/postInsertHook/ err:', err);
+                //   }).on('data', function(data) {
+                //   }).on('end', function(data) {
+                //     console.log('/restapi/postInsertHook/ ok:', data);
+                //   });
                 res.end(JSON.stringify({result: 'success'}));
               });
             } else {
