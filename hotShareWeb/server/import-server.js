@@ -202,6 +202,7 @@ Router.route('/restapi/importPost/:type/:_id', function(req, res, next) {
                     return res.end(JSON.stringify({result: 'failed', reason: 'No such user ID!'+req_userId}))
                 }
                 req_data.ownerId = user._id;
+                req_data.owner = user._id;
                 req_data.ownerName = user.profile.fullname || user.username;
                 req_data.ownerIcon = user.profile.icon || '/userPicture.png';
                 if (req_data.createdAt) {

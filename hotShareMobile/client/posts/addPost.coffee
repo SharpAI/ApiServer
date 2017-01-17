@@ -1683,13 +1683,43 @@ if Meteor.isClient
             if err
               window.plugins.toast.showShortBottom('上传失败，请稍后重试')
               return
+            post_id = Drafts.findOne({})._id
             publishPostHandle()
-            cordovaHTTP.get Meteor.absoluteUrl('restapi/postInsertHook/'+Meteor.userId()+'/'+ Drafts.findOne({})._id), {}, {}, null, null
             removeImagesFromCache(draftImageData)
+            Meteor.subscribe('publicPosts', post_id, {
+              onStop: ()->
+                Router.go('/posts/'+post_id)
+              onReady: ()->
+                postItem = Posts.findOne({_id: post_id})
+                if(postItem.insertHook != true)
+                  Session.set("TopicPostId", post_id)
+                  Session.set("TopicTitle", postItem.title)
+                  Session.set("TopicAddonTitle", postItem.addontitle)
+                  Session.set("TopicMainImage", postItem.mainImage)
+                  Router.go('/addTopicComment/')
+                  cordovaHTTP.get Meteor.absoluteUrl('restapi/postInsertHook/'+Meteor.userId()+'/'+ post_id), {}, {}, null, null
+              onError: ()->
+                Router.go('/posts/'+post_id)
+            })
           )
         else
+          post_id = Drafts.findOne({})._id
           publishPostHandle()
-          cordovaHTTP.get Meteor.absoluteUrl('restapi/postInsertHook/'+Meteor.userId()+'/'+Drafts.findOne({})._id), {}, {}, null, null
+          Meteor.subscribe('publicPosts', post_id, {
+              onStop: ()->
+                Router.go('/posts/'+post_id)
+              onReady: ()->
+                postItem = Posts.findOne({_id: post_id})
+                if(postItem.insertHook != true)
+                  Session.set("TopicPostId", post_id)
+                  Session.set("TopicTitle", postItem.title)
+                  Session.set("TopicAddonTitle", postItem.addontitle)
+                  Session.set("TopicMainImage", postItem.mainImage)
+                  Router.go('/addTopicComment/')
+                  cordovaHTTP.get Meteor.absoluteUrl('restapi/postInsertHook/'+Meteor.userId()+'/'+post_id), {}, {}, null, null
+              onError: ()->
+                Router.go('/posts/'+post_id)
+            })
         return
     'click .remove':(event)->
       Drafts.remove this._id
