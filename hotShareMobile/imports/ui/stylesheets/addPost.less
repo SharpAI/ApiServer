@@ -19,10 +19,94 @@
 .addPost .content .remove{position: absolute;right: 15px;font-size: 20px;bottom: 2px;color: yellow}
 .addPost .content .gridster .textdiv{height:100%; width:100%; }
 .addPost .content .gridster .textdiv textarea{-webkit-appearance: none; vertical-align: middle; display: inline-block; font-size:large; margin: 0;color: black;word-wrap: break-word;font-size:medium ;background :none; line-height: 30px; overflow-y: hidden; resize:vertical;height:100%;width:100%;box-sizing:border-box; border: 1px solid white;}
-.addPost #postFooter{width:100%; height:40px;font-size:16px; line-height:40px; position:fixed; left:0; bottom:0; border:none; text-align:center; background:  #F0F0F0; z-index: 999;opacity: 0.9;}
-.addPost #postFooter div{width: 25%; height: 40px; line-height: 40px; float: left; text-align: center;}
-.addPost #postFooter div i{display: block; width: 100%; height: 40px; line-height: 40px; font-size: 26px;color: #aeaeae;}
-.addPost #postFooter div.clear{clear: both;}
+.addPost #show_hyperlink{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    z-index: 9999;
+    display: none;
+    div.hyperlink_content{
+        padding-top: 100px;
+        text-align: center;
+        div.hyperlink_input{
+            background-color: #fff;
+            padding-bottom: 10px;
+            color: #7d7d7d;
+            border: none;
+            span{font-weight: bold;}
+            label{
+                border-bottom: 1px solid #eee;
+                font-weight: normal;
+                input{
+                    border: none;
+                    color: #7d7d7d;
+                }
+            }
+        }
+        div#add_hyperlink_btn{
+            background-color: #37a7fe;
+            width: 30%;
+            margin: auto;
+            padding: 8px;
+            margin-top: 25px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    }
+
+}
+.addPost #postFooter {
+    width:100%;
+    height:40px;
+    font-size:16px; 
+    line-height:40px; 
+    position:fixed; 
+    left:0; 
+    bottom:0; 
+    border:none; 
+    text-align:center; 
+    background:  #F0F0F0; 
+    z-index: 999;
+    opacity: 0.9;
+    div{
+        width: 25%; 
+        height: 40px; 
+        line-height: 40px; 
+        float: left; 
+        text-align: center;
+        i{
+            display: block; 
+            width: 100%; 
+            height: 40px; 
+            line-height: 40px; 
+            font-size: 26px;
+            color: #aeaeae;
+        }
+    }
+    div.clear{clear: both;}
+    div#addHyperlink{
+        position: relative;
+        top: -75px;
+        font-size: .6em;
+        float: right;
+        border-radius: 20px;
+        background-color: #37a7fe;
+        height: 30px;
+        margin-right: 5px;
+        line-height: 30px;
+        
+        i{
+            font-size: 1.2em;
+            height: 30px;
+            line-height: 30px;
+            color: #fff;
+        }
+    }
+
+}
 
 .addPost .content #display .pressed .textdiv textarea{border: 1px dotted #00c4ff;position: relative}
 .addPost .content #display .edit .textdiv textarea{border: 1px dotted #00c4ff;position: relative}

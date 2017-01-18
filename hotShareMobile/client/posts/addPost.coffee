@@ -1313,6 +1313,32 @@ if Meteor.isClient
           handleAddedLink(text)
         else
           handleAddedLink(Session.get('lastImportedUrl'))
+    'click #addHyperlink': ()->
+      $('#show_hyperlink').show()
+      $('#add_posts_content').hide()
+    'click #hyperlink_back': ()->
+      $('#add_posts_content').show()
+      $('#show_hyperlink').hide()
+    'click #add_hyperlink_btn': ()->
+      describe = $('#hyperlink-text').val()
+      url = $('#hyperlink-url').val()
+      if describe is ''
+        return PUB.toast('请输入链接描述')
+      if url is ''
+        return PUB.toast('请输入跳转网址')
+      console.log 'isUrl is ' + PUB.isUrl(url)
+      if PUB.isUrl(url) is false
+        return PUB.toast('输入网址格式不匹配')
+      else
+        if url.toLowerCase().indexOf("http://") > 0 or url.toLowerCase().indexOf("https://") > 0
+          return PUB.toast('输入网址格式不匹配')
+        if url.toLowerCase().indexOf("http://") is -1 and url.toLowerCase().indexOf("https://") is -1
+          url = 'http://' + url
+        Drafts.insert {type:'text', isImage:false, owner: Meteor.userId(), text: describe, hyperlink: url, style:'', data_row:'1', data_col:'3',  data_sizex:'6', data_sizey:'1'}
+        $('#add_posts_content').show()
+        $('#show_hyperlink').hide()
+        $('#hyperlink-text').val('')
+        $('#hyperlink-url').val('')
     'click #takephoto': ()->
       if Drafts.find().count() > 0
         window.footbarOppration = true

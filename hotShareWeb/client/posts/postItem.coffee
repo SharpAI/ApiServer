@@ -257,6 +257,11 @@ if Meteor.isClient
         0
       else
         this.likeSum
+    hasHyperlink: ->
+      if this.hyperlink is undefined or this.hyperlink is ''
+        return false
+      else
+        return true
     hasPcomments: ->
       i = this.index
       #post = Session.get("postContent").pub

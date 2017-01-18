@@ -1,5 +1,24 @@
 <template name="addPost">
   <div class="addPost">
+    <div id="show_hyperlink">
+      <div class="head">
+        <div class="leftButton" id="hyperlink_back"><i class="fa fa-angle-left fa-fw"></i></div>
+            <div>添加链接</div>
+      </div>
+      <div class="hyperlink_content">
+        <div class="hyperlink_input">
+          <span>链接描述</span>
+          <label><input id="hyperlink-text" type="text" placeholder="输入超链接文字描述"></label>
+        </div>
+        <div class="hyperlink_input">
+          <span>链接地址</span>
+          <label><input id="hyperlink-url" type="text" placeholder="输入超链接跳转网址"></label>
+        </div>
+        <div id="add_hyperlink_btn">
+         添加 
+        </div>
+      </div>
+    </div>
     <div id="blur_overlay" style="position: absolute; opacity: 0.8; z-index: 1; width:100%; background-color:white;"></div>
     <div id="blur_bottom" style="position: absolute; opacity: 0.8; z-index: 14; width:100%; background-color:white;"></div>
     <div id="blur_left" style="position: absolute; opacity: 0.8; z-index: 14;left:0; background-color:white;"></div>
@@ -42,18 +61,18 @@
         <div>{{_ "plsAddImageAndText"}}</div>
       {{/if}}
     </div>
-        <div class="content">
-            {{>addPostMainImage}}
-            <div class="gridster">
-                <ul id="display" style="background-color:white !important;">
-                    {{#if showContent}}
-                        {{#each pub}}
-                            {{>addPostItem}}
-                        {{/each}}
-                    {{/if}}
-                </ul>
-            </div>
-        </div>
+      <div id="add_posts_content" class="content">
+          {{>addPostMainImage}}
+          <div class="gridster">
+              <ul id="display" style="background-color:white !important;">
+                  {{#if showContent}}
+                      {{#each pub}}
+                          {{>addPostItem}}
+                      {{/each}}
+                  {{/if}}
+              </ul>
+          </div>
+      </div>
       <div id="ViewOnWeb" style="{{displayUrl}}"><i class="fa fa-globe"></i>{{_ "readOriginalText"}}</div>
       <div class="linkInputBox">
         <input type="text" class="form-control form-group-material-light-blue" id="linkToBeInserted">
@@ -141,6 +160,9 @@
               <i class="fa fa-link"></i>
             </div>
           {{/if}}
+            <div id="addHyperlink">
+              <i class="fa fa-link">添加链接</i>
+            </div>
           <div class="clear"></div>
         </div>
         <div class="addProgress" style="display:none">

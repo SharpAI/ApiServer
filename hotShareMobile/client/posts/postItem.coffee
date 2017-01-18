@@ -289,6 +289,11 @@ if Meteor.isClient
         0
       else
         this.likeSum
+    hasHyperlink: ->
+      if this.hyperlink is undefined or this.hyperlink is ''
+        return false
+      else
+        return true
     hasPcomments: ->
       if this.pcomments isnt undefined and this.pcomments.length > 0
         return true
