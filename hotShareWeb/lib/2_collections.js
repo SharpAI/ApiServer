@@ -667,7 +667,8 @@ if(Meteor.isServer){
                 // console.log('send mail to:', notifyUser.userEmail);
             } catch (_error) {
               ex = _error;
-              console.log("err is: ", ex);
+              //console.log("err is: ", ex);
+              console.log("Exception: sendEmailToSubscriber: error=%s, notifyUser.userEmail=%s", ex, notifyUser.userEmail);
             }
 
         });
@@ -687,7 +688,8 @@ if(Meteor.isServer){
                 });
                 // console.log('send mail to:', userEmail);
             } catch (error) {
-                console.log("Exception: sendEmailToFollower: err=", error);
+                //console.log("Exception: sendEmailToFollower: err=", error);
+                console.log("Exception: sendEmailToFollower: err=%s, userEmail=%s", error, userEmail);
             }
         });
     }
@@ -1018,8 +1020,9 @@ if(Meteor.isServer){
                     html: text
                 });
 
-            } catch (e){
-                console.log(e);
+            } catch (error){
+                //console.log(e);
+                console.log("Exception: followerHookForWeb: error=%s, userEmail=%s", error, userEmail);
             }
         });
     }
@@ -2807,7 +2810,8 @@ if(Meteor.isServer){
       var selector = {'text': regExp};
       return Topics.find(selector, options).fetch();
     } else {
-       return this.ready();
+       //return this.ready();
+       return [];
       //return Topics.find({}, options).fetch();
     }
   });
@@ -2830,7 +2834,8 @@ if(Meteor.isServer){
       }
       return Meteor.users.find(selector, options).fetch();
     } else {
-       return this.ready();
+       //return this.ready();
+       return [];
       //return Meteor.users.find({}, options).fetch();
     }
   });
@@ -2843,7 +2848,8 @@ if(Meteor.isServer){
       var selector = { owner: this.userId,'title': regExp };
       return Posts.find(selector, options).fetch();
     } else {
-       return this.ready();
+       //return this.ready();
+       return [];
         //return Posts.find({}, options).fetch();
     }
   });
