@@ -312,6 +312,25 @@ if Meteor.isClient
       #   }
       # catch
       #   return null
+    else if data.host is "m.v.qq.com"
+      imageUrl = ''
+      playUrl = $(data.body).find('video').attr('src')
+      $txp_poster = $(data.body).find('.txp_poster')
+
+      if($txp_poster.length > 0 && $txp_poster[0].style && $txp_poster[0].style.backgroundImage)
+        imageUrl = $txp_poster[0].style.backgroundImage.replace('url("','').replace('")', '').replace("url('",'').replace("')", '')
+      if(imageUrl and playUrl)
+        return {playUrl: playUrl, imageUrl: imageUrl}
+      return null
+    else if data.host is "m.youku.com"
+      imageUrl = 'http:' + $(data.body).find('.x-video-poster img').attr('src')
+      # playUrl = $(data.body).find('video').attr('src')
+      if(data._video_src)
+        playUrl = 'http:' + data._video_src;
+
+      if(imageUrl and playUrl)
+        return {playUrl: playUrl, imageUrl: imageUrl}
+      return null
     else
       console.log 'not match meerlive'
       for s in videoExtactorMapping
@@ -573,6 +592,11 @@ if Meteor.isClient
           if(window.location.protocol){
             returnJson["protocol"] = window.location.protocol;
           }
+
+          if(location.host === "m.youku.com"){
+            try{returnJson["_video_src"] = BuildVideoInfo._videoInfo._videoSegsDic.streams.default.mp4[0].src;}catch(e){}
+          }
+
           returnJson;
       '}
     ,(data)->
@@ -946,7 +970,13 @@ if Meteor.isClient
           # console.log 'get htmldata is ----------'
           # console.log htmldata
           videoInfo = getPossibleVideo(node,htmldata)
-          if videoInfo
+          has_push = true
+          if(resortedArticle.length > 0)
+            for item in resortedArticle
+              if(item.type is 'video' and (item.videoInfo.imageUrl is videoInfo.imageUrl or item.videoInfo.playUrl is videoInfo.playUrl))
+                has_push = false
+                break
+          if videoInfo and has_push is true
             sortedVideos++
             resortedArticle.push({type:'video', videoInfo:videoInfo})
             if videoInfo.imageUrl
@@ -1131,6 +1161,9 @@ if Meteor.isClient
           }
           if(window.location.protocol){
             returnJson["protocol"] = window.location.protocol;
+          }
+          if(location.host === "m.youku.com"){
+            try{returnJson["_video_src"] = BuildVideoInfo._videoInfo._videoSegsDic.streams.default.mp4[0].src;}catch(e){}
           }
           returnJson;
       '}

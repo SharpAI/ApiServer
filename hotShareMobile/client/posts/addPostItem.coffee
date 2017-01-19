@@ -572,9 +572,11 @@ if Meteor.isClient
         if $('head script[tag=m3u8]').length > 0
           return true
         
-        $('head').append('<link tag="m3u8" href="http://data.tiegushi.com/video-js.min.css" rel="stylesheet">')
-        $('head').append('<script tag="m3u8">token = "EioJxvLpZHJvcrYdJ"; trafficDisplay = true; </script>')
-        $('head').append('<script tag="m3u8" src="http://data.tiegushi.com/bundle-hls.js"></script>')
+        try
+          $('head').append('<link tag="m3u8" href="http://data.tiegushi.com/video-js.min.css" rel="stylesheet">')
+          $('head').append('<script tag="m3u8">token = "EioJxvLpZHJvcrYdJ"; trafficDisplay = true; </script>')
+          $('head').append('<script tag="m3u8" src="http://data.tiegushi.com/bundle-hls.js"></script>')
+        catch
       # other video        
       else
         if $('head script[tag=m3u8]').length > 0
@@ -583,9 +585,11 @@ if Meteor.isClient
         if $('head script[tag=mp4]').length > 0
           return true
       
-        $('head').append('<link tag="mp4" href="http://data.tiegushi.com/video-js.min.css" rel="stylesheet">')
-        $('head').append('<script tag="mp4">token = "7gFCGdcqXw4mSc252"; trafficDisplay = false; </script>')
-        $('head').append('<script tag="mp4" src="/bundle-raidcdn-mini-2.21.4.js"></script>')
+        try
+          $('head').append('<link tag="mp4" href="http://data.tiegushi.com/video-js.min.css" rel="stylesheet">')
+          $('head').append('<script tag="mp4">token = "7gFCGdcqXw4mSc252"; trafficDisplay = false; </script>')
+          $('head').append('<script tag="mp4" src="/bundle-raidcdn-mini-2.21.4.js"></script>')
+        catch
         
       return true
     calcStyle: ()->

@@ -1339,6 +1339,58 @@ if Meteor.isClient
         $('#show_hyperlink').hide()
         $('#hyperlink-text').val('')
         $('#hyperlink-url').val('')
+    'click #addVideo': ()->
+      url = prompt("请输入要导入的视频URL地址（支持：腾讯视频、优酷视频）!","")
+      if(!url)
+        return
+      regexToken = /\b(((http|https?)+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/ig
+      if !regexToken.exec(url)
+        return window.plugins.toast.showLongCenter("请输入正确的URL地址!")
+
+      showPopupProgressBar()
+      if iabHandle
+        iabHandle.removeEventListener 'import',getURL
+        #iabHandle.removeEventListener 'exit',handleExitBrowser
+        iabHandle.removeEventListener 'hide',handleHideBrowser
+        iabHandle.removeEventListener 'loadstart',handlerLoadStartEvent
+        iabHandle.removeEventListener 'loadstop',handlerLoadStopEvent
+        iabHandle.removeEventListener 'loaderror',handlerLoadErrorEvent
+
+      window.iabHandle = window.open(url, '_blank', 'hidden=yes,toolbarposition=top')
+      iabHandle.addEventListener 'loadstart',importVideo.stratEvent
+      iabHandle.addEventListener 'loadstop',importVideo.stopEvent
+      iabHandle.addEventListener 'loaderror',importVideo.errorEvent
+    'click #addOther': ()->
+      navigator.notification.confirm(
+        '您要添加链接还是视频，请选择？'
+        (index)->
+          if index is 1
+            $('#show_hyperlink').show()
+            $('#add_posts_content').hide()
+          else if index is 2
+            url = prompt("请输入要导入的视频URL地址（支持：腾讯视频、优酷视频）!","")
+            if(!url)
+              return
+            regexToken = /\b(((http|https?)+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/ig
+            if !regexToken.exec(url)
+              return window.plugins.toast.showLongCenter("请输入正确的URL地址!")
+
+            showPopupProgressBar()
+            if iabHandle
+              iabHandle.removeEventListener 'import',getURL
+              #iabHandle.removeEventListener 'exit',handleExitBrowser
+              iabHandle.removeEventListener 'hide',handleHideBrowser
+              iabHandle.removeEventListener 'loadstart',handlerLoadStartEvent
+              iabHandle.removeEventListener 'loadstop',handlerLoadStopEvent
+              iabHandle.removeEventListener 'loaderror',handlerLoadErrorEvent
+
+            window.iabHandle = window.open(url, '_blank', 'hidden=yes,toolbarposition=top')
+            iabHandle.addEventListener 'loadstart',importVideo.stratEvent
+            iabHandle.addEventListener 'loadstop',importVideo.stopEvent
+            iabHandle.addEventListener 'loaderror',importVideo.errorEvent
+        '提示'
+        ['添加链接','添加视频', '取消']
+      )
     'click #takephoto': ()->
       if Drafts.find().count() > 0
         window.footbarOppration = true
@@ -1678,7 +1730,7 @@ if Meteor.isClient
             continue
           draftToBeUploadedImageData.push(music)
         for video in draftVideoData
-          if video.videoInfo.imageUrl.toLowerCase().indexOf("http://")>= 0 or video.videoInfo.imageUrl.toLowerCase().indexOf("https://")>= 0
+          if !video.videoInfo.imageUrl or video.videoInfo.imageUrl.toLowerCase().indexOf("http://")>= 0 or video.videoInfo.imageUrl.toLowerCase().indexOf("https://")>= 0
             draftToBeUploadedImageData.unshift({})
             continue
           draftToBeUploadedImageData.push(video)
