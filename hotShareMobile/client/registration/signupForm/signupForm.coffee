@@ -1,4 +1,12 @@
 userNameLength = signUpUserNameLength || 16
+Template.signupForm.onRendered ()->
+  $('#signup-username').bind('propertychange input',(e)->
+      names = $(e.target).val().trim()
+      html = ''
+      html += names.length
+      html += '/'+userNameLength
+      $('#signup-username-help').html(html)
+    )
 Template.signupForm.helpers
   names:->
    if Session.get("signUpName")
@@ -18,12 +26,12 @@ Template.signupForm.helpers
    else
      ''
 Template.signupForm.events
-  'keyup #signup-username': (e,t)->
-    names = t.find('#signup-username').value
-    html = ''
-    html += names.length
-    html += '/'+userNameLength
-    $('#signup-username-help').html(html)
+  # 'keyup #signup-username': (e,t)->
+  #   names = t.find('#signup-username').value
+  #   html = ''
+  #   html += names.length
+  #   html += '/'+userNameLength
+  #   $('#signup-username-help').html(html)
   'click .term_notice' :(e,t)->
     names = t.find('#signup-username').value
     email = t.find('#signup-email').value.toLowerCase()
