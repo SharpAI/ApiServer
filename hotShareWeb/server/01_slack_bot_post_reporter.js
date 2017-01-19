@@ -244,6 +244,7 @@ if (withSlackReporter && Meteor.isServer){
         var conversationId = '19:34d7527a4fdd4d5f80e9e1021fdffae8@thread.skype';
         var skyweb = new Skyweb();
         var online = false;
+        var failedMsgQueue = [];
         skyweb.login(username, password).then(function (skypeAccount) {
             online = true;
             console.log('Skyweb is initialized now');
@@ -284,7 +285,36 @@ if (withSlackReporter && Meteor.isServer){
         });
 
         var sendMessage=function(message){
-            skyweb.sendMessage(conversationId, message);
+            function checkRaw() {
+                if (skyweb && skyweb.skypeAccount && skyweb.skypeAccount.registrationTokenParams && skyweb.skypeAccount.registrationTokenParams.raw) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            try {
+                if (checkRaw()) {
+                    if (failedMsgQueue.length > 0) {
+                        for (var i = failedMsgQueue.length-1; i >= 0; i--) {
+                            if (checkRaw()) {
+                                skyweb.sendMessage(conversationId, failedMsgQueue[i]);
+                                console.log("send the failed message: i="+i);
+                                failedMsgQueue.splice(i, 1);
+                            }
+                        }
+                        if (checkRaw()) {
+                            skyweb.sendMessage(conversationId, message);
+                        }
+                    } else {
+                        skyweb.sendMessage(conversationId, message);
+                    }
+                } else {
+                    failedMsgQueue.push(message);
+                    console.log("checkRaw false, push the message to a queue, we will send it when the next message comes.");
+                }
+            } catch (error) {
+                console.log("Exception sendMessage: error="+error);
+            }
         };
 
         postMessageToGeneralChannel=function(message, params, callback){

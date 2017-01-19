@@ -427,19 +427,19 @@ if Meteor.isServer
         if !confirmReporterAuth(userId)
           return false
         post = Posts.findOne({_id:postId})
-        owner = Meteor.users.findOne({_id: post.owner})
-        reporterLogs.insert({
-          userId:post.owner,
-          userName: post.ownerName,
-          userEmails: owner.emails,
-          postId: postId,
-          postTitle: post.title,
-          postCreatedAt: post.createdAt,
-          eventType: '删除帖子',
-          loginUser: userId,
-          createdAt: new Date()
-        })
-        if post
+        if post?
+          owner = Meteor.users.findOne({_id: post.owner})
+          reporterLogs.insert({
+            userId:post.owner,
+            userName: post.ownerName,
+            userEmails: owner.emails,
+            postId: postId,
+            postTitle: post.title,
+            postCreatedAt: post.createdAt,
+            eventType: '删除帖子',
+            loginUser: userId,
+            createdAt: new Date()
+          })
           # backup
           BackUpPosts.insert(post)
           # remove
