@@ -3,13 +3,20 @@ if Meteor.isClient
   # 更新当前看帖子时评论点赞操作的postContent
   @updatePostsContentSession=(pub,ptype,pindex)->
     postContent = Session.get('postContent')
+    newPostContent = Session.get('newpostsdata')
     if postContent && postContent.pub
       postContent.pub = pub
       postContent.ptype = ptype
       postContent.pindex = pindex
       postContent.updateAt = new Date()
       Session.set('postContent', postContent)
-      
+    if newPostContent && newPostContent.pub
+      newPostContent.pub = pub
+      newPostContent.ptype = ptype
+      newPostContent.pindex = pindex
+      newPostContent.updateAt = new Date()
+      Session.set('newpostsdata', newPostContent)
+
   @pcommentReportHandler=(i, content)->
     Meteor.defer ()->
         postId = Session.get("postContent")._id

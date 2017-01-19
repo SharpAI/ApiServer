@@ -1188,7 +1188,7 @@ if Meteor.isClient
           userIcon:userIcon
           createdAt: new Date()
         }
-        #post[i].pcomments.push(pcommentJson)
+        post[i].pcomments.push(pcommentJson)
         updatePostsContentSession(post,"pcomments",i);
         popUpObj = {}
         objHelp = 'pub.'+i+'.pcomments';
@@ -1233,6 +1233,7 @@ if Meteor.isClient
       pcomments = post[i].pcomments
       index = Session.get('pcommentSelectedIndex')
       pcomments.splice( index, 1 )
+      updatePostsContentSession(post,"pcomments",i)
       Posts.update({_id: postId},{"$set":{"pub":post,"ptype":"pcomments","pindex":i}}, (error, result)->
           if error
             console.log(error.reason);
