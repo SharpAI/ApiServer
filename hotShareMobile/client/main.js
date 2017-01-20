@@ -170,6 +170,14 @@ if (Meteor.isCordova) {
       if(Tips.isShow())
         return Tips.close();
 
+      // if on add hyperlink page, just disappear that page
+      if ($('#show_hyperlink').css('display') !== 'none') {
+        console.log('##RDBG hide add hyperlink page');
+        $('#add_posts_content').show();
+        $('#show_hyperlink').hide();
+        return;
+      }
+
       // 编辑post时回退
         if(withAutoSavedOnPaused) {
             if (location.pathname === '/add') {
