@@ -477,6 +477,14 @@ if Meteor.isClient
   @handleExitBrowser = ()->
     window.iabHandle = null
   @handleHideBrowser = ()->
+    if Session.get("ishyperlink") is true
+      Session.set("ishyperlink",false)
+      # postId = Session.get('postContent')._id
+      # if Session.get ('showDraft')
+      #   Router.go '/draftposts/'+postId
+      # else
+      #   Router.go '/posts/'+postId
+      return
     if Session.get("channel") is 'addPost' and Drafts.find().count() is 0
       Router.go '/'
     else

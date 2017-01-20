@@ -63,17 +63,19 @@ if Meteor.isClient
       Router.go('/unpublish')
     if postContent.addontitle
       title=title+":"+postContent.addontitle
-
-    $("a[target='_blank']").click((e)->
-      e.preventDefault();
-      if Meteor.isCordova
-        Session.set("isReviewMode","undefined")
-        prepareToEditorMode()
-        PUB.page '/add'
-        handleAddedLink($(e.currentTarget).attr('href'))
-      else
-        window.open($(e.currentTarget).attr('href'), '_blank', 'hidden=no,toolbarposition=top')
-    )
+    setTimeout ()->
+      $("a[target='_blank']").click((e)->
+        e.preventDefault();
+        if Meteor.isCordova
+          Session.set("isReviewMode","undefined")
+          prepareToEditorMode()
+          #PUB.page '/add'
+          Session.set("ishyperlink",true)
+          handleAddedLink($(e.currentTarget).attr('href'))
+        else
+          window.open($(e.currentTarget).attr('href'), '_blank', 'hidden=no,toolbarposition=top')
+      )
+    , 450
     $('.showBgColor').css('min-height',$(window).height())
 
 

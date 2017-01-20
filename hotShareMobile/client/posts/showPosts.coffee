@@ -336,7 +336,8 @@ if Meteor.isClient
           #and $(this).attr('class').indexOf('_post_item_a') is -1
           Session.set("isReviewMode","undefined")
           prepareToEditorMode()
-          PUB.page '/add'
+          #PUB.page '/add'
+          Session.set("ishyperlink",true)
           handleAddedLink($(e.currentTarget).attr('href'))
         else
           cordova.InAppBrowser.open($(e.currentTarget).attr('href'), '_system')
@@ -658,6 +659,7 @@ if Meteor.isClient
         if Meteor.isCordova
           Session.set("isReviewMode","undefined")
           prepareToEditorMode()
+          Session.set("ishyperlink",true)
           #PUB.page '/add'
           handleAddedLink(Session.get("postContent").fromUrl)
         else
