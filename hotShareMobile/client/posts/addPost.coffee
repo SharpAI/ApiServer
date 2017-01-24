@@ -1383,8 +1383,24 @@ if Meteor.isClient
             if !regexToken.exec(url)
               return window.plugins.toast.showLongCenter("请输入正确的URL地址!")
             
-            # TODO：importVideo.getVideoUrlFromUrl(url)
-            window.plugins.toast.showShortCenter("导入视频失败，如有需要请重新尝试~");
+            url = importVideo.getVideoUrlFromUrl(url)
+            if (!url)
+              return window.plugins.toast.showShortCenter("导入视频失败，如有需要请重新尝试~")
+            Drafts.insert {
+              _id: new Mongo.ObjectID()._str,
+              type: 'image',
+              isImage: true,
+              inIframe: true,
+              owner: Meteor.userId(),
+              toTheEnd: true,
+              text: '您当前程序不支持视频观看',
+              iframe: '<iframe height="100%" width="100%" src="'+url+'" frameborder="0" allowfullscreen=""></iframe>',
+              imgUrl: 'http://data.tiegushi.com/res/video_old_version.jpg',
+              data_row: '1',
+              data_col: '1',
+              data_sizex: '6',
+              data_sizey: '4'
+            }
         '提示'
         ['添加链接','添加视频', '取消']
       )
