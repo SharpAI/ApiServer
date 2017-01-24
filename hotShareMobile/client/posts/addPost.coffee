@@ -1382,20 +1382,9 @@ if Meteor.isClient
             regexToken = /\b(((http|https?)+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/ig
             if !regexToken.exec(url)
               return window.plugins.toast.showLongCenter("请输入正确的URL地址!")
-
-            showPopupProgressBar()
-            if iabHandle
-              iabHandle.removeEventListener 'import',getURL
-              #iabHandle.removeEventListener 'exit',handleExitBrowser
-              iabHandle.removeEventListener 'hide',handleHideBrowser
-              iabHandle.removeEventListener 'loadstart',handlerLoadStartEvent
-              iabHandle.removeEventListener 'loadstop',handlerLoadStopEvent
-              iabHandle.removeEventListener 'loaderror',handlerLoadErrorEvent
-
-            window.iabHandle = window.open(url, '_blank', 'hidden=yes,toolbarposition=top')
-            iabHandle.addEventListener 'loadstart',importVideo.stratEvent
-            iabHandle.addEventListener 'loadstop',importVideo.stopEvent
-            iabHandle.addEventListener 'loaderror',importVideo.errorEvent
+            
+            # TODO：importVideo.getVideoUrlFromUrl(url)
+            window.plugins.toast.showShortCenter("导入视频失败，如有需要请重新尝试~");
         '提示'
         ['添加链接','添加视频', '取消']
       )
