@@ -1378,7 +1378,9 @@ if Meteor.isClient
           if index is 1
             $('#show_hyperlink').show()
             $('#add_posts_content').hide()
+            window.trackEvent('addPost', 'addLink')
           else if index is 2
+            window.trackEvent('addPost', 'addVideo')
             url = prompt("请输入要导入的视频URL地址（支持：腾讯视频、优酷视频）!","")
             if(!url)
               return

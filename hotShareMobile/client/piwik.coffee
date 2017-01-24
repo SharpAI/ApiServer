@@ -1,8 +1,14 @@
 window.trackEvent=(category, action)->
   try
     console.log('Track Event')
-    unless typeof(piwik) is 'undefined'
+    if typeof(piwik) isnt 'undefined'
       piwik.trackEvent(category, action)
+    else
+      $.getScript('http://piwik.tiegushi.com/piwik.js' ,()->
+        console.log('Got piwik')
+        window.piwik = Piwik.getTracker( 'http://piwik.tiegushi.com/piwik.php', 2 )
+        piwik.trackEvent(category, action)
+      )
   catch error
     console.log('trackevent exception')
   
