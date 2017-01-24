@@ -13,7 +13,7 @@ cordova-plugin-dialogs@1.2.0
 cordova-plugin-file@4.1.1
 cordova-plugin-file-transfer@1.6.0
 cordova-plugin-http@1.2.0
-cordova-plugin-splashscreen@https://github.com/PluginCordova/cordova-plugin-splashscreen/tarball/9c82315370881464c4454d9c187c0836ffddfa5b
+cordova-plugin-splashscreen@https://github.com/PluginCordova/cordova-plugin-splashscreen/tarball/b39d015a3286e3ddf098c6c996fbda963f66d57c
 cordova-plugin-camera@https://github.com/PluginCordova/cordova-plugin-camera/tarball/394a5b1dbf9de3a76f64127acaf8366e4cf82920
 cordova-plugin-inappbrowser@https://github.com/PluginCordova/inappbrowser/tarball/61e7d527d8b381e0e76277ee385823151f20c90a
 cordova-plugin-iosaudiopicker@https://github.com/PluginCordova/iosaudiopicker/tarball/c0ed773bc6b6de8211466d136e1992e880b25812
