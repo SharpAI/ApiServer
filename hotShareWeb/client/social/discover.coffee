@@ -10,6 +10,16 @@ if Meteor.isClient
     #     spanOuterWidth = $(".discover .discover-top .discover-con span").outerWidth() || 0
     #     $(".discover .discover-top .discover-con").css({'width': (spanOuterWidth + 40) + 'px'});
         
+    Template.discover.events
+      'click .clear-discover-msg':(e,t)->
+        Meteor.call 'clearDiscoverMSG',Meteor.userId(),Session.get("postContent")._id, (err,res)->
+          if !err and res and res.msg is 'success'
+            toastr.remove()
+            toastr.info('已全部标记为已读')
+          else
+            toastr.remove()
+            toastr.info('操作失败请重试～')
+          console.table(res)
     Template.discover.helpers
       showSuggestPosts:()->
         if Session.get("showSuggestPosts") is true
@@ -196,8 +206,11 @@ if Meteor.isClient
         else
           document.body.scrollTop = 0
     Template.recommends.helpers
-      recommends: ()->
+      hasRecommends: ()->
         Meteor.subscribe('list_recommends', Session.get("postContent")._id);
+        Recommends.find({relatedPostId: Session.get("postContent")._id}).count() > 0
+      recommends: ()->
+        # Meteor.subscribe('list_recommends', Session.get("postContent")._id);
         Recommends.find({relatedPostId: Session.get("postContent")._id})
       time_diff: (created)->
         GetTime0(new Date() - created)          

@@ -32,6 +32,9 @@
   </div>
 </template>
 <template name="recommends">
+    {{#if hasRecommends}}
+    <div class="clear-discover-msg"><span>全部标为已读</span></div>
+    {{/if}}
     <div class="recommends">
         <ul id="wrapper"  class="recommends-swipe-delete">
             {{#each recommends}}
@@ -119,6 +122,7 @@
             <span>朋友圈消息</span>
           </div>
     </div>
+    <div class="clear-discover-msg"><span>全部标为已读</span></div>
     <div class="lpcomments">
         <ul id="wrapper"  class="swipe-delete">
             {{#each lpcomments}}

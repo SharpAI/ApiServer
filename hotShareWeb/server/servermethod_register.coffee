@@ -84,6 +84,21 @@ if Meteor.isServer
       FavouritePosts.insert({postId: postId, userId: userId, createdAt: new Date(), updateAt: new Date()})
   Meteor.startup ()->
     Meteor.methods
+      'clearDiscoverMSG': (userId,postId)->
+        if !Match.test(userId, String) or !Match.test(postId, String)
+          return {msg: 'failed'}
+        console.log('user='+userId+', post=='+postId)
+        Feeds.update({followby:userId,checked:false, eventType: {$nin: ['share','personalletter']}},{$set: {checked: true}},{multi: true})
+        recommendPosts = Recommends.find({relatedPostId: postId}).fetch()
+        if recommendPosts and recommendPosts.length > 0
+          userLists = []
+          recommendPosts.forEach (item)->
+            if item.readUsers
+              userLists = item.readUsers
+            userLists.push(userId)
+            Recommends.update({_id:item._id},{$set: {readUsers: userLists}})
+        return {msg: 'success'}
+
       'pushRecommendStoryToReaderGroups': (postId, storyId, userId)->
         if this.userId is null or postId is undefined or postId is null or storyId is undefined or storyId is null
           return false
