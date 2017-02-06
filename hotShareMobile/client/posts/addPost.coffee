@@ -1793,7 +1793,7 @@ if Meteor.isClient
                   Session.set("TopicAddonTitle", postItem.addontitle)
                   Session.set("TopicMainImage", postItem.mainImage)
                   Router.go('/addTopicComment/')
-                  cordovaHTTP.get Meteor.absoluteUrl('restapi/postInsertHook/'+Meteor.userId()+'/'+ post_id), {}, {}, null, null
+                  # cordovaHTTP.get Meteor.absoluteUrl('restapi/postInsertHook/'+Meteor.userId()+'/'+ post_id), {}, {}, null, null
               onError: ()->
                 Router.go('/posts/'+post_id)
             })
@@ -1812,7 +1812,7 @@ if Meteor.isClient
                   Session.set("TopicAddonTitle", postItem.addontitle)
                   Session.set("TopicMainImage", postItem.mainImage)
                   Router.go('/addTopicComment/')
-                  cordovaHTTP.get Meteor.absoluteUrl('restapi/postInsertHook/'+Meteor.userId()+'/'+post_id), {}, {}, null, null
+                  # cordovaHTTP.get Meteor.absoluteUrl('restapi/postInsertHook/'+Meteor.userId()+'/'+post_id), {}, {}, null, null
               onError: ()->
                 Router.go('/posts/'+post_id)
             })
