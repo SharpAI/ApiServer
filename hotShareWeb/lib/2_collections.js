@@ -1,3 +1,4 @@
+Mongo.setConnectionOptions({server: {reconnectTries:Infinity}});
 Posts = new Meteor.Collection('posts');
 RePosts = new Meteor.Collection('rePosts');
 FollowPosts = new Meteor.Collection('followposts');
@@ -721,7 +722,7 @@ if(Meteor.isServer){
                     var userEmail = [];
                     var post = Posts.findOne({_id: doc._id});
                     if (!post) {
-                        console.log("Can't find the post: id="+id);
+                        console.log("Can't find the post: id="+doc._id);
                     }
                     var reg = new RegExp('[.^*#]','g');
                     var title = post.title.replace(reg,'-');
