@@ -19,9 +19,10 @@
                     <div class="col-md-6 col-sm-6 col-xs-12">
                         <div class="social-icons">
                             <ul class="main-menu">
-                                <li><a href="#"><i class="fa fa-weixin"></i></a></li>
-                                <li><a href="#"><i class="fa fa-weibo"></i></a></li>
-                                <li><a href="#"><i class="fa fa-qq"></i></a></li>
+                                <li style="width: 30%;top: 0px;"><div id="icon-title"></div></li>
+                                <li><a class="show-1 active homebutton" href="#">首页</a></li>
+                                <li><a class="show-2 aboutbutton" href="#">使用指南</a></li>
+                                <li><a class="show-5 contactbutton" href="#">留言反馈</a></li>
                             </ul>
                         </div>
                     </div>
@@ -30,7 +31,7 @@
             </div>
         </div>
 
-        <div class="visible-xs visible-sm responsive-menu">
+        <!-- <div class="visible-xs visible-sm responsive-menu">
             <a href="#" class="toggle-menu">
                 <i class="fa fa-bars"></i> 网站导航
             </a>
@@ -48,7 +49,7 @@
                     </li>
                 </ul>
             </div>
-        </div>
+        </div> -->
 
 
         <div class="container" id="page-content">
@@ -56,24 +57,85 @@
                 <div class="col-md-9 col-sm-12 content-holder">
                     <div id="menu-container">
 
-                        <div class="logo-holder logo-top-margin">
+                        <!-- <div class="logo-holder logo-top-margin">
                             <a class="site-brand"><img src="images/icon.png" width="100px" height="100px"></a>
-                        </div>
+                        </div> -->
                         <div id="menu-1" class="homepage home-section text-center">
                             <div class="welcome-text">
-                                <h2>一贴一故事，分享朋友圈</h2>
-                                <p>故事贴是一款基于阅读的半透明社交应用，通过发帖，分享，阅读，找到趣味相投的读友。首创"偶遇"功能，让拥有共同兴趣，关注相似话题的用户能相互发现、聚集成朋友圈。</p>
-                                <form action="#" method="get" class="subscribe-form">
-                                    <div class="row">
- 										<div class="iosBtn download">
-                                            <a href="https://itunes.apple.com/app/gu-shi-tie/id957024953" target="_blank"><i class="fa fa-apple app-dow"></i> Iphone 1.4.66</a>
+                                <ul class="menu1-list">
+                                    <li class="bg" id="bg1">
+                                        <div class="left-content">
+                                            <h1>每个人都是故事的主角</h1>
+                                            <h2>一贴一故事，分享朋友圈</h2>
+                                            <form action="#" method="get" class="subscribe-form">
+                                                <div class="row">
+                                                    <div class="iosBtn download">
+                                                        <a href="https://itunes.apple.com/app/gu-shi-tie/id957024953" target="_blank"><i class="fa fa-apple app-dow"></i> Iphone 1.4.76</a>
+                                                    </div>
+                                                    <div class="androidBtn download">
+                                                        <a href="http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere" target="_blank"><i class="fa fa-android android-dow"></i> Android 1.4.76</a>
+                                                     </div>
+                                                </div>
+                                            </form>
                                         </div>
-                                        <div class="androidBtn download">
-                                            <a href="http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere" target="_blank"><i class="fa fa-android android-dow"></i> Android 1.4.68</a>
-                                         </div>
-                                    </div>
-
-                                </form>
+                                        <div class="right-content">
+                                            <img class="img1-right" src="/webhome/whbanner1.png" alt="">
+                                        </div>
+                                    </li>
+                                    <li class="bg" id="bg2">
+                                        <div class="left-content-bg2">
+                                            <img class="img2-right" src="/webhome/whbanner2.png" alt="">
+                                        </div>
+                                        <div class="right-content-bg2">
+                                            <p>如果青春不曾放肆，</p>
+                                            <p>老来何以话说当年。</p>
+                                            <p>对生活的不满，</p>
+                                            <p>总有人可以体验。</p>
+                                        </div>
+                                    </li>
+                                    <li class="bg" id="bg3">
+                                        <div class="left-content" style="top: 35%;right: 60%;">
+                                            <p>如果梦想远在天边，</p>
+                                            <p>也要相信它会实现，</p>
+                                            <p>带着你的价值观，</p>
+                                            <p>和这个世界谈谈。</p>
+                                        </div>
+                                        <div class="right-content">
+                                            <img class="img3-right" src="/webhome/whbanner3.png" alt="">
+                                        </div>
+                                    </li>
+                                    <li class="bg" id="bg4">
+                                        <div class="left-content-bg4">
+                                            <p>故事贴是一款基于阅读的半透明社交应用，</p>
+                                            <p>通过发帖，分享，阅读，找到气味相投的读友。</p>
+                                            <p>首创“偶遇”功能，让拥有共同兴趣，</p>
+                                            <p>关注相似话题的用户能互相发现、聚集成朋友圈。</p>
+                                        </div>
+                                        <div class="right-content-bg4">
+                                            <img class="img3-right" src="/webhome/whbanner3.png" alt="">
+                                        </div>
+                                    </li>
+                                    <li class="bg" id="bg5">
+                                        <div class="left-content-bg2">
+                                            <img class="img5-right" src="/webhome/whbanner4.png" alt="">
+                                        </div>
+                                        <div class="right-content-bg2">
+                                            <p>如果缘分难以预测，</p>
+                                            <p>不用刻意总要遇见。</p>
+                                            <p>会有一种方式，</p>
+                                            <p>能够偶遇对的人！</p>
+                                        </div>
+                                    </li>
+                                    <li class="bg" id="bg3">
+                                        <div class="left-content" style="top: 35%;right: 60%;">
+                                            <p>如果有机会，把你的故事讲给我听</p>
+                                            
+                                        </div>
+                                        <div class="right-content">
+                                            <img class="img3-right" src="/webhome/whbanner5.png" alt="">
+                                        </div>
+                                    </li>
+                                </ul>
 
 
                             </div>
@@ -198,7 +260,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-3 hidden-sm">
+                <!-- <div class="col-md-3 hidden-sm">
 
                     <nav id="nav" class="main-navigation hidden-xs hidden-sm">
                         <ul class="main-menu">
@@ -214,7 +276,7 @@
                         </ul>
                     </nav>
 
-                </div>
+                </div> -->
             </div>
         </div>
   {{/if}}
@@ -222,7 +284,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-12 text-center">
-                        <p>Copyright &copy; 2015-2016 故事贴<span>昆明讯动科技有限公司</span>滇ICP 备14007324号</p>
+                        <p><b>Copyright &copy; 2016-2017 故事贴<span>昆明讯动科技有限公司</span>滇ICP 备14007324号</b></p>
                     </div>
                 </div>
             </div>

@@ -1792,41 +1792,29 @@ pre code {
 	overflow-y:scroll
 }
 .container {
-	padding-right:15px;
-	padding-left:15px;
+	// padding-right:15px;
+	// padding-left:15px;
 	margin-right:auto;
-	margin-left:auto
+	margin-left:auto;
+    width:100%;
 }
-@media (min-width:768px) {
-.container {
-width:750px
-}
-}
-@media (min-width:992px) {
-.container {
-width:970px
-}
-}
-@media (min-width:1200px) {
-.container {
-width:1170px
-}
-}
+
 .container-fluid {
-	padding-right:15px;
-	padding-left:15px;
+	// padding-right:15px;
+	// padding-left:15px;
 	margin-right:auto;
 	margin-left:auto
 }
 .row {
-	margin-right:-15px;
-	margin-left:-15px
+    line-height: 45px;
+	// margin-right:-15px;
+	// margin-left:-15px
 }
 .col-xs-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xs-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xs-5, .col-sm-5, .col-md-5, .col-lg-5, .col-xs-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xs-7, .col-sm-7, .col-md-7, .col-lg-7, .col-xs-8, .col-sm-8, .col-md-8, .col-lg-8, .col-xs-9, .col-sm-9, .col-md-9, .col-lg-9, .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xs-11, .col-sm-11, .col-md-11, .col-lg-11, .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
 	position:relative;
 	min-height:1px;
-	padding-right:15px;
-	padding-left:15px
+	// padding-right:15px;
+	// padding-left:15px
 }
 .col-xs-1, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9, .col-xs-10, .col-xs-11, .col-xs-12 {
 	float:left
@@ -2155,9 +2143,6 @@ width:91.66666667%
 .col-md-10 {
 width:83.33333333%
 }
-.col-md-9 {
-width:75%
-}
 .col-md-8 {
 width:66.66666667%
 }
@@ -2165,7 +2150,10 @@ width:66.66666667%
 width:58.33333333%
 }
 .col-md-6 {
-width:50%
+width:50%;
+float: right;
+text-align: right;
+padding-right: 10%;
 }
 .col-md-5 {
 width:41.66666667%
@@ -3794,8 +3782,8 @@ float:left
 }
 }
 .navbar-collapse {
-	padding-right:15px;
-	padding-left:15px;
+	// padding-right:15px;
+	// padding-left:15px;
 	overflow-x:visible;
 	-webkit-overflow-scrolling:touch;
 	border-top:1px solid transparent;
@@ -3835,10 +3823,10 @@ padding-left:0
 max-height:200px
 }
 }
-.container>.navbar-header, .container-fluid>.navbar-header, .container>.navbar-collapse, .container-fluid>.navbar-collapse {
-	margin-right:-15px;
-	margin-left:-15px
-}
+// .container>.navbar-header, .container-fluid>.navbar-header, .container>.navbar-collapse, .container-fluid>.navbar-collapse {
+// 	margin-right:-15px;
+// 	margin-left:-15px
+// }
 @media (min-width:768px) {
 .container>.navbar-header, .container-fluid>.navbar-header, .container>.navbar-collapse, .container-fluid>.navbar-collapse {
 margin-right:0;
@@ -3887,11 +3875,11 @@ border-radius:0
 .navbar-brand>img {
 	display:block
 }
-@media (min-width:768px) {
-.navbar>.container .navbar-brand, .navbar>.container-fluid .navbar-brand {
-margin-left:-15px
-}
-}
+// @media (min-width:768px) {
+// .navbar>.container .navbar-brand, .navbar>.container-fluid .navbar-brand {
+// margin-left:-15px
+// }
+// }
 .navbar-toggle {
 	position:relative;
 	float:right;
@@ -4921,10 +4909,10 @@ a.list-group-item-danger.active, a.list-group-item-danger.active:hover, a.list-g
 .panel>.table, .panel>.table-responsive>.table, .panel>.panel-collapse>.table {
 	margin-bottom:0
 }
-.panel>.table caption, .panel>.table-responsive>.table caption, .panel>.panel-collapse>.table caption {
-	padding-right:15px;
-	padding-left:15px
-}
+// .panel>.table caption, .panel>.table-responsive>.table caption, .panel>.panel-collapse>.table caption {
+// 	padding-right:15px;
+// 	padding-left:15px
+// }
 .panel>.table:first-child, .panel>.table-responsive:first-child>.table:first-child {
 	border-top-left-radius:3px;
 	border-top-right-radius:3px
@@ -5708,12 +5696,12 @@ height:30px;
 margin-top:-15px;
 font-size:30px;
 }
-.carousel-control .glyphicon-chevron-left, .carousel-control .icon-prev {
-margin-left:-15px;
-}
-.carousel-control .glyphicon-chevron-right, .carousel-control .icon-next {
-margin-right:-15px;
-}
+// .carousel-control .glyphicon-chevron-left, .carousel-control .icon-prev {
+// margin-left:-15px;
+// }
+// .carousel-control .glyphicon-chevron-right, .carousel-control .icon-next {
+// margin-right:-15px;
+// }
 .carousel-caption {
 right:20%;
 left:20%;
@@ -6139,6 +6127,27 @@ textarea {
   overflow: auto;
   vertical-align: top;
 }
+/*---------------------------------------------------------
+ 5. Footer
+-------------------------------------------------------- */
+
+
+.site-footer {
+    position: relative;
+    z-index: 111111;
+    padding: 14px 0;
+    width: 100%;
+    bottom: 0;
+    color: #95a49d;
+}
+
+
+.site-footer p { font-family: serif;color: #95a49d !important;}
+.site-footer p span { margin:0 8px;color: #95a49d !important;}
+
+.site-footer a {
+  color: #5cb48e;
+}
 
 /*---------------------------------------------------------
  2. Basic Style
@@ -6203,7 +6212,7 @@ h1, h2, h3, h4, h5 {
   top: 0;
   left: 0;
   z-index: 1;
-  background: rgba(92, 180, 142, 0.6);
+  background: #1a2e40;
 }
 
 
@@ -6213,7 +6222,7 @@ h1, h2, h3, h4, h5 {
 #page-content {
   position: relative;
   z-index: 12;
-  margin-top:8%;
+  width:100%;
   min-height:690px;
 }
 }
@@ -6225,7 +6234,6 @@ h1, h2, h3, h4, h5 {
 #page-content {
   position: relative;
   z-index: 12;
-  margin-top:60px;
 }
 }
 
@@ -6245,45 +6253,79 @@ h1, h2, h3, h4, h5 {
 .box-content {
   background: white;
   color: #555;
-  font-family:"微软雅黑";
+  font-family: serif;
   padding: 30px;
   margin-top: 30px;
 }
 .box-content .widget-title {
   font-size: 16px;
   color: #606060;
-  font-family:"微软雅黑";
+  font-family: serif;
   margin-bottom: 30px;
 }
 
 .welcome-text {
   position: relative;
-  margin-top: 60px;
+  // margin-top: 60px;
 }
-.welcome-text h2 {
-  font-size: 25px;
-  font-family:"微软雅黑";
-  margin-bottom: 22px;
-  color: white;
-  font-weight:bold;
-}
-
-
-@media (max-width:767px) {
-.welcome-text h2 {
-  font-size: 25px;
-  font-family:"微软雅黑";
-  margin-bottom: 22px;
+.welcome-text h1 {
+  font-size: 26px;
+  font-family: serif;
+  margin-bottom: 45px;
   color: white;
   font-weight:normal;
 }
+.welcome-text h2 {
+  font-size: 20px;
+  font-family: serif;
+  color: white;
+  font-weight:normal;
+}
+@media screen and (max-width: 768px) {
+    .welcome-text h1 {
+        font-size: 100%;
+        font-family: serif;
+        margin-bottom: 5px;
+        color: white;
+        font-weight: normal;
+    }
+    .welcome-text h2 {
+        font-size: 80%;
+        font-family: serif;
+        color: white;
+        font-weight: normal;
+    }
+    .top-header {
+      padding: 0 !important;
+      .phone-info{
+        display: none;
+      }
+    }
+    .download a {
+        line-height: 220% !important;
+        margin: 5px !important;
+        border-radius: 5px !important;
+    }
+    .download .app-dow , .android-dow{
+        font-size: 100% !important;
+    }
+    .menu1-list .bg .left-content {
+        top: 12% !important;
+    }
+    .menu1-list .bg .right-content-bg2 {
+        top: 12% !important;
+    }
+    .menu1-list .bg .left-content-bg4 {
+        top: 12% !important;
+    }
 }
 
 
 .welcome-text p {
-  font-size: 16px;
-  font-family:"微软雅黑";
-	color:white;
+    font-size: 16px;
+    font-family: serif;
+    color: white;
+    line-height: 30px;
 }
 
 @media (min-width:1170px){
@@ -6293,7 +6335,7 @@ h1, h2, h3, h4, h5 {
 
 
 .subscribe-form {
-  margin-top: 60px;
+  margin-top: 36px;
 }
 .subscribe-form input.email {
   -webkit-border-radius: 10px;
@@ -6352,15 +6394,16 @@ h1, h2, h3, h4, h5 {
 .top-header {
   position: relative;
   z-index: 10;
-  padding: 14px 0;
-  background: rgba(0, 0, 0, 0.7);
+  padding: 14px 0 0 0;
+  background: rgba(0, 0, 0, 0.4);
 }
 
 .phone-info {
 	color:white;
+    font-size: 1.2em;
 }
 .phone-info a {
-  color: #5cb48e;
+  color: #39a8fe;
 }
 @media screen and (max-width: 992px) {
   .phone-info {
@@ -6369,16 +6412,25 @@ h1, h2, h3, h4, h5 {
 }
 
 .social-icons {
-	display: none;
-  text-align: right;
+  text-align: center;
+}
+#icon-title {
+    height: 45px;
+    background-image: url(/webhome/whicon.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }
 .social-icons a {
   color: white;
-  font-family:"微软雅黑";
+  font-family: serif;
 }
 .social-icons li {
   display: inline-block;
+  position: relative;
   margin-left: 15px;
+  font-size: 1.1em;
+  top: -15px;
 }
 @media screen and (max-width: 992px) {
   .social-icons {
@@ -6398,7 +6450,7 @@ h1, h2, h3, h4, h5 {
   color: white;
   font-size: 14px;
   margin: 0 auto;
-  font-family:"微软雅黑"
+  font-family: serif;
 }
 #nav li {
   margin-bottom: 30px;
@@ -6410,20 +6462,8 @@ h1, h2, h3, h4, h5 {
   margin-bottom:10px;
 }
 
-.homebutton {
-  background: #207d59;
-}
-
-.aboutbutton {
-  background: #3b5b8e;
-}
-
 .projectbutton {
   background: #5c9faf;
-}
-
-.contactbutton {
-  background: #c35c44;
 }
 
 .logo-top-margin {
@@ -6495,6 +6535,84 @@ h1, h2, h3, h4, h5 {
   overflow: hidden;
 }
 
+.menu1-list {
+    #bg1{background-image: url(/webhome/whbg1.jpg);}
+    #bg2{background-image: url(/webhome/whbg2.jpg);}
+    #bg3{background-image: url(/webhome/whbg3.jpg);}
+    #bg4{background-image: url(/webhome/whbg4.jpg);}
+    #bg5{background-image: url(/webhome/whbg5.jpg);}
+    .bg{
+        position: relative;
+        background-repeat: no-repeat;
+        background-size: cover;
+        .left-content{
+            position: absolute;
+            right: 55%;
+            top: 25%;
+            z-index: 1111;
+            p{
+                color: #111;
+            }
+        }
+        .right-content{
+            position: relative;
+            text-align: end;
+            .img1-right{
+                width: 50%;
+                position: relative;
+                padding-right: 5%;
+                margin-right: 5%;
+                bottom: -17px;
+            }
+            .img3-right{
+                width: 50%;
+                position: relative;
+                padding-right: 5%;
+                margin-right: 5%;
+            }
+        }
+        .left-content-bg2{
+            position: relative;
+            text-align: start;
+            .img2-right{
+                width: 50%;
+                position: relative;
+                padding-left: 5%;
+                margin-left: 5%;
+                bottom: -17px;
+            }
+            .img5-right{
+                width: 50%;
+                position: relative;
+                bottom: -19px;
+            }
+        }
+        .right-content-bg2{
+            position: absolute;
+            left: 60%;
+            top: 35%;
+            color: white;
+        }
+        .left-content-bg4{
+            position: absolute;
+            top: 35%;
+            right: 2%;
+            left: 10%;
+            color: white;
+        }
+        .right-content-bg4{
+            position: relative;
+            text-align: end;
+            .img3-right{
+                width: 50%;
+                position: relative;
+                padding-right: 5%;
+                margin-right: 5%;
+                z-index: -10;
+            }
+        }
+    }
+}
 .profile-thumb {
   width: 200px;
   height: 200px;
@@ -6513,6 +6631,9 @@ h1, h2, h3, h4, h5 {
     margin-bottom: 25px;
     width: 80%;
     height: auto;
+  }
+  .left-content{
+    top: 15%;
   }
 }
 
@@ -6645,35 +6766,23 @@ h1, h2, h3, h4, h5 {
   padding:6px 25px;
 }
 
-/*---------------------------------------------------------
- 5. Footer
--------------------------------------------------------- */
 
-
-.site-footer {
-  position:relative;
-  z-index: 11;
-  padding: 14px 0;
-  background: rgba(0, 0, 0, 0.7);
-  margin-top: 30px;
-  color:#95a49d;
-
-}
-
-
-.site-footer p { font-family:"微软雅黑";}
-.site-footer p span { margin:0 8px;}
-
-.site-footer a {
-  color: #5cb48e;
-}
 
 
 /* Custom */
 
 .download { text-align:center;}
-.download a { background:url(/images/dow.png) no-repeat;  display:inline-block;  line-height:66px; color:#FFF; margin:10px; background-size:auto 66px; width:170px;}
-.download a:hover{ background:url(/images/dow2.png) no-repeat; display:inline-block;  line-height:66px; color:#FFF; margin:10px; width:170px; background-size:auto 66px;}
+.download a {
+    display: inline-block;
+    line-height: 48px;
+    color: #FFF;
+    margin: 10px;
+    background-size: auto 66px;
+    width: 130px;
+    border: 1px solid;
+    border-radius: 10px;
+}
+// .download a:hover{display:inline-block;  line-height:66px; color:#FFF; margin:10px; width:170px; background-size:auto 66px;}
 
 .download .app-dow { font-size:25px; margin-right:3px; vertical-align:middle;}
 .download .android-dow { font-size:25px; margin-right:3px; vertical-align:middle;}
@@ -6715,7 +6824,7 @@ h1, h2, h3, h4, h5 {
 	color: #207d59;
 	text-decoration: none; 
 	font-size:16px;
-	font-family:"微软雅黑";
+	font-family: serif;
 	margin-top:10px;
 	padding:15px 30px;
 	padding-left:60px;
@@ -6748,17 +6857,17 @@ h1, h2, h3, h4, h5 {
 
 @media (max-width:767px) {
 .welcome-text p {
-  font-size: 14px;
-  font-family:"微软雅黑";
-  padding:0 20px;
+  font-size: 10px;
+  font-family: serif;
+  line-height: 24px;
 }
 
 .subscribe-form {
-    margin-top: 30px;
+    margin-top: 0px;
 }
 
 .welcome-text {
-    margin-top: 30px;
+    // margin-top: 30px;
     position: relative;
 }
 
