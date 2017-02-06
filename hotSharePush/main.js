@@ -22,7 +22,7 @@ var QUEUE_SIZE = 20;
 var prefix = process.env.PREFIX || '';
 var redis_prefix = prefix+'pushnotification_task';
 var redis_prefix_us = prefix+'pushnotification_task_us';
-var DB_CONN_STR = process.env.MONGO_URL || 'mongodb://hotShareAdmin:aei_19056@host1.tiegushi.com:27017/hotShare';
+var DB_CONN_STR = process.env.MONGO_URL || 'mongodb://hotShareAdmin:aei_19056@db1.tiegushi.com:27017,db2.tiegushi.com:27017/hotShare?replicaSet=hotShare&readPreference=primaryPreferred&connectTimeoutMS=30000&socketTimeoutMS=30000&poolSize=20';
 
 var pushServer = initPushServer();
 //pushServer.sendIOS('me', '9ce162f4beb26d45f4e91c7c83d57324a776a3fc3eaa81111e360ad0ae5e834c', 'aaa', 'aaa', 1);
@@ -31,7 +31,7 @@ var pushServer = initPushServer();
 var totalRequestCount = 0;
 var totalRedisTaskCount = 0;
 
-MongoClient.connect(DB_CONN_STR, function(err, db) {
+MongoClient.connect(DB_CONN_STR, {poolSize:20, reconnectTries:Infinity}, function(err, db) {
     if (err) {
         console.log('Error:' + err);
         return;
