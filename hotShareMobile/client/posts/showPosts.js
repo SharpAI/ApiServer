@@ -67,6 +67,16 @@ Template.showPosts.helpers({
 //       $('#commitMsg').focus();
 //    }
 // });
+filterEmoji = function(value) {
+    var ranges = [
+        '\ud83c[\udc00-\udfff]',
+        '\ud83d[\udc00-\udfff]',
+        '[\u2600-\u27ff]'
+    ];
+    var reg = new RegExp(ranges.join('|'),'g');
+    var result = value.replace(reg,'');
+    return result;
+}
 getSharingTitle = function(self){
     var title = self.title;
     if (self.addontitle && (self.addontitle !=='')){
@@ -94,14 +104,20 @@ getFirstParagraph = function(){
           var text = "来自故事贴";
           return text;
         }else if(textArr[i].text){
-          return textArr[i].text.substring(0, 100);
+          var text = textArr[i].text;
+          text = text.replace(/<\/?.+?>/g,"");
+          text = filterEmoji(text);
+          return text.substring(0, 96);
         }
       }
     }else if(patagraphLength >= 2){
       var textArr = Session.get('postContent').pub;
       for (var i = 0; i < patagraphLength; i++){
         if(textArr[i].text && textArr[i].text != invalidString){
-          return textArr[i].text.substring(0, 100);
+          var text = textArr[i].text;
+          text = text.replace(/<\/?.+?>/g,"");
+          text = filterEmoji(text);
+          return text.substring(0, 96);
         }
       }
     }else{
@@ -312,8 +328,10 @@ shareTo = function(to,self,index){
         description = text;
         if(!description || description ===''){
             description = undefined;
-        } else if(description.length > 100){
-            description = description.substring(0, 100);
+        } else if(description.length > 96){
+            description = description.replace(/<\/?.+?>/g,"");
+            description = filterEmoji(description);
+            description = description.substring(0, 96);
         }
     }
     window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
