@@ -1381,31 +1381,34 @@ if Meteor.isClient
             window.trackEvent('addPost', 'addLink')
           else if index is 2
             window.trackEvent('addPost', 'addVideo')
-            url = prompt("请输入要导入的视频URL地址（支持：腾讯视频、优酷视频）!","")
-            if(!url)
-              return
-            regexToken = /\b(((http|https?)+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/ig
-            if !regexToken.exec(url)
-              return window.plugins.toast.showLongCenter("请输入正确的URL地址!")
-            
-            url = importVideo.getVideoUrlFromUrl(url)
-            if (!url)
-              return window.plugins.toast.showShortCenter("导入视频失败，如有需要请重新尝试~")
-            Drafts.insert {
-              _id: new Mongo.ObjectID()._str,
-              type: 'image',
-              isImage: true,
-              inIframe: true,
-              owner: Meteor.userId(),
-              toTheEnd: true,
-              text: '您当前程序不支持视频观看',
-              iframe: '<iframe height="100%" width="100%" src="'+url+'" frameborder="0" allowfullscreen=""></iframe>',
-              imgUrl: 'http://data.tiegushi.com/res/video_old_version.jpg',
-              data_row: '1',
-              data_col: '1',
-              data_sizex: '6',
-              data_sizey: '4'
-            }
+            navigator.notification.prompt(
+              '请输入要导入的视频URL地址（支持：腾讯视频、优酷视频）!'
+              (result)->
+                if result.buttonIndex is 1 and result.input1
+                  regexToken = /\b(((http|https?)+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/ig
+                  if !regexToken.exec(result.input1)
+                    return window.plugins.toast.showLongCenter("请输入正确的URL地址!")
+                  url = importVideo.getVideoUrlFromUrl(result.input1)
+                  if (!url)
+                    return window.plugins.toast.showShortCenter("导入视频失败，如有需要请重新尝试~")
+                  Drafts.insert {
+                    _id: new Mongo.ObjectID()._str,
+                    type: 'image',
+                    isImage: true,
+                    inIframe: true,
+                    owner: Meteor.userId(),
+                    toTheEnd: true,
+                    text: '您当前程序不支持视频观看',
+                    iframe: '<iframe height="100%" width="100%" src="'+url+'" frameborder="0" allowfullscreen=""></iframe>',
+                    imgUrl: 'http://data.tiegushi.com/res/video_old_version.jpg',
+                    data_row: '1',
+                    data_col: '1',
+                    data_sizex: '6',
+                    data_sizey: '4'
+                  }                
+              '提示'
+              ['导入', '取消']
+            )
         '提示'
         ['添加链接','添加视频', '取消']
       )
