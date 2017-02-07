@@ -32,6 +32,7 @@
 
 .webHome {
 	.sendAlert{
+    display: none;
     border-radius: 5px;
     text-align: center;
     position: fixed;
@@ -48,7 +49,7 @@
 	    color: white;
 		}
 		#sendAlert{
-			top: 35%;
+		top: 35%;
 	    background: #23527c;
 	    width: 100px;
 	    margin: auto;
@@ -6135,6 +6136,7 @@ textarea {
 .site-footer {
     position: relative;
     z-index: 111111;
+    background: #1a2e40;
     padding: 14px 0;
     width: 100%;
     bottom: 0;
@@ -6211,30 +6213,33 @@ h1, h2, h3, h4, h5 {
   height: 100%;
   top: 0;
   left: 0;
-  z-index: 1;
   background: #1a2e40;
 }
 
 
 
 @media (min-height:810px) {
-
-#page-content {
-  position: relative;
-  z-index: 12;
-  width:100%;
-  min-height:690px;
-}
+    #page-content {
+        position: relative;
+        z-index: 12;
+        width:100%;
+        min-height:690px;
+        background-image: url(webhome/whbg1.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
 }
 
 
 
 @media (max-height:810px){
-
-#page-content {
-  position: relative;
-  z-index: 12;
-}
+    #page-content {
+        position: relative;
+        z-index: 12;
+        background-image: url(webhome/whbg1.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
 }
 
 

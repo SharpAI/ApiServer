@@ -1,7 +1,7 @@
 Template.webHome.rendered = function () {
   //    $('.webHome').css('height', $(window).height());
   //    $('.webFooter').css('left', $(window).width()*0.5-105);
-  $('.sendAlert').css('display', "none");
+  // $('.sendAlert').css('display', "none");
   trackPage('http://www.tiegushi.com/');
   /*
   Meteor.subscribe("versions");
@@ -10,7 +10,7 @@ Template.webHome.rendered = function () {
 };
 Template.webHome.events({
   'click #sendAlert': function (events) {
-    $('.sendAlert').css('display', "none");
+    $('.sendAlert').fadeOut();
   },
   'click #sendEmailbtn': function (events) {
     name = $("#sendEmailname").val();
@@ -18,7 +18,7 @@ Template.webHome.events({
     subject = $("#sendEmailsubject").val();
     text = $("#sendEmailmessage").val();
     if (name === "" || email === "" || subject === "" || text === "") {
-      $('.sendAlert').css('display', "");
+      $('.sendAlert').fadeIn();
     } else {
 //      Meteor.call('sendEmailToAdmin', email, subject, text + name);
       $("#sendEmailname").val('');
