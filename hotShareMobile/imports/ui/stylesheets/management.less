@@ -195,6 +195,58 @@
     }
 }
 
+#chooseAssociatedUserFooter {
+    .modal-body {
+        dl {
+            position: relative;
+            margin-bottom: 0;
+            line-height: 50px;
+            border-bottom: 1px solid #c8c7cc;
+
+            dt {
+                position: relative;
+                display: inline-block;
+                margin-left: 10px;
+
+                img {
+                    width: 35px;
+                    height: 35px;
+                    border-radius: 50px;
+                }
+
+                i.fa.fa-check-circle {
+                    display: none;
+                    position: absolute;
+                    bottom: 0;
+                    right: -2px;
+                    height: 12px;
+                    border-radius: 50px;
+                    color: #35CE0F;
+                    background-color: #fff;
+                }
+
+                i.fa.fa-check-circle:before {
+                    position: relative;
+                    top: -1px;
+                }
+            }
+
+            dt.active {
+                i.fa.fa-check-circle { display: inline-block; }
+            }
+
+            dd {
+                display: inline-block;
+                margin-left: 10px;
+                width: 65%;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+        }      
+    }
+}
+
 .page-accounts-management-prompt{
 
     .management-prompt-content {

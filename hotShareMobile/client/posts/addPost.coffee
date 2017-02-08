@@ -524,10 +524,11 @@ if Meteor.isClient
     #api_url += '/' + encodeURIComponent(url);
     #api_url += '/' + unique_id;
     api_url = Meteor.absoluteUrl('import-server')
+    modalUserId = Session.get('chooseAssociatedUserFooter')
     if (api_url.endsWith("/"))
-      api_url += Meteor.userId()
+      api_url += (modalUserId || Meteor.userId())
     else
-      api_url += '/' + Meteor.userId()
+      api_url += '/' + (modalUserId || Meteor.userId())
     api_url += '/' + encodeURIComponent(url)
     api_url += '?task_id=' + unique_id + '&isMobile=true'
     if(withImportToEdit is true)
@@ -1881,3 +1882,4 @@ if Meteor.isClient
     "click .modal-body dl": (e, t)->
       t.$("dt.active").removeClass("active")
       $(e.currentTarget).find("dt").addClass('active')
+
