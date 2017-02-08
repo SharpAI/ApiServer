@@ -57,7 +57,7 @@ if Meteor.isClient
     'click .back':(event)->
         $('.home').addClass('animated ' + animateOutUpperEffect);
         setTimeout ()->
-          PUB.back()
+          PUB.page('/user')
         ,animatePageTrasitionTimeout
     'click .mainImage':(e)->
         Session.set("postPageScrollTop", 0)
