@@ -1,4 +1,4 @@
-Mongo.setConnectionOptions({server: {reconnectTries:Infinity}});
+// Mongo.setConnectionOptions({server: {reconnectTries:Infinity}});
 Posts = new Meteor.Collection('posts');
 RePosts = new Meteor.Collection('rePosts');
 FollowPosts = new Meteor.Collection('followposts');
