@@ -414,7 +414,8 @@ if Meteor.isClient
     displayPostContent:()->
       Session.get('displayPostContent')
     getMainImageHeight:()->
-      $(window).height()*0.55
+      # $(window).height()*0.55
+      window.screen.height * 0.5
     getAbstractSentence:->
       if Session.get('focusedIndex') isnt undefined
         Session.get('postContent').pub[Session.get('focusedIndex')].text
