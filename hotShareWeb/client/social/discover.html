@@ -164,7 +164,7 @@
                                 <div class="user_name">
                                     {{#if pindexText}}
                                     <h2>{{ownerName}}&nbsp;<span>点评了您转发的段落：</span></h2>
-                                    <div style="font-sze:10px;">"{{pindexText}}"</div>
+                                    <div style="font-sze:10px;">"{{{pindexText}}}"</div>
                                     {{else}}
                                     <h2>{{ownerName}}&nbsp;<span>点评了您的转发</span></h2>
                                     {{/if}}
@@ -199,7 +199,7 @@
                                         <!--<div style="font-sze:10px;">"{{pindexText}}"</div>-->
                                     {{else}}
                                         <h2>{{ownerName}}&nbsp;<span>和您点评了同一段落：</span></h2>
-                                        <div style="font-sze:10px;">"{{pindexText}}"</div>
+                                        <div style="font-sze:10px;">"{{{pindexText}}}"</div>
                                     {{/if}}
                                   {{else}}
                                     {{#if commentReply}}
@@ -207,7 +207,7 @@
                                         <!--<div style="font-sze:10px;">"{{pindexText}}"</div>-->
                                     {{else}}
                                         <h2>{{ownerName}}&nbsp;<span>也点评了此故事：</span></h2>
-                                        <div style="font-sze:10px;">"{{pindexText}}"</div>
+                                        <div style="font-sze:10px;">"{{{pindexText}}}"</div>
                                     {{/if}}
                                   {{/if}}
                                 {{else}}
