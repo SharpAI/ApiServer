@@ -109,6 +109,16 @@
         <div class="description">{{browse}}人读过，分享您的故事给他们吧！<span class="shareStoryBtn">分享</span></div>
     </div>
     {{/if}}
+    <div class="authorInfos">
+      {{#if authorReadPopularPosts}}
+      <div class="tipAuthorHotPosts">—&nbsp;热门文章&nbsp;—</div>
+      <ul>
+        {{#each authorReadPopularPosts}}
+        <dl id="{{_id}}" class="authorReadPopularPostItem"><dd>《{{title}}》</dd></dl>
+        {{/each}}
+      </ul>
+      {{/if}}
+    </div>
     {{#if withAfterPostIntroduce}}
       <div class="write">
         <p class="author">Write by <span class="spc">{{ownerName}}</span></p>

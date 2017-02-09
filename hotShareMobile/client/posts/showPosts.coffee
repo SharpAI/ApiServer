@@ -418,6 +418,9 @@ if Meteor.isClient
         return true
       else
         return false
+    authorReadPopularPosts: ()->
+      Meteor.subscribe "authorReadPopularPosts",@owner,@_id,3
+      return Posts.find({_id: {$ne: @_id},owner: @owner, publish: {$ne: false}},{sort: {browse: -1},limit: 3})
     clickedCommentOverlayThumbsDown:()->
       i = Session.get('focusedIndex')
       userId = Meteor.userId()
@@ -601,6 +604,11 @@ if Meteor.isClient
     else if action is 'post-tts'
       startPostTTS(self.index)
   Template.showPosts.events
+    'click .authorReadPopularPostItem': (e)->
+      postId = e.currentTarget.id
+      if postId is undefined
+        postId = this._id
+      Router.go '/posts/' + postId
     'click #shareStoryBtn' :->
       Session.set('isRecommendStory',true)
       trackEvent("shareStoryBtn","MobileRecommendStory")
