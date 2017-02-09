@@ -1373,6 +1373,7 @@ if Meteor.isClient
       iabHandle.addEventListener 'loadstop',importVideo.stopEvent
       iabHandle.addEventListener 'loaderror',importVideo.errorEvent
     'click #addOther': ()->
+      window.footbarOppration = true
       navigator.notification.confirm(
         '您要添加链接还是视频，请选择？'
         (index)->
