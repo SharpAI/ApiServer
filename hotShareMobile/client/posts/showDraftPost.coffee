@@ -212,6 +212,8 @@ if Meteor.isClient
           # console.log draftVideoData
           # console.log draftMusicData
           for i in [0..(draftImageData.length-1)]
+              if !draftImageData[i].imgUrl
+                continue
               unless draftImageData[i].imgUrl.toLowerCase().indexOf("http://data.tiegushi.com/") isnt -1
                 # console.log 'push image to be uploaded.'
                 draftToBeUploadedImageData.push(draftImageData[i])
