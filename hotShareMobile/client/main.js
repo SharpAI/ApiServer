@@ -171,7 +171,7 @@ if (Meteor.isCordova) {
         return Tips.close();
 
       // if on add hyperlink page, just disappear that page
-      if ($('#show_hyperlink').css('display') !== 'none') {
+      if ($('#show_hyperlink').css('display') == 'block') {
         console.log('##RDBG hide add hyperlink page');
         $('#add_posts_content').show();
         $('#show_hyperlink').hide();
