@@ -778,7 +778,7 @@ if Meteor.isClient
         iabHandle.removeEventListener 'loadstart',handlerLoadStartEvent
         iabHandle.removeEventListener 'loadstop',handlerLoadStopEvent
         iabHandle.removeEventListener 'loaderror',handlerLoadErrorEvent
-      window.iabHandle = window.open(url, '_blank', 'hidden=yes,toolbarposition=top')
+      window.iabHandle = window.open(url, '_blank', 'hidden=yes,toolbarposition=top,mediaPlaybackRequiresUserAction=yes')
       if Session.get('isReviewMode') isnt '1'
         iabHandle.addEventListener 'import',getURL
         iabHandle.addEventListener 'loadstart',handlerLoadStartEvent
@@ -794,9 +794,9 @@ if Meteor.isClient
       else
         iabHandle.removeEventListener 'hide',handleHideBrowser
     if url and url isnt ''
-      window.iabHandle = window.open(url, '_blank', 'hidden=no,toolbarposition=top')
+      window.iabHandle = window.open(url, '_blank', 'hidden=no,toolbarposition=top,mediaPlaybackRequiresUserAction=yes')
     else
-      window.iabHandle = window.open('about:blank', '_blank', 'hidden=no,toolbarposition=top')
+      window.iabHandle = window.open('about:blank', '_blank', 'hidden=no,toolbarposition=top,mediaPlaybackRequiresUserAction=yes')
     if Session.get('isReviewMode') isnt '1'
       iabHandle.addEventListener 'import',getURL
       #iabHandle.addEventListener 'exit',handleExitBrowser
@@ -1368,7 +1368,7 @@ if Meteor.isClient
         iabHandle.removeEventListener 'loadstop',handlerLoadStopEvent
         iabHandle.removeEventListener 'loaderror',handlerLoadErrorEvent
 
-      window.iabHandle = window.open(url, '_blank', 'hidden=yes,toolbarposition=top')
+      window.iabHandle = window.open(url, '_blank', 'hidden=yes,toolbarposition=top,mediaPlaybackRequiresUserAction=yes')
       iabHandle.addEventListener 'loadstart',importVideo.stratEvent
       iabHandle.addEventListener 'loadstop',importVideo.stopEvent
       iabHandle.addEventListener 'loaderror',importVideo.errorEvent
