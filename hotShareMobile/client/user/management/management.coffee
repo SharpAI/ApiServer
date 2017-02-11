@@ -1,5 +1,7 @@
+Meteor['_unsubscribeAll'] = _.bind(Meteor.connection['_unsubscribeAll'], Meteor.connection);
 is_loading = new ReactiveVar([])
 loginFn = (id)->
+  Meteor._unsubscribeAll()
   Meteor.loginWithUserId id, false, (err)->
     # 切换帐号时清空PostSearch history
     Session.set("searchContent","")
