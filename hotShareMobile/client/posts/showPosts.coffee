@@ -1327,10 +1327,14 @@ if Meteor.isClient
       text = ''
       if !pub
         return ''
-      pub.forEach (item)->
-        console.log(item.text)
-        if item.type is 'text'
-          text = item.text
+      for i in [1..pub.length-1]
+        if pub[i].type is 'text'
+          if pub[i].isHyperlink
+            text = pub[i].hyperlinkText
+          else
+            text = pub[i].text
+        if text? and text isnt ''
+          break
       return text
   Template.recommendStory.events
     'click .leftButton':(e)->
