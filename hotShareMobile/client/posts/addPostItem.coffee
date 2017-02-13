@@ -1,5 +1,17 @@
 
 if Meteor.isClient
+  @resizeGridsterDisplayHeight = ()->
+    gridsterDisplayHeight = 0
+    setTimeout ()->
+      $("ul#display").find("li").each((i,el)->
+        gridsterDisplayHeight += $(el).height()
+        gridsterDisplayHeight += 10
+      )
+      if gridsterDisplayHeight is 0
+        gridsterDisplayHeight = 20
+      if $("ul#display").height() > gridsterDisplayHeight
+        $("ul#display").height(gridsterDisplayHeight)
+    ,1000
   @getImagePath=(path,uri,id)->
     if !path or !id
       return ''
@@ -121,6 +133,7 @@ if Meteor.isClient
       if gridster?
         gridster.remove_widget2(node, false)
       Drafts.remove node.id
+      resizeGridsterDisplayHeight()
     else if buttonClicked.id == "delEnd"
       console.log("node "+ node)
       console.log("delEnd "+ node.id)
@@ -136,6 +149,7 @@ if Meteor.isClient
             gridster.remove_widget2(thisNode, false)
           Drafts.remove draftsArr[i]._id
         # Drafts.find({}).fetch().splice(indexNum,draftsArr.length + 1 - indexNum)
+      resizeGridsterDisplayHeight()
     else if buttonClicked.id is "font"
       setTimeout ()->
         Session.set 'textMenu','font'
@@ -457,6 +471,7 @@ if Meteor.isClient
           if gridster?
             gridster.remove_widget2(node, false)
           Drafts.remove node.id
+          resizeGridsterDisplayHeight()
         else if buttonClicked.id is "crop"
           console.log("crop "+ node.id)
           cropHandlerOnImage(node)
@@ -486,6 +501,7 @@ if Meteor.isClient
               if gridster?
                 gridster.remove_widget2(thisNode, false)
               Drafts.remove draftsArr[i]._id
+        resizeGridsterDisplayHeight()
     if trigger
       $(node).trigger('click')
     return
