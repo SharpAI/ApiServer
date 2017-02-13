@@ -81,22 +81,22 @@ if (Meteor.isCordova) {
         document.addEventListener("pause", eventPause, false);//挂起
         document.addEventListener("resume", eventResume, false);
         TAPi18n.precacheBundle = true;
-        if(isUSVersion){
-          Session.set("display_lang",'en');
-          Cookies.set("display-lang","en",360);
-          AppRate.preferences.useLanguage = 'en';
-        }
+        // if(isUSVersion){
+        //   Session.set("display_lang",'en');
+        //   Cookies.set("display-lang","en",360);
+        //   AppRate.preferences.useLanguage = 'en';
+        // }
         if(Cookies.check("display-lang")){
           var displayLang = Cookies.get("display-lang");
           Session.set("display_lang",displayLang)
-          if(displayLang === 'en'){
-              AppRate.preferences.useLanguage = 'en';
-          }
-          else if(displayLang ==='zh')
-          {
+          // if(displayLang === 'en'){
+          //     AppRate.preferences.useLanguage = 'en';
+          // }
+          // else if(displayLang ==='zh')
+          // {
               AppRate.preferences.useLanguage = 'zh-Hans';
-          }
-          TAPi18n.setLanguage(displayLang)
+          // }
+          TAPi18n.setLanguage("zh")
           .done(function () {
              console.log("zh");
           })
@@ -116,7 +116,7 @@ if (Meteor.isCordova) {
             console.log(error_message);
           });
         }
-        //TAPi18n.setLanguage("zh")
+        TAPi18n.setLanguage("zh")
          //当用户第八次使用该软件时提示评价app
         AppRate.preferences.usesUntilPrompt = 7;
         AppRate.preferences.storeAppURL.ios = '957024953';
