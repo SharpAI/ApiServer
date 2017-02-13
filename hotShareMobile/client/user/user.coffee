@@ -51,6 +51,7 @@ if Meteor.isClient
           onReady:()->
             Session.set('followToWithLimitCollection','loaded')
         })
+        Meteor.subscribe("userRelation")
   Template.user.helpers
     isLoading:->
       if Session.get('myPostsCount') isnt undefined
