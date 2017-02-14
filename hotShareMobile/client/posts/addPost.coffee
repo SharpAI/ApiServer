@@ -524,11 +524,10 @@ if Meteor.isClient
     #api_url += '/' + encodeURIComponent(url);
     #api_url += '/' + unique_id;
     api_url = Meteor.absoluteUrl('import-server')
-    modalUserId = Session.get('chooseAssociatedUserFooter')
     if (api_url.endsWith("/"))
-      api_url += (modalUserId || Meteor.userId())
+      api_url += Meteor.userId()
     else
-      api_url += '/' + (modalUserId || Meteor.userId())
+      api_url += '/' + Meteor.userId()
     api_url += '/' + encodeURIComponent(url)
     api_url += '?task_id=' + unique_id + '&isMobile=true'
     if(withImportToEdit is true)
@@ -640,7 +639,7 @@ if Meteor.isClient
               Session.set("TopicTitle", result.title)
               Session.set("TopicAddonTitle", result.addontitle)
               Session.set("TopicMainImage", result.mainImage)
-              Router.go('/addTopicComment/')
+              Router.go('/addTopicComment/?server_import=true')
               Meteor.subscribe(
                 'publicPosts'
                 postId
@@ -1853,7 +1852,8 @@ if Meteor.isClient
     # )
 
     # Meteor.subscribe('associateduserdetails', userIds)
-    Meteor.subscribe('userRelation')
+    t = this
+    Meteor.subscribe 'userRelation'
     height = $(window).height()*0.68		
     height = height + 'px'		
     $('.modal-dialog .modal-body').css({'max-height':height,'overflow-y':'auto'})		

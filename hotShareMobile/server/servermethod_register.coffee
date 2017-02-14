@@ -444,4 +444,29 @@ if Meteor.isServer
         #     if item.userIdB isnt self.userId
         #       Meteor.users.update({_id: item.userIdB}, {$set: {type: data.type, token: data.token}})
         #   )
+      'updatePostUser': (postId, userId)->
+        Meteor.setTimeout(
+          ()->
+            user = Meteor.users.findOne({_id: userId})
+            post = Posts.findOne({_id: postId})
+            if(!user or !post)
+              return
+            Posts.update({_id: postId}, {$set: {
+              ownerId: userId,
+              owner: userId,
+              ownerIcon: if user.profile and user.profile.icon then user.profile.icon else '/userPicture.png',
+              ownerName: if user.profile and user.profile.fullname then user.profile.fullname else user.username
+            }})
+            FollowPosts.update({postId: postId, followby: post.owner}, {$set: {
+              followby: userId
+            }})
+            FollowPosts.update({postId: postId}, {$set: {
+              owner: userId,
+              ownerIcon: if user.profile and user.profile.icon then user.profile.icon else '/userPicture.png',
+              ownerName: if user.profile and user.profile.fullname then user.profile.fullname else user.username
+            }}, {multi: true})
+          1000
+        )
+        
+
 

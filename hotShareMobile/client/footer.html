@@ -1,5 +1,4 @@
 <template name="footer">
-  {{> chooseAssociatedUserFooter}}
   {{#if display_footer}}
     <div id="footer" class="navbar navbar-default navbar-fixed-bottom">
         <div class="btn-group btn-group-justified" style="margin:0">
@@ -83,47 +82,7 @@
     </div>
     <div class="importWayFooter">
       <div class="importWayBtn" id="appImport">高级导入</div>
-      {{#if hasAssocaitedUsers}}
-      <div class="importWayBtn importWayBtnLight" id="" data-toggle="modal" data-target="#chooseAssociatedUserFooter">快速导入</div>
-      {{else}}
       <div class="importWayBtn importWayBtnLight" id="serverImport">快速导入</div>
-      {{/if}}
-    </div>
-  </div>
-</template>
-
-<template name="chooseAssociatedUserFooter">
-  <div class="modal fade" id="chooseAssociatedUserFooter" tabindex="-1" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">选择帐号</h4>
-        </div>
-        <div class="modal-body">
-          <dl>
-            <dt class="active" userId="{{currentUser._id}}"><img src="{{currentUser.profile.icon}}" alt="Avatar"><i class="fa fa-check-circle"></i></dt>
-            <dd>
-                {{#if currentUser.profile.fullname}}
-                    {{currentUser.profile.fullname}}
-                {{else}}
-                    {{currentUser.username}}
-                {{/if}}
-            </dd>
-          </dl>
-          {{#each accountList}}
-            <dl>
-              <dt userId="{{toUserId}}" userIcon="{{toIcon}}" userName="{{toName}}"><img src="{{toIcon}}" alt="Avatar"><i class="fa fa-check-circle"></i></dt>
-              <dd>
-                  {{toName}}
-              </dd>
-            </dl>
-          {{/each}}          
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
-          <button type="button" id="chooseUserFooter" class="btn btn-primary">导入</button>
-        </div>
-      </div>
     </div>
   </div>
 </template>

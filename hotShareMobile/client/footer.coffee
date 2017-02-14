@@ -231,13 +231,6 @@ if Meteor.isClient
     hasAssocaitedUsers: ()->
       (AssociatedUsers.find({}).count() > 0) or (UserRelation.find({userId: Meteor.userId()}).count() > 0)
   serverImportClick = (e, t)->
-    if e.currentTarget.id is ''
-      return Session.set('display_select_import_way',undefined)
-    if e.currentTarget.id is 'chooseUserFooter'
-      Session.set('chooseAssociatedUserFooter', $('#chooseAssociatedUserFooter .modal-body dt.active').attr('userId'))
-      $('#chooseAssociatedUserFooter').modal('hide')
-    else
-      Session.set('chooseAssociatedUserFooter', '')
     Session.set('post_improt_way',e.currentTarget.id)
     Session.set('display_select_import_way',undefined)
     Meteor.defer ()->
@@ -252,7 +245,7 @@ if Meteor.isClient
         if matchArray[0].indexOf('http') is -1
           importLink = "http://"+matchArray[0]
         Meteor.setTimeout(()->
-          if e.currentTarget.id is 'serverImport' or e.currentTarget.id is 'chooseUserFooter'
+          if e.currentTarget.id is 'serverImport'
             Session.set 'isServerImport', true
             handleDirectLinkImport(importLink)
           else
@@ -269,47 +262,3 @@ if Meteor.isClient
       Session.set('display_select_import_way',undefined)
     'click .importWayBtn':(e,t)->
       serverImportClick(e, t)
-
-  Template.chooseAssociatedUserFooter.onRendered ()->
-    # userIds = []
-    # AssociatedUsers.find({}).forEach((item)->
-    #     if Meteor.userId() isnt item.userIdA and !~ userIds.indexOf(item.userIdA)
-    #         userIds.push(item.userIdA)
-
-    #     if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
-    #         userIds.push(item.userIdB)
-    # )
-
-    # Meteor.subscribe('associateduserdetails', userIds)
-    Meteor.subscribe('userRelation')
-    height = $(window).height()*0.68		
-    height = height + 'px'		
-    $('.modal-dialog .modal-body').css({'max-height':height,'overflow-y':'auto'})		
-    $('#chooseAssociatedUserFooter').on 'show.bs.modal', ->		
-      $('body,html').css 'overflow': 'hidden'		
-    $('#chooseAssociatedUserFooter').on 'hide.bs.modal', ->		
-      $('body,html').css 'overflow': '' 
-
-  Template.chooseAssociatedUserFooter.onDestroyed ()->
-    $('body,html').css 'overflow': '' 
-    
-  Template.chooseAssociatedUserFooter.helpers
-    accountList :->
-      # userIds = []
-      # AssociatedUsers.find({}).forEach((item)->
-      #     if Meteor.userId() isnt item.userIdA and !~ userIds.indexOf(item.userIdA)
-      #         userIds.push(item.userIdA)
-
-      #     if Meteor.userId() isnt item.userIdB and !~ userIds.indexOf(item.userIdB)
-      #         userIds.push(item.userIdB)
-      # )
-
-      # return Meteor.users.find({_id: {'$in': userIds}})
-      return UserRelation.find({userId: Meteor.userId()})
-
-  Template.chooseAssociatedUserFooter.events
-    "click #chooseUserFooter": (e, t)->
-      serverImportClick(e, t)
-    "click .modal-body dl": (e, t)->
-      t.$("dt.active").removeClass("active")
-      $(e.currentTarget).find("dt").addClass('active')

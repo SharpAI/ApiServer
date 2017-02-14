@@ -62,6 +62,7 @@
 </style>
 
 <div class="addTopicComment">
+{{> Template.dynamic template=template data=data }}
 <div class="content">
   <div id="title">{{_ "yourStoryPublished"}}</div>
   <div><textarea id="comment" placeholder="{{_ 'addTopicOrComment'}}" maxlength="150">{{comment}}</textarea></div>
@@ -198,4 +199,31 @@
   </div>
   {{/if}} 
 </div>
+</template>
+
+<template name="serverImportSelectUser">
+  <div class="server-import-select-user" style="display: none;">
+    <div class="h">选择帐号</div>
+    <div class="c">
+      <dl>
+        <dt class="active" userId="{{currentUser._id}}"><img src="{{currentUser.profile.icon}}" alt="Avatar"><i class="fa fa-check-circle"></i></dt>
+        <dd>
+            {{#if currentUser.profile.fullname}}
+                {{currentUser.profile.fullname}}
+            {{else}}
+                {{currentUser.username}}
+            {{/if}}
+        </dd>
+      </dl>
+      {{#each accountList}}
+        <dl>
+          <dt userId="{{toUserId}}" userIcon="{{toIcon}}" userName="{{toName}}"><img src="{{toIcon}}" alt="Avatar"><i class="fa fa-check-circle"></i></dt>
+          <dd>
+              {{toName}}
+          </dd>
+        </dl>
+      {{/each}}      
+    </div>
+    <div class="f"><button type="button" id="modalServerPublish" class="btn btn-primary">发表</button></div>
+  </div>
 </template>

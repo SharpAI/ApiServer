@@ -320,6 +320,7 @@ if Meteor.isClient
     Router.route '/addTopicComment',()->
       if Meteor.isCordova is true
         this.render 'addTopicComment'
+        Session.set 'addTopicComment_server_import', this.params.query.server_import
         Session.set 'channel','addTopicComment'
         return
     Router.route '/thanksReport',()->

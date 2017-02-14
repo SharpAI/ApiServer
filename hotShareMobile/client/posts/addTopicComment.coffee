@@ -31,6 +31,12 @@ if Meteor.isClient
       console.log '>>>>>>>>>>>>>>>>>' + event.target.value
       topicsCountIsBeyond event.target.value
   Template.addTopicComment.helpers
+    is_server_import: ()->
+      return location.search is '?server_import=true'
+    template: ()->
+      return 'serverImportSelectUser'
+    data: ()->
+      return {server_import: Session.get('addTopicComment_server_import')}
     comment:()->
       Session.get("comment")
     topics:()->
@@ -302,3 +308,25 @@ if Meteor.isClient
       e.preventDefault()
       # alert(e.currentTarget.id)
       $(e.currentTarget).toggleClass('select')
+
+  Template.serverImportSelectUser.onRendered ()->
+    t = this
+    Meteor.subscribe 'userRelation', ()->
+      console.log('chooseAssociatedUser data:', t.data)
+      if UserRelation.find({userId: Meteor.userId()}).count() > 0 and t.data.server_import
+        $('.addTopicComment .content').hide()
+        $('.server-import-select-user').show()
+  Template.serverImportSelectUser.helpers
+    accountList :->
+      return UserRelation.find({userId: Meteor.userId()})
+
+  Template.serverImportSelectUser.events
+    "click .c dl": (e, t)->
+      t.$("dt.active").removeClass("active")
+      $(e.currentTarget).find("dt").addClass('active')
+    "click #modalServerPublish": (e, t)->
+      user_id = $('.server-import-select-user .c dt.active').attr('userId')
+      console.log('publish user:', user_id)
+      $('.server-import-select-user').hide()
+      $('.addTopicComment .content').show()
+      Meteor.call('updatePostUser', Session.get('TopicPostId'), user_id)
