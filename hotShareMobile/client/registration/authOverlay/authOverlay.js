@@ -10,7 +10,8 @@ if (Meteor.isClient) {
   Template.authOverlay.onRendered(function () {
     // StatusBar.backgroundColorByHexString("#ffffff");
     // StatusBar.styleDefault();
-    $('.authOverlay').css('height', $(window).height());
+    $('body,.authOverlay').height($('body')[0].clientHeight);
+    // $('.authOverlay').css('height', $(window).height());
     if (Meteor.user())
       Meteor.subscribe("follows");
     if (isUSVersion == true) {
@@ -80,24 +81,24 @@ if (Meteor.isClient) {
             });
     },
     'click #register': function () {
-//      Router.go('/signupForm');
-      $('.register').css('display',"block")
-      $('#register').css('display',"none")
-      $('#weibo').css('display',"none")
-      $('#login').css('display',"none")
-      $('.recovery').css('display',"none")
-      $('.agreeDeal').css('display',"none");
+        PUB.page('/signupForm');
+    //   $('.register').css('display',"block")
+    //   $('#register').css('display',"none")
+    //   $('#weibo').css('display',"none")
+    //   $('#login').css('display',"none")
+    //   $('.recovery').css('display',"none")
+    //   $('.agreeDeal').css('display',"none");
       Session.set("dealBack","register");
 //      $('.authOverlay').css('-webkit-filter',"blur(10px)")
     },
     'click #login': function () {
-//      Router.go('/loginForm');
-      $('.login').css('display',"block")
-      $('#register').css('display',"none")
-      $('#weibo').css('display',"none")
-      $('#login').css('display',"none")
-      $('.recovery').css('display',"none")
-      $('.agreeDeal').css('display',"none");
+        PUB.page('/loginForm');
+    //   $('.login').css('display',"block")
+    //   $('#register').css('display',"none")
+    //   $('#weibo').css('display',"none")
+    //   $('#login').css('display',"none")
+    //   $('.recovery').css('display',"none")
+    //   $('.agreeDeal').css('display',"none");
 //      $('.authOverlay').css('-webkit-filter',"blur(10px)")
     },
     'click #weibo': function () {

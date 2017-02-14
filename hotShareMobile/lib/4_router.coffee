@@ -111,6 +111,16 @@ if Meteor.isClient
       else
         this.render 'webHome'
         return
+    Router.route '/loginForm', ()->
+      this.render 'loginForm'
+      return
+    Router.route '/signupForm', ()->
+      this.render 'signupForm'
+      return
+    Router.route '/recoveryForm', ()->
+      this.render 'recoveryForm'
+      return
+    
     Router.route '/webHome',()->
       this.render 'webHome'
       return

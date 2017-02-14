@@ -32,6 +32,14 @@ Template.signupForm.events
   #   html += names.length
   #   html += '/'+userNameLength
   #   $('#signup-username-help').html(html)
+  'focus input':(e,t)->
+    Meteor.setTimeout ->
+      $('.company').css('display','none')
+    ,10
+  'blur input':(e,t)->
+    Meteor.setTimeout ->
+      $('.company').css('display','block')
+    ,10
   'click .term_notice' :(e,t)->
     names = t.find('#signup-username').value
     email = t.find('#signup-email').value.toLowerCase()
@@ -41,13 +49,15 @@ Template.signupForm.events
     Session.set("signUpPwd", pwd)
     Router.go '/deal_page'
   'click #btn_back' :->
+    $('input').blur()
     Session.set("signUpName", '')
     Session.set("signUpMail", '')
     Session.set("signUpPwd", '')
-    $('.register').css('display',"none")
-    $('#login').css('display',"block")
-    $('#weibo').css('display',"block")
-    $('#register').css('display',"block")
+    PUB.back()
+    # $('.register').css('display',"none")
+    # $('#login').css('display',"block")
+    # $('#weibo').css('display',"block")
+    # $('#register').css('display',"block")
 #    $('.authOverlay').css('-webkit-filter',"none")
   'submit #signup-form':(e,t)->
     e.preventDefault()

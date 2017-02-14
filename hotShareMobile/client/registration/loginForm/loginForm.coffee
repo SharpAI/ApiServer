@@ -1,23 +1,34 @@
 Template.loginForm.events
+    'focus input':(e,t)->
+      Meteor.setTimeout ->
+        $('.company').css('display','none')
+      ,10
+    'blur input':(e,t)->
+      Meteor.setTimeout ->
+        $('.company').css('display','block')
+      ,10
     'click #btn_back' :->
+      $('input').blur()
+      PUB.back()
 #      Router.go '/authOverlay'
-      $('.login').css('display',"none")
-      $('#register').css('display',"block")
-      $('#weibo').css('display',"block")
-      $('#login').css('display',"block")
-      $('.recovery').css('display',"none")
+      # $('.login').css('display',"none")
+      # $('#register').css('display',"block")
+      # $('#weibo').css('display',"block")
+      # $('#login').css('display',"block")
+      # $('.recovery').css('display',"none")
 #      $('.authOverlay').css('-webkit-filter',"none")
     'click .forgetPwdBtn': (e)->
       menus = ['忘记密码？','联系客服']
       menuTitle = ''
       callback = (buttonIndex)->
         if buttonIndex is 1
-          $('.login').css('display',"none")
-          $('#register').css('display',"none")
-          $('#weibo').css('display',"none")
-          $('#login').css('display',"none")
-          $('.recovery').css('display',"block")
-          $('.agreeDeal').css('display',"none")
+          # $('.login').css('display',"none")
+          # $('#register').css('display',"none")
+          # $('#weibo').css('display',"none")
+          # $('#login').css('display',"none")
+          # $('.recovery').css('display',"block")
+          # $('.agreeDeal').css('display',"none")
+          Router.go '/recoveryForm'
         else if buttonIndex is 2
           $('.customerService,.customerServiceBackground').fadeIn(300)
       PUB.actionSheet(menus, menuTitle, callback)
@@ -42,12 +53,14 @@ Template.loginForm.events
       PUB.toast('邮件已经发送，请等待客服与您联系。')
       $('.customerService,.customerServiceBackground').hide()
     'click .forgetPassword' :->
-      $('.login').css('display',"none")
-      $('#register').css('display',"none")
-      $('#weibo').css('display',"none")
-      $('#login').css('display',"none")
-      $('.recovery').css('display',"block")
-      $('.agreeDeal').css('display',"none")
+      # $('.login').css('display',"none")
+      # $('#register').css('display',"none")
+      # $('#weibo').css('display',"none")
+      # $('#login').css('display',"none")
+      # $('.recovery').css('display',"block")
+      # $('.agreeDeal').css('display',"none")
+      $('body').height($('body')[0].clientHeight);
+      Router.go '/recoveryForm'
     'submit #login-form':(e,t)->
       e.preventDefault()
       if Meteor.status().connected isnt true
@@ -71,12 +84,22 @@ Template.loginForm.events
           return
       false 
 Template.recoveryForm.events
+    'focus input':(e,t)->
+      Meteor.setTimeout ->
+        $('.company').css('display','none')
+      ,10
+    'blur input':(e,t)->
+      Meteor.setTimeout ->
+        $('.company').css('display','block')
+      ,10
     'click #btn_back' :->
-      $('.login').css('display',"none")
-      $('#register').css('display',"block")
-      $('#weibo').css('display',"block")
-      $('#login').css('display',"block")
-      $('.recovery').css('display',"none")
+      $('input').blur()
+      Router.go '/loginForm'
+      # $('.login').css('display',"none")
+      # $('#register').css('display',"block")
+      # $('#weibo').css('display',"block")
+      # $('#login').css('display',"block")
+      # $('.recovery').css('display',"none")
     'submit #recovery-form':(e,t)->
       e.preventDefault()
       if Meteor.status().connected isnt true
@@ -101,8 +124,9 @@ Template.recoveryForm.events
             if r is 1
               $('#recovery-email').val('');
           , '提示信息', ['确定']);
-          $('.login').css('display',"none")
-          $('#register').css('display',"block")
-          $('#weibo').css('display',"block")
-          $('#login').css('display',"block")
-          $('.recovery').css('display',"none")
+          Router.go '/loginForm'
+          # $('.login').css('display',"none")
+          # $('#register').css('display',"block")
+          # $('#weibo').css('display',"block")
+          # $('#login').css('display',"block")
+          # $('.recovery').css('display',"none")
