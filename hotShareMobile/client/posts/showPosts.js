@@ -325,12 +325,12 @@ shareTo = function(to,self,index){
     if(index !== undefined) {
         var text =Session.get('postContent').pub[index].text;
         url = url + '/' + index;
+        text = text.replace(/<\/?.+?>/g,"");
+        text = filterEmoji(text);
         description = text;
         if(!description || description ===''){
             description = undefined;
         } else if(description.length > 96){
-            description = description.replace(/<\/?.+?>/g,"");
-            description = filterEmoji(description);
             description = description.substring(0, 96);
         }
     }
