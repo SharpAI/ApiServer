@@ -234,14 +234,14 @@ Router.route('/restapi/importPost/:type/:_id', function(req, res, next) {
                     //var hostAndPortUrl = Meteor.absoluteUrl().substr(0, position) + ":8083" + Meteor.absoluteUrl().substr(position);
                     var hostAndPortUrl = "http://127.0.0.1";
                     var uri = hostAndPortUrl + '/restapi/postInsertHook/' + post.owner + '/' + post._id;
-                    // console.log("req_data._id="+req_data._id+", uri = "+uri);
-                    // request({method: 'GET', uri: uri})
-                    //   .on('error', function(err){
-                    //     console.log('/restapi/postInsertHook/ err:', err);
-                    //   }).on('data', function(data) {
-                    //   }).on('end', function(data) {
-                    //     console.log('/restapi/postInsertHook/ ok:', data);
-                    //   });
+                    console.log("req_data._id="+req_data._id+", uri = "+uri);
+                    request({method: 'GET', uri: uri})
+                      .on('error', function(err){
+                        console.log('/restapi/postInsertHook/ err:', err);
+                      }).on('data', function(data) {
+                      }).on('end', function(data) {
+                        console.log('/restapi/postInsertHook/ ok:', data);
+                      });
                     res.end(JSON.stringify({result: 'success'}));
                 });
             } else if(req_type === 'image'){
@@ -277,19 +277,19 @@ Router.route('/restapi/importPost/:type/:_id', function(req, res, next) {
                 if (err || num <= 0) {
                     return res.end(JSON.stringify({result: 'failed'}));
                 }
-                //var post = Posts.findOne({_id: req_data._id});
+                var post = Posts.findOne({_id: req_data._id});
                 //var position = Meteor.absoluteUrl().length-1;
                 //var hostAndPortUrl = Meteor.absoluteUrl().substr(0, position) + ":8083" + Meteor.absoluteUrl().substr(position);
                 var hostAndPortUrl = "http://127.0.0.1";
                 var uri = hostAndPortUrl + '/restapi/postInsertHook/' + post.owner + '/' + post._id;
-                // console.log("req_data._id="+req_data._id+", uri = "+uri);
-                // request({method: 'GET', uri: uri})
-                //   .on('error', function(err){
-                //     console.log('/restapi/postInsertHook/ err:', err);
-                //   }).on('data', function(data) {
-                //   }).on('end', function(data) {
-                //     console.log('/restapi/postInsertHook/ ok:', data);
-                //   });
+                console.log("req_data._id="+req_data._id+", uri = "+uri);
+                request({method: 'GET', uri: uri})
+                  .on('error', function(err){
+                    console.log('/restapi/postInsertHook/ err:', err);
+                  }).on('data', function(data) {
+                  }).on('end', function(data) {
+                    console.log('/restapi/postInsertHook/ ok:', data);
+                  });
                 res.end(JSON.stringify({result: 'success'}));
               });
             } else {
