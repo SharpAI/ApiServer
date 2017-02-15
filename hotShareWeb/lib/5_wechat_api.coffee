@@ -76,7 +76,8 @@ if Meteor.isClient
         if !description || description is ''
           description = Session.get("DocumentTitle").replace('『故事贴』','');
         else if(description.length > 100)
-          description = description.substring(0, 100)
+          description = description.replace(/<\/?.+?>/g,"")
+          description = description.substring(0, 96)
         section=parseInt(Session.get('focusedIndex'))
         timelineData = {
           title: description,
@@ -119,13 +120,15 @@ if Meteor.isClient
             if textArr[i].text is invalidString
               descriptionFirstParagraph = "来自故事贴"
             else if textArr[i].text
-              descriptionFirstParagraph = textArr[i].text.substring(0, 100)
+              descriptionFirstParagraph = textArr[i].text.replace(/<\/?.+?>/g,"")
+              descriptionFirstParagraph = descriptionFirstParagraph.substring(0, 96)
         else if  patagraphLength >= 2
           textArr = Session.get('postContent').pub
           for i in [patagraphLength - 1..0]
             if textArr[i].text and textArr[i].text isnt invalidString
               console.log(textArr[i].text)
-              descriptionFirstParagraph = textArr[i].text.substring(0, 100)
+              descriptionFirstParagraph = textArr[i].text.replace(/<\/?.+?>/g,"")
+              descriptionFirstParagraph = descriptionFirstParagraph.substring(0, 96)
         else
           descriptionFirstParagraph = Session.get("DocumentTitle")
         timelineData = {
