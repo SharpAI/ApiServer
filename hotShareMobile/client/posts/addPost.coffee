@@ -909,7 +909,7 @@ if Meteor.isClient
       if withDirectDraftShow
         if savedDraftData and savedDraftData.pub and savedDraftData._id
           Session.set('postContent',savedDraftData)
-          PUB.page('/draftposts/'+savedDraftData._id)
+          Router.go('/draftposts/'+savedDraftData._id)
           return
         else
           toastr.error('got wrong')

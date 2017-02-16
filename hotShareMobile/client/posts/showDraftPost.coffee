@@ -446,13 +446,13 @@ if Meteor.isClient
       Session.set('fromDraftPost',false)
       Session.set 'showDraft', false
       setTimeout ()->
-        if Session.get("backtoalldrafts") is true
-          Session.set("backtoalldrafts",false)
-          PUB.page('/allDrafts')
-        else if Session.get("backtopageuser") is true
-          Session.set('backtopageuser', false)
-          PUB.page('/user')
-        else
+        # if Session.get("backtoalldrafts") is true
+        #   Session.set("backtoalldrafts",false)
+        #   PUB.page('/allDrafts')
+        # else if Session.get("backtopageuser") is true
+        #   Session.set('backtopageuser', false)
+        #   PUB.page('/user')
+        # else
           PUB.postPageBack()
       ,animatePageTrasitionTimeout
     'click .postImageItem': (e,t)->
