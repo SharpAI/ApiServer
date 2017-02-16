@@ -552,6 +552,7 @@ if Meteor.isClient
         #   return
         # PUB.toast('服务器正在处理，稍后可以在"我"下面查看。')
       cordovaHTTP.get Meteor.absoluteUrl('import-cancel/') + unique_id, {}, {}, request_return_ok, request_return
+      Router.go('/')
       console.log("import-cancel: unique_id="+unique_id);
     showIframePage = (url)->
       link = {}
@@ -759,7 +760,9 @@ if Meteor.isClient
         )
         ###
     catch error
-        console.log("ERROR: httpCall, api_url="+api_url);
+        console.log("ERROR: httpCall, api_url="+api_url)
+        PUB.toast('快速导入失败啦，请尝试高级导入吧。')
+        Router.go('/')
 
   @handleDirectLinkImport = (url, clientSide)->
     if url.match(/localhost/g)
