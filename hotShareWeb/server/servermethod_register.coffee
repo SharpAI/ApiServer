@@ -494,18 +494,21 @@ if Meteor.isServer
         if !confirmReporterAuth(userId)
           return false
         post = BackUpPosts.findOne({_id:postId})
-        owner = Meteor.users.findOne({_id: post.owner})
-        reporterLogs.insert({
-          userId:post.owner,
-          userName: post.ownerName,
-          userEmails: owner.emails,
-          postId: postId,
-          postTitle: post.title,
-          postCreatedAt: post.createdAt,
-          eventType: '恢复帖子',
-          loginUser: userId,
-          createdAt: new Date()
-        })
+        try
+          owner = Meteor.users.findOne({_id: post.owner})
+          reporterLogs.insert({
+            userId:post.owner,
+            userName: post.ownerName,
+            userEmails: owner.emails,
+            postId: postId,
+            postTitle: post.title,
+            postCreatedAt: post.createdAt,
+            eventType: '恢复帖子',
+            loginUser: userId,
+            createdAt: new Date()
+          })
+        catch error
+          console.log error
         if post
           Posts.insert(post)
           console.log('isReview:', post.isReview)
