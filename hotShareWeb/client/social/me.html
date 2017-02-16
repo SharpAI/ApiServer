@@ -97,11 +97,12 @@
       {{#newLayoutElement layoutId=onPostId displayId=_id src="favposts" container='.favposts'}}
         <div class="img_placeholder">
           <img class="mainImage" src="{{mainImage}}" />
+          <button data-id="{{_id}}" class="removefavp"><i class="fa fa-circle-o"></i></button>
         </div>
         <div class="pin_content">
           <p class="title">{{title}}</p>
           <p class="addontitle">{{addontitle}}</p>
-          <h1 class="username">{{ownerName}}  <span>发布</span><button data-id="{{_id}}" class="removefavp"><i class="fa fa-times"></i></button></h1>
+          <h1 class="username">{{ownerName}}  <span>发布</span></h1>
         </div>
       {{/newLayoutElement}}
     {{/each}}

@@ -131,8 +131,21 @@
 }
 
 .newLayout_container .newLayout_element .img_placeholder{
+    position: relative;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
+}
+.newLayout_container .newLayout_element .img_placeholder button{
+    position: absolute;
+    bottom: 0;
+    color: white;
+    font-size: 250%;
+    right: 0;
+    top:auto;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-right: 10px;
 }
 .newLayout_container .newLayout_element .mainImage
 {
