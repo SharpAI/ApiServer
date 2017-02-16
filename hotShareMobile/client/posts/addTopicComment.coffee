@@ -329,4 +329,6 @@ if Meteor.isClient
       console.log('publish user:', user_id)
       $('.server-import-select-user').hide()
       $('.addTopicComment .content').show()
+      Session.set 'post-publish-user-id', user_id
+      Meteor.subscribe "usersById", user_id
       Meteor.call('updatePostUser', Session.get('TopicPostId'), user_id)
