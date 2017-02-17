@@ -73,10 +73,10 @@ if Meteor.isClient
       # Session.set('turnOnRandom',false)
       if Session.get('focusedIndex') isnt undefined
         description =Session.get('postContent').pub[Session.get('focusedIndex')].text.replace(/\s\s\s+/g, '');
+        description = description.replace(/<\/?.+?>/g,"")
         if !description || description is ''
           description = Session.get("DocumentTitle").replace('『故事贴』','');
         else if(description.length > 100)
-          description = description.replace(/<\/?.+?>/g,"")
           description = description.substring(0, 96)
         section=parseInt(Session.get('focusedIndex'))
         timelineData = {
