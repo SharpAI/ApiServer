@@ -16,19 +16,22 @@ if Meteor.isClient
       ###
       if Meteor.user() and Session.equals('channel','user')
         Session.set('myCounterCollection','loading')
-        Meteor.call('getMyProfileData',(err,json)->
-          if(!err && json)
-            Session.set('myCounterCollection','loaded')
-            console.log(json)
-            Session.setPersistent('myPostsCount',json['myPostsCount'])
-            Session.setPersistent('mySavedDraftsCount',json['mySavedDraftsCount'])
-            Session.setPersistent('myFollowedByCount',json['myFollowedByCount'])
-            Session.setPersistent('myFollowedByCount-'+Meteor.userId(),json['myFollowedByCount-'+Meteor.userId()])
-            Session.setPersistent('myFollowToCount',json['myFollowToCount'])
-            Session.setPersistent('myEmailFollowerCount',json['myEmailFollowerCount'])
-            Session.setPersistent('myEmailFollowerCount-'+Meteor.userId(),json['myEmailFollowerCount-'+Meteor.userId()])
-          console.log('Issue on getMyProfileData')
-        )
+        Meteor.setTimeout ()->
+          Meteor.call('getMyProfileData',(err,json)->
+            if(!err && json)
+              Session.set('myCounterCollection','loaded')
+              console.log(json)
+              Session.setPersistent('myPostsCount',json['myPostsCount'])
+              Session.setPersistent('mySavedDraftsCount',json['mySavedDraftsCount'])
+              Session.setPersistent('myFollowedByCount',json['myFollowedByCount'])
+              Session.setPersistent('myFollowedByCount-'+Meteor.userId(),json['myFollowedByCount-'+Meteor.userId()])
+              Session.setPersistent('myFollowToCount',json['myFollowToCount'])
+              Session.setPersistent('myEmailFollowerCount',json['myEmailFollowerCount'])
+              Session.setPersistent('myEmailFollowerCount-'+Meteor.userId(),json['myEmailFollowerCount-'+Meteor.userId()])
+            console.log('Issue on getMyProfileData')
+          )
+        ,100
+        
     Tracker.autorun ()->
       if Meteor.user() and Session.equals('channel','user')
         Session.set('postsWithLimitCollection','loading')
