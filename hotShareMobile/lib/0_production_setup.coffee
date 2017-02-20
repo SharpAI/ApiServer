@@ -25,5 +25,5 @@
 @withLanguageSetting=false
 @withImportToEdit=false
 @signUpUserNameLength = 16
-@withPostTitleMaxLength = 90      #byte
-@withPostSubTitleMaxLength = 60   #byte
+@withPostTitleMaxLength = 180      #byte
+@withPostSubTitleMaxLength = 120   #byte
