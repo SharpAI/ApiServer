@@ -18,6 +18,7 @@ if (Meteor.isCordova) {
           return Session.set('hottestPosts', res)
         }
       });
+      $('.showPosts').removeClass('animated ' + animateOutUpperEffect)
     }
     Deps.autorun(function(){
       if( Session.get('persistentLoginStatus') && !Meteor.userId() && !Meteor.loggingIn()){
