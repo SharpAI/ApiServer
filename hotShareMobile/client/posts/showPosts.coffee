@@ -376,6 +376,8 @@ if Meteor.isClient
     , 600
 
   Template.showPosts.helpers
+    has_share_follower: ->
+      return if Meteor.user().profile and Meteor.user().profile.web_follower_count then Meteor.user().profile.web_follower_count > 0 else false
     msgs_count: ->
       if Posts.findOne({_id: Session.get('postContent')._id}).owner isnt Meteor.userId()
         return 0

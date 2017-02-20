@@ -53,6 +53,9 @@
               {{#if shareToStoryGroup}}
                 <li role="presentation"><a id="ShareStoryGroup" role="menuitem" tabindex="-1" ><i class="fa fa-weixin fa-fw"></i>{{_ "shareStoryGroup"}}</a></li>
               {{/if}}
+              {{#if has_share_follower}}
+                <li role="presentation"><a id="shareToFollower" role="menuitem" tabindex="-1" ><i class="fa fa-user-plus fa-fw"></i>分享给关注者</a></li>
+              {{/if}}
               <li role="presentation"><a id="QQShare" role="menuitem" tabindex="-1" ><i class="fa fa-qq fa-fw"></i>{{_ "shareQQ"}}</a></li>
               <li role="presentation"><a id="QQZoneShare" role="menuitem" tabindex="-1" ><i class="fa fa-qq fa-fw"></i>{{_ "shareQQZone"}}</a></li>
               <li role="presentation"><a id="socialShare" role="menuitem" tabindex="-1" ><i class="fa fa-share-alt fa-fw"></i>{{_ "shareMore"}}</a></li>

@@ -163,10 +163,13 @@ shareToWechatSession = function (title, description, thumbData, url) {
             return true;
             // return !value.hasPush;
         });
-
-        if (hotPosts.length > 0 || (Meteor.user().profile && Meteor.user().profile.web_follower_count && Meteor.user().profile.web_follower_count > 0)) {
-            $('.shareReaderClub,.shareReaderClubBackground').show();
+        if (hotPosts.length > 0){
+            Router.go('/hotPosts/' + Session.get('postContent')._id);
         }
+        // if (hotPosts.length > 0 || (Meteor.user().profile && Meteor.user().profile.web_follower_count && Meteor.user().profile.web_follower_count > 0)) {
+        //     // $('.shareReaderClub,.shareReaderClubBackground').show();
+        //      Router.go('/hotPosts/' + Session.get('postContent')._id);
+        // }
         // window.PUB.toast('分享成功!');
         // var shareType = Session.get("shareToWechatType");
         // if(shareType[1] && shareType[1] == true){
@@ -211,10 +214,13 @@ shareToWechatTimeLine = function (title, description, thumbData, url) {
             return true;
             // return !value.hasPush;
         });
-
-        if (hotPosts.length > 0 || (Meteor.user().profile && Meteor.user().profile.web_follower_count && Meteor.user().profile.web_follower_count > 0)) {
-            $('.shareReaderClub,.shareReaderClubBackground').show();
+        if (hotPosts.length > 0){
+            Router.go('/hotPosts/' + Session.get('postContent')._id);
         }
+
+        // if (hotPosts.length > 0 || (Meteor.user().profile && Meteor.user().profile.web_follower_count && Meteor.user().profile.web_follower_count > 0)) {
+        //     $('.shareReaderClub,.shareReaderClubBackground').show();
+        // }
         // window.PUB.toast('分享成功!');
         // var shareType = Session.get("shareToWechatType");
         // if(shareType[1] && shareType[1] == true){
@@ -247,10 +253,13 @@ shareToWechat = function(title,description,thumbData,url,type) {
             return true;
             // return !value.hasPush;
         });
-
-        if (hotPosts.length > 0 || (Meteor.user().profile && Meteor.user().profile.web_follower_count && Meteor.user().profile.web_follower_count > 0)) {
-            $('.shareReaderClub,.shareReaderClubBackground').show();
+        if (hotPosts.length > 0){
+            Router.go('/hotPosts/' + Session.get('postContent')._id);
         }
+
+        // if (hotPosts.length > 0 || (Meteor.user().profile && Meteor.user().profile.web_follower_count && Meteor.user().profile.web_follower_count > 0)) {
+        //     $('.shareReaderClub,.shareReaderClubBackground').show();
+        // }
         // console.log('分享成功~');
         // var shareType = Session.get("shareToWechatType");
         // if(shareType[1] && shareType[1] == true){
@@ -426,11 +435,16 @@ shareTo = function(to,self,index){
     })
 };
 Template.showPosts.events({
+    'click #shareToFollower': function(e,t){
+        Meteor.call('sendEmailByWebFollower', Session.get('postContent')._id, 'share');
+        PUB.toast('分享成功～');
+    },
     'click #ShareStoryGroup':function(e, t){
         //If has hotPosts
         // if (hotPosts.length > 0 || (Meteor.user().profile && Meteor.user().profile.web_follower_count && Meteor.user().profile.web_follower_count > 0)) {
         if (Template.shareReaderClub.__helpers.get('has_share_hot_post')()){
-            $('.shareReaderClub,.shareReaderClubBackground').show();
+            // $('.shareReaderClub,.shareReaderClubBackground').show();
+             Router.go('/hotPosts/' + Session.get('postContent')._id);
         } else {
             toastr.info("还没有故事贴群哦，再多读一些故事帖吧！")
         }
