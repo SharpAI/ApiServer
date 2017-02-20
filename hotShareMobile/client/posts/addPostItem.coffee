@@ -434,6 +434,7 @@ if Meteor.isClient
   initToolBar = (node,insertedObj,grid,trigger)->
     #console.log 'Added node id is ' + node.id
     type = insertedObj.type
+    inIframe = insertedObj.inIframe
     if type is "text"
       $(node).toolbar
         content: '#text-toolbar-options'
@@ -459,7 +460,7 @@ if Meteor.isClient
         Meteor.defer ()->
           $('#'+node.id+'TextArea').trigger('keyup')
       ###
-    else if type is "image"
+    else if type is "image" and !inIframe
       $(node).toolbar
         content: '#image-toolbar-options'
         position: 'top'
