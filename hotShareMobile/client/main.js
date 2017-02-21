@@ -145,6 +145,9 @@ if (Meteor.isCordova) {
                 window.refreshMainDataSource();
                 checkShareUrl();
                 checkShareExtension();
+                if(Meteor.user().profile.waitReadCount > 0){
+                  Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
+                }
 
                 if(device.platform === 'Android'){
                   window.plugins.shareExtension.getShareData(function(data) {

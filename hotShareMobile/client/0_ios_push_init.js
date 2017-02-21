@@ -60,6 +60,9 @@ if (Meteor.isClient) {
             if (data.count) {
               Session.set('waitReadCount', data.count);
             }
+            if(Meteor.user().profile.waitReadCount > 0){
+              Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
+            }
             if (data.additionalData.foreground === false) {
               console.log('Push notification when background');
               window.refreshMainDataSource();
