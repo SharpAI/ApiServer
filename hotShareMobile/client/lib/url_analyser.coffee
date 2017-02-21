@@ -1147,6 +1147,11 @@ if Meteor.isClient
         a = document.createElement('a')
         a.href = url
         data.host = a.hostname
+
+      if data.body
+        data.body = data.body.replace(/(<video.*?)autoplay\s*=.*?(\w+\s*=|\s*>)/gim, '$1$2')
+        data.bodyLength = data.body.length
+      
       console.log 'getContentListsFromUrl _html2data2 data is '
       console.log data
       console.log "scripts is " + data.scripts
