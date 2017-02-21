@@ -2460,6 +2460,9 @@ if(Meteor.isServer){
     }
   });
   FollowPosts.allow({
+    remove: function (userId, doc) {
+      return doc.followby === userId;
+    },
     update: function (userId, doc, fieldNames, modifier) {
       if (fieldNames.toString() === 'browse' || fieldNames.toString() === 'heart' || fieldNames.toString() === 'publish' || fieldNames.toString() === 'retweet' || fieldNames.toString() === 'comment' && modifier.$inc !== void 0) {
         return true;
