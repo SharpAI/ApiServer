@@ -2055,6 +2055,8 @@
     * @param {Object} ui A prepared ui object with useful drag-related data
     */
     fn.on_start_drag = function(event, ui) {
+        // hide toolbar at here
+        $('.tool-container :visible').parent('.tool-container').addClass('element-deagging').css('opacity',0);
         this.$helper.add(this.$player).add(this.$wrapper).addClass('dragging');
 
         this.highest_col = this.get_highest_occupied_cell().col;
@@ -2171,8 +2173,19 @@
     * @param {Object} ui A prepared ui object with useful drag-related data
     */
     fn.on_stop_drag = function(event, ui) {
-        this.$helper.add(this.$player).add(this.$wrapper)
-            .removeClass('dragging');
+        setTimeout(function(){
+            if($('.tool-container.element-deagging').hasClass('tool-bottom')){
+                $('.tool-container.element-deagging').removeClass('tool-bottom').addClass('tool-top');
+            } 
+            $('.tool-container.element-deagging').removeClass('element-deagging').css({
+                'opacity':1,
+                'top':($('li.dragging').offset().top+ $('#add_posts_content').scrollTop() - 80)+ 'px'
+            });
+            $('li.dragging').removeClass('dragging');
+        },300);
+
+        // this.$helper.add(this.$player).add(this.$wrapper)
+        //     .removeClass('dragging');
 
         ui.position.left = ui.position.left + this.baseX;
         ui.position.top = ui.position.top + this.baseY;
@@ -2213,7 +2226,7 @@
         }
 
         this.$preview_holder.remove();
-
+        
         this.$player = null;
         this.$helper = null;
         this.placeholder_grid_data = {};
