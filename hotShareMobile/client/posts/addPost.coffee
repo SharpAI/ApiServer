@@ -877,7 +877,9 @@ if Meteor.isClient
     $('.addPost #ViewOnWeb').toolbar
       content: '#linkOption-toolbar-options'
       position: 'top'
-      hideOnClick: true
+      hideOnClick: true,
+      parent: '#add_posts_content',
+      parentTopMargin : 40
       $('.addPost #ViewOnWeb').on 'toolbarItemClick',(event,buttonClicked)->
         if buttonClicked.id is "del"
           if Drafts.find({type:'image'}).count() > 0
@@ -1124,7 +1126,7 @@ if Meteor.isClient
       Session.get('editProgessBarPercentage')[1]
     displayUrl:->
       if Drafts.findOne({type:'image'}) and Drafts.findOne({type:'image'}).url and Drafts.findOne({type:'image'}).url isnt ''
-        ""
+        "display:block"
       else
         "display:none"
     linkUrl:->
