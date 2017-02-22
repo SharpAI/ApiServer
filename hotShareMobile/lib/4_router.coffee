@@ -17,12 +17,12 @@ if Meteor.isClient
     if !post
       return self.render 'postNotFound'
 
-    if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
-      Session.set('postContent',post)
-      refreshPostContent()
-      toastr.info('作者修改了帖子内容.')
-    else
-      Session.set('postContent',post)
+    # if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
+    #   Session.set('postContent',post)
+    #   refreshPostContent()
+    #   toastr.info('作者修改了帖子内容.')
+    # else
+    Session.set('postContent',post)
     Session.set('focusedIndex',undefined)
     if post and post.addontitle and (post.addontitle isnt '')
       documentTitle = "『故事贴』" + post.title + "：" + post.addontitle

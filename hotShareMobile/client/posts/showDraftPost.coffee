@@ -290,9 +290,11 @@ if Meteor.isClient
             pub = new_pub
             # console.log 'pub is  '
             # console.log pub
+            browseTimes = 0
 
             if Posts.find({_id:postId}).count()>0
               # console.log 'goooooooooood!!'
+              browseTimes = Posts.findOne({_id:postId}).browse 
               Posts.update(
                 {
                   _id:postId
@@ -359,7 +361,28 @@ if Meteor.isClient
             SavedDrafts.remove({_id:postId})
             #Delete the Drafts
             cleanDraft()
-            Router.go('/posts/'+postId)
+            newPostData = {
+              _id:postId,
+              pub:pub,
+              title:title,
+              browse:browseTimes+1,
+              heart:[],  #点赞
+              retweet:[],#转发
+              comment:[], #评论
+              addontitle:addontitle,
+              mainImage: mainImage,
+              mainImageStyle:mainImageStyle,
+              mainText: mainText,
+              fromUrl: fromUrl,
+              publish:true,
+              owner:ownerUser._id,
+              ownerName:ownerName,
+              ownerIcon:ownerIcon,
+              isReview: true,
+              createdAt: new Date()
+            }
+            Session.set('newpostsdata', newPostData)
+            Router.go('/newposts/'+postId)
 
             removeImagesFromCache(draftImageData)
           )
@@ -369,10 +392,11 @@ if Meteor.isClient
           pubtest.shift()
           pub = pubtest
           mainImage = savedDraftData.mainImage
-          
+          browseTimes = 0
 
           if Posts.find({_id:postId}).count()>0
             # console.log 'goooooooooood!!'
+            browseTimes = Posts.findOne({_id:postId}).browse
             Posts.update(
               {
                 _id:postId
@@ -439,7 +463,28 @@ if Meteor.isClient
           SavedDrafts.remove({_id:postId})
           #Delete the Drafts
           cleanDraft()
-          Router.go('/posts/'+postId)
+          newPostData = {
+              _id:postId,
+              pub:pub,
+              title:title,
+              browse:browseTimes+1,
+              heart:[],  #点赞
+              retweet:[],#转发
+              comment:[], #评论
+              addontitle:addontitle,
+              mainImage: mainImage,
+              mainImageStyle:mainImageStyle,
+              mainText: mainText,
+              fromUrl: fromUrl,
+              publish:true,
+              owner:ownerUser._id,
+              ownerName:ownerName,
+              ownerIcon:ownerIcon,
+              isReview: true,
+              createdAt: new Date()
+          }
+          Session.set('newpostsdata', newPostData)
+          Router.go('/newposts/'+postId)
         Session.set 'showDraft', false
         return
     'click .showDraftback' :->
