@@ -327,6 +327,8 @@ if Meteor.isClient
         Meteor.call 'readPostReport',postContent._id,Meteor.userId(), null, (err, res)->
           if !err and res is true
             console.log 'readPostReport:', res
+            if Template.showPosts.__helpers.get('isMynewpost')() is true
+              return
             $('.subscribeAutorPage').show()
 #    $('.textDiv1Link').linkify();
     setTimeout ()->
