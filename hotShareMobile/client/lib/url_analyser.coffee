@@ -959,7 +959,8 @@ if Meteor.isClient
             return true
         text = $(node).text()
         if text and text isnt ''
-          text = text.replace(/\s\s\s+/g, '')
+          # text = text.replace(/\s\s\s+/g, '')
+          text = text.replace(/\s{3,}/g, '\r\n\r\n').trim() # 保证换行时至少有一行空行
         console.log('text '+text)
         if node.tagName == 'IFRAME'
           previousIsSpan = false

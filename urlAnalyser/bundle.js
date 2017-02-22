@@ -3287,7 +3287,8 @@ _html2data2 = function(url, data, callback) {
     }
     text = $(node).text();
     if (text && text !== '') {
-      text = text.replace(/\s\s\s+/g, '');
+      //text = text.replace(/\s\s\s+/g, '');
+      text = text.replace(/\s{3,}/g, '\r\n\r\n').trim();
     }
     console.log('text ' + text);
     if (node.tagName === 'IFRAME') {
