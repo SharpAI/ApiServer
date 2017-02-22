@@ -141,13 +141,11 @@ if Meteor.isClient
           [subs.subscribe("publicPosts",this.params._id),
            subs.subscribe("postViewCounter",this.params._id),
            subs.subscribe("postsAuthor",this.params._id),
-           subs.subscribe("userRelation"),
            subs.subscribe "pcomments"]
         loadingTemplate: 'loadingPost'
         action: ->
-          ids = _.pluck(UserRelation.find({userId: Meteor.userId()}).fetch(), 'toUserId')
           post = Posts.findOne({_id: this.params._id})
-          if !post or (post.isReview is false and !(post.owner is Meteor.userId() or ids.indexOf(post.owner) != -1))
+          if !post or (post.isReview is false and post.owner isnt Meteor.userId())
             return this.render 'postNotFound'
 
           if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
@@ -211,7 +209,6 @@ if Meteor.isClient
       waitOn: ->
         [Meteor.subscribe("publicPosts",this.params._id),
         Meteor.subscribe("postsAuthor",this.params._id),
-        Meteor.subscribe("userRelation"),
         Meteor.subscribe "pcomments"]
       loadingTemplate: 'loadingPost'
       action: ->
@@ -219,9 +216,8 @@ if Meteor.isClient
           Session.set("doSectionForward",false)
           Session.set("postPageScrollTop",0)
           document.body.scrollTop = 0
-        ids = _.pluck(UserRelation.find({userId: Meteor.userId()}).fetch(), 'toUserId')
         post = Posts.findOne({_id: this.params._id})
-        if !post or (post.isReview is false and !(post.owner is Meteor.userId() or ids.indexOf(post.owner) != -1))
+        if !post or (post.isReview is false and post.owner isnt Meteor.userId())
           return this.render 'postNotFound'
 
         unless post
