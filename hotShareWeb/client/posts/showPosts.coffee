@@ -341,8 +341,10 @@ if Meteor.isClient
 
     if withSocialBar
       $(window).scroll(scrollEventCallback)
-
+  
   Template.showPosts.helpers
+    showPostGroupChatIntro:->
+      return !localStorage.getItem('postGroupChatIntro')
     msgs_count: ->
       if Posts.findOne({_id: Session.get('postContent')._id}).owner isnt Meteor.userId()
         return 0

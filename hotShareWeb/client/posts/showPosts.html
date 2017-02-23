@@ -287,7 +287,9 @@
       <span id="sendEmailBtn" class="send-email-btn" onclick="sendAuthorEmail(event)">发送</span>
     </div>
   </div>
-
+  {{#if showPostGroupChatIntro}}
+    {{> introsPostGroupchat}}
+  {{/if}}
   {{> SubscribeAuthor}}
   <script>
        function hideAuthorEmail(){

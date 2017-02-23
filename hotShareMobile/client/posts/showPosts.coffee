@@ -381,6 +381,8 @@ if Meteor.isClient
     , 600
 
   Template.showPosts.helpers
+    showPostGroupChatIntro:->
+      return !localStorage.getItem('postGroupChatIntro')
     has_share_follower: ->
       return if Meteor.user().profile and Meteor.user().profile.web_follower_count then Meteor.user().profile.web_follower_count > 0 else false
     msgs_count: ->
