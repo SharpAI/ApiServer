@@ -12,9 +12,11 @@ importVideo = {
           return '';
         return 'http://player.youku.com/embed/' + id;
       case 'm.v.qq.com':
-        if (!uri.params.vid)
-          return '';
-        return 'https://v.qq.com/iframe/player.html?vid=' + uri.params.vid + '&tiny=0&auto=0';
+        if (uri.params.vid)
+          return 'https://v.qq.com/iframe/player.html?vid=' + uri.params.vid + '&tiny=0&auto=0';
+        else if(uri.file.replace('.html', ''))
+          return 'https://v.qq.com/iframe/player.html?vid=' + uri.file.replace('.html', '') + '&tiny=0&auto=0';
+        return '';
       default:
         return '';
     }

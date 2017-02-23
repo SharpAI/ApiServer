@@ -1406,7 +1406,7 @@ if Meteor.isClient
                     owner: Meteor.userId(),
                     toTheEnd: true,
                     text: '您当前程序不支持视频观看',
-                    iframe: '<iframe height="100%" width="100%" src="'+url+'" frameborder="0" allowfullscreen=""></iframe>',
+                    iframe: '<iframe height="100%" width="100%" src="'+url+'" frameborder="0" allowfullscreen></iframe>',
                     imgUrl: 'http://data.tiegushi.com/res/video_old_version.jpg',
                     data_row: '1',
                     data_col: '1',
