@@ -629,6 +629,50 @@ if Meteor.isServer
             subject: subject,
             text: text
         })
+      "reviewFollowPosts":(postId,userId)->
+        Meteor.defer ()->
+          _post = Posts.findOne({_id:postId})
+          if _post and _post.owner and userId
+            try
+              if FollowPosts.findOne({postId:postId,followby:_post.owner})
+                FollowPosts.update(
+                  {followby:_post.owner,postId:postId},
+                  {$set:{
+                        title:_post.title,
+                        addontitle:_post.addontitle,
+                        mainImage: _post.mainImage,
+                        mainImageStyle: _post.mainImageStyle,
+                        publish: _post.publish,
+                        owner: _post.owner,
+                        ownerName: _post.ownerName,
+                        ownerIcon: _post.ownerIcon,
+                        createdAt: _post.createdAt
+                    }
+                  })
+              else
+                FollowPosts.insert({
+                  postId:_post._id,
+                  title:_post.title,
+                  addontitle:_post.addontitle,
+                  mainImage: _post.mainImage,
+                  mainImageStyle:_post.mainImageStyle,
+                  heart:0,
+                  retweet:0,
+                  comment:0,
+                  browse: 0,
+                  publish: _post.publish,
+                  owner:_post.owner,
+                  ownerName:_post.ownerName,
+                  ownerIcon:_post.ownerIcon,
+                  createdAt: _post.createdAt,
+                  followby: _post.owner})
+              isFollow = Follower.findOne({userId:userId,followerId:_post.owner})
+              if isFollow
+                return
+              if _post.owner isnt userId
+                FollowPosts.update({postId:postId,followby:userId},{$set:{publish:false}},{multi: true, upsert:true})
+            catch e
+              console.log  'reviewFollowPosts with error'+e
       "unpublish":(postId,userId,drafts)->
         Meteor.defer ()->
           Posts.update({_id:postId},{$set:{publish:false}})
