@@ -137,6 +137,9 @@ if Meteor.isServer
     toUserToken = Meteor.users.findOne({_id: toUserId})
 
     unless toUserToken is undefined or toUserToken.type is undefined or toUserToken.token is undefined
+        pushTokenObj = PushTokens.findOne({type:toUserToken.type,token:toUserToken.token})
+        if pushTokenObj is undefined or pushTokenObj.userId isnt toUserId
+          return
         waitReadCount = 0
         pushToken = {type: toUserToken.type, token: toUserToken.token}
 
@@ -172,7 +175,8 @@ if Meteor.isServer
           token = pushToken.token
           waitReadCount = Meteor.users.findOne({_id:toUserId}).profile.waitReadCount
           if waitReadCount is undefined or isNaN(waitReadCount)
-              waitReadCount = 0
+              waitReadCount = 1
+              Meteor.users.update({_id: toUserId}, {$set: {'profile.waitReadCount': waitReadCount}});
         pushServerAddr = 'http://pushserver.tiegushi.com/pushnotification/' + (new Mongo.ObjectID()._str)
         #pushServerAddr += '?fromserver='+encodeURIComponent(Meteor.absoluteUrl())
         #pushServerAddr += '&eventType='+type
@@ -319,7 +323,9 @@ if Meteor.isServer
     toUserToken = Meteor.users.findOne({_id: toUserId})
 
     unless toUserToken is undefined or toUserToken.type is undefined or toUserToken.token is undefined
-    
+      pushTokenObj = PushTokens.findOne({type:toUserToken.type,token:toUserToken.token})
+      if pushTokenObj is undefined or pushTokenObj.userId isnt toUserId
+        return
       if type is "newpost"
         # push send logs
         removeTime = new Date((new Date()).getTime() - 1000*60*60*48) # 48 hour
@@ -369,7 +375,9 @@ if Meteor.isServer
           token = pushToken.token
           waitReadCount = Meteor.users.findOne({_id:toUserId}).profile.waitReadCount
           if waitReadCount is undefined or isNaN(waitReadCount)
-              waitReadCount = 0
+              waitReadCount = 1
+              Meteor.users.update({_id: toUserId}, {$set: {'profile.waitReadCount': waitReadCount}});
+          #console.log  'waitReadCount>>>>>>>'+waitReadCount
           pushServer.sendIOS 'me', token , '', content, waitReadCount
         else if pushToken.type is 'GCM'
           #console.log 'Server PN to GCM '

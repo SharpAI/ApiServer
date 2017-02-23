@@ -72,6 +72,9 @@ FavouritePosts = new Meteor.Collection('favouriteposts');
 
 ShareURLs = new Meteor.Collection('shareURLs');
 
+//推送设备token（同一手机只绑定最近一次登录的用户）
+PushTokens = new Meteor.Collection('pushTokens');
+
 if(Meteor.isClient){
   PostFriends = new Meteor.Collection("postfriends");
   PostFriendsCount = new Meteor.Collection("postfriendsCount");
@@ -814,7 +817,6 @@ if(Meteor.isServer){
                             comment:0,
                             followby: data.userId
                         });
-                        pushnotification("newpost",doc,data.userId);
                         if(data.userEmail){
                             console.log(data.userEmail)
                             userEmail.push(data.userEmail);
@@ -827,6 +829,7 @@ if(Meteor.isServer){
                             waitReadCount = 0;
                         }
                         Meteor.users.update({_id: data.userId}, {$set: {'profile.waitReadCount': waitReadCount+1}});
+                        pushnotification("newpost",doc,data.userId);
                     });
 
                     if (userEmail.length > 0) {

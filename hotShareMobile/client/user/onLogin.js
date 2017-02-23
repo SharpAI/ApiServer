@@ -13,6 +13,7 @@ if (Meteor.isClient) {
           Meteor.call('updateUserLanguage', Meteor.userId(), 'zh');
         }
         console.log("Accounts.onLogin");
+        Session.set("token", '');
         Meteor.subscribe("pcomments");
 	      checkShareUrl();
         if(device.platform === 'Android'){
@@ -69,7 +70,7 @@ if (Meteor.isClient) {
             });
            },20000 );
         }
-        if (Session.get('registrationID') === void 0 && localStorage.getItem('registrationID') && device.platform === 'iOS') {
+        if (Session.get('registrationID') && localStorage.getItem('registrationID') && device.platform === 'iOS') {
           console.log(localStorage.getItem('registrationID'));
           return window.updatePushNotificationToken('iOS', localStorage.getItem('registrationID'));
         }

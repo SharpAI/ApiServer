@@ -707,6 +707,26 @@ if Meteor.isServer
             TopicPosts.remove({postId:postId})
             FavouritePosts.remove({postId:postId})
           catch error
+      'updatePushToken':(data)->
+        console.log  'updatePushToken with userId: '+data.userId+' token:'+data.token+' type:'+data.type
+        if data.token is undefined
+          return
+        token = data.token
+        type = data.type
+        userId = data.userId
+        pushTokenObj = PushTokens.findOne({type: type,token: token})
+        if pushTokenObj is undefined
+          try
+            PushTokens.insert(data) 
+          catch error
+            console.log error
+        else
+          try
+            if pushTokenObj.userId isnt userId
+              Meteor.users.update({_id: pushTokenObj.userId}, {$set: {'profile.waitReadCount': 0}});
+            PushTokens.update({type: type,token: token},{$set:{userId: userId}})
+          catch error
+            console.log error
       "readPostReport": (postId,userId,NoUpdateShare)->
         if(!Match.test(postId, String) || !Match.test(userId, String))
           return
@@ -738,6 +758,12 @@ if Meteor.isServer
             Meteor.defer ()->
               Posts.update({_id:postId},{$set:{browse:browseTimes}})
               Viewers.update({postId: postId, userId: userId}, {$inc: {count: 1}, $set: {owner: post.owner}}); 
+              if owner_user
+                waitReadCount = owner_user.profile.waitReadCount
+              if waitReadCount is undefined or isNaN(waitReadCount)
+                waitReadCount = 0
+              Meteor.users.update({_id:post.owner}, {$set: {'profile.waitReadCount': waitReadCount+1}});
+              console.log  'read waitReadCount' 
               pushnotification("read",post,userId)
               ###
               if(browseTimes < 11)
