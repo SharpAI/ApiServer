@@ -13,7 +13,7 @@ var URL = require('url');
 var THREAD_NUMBER = {
   download: 20,
   upload: 20,
-  pub: 20 
+  pub: 20
 }; // 同时下载/上传/pub分析的任务数
 
 var showDebug = true;
@@ -32,7 +32,7 @@ var Feeds = null;
 var serverImportLog = null;
 var lockedUsers = null;
 
-var kue = require('kue'), 
+var kue = require('kue'),
     cluster = require('cluster'),
     clusterWorkerSize = require('os').cpus().length,
     kuequeue;/* = kue.createQueue({
@@ -121,7 +121,7 @@ var formatResult = function(data){
       data.resortedArticle[i].data_col = 1;
       data.resortedArticle[i].data_sizex = 6;
     }
-  
+
     // format
     for(var i=0;i<data.resortedArticle.length;i++){
       data.resortedArticle[i].index = i;
@@ -423,7 +423,7 @@ var postsInsertHookDeferHandle = function(userId,doc){
         Follower.find({followerId:userId}).toArray(function(err, follows) {
             var follows_length = follows.length;
             console.log("userId="+userId+", follows.length="+follows.length);
-            if(follows_length>0){                  
+            if(follows_length>0){
                 follows.forEach(function(data){
                     if(data.userId === suggestPostsUserId)
                     {
@@ -492,8 +492,8 @@ var postsInsertHookDeferHandle = function(userId,doc){
                 });
             }
             if(userId === suggestPostsUserId)
-            {    
-                console.log("22222");               
+            {
+                console.log("22222");
                 // FollowPosts.insert({
                 //     _id:doc._id,
                 //     postId:doc._id,
@@ -514,7 +514,7 @@ var postsInsertHookDeferHandle = function(userId,doc){
                 // });
             }
             else
-            {         
+            {
                 // FollowPosts.insert({
                 //     postId:doc._id,
                 //     title:doc.title,
@@ -550,7 +550,7 @@ var update_mainImage = function(userId, postId, mainImageUrl, style){
    FollowPosts.update({followby:userId, postId:postId}, {$set: {mainImage: mainImageUrl, mainImageStyle:style}}, function(err, number){
      console.log("update_mainImage2: err="+err+", number="+number)
    });
-  
+
   TopicPoss.update({owner:userId, postId:postId}, {$set: {mainImage: mainImageUrl, mainImageStyle:style}});
 }
 
@@ -577,7 +577,7 @@ function get_insertData(user, url, data, draftsObj, callback) {
               data.resortedArticle[i].data_col = 1;
               data.resortedArticle[i].data_sizex = 6;
           }
-        
+
           // format
           for(var i=0;i<data.resortedArticle.length;i++){
               data.resortedArticle[i].index = i;
@@ -649,7 +649,7 @@ var insert_data = function(user, url, data, draftsObj, cb) {
         data.resortedArticle[i].data_col = 1;
         data.resortedArticle[i].data_sizex = 6;
       }
-      
+
       // format
       for(var i=0;i<data.resortedArticle.length;i++){
         data.resortedArticle[i].index = i;
@@ -776,7 +776,7 @@ var updatePosts = function(postId, post, taskId, callback){
     posts.update({_id: postId},{$set: post}, function(err, number){
         callback && callback(err, number);
     });
-  
+
   var task = Task.get(taskId);
   if(task){
     console.log('task img upload: ' + taskId);
@@ -829,7 +829,7 @@ var updatePosts2 = function(postId, post, taskId, callback){
   // posts.update({_id: postId},{$set: post}, function(err, number){
   //   callback && callback(err, number);
   // });
-  
+
   var task = Task.get(taskId);
   if(task){
     console.log('task img upload: ' + taskId);
@@ -886,8 +886,8 @@ var updatePosts3 = function(postId, post, taskId, callback, qVer){
                     new_post['pub.'+i+'.data_sizey'] = post.pub[ii].data_sizey;
                   }
                   break;
-                } 
-              }               
+                }
+              }
             }
           }
 
@@ -914,7 +914,7 @@ var updatePosts3 = function(postId, post, taskId, callback, qVer){
   // posts.update({_id: postId},{$set: post}, function(err, number){
   //   callback && callback(err, number);
   // });
-  
+
   var task = Task.get(taskId);
   if(task){
     console.log('task img upload: ' + taskId);
@@ -983,6 +983,14 @@ var httppost = function(url, data, callback){
   req.end();
 };
 
+function randomIntBetween(min, max) {
+  return Math.floor(Math.random()*(max-min+1)+min);
+}
+
+function getRandomDefaultImage() {
+  return "http://data.tiegushi.com/ocmainimages/mainimage" + randomIntBetween(1, 38) + ".jpg";
+}
+
 function importUrl(_id, url, server, unique_id, isMobile, chunked, callback, qVer) {
   switch (arguments.length) {
     case 2:
@@ -1006,11 +1014,11 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback, qVe
         chunked_result.status = 'importing';
         chunked_result.json = {
           title: url,
-          mainImg: 'http://data.tiegushi.com/res/defaultMainImage1.jpg',
+          mainImg: getRandomDefaultImage(),
           remark: '[内容分析中...]'
         };
         callback(chunked_result);
-        
+
         var nightmare_header = Nightmare({ show: false , openDevTools: false});
         nightmare_header
           .useragent(userAgent + ' (GetHeader)')
@@ -1026,14 +1034,14 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback, qVe
               console.log('find main info end.');
               chunked_result.status = 'importing';
               chunked_result.json.title = result.title || '[暂无标题]';
-              chunked_result.json.mainImg = result.mainImg || 'http://data.tiegushi.com/res/defaultMainImage1.jpg';
+              chunked_result.json.mainImg = result.mainImg || getRandomDefaultImage();
               chunked_result.json.remark = result.remark || '[暂无介绍]';
               callback(chunked_result);
             }
           });
       }
   }
-  
+
   //var nightmare = Nightmare({ show: false , openDevTools: false, waitTimeout: 30000});
   function startNavigation(queueMember) {
       if (!queueMember) {
@@ -1074,7 +1082,7 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback, qVe
                 cleanUp();
                 return callback && callback({status:'failed'});
               }
-            
+
               //console.log("result="+JSON.stringify(result));
               console.log("nightmare finished, insert data and parse it...");
               users.findOne({_id: _id}, function (err, user) {
@@ -1106,7 +1114,7 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback, qVe
                     console.log("importUrl: cancel - 2.");
                     return callback && callback({status:'failed'});
                   }
-                    
+
                   if (err) {
                     console.log('Error: insert_data failed');
                     chunked_result.status = 'failed';
@@ -1114,12 +1122,12 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback, qVe
                     return;
                   }
                   showDebug && console.log('Post id is: '+postId);
-                  
+
                   console.log('insert posts.');
                   if(!Task.get(unique_id))
                     Task.add(unique_id, _id, url);
                   Task.update(unique_id, 'importing', postId);
-                  
+
                   // setTimeout(function(){ // test code
                   // 图片的下载及排版计算
                   draftsObj.setPostId(postId);
@@ -1128,21 +1136,21 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback, qVe
                       console.log("importUrl: cancel - 3.");
                       return callback && callback({status:'failed'});
                     }
-                
+
                     draftsObj.uploadFiles(function (err) {
                       if (Task.isCancel(unique_id, true)) {
                         console.log("importUrl: cancel - 4.");
                         return callback && callback({status:'failed'});
                       }
-                
+
                       if(err) {
                         return console.log('upload file error.');
                       }
-                        
+
                       var postObj = draftsObj.getPubObject();
                       // console.log('post:', JSON.stringify(postObj));
                       // draftsObj.destroy();
-                      
+
                       //update_mainImage(user._id, postId, postObj.mainImage, postObj.mainImageStyle);
                       // update pub
                       updatePosts(postId, postObj, unique_id, function(err, number){
@@ -1150,11 +1158,11 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback, qVe
                           console.log("importUrl: cancel - 5.");
                           return callback && callback({status:'failed'});
                         }
-                
+
                         if(err || number <= 0) {
                           return console.log('import error.');
                         }
-                          
+
                           var tmpServer = hotshare_web;
                           if (server && (server != '')) {
                             if (server.charAt(server.length - 1) == '/')
@@ -1170,8 +1178,8 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback, qVe
                           console.log('http://host1.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
                           httpget('http://host1.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
                           console.log('==============================');
-                      });                 
-                      
+                      });
+
                       // updatePosts(postId, postObj, function(err, number){
                       //   if(err || number <= 0) {
                       //     showDebug && console.log('database update error!');
@@ -1188,8 +1196,8 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback, qVe
                       //       httpget(url);
                       //   }
                       // });
-                      
-                      
+
+
                       /*updateFollowPosts(user._id, postId, postObj, function(err, number){
                         if(err || number <= 0)
                           console.log('import error.');
@@ -1198,7 +1206,7 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback, qVe
                   });
                   draftsObj.seekOneUsableMainImage(result, url);
                   //draftsObj.seekOneUsableMainImageWithOutMainImage(result, url, mainUrl);
-      
+
                   // send response
                   if (callback) {
                     chunked_result.status = 'succ';
@@ -1365,7 +1373,7 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback, qVe
                             if(err) {
                                 return console.log('upload file error.');
                             }
-                            
+
                             var postObj = draftsObj.getPubObject(result);
                             updatePosts3(postId, postObj, unique_id, function(err3, number){
                                 if (Task.isCancel(unique_id, true)) {
@@ -1376,7 +1384,7 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback, qVe
                                 if(err3 || number <= 0) {
                                     return console.log('import error.');
                                 }
-                                  
+
                                 var tmpServer = hotshare_web;
                                 if (server && (server != '')) {
                                     if (server.charAt(server.length - 1) == '/')
@@ -1392,12 +1400,12 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback, qVe
                                 // console.log('http://host1.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
                                 httpget('http://host1.tiegushi.com/slack/sendMsg?type=sendPostNew&id=' + postId);
                                 // console.log('==============================');
-                            }, qVer);                 
+                            }, qVer);
                         });
                     });
                     draftsObj.seekOneUsableMainImage(result, url);
                 });
-            });         
+            });
         })
         .catch(function (error) {
             if (callback) {
@@ -1424,10 +1432,10 @@ function setKueProcessCallback() {
     var isMobile = data.isMobile;
     var chunked = data.chunked;
     var q_ver = data.qVer;
-    
+
     if(isMobile)
       job.progress(50, 100, JSON.stringify({status: 'importing'}));
-      
+
     setTimeout(function() {
         try {
             importUrl(_id, url, server, unique_id, isMobile, chunked, function(result) {
@@ -1567,7 +1575,7 @@ if (cluster.isMaster) {
       /*if (checkIPAddr(ip) == 'CN') {
         console.log("   create task for CN");
         job = createTaskToKueQueue(redis_prefix, req.params._id, req.params.url, fromserver, unique_id, isMobile, chunked);
-        
+
       } else {
         console.log("   create task for US");
         job = createTaskToKueQueue(redis_prefix_us, req.params._id, req.params.url, fromserver, unique_id, isMobile, chunked);
@@ -1585,13 +1593,13 @@ if (cluster.isMaster) {
           return res.redirect(req_url);
         }
       }
-      
+
       if (unique_id != '') {
         Task.add(unique_id, req.params._id, req.params.url);
       }
 
       job.on('enqueue', function(id, type) {
-        console.log('Job %s got queued of type %s', id, type); 
+        console.log('Job %s got queued of type %s', id, type);
       }).on('complete', function(result){
         console.log('Job completed with data', result);
       }).on('failed attempt', function(errorMessage, doneAttempts){

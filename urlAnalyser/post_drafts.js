@@ -15,10 +15,10 @@ function downloadImgsClass(threadsNumber){
       if (data.resortedArticle[i].type === 'image')
         imgs.push(data.resortedArticle[i]);
     }
-  
+
     if(imgs.length <= 0)
       return callback && callback(null, data);
-    
+
     async.mapLimit(imgs, imgs.length <= threadsNumber ? imgs.length : threadsNumber, function(item, asyncCallback){
       filedownup.seekSuitableImageFromArrayAndDownloadToLocal([item.imageUrl], function(file, w, h, found, index, total, source) {
         item._download = {
@@ -37,7 +37,7 @@ function downloadImgsClass(threadsNumber){
     }, function(err, results) {
       if(err)
         return callback && callback(err);
-      
+
       // var result = []
       for(var i=0;i<data.resortedArticle.length;i++){
         for(var ii=0;ii<results.length;ii++){
@@ -46,12 +46,12 @@ function downloadImgsClass(threadsNumber){
         }
         // result.push(data.resortedArticle[i]);
       }
-      
+
       callback && callback(null, data);
       // callback && callback(null, result);
     });
   }
-  
+
   return obj;
 }
 
@@ -65,7 +65,7 @@ function PostDrafts(_id, _user, threadsNumber) {
   var id;
   var download = new downloadImgsClass(threadsNumber.download);
   var user = _user || {};
-  
+
   var imageIndex = function () {
     if(drafts.length <= 0)
       return -1;
@@ -75,11 +75,11 @@ function PostDrafts(_id, _user, threadsNumber) {
     }
     return -1;
   };
-  
+
   var getItems = function (type) {
     if(drafts.length <= 0)
       return [];
-      
+
     var result = []
     for(var i=0;i<drafts.length;i++){
       if(drafts[i].type === type)
@@ -87,22 +87,22 @@ function PostDrafts(_id, _user, threadsNumber) {
     }
     return result;
   };
-  
+
   var getItem = function(id) {
     if(drafts.length <= 0)
       return null;
-      
+
     for(var i=0;i<drafts.length;i++){
       if(drafts[i]._id === id)
         return drafts[i];
     }
     return null;
   };
-  
+
   var getItemIndex = function(id) {
     if(drafts.length <= 0)
       return -1;
-      
+
     for(var i=0;i<drafts.length;i++){
       if(drafts[i]._id === id)
         return i;
@@ -126,7 +126,7 @@ function PostDrafts(_id, _user, threadsNumber) {
     if (item.type === 'text') {
       showDebug && console.log('Processing Text');
       showDebug && console.log(user)
-      
+
       var draftItem = {
         _id: item._id || mongoid(),
         type: 'text',
@@ -144,7 +144,7 @@ function PostDrafts(_id, _user, threadsNumber) {
       };
       if(item.layout)
         draftItem.layout = item.layout;
-      
+
       drafts.push(draftItem);
     } else if (item.type === 'image') {
       showDebug && console.log('Processing Image ' + item.imageUrl);
@@ -155,11 +155,11 @@ function PostDrafts(_id, _user, threadsNumber) {
             if(!_mainImage || _mainImage === 'http://data.tiegushi.com/res/defaultMainImage1.jpg')
               _mainImage = item._download.source;
           }
-          
+
           localImgs.push(item._download.file);
           return callback(null, item);
         }
-        
+
         return filedownup.seekSuitableImageFromArrayAndDownloadToLocal([item.imageUrl], function(file, w, h, found, index, total, source) {
           if (file){
             postDrafts.insertDownloadedImage(self.data, source, found, self.inputUrl, file, w, h, item._id);
@@ -209,7 +209,7 @@ function PostDrafts(_id, _user, threadsNumber) {
         postDrafts.insertVideoInfo(item.videoInfo, null, item._id);
       }
     }
-    
+
     setTimeout(function() {
       callback && callback(null, item);
     }, 10);
@@ -220,7 +220,7 @@ function PostDrafts(_id, _user, threadsNumber) {
       data_sizey = sizey;
     else
       data_sizey = '4';
-      
+
     showDebug && console.log("data_sizey is " + data_sizey);
     drafts.push({
       _id: id || mongoid(),
@@ -311,15 +311,15 @@ function PostDrafts(_id, _user, threadsNumber) {
       download.download(data, function(err){
         if(err)
           console.log('error ' + err);
-        
+
         resortedObj.itemProcessor = postDrafts.itemProcessor;
         resortedObj.data = data;
         resortedObj.inputUrl = inputUrl;
-        
+
         async.mapLimit(data.resortedArticle, (data.resortedArticle.length <= threadsNumber.pub ? data.resortedArticle.length : threadsNumber.pub), resortedObj.itemProcessor.bind(resortedObj), function(err, results) {
           if(err)
             console.log('error ' + err);
-          
+
           showDebug && console.log('results:', JSON.stringify(results));
           postDrafts.processTitleOfPost(data);
         });
@@ -328,11 +328,11 @@ function PostDrafts(_id, _user, threadsNumber) {
       resortedObj.itemProcessor = postDrafts.itemProcessor;
       resortedObj.data = data;
       resortedObj.inputUrl = inputUrl;
-    
+
       async.mapLimit(data.resortedArticle, (data.resortedArticle.length <= threadsNumber.pub ? data.resortedArticle.length : threadsNumber.pub), resortedObj.itemProcessor.bind(resortedObj), function(err, results) {
         if(err)
           console.log('error ' + err);
-        
+
         showDebug && console.log('results:', JSON.stringify(results));
         postDrafts.processTitleOfPost(data);
       });
@@ -363,9 +363,16 @@ function PostDrafts(_id, _user, threadsNumber) {
       localImgs.push(file);
     });
   };
+  function randomIntBetween(min, max) {
+    return Math.floor(Math.random()*(max-min+1)+min);
+  }
+
+  function getRandomDefaultImage() {
+    return "http://data.tiegushi.com/ocmainimages/mainimage" + randomIntBetween(1, 38) + ".jpg";
+  }
   postDrafts.EalyMainImage = function(data, inputUrl, callback) {
     if (callback) {
-        callback && callback('http://data.tiegushi.com/res/defaultMainImage1.jpg');
+        callback && callback(getRandomDefaultImage());
     }
     return;
     filedownup.seekOneUsableMainImage(data, function(file, w, h, found, index, total, source) {
@@ -417,16 +424,16 @@ function PostDrafts(_id, _user, threadsNumber) {
       if(!addontitle || addontitle === '')
         addontitle = '';
     }
-    
+
     for(var i=0;i<successCallback.length;i++)
-      successCallback[i]();       
+      successCallback[i]();
   };
   postDrafts.uploadFiles = function(callback){
     var draftImageData = getItems('image');
     var draftMusicData = getItems('music');
     var draftVideoData = getItems('video');
     var draftToBeUploadedImageData = [];
-    
+
     if(draftImageData.length > 0){
       for(var i=0;i<draftImageData.length;i++)
         draftToBeUploadedImageData.push(draftImageData[i]);
@@ -439,16 +446,16 @@ function PostDrafts(_id, _user, threadsNumber) {
       for(var i=0;i<draftVideoData.length;i++)
         draftToBeUploadedImageData.push(draftVideoData[i]);
     }
-    
+
     if(draftToBeUploadedImageData.length <= 0)
       return callback && callback();
-      
+
     filedownup.multiThreadUploadFileWhenPublishInCordova(draftToBeUploadedImageData, threadsNumber.upload, function(err, result) {
       if(err || !result)
         return callback && callback('上传失败，请稍后重试');
       if(result.length < 1)
         return callback && callback('上传失败，请稍后重试');
-        
+
       for(var i=0;i<result.length;i++){
         var item = result[i];
         if(item.uploaded && item._id){
@@ -465,7 +472,7 @@ function PostDrafts(_id, _user, threadsNumber) {
           }
         }
       }
-      
+
       setTimeout(function () {
         var tmps = [];
         if(localImgs.length > 0){
@@ -488,7 +495,7 @@ function PostDrafts(_id, _user, threadsNumber) {
         // console.log('local tmp images:', JSON.stringify(localImgs));
         // filedownup.removeImagesFromCache(draftImageData)
       }, 0);
-      
+
       // console.log('uploadFiles.');
       callback && callback();
     });
@@ -539,7 +546,7 @@ function PostDrafts(_id, _user, threadsNumber) {
         pub.push(draftData[i]);
       }
     }
-    
+
     // format pub
     if(pub.length > 0){
       for(var i=0;i<pub.length;i++){
@@ -553,7 +560,7 @@ function PostDrafts(_id, _user, threadsNumber) {
         if(pub[i].uploaded === false && pub[i].souImgUrl){pub[i].imgUrl=pub[i].souImgUrl}
       }
     }
-    
+
     var sortBy = function(key, a, b, r) {
       r = r ? 1 : -1;
       if (a[key] && b[key] && a[key] > b[key])
@@ -567,11 +574,11 @@ function PostDrafts(_id, _user, threadsNumber) {
 
       return 0;
     };
-    
+
     // pub.sort(function(a, b) {
     //   sortBy('data_row', a, b);
     // });
-    
+
     return {
       pub:pub,
       title:title,
@@ -591,7 +598,7 @@ function PostDrafts(_id, _user, threadsNumber) {
     };
   };
   postDrafts.destroy = function(){
-    
+
   }
 
   var insertVideoWithDownloadedImage = function(videoInfo, linkInfo, imageExternalURL, found, inputUrl, file, width, height, id){
@@ -604,7 +611,7 @@ function PostDrafts(_id, _user, threadsNumber) {
       return postDrafts.insertVideoInfo(videoInfo, sizey.toString(), id);
     }
   };
-  
+
   return postDrafts;
 }
 
