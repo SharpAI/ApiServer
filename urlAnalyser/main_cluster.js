@@ -851,7 +851,7 @@ var updatePosts3 = function(postId, post, taskId, callback, qVer){
   // post.req_ver = qVer || '1';
 
   var url = hotshare_web+'/restapi/importPost/image/NOUSERID?v='+qVer;
-  // console.log("updateURL="+url+", postId="+postId);
+  console.log("updateURL="+url+", postId="+postId);
   httppost(url, post, function(err, data){
     try {
         dataObj = JSON.parse(data);
@@ -1160,7 +1160,8 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback, qVe
                         }
 
                         if(err || number <= 0) {
-                          return console.log('import error.');
+                          //return console.log('import error.');
+                          console.log('upload images info to DB failed -1.');
                         }
 
                           var tmpServer = hotshare_web;
@@ -1382,7 +1383,8 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback, qVe
                                 }
 
                                 if(err3 || number <= 0) {
-                                    return console.log('import error.');
+                                    //return console.log('import error.');
+                                    console.log('upload images info to DB failed -2.');
                                 }
 
                                 var tmpServer = hotshare_web;
