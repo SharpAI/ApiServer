@@ -158,6 +158,16 @@ if Meteor.isClient
           $(window).scroll(scrollEventCallback)
       ,1000
   Tracker.autorun ()->
+    if Session.get("needReviewPostStyle") is true
+      Session.set("needReviewPostStyle",false)
+      console.log  'open a New Post!'
+      setTimeout ()->
+        $('.showPosts').removeClass('animated ' + animateOutUpperEffect)
+        document.body.scrollTop = 0;
+        Session.set("SocialOnButton",'postBtn');
+        $('.showPosts .head').fadeIn(300);
+      ,1000
+  Tracker.autorun ()->
     if Session.get("needToast") is true
       Session.set("needToast",false)
       setTimeout ()->
