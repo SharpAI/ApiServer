@@ -1384,7 +1384,7 @@ function importUrl(_id, url, server, unique_id, isMobile, chunked, callback, qVe
                                 }
                                 var url = tmpServer+'/restapi/postInsertHook/'+user._id+'/'+postId;
                                 // console.log("httpget url="+url);
-                                if (number == 2 && qVer != '2') {
+                                if (number == 2) {
                                     httpget(url);
                                 }
 
