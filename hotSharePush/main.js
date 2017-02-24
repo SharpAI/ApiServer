@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 var kue        = require('kue');
 var cluster    = require('cluster');
 var clusterWorkerSize = require('os').cpus().length;
+var MongoOplog = require('mongo-oplog');
 //var pushnotification = 
 require('./3_pushnotification_trigger.js');
 //var initPushServer = 
@@ -23,6 +24,7 @@ var prefix = process.env.PREFIX || '';
 var redis_prefix = prefix+'pushnotification_task';
 var redis_prefix_us = prefix+'pushnotification_task_us';
 var DB_CONN_STR = process.env.MONGO_URL || 'mongodb://hotShareAdmin:aei_19056@db1.tiegushi.com:27017,db2.tiegushi.com:27017/hotShare?replicaSet=hotShare&readPreference=primaryPreferred&connectTimeoutMS=30000&socketTimeoutMS=30000&poolSize=20';
+var MONGO_OPLOG = process.env.MONGO_OPLOG || 'mongodb://oplogger:PasswordForOplogger@host1.tiegushi.com:27017/local?authSource=admin';
 
 var pushServer = initPushServer();
 //pushServer.sendIOS('me', '9ce162f4beb26d45f4e91c7c83d57324a776a3fc3eaa81111e360ad0ae5e834c', 'aaa', 'aaa', 1);
@@ -30,48 +32,59 @@ var pushServer = initPushServer();
 
 var totalRequestCount = 0;
 var totalRedisTaskCount = 0;
+var oplog = null;
+var pushmessages = null;
+var oplog_connect=function(db){
+  if(oplog){
+    oplog.destroy(function(){
+      console.log('oplog destroy');
+      oplog = null;
+    });
+  }
 
-MongoClient.connect(DB_CONN_STR, {poolSize:20, reconnectTries:Infinity}, function(err, db) {
-    if (err) {
-        console.log('Error:' + err);
-        return;
-    }
-
-    PushMessages = db.collection('pushmessages');
-    setInterval(function(){
-        var dbCount = PushMessages.find({}).count();
-        if (dbCount > 0) {
-            console.log("dbCount("+dbCount+") > 0, create tasks from DB...");
-            var dbRecords = PushMessages.find({}).fetch();
-            dbRecords.forEach(function(dbRecord, index) {
-                var item;
-                try {
-                    item = JSON.parse(dbRecord.pushMessage);
-                } catch (error) {
-                    console.log("Exception for JSON.parse: dbRecord.pushMessage="+dbRecord.pushMessage+", error="+error);
-                    return;
-                }
-                if (!item.eventType || !item.doc || !item.userId) {
-                    console.log("   Push information from DB error: item="+JSON.stringify(item));
-                    return;
-                }
-                var fromserver = item.fromserver || '';
-                var eventType = item.eventType || '';
-                var doc = item.doc || '';
-                var userId = item.userId || '';
-                if (process.env.SERVER_IN_US) {
-                    console.log("   create task for US: "+index);
-                    //job = createTaskToKueQueue(redis_prefix_us, dbRecord._id, fromserver, eventType, doc, userId);
-                    job = createTaskToKueQueue(redis_prefix_us, dbRecord._id, item);
-                } else {
-                    console.log("   create task for CN: "+index);
-                    //job = createTaskToKueQueue(redis_prefix, dbRecord._id, fromserver, eventType, doc, userId);
-                    job = createTaskToKueQueue(redis_prefix, dbRecord._id, item);
-                }
-            });
+  oplog = MongoOplog(MONGO_OPLOG, {ns: 'hotShare.pushmessages'}).tail();
+  oplog.on('insert', function (data) {
+    console.log('pushmessages insert data');
+    if(data.o.pushMessage && data.o.pushMessage.length > 0){
+      data.o.pushMessage.forEach(function(item, index) {
+        if (!item.eventType || !item.doc || !item.userId) {
+          console.log("   Push information from DB error: item="+JSON.stringify(item));
+          return;
         }
-    }, 10*1000);
-});
+        var fromserver = item.fromserver || '';
+        var eventType = item.eventType || '';
+        var doc = item.doc || '';
+        var userId = item.userId || '';
+        if (process.env.SERVER_IN_US) {
+            console.log("   create task for US: "+index);
+            //job = createTaskToKueQueue(redis_prefix_us, dbRecord._id, fromserver, eventType, doc, userId);
+            job = createTaskToKueQueue(redis_prefix_us, data.o._id, item);
+        } else {
+            console.log("   create task for CN: "+index);
+            //job = createTaskToKueQueue(redis_prefix, dbRecord._id, fromserver, eventType, doc, userId);
+            job = createTaskToKueQueue(redis_prefix, data.o._id, item);
+        }
+      });
+    }
+    if(!pushmessages)
+      pushmessages = db.collection('pushmessages');
+    pushmessages.remove({_id: data.o._id});
+  });
+};
+
+if (cluster.isMaster) {
+  MongoClient.connect(DB_CONN_STR, {poolSize:20, reconnectTries:Infinity}, function(err, db) {
+      if (err) {
+          console.log('Error:' + err);
+          return;
+      }
+      db.on('reconnect',   function(){
+          console.log('MongoClient.connect reconnect')
+          oplog_connect(db);
+      });
+      oplog_connect(db);
+  });
+}
 
 function abornalDispose() {
     /*kuequeue.on('job enqueue', function(id, type){
