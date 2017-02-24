@@ -1155,6 +1155,7 @@ if Meteor.isClient
         $('body').removeAttr('style')
         $(window).scrollTop(0-Session.get('backgroundTop'))
         $('.pcommentInput,.alertBackground').fadeOut 300
+        $('.post-pcomment-current-pub-item').removeClass('post-pcomment-current-pub-item')
         Session.set('backgroundTop','')
       'click #pcommitReportBtn':(e, t)->
         i = Session.get "pcommentIndexNum"

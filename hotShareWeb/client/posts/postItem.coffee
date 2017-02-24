@@ -65,7 +65,8 @@ if Meteor.isClient
       #console.log($(e.currentTarget).parent().parent().parent())
       Session.set("pcommetsReply",false)
       $(e.currentTarget).parent().parent().parent().addClass('post-pcomment-current-pub-item').attr('data-height': $(e.currentTarget).parent().parent().parent().height())
-      bgheight = $(window).height() + $(window).scrollTop()
+      #bgheight = $(window).height() + $(window).scrollTop()
+      bgheight = $('.post-pcomment-current-pub-item').offset().top+parseInt($('.post-pcomment-current-pub-item').attr('data-height'))+50
       # $('.showBgColor').css('overflow','hidden')
       $('.showBgColor').attr('style','overflow:hidden;min-width:' + $(window).width() + 'px;' + 'height:' + bgheight + 'px;')
       Session.set("pcommetsId","")
@@ -88,7 +89,8 @@ if Meteor.isClient
         $('.pcommentInputPromptPage').show()
         return
       Session.set("pcommetsReply",true)
-      bgheight = $(window).height() + $(window).scrollTop()
+      #bgheight = $(window).height() + $(window).scrollTop()
+      bgheight = $('.post-pcomment-current-pub-item').offset().top+parseInt($('.post-pcomment-current-pub-item').attr('data-height'))+50
       # $('.showBgColor').css('overflow','hidden')
       $('.showBgColor').attr('style','overflow:hidden;min-width:' + $(window).width() + 'px;' + 'height:' + bgheight + 'px;')
       Session.set("pcommetsId","")
