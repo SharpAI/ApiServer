@@ -439,9 +439,7 @@ if Meteor.isClient
       $(node).toolbar
         content: '#text-toolbar-options'
         position: 'top'
-        hideOnClick: true,
-        parent: '#add_posts_content',
-        parentTopMargin : 40
+        hideOnClick: true
       $(node)
       .on 'toolbarItemClick', (event, buttonClicked)=>
         #console.log("toolbarItemClick on " + buttonClicked.id)
@@ -466,9 +464,7 @@ if Meteor.isClient
       $(node).toolbar
         content: '#image-toolbar-options'
         position: 'top'
-        hideOnClick: true,
-        parent: '#add_posts_content',
-        parentTopMargin : 40
+        hideOnClick: true
       $(node).on 'toolbarItemClick',(event,buttonClicked)->
         console.log($(buttonClicked).attr('id')+' event on nodeid '+node.id)
         if buttonClicked.id is "del"
@@ -485,9 +481,7 @@ if Meteor.isClient
       $(node).toolbar
         content: '#other-toolbar-options'
         position: 'top'
-        hideOnClick: true,
-        parent: '#add_posts_content',
-        parentTopMargin : 40
+        hideOnClick: true
       $(node).on 'toolbarItemClick',(event,buttonClicked)->
         console.log($(buttonClicked).attr('id')+' event on nodeid '+node.id)
         if buttonClicked.id is "del"

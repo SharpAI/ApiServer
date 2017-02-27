@@ -15,9 +15,7 @@ if Meteor.isClient
     $('.mainImage').toolbar
       content: '#mainImage-toolbar-options'
       position: 'bottom'
-      hideOnClick: true,
-      parent: '#add_posts_content',
-      parentTopMargin : 40
+      hideOnClick: true
       $('.mainImage').on 'toolbarItemClick',(event,buttonClicked)->
         console.log $(buttonClicked).attr('id')
         console.log event.currentTarget.id

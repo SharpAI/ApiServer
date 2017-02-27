@@ -1,5 +1,5 @@
 <template name="addPost">
-  <div class="addPost" style="overflow: hidden;">
+  <div class="addPost">
     <div id="show_hyperlink">
       <div class="head">
         <div class="leftButton" id="hyperlink_back"><i class="fa fa-angle-left fa-fw"></i></div>
@@ -61,7 +61,7 @@
         <div>{{_ "plsAddImageAndText"}}</div>
       {{/if}}
     </div>
-      <div id="add_posts_content" class="content" style="position:absolute; overflow-y: scroll; -webkit-overflow-scrolling: touch; top: 40px; right: 0; bottom: 40px; left: 0;">
+      <div id="add_posts_content" class="content">
           {{>addPostMainImage}}
           <div class="gridster">
               <ul id="display" style="background-color:white !important;">
@@ -72,8 +72,8 @@
                   {{/if}}
               </ul>
           </div>
-          <div id="ViewOnWeb" style="-webkit-animation: display 1s linear 3s; animation: display 1s linear 3s; {{displayUrl}}"><i class="fa fa-globe"></i>{{_ "readOriginalText"}}</div>
       </div>
+      <div id="ViewOnWeb" style="{{displayUrl}}"><i class="fa fa-globe"></i>{{_ "readOriginalText"}}</div>
       <div class="linkInputBox">
         <input type="text" class="form-control form-group-material-light-blue" id="linkToBeInserted">
         <button class="btn btn-material-light-blue btn-lg" id="pasteLink">{{_ "pasteLink"}}</button>
@@ -141,7 +141,7 @@
           </div>
       </div>
     {{#if showPostFooter}}
-        <div id="postFooter" style="position: absolute; ">
+        <div id="postFooter">
           <div id="addmore">
             <i class="fa fa-picture-o"></i>
           </div>
@@ -169,7 +169,7 @@
           <div id="addOther">
             <i class="fa fa-ellipsis-v"></i>
           </div>
-          <div class="clear" style="height: 0;"></div>
+          <div class="clear"></div>
         </div>
         <div class="addProgress" style="display:none">
           {{> progressBar}}

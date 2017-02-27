@@ -30,25 +30,14 @@ if ( typeof Object.create !== 'function' ) {
             self.elem = elem;
             self.$elem = $( elem );
             self.options = $.extend( {}, $.fn.toolbar.options, options );
-            if(self.options.parent){
-                self.toolbar = $('<div class="tool-container gradient" />')
-                    .addClass('tool-'+self.options.position)
-                    .addClass('tool-rounded')
-                    .append('<div class="tool-items" />')
-                    .append('<div class="arrow" />')
-                    .appendTo(self.options.parent)
-                    .css('opacity', 0)
-                    .hide();
-            } else {
-                self.toolbar = $('<div class="tool-container gradient" />')
-                    .addClass('tool-'+self.options.position)
-                    .addClass('tool-rounded')
-                    .append('<div class="tool-items" />')
-                    .append('<div class="arrow" />')
-                    .appendTo('body')
-                    .css('opacity', 0)
-                    .hide();
-            }
+            self.toolbar = $('<div class="tool-container gradient" />')
+                .addClass('tool-'+self.options.position)
+                .addClass('tool-rounded')
+                .append('<div class="tool-items" />')
+                .append('<div class="arrow" />')
+                .appendTo('body')
+                .css('opacity', 0)
+                .hide();
             self.toolbar_arrow = self.toolbar.find('.arrow');
             self.initializeToolbar();
             self.scrollMontor = scrollMonitor.create(self.$elem);
@@ -187,14 +176,7 @@ if ( typeof Object.create !== 'function' ) {
 
         getCoordinates: function( position, adjustment ) {
             var self = this;
-            if(self.options.parent){
-                self.coordinates = {
-                    top: $(self.options.parent).scrollTop() + self.$elem.offset().top - self.options.parentTopMargin,
-                    left: self.$elem.offset().left
-                }
-            } else {
-                self.coordinates = self.$elem.offset();
-            }
+            self.coordinates = self.$elem.offset();
 
             if (self.options.adjustment && self.options.adjustment[self.options.position]) {
                 adjustment = self.options.adjustment[self.options.position] + adjustment;
