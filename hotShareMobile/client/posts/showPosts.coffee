@@ -193,7 +193,7 @@ if Meteor.isClient
   Template.showPosts.created=->
     layoutHelperInit()
     Session.set("content_loadedCount", 0)
-    getHotPostsData()
+    # getHotPostsData()
   Template.showPosts.onDestroyed ->
     document.body.scrollTop = 0
     Session.set("postPageScrollTop", 0)
@@ -270,7 +270,7 @@ if Meteor.isClient
     #     $('.subscribeAutorPage').show()
     # showFollowTips()
 
-    getHotPostsData()
+    # getHotPostsData()
     #if !amplify.store('chatNotify')
     #  amplify.store('chatNotify',1)
     #if amplify.store('chatNotify') < 6
@@ -309,7 +309,7 @@ if Meteor.isClient
           document.body.scrollTop = Session.get("postPageScrollTop")
         , 280
   Template.showPosts.onRendered ->
-    getHotPostsData()
+    # getHotPostsData()
     Session.set 'showDraft', false
     Session.setDefault "displayPostContent",true
     Session.setDefault "toasted",false

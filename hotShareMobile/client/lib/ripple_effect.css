@@ -1,0 +1,35 @@
+.ripple-btn,.leftButton,.rightButton,.btn,.boxTitle,.box>dl,.dropdown-menu>li,.chatFooter>div,#postFooter>div,#topicList>li{
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.ripple-btn:after,.leftButton:after,.rightButton:after,.btn:after,.boxTitle:after,.box>dl:after,.dropdown-menu>li:after,.chatFooter>div:after,#postFooter>div:after,#topicList>li:after{
+  content: "";
+  background: rgba(0, 0, 0, .15);
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  padding-top: 480%;
+  padding-left: 480%;
+  margin-top: -240%;
+  margin-left: -240%;
+  opacity: 0;
+  -webkit-transition: all .75s ease-out;
+  -moz-transition: all .75s ease-out;
+  transition: all .75s ease-out;
+}
+.boxTitle:after,.box>dl:after,.dropdown-menu>li:after,#topicList>li:after{top: 100%; left: 0;}
+.ripple-btn:active:after,.leftButton:active:after,.rightButton:active:after,.btn:active:after,.boxTitle:active:after,.box>dl:active:after,.dropdown-menu>li:active:after,.chatFooter>div:active:after,#postFooter>div:active:after,#topicList>li:active:after{
+  padding-top: 0;
+  padding-left: 0;
+  margin-top: 0;
+  margin-left: 0;
+  border-radius: 50%;
+  opacity: 1;
+  -webkit-transition: 0s;
+  -moz-transition: 0s;
+  transition: 0s;
+}

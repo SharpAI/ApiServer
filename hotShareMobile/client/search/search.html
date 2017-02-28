@@ -56,8 +56,8 @@
         </table>
         {{#if is_people}}
         <ul class="my_btns my_btn2">
-          <li id="search_people" class="on">作者</li>
-          <li id="search_topic">#{{_ "plainTopic"}}#</li>
+          <li id="search_people" class="on ripple-btn">作者</li>
+          <li id="search_topic" class="ripple-btn">#{{_ "plainTopic"}}#</li>
         </ul>
         <div id="peopleList">
           {{#if showSearchStatus}}
@@ -113,8 +113,8 @@
         </div>
         {{else}}
         <ul class="my_btns my_btn2">
-          <li id="search_people">{{_ "plainPeople"}}</li>
-          <li id="search_topic" class="on">#{{_ "plainTopic"}}#</li>
+          <li id="search_people" class="ripple-btn">{{_ "plainPeople"}}</li>
+          <li id="search_topic" class="on ripple-btn">#{{_ "plainTopic"}}#</li>
         </ul>
         <div id="topicList">
           {{#if showSearchStatus}}
