@@ -70,6 +70,14 @@ if Meteor.isClient
       $(node).css('height', "")
       sizex = parseInt(resizeItem.attr("data-sizex"))
       gridster.resize_widget(resizeItem, sizex,sizey)
+  reCaculateAndSetScrollTop = (node)->
+    console.log  'reCaculateAndSetScrollTop!'
+    keyboardHeight = Session.get('keyboardHeight')
+    bgheight = $(window).height() + $(window).scrollTop()
+    editheight = $(node).offset().top + $(node).height() + keyboardHeight + 20
+    if bgheight < editheight
+      scrollTop = editheight - $(window).height()
+      $(window).scrollTop(scrollTop)
   toolbarHiddenHandle = (event,node)->
     if Session.get('textMenu') isnt 'main'
       setTimeout ()->
@@ -103,6 +111,7 @@ if Meteor.isClient
         $(node).addClass("edit");
         $(textarea).off('focus')
         $(".head").css 'position','absolute'
+        reCaculateAndSetScrollTop(node)
       )
 
       $(textarea).focus()
@@ -408,11 +417,15 @@ if Meteor.isClient
       sizex = parseInt(resizeItem.attr("data-sizex"))
       gridster.resize_widget(resizeItem, sizex,sizey)
       console.log('propertychange sizey:'+ sizey + 'height:' +height + 'scrollHeight:'+node.scrollHeight)
+      setTimeout ()->
+        reCaculateAndSetScrollTop(node)
+      ,500
     height = sizey*min_widget_height - baseGap*2
     if node.parentNode
       layoutItem = node.parentNode.parentNode
       if layoutItem
         layoutItem.style.lineHeight=height+'px'
+    reCaculateAndSetScrollTop(node)
     #resizeItem.css("line-height", height+'px')
   adjustTextAreaHeightAndGetTheLayoutEngineSizeY = (id,node)->
     grid_size=Math.floor(getDisplayElementWidth() / 6-baseGap*2)
