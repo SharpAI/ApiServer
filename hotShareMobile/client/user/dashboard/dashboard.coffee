@@ -88,7 +88,7 @@ if Meteor.isClient
       Router.go '/user'
     'click .logout':(e)->
       e.target.innerText="正在退出登录..."
-#      thisUser = Meteor.user()
+      thisUser = Meteor.user()
 #      Meteor.users.update({_id: thisUser._id}, {$set: {type: '', token: ''}})
       Meteor.logout (msg)->
         Session.set("searchContent","")
@@ -105,6 +105,7 @@ if Meteor.isClient
         Session.setPersistent('persistentMySavedDrafts',null)
         Session.setPersistent('persistentMyOwnPosts',null)
         #console.log msg
+        Meteor.call('updatePushToken' ,{type: thisUser.type, token: thisUser.token,userId:''});
         window.plugins.userinfo.setUserInfo '', ->
              console.log 'setUserInfo was succeed!'
              return

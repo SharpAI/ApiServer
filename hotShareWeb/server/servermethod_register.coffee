@@ -678,8 +678,8 @@ if Meteor.isServer
             console.log error
         else
           try
-            if pushTokenObj.userId isnt userId
-              Meteor.users.update({_id: pushTokenObj.userId}, {$set: {'profile.waitReadCount': 0}});
+            if pushTokenObj.userId isnt userId and userId isnt ''
+              Meteor.users.update({_id:userId}, {$set: {'profile.waitReadCount': 0}});
             PushTokens.update({type: type,token: token},{$set:{userId: userId}})
           catch error
             console.log error
