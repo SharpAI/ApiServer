@@ -1082,7 +1082,6 @@ if Meteor.isClient
         createdAt: new Date()
     }
     Session.set('newpostsdata', newPostData)
-    Meteor.call('reviewFollowPosts',postId,Meteor.userId())
     #Delete from SavedDrafts if it is a saved draft.
     if SavedDrafts.find().count() is 1
       Session.setPersistent('mySavedDraftsCount',0)

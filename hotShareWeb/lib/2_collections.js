@@ -960,8 +960,11 @@ if(Meteor.isServer){
                         );
                     });
                 }
-                FollowPosts.update(
-                    {followby:userId,postId:doc._id},
+                var postOwner = modifier.$set.owner;
+                var followPost = FollowPosts.findOne({postId:doc._id,followby:postOwner})
+                if (followPost){
+                    FollowPosts.update(
+                    {followby:postOwner,postId:doc._id},
                     {$set:{
                         title:modifier.$set.title,
                         addontitle:modifier.$set.addontitle,
@@ -972,8 +975,37 @@ if(Meteor.isServer){
                         ownerName: modifier.$set.ownerName,
                         ownerIcon: modifier.$set.ownerIcon
                     }
-                    }
-                );
+                    });
+                }
+                else{
+                    FollowPosts.insert({
+                            postId:doc._id,
+                            title:modifier.$set.title,
+                            addontitle:modifier.$set.addontitle,
+                            mainImage: modifier.$set.mainImage,
+                            mainImageStyle:modifier.$set.mainImageStyle,
+                            heart:0,
+                            retweet:0,
+                            comment:0,
+                            browse: 0,
+                            publish: modifier.$set.publish,
+                            owner:modifier.$set.owner,
+                            ownerName:modifier.$set.ownerName,
+                            ownerIcon:modifier.$set.ownerIcon,
+                            createdAt: modifier.$set.createdAt,
+                            followby: postOwner
+                        }, function(error, _id){
+                            console.log('error: ' + error);
+                            // console.log('_id: ' + _id);
+                        });
+                }
+                var isFollow = Follower.findOne({userId:userId,followerId:postOwner});
+                if (isFollow){
+                  return
+                }
+                if (postOwner !== userId){
+                    FollowPosts.remove({postId:doc._id,followby:userId});
+                }
             }
             catch(error){
                 console.log('posts update error: ' + error)

@@ -354,7 +354,6 @@ if Meteor.isClient
               createdAt: new Date()
             }
             updateTopicPost(topicPostObj)
-            Meteor.call('reviewFollowPosts',postId,Meteor.userId())
             #Delete from SavedDrafts if it is a saved draft.
             if SavedDrafts.find().count() is 1
               Session.setPersistent('mySavedDraftsCount',0)
@@ -457,7 +456,6 @@ if Meteor.isClient
             createdAt: new Date()
           }
           updateTopicPost(topicPostObj)
-          Meteor.call('reviewFollowPosts',postId,Meteor.userId())
           #Delete from SavedDrafts if it is a saved draft.
           if SavedDrafts.find().count() is 1
             Session.setPersistent('mySavedDraftsCount',0)
