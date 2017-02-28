@@ -216,7 +216,7 @@ if Meteor.isServer
         dataArray = []
         dataArray.push(dataObj)
         console.log("Will send http POST to push server. pushServerAddr="+pushServerAddr+", dataArray="+JSON.stringify(dataArray))
-        PushMessages.insert({pushMessage: dataArray})
+        PushMessages.insert({pushMessage: dataArray, createAt: new Date()})
         # httppost(pushServerAddr, dataArray, (error, result)->
         #     if error
         #         console.log("ERROR: httppost failed, let's try to send notification directly...")

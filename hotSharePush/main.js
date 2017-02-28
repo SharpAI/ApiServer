@@ -44,7 +44,7 @@ var oplog_connect=function(db){
 
   oplog = MongoOplog(MONGO_OPLOG, {ns: 'hotShare.pushmessages'}).tail();
   oplog.on('insert', function (data) {
-    console.log('pushmessages insert data');
+    console.log('pushmessages insert data:', data.o._id);
     if(data.o.pushMessage && data.o.pushMessage.length > 0){
       data.o.pushMessage.forEach(function(item, index) {
         if (!item.eventType || !item.doc || !item.userId) {
@@ -71,6 +71,42 @@ var oplog_connect=function(db){
     pushmessages.remove({_id: data.o._id});
   });
 };
+var sendHisPushMessage = function(db){
+  if(!pushmessages)
+    pushmessages = db.collection('pushmessages');
+
+  var expireTime = new Date((new Date()).getTime() - 1000*60*60*2) //2小时;
+  pushmessages.remove({createAt: {$lt: expireTime}});
+  pushmessages.find({createAt: {$$gte: expireTime}}).toArray(function(err, docs) {
+    if(err)
+      return;
+
+    docs.forEach(function(doc) {
+      if(doc.pushMessage && doc.pushMessage.length > 0){
+        doc.pushMessage.forEach(function(item, index) {
+          if (!item.eventType || !item.doc || !item.userId) {
+            console.log("   Push information from DB error: item="+JSON.stringify(item));
+            return;
+          }
+          var fromserver = item.fromserver || '';
+          var eventType = item.eventType || '';
+          var doc = item.doc || '';
+          var userId = item.userId || '';
+          if (process.env.SERVER_IN_US) {
+              console.log("   create task for US: "+index);
+              //job = createTaskToKueQueue(redis_prefix_us, dbRecord._id, fromserver, eventType, doc, userId);
+              job = createTaskToKueQueue(redis_prefix_us, doc._id, item);
+          } else {
+              console.log("   create task for CN: "+index);
+              //job = createTaskToKueQueue(redis_prefix, dbRecord._id, fromserver, eventType, doc, userId);
+              job = createTaskToKueQueue(redis_prefix, doc._id, item);
+          }
+        });
+      }
+      pushmessages.remove({_id: doc._id});
+    });
+  });
+};
 
 if (cluster.isMaster) {
   MongoClient.connect(DB_CONN_STR, {poolSize:20, reconnectTries:Infinity}, function(err, db) {
@@ -83,6 +119,7 @@ if (cluster.isMaster) {
           oplog_connect(db);
       });
       oplog_connect(db);
+      sendHisPushMessage(db);
   });
 }
 
