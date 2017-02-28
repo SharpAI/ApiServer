@@ -74,10 +74,23 @@ if Meteor.isClient
     console.log  'reCaculateAndSetScrollTop!'
     keyboardHeight = Session.get('keyboardHeight')
     bgheight = $(window).height() + $(window).scrollTop()
-    editheight = $(node).offset().top + $(node).height() + keyboardHeight + 20
+    editheight = 0
+    if device.platform is 'Android'
+      editheight = $(node).offset().top + $(node).height() + 20
+    else
+      editheight = $(node).offset().top + $(node).height() + keyboardHeight + 20
     if bgheight < editheight
       scrollTop = editheight - $(window).height()
       $(window).scrollTop(scrollTop)
+      return
+    diffVal = bgheight - editheight
+    halfheight = $(window).height()/2
+    if diffVal > halfheight
+      setTimeout ()->
+        scrollTop = editheight - halfheight
+        #console.log  'scrollTop>>>>'+scrollTop
+        $(window).scrollTop(scrollTop)
+      ,500
   toolbarHiddenHandle = (event,node)->
     if Session.get('textMenu') isnt 'main'
       setTimeout ()->

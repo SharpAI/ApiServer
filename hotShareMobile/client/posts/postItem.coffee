@@ -110,6 +110,7 @@ if Meteor.isClient
       # $('.showBgColor').css('min-width',$(window).width())
       Session.set "pcommentIndexNum", this.index
     'click .bubble':(e)->
+      Session.set("pcommetsClicked",true)
       Session.set "pcommentIndexNum", $(e.currentTarget).parent().parent().parent().index(".element")
       pcommentSelectedIndex = $(e.currentTarget).parent().index()
       console.log 'pcommentSelectedIndex >>>'+pcommentSelectedIndex

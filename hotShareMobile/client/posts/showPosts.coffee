@@ -70,6 +70,10 @@ if Meteor.isClient
     console.log 'Keyboard height is: ' + e.keyboardHeight
     lastKeyboardHeight = Session.get('keyboardHeight')
     Session.set 'keyboardHeight', e.keyboardHeight
+    if device.platform is 'Android' and Session.get("pcommetsClicked") is true
+      scrollTop = $(window).scrollTop()+e.keyboardHeight
+      $(window).scrollTop(scrollTop)
+      return
     if lastKeyboardHeight is undefined
         return
     # if Math.abs(e.keyboardHeight - lastKeyboardHeight) < 5
