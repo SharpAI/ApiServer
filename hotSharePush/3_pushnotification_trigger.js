@@ -74,7 +74,7 @@
           return pushServer.sendIOS('me', token, '', content, waitReadCount);
         } else if (pushToken.type === 'GCM') {
           token = pushToken.token;
-          return console.log("Send notification: GCM,  token="+token+", content="+content);
+          console.log("Send notification: GCM,  token="+token+", content="+content);
           return pushServer.sendAndroid('me', token, '', content, 1);
         }
       } catch (error1) {
