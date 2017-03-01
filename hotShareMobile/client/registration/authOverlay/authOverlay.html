@@ -22,7 +22,7 @@
     <div class="loginActionArea">
       <div id="login" class="ripple-btn">{{_ "theme_blue_loginWithAccount"}}</div>
       <div id="register" class="ripple-btn">{{_ "theme_blue_regWithEmail"}}</div>
-      <!--{{#if isWXAppInstalled}}-->
+      {{#if isWXAppInstalled}}
       <div class="loginWithSocial">
         <div class="socialLoginTips">{{_ "theme_blue_socialLoginTips"}}</div>
         <div id="wechat">
@@ -32,7 +32,7 @@
           </span>
         </div>
       </div>
-      <!--{{/if}}-->
+      {{/if}}
     </div>
     <div id="anonymous" class="ripple-btn">{{_ "theme_blue_anonymous"}}&nbsp;<i class="fa fa-angle-right"></i></div>
     <!--{{#if isWXAppInstalled}}
