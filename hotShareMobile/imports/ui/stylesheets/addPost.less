@@ -120,20 +120,26 @@
 .addPost .imgMask{position: absolute; top: 0; left: 0; height: 100%; width: 100%; z-index: 1;}
 .addPost .content #display .resortitem .imgMask {border: 2px solid #00c4ff;}
 
+.addPost .head .leftButton { padding-top: 0;}
 .addPost .head .pullright {
     position: absolute;
     right: 10px;
     top: 0;
 
     .secondRightButton {
-        position: static;
+        position: relative;
         display: inline-block;
-        margin-right: 3px;
+        // margin-right: 3px;
+        right: 0;
+        float: left;
     }
 
     .rightButton {
-        position: static;
+        // position: static;
+        position: relative !important;
         display: inline-block;
+        padding: 0;
+        text-align: center;
     }
 }
 

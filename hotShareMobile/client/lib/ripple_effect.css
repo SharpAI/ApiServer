@@ -1,10 +1,10 @@
-.ripple-btn,.leftButton,.rightButton,.btn,.boxTitle,.box>dl,.dropdown-menu>li,.chatFooter>div,#postFooter>div,#topicList>li{
+.ripple-btn,.leftButton,.rightButton,.btn,.boxTitle,.box>dl,.chatFooter>div,#postFooter>div,#topicList>li{
   position: relative;
   overflow: hidden;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
-.ripple-btn:after,.leftButton:after,.rightButton:after,.btn:after,.boxTitle:after,.box>dl:after,.dropdown-menu>li:after,.chatFooter>div:after,#postFooter>div:after,#topicList>li:after{
+.ripple-btn:after,.leftButton:after,.rightButton:after,.btn:after,.boxTitle:after,.box>dl:after,.chatFooter>div:after,#postFooter>div:after,#topicList>li:after{
   content: "";
   background: rgba(0, 0, 0, .15);
   display: block;
@@ -21,8 +21,8 @@
   -moz-transition: all .75s ease-out;
   transition: all .75s ease-out;
 }
-.boxTitle:after,.box>dl:after,.dropdown-menu>li:after,#topicList>li:after{top: 100%; left: 0;}
-.ripple-btn:active:after,.leftButton:active:after,.rightButton:active:after,.btn:active:after,.boxTitle:active:after,.box>dl:active:after,.dropdown-menu>li:active:after,.chatFooter>div:active:after,#postFooter>div:active:after,#topicList>li:active:after{
+.boxTitle:after,.box>dl:after,#topicList>li:after{top: 100%; left: 0;}
+.ripple-btn:active:after,.leftButton:active:after,.rightButton:active:after,.btn:active:after,.boxTitle:active:after,.box>dl:active:after,.chatFooter>div:active:after,#postFooter>div:active:after,#topicList>li:active:after{
   padding-top: 0;
   padding-left: 0;
   margin-top: 0;

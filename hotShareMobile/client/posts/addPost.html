@@ -41,14 +41,14 @@
         {{#if isReviewMode '1'}}
             <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
             <div class="pullright">
-              <div id="edit" class="secondRightButton" style="color: #00c4ff;margin-top:0px;">{{_ "edit"}}</div>
+              <div id="edit" class="secondRightButton ripple-btn" style="color: #00c4ff;margin-top:0px;">{{_ "edit"}}</div>
               <div id="delete" class="rightButton" style="color: #00c4ff;margin-top:0px;">{{_ "delete"}}</div>
             </div>
         {{/if}}
         {{#if isReviewMode '0'}}
             <div class="leftButton cancle" style="color: #00c4ff;margin-top:0px;">{{_ "cancel"}}</div>
             <div class="pullright">
-              <div id="saveDraft" class="secondRightButton" style="color: #00c4ff;margin-top:0px;">{{_ "saveDraft"}}</div>
+              <div id="saveDraft" class="secondRightButton ripple-btn" style="color: #00c4ff;margin-top:0px;">{{_ "saveDraft"}}</div>
               {{#if hasAssocaitedUsers}}
                 <div id="publish" class="rightButton" data-toggle="modal" data-target="#chooseAssociatedUser" style="font-weight:bold;color: #00c4ff;margin-top:0px;">{{_ "publish"}}</div>            
               {{else}}

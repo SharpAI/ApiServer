@@ -22,7 +22,7 @@ Template.hotPosts.events({
     }
     $(e.currentTarget).toggleClass('select')
   },
-  'click .back': function(){
+  'click .leftButton': function(){
     return PUB.page('/posts/' + Session.get('postContent')._id);
   },
   'click .submit': function () {
