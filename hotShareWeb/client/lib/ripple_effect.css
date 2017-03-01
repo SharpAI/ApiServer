@@ -1,0 +1,33 @@
+.ripple,.leftButton,.btn{
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.ripple:after,.leftButton:after,.btn:after{
+  content: "";
+  background: rgba(0, 0, 0, .15);
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  padding-top: 480%;
+  padding-left: 480%;
+  margin-top: -240%;
+  margin-left: -240%;
+  opacity: 0;
+  -webkit-transition: all .75s ease-out;
+  -moz-transition: all .75s ease-out;
+  transition: all .75s ease-out;
+}
+.ripple:active:after,.leftButton:active:after,.btn:active:after{
+  padding-top: 0;
+  padding-left: 0;
+  margin-top: 0;
+  margin-left: 0;
+  opacity: 1;
+  -webkit-transition: 0s;
+  -moz-transition: 0s;
+  transition: 0s;
+}

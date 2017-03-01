@@ -24,11 +24,11 @@
             {{/if}}
           </div>
           -->
-          <div class="postBtn  {{isFocus 'postBtn'}}">
+          <div class="postBtn  {{isFocus 'postBtn'}} ripple">
             <i class="fa fa-file-image-o"></i>
             <div>故事贴</div>
           </div>
-          <div class="contactsBtn {{isFocus 'contactsList'}}">
+          <div class="contactsBtn {{isFocus 'contactsList'}} ripple">
             <i class="fa fa-list">
               {{#if haveNewFriends}}
               <div id="newFriendRedSpot" style="display: none;z-index: 99998;" class="red_spot"></div>
@@ -43,7 +43,7 @@
             <!--<div style="position: absolute;width: 100%;text-align: center;margin-left: -14%;margin-top: 2px;">阅览室</div>-->
             </div>
           </div>
-          <div class="discoverBtn {{isFocus 'discover'}}">
+          <div class="discoverBtn {{isFocus 'discover'}} ripple">
             <i class="fa fa-compass">
               {{#if haveFeeds}}
                   <div class="red_spot">{{feedscount}}</div>
@@ -51,7 +51,7 @@
             </i>
             <div>动态</div>
           </div>
-          <div class="meBtn {{isFocus 'me'}}">
+          <div class="meBtn {{isFocus 'me'}} ripple">
             <i class="fa fa-bookmark-o"></i>
             <div>收藏</div>
           </div>

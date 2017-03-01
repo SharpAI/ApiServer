@@ -24,13 +24,13 @@
             <span class="back" style="font-size: 14px;color: grey;bottom: 5px;">后退</span>
             {{/if}}
           </div>
-          <div class="rightButton pub-me-post" style="font-weight:bold; color: red;">点我创作</div>
+          <div class="rightButton pub-me-post ripple" style="font-weight:bold; color: red;">点我创作</div>
           <!--<div class="rightButton" style="font-weight:bold; color: red;" onclick=" trackEvent('Download','from Post Header'); window.open('http://cdn.tiegushi.com', '_system');">点我创作</div>-->
         {{#unless readerIsOwner}}
           {{#if displayFollowBtn}}
-          <div id="SubscribeAuthor" style="left:64px;"><i class="fa fa-plus"></i> 关注</div>
+          <div id="SubscribeAuthor" style="left:64px;" class="ripple"><i class="fa fa-plus"></i> 关注</div>
           {{else}}
-          <div id="SubscribeAuthor"><i class="fa fa-plus"></i> 关注</div>
+          <div id="SubscribeAuthor" class="ripple"><i class="fa fa-plus"></i> 关注</div>
           {{/if}}
         {{/unless}}
         <div class="user">
@@ -115,7 +115,7 @@
     </div>
     <div class="globe-envelope-box">
       {{#if haveUrl}}
-      <div id="ViewOnWeb"><i class="fa fa-globe"></i>     阅读原文</div>
+      <div id="ViewOnWeb" class="ripple"><i class="fa fa-globe"></i>     阅读原文</div>
       {{else}}
       <div id="block"></div>
       {{/if}}
@@ -126,7 +126,7 @@
     </div>
     {{#if browse}}
     <div class="recommendstory"  id="shareStoryBtn">
-        <div class="description">{{browse}}人读过，分享您的故事给他们吧！<span class="shareStoryBtn">分享</span></div>
+        <div class="description">{{browse}}人读过，分享您的故事给他们吧！<span class="shareStoryBtn ripple">分享</span></div>
     </div>
     {{/if}}
     {{#if withAfterPostIntroduce}}
@@ -176,7 +176,7 @@
       <div class="authorNike  authorInfoIcon">{{authorInfo.authorName}}</div>
       {{#unless readerIsOwner}}
       <div class="subscribe">
-        <div id="SubscribeAuthor" style="margin: 0 auto; position:relative; left:0;"><i class="fa fa-plus"></i> 关注</div>
+        <div id="SubscribeAuthor" class="ripple" style="margin: 0 auto; position:relative; left:0;"><i class="fa fa-plus"></i> 关注</div>
       </div>
       {{/unless}}
       {{#if authorReadPopularPosts}}
@@ -256,17 +256,17 @@
   <div class="shareReaderClub">
     <div class="reader-club-head">
       <h3 class="title">故事贴</h3>
-      <div class="btnNo" onclick="hideShareReaderClub()">取消</div>
+      <div class="btnNo ripple" onclick="hideShareReaderClub()">取消</div>
     </div>
     <div class="content">
       <img class="mini-main-image" src="{{mainImage}}" width='45' height='45' draggable="false" >
       <div class="mini-main-title">{{title}}</div>
     </div>
     {{#if has_share_hot_post}}
-    <div class="btnYes share-hot-post" onclick="showReaderClub()">分享到读友圈<i class="fa fa-angle-right fa-fw"></i></div>
+    <div class="btnYes share-hot-post ripple" onclick="showReaderClub()">分享到读友圈<i class="fa fa-angle-right fa-fw"></i></div>
     {{/if}}
     {{#if has_share_follower}}
-    <div class="btnYes share-fllower" onclick="sendEmailByWebFollower()">分享给关注者<i class="fa fa-angle-right fa-fw"></i></div>
+    <div class="btnYes share-fllower ripple" onclick="sendEmailByWebFollower()">分享给关注者<i class="fa fa-angle-right fa-fw"></i></div>
     {{/if}}
   </div>
 
@@ -284,7 +284,7 @@
       <textarea id="sendContent" cols="10" rows="2" placeholder="给{{ownerName}}的私信内容"></textarea>
     </div>
     <div class="btn-banner">
-      <span id="sendEmailBtn" class="send-email-btn" onclick="sendAuthorEmail(event)">发送</span>
+      <span id="sendEmailBtn" class="send-email-btn ripple" onclick="sendAuthorEmail(event)">发送</span>
     </div>
   </div>
   {{#if showPostGroupChatIntro}}
