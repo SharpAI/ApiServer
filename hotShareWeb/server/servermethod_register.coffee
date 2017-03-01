@@ -32,6 +32,21 @@ if Meteor.isServer
       console.log(err, res)
     )
 
+    wechatPath = 'http://'  +server_domain_name+'/posts/' + postId + '?from=singlemessage&isappinstalled=1';
+    cdn.refreshObjectCaches({
+      ObjectType: 'File',
+      ObjectPath: wechatPath
+    }, (err, res)->
+      console.log(err, res)
+    )
+
+    cdn.refreshObjectCaches({
+        ObjectType: 'File',
+        ObjectPath: rawPath
+      }, (err, res)->
+        console.log(err, res)
+    )
+
     rawPath = 'http://'  +server_domain_name+'/raw/' + postId;
     cdn.refreshObjectCaches({
         ObjectType: 'File',
@@ -644,6 +659,7 @@ if Meteor.isServer
                     Topics.update({_id: data.topicId}, {$set: {'posts': PostsCount-1}})
           TopicPosts.remove({postId:postId})
           FavouritePosts.remove({postId:postId})
+          refreshPostsCDNCaches(postId)
       "unpublishPosts":(postId,userId,drafts)->
         Meteor.defer ()->
           Posts.remove {_id:postId}
