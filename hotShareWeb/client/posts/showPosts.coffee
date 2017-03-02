@@ -65,7 +65,7 @@ if Meteor.isClient
         $('.showPosts').get(0).style.overflow = ''
         $('.showPosts').get(0).style.maxHeight = ''
         $('.showPosts').get(0).style.position = ''
-        $('.readmore').remove()      
+        $('.readmore').remove()
         if $('.dCurrent').length
           scrolltop=$('.dCurrent').offset().top
           Session.set("postPageScrollTop", scrolltop)
@@ -80,14 +80,14 @@ if Meteor.isClient
     Session.set("postPageScrollTop", 0)
     Session.set("showSuggestPosts",false)
     $('.tool-container').remove()
-    
+
   Session.setDefault('hottestPosts', [])
   Template.showPosts.onRendered ->
     postId = this.data._id
     ownerId = this.data.ownerId
     # showFollowTips = ()->
-    #   owner = Meteor.users.findOne({_id: ownerId}) 
-      
+    #   owner = Meteor.users.findOne({_id: ownerId})
+
     #   if !owner
     #     return
     #   # is 0
@@ -122,11 +122,11 @@ if Meteor.isClient
     #console.log 'showPost'
     #$('html').attr('xmlns','http://www.w3.org/1999/xhtml')
     #$('html').attr('xmlns:fb','http://ogp.me/ns/fb#')
-    #ogMeta = $("meta[property='og:image']") 
+    #ogMeta = $("meta[property='og:image']")
     #imageSrc = $('head link[id = "icon"]').attr('href')
     #if ogMeta.length is 0
     #   $('head').append('<meta property=og:image content="' + imageSrc + '"/>')
-    #else 
+    #else
     #   ogMeta.attr('content',imageSrc)
     #if !amplify.store('chatNotify')
     #  amplify.store('chatNotify',1)
@@ -236,9 +236,9 @@ if Meteor.isClient
     Deps.autorun (h)->
       if Meteor.userId() and Meteor.userId() isnt ''
         h.stop()
-        if location.pathname.split('/').length is 3 
+        if location.pathname.split('/').length is 3
           Session.set('section_forward_flag', false)
-          
+
         if Session.get("NoUpdateShare") is true
           Session.set "NoUpdateShare",false
           Meteor.call 'readPostReport',postContent._id,Meteor.userId(),true, (err, res)->
@@ -341,7 +341,7 @@ if Meteor.isClient
 
     if withSocialBar
       $(window).scroll(scrollEventCallback)
-  
+
   Template.showPosts.helpers
     showPostGroupChatIntro:->
       return !localStorage.getItem('postGroupChatIntro')
@@ -377,8 +377,23 @@ if Meteor.isClient
     oldMail: ->
       Template.SubscribeAuthor.__helpers.get('oldMail')()
     authorReadPopularPosts: ()->
-      Meteor.subscribe "authorReadPopularPosts",@owner,@_id,3
-      return Posts.find({_id: {$ne: @_id},owner: @owner, publish: {$ne: false}},{sort: {browse: -1},limit: 3})
+      myHotPosts = Meteor.users.findOne({_id: @owner}).myHotPosts
+      if (myHotPosts && myHotPosts.length >= 3)
+        return myHotPosts
+      else
+        Meteor.subscribe "authorReadPopularPosts",@owner,@_id,3
+        mostReadPosts = Posts.find({_id: {$ne: @_id},owner: @owner, publish: {$ne: false}},{sort: {browse: -1},limit: 3}).fetch()
+        if (myHotPosts == undefined || myHotPosts == null)
+          myHotPosts = []
+        if (mostReadPosts == undefined || mostReadPosts == null)
+          mostReadPosts = []
+        size = myHotPosts.length
+        idx = 0
+        while (size < 3 && idx < mostReadPosts.length)
+          myHotPosts.push(mostReadPosts[idx])
+          idx++
+          size = myHotPosts.length
+      return myHotPosts
     readerIsOwner: ()->
       return @owner is Meteor.userId()
     showImporting: ()->
@@ -437,7 +452,7 @@ if Meteor.isClient
       if postBack.length>0 or postForward.length>0
         true
       else
-        false 
+        false
     displayForwardBtn:()->
       postForward = Session.get("postForward")
       if postForward is undefined or postForward.length is 0
@@ -593,7 +608,7 @@ if Meteor.isClient
           else
             console.log("success");
         )
-      
+
         Session.set("doSectionForward",true)
         toastr.success('将在微信分享时引用本段内容', '您选定了本段文字')
         console.log('Selected index '+self.index)
@@ -722,7 +737,7 @@ if Meteor.isClient
       content = t.find('#sendContent').val()
       post = Session.get("postContent")
       qqValueReg = RegExp(/^[1-9][0-9]{4,9}$/)
-      mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) 
+      mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/)
       if !mailValueReg.test(mailAddress) and !qqValueReg.test(mailAddress)
         toastr.info('请输入正确的QQ号或Email')
         return false
@@ -1144,8 +1159,8 @@ if Meteor.isClient
 
   Template.pcommentInput.helpers
       placeHolder:->
-        placeHolderText = '评论' 
-        if Session.get("pcommetsReply") 
+        placeHolderText = '评论'
+        if Session.get("pcommetsReply")
            i = Session.get "pcommentIndexNum"
            post = Session.get("postContent").pub
            selectedIndex = Session.get("pcommentSelectedIndex")
@@ -1338,13 +1353,13 @@ if Meteor.isClient
       mailAddress = t.find('#email').value
       if Session.set('postContentTwo')
         postId = Session.set('postContentTwo')
-      else 
+      else
         postId = Session.get("postContent")._id
       # postId = Session.get("postContent")._id
       post = Posts.findOne({_id: postId})
       followerCount = Follower.find({followerId: post.owner, userId: Meteor.userId(),userEmail: {$exists: true}}).count()
       qqValueReg = RegExp(/^[1-9][0-9]{4,9}$/)
-      mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) 
+      mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/)
       # 处理已经关注时， 可以输入空的Email
       if followerCount >0 and mailAddress is ''
         mailAddress = null
@@ -1380,12 +1395,12 @@ if Meteor.isClient
         },
         {
           $set:{
-            userEmail: mailAddress 
-            fromWeb: true 
+            userEmail: mailAddress
+            fromWeb: true
           }
-        }        
+        }
       # 用户第一次关注该作者
-      else 
+      else
         Follower.insert {
           userId: Meteor.userId()
           #这里存放fullname
@@ -1393,14 +1408,14 @@ if Meteor.isClient
           userIcon: Meteor.user().profile.icon
           userDesc: Meteor.user().profile.desc
           # 存放关注者的Email
-          userEmail: mailAddress 
+          userEmail: mailAddress
           followerId: post.owner
           #这里存放fullname
           followerName: post.ownerName
           followerIcon: post.ownerIcon
           followerDesc: ''
           # 存放关注来源
-          fromWeb: true 
+          fromWeb: true
           createAt: new Date()
         }
       # 更新USER中的followMailAddr
@@ -1416,7 +1431,7 @@ if Meteor.isClient
         trackEvent("Following","Email Follower")
     'click .cannelBtn, click .bg':->
       $('.subscribeAutorPage').hide()
-    
+
     Template.recommendStory.onRendered ->
       $('body').css('overflow-y','hidden')
       Session.set('storyListsLimit',10)
@@ -1474,7 +1489,7 @@ if Meteor.isClient
           return toastr.info('链接格式错误~')
         # 调用导入相关方法
         url = '/import-server/' + Meteor.userId() + '/' + encodeURIComponent(originUrl)
-        console.log('url=='+url) 
+        console.log('url=='+url)
         $('.importing-mask,.importing').show()
         HTTP.get url,(error, result)->
           if !error
@@ -1528,8 +1543,3 @@ if Meteor.isClient
         Session.set('storyListsLoaded',false)
       'click .storySource .radio': (e)->
         Session.set('storyListsType',e.currentTarget.id)
-        
-
-      
-
-

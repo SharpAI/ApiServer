@@ -37,7 +37,7 @@
                                 <!--<i class="fa fa-retweet"></i>{{retweet}}-->
 <!--                                <i class="fa fa-comment"></i>{{commentsCount}}-->
                                 </span>
-                            </div> 
+                            </div>
                         {{else}}
                                 <div id="{{_id}}" class="mainImage" style="font-size:15px;width: 100%;float: left;margin-right: 2%; height: 56px; overflow: hidden;">
                                     <dl style='background: grey;padding: 5px; margin-top: 6px;min-height: 50px;margin-bottom: 1px;'>
@@ -47,6 +47,13 @@
                                         <dd style="font-size: 18px;overflow: hidden;word-wrap: break-word;white-space: nowrap;text-overflow: ellipsis;">{{title}}</dd>
                                         <dd style="font-size: 15px;overflow: hidden;word-wrap: break-word;white-space: nowrap;text-overflow: ellipsis;color: #ccc">{{addontitle}}</dd>
                                     </dl>
+                                    <div class="cb_parent" style="position: absolute; right: 10px; width: 30px; height: 100%;">
+                                      {{#if isHotPost _id}}
+                                      <input class="cb_hotpost" style="position: absolute; top: 10px; left: 10px;" type='checkbox' checked="checked"/>
+                                      {{else}}
+                                      <input class="cb_hotpost" style="position: absolute; top: 10px; left: 10px;" type='checkbox'/>
+                                      {{/if}}
+                                    </div>
                                 </div>
                         {{/if}}
                     {{/each}}

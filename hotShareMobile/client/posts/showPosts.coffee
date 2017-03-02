@@ -88,7 +88,7 @@ if Meteor.isClient
     Session.set('backgroundTop', 0-scrollTop);
     console.log 'scrollTop is: ' + scrollTop
     $(window).scrollTop(scrollTop)
-   
+
   window.addEventListener 'native.keyboardshow', keyboardShowHandler
 
   hookRemoteEvent = ()->
@@ -202,7 +202,7 @@ if Meteor.isClient
     if $('.tts-stoper').is(':visible')
       $('.tts-stoper').hide()
       window.currentTTS.stop()
-  
+
   Template.SubscribeAuthor.onRendered ->
     Meteor.subscribe 'follower'
   Template.SubscribeAuthor.helpers
@@ -246,8 +246,8 @@ if Meteor.isClient
     postId = this.data._id
     ownerId = this.data.ownerId
     # showFollowTips = ()->
-    #   owner = Meteor.users.findOne({_id: ownerId}) 
-      
+    #   owner = Meteor.users.findOne({_id: ownerId})
+
     #   if !owner
     #     return
     #   # is 0
@@ -351,7 +351,7 @@ if Meteor.isClient
     setTimeout ()->
       $("a[target='_blank']").click((e)->
         e.preventDefault();
-        if Meteor.isCordova 
+        if Meteor.isCordova
           #and $(this).attr('class').indexOf('_post_item_a') is -1
           Session.set("isReviewMode","undefined")
           prepareToEditorMode()
@@ -442,8 +442,23 @@ if Meteor.isClient
       else
         return false
     authorReadPopularPosts: ()->
-      Meteor.subscribe "authorReadPopularPosts",@owner,@_id,3
-      return Posts.find({_id: {$ne: @_id},owner: @owner, publish: {$ne: false}},{sort: {browse: -1},limit: 3})
+      myHotPosts = Meteor.users.findOne({_id: @owner}).myHotPosts
+      if (myHotPosts && myHotPosts.length >= 3)
+        return myHotPosts
+      else
+        Meteor.subscribe "authorReadPopularPosts",@owner,@_id,3
+        mostReadPosts = Posts.find({_id: {$ne: @_id},owner: @owner, publish: {$ne: false}},{sort: {browse: -1},limit: 3}).fetch()
+        if (myHotPosts == undefined || myHotPosts == null)
+          myHotPosts = []
+        if (mostReadPosts == undefined || mostReadPosts == null)
+          mostReadPosts = []
+        size = myHotPosts.length
+        idx = 0
+        while (size < 3 && idx < mostReadPosts.length)
+          myHotPosts.push(mostReadPosts[idx])
+          idx++
+          size = myHotPosts.length
+      return myHotPosts
     clickedCommentOverlayThumbsDown:()->
       i = Session.get('focusedIndex')
       userId = Meteor.userId()
@@ -808,7 +823,7 @@ if Meteor.isClient
       if this.import_status
         unless this.import_status is 'imported' or this.import_status is 'done'
           return window.plugins.toast.showLongBottom('此故事的图片正在处理中，请稍后操作~')
-    
+
       #Clear draft first
       Drafts.remove({})
       #Prepare data from post
@@ -1125,8 +1140,8 @@ if Meteor.isClient
 
   Template.pcommentInput.helpers
       placeHolder:->
-        placeHolderText = '评论' 
-        if Session.get("pcommetsReply") 
+        placeHolderText = '评论'
+        if Session.get("pcommetsReply")
            i = Session.get "pcommentIndexNum"
            post = Session.get("postContent").pub
            selectedIndex = Session.get("pcommentSelectedIndex")
@@ -1204,7 +1219,7 @@ if Meteor.isClient
         if not post[i].pcomments or post[i].pcomments is undefined
           pcomments = []
           post[i].pcomments = pcomments
-          
+
         toUsername = ''
         toUserId = ''
         if Session.get("pcommetsReply")
@@ -1247,7 +1262,7 @@ if Meteor.isClient
                 item.css('top', top + 'px')
               catch
             postItem.removeClass('post-pcomment-current-pub-item')
-              
+
             console.log("success");
         )
         $('#pcommitReport').val("")
@@ -1369,17 +1384,17 @@ if Meteor.isClient
       console.log('originUrl=='+originUrl)
       if originUrl is ''
         if Meteor.isCordova
-          cordova.plugins.clipboard.paste (text)->  
+          cordova.plugins.clipboard.paste (text)->
             if text and text isnt '' and text.indexOf('http') > -1
               originUrl = text
             else
-              return PUB.toast('请输入或粘贴一个链接~') 
+              return PUB.toast('请输入或粘贴一个链接~')
         else
-          return PUB.toast('请输入或粘贴一个链接~') 
+          return PUB.toast('请输入或粘贴一个链接~')
       # 判断url格式
       urlReg = new RegExp("(http[s]{0,1}|ftp)://[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?", "gi")
       if !originUrl.match(urlReg)
-        return PUB.toast('链接格式错误~') 
+        return PUB.toast('链接格式错误~')
       # 调用导入相关方法
       prepareToEditorMode()
       Session.set('recommendStoryShare', true)

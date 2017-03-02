@@ -53,7 +53,51 @@ if Meteor.isClient
       Session.equals('myPostsCollection','loading')
     loadError:->
       Session.equals('myPostsCollection','error')
+    isHotPost:(postId)->
+      console.log '##RDBG isHotPost: ' + postId
+      myHotPosts = Meteor.user().myHotPosts
+      if (myHotPosts)
+        for item in myHotPosts
+          if (item.postId == postId)
+            return true
+      return false
+  addPostToMyHotPosts = (postId, title, addontitle, mainImage)->
+    myHotPost = {postId: postId, title: title, addontitle: addontitle, mainImage: mainImage}
+    hotPostArray = Meteor.user().myHotPosts
+    if (hotPostArray == undefined || hotPostArray == null)
+      hotPostArray = []
+      hotPostArray.push(myHotPost)
+    else
+      newArray = []
+      newArray.push(myHotPost)
+      if (hotPostArray.length > 0)
+        newArray.push(hotPostArray[0])
+      if (hotPostArray.length > 1)
+        newArray.push(hotPostArray[1])
+      hotPostArray = newArray
+    Meteor.users.update({_id: Meteor.userId()}, {$set: {'myHotPosts': hotPostArray}});
+    return
+  removePostFromMyHotPosts = (postId)->
+    hotPostArray = Meteor.user().myHotPosts
+    if (hotPostArray)
+      newArray = []
+      for item in hotPostArray
+        if item.postId isnt postId
+          newArray.push(item)
+      Meteor.users.update({_id: Meteor.userId()}, {$set: {'myHotPosts': newArray}});
+    return
   Template.myPosts.events
+    'click .cb_parent':(event)->
+      event.stopPropagation()
+    'change .cb_hotpost':(event)->
+      event.stopPropagation()
+      x = event.target.checked
+      if (x)
+        console.log '##RDBG add post to myHotPosts, id: ' + this._id;
+        addPostToMyHotPosts(this._id, this.title, this.addontitle, this.mainImage)
+      else
+        console.log '##RDBG add post to myHotPosts, id: ' + this._id;
+        removePostFromMyHotPosts(this._id)
     'click .back':(event)->
         $('.home').addClass('animated ' + animateOutUpperEffect);
         setTimeout ()->

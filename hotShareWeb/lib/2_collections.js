@@ -1874,7 +1874,7 @@ if(Meteor.isServer){
     post = Posts.findOne({_id:postId})
     if(post && post.owner){
         owner = post.owner;
-        return Meteor.users.find({_id:owner},{fields:{'username': 1,'profile.fullname': 1,'profile.icon': 1,'profile.followTips':1}});
+        return Meteor.users.find({_id:owner},{fields:{'username': 1,'profile.fullname': 1,'profile.icon': 1,'profile.followTips':1, 'myHotPosts':1}});
     } else {
         return this.ready();
     }
