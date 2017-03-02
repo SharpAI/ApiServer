@@ -85,6 +85,7 @@ if Meteor.isClient
   Template.showPosts.onRendered ->
     postId = this.data._id
     ownerId = this.data.ownerId
+    $.rippleButton();
     # showFollowTips = ()->
     #   owner = Meteor.users.findOne({_id: ownerId})
 
@@ -1437,6 +1438,7 @@ if Meteor.isClient
       Session.set('storyListsLimit',10)
       Session.set('storyListsLoaded',false)
       Session.set('storyListsType','publishedStories')
+      $.rippleButton();
     Template.recommendStory.onDestroyed ->
       $('body').css('overflow-y','auto')
       Session.set('isRecommendStory',false)

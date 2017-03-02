@@ -28,9 +28,9 @@
           <!--<div class="rightButton" style="font-weight:bold; color: red;" onclick=" trackEvent('Download','from Post Header'); window.open('http://cdn.tiegushi.com', '_system');">点我创作</div>-->
         {{#unless readerIsOwner}}
           {{#if displayFollowBtn}}
-          <div id="SubscribeAuthor" style="left:64px;" class="ripple"><i class="fa fa-plus"></i> 关注</div>
+          <div id="SubscribeAuthor" style="left:64px;" class="ripple" data-ripple-color="#00c4ff"><i class="fa fa-plus"></i> 关注</div>
           {{else}}
-          <div id="SubscribeAuthor" class="ripple"><i class="fa fa-plus"></i> 关注</div>
+          <div id="SubscribeAuthor" class="ripple" ><i class="fa fa-plus"></i> 关注</div>
           {{/if}}
         {{/unless}}
         <div class="user">
@@ -126,7 +126,7 @@
     </div>
     {{#if browse}}
     <div class="recommendstory"  id="shareStoryBtn">
-        <div class="description">{{browse}}人读过，分享您的故事给他们吧！<span class="shareStoryBtn ripple">分享</span></div>
+        <div class="description">{{browse}}人读过，分享您的故事给他们吧！<span class="shareStoryBtn ripple" style="position: relative;">分享</span></div>
     </div>
     {{/if}}
     {{#if withAfterPostIntroduce}}
@@ -176,7 +176,7 @@
       <div class="authorNike  authorInfoIcon">{{authorInfo.authorName}}</div>
       {{#unless readerIsOwner}}
       <div class="subscribe">
-        <div id="SubscribeAuthor" class="ripple" style="margin: 0 auto; position:relative; left:0;"><i class="fa fa-plus"></i> 关注</div>
+        <div id="SubscribeAuthor" class="ripple" data-ripple-color="#00c4ff" style="margin: 0 auto; position:relative; left:0;"><i class="fa fa-plus"></i> 关注</div>
       </div>
       {{/unless}}
       {{#if authorReadPopularPosts}}
@@ -599,8 +599,8 @@
           <!--<p class="help-block"></p>-->
         </div>
         <div class="footer">
-          <div class="btn cannelBtn">取消</div>
-          <div class="btn okBtn">确定</div>
+          <div class="btn cannelBtn ripple">取消</div>
+          <div class="btn okBtn ripple">确定</div>
         </div>
     </div>
   </div>
@@ -609,7 +609,7 @@
 <template name="recommendStory">
     <div class="recommendStory">
         <div class="head">
-          <div class="leftButton" style="left: 0;margin: 0;">
+          <div class="leftButton ripple"  data-ripple-color="#ffffff" style="left: 0;margin: 0;">
             <i class="fa fa-angle-left fa-fw back" style="padding: 0;margin-top: 3px;width: auto;padding-left: 10px;"></i>
             <span class="back" style="font-size: 14px;color: #fff;bottom: 5px;">返回</span>
           </div>
@@ -619,7 +619,7 @@
             <div class="shareNewStory">分享新故事</div>
             <div class="input-group">
                 <input type="text" id="importUrl" autofocus="autofocus" class="form-control" maxlength="180" placeholder="输入或粘贴一个链接" />
-                <div id="importBtn">导入分享</div>
+                <div id="importBtn" class="ripple" style="position: relative;">导入分享</div>
             </div>
         </div>
         <div class="showPostsLine"></div>
