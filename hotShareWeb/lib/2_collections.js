@@ -149,6 +149,7 @@ if(Meteor.isServer){
 
 if(Meteor.isServer){
     Rnd = 0;
+    async = Meteor.npmRequire('async');
     try{
         suggestPostsUserId = Meteor.users.findOne({'username': 'suggestPosts' })._id;
     }
@@ -355,7 +356,7 @@ if(Meteor.isServer){
         var views = Viewers.find({userId: userId},{sort:{createdAt: -1},limit:limit});
         var viewlistsIds = [];
         if (views.count()>0){
-            views.forEach(function(fields){
+            async.eachSeries(views, function(fields){
                 var viewItem = Posts.findOne({"_id":fields.postId});
                 if(viewItem)
                 {
@@ -412,7 +413,7 @@ if(Meteor.isServer){
             });
             if (viewposts.count() > 0 && currentpost && userinfo) {
                 try {
-                viewposts.forEach(function (pdata) {
+                async.eachSeries(viewposts, function (pdata) {
                     if(pdata.postId !== postId)
                     {
                         var readpost = Posts.findOne(pdata.postId);
@@ -520,7 +521,7 @@ if(Meteor.isServer){
             try{
                 var views=Viewers.find({postId:postId},{limit:100});
                 if(views.count()>0){
-                    views.forEach(function(data){
+                    async.eachSeries(views, function(data){
                         var meetItemOne = Meets.findOne({me:userId,ta:data.userId});
                         if(meetItemOne){
                             var meetCount = meetItemOne.count;
@@ -760,7 +761,7 @@ if(Meteor.isServer){
                     }
                     mailText = mailText.replace('{{post-content}}', content);
                     // sendEmailToFollower mail html end
-                    follows.forEach(function(data){
+                    async.eachSeries(follows, function(data){
                         if(data.userId === suggestPostsUserId)
                         {
                             FollowPosts.insert({
@@ -895,7 +896,7 @@ if(Meteor.isServer){
 
             try {
                 var recommendUserIds = [];
-                Recommends.find({relatedUserId: doc.owner, relatedPostId: {$exists: false}}).forEach(function(item) {
+                async.eachSeries(Recommends.find({relatedUserId: doc.owner, relatedPostId: {$exists: false}}), function(item) {
                     if (!~recommendUserIds.indexOf(item.recommendUserId)) {
                         recommendUserIds.push(item.recommendUserId);
                         Recommends.update({_id: item._id}, {$set: {relatedPostId: doc._id}});
@@ -919,7 +920,7 @@ if(Meteor.isServer){
                 });
                 var TPs=TopicPosts.find({postId:doc._id})
                 if(TPs.count()>0){
-                    TPs.forEach(function(data){
+                    async.eachSeries(TPs, function(data){
                         PostsCount = Topics.findOne({_id:data.topicId}).posts;
                         if(PostsCount === 1)
                         {
@@ -946,7 +947,7 @@ if(Meteor.isServer){
                     followerId: postOwner
                 });
                 if (follows.count() > 0) {
-                    follows.forEach(function(data) {
+                    async.eachSeries(follows,function(data){
                         var followPost = FollowPosts.findOne({
                             postId: doc._id,
                             followby: data.userId
@@ -1102,7 +1103,7 @@ if(Meteor.isServer){
             try{
                 var posts=Posts.find({owner: doc.followerId});
                 if(posts.count()>0){
-                    posts.forEach(function(data){
+                    async.eachSeries(posts,function(data){
                         if(doc.userId === suggestPostsUserId)
                         {
                             FollowPosts.insert({
@@ -1332,7 +1333,7 @@ if(Meteor.isServer){
                 post = Posts.findOne({_id: postId});
                 status = post.import_status;
                 reload = false;
-                post.pub.forEach(function(item){
+                async.eachSeries(post.pub, function(item){
                     if(item.isImage){
                         pub.push({_id: item._id, imgUrl:item.imgUrl,index:item.index,souImgUrl:item.souImgUrl})
                     }
@@ -1344,7 +1345,7 @@ if(Meteor.isServer){
             changed: function (id) {
                 post = Posts.findOne({_id: postId});
                 reload = false;
-                post.pub.forEach(function(item){
+                async.eachSeries(post.pub,function(item){
                     if(item.isImage){
                         pub.push({_id: item._id, imgUrl:item.imgUrl,index:item.index,souImgUrl:item.souImgUrl})
                     }
@@ -1359,7 +1360,7 @@ if(Meteor.isServer){
             removed: function (id) {
                 post = Posts.findOne({_id: postId});
                 reload = false;
-                post.pub.forEach(function(item){
+                async.eachSeries(post.pub, function(item){
                     if(item.isImage){
                         pub.push({_id: item._id, imgUrl:item.imgUrl,index:item.index,souImgUrl:item.souImgUrl})
                     }
@@ -1371,7 +1372,7 @@ if(Meteor.isServer){
         });
         initializing = false;
         post = Posts.findOne({_id: postId});
-        post.pub.forEach(function(item){
+        async.eachSeries(post.pub, function(item){
             if(item.isImage){
                 pub.push({_id: item._id, imgUrl:item.imgUrl,index:item.index,souImgUrl:item.souImgUrl})
             }

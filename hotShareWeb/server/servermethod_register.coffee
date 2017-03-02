@@ -7,6 +7,7 @@ if Meteor.isServer
   #if (Meteor.absoluteUrl().toLowerCase().indexOf('host2.tiegushi.com') >= 0)
   process.env['HTTP_FORWARDED_COUNT'] = 1
   console.log("process.env.HTTP_FORWARDED_COUNT="+process.env.HTTP_FORWARDED_COUNT);
+  async = Meteor.npmRequire('async')
   # 权限验证
   @confirmReporterAuth = (userId)->
     console.log(userId)
@@ -67,7 +68,7 @@ if Meteor.isServer
     post =  BackUpPosts.findOne({_id: postId});
     images = []
     if post and post.pub
-      post.pub.forEach (item)->
+      async.each post.pub, (item)->
         if item.isImage
           uri = item.imgUrl.split('/')
           filename = uri[uri.length-1]
@@ -107,7 +108,7 @@ if Meteor.isServer
         recommendPosts = Recommends.find({relatedPostId: postId}).fetch()
         if recommendPosts and recommendPosts.length > 0
           userLists = []
-          recommendPosts.forEach (item)->
+          async.each recommendPosts, (item)->
             if item.readUsers
               userLists = item.readUsers
             userLists.push(userId)
@@ -146,7 +147,7 @@ if Meteor.isServer
             retweet: 0,
             comment: 0
           }
-          Viewers.find({postId: postId}).forEach((item)->
+          async.eachSeries(Viewers.find({postId: postId}), (item)->
             if !~readers.indexOf(item.userId) and item.userId isnt self.userId
               readers.push(item.userId)
               console.log(item.userId)
@@ -157,7 +158,7 @@ if Meteor.isServer
           )
 
           relatedUserIds = []
-          Posts.find({_id: postId}).forEach((item)->
+          async.eachSeries(Posts.find({_id: postId}), (item)->
             if !~relatedUserIds.indexOf(item.owner)
               relatedUserIds.push(item.owner)
 
@@ -184,7 +185,7 @@ if Meteor.isServer
       'getRecommendStorys': (userId,limit,skip,isFav)->
         if isFav
           postIds = []
-          FavouritePosts.find({userId: userId}).forEach((item) ->
+          async.eachSeries(FavouritePosts.find({userId: userId}), (item) ->
             if !~postIds.indexOf(item.postId)
               postIds.push(item.postId)
           )
@@ -267,7 +268,7 @@ if Meteor.isServer
           console.log(error)
       'getMoreFavouritePosts': (userId, skip, limit)->
         postIds = []
-        FavouritePosts.find({userId: userId}).forEach((item) ->
+        async.eachSeries(FavouritePosts.find({userId: userId}), (item) ->
           if !~postIds.indexOf(item.postId)
             postIds.push(item.postId)
         )
@@ -445,7 +446,7 @@ if Meteor.isServer
           })
           TPs=TopicPosts.find({postId:postId})
           if TPs.count()>0
-            TPs.forEach (data)->
+            async.eachSeries TPs, (data)->
               PostsCount = Topics.findOne({_id:data.topicId}).posts
               if PostsCount is 1
                 Topics.remove({_id:data.topicId})
@@ -651,7 +652,7 @@ if Meteor.isServer
           FollowPosts.update({postId:postId},{$set:{publish:false}},{multi: true, upsert:true})
           TPs=TopicPosts.find({postId:postId})
           if TPs.count()>0
-              TPs.forEach (data)->
+              async.eachSeries TPs, (data)->
                   PostsCount = Topics.findOne({_id:data.topicId}).posts
                   if PostsCount is 1
                     Topics.remove({_id:data.topicId})
@@ -670,7 +671,7 @@ if Meteor.isServer
             Feeds.remove({owner:userId,eventType:'SelfPosted',postId:postId})
             TPs=TopicPosts.find({postId:postId})
             if TPs.count()>0
-                TPs.forEach (data)->
+                async.eachSeries TPs, (data)->
                     PostsCount = Topics.findOne({_id:data.topicId}).posts
                     if PostsCount is 1
                       Topics.remove({_id:data.topicId})
@@ -823,16 +824,16 @@ if Meteor.isServer
           return false
 
         Meteor.defer ()->
-          ReaderPopularPosts.find({userId: userId}).forEach((item)->
+          async.eachSeries(ReaderPopularPosts.find({userId: userId}), (item)->
             ReaderPopularPosts.remove({_id: item._id})
           )
 
           postIds = []
-          Viewers.find({userId: userId}, {sort: {createdAt: -1}, limit: 50}).forEach((item)->
+          async.eachSeries(Viewers.find({userId: userId}, {sort: {createdAt: -1}, limit: 50}), (item)->
             postIds.push(item.postId)
           )
 
-          Posts.find({_id: {$in: postIds}, browse: {$gte: 5}}, {sort: {browse: -1}, limit: 9}).forEach((item)->
+          async.eachSeries(Posts.find({_id: {$in: postIds}, browse: {$gte: 5}}, {sort: {browse: -1}, limit: 9}), (item)->
             ReaderPopularPosts.insert({userId: userId, postId: item._id, title: item.title, browse: item.browse, createdAt: new Date()})
           )
         true
@@ -844,7 +845,7 @@ if Meteor.isServer
         Meteor.defer ()->
           feeds = []
           readers = []
-          Viewers.find({postId: {$in: groups}}).forEach((item)->
+          async.eachSeries(Viewers.find({postId: {$in: groups}}), (item)->
             if !~readers.indexOf(item.userId) and item.userId isnt self.userId
               readers.push(item.userId)
               feedItem = _.extend(feed, {followby: item.userId})
@@ -856,7 +857,7 @@ if Meteor.isServer
           )
 
           relatedUserIds = []
-          Posts.find({_id: {$in: groups}}).forEach((item)->
+          async.eachSeries(Posts.find({_id: {$in: groups}}), (item)->
             if !~relatedUserIds.indexOf(item.owner)
               relatedUserIds.push(item.owner)
 
@@ -890,7 +891,7 @@ if Meteor.isServer
         Meteor.defer ()->
           feeds = []
           readers = []
-          Viewers.find({postId: {$in: groups}}).forEach((item)->
+          async.eachSeries(Viewers.find({postId: {$in: groups}}), (item)->
             if !~readers.indexOf(item.userId) and item.userId isnt self.userId
               readers.push(item.userId)
               feedItem = _.extend(feed, {followby: item.userId})
@@ -1141,7 +1142,7 @@ if Meteor.isServer
               break
           text = text.replace('{{post-content}}', content)
           userEmail = []
-          Follower.find({followerId: slef.userId, fromWeb: true}).fetch().forEach (item)->
+          async.eachSeries Follower.find({followerId: slef.userId, fromWeb: true}).fetch() (item)->
             userEmail.push(item.userEmail)
           try
               Email.send {
