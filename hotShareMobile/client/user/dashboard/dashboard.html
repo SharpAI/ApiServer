@@ -43,14 +43,13 @@
             <span><i class="fa fa-angle-right fa-fw"></i></span>
           </div>
         {{/if}}
+        {{#unless isLatestVersion}}
         <div class="update  bottomBorder boxTitle">{{_ "version"}}
-          {{#if isLatestVersion}}
-            <span class="right" style="margin-right: 28px;color: #a1a1a1;">{{_ "latestversion"}}</span>
-          {{else}}
+            <!--<span class="right" style="margin-right: 28px;color: #a1a1a1;">{{_ "latestversion"}}</span>-->
             <span class="right" style="margin-right: 28px;color: red;">{{_ "Newversion"}}</span>
-          {{/if}}
             <span ><i class="fa fa-angle-right fa-fw"></i></span>
         </div>
+        {{/unless}}
         <div class='about boxTitle'>{{_ "about"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
        </div>
       <!--<div class="clear box boxTitle boxCenter">清除缓存</div>-->
@@ -70,7 +69,7 @@
           <div class="update-content-box">
             <h4 class="modal-title">发现新版本</h4>
           </div>
-          <h5 class="modal-title">亲，故事贴有新版本了．　诚邀您参与故事贴{{newVersion}}版本的优先体验！</h5>          
+          <h5 class="modal-title">亲，故事贴有新版本了．　诚邀您参与故事贴{{newVersion}}版本的优先体验！</h5>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">稍后再说</button>
