@@ -940,72 +940,103 @@ if(Meteor.isServer){
     };
     var postsUpdateHookDeferHandle = function(userId,doc,fieldNames, modifier){
         Meteor.defer(function(){
-            try{
-                var follows=Follower.find({followerId:userId});
-                if(follows.count()>0){
-                    follows.forEach(function(data){
-                        FollowPosts.update(
-                            {followby:data.userId,postId:doc._id},
-                            {$set:{
-                                title:modifier.$set.title,
-                                addontitle:modifier.$set.addontitle,
+            try {
+                var postOwner = modifier.$set.owner;
+                var follows = Follower.find({
+                    followerId: postOwner
+                });
+                if (follows.count() > 0) {
+                    follows.forEach(function(data) {
+                        var followPost = FollowPosts.findOne({
+                            postId: doc._id,
+                            followby: data.userId
+                        })
+                        if (followPost) {
+                            FollowPosts.update({
+                                followby: data.userId,
+                                postId: doc._id
+                            }, {
+                                $set: {
+                                    title: modifier.$set.title,
+                                    addontitle: modifier.$set.addontitle,
+                                    mainImage: modifier.$set.mainImage,
+                                    mainImageStyle: modifier.$set.mainImageStyle,
+                                    publish: modifier.$set.publish,
+                                    owner: modifier.$set.owner,
+                                    ownerName: modifier.$set.ownerName,
+                                    ownerIcon: modifier.$set.ownerIcon,
+                                    createdAt: modifier.$set.createdAt,
+                                }
+                            });
+                        } else {
+                            FollowPosts.insert({
+                                postId: doc._id,
+                                title: modifier.$set.title,
+                                addontitle: modifier.$set.addontitle,
                                 mainImage: modifier.$set.mainImage,
                                 mainImageStyle: modifier.$set.mainImageStyle,
+                                heart: 0,
+                                retweet: 0,
+                                comment: 0,
+                                browse: 0,
                                 publish: modifier.$set.publish,
                                 owner: modifier.$set.owner,
                                 ownerName: modifier.$set.ownerName,
-                                ownerIcon: modifier.$set.ownerIcon
-                            }
-                            }
-                        );
+                                ownerIcon: modifier.$set.ownerIcon,
+                                createdAt: modifier.$set.createdAt,
+                                followby: data.userId
+                            }, function(error, _id) {
+                                console.log('error: ' + error);
+                                // console.log('_id: ' + _id);
+                            });
+                        }
                     });
                 }
-                var postOwner = modifier.$set.owner;
-                var followPost = FollowPosts.findOne({postId:doc._id,followby:postOwner})
-                if (followPost){
-                    FollowPosts.update(
-                    {followby:postOwner,postId:doc._id},
-                    {$set:{
-                        title:modifier.$set.title,
-                        addontitle:modifier.$set.addontitle,
+
+                var followPost = FollowPosts.findOne({
+                    postId: doc._id,
+                    followby: postOwner
+                })
+                if (followPost) {
+                    FollowPosts.update({
+                        followby: postOwner,
+                        postId: doc._id
+                    }, {
+                        $set: {
+                            title: modifier.$set.title,
+                            addontitle: modifier.$set.addontitle,
+                            mainImage: modifier.$set.mainImage,
+                            mainImageStyle: modifier.$set.mainImageStyle,
+                            publish: modifier.$set.publish,
+                            owner: modifier.$set.owner,
+                            ownerName: modifier.$set.ownerName,
+                            ownerIcon: modifier.$set.ownerIcon,
+                            createdAt: modifier.$set.createdAt,
+                        }
+                    });
+                } else {
+                    FollowPosts.insert({
+                        postId: doc._id,
+                        title: modifier.$set.title,
+                        addontitle: modifier.$set.addontitle,
                         mainImage: modifier.$set.mainImage,
                         mainImageStyle: modifier.$set.mainImageStyle,
+                        heart: 0,
+                        retweet: 0,
+                        comment: 0,
+                        browse: 0,
                         publish: modifier.$set.publish,
                         owner: modifier.$set.owner,
                         ownerName: modifier.$set.ownerName,
-                        ownerIcon: modifier.$set.ownerIcon
-                    }
+                        ownerIcon: modifier.$set.ownerIcon,
+                        createdAt: modifier.$set.createdAt,
+                        followby: postOwner
+                    }, function(error, _id) {
+                        console.log('error: ' + error);
+                        // console.log('_id: ' + _id);
                     });
                 }
-                else{
-                    FollowPosts.insert({
-                            postId:doc._id,
-                            title:modifier.$set.title,
-                            addontitle:modifier.$set.addontitle,
-                            mainImage: modifier.$set.mainImage,
-                            mainImageStyle:modifier.$set.mainImageStyle,
-                            heart:0,
-                            retweet:0,
-                            comment:0,
-                            browse: 0,
-                            publish: modifier.$set.publish,
-                            owner:modifier.$set.owner,
-                            ownerName:modifier.$set.ownerName,
-                            ownerIcon:modifier.$set.ownerIcon,
-                            createdAt: modifier.$set.createdAt,
-                            followby: postOwner
-                        }, function(error, _id){
-                            console.log('error: ' + error);
-                            // console.log('_id: ' + _id);
-                        });
-                }
-                var isFollow = Follower.findOne({userId:userId,followerId:postOwner});
-                if (isFollow){
-                  return
-                }
-                if (postOwner !== userId){
-                    FollowPosts.remove({postId:doc._id,followby:userId});
-                }
+
             }
             catch(error){
                 console.log('posts update error: ' + error)
