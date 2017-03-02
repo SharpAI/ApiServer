@@ -161,6 +161,7 @@ Template.newLayoutContainer.events =
     if typeof PopUpBox isnt "undefined"
       PopUpBox.close()
       # $('.popUpBox, .b-modal').hide()
+    Session.set("readMomentsPost",true);
     Router.go '/posts/'+postId
 Template.newLayoutContainer.helpers =
   displayId:()->

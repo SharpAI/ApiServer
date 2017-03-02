@@ -164,7 +164,9 @@ if Meteor.isClient
             this.render 'showPosts', {data: post}
           else
             this.render 'unpublish'
-          Session.set 'needReviewPostStyle',true
+          if Session.get("readMomentsPost") is true
+            Session.set 'readMomentsPost',false
+            Session.set 'needReviewPostStyle',true
           Session.set 'channel','posts/'+this.params._id
       }
     Router.route '/newposts/:_id', {
