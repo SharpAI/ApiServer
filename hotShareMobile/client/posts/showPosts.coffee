@@ -1254,6 +1254,8 @@ if Meteor.isClient
             postItem = $('.post-pcomment-current-pub-item')
             offsetHeight = postItem.height() - parseInt(postItem.attr('data-height'))
             console.log(offsetHeight)
+            testDivHeight = parseInt($('#test').css('height'))
+            $('#test').css('height',testDivHeight + offsetHeight + 'px')
             # resize nex node top
             postItem.nextAll().each ()->
               try
@@ -1292,6 +1294,8 @@ if Meteor.isClient
             console.log postItem
             offsetHeight = postItem.height() - parseInt(postItem.attr('data-height'))
             console.log offsetHeight
+            testDivHeight = parseInt($('#test').css('height'))
+            $('#test').css('height',testDivHeight + offsetHeight + 'px')
             # resize nex node top
             postItem.nextAll().each ->
               try
