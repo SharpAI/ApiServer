@@ -6,14 +6,14 @@
     </div>
     <div class="content">
       <div class="userInfo box">
-        <div class='accounts-management bottomBorder boxTitle'>{{_ "Account"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+        <div class='accounts-management bottomBorder boxTitle ripple-label'>{{_ "Account"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
         {{#unless anonymous}}
           <!--<div class="emailPasswd">-->
-            <div class='email bottomBorder boxTitle'>{{_ "email"}}<span>{{userEmail}}<i class="fa fa-angle-right fa-fw"></i></span></div>
-            <div class='changePasswd bottomBorder boxTitle'>{{_ "changePass"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+            <div class='email bottomBorder boxTitle ripple-label'>{{_ "email"}}<span>{{userEmail}}<i class="fa fa-angle-right fa-fw"></i></span></div>
+            <div class='changePasswd bottomBorder boxTitle ripple-label'>{{_ "changePass"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
           <!--</div>-->
         {{/unless}}
-        <div class="blacklist boxTitle">{{_ "blacklist"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+        <div class="blacklist boxTitle ripple-label">{{_ "blacklist"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
       </div>
       <div class="appSetting box">
         <div class="readFollowTips  bottomBorder boxTitle">{{_ "readFollowTips"}}
@@ -30,7 +30,7 @@
         <div class='info bottomBorder boxTitle'>编辑个人资料<span><i class="fa fa-angle-right fa-fw"></i></span></div>
         <div class='accounts bottomBorder boxTitle'>已连接的账户<span><i class="fa fa-angle-right fa-fw"></i></span></div>
         -->
-        <div class='notice bottomBorder boxTitle'>{{_ "notification"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+        <div class='notice bottomBorder boxTitle ripple-label'>{{_ "notification"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
 
         <!--<div class="blacklist box boxTitle">{{_ "blacklist"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>-->
         {{#if allowLanguageSetting}}
@@ -44,16 +44,16 @@
           </div>
         {{/if}}
         {{#unless isLatestVersion}}
-        <div class="update  bottomBorder boxTitle">{{_ "version"}}
+        <div class="update  bottomBorder boxTitle ripple-label">{{_ "version"}}
             <!--<span class="right" style="margin-right: 28px;color: #a1a1a1;">{{_ "latestversion"}}</span>-->
             <span class="right" style="margin-right: 28px;color: red;">{{_ "Newversion"}}</span>
             <span ><i class="fa fa-angle-right fa-fw"></i></span>
         </div>
         {{/unless}}
-        <div class='about boxTitle'>{{_ "about"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
+        <div class='about boxTitle ripple-label'>{{_ "about"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
        </div>
       <!--<div class="clear box boxTitle boxCenter">清除缓存</div>-->
-      <div class="logout box boxTitle boxCenter">{{_ "logOut"}}</div>
+      <div class="logout box boxTitle boxCenter ripple-label">{{_ "logOut"}}</div>
     </div>
   </div>
   <div class="modal fade" id="updateToLatestVersion" tabindex="-1" role="dialog">
@@ -141,7 +141,7 @@
     <div class="content">
       {{#if isIOS}}
         <div class="box">
-          <div class='boxTitle'>{{_ "notifiButton"}}</div>
+          <div class='boxTitle ripple-label'>{{_ "notifiButton"}}</div>
         </div>
         <div class="smallcontent">{{_ "notifiTipsIos"}}</div>
         <!--
@@ -157,7 +157,7 @@
         -->
       {{else}}
         <div class="box">
-            <div class='boxTitle'>{{_ "notifiButton"}}</div>
+            <div class='boxTitle ripple-label'>{{_ "notifiButton"}}</div>
         </div>
         <div class="smallcontent">{{_ "notifiTips"}}</div>
         <!--
