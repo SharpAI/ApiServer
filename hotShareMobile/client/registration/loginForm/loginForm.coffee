@@ -69,7 +69,11 @@ Template.loginForm.events
       name = t.find('#login-username').value
       Session.set 'userName',name
       pass = t.find('#login-password').value
-      if name is '' or pass is ''
+      if name is ''
+        PUB.toast '请输入用户名！'
+        return
+      if pass is ''
+        PUB.toast '请输入密码！'
         return
       t.find('#sub-login').disabled = true
       t.find('#sub-login').value = '正在登录...'
