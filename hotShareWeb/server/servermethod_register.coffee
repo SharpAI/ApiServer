@@ -279,6 +279,17 @@ if Meteor.isServer
       'updateUserSex': (id, val)->
         Meteor.users.update({_id: id}, {$set: {'profile.sex': val}})
         return;
+      'updateFollower':(userId,options)->
+        Meteor.defer ()->
+          try
+            if options.name
+              Follower.update({userId:userId},{$set:{'userName':options.name}},{multi: true, upsert:true})
+              Follower.update({followerId:userId},{$set:{'followerName':options.name}},{multi: true, upsert:true})
+            if options.icon
+              Follower.update({userId:userId},{$set:{'userIcon':options.icon}},{multi: true, upsert:true})
+              Follower.update({followerId:userId},{$set:{'followerIcon':options.icon}},{multi: true, upsert:true})
+          catch error
+            console.log('Error on updateFollower' + error)
       'profileData': (userId)->
         if !Match.test(userId, String)
           return []

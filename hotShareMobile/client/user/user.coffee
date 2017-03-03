@@ -200,6 +200,7 @@ if Meteor.isClient
         if status is 'done' and result
           e.currentTarget.innerHTML = '<img src="'+result+'"  width="80" height="80">'
           Meteor.users.update Meteor.userId(),{$set:{'profile.icon':result}}
+          Meteor.call 'updateFollower',Meteor.userId(),{icon:result}
           console.log '头像上传成功：' + result
         else
           e.currentTarget.innerHTML = val
