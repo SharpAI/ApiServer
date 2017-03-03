@@ -84,6 +84,8 @@ if Meteor.isClient
                      followerId: followerId
                  })._id
       Follower.remove(FollowerId)
+      myFollowToCount = Session.get('myFollowToCount')
+      Session.set('myFollowToCount',myFollowToCount-1)
     'click .add':(e)->
       #true 列出偶像列表，false 列出粉丝列表
       if Session.get('followers_tag')
@@ -113,4 +115,6 @@ if Meteor.isClient
         followerIcon: followerIcon
         followerDesc: followerDesc
         createAt: new Date()
-    }
+      }
+      myFollowToCount = Session.get('myFollowToCount')
+      Session.set('myFollowToCount',myFollowToCount+1)
