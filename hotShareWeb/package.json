@@ -5,7 +5,6 @@
     "chimp-post-watch": "chimp --ddp=http://localhost:7788 --mocha --browser=firefox --path=tests/mocha/post-watch"
   },
   "dependencies": {
-    "async": "^2.1.5",
     "bcrypt": "^0.8.7"
   }
 }
