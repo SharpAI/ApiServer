@@ -1,6 +1,9 @@
 <template name="me">
   <div class="me">
     {{> Template.dynamic template=whichOne}}
+    {{#if showSaveTipHintTemplate}}
+      {{> saveTipHintTemplate}}
+    {{/if}}
   </div>
 </template>
 <template name="information">
