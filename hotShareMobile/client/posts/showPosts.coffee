@@ -644,8 +644,10 @@ if Meteor.isClient
   Template.showPosts.events
     'click .authorReadPopularPostItem': (e)->
       postId = e.currentTarget.id
-      if postId is undefined
+      unless postId
         postId = this._id
+      unless postId
+        postId = this.postId
       Router.go '/posts/' + postId
     'click #shareStoryBtn' :->
       Session.set('isRecommendStory',true)
