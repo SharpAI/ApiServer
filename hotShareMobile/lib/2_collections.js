@@ -24,6 +24,7 @@ AssociatedUsers = new Meteor.Collection('associatedusers');
 UserRelation = new Meteor.Collection('userrelation'); // 用户关系，为了不和以前的产生冲突，使用新表
 
 Recommends = new Meteor.Collection('recommends');
+Series = new Meteor.Collection('series');
 
 GetStringByteLength = function(str){
   return str ? str.replace(/[^\x00-\xff]/g, 'xx').length : 0;
@@ -1464,7 +1465,28 @@ if(Meteor.isServer){
             });*/
         }
     });
+    
+    Meteor.publish("mySeries", function(limit) {
+        if(this.userId === null || !Match.test(limit, Number))
+          return this.ready();
+        else
+          return Series.find({owner: this.userId,publish: true}, {sort: {createdAt: -1}, limit:limit});
+    });
 
+    Meteor.publish("oneSeries", function(seriesId){
+        if(this.userId === null)
+          return this.ready();
+        else
+          return Series.find({_id: seriesId});
+    });
+
+    Meteor.publish("seriesPosts", function(ids){
+        if(this.userId === null){
+            return this.ready();
+        } else {
+            return Posts.find({})
+        }
+    })
     Meteor.publish("suggestPosts", function (limit) {
         if(this.userId === null){
             return this.ready();
@@ -2249,6 +2271,19 @@ if(Meteor.isServer){
     return SavedDrafts.find({owner: this.userId}, {sort: {createdAt: -1}});
   });
 
+
+  Series.allow({
+    insert: function(userId, doc) {
+        console.log(userId)
+        return doc.owner === userId;
+    },
+    update: function(userId, doc) {
+        return doc.owner === userId;
+    },
+    remove: function(userId, doc) {
+        return doc.owner === userId;
+    }
+  });
   Recommends.allow({
       update: function(userId, doc, fieldNames, modifier) {
         if(modifier.$set["readUsers"]){
@@ -2897,6 +2932,7 @@ if(Meteor.isClient){
   var MOMENTS_ITEMS_INCREMENT = 10;
   var FAVOURITE_POSTS_INCREMENT = 10;
   var POSTFRIENDS_ITEMS_INCREMENT = 10;
+  var SERIES_ITEMS_INCREMENT = 10;
   var SUGGEST_POSTS_INCREMENT = 15;
   var POST_ID = null;
   Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
@@ -2912,6 +2948,8 @@ if(Meteor.isClient){
   Session.setDefault('postfriendsitemsLimit', POSTFRIENDS_ITEMS_INCREMENT);
   Session.setDefault("momentsitemsLimit",MOMENTS_ITEMS_INCREMENT);
   Session.setDefault("suggestpostsLimit",SUGGEST_POSTS_INCREMENT);
+  Session.setDefault("seriesitemsLimit",SERIES_ITEMS_INCREMENT);
+  Session.set('seriesCollection','loading');
   Session.set('followPostsCollection','loading');
   Session.set('feedsCollection','loading');
   Session.set('followersCollection','loading');
@@ -2919,8 +2957,22 @@ if(Meteor.isClient){
   Session.set('myPostsCollection','loading');
   Session.set('momentsCollection','loading');
   Session.set('postfriendsCollection','loaded');
+  var subscribeMySeriesOnStop = function(err){
+      Session.set('seriesCollection','error');
+      if(Meteor.user())
+      {
+          Meteor.setTimeout(function(){
+              Session.set('seriesCollection','loading');
+              Meteor.subscribe('followposts', Session.get('seriesitemsLimit'), {
+                  onStop: subscribeMySeriesOnStop,
+                  onReady: function(){
+                      Session.set('seriesCollection','loaded');
+                  }
+              });
+          },2000);
+      }
+  };
   var subscribeFollowPostsOnStop = function(err){
-      console.log('followPostsCollection ' + err);
       Session.set('followPostsCollection','error');
       if(Meteor.user())
       {
@@ -2929,7 +2981,6 @@ if(Meteor.isClient){
               Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'), {
                   onStop: subscribeFollowPostsOnStop,
                   onReady: function(){
-                      console.log('followPostsCollection loaded');
                       Session.set('followPostsCollection','loaded');
                   }
               });
@@ -2971,6 +3022,13 @@ if(Meteor.isClient){
       PostsSearch = new SearchSource('posts', postsfields, options);
       Tracker.autorun(function(){
           if (Meteor.userId()) {
+              Meteor.subscribe('mySeries', Session.get('seriesitemsLimit'), {
+                  onStop: subscribeMySeriesOnStop,
+                  onReady: function () {
+                      console.log('seriesCollection loaded');
+                      Session.set('seriesCollection', 'loaded');
+                  }
+              });
               Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'), {
                   onStop: subscribeFollowPostsOnStop,
                   onReady: function () {

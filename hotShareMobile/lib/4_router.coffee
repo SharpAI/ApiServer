@@ -53,6 +53,25 @@ if Meteor.isClient
       this.render 'home'
       Session.set 'channel','home'
       return
+    Router.route '/seriesList',()->
+      this.render 'seriesList'
+      Session.set 'channel','seriesList'
+    Router.route '/series',()->
+      Session.set('seriesContent',{
+        mainImage:'http://data.tiegushi.com/ocmainimages/mainimage5.jpg',
+        postLists: [],
+        publish: false
+      })
+      this.render 'series'
+      return
+    Router.route '/series/:_id',()->
+      Meteor.subscribe("oneSeries",this.params._id)
+      console.log(this.params._id)
+      seriesContent = Series.findOne({_id: this.params._id})
+      Session.set('seriesId',this.params._id)
+      Session.set('seriesContent',seriesContent)
+      this.render 'series'
+      return
     Router.route '/splashScreen',()->
       this.render 'splashScreen'
       Session.set 'channel', 'splashScreen'

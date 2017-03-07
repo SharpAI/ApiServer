@@ -24,6 +24,7 @@ UserRelation = new Meteor.Collection('userrelation'); // 用户关系，为了�
 PushMessages = new Meteor.Collection('pushmessages');
 
 Recommends = new Meteor.Collection('recommends');
+Series = new Meteor.Collection('series');
 LogonIPLogs = new Meteor.Collection('loginiplogs');
 
 Configs = new Meteor.Collection('configs');
@@ -1421,7 +1422,19 @@ if(Meteor.isServer){
             });*/
         }
     });
-
+ 
+    Meteor.publish("mySeries", function(limit) {
+        if(this.userId === null || !Match.test(limit, Number))
+          return this.ready();
+        else
+          return Series.find({owner: this.userId,publish: true}, {sort: {createdAt: -1}, limit:limit});
+    });
+    Meteor.publish("oneSeries", function(seriesId){
+        if(this.userId === null)
+            return this.ready();
+        else
+            return Series.find({_id: seriesId});
+    });
     Meteor.publish("suggestPosts", function (limit) {
         if(this.userId === null){
             return this.ready();
@@ -2338,6 +2351,19 @@ if(Meteor.isServer){
     return Posts.find({owner: this.userId}, {sort: {createdAt: -1}, limit: limit});
   });
 
+  Series.allow({
+    insert: function(userId, doc) {
+        console.log(userId)
+        return doc.owner === userId;
+    },
+    update: function(userId, doc) {
+        return doc.owner === userId;
+    },
+    remove: function(userId, doc) {
+        return doc.owner === userId;
+    }
+  });
+  
   Recommends.allow({
     update: function(userId, doc, fieldNames, modifier) {
       if(modifier.$set["readUsers"]){

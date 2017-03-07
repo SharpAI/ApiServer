@@ -53,6 +53,8 @@ if Meteor.isClient
     isFirstLog:()->
       Session.get('isFlag');
   Template.home.events
+    'click .top-series-btn': (event)->
+       Router.go '/seriesList'
     'click #follow': (event)->
        Router.go '/searchFollow'
     'click .clickHelp':(event)->
