@@ -87,17 +87,12 @@ if Meteor.isClient
       Meteor.users.update({_id: Meteor.userId()}, {$set: {'myHotPosts': newArray}});
     return
   Template.myPosts.events
-    'click .cb_parent':(event)->
+    'click .img_hotpost':(event)->
       event.stopPropagation()
-    'change .cb_hotpost':(event)->
+      removePostFromMyHotPosts(this._id)
+    'click .img_unhotpost':(event)->
       event.stopPropagation()
-      x = event.target.checked
-      if (x)
-        console.log '##RDBG add post to myHotPosts, id: ' + this._id;
-        addPostToMyHotPosts(this._id, this.title, this.addontitle, this.mainImage)
-      else
-        console.log '##RDBG add post to myHotPosts, id: ' + this._id;
-        removePostFromMyHotPosts(this._id)
+      addPostToMyHotPosts(this._id, this.title, this.addontitle, this.mainImage)
     'click .back':(event)->
         $('.home').addClass('animated ' + animateOutUpperEffect);
         setTimeout ()->

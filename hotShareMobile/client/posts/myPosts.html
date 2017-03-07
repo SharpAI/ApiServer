@@ -47,11 +47,11 @@
                                         <dd style="font-size: 18px;overflow: hidden;word-wrap: break-word;white-space: nowrap;text-overflow: ellipsis;">{{title}}</dd>
                                         <dd style="font-size: 15px;overflow: hidden;word-wrap: break-word;white-space: nowrap;text-overflow: ellipsis;color: #ccc">{{addontitle}}</dd>
                                     </dl>
-                                    <div class="cb_parent" style="position: absolute; right: 10px; width: 30px; height: 100%;">
+                                    <div style="position: absolute; top: 15px; right: 15px;">
                                       {{#if isHotPost _id}}
-                                      <input class="cb_hotpost" style="position: absolute; top: 10px; left: 10px;" type='checkbox' checked="checked"/>
+                                      <img class="img_hotpost" src="/img/hotpost_enable.png"/>
                                       {{else}}
-                                      <input class="cb_hotpost" style="position: absolute; top: 10px; left: 10px;" type='checkbox'/>
+                                      <img class="img_unhotpost" src="/img/hotpost_disable.png"/>
                                       {{/if}}
                                     </div>
                                 </div>
