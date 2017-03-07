@@ -15,11 +15,11 @@ if Meteor.isClient
       }
       ###
       if Meteor.user() and Session.equals('channel','user')
-        Session.set('myCounterCollection','loading')
+        Session.set('gotMyProfileData',false)
         Meteor.setTimeout ()->
           Meteor.call('getMyProfileData',(err,json)->
             if(!err && json)
-              Session.set('myCounterCollection','loaded')
+              Session.set('gotMyProfileData',true)
               console.log(json)
               Session.setPersistent('myPostsCount',json['myPostsCount'])
               Session.setPersistent('mySavedDraftsCount',json['mySavedDraftsCount'])
@@ -38,6 +38,7 @@ if Meteor.isClient
         Session.set('savedDraftsWithLimitCollection','loading')
         Session.set('followedByWithLimitCollection','loading')
         Session.set('followToWithLimitCollection','loading')
+        Session.set('myCounterCollection','loading')
         Meteor.subscribe("postsWithLimit",4,{
           onReady:()->
             Session.set('postsWithLimitCollection','loaded')
@@ -55,6 +56,10 @@ if Meteor.isClient
             Session.set('followToWithLimitCollection','loaded')
         })
         Meteor.subscribe("userRelation")
+        Meteor.subscribe('myCounter',{
+          onReady:()->
+            Session.set('myCounterCollection','loaded')
+        })
   Template.user.helpers
     isLoading:->
       if Session.get('myPostsCount') isnt undefined
@@ -70,7 +75,7 @@ if Meteor.isClient
         Session.get('persistentMyOwnPosts') is undefined or
         Session.get('myFollowToCount') is undefined
         ) and (
-        Session.get('myCounterCollection') is 'loading' or
+        Session.get('gotMyProfileData') is false or
         Session.get('postsWithLimitCollection') is 'loading' or
         Session.get('savedDraftsWithLimitCollection') is 'loading' or
         Session.get('followedByWithLimitCollection') is 'loading' or
@@ -95,6 +100,8 @@ if Meteor.isClient
       #Follower存放用户间关注记录， Follows是推荐偶像列表
       #followerId是偶像userId, userId是粉丝userId
       myFollowedByCount = Session.get('myEmailFollowerCount-'+Meteor.userId()) + Session.get('myFollowedByCount-'+Meteor.userId())
+      if Session.equals('myCounterCollection','loaded')
+        myFollowedByCount = Counts.get('myEmailFollowerCount-'+Meteor.userId()) + Counts.get('myFollowedByCount-'+Meteor.userId())
       if myFollowedByCount
         myFollowedByCount
       else
@@ -102,6 +109,8 @@ if Meteor.isClient
 
     emailFollowerCount:->
       myEmailFollowedByCount = Session.get('myEmailFollowerCount-'+Meteor.userId())
+      if Session.equals('myCounterCollection','loaded')
+        myEmailFollowedByCount = Counts.get('myEmailFollowerCount-'+Meteor.userId())
       if myEmailFollowedByCount
         myEmailFollowedByCount
       else
@@ -109,6 +118,8 @@ if Meteor.isClient
 
     appFollowerCount:->
       myFollowedByCount = Session.get('myFollowedByCount-'+Meteor.userId())
+      if Session.equals('myCounterCollection','loaded')
+        myFollowedByCount = Counts.get('myFollowedByCount-'+Meteor.userId())
 
       if myFollowedByCount
         myFollowedByCount
@@ -117,6 +128,8 @@ if Meteor.isClient
 
     draftsCount:->
       mySavedDraftsCount = Session.get('mySavedDraftsCount')
+      if Session.equals('myCounterCollection','loaded')
+        mySavedDraftsCount = Counts.get('mySavedDraftsCount')
       if mySavedDraftsCount
         mySavedDraftsCount
       else
@@ -148,6 +161,8 @@ if Meteor.isClient
     postsCount:->
       #return  Posts.find({owner: Meteor.userId(), publish: {$ne: false}}).count()
       myPostsCount = Session.get('myPostsCount')
+      if Session.equals('myCounterCollection','loaded')
+        myPostsCount = Counts.get('myPostsCount')
       if myPostsCount
         myPostsCount
       else
@@ -167,6 +182,8 @@ if Meteor.isClient
         Session.get('persistentMyOwnPosts')
     followCount:->
       myFollowToCount = Session.get('myFollowToCount')
+      if Session.equals('myCounterCollection','loaded')
+        myFollowToCount = Counts.get('myFollowToCount')
       if myFollowToCount
         myFollowToCount
       else

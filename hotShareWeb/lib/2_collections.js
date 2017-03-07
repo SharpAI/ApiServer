@@ -1777,7 +1777,7 @@ if(Meteor.isServer){
           return this.ready();
       else {
           Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId,publish: {$ne: false}}), {nonReactive: true });
-          Counts.publish(this, 'mySavedDraftsCount', SavedDrafts.find({owner: this.userId}), {nonReactive: true });
+          Counts.publish(this, 'mySavedDraftsCount', SavedDrafts.find({owner: this.userId}), {reactive: true });
           //Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { nonReactive: true });
           Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { reactive: true });
           Counts.publish(this, 'myFollowedByCount-'+this.userId, Follower.find({followerId:this.userId, userEmail: {$exists: false}}), { noReady: true });
