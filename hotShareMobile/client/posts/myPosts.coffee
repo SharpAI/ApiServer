@@ -1,5 +1,10 @@
 if Meteor.isClient
   Template.myPosts.rendered=->
+    hotPostArray = Meteor.user().myHotPosts
+    unless hotPostArray
+      hotPostArray = []
+    Session.set("myHotPosts", hotPostArray)
+    Session.set("myHotPostsChanged", false)
     $('.content').css 'min-height',$(window).height()
     if(Session.get("showBigImage") == undefined)
       Session.set("showBigImage",true)
@@ -54,16 +59,21 @@ if Meteor.isClient
     loadError:->
       Session.equals('myPostsCollection','error')
     isHotPost:(postId)->
-      console.log '##RDBG isHotPost: ' + postId
-      myHotPosts = Meteor.user().myHotPosts
+      myHotPosts = Session.get("myHotPosts")
       if (myHotPosts)
         for item in myHotPosts
           if (item.postId == postId)
             return true
       return false
+  @isHotPostsChanged = ()->
+    Session.get("myHotPostsChanged")
+  @saveHotPosts = ()->
+    if (Session.get("myHotPostsChanged"))
+      myHotPosts = Session.get("myHotPosts")
+      Meteor.users.update({_id: Meteor.userId()}, {$set: {'myHotPosts': myHotPosts}});
   addPostToMyHotPosts = (postId, title, addontitle, mainImage)->
     myHotPost = {postId: postId, title: title, addontitle: addontitle, mainImage: mainImage}
-    hotPostArray = Meteor.user().myHotPosts
+    hotPostArray = Session.get("myHotPosts")
     if (hotPostArray == undefined || hotPostArray == null)
       hotPostArray = []
       hotPostArray.push(myHotPost)
@@ -75,16 +85,19 @@ if Meteor.isClient
       if (hotPostArray.length > 1)
         newArray.push(hotPostArray[1])
       hotPostArray = newArray
-    Meteor.users.update({_id: Meteor.userId()}, {$set: {'myHotPosts': hotPostArray}});
+    Session.set("myHotPosts", hotPostArray)
+    Session.set("myHotPostsChanged", true)
     return
   removePostFromMyHotPosts = (postId)->
-    hotPostArray = Meteor.user().myHotPosts
+    hotPostArray = Session.get("myHotPosts")
     if (hotPostArray)
       newArray = []
       for item in hotPostArray
         if item.postId isnt postId
           newArray.push(item)
-      Meteor.users.update({_id: Meteor.userId()}, {$set: {'myHotPosts': newArray}});
+      hotPostArray = newArray
+      Session.set("myHotPosts", hotPostArray)
+      Session.set("myHotPostsChanged", true)
     return
   Template.myPosts.events
     'click .img_hotpost':(event)->
@@ -92,8 +105,15 @@ if Meteor.isClient
       removePostFromMyHotPosts(this._id)
     'click .img_unhotpost':(event)->
       event.stopPropagation()
+      hotPostArray = Session.get("myHotPosts")
+      if (hotPostArray.length >= 3)
+        PUB.toast('热门帖子最多选取三张! 请先取消其他热门帖子!')
       addPostToMyHotPosts(this._id, this.title, this.addontitle, this.mainImage)
     'click .back':(event)->
+        if (Session.get("myHotPostsChanged"))
+          PUB.confirm("您改变了热门帖子, 要保存吗?", ()->
+            saveHotPosts()
+          )
         $('.home').addClass('animated ' + animateOutUpperEffect);
         setTimeout ()->
           PUB.page('/user')

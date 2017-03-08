@@ -391,7 +391,12 @@ if Meteor.isClient
         size = myHotPosts.length
         idx = 0
         while (size < 3 && idx < mostReadPosts.length)
-          myHotPosts.push(mostReadPosts[idx])
+          inHotPosts = false
+          for itemPost in myHotPosts
+            if itemPost.postId and itemPost.postId is mostReadPosts[idx]._id
+              inHotPosts = true
+          unless inHotPosts
+            myHotPosts.push(mostReadPosts[idx])
           idx++
           size = myHotPosts.length
       return myHotPosts

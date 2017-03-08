@@ -203,7 +203,16 @@ if (Meteor.isCordova) {
         return;
       }
       var currentRoute = Router.current().route.getName();
-      if (currentRoute == 'deal_page'){
+      if (currentRoute == 'myPosts'){
+        if (isHotPostsChanged()) {
+          PUB.confirm("您改变了热门帖子, 要保存吗?", function(){
+            console.log('##RDBG confirm callback');
+            saveHotPosts()
+          });
+        }
+        PUB.back();
+      }
+      else if (currentRoute == 'deal_page'){
         if (Session.get("dealBack") == "register"){
           Router.go('/signupForm');
         } else if (Session.get("dealBack") == "anonymous"){
