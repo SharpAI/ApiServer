@@ -346,6 +346,9 @@ if Meteor.isClient
             newpostsdata = Session.get 'newpostsdata'
             if newpostsdata and postContent._id is newpostsdata._id
               return
+            #文章作者被加入黑名单时不提示关注作者
+            if BlackList.find({blackBy: Meteor.userId(), blacker:{$in: [postContent._id]}}).count() > 0
+              return
             $('.subscribeAutorPage').show()
 #    $('.textDiv1Link').linkify();
     setTimeout ()->

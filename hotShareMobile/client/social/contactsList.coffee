@@ -167,7 +167,8 @@ if Meteor.isClient
          username = Meteor.user().profile.fullname
       else
          username = Meteor.user().username
-      Follower.insert {
+      console.log  'contactsList addFollow!'
+      insertObj = {
         userId: Meteor.userId()
         #这里存放fullname
         userName: username
@@ -178,4 +179,5 @@ if Meteor.isClient
         followerName: this.username
         followerIcon: this.userIcon
         createAt: new Date()
-    }
+      }
+      addFollower(insertObj)

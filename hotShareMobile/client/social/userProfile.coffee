@@ -77,8 +77,9 @@ if Meteor.isClient
     UserProfile = PostFriends.findOne({ta:Session.get(userId)})
     requestee = UserProfile.displayName
     UserProfile._id = UserProfile.ta
+    console.log  'addToContactList！！！'
     if Follower.findOne({"userId":UserProfile._id,"followerId":Meteor.userId()})
-      Follower.insert {
+      insertObj = {
         userId: Meteor.userId()
         userName: username
         userIcon: Meteor.user().profile.icon
@@ -89,6 +90,7 @@ if Meteor.isClient
         followerDesc: ''
         createAt: new Date()
       }
+      addFollower(insertObj)
       return
     if Feeds.findOne({"requesteeId":Meteor.userId(),"requesterId":UserProfile._id})
       Follower.insert {
@@ -345,7 +347,7 @@ if Meteor.isClient
         followerName = profile.profile.fullname
       else if profile
         followerName = profile.username
-      Follower.insert {
+      insertObj = {
         userId: Meteor.userId()
         #这里存放fullname
         userName: username
@@ -358,6 +360,7 @@ if Meteor.isClient
         followerDesc: profile.profile.desc
         createAt: new Date()
       }
+      addFollower(insertObj)
     'click #unFollowAuthor': (e)->
       followId = Follower.findOne({followerId: Session.get("ProfileUserId1"), userId: Meteor.userId()})._id
       Follower.remove {
@@ -471,7 +474,7 @@ if Meteor.isClient
         followerName = profile.profile.fullname
       else if profile
         followerName = profile.username
-      Follower.insert {
+      insertObj = {
         userId: Meteor.userId()
         #这里存放fullname
         userName: username
@@ -484,6 +487,7 @@ if Meteor.isClient
         followerDesc: profile.profile.desc
         createAt: new Date()
       }
+      addFollower(insertObj)
     'click #unFollowAuthor': (e)->
       followId = Follower.findOne({followerId: Session.get("ProfileUserId2"), userId: Meteor.userId()})._id
       Follower.remove {
@@ -596,7 +600,7 @@ if Meteor.isClient
         followerName = profile.profile.fullname
       else if profile
         followerName = profile.username
-      Follower.insert {
+      insertObj = {
         userId: Meteor.userId()
         #这里存放fullname
         userName: username
@@ -609,6 +613,7 @@ if Meteor.isClient
         followerDesc: profile.profile.desc
         createAt: new Date()
       }
+      addFollower(insertObj)
     'click #unFollowAuthor': (e)->
       followId = Follower.findOne({followerId: Session.get("ProfileUserId3"), userId: Meteor.userId()})._id
       Follower.remove {
@@ -723,7 +728,7 @@ if Meteor.isClient
         followerName = profile.profile.fullname
       else if profile
         followerName = profile.username
-      Follower.insert {
+      insertObj = {
         userId: Meteor.userId()
         #这里存放fullname
         userName: username
@@ -736,6 +741,7 @@ if Meteor.isClient
         followerDesc: profile.profile.desc
         createAt: new Date()
       }
+      addFollower(insertObj)
     'click #unFollowAuthor': (e)->
       followId = Follower.findOne({followerId: Session.get("ProfileUserId"), userId: Meteor.userId()})._id
       Follower.remove {

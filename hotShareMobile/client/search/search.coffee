@@ -97,7 +97,7 @@ if Meteor.isClient
          followername = @profile.fullname
       else
          followername = @username
-      Follower.insert {
+      insertObj = {
         userId: Meteor.userId()
         #这里存放fullname
         userName: username
@@ -110,6 +110,7 @@ if Meteor.isClient
         followerDesc: @desc
         createAt: new Date()
       }
+      addFollower(insertObj)
     'click .del':(e)->
       followerId = e.currentTarget.id
       FollowerId = Follower.findOne({
@@ -122,7 +123,7 @@ if Meteor.isClient
          username = Meteor.user().profile.fullname
       else
          username = Meteor.user().username
-      Follower.insert {
+      insertObj = {
         userId: Meteor.userId()
         #这里存放fullname
         userName: username
@@ -134,7 +135,8 @@ if Meteor.isClient
         followerIcon: @icon
         followerDesc: @desc
         createAt: new Date()
-    }
+      }
+      addFollower(insertObj)
   Template.searchFollow.helpers
     isSearching:->
       if Session.get('isSearching') is false
@@ -343,7 +345,7 @@ if Meteor.isClient
          followername = @profile.fullname
       else
          followername = @username
-      Follower.insert {
+      insertObj = {
         userId: Meteor.userId()
         #这里存放fullname
         userName: username
@@ -355,7 +357,8 @@ if Meteor.isClient
         followerIcon: @profile.icon
         followerDesc: @desc
         createAt: new Date()
-    }
+      }
+      addFollower(insertObj)
     'click .del':(e)->
       followerId = e.currentTarget.id
       FollowerId = Follower.findOne({
@@ -368,7 +371,7 @@ if Meteor.isClient
          username = Meteor.user().profile.fullname
       else
          username = Meteor.user().username
-      Follower.insert {
+      insertObj = {
         userId: Meteor.userId()
         #这里存放fullname
         userName: username
@@ -380,4 +383,5 @@ if Meteor.isClient
         followerIcon: @icon
         followerDesc: @desc
         createAt: new Date()
-    }
+      }
+      addFollower(insertObj)
