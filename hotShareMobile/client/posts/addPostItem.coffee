@@ -161,16 +161,17 @@ if Meteor.isClient
       console.log("delEnd "+ node.id)
       draftsArr = Drafts.find({}).fetch()
       if draftsArr.length > 0
-        for i in [0..draftsArr.length - 1]
-          if draftsArr[i]._id is node.id
-            indexNum = i
-        for i in [indexNum..draftsArr.length - 1]
-          thisNode = document.getElementById(draftsArr[i]._id)
-          console.log("thisNode "+ thisNode)
-          if gridster?
-            gridster.remove_widget2(thisNode, false)
-          Drafts.remove draftsArr[i]._id
-        # Drafts.find({}).fetch().splice(indexNum,draftsArr.length + 1 - indexNum)
+        indexNum = parseInt($(node).attr('data-row'))
+        console.log  'indexNum======'+indexNum
+
+        $("ul#display").find("li").each((i,el)->
+          console.log("thisNode "+ $(el))
+          data_row = parseInt($(el).attr('data-row'))
+          if data_row >= indexNum
+            if gridster?
+              gridster.remove_widget2(el, false)
+            Drafts.remove el.id
+        )
       resizeGridsterDisplayHeight()
     else if buttonClicked.id is "font"
       setTimeout ()->
