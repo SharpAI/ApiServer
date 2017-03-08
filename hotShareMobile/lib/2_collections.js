@@ -2271,7 +2271,14 @@ if(Meteor.isServer){
     return SavedDrafts.find({owner: this.userId}, {sort: {createdAt: -1}});
   });
 
+   Meteor.publish('webUserPublishPosts', function(limit) {
+    if(!this.userId)
+      return this.ready();
 
+    limit = limit || 10;
+    //return Posts.find({}, {sort: {createdAt: -1}, limit: limit});
+    return Posts.find({owner: this.userId}, {sort: {createdAt: -1}, limit: limit});
+  });
   Series.allow({
     insert: function(userId, doc) {
         console.log(userId)
@@ -3232,6 +3239,31 @@ if(Meteor.isClient){
                 count = Posts.find({owner: Meteor.userId()}).count()
                 Session.set('storyListsCounts',count)
                 Session.set('storyListsLoaded',true)
+            }
+        });
+    }
+  });
+
+  Tracker.autorun(function() {
+    if (Meteor.userId()) {
+        Meteor.subscribe('webUserPublishPosts',Session.get('seriesAuthorPostsLimit'),{
+            onReady: function(){
+                console.log('author publish posts loaded');
+                count = Posts.find({owner:Meteor.userId(),publish:{"$ne":false}}).count();
+                if(count === Session.get('seriesAuthorPostsCount')){
+                    Session.set('authorPublishPostForSeries','loadedall');
+                } else {
+                    Session.set('authorPublishPostForSeries','loaded');
+                }
+                console.log('count ==',count);
+                console.log('session count==', Session.get('seriesAuthorPostsCount'));
+                Session.set('seriesAuthorPostsCount',count)
+            },
+            onError: function(){
+                console.log('get author publish posts error');
+                count = Posts.find({owner:Meteor.userId(),publish:{"$ne":false}}).count();
+                Session.set('seriesAuthorPostsCount',count);
+                Session.set('authorPublishPostForSeries','loaded');
             }
         });
     }

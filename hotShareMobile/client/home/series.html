@@ -16,9 +16,14 @@
   </ul>
   <div class="series-head">
     <div class="series-btns">
+      {{#if isSeriesEdit}}
+      <div class="back">关闭</div>
+      <div class="publish">发布</div>
+      {{else}}
       <div class="back"><i class="fa fa-chevron-left"></i></div>
-      <!--<div class="share-btn"><i class="fa fa-share-alt"></i></div>-->
+      <div class="share-btn"><i class="fa fa-share-alt"></i></div>
       <div class="menu-btn has-dropdown"> <i class="fa fa-ellipsis-v"></i></div>
+      {{/if}}
     </div>
   </div>
   {{#if isSeriesEdit}}
@@ -28,7 +33,7 @@
       <span id="useUserImage" class="imageToolBtn"><i class="fa fa-pencil"></i></span>
     </div>
     <div class="series-title" style="background: url({{mainImage}}) no-repeat;background-size: cover;" data-image="{{mainImage}}">
-       <textarea id="seriesTitle">{{seriesTitle}}</textarea>
+       <textarea id="seriesTitle" rows="3" cols="20">{{seriesTitle}}</textarea>
      </div>
      {{#if postCounts}}
     <div style="margin: 10px">此合集包含下列{{postCounts}}个故事</div>

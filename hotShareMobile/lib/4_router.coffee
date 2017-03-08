@@ -57,11 +57,7 @@ if Meteor.isClient
       this.render 'seriesList'
       Session.set 'channel','seriesList'
     Router.route '/series',()->
-      Session.set('seriesContent',{
-        mainImage:'http://data.tiegushi.com/ocmainimages/mainimage5.jpg',
-        postLists: [],
-        publish: false
-      })
+      Session.set('seriesId','')
       this.render 'series'
       return
     Router.route '/series/:_id',()->

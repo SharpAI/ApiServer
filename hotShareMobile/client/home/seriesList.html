@@ -15,7 +15,7 @@
             <div class="no-series-title">当前没有合辑？马上创建一个</div>
             <i class="fa fa-long-arrow-down" aria-hidden="true"></i>
           {{else}}
-            <div id="list">
+            <div id="list" style="width: 100%;">
             {{#if loading}}
               <div>{{_ "isLoading"}}</div>
             {{/if}}
@@ -34,7 +34,7 @@
               {{/each}}
             </ul>
             {{#if moreResults}}
-              <div id="showMoreResults" style="margin-left: 25px;">
+              <div id="showMoreResults" style="margin-bottom: 60px;">
                 <span class="loading">{{_ "loading"}}</span>
               </div>
             {{/if}}

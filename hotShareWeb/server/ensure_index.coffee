@@ -32,7 +32,7 @@ if Meteor.isServer
     Meets._ensureIndex({me: 1, meetOnPostId: 1, createdAt: -1})
     Posts._ensureIndex({owner: 1, createdAt: -1})
     Posts._ensureIndex({owner: 1, publish: 1})
-    Series._ensureIndex({owner: 1, publish: 1})
+    Series._ensureIndex({owner: 1})
     #Posts._ensureIndex({title: 1, publish: 1})
     Posts._ensureIndex({owner: 1, publish: 1, createdAt: -1})
     Posts._ensureIndex({owner: 1, publish: 1, browse: -1})

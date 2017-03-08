@@ -11,9 +11,11 @@
           <input id="" uri="" class="mainImageListInput" type="checkbox" name="mainimage{{num}}.jpg" value="http://data.tiegushi.com/ocmainimages/mainimage{{num}}.jpg" />
         </li>
         {{/each}}
+        {{#if mainImage}}
         <li style="background-image:url('{{mainImage}}');">
           <input  class="mainImageListInput" type="checkbox"  value="{{mainImage}}" />
         </li>
+        {{/if}}
       </ul>
     </div>
     <div class="contentList">

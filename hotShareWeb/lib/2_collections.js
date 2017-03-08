@@ -1427,7 +1427,7 @@ if(Meteor.isServer){
         if(this.userId === null || !Match.test(limit, Number))
           return this.ready();
         else
-          return Series.find({owner: this.userId,publish: true}, {sort: {createdAt: -1}, limit:limit});
+          return Series.find({owner: this.userId}, {sort: {createdAt: -1}, limit:limit});
     });
     Meteor.publish("oneSeries", function(seriesId){
         if(this.userId === null)

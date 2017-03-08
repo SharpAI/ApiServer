@@ -20,6 +20,15 @@
       </li>
       {{/each}}
     </ul>
+    {{#if showLoadingElem}}
+    <div class="loadingStatus"><img src="/loading-2.gif" height="24" style="margin-right: 4px;"/>加载中 ...</div>
+    {{else}}
+      {{#if allPostsLoaded}}
+      <div class="loadingStatus">已显示全部</div>
+      {{else}}
+      <div class="loadingStatus">上拉加载更多</div>
+      {{/if}}
+    {{/if}}
   </div>
 </div>
 

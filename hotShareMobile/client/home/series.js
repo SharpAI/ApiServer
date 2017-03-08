@@ -1,6 +1,77 @@
+var updateOrInsertSeries = function(isNewSeries,publish){
+  if($('#seriesTitle').val() === ''){
+    return PUB.toast('请输入标题');
+  }
+  if($(".series-post-item").length === 0){
+    return PUB.toast('请至少添加一个故事')
+  }
+  var title = $('#seriesTitle').val();
+  var posts = []
+  var mainImage = $('.series-title').data('image');
+  var owner = Meteor.user();
+  var ownerName = owner.profile.fullname ? owner.profile.fullname: owner.username;
+  var ownerIcon = owner.profile.icon
+  var num = 0;
+  $('.series-post-item').each(function(index){
+    posts.push({
+        postId:$(this).attr('id'),
+        postTitle: $(this).data('title'),
+        postAddonTitle: $(this).data('addontitle'),
+        postMainImage: $(this).data('image'),
+        postIndex: num,
+        postOwner: owner._id,
+        postOwnerName: ownerName,
+        postOwnerIcon: ownerIcon
+    });
+    num++;
+  });
+  if(isNewSeries){
+    Series.insert({
+        title: title,
+        mainImage: mainImage,
+        owner: owner._id,
+        ownerName: ownerName,
+        ownerIcon: ownerIcon,
+        createdAt: new Date(),
+        postLists: posts,
+        publish: publish
+    },function(err,_id){
+      if(err){
+        console.log('insert series ERR=',err)
+      } else {
+        console.log('insert series successed ,ID=',_id)
+      }
+    });
+  } else {
+    console.log('update series')
+    Series.update({
+      _id: Session.get('seriesId')
+    },{
+      $set:{
+        title: title,
+        mainImage: mainImage,
+        postLists: posts,
+        updateAt: new Date(),
+        publish: true
+      }
+    },function(err,num){
+      if(err){
+        console.log('update series ERR=',err)
+      } else {
+        console.log('update series successed ,num=',num)
+      }
+    });
+  }
+  Session.set('seriesId','');
+  Session.set('seriesContent','');
+  Session.set('isSeriesEdit',false);
+  Router.go('/seriesList');
+}
 Template.series.helpers({
   postsLists: function(){
-    return Session.get('seriesContent').postLists
+    if(Session.get('seriesContent')){
+      return Session.get('seriesContent').postLists
+    }
   },
   isSeriesEdit: function(){
     return Session.equals('isSeriesEdit',true);
@@ -10,37 +81,51 @@ Template.series.helpers({
     return (seriesContent && seriesContent.postLists)?seriesContent.postLists.length : 0
   },
   seriesTitle: function(){
-    if(Session.get('seriesContent').title){
+    if(Session.get('seriesContent') && Session.get('seriesContent').title){
       return Session.get('seriesContent').title;
     } else {
       return "";
     }
   },
   mainImage: function() {
-    if(!Session.get('seriesMainImage') || Session.get('seriesMainImage') === ''){
-      Session.set('seriesMainImage','http://data.tiegushi.com/ocmainimages/mainimage5.jpg');
+    if(Session.get('seriesContent') && Session.get('seriesContent').mainImage){
+      return Session.get('seriesContent').mainImage;
+    } else {
+      return 'http://data.tiegushi.com/ocmainimages/mainimage5.jpg';
     }
-    return Session.get('seriesMainImage');
   },
   showPublishBtn: function(){
-    console.log(Session.get('seriesContent').publish +'--dsfsdf')
-    return !Session.get('seriesContent').publish && Template.series.__helpers.get('postCounts')()
+    if(Session.get('seriesContent')){
+      return !Session.get('seriesContent').publish && Template.series.__helpers.get('postCounts')()
+    } else {
+      return true;
+    }
   }
 });
 
 Template.series.events({
+  'click .share-btn': function(e){
+    console.log('will share')
+  },
   'click .back': function(e,t){
     if(!Session.get('seriesIsSaved') && Session.get('isSeriesEdit')){
-
-       navigator.notification.confirm('这个操作无法撤销', function(r){
-        if(r !== 1){
-          return 
-        }
-        Router.go('/seriesList');
-       },'您确定要放弃未保存的修改吗？', ['放弃修改','继续编辑']);
-    } else {
-      Router.go('/seriesList');
-    }
+       if(Session.get('seriesId') && Session.get('seriesId') !== ''){
+        navigator.notification.confirm('这个操作无法撤销', function(r){
+          if(r !== 1){
+            updateOrInsertSeries(false,true);
+          }
+          Router.go('/seriesList');
+        },'您确定要放弃未保存的修改吗？', ['放弃修改','保存修改']);
+       } else {
+        navigator.notification.confirm('这个操作无法撤销', function(r){
+          if(r !== 1){
+            updateOrInsertSeries(true,false);
+          }
+          Router.go('/seriesList');
+        },'您确定要放弃未保存的修改吗？', ['放弃修改','存为草稿']);
+       }
+    } 
+    Router.go('/seriesList');
   },
   'click #edit': function(e,t){
     return Session.set('isSeriesEdit',true);
@@ -53,18 +138,69 @@ Template.series.events({
     Session.set('seriesIsSaved',false);
     $('.author-self-posts').toggle();
   },
-  'change #seriesTitle':function(){
+  'click #seriesTitle':function(e,t){
+    e.preventDefault();
+    e.stopPropagation();
+    $(this).focus();
     Session.set('seriesIsSaved',false);
   },
   'click .series-title':function(){
-    $('.mainImageTools').show();
+    $('.mainImageTools').toggle();
   },
   'click .imageToolBtn': function(e,t){
     $('.mainImageTools').hide();
     if(e.currentTarget.id === 'useOfficalImage'){
+      $('#seriesTitle').hide();
       $('.mainImagesList').show();
     } else {
-      // todo 
+      Meteor.defer(function() {
+        selectMediaFromAblum(1, function(cancel, result) {
+          var data;
+          if (cancel) {
+            PUB.back();
+            return;
+          }
+          if (result) {
+            data = [
+              {
+                type: 'image',
+                isImage: true,
+                owner: Meteor.userId(),
+                imgUrl: result.smallImage,
+                filename: result.filename,
+                URI: result.URI,
+                layout: ''
+              }
+            ];
+            return multiThreadUploadFileWhenPublishInCordova(data, null, function(err, result) {
+              var i, item, len;
+              if (!result) {
+                window.plugins.toast.showShortBottom('上传失败，请稍后重试');
+                return;
+              }
+              if (result.length < 1) {
+                window.plugins.toast.showShortBottom('上传失败，请稍后重试');
+                return;
+              }
+              for (i = 0, len = result.length; i < len; i++) {
+                item = result[i];
+                if (item.uploaded) {
+                  if (item.type === 'image' && item.imgUrl) {
+                    var seriesContent = Session.get('seriesContent');
+                    seriesContent.mainImage = item.imgUrl
+                    Session.set('seriesContent',seriesContent);
+                  }
+                }
+              }
+              if (err) {
+                window.plugins.toast.showShortBottom('上传失败，请稍后重试');
+                return;
+              }
+              return removeImagesFromCache(data);
+            });
+          }
+        });
+      });
     }
   },
   'click .series-post-item': function(e,t){
@@ -104,66 +240,13 @@ Template.series.events({
   },
   'click #del':function(e,t){
     Series.remove({_id: Session.get('seriesId')});
-    return PUB.back();
+    Router.go ('/seriesList');
   },  
   'click .publish':function(e,t){
-    if($('#seriesTitle').val() === ''){
-      return PUB.toast('请输入标题');
-    }
-    if($(".series-post-item").length === 0){
-      return PUB.toast('请至少添加一个故事')
-    }
-    Session.set('isSeriesEdit',false);
-    var title = $('#seriesTitle').val();
-    var posts = []
-    var mainImage = $('.series-title').data('image');
-    var owner = Meteor.user();
-    var ownerName = owner.profile.fullname ? owner.profile.fullname: owner.username;
-    var ownerIcon = owner.profile.icon
-    var num = 0;
-    $('.series-post-item').each(function(index){
-      posts.push({
-          postId:$(this).attr('id'),
-          postTitle: $(this).data('title'),
-          postAddonTitle: $(this).data('addontitle'),
-          postMainImage: $(this).data('image'),
-          postIndex: num,
-          postOwner: owner._id,
-          postOwnerName: ownerName,
-          postOwnerIcon: ownerIcon
-      });
-      num++;
-    });
-    var publish = Session.get('seriesContent').publish;
-    if(e.currentTarget.id === 'publish'){
-      publish = true;
-    }
-    console.log('publish='+publish)
-    if(Session.get('seriesId')){
-      Series.update({
-        _id: Session.get('seriesId')
-      },{
-        $set:{
-          title: title,
-          mainImage: mainImage,
-          postLists: posts,
-          updateAt: new Date(),
-          publish: publish
-        }
-      });
+    if(Session.get('seriesId') && Session.get('seriesId') !== ''){
+      updateOrInsertSeries(false,true);   
     } else {
-      Series.insert({
-          title: title,
-          mainImage: mainImage,
-          owner: owner._id,
-          ownerName: ownerName,
-          ownerIcon: ownerIcon,
-          createdAt: new Date(),
-          postLists: posts,
-          publish: publish
-      })
+      updateOrInsertSeries(true,true);  
     }
-
-    Router.go('/seriesList');
   }
-})
+});
