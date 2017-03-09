@@ -84,6 +84,24 @@ if Meteor.isClient
     #    ' row '+myData.data_row+' h '+myData.data_sizey+' w '+myData.data_sizex+
     #    ' H '+element.offsetHeight+'/'+element.clientHeight+' W '+element.offsetWidth+' Top '+element.offsetTop
     #)
+    $('#'+myData._id).attr('data-height': $('#'+myData._id).height())
+    $('#'+myData._id).bind 'DOMNodeInserted', (e) ->
+      console.log 'element now contains '
+      postItem = $(this)
+      offsetHeight = postItem.height() - parseInt(postItem.attr('data-height'))
+      console.log offsetHeight
+      if offsetHeight == 0
+        return
+      testDivHeight = parseInt($('#test').css('height'))
+      $('#test').css 'height', testDivHeight + offsetHeight + 'px'
+      postItem.attr 'data-height': postItem.height()
+      postItem.nextAll().each ->
+        try
+          item = $(this)
+          top = offsetHeight + item.position().top
+          item.css('top', top + 'px')
+        catch error
+          console.log  error
   Template.postItem.events
     'click .thumbsUp': (e)->
       Session.set("pcommetsId","")
