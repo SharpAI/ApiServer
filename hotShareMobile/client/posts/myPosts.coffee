@@ -143,6 +143,11 @@ if Meteor.isClient
                 '提示'
                 ['暂不','保存']
             )
+        else
+          $('.home').addClass('animated ' + animateOutUpperEffect);
+          setTimeout ()->
+            PUB.page('/user')
+          ,animatePageTrasitionTimeout
     'click .mainImage':(e)->
         Session.set("postPageScrollTop", 0)
         if isIOS
@@ -150,6 +155,22 @@ if Meteor.isClient
             console.log 'should be triggered in scrolling'
             return false
         postId = this._id
+        if (Session.get("myHotPostsChanged"))
+          navigator.notification.confirm(
+                '您改变了热门帖子, 要保存吗?'
+                (index)->
+                    if index is 2
+                       saveHotPosts()
+                    $('.home').addClass('animated ' + animateOutUpperEffect);
+                    setTimeout ()->
+                      PUB.page '/posts/'+postId
+                    ,animatePageTrasitionTimeout
+                    Session.set 'FollowPostsId',this._id
+                    Session.set 'backtoMyPosts', true
+                '提示'
+                ['暂不','保存']
+            )
+          return
         $('.home').addClass('animated ' + animateOutUpperEffect);
         setTimeout ()->
           PUB.page '/posts/'+postId
