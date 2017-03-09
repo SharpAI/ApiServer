@@ -1,8 +1,27 @@
-var PRFIX= '_simple_chat_';
-Messages = new Mongo.Collection(PRFIX + 'messages');
-MsgSession = new Mongo.Collection(PRFIX + 'msg_session');
-Groups = new Mongo.Collection(PRFIX + 'groups');
-GroupUsers = new Mongo.Collection(PRFIX + 'groups_users');
+var PRFIX= 'simple_chat_';
+if(Meteor.isServer){
+  var remoteCollectionDriver = function(){
+    var connectionOptions = {};
+    var mongoUrl = process.env.CHAT_MONGO_URL;
+
+    if (process.env.MONGO_OPLOG_URL)
+      connectionOptions.oplogUrl = process.env.CHAT_MONGO_OPLOG_URL;
+    if (!mongoUrl)
+      mongoUrl = process.env.MONGO_URL
+    return new MongoInternals.RemoteCollectionDriver(mongoUrl, connectionOptions);
+  };
+  var options = {_driver: remoteCollectionDriver()};
+
+  Messages = new Mongo.Collection(PRFIX + 'messages', options);
+  MsgSession = new Mongo.Collection(PRFIX + 'msg_session', options);
+  Groups = new Mongo.Collection(PRFIX + 'groups', options);
+  GroupUsers = new Mongo.Collection(PRFIX + 'groups_users', options);
+}else{
+  Messages = new Mongo.Collection(PRFIX + 'messages');
+  MsgSession = new Mongo.Collection(PRFIX + 'msg_session');
+  Groups = new Mongo.Collection(PRFIX + 'groups');
+  GroupUsers = new Mongo.Collection(PRFIX + 'groups_users');
+}
 
 if(Meteor.isServer){
   Messages.allow({
