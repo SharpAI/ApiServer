@@ -3,6 +3,20 @@ if Meteor.isClient
     hotPostArray = Meteor.user().myHotPosts
     unless hotPostArray
       hotPostArray = []
+    if hotPostArray.length < 3
+      Meteor.subscribe "authorReadPopularPosts",Meteor.userId(),3
+      mostReadPosts = Posts.find({owner: Meteor.userId(), publish: {$ne: false}},{sort: {browse: -1},limit: 3}).fetch()
+      size = hotPostArray.length
+      idx = 0
+      while (size < 3 && idx < mostReadPosts.length)
+        inHotPosts = false
+        for itemPost in hotPostArray
+          if itemPost.postId and itemPost.postId is mostReadPosts[idx]._id
+            inHotPosts = true
+        unless inHotPosts
+          hotPostArray.push(mostReadPosts[idx])
+        idx++
+        size = hotPostArray.length
     Session.set("myHotPosts", hotPostArray)
     Session.set("myHotPostsChanged", false)
     $('.content').css 'min-height',$(window).height()
@@ -62,7 +76,8 @@ if Meteor.isClient
       myHotPosts = Session.get("myHotPosts")
       if (myHotPosts)
         for item in myHotPosts
-          if (item.postId == postId)
+          itemPostId = item.postId || item._id
+          if (itemPostId == postId) 
             return true
       return false
   @isHotPostsChanged = ()->
@@ -93,7 +108,8 @@ if Meteor.isClient
     if (hotPostArray)
       newArray = []
       for item in hotPostArray
-        if item.postId isnt postId
+        itemPostId = item.postId || item._id
+        if itemPostId isnt postId
           newArray.push(item)
       hotPostArray = newArray
       Session.set("myHotPosts", hotPostArray)
@@ -108,16 +124,25 @@ if Meteor.isClient
       hotPostArray = Session.get("myHotPosts")
       if (hotPostArray.length >= 3)
         PUB.toast('热门帖子最多选取三张! 请先取消其他热门帖子!')
+        return
       addPostToMyHotPosts(this._id, this.title, this.addontitle, this.mainImage)
     'click .back':(event)->
         if (Session.get("myHotPostsChanged"))
-          PUB.confirm("您改变了热门帖子, 要保存吗?", ()->
-            saveHotPosts()
-          )
-        $('.home').addClass('animated ' + animateOutUpperEffect);
-        setTimeout ()->
-          PUB.page('/user')
-        ,animatePageTrasitionTimeout
+          # PUB.confirm("您改变了热门帖子, 要保存吗?", ()->
+          #   saveHotPosts()
+          # )
+          navigator.notification.confirm(
+                '您改变了热门帖子, 要保存吗?'
+                (index)->
+                    if index is 2
+                       saveHotPosts()
+                    $('.home').addClass('animated ' + animateOutUpperEffect);
+                    setTimeout ()->
+                      PUB.page('/user')
+                    ,animatePageTrasitionTimeout
+                '提示'
+                ['暂不','保存']
+            )
     'click .mainImage':(e)->
         Session.set("postPageScrollTop", 0)
         if isIOS
