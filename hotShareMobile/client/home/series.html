@@ -12,6 +12,11 @@
       {{/if}}
       <li id="edit" class="edit">编辑</li>
       <li id="del">删除</li>
+      <li id="WXSessionShare"><i class="fa fa-weixin fa-fw"></i>{{_ "shareWechatFriend"}}</li>
+      <li id="WXTimelineShare"><i class="fa fa-weixin fa-fw"></i>{{_ "shareWechatFriendField"}}</li>
+      <li id="QQShare"><i class="fa fa-qq fa-fw"></i>{{_ "shareQQ"}}</li>
+      <li id="QQZoneShare"><i class="fa fa-qq fa-fw"></i>{{_ "shareQQZone"}}</li>
+      <li id="socialShare"><i class="fa fa-share-alt fa-fw"></i>{{_ "shareMore"}}</li>
     {{/if}}
   </ul>
   <div class="series-head">
@@ -21,7 +26,6 @@
       <div class="publish">发布</div>
       {{else}}
       <div class="back"><i class="fa fa-chevron-left"></i></div>
-      <div class="share-btn"><i class="fa fa-share-alt"></i></div>
       <div class="menu-btn has-dropdown"> <i class="fa fa-ellipsis-v"></i></div>
       {{/if}}
     </div>
@@ -76,10 +80,10 @@
         </div>
       </li>
       {{/each}}
-    </ul>     
+    </ul>
   </div>
   {{/if}}
- 
+
 </div>
 {{> selectAuthorPosts}}
 {{> changeSeriesImage}}

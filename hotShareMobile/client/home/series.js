@@ -103,9 +103,112 @@ Template.series.helpers({
   }
 });
 
+getSeriesSharingPath = function(data){
+  var url = "http://" + server_domain_name +'/series/'+data._id;
+  return url;
+};
+
+shareSeriesToWXTimeLine = function(title,description,thumbData,url){
+    shareSeriesToWechat(title,description,thumbData,url,WeChat.Scene.timeline);
+};
+shareSeriesToWXSession = function(title,description,thumbData,url) {
+    shareSeriesToWechat(title,description,thumbData,url,WeChat.Scene.session);
+};
+shareSeriesToWechat = function(title,description,thumbData,url,type) {
+    WeChat.share({
+        title: title,
+        description: description,
+        thumbData: thumbData,
+        url: url
+    }, type, function () {
+        /*var hotPosts = _.filter(Session.get('hottestPosts') || [], function(value) {
+            return true;
+        });
+        if (hotPosts.length > 0){
+            Router.go('/hotPosts/' + Session.get('postContent')._id);
+        }*/
+    }, function (reason) {
+        // 分享失败
+        if (reason === 'ERR_WECHAT_NOT_INSTALLED') {
+            PUB.toast(TAPi18n.__("wechatNotInstalled"));
+        } else {
+            PUB.toast(TAPi18n.__("failToShare"));
+        }
+        console.log(reason);
+    });
+};
+
+shareSeriesToQQ = function (title,description,imageUrl,url){
+    var args = {};
+    args.url = url;
+    args.title = title;
+    args.description = description;
+    args.imageUrl = imageUrl;
+    args.appName = TAPi18n.__("gst");
+    YCQQ.shareToQQ(function(){
+        console.log("share success");
+        // var shareType = Session.get("shareToWechatType");
+        // if(shareType[1] && shareType[1] == true){
+        //     $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+        //     shareType[1] = false;
+        //     Session.set("shareToWechatType",shareType);
+        // }
+    },function(reason){
+        if (reason ==='QQ Client is not installed') {
+            PUB.toast(TAPi18n.__("qqNotInstalled"));
+        } else {
+            PUB.toast(TAPi18n.__("failToShare"));
+        }
+    },args);
+};
+shareSeriesToQQZone = function (title,description,imageUrl,url){
+  var args = {};
+  args.url = url;
+  args.title = title;
+  args.description = TAPi18n.__("hotShareQQZoneShare");
+  var imgs =[];
+  imgs.push(imageUrl);
+  args.imageUrl = imgs;
+  YCQQ.shareToQzone(function () {
+    console.log("share success");
+    // var shareType = Session.get("shareToWechatType");
+    // if(shareType[1] && shareType[1] == true){
+    //     $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
+    //     shareType[1] = false;
+    //     Session.set("shareToWechatType",shareType);
+    // }
+  }, function (failReason) {
+    console.log(failReason);
+  }, args);
+};
+shareSeriesToSystem = function(title,description,thumbData,url) {
+    window.plugins.socialsharing.share(title, description, thumbData, url);
+};
+
 Template.series.events({
-  'click .share-btn': function(e){
-    console.log('will share')
+  'click #WXSessionShare': function(e,t){
+    var seriesContent = Session.get('seriesContent');
+    shareSeriesToWXSession(seriesContent.title,seriesContent.title,seriesContent.mainImage,getSeriesSharingPath(seriesContent));
+  },
+  'click #WXTimelineShare': function(e,t){
+    console.log('WXTimelineShare');
+    var seriesContent = Session.get('seriesContent');
+    shareSeriesToWXTimeLine(seriesContent.title,seriesContent.title,seriesContent.mainImage,getSeriesSharingPath(seriesContent));
+  },
+  'click #QQShare': function(e,t){
+    console.log('QQShare');
+    var seriesContent = Session.get('seriesContent');
+    shareSeriesToQQ(seriesContent.title,seriesContent.title,seriesContent.mainImage,getSeriesSharingPath(seriesContent));
+  },
+  'click #shareSeriesToQQZone': function(e,t){
+    console.log('QQZoneShare');
+    var seriesContent = Session.get('seriesContent');
+    shareSeriesToWXTimeLine(seriesContent.title,seriesContent.title,seriesContent.mainImage,getSeriesSharingPath(seriesContent));
+  },
+  'click #socialShare': function(e,t){
+    console.log('socialShare');
+    var seriesContent = Session.get('seriesContent');
+    shareSeriesToSystem(seriesContent.title,seriesContent.title,seriesContent.mainImage,getSeriesSharingPath(seriesContent));
   },
   'click .back': function(e,t){
     if(!Session.get('seriesIsSaved') && Session.get('isSeriesEdit')){
@@ -118,14 +221,15 @@ Template.series.events({
         },'您确定要放弃未保存的修改吗？', ['放弃修改','保存修改']);
        } else {
         navigator.notification.confirm('这个操作无法撤销', function(r){
-          if(r !== 1){
-            updateOrInsertSeries(true,false);
+          if(r == 1){
+            Session.set('seriesContent','');
+            Router.go('/seriesList');
           }
-          Router.go('/seriesList');
-        },'您确定要放弃未保存的修改吗？', ['放弃修改','存为草稿']);
+        },'您确定要放弃未保存的修改吗？', ['放弃修改','继续编辑']);
        }
-    } 
-    Router.go('/seriesList');
+    }else{
+      Router.go('/seriesList');
+    }
   },
   'click #edit': function(e,t){
     return Session.set('isSeriesEdit',true);
@@ -221,7 +325,7 @@ Template.series.events({
     Session.set('seriesIsSaved',false);
     var seriesContent = Session.get('seriesContent')
     var postLists = [];
-    
+
     $('.series-post-item-not-select').each(function(index){
       postLists.push({
         postId:$(this).attr('id'),
@@ -236,17 +340,18 @@ Template.series.events({
     Session.set('seriesContent',seriesContent);
   },
   'click .viewModal':function(e,t){
+    Session.set('fromSeries', {status: true, id: Session.get('seriesId')});
     return Router.go('/posts/'+e.currentTarget.id);
   },
   'click #del':function(e,t){
     Series.remove({_id: Session.get('seriesId')});
     Router.go ('/seriesList');
-  },  
+  },
   'click .publish':function(e,t){
     if(Session.get('seriesId') && Session.get('seriesId') !== ''){
-      updateOrInsertSeries(false,true);   
+      updateOrInsertSeries(false,true);
     } else {
-      updateOrInsertSeries(true,true);  
+      updateOrInsertSeries(true,true);
     }
   }
 });

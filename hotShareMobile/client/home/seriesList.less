@@ -21,7 +21,7 @@
 	    color: #fff;
 	    line-height: 24px;
 	    padding-right: 2%;
-	    padding-top: 80px;
+	    overflow: hidden;
 	    text-shadow: 2px 2px 2px #000, 0px 0px 10px #000, 0px 0px 20px #000;
 	    text-align: left;
 	    margin-right: 2%;
@@ -34,6 +34,17 @@
 	    background-repeat: no-repeat;
 	    background-position: center;
 	    background-size: cover;
+	    img{
+	    	z-index: -1;
+	    	min-height: 100%;
+	    	width: 100%;
+	    	position:absolute;
+	    	object-fit: cover;
+	    }
+	    .css-post-title{
+	    	position: relative;
+    		top: 40%;
+	    }
 	    .title{
 	    	text-overflow: ellipsis;
 		    white-space: nowrap;

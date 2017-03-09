@@ -827,6 +827,10 @@ if Meteor.isClient
         else if Session.get("backtopageuser") is true
           Session.set('backtopageuser', false)
           PUB.page('/user')
+        else if Session.get("fromSeries") and Session.get("fromSeries").status is true
+          seriesId = Session.get("fromSeries").id
+          Session.set("fromSeries",'')
+          Router.go '/series/' + seriesId
         else if Session.get("backtoalldrafts") is true
           Session.set("backtoalldrafts",false)
           PUB.page('/allDrafts')

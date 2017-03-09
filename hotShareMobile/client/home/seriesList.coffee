@@ -36,8 +36,6 @@ Template.seriesList.events
       PUB.page '/help'
     'click .seriesImages ul li':(e)->
       seriesId = e.currentTarget.id
-      seriesContent = Series.findOne({'_id':seriesId})
-      Session.set('seriesContent',seriesContent)
       Session.set('isSeriesEdit',false)
       Router.go '/series/' + seriesId
 Template.seriesFooter.events
