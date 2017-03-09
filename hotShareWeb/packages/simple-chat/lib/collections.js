@@ -41,4 +41,15 @@ if(Meteor.isServer){
       return userId === doc.form.id;
     }
   });
+
+  Meteor.startup(function(){
+    Messages._ensureIndex({'form.id': 1, 'to.id': 1, 'create_time': -1});
+    MsgSession._ensureIndex({'form.id': 1, 'to.id': 1, 'create_time': -1});
+    Groups._ensureIndex({'user_id': 1});
+    GroupUsers._ensureIndex({'user_id': 1});
+    GroupUsers._ensureIndex({'group_id': 1});
+    GroupUsers._ensureIndex({'group_id': 1, 'user_id': 1});
+    MsgSession._ensureIndex({'user_id': 1, 'update_time': -1});
+    MsgSession._ensureIndex({'user_id': 1, 'type': 1});
+  });
 }

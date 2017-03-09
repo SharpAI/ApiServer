@@ -15,19 +15,19 @@ Package.onUse(function (api) {
     // 'client/lib/crypto1/sha1/sha1.js',
     // 'client/lib/base64.js',
     // 'client/lib/plupload-2.1.2/js/plupload.full.min.js',
-    'client/upload.min.js'
+    'client/upload.js'
   ], 'client');
   api.addAssets([
     'client/lib/plupload-2.1.2/js/Moxie.swf',
     'client/lib/plupload-2.1.2/js/Moxie.xap'
   ], 'client');
 
-  api.addFiles(['lib/collections.js', 'lib/config.js'], ['client', 'server']);
+  api.addFiles(['simple-chat.js', 'lib/collections.js', 'lib/config.js'], ['client', 'server']);
   api.addFiles(['server/subs.js'], 'server');
   api.addAssets([
     'images/image.png', 'images/back.png', 'images/account.png', 'images/sendingBmp.gif'
   ], 'client');
   api.addFiles([
-    'client/get_diff_time.js', 'client/to-chat/index.html', 'client/app.less', 'client/router.js'
+    'client/upload.config.js', 'client/get_diff_time.js', 'client/to-chat/index.html', 'client/app.less', 'client/router.js'
   ], 'client');
 });

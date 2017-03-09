@@ -74,15 +74,38 @@ Template._simpleChatToChat.onRendered(function(){
       console.log('load more data');
     }
   });
-
-  // jQuery.getScript("/packages/feiwu_simple-chat/client/lib/plupload-2.1.2/js/plupload.full.min.js", function(){
-  //   jQuery.getScript("/packages/feiwu_simple-chat/client/upload.js", function(){
-  //     console.log('load file: upload.js');
-  //   });
-  // });
 });
 
+var loadScript = function(url, callback){
+  if($("script[src='"+url+"']").length > 0)
+    return callback && callback();
+
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  if(script.readyState){
+    script.onreadystatechange = function(){
+      if(script.readyState === 'loaded' || script.readyState === 'complete'){
+        script.onreadystatechange = null;
+        callback && callback();
+      }
+    }
+  }else{
+    script.onload = function(){
+      callback && callback();
+    };
+  }
+
+  script.src = url;
+  document.getElementsByTagName('head')[0].appendChild(script);
+}
+
 Template._simpleChatToChatLayout.onRendered(function(){
+  // load upload.js
+  loadScript('/packages/feiwu_simple-chat/client/upload.js', function(){
+    var uploader = SimpleChat.createPlupload('selectfiles');
+    uploader.init();
+  });
+
   Meteor.setTimeout(function(){
     $('body').css('overflow', 'hidden');
   }, 500);
