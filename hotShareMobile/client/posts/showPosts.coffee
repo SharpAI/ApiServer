@@ -656,7 +656,14 @@ if Meteor.isClient
         postId = this._id
       unless postId
         postId = this.postId
-      Router.go '/posts/' + postId
+      currentPostId = Session.get('postContent')._id
+      if postId is currentPostId
+        document.body.scrollTop = 0
+        Session.set("SocialOnButton",'postBtn')
+        $('.showPosts .head').fadeIn(300)
+      else
+        Session.set 'readMomentsPost',true
+        Router.go '/posts/' + postId
     'click #shareStoryBtn' :->
       Session.set('isRecommendStory',true)
       trackEvent("shareStoryBtn","MobileRecommendStory")
