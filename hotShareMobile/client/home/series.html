@@ -12,11 +12,6 @@
       {{/if}}
       <li id="edit" class="edit">编辑</li>
       <li id="del">删除</li>
-      <li id="WXSessionShare"><i class="fa fa-weixin fa-fw"></i>{{_ "shareWechatFriend"}}</li>
-      <li id="WXTimelineShare"><i class="fa fa-weixin fa-fw"></i>{{_ "shareWechatFriendField"}}</li>
-      <li id="QQShare"><i class="fa fa-qq fa-fw"></i>{{_ "shareQQ"}}</li>
-      <li id="QQZoneShare"><i class="fa fa-qq fa-fw"></i>{{_ "shareQQZone"}}</li>
-      <li id="socialShare"><i class="fa fa-share-alt fa-fw"></i>{{_ "shareMore"}}</li>
     {{/if}}
   </ul>
   <div class="series-head">
@@ -26,6 +21,7 @@
       <div class="publish">发布</div>
       {{else}}
       <div class="back"><i class="fa fa-chevron-left"></i></div>
+      <div class="share-btn"><i class="fa fa-share-alt"></i></div>
       <div class="menu-btn has-dropdown"> <i class="fa fa-ellipsis-v"></i></div>
       {{/if}}
     </div>
@@ -36,9 +32,16 @@
       <span id="useOfficalImage" class="imageToolBtn" style="border-right:1px solid #75c2ff"><i class="fa fa-picture-o"></i></span>
       <span id="useUserImage" class="imageToolBtn"><i class="fa fa-pencil"></i></span>
     </div>
-    <div class="series-title" style="background: url({{mainImage}}) no-repeat;background-size: cover;" data-image="{{mainImage}}">
-       <textarea id="seriesTitle" rows="3" cols="20">{{seriesTitle}}</textarea>
-     </div>
+      {{#if mainImage.URI}}
+      <div class="series-title">
+        <img data-type="mainImage" id="mainImage{{mainImage._id}}" class="scale item image_{{mainImage._id}}" src="{{getImagePath mainImage.imgUrl mainImage.URI mainImage._id}}" draggable="false" style="min-height: 100%;position:absolute;" >
+         <textarea id="seriesTitle" rows="3" cols="20">{{seriesTitle}}</textarea>
+      </div>
+      {{else}}
+      <div class="series-title" style="background: url({{mainImage}}) no-repeat;background-size: cover;" data-image="{{mainImage}}">
+         <textarea id="seriesTitle" rows="3" cols="20">{{seriesTitle}}</textarea>
+      </div>
+      {{/if}}
      {{#if postCounts}}
     <div style="margin: 10px">此合集包含下列{{postCounts}}个故事</div>
     {{/if}}
@@ -87,4 +90,5 @@
 </div>
 {{> selectAuthorPosts}}
 {{> changeSeriesImage}}
+{{> shareSeries}}
 </template>

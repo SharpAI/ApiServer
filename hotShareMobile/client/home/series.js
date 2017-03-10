@@ -1,3 +1,72 @@
+var uploadSeriesImage = function(data) {
+  multiThreadUploadFileWhenPublishInCordova(data, null, function(err, result) {
+    var i, item, len;
+    if (!result) {
+      window.plugins.toast.showShortBottom('上传失败，请稍后重试');
+      return;
+    }
+    if (result.length < 1) {
+      window.plugins.toast.showShortBottom('上传失败，请稍后重试');
+      return;
+    }
+    for (i = 0, len = result.length; i < len; i++) {
+      item = result[i];
+      if (item.uploaded) {
+        if (item.type === 'image' && item.imgUrl) {
+          var mainImage = item.imgUrl;
+          var postdata = Session.get('seriresuploadData')
+          var owner = Meteor.user();
+          if(postdata.isNewSeries){
+            Series.insert({
+                title: postdata.title,
+                mainImage: mainImage,
+                owner: owner._id,
+                ownerName: owner.profile.fullname ? owner.profile.fullname: owner.username,
+                ownerIcon: owner.profile.icon,
+                createdAt: new Date(),
+                postLists: postdata.postLists,
+                publish: true
+            },function(err,_id){
+              if(err){
+                console.log('insert series ERR=',err)
+              } else {
+                console.log('insert series successed ,ID=',_id)
+              }
+            });
+          } else {
+            console.log('update series')
+            Series.update({
+              _id: Session.get('seriesId')
+            },{
+              $set:{
+                title: postdata.title,
+                mainImage: mainImage,
+                postLists: postdata.postLists,
+                updateAt: new Date(),
+                publish: true
+              }
+            },function(err,num){
+              if(err){
+                console.log('update series ERR=',err)
+              } else {
+                console.log('update series successed ,num=',num)
+              }
+            });
+          }
+          Session.set('seriesId','');
+          Session.set('seriesContent','');
+          Session.set('isSeriesEdit',false);
+          Router.go('/seriesList');
+        }
+      }
+    }
+    if (err) {
+      window.plugins.toast.showShortBottom('上传失败，请稍后重试');
+      return;
+    }
+    return removeImagesFromCache(data);
+  });
+}
 var updateOrInsertSeries = function(isNewSeries,publish){
   if($('#seriesTitle').val() === ''){
     return PUB.toast('请输入标题');
@@ -7,65 +76,71 @@ var updateOrInsertSeries = function(isNewSeries,publish){
   }
   var title = $('#seriesTitle').val();
   var posts = []
-  var mainImage = $('.series-title').data('image');
+  var mainImage = ''
   var owner = Meteor.user();
   var ownerName = owner.profile.fullname ? owner.profile.fullname: owner.username;
   var ownerIcon = owner.profile.icon
   var num = 0;
   $('.series-post-item').each(function(index){
     posts.push({
-        postId:$(this).attr('id'),
-        postTitle: $(this).data('title'),
-        postAddonTitle: $(this).data('addontitle'),
-        postMainImage: $(this).data('image'),
-        postIndex: num,
-        postOwner: owner._id,
-        postOwnerName: ownerName,
-        postOwnerIcon: ownerIcon
+      postId:$(this).attr('id'),
+      postTitle: $(this).data('title'),
+      postAddonTitle: $(this).data('addontitle'),
+      postMainImage: $(this).data('image'),
+      postIndex: num,
+      postOwner: owner._id,
+      postOwnerName: ownerName,
+      postOwnerIcon: ownerIcon
     });
     num++;
   });
-  if(isNewSeries){
-    Series.insert({
-        title: title,
-        mainImage: mainImage,
-        owner: owner._id,
-        ownerName: ownerName,
-        ownerIcon: ownerIcon,
-        createdAt: new Date(),
-        postLists: posts,
-        publish: publish
-    },function(err,_id){
-      if(err){
-        console.log('insert series ERR=',err)
-      } else {
-        console.log('insert series successed ,ID=',_id)
-      }
-    });
-  } else {
-    console.log('update series')
-    Series.update({
-      _id: Session.get('seriesId')
-    },{
-      $set:{
-        title: title,
-        mainImage: mainImage,
-        postLists: posts,
-        updateAt: new Date(),
-        publish: true
-      }
-    },function(err,num){
-      if(err){
-        console.log('update series ERR=',err)
-      } else {
-        console.log('update series successed ,num=',num)
-      }
-    });
+  Session.set('seriresuploadData', {postLists:posts,title:title,isNewSeries:isNewSeries});
+  if($('.series-title').data('image')){
+    mainImage = $('.series-title').data('image');
+    if(isNewSeries){
+      Series.insert({
+          title: title,
+          mainImage: mainImage,
+          owner: owner._id,
+          ownerName: ownerName,
+          ownerIcon: ownerIcon,
+          createdAt: new Date(),
+          postLists: posts,
+          publish: publish
+      },function(err,_id){
+        if(err){
+          console.log('insert series ERR=',err)
+        } else {
+          console.log('insert series successed ,ID=',_id)
+        }
+      });
+    } else {
+      console.log('update series')
+      Series.update({
+        _id: Session.get('seriesId')
+      },{
+        $set:{
+          title: title,
+          mainImage: mainImage,
+          postLists: posts,
+          updateAt: new Date(),
+          publish: true
+        }
+      },function(err,num){
+        if(err){
+          console.log('update series ERR=',err)
+        } else {
+          console.log('update series successed ,num=',num)
+        }
+      });
+    }
+    Session.set('seriesId','');
+    Session.set('seriesContent','');
+    Session.set('isSeriesEdit',false);
+    Router.go('/seriesList');
+  }else{
+    uploadSeriesImage(Session.get('seriesContent').imageData)
   }
-  Session.set('seriesId','');
-  Session.set('seriesContent','');
-  Session.set('isSeriesEdit',false);
-  Router.go('/seriesList');
 }
 Template.series.helpers({
   postsLists: function(){
@@ -87,9 +162,15 @@ Template.series.helpers({
       return "";
     }
   },
+  getImagePath: function(path,uri,id){
+    return getImagePath(path,uri,id);
+  },
   mainImage: function() {
-    if(Session.get('seriesContent') && Session.get('seriesContent').mainImage){
-      return Session.get('seriesContent').mainImage;
+    if(Session.get('seriesContent')){
+      if(Session.get('seriesContent').mainImage)
+        return Session.get('seriesContent').mainImage;
+      else if (Session.get('seriesContent').imageData)
+        return Session.get('seriesContent').imageData[0]
     } else {
       return 'http://data.tiegushi.com/ocmainimages/mainimage5.jpg';
     }
@@ -103,112 +184,10 @@ Template.series.helpers({
   }
 });
 
-getSeriesSharingPath = function(data){
-  var url = "http://" + server_domain_name +'/series/'+data._id;
-  return url;
-};
-
-shareSeriesToWXTimeLine = function(title,description,thumbData,url){
-    shareSeriesToWechat(title,description,thumbData,url,WeChat.Scene.timeline);
-};
-shareSeriesToWXSession = function(title,description,thumbData,url) {
-    shareSeriesToWechat(title,description,thumbData,url,WeChat.Scene.session);
-};
-shareSeriesToWechat = function(title,description,thumbData,url,type) {
-    WeChat.share({
-        title: title,
-        description: description,
-        thumbData: thumbData,
-        url: url
-    }, type, function () {
-        /*var hotPosts = _.filter(Session.get('hottestPosts') || [], function(value) {
-            return true;
-        });
-        if (hotPosts.length > 0){
-            Router.go('/hotPosts/' + Session.get('postContent')._id);
-        }*/
-    }, function (reason) {
-        // 分享失败
-        if (reason === 'ERR_WECHAT_NOT_INSTALLED') {
-            PUB.toast(TAPi18n.__("wechatNotInstalled"));
-        } else {
-            PUB.toast(TAPi18n.__("failToShare"));
-        }
-        console.log(reason);
-    });
-};
-
-shareSeriesToQQ = function (title,description,imageUrl,url){
-    var args = {};
-    args.url = url;
-    args.title = title;
-    args.description = description;
-    args.imageUrl = imageUrl;
-    args.appName = TAPi18n.__("gst");
-    YCQQ.shareToQQ(function(){
-        console.log("share success");
-        // var shareType = Session.get("shareToWechatType");
-        // if(shareType[1] && shareType[1] == true){
-        //     $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
-        //     shareType[1] = false;
-        //     Session.set("shareToWechatType",shareType);
-        // }
-    },function(reason){
-        if (reason ==='QQ Client is not installed') {
-            PUB.toast(TAPi18n.__("qqNotInstalled"));
-        } else {
-            PUB.toast(TAPi18n.__("failToShare"));
-        }
-    },args);
-};
-shareSeriesToQQZone = function (title,description,imageUrl,url){
-  var args = {};
-  args.url = url;
-  args.title = title;
-  args.description = TAPi18n.__("hotShareQQZoneShare");
-  var imgs =[];
-  imgs.push(imageUrl);
-  args.imageUrl = imgs;
-  YCQQ.shareToQzone(function () {
-    console.log("share success");
-    // var shareType = Session.get("shareToWechatType");
-    // if(shareType[1] && shareType[1] == true){
-    //     $('.shareTheReadingRoom,.shareAlertBackground').fadeIn(300)
-    //     shareType[1] = false;
-    //     Session.set("shareToWechatType",shareType);
-    // }
-  }, function (failReason) {
-    console.log(failReason);
-  }, args);
-};
-shareSeriesToSystem = function(title,description,thumbData,url) {
-    window.plugins.socialsharing.share(title, description, thumbData, url);
-};
-
 Template.series.events({
-  'click #WXSessionShare': function(e,t){
-    var seriesContent = Session.get('seriesContent');
-    shareSeriesToWXSession(seriesContent.title,seriesContent.title,seriesContent.mainImage,getSeriesSharingPath(seriesContent));
-  },
-  'click #WXTimelineShare': function(e,t){
-    console.log('WXTimelineShare');
-    var seriesContent = Session.get('seriesContent');
-    shareSeriesToWXTimeLine(seriesContent.title,seriesContent.title,seriesContent.mainImage,getSeriesSharingPath(seriesContent));
-  },
-  'click #QQShare': function(e,t){
-    console.log('QQShare');
-    var seriesContent = Session.get('seriesContent');
-    shareSeriesToQQ(seriesContent.title,seriesContent.title,seriesContent.mainImage,getSeriesSharingPath(seriesContent));
-  },
-  'click #shareSeriesToQQZone': function(e,t){
-    console.log('QQZoneShare');
-    var seriesContent = Session.get('seriesContent');
-    shareSeriesToWXTimeLine(seriesContent.title,seriesContent.title,seriesContent.mainImage,getSeriesSharingPath(seriesContent));
-  },
-  'click #socialShare': function(e,t){
-    console.log('socialShare');
-    var seriesContent = Session.get('seriesContent');
-    shareSeriesToSystem(seriesContent.title,seriesContent.title,seriesContent.mainImage,getSeriesSharingPath(seriesContent));
+  'click .share-btn': function(e){
+    console.log('will share');
+    $('.shareSeries').show();
   },
   'click .back': function(e,t){
     if(!Session.get('seriesIsSaved') && Session.get('isSeriesEdit')){
@@ -265,43 +244,13 @@ Template.series.events({
             return;
           }
           if (result) {
-            data = [
-              {
-                type: 'image',
-                isImage: true,
-                owner: Meteor.userId(),
-                imgUrl: result.smallImage,
-                filename: result.filename,
-                URI: result.URI,
-                layout: ''
-              }
-            ];
-            return multiThreadUploadFileWhenPublishInCordova(data, null, function(err, result) {
-              var i, item, len;
-              if (!result) {
-                window.plugins.toast.showShortBottom('上传失败，请稍后重试');
-                return;
-              }
-              if (result.length < 1) {
-                window.plugins.toast.showShortBottom('上传失败，请稍后重试');
-                return;
-              }
-              for (i = 0, len = result.length; i < len; i++) {
-                item = result[i];
-                if (item.uploaded) {
-                  if (item.type === 'image' && item.imgUrl) {
-                    var seriesContent = Session.get('seriesContent');
-                    seriesContent.mainImage = item.imgUrl
-                    Session.set('seriesContent',seriesContent);
-                  }
-                }
-              }
-              if (err) {
-                window.plugins.toast.showShortBottom('上传失败，请稍后重试');
-                return;
-              }
-              return removeImagesFromCache(data);
-            });
+            TempDrafts.insert({type:'image',isSeriesImg:true, isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''});
+            var data = TempDrafts.find({isSeriesImg:true}).fetch();
+            var oldSeriesContent = Session.get('seriesContent')
+            oldSeriesContent.imageData = data
+            delete oldSeriesContent.mainImage
+            Session.set('seriesContent',oldSeriesContent);
+            TempDrafts.remove({});
           }
         });
       });

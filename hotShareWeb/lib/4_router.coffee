@@ -23,6 +23,15 @@ if Meteor.isClient
     return
   Router.route '/import', ()->
     this.render 'importPost'
+  Router.route '/series/:_id', {
+      waitOn: ->
+        [subs.subscribe("oneSeries", this.params._id)]
+      action: ->
+        series = Series.findOne({_id: this.params._id})
+        Session.set('seriesContent',series)
+        this.render 'series', {data: series}
+      fastRender: true
+    }
   Router.route '/posts/:_id', {
       waitOn: ->
           [subs.subscribe("publicPosts", this.params._id),
@@ -191,7 +200,7 @@ if Meteor.isClient
 if Meteor.isServer
   request = Meteor.npmRequire('request')
   Fiber = Meteor.npmRequire('fibers')
-  
+
   ###
   Router.route '/posts/:_id', {
       waitOn: ->
@@ -275,7 +284,7 @@ if Meteor.isServer
     else
     ###
     # postItem = Posts.findOne({_id: this.params._id},{fields:{title:1,mainImage:1,addontitle:1}});
-    
+
     Inject.rawModHtml('addxmlns', (html) ->
       return html.replace(/<html>/, '<html xmlns="http://www.w3.org/1999/xhtml"
     xmlns:fb="http://ogp.me/ns/fb#">');
@@ -347,11 +356,11 @@ if Meteor.isServer
       return return_result(false)
     if(_post.insertHook is true)
       return return_result(true)
-    
+
     #if !_post or _post.isReview is true or _post.isReview is null or _post.isReview is undefined
       #console.log('sep2:', _post.isReview);
     #  return return_result(false)
-    
+
     # update topicposs mainImage
     try
       topicpossCount = TopicPosts.find({postId: this.params._postId, owner: this.params._userId}).count()
@@ -359,7 +368,7 @@ if Meteor.isServer
         TopicPosts.update({postId: this.params._postId, owner: this.params._userId},{$set:{mainImage: _post.mainImage}})
     catch error
       console.log('update topicposs mainImage error, MSG = ',error)
-    
+
     # review
     Posts.update {_id: this.params._postId}, {$set: {isReview: true, insertHook: true}}, (err, num)->
       if err or num <= 0
@@ -469,6 +478,3 @@ if Meteor.isServer
     this.response.writeHead(200, headers)
     this.response.end(file, 'binary')
   , { where: 'server' })
-
-
-

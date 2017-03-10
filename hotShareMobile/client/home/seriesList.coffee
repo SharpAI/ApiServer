@@ -50,22 +50,10 @@ Template.seriesFooter.events
             PUB.back()
             return
           if result
-            data = [{type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}]
-            multiThreadUploadFileWhenPublishInCordova data, null, (err, result)->
-              unless result
-                window.plugins.toast.showShortBottom('上传失败，请稍后重试')
-                return
-              if result.length < 1
-                window.plugins.toast.showShortBottom('上传失败，请稍后重试')
-                return
-              for item in result
-                if item.uploaded
-                  if item.type is 'image' and item.imgUrl
-                    Session.set('seriesContent',{ mainImage:item.imgUrl, postLists: [],publish: false})
-              if err
-                window.plugins.toast.showShortBottom('上传失败，请稍后重试')
-                return
-              removeImagesFromCache(data)
+            TempDrafts.insert {type:'image',isSeriesImg:true, isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
+            data = TempDrafts.find({isSeriesImg:true}).fetch()
+            Session.set('seriesContent',{imageData:data, postLists: [],publish: false})
+            TempDrafts.remove({})
     'click #photo-select':(e)->
       Meteor.defer ()->
         $('.modal-backdrop.in').remove()
@@ -76,21 +64,9 @@ Template.seriesFooter.events
           window.takePhoto (result)->
             # console.log 'result from camera is ' + JSON.stringify(result)
             if result
-              data = [{type:'image', isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}]
-              multiThreadUploadFileWhenPublishInCordova data, null, (err, result)->
-                unless result
-                  window.plugins.toast.showShortBottom('上传失败，请稍后重试')
-                  return
-                if result.length < 1
-                  window.plugins.toast.showShortBottom('上传失败，请稍后重试')
-                  return
-                for item in result
-                  if item.uploaded
-                    if item.type is 'image' and item.imgUrl
-                      Session.set('seriesContent',{ mainImage:item.imgUrl, postLists: [],publish: false})
-                if err
-                  window.plugins.toast.showShortBottom('上传失败，请稍后重试')
-                  return
-                removeImagesFromCache(data)
+              TempDrafts.insert {type:'image',isSeriesImg:true, isImage:true, owner: Meteor.userId(), imgUrl:result.smallImage, filename:result.filename, URI:result.URI, layout:''}
+              data = TempDrafts.find({isSeriesImg:true}).fetch()
+              Session.set('seriesContent',{imageData:data, postLists: [],publish: false})
+              TempDrafts.remove({})
             else
               PUB.back()
