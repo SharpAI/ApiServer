@@ -261,6 +261,10 @@ Template.series.events({
     return $(e.currentTarget).toggleClass('series-post-item-select');
   },
   'click .addNewPost': function(){
+    var postCounts = Posts.find({owner:Meteor.userId(),publish:{"$ne":false}}).count();
+    if(postCounts === 0){
+      return PUB.toast('你还没有发表过故事哦，先去发表一篇故事吧～')
+    }
     Session.set('seriesIsSaved',false);
     $('.author-self-posts').toggle();
   },
@@ -304,3 +308,15 @@ Template.series.events({
     }
   }
 });
+
+Template.series.onRendered(function(){
+    $('.series').click(function(e){
+      var target = $(e.target);
+      if(target.closest('.series-dropdown').length == 0){
+        $('.series-dropdown').hide();
+      }
+      if(target.closest('.mainImageTools').length == 0){
+        $('.mainImageTools').hide();
+      }
+    });
+})
