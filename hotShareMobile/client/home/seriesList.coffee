@@ -27,6 +27,8 @@ Template.seriesList.helpers
     Session.equals('seriesCollection','loading')
   loadError:->
     Session.equals('seriesCollection','error')
+  showSeriesHint:->
+    return !localStorage.getItem('seriesHint');
 Template.seriesList.events
     'click .top-home-btn': (event)->
       Router.go '/'
