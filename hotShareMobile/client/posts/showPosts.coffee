@@ -449,8 +449,8 @@ if Meteor.isClient
       if (myHotPosts && myHotPosts.length >= 3)
         return myHotPosts
       else
-        Meteor.subscribe "authorReadPopularPosts",@owner,@_id,3
-        mostReadPosts = Posts.find({_id: {$ne: @_id},owner: @owner, publish: {$ne: false}},{sort: {browse: -1},limit: 3}).fetch()
+        Meteor.subscribe "authorReadPopularPosts",@owner,3
+        mostReadPosts = Posts.find({owner: @owner, publish: {$ne: false}},{sort: {browse: -1},limit: 3}).fetch()
         if (myHotPosts == undefined || myHotPosts == null)
           myHotPosts = []
         if (mostReadPosts == undefined || mostReadPosts == null)
