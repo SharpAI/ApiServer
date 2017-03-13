@@ -10,6 +10,7 @@ Template.series.helpers({
   },
   seriesTitle: function(){
     if(Session.get('seriesContent') && Session.get('seriesContent').title){
+      document.title = Session.get('seriesContent').ownerName + '的合辑《' + Session.get('seriesContent').title + '》';
       return Session.get('seriesContent').title;
     } else {
       return "";
