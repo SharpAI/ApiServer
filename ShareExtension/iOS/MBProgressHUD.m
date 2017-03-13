@@ -33,7 +33,6 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
 
 @property (nonatomic, assign) BOOL useAnimation;
 @property (nonatomic, assign, getter=hasFinished) BOOL finished;
-@property (nonatomic, strong) UIView *indicator;
 @property (nonatomic, strong) NSDate *showStarted;
 @property (nonatomic, strong) NSArray *paddingConstraints;
 @property (nonatomic, strong) NSArray *bezelConstraints;

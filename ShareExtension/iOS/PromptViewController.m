@@ -9,7 +9,12 @@
 #import "PromptViewController.h"
 #import "MBProgressHUD.h"
 
+
+#define  STATUS_FAILED @"failed"
+#define STATUS_SUCCESS @"succ"
+#define STATUS_IMPORTING @"importing"
 @interface PromptViewController ()<MBProgressHUDDelegate>
+
 @end
 
 @implementation PromptViewController
@@ -24,20 +29,35 @@
     
     hud.bezelView.backgroundColor = [UIColor whiteColor];
     
-    hud.contentColor = [UIColor colorWithRed:30/255.0 green:144/255.0  blue:255/255.0 alpha:1];
+    hud.contentColor = [UIColor colorWithRed:37/255.0 green:171/255.0 blue:236/255.0 alpha:1];
     
     // Set the annular determinate mode to show task progress.
-    hud.mode = MBProgressHUDModeText;
-    hud.label.text = NSLocalizedString(@"发送成功，点击这里打开故事贴编辑。", @"HUD message title");
     hud.label.adjustsFontSizeToFitWidth = YES;
     //hud.label.font = [UIFont systemFontOfSize:11];
-    // Move to bottm center.
-    hud.offset = CGPointMake(0.f, MBProgressMaxOffset/4.f);
     
     hud.delegate = self;
     
+    hud.mode = MBProgressHUDModeText;
+    
+    hud.offset = CGPointMake(0.f, MBProgressMaxOffset/4.f);
+    
     [hud hideAnimated:YES afterDelay:5.f];
     
+    if ([self.type isEqualToString:@"url"]) {
+        
+        if ([_status isEqualToString:STATUS_SUCCESS]) {
+            hud.label.text = NSLocalizedString(@"发送成功，点击这里打开故事贴查看", @"HUD message title");
+        }
+        else if ([_status isEqualToString:STATUS_FAILED]){
+            hud.label.text = NSLocalizedString(@"发送失败，你可以重新尝试分享", @"HUD message title");
+        }
+    }
+    else{
+        
+        hud.label.text = NSLocalizedString(@"发送成功，点击这里打开故事贴编辑。", @"HUD message title");
+        
+        // Move to bottm center.
+    }
     
     UITapGestureRecognizer *tapGesture=[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(onClickUI:)];
     
@@ -50,7 +70,6 @@
     hud.bezelView.userInteractionEnabled=YES;
     
     [hud.bezelView addGestureRecognizer:tapLabelGesture];
-    
 }
 
 #pragma MBProgressHUDDelegate
@@ -65,6 +84,11 @@
 }
 
 -(void)onClickUILabel:(UITapGestureRecognizer *)sender{
+    
+    if ([_status isEqualToString:STATUS_FAILED]) {
+        
+        return self.block();
+    }
   
     NSString *customURL = @"hotshare://";
     

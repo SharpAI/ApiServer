@@ -254,6 +254,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (assign, nonatomic) float progress;
 
+@property (nonatomic, strong) UIView *indicator;
+
 /// @name Views
 
 /**
@@ -361,6 +363,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Defaults to white [UIColor whiteColor].
  */
 @property (nonatomic, strong) UIColor *progressColor;
+
 
 @end
 
