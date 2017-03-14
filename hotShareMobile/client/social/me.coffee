@@ -17,8 +17,6 @@ if Meteor.isClient
   Template.me.rendered=->
     #$('.me').css('min-height',$(window).height()-90)
   Template.me.helpers
-    showSaveTipHintTemplate:->
-      return !localStorage.getItem('savetipFlag')
     whichOne:()->
       Session.get("Social.LevelTwo.Me.Menu")
   ###

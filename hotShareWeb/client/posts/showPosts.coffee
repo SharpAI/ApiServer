@@ -346,6 +346,8 @@ if Meteor.isClient
   Template.showPosts.helpers
     showPostGroupChatIntro:->
       return !localStorage.getItem('postGroupChatIntro')
+    showSaveTipHintTemplate:->
+      return !localStorage.getItem('savetipFlag')
     msgs_count: ->
       if Posts.findOne({_id: Session.get('postContent')._id}).owner isnt Meteor.userId()
         return 0
