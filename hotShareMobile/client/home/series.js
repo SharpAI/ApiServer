@@ -257,7 +257,7 @@ Template.series.events({
       });
     }
   },
-  'click .series-post-item': function(e,t){
+  'click .series-select-item': function(e,t){
     $(e.currentTarget).toggleClass('series-post-item-not-select');
     return $(e.currentTarget).toggleClass('series-post-item-select');
   },
