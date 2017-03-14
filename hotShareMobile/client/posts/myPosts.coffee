@@ -11,7 +11,8 @@ if Meteor.isClient
       while (size < 3 && idx < mostReadPosts.length)
         inHotPosts = false
         for itemPost in hotPostArray
-          if itemPost.postId and itemPost.postId is mostReadPosts[idx]._id
+          itemId = itemPost.postId or itemPost._id
+          if itemId and itemId is mostReadPosts[idx]._id
             inHotPosts = true
         unless inHotPosts
           hotPostArray.push(mostReadPosts[idx])

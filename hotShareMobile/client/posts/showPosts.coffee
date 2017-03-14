@@ -460,7 +460,8 @@ if Meteor.isClient
         while (size < 3 && idx < mostReadPosts.length)
           inHotPosts = false
           for itemPost in myHotPosts
-            if itemPost.postId and itemPost.postId is mostReadPosts[idx]._id
+            itemId = itemPost.postId or itemPost._id
+            if itemId and itemId is mostReadPosts[idx]._id
               inHotPosts = true
           unless inHotPosts
             myHotPosts.push(mostReadPosts[idx])
@@ -893,6 +894,15 @@ if Meteor.isClient
       }
       Meteor.call 'unpublish',postId,userId,drafts, (err, res)->
         #Meteor.subscribe 'myCounter'
+        myHotPosts = Meteor.user().myHotPosts
+        if myHotPosts and myHotPosts.length > 0
+          newArray = []
+          for item in myHotPosts
+            itemPostId = item.postId or item._id
+            if itemPostId isnt postId
+              newArray.push(item)
+          myHotPosts = newArray
+          Meteor.users.update { _id: Meteor.userId() }, $set: 'myHotPosts': myHotPosts
         Meteor.subscribe 'followposts', Session.get('followpostsitemsLimit'), {
           #onStop: subscribeFollowPostsOnStop
           onReady: ()->
