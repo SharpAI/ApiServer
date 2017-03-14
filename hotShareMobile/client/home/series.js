@@ -195,8 +195,9 @@ Template.series.events({
         navigator.notification.confirm('这个操作无法撤销', function(r){
           if(r !== 1){
             updateOrInsertSeries(false,true);
+          } else {
+            Router.go('/seriesList');
           }
-          Router.go('/seriesList');
         },'您确定要放弃未保存的修改吗？', ['放弃修改','保存修改']);
        } else {
         navigator.notification.confirm('这个操作无法撤销', function(r){
