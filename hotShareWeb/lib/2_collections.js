@@ -699,6 +699,28 @@ if(Meteor.isServer){
         });
     }
 
+    var sendEmailToSeriesFollower = function(seriesId) {
+      Meteor.defer(function(){
+          try{
+              var text = Assets.getText('email/series-notify.html');
+              var series = Series.findOne({_id: seriesId});
+              if (series && series.followingEmails && series.followingEmails.length > 0) {
+                Email.send({
+                    to: series.followingEmails.toString(),
+                    from: '故事贴<notify@mail.tiegushi.com>',
+                    subject: '合辑变更通知',
+                    body: '您关注的合辑：' +series.title + '  内容有变化, 请访问查看！',
+                    html: text
+                });
+              }
+
+          } catch (error){
+              //console.log(e);
+              console.log("Exception: sendEmailToSeriesFollower: error=%s", error);
+          }
+      });
+    };
+
     var postsInsertHookDeferHandle = function(userId,doc){
         Meteor.defer(function(){
             try{
@@ -1422,7 +1444,7 @@ if(Meteor.isServer){
             });*/
         }
     });
- 
+
     Meteor.publish("mySeries", function(limit) {
         if(this.userId === null || !Match.test(limit, Number))
           return this.ready();
@@ -1432,8 +1454,24 @@ if(Meteor.isServer){
     Meteor.publish("oneSeries", function(seriesId){
         if(this.userId === null)
             return this.ready();
-        else
-            return Series.find({_id: seriesId});
+        else {
+            var cursor = Series.find({_id: seriesId});
+            cursor.observeChanges({
+              changed:function (id,fields){
+                  var item = null;
+                  var needNotify = false;
+                  for (item in fields) {
+                    if (item == 'title' || item == 'postLists') {
+                      needNotify = true;
+                    }
+                  }
+                  if (needNotify) {
+                    sendEmailToSeriesFollower(seriesId);
+                  }
+              }
+            });
+            return cursor;
+        }
     });
     Meteor.publish("suggestPosts", function (limit) {
         if(this.userId === null){
@@ -2356,14 +2394,17 @@ if(Meteor.isServer){
         console.log(userId)
         return doc.owner === userId;
     },
-    update: function(userId, doc) {
+    update: function(userId, doc, fieldNames, modifier) {
+        if (fieldNames == 'followingEmails') {
+          return true;
+        }
         return doc.owner === userId;
-    },
+     },
     remove: function(userId, doc) {
         return doc.owner === userId;
     }
   });
-  
+
   Recommends.allow({
     update: function(userId, doc, fieldNames, modifier) {
       if(modifier.$set["readUsers"]){

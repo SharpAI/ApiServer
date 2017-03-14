@@ -8,6 +8,9 @@
       <div class="menu-btn has-dropdown"> <i class="fa fa-ellipsis-v"></i></div>
     </div>
   </div> -->
+  <div class="series-func-btn-container">
+    <div id="SubscribeSeries"><i class="fa fa-plus"></i> 关注</div>
+  </div>
   <div class="series-container">
      <div class="series-title" style="background: url({{mainImage}}) no-repeat;background-size: cover;" data-image="{{mainImage}}">
        <img src="{{mainImage}}" style="width: 0;" />
@@ -30,7 +33,20 @@
       {{/each}}
     </ul>
   </div>
-
+</div>
+<div class="subscribeSeriesPage">
+  <div class="bg"></div>
+  <div class="content">
+      <div class="header">关注合辑</div>
+      <div class="body">
+        <input id="email" class="form-control" placeholder="QQ/邮箱地址" value="{{oldMail}}"/>
+        <p class="tips">输入您的QQ号或者邮箱地址，然后选择“确定”完成关注，此信息不会展示给作者。</p>
+      </div>
+      <div class="footer">
+        <div class="btn cannelBtn ripple">取消</div>
+        <div class="btn okBtn ripple">确定</div>
+      </div>
+  </div>
 </div>
 <script>
   function goposts(gsid){

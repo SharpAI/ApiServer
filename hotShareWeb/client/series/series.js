@@ -33,6 +33,47 @@ Template.series.helpers({
 });
 
 Template.series.events({
+  'click .series-func-btn-container': function(e,t){
+    console.log('follow btn clicked');
+    $('.subscribeSeriesPage').show();
+  },
+  'click .cannelBtn': function(e,t){
+    console.log('cancel btn clicked');
+    $('.subscribeSeriesPage').hide();
+  },
+  'click .okBtn': function(e,t){
+    console.log('ok btn clicked');
+
+    mailAddress = t.find('#email').value;
+    qqValueReg = RegExp(/^[1-9][0-9]{4,9}$/);
+    mailValueReg = RegExp(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/);
+    if (!mailValueReg.test(mailAddress) && !qqValueReg.test(mailAddress)) {
+      toastr.remove();
+      toastr.info('请输入正确的QQ号或Email');
+      return false;
+    }
+    if (qqValueReg.test(mailAddress)) {
+      mailAddress += '@qq.com';
+    }
+
+    console.log('##RDBG mailAddress: ' + mailAddress);
+    $('.subscribeSeriesPage').hide();
+
+    var series = Series.findOne({_id: this._id});
+    if (series) {
+      var followingEmails = series.followingEmails;
+      if (!followingEmails)
+        followingEmails = [];
+      for (var i = 0; i < followingEmails.length; i++) {
+        if (followingEmails[i] == mailAddress) {
+          toastr.info('已经关注了这个邮箱 ' + mailAddress);
+          return;
+        }
+      }
+      followingEmails.push(mailAddress);
+      Series.update({_id: this._id}, {$set: {followingEmails: followingEmails}});
+    }
+  },
   'click .back': function(e,t){
     console.log('back clicked');
   },
