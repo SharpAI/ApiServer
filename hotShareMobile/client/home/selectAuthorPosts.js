@@ -20,12 +20,9 @@ Template.selectAuthorPosts.onRendered(function(){
 });
 Template.selectAuthorPosts.helpers({
   userPostsLists: function(){
-    if(Session.get('seriesContent')){
-      var postLists = Session.get('seriesContent').postLists;
-      var ids = [];
-      postLists.forEach(function(item){
-        ids.push(item.postId);
-      });
+    var ids = Session.get('selectedPostIds');
+    console.table(ids)
+    if(ids.length > 0){
       var posts = Posts.find({owner:Meteor.userId(),_id:{"$nin":ids},publish:{"$ne":false}}, {sort: {createdAt: -1}}, {limit:Session.get('seriesAuthorPostsLimit')});
     } else {
       var posts = Posts.find({owner:Meteor.userId(),publish:{"$ne":false}}, {sort: {createdAt: -1}}, {limit:Session.get('seriesAuthorPostsLimit')});
@@ -49,16 +46,11 @@ Template.selectAuthorPosts.events({
     if( $('.author-post-item-select').length === 0){
       return PUB.toast('至少选中一个故事哦～')
     }
-    seriesContent = Session.get('seriesContent')
-    $('.author-post-item-select').each(function(index){
-      seriesContent.postLists.push({
-        postId:$(this).attr('id'),
-        postMainImage: $(this).data('image'),
-        postTitle:$(this).data('title'),
-        postAddonTitle: $(this).data('addontitle'),
-      });
-    });
-    Session.set('seriesContent',seriesContent);
+    var selectPosts = $('.author-post-item-select').clone();
+    selectPosts.each(function(){
+      $(this).removeClass('author-post-item author-post-item-select').addClass('series-post-item series-post-item-not-select series-select-item')
+    })
+    $('#editSeriesList').append(selectPosts)
     Session.set('seriesAuthorPostsCount',0);
     return $('.author-self-posts').hide();
   },

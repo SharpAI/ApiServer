@@ -241,7 +241,7 @@ Template.series.events({
         selectMediaFromAblum(1, function(cancel, result) {
           var data;
           if (cancel) {
-            PUB.back();
+            // PUB.back();
             return;
           }
           if (result) {
@@ -266,6 +266,11 @@ Template.series.events({
     if(postCounts === 0){
       return PUB.toast('你还没有发表过故事哦，先去发表一篇故事吧～')
     }
+    var ids = [];
+    $('.series-post-item').each(function(){
+      ids.push($(this).attr('id'))
+    });
+    Session.set('selectedPostIds',ids);
     Session.set('seriesIsSaved',false);
     $('.author-self-posts').toggle();
   },
@@ -277,21 +282,12 @@ Template.series.events({
       return PUB.toast('请至少选择一个要删除故事')
     }
     Session.set('seriesIsSaved',false);
-    var seriesContent = Session.get('seriesContent')
-    var postLists = [];
-
-    $('.series-post-item-not-select').each(function(index){
-      postLists.push({
-        postId:$(this).attr('id'),
-        postMainImage: $(this).data('image'),
-        postTitle:$(this).data('title'),
-        postIndex: $(this).data('index')
-      });
+    $('.series-post-item-select').remove();
+    var ids = [];
+    $('.series-post-item').each(function(){
+      ids.push($(this).attr('id'))
     });
-    $('.series-post-item').removeClass('series-post-item-select');
-    console.table(postLists)
-    seriesContent.postLists = postLists;
-    Session.set('seriesContent',seriesContent);
+    Session.set('selectedPostIds',ids);
   },
   'click .viewModal':function(e,t){
     Session.set('fromSeries', {status: true, id: Session.get('seriesId')});

@@ -42,10 +42,10 @@
          <textarea id="seriesTitle" rows="3" cols="20">{{seriesTitle}}</textarea>
       </div>
       {{/if}}
-     {{#if postCounts}}
+     <!--{{#if postCounts}}
     <div style="margin: 10px">此合集包含下列{{postCounts}}个故事</div>
-    {{/if}}
-    <ul class="series-posts-lists" draggable="true">
+    {{/if}}-->
+    <ul id="editSeriesList" class="series-posts-lists" draggable="true">
       {{#each postsLists}}
       <li id="{{postId}}" class="series-post-item series-post-item-not-select series-select-item" data-index="{{postIndex}}" data-title="{{postTitle}}" data-addontitle="{{postAddonTitle}}" data-image="{{postMainImage}}">
         <div class="series-img-helper">
