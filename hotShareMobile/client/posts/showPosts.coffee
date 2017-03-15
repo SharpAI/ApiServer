@@ -824,10 +824,11 @@ if Meteor.isClient
       $('.showPostsFooter').addClass('animated ' + animateOutUpperEffect)
       setTimeout ()->
         #PUB.back()
-        if Session.get("backtoMyPosts") is true
-          Session.set("backtoMyPosts",false)
-          PUB.page('/myPosts')
-        else if Session.get("backtopageuser") is true
+        # if Session.get("backtoMyPosts") is true
+        #   Session.set("backtoMyPosts",false)
+        #   PUB.page('/myPosts')
+        #else 
+        if Session.get("backtopageuser") is true
           Session.set('backtopageuser', false)
           PUB.page('/user')
         else if Session.get("fromSeries") and Session.get("fromSeries").status is true
