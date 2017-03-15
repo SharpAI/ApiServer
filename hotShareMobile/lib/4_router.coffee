@@ -34,6 +34,56 @@ if Meteor.isClient
     else
       self.render 'unpublish'
     Session.set 'channel','posts/'+self.params._id
+  renderPost2 = (self,post)->
+    if !post or (post.isReview is false and post.owner isnt Meteor.userId())
+      return this.render 'postNotFound'
+    if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
+      Session.set('postContent',post)
+      refreshPostContent()
+      toastr.info('作者修改了帖子内容.')
+    else
+      Session.set('postContent',post)
+    Session.set('focusedIndex',undefined)
+    if post and post.addontitle and (post.addontitle isnt '')
+      documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
+    else if post
+      documentTitle = "『故事贴』" + post.title
+    Session.set("DocumentTitle",documentTitle)
+    if post
+      self.render 'showPosts', {data: post}
+    else
+      self.render 'unpublish'
+    Session.set 'channel','posts/'+self.params._id
+  renderPost3 = (self,post)->
+    if !post or (post.isReview is false and post.owner isnt Meteor.userId())
+      return this.render 'postNotFound'
+    if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
+      Session.set('postContent',post)
+      refreshPostContent()
+      toastr.info('作者修改了帖子内容.')
+    else
+      Session.set('postContent',post)
+
+    if Session.get("doSectionForward") is true
+      Session.set("doSectionForward",false)
+      Session.set("postPageScrollTop",0)
+      document.body.scrollTop = 0
+    Session.set("refComment",[''])
+    Session.set('focusedIndex',self.params._index)
+    if post.addontitle and (post.addontitle isnt '')
+      documentTitle = post.title + "：" + post.addontitle
+    else
+      documentTitle = post.title
+    Session.set("DocumentTitle",documentTitle)
+    favicon = document.createElement('link')
+    favicon.id = 'icon'
+    favicon.rel = 'icon'
+    favicon.href = post.mainImage
+    document.head.appendChild(favicon)
+    unless Session.equals('channel','posts/'+self.params._id+'/'+self.params._index)
+      refreshPostContent()
+    self.render 'showPosts', {data: post}
+    Session.set('channel','posts/'+self.params._id+'/'+self.params._index)
   Meteor.startup ()->
     Tracker.autorun ()->
       channel = Session.get 'channel'
@@ -151,38 +201,71 @@ if Meteor.isClient
       Session.set('nextPostID',this.params._id)
       this.render 'redirect'
       return
+    # Router.route '/posts/:_id', {
+    #     waitOn: ->
+    #       [subs.subscribe("publicPosts",this.params._id),
+    #        subs.subscribe("postViewCounter",this.params._id),
+    #        subs.subscribe("postsAuthor",this.params._id),
+    #        subs.subscribe "pcomments"]
+    #     loadingTemplate: 'loadingPost'
+    #     action: ->
+    #       post = Posts.findOne({_id: this.params._id})
+    #       if !post or (post.isReview is false and post.owner isnt Meteor.userId())
+    #         return this.render 'postNotFound'
+
+    #       if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
+    #         Session.set('postContent',post)
+    #         refreshPostContent()
+    #         toastr.info('作者修改了帖子内容.')
+    #       else
+    #         Session.set('postContent',post)
+    #       Session.set('focusedIndex',undefined)
+    #       if post and post.addontitle and (post.addontitle isnt '')
+    #         documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
+    #       else if post
+    #         documentTitle = "『故事贴』" + post.title
+    #       Session.set("DocumentTitle",documentTitle)
+    #       if post
+    #         this.render 'showPosts', {data: post}
+    #       else
+    #         this.render 'unpublish'
+    #       if Session.get("readMomentsPost") is true
+    #         Session.set 'readMomentsPost',false
+    #         Session.set 'needReviewPostStyle',true
+    #       Session.set 'channel','posts/'+this.params._id
+    #   }
     Router.route '/posts/:_id', {
-        waitOn: ->
-          [subs.subscribe("publicPosts",this.params._id),
-           subs.subscribe("postViewCounter",this.params._id),
-           subs.subscribe("postsAuthor",this.params._id),
-           subs.subscribe "pcomments"]
         loadingTemplate: 'loadingPost'
         action: ->
+          self = this
+          this.render 'loadingPost'
+          if ajaxCDN?
+            ajaxCDN.abort()
+            ajaxCDN = null
+          console.log(this.params._id);
+          subs.subscribe "publicPosts",this.params._id, ()->
+            console.log('subs loaded:', self.params._id);
+          subs.subscribe("postViewCounter",this.params._id)
+          subs.subscribe("postsAuthor",this.params._id)
+          subs.subscribe "pcomments"
           post = Posts.findOne({_id: this.params._id})
-          if !post or (post.isReview is false and post.owner isnt Meteor.userId())
-            return this.render 'postNotFound'
-
-          if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
-            Session.set('postContent',post)
-            refreshPostContent()
-            toastr.info('作者修改了帖子内容.')
-          else
-            Session.set('postContent',post)
-          Session.set('focusedIndex',undefined)
-          if post and post.addontitle and (post.addontitle isnt '')
-            documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
-          else if post
-            documentTitle = "『故事贴』" + post.title
-          Session.set("DocumentTitle",documentTitle)
-          if post
-            this.render 'showPosts', {data: post}
-          else
-            this.render 'unpublish'
-          if Session.get("readMomentsPost") is true
-            Session.set 'readMomentsPost',false
-            Session.set 'needReviewPostStyle',true
-          Session.set 'channel','posts/'+this.params._id
+          unless post
+            # console.log("by ajax:", this.params._id)
+            ajaxCDN = $.getJSON(rest_api_url+"/raw/"+this.params._id,(json,result)->
+              post = Posts.findOne({_id: self.params._id})
+              if post
+                console.log('show subs post:', self.params._id);
+                renderPost2(self, post)
+              else if(result && result is 'success' && json && json.status && json.status is 'ok' && json.data)
+                console.log('show ajax post:', self.params._id);
+                Posts._connection._livedata_data({msg: 'added', collection: 'posts', id: new Mongo.ObjectID()._str, fields: json.data}) # insert post data
+                post = json.data
+                renderPost2(self, post)
+              else
+                this.render 'unpublish'
+            )
+            return
+          renderPost2(self, post)
       }
     Router.route '/newposts/:_id', {
         action: ->
@@ -223,48 +306,82 @@ if Meteor.isClient
         this.render 'showDraftPosts', {data: post}
         Session.set 'draftposts','draftposts/'+this.params._id
     }
+    # Router.route '/posts/:_id/:_index', {
+    #   waitOn: ->
+    #     [Meteor.subscribe("publicPosts",this.params._id),
+    #     Meteor.subscribe("postsAuthor",this.params._id),
+    #     Meteor.subscribe "pcomments"]
+    #   loadingTemplate: 'loadingPost'
+    #   action: ->
+    #     if Session.get("doSectionForward") is true
+    #       Session.set("doSectionForward",false)
+    #       Session.set("postPageScrollTop",0)
+    #       document.body.scrollTop = 0
+    #     post = Posts.findOne({_id: this.params._id})
+    #     if !post or (post.isReview is false and post.owner isnt Meteor.userId())
+    #       return this.render 'postNotFound'
+
+    #     unless post
+    #       console.log "Cant find the request post"
+    #       this.render 'postNotFound'
+    #       return
+    #     Session.set("refComment",[''])
+    #     if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
+    #       Session.set('postContent',post)
+    #       refreshPostContent()
+    #       toastr.info('作者修改了帖子内容.')
+    #     else
+    #       Session.set('postContent',post)
+    #     Session.set('focusedIndex',this.params._index)
+    #     if post.addontitle and (post.addontitle isnt '')
+    #       documentTitle = post.title + "：" + post.addontitle
+    #     else
+    #       documentTitle = post.title
+    #     Session.set("DocumentTitle",documentTitle)
+    #     favicon = document.createElement('link')
+    #     favicon.id = 'icon'
+    #     favicon.rel = 'icon'
+    #     favicon.href = post.mainImage
+    #     document.head.appendChild(favicon)
+
+    #     unless Session.equals('channel','posts/'+this.params._id+'/'+this.params._index)
+    #       refreshPostContent()
+    #     this.render 'showPosts', {data: post}
+    #     Session.set('channel','posts/'+this.params._id+'/'+this.params._index)
+    #   fastRender: true
+    # }
     Router.route '/posts/:_id/:_index', {
-      waitOn: ->
-        [Meteor.subscribe("publicPosts",this.params._id),
-        Meteor.subscribe("postsAuthor",this.params._id),
-        Meteor.subscribe "pcomments"]
       loadingTemplate: 'loadingPost'
       action: ->
-        if Session.get("doSectionForward") is true
-          Session.set("doSectionForward",false)
-          Session.set("postPageScrollTop",0)
-          document.body.scrollTop = 0
+        self = this
+        this.render 'loadingPost'
+        if ajaxCDN?
+          ajaxCDN.abort()
+          ajaxCDN = null
+        console.log(this.params._id);
+        subs.subscribe "publicPosts",this.params._id, ()->
+          console.log('subs loaded:', self.params._id);
+        subs.subscribe("postViewCounter",this.params._id)
+        subs.subscribe("postsAuthor",this.params._id)
+        subs.subscribe "pcomments"
         post = Posts.findOne({_id: this.params._id})
-        if !post or (post.isReview is false and post.owner isnt Meteor.userId())
-          return this.render 'postNotFound'
-
         unless post
-          console.log "Cant find the request post"
-          this.render 'postNotFound'
+          # console.log("by ajax:", this.params._id)
+          ajaxCDN = $.getJSON(rest_api_url+"/raw/"+this.params._id,(json,result)->
+            post = Posts.findOne({_id: self.params._id})
+            if post
+              console.log('show subs post:', self.params._id);
+              renderPost3(self, post)
+            else if(result && result is 'success' && json && json.status && json.status is 'ok' && json.data)
+              console.log('show ajax post:', self.params._id);
+              Posts._connection._livedata_data({msg: 'added', collection: 'posts', id: new Mongo.ObjectID()._str, fields: json.data}) # insert post data
+              post = json.data
+              renderPost3(self, post)
+            else
+              this.render 'unpublish'
+          )
           return
-        Session.set("refComment",[''])
-        if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
-          Session.set('postContent',post)
-          refreshPostContent()
-          toastr.info('作者修改了帖子内容.')
-        else
-          Session.set('postContent',post)
-        Session.set('focusedIndex',this.params._index)
-        if post.addontitle and (post.addontitle isnt '')
-          documentTitle = post.title + "：" + post.addontitle
-        else
-          documentTitle = post.title
-        Session.set("DocumentTitle",documentTitle)
-        favicon = document.createElement('link')
-        favicon.id = 'icon'
-        favicon.rel = 'icon'
-        favicon.href = post.mainImage
-        document.head.appendChild(favicon)
-
-        unless Session.equals('channel','posts/'+this.params._id+'/'+this.params._index)
-          refreshPostContent()
-        this.render 'showPosts', {data: post}
-        Session.set('channel','posts/'+this.params._id+'/'+this.params._index)
+        renderPost3(self, post)
       fastRender: true
     }
     # Router.route '/allDrafts',()->
