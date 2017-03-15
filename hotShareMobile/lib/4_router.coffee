@@ -106,6 +106,9 @@ if Meteor.isClient
     Router.route '/seriesList',()->
       this.render 'seriesList'
       Session.set 'channel','seriesList'
+    Router.route '/mySeries',()->
+      this.render 'mySeries'
+      Session.set 'channel','mySeries'
     Router.route '/series',()->
       Session.set('seriesId','')
       this.render 'series'

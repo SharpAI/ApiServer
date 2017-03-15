@@ -25,6 +25,8 @@ PushMessages = new Meteor.Collection('pushmessages');
 
 Recommends = new Meteor.Collection('recommends');
 Series = new Meteor.Collection('series');
+SeriesFollow = new Meteor.Collection('seriesfollow');
+
 LogonIPLogs = new Meteor.Collection('loginiplogs');
 
 Configs = new Meteor.Collection('configs');
@@ -2398,6 +2400,18 @@ if(Meteor.isServer){
         if (fieldNames == 'followingEmails') {
           return true;
         }
+        return doc.owner === userId;
+     },
+    remove: function(userId, doc) {
+        return doc.owner === userId;
+    }
+  });
+
+  SeriesFollow.allow({
+    insert: function(userId, doc) {
+        return doc.owner === userId;
+    },
+    update: function(userId, doc, fieldNames, modifier) {
         return doc.owner === userId;
      },
     remove: function(userId, doc) {

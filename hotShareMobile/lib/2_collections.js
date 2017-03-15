@@ -25,6 +25,7 @@ UserRelation = new Meteor.Collection('userrelation'); // 用户关系，为了�
 
 Recommends = new Meteor.Collection('recommends');
 Series = new Meteor.Collection('series');
+SeriesFollow = new Meteor.Collection('seriesfollow');
 
 GetStringByteLength = function(str){
   return str ? str.replace(/[^\x00-\xff]/g, 'xx').length : 0;
@@ -2279,6 +2280,7 @@ if(Meteor.isServer){
     //return Posts.find({}, {sort: {createdAt: -1}, limit: limit});
     return Posts.find({owner: this.userId}, {sort: {createdAt: -1}, limit: limit});
   });
+
   Series.allow({
     insert: function(userId, doc) {
         console.log(userId)
@@ -2291,6 +2293,19 @@ if(Meteor.isServer){
         return doc.owner === userId;
     }
   });
+
+  SeriesFollow.allow({
+    insert: function(userId, doc) {
+        return doc.owner === userId;
+    },
+    update: function(userId, doc, fieldNames, modifier) {
+        return doc.owner === userId;
+     },
+    remove: function(userId, doc) {
+        return doc.owner === userId;
+    }
+  });
+  
   Recommends.allow({
       update: function(userId, doc, fieldNames, modifier) {
         if(modifier.$set["readUsers"]){

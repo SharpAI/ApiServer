@@ -40,7 +40,12 @@ Template.seriesList.events
       seriesId = e.currentTarget.id
       Session.set('isSeriesEdit',false)
       Router.go '/series/' + seriesId
+Template.seriesFooter.helpers
+  haveSeries:()->
+    Series.find({owner:Meteor.userId()}).count() > 0
 Template.seriesFooter.events
+    'click #user':(e)->
+      PUB.page('/mySeries')
     'click #album-select':(e)->
       Meteor.defer ()->
         $('.modal-backdrop.in').remove()
