@@ -446,6 +446,17 @@ if Meteor.isClient
         return true
       else
         return false
+    isInSeries:()->
+      latestSeries = Session.get("postContent").latestSeries
+      if latestSeries
+        return true
+      return false
+    postSeriesId:()->
+      latestSeries = Session.get("postContent").latestSeries
+      latestSeries.seriesId
+    postSeriesTitle:()->
+      latestSeries = Session.get("postContent").latestSeries
+      latestSeries.seriesTitle
     authorReadPopularPosts: ()->
       myHotPosts = Meteor.users.findOne({_id: @owner}).myHotPosts
       if (myHotPosts && myHotPosts.length >= 3)
@@ -653,6 +664,9 @@ if Meteor.isClient
     else if action is 'post-tts'
       startPostTTS(self.index)
   Template.showPosts.events
+    'click .postSeriesTitle': (e,t)->
+      seriesId = e.currentTarget.id
+      Router.go '/series/' + seriesId
     'click .authorReadPopularPostItem': (e)->
       postId = e.currentTarget.id
       unless postId

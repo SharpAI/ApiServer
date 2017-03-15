@@ -1,3 +1,12 @@
+var updatePostsLatestSeries = function(postLists, seriesId, seriesTitle) {
+  if (!seriesId || !postLists)
+    return false;
+  var i = 0;
+  for (i = 0; i < postLists.length; i++) {
+    Posts.update({_id: postLists[i].postId}, {$set: {latestSeries: {seriesId: seriesId, seriesTitle: seriesTitle}}});
+  }
+};
+
 var uploadSeriesImage = function(data) {
   multiThreadUploadFileWhenPublishInCordova(data, null, function(err, result) {
     var i, item, len;
@@ -30,7 +39,8 @@ var uploadSeriesImage = function(data) {
               if(err){
                 console.log('insert series ERR=',err)
               } else {
-                console.log('insert series successed ,ID=',_id)
+                console.log('insert series successed ,ID=',_id);
+                updatePostsLatestSeries(postdata.postLists, _id, postdata.title);
               }
             });
           } else {
@@ -49,7 +59,8 @@ var uploadSeriesImage = function(data) {
               if(err){
                 console.log('update series ERR=',err)
               } else {
-                console.log('update series successed ,num=',num)
+                console.log('update series successed ,num=',num);
+                updatePostsLatestSeries(postdata.postLists, Session.get('seriesId'), postdata.title);
               }
             });
           }
@@ -112,6 +123,7 @@ var updateOrInsertSeries = function(isNewSeries,publish){
           console.log('insert series ERR=',err)
         } else {
           console.log('insert series successed ,ID=',_id)
+          updatePostsLatestSeries(posts, _id, title);
         }
       });
     } else {
@@ -130,7 +142,8 @@ var updateOrInsertSeries = function(isNewSeries,publish){
         if(err){
           console.log('update series ERR=',err)
         } else {
-          console.log('update series successed ,num=',num)
+          console.log('update series successed ,num=',num);
+          updatePostsLatestSeries(posts, Session.get('seriesId'), title);
         }
       });
     }

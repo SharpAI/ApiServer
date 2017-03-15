@@ -122,6 +122,12 @@
       </ul>
       {{/if}}
     </div>
+    {{#if isInSeries}}
+    <div class="postSeries">
+      <div class="postSeriesIntro">—&nbsp;该文章最近编入了合辑&nbsp;—</div>
+      <div id="{{postSeriesId}}" class="postSeriesTitle">《{{postSeriesTitle}}》</div>
+    </div>
+    {{/if}}
     {{#if withAfterPostIntroduce}}
       <div class="write">
         <p class="author">Write by <span class="spc">{{ownerName}}</span></p>

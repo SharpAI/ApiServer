@@ -1842,7 +1842,7 @@ if(Meteor.isServer){
      if(this.userId === null|| !Match.test(limit, Number)) {
           return this.ready();
       } else {
-          return Posts.find({owner: owner, publish: true},{sort: {browse: -1},limit: limit,fields:{title:1,publish:1,owner:1,browse:1}});
+          return Posts.find({owner: owner, publish: true},{sort: {browse: -1},limit: limit,fields:{title:1,publish:1,owner:1,browse:1,latestSeries:1}});
       }
   });
   Meteor.publish("userRecommendStory", function(limit) {
@@ -1850,7 +1850,7 @@ if(Meteor.isServer){
           return this.ready();
       }
       else{
-          return Posts.find({owner: this.userId, publish: true},{sort: {createdAt: -1},limit:limit,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1}});
+          return Posts.find({owner: this.userId, publish: true},{sort: {createdAt: -1},limit:limit,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1,latestSeries:1}});
       }
   });
   Meteor.publish("postsWithLimit", function(limit) {
@@ -1858,7 +1858,7 @@ if(Meteor.isServer){
           return this.ready();
       }
       else{
-          return Posts.find({owner: this.userId, publish: true},{sort: {createdAt: -1},limit:limit,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1}});
+          return Posts.find({owner: this.userId, publish: true},{sort: {createdAt: -1},limit:limit,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1,latestSeries:1}});
       }
   });
   Meteor.publish("savedDraftsWithLimit", function(limit) {
