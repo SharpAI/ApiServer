@@ -4,6 +4,7 @@ subs = new SubsManager({
   # any subscription will be expire after 30 days, if it's not subscribed again
   expireIn: 60*24*30
 });
+ajaxCDN = null
 
 if Meteor.isClient
   @refreshPostContent=()->
@@ -17,12 +18,12 @@ if Meteor.isClient
     if !post
       return self.render 'postNotFound'
 
-    # if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
-    #   Session.set('postContent',post)
-    #   refreshPostContent()
-    #   toastr.info('作者修改了帖子内容.')
-    # else
-    Session.set('postContent',post)
+    if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
+      Session.set('postContent',post)
+      refreshPostContent()
+      toastr.info('作者修改了帖子内容.')
+    else
+      Session.set('postContent',post)
     Session.set('focusedIndex',undefined)
     if post and post.addontitle and (post.addontitle isnt '')
       documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
@@ -34,6 +35,56 @@ if Meteor.isClient
     else
       self.render 'unpublish'
     Session.set 'channel','posts/'+self.params._id
+  renderPost2 = (self,post)->
+    if !post or (post.isReview is false and post.owner isnt Meteor.userId())
+      return this.render 'postNotFound'
+    if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
+      Session.set('postContent',post)
+      refreshPostContent()
+      toastr.info('作者修改了帖子内容.')
+    else
+      Session.set('postContent',post)
+    Session.set('focusedIndex',undefined)
+    if post and post.addontitle and (post.addontitle isnt '')
+      documentTitle = "『故事贴』" + post.title + "：" + post.addontitle
+    else if post
+      documentTitle = "『故事贴』" + post.title
+    Session.set("DocumentTitle",documentTitle)
+    if post
+      self.render 'showPosts', {data: post}
+    else
+      self.render 'unpublish'
+    Session.set 'channel','posts/'+self.params._id
+  renderPost3 = (self,post)->
+    if !post or (post.isReview is false and post.owner isnt Meteor.userId())
+      return this.render 'postNotFound'
+    if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
+      Session.set('postContent',post)
+      refreshPostContent()
+      toastr.info('作者修改了帖子内容.')
+    else
+      Session.set('postContent',post)
+
+    if Session.get("doSectionForward") is true
+      Session.set("doSectionForward",false)
+      Session.set("postPageScrollTop",0)
+      document.body.scrollTop = 0
+    Session.set("refComment",[''])
+    Session.set('focusedIndex',self.params._index)
+    if post.addontitle and (post.addontitle isnt '')
+      documentTitle = post.title + "：" + post.addontitle
+    else
+      documentTitle = post.title
+    Session.set("DocumentTitle",documentTitle)
+    favicon = document.createElement('link')
+    favicon.id = 'icon'
+    favicon.rel = 'icon'
+    favicon.href = post.mainImage
+    document.head.appendChild(favicon)
+    unless Session.equals('channel','posts/'+self.params._id+'/'+self.params._index)
+      refreshPostContent()
+    self.render 'showPosts', {data: post}
+    Session.set('channel','posts/'+self.params._id+'/'+self.params._index)
   Meteor.startup ()->
     Tracker.autorun ()->
       channel = Session.get 'channel'
@@ -52,21 +103,6 @@ if Meteor.isClient
     Router.route '/',()->
       this.render 'home'
       Session.set 'channel','home'
-      return
-    Router.route '/seriesList',()->
-      this.render 'seriesList'
-      Session.set 'channel','seriesList'
-    Router.route '/series',()->
-      Session.set('seriesId','')
-      this.render 'series'
-      return
-    Router.route '/series/:_id',()->
-      Meteor.subscribe("oneSeries",this.params._id)
-      console.log(this.params._id)
-      seriesContent = Series.findOne({_id: this.params._id})
-      Session.set('seriesId',this.params._id)
-      Session.set('seriesContent',seriesContent)
-      this.render 'series'
       return
     Router.route '/splashScreen',()->
       this.render 'splashScreen'
@@ -126,16 +162,6 @@ if Meteor.isClient
       else
         this.render 'webHome'
         return
-    Router.route '/loginForm', ()->
-      this.render 'loginForm'
-      return
-    Router.route '/signupForm', ()->
-      this.render 'signupForm'
-      return
-    Router.route '/recoveryForm', ()->
-      this.render 'recoveryForm'
-      return
-    
     Router.route '/webHome',()->
       this.render 'webHome'
       return
@@ -151,7 +177,7 @@ if Meteor.isClient
       Session.set('nextPostID',this.params._id)
       this.render 'redirect'
       return
-    Router.route '/posts/:_id', {
+    Router.route '/postsOld/:_id', {
         waitOn: ->
           [subs.subscribe("publicPosts",this.params._id),
            subs.subscribe("postViewCounter",this.params._id),
@@ -162,7 +188,7 @@ if Meteor.isClient
           post = Posts.findOne({_id: this.params._id})
           if !post or (post.isReview is false and post.owner isnt Meteor.userId())
             return this.render 'postNotFound'
-
+          console.log("Router.route: action")
           if post and Session.get('postContent') and post.owner isnt Meteor.userId() and post._id is Session.get('postContent')._id and String(post.createdAt) isnt String(Session.get('postContent').createdAt)
             Session.set('postContent',post)
             refreshPostContent()
@@ -179,10 +205,41 @@ if Meteor.isClient
             this.render 'showPosts', {data: post}
           else
             this.render 'unpublish'
-          if Session.get("readMomentsPost") is true
-            Session.set 'readMomentsPost',false
-            Session.set 'needReviewPostStyle',true
           Session.set 'channel','posts/'+this.params._id
+      }
+    
+    Router.route '/posts/:_id', {
+        loadingTemplate: 'loadingPost'
+        action: ->
+          self = this
+          this.render 'loadingPost'
+          if ajaxCDN?
+            ajaxCDN.abort()
+            ajaxCDN = null
+          console.log(this.params._id);
+          subs.subscribe "publicPosts",this.params._id, ()->
+            console.log('subs loaded:', self.params._id);
+          subs.subscribe("postViewCounter",this.params._id)
+          subs.subscribe("postsAuthor",this.params._id)
+          subs.subscribe "pcomments"
+          post = Posts.findOne({_id: this.params._id})
+          unless post
+            # console.log("by ajax:", this.params._id)
+            ajaxCDN = $.getJSON(rest_api_url+"/raw/"+this.params._id,(json,result)->
+              post = Posts.findOne({_id: self.params._id})
+              if post
+                console.log('show subs post:', self.params._id);
+                renderPost2(self, post)
+              else if(result && result is 'success' && json && json.status && json.status is 'ok' && json.data)
+                console.log('show ajax post:', self.params._id);
+                Posts._connection._livedata_data({msg: 'added', collection: 'posts', id: new Mongo.ObjectID()._str, fields: json.data}) # insert post data
+                post = json.data
+                renderPost2(self, post)
+              else
+                this.render 'unpublish'
+            )
+            return
+          renderPost2(self, post)
       }
     Router.route '/newposts/:_id', {
         action: ->
@@ -223,7 +280,7 @@ if Meteor.isClient
         this.render 'showDraftPosts', {data: post}
         Session.set 'draftposts','draftposts/'+this.params._id
     }
-    Router.route '/posts/:_id/:_index', {
+    Router.route '/postsOld/:_id/:_index', {
       waitOn: ->
         [Meteor.subscribe("publicPosts",this.params._id),
         Meteor.subscribe("postsAuthor",this.params._id),
@@ -265,6 +322,40 @@ if Meteor.isClient
           refreshPostContent()
         this.render 'showPosts', {data: post}
         Session.set('channel','posts/'+this.params._id+'/'+this.params._index)
+      fastRender: true
+    }
+    Router.route '/posts/:_id/:_index', {
+      loadingTemplate: 'loadingPost'
+      action: ->
+        self = this
+        this.render 'loadingPost'
+        if ajaxCDN?
+          ajaxCDN.abort()
+          ajaxCDN = null
+        console.log(this.params._id);
+        subs.subscribe "publicPosts",this.params._id, ()->
+          console.log('subs loaded:', self.params._id);
+        subs.subscribe("postViewCounter",this.params._id)
+        subs.subscribe("postsAuthor",this.params._id)
+        subs.subscribe "pcomments"
+        post = Posts.findOne({_id: this.params._id})
+        unless post
+          # console.log("by ajax:", this.params._id)
+          ajaxCDN = $.getJSON(rest_api_url+"/raw/"+this.params._id,(json,result)->
+            post = Posts.findOne({_id: self.params._id})
+            if post
+              console.log('show subs post:', self.params._id);
+              renderPost3(self, post)
+            else if(result && result is 'success' && json && json.status && json.status is 'ok' && json.data)
+              console.log('show ajax post:', self.params._id);
+              Posts._connection._livedata_data({msg: 'added', collection: 'posts', id: new Mongo.ObjectID()._str, fields: json.data}) # insert post data
+              post = json.data
+              renderPost3(self, post)
+            else
+              this.render 'unpublish'
+          )
+          return
+        renderPost3(self, post)
       fastRender: true
     }
     # Router.route '/allDrafts',()->
@@ -348,7 +439,6 @@ if Meteor.isClient
     Router.route '/addTopicComment',()->
       if Meteor.isCordova is true
         this.render 'addTopicComment'
-        Session.set 'addTopicComment_server_import', this.params.query.server_import
         Session.set 'channel','addTopicComment'
         return
     Router.route '/thanksReport',()->
