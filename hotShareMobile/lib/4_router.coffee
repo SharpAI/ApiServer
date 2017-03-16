@@ -115,6 +115,7 @@ if Meteor.isClient
       return
     Router.route '/series/:_id',()->
       Meteor.subscribe("oneSeries",this.params._id)
+      Meteor.subscribe("seriesFollow", this.params._id)
       console.log(this.params._id)
       seriesContent = Series.findOne({_id: this.params._id})
       Session.set('seriesId',this.params._id)
@@ -188,7 +189,7 @@ if Meteor.isClient
     Router.route '/recoveryForm', ()->
       this.render 'recoveryForm'
       return
-    
+
     Router.route '/webHome',()->
       this.render 'webHome'
       return
@@ -429,7 +430,7 @@ if Meteor.isClient
       if Meteor.isCordova is true
         this.render 'accounts_management_addnew'
         Session.set 'channel','my_accounts_management_addnew'
-        return        
+        return
     Router.route '/my_password',()->
       if Meteor.isCordova is true
         this.render 'my_password'

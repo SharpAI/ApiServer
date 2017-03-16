@@ -156,6 +156,17 @@ var updateOrInsertSeries = function(isNewSeries,publish){
   }
 }
 Template.series.helpers({
+  canFollowSeries: function() {
+    seriesOwner = Session.get('seriesContent').owner;
+    if (seriesOwner == Meteor.userId()) {
+      return false;
+    }
+    seriesFollow = SeriesFollow.find({owner: Meteor.userId(), seriesId: Session.get('seriesId')});
+    if (seriesFollow && seriesFollow.count() > 0) {
+      return false;
+    }
+    return true;
+  },
   postsLists: function(){
     if(Session.get('seriesContent')){
       return Session.get('seriesContent').postLists
@@ -198,6 +209,10 @@ Template.series.helpers({
 });
 
 Template.series.events({
+  'click .series-follow': function(e){
+    series = Session.get('seriesContent');
+    SeriesFollow.insert({owner: Meteor.userId(), seriesId: series._id, title: series.title, mainImage: series.mainImage, createdAt: new Date()});
+  },
   'click .share-btn': function(e){
     console.log('will share');
     $('.shareSeries').show();
