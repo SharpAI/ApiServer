@@ -172,6 +172,12 @@ if Meteor.isClient
         $('.showPosts .head').fadeIn(300);
       ,1000
   Tracker.autorun ()->
+    if Meteor.userId()
+      if Session.get("postContent")
+        setTimeout ()->
+          $('.showPosts').removeClass('animated ' + animateOutUpperEffect)
+        ,1000
+  Tracker.autorun ()->
     if Session.get("needToast") is true
       Session.set("needToast",false)
       setTimeout ()->
