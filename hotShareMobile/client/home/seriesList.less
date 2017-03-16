@@ -48,14 +48,38 @@
 	    .css-post-title{
 	    	position: relative;
     		top: 40%;
+				left: 5px;
 	    }
 	    .title{
 	    	text-overflow: ellipsis;
-		    white-space: nowrap;
+		    // white-space: nowrap;
 		    overflow: hidden;
 		    text-align: center;
+				display: -webkit-box;
+				-webkit-box-orient: vertical;
+				-webkit-line-clamp: 3;
+				transform: translateY(-40%);
 	    }
     }
+}
+.seriesOwner{
+	position: absolute;
+	left: 10px;
+	right: 10px;
+	bottom: 10px;
+	height: 26px;
+	text-align: center;
+	span{
+		padding-left: 34px;
+		line-height: 26px;
+		font-size: 12px;
+		max-width: 100%;
+		display: inline-block;
+		letter-spacing: 1px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
 }
 @-webkit-keyframes twinkling{
     0%{ opacity:0.3; }  

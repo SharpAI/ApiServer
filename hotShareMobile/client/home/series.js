@@ -205,6 +205,13 @@ Template.series.helpers({
     } else {
       return true;
     }
+  },
+  isSeriesOwner: function(){
+    if(Session.get('seriesContent') && Session.get('seriesContent').owner){
+      return Session.get('seriesContent').owner === Meteor.userId()
+    } else {
+      return false;
+    }
   }
 });
 
