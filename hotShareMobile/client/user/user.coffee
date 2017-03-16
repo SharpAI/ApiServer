@@ -295,15 +295,15 @@ if Meteor.isClient
       Session.set("postPageScrollTop", 0)
       postId = e.currentTarget.id
       $('.user').addClass('animated ' + animateOutLowerEffect);
-      history = []
-      history.push {
-          view: 'user'
-          scrollTop: document.body.scrollTop
-      }
-      Session.set "history_view", history
-      Session.set('backtopageuser', true)
+      # history = []
+      # history.push {
+      #     view: 'user'
+      #     scrollTop: document.body.scrollTop
+      # }
+      # Session.set "history_view", history
+      #Session.set('backtopageuser', true)
       Meteor.setTimeout ()->
-        Router.go '/posts/'+postId
+        PUB.page '/posts/'+postId
       ,animatePageTrasitionTimeout
     'click .postRight':(e)->
       $('.user').addClass('animated ' + animateOutLowerEffect);
