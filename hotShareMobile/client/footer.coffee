@@ -130,8 +130,32 @@ if Meteor.isClient
     # ,100)
   Template.footer.events
     'click #home':(e)->
+      if (Session.get("myHotPostsChanged"))
+        Session.set("myHotPostsChanged", false)
+        navigator.notification.confirm(
+          '您改变了热门帖子, 要保存吗?'
+          (index)->
+            if index is 2
+              saveHotPosts()
+            PUB.page('/')
+          '提示'
+          ['暂不','保存']
+        )
+        return
       PUB.page('/')
     'click #search':(e)->
+      if (Session.get("myHotPostsChanged"))
+        Session.set("myHotPostsChanged", false)
+        navigator.notification.confirm(
+          '您改变了热门帖子, 要保存吗?'
+          (index)->
+            if index is 2
+              saveHotPosts()
+            PUB.page('/search')
+          '提示'
+          ['暂不','保存']
+        )
+        return
       PUB.page('/search')
     'click #bell':(e)->
       Meteor.defer ()->
@@ -139,11 +163,48 @@ if Meteor.isClient
         if me and me.profile and me.profile.waitReadCount
           if me.profile.waitReadCount > 0
             Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
+      if (Session.get("myHotPostsChanged"))
+        Session.set("myHotPostsChanged", false)
+        navigator.notification.confirm(
+          '您改变了热门帖子, 要保存吗?'
+          (index)->
+            if index is 2
+              saveHotPosts()
+            PUB.page('/bell')
+          '提示'
+          ['暂不','保存']
+        )
+        return
       PUB.page('/bell')
     'click #user':(e)->
       $('.importProgressBar, .b-modal, .toEditingProgressBar').remove()
+      if (Session.get("myHotPostsChanged"))
+        Session.set("myHotPostsChanged", false)
+        navigator.notification.confirm(
+          '您改变了热门帖子, 要保存吗?'
+          (index)->
+            if index is 2
+              saveHotPosts()
+            PUB.page('/user')
+          '提示'
+          ['暂不','保存']
+        )
+        return
       PUB.page('/user')
     'click #add': (e)->
+      if (Session.get("myHotPostsChanged"))
+        Session.set("myHotPostsChanged", false)
+        navigator.notification.confirm(
+          '您改变了热门帖子, 要保存吗?'
+          (index)->
+            if index is 2
+              saveHotPosts()
+            $('.importProgressBar, .b-modal, .toEditingProgressBar').remove()
+            Tips.show('_tips_addPost')
+          '提示'
+          ['暂不','保存']
+        )
+        return
       $('.importProgressBar, .b-modal, .toEditingProgressBar').remove()
       Tips.show('_tips_addPost')
       if Session.get('persistentLoginStatus') and !Meteor.userId() and !Meteor.loggingIn()

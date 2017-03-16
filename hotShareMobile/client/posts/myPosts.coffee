@@ -129,9 +129,7 @@ if Meteor.isClient
       addPostToMyHotPosts(this._id, this.title, this.addontitle, this.mainImage)
     'click .back':(event)->
         if (Session.get("myHotPostsChanged"))
-          # PUB.confirm("您改变了热门帖子, 要保存吗?", ()->
-          #   saveHotPosts()
-          # )
+          Session.set("myHotPostsChanged", false)
           navigator.notification.confirm(
                 '您改变了热门帖子, 要保存吗?'
                 (index)->
@@ -157,6 +155,7 @@ if Meteor.isClient
             return false
         postId = this._id
         if (Session.get("myHotPostsChanged"))
+          Session.set("myHotPostsChanged", false)
           navigator.notification.confirm(
                 '您改变了热门帖子, 要保存吗?'
                 (index)->
