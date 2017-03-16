@@ -1300,6 +1300,10 @@ if(Meteor.isServer){
         });
     };
 
+    Meteor.publish('seriesFollow', function(seriesId) {
+      return SeriesFollow.find({owner: this.userId, seriesId: seriesId}, {limit: 1});
+    });
+
     Meteor.publish('postInfoById', function(id) {
       return Posts.find({_id: id}, {limit: 1});
     });
