@@ -23,7 +23,7 @@ cordova-plugin-meteor-webapp@1.4.1
 cordova-plugin-network-information@1.2.0
 cordova-plugin-themeablebrowser@https://github.com/PluginCordova/cordova-plugin-themeablebrowser/tarball/12117b16548e0ad309280c2a4b8c82cf313e2693
 cordova-plugin-wkwebview-engine@1.1.0
-cordova-plugin-x-socialsharing@https://github.com/PluginCordova/SocialSharing-PhoneGap-Plugin/tarball/a7e893efacb549a66dfbc29d3d9dabb53127da94
+cordova-plugin-x-socialsharing@https://github.com/PluginCordova/SocialSharing-PhoneGap-Plugin/tarball/22a83973a1ca46265a96197e29195c899223c7d1
 ionic-plugin-keyboard@2.2.1
 jpush-phonegap-plugin@https://github.com/PluginCordova/jpush-phonegap-plugin/tarball/f34df83b9e62345161275c57b28349144ec64d2d
 meteor-ios10-csp-fix@0.1.0
