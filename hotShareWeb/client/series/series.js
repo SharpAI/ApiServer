@@ -29,11 +29,18 @@ Template.series.helpers({
     } else {
       return true;
     }
+  },
+  formatTime(updateAt,createdAt){
+    if(updateAt){
+      return get_diff_time(updateAt) + ' 更新';
+    } else {
+      get_diff_time(createdAt) + ' 创建';
+    }
   }
 });
 
 Template.series.events({
-  'click .series-func-btn-container': function(e,t){
+  'click #SubscribeSeries': function(e,t){
     console.log('follow btn clicked');
     $('.subscribeSeriesPage').show();
   },

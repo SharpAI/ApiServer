@@ -8,17 +8,41 @@
       <div class="menu-btn has-dropdown"> <i class="fa fa-ellipsis-v"></i></div>
     </div>
   </div> -->
-  <div class="series-func-btn-container">
+  <!--<div class="series-func-btn-container">
     <div id="SubscribeSeries"><i class="fa fa-plus"></i> 关注</div>
-  </div>
+  </div>-->
   <div class="series-container">
      <div class="series-title" style="background: url({{mainImage}}) no-repeat;background-size: cover;" data-image="{{mainImage}}">
        <img src="{{mainImage}}" style="width: 0;" />
        <h1>{{seriesTitle}}</h1>
+       <div class="series-head">
+          {{#if hasLeftBtn}}
+          <div class="back"><i class="fa fa-chevron-left"></i></div>
+          <div class="series-head-owner" style="left: 40px;">
+            <img src="{{ownerIcon}}"/>
+            <div class="series-head-infos">
+              <p>{{ownerName}}</p>
+              <p style="font-weight: normal;">{{#if postCounts}}{{postCounts}}个故事 · {{/if}}{{formatTime updateAt createdAt}}</p>
+            </div>
+          </div>
+          {{else}}
+          <div class="series-head-owner">
+            <img src="{{ownerIcon}}"/>
+            <div class="series-head-infos">
+              <p>{{ownerName}}</p>
+              <p style="font-weight: normal;">{{#if postCounts}}{{postCounts}}个故事 · {{/if}}{{formatTime updateAt createdAt}}</p>
+            </div>
+          </div>
+          {{/if}}
+          <div class="series-btns">
+            <div id="SubscribeSeries"><img src="/series-subscribe.svg" width="32"/></div>
+            <div id="shareSeries"><img src="/series-share.svg" width="22"/></div>
+          </div>
+       </div>
      </div>
-    {{#if postCounts}}
+    <!--{{#if postCounts}}
     <div style="margin: 10px">此合集包含下列{{postCounts}}个故事</div>
-    {{/if}}
+    {{/if}}-->
     <ul class="series-posts-lists">
       {{#each postsLists}}
       <li id="{{postId}}"  onclick="goposts({{postId}})" class="series-post-item viewModal" data-index="{{postIndex}}">

@@ -12,24 +12,68 @@
   z-index: 90;
   top: 0;
   width: 100%;
-  height: 40px;
+  height: 50px;
   overflow: hidden;
-  background: #37a7fe;
-  box-shadow: 0 2px 3px #ccc;
+  background: rgba(255, 255, 255, 0.5);
+  color: #fff;
+  .back{
+    display: inline-block;
+    width: 30px;
+    height: 50px;
+    padding-left: 10px;
+    i{font-size: 18px; line-height: 50px;}
+  }
+}
+.series-head-owner{
+  display: inline-block;
+  position: absolute;
+  left: 10px;
+  right: 110px;
+  height: 50px;
+  line-height: 50px;
+  img{
+    width: 30px;
+    height: 30px;
+    margin-right: 5px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+}
+.series-head-infos{
+  display: inline-block;
+  position: absolute;
+  left: 45px;
+  right: 0;
+  padding: 8px 0;
+  p{
+    margin: 0;
+    padding: 0;
+    line-height: 18px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 .series-btns{
   font-size: 0;
   text-align: right;
   color: #fff;
+  display: inline-block;
+  float: right;
 }
 .series-btns div {
   display: inline-block;
-  width: 56px;
-  height: 40px;
-  line-height: 40px;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
   text-align: center;
   color: #fff;
   font-size: 14px;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
 }
 .series-btns .back{ float: left};
 .series-btns i{
@@ -97,7 +141,7 @@
   background: #fefefe;
 }
 .series-posts-lists{
-  margin: 10px 5px;
+  margin: 0 5px;
   padding: 10px 0;
 }
 .series-posts-lists:after{
