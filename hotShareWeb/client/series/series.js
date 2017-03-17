@@ -30,7 +30,7 @@ Template.series.helpers({
       return true;
     }
   },
-  formatTime(updateAt,createdAt){
+  formatTime:function(updateAt,createdAt){
     if(updateAt){
       return get_diff_time(updateAt) + ' 更新';
     } else {
