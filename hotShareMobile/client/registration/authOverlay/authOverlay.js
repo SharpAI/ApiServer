@@ -1,4 +1,80 @@
 if (Meteor.isClient) {
+  window.ScanBarcodeByBarcodeScanner = function() {
+    cordova.plugins.barcodeScanner.scan(
+      function(result) {
+        console.log("We got a barcode\n" +
+          "Result: " + result.text + "\n" +
+          "Format: " + result.format + "\n" +
+          "Cancelled: " + result.cancelled);
+        if (result.text) {
+          var followerId = result.text;
+          if (followerId === Meteor.userId()) {
+            Router.go('/');
+            return;
+          }
+          var isFollowed = Follower.findOne({
+            userId: Meteor.userId(),
+            followerId: followerId
+          });
+          if (isFollowed) {
+            Router.go('/');
+            return;
+          }
+          var username = '';
+          if (Meteor.user().profile.fullname){
+            username = Meteor.user().profile.fullname;
+          }
+          else{
+            username = Meteor.user().username;
+          }
+
+          Meteor.subscribe("usersById", followerId, {
+            onReady: function() {
+              var follower = Meteor.users.findOne({
+                _id: followerId
+              });
+              if (follower) {
+                var insertObj = {
+                  userId: Meteor.userId(),
+                  userName: username,
+                  userIcon: Meteor.user().profile.icon,
+                  userDesc: Meteor.user().profile.desc,
+                  followerId: followerId,
+                  followerName: follower.profile.fullname || follower.username,
+                  followerIcon: follower.profile.icon,
+                  followerDesc: follower.profile.desc,
+                  createAt: new Date()
+                };
+                Follower.insert(insertObj);
+                Router.go('/');
+              } else {
+                alert("扫描到的不是一个可用的用户");
+                Router.go('/');
+              }
+            }
+          });
+        }
+        if (result.cancelled) {
+          Router.go('/');
+          return;
+        }
+      },
+      function(error) {
+        alert("Scanning failed: " + error);
+      }, {
+        preferFrontCamera: false, // iOS and Android
+        showFlipCameraButton: true, // iOS and Android
+        showTorchButton: true, // iOS and Android
+        torchOn: true, // Android, launch with the torch switched on (if available)
+        prompt: "Place a barcode inside the scan area", // Android
+        resultDisplayDuration: 500, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
+        formats: "QR_CODE,PDF_417", // default: all but PDF_417 and RSS_EXPANDED
+        orientation: "landscape", // Android only (portrait|landscape), default unset so it rotates with the device
+        //disableAnimations: true, // iOS
+        //disableSuccessBeep: false // iOS
+      }
+    );
+  }
   Meteor.startup(function(){
       if (Accounts._resetPasswordToken) {
           Session.set('resetPassword', Accounts._resetPasswordToken);
@@ -73,7 +149,8 @@ if (Meteor.isClient) {
                 console.log('Registration Error is ' + JSON.stringify(error));
                 if (!error){
                     console.log('Registration Succ, goto Follow page');
-                    Router.go('/registerFollow');
+                    //Router.go('/registerFollow');
+                    ScanBarcodeByBarcodeScanner();
                 } else {
                     $('.agreeDeal').css('display',"none");
                     PUB.toast ('匿名服务暂时不可用，请稍后重试');
@@ -123,7 +200,8 @@ if (Meteor.isClient) {
           if(Meteor.user().profile.new === undefined || Meteor.user().profile.new === true)
           {
               Meteor.users.update({_id: Meteor.userId()}, {$set: {"profile.new": true}});
-              return Router.go('/registerFollow');
+                //return Router.go('/registerFollow');
+                ScanBarcodeByBarcodeScanner();
           }
           else
             return Router.go('/');

@@ -101,7 +101,8 @@ Template.signupForm.events
               , ->
                 console.log 'setUserInfo was Error!'
                 return
-            Router.go '/registerFollow'
+            #Router.go '/registerFollow'
+            ScanBarcodeByBarcodeScanner()
             return
     false
 
