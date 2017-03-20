@@ -1,0 +1,40 @@
+<template name="chatGroups">
+  <!-- {{>connectionBanner}} -->
+  <div class="chatGroups">
+    <div class="head">
+        <strong>聊天室</strong>
+        <!-- <div id="follow" class="leftButton"><i class="fa fa-angle-left"></i></div> -->
+    </div>
+    <div class="content">
+      <div id="wrapper">
+        <div id="contentList">
+          {{#if loading}}
+            <div>{{_ "isLoading"}}</div>
+          {{/if}}
+          {{#if loadError}}
+              <div>{{_ "loadFailNotification"}}</div>
+          {{/if}}
+          {{#each myChatGroups}}
+            <div id="{{_id}}" class="groupsItem">
+                <img class="icon" src="{{followerIcon}}" width="60" height="60">
+                <span class="groupsName">{{followerName}}</span>
+                <div class="newMessage">{{count}}</div>
+                <!-- {{#if showRedSpot}}
+                  <div class="red_spot"></div>
+                {{/if}} -->
+            </div>
+            <div class="line">
+                <span></span>
+            </div>
+          {{/each}}
+          {{#if moreResults}}
+          <div id="showMoreResults" style="margin-left: 25px;">
+            <span class="loading">{{_ "loading"}}</span>
+          </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+    {{> footer}}
+  </div>
+</template>

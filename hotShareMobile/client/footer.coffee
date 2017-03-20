@@ -143,7 +143,7 @@ if Meteor.isClient
         )
         return
       PUB.page('/')
-    'click #search':(e)->
+    'click #chatGroups':(e)->
       if (Session.get("myHotPostsChanged"))
         Session.set("myHotPostsChanged", false)
         navigator.notification.confirm(
@@ -151,12 +151,12 @@ if Meteor.isClient
           (index)->
             if index is 2
               saveHotPosts()
-            PUB.page('/search')
+            PUB.page('/chatGroups')
           '提示'
           ['暂不','保存']
         )
         return
-      PUB.page('/search')
+      PUB.page('/chatGroups')
     'click #bell':(e)->
       Meteor.defer ()->
         me = Meteor.user()
