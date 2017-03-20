@@ -480,7 +480,7 @@ if Meteor.isServer
   , { where: 'server' })
 
 if Meteor.isServer
-  workaiId = 'fCknRHwSGcY4kYKas'
+  workaiId = 'Lh4JcxG7CnmgR3YXe'
   workaiName = 'Actiontec'
   Router.route('/restapi/workai', {where: 'server'}).get(()->
       id = this.params.query.id
