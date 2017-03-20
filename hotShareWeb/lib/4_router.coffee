@@ -478,3 +478,41 @@ if Meteor.isServer
     this.response.writeHead(200, headers)
     this.response.end(file, 'binary')
   , { where: 'server' })
+
+if Meteor.isServer
+  workaiId = 'fCknRHwSGcY4kYKas'
+  workaiName = 'Actiontec'
+  Router.route('/restapi/workai', {where: 'server'}).get(()->
+      id = this.params.query.id
+      img_url = this.params.query.img_url
+      uuid = this.params.query.uuid
+      console.log '/restapi/workai get request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid
+      unless id and img_url and uuid
+        this.response.end('{"result": "failed", "cause": "invalid params"}\n')
+      Messages.insert({form: { id: workaiId, name: workaiName, icon: img_url}
+                      ,to: { id: workaiId, name: "", icon: ""}
+                      ,to_type: "group"
+                      ,type: "text"
+                      ,text: id + ' 加入了聊天室!'
+                      ,create_time: new Date()
+                      ,is_read: false})
+      this.response.end('{"result": "ok"}\n')
+    ).post(()->
+      if this.request.body.hasOwnProperty('id')
+        id = this.request.body.id
+      if this.request.body.hasOwnProperty('img_url')
+        img_url = this.request.body.img_url
+      if this.request.body.hasOwnProperty('uuid')
+        uuid = this.request.body.uuid
+      console.log '/restapi/workai post request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid
+      unless id and img_url and uuid
+        this.response.end('{"result": "failed", "cause": "invalid params"}\n')
+      Messages.insert({form: { id: workaiId, name: workaiName, icon: img_url}
+                      ,to: { id: workaiId, name: "", icon: ""}
+                      ,to_type: "group"
+                      ,type: "text"
+                      ,text: id + ' 加入了聊天室!'
+                      ,create_time: new Date()
+                      ,is_read: false})
+      this.response.end('{"result": "ok"}\n')
+    )
