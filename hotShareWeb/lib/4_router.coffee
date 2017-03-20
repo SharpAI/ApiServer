@@ -489,7 +489,7 @@ if Meteor.isServer
       console.log '/restapi/workai get request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid
       unless id and img_url and uuid
         this.response.end('{"result": "failed", "cause": "invalid params"}\n')
-      Messages.insert({form: { id: workaiId, name: workaiName, icon: img_url}
+      SimpleChat.Messages.insert({form: { id: workaiId, name: workaiName, icon: img_url}
                       ,to: { id: workaiId, name: "", icon: ""}
                       ,to_type: "group"
                       ,type: "text"
@@ -507,7 +507,7 @@ if Meteor.isServer
       console.log '/restapi/workai post request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid
       unless id and img_url and uuid
         this.response.end('{"result": "failed", "cause": "invalid params"}\n')
-      Messages.insert({form: { id: workaiId, name: workaiName, icon: img_url}
+      SimpleChat.Messages.insert({form: { id: workaiId, name: workaiName, icon: img_url}
                       ,to: { id: workaiId, name: "", icon: ""}
                       ,to_type: "group"
                       ,type: "text"

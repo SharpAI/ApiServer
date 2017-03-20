@@ -72,3 +72,12 @@ if(Meteor.isServer){
     MsgSession._ensureIndex({'user_id': 1, 'type': 1});
   });
 }
+
+SimpleChat.Messages = Messages;
+
+SimpleChat.MsgSession = MsgSession;
+
+SimpleChat.Groups = Groups;
+
+SimpleChat.GroupUsers = GroupUsers;
+
