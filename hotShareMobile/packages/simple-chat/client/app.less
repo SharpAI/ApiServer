@@ -40,6 +40,9 @@
             max-width: 60%; display: inline-block; background-color: #fff; padding: 3px;
             img{max-width: 100%; border-radius: 5px; z-index: 3;}
           }
+          .imgs{
+            img{width: 60px; height: 60px; margin-top: 5px;}
+          }
           .name{display: none;}
           .text, .img{position: relative; border-radius: 5px; border:1px solid #d2d2d2; z-index: 1;}
         }
@@ -87,4 +90,8 @@
       }
     }
   }
+}
+.simple-chat-label{
+  position: absolute; left: 0; top: 0; z-index: 99999999;
+  .btn-label{height: 48px; line-height: 48px; border-radius: 5px; text-align: center; margin-left: 20px;}
 }

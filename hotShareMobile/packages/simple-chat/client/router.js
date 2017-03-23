@@ -76,6 +76,41 @@ Template._simpleChatToChat.onRendered(function(){
   });
 });
 
+Template._simpleChatToChatItem.events({
+  'click li': function(){
+    var imgs = []
+    $('#' + this._id + ' img').each(function(){
+      imgs.push({
+        href: $(this).attr('src'),
+        title: ''
+      });
+    });
+    if(imgs.length > 0){
+      console.log('imgs:', imgs);
+      var labelView = null;
+      var slef = this;
+
+      $.swipebox(imgs, {
+        initialIndexOnArray: 0,
+        hideCloseButtonOnMobile : true,
+        loopAtEnd: false,
+        beforeOpen: function(){
+          labelView = Blaze.renderWithData(Template._simpleChatToChatLabel, slef, document.body);
+        },
+        afterClose: function(){
+          Blaze.remove(labelView);
+        }
+      });
+    }
+  }
+});
+
+Template._simpleChatToChatLabel.events({
+  'click .btn-label': function(){
+    console.log(this);
+  }
+});
+
 var loadScript = function(url, callback){
   if($("script[src='"+url+"']").length > 0)
     return callback && callback();

@@ -44,13 +44,21 @@
 
 <template name="_simpleChatToChatItem">
   {{#if is_show_time create_time}}
-  <li class="time">{{get_time create_time}}</li>
+  <li id="{{_id}}" class="time">{{get_time create_time}}</li>
   {{/if}}
-  <li class="{{ta_me form.id}}">
+  <li id="{{_id}}" class="{{ta_me form.id}}">
     <div class="icon"><img src="{{form.icon}}" /></div>
     <div class="name">{{form.name}}</div>
     {{#if text}}
-    <div class="text">{{text}}</div>
+    <div class="text">{{text}}
+      {{#if images}}
+      <div class="imgs">
+        {{#each images}}
+        <img src="{{this}}" />
+        {{/each}}
+      </div>
+      {{/if}}
+    </div>
     {{else}}
     {{#if image}}
     <div class="img"><img src="{{image}}" /></div>
@@ -59,4 +67,10 @@
     {{/if}}
     {{/if}}
   </li>
+</template>
+
+<template name="_simpleChatToChatLabel">
+  <div class="simple-chat-label">
+    <div class="btn-label">标记此照片</div>
+  </div>
 </template>
