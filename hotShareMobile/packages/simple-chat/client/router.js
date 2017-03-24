@@ -77,28 +77,37 @@ Template._simpleChatToChat.onRendered(function(){
 });
 
 Template._simpleChatToChatItem.events({
-  'click li': function(){
+  'click li img.swipebox': function(e){
     var imgs = []
-    $('#' + this._id + ' img').each(function(){
+    var index = 0;
+    var selected = 0;
+    var data = Blaze.getData($(e.currentTarget).attr('data-type') === 'images' ? $(e.currentTarget).parent().parent().parent()[0] : $('#'+this._id)[0]);
+    
+    console.log('data:', data);
+    $('li#' + data._id + ' img.swipebox').each(function(){
       imgs.push({
         href: $(this).attr('src'),
         title: ''
       });
+      if($(e.currentTarget).attr('src') === $(this).attr('src'))
+        selected = index;
+      index += 1;
     });
     if(imgs.length > 0){
       console.log('imgs:', imgs);
       var labelView = null;
-      var slef = this;
 
       $.swipebox(imgs, {
-        initialIndexOnArray: 0,
+        initialIndexOnArray: selected,
         hideCloseButtonOnMobile : true,
         loopAtEnd: false,
         beforeOpen: function(){
-          labelView = Blaze.renderWithData(Template._simpleChatToChatLabel, slef, document.body);
+          if (data.people_id)
+            labelView = Blaze.renderWithData(Template._simpleChatToChatLabel, data, document.body);
         },
         afterClose: function(){
-          Blaze.remove(labelView);
+          if (data.people_id)
+            Blaze.remove(labelView);
         }
       });
     }
@@ -107,7 +116,29 @@ Template._simpleChatToChatItem.events({
 
 Template._simpleChatToChatLabel.events({
   'click .btn-label': function(){
-    console.log(this);
+    var $img = $('#swipebox-overlay .slide.current img');
+    var data = this;
+    var name = prompt('此照片是谁？');
+
+    if(name){
+      PeopleHis.update({_id: data.people_his_id}, {
+        $set: {fix_name: name},
+        $push: {fix_names: {
+          _id: new Mongo.ObjectID()._str,
+          name: name,
+          userId: Meteor.userId,
+          userName: Meteor.user().profile && Meteor.user().profile.fullname ? Meteor.user().profile.fullname : Meteor.user().username,
+          userIcon: Meteor.user().profile && Meteor.user().profile.icon ? Meteor.user().profile.icon : '/userPicture.png',
+          fixTime: new Date()
+        }}
+      }, function(err, num){
+        if(err || num <= 0){
+          console.log(err);
+          return PUB.toast('标记失败，请重试~');
+        }
+        PUB.toast('标记成功~');
+      });
+    }
   }
 });
 

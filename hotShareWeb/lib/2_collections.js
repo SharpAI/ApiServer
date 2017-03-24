@@ -35,6 +35,48 @@ Configs = new Meteor.Collection('configs');
 LockedUsers = new Meteor.Collection('lockedUsers');
 BackUpPosts = new Meteor.Collection('backUpPosts');
 reporterLogs = new Meteor.Collection('reporterLogs');
+
+People = new Meteor.Collection('people');
+PeopleHis = new Meteor.Collection('peopleHis');
+
+if(Meteor.isServer){
+  PeopleHis.allow({
+    update: function (userId, doc, fields, modifier) {
+      var user = Meteor.users.findOne({_id: userId})
+
+      People.update({id: doc.id}, {$set: {name: modifier['$set'].fix_name}});
+      SimpleChat.Messages.insert({
+        form: {
+          id: userId,
+          name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+          icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png'
+        },
+        to: {
+          id: 'Lh4JcxG7CnmgR3YXe',
+          name: "",
+          icon: ""
+        },
+        images: [
+          {
+            _id: new Mongo.ObjectID()._str,
+            people_his_id: doc._id,
+            url: doc.aliyun_url
+          }
+        ],
+        to_type: "group",
+        type: "text",
+        text: '此照片是"' + modifier['$set'].fix_name + '" ~',
+        create_time: new Date(),
+        people_id: doc.id,
+        people_uuid: doc.uuid,
+        people_his_id: doc._id,
+        is_read: false
+      });
+      return true;
+    }
+  });
+}
+
 // 绿网检查帖子内容
 isPostSafe = function(title,addontitle,mainImage,pub){
     // check title

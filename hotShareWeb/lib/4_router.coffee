@@ -483,20 +483,49 @@ if Meteor.isServer
   workaiId = 'Lh4JcxG7CnmgR3YXe'
   workaiName = 'Actiontec';;
 
-  insert_msg = (id, url)->
+  insert_msg = (id, url, uuid)->
     last_msg = SimpleChat.Messages.findOne({}, {sort: {create_time: -1}})
-    if (last_msg and last_msg.form.id is workaiId and last_msg.to.id is workaiId)
-      console.log('update msg')
-      SimpleChat.Messages.update({_id: last_msg._id}, {$set: {create_time: new Date(), photo_id: id}, $push: {images: url}})
-    else
-      SimpleChat.Messages.insert({form: { id: workaiId, name: workaiName, icon: url}
-        ,to: { id: workaiId, name: "", icon: ""}
-        ,to_type: "group"
-        ,type: "text"
-        ,text: id + ' 加入了聊天室!'
-        ,create_time: new Date()
-        ,photo_id: id
-        ,is_read: false})
+    people = People.findOne({id: id})
+    name = if people then people.name else null
+
+    PeopleHis.insert {id: id,uuid: uuid,name: null,embed: null,local_url: null,aliyun_url: url}, (err, _id)->
+      if err or !_id
+        return
+      if (last_msg and last_msg.form.id is workaiId and last_msg.to.id is workaiId and last_msg.people_id is id and last_msg.type is 'text')
+        console.log('update msg')
+        SimpleChat.Messages.update({_id: last_msg._id}, {$set: {
+          create_time: new Date()
+          # text: if name then (name + '['+id+'] 加入了聊天室!') else id + ' 加入了聊天室!'
+          people_id: id
+          people_uuid: uuid
+          people_his_id: _id
+        }, $push: {images: {_id: new Mongo.ObjectID()._str, people_his_id: _id, url: url}}})
+      else
+        SimpleChat.Messages.insert({
+          form: {
+            id: workaiId
+            name: workaiName
+            icon: '/userPicture.png'
+          }
+          to: {
+            id: workaiId
+            name: ""
+            icon: ""
+          }
+          images: [
+            {_id: new Mongo.ObjectID()._str, people_his_id: _id, url: url}
+          ]
+          to_type: "group"
+          type: "text"
+          text: if name then (name + '['+id+'] 加入了聊天室!') else id + ' 加入了聊天室!'
+          create_time: new Date()
+          people_id: id
+          people_uuid: uuid
+          people_his_id: _id
+          is_read: false
+        })
+    People.upsert({id: id}, {$set: {id: id,uuid: uuid,name: name,embed: null,local_url: null,aliyun_url: url}})
+    SimpleChat.Messages.update({people_id: id}, {$set: {name: if people then people.name else workaiName}}, {multi: true})
 
   Router.route('/restapi/workai', {where: 'server'}).get(()->
       id = this.params.query.id
@@ -505,14 +534,7 @@ if Meteor.isServer
       console.log '/restapi/workai get request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid
       unless id and img_url and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
-      insert_msg(id, img_url)
-      # SimpleChat.Messages.insert({form: { id: workaiId, name: workaiName, icon: img_url}
-      #                 ,to: { id: workaiId, name: "", icon: ""}
-      #                 ,to_type: "group"
-      #                 ,type: "text"
-      #                 ,text: id + ' 加入了聊天室!'
-      #                 ,create_time: new Date()
-      #                 ,is_read: false})
+      insert_msg(id, img_url, uuid)
       this.response.end('{"result": "ok"}\n')
     ).post(()->
       if this.request.body.hasOwnProperty('id')
@@ -524,13 +546,6 @@ if Meteor.isServer
       console.log '/restapi/workai post request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid
       unless id and img_url and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
-      insert_msg(id, img_url)
-      # SimpleChat.Messages.insert({form: { id: workaiId, name: workaiName, icon: img_url}
-      #                 ,to: { id: workaiId, name: "", icon: ""}
-      #                 ,to_type: "group"
-      #                 ,type: "text"
-      #                 ,text: id + ' 加入了聊天室!'
-      #                 ,create_time: new Date()
-      #                 ,is_read: false})
+      insert_msg(id, img_url, uuid)
       this.response.end('{"result": "ok"}\n')
     )

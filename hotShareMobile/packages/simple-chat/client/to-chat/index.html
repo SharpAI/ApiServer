@@ -51,17 +51,27 @@
     <div class="name">{{form.name}}</div>
     {{#if text}}
     <div class="text">{{text}}
-      {{#if images}}
-      <div class="imgs">
-        {{#each images}}
-        <img src="{{this}}" />
-        {{/each}}
-      </div>
+      {{#if people_id}}
+        {{#if images}}
+        <div class="imgs">
+          {{#each images}}
+          <img class="work-ai-img swipebox" data-type="images" data-peoplehisid="{{people_his_id}}" src="{{url}}" />
+          {{/each}}
+        </div>
+        {{/if}}
+      {{else}}
+        {{#if images}}
+        <div class="imgs">
+          {{#each images}}
+          <img class="swipebox" data-type="images" src="{{url}}" />
+          {{/each}}
+        </div>
+        {{/if}}
       {{/if}}
     </div>
     {{else}}
     {{#if image}}
-    <div class="img"><img src="{{image}}" /></div>
+    <div class="img"><img class="swipebox" src="{{image}}" /></div>
     {{else}}
     <div class="img"><img src="{{thumbnail}}" /></div>
     {{/if}}

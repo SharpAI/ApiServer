@@ -74,10 +74,7 @@ if(Meteor.isServer){
 }
 
 SimpleChat.Messages = Messages;
-
 SimpleChat.MsgSession = MsgSession;
-
 SimpleChat.Groups = Groups;
-
 SimpleChat.GroupUsers = GroupUsers;
 
