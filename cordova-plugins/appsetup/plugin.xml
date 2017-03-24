@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-        id="org.hotshare.everywhere.appsetup"
+        id="org.workai.everywhere.appsetup"
         version="1.1.0">
 
   <name>HotShareAppSetup</name>
@@ -44,7 +44,7 @@
 
 
     <config-file target="*-Info.plist" parent="CFBundleDisplayName">
-      <string>故事贴</string>
+      <string>WorkAI</string>
     </config-file>
 
     <config-file target="*-Info.plist" parent="NSAppTransportSecurity">
