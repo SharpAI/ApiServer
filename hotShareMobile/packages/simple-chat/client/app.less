@@ -31,7 +31,20 @@
         padding: 10px;
         li{
           margin: 10px 0px; position: relative;
-          .text{display: inline-block; padding: 10px;}
+          .text{
+            display: inline-block; padding: 10px;
+            .showmore{
+              display: block;
+              position: absolute;
+              background: #fff;
+              right: 8px;
+              bottom: 0;
+              display: none;
+              text-align: right;
+              padding: 5px;
+              width: 100%
+            }
+          }
           .icon{
             width: 40px; height: 40px; position: absolute; top: 0px; background-color: #fff; z-index: 2;
             img{width: 100%; height: 100%; object-fit: cover;}

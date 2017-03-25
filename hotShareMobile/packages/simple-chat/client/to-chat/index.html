@@ -52,7 +52,7 @@
     {{#if text}}
     <div class="text">{{text}}
       {{#if people_id}}
-        {{#if images}}
+        {{#if show_images images}}
         <div class="imgs">
           {{#each images}}
           <img class="work-ai-img swipebox" data-type="images" data-peoplehisid="{{people_his_id}}" src="{{url}}" />
@@ -60,7 +60,7 @@
         </div>
         {{/if}}
       {{else}}
-        {{#if images}}
+        {{#if show_images images}}
         <div class="imgs">
           {{#each images}}
           <img class="swipebox" data-type="images" src="{{url}}" />
@@ -68,6 +68,7 @@
         </div>
         {{/if}}
       {{/if}}
+      <div id="{{_id}}" class="showmore">查看全部</div>
     </div>
     {{else}}
     {{#if image}}

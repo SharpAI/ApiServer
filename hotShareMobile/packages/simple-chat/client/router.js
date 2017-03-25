@@ -111,6 +111,12 @@ Template._simpleChatToChatItem.events({
         }
       });
     }
+  },
+  'click li div.showmore':function(e){
+    console.log(e.currentTarget.id);
+    id = e.currentTarget.id;
+    $('li#' + id + ' div.showmore').hide();
+    $('li#' + id + ' div.text').removeAttr('style');
   }
 });
 
@@ -198,7 +204,9 @@ Template._simpleChatToChatLayout.onRendered(function(){
 
   Meteor.setTimeout(function(){
     $('body').css('overflow', 'hidden');
-  }, 500);
+    var DHeight = $('.group-list').outerHeight();
+    $('.box').scrollTop(DHeight);
+  }, 600);
 });
 Template._simpleChatToChatLayout.onDestroyed(function(){
   $('body').css('overflow', 'auto');
@@ -267,6 +275,14 @@ Template._simpleChatToChatItem.helpers({
   is_show_time: function(time){
     var str = get_diff_time(time);
     return time_list.indexOf(str) === -1;
+  },
+  show_images: function(images){
+    if(images.length > 9){
+      $('li#' + this._id + ' div.text').css('height', '130px');
+      $('li#' + this._id + ' div.text').css('overflow', 'hidden');
+      $('li#' + this._id + ' div.showmore').show();
+    }
+    return images && images.length > 0;
   },
   get_time: function(time){
     var str = get_diff_time(time);
