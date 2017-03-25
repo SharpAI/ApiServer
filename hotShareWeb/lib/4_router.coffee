@@ -517,7 +517,7 @@ if Meteor.isServer
           ]
           to_type: "group"
           type: "text"
-          text: if name then (name + '['+id+'] 加入了聊天室!') else id + ' 加入了聊天室!'
+          text: if name then (name + '['+id+']: ') else id + ' -> 需要标注'
           create_time: new Date()
           people_id: id
           people_uuid: uuid
