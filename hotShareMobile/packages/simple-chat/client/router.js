@@ -1,23 +1,23 @@
+var list_limit_val = 20;
 var is_loading = new ReactiveVar(false);
-var list_limit = new ReactiveVar(20);
-var init_page = new ReactiveVar(false);
+var list_limit = new ReactiveVar(list_limit_val);
 var page_title = new ReactiveVar('聊天室');
 
 Router.route(AppConfig.path + '/to/:type', {
   layoutTemplate: '_simpleChatToChatLayout',
   template: '_simpleChatToChat',
-  waitOn: function(){
-    is_loading.set(true);
-    return Meteor.subscribe('get-messages', this.params.type, this.params.query['id'], list_limit.get(), function(){
-      is_loading.set(false);
-      Meteor.setTimeout(function(){
-        if(init_page.get()){
-          //$('.box').scrollTop($('.box ul').height());
-          init_page.set(false);
-        }
-      }, 500);
-    });
-  },
+  // waitOn: function(){
+  //   is_loading.set(true);
+  //   return Meteor.subscribe('get-messages', this.params.type, this.params.query['id'], Session.get('simple-chat-limit'), function(){
+  //     is_loading.set(false);
+  //     Meteor.setTimeout(function(){
+  //       if(init_page.get()){
+  //         //$('.box').scrollTop($('.box ul').height());
+  //         init_page.set(false);
+  //       }
+  //     }, 500);
+  //   });
+  // },
   data: function () {
     var slef = this;
     var to = slef.params.query['id'];
@@ -61,17 +61,34 @@ Router.route(AppConfig.path + '/to/:type', {
 });
 
 var time_list = [];
+var init_page = false;
 
 Template._simpleChatToChat.onRendered(function(){
-  init_page.set(true);
   is_loading.set(false);
-  list_limit.set(20);
+  list_limit.set(list_limit_val);
   time_list = [];
+  init_page = false;
+  var slef = this;
+
+  slef.autorun(function(){
+    if(list_limit.get()){
+      is_loading.set(true);
+      Meteor.subscribe('get-messages', slef.data.type, slef.data.id, list_limit.get(), function(){
+        is_loading.set(false);
+
+        if(slef.data.messages.count() <= list_limit_val && !init_page){
+          init_page = true;
+          $('.box').scrollTop($('.box ul').height());
+        }
+      });
+      console.log('load more data:', list_limit.get());
+    }
+  });
 
   $('.box').scroll(function () {
     if($('.box').scrollTop() === 0 && !is_loading.get()){
-      list_limit.set(list_limit.get()+20);
-      console.log('load more data');
+      if(slef.data.messages.count() >= list_limit.get())
+        list_limit.set(list_limit.get()+list_limit_val)
     }
   });
 });
@@ -277,7 +294,7 @@ Template._simpleChatToChatItem.helpers({
     return time_list.indexOf(str) === -1;
   },
   show_images: function(images){
-    if(images.length > 9){
+    if(images && images.length > 9){
       $('li#' + this._id + ' div.text').css('height', '130px');
       $('li#' + this._id + ' div.text').css('overflow', 'hidden');
       $('li#' + this._id + ' div.showmore').show();
