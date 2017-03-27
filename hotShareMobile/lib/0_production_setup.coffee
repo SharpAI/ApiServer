@@ -17,7 +17,7 @@
 @isUSVersion = false
 @withZhiFaCDN = false
 @withServerImport = true
-@withShareStoryGroup = true
+@withShareStoryGroup = false
 @withDirectDraftShow = true
 @withMobileBackendUploading = false
 @withStaticPosts = false
