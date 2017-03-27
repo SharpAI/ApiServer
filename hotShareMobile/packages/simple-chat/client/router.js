@@ -2,6 +2,7 @@ var list_limit_val = 20;
 var is_loading = new ReactiveVar(false);
 var list_limit = new ReactiveVar(list_limit_val);
 var page_title = new ReactiveVar('聊天室');
+var list_data = new ReactiveVar([]);
 
 Router.route(AppConfig.path + '/to/:type', {
   layoutTemplate: '_simpleChatToChatLayout',
@@ -53,6 +54,7 @@ Router.route(AppConfig.path + '/to/:type', {
       is_group: function(){
         return slef.params.type === 'group';
       },
+      query: Messages.find(where, {sort: {create_time: 1}}),
       type: slef.params.type,
       messages: Messages.find(where, {limit: list_limit.get(), sort: {create_time: 1}}),
       loading: is_loading.get()
@@ -62,13 +64,58 @@ Router.route(AppConfig.path + '/to/:type', {
 
 var time_list = [];
 var init_page = false;
+var fix_data_timeInterval = null;
+var fix_data = function(){
+  var data = Blaze.getData($('.simple-chat')[0]).messages.fetch();
+  data.sort(function(a, b){
+    return a.create_time - b.create_time;
+  });
+  if(data.length > 0){
+    for(var i=0;i<data.length;i++){
+      data[i].show_time_str = get_diff_time(data[i].create_time);
+      if(i===0)
+        data[i].show_time = true;
+      else if(data[i].show_time_str != data[i-1].show_time_str)
+        data[i].show_time = true;
+      else
+        data[i].show_time = false;
+    }
+  }
+  list_data.set(data);
+};
+
+Template._simpleChatToChat.onDestroyed(function(){
+  if(fix_data_timeInterval){
+    Meteor.clearInterval(fix_data_timeInterval);
+    fix_data_timeInterval = null;
+  }
+});
 
 Template._simpleChatToChat.onRendered(function(){
   is_loading.set(false);
   list_limit.set(list_limit_val);
   time_list = [];
   init_page = false;
+  list_data.set([]);
   var slef = this;
+
+  slef.data.query.observeChanges({
+    added: function(id, fields){
+      fix_data();
+    },
+    changed: function(id, fields){
+      fix_data();
+    },
+    removed: function(id){
+      fix_data();
+    }
+  });
+
+  if(fix_data_timeInterval){
+    Meteor.clearInterval(fix_data_timeInterval);
+    fix_data_timeInterval = null;
+  }
+  fix_data_timeInterval = Meteor.setInterval(fix_data, 1000*60);
 
   slef.autorun(function(){
     if(list_limit.get()){
@@ -289,10 +336,6 @@ Template._simpleChatToChatItem.helpers({
   ta_me: function(id){
     return id != Meteor.userId() ? 'ta' : 'me';
   },
-  is_show_time: function(time){
-    var str = get_diff_time(time);
-    return time_list.indexOf(str) === -1;
-  },
   show_images: function(images){
     if(images && images.length > 9){
       $('li#' + this._id + ' div.text').css('height', '130px');
@@ -301,13 +344,13 @@ Template._simpleChatToChatItem.helpers({
     }
     return images && images.length > 0;
   },
-  get_time: function(time){
-    var str = get_diff_time(time);
-    if(time_list.indexOf(str) >= 0)
-      return '';
-    
-    time_list.push(str);
-    return str;
+  is_show_time: function(id){
+    var data = list_data.get();
+    return data[_.pluck(data, '_id').indexOf(id)].show_time;
+  },
+  get_time: function(id){
+    var data = list_data.get();
+    return data[_.pluck(data, '_id').indexOf(id)].show_time_str;
   }
 });
 
