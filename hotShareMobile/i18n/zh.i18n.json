@@ -2,18 +2,18 @@
   //authOverlay.html
   "anonymous": "匿名使用",
   "anonymousAgree": "匿名使用表示已经同意",
-  "gstServiceSpec": "故事贴服务告知",
+  "gstServiceSpec": "WorkAI服务告知",
   "anonymousWarn": "友情提示:匿名账户的数据在程序卸载后可能会无法继续使用，如需永久保存数据，请注册或登录使用。",
   "kownIt": "知道了",
   "funnyLogin": "很卖萌的登录中~~~",
   "regWithEmail": "使用电子邮件注册",
   "loginWithAccount": "已经有帐户？登录",
   "kmxdkj": "昆明讯动科技有限公司",
-  "gstSecurity": "故事贴 - 安全",
+  "gstSecurity": "WorkAI - 安全",
   "resetPassword": "重设密码",
-  "resetPasswordSuc": "你的故事贴密码已经重置成功",
-  "loginWithNewPassword": "现在可以用新密码登录你的故事贴帐号。",
-  "canSetNewPassword": "现在你可以重新设定您的故事贴密码。",
+  "resetPasswordSuc": "你的WorkAI密码已经重置成功",
+  "loginWithNewPassword": "现在可以用新密码登录你的WorkAI帐号。",
+  "canSetNewPassword": "现在你可以重新设定您的WorkAI密码。",
   "newPassword": "新密码：",
   "sixToSixteenCh": "6到16个字符。",
   "inputPasswordAgain": "重复输入新密码：",
@@ -140,8 +140,8 @@
   "exchange": "换",
   //end
   //help.html
-  "useTips": "故事贴使用攻略",
-  "howToRegister": "如何注册故事贴?",
+  "useTips": "WorkAI使用攻略",
+  "howToRegister": "如何注册WorkAI?",
   "howToPublish": "如何发帖",
   "changePicture": "图片调整",
   "addTextAndEdit": "添加文字&排版",
@@ -202,7 +202,7 @@
   "segment": "段 ",
   //"readOriginalText": "     阅读原文", duplicate
   "hotStores": "热门文章",
-  "downloadGSTAndReadMore": "（下载“故事贴”查看更多精彩内容）",
+  "downloadGSTAndReadMore": "（下载“WorkAI”查看更多精彩内容）",
   "weTogetherThatYears": "哪些年，我们在一起",
   "fromBestAPP": "本文由史上最好用的图文排版APP",
   "supportCreate": "支持创作",
@@ -220,7 +220,7 @@
   //thanksReport.html
   "thanksReport": "感谢举报",
   "reportSuccess": "举报成功",
-  "reportDeclaration": "谢谢您！故事贴坚决反对色情、暴力、欺诈信息，我们会认真处理您的举报，维护绿色、健康的网络环境。",
+  "reportDeclaration": "谢谢您！WorkAI坚决反对色情、暴力、欺诈信息，我们会认真处理您的举报，维护绿色、健康的网络环境。",
   //end
 
   // dashboard.html
@@ -232,8 +232,8 @@
   "enterEmail": "输入电子邮件",
   "notification": "通知",
   "notifiButton": "接收新消息通知",
-  "notifiTips": "如果你要关闭或开启故事贴的新消息通知，请在系统设置中，找到应用程序“故事贴”更改",
-  "notifiTipsIos": "如果你要关闭或开启故事贴的新消息通知，请在“设置”-“通知”功能中，找到应用程序“故事贴”更改。",
+  "notifiTips": "如果你要关闭或开启WorkAI的新消息通知，请在系统设置中，找到应用程序“WorkAI”更改",
+  "notifiTipsIos": "如果你要关闭或开启WorkAI的新消息通知，请在“设置”-“通知”功能中，找到应用程序“WorkAI”更改。",
   "changePass": "修改密码",
   "currentPass": "当前密码",
   "newPass": "新密码",
@@ -246,8 +246,8 @@
   "latestversion":"当前已是最新版本",
   "Newversion":"有新版本",
 
-  "about": "关于故事贴",
-  "aboutTitle": "关于 故事贴",
+  "about": "关于WorkAI",
+  "aboutTitle": "关于 WorkAI",
   "ver": "版本",
   "logOut": "退出登录",
   "NewFriends": "新朋友",
@@ -284,7 +284,7 @@
   // end
 
   //dynamic js file contents
-  "hotShareQQZoneShare": "故事贴分享QQ空间",
+  "hotShareQQZoneShare": "WorkAI分享QQ空间",
   "wechatNotInstalled": "未安装微信客户端，分享失败",
   "failToShare": "分享失败",
   "qqNotInstalled": "未安装QQ客户端，分享失败",

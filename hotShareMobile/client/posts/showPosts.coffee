@@ -566,7 +566,7 @@ if Meteor.isClient
             return true
       return false
     shareToStoryGroup:->
-      if withShareStoryGroup?
+      if withShareStoryGroup == true
         true
       else
         false
