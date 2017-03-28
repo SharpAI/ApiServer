@@ -286,6 +286,11 @@ Template._simpleChatToChatLayout.helpers({
 });
 
 Template._simpleChatToChatLayout.events({
+  'focus .input-text': function(){
+    Meteor.setTimeout(function(){
+      $('body').scrollTop(999999);
+    }, 500);
+  },
   'submit .input-form': function(e, t){
     var data = Blaze.getData(Blaze.getView(document.getElementsByClassName('simple-chat')[0]));
     var text = $('.input-text').val();
