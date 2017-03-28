@@ -234,6 +234,47 @@ var loadScript = function(url, callback){
   script.src = url;
   document.getElementsByTagName('head')[0].appendChild(script);
 }
+// WXTimeLine, WXSession, QQShare, QQZoneShare, System
+var shareChatRoomTo = function(to) {
+    var data = Blaze.getData(Blaze.getView(document.getElementsByClassName('simple-chat')[0]));
+
+    var title = 'WorkAI专属聊天室';
+    var imgUrl = 'http://data.tiegushi.com/iEyHnNHmrhNBFiPdq_1490603607250_cdv_photo_007.jpg';
+    var obj = Groups.findOne({_id: data.id});
+    if (obj) {
+      // imgUrl = Session.get('postContent').mainImage ? Session.get('postContent').mainImage : 'http://cdn.tiegushi.com/images/logo.png';
+
+      title = obj.name ? obj.name + '－专属聊天室' : 'WorkAI专属聊天室';
+    }
+    
+    var shareUrl = 'http://'+server_domain_name+'/simple-chat/to/group?id='+data.id;
+    console.log('share chatroom Url:'+shareUrl)
+
+    window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
+
+    if (to === 'QQZoneShare') {
+        shareToQQZone(title, description, imgUrl, shareUrl);
+        return;
+    }
+    if (to === 'QQShare') {
+        shareToQQ(title, description, imgUrl, shareUrl);
+        return;
+    }
+    var description = '来自WorkAI';
+    downloadFromBCS(imgUrl, function(result) {
+        if (result) {
+            if (to === 'WXTimeLine') {
+                shareToWechatTimeLine(title, description, result, shareUrl);
+            } else if (to === 'WXSession') {
+                shareToWechatSession(title, description, result, shareUrl);
+            } else if (to === 'System') {
+                shareToSystem(title, null, result, shareUrl)
+            }
+        } else {
+            PUB.toast(TAPi18n.__("failToGetPicAndTryAgain"));
+        }
+    })
+};
 
 Template._simpleChatToChatLayout.onRendered(function(){
   if(Meteor.isCordova){
@@ -334,7 +375,23 @@ Template._simpleChatToChatLayout.events({
 
     $('.input-text').val('');
     return false;
+  },    
+  'click #WXSessionShare': function(e, t) {
+      shareChatRoomTo('WXSession');
+  },
+  'click #WXTimelineShare': function(e, t) {
+      shareChatRoomTo('WXTimeLine');
+  },
+  'click #QQShare': function(e, t) {
+      shareChatRoomTo('QQShare');
+  },
+  'click #QQZoneShare': function(e, t) {
+      shareChatRoomTo('QQZoneShare');
+  },
+  'click #socialShare': function(e, t) {
+      shareChatRoomTo('System');
   }
+
 });
 
 Template._simpleChatToChatItem.helpers({
