@@ -38,6 +38,7 @@ reporterLogs = new Meteor.Collection('reporterLogs');
 
 People = new Meteor.Collection('people');
 PeopleHis = new Meteor.Collection('peopleHis');
+Devices = new Meteor.Collection('devices');
 
 if(Meteor.isServer){
   PeopleHis.allow({

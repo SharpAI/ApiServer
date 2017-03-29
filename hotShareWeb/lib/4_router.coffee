@@ -486,18 +486,24 @@ if Meteor.isServer
   insert_msg = (id, url, uuid)->
     last_msg = SimpleChat.Messages.findOne({}, {sort: {create_time: -1}})
     people = People.findOne({id: id})
+    device = Devices.findOne({uuid: uuid})
     name = if people then people.name else null
+
+    if(!device)
+      device = {_id: new Mongo.ObjectID()._str,uuid: uuid, name: '摄像头 ' + (Devices.find({}).count() + 1)}
+      Devices.insert(device)
 
     PeopleHis.insert {id: id,uuid: uuid,name: null,embed: null,local_url: null,aliyun_url: url}, (err, _id)->
       if err or !_id
         return
-      if (last_msg and last_msg.form.id is workaiId and last_msg.to.id is workaiId and last_msg.people_id is id and last_msg.type is 'text')
+      if (last_msg and last_msg.form.id is workaiId and last_msg.to.id is workaiId and last_msg.people_id is id and last_msg.type is 'text' and last_msg.people_uuid is uuid)
         console.log('update msg')
-        SimpleChat.Messages.update({_id: last_msg._id}, {$set: {
+        SimpleChat.Messages.update({_id: last_msg._id, people_uuid: uuid}, {$set: {
           create_time: new Date()
           # text: if name then (name + '['+id+'] 加入了聊天室!') else id + ' 加入了聊天室!'
           people_id: id
-          people_uuid: uuid
+          # people_uuid: uuid
+          device_name: device.name
           people_his_id: _id
         }, $push: {images: {_id: new Mongo.ObjectID()._str, people_his_id: _id, url: url}}})
       else
@@ -521,6 +527,7 @@ if Meteor.isServer
           create_time: new Date()
           people_id: id
           people_uuid: uuid
+          device_name: device.name
           people_his_id: _id
           is_read: false
         })
