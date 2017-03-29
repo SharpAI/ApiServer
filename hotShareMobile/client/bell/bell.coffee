@@ -136,3 +136,5 @@ if Meteor.isClient
        }
     'click #follow': (event)->
        Router.go '/searchFollow'
+    'click #search': (event)->
+       Router.go '/searchPeopleAndTopic'

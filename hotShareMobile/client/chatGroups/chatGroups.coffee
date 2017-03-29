@@ -26,6 +26,8 @@ if Meteor.isClient
     loadError:->
       Session.equals('followersCollection','error')
   Template.chatGroups.events
+    'click #scanbarcode':(event)->
+      ScanBarcodeByBarcodeScanner()
     'click .groupsItem': (event)->
       if isIOS
         if (event.clientY + $('.home #footer').height()) >=  $(window).height()

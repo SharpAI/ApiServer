@@ -3,11 +3,20 @@
   <div class="chatGroups">
     <div class="head">
         <strong>聊天室</strong>
+        <div id="scanbarcode" class="rightButton" style="padding-top: 0px;">
+          <img src="/scanbarcode.png" height="40" width="45" >
+        </div>
         <!-- <div id="follow" class="leftButton"><i class="fa fa-angle-left"></i></div> -->
     </div>
+
     <div class="content">
       <div id="wrapper">
-        <div id="contentList">
+        <div id="addNewGroups" class="eachViewer">
+          <img class="icon" src="/usersChat.jpg">
+          <span class="groupsName">创建群聊</span>
+        </div>
+        <div class="line"><span style="height: 8px;"></span></div>
+        <div class="contentList">
           {{#if loading}}
             <div>{{_ "isLoading"}}</div>
           {{/if}}
@@ -16,7 +25,7 @@
           {{/if}}
           {{#each myChatGroups}}
             <div id="{{_id}}" class="groupsItem">
-                <img class="icon" src="{{followerIcon}}" width="60" height="60">
+                <img class="icon" src="{{followerIcon}}">
                 <span class="groupsName">{{followerName}}</span>
                 <div class="newMessage">{{count}}</div>
                 <!-- {{#if showRedSpot}}

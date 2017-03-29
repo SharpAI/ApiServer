@@ -6,10 +6,14 @@ if (Meteor.isClient) {
           "Result: " + result.text + "\n" +
           "Format: " + result.format + "\n" +
           "Cancelled: " + result.cancelled);
+        var gotoPage = '/';
+        if (Session.get('channel') === 'chatGroups') {
+          gotoPage = '/chatGroups';
+        }
         if (result.text) {
           var followerId = result.text;
           if (followerId === Meteor.userId()) {
-            Router.go('/');
+            Router.go(gotoPage);
             return;
           }
           var isFollowed = Follower.findOne({
@@ -17,7 +21,7 @@ if (Meteor.isClient) {
             followerId: followerId
           });
           if (isFollowed) {
-            Router.go('/');
+            Router.go(gotoPage);
             return;
           }
           var username = '';
@@ -46,16 +50,16 @@ if (Meteor.isClient) {
                   createAt: new Date()
                 };
                 Follower.insert(insertObj);
-                Router.go('/');
+                Router.go(gotoPage);
               } else {
                 alert("扫描到的不是一个可用的用户");
-                Router.go('/');
+                Router.go(gotoPage);
               }
             }
           });
         }
         if (result.cancelled) {
-          Router.go('/');
+          Router.go(gotoPage);
           return;
         }
       },
