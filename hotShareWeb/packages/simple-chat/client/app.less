@@ -31,7 +31,20 @@
         padding: 10px;
         li{
           margin: 10px 0px; position: relative;
-          .text{display: inline-block; padding: 10px;}
+          .text{
+            display: inline-block; padding: 10px;
+            .showmore{
+              display: block;
+              position: absolute;
+              background: #fff;
+              right: 8px;
+              bottom: 0;
+              display: none;
+              text-align: right;
+              padding: 5px;
+              width: 100%
+            }
+          }
           .icon{
             width: 40px; height: 40px; position: absolute; top: 0px; background-color: #fff; z-index: 2;
             img{width: 100%; height: 100%; object-fit: cover;}
@@ -39,6 +52,9 @@
           .img{
             max-width: 60%; display: inline-block; background-color: #fff; padding: 3px;
             img{max-width: 100%; border-radius: 5px; z-index: 3;}
+          }
+          .imgs{
+            img{width: 60px; height: 60px; margin-top: 5px; border-radius: 3px;}
           }
           .name{display: none;}
           .text, .img{position: relative; border-radius: 5px; border:1px solid #d2d2d2; z-index: 1;}
@@ -78,13 +94,17 @@
       .btn-box.image{background-image: url(/packages/feiwu_simple-chat/images/image.png); background-size: auto 90%; background-position: center center; background-repeat: no-repeat;}
       .input{
         height: 36px; line-height: 36px; position: absolute; top: 5px; left: 60px; right: 75px;
-        input{width: 100%; height: 36px; line-height: 36px; padding: 10px 10px; border-radius: 5px; box-sizing: border-box; border:1px solid rgb(170, 170, 170); color: rgb(183, 183, 183)}
+        input{width: 100%; height: 36px; line-height: 36px; padding: 4px 10px; border-radius: 5px; box-sizing: border-box; border:1px solid rgb(170, 170, 170); color: rgb(183, 183, 183)}
       }
       .send-btn{
         width: 75px; height: 48px; line-height: 48px; position: absolute; right: 0px; top: 0px; z-index: 999;
-        box-sizing: border-box; padding-left: 10px; padding-right: 10px;
-        .btn{-webkit-appearance: none;width: 100%; height: 34px; margin: 0; padding: 0; border:none; line-height: 34px; text-align: center; border-radius: 5px; background-color: @master_color; color: #fff; text-align: center;}
+        box-sizing: border-box; padding-left: 10px; padding-right: 10px; padding-top: 6px;
+        .btn{display: block; -webkit-appearance: none;width: 100%; height: 34px; margin: 0; padding: 0; border:none; line-height: 34px; text-align: center; border-radius: 5px; background-color: @master_color; color: #fff; text-align: center;}
       }
     }
   }
+}
+.simple-chat-label{
+  position: absolute; left: 0; top: 0; z-index: 99999999;
+  .btn-label{height: 48px; line-height: 48px; border-radius: 5px; text-align: center; margin-left: 20px;}
 }

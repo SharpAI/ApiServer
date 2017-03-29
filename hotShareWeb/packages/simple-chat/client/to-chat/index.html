@@ -43,20 +43,45 @@
 </template>
 
 <template name="_simpleChatToChatItem">
-  {{#if is_show_time create_time}}
-  <li class="time">{{get_time create_time}}</li>
+  {{#if is_show_time _id}}
+  <li id="{{_id}}" class="time">{{get_time _id}}</li>
   {{/if}}
-  <li class="{{ta_me form.id}}">
+  <li id="{{_id}}" class="{{ta_me form.id}}">
     <div class="icon"><img src="{{form.icon}}" /></div>
     <div class="name">{{form.name}}</div>
     {{#if text}}
-    <div class="text">{{text}}</div>
+    <div class="text">{{text}}
+      {{#if people_id}}
+        {{#if show_images images}}
+        <div class="imgs">
+          {{#each images}}
+          <img class="work-ai-img swipebox" data-type="images" data-peoplehisid="{{people_his_id}}" src="{{url}}" />
+          {{/each}}
+        </div>
+        {{/if}}
+      {{else}}
+        {{#if show_images images}}
+        <div class="imgs">
+          {{#each images}}
+          <img class="swipebox" data-type="images" src="{{url}}" />
+          {{/each}}
+        </div>
+        {{/if}}
+      {{/if}}
+      <div id="{{_id}}" class="showmore">查看全部</div>
+    </div>
     {{else}}
     {{#if image}}
-    <div class="img"><img src="{{image}}" /></div>
+    <div class="img"><img class="swipebox" src="{{image}}" /></div>
     {{else}}
     <div class="img"><img src="{{thumbnail}}" /></div>
     {{/if}}
     {{/if}}
   </li>
+</template>
+
+<template name="_simpleChatToChatLabel">
+  <div class="simple-chat-label">
+    <div class="btn-label">标记此照片</div>
+  </div>
 </template>
