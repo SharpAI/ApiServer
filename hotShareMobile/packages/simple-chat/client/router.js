@@ -123,7 +123,7 @@ Template._simpleChatToChat.onRendered(function(){
       Meteor.subscribe('get-messages', slef.data.type, slef.data.id, list_limit.get(), function(){
         is_loading.set(false);
 
-        if(slef.data.messages.count() <= list_limit_val && !init_page){
+        if(!init_page){
           init_page = true;
           $('.box').scrollTop($('.box ul').height());
         }
@@ -134,8 +134,8 @@ Template._simpleChatToChat.onRendered(function(){
 
   $('.box').scroll(function () {
     if($('.box').scrollTop() === 0 && !is_loading.get()){
-      if(slef.data.messages.count() >= list_limit.get())
-        list_limit.set(list_limit.get()+list_limit_val)
+      // if(slef.data.messages.count() >= list_limit.get())
+      list_limit.set(list_limit.get()+list_limit_val)
     }
   });
 });
