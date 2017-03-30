@@ -93,8 +93,45 @@
   </li>
 </template>
 
+<template name="_simpleChatToChatLabelBox">
+  <div class="simple-chat-label-box">
+    <div class="mask"></div>
+    <div class="_body">
+      <div class="title">{{title}}</div>
+      <div class="_main">
+        {{#if list}}
+        <select>
+          {{#each list}}
+          <option value="{{this}}">{{this}}</option>
+          {{/each}}
+          <option value="">其它</option>
+        </select>
+        <input style="display: none;" type="text" placeholder="{{tips}}" />
+        {{else}}
+        <div class="dest">{{tips}}</div>
+        {{/if}}
+      </div>
+      <div class="btns">
+        {{#each btns}}
+        <div class="my-btn">{{this}}</div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</template>
+
 <template name="_simpleChatToChatLabel">
   <div class="simple-chat-label">
-    <div class="btn-label">标记此照片</div>
+    {{#if data.label}}
+    <div class="btn-label">此照片是 {{data.label}} 吗？</div>
+    {{else}}
+    <div class="btn-label yes">我想标记此照片</div>
+    {{/if}}
+    {{#if data.label}}
+    <div class="btn-yes"><i class="fa fa-circle-o" aria-hidden="true"></i><i class="fa fa-check" aria-hidden="true"></i></div>
+    <div class="btn-no"><i class="fa fa-circle-o" aria-hidden="true"></i><i class="fa fa-close" aria-hidden="true"></i></div>
+    {{else}}
+    <div class="btn-no" style="top: 5px;"><i class="fa fa-circle-o" aria-hidden="true"></i><i class="fa fa-close" aria-hidden="true"></i></div>
+    {{/if}}
   </div>
 </template>

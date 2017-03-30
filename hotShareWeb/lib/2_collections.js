@@ -45,36 +45,84 @@ if(Meteor.isServer){
     update: function (userId, doc, fields, modifier) {
       var user = Meteor.users.findOne({_id: userId})
 
-      People.update({id: doc.id}, {$set: {name: modifier['$set'].fix_name}});
-      SimpleChat.Messages.insert({
-        form: {
-          id: userId,
-          name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
-          icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png'
-        },
-        to: {
-          id: 'Lh4JcxG7CnmgR3YXe',
-          name: "",
-          icon: ""
-        },
-        images: [
-          {
-            _id: new Mongo.ObjectID()._str,
-            people_his_id: doc._id,
-            url: doc.aliyun_url
+      if(modifier['$set'].fix_name){
+        var people = People.find({id: doc.id, uuid: doc.uuid});
+        if(people && people.name)
+          People.update({name: people.name}, {$set: {name: modifier['$set'].fix_name, updateTime: new Date()}}, {multi: true});
+        else
+          People.update({id: doc.id, uuid: doc.uuid}, {$set: {name: modifier['$set'].fix_name, updateTime: new Date()}});
+      }
+      if(doc.msg_id){
+        SimpleChat.Messages.update({_id: doc.msg_id, 'images.url': doc.aliyun_url}, {
+          $set: {
+            'images.$.label': doc.fix_name,
+            'images.$.result': modifier['$set'].fix_name ? '' : 'remove'
           }
-        ],
-        to_type: "group",
-        type: "text",
-        text: '此照片是"' + modifier['$set'].fix_name + '" ~',
-        create_time: new Date(),
-        people_id: doc.id,
-        people_uuid: doc.uuid,
-        people_his_id: doc._id,
-        is_read: false
-      });
+        });
+      }
+      
+      if(modifier['$set'].fix_name){
+        SimpleChat.Messages.insert({
+          form: {
+            id: userId,
+            name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+            icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png'
+          },
+          to: {
+            id: 'Lh4JcxG7CnmgR3YXe',
+            name: "",
+            icon: ""
+          },
+          images: [
+            {
+              _id: new Mongo.ObjectID()._str,
+              people_his_id: doc._id,
+              url: doc.aliyun_url
+            }
+          ],
+          to_type: "group",
+          type: "text",
+          text: '此照片是"' + modifier['$set'].fix_name + '" ~',
+          create_time: new Date(),
+          people_id: doc.id,
+          people_uuid: doc.uuid,
+          people_his_id: doc._id,
+          is_read: false
+        });
+      }else if(modifier['$push'] && modifier['$push'].fix_names && modifier['$push'].fix_names.fixType === 'remove'){
+        SimpleChat.Messages.insert({
+          form: {
+            id: userId,
+            name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+            icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png'
+          },
+          to: {
+            id: 'Lh4JcxG7CnmgR3YXe',
+            name: "",
+            icon: ""
+          },
+          images: [
+            {
+              _id: new Mongo.ObjectID()._str,
+              people_his_id: doc._id,
+              url: doc.aliyun_url
+            }
+          ],
+          to_type: "group",
+          type: "text",
+          text: '删除照片: ' + modifier['$push'].fix_names.removeText,
+          create_time: new Date(),
+          people_id: doc.id,
+          people_uuid: doc.uuid,
+          people_his_id: doc._id,
+          is_read: false
+        });
+      }
       return true;
     }
+  });
+  Meteor.publish('people_new', function(){
+    return People.find({}, {sort: {updateTime: -1}, limit: 50});
   });
 }
 

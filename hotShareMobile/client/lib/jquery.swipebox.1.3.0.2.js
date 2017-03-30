@@ -18,7 +18,8 @@
 				afterOpen: null,
 				afterClose: null,
 				loopAtEnd: false,
-				autoplayVideos: false
+				autoplayVideos: false,
+				indexChanged: options.indexChanged || null
 			},
 
 			plugin = this,
@@ -947,6 +948,11 @@
 				} else if ( index === elements.length - 1 && plugin.settings.loopAtEnd !== true ) {
 					$( '#swipebox-next' ).addClass( 'disabled' );
 				}
+
+				if(defaults.indexChanged)
+					defaults.indexChanged(index);
+				else
+					console.log('swipeobx index:', index);
 			},
 
 			/**

@@ -83,6 +83,63 @@ var fix_data = function(){
   }
   list_data.set(data);
 };
+var get_people_names = function(){
+  var names = People.find({}, {sort: {updateTime: -1}, limit: 50}).fetch();
+  var result = [];
+  if(names.length > 0){
+    for(var i=0;i<names.length;i++){
+      if(result.indexOf(names[i].name) === -1)
+        result.push(names[i].name);
+    }
+  }  
+
+  return result;
+};
+
+var showBoxView = null;
+var showBox = function(title, btns, list, tips, callback){
+  if(showBoxView)
+    Blaze.remove(showBoxView);
+  showBoxView = Blaze.renderWithData(Template._simpleChatToChatLabelBox, {
+    title: title,
+    btns: btns || ['知道了'],
+    list: list,
+    tips: tips,
+    callback: callback || function(){},
+    remove: function(){Blaze.remove(showBoxView);}
+  }, document.body);
+};
+Template._simpleChatToChatLabelBox.events({
+  'click .mask': function(e, t){
+    t.data.remove();
+  },
+  'click .my-btn': function(e, t){
+    var index = 0;
+    var btns = t.$('.my-btn');
+    var value = t.$('select').val() || t.$('input').val();
+    
+    for(var i=0;i<btns.length;i++){
+      if(btns[i].innerHTML === $(e.currentTarget).html()){
+        index = i;
+        break;
+      }
+    }
+    console.log('selected:', index, value);
+    t.data.remove();
+    t.data.callback(index, value);
+  },
+  'change select': function(e, t){
+    var $input = t.$('input');
+    var $select = t.$('select');
+
+    if($(e.currentTarget).val() === ''){
+      $select.hide();
+      $input.show();
+    }else{
+      $input.hide();
+    }
+  }
+});
 
 Template._simpleChatToChat.onDestroyed(function(){
   if(fix_data_timeInterval){
@@ -116,6 +173,7 @@ Template._simpleChatToChat.onRendered(function(){
     fix_data_timeInterval = null;
   }
   fix_data_timeInterval = Meteor.setInterval(fix_data, 1000*60);
+  Meteor.subscribe('people_new', function(){});
 
   slef.autorun(function(){
     if(list_limit.get()){
@@ -148,15 +206,25 @@ Template._simpleChatToChatItem.events({
     var data = Blaze.getData($(e.currentTarget).attr('data-type') === 'images' ? $(e.currentTarget).parent().parent().parent()[0] : $('#'+this._id)[0]);
     
     console.log('data:', data);
-    $('li#' + data._id + ' img.swipebox').each(function(){
-      imgs.push({
-        href: $(this).attr('src'),
-        title: ''
-      });
-      if($(e.currentTarget).attr('src') === $(this).attr('src'))
-        selected = index;
-      index += 1;
-    });
+    // $('li#' + data._id + ' img.swipebox').each(function(){
+    //   imgs.push({
+    //     href: $(this).attr('src'),
+    //     title: ''
+    //   });
+    //   if($(e.currentTarget).attr('src') === $(this).attr('src'))
+    //     selected = index;
+    //   index += 1;
+    // });
+    if(data.images.length > 0){
+      for(var i=0;i<data.images.length;i++){
+        imgs.push({
+          href: data.images[i].url,
+          title: ''
+        });
+        if(data.images[i].url === $(e.currentTarget).attr('src'))
+          selected = i;
+      }
+    }
     if(imgs.length > 0){
       console.log('imgs:', imgs);
       var labelView = null;
@@ -172,6 +240,14 @@ Template._simpleChatToChatItem.events({
         afterClose: function(){
           if (data.people_id)
             Blaze.remove(labelView);
+        },
+        indexChanged: function(index){
+          var data = Blaze.getData($('.simple-chat-label')[0]);
+          var $img = $('#swipebox-overlay .slide.current img');
+
+          console.log($img.attr('src'));
+          console.log(_.pluck(data.images, 'url'));
+          Session.set('SimpleChatToChatLabelImage', data.images[index]);
         }
       });
     }
@@ -184,15 +260,24 @@ Template._simpleChatToChatItem.events({
   }
 });
 
+Template._simpleChatToChatLabel.helpers({
+  data: function(){
+    return Session.get('SimpleChatToChatLabelImage');
+  }
+});
+
 Template._simpleChatToChatLabel.events({
-  'click .btn-label': function(){
+  'click .btn-label.yes': function(){
     var $img = $('#swipebox-overlay .slide.current img');
     var data = this;
-    var name = prompt('此照片是谁？');
+    var names = get_people_names();
 
-    if(name){
+    showBox('提示', ['标记', '返回'], names.length > 0 ? names : ['张三'], '请输入名字，如：张三', function(index, name){
+      if(!name || index != 0)
+        return;
+
       PeopleHis.update({_id: data.people_his_id}, {
-        $set: {fix_name: name},
+        $set: {fix_name: name, msg_id: data._id},
         $push: {fix_names: {
           _id: new Mongo.ObjectID()._str,
           name: name,
@@ -208,7 +293,82 @@ Template._simpleChatToChatLabel.events({
         }
         PUB.toast('标记成功~');
       });
-    }
+    });
+  },
+  'click .btn-yes': function(){
+    var $img = $('#swipebox-overlay .slide.current img');
+    var data = this;
+
+    PeopleHis.update({_id: data.people_his_id}, {
+      $set: {fix_name: name, msg_id: data._id},
+      $push: {fix_names: {
+        _id: new Mongo.ObjectID()._str,
+        name: name,
+        userId: Meteor.userId,
+        userName: Meteor.user().profile && Meteor.user().profile.fullname ? Meteor.user().profile.fullname : Meteor.user().username,
+        userIcon: Meteor.user().profile && Meteor.user().profile.icon ? Meteor.user().profile.icon : '/userPicture.png',
+        fixTime: new Date()
+      }}
+    }, function(err, num){
+      if(err || num <= 0){
+        console.log(err);
+        return PUB.toast('标记失败，请重试~');
+      }
+      PUB.toast('标记成功~');
+    });
+  },
+  'click .btn-no': function(){
+    var $img = $('#swipebox-overlay .slide.current img');
+    var data = this;
+    var name = Session.get('SimpleChatToChatLabelImage').label;
+    var names = get_people_names();
+
+    showBox('提示', ['重新标记', '删除'], null, '你要重新标记照片还是删除？', function(index){
+      if(index === 0)
+        showBox('提示照片', ['标记', '返回'], names.length > 0 ? names : ['张三'], '请输入名字，如：张三', function(select, name){
+          PeopleHis.update({_id: data.people_his_id}, {
+            $set: {fix_name: name, msg_id: data._id},
+            $push: {fix_names: {
+              _id: new Mongo.ObjectID()._str,
+              name: name,
+              userId: Meteor.userId,
+              userName: Meteor.user().profile && Meteor.user().profile.fullname ? Meteor.user().profile.fullname : Meteor.user().username,
+              userIcon: Meteor.user().profile && Meteor.user().profile.icon ? Meteor.user().profile.icon : '/userPicture.png',
+              fixTime: new Date()
+            }}
+          }, function(err, num){
+            if(err || num <= 0){
+              console.log(err);
+              return PUB.toast('标记失败，请重试~');
+            }
+            PUB.toast('标记成功~');
+          });
+        });
+      else
+        showBox('删除原因？', ['删除', '返回'], ['遮盖', '模糊', '非人脸'], '请输入删除的原因', function(select, name){
+          if(!name || select != 0)
+            return;
+
+          PeopleHis.update({_id: data.people_his_id}, {
+            $set: {msg_id: data._id},
+            $push: {fix_names: {
+              _id: new Mongo.ObjectID()._str,
+              userId: Meteor.userId,
+              userName: Meteor.user().profile && Meteor.user().profile.fullname ? Meteor.user().profile.fullname : Meteor.user().username,
+              userIcon: Meteor.user().profile && Meteor.user().profile.icon ? Meteor.user().profile.icon : '/userPicture.png',
+              fixTime: new Date(),
+              fixType: 'remove',
+              removeText: name
+            }}
+          }, function(err, num){
+            if(err || num <= 0){
+              console.log(err);
+              return PUB.toast('删除失败，请重试~');
+            }
+            PUB.toast('删除成功~');
+          });
+        });
+    });
   }
 });
 
@@ -250,7 +410,7 @@ var shareChatRoomTo = function(to) {
     var shareUrl = 'http://'+server_domain_name+'/simple-chat/to/group?id='+data.id;
     console.log('share chatroom Url:'+shareUrl)
 
-    window.plugins.toast.showShortCenter('正在准备主题图片，请稍等');
+    window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
 
     if (to === 'QQZoneShare') {
         shareToQQZone(title, description, imgUrl, shareUrl);

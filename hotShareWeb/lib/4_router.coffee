@@ -484,29 +484,50 @@ if Meteor.isServer
   workaiName = 'Actiontec';;
 
   insert_msg = (id, url, uuid)->
-    last_msg = SimpleChat.Messages.findOne({}, {sort: {create_time: -1}})
-    people = People.findOne({id: id})
-    device = Devices.findOne({uuid: uuid})
-    name = if people then people.name else null
+    last_msg = SimpleChat.Messages.findOne({}, {sort: {create_time: -1}}) # 最后一条消息
+    people = People.findOne({id: id, uuid: uuid})                         # 人脸
+    device = Devices.findOne({uuid: uuid})                                # 设备
+    name = if people then people.name else null                           # label name
+    name_peoples = []
 
+    if (name)
+      name_peoples = People.find({name: name}).fetch()
+    if !people
+      people = {_id: new Mongo.ObjectID()._str, id: id, uuid: uuid,name: name,embed: null,local_url: null,aliyun_url: url}
+      People.insert(people)
+    else
+      People.update({_id: people._id}, {$set: {aliyun_url: url}})
     if(!device)
       device = {_id: new Mongo.ObjectID()._str,uuid: uuid, name: '摄像头 ' + (Devices.find({}).count() + 1)}
       Devices.insert(device)
 
-    PeopleHis.insert {id: id,uuid: uuid,name: null,embed: null,local_url: null,aliyun_url: url}, (err, _id)->
+    PeopleHis.insert {id: id,uuid: uuid,name: name, people_id: people._id, device_id: device._id, embed: null,local_url: null,aliyun_url: url}, (err, _id)->
       if err or !_id
         return
-      if (last_msg and last_msg.form.id is workaiId and last_msg.to.id is workaiId and last_msg.people_id is id and last_msg.type is 'text' and last_msg.people_uuid is uuid)
-        console.log('update msg')
-        SimpleChat.Messages.update({_id: last_msg._id, people_uuid: uuid}, {$set: {
-          create_time: new Date()
-          # text: if name then (name + '['+id+'] 加入了聊天室!') else id + ' 加入了聊天室!'
-          people_id: id
-          # people_uuid: uuid
-          device_name: device.name
-          people_his_id: _id
-        }, $push: {images: {_id: new Mongo.ObjectID()._str, people_his_id: _id, url: url}}})
-      else
+
+      is_last_people_msg = last_msg and last_msg.form.id is workaiId and last_msg.to.id is workaiId and last_msg.type is 'text' # 最后一条是否人脸消息
+      is_last_me_msg = last_msg and last_msg.people_uuid is uuid and last_msg.people_id is id                                   # 最后一条消息是否当前人脸的消息
+      is_last_wait_lable = last_msg.wait_lable                                                                                  # 最后一条消息是否是需要标记的消息
+      is_wait_lable = if name then false else true                                                                              # 当前信息是否需要标记
+      message_insert_update = 'insert'                                                                                          # 消息是增加还是修改
+
+      if (name_peoples.length > 0 and !is_last_me_msg)
+        for item in name_peoples
+          if item.uuid is uuid and item.id is id
+            is_last_me_msg = true
+            break
+
+      console.log('is_last_people_msg:', is_last_people_msg)
+      console.log('is_last_me_msg:', is_last_me_msg)
+      console.log('is_last_wait_lable:', is_last_wait_lable)
+      console.log('is_wait_lable:', is_wait_lable)
+
+      if is_last_people_msg and is_wait_lable and is_last_wait_lable and is_last_me_msg
+        message_insert_update = 'update'
+      else if is_last_people_msg and !is_wait_lable and !is_last_wait_lable and is_last_me_msg
+        message_insert_update = 'update'
+
+      if message_insert_update is 'insert'
         SimpleChat.Messages.insert({
           form: {
             id: workaiId
@@ -519,20 +540,25 @@ if Meteor.isServer
             icon: ""
           }
           images: [
-            {_id: new Mongo.ObjectID()._str, people_his_id: _id, url: url}
+            {_id: new Mongo.ObjectID()._str, people_his_id: _id, url: url, label: name}
           ]
           to_type: "group"
           type: "text"
-          text: if name then (name + '['+id+']: ') else id + ' -> 需要标注'
+          text: if is_wait_lable then '['+uuid+','+id+']: -> 需要标注' else name + ' 加入聊天室'
           create_time: new Date()
           people_id: id
           people_uuid: uuid
-          device_name: device.name
+          # device_name: device.name
           people_his_id: _id
+          wait_lable: is_wait_lable
           is_read: false
         })
-    People.upsert({id: id}, {$set: {id: id,uuid: uuid,name: name,embed: null,local_url: null,aliyun_url: url}})
-    SimpleChat.Messages.update({people_id: id}, {$set: {name: if people then people.name else workaiName}}, {multi: true})
+      else
+        SimpleChat.Messages.update({_id: last_msg._id}, {$set: {
+          create_time: new Date()
+          # device_name: device.name
+          people_his_id: _id
+        }, $push: {images: {_id: new Mongo.ObjectID()._str, people_his_id: _id, url: url, label: name}}})
 
   Router.route('/restapi/workai', {where: 'server'}).get(()->
       id = this.params.query.id
