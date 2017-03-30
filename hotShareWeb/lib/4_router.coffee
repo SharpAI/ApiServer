@@ -568,6 +568,7 @@ if Meteor.isServer
       unless id and img_url and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
       insert_msg(id, img_url, uuid)
+      sendMqttMessage('workai', {id: id, img_url: img_url, uuid: uuid})
       this.response.end('{"result": "ok"}\n')
     ).post(()->
       if this.request.body.hasOwnProperty('id')
@@ -580,5 +581,6 @@ if Meteor.isServer
       unless id and img_url and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
       insert_msg(id, img_url, uuid)
+      sendMqttMessage('workai', {id: id, img_url: img_url, uuid: uuid})
       this.response.end('{"result": "ok"}\n')
     )

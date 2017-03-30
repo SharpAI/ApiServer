@@ -47,7 +47,7 @@ Router.route(AppConfig.path + '/to/:type', {
       // title: function(){
       //   if(slef.params.type != 'user')
       //     return Groups.findOne({_id: slef.params.query['id']}).name || '聊天室';
-        
+
       //   var user = Meteor.users.find({_id: slef.params.query['id']});
       //   return AppConfig.get_user_name(user);
       // },
@@ -204,7 +204,7 @@ Template._simpleChatToChatItem.events({
     var index = 0;
     var selected = 0;
     var data = Blaze.getData($(e.currentTarget).attr('data-type') === 'images' ? $(e.currentTarget).parent().parent().parent()[0] : $('#'+this._id)[0]);
-    
+
     console.log('data:', data);
     // $('li#' + data._id + ' img.swipebox').each(function(){
     //   imgs.push({
@@ -406,7 +406,7 @@ var shareChatRoomTo = function(to) {
 
       title = obj.name ? obj.name + '－专属聊天室' : 'WorkAI专属聊天室';
     }
-    
+
     var shareUrl = 'http://'+server_domain_name+'/simple-chat/to/group?id='+data.id;
     console.log('share chatroom Url:'+shareUrl)
 
@@ -496,7 +496,7 @@ Template._simpleChatToChatLayout.events({
     var data = Blaze.getData(Blaze.getView(document.getElementsByClassName('simple-chat')[0]));
     var text = $('.input-text').val();
     var to = null;
-    
+
     if(!text){
       $('.box').scrollTop($('.box ul').height());
       return false;
@@ -531,11 +531,11 @@ Template._simpleChatToChatLayout.events({
       is_read: false
     }, function(){
       $('.box').scrollTop($('.box ul').height());
-    });    
+    });
 
     $('.input-text').val('');
     return false;
-  },    
+  },
   'click #WXSessionShare': function(e, t) {
       shareChatRoomTo('WXSession');
   },
@@ -622,7 +622,7 @@ window.___message = {
       console.log('update id:', id);
       $('.box').scrollTop($('.box ul').height());
     });
-  },  
+  },
   remove: function(id){
     Messages.remove({_id: id}, function(){
       console.log('remove id:', id);
@@ -630,3 +630,9 @@ window.___message = {
     });
   }
 };
+
+SimpleChat.onMqttMessage = function(msg) {
+  console.log('SimpleChat.onMqttMessage');
+  var msgObj = JSON.parse(msg);
+};
+
