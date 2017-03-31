@@ -1,9 +1,4 @@
-
-Meteor.publish('get-msg-session', function(){
-  return MsgSession.find({user_id: this.userId});
-});
-
-Meteor.publish('get-messages', function(type, to, limit){
+Meteor.publish('get-messages', function(type, to){
   var slef = this;
   var user = Meteor.users.findOne(slef.userId);
   var where = null;
@@ -22,7 +17,7 @@ Meteor.publish('get-messages', function(type, to, limit){
     case 'user':
       return [
         Meteor.users.find({_id: to}),
-        Messages.find(where, {limit: limit || 20, sort: {create_time: -1}})
+        // Messages.find(where, {limit: limit || 20, sort: {create_time: -1}})
       ];
     case 'group':
       if(Groups.find({_id: to}).count() <= 0){
@@ -62,7 +57,7 @@ Meteor.publish('get-messages', function(type, to, limit){
 
       return [
         Groups.find({_id: to}),
-        Messages.find(where, {limit: limit || 20, sort: {create_time: -1}})
+        // Messages.find(where, {limit: limit || 20, sort: {create_time: -1}})
       ];
   }
 });

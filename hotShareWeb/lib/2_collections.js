@@ -52,27 +52,19 @@ if(Meteor.isServer){
         else
           People.update({id: doc.id, uuid: doc.uuid}, {$set: {name: modifier['$set'].fix_name, updateTime: new Date()}});
       }
-      if(doc.msg_id){
-        SimpleChat.Messages.update({_id: doc.msg_id, 'images.url': doc.aliyun_url}, {
-          $set: {
-            'images.$.label': doc.fix_name,
-            'images.$.result': modifier['$set'].fix_name ? '' : 'remove'
-          }
-        });
-      }
+
+      if (!modifier['$set'].to)
+        return true;
       
       if(modifier['$set'].fix_name){
-        SimpleChat.Messages.insert({
+        sendMqttMessage('workai', {
+          _id: new Mongo.ObjectID()._str,
           form: {
             id: userId,
             name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
             icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png'
           },
-          to: {
-            id: 'Lh4JcxG7CnmgR3YXe',
-            name: "",
-            icon: ""
-          },
+          to: modifier['$set'].to,
           images: [
             {
               _id: new Mongo.ObjectID()._str,
@@ -90,17 +82,14 @@ if(Meteor.isServer){
           is_read: false
         });
       }else if(modifier['$push'] && modifier['$push'].fix_names && modifier['$push'].fix_names.fixType === 'remove'){
-        SimpleChat.Messages.insert({
+        sendMqttMessage('workai', {
+          _id: new Mongo.ObjectID()._str,
           form: {
             id: userId,
             name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
             icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png'
           },
-          to: {
-            id: 'Lh4JcxG7CnmgR3YXe',
-            name: "",
-            icon: ""
-          },
+          to: modifier['$set'].to,
           images: [
             {
               _id: new Mongo.ObjectID()._str,

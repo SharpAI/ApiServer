@@ -4,29 +4,9 @@ var list_limit = new ReactiveVar(list_limit_val);
 var page_title = new ReactiveVar('聊天室');
 var list_data = new ReactiveVar([]);
 
-if (Meteor.isClient) {
-  Meteor.startup(function() {
-    var LocalMessages = new Meteor.Collection('workai-messages', {connection: null});
-    var LocalMessagesObservor = new PersistentMinimongo2(LocalMessages, 'workai');
-    SimpleChat.LocalMessages = LocalMessages;
-  });
-}
-
 Router.route(AppConfig.path + '/to/:type', {
   layoutTemplate: '_simpleChatToChatLayout',
   template: '_simpleChatToChat',
-  // waitOn: function(){
-  //   is_loading.set(true);
-  //   return Meteor.subscribe('get-messages', this.params.type, this.params.query['id'], Session.get('simple-chat-limit'), function(){
-  //     is_loading.set(false);
-  //     Meteor.setTimeout(function(){
-  //       if(init_page.get()){
-  //         //$('.box').scrollTop($('.box ul').height());
-  //         init_page.set(false);
-  //       }
-  //     }, 500);
-  //   });
-  // },
   data: function () {
     var slef = this;
     var to = slef.params.query['id'];
@@ -99,7 +79,7 @@ var get_people_names = function(){
       if(result.indexOf(names[i].name) === -1)
         result.push(names[i].name);
     }
-  }
+  }  
 
   return result;
 };
@@ -125,7 +105,7 @@ Template._simpleChatToChatLabelBox.events({
     var index = 0;
     var btns = t.$('.my-btn');
     var value = t.$('select').val() || t.$('input').val();
-
+    
     for(var i=0;i<btns.length;i++){
       if(btns[i].innerHTML === $(e.currentTarget).html()){
         index = i;
@@ -185,8 +165,11 @@ Template._simpleChatToChat.onRendered(function(){
 
   slef.autorun(function(){
     if(list_limit.get()){
+      if(init_page)
+        return;
+
       is_loading.set(true);
-      Meteor.subscribe('get-messages', slef.data.type, slef.data.id, list_limit.get(), function(){
+      Meteor.subscribe('get-messages', slef.data.type, slef.data.id, function(){
         is_loading.set(false);
 
         if(!init_page){
@@ -285,7 +268,7 @@ Template._simpleChatToChatLabel.events({
         return;
 
       PeopleHis.update({_id: data.people_his_id}, {
-        $set: {fix_name: name, msg_id: data._id},
+        $set: {fix_name: name, msg_to: data.to},
         $push: {fix_names: {
           _id: new Mongo.ObjectID()._str,
           name: name,
@@ -299,6 +282,14 @@ Template._simpleChatToChatLabel.events({
           console.log(err);
           return PUB.toast('标记失败，请重试~');
         }
+
+        Messages.update({_id: data.msg_id, 'images.url': $img.attr('src')}, {
+          $set: {
+            'images.$.label': name,
+            'images.$.result': ''
+          }
+        });
+
         PUB.toast('标记成功~');
       });
     });
@@ -335,7 +326,7 @@ Template._simpleChatToChatLabel.events({
       if(index === 0)
         showBox('提示照片', ['标记', '返回'], names.length > 0 ? names : ['张三'], '请输入名字，如：张三', function(select, name){
           PeopleHis.update({_id: data.people_his_id}, {
-            $set: {fix_name: name, msg_id: data._id},
+            $set: {fix_name: name, msg_to: data.to},
             $push: {fix_names: {
               _id: new Mongo.ObjectID()._str,
               name: name,
@@ -349,6 +340,14 @@ Template._simpleChatToChatLabel.events({
               console.log(err);
               return PUB.toast('标记失败，请重试~');
             }
+
+            Messages.update({_id: data.msg_id, 'images.url': $img.attr('src')}, {
+              $set: {
+                'images.$.label': name,
+                'images.$.result': ''
+              }
+            });
+
             PUB.toast('标记成功~');
           });
         });
@@ -358,7 +357,7 @@ Template._simpleChatToChatLabel.events({
             return;
 
           PeopleHis.update({_id: data.people_his_id}, {
-            $set: {msg_id: data._id},
+            $set: {msg_to: data.to},
             $push: {fix_names: {
               _id: new Mongo.ObjectID()._str,
               userId: Meteor.userId,
@@ -373,6 +372,13 @@ Template._simpleChatToChatLabel.events({
               console.log(err);
               return PUB.toast('删除失败，请重试~');
             }
+
+            Messages.update({_id: data.msg_id, 'images.url': $img.attr('src')}, {
+              $set: {
+                'images.$.result': 'remove'
+              }
+            });
+
             PUB.toast('删除成功~');
           });
         });
@@ -525,7 +531,8 @@ Template._simpleChatToChatLayout.events({
       };
     }
 
-    Messages.insert({
+    var msg = {
+      _id: new Mongo.ObjectID()._str,
       form:{
         id: Meteor.userId(),
         name: AppConfig.get_user_name(Meteor.user()),
@@ -537,8 +544,10 @@ Template._simpleChatToChatLayout.events({
       text: text,
       create_time: new Date(),
       is_read: false
-    }, function(){
+    };
+    Messages.insert(msg, function(){
       $('.box').scrollTop($('.box ul').height());
+      sendMqttMessage('workai', msg);
     });
 
     $('.input-text').val('');
@@ -629,6 +638,7 @@ window.___message = {
     }}, function(){
       console.log('update id:', id);
       $('.box').scrollTop($('.box ul').height());
+      sendMqttMessage('workai', Messages.findOne({_id: id}));
     });
   },
   remove: function(id){
@@ -642,4 +652,26 @@ window.___message = {
 SimpleChat.onMqttMessage = function(msg) {
   console.log('SimpleChat.onMqttMessage');
   var msgObj = JSON.parse(msg);
+  var last_msg = SimpleChat.Messages.findOne({}, {sort: {create_time: -1}});
+
+  if(SimpleChat.Messages.find({_id: msgObj._id}).count() > 0)
+    return;
+
+  if (last_msg && last_msg.is_people === true){
+    if(!msgObj.wait_lable && msgObj.images[0].label === last_msg.images[0].label){
+      Messages.update({_id: last_msg._id}, {
+        $set: {create_time: msgObj.create_time},
+        $push: {images: msgObj.images[0]}
+      });
+    }else if(msgObj.wait_lable && msgObj.people_id === last_msg.people_id && msgObj.people_uuid === last_msg.people_uuid){
+      Messages.update({_id: last_msg._id}, {
+        $set: {create_time: msgObj.create_time},
+        $push: {images: msgObj.images[0]}
+      });
+    }else{
+      Messages.insert(msgObj);
+    }
+  }else{
+    Messages.insert(msgObj);
+  }
 };
