@@ -410,7 +410,7 @@ var shareChatRoomTo = function(to) {
     var shareUrl = 'http://'+server_domain_name+'/simple-chat/to/group?id='+data.id;
     console.log('share chatroom Url:'+shareUrl)
 
-    window.plugins.toast.showShortCenter(TAPi18n.__("preparePicAndWait"));
+    window.plugins.toast.showShortCenter('正在准备主题图片，请稍等');
 
     if (to === 'QQZoneShare') {
         shareToQQZone(title, description, imgUrl, shareUrl);
@@ -635,4 +635,3 @@ SimpleChat.onMqttMessage = function(msg) {
   console.log('SimpleChat.onMqttMessage');
   var msgObj = JSON.parse(msg);
 };
-
