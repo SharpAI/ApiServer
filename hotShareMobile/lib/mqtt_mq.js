@@ -8,7 +8,7 @@ if(Meteor.isClient){
         mqtt_connection.on('connect',function(){
 
             console.log('Connected to mqtt server');
-            mqtt_connection.subscribe('workai');
+            mqtt_connection.subscribe('workai',{qos:2});
             mqtt_connection.on('message', function(topic, message) {
               console.log('on mqtt message topic: ' + topic + ', message: ' + message.toString());
               if (topic == 'workai') {
