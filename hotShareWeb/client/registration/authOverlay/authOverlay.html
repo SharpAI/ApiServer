@@ -1,0 +1,15 @@
+<template name="authOverlay">
+  <div id="authOverlaybg" class="authOverlay">
+    {{#if isLoggingIn}}
+      <div>{{>spinner}}</div>
+      <div id="loggingIn">{{_ "funnyLogin"}}</div>
+    {{else}}
+    <div class="loginActionArea">
+      <div id="login" class="ripple-btn">登录</div>
+      <div id="register" class="ripple-btn">注册</div>
+      
+    </div>
+    {{/if}}
+  </div>
+</template>
+

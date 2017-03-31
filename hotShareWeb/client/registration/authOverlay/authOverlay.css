@@ -1,0 +1,37 @@
+/* CSS declarations go here */
+.authOverlay{background-repeat: no-repeat;background-size: 100% auto; position: relative;}
+
+.authOverlay .agreeDeal{position: absolute;bottom: 45%;left: 5%;right: 5%;width: 90%;background-color: #FFF;color: #111; text-align: center;border-radius: 5px;padding: 15px;}
+.authOverlay .title{font-weight:bold;}
+.authOverlay .loginActionArea{
+	position: absolute;
+    left: 10%;
+    right: 10%;
+    bottom: 50px;
+    height: 50%;
+    color: #1a1a1a;
+    text-align: center;
+}
+.authOverlay #register{
+	text-align: center;
+    padding: 10px;
+    background-color: rgba(255,255,255,0.2);
+    font-size: 16px;
+    position: relative !important;
+    border: 1px solid #37a7fe !important;
+    width: 100% !important;
+    border-radius: 16px !important;
+    color: #37a7fe !important;
+}
+.authOverlay #login{
+	text-align: center;
+	font-size: 16px;
+    position: relative !important;
+    padding: 10px;
+    background-color: #37a7fe;
+    color: #ffffff !important;
+    border-radius: 16px;
+    width: 100% !important;
+    margin-bottom: 12px;}
+.authOverlay .company{position: absolute;bottom: 0;left: 30%;right: 30%;text-align: center;font-size: 12px;text-shadow: 0 1px 0 black}
+.authOverlay #loggingIn{position: absolute;bottom: 15%;left: 5%;right: 5%;width: 90%;text-align: center;border: none;border-radius: 8px;padding: 10px;background-color: #00c4ff;font-size: 16px;}

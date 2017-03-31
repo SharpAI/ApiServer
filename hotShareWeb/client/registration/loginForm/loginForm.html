@@ -1,0 +1,71 @@
+<template name="loginForm">
+<div class="loginForm">
+    <div class="signupHeader">
+        <div id="btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+        <span>登录</span>
+    </div>
+    <form  class="loginBody" id="login-form">
+        <div class="input-group margin-bottom-sm">
+            <!--<span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>-->
+            <input type="text" id="login-username" class="form-control" placeholder=用户名 /><br />
+        </div>
+        <div class="input-group">
+            <!--<span class="input-group-addon"><i class="fa fa-lock fa-fw"></i></span>-->
+            <input type="password" id="login-password" class="form-control" placeholder=密码 /><br />
+        </div>
+        <!--<input type="submit" value={{_ "logIn"}} id="sub-login">-->
+        <button type="submit" id="sub-login" class="ripple-btn" style="color: #fff; border: none;outline: none;">登录</button>
+        
+        <div class="forgetPwdBtn">忘记密码</div>
+        <!-- <div class="forgetPassword">{{_ "forgotPassword"}}</div> -->
+    </form>
+    <div class="company">昆明讯动科技有限公司</div>
+    <div class="customerServiceBackground"></div>
+    <div class="customerService">
+        <div class="customerService-head">
+          <h5 class="title">联系WorkAI客服</h5>
+          <div class="btnClose">&times;</div>
+        </div>
+        <div class="customer-email">
+          <input id="customerEmail" type="text" placeholder="请输入邮箱地址" value="{{oldMail}}">
+        </div>
+        <div class="alert-email" style="padding-left: 10px; padding-top: 10px;">邮箱地址用于人工客服与您联系，请正确填写</div>
+        <div class="content">
+          <textarea id="sendContent" cols="10" rows="2" placeholder="请输入您要申诉的内容，以便客服与您沟通。"></textarea>
+        </div>
+        <div class="btn-banner">
+          <span id="sendEmailBtn" class="send-email-btn ripple-btn">发送</span>
+        </div>
+    </div>
+    {{>loginProblemsPrompt}}
+</div>
+</template>
+<template name="recoveryForm">
+<div class="recoveryForm">
+    <div class="signupHeader">
+        <div id="btn_back" class="leftButton"><i class="fa fa-angle-left fa-fw"></i></div>
+        <span>重设密码</span>
+    </div>
+    <form class="recoveryBody" id="recovery-form">
+        <div class="input-group">
+            <!--<span class="input-group-addon"><i class="fa fa-envelope fa-fw"></i></span>-->
+            <input type="text" id="recovery-email" class="form-control" placeholder=邮箱 /><br />
+        </div>
+        <!--<input type="submit" value={{_ "confirm"}} id="sub-recovery">-->
+        <button type="submit" id="sub-recovery" class="ripple-btn" style="color: #fff; border: none;outline: none;">确定</button>
+    </form>
+    <div class="company">昆明讯动科技有限公司</div>
+</div>
+</template>
+
+<template name="loginProblemsPrompt">
+  <div class="loginProblemsPromptPage">
+    <div class="bg"></div>
+    <div class="content">
+        <div class="forgetPasswordBtn">忘记密码？</div>
+        <div class="customerServiceBtn">联系客服</div>
+        <div class="cancleBtn">取消</div>
+    </div>
+  </div>
+</template>
+

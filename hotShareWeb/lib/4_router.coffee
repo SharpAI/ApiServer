@@ -13,6 +13,51 @@ if Meteor.isClient
     Meteor.setTimeout ()->
       Session.set("displayPostContent",true)
     ,300
+  Router.onBeforeAction ()->
+    console.log  'Router.url === '+this.url
+    if Meteor.loggingIn()
+      this.next()
+      return
+    if Meteor.userId()
+      this.next()
+      return
+    else
+      if this.url.indexOf('/simple-chat') != -1
+        console.log  'is open simple-chat!'
+        #Session.set('disableAnonymousLogin',true);
+        Session.set('routerWillRenderPage',this.url+'?id='+this.params.query['id'])
+        Router.go('/authOverlay')
+        this.next()
+        return
+      else if this.url.indexOf('/posts') != -1 or this.url.indexOf('/series') != -1
+        Session.set('routerWillRenderPage',this.url)
+        Router.go('/authOverlay')
+        this.next()
+        return
+      #Router.go('/authOverlay')
+      else
+        this.next()
+        return
+  Router.route '/authOverlay',()->
+    this.render 'authOverlay'
+    #Session.set('disableAnonymousLogin',true);
+    return
+  Router.route '/loginForm', ()->
+    this.render 'loginForm'
+    #Session.set('disableAnonymousLogin',true);
+    return
+  Router.route '/signupForm', ()->
+    this.render 'signupForm'
+    #Session.set('disableAnonymousLogin',true);
+    return
+  Router.route '/recoveryForm', ()->
+    #Session.set('disableAnonymousLogin',true);
+    this.render 'recoveryForm'
+    return
+  Router.route '/deal_page',()->
+    #Session.set('disableAnonymousLogin',true);
+    this.render 'deal_page'
+    return
   Router.route '/bell',()->
     this.render 'bell'
     Session.set 'channel','bell'
