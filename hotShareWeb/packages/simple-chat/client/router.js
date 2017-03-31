@@ -597,6 +597,11 @@ SimpleChat.onMqttMessage = function(msg) {
   var msgObj = JSON.parse(msg);
   var last_msg = SimpleChat.Messages.findOne({}, {sort: {create_time: -1}});
 
+  if(SimpleChat.Messages.find({_id: msgObj._id}).count() > 0)
+    return;
+  if(msgObj.create_time)
+    msgObj.create_time = new Date(msgObj.create_time);
+    
   if (last_msg && last_msg.is_people === true){
     if(!msgObj.wait_lable && msgObj.images[0].label === last_msg.images[0].label){
       Messages.update({_id: last_msg._id}, {
