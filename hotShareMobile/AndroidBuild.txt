@@ -4,7 +4,7 @@
 
 ./cleanbuild.sh
 ./build.sh
-cd ~/build-hot-share/android/project
+cd ~/build-workai/android/project
 vim ./AndroidManifest.xml
 修改文件内容，　在Ｍａｉｎ　Ａｃｔｉｖｉｔｙ中增加以下内容
             <intent-filter>
@@ -39,11 +39,11 @@ vim ./AndroidManifest.xml
         </activity>
 
 
-cp /home/roger/hotShare/ShareExtension/Android/MainActivity.java ./src/org/hotshare/everywhere/
+cp /home/roger/hotShare/ShareExtension/Android/MainActivity.java ./src/org/workai/everywhere/
 
 修改Ａｐｐ的名字为中文：
 vim res/values/strings.xml
-把app_name那一项从ｈｏｔＳｈａｒｅ改为故事贴
+把app_name那一项从ｈｏｔＳｈａｒｅ改为workai
 
 在ｐｒｏｊｅｃｔ目录下创建一个文件
 vim gradle.properties 

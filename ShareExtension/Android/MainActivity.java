@@ -17,7 +17,7 @@
        under the License.
  */
 
-package org.hotshare.everywhere;
+package org.workai.everywhere;
 
 import android.os.Bundle;
 import android.os.Build;
