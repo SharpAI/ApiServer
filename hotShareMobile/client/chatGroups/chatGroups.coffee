@@ -19,6 +19,29 @@ if Meteor.isClient
   Template.chatGroups.helpers
     myChatGroups:()->
       Follower.find({"userId":Meteor.userId()}, {sort: {createdAt: -1}}, {limit:Session.get("followersitemsLimit")})
+    hasSysMessages:()->
+      if Feeds.find().count() > 0
+        true
+      else
+        false
+    showRedSpot:()->
+      me = Meteor.user()
+      if me
+        wait_read_count = Feeds.find({
+            followby: Meteor.userId(),
+            isRead:{$ne: true},
+            checked:{$ne: true},
+            eventType:{$ne:'share'},
+            createdAt: {$gt: new Date((new Date()).getTime() - 7 * 24 * 3600 * 1000)}
+          },{
+            limit: 99
+          }).count()
+        if wait_read_count > 0
+          true
+        else 
+          false
+      else
+        false
     moreResults:->
       !(Follower.find({"userId":Meteor.userId()}).count() < Session.get("followersitemsLimit"))
     loading:->
@@ -26,8 +49,13 @@ if Meteor.isClient
     loadError:->
       Session.equals('followersCollection','error')
   Template.chatGroups.events
-    'click #scanbarcode':(event)->
-      ScanBarcodeByBarcodeScanner()
+    'click #sysBell':(event)->
+      Meteor.defer ()->
+        me = Meteor.user()
+        if me and me.profile and me.profile.waitReadCount
+          if me.profile.waitReadCount > 0
+            Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
+      PUB.page('/bell')
     'click .groupsItem': (event)->
       if isIOS
         if (event.clientY + $('.home #footer').height()) >=  $(window).height()

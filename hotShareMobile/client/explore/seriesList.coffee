@@ -31,7 +31,7 @@ Template.seriesList.helpers
     return !localStorage.getItem('seriesHint');
 Template.seriesList.events
     'click .top-home-btn': (event)->
-      Router.go '/'
+      Router.go '/explore'
     'click #follow': (event)->
       Router.go '/searchFollow'
     'click .clickHelp':(event)->

@@ -144,10 +144,15 @@ if Meteor.isClient
     Router.route '/cropImage',()->
       this.render 'cropImage'
       return
-    Router.route '/chatGroups',()->
+    Router.route '/addressBook',()->
       if Meteor.isCordova is true
-        this.render 'chatGroups'
-        Session.set 'channel','chatGroups'
+        this.render 'addressBook'
+        Session.set 'channel','addressBook'
+      return
+    Router.route '/explore',()->
+      if Meteor.isCordova is true
+        this.render 'explore'
+        Session.set 'channel','explore'
       return
     Router.route '/bell',()->
       if Meteor.isCordova is true

@@ -4,22 +4,30 @@
         <div class="btn-group btn-group-justified" style="margin:0">
             <div class="btn-group">
               <a id="home" class="foot-btn btn btn-default {{focus_style 'home'}}">
-                <i class="fa fa-home" style="font-size: 26px;"></i>
-                <div class="footerName">{{_ "homePage"}}</div>
+                <i class="fa fa-comment" style="font-size: 24px;"></i>
+                <div class="footerName">聊天</div>
               </a>
             </div>
             <div class="btn-group">
-              <a id="chatGroups" class="foot-btn btn btn-default {{focus_style 'chatGroups'}}">
-                <i class="fa fa-bullhorn" style="font-size: 24px;"></i>
-                <div class="footerName">聊天室</div>
+              <a id="addressBook" class="foot-btn btn btn-default {{focus_style 'addressBook'}}">
+                <img src="{{addressBookImgSrc 'addressBook'}}" style="height:30px;margin-top:-8px;"/>
+                <!-- <i class="fa fa-home" style="font-size: 26px;"></i> -->
+                <div class="footerName">通讯录</div>
               </a>
             </div>
+            <div class="btn-group">
+              <a id="explore" class="foot-btn btn btn-default {{focus_style 'explore'}}">
+                <i class="fa fa-compass" style="font-size: 26px;"></i>
+                <div class="footerName">发现</div>
+              </a>
+            </div>
+            
             <!-- <div class="btn-group">
                 <div id="add" data-toggle="modal" data-target="#level2-popup-menu" class="foot-btn btn btn-default {{focus_style 'add'}}">
                   <img src="/theme_blue/add.svg" style="height:50px;margin-top:-2px;"/>
                 </div>
             </div> -->
-            <div class="btn-group">
+            <!-- <div class="btn-group">
               <a id="bell" class="foot-btn btn btn-default {{focus_style 'bell'}}">
                 <i class="fa fa-bell" style="font-size: 22px;"></i>
                 <div class="footerName">{{_ "message"}}</div>
@@ -31,7 +39,7 @@
                   {{/if}}
                 {{/if}}
               </a>
-            </div>
+            </div> -->
             <div class="btn-group">
               <a id="user" class="foot-btn btn btn-default {{focus_style 'user'}}">
                 <i class="fa fa-user" style="font-size: 24px;"></i>

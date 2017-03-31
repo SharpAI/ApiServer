@@ -5,30 +5,24 @@
   <div class="home">
     {{#if wasLogon}}
       <div class="head">
-        <strong class="top-home-btn active">主页</strong>
-        <strong class="top-series-btn">合辑</strong>
-        <!-- <div id="follow" class="leftButton">
-          <span class="fa fa-plus"></span><i class="fa fa-user"></i>
+        <strong>聊天</strong>
+        <!-- <div id="scanbarcode" class="rightButton" style="padding-top: 0px;">
+          <img src="/scanbarcode.png" height="40" width="45" >
         </div> -->
-        <div id="search" class="leftButton">
-          <i class="fa fa-search" style="font-size: 21px;"></i>
-        </div>
         <div class="rightDropMenu dropdown">
-            <div class="rightButton dropdown-toggle" id="add-new-post" data-toggle="dropdown"><i class="fa fa-plus-circle"></i></div>
-            <ul class="dropdown-menu" role="menu" aria-labelledby="add-new-post">
-              <li role="presentation"><a id="album-select" role="menuitem" tabindex="-1" >{{_ "selectPicFromGallery"}}</a></li>
-              <li role="presentation"><a id="web-import" role="menuitem" tabindex="-1" >{{_ "importFromPaster"}}</a></li>
-              {{#if wait_import_count}}
-              <li role="presentation"><a id="share-import" role="menuitem" tabindex="-1" >{{_ "importFromShareExtension"}}</a></li>
-              {{/if}}
-              <li role="presentation"><a id="photo-select" role="menuitem" tabindex="-1" >{{_ "takePicture"}}</a></li>
+            <div class="rightButton dropdown-toggle" id="add-more" data-toggle="dropdown">
+              <img src="/add_more.png" height="30" >
+            </div>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="add-more">
+              <li role="presentation"><a id="createNewChatGroups" role="menuitem" tabindex="-1" ><i class="fa fa-comment add-more-drop-item"></i>发起群聊</a></li>
+              <li role="presentation"><a id="addNewFriends" role="menuitem" tabindex="-1" ><span class="add-more-drop-item"><span class="fa fa-plus"></span><i class="fa fa-user"></i></span> 添加朋友</a></li>
+              <li role="presentation"><a id="scanbarcode" role="menuitem" tabindex="-1" ><img class="add-more-drop-item" src="/scan_b.png" height="30" style="margin-left: -15px;">扫一扫</a></li>
             </ul>
         </div>
-
-        <!-- <div class="rightButton clickHelp"><i class="fa fa-question-circle fa-fw"></i></div> -->
+        <!-- <div id="follow" class="leftButton"><i class="fa fa-angle-left"></i></div> -->
       </div>
       <div class="content">
-        {{> listPosts}}
+        {{> chatGroups}}
       </div>
       {{> footer}}
     {{else}}

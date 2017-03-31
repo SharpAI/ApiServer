@@ -56,6 +56,13 @@ if Meteor.isClient
         return "focus"
       else
         return ""
+    addressBookImgSrc:(channelName)->
+      channel = Session.get "focusOn"
+      if channel is channelName
+        return "/addressbook_s.png"
+      else
+        return "/addressbook.png"
+      
     icon_size:(channelName)->
       channel = Session.get "focusOn"
       if channel is channelName
@@ -143,7 +150,7 @@ if Meteor.isClient
         )
         return
       PUB.page('/')
-    'click #chatGroups':(e)->
+    'click #addressBook':(e)->
       if (Session.get("myHotPostsChanged"))
         Session.set("myHotPostsChanged", false)
         navigator.notification.confirm(
@@ -151,12 +158,26 @@ if Meteor.isClient
           (index)->
             if index is 2
               saveHotPosts()
-            PUB.page('/chatGroups')
+            PUB.page('/addressBook')
           '提示'
           ['暂不','保存']
         )
         return
-      PUB.page('/chatGroups')
+      PUB.page('/addressBook')
+    'click #explore':(e)->
+      if (Session.get("myHotPostsChanged"))
+        Session.set("myHotPostsChanged", false)
+        navigator.notification.confirm(
+          '您改变了热门帖子, 要保存吗?'
+          (index)->
+            if index is 2
+              saveHotPosts()
+            PUB.page('/explore')
+          '提示'
+          ['暂不','保存']
+        )
+        return
+      PUB.page('/explore')
     'click #bell':(e)->
       Meteor.defer ()->
         me = Meteor.user()

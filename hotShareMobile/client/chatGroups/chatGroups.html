@@ -1,49 +1,45 @@
 <template name="chatGroups">
-  <!-- {{>connectionBanner}} -->
+  {{>connectionBanner}}
   <div class="chatGroups">
-    <div class="head">
-        <strong>聊天室</strong>
-        <div id="scanbarcode" class="rightButton" style="padding-top: 0px;">
-          <img src="/scanbarcode.png" height="40" width="45" >
-        </div>
-        <!-- <div id="follow" class="leftButton"><i class="fa fa-angle-left"></i></div> -->
-    </div>
-
-    <div class="content">
-      <div id="wrapper">
-        <div id="addNewGroups" class="eachViewer">
-          <img class="icon" src="/usersChat.jpg">
-          <span class="groupsName">创建群聊</span>
-        </div>
-        <div class="line"><span style="height: 8px;"></span></div>
-        <div class="contentList">
-          {{#if loading}}
-            <div>{{_ "isLoading"}}</div>
+    <div id="wrapper">
+      {{#if hasSysMessages}}
+        <div id="sysBell" class="eachViewer groupsItem">
+          <img class="icon" src="/sysMessages.png">
+          <span class="groupsName">系统消息</span>
+          {{#if showRedSpot}}
+            <div class="red_spot"></div>
           {{/if}}
-          {{#if loadError}}
-              <div>{{_ "loadFailNotification"}}</div>
-          {{/if}}
-          {{#each myChatGroups}}
-            <div id="{{_id}}" class="groupsItem">
-                <img class="icon" src="{{followerIcon}}">
-                <span class="groupsName">{{followerName}}</span>
-                <div class="newMessage">{{count}}</div>
-                <!-- {{#if showRedSpot}}
-                  <div class="red_spot"></div>
-                {{/if}} -->
-            </div>
-            <div class="line">
-                <span></span>
-            </div>
-          {{/each}}
-          {{#if moreResults}}
-          <div id="showMoreResults" style="margin-left: 25px;">
-            <span class="loading">{{_ "loading"}}</span>
+        </div>
+        <div class="line">
+              <span></span>
+        </div>
+      {{/if}}
+      <div class="contentList">
+        {{#if loading}}
+          <div>{{_ "isLoading"}}</div>
+        {{/if}}
+        {{#if loadError}}
+            <div>{{_ "loadFailNotification"}}</div>
+        {{/if}}
+        {{#each myChatGroups}}
+          <div id="{{_id}}" class="groupsItem">
+              <img class="icon" src="{{followerIcon}}">
+              <span class="groupsName">{{followerName}}</span>
+              <div class="newMessage">{{count}}</div>
+              <!-- {{#if showRedSpot}}
+                <div class="red_spot"></div>
+              {{/if}} -->
           </div>
-          {{/if}}
+          <div class="line">
+              <span></span>
+          </div>
+        {{/each}}
+        {{#if moreResults}}
+        <div id="showMoreResults" style="margin-left: 25px;">
+          <span class="loading">{{_ "loading"}}</span>
         </div>
+        {{/if}}
       </div>
     </div>
-    {{> footer}}
   </div>
 </template>

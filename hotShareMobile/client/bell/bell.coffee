@@ -138,3 +138,6 @@ if Meteor.isClient
        Router.go '/searchFollow'
     'click #search': (event)->
        Router.go '/searchPeopleAndTopic'
+    'click #bellPageback':(event)->
+       PUB.back()
+

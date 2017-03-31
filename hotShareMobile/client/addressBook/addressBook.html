@@ -1,0 +1,58 @@
+<template name="addressBook">
+  {{>connectionBanner}}
+  <div class="addressBook">
+    <div class="head">
+      <strong>通讯录</strong>
+      <div id="follow" class="rightButton">
+        <span class="fa fa-plus"></span><i class="fa fa-user"></i>
+      </div>
+    </div>
+
+    <div class="content">
+      <div id="wrapper">
+        <div class="newFriends eachViewer">
+          <img class="icon" src="/userPlus.png">
+          <span class="groupsName">新的朋友</span>
+        </div>
+        <div class="line"><span></span></div>
+        <div class="groupslist eachViewer">
+          <img class="icon" src="/usersChat.jpg">
+          <span class="groupsName">群聊</span>
+        </div>
+        <div class="line"><span></span></div>
+        <div class="recentlyPeople eachViewer">
+          <img class="icon" src="/recently.png">
+          <span class="groupsName">最近来过</span>
+        </div>
+        <div class="line" style="height: 8px;"></div>
+        <div class="contentList">
+          {{#if loading}}
+            <div>{{_ "isLoading"}}</div>
+          {{/if}}
+          {{#if loadError}}
+              <div>{{_ "loadFailNotification"}}</div>
+          {{/if}}
+          {{#each myFollows}}
+            <div id="{{_id}}" class="followItem eachViewer">
+                <img class="icon" src="{{followerIcon}}">
+                <span class="groupsName">{{followerName}}</span>
+                <div class="newMessage">{{count}}</div>
+                <!-- {{#if showRedSpot}}
+                  <div class="red_spot"></div>
+                {{/if}} -->
+            </div>
+            <div class="line">
+                <span></span>
+            </div>
+          {{/each}}
+          {{#if moreResults}}
+          <div id="showMoreResults" style="margin-left: 25px;">
+            <span class="loading">{{_ "loading"}}</span>
+          </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+    {{> footer}}
+  </div>
+</template>
