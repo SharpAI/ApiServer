@@ -63,3 +63,4 @@ standard-minifier-js@1.2.0_1
 shell-server
 nicolaslopezj:excel-export
 feiwu:simple-chat
+frozeman:persistent-minimongo2

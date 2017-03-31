@@ -4,6 +4,14 @@ var list_limit = new ReactiveVar(list_limit_val);
 var page_title = new ReactiveVar('聊天室');
 var list_data = new ReactiveVar([]);
 
+if (Meteor.isClient) {
+  Meteor.startup(function() {
+    var LocalMessages = new Meteor.Collection('workai-messages', {connection: null});
+    var LocalMessagesObservor = new PersistentMinimongo2(LocalMessages, 'workai');
+    SimpleChat.LocalMessages = LocalMessages;
+  });
+}
+
 Router.route(AppConfig.path + '/to/:type', {
   layoutTemplate: '_simpleChatToChatLayout',
   template: '_simpleChatToChat',

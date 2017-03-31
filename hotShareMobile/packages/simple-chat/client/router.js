@@ -4,6 +4,14 @@ var list_limit = new ReactiveVar(list_limit_val);
 var page_title = new ReactiveVar('聊天室');
 var list_data = new ReactiveVar([]);
 
+f (Meteor.isClient) {
+  Meteor.startup(function() {
+    var LocalMessages = new Meteor.Collection('workai-messages', {connection: null});
+    var LocalMessagesObservor = new PersistentMinimongo2(LocalMessages, 'workai');
+    SimpleChat.LocalMessages = LocalMessages;
+  });
+}
+
 Router.route(AppConfig.path + '/to/:type', {
   layoutTemplate: '_simpleChatToChatLayout',
   template: '_simpleChatToChat',
@@ -91,7 +99,7 @@ var get_people_names = function(){
       if(result.indexOf(names[i].name) === -1)
         result.push(names[i].name);
     }
-  }  
+  }
 
   return result;
 };
@@ -117,7 +125,7 @@ Template._simpleChatToChatLabelBox.events({
     var index = 0;
     var btns = t.$('.my-btn');
     var value = t.$('select').val() || t.$('input').val();
-    
+
     for(var i=0;i<btns.length;i++){
       if(btns[i].innerHTML === $(e.currentTarget).html()){
         index = i;
