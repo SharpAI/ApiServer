@@ -21,7 +21,8 @@ if(Meteor.isServer){
   GroupUsers = new Mongo.Collection(PRFIX + 'groups_users');
 
   Meteor.startup(function() {
-    var LocalMessagesObservor = new PersistentMinimongo2(Messages, 'workai');
+    //var LocalMessagesObservor = new PersistentMinimongo2(Messages, 'workai');
+    Ground.Collection(Messages, 'gdb');
   });
 }
 
