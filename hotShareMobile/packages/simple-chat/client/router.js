@@ -115,18 +115,19 @@ var onFixName = function(id, uuid, his_id, url, to, value, type){
       msg.text = '此照片是"' + value + '" ~';
       Messages.insert(msg);
       sendMqttMessage('workai', msg);
-      // sendMqttMessage('trainset', {url: url, person_id: '', uuid: uuid, id: id});
+      sendMqttMessage('trainset', {url: url, person_id: '', uuid: uuid, id: id});
       break;
     case 'check':
       msg.text = '此照片是"' + value + '" ~';
       Messages.insert(msg);
       sendMqttMessage('workai', msg);
-      // sendMqttMessage('trainset', {url: url, person_id: '', uuid: uuid, id: id});
+      sendMqttMessage('trainset', {url: url, person_id: '', uuid: uuid, id: id});
       break;
     case 'remove':
       msg.text = '删除照片: ' + value;
       Messages.insert(msg);
       sendMqttMessage('workai', msg);
+      sendMqttMessage('trainset', {url: url, person_id: '', uuid: uuid, id: id, drop: true});
       break;
   }
 };
@@ -326,7 +327,6 @@ Template._simpleChatToChatLabel.events({
         }}
       }, function(err, num){
         if(err || num <= 0){
-          console.log(err);
           return PUB.toast('标记失败，请重试~');
         }
 
