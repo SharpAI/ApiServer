@@ -58,6 +58,15 @@ if(Meteor.isServer){
   Meteor.publish('people_new', function(){
     return People.find({}, {sort: {updateTime: -1}, limit: 50});
   });
+  Meteor.methods({
+    getPeopleIdByName: function(name, uuid){
+      var people = People.findOne({name: name, uuid: uuid}, {sort: {updateTime: -1}});
+      if(!people)
+        return '';
+      
+      return {uuid: people.uuid, id: people.id};
+    }
+  });
 }
 
 // 绿网检查帖子内容

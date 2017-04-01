@@ -115,19 +115,19 @@ var onFixName = function(id, uuid, his_id, url, to, value, type){
       msg.text = '此照片是"' + value + '" ~';
       Messages.insert(msg);
       sendMqttMessage('workai', msg);
-      sendMqttMessage('trainset', {url: url, person_id: '', uuid: uuid, id: id});
+      // sendMqttMessage('trainset', {url: url, person_id: '', device_id: uuid, face_id: id});
       break;
     case 'check':
       msg.text = '此照片是"' + value + '" ~';
       Messages.insert(msg);
       sendMqttMessage('workai', msg);
-      sendMqttMessage('trainset', {url: url, person_id: '', uuid: uuid, id: id});
+      // sendMqttMessage('trainset', {url: url, person_id: '', device_id: uuid, face_id: id});
       break;
     case 'remove':
       msg.text = '删除照片: ' + value;
       Messages.insert(msg);
       sendMqttMessage('workai', msg);
-      sendMqttMessage('trainset', {url: url, person_id: '', uuid: uuid, id: id, drop: true});
+      sendMqttMessage('trainset', {url: url, person_id: '', device_id: uuid, face_id: id, drop: true});
       break;
   }
 };
@@ -315,8 +315,54 @@ Template._simpleChatToChatLabel.events({
       if(!name || index != 0)
         return;
 
+      Meteor.call('getPeopleIdByName', name, data.people_uuid, function(err, res){
+        if(err)
+          return PUB.toast('标记成功~');
+        if(!res)
+          res = {uuid: data.people_uuid, id: data.people_id};
+
+        PeopleHis.update({_id: data.people_his_id}, {
+          $set: {fix_name: name, msg_to: data.to},
+          $push: {fix_names: {
+            _id: new Mongo.ObjectID()._str,
+            name: name,
+            userId: Meteor.userId(),
+            userName: Meteor.user().profile && Meteor.user().profile.fullname ? Meteor.user().profile.fullname : Meteor.user().username,
+            userIcon: Meteor.user().profile && Meteor.user().profile.icon ? Meteor.user().profile.icon : '/userPicture.png',
+            fixTime: new Date()
+          }}
+        }, function(err, num){
+          if(err || num <= 0){
+            return PUB.toast('标记失败，请重试~');
+          }
+
+          Messages.update({_id: data.msg_id, 'images.url': $img.attr('src')}, {
+            $set: {
+              'images.$.label': name,
+              'images.$.result': ''
+            }
+          });
+
+          onFixName(data.people_id, data.people_uuid, data.people_his_id, $img.attr('src'), data.to, name, 'label');
+          sendMqttMessage('trainset', {url: $img.attr('src'), person_id: '', device_id: data.people_uuid, face_id: res.id, drop: false});
+          PUB.toast('标记成功~');
+        });
+      });
+    });
+  },
+  'click .btn-yes': function(){
+    var $img = $('#swipebox-overlay .slide.current img');
+    var data = this;
+    var name = data.images[0].label;
+
+    Meteor.call('getPeopleIdByName', name, data.people_uuid, function(err, res){
+      if(err)
+        return PUB.toast('标记成功~');
+      if(!res)
+        res = {uuid: data.people_uuid, id: data.people_id};
+
       PeopleHis.update({_id: data.people_his_id}, {
-        $set: {fix_name: name, msg_to: data.to},
+        $set: {fix_name: name, msg_id: data._id, msg_to: data.to},
         $push: {fix_names: {
           _id: new Mongo.ObjectID()._str,
           name: name,
@@ -327,44 +373,14 @@ Template._simpleChatToChatLabel.events({
         }}
       }, function(err, num){
         if(err || num <= 0){
+          console.log(err);
           return PUB.toast('标记失败，请重试~');
         }
 
-        Messages.update({_id: data.msg_id, 'images.url': $img.attr('src')}, {
-          $set: {
-            'images.$.label': name,
-            'images.$.result': ''
-          }
-        });
-
-        onFixName(data.id, data.uuid, data.people_his_id, $img.attr('src'), data.to, name, 'label');
+        onFixName(data.people_id, data.people_uuid, data.people_his_id, $img.attr('src'), data.to, name, 'label');
+        sendMqttMessage('trainset', {url: $img.attr('src'), person_id: '', device_id: data.people_uuid, face_id: res.id, drop: false});
         PUB.toast('标记成功~');
       });
-    });
-  },
-  'click .btn-yes': function(){
-    var $img = $('#swipebox-overlay .slide.current img');
-    var data = this;
-    var name = data.images[0].label;
-
-    PeopleHis.update({_id: data.people_his_id}, {
-      $set: {fix_name: name, msg_id: data._id},
-      $push: {fix_names: {
-        _id: new Mongo.ObjectID()._str,
-        name: name,
-        userId: Meteor.userId(),
-        userName: Meteor.user().profile && Meteor.user().profile.fullname ? Meteor.user().profile.fullname : Meteor.user().username,
-        userIcon: Meteor.user().profile && Meteor.user().profile.icon ? Meteor.user().profile.icon : '/userPicture.png',
-        fixTime: new Date()
-      }}
-    }, function(err, num){
-      if(err || num <= 0){
-        console.log(err);
-        return PUB.toast('标记失败，请重试~');
-      }
-
-      onFixName(data.id, data.uuid, data.people_his_id, $img.attr('src'), data.to, name, 'label');
-      PUB.toast('标记成功~');
     });
   },
   'click .btn-no': function(){
@@ -378,32 +394,40 @@ Template._simpleChatToChatLabel.events({
         showBox('提示照片', ['标记', '返回'], names.length > 0 ? names : ['张三'], '请输入名字，如：张三', function(select, name){
           if(!name || select != 0)
             return;
-            
-          PeopleHis.update({_id: data.people_his_id}, {
-            $set: {fix_name: name, msg_to: data.to},
-            $push: {fix_names: {
-              _id: new Mongo.ObjectID()._str,
-              name: name,
-              userId: Meteor.userId(),
-              userName: Meteor.user().profile && Meteor.user().profile.fullname ? Meteor.user().profile.fullname : Meteor.user().username,
-              userIcon: Meteor.user().profile && Meteor.user().profile.icon ? Meteor.user().profile.icon : '/userPicture.png',
-              fixTime: new Date()
-            }}
-          }, function(err, num){
-            if(err || num <= 0){
-              console.log(err);
-              return PUB.toast('标记失败，请重试~');
-            }
 
-            Messages.update({_id: data.msg_id, 'images.url': $img.attr('src')}, {
-              $set: {
-                'images.$.label': name,
-                'images.$.result': ''
+          Meteor.call('getPeopleIdByName', name, data.people_uuid, function(err, res){
+            if(err)
+              return PUB.toast('标记成功~');
+            if(!res)
+              res = {uuid: data.people_uuid, id: data.people_id};
+
+            PeopleHis.update({_id: data.people_his_id}, {
+              $set: {fix_name: name, msg_to: data.to},
+              $push: {fix_names: {
+                _id: new Mongo.ObjectID()._str,
+                name: name,
+                userId: Meteor.userId(),
+                userName: Meteor.user().profile && Meteor.user().profile.fullname ? Meteor.user().profile.fullname : Meteor.user().username,
+                userIcon: Meteor.user().profile && Meteor.user().profile.icon ? Meteor.user().profile.icon : '/userPicture.png',
+                fixTime: new Date()
+              }}
+            }, function(err, num){
+              if(err || num <= 0){
+                console.log(err);
+                return PUB.toast('标记失败，请重试~');
               }
-            });
 
-            onFixName(data.id, data.uuid, data.people_his_id, $img.attr('src'), data.to, name, 'check');
-            PUB.toast('标记成功~');
+              Messages.update({_id: data.msg_id, 'images.url': $img.attr('src')}, {
+                $set: {
+                  'images.$.label': name,
+                  'images.$.result': ''
+                }
+              });
+
+              onFixName(data.people_id, data.people_uuid, data.people_his_id, $img.attr('src'), data.to, name, 'check');
+              PUB.toast('标记成功~');
+              sendMqttMessage('trainset', {url: $img.attr('src'), person_id: '', device_id: data.people_uuid, face_id: res.id, drop: false});
+            });
           });
         });
       else
@@ -434,7 +458,7 @@ Template._simpleChatToChatLabel.events({
               }
             });
 
-            onFixName(data.id, data.uuid, data.people_his_id, $img.attr('src'), data.to, name, 'remove');
+            onFixName(data.people_id, data.people_uuid, data.people_his_id, $img.attr('src'), data.to, name, 'remove');
             PUB.toast('删除成功~');
           });
         });

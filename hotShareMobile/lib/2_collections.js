@@ -35,7 +35,6 @@ if(Meteor.isServer){
   PeopleHis.allow({
     update: function (userId, doc, fields, modifier) {
       var user = Meteor.users.findOne({_id: userId})
-
       if(modifier['$set'].fix_name){
         var people = People.find({id: doc.id, uuid: doc.uuid});
         if(people && people.name)
@@ -49,6 +48,18 @@ if(Meteor.isServer){
   Meteor.publish('people_new', function(){
     return People.find({}, {sort: {updateTime: -1}, limit: 50});
   });
+  Meteor.methods({
+    getPeopleIdByName: function(name, uuid){
+      var people = People.findOne({name: name, uuid: uuid}, {sort: {updateTime: -1}});
+      if(!people)
+        return '';
+      
+      return {uuid: people.uuid, id: people.id};
+    }
+  });
+
+  // People.remove({});
+  // console.log(People.find({name: '桂富波'}).fetch());
 }
 
 GetStringByteLength = function(str){
