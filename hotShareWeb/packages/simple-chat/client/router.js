@@ -113,14 +113,19 @@ var onFixName = function(id, uuid, his_id, url, to, value, type){
   switch(type){
     case 'label':
       msg.text = '此照片是"' + value + '" ~';
+      Messages.insert(msg);
       sendMqttMessage('workai', msg);
+      // sendMqttMessage('trainset', {url: url, person_id: '', uuid: uuid, id: id});
       break;
     case 'check':
       msg.text = '此照片是"' + value + '" ~';
+      Messages.insert(msg);
       sendMqttMessage('workai', msg);
+      // sendMqttMessage('trainset', {url: url, person_id: '', uuid: uuid, id: id});
       break;
     case 'remove':
       msg.text = '删除照片: ' + value;
+      Messages.insert(msg);
       sendMqttMessage('workai', msg);
       break;
   }
