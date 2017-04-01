@@ -1,7 +1,7 @@
 if Meteor.isServer
   Meteor.startup ()->
     @JPush = Meteor.npmRequire "jpush-sdk"
-    @client = @JPush.buildClient '50e8f00890be941f05784e6f', 'ec9940bbc7fcc646fc492ed8'
+    @client = @JPush.buildClient 'c8efd2f69c6cd251faa9252b', '6ca8461df032f8bae4afd11d'
   URL = Meteor.npmRequire('url')
   http = Meteor.npmRequire('http')
   Fiber = Meteor.npmRequire('fibers')
@@ -228,8 +228,8 @@ if Meteor.isServer
         # )
 
   @pushnotification = (type, doc, userId)->
-    return _pushnotification(type, doc, userId)
-    # console.log "type:"+type
+    #return _pushnotification(type, doc, userId)
+    console.log "type:"+type
     if type is "palsofavourite"
       content = '有人也赞了此故事:《' + doc.title + '》'
       extras = {
