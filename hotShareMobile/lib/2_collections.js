@@ -43,59 +43,6 @@ if(Meteor.isServer){
         else
           People.update({id: doc.id, uuid: doc.uuid}, {$set: {name: modifier['$set'].fix_name, updateTime: new Date()}});
       }
-
-      if (!modifier['$set'].to)
-        return true;
-      
-      if(modifier['$set'].fix_name){
-        sendMqttMessage('workai', {
-          form: {
-            id: userId,
-            name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
-            icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png'
-          },
-          to: modifier['$set'].to,
-          images: [
-            {
-              _id: new Mongo.ObjectID()._str,
-              people_his_id: doc._id,
-              url: doc.aliyun_url
-            }
-          ],
-          to_type: "group",
-          type: "text",
-          text: '此照片是"' + modifier['$set'].fix_name + '" ~',
-          create_time: new Date(),
-          people_id: doc.id,
-          people_uuid: doc.uuid,
-          people_his_id: doc._id,
-          is_read: false
-        });
-      }else if(modifier['$push'] && modifier['$push'].fix_names && modifier['$push'].fix_names.fixType === 'remove'){
-        sendMqttMessage('workai', {
-          form: {
-            id: userId,
-            name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
-            icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png'
-          },
-          to: modifier['$set'].to,
-          images: [
-            {
-              _id: new Mongo.ObjectID()._str,
-              people_his_id: doc._id,
-              url: doc.aliyun_url
-            }
-          ],
-          to_type: "group",
-          type: "text",
-          text: '删除照片: ' + modifier['$push'].fix_names.removeText,
-          create_time: new Date(),
-          people_id: doc.id,
-          people_uuid: doc.uuid,
-          people_his_id: doc._id,
-          is_read: false
-        });
-      }
       return true;
     }
   });
