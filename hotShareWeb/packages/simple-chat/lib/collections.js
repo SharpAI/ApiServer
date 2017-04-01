@@ -15,8 +15,8 @@ if(Meteor.isServer){
   Groups = new Mongo.Collection(PRFIX + 'groups', options);
   GroupUsers = new Mongo.Collection(PRFIX + 'groups_users', options);
 }else{
-  Messages = new Mongo.Collection(PRFIX + 'messages');
-  MsgSession = new Mongo.Collection(PRFIX + 'msg_session');
+  Messages = new Mongo.Collection(PRFIX + 'messages', {connection: null});
+  MsgSession = new Mongo.Collection(PRFIX + 'msg_session', {connection: null});
   Groups = new Mongo.Collection(PRFIX + 'groups');
   GroupUsers = new Mongo.Collection(PRFIX + 'groups_users');
 
