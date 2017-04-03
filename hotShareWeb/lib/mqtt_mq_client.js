@@ -27,4 +27,18 @@ if(Meteor.isClient){
             })
         }
     }
+    uninitMQTT = function(){
+        if(mqtt_connection){
+            mqtt_connection.end()
+        }
+    }
+    Deps.autorun(function(){
+        if(Meteor.userId()){
+            Meteor.setTimeout(function(){
+                initMQTT(Meteor.userId())
+            },1000)
+        } else {
+            uninitMQTT()
+        }
+    });
 }
