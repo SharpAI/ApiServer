@@ -21,5 +21,10 @@ if(Meteor.isClient){
                 }
             });
         });
+        sendMqttMessage=function(topic,message){
+            Meteor.defer(function(){
+                mqtt_connection.publish(topic,JSON.stringify(message),{qos:2})
+            })
+        }
     }
 }
