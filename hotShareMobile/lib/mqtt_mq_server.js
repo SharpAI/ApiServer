@@ -1,22 +1,17 @@
 /**
  * Created by simba on 5/12/16.
  */
-
-if(true){
-    Meteor.startup(function(){
+if(Meteor.isServer){
+    initMQTT = function(clientId){
+        var mqttOptions = {
+            clean:false,
+            keepalive:30,
+            reconnectPeriod:20*1000,
+            clientId:clientId
+        }
         mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80');
         mqtt_connection.on('connect',function(){
             console.log('Connected to mqtt server');
-            if (Meteor.isClient) {
-              mqtt_connection.subscribe('workai');
-              mqtt_connection.on('message', function(topic, message) {
-                console.log('on mqtt message topic: ' + topic + ', message: ' + message.toString());
-                if (topic == 'workai') {
-                  console.log('workai message: ' + message.toString());
-                  SimpleChat.onMqttMessage(message.toString());
-                }
-              });
-            }
         });
         sendMqttMessage=function(topic,message){
             Meteor.defer(function(){
@@ -49,5 +44,9 @@ if(true){
                 })
             }catch(e){}
         }
+    }
+
+    Meteor.startup(function(){
+        initMQTT(null);
     })
 }
