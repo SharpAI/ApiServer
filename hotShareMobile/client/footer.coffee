@@ -68,13 +68,15 @@ if Meteor.isClient
       if channel is channelName
         return true
     display_footer:()->
+      show_foot_url = ['/', '/addressBook', '/explore', '/user']
       console.log "document_body_scrollTop=" + Session.get("document_body_scrollTop")
       setTimeout(
         ()->
             document.body.scrollTop = Session.get("document_body_scrollTop")
         0
       )
-      Meteor.isCordova
+      return show_foot_url.indexOf(location.pathname) isnt -1
+      # Meteor.isCordova
     fade:->
       if isAndroidFunc()
          ''
