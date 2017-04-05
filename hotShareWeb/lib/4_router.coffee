@@ -527,7 +527,7 @@ if Meteor.isServer
 if Meteor.isServer
   workaiId = 'Lh4JcxG7CnmgR3YXe'
   workaiName = 'Actiontec';;
-  
+
   insert_msg2 = (id, url, uuid)->
     people = People.findOne({id: id, uuid: uuid})
     name = if people then people.name else null
@@ -568,7 +568,7 @@ if Meteor.isServer
         is_people: true
         is_read: false
       })
-  
+
   Router.route('/restapi/workai', {where: 'server'}).get(()->
       id = this.params.query.id
       img_url = this.params.query.img_url
@@ -589,5 +589,23 @@ if Meteor.isServer
       unless id and img_url and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
       insert_msg2(id, img_url, uuid)
+      this.response.end('{"result": "ok"}\n')
+    )
+
+  Router.route('/restapi/workai-join-group', {where: 'server'}).get(()->
+      uuid = this.params.query.uuid
+      group_id = this.params.query.group_id
+      console.log '/restapi/workai-join-group get request, uuid:' + uuid + ', group_id:' + group
+      unless uuid and group_id
+        return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
+      this.response.end('{"result": "ok"}\n')
+    ).post(()->
+      if this.request.body.hasOwnProperty('uuid')
+        uuid = this.request.body.uuid
+      if this.request.body.hasOwnProperty('group_id')
+        group_id = this.request.body.group_id
+      console.log '/restapi/workai-join-group post request, uuid:' + uuid + ', group_id:' + group_id
+      unless uuid and group_id
+        return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
       this.response.end('{"result": "ok"}\n')
     )
