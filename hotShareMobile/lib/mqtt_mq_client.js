@@ -22,7 +22,38 @@ if(Meteor.isClient){
             Meteor.defer(function(){
                 mqtt_connection.publish(topic,JSON.stringify(message),{qos:2})
             })
-        }
+        };
+        subscribeMqttGroup=function(group_id) {
+          if (mqtt_connection) {
+            mqtt_connection.subscribe("/msg/g/" + group_id);
+          }
+        };
+        unsubscribeMqttGroup=function(group_id) {
+          if (mqtt_connection) {
+            mqtt_connection.unsubscribe("/msg/g/" + group_id);
+          }
+        };
+        subscribeMqttUser=function(user_id){
+          if (mqtt_connection) {
+            mqtt_connection.subscribe("/msg/u/" + user_id);
+          }
+        };
+        unsubscribeMqttUser=function(user_id){
+          if (mqtt_connection) {
+            mqtt_connection.unsubscribe("/msg/u/" + user_id);
+          }
+        };
+        sendMqttMessage=function(topic,message){
+            Meteor.defer(function(){
+                mqtt_connection.publish(topic,JSON.stringify(message),{qos:2})
+            })
+        };
+        sendMqttGroupMessage=function(group_id, message) {
+          sendMqttMessage("/msg/g/" + group_id, message);
+        };
+        sendMqttUserMessage=function(user_id, message) {
+          sendMqttMessage("/msg/u/" + user_id, message);
+        };
     }
     uninitMQTT = function(){
         if(mqtt_connection){
