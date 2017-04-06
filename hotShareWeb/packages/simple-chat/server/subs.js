@@ -46,6 +46,7 @@ Meteor.publish('get-group-user-with-limit', function(id,limit){
 
 Meteor.publish("group-user-counter",function(id){
   Counts.publish(this, 'groupsUserCountBy-'+id, GroupUsers.find({group_id: id}), {reactive: true });
+});
 
 Meteor.publish('get-my-group', function(user_id){
   return GroupUsers.find({user_id: user_id});

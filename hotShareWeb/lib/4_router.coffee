@@ -534,11 +534,24 @@ if Meteor.isServer
 
 if Meteor.isServer
   workaiId = 'Lh4JcxG7CnmgR3YXe'
-  workaiName = 'Actiontec';;
+  workaiName = 'Actiontec'
+
+  createDeviceByUUID = (uuid)->
+    device = Devices.findOne({uuid: uuid})
+    if !device
+      device = {
+        _id: new Mongo.ObjectID()._str
+        uuid: uuid,
+        name: '设备 ' + (Devices.find({}).count() + 1)
+        createAt: new Date()
+      }
+      Devices.insert(device)
+    return device
 
   insert_msg2 = (id, url, uuid)->
     people = People.findOne({id: id, uuid: uuid})
     name = if people then people.name else null
+    device = createDeviceByUUID(uuid)
 
     if !people
       people = {_id: new Mongo.ObjectID()._str, id: id, uuid: uuid,name: name,embed: null,local_url: null,aliyun_url: url}
@@ -618,6 +631,26 @@ if Meteor.isServer
       console.log '/restapi/workai-join-group get request, uuid:' + uuid + ', group_id:' + group
       unless uuid and group_id
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
+
+      device = createDeviceByUUID(uuid)
+      user = Meteor.users.findOne({username: uuid})
+      if !user
+        userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/userPicture.png'}})
+        user = Meteor.users.findOne({_id: userId})
+      group = SimpleChat.Groups.findOne({_id: group_id})
+      groupUser = SimpleChat.GroupUsers.findOne({user_id: user._id, group_id: group_id})
+      if !groupUser
+        SimpleChat.GroupUsers.insert({
+          group_id: group_id
+          group_name: group.name
+          group_icon: group.icon
+          user_id: user._id
+          user_name: if user.profile and user.profile.fullname then user.profile.fullname else user.username
+          user_icon: if user.profile and user.profile.icon then user.profile.icon else '/userPicture.png'
+          create_time: new Date()
+        });
+      console.log('user:', user)
+      console.log('device:', device)
       this.response.end('{"result": "ok"}\n')
     ).post(()->
       if this.request.body.hasOwnProperty('uuid')
@@ -627,5 +660,23 @@ if Meteor.isServer
       console.log '/restapi/workai-join-group post request, uuid:' + uuid + ', group_id:' + group_id
       unless uuid and group_id
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
+      
+      device = createDeviceByUUID(uuid)
+      user = Meteor.users.findOne({username: uuid})
+      if !user
+        userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/userPicture.png'}})
+        user = Meteor.users.findOne({_id: userId})
+      group = SimpleChat.Groups.findOne({_id: group_id})
+      groupUser = SimpleChat.GroupUsers.findOne({user_id: user._id})
+      if !groupUser
+        SimpleChat.GroupUsers.insert({
+          group_id: group_id
+          group_name: group.name
+          group_icon: group.icon
+          user_id: user._id
+          user_name: if user.profile and user.profile.fullname then user.profile.fullname else user.username
+          user_icon: if user.profile and user.profile.icon then user.profile.icon else '/userPicture.png'
+          create_time: new Date()
+        });
       this.response.end('{"result": "ok"}\n')
     )
