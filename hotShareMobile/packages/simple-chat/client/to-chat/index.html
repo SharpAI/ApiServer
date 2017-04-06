@@ -6,7 +6,7 @@
         <script type="text/javascript">
         $('.header .back').click(function(){
           var historyArr = Session.get("history_view");
-          if (historyArr && historyArr.length()>0) {
+          if (historyArr && historyArr.length > 0) {
             PUB.back();
           }
           else{
