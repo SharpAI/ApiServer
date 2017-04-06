@@ -563,7 +563,7 @@ if Meteor.isServer
       if err or !_id
         return
 
-      sendMqttMessage('workai', {
+      sendMqttMessage('/msg/g/workai', {
         _id: new Mongo.ObjectID()._str
         form: {
           id: workaiId

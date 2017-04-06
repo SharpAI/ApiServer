@@ -589,7 +589,7 @@ Template._simpleChatToChatLayout.events({
     };
     Messages.insert(msg, function(){
       $('.box').scrollTop($('.box ul').height());
-      sendMqttMessage('workai', msg);
+      sendMqttGroupMessage(msg.to.id, msg);
     });
 
     $('.input-text').val('');
@@ -664,12 +664,13 @@ window.___message = {
     });
   },
   update: function(id, url){
+    var msg = Messages.find({_id: id});
     Messages.update({_id: id}, {$set: {
       image: url
     }}, function(){
       console.log('update id:', id);
       $('.box').scrollTop($('.box ul').height());
-      sendMqttMessage('workai', Messages.findOne({_id: id}));
+      sendMqttGroupMessage(msg.to.id, Messages.findOne({_id: id}));
     });
   },
   remove: function(id){
@@ -680,7 +681,7 @@ window.___message = {
   }
 };
 
-SimpleChat.onMqttMessage = function(msg) {
+SimpleChat.onMqttMessage = function(topic, msg) {
   console.log('SimpleChat.onMqttMessage');
   var msgObj = JSON.parse(msg);
   var last_msg = Messages.findOne({}, {sort: {create_time: -1}});
