@@ -2,7 +2,7 @@ Meteor.publish('get-messages', function(type, to){
   var slef = this;
   var user = Meteor.users.findOne(slef.userId);
   var where = null;
-  
+
   if(type === 'group')
     where = {'to.id': to, to_type: type}; // 没有判断是否在群的处理。自动加群
   else
@@ -34,4 +34,8 @@ Meteor.publish('get-msg-session', function(){
 
 Meteor.publish('get-group', function(id){
   return Groups.find({_id: id});
+});
+
+Meteor.publish('get-my-group', function(user_id){
+  return GroupUsers.find({user_id: user_id});
 });

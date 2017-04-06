@@ -12,13 +12,10 @@ if(Meteor.isClient){
         mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80');
         mqtt_connection.on('connect',function(){
             console.log('Connected to mqtt server');
-            mqtt_connection.subscribe('workai');
+            //mqtt_connection.subscribe('workai');
             mqtt_connection.on('message', function(topic, message) {
                 console.log('on mqtt message topic: ' + topic + ', message: ' + message.toString());
-                if (topic == 'workai') {
-                    console.log('workai message: ' + message.toString());
-                    SimpleChat.onMqttMessage(message.toString());
-                }
+                SimpleChat.onMqttMessage(topic, message.toString());
             });
         });
         sendMqttMessage=function(topic,message){
@@ -32,10 +29,19 @@ if(Meteor.isClient){
             mqtt_connection.end()
         }
     }
+    subscribeMyChatGroups = function() {
+      Meteor.subscribe('get-my-group', Meteor.userId(), function() {
+        userGroups = SimpleChat.GroupUsers.find({user_id: Meteor.userId()});
+        userGroups.forEach(function(userGroup) {
+          subscribeMqttGroup(userGroup.group_id);
+        });
+      });
+    }
     Deps.autorun(function(){
         if(Meteor.userId()){
             Meteor.setTimeout(function(){
-                initMQTT(Meteor.userId())
+                initMQTT(Meteor.userId());
+                subscribeMyChatGroups();
             },1000)
         } else {
             uninitMQTT()

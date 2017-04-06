@@ -12,30 +12,63 @@ if(Meteor.isClient){
         mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80');
         mqtt_connection.on('connect',function(){
             console.log('Connected to mqtt server');
-            mqtt_connection.subscribe('workai');
+            //mqtt_connection.subscribe('workai');
             mqtt_connection.on('message', function(topic, message) {
                 console.log('on mqtt message topic: ' + topic + ', message: ' + message.toString());
-                if (topic == 'workai') {
-                    console.log('workai message: ' + message.toString());
-                    SimpleChat.onMqttMessage(message.toString());
-                }
+                SimpleChat.onMqttMessage(topic, message.toString());
             });
         });
+        subscribeMqttGroup=function(group_id) {
+          if (mqtt_connection) {
+            mqtt_connection.subscribe("/msg/g/" + group_id);
+          }
+        };
+        unsubscribeMqttGroup=function(group_id) {
+          if (mqtt_connection) {
+            mqtt_connection.unsubscribe("/msg/g/" + group_id);
+          }
+        };
+        subscribeMqttUser=function(user_id){
+          if (mqtt_connection) {
+            mqtt_connection.subscribe("/msg/u/" + user_id);
+          }
+        };
+        unsubscribeMqttUser=function(user_id){
+          if (mqtt_connection) {
+            mqtt_connection.unsubscribe("/msg/u/" + user_id);
+          }
+        };
         sendMqttMessage=function(topic,message){
             Meteor.defer(function(){
                 mqtt_connection.publish(topic,JSON.stringify(message),{qos:2})
             })
-        }
+        };
+        sendMqttGroupMessage=function(group_id, message) {
+          sendMqttMessage("/msg/g/" + group_id, message);
+        };
+        sendMqttUserMessage=function(user_id, message) {
+          sendMqttMessage("/msg/u/" + user_id, message);
+        };
     }
     uninitMQTT = function(){
         if(mqtt_connection){
-            mqtt_connection.end()
+            mqtt_connection.end();
+            mqtt_connection = null;
         }
+    }
+    subscribeMyChatGroups = function() {
+      Meteor.subscribe('get-my-group', Meteor.userId(), function() {
+        userGroups = SimpleChat.GroupUsers.find({user_id: Meteor.userId()});
+        userGroups.forEach(function(userGroup) {
+          subscribeMqttGroup(userGroup.group_id);
+        });
+      });
     }
     Deps.autorun(function(){
         if(Meteor.userId()){
             Meteor.setTimeout(function(){
-                initMQTT(Meteor.userId())
+                initMQTT(Meteor.userId());
+                subscribeMyChatGroups();
             },1000)
         } else {
             uninitMQTT()
