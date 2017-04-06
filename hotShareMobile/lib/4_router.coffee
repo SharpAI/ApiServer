@@ -155,7 +155,7 @@ if Meteor.isClient
       return
     Router.route '/groupsList',()->
       if Meteor.isCordova is true
-        Meteor.subscribe("get-user-group",Meteor.userId())
+        Meteor.subscribe("get-my-group",Meteor.userId())
         this.render 'groupsList'
         Session.set 'channel','groupsList'
       return

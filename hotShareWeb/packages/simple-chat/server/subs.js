@@ -36,8 +36,12 @@ Meteor.publish('get-group', function(id){
   return Groups.find({_id: id});
 });
 
-Meteor.publish('get-user-group',function(userId){
-  return GroupUsers.find({user_id: userId});
+// Meteor.publish('get-user-group',function(userId){
+//   return GroupUsers.find({user_id: userId});
+// });
+
+Meteor.publish('get-group-user', function(id){
+  return GroupUsers.find({group_id: id});
 });
 
 Meteor.publish('get-group-user-with-limit', function(id,limit){
