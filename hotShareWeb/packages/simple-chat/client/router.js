@@ -79,7 +79,7 @@ var get_people_names = function(){
       if(result.indexOf(names[i].name) === -1)
         result.push(names[i].name);
     }
-  }  
+  }
 
   return result;
 };
@@ -153,7 +153,7 @@ Template._simpleChatToChatLabelBox.events({
     var index = 0;
     var btns = t.$('.my-btn');
     var value = t.$('select').val() || t.$('input').val();
-    
+
     for(var i=0;i<btns.length;i++){
       if(btns[i].innerHTML === $(e.currentTarget).html()){
         index = i;
@@ -682,7 +682,8 @@ window.___message = {
 };
 
 SimpleChat.onMqttMessage = function(topic, msg) {
-  console.log('SimpleChat.onMqttMessage');
+  console.log('SimpleChat.onMqttMessage, topic: ' + topic + ', msg: ' + msg);
+  var group = topic.substring(topic.lastIndexOf('/') + 1);
   var msgObj = JSON.parse(msg);
   var last_msg = Messages.findOne({}, {sort: {create_time: -1}});
 
@@ -690,7 +691,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
     return;
   if(msgObj.create_time)
     msgObj.create_time = new Date(msgObj.create_time);
-    
+
   if (last_msg && last_msg.is_people === true){
     if(!msgObj.wait_lable && msgObj.images[0].label === last_msg.images[0].label){
       Messages.update({_id: last_msg._id}, {

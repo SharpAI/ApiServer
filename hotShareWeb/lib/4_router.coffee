@@ -573,12 +573,12 @@ if Meteor.isServer
         sendMqttMessage('/msg/g/'+ userGroup.group_id, {
           _id: new Mongo.ObjectID()._str
           form: {
-            id: workaiId
-            name: workaiName
+            id: user._id
+            name: user.username
             icon: '/userPicture.png'
           }
           to: {
-            id: workaiId
+            id: userGroup.group_id
             name: ""
             icon: ""
           }
