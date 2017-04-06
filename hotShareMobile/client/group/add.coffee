@@ -27,8 +27,8 @@ if Meteor.isClient
       Session.equals('followersCollection','loading')
     loadError:->
       Session.equals('followersCollection','error')
-    is_selected: (userId)->
-      return _.pluck(users.get(), 'userId').indexOf(userId) isnt -1
+    is_selected: (followerId)->
+      return _.pluck(users.get(), 'followerId').indexOf(followerId) isnt -1
   Template.groupAdd.events
     'click .leftButton':(event)->
       history.go(-1)
@@ -47,6 +47,7 @@ if Meteor.isClient
         )
         history.go(-1)
     'click .followItem': (event)->
+      # console.log(this);
       $i = $(event.currentTarget).find('i');
       selected = users.get()
       if _.pluck(selected, 'followerId').indexOf(this.followerId) is -1
