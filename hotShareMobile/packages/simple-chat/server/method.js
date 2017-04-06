@@ -17,7 +17,8 @@ Meteor.methods({
       describe: '',
       create_time: new Date(),
       last_text: '',
-      last_time: new Date()
+      last_time: new Date(),
+      barcode: rest_api_url + '/restapi/workai-group-qrcode?group_id=' + id
     }, function(err){
       if(ids.indexOf(slef.userId) === -1)
         ids.splice(0, 0, slef.userId);

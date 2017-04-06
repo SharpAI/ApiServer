@@ -245,6 +245,7 @@ if Meteor.isClient
 if Meteor.isServer
   request = Meteor.npmRequire('request')
   Fiber = Meteor.npmRequire('fibers')
+  QRImage = Meteor.npmRequire('qr-image')
 
   ###
   Router.route '/posts/:_id', {
@@ -590,6 +591,18 @@ if Meteor.isServer
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
       insert_msg2(id, img_url, uuid)
       this.response.end('{"result": "ok"}\n')
+    )
+
+  Router.route('/restapi/workai-group-qrcode', {where: 'server'}).get(()->
+    group_id = this.params.query.group_id
+    console.log '/restapi/workai-group-qrcode get request, group_id: ', group_id
+    try
+      img = QRImage.image(group_id, {size: 10})
+      this.response.writeHead(200, {'Content-Type': 'image/png'})
+      img.pipe(this.response)
+    catch
+      this.response.writeHead(414, {'Content-Type': 'text/html'})
+      this.response.end('<h1>414 Request-URI Too Large</h1>')
     )
 
   Router.route('/restapi/workai-join-group', {where: 'server'}).get(()->
