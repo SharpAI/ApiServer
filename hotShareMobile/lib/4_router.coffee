@@ -153,6 +153,19 @@ if Meteor.isClient
         this.render 'addressBook'
         Session.set 'channel','addressBook'
       return
+    Router.route '/groupsList',()->
+      if Meteor.isCordova is true
+        Meteor.subscribe("get-user-group",Meteor.userId())
+        this.render 'groupsList'
+        Session.set 'channel','groupsList'
+      return
+    Router.route '/groupsProfile/:_id',()->
+      limit = withShowGroupsUserMaxCount || 29;
+      Meteor.subscribe("get-group-user-with-limit",this.params._id,limit)
+      console.log(this.params._id)
+      Session.set('groupsId',this.params._id)
+      this.render 'groupsProfile'
+      return
     Router.route '/explore',()->
       if Meteor.isCordova is true
         this.render 'explore'

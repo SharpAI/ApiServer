@@ -321,7 +321,6 @@ Template._simpleChatToChatLabel.events({
         if(!res)
           res = {uuid: data.people_uuid, id: data.people_id};
 
-        console.log(res);
         PeopleHis.update({_id: data.people_his_id}, {
           $set: {fix_name: name, msg_to: data.to},
           $push: {fix_names: {
@@ -489,7 +488,6 @@ var loadScript = function(url, callback){
   script.src = url;
   document.getElementsByTagName('head')[0].appendChild(script);
 }
-
 Template._simpleChatToChatLayout.onRendered(function(){
   if(Meteor.isCordova){
     $('#container').click(function(){
@@ -537,6 +535,10 @@ Template._simpleChatToChatLayout.helpers({
   },
   loading: function(){
     return is_loading.get();
+  },
+  isGroups:function(){
+    var data = Blaze.getData(Blaze.getView(document.getElementsByClassName('simple-chat')[0]));
+    return data.is_group();
   }
 });
 
@@ -592,7 +594,12 @@ Template._simpleChatToChatLayout.events({
 
     $('.input-text').val('');
     return false;
+  },
+  'click .groupsProfile':function(e,t){
+    var data = Blaze.getData(Blaze.getView(document.getElementsByClassName('simple-chat')[0]));
+    Router.go('/groupsProfile/'+data.id);
   }
+
 });
 
 Template._simpleChatToChatItem.helpers({

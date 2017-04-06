@@ -3,9 +3,22 @@
     <div class="msg-box">
       <div class="header">
         <div class="left back"></div>
-        <script type="text/javascript">$('.header .back').click(function(){history.go(-1);})</script>
+        <script type="text/javascript">
+        $('.header .back').click(function(){
+          var historyArr = Session.get("history_view");
+          if (historyArr && historyArr.length()>0) {
+            PUB.back();
+          }
+          else{
+            history.go(-1);
+          }
+        })
+        </script>
         <span>{{title}}</span>
-        <span>聊天室</span>
+        {{#if isGroups}}
+          <div class="right groupsProfile"></div>
+        {{/if}}
+
         <!--<div class="right profile"></div>-->
         {{#if loading}}
         <div class="loading"></div>

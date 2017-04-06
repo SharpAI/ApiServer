@@ -70,5 +70,5 @@ if Meteor.isClient
       console.log this._id
       url = '/simple-chat/to/group?id='+this._id
       setTimeout ()->
-        Router.go(url)
+        PUB.page(url)
       ,animatePageTrasitionTimeout

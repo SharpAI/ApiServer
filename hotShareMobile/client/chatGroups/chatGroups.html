@@ -3,7 +3,7 @@
   <div class="chatGroups">
     <div id="wrapper">
       {{#if hasSysMessages}}
-        <div id="sysBell" class="eachViewer groupsItem">
+        <div id="sysBell" class="eachViewer">
           <img class="icon" src="/sysMessages.png">
           <span class="groupsName">系统消息</span>
           {{#if showRedSpot}}
@@ -39,7 +39,7 @@
           </div>
         {{/each}}
         {{#each myChatGroups}}
-          <div id="{{_id}}" class="groupsItem">
+          <div id="{{_id}}" class="groupsItem eachViewer">
               <img class="icon" src="{{followerIcon}}">
               <span class="groupsName">{{followerName}}</span>
               <div class="newMessage">{{count}}</div>

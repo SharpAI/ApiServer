@@ -72,8 +72,7 @@ if Meteor.isClient
       Router.go('/group/add')
       #ScanBarcodeByBarcodeScanner()
     'click #addNewFriends':(event)->
-      console.log 'click #addNewFriends'
-      #ScanBarcodeByBarcodeScanner()
+      PUB.page '/searchFollow'
     'click #scanbarcode':(event)->
       ScanBarcodeByBarcodeScanner()
 

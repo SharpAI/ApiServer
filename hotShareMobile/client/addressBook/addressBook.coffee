@@ -29,11 +29,11 @@ if Meteor.isClient
     'click #follow':(event)->
       PUB.page('/searchFollow');
     'click .newFriends':(event)->
-      #PUB.page('/bell')
+      #PUB.page('/newFriendsList')
     'click .groupslist':(event)->
-      #PUB.page('/bell')
+      PUB.page('/groupsList')
     'click .recentlyPeople':(event)->
-      #PUB.page('/bell')
+      #PUB.page('/recentlyList')
     'click .followItem': (event)->
       console.log 'click .followItem'
       # if isIOS

@@ -1191,3 +1191,5 @@ if Meteor.isServer
             }}, {multi: true})
           1000
         )
+      'updateGroupName':(groupId,name)->
+        SimpleChat.Groups.update({_id:groupId},{$set:{name:name}})

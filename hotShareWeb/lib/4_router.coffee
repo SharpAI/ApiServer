@@ -242,6 +242,13 @@ if Meteor.isClient
   Router.route 'recommendStory',()->
     this.render 'recommendStory'
     return
+  Router.route '/groupsProfile/:_id',()->
+    limit = withShowGroupsUserMaxCount || 29;
+    Meteor.subscribe("get-group-user-with-limit",this.params._id,limit)
+    console.log(this.params._id)
+    Session.set('groupsId',this.params._id)
+    this.render 'groupsProfile'
+    return
 if Meteor.isServer
   request = Meteor.npmRequire('request')
   Fiber = Meteor.npmRequire('fibers')
