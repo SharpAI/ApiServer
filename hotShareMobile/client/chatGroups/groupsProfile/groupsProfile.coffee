@@ -43,13 +43,14 @@ if Meteor.isClient
     moreResults:()->
       limit = withShowGroupsUserMaxCount || 29;
       return Counts.get('groupsUserCountBy-'+Session.get('groupsId')) > limit
-      
+    isMobile:()->
+      Meteor.isCordova
 
   Template.groupUsers.events
     'click #addUserInGroup':(event)->
-
+      Session.set("groupsProfileMenu","inviteFriendIntoGroup")
     'click #showAllResults':(event)->
-      
+      Session.set("groupsProfileMenu","groupAllUser")
     'click .userItem': (event)->
       #Session.set("groupsProfileMenu","setGroupname")
    

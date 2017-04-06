@@ -45,9 +45,12 @@
                     <div class="userName">{{user_name}}</div>
                 </li>
                 {{/each}}
-                <li>
-                    <span class="eachViewer" id="addUserInGroup"></span>
-                </li>
+                {{#if isMobile}}
+                    <li>
+                        <img id="addUserInGroup" src="/addUser.png">
+                        <div class="userName" style="color: white">添加</div>
+                    </li>
+                {{/if}}
             </ul>
             {{#if moreResults}}
             <div id="showAllResults">
