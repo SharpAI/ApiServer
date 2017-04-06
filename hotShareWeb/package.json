@@ -6,7 +6,6 @@
   },
   "dependencies": {
     "async": "^2.1.5",
-    "bcrypt": "^0.8.7",
-    "qr-image": "3.2.0"
+    "bcrypt": "^0.8.7"
   }
 }
