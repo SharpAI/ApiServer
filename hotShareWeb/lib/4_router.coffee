@@ -563,32 +563,40 @@ if Meteor.isServer
       if err or !_id
         return
 
-      sendMqttMessage('/msg/g/workai', {
-        _id: new Mongo.ObjectID()._str
-        form: {
-          id: workaiId
-          name: workaiName
-          icon: '/userPicture.png'
-        }
-        to: {
-          id: workaiId
-          name: ""
-          icon: ""
-        }
-        images: [
-          {_id: new Mongo.ObjectID()._str, people_his_id: _id, url: url, label: name} # 暂一次只能发一张图
-        ]
-        to_type: "group"
-        type: "text"
-        text: if !name then '['+uuid+','+id+']: -> 需要标注' else name + ' 加入聊天室'
-        create_time: new Date()
-        people_id: id
-        people_uuid: uuid
-        people_his_id: _id
-        wait_lable: !name
-        is_people: true
-        is_read: false
-      })
+      user = Meteor.users.findOne({username: uuid})
+      unless user
+        return
+      userGroups = SimpleChat.GroupUsers.find({user_id: user._id})
+      unless userGroups
+        return
+      userGroups.forEach((userGroup)->
+        sendMqttMessage('/msg/g/'+ userGroup.group_id, {
+          _id: new Mongo.ObjectID()._str
+          form: {
+            id: workaiId
+            name: workaiName
+            icon: '/userPicture.png'
+          }
+          to: {
+            id: workaiId
+            name: ""
+            icon: ""
+          }
+          images: [
+            {_id: new Mongo.ObjectID()._str, people_his_id: _id, url: url, label: name} # 暂一次只能发一张图
+          ]
+          to_type: "group"
+          type: "text"
+          text: if !name then '['+uuid+','+id+']: -> 需要标注' else name + ' 加入聊天室'
+          create_time: new Date()
+          people_id: id
+          people_uuid: uuid
+          people_his_id: _id
+          wait_lable: !name
+          is_people: true
+          is_read: false
+        })
+      )
 
   Router.route('/restapi/workai', {where: 'server'}).get(()->
       id = this.params.query.id
@@ -660,7 +668,7 @@ if Meteor.isServer
       console.log '/restapi/workai-join-group post request, uuid:' + uuid + ', group_id:' + group_id
       unless uuid and group_id
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
-      
+
       device = createDeviceByUUID(uuid)
       user = Meteor.users.findOne({username: uuid})
       if !user
