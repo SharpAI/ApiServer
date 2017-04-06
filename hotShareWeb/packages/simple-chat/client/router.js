@@ -32,13 +32,13 @@ Router.route(AppConfig.path + '/to/:type', {
 
     return {
       id: slef.params.query['id'],
-      // title: function(){
-      //   if(slef.params.type != 'user')
-      //     return Groups.findOne({_id: slef.params.query['id']}).name || '聊天室';
+      title: function(){
+        if(slef.params.type != 'user')
+          return Groups.findOne({_id: slef.params.query['id']}).name || '聊天室';
 
-      //   var user = Meteor.users.find({_id: slef.params.query['id']});
-      //   return AppConfig.get_user_name(user);
-      // },
+        var user = Meteor.users.find({_id: slef.params.query['id']});
+        return AppConfig.get_user_name(user);
+      },
       is_group: function(){
         return slef.params.type === 'group';
       },

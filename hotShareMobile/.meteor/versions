@@ -73,6 +73,7 @@ less@2.7.5_1
 livedata@1.0.18
 localstorage@1.0.11
 logging@1.1.15_1
+matb33:collection-hooks@0.8.4
 mdg:camera@1.4.1
 meteor@1.6.0
 meteor-base@1.0.4

@@ -69,7 +69,7 @@ if Meteor.isClient
       $('.app-rate').fadeOut()
       promptForRatingWindowButtonClickHandler(3)
     'click #createNewChatGroups':(event)->
-      console.log  'click #createNewChatGroups'
+      Router.go('/group/add')
       #ScanBarcodeByBarcodeScanner()
     'click #addNewFriends':(event)->
       console.log 'click #addNewFriends'

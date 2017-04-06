@@ -103,6 +103,10 @@ if Meteor.isClient
       this.render 'home'
       Session.set 'channel','home'
       return
+    Router.route '/group/add',()->
+      if Meteor.isCordova is true
+        this.render 'groupAdd'
+      return
     Router.route '/seriesList',()->
       this.render 'seriesList'
       Session.set 'channel','seriesList'

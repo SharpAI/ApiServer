@@ -20,46 +20,16 @@ Meteor.publish('get-messages', function(type, to){
         // Messages.find(where, {limit: limit || 20, sort: {create_time: -1}})
       ];
     case 'group':
-      if(Groups.find({_id: to}).count() <= 0){
-        Groups.insert({
-          _id: to,
-          name: '',
-          icon: '',
-          describe: '',
-          create_time: new Date(),
-          last_text: '',
-          last_time: new Date()
-        }, function(err, id){
-          GroupUsers.insert({
-            group_id: id,
-            group_name: '',
-            group_icon: '',
-            user_id: slef.userId,
-            user_name: AppConfig.get_user_name(user),
-            user_icon: AppConfig.get_user_icon(user),
-            create_time: new Date()
-          });
-        });
-      }else{
-        var group = Groups.findOne({_id: to});
-        if(GroupUsers.find({group_id: to, user_id: slef.userId}).count() <= 0){
-          GroupUsers.insert({
-            group_id: to,
-            group_name: '',
-            group_icon: '',
-            user_id: slef.userId,
-            user_name: AppConfig.get_user_name(user),
-            user_icon: AppConfig.get_user_icon(user),
-            create_time: new Date()
-          });
-        }
-      }
-
+      Meteor.call('create-group', to, null, []);
       return [
-        Groups.find({_id: to}),
+        Groups.find({_id: to}, {limit: 1}),
         // Messages.find(where, {limit: limit || 20, sort: {create_time: -1}})
       ];
   }
+});
+
+Meteor.publish('get-msg-session', function(){
+  return MsgSession.find({user_id: this.userId}, {limit: 20});
 });
 
 Meteor.publish('get-group', function(id){

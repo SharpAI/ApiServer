@@ -23,7 +23,7 @@ Package.onUse(function (api) {
   ], 'client');
 
   api.addFiles(['simple-chat.js', 'lib/collections.js', 'lib/config.js'], ['client', 'server']);
-  api.addFiles(['server/subs.js'], 'server');
+  api.addFiles(['server/subs.js', 'server/method.js'], 'server');
   api.addAssets([
     'images/image.png', 'images/back.png', 'images/account.png', 'images/sendingBmp.gif','images/share.png'
   ], 'client');
