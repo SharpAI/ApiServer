@@ -32,9 +32,9 @@ Router.route(AppConfig.path + '/to/:type', {
       is_group: function(){
         return slef.params.type === 'group';
       },
-      query: Messages.find(where, {sort: {create_time: 1}}),
+      query: Messages.find(where, {sort: {create_time: -1}}),
       type: slef.params.type,
-      messages: Messages.find(where, {limit: list_limit.get(), sort: {create_time: 1}}),
+      messages: Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}),
       loading: is_loading.get()
     };
   }
@@ -799,7 +799,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
   if(msgObj.create_time)
     msgObj.create_time = new Date(msgObj.create_time);
 
-  if (last_msg && last_msg.is_people === true && last_msg.images && last_msg.images.length >= 0){
+  if (last_msg && last_msg.is_people === true && last_msg.images && last_msg.images.length > 0 && msgObj.images && msgObj.images.length > 0){
     if(!msgObj.wait_lable && msgObj.images[0].label === last_msg.images[0].label){
       Messages.update({_id: last_msg._id}, {
         $set: {create_time: msgObj.create_time},
