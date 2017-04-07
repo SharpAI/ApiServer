@@ -717,8 +717,10 @@ Template._simpleChatToChatItem.helpers({
     return images && images.length > 0;
   },
   is_show_time: function(id){
-    var data = list_data.get();
-    return data[_.pluck(data, '_id').indexOf(id)].show_time;
+    try{
+      var data = list_data.get();
+      return data[_.pluck(data, '_id').indexOf(id)].show_time;
+    }catch(ex){return false;}
   },
   get_time: function(id){
     var data = list_data.get();
@@ -797,7 +799,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
   if(msgObj.create_time)
     msgObj.create_time = new Date(msgObj.create_time);
 
-  if (last_msg && last_msg.is_people === true){
+  if (last_msg && last_msg.is_people === true && last_msg.images && last_msg.images.length >= 0){
     if(!msgObj.wait_lable && msgObj.images[0].label === last_msg.images[0].label){
       Messages.update({_id: last_msg._id}, {
         $set: {create_time: msgObj.create_time},
