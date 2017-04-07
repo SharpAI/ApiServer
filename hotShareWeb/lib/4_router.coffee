@@ -637,7 +637,8 @@ if Meteor.isServer
       uuid = this.params.query.uuid
       group_id = this.params.query.group_id
       console.log '/restapi/workai-join-group get request, uuid:' + uuid + ', group_id:' + group
-      unless uuid and group_id
+      unless uuid or group_id
+        console.log '/restapi/workai-join-group get unless resturn'
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
 
       device = createDeviceByUUID(uuid)
@@ -646,7 +647,7 @@ if Meteor.isServer
         userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/userPicture.png'}})
         user = Meteor.users.findOne({_id: userId})
       group = SimpleChat.Groups.findOne({_id: group_id})
-      groupUser = SimpleChat.GroupUsers.findOne({user_id: user._id, group_id: group_id})
+      groupUser = SimpleChat.GroupUsers.findOne({group_id: group_id, user_id: user._id})
       if !groupUser
         SimpleChat.GroupUsers.insert({
           group_id: group_id
@@ -666,7 +667,8 @@ if Meteor.isServer
       if this.request.body.hasOwnProperty('group_id')
         group_id = this.request.body.group_id
       console.log '/restapi/workai-join-group post request, uuid:' + uuid + ', group_id:' + group_id
-      unless uuid and group_id
+      unless uuid or group_id
+        console.log '/restapi/workai-join-group get unless resturn'
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
 
       device = createDeviceByUUID(uuid)
@@ -675,7 +677,7 @@ if Meteor.isServer
         userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/userPicture.png'}})
         user = Meteor.users.findOne({_id: userId})
       group = SimpleChat.Groups.findOne({_id: group_id})
-      groupUser = SimpleChat.GroupUsers.findOne({user_id: user._id})
+      groupUser = SimpleChat.GroupUsers.findOne({group_id: group_id, user_id: user._id})
       if !groupUser
         SimpleChat.GroupUsers.insert({
           group_id: group_id
