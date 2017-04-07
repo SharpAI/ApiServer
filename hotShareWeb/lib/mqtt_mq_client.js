@@ -2,6 +2,7 @@
  * Created by simba on 5/12/16.
  */
 if(Meteor.isClient){
+    mqtt_connection = null;
     initMQTT = function(clientId){
         var mqttOptions = {
             clean:false,
@@ -13,6 +14,7 @@ if(Meteor.isClient){
         mqtt_connection.on('connect',function(){
             console.log('Connected to mqtt server');
             //mqtt_connection.subscribe('workai');
+            subscribeMyChatGroups();
             mqtt_connection.on('message', function(topic, message) {
                 console.log('on mqtt message topic: ' + topic + ', message: ' + message.toString());
                 SimpleChat.onMqttMessage(topic, message.toString());
@@ -20,7 +22,7 @@ if(Meteor.isClient){
         });
         subscribeMqttGroup=function(group_id) {
           if (mqtt_connection) {
-            console.log('sub mqtt:', group_id);
+            console.log('sub mqtt:' + group_id);
             mqtt_connection.subscribe("/msg/g/" + group_id);
           }
         };
@@ -88,7 +90,6 @@ if(Meteor.isClient){
         if(Meteor.userId()){
             Meteor.setTimeout(function(){
                 initMQTT(Meteor.userId());
-                subscribeMyChatGroups();
             },1000)
         } else {
             uninitMQTT()
