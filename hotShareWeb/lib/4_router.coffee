@@ -536,23 +536,11 @@ if Meteor.isServer
   workaiId = 'Lh4JcxG7CnmgR3YXe'
   workaiName = 'Actiontec'
 
-  createDeviceByUUID = (uuid)->
-    device = Devices.findOne({uuid: uuid})
-    if !device
-      device = {
-        _id: new Mongo.ObjectID()._str
-        uuid: uuid,
-        name: '设备 ' + (Devices.find({}).count() + 1)
-        createAt: new Date()
-      }
-      Devices.insert(device)
-    return device
-
   insert_msg2 = (id, url, uuid)->
     people = People.findOne({id: id, uuid: uuid})
     name = PERSON.getName(uuid, id)
     device = PERSON.upsetDevice(uuid)
-
+    
     if !people
       people = {_id: new Mongo.ObjectID()._str, id: id, uuid: uuid,name: name,embed: null,local_url: null,aliyun_url: url}
       People.insert(people)
@@ -641,7 +629,7 @@ if Meteor.isServer
         console.log '/restapi/workai-join-group get unless resturn'
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
 
-      device = createDeviceByUUID(uuid)
+      device = PERSON.upsetDevice(uuid)
       user = Meteor.users.findOne({username: uuid})
       if !user
         userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/userPicture.png'}})
@@ -671,7 +659,7 @@ if Meteor.isServer
         console.log '/restapi/workai-join-group get unless resturn'
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
 
-      device = createDeviceByUUID(uuid)
+      device = PERSON.upsetDevice(uuid)
       user = Meteor.users.findOne({username: uuid})
       if !user
         userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/userPicture.png'}})

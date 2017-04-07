@@ -114,19 +114,22 @@ var onFixName = function(id, uuid, his_id, url, to, value, type){
     case 'label':
       msg.text = '此照片是"' + value + '" ~';
       Messages.insert(msg);
-      sendMqttMessage('workai', msg);
+      sendMqttGroupMessage(msg.to.id, msg);
+      // sendMqttMessage('workai', msg);
       // sendMqttMessage('trainset', {url: url, person_id: '', device_id: uuid, face_id: id});
       break;
     case 'check':
       msg.text = '此照片是"' + value + '" ~';
       Messages.insert(msg);
-      sendMqttMessage('workai', msg);
+      sendMqttGroupMessage(msg.to.id, msg);
+      // sendMqttMessage('workai', msg);
       // sendMqttMessage('trainset', {url: url, person_id: '', device_id: uuid, face_id: id});
       break;
     case 'remove':
       msg.text = '删除照片: ' + value;
       Messages.insert(msg);
-      sendMqttMessage('workai', msg);
+      sendMqttGroupMessage(msg.to.id, msg);
+      // sendMqttMessage('workai', msg);
       sendMqttMessage('trainset', {url: url, person_id: '', device_id: uuid, face_id: id, drop: true});
       break;
   }
@@ -311,15 +314,10 @@ Template._simpleChatToChatLabel.events({
     var data = this;
     var names = get_people_names();
 
-    showBox('提示', ['标记', '返回'], names.length > 0 ? names : ['张三'], '请输入名字，如：张三', function(index, name){
-      if(!name || index != 0)
-        return;
-
-      Meteor.call('getPeopleIdByName', name, data.people_uuid, function(err, res){
+    show_label(function(name){
+      Meteor.call('get-id-by-name', data.people_uuid, name, function(err, res){
         if(err)
           return PUB.toast('标记成功~');
-        if(!res)
-          res = {uuid: data.people_uuid, id: data.people_id};
 
         PeopleHis.update({_id: data.people_his_id}, {
           $set: {fix_name: name, msg_to: data.to},
@@ -344,25 +342,62 @@ Template._simpleChatToChatLabel.events({
           });
 
           onFixName(data.people_id, data.people_uuid, data.people_his_id, $img.attr('src'), data.to, name, 'label');
-          sendMqttMessage('trainset', {url: $img.attr('src'), person_id: '', device_id: data.people_uuid, face_id: res.id, drop: false});
+          sendMqttMessage('trainset', {url: $img.attr('src'), person_id: res.id ? res.id : '', device_id: data.people_uuid, face_id: res ? res.faceId : data.people_id, drop: false});
           PUB.toast('标记成功~');
         });
       });
     });
+
+    // showBox('提示', ['标记', '返回'], names.length > 0 ? names : ['张三'], '请输入名字，如：张三', function(index, name){
+    //   if(!name || index != 0)
+    //     return;
+
+    //   Meteor.call('getPeopleIdByName', name, data.people_uuid, function(err, res){
+    //     if(err)
+    //       return PUB.toast('标记成功~');
+    //     if(!res)
+    //       res = {uuid: data.people_uuid, id: data.people_id};
+
+    //     PeopleHis.update({_id: data.people_his_id}, {
+    //       $set: {fix_name: name, msg_to: data.to},
+    //       $push: {fix_names: {
+    //         _id: new Mongo.ObjectID()._str,
+    //         name: name,
+    //         userId: Meteor.userId(),
+    //         userName: Meteor.user().profile && Meteor.user().profile.fullname ? Meteor.user().profile.fullname : Meteor.user().username,
+    //         userIcon: Meteor.user().profile && Meteor.user().profile.icon ? Meteor.user().profile.icon : '/userPicture.png',
+    //         fixTime: new Date()
+    //       }}
+    //     }, function(err, num){
+    //       if(err || num <= 0){
+    //         return PUB.toast('标记失败，请重试~');
+    //       }
+
+    //       Messages.update({_id: data.msg_id, 'images.url': $img.attr('src')}, {
+    //         $set: {
+    //           'images.$.label': name,
+    //           'images.$.result': ''
+    //         }
+    //       });
+
+    //       onFixName(data.people_id, data.people_uuid, data.people_his_id, $img.attr('src'), data.to, name, 'label');
+    //       sendMqttMessage('trainset', {url: $img.attr('src'), person_id: '', device_id: data.people_uuid, face_id: res.id, drop: false});
+    //       PUB.toast('标记成功~');
+    //     });
+    //   });
+    // });
   },
   'click .btn-yes': function(){
     var $img = $('#swipebox-overlay .slide.current img');
     var data = this;
     var name = data.images[0].label;
 
-    Meteor.call('getPeopleIdByName', name, data.people_uuid, function(err, res){
+    Meteor.call('get-id-by-name', data.people_uuid, name, function(err, res){
       if(err)
         return PUB.toast('标记成功~');
-      if(!res)
-        res = {uuid: data.people_uuid, id: data.people_id};
 
       PeopleHis.update({_id: data.people_his_id}, {
-        $set: {fix_name: name, msg_id: data._id, msg_to: data.to},
+        $set: {fix_name: name, msg_to: data.to},
         $push: {fix_names: {
           _id: new Mongo.ObjectID()._str,
           name: name,
@@ -373,15 +408,49 @@ Template._simpleChatToChatLabel.events({
         }}
       }, function(err, num){
         if(err || num <= 0){
-          console.log(err);
           return PUB.toast('标记失败，请重试~');
         }
 
+        Messages.update({_id: data.msg_id, 'images.url': $img.attr('src')}, {
+          $set: {
+            'images.$.label': name,
+            'images.$.result': ''
+          }
+        });
+
         onFixName(data.people_id, data.people_uuid, data.people_his_id, $img.attr('src'), data.to, name, 'label');
-        sendMqttMessage('trainset', {url: $img.attr('src'), person_id: '', device_id: data.people_uuid, face_id: res.id, drop: false});
+        sendMqttMessage('trainset', {url: $img.attr('src'), person_id: res.id ? res.id : '', device_id: data.people_uuid, face_id: res ? res.faceId : data.people_id, drop: false});
         PUB.toast('标记成功~');
       });
     });
+
+    // Meteor.call('getPeopleIdByName', name, data.people_uuid, function(err, res){
+    //   if(err)
+    //     return PUB.toast('标记成功~');
+    //   if(!res)
+    //     res = {uuid: data.people_uuid, id: data.people_id};
+
+    //   PeopleHis.update({_id: data.people_his_id}, {
+    //     $set: {fix_name: name, msg_id: data._id, msg_to: data.to},
+    //     $push: {fix_names: {
+    //       _id: new Mongo.ObjectID()._str,
+    //       name: name,
+    //       userId: Meteor.userId(),
+    //       userName: Meteor.user().profile && Meteor.user().profile.fullname ? Meteor.user().profile.fullname : Meteor.user().username,
+    //       userIcon: Meteor.user().profile && Meteor.user().profile.icon ? Meteor.user().profile.icon : '/userPicture.png',
+    //       fixTime: new Date()
+    //     }}
+    //   }, function(err, num){
+    //     if(err || num <= 0){
+    //       console.log(err);
+    //       return PUB.toast('标记失败，请重试~');
+    //     }
+
+    //     onFixName(data.people_id, data.people_uuid, data.people_his_id, $img.attr('src'), data.to, name, 'label');
+    //     sendMqttMessage('trainset', {url: $img.attr('src'), person_id: '', device_id: data.people_uuid, face_id: res.id, drop: false});
+    //     PUB.toast('标记成功~');
+    //   });
+    // });
   },
   'click .btn-no': function(){
     var $img = $('#swipebox-overlay .slide.current img');
@@ -391,15 +460,10 @@ Template._simpleChatToChatLabel.events({
 
     showBox('提示', ['重新标记', '删除'], null, '你要重新标记照片还是删除？', function(index){
       if(index === 0)
-        showBox('提示照片', ['标记', '返回'], names.length > 0 ? names : ['张三'], '请输入名字，如：张三', function(select, name){
-          if(!name || select != 0)
-            return;
-
-          Meteor.call('getPeopleIdByName', name, data.people_uuid, function(err, res){
+        show_label(function(name){
+          Meteor.call('get-id-by-name', data.people_uuid, name, function(err, res){
             if(err)
               return PUB.toast('标记成功~');
-            if(!res)
-              res = {uuid: data.people_uuid, id: data.people_id};
 
             PeopleHis.update({_id: data.people_his_id}, {
               $set: {fix_name: name, msg_to: data.to},
@@ -413,7 +477,6 @@ Template._simpleChatToChatLabel.events({
               }}
             }, function(err, num){
               if(err || num <= 0){
-                console.log(err);
                 return PUB.toast('标记失败，请重试~');
               }
 
@@ -424,12 +487,51 @@ Template._simpleChatToChatLabel.events({
                 }
               });
 
-              onFixName(data.people_id, data.people_uuid, data.people_his_id, $img.attr('src'), data.to, name, 'check');
+              onFixName(data.people_id, data.people_uuid, data.people_his_id, $img.attr('src'), data.to, name, 'label');
+              sendMqttMessage('trainset', {url: $img.attr('src'), person_id: res.id ? res.id : '', device_id: data.people_uuid, face_id: res ? res.faceId : data.people_id, drop: false});
               PUB.toast('标记成功~');
-              sendMqttMessage('trainset', {url: $img.attr('src'), person_id: '', device_id: data.people_uuid, face_id: res.id, drop: false});
             });
           });
         });
+        // showBox('提示照片', ['标记', '返回'], names.length > 0 ? names : ['张三'], '请输入名字，如：张三', function(select, name){
+        //   if(!name || select != 0)
+        //     return;
+
+        //   Meteor.call('getPeopleIdByName', name, data.people_uuid, function(err, res){
+        //     if(err)
+        //       return PUB.toast('标记成功~');
+        //     if(!res)
+        //       res = {uuid: data.people_uuid, id: data.people_id};
+
+        //     PeopleHis.update({_id: data.people_his_id}, {
+        //       $set: {fix_name: name, msg_to: data.to},
+        //       $push: {fix_names: {
+        //         _id: new Mongo.ObjectID()._str,
+        //         name: name,
+        //         userId: Meteor.userId(),
+        //         userName: Meteor.user().profile && Meteor.user().profile.fullname ? Meteor.user().profile.fullname : Meteor.user().username,
+        //         userIcon: Meteor.user().profile && Meteor.user().profile.icon ? Meteor.user().profile.icon : '/userPicture.png',
+        //         fixTime: new Date()
+        //       }}
+        //     }, function(err, num){
+        //       if(err || num <= 0){
+        //         console.log(err);
+        //         return PUB.toast('标记失败，请重试~');
+        //       }
+
+        //       Messages.update({_id: data.msg_id, 'images.url': $img.attr('src')}, {
+        //         $set: {
+        //           'images.$.label': name,
+        //           'images.$.result': ''
+        //         }
+        //       });
+
+        //       onFixName(data.people_id, data.people_uuid, data.people_his_id, $img.attr('src'), data.to, name, 'check');
+        //       PUB.toast('标记成功~');
+        //       sendMqttMessage('trainset', {url: $img.attr('src'), person_id: '', device_id: data.people_uuid, face_id: res.id, drop: false});
+        //     });
+        //   });
+        // });
       else
         showBox('删除原因？', ['删除', '返回'], ['遮盖', '模糊', '非人脸'], '请输入删除的原因', function(select, name){
           if(!name || select != 0)
@@ -710,3 +812,44 @@ SimpleChat.onMqttMessage = function(topic, msg) {
     Messages.insert(msgObj);
   }
 };
+
+
+// label
+var label_view = null;
+var label_limit = new ReactiveVar(0);
+var show_label = function(callback){
+  if (label_view)
+    Blaze.remove(label_view);
+  label_view = Blaze.renderWithData(Template._simpleChatToChatLabelName, {
+    callback : callback || function(){}
+  }, document.body)
+}
+
+Template._simpleChatToChatLabelName.onRendered(function(){
+  label_limit.set(40);
+  Meteor.subscribe('get-label-names', label_limit.get()); // TODO：
+});
+Template._simpleChatToChatLabelName.helpers({
+  names: function(){
+    return PersonNames.find({}, {sort: {createAt: 1}, limit: label_limit.get()});
+  }
+});
+Template._simpleChatToChatLabelName.events({
+  'click li': function(e, t){
+    $('#label-input-name').val(this.name);
+    t.$('li img').removeAttr('style');
+    $(e.currentTarget).find('img').attr('style', 'border: 1px solid #39a8fe;');
+  },
+  'click .leftButton': function(){
+    Blaze.remove(label_view);
+    label_view = null;
+  },
+  'click .rightButton': function(e, t){
+    if (!$('#label-input-name').val())
+      return PUB.toast('请选择或输入名字~');;
+
+    t.data.callback && t.data.callback($('#label-input-name').val());
+    Blaze.remove(label_view);
+    label_view = null;
+  }
+});

@@ -55,3 +55,8 @@ Meteor.publish("group-user-counter",function(id){
 Meteor.publish('get-my-group', function(user_id){
   return GroupUsers.find({user_id: user_id});
 });
+
+Meteor.publish('get-label-names', function(limit){
+  limit = limit || 20;
+  return PersonNames.find({}, {sort: {createAt: 1}, limit: limit});
+});

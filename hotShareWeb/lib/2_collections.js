@@ -41,6 +41,7 @@ PeopleHis = new Meteor.Collection('peopleHis');
 Devices = new Meteor.Collection('devices');
 
 Person = new Meteor.Collection('person');
+PersonNames = new Meteor.Collection('personNames');
 /*Person = {
   id: <Integer>,
   uuid: <Integer>,
@@ -60,6 +61,7 @@ if(Meteor.isServer){
       var user = Meteor.users.findOne({_id: userId})
 
       if(modifier['$set'].fix_name){
+        PERSON.setName(doc.uuid, doc.id, doc.aliyun_url, modifier['$set'].fix_name);
         var people = People.find({id: doc.id, uuid: doc.uuid});
         if(people && people.name)
           People.update({name: people.name}, {$set: {name: modifier['$set'].fix_name, updateTime: new Date()}}, {multi: true});
