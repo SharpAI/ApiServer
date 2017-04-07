@@ -22,13 +22,13 @@
             <div>{{_ "loadFailNotification"}}</div>
         {{/if}}
         {{#each msgSession}}
-        <div id="{{_id}}" class="groupsItem" data-type='group'>
-              {{#if to_user_icon}}
-              <img class="icon" src="{{to_user_icon}}">
+        <div id="{{_id}}" class="groupsItem" data-type='group' style="background-color:#fff;">
+              {{#if group_icon}}
+              <img class="icon" src="{{group_icon}}">
               {{else}}
               <i class="fa fa-users" aria-hidden="true"></i>
               {{/if}}
-              <span class="groupsName">{{to_user_name}}</span>
+              <span class="groupsName">{{group_name}}</span>
               <!--<div class="newMessage">{{msg_count}}</div>-->
               <!-- {{#if showRedSpot}}
                 <div class="red_spot"></div>
@@ -39,7 +39,7 @@
           </div>
         {{/each}}
         {{#each myChatGroups}}
-          <div id="{{_id}}" class="groupsItem eachViewer">
+          <div id="{{_id}}" class="groupsItem eachViewer" data-type="user">
               <img class="icon" src="{{followerIcon}}">
               <span class="groupsName">{{followerName}}</span>
               <div class="newMessage">{{count}}</div>

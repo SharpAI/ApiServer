@@ -22,6 +22,7 @@ if(Meteor.isClient){
         });
         sendMqttMessage=function(topic,message){
             Meteor.defer(function(){
+                console.log('sendMqttMessage:', topic, message);
                 mqtt_connection.publish(topic,JSON.stringify(message),{qos:2})
             })
         };
@@ -38,6 +39,7 @@ if(Meteor.isClient){
         };
         subscribeMqttUser=function(user_id){
           if (mqtt_connection) {
+            console.log('sub mqtt:', user_id);
             mqtt_connection.subscribe("/msg/u/" + user_id);
           }
         };
@@ -46,15 +48,16 @@ if(Meteor.isClient){
             mqtt_connection.unsubscribe("/msg/u/" + user_id);
           }
         };
-        sendMqttMessage=function(topic,message){
-            Meteor.defer(function(){
-                mqtt_connection.publish(topic,JSON.stringify(message),{qos:2})
-            })
-        };
+        // sendMqttMessage=function(topic,message){
+        //     Meteor.defer(function(){
+        //         mqtt_connection.publish(topic,JSON.stringify(message),{qos:2})
+        //     })
+        // };
         sendMqttGroupMessage=function(group_id, message) {
           sendMqttMessage("/msg/g/" + group_id, message);
         };
         sendMqttUserMessage=function(user_id, message) {
+          // console.log('sendMqttUserMessage:', message);
           sendMqttMessage("/msg/u/" + user_id, message);
         };
     }
@@ -92,6 +95,8 @@ if(Meteor.isClient){
         if(Meteor.userId()){
             Meteor.setTimeout(function(){
                 initMQTT(Meteor.userId());
+                subscribeMyChatGroups();
+                subscribeMqttUser(Meteor.userId());
             },1000)
         } else {
             uninitMQTT()

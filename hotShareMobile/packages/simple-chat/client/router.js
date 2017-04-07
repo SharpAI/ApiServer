@@ -18,26 +18,16 @@ Router.route(AppConfig.path + '/to/:type', {
     else
       where = {
         $or: [
-          {'form.id': slef.userId, 'to.id': to, to_type: type}, // me -> ta
-          {'form.id': to, 'to.id': slef.userId, to_type: type}  // ta -> me
+          {'form.id': Meteor.userId(), 'to.id': to, to_type: type}, // me -> ta
+          {'form.id': to, 'to.id': Meteor.userId(), to_type: type}  // ta -> me
         ]
       };
 
-    if(slef.params.type != 'user'){
-      page_title.set(Groups.findOne({_id: slef.params.query['id']}) ? Groups.findOne({_id: slef.params.query['id']}).name : '聊天室');
-    }else{
-      var user = Meteor.users.find({_id: slef.params.query['id']});
-      page_title.set(AppConfig.get_user_name(user));
-    }
-
+    console.log('where:', where);
     return {
       id: slef.params.query['id'],
       title: function(){
-        if(slef.params.type != 'user')
-          return Groups.findOne({_id: slef.params.query['id']}).name || '聊天室';
-
-        var user = Meteor.users.find({_id: slef.params.query['id']});
-        return AppConfig.get_user_name(user);
+        return page_title.get();
       },
       is_group: function(){
         return slef.params.type === 'group';
@@ -224,6 +214,13 @@ Template._simpleChatToChat.onRendered(function(){
         is_loading.set(false);
 
         if(!init_page){
+          if(slef.data.type != 'user'){
+            page_title.set(Groups.findOne({_id: slef.data.id}) ? Groups.findOne({_id: slef.data.id}).name : '聊天室');
+          }else{
+            var user = Meteor.users.findOne({_id: slef.data.id});
+            page_title.set(AppConfig.get_user_name(user));
+          }
+
           init_page = true;
           $('.box').scrollTop($('.box ul').height());
         }
@@ -691,7 +688,10 @@ Template._simpleChatToChatLayout.events({
     };
     Messages.insert(msg, function(){
       $('.box').scrollTop($('.box ul').height());
-      sendMqttGroupMessage(msg.to.id, msg);
+      if(data.type === 'group')
+        sendMqttGroupMessage(msg.to.id, msg);
+      else
+        sendMqttUserMessage(msg.to.id, msg);
     });
 
     $('.input-text').val('');
@@ -772,7 +772,10 @@ window.___message = {
     }}, function(){
       console.log('update id:', id);
       $('.box').scrollTop($('.box ul').height());
-      sendMqttGroupMessage(msg.to.id, Messages.findOne({_id: id}));
+      if (msg.to_type === 'group')
+        sendMqttGroupMessage(msg.to.id, Messages.findOne({_id: id}));
+      else
+        sendMqttUserMessage(msg.to.id, Messages.findOne({_id: id}));
     });
   },
   remove: function(id){

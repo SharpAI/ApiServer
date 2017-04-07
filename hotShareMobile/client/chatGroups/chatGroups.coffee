@@ -1,7 +1,7 @@
 if Meteor.isClient
   Template.chatGroups.rendered=->
     $('.content').css 'min-height',$(window).height()
-    Meteor.subscribe('get-msg-session')
+    Meteor.subscribe("get-my-group", Meteor.userId())
 #    $('.mainImage').css('height',$(window).height()*0.55)
     $(window).scroll (event)->
         target = $("#showMoreFollowsResults");
@@ -19,7 +19,7 @@ if Meteor.isClient
                 target.data("visible", false);
   Template.chatGroups.helpers
     msgSession: ()->
-      SimpleChat.MsgSession.find({user_id: Meteor.userId()}, {limit: 20})
+      SimpleChat.GroupUsers.find({user_id:Meteor.userId()}, {sort: {createdAt: -1}})
     myChatGroups:()->
       Follower.find({"userId":Meteor.userId()}, {sort: {createdAt: -1}}, {limit:Session.get("followersitemsLimit")})
     hasSysMessages:()->
@@ -60,15 +60,14 @@ if Meteor.isClient
             Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
       PUB.page('/bell')
     'click .groupsItem': (event)->
-      if $(event.currentTarget).attr('data-type') isnt 'group'
-        return console.log('TODO: 一对一聊天')
       if isIOS
         if (event.clientY + $('.home #footer').height()) >=  $(window).height()
           console.log 'should be triggered in scrolling'
           return false
       $('.chatGroups').addClass('animated ' + animateOutLowerEffect);
-      console.log this._id
-      url = '/simple-chat/to/group?id='+this._id
+      console.log this
+      type = $(event.currentTarget).attr('data-type')
+      url = '/simple-chat/to/'+type+'?id='+ (if type is 'group' then this.group_id else this.followerId)
       setTimeout ()->
         PUB.page(url)
       ,animatePageTrasitionTimeout
