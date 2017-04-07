@@ -25,6 +25,7 @@ if(Meteor.isClient){
         };
         subscribeMqttGroup=function(group_id) {
           if (mqtt_connection) {
+            console.log('sub mqtt:', group_id);
             mqtt_connection.subscribe("/msg/g/" + group_id);
           }
         };
@@ -62,10 +63,23 @@ if(Meteor.isClient){
     }
     subscribeMyChatGroups = function() {
       Meteor.subscribe('get-my-group', Meteor.userId(), function() {
-        userGroups = SimpleChat.GroupUsers.find({user_id: Meteor.userId()});
-        userGroups.forEach(function(userGroup) {
-          subscribeMqttGroup(userGroup.group_id);
-        });
+        // userGroups = SimpleChat.GroupUsers.find({user_id: Meteor.userId()});
+        // userGroups.forEach(function(userGroup) {
+        //   subscribeMqttGroup(userGroup.group_id);
+        // });
+      });
+
+      SimpleChat.GroupUsers.find({user_id: Meteor.userId()}).observe({
+         added: function(document) {
+           subscribeMqttGroup(document.group_id);
+         },
+         changed: function(newDocument, oldDocument){
+           unsubscribeMqttGroup(oldDocument.group_id);
+           subscribeMqttGroup(newDocument.group_id);
+         },
+         removed: function(document){
+           unsubscribeMqttGroup(document.group_id);
+         }
       });
     }
     Deps.autorun(function(){

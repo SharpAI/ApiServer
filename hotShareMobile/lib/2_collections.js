@@ -31,6 +31,20 @@ People = new Meteor.Collection('people');
 PeopleHis = new Meteor.Collection('peopleHis');
 Devices = new Meteor.Collection('devices');
 
+Person = new Meteor.Collection('person');
+/*Person = {
+  id: <Integer>,
+  uuid: <Integer>,
+  faceId: <Integer>,
+  url: <String>,
+  name: <String>,
+  faces: [{id: <Integer>, url: <String>}]
+  deviceId: <String>,
+  DeviceName: <String>,
+  createAt: <Date>,
+  updateAt: <Date>
+}*/
+
 if(Meteor.isServer){
   PeopleHis.allow({
     update: function (userId, doc, fields, modifier) {

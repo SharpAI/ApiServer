@@ -20,7 +20,7 @@ Meteor.publish('get-messages', function(type, to){
         // Messages.find(where, {limit: limit || 20, sort: {create_time: -1}})
       ];
     case 'group':
-      Meteor.call('create-group', to, null, []);
+      Meteor.call('create-group', to, null, [slef.userId]);
       return [
         Groups.find({_id: to}, {limit: 1}),
         // Messages.find(where, {limit: limit || 20, sort: {create_time: -1}})

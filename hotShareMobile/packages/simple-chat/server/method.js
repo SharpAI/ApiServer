@@ -3,11 +3,31 @@ Meteor.methods({
     var slef = this;
     id = id || new Mongo.ObjectID()._str;
     ids = ids || [];
+    var group = Groups.findOne({_id: id});
 
     if (!name)
       name = '群聊 ' + (Groups.find({}).count() + 1);
-    if(Groups.findOne({_id: id}))
+    if(group){
+      if (slef.userId && ids.indexOf(slef.userId) === -1)
+        ids.push(slef.userId);
+      if (ids.length > 0){
+        for(var i=0;i<ids.length;i++){
+          var user = Meteor.users.findOne({_id: ids[i]});
+          if (user && Groups.find({group_id: id, user_id: ids[i]}).count() <= 0){
+            GroupUsers.insert({
+              group_id: id,
+              group_name: group.name,
+              group_icon: group.icon,
+              user_id: user._id,
+              user_name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+              user_icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
+              create_time: new Date()
+            });
+          }
+        }
+      }
       return id;
+    }
 
     // console.log('ids:', ids);
     Groups.insert({
@@ -39,6 +59,36 @@ Meteor.methods({
         }
       }
     });
+    return id;
+  },
+  'add-group-urser':function(id,usersId){
+    var slef = this;
+    usersId = usersId || [];
+    group = Groups.findOne({_id: id});
+    if(group)
+      if(usersId.indexOf(slef.userId) === -1)
+          usersId.splice(0, 0, slef.userId);
+        // console.log('ids:', ids);
+        for(var i=0;i<usersId.length;i++){
+          var user = Meteor.users.findOne({_id: usersId[i]});
+          if(user){
+            var isExist = GroupUsers.findOne({group_id: group._id,user_id: user._id});
+            if (isExist) {
+              console.log('GroupUsers isExist');
+              continue;
+            }
+            // console.log(user);
+            GroupUsers.insert({
+              group_id: group._id,
+              group_name: group.name,
+              group_icon: group.icon,
+              user_id: user._id,
+              user_name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+              user_icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
+              create_time: new Date()
+            });
+          }
+        }
     return id;
   }
 });
