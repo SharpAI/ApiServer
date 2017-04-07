@@ -7,56 +7,41 @@ if (Meteor.isClient) {
           "Format: " + result.format + "\n" +
           "Cancelled: " + result.cancelled);
         var gotoPage = '/';
-        if (Session.get('channel') === 'chatGroups') {
-          gotoPage = '/chatGroups';
-        }
+        var  requiredStr = rest_api_url+'/simple-chat/to/group?id='
         if (result.text) {
-          var followerId = result.text;
-          if (followerId === Meteor.userId()) {
-            Router.go(gotoPage);
-            return;
-          }
-          var isFollowed = Follower.findOne({
-            userId: Meteor.userId(),
-            followerId: followerId
-          });
-          if (isFollowed) {
-            Router.go(gotoPage);
-            return;
-          }
-          var username = '';
-          if (Meteor.user().profile.fullname){
-            username = Meteor.user().profile.fullname;
+          if (result.text.indexOf(requiredStr)=== 0) {
+            var groupid = result.text.substring(requiredStr.length);
+            console.log('groupid==='+groupid);
+            if (groupid && groupid.length > 0) {
+              Meteor.call('add-group-urser', groupid, [Meteor.userId()], function(err, result) {
+                if (err) {
+                  console.log(err);
+                  return PUB.toast('添加失败，请重试~');
+                }
+                if (result === 'succ') {
+                   PUB.toast('添加成功');
+                   return Router.go(gotoPage);
+                }
+                if (result === 'not find group') {
+                  PUB.toast('二维码格式错误');
+                  return Router.go(gotoPage);
+                }
+              });
+            }
+            else{
+              Router.go(gotoPage);
+              PUB.toast('二维码格式错误')
+            }
+            
           }
           else{
-            username = Meteor.user().username;
+            Router.go(gotoPage);
+            PUB.toast('二维码格式错误')
           }
-
-          Meteor.subscribe("usersById", followerId, {
-            onReady: function() {
-              var follower = Meteor.users.findOne({
-                _id: followerId
-              });
-              if (follower) {
-                var insertObj = {
-                  userId: Meteor.userId(),
-                  userName: username,
-                  userIcon: Meteor.user().profile.icon,
-                  userDesc: Meteor.user().profile.desc,
-                  followerId: followerId,
-                  followerName: follower.profile.fullname || follower.username,
-                  followerIcon: follower.profile.icon,
-                  followerDesc: follower.profile.desc,
-                  createAt: new Date()
-                };
-                Follower.insert(insertObj);
-                Router.go(gotoPage);
-              } else {
-                alert("扫描到的不是一个可用的用户");
-                Router.go(gotoPage);
-              }
-            }
-          });
+        }
+        else{
+          Router.go(gotoPage);
+          PUB.toast('二维码格式错误')
         }
         if (result.cancelled) {
           Router.go(gotoPage);
