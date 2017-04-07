@@ -550,8 +550,8 @@ if Meteor.isServer
 
   insert_msg2 = (id, url, uuid)->
     people = People.findOne({id: id, uuid: uuid})
-    name = if people then people.name else null
-    device = createDeviceByUUID(uuid)
+    name = PERSON.getName(uuid, id)
+    device = PERSON.upsetDevice(uuid)
 
     if !people
       people = {_id: new Mongo.ObjectID()._str, id: id, uuid: uuid,name: name,embed: null,local_url: null,aliyun_url: url}
@@ -579,15 +579,15 @@ if Meteor.isServer
           }
           to: {
             id: userGroup.group_id
-            name: ""
-            icon: ""
+            name: userGroup.group_name
+            icon: userGroup.group_icon
           }
           images: [
             {_id: new Mongo.ObjectID()._str, people_his_id: _id, url: url, label: name} # 暂一次只能发一张图
           ]
           to_type: "group"
           type: "text"
-          text: if !name then '['+uuid+','+id+']: -> 需要标注' else name + ' 加入聊天室'
+          text: if !name then '['+device.name+','+id+']: -> 需要标注' else name + ' 加入聊天室'
           create_time: new Date()
           people_id: id
           people_uuid: uuid
