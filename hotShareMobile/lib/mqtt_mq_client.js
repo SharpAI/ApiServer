@@ -56,10 +56,14 @@ if(Meteor.isClient){
           sendMqttMessage("/msg/u/" + user_id, message);
         };
     }
-    uninitMQTT = function(){
-        if(mqtt_connection){
-            mqtt_connection.end()
-        }
+    uninitMQTT = function() {
+      try {
+          if (mqtt_connection) {
+              mqtt_connection.end();
+          }
+      } catch (error) {
+        console.log(error)
+      }
     }
     subscribeMyChatGroups = function() {
       Meteor.subscribe('get-my-group', Meteor.userId(), function() {

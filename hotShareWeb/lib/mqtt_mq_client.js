@@ -52,12 +52,17 @@ if(Meteor.isClient){
           sendMqttMessage("/msg/u/" + user_id, message);
         };
     }
-    uninitMQTT = function(){
-        if(mqtt_connection){
-            mqtt_connection.end();
-            mqtt_connection = null;
-        }
+    uninitMQTT = function() {
+      try {
+          if (mqtt_connection) {
+              mqtt_connection.end();
+              mqtt_connection = null;
+          }
+      } catch (error) {
+        console.log(error)
+      }
     }
+
     subscribeMyChatGroups = function() {
       Meteor.subscribe('get-my-group', Meteor.userId(), function() {
         // userGroups = SimpleChat.GroupUsers.find({user_id: Meteor.userId()});
