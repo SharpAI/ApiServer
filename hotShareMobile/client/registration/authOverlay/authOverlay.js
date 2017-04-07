@@ -39,10 +39,6 @@ if (Meteor.isClient) {
             PUB.toast('二维码格式错误')
           }
         }
-        else{
-          Router.go(gotoPage);
-          PUB.toast('二维码格式错误')
-        }
         if (result.cancelled) {
           Router.go(gotoPage);
           return;
