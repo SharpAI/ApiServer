@@ -613,7 +613,7 @@ if Meteor.isServer
     group_id = this.params.query.group_id
     console.log '/restapi/workai-group-qrcode get request, group_id: ', group_id
     try
-      img = QRImage.image(group_id, {size: 10})
+      img = QRImage.image('http://' + server_domain_name + '/simple-chat/to/group?id=?' + group_id, {size: 10})
       this.response.writeHead(200, {'Content-Type': 'image/png'})
       img.pipe(this.response)
     catch
