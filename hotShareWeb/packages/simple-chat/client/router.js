@@ -36,7 +36,9 @@ Router.route(AppConfig.path + '/to/:type', {
       query: Messages.find(where, {sort: {create_time: -1}}),
       type: slef.params.type,
       where: where,
-      messages: message_list.get(), // Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}),
+      messages: function(){
+        return message_list.get();
+      }, 
       loading: is_loading.get()
     };
   }
@@ -185,7 +187,7 @@ Template._simpleChatToChat.onDestroyed(function(){
 });
 
 Template._simpleChatToChat.onRendered(function(){
-  is_loading.set(false);
+  is_loading.set(true);
   list_limit.set(list_limit_val);
   time_list = [];
   init_page = false;
@@ -193,20 +195,44 @@ Template._simpleChatToChat.onRendered(function(){
   message_list.set([]);
   var slef = this;
 
-  slef.data.query.observeChanges({
-    added: function(id, fields){
-      message_list.set(Messages.find(slef.data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
-      fix_data();
-    },
-    changed: function(id, fields){
-      message_list.set(Messages.find(slef.data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
-      fix_data();
-    },
-    removed: function(id){
-      message_list.set(Messages.find(slef.data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
-      fix_data();
-    }
-  });
+  message_list.set(Messages.find(slef.data.where, {limit: list_limit_val, sort: {create_time: -1}}).fetch().reverse());
+  if (!Messages.onBefore){
+    Messages.after.insert(function (userId, doc) {
+      var chatBox = document.getElementsByClassName('simple-chat');
+      if (chatBox.length <= 0)
+        return;
+
+      var data = Blaze.getData(chatBox[0]);
+      if (!data)
+        return;
+
+      if (doc.to_type === data.type && doc.to.id === data.id){
+        console.log('message insert');
+        console.log('data:', Messages.find(data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
+        message_list.set(Messages.find(data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
+      }
+    });
+    Messages.after.update(function (userId, doc, fieldNames, modifier, options) {
+      var chatBox = document.getElementsByClassName('simple-chat');
+      if (chatBox.length <= 0)
+        return;
+
+      var data = Blaze.getData(chatBox[0]);
+      if (!data)
+        return;
+
+      if (doc.to_type === data.type && doc.to.id === data.id){
+        console.log('message update');
+        console.log('data:', Messages.find(data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
+        message_list.set(Messages.find(data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
+      }
+    });
+    Messages.after.remove(function (userId, doc){
+      // console.log('message remove');
+      // message_list.set(Messages.find(slef.data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
+    });
+    Messages.onBefore = true;
+  }
 
   if(fix_data_timeInterval){
     Meteor.clearInterval(fix_data_timeInterval);
@@ -215,29 +241,17 @@ Template._simpleChatToChat.onRendered(function(){
   fix_data_timeInterval = Meteor.setInterval(fix_data, 1000*60);
   Meteor.subscribe('people_new', function(){});
 
-  slef.autorun(function(){
-    if(list_limit.get()){
-      if(init_page)
-        return;
-
-      is_loading.set(true);
-      Meteor.subscribe('get-messages', slef.data.type, slef.data.id, function(){
-        is_loading.set(false);
-
-        if(!init_page){
-          if(slef.data.type != 'user'){
-            page_title.set(Groups.findOne({_id: slef.data.id}) ? Groups.findOne({_id: slef.data.id}).name : '聊天室');
-          }else{
-            var user = Meteor.users.findOne({_id: slef.data.id});
-            page_title.set(AppConfig.get_user_name(user));
-          }
-
-          init_page = true;
-          $('.box').scrollTop($('.box ul').height());
-        }
-      });
-      console.log('load more data:', list_limit.get());
+  Meteor.subscribe('get-messages', slef.data.type, slef.data.id, function(){
+    if(slef.data.type != 'user'){
+      page_title.set(Groups.findOne({_id: slef.data.id}) ? Groups.findOne({_id: slef.data.id}).name : '聊天室');
+    }else{
+      var user = Meteor.users.findOne({_id: slef.data.id});
+      page_title.set(AppConfig.get_user_name(user));
     }
+
+    init_page = true;
+    $('.box').scrollTop($('.box ul').height());
+    is_loading.set(false);
   });
 
   $('.box').scroll(function () {
@@ -330,6 +344,7 @@ Template._simpleChatToChatLabel.events({
         if(err)
           return PUB.toast('标记成功~');
 
+        console.log(res);
         PeopleHis.update({_id: data.people_his_id}, {
           $set: {fix_name: name, msg_to: data.to},
           $push: {fix_names: {
@@ -662,54 +677,56 @@ Template._simpleChatToChatLayout.events({
     }, 500);
   },
   'submit .input-form': function(e, t){
-    var data = Blaze.getData(Blaze.getView(document.getElementsByClassName('simple-chat')[0]));
-    var text = $('.input-text').val();
-    var to = null;
+    try{
+      var data = Blaze.getData(Blaze.getView(document.getElementsByClassName('simple-chat')[0]));
+      var text = $('.input-text').val();
+      var to = null;
 
-    if(!text){
-      $('.box').scrollTop($('.box ul').height());
+      if(!text){
+        $('.box').scrollTop($('.box ul').height());
+        return false;
+      }
+      if(data.type === 'group'){
+        var obj = Groups.findOne({_id: data.id});
+        to = {
+          id: data.id,
+          name: obj.name,
+          icon: obj.icon
+        };
+      }else{
+        var obj = Meteor.users.findOne({_id: data.id});
+        to = {
+          id: t.data.id,
+          name: AppConfig.get_user_name(obj),
+          icon: AppConfig.get_user_icon(obj)
+        };
+      }
+
+      var msg = {
+        _id: new Mongo.ObjectID()._str,
+        form:{
+          id: Meteor.userId(),
+          name: AppConfig.get_user_name(Meteor.user()),
+          icon: AppConfig.get_user_icon(Meteor.user())
+        },
+        to: to,
+        to_type: data.type,
+        type: 'text',
+        text: text,
+        create_time: new Date(),
+        is_read: false
+      };
+      Messages.insert(msg, function(){
+        if(data.type === 'group')
+          sendMqttGroupMessage(msg.to.id, msg);
+        else
+          sendMqttUserMessage(msg.to.id, msg);
+        Meteor.setTimeout(function(){$('.box').scrollTop($('.box ul').height());}, 200);
+      });
+
+      $('.input-text').val('');
       return false;
-    }
-    if(data.type === 'group'){
-      var obj = Groups.findOne({_id: data.id});
-      to = {
-        id: data.id,
-        name: obj.name,
-        icon: obj.icon
-      };
-    }else{
-      var obj = Meteor.users.findOne({_id: data.id});
-      to = {
-        id: t.data.id,
-        name: AppConfig.get_user_name(obj),
-        icon: AppConfig.get_user_icon(obj)
-      };
-    }
-
-    var msg = {
-      _id: new Mongo.ObjectID()._str,
-      form:{
-        id: Meteor.userId(),
-        name: AppConfig.get_user_name(Meteor.user()),
-        icon: AppConfig.get_user_icon(Meteor.user())
-      },
-      to: to,
-      to_type: data.type,
-      type: 'text',
-      text: text,
-      create_time: new Date(),
-      is_read: false
-    };
-    Messages.insert(msg, function(){
-      $('.box').scrollTop($('.box ul').height());
-      if(data.type === 'group')
-        sendMqttGroupMessage(msg.to.id, msg);
-      else
-        sendMqttUserMessage(msg.to.id, msg);
-    });
-
-    $('.input-text').val('');
-    return false;
+    }catch(ex){console.log(ex); return false;}
   },
   'click .groupsProfile':function(e,t){
     var data = Blaze.getData(Blaze.getView(document.getElementsByClassName('simple-chat')[0]));
@@ -734,9 +751,7 @@ Template._simpleChatToChatItem.helpers({
     try{
       var data = list_data.get();
       return data[_.pluck(data, '_id').indexOf(id)].show_time;
-    } catch(e){
-      return false
-    }
+    }catch(ex){return false;}
   },
   get_time: function(id){
     var data = list_data.get();
