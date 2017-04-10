@@ -15,7 +15,7 @@ if(Meteor.isServer){
         });
         sendMqttMessage=function(topic,message){
             Meteor.defer(function(){
-                mqtt_connection.publish(topic,JSON.stringify(message),{qos:2})
+                mqtt_connection.publish(topic,JSON.stringify(message),{qos:2, retain:true})
             })
         }
         mqttPostViewHook=function(userId,postId){
@@ -47,6 +47,6 @@ if(Meteor.isServer){
     }
 
     Meteor.startup(function(){
-        initMQTT(null);
+        initMQTT('workAI_server');
     })
 }

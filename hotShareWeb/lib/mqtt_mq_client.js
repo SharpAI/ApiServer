@@ -23,7 +23,7 @@ if(Meteor.isClient){
         subscribeMqttGroup=function(group_id) {
           if (mqtt_connection) {
             console.log('sub mqtt:' + group_id);
-            mqtt_connection.subscribe("/msg/g/" + group_id);
+            mqtt_connection.subscribe('/msg/g/' + group_id, {qos:2});
           }
         };
         unsubscribeMqttGroup=function(group_id) {
@@ -33,7 +33,7 @@ if(Meteor.isClient){
         };
         subscribeMqttUser=function(user_id){
           if (mqtt_connection) {
-            mqtt_connection.subscribe("/msg/u/" + user_id);
+            mqtt_connection.subscribe('/msg/u/' + user_id, {qos:2});
           }
         };
         unsubscribeMqttUser=function(user_id){
@@ -43,7 +43,7 @@ if(Meteor.isClient){
         };
         sendMqttMessage=function(topic,message){
             Meteor.defer(function(){
-                mqtt_connection.publish(topic,JSON.stringify(message),{qos:2})
+                mqtt_connection.publish(topic,JSON.stringify(message),{qos:2, retain:true})
             })
         };
         sendMqttGroupMessage=function(group_id, message) {
@@ -86,10 +86,19 @@ if(Meteor.isClient){
         }
       });
     }
+    getMqttClientID = function() {
+      var client_id = window.localStorage.getItem('mqtt_client_id');
+      if (!client_id) {
+        client_id = 'WorkAIC_' + (new Mongo.ObjectID())._str;
+        window.localStorage.setItem('mqtt_client_id', client_id);
+      }
+      console.log("##RDBG getMqttClientID: " + client_id);
+      return client_id;
+    };
     Deps.autorun(function(){
         if(Meteor.userId()){
             Meteor.setTimeout(function(){
-                initMQTT(Meteor.userId());
+                initMQTT(getMqttClientID());
             },1000)
         } else {
             uninitMQTT()
