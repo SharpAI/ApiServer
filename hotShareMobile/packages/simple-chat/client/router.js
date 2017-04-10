@@ -3,6 +3,7 @@ var is_loading = new ReactiveVar(false);
 var list_limit = new ReactiveVar(list_limit_val);
 var page_title = new ReactiveVar('聊天室');
 var list_data = new ReactiveVar([]);
+var message_list = new ReactiveVar([]);
 
 Router.route(AppConfig.path + '/to/:type', {
   layoutTemplate: '_simpleChatToChatLayout',
@@ -34,7 +35,8 @@ Router.route(AppConfig.path + '/to/:type', {
       },
       query: Messages.find(where, {sort: {create_time: -1}}),
       type: slef.params.type,
-      messages: Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}),
+      where: where,
+      messages: message_list.get(), // Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}),
       loading: is_loading.get()
     };
   }
@@ -44,7 +46,7 @@ var time_list = [];
 var init_page = false;
 var fix_data_timeInterval = null;
 var fix_data = function(){
-  var data = Blaze.getData($('.simple-chat')[0]).messages.fetch();
+  var data = message_list.get(); //Blaze.getData($('.simple-chat')[0]).messages.fetch();
   data.sort(function(a, b){
     return a.create_time - b.create_time;
   });
@@ -183,16 +185,20 @@ Template._simpleChatToChat.onRendered(function(){
   time_list = [];
   init_page = false;
   list_data.set([]);
+  message_list.set([]);
   var slef = this;
 
   slef.data.query.observeChanges({
     added: function(id, fields){
+      message_list.set(Messages.find(slef.data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
       fix_data();
     },
     changed: function(id, fields){
+      message_list.set(Messages.find(slef.data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
       fix_data();
     },
     removed: function(id){
+      message_list.set(Messages.find(slef.data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
       fix_data();
     }
   });
@@ -232,7 +238,10 @@ Template._simpleChatToChat.onRendered(function(){
   $('.box').scroll(function () {
     if($('.box').scrollTop() === 0 && !is_loading.get()){
       // if(slef.data.messages.count() >= list_limit.get())
-      list_limit.set(list_limit.get()+list_limit_val)
+      is_loading.set(true);
+      list_limit.set(list_limit.get()+list_limit_val);
+      message_list.set(Messages.find(slef.data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
+      Meteor.setTimeout(function(){is_loading.set(false);}, 500);
     }
   });
 });

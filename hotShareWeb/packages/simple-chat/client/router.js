@@ -3,6 +3,7 @@ var is_loading = new ReactiveVar(false);
 var list_limit = new ReactiveVar(list_limit_val);
 var page_title = new ReactiveVar('聊天室');
 var list_data = new ReactiveVar([]);
+var message_list = new ReactiveVar([]);
 
 Router.route(AppConfig.path + '/to/:type', {
   layoutTemplate: '_simpleChatToChatLayout',
@@ -18,33 +19,24 @@ Router.route(AppConfig.path + '/to/:type', {
     else
       where = {
         $or: [
-          {'form.id': slef.userId, 'to.id': to, to_type: type}, // me -> ta
-          {'form.id': to, 'to.id': slef.userId, to_type: type}  // ta -> me
+          {'form.id': Meteor.userId(), 'to.id': to, to_type: type}, // me -> ta
+          {'form.id': to, 'to.id': Meteor.userId(), to_type: type}  // ta -> me
         ]
       };
 
-    if(slef.params.type != 'user'){
-      page_title.set(Groups.findOne({_id: slef.params.query['id']}) ? Groups.findOne({_id: slef.params.query['id']}).name : '聊天室');
-    }else{
-      var user = Meteor.users.find({_id: slef.params.query['id']});
-      page_title.set(AppConfig.get_user_name(user));
-    }
-
+    console.log('where:', where);
     return {
       id: slef.params.query['id'],
       title: function(){
-        if(slef.params.type != 'user')
-          return Groups.findOne({_id: slef.params.query['id']}).name || '聊天室';
-
-        var user = Meteor.users.find({_id: slef.params.query['id']});
-        return AppConfig.get_user_name(user);
+        return page_title.get();
       },
       is_group: function(){
         return slef.params.type === 'group';
       },
-      query: Messages.find(where, {sort: {create_time: 1}}),
+      query: Messages.find(where, {sort: {create_time: -1}}),
       type: slef.params.type,
-      messages: Messages.find(where, {limit: list_limit.get(), sort: {create_time: 1}}),
+      where: where,
+      messages: message_list.get(), // Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}),
       loading: is_loading.get()
     };
   }
@@ -54,7 +46,7 @@ var time_list = [];
 var init_page = false;
 var fix_data_timeInterval = null;
 var fix_data = function(){
-  var data = Blaze.getData($('.simple-chat')[0]).messages.fetch();
+  var data = message_list.get(); //Blaze.getData($('.simple-chat')[0]).messages.fetch();
   data.sort(function(a, b){
     return a.create_time - b.create_time;
   });
@@ -193,16 +185,20 @@ Template._simpleChatToChat.onRendered(function(){
   time_list = [];
   init_page = false;
   list_data.set([]);
+  message_list.set([]);
   var slef = this;
 
   slef.data.query.observeChanges({
     added: function(id, fields){
+      message_list.set(Messages.find(slef.data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
       fix_data();
     },
     changed: function(id, fields){
+      message_list.set(Messages.find(slef.data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
       fix_data();
     },
     removed: function(id){
+      message_list.set(Messages.find(slef.data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
       fix_data();
     }
   });
@@ -224,6 +220,13 @@ Template._simpleChatToChat.onRendered(function(){
         is_loading.set(false);
 
         if(!init_page){
+          if(slef.data.type != 'user'){
+            page_title.set(Groups.findOne({_id: slef.data.id}) ? Groups.findOne({_id: slef.data.id}).name : '聊天室');
+          }else{
+            var user = Meteor.users.findOne({_id: slef.data.id});
+            page_title.set(AppConfig.get_user_name(user));
+          }
+
           init_page = true;
           $('.box').scrollTop($('.box ul').height());
         }
@@ -235,7 +238,10 @@ Template._simpleChatToChat.onRendered(function(){
   $('.box').scroll(function () {
     if($('.box').scrollTop() === 0 && !is_loading.get()){
       // if(slef.data.messages.count() >= list_limit.get())
-      list_limit.set(list_limit.get()+list_limit_val)
+      is_loading.set(true);
+      list_limit.set(list_limit.get()+list_limit_val);
+      message_list.set(Messages.find(slef.data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
+      Meteor.setTimeout(function(){is_loading.set(false);}, 500);
     }
   });
 });
@@ -691,7 +697,10 @@ Template._simpleChatToChatLayout.events({
     };
     Messages.insert(msg, function(){
       $('.box').scrollTop($('.box ul').height());
-      sendMqttGroupMessage(msg.to.id, msg);
+      if(data.type === 'group')
+        sendMqttGroupMessage(msg.to.id, msg);
+      else
+        sendMqttUserMessage(msg.to.id, msg);
     });
 
     $('.input-text').val('');
@@ -774,7 +783,10 @@ window.___message = {
     }}, function(){
       console.log('update id:', id);
       $('.box').scrollTop($('.box ul').height());
-      sendMqttGroupMessage(msg.to.id, Messages.findOne({_id: id}));
+      if (msg.to_type === 'group')
+        sendMqttGroupMessage(msg.to.id, Messages.findOne({_id: id}));
+      else
+        sendMqttUserMessage(msg.to.id, Messages.findOne({_id: id}));
     });
   },
   remove: function(id){
@@ -796,7 +808,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
   if(msgObj.create_time)
     msgObj.create_time = new Date(msgObj.create_time);
 
-  if (last_msg && last_msg.is_people === true && last_msg.images && last_msg.images.length >= 0){
+  if (last_msg && last_msg.is_people === true && last_msg.images && last_msg.images.length > 0 && msgObj.images && msgObj.images.length > 0){
     if(!msgObj.wait_lable && msgObj.images[0].label === last_msg.images[0].label){
       Messages.update({_id: last_msg._id}, {
         $set: {create_time: msgObj.create_time},
