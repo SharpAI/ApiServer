@@ -51,10 +51,31 @@
             //margin-right: 2%;
             margin-left:2.5%;
             margin-bottom: 10px;
-            img{
-                width: 100%;
+            .box {
+                position: relative;
+                width:    100%; /* desired width */
                 margin-top: 10px;
                 margin-bottom: 5px;
+            }
+
+            .box:before {
+                content:     "";
+                display:     block;
+                padding-top: 100%; /* initial ratio of 1:1*/
+            }
+
+            .boxcontent {
+                position: absolute;
+                top:      0;
+                left:     0;
+                bottom:   0;
+                right:    0;
+            }
+
+            img{
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
                 border-radius: 5px;
             }
             .userName{
@@ -114,6 +135,39 @@
     .head{
         background: #37a7fe;
         color: #fff;
+        .dropdown {
+            cursor: pointer;
+            #btn-more{
+                    top: -45px;
+                  }
+            .dropdown-backdrop{
+                background-color: rgba(0, 0, 0, 0.1)
+            }
+            .dropdown-menu {
+                padding: 0;
+                right: 5px;
+                left: auto;
+                border-radius: 5px;
+                li {
+                    background-color: transparent !important;
+                    text-align: center;
+                    padding: 12px;
+                }
+                a {
+                    font-size: 15px;
+                }
+            }
+            .add-more-drop-item{
+                margin-right: 10px;
+                font-size: 20px;
+                color: #666;
+                .fa-plus{
+                    position: relative;
+                    bottom: 8px;
+                    font-size: 8px;
+                }
+            }
+        }
     }
     .content {
         position: relative;
@@ -127,6 +181,7 @@
             width: 15%;
             border-radius: 5px;
         }
+        .fa-users{width: 50px;height: 50px; line-height: 50px; margin: 10px;border-radius: 6px; display: inline-block; text-align: center; background-color: #2196f3; color: #fff; font-size: 24px;}
         .barcode {
             text-align: center;
             img{

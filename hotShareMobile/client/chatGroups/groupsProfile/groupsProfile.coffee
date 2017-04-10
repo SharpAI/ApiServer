@@ -93,3 +93,15 @@ if Meteor.isClient
   Template.groupBarCode.events
     'click #groupBarCodePageback':(event)->
       Session.set("groupsProfileMenu","groupInformation")
+    'click #savebarcode':(event)->
+      group = SimpleChat.Groups.findOne({_id:Session.get('groupsId')});
+      cordova.plugins.barcodeScanner.saveBarCodeToPhotoAlum group.barcode, ((result) ->
+        console.log 'res:' + result
+        PUB.toast '保存成功！'
+        return
+      ), (error) ->
+        console.log 'error:' + error
+        PUB.toast '保存失败！'
+        return
+    'click #scanbarcode':(event)->
+      ScanBarcodeByBarcodeScanner()

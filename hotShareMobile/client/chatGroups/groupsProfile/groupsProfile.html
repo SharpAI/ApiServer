@@ -41,13 +41,21 @@
             <ul style="padding: 0;">
                 {{#each groupUsers}}
                 <li id="{{_id}}">
-                    <img class="usericon" src="{{user_icon}}">
+                    <div class='box'>
+                        <div class='boxcontent'>
+                            <img class="usericon" src="{{user_icon}}">
+                        </div>
+                    </div>
                     <div class="userName">{{user_name}}</div>
                 </li>
                 {{/each}}
                 {{#if isMobile}}
                     <li>
-                        <img id="addUserInGroup" src="/addUser.png">
+                        <div class='box'>
+                            <div class='boxcontent'>
+                                <img id="addUserInGroup" src="/addUser.png">
+                            </div>
+                        </div>
                         <div class="userName" style="color: white">添加</div>
                     </li>
                 {{/if}}
@@ -91,12 +99,25 @@
                     <i class="fa fa-angle-left fa-fw"></i>
                 </div>
                 <span>群二维码</span>
-                <!-- <div class="right-btn">{{_ "Save"}}</div> -->
+                <div class="rightDropMenu dropdown">
+                    <div class="rightButton dropdown-toggle" id="btn-more" data-toggle="dropdown">
+                      <img src="/more.png" height="30" >
+                    </div>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="btn-more">
+                      <!-- <li role="presentation"><a id="addNewFriends" role="menuitem" tabindex="-1" ><span class="add-more-drop-item"><span class="fa fa-plus"></span><i class="fa fa-user"></i></span> 添加朋友</a></li> -->
+                      <li role="presentation"><a id="savebarcode" role="menuitem" tabindex="-1" >保存图片</a></li>
+                      <li role="presentation"><a id="scanbarcode" role="menuitem" tabindex="-1" >扫描二维码</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
         <div class="content">
             <div class="top" style="padding-top: 0px;">
-                <img src="{{groupIcon}}">
+                {{#if groupIcon}}
+                <img class="icon" src="{{groupIcon}}">
+                {{else}}
+                <i class="fa fa-users" aria-hidden="true"></i>
+                {{/if}}
                 <span>{{groupName}}</span>
             </div>
             <div class="barcode">
