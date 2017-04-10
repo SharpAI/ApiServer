@@ -25,7 +25,7 @@ if(Meteor.isClient){
         subscribeMqttGroup=function(group_id) {
           if (mqtt_connection) {
             console.log('sub mqtt:' + group_id);
-            mqtt_connection.subscribe('/msg/g/' + group_id, {qos:2});
+            mqtt_connection.subscribe('/msg/g/' + group_id, {qos:1});
           }
         };
         unsubscribeMqttGroup=function(group_id) {
@@ -35,7 +35,7 @@ if(Meteor.isClient){
         };
         subscribeMqttUser=function(user_id){
           if (mqtt_connection) {
-            mqtt_connection.subscribe('/msg/u/' + user_id, {qos:2});
+            mqtt_connection.subscribe('/msg/u/' + user_id, {qos:1});
           }
         };
         unsubscribeMqttUser=function(user_id){
