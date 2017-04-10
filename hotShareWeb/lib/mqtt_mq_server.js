@@ -47,6 +47,6 @@ if(Meteor.isServer){
     }
 
     Meteor.startup(function(){
-        initMQTT('workAI_server');
+        initMQTT(null);
     })
 }
