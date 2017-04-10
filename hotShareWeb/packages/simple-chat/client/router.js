@@ -826,25 +826,39 @@ SimpleChat.onMqttMessage = function(topic, msg) {
   var last_msg = Messages.findOne({}, {sort: {create_time: -1}});
 
   if(Messages.find({_id: msgObj._id}).count() > 0)
-    return;
-  if(msgObj.create_time)
-    msgObj.create_time = new Date(msgObj.create_time);
+    msgObj._id = new Mongo.ObjectID()._str;
+  try{
+    console.log('last_msg:', last_msg);
+    msgObj.create_time = msgObj.create_time ? new Date(msgObj.create_time) : new Date();
+    var group_msg = last_msg && msgObj && msgObj.to_type === 'group' && msgObj.to.id === last_msg.to.id; // 当前组消息
+    if (!group_msg)
+      return Messages.insert(msgObj);
 
-  if (last_msg && last_msg.is_people === true && last_msg.images && last_msg.images.length > 0 && msgObj.images && msgObj.images.length > 0){
-    if(!msgObj.wait_lable && msgObj.images[0].label === last_msg.images[0].label){
-      Messages.update({_id: last_msg._id}, {
-        $set: {create_time: msgObj.create_time},
-        $push: {images: msgObj.images[0]}
-      });
-    }else if(msgObj.wait_lable && msgObj.people_id === last_msg.people_id && msgObj.people_uuid === last_msg.people_uuid){
-      Messages.update({_id: last_msg._id}, {
-        $set: {create_time: msgObj.create_time},
-        $push: {images: msgObj.images[0]}
-      });
+    if (last_msg && last_msg.is_people === true && last_msg.images && last_msg.images.length > 0 && msgObj.images && msgObj.images.length > 0){
+      if(!msgObj.wait_lable && msgObj.images[0].label === last_msg.images[0].label){
+        Messages.update({_id: last_msg._id}, {
+          $set: {create_time: msgObj.create_time},
+          $push: {images: msgObj.images[0]}
+        }, function(err, num){
+          if (err || num <= 0)
+            Messages.insert(msgObj);
+        });
+      }else if(msgObj.wait_lable && msgObj.people_id === last_msg.people_id && msgObj.people_uuid === last_msg.people_uuid){
+        Messages.update({_id: last_msg._id}, {
+          $set: {create_time: msgObj.create_time},
+          $push: {images: msgObj.images[0]}
+        }, function(err, num){
+          if (err || num <= 0)
+            Messages.insert(msgObj);
+        });
+      }else{
+        Messages.insert(msgObj);
+      }
     }else{
       Messages.insert(msgObj);
     }
-  }else{
+  }catch(ex){
+    console.log(ex);
     Messages.insert(msgObj);
   }
 };
