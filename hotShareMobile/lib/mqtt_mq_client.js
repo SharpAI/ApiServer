@@ -17,7 +17,8 @@ if(Meteor.isClient){
             console.log('Connected to mqtt server');
             //mqtt_connection.subscribe('workai');
             subscribeMyChatGroups();
-            subscribeMqttUser(Meteor.userId());
+            subscribeMqttUser(Meteor.userId());            
+            sendMqttMessage('presence/'+Meteor.userId(),{online:true})
             mqtt_connection.on('message', function(topic, message) {
                 console.log('on mqtt message topic: ' + topic + ', message: ' + message.toString());
                 SimpleChat.onMqttMessage(topic, message.toString());
@@ -108,7 +109,6 @@ if(Meteor.isClient){
         if(Meteor.userId()){
             Meteor.setTimeout(function(){
                 initMQTT(getMqttClientID());
-                sendMqttMessage('presence/'+Meteor.userId(),{online:true})
             },1000)
         } else {
             uninitMQTT()
