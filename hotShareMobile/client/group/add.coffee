@@ -34,8 +34,8 @@ if Meteor.isClient
       history.go(-1)
     'click .rightButton':(event)->
       selected = users.get()
-      if selected.length <= 0
-        return PUB.toast('没有选择任何用户~')
+      # if selected.length <= 0
+      #   return PUB.toast('没有选择任何用户~')
       Meteor.call 'create-group', null, null, _.pluck(selected, 'followerId'), (err, id)->
         console.log(err)
         if err or !id
