@@ -6,11 +6,13 @@ if(Meteor.isClient){
     initMQTT = function(clientId){
         var mqttOptions = {
             clean:false,
-            keepalive:30,
-            reconnectPeriod:20*1000,
+            keepalive:20,
+            reconnectPeriod:10*1000,
+            incomingStore: mqtt_store_manager.incoming,
+            outgoingStore: mqtt_store_manager.outgoing,
             clientId:clientId
         }
-        mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80');
+        mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80',mqttOptions);
         mqtt_connection.on('connect',function(){
             console.log('Connected to mqtt server');
             //mqtt_connection.subscribe('workai');
@@ -43,7 +45,7 @@ if(Meteor.isClient){
         };
         sendMqttMessage=function(topic,message){
             Meteor.defer(function(){
-                mqtt_connection.publish(topic,JSON.stringify(message),{qos:2, retain:true})
+                mqtt_connection.publish(topic,JSON.stringify(message),{qos:1})
             })
         };
         sendMqttGroupMessage=function(group_id, message) {
@@ -98,6 +100,7 @@ if(Meteor.isClient){
     Deps.autorun(function(){
         if(Meteor.userId()){
             Meteor.setTimeout(function(){
+                sendMqttMessage('presence/'+Meteor.userId(),{online:true})
                 initMQTT(getMqttClientID());
             },1000)
         } else {

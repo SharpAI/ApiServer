@@ -13,9 +13,9 @@ Viewers = new Meteor.Collection('viewers');
 RefComments = new Meteor.Collection("refcomments");
 ReComment = new Meteor.Collection('recomment');
 Reports = new Meteor.Collection('reports');
-Messages = new Meteor.Collection('messages');
-MsgSession = new Meteor.Collection('msgsession');
-MsgGroup = new Meteor.Collection('msggroup');
+//Messages = new Meteor.Collection('messages');
+//MsgSession = new Meteor.Collection('msgsession');
+//MsgGroup = new Meteor.Collection('msggroup');
 Meets = new Meteor.Collection('meets');
 Versions = new Meteor.Collection('versions');
 Moments = new Meteor.Collection('moments');
@@ -2106,7 +2106,7 @@ if(Meteor.isServer){
       return this.ready();
     else
       return Reports.find({postId: postId},{limit:5});
-  });
+  });/*
   Meteor.publish("messages", function(to){
     if(this.userId === null || to === null || to === undefined)
       return this.ready();
@@ -2164,18 +2164,22 @@ if(Meteor.isServer){
 
     return Messages.find(filter, {sort: {createTime: 1}});
   });
+  */
+    /*
   Meteor.publish("msgSession", function(){
     if(this.userId === null)
       return this.ready();
     else
       return MsgSession.find({userId: this.userId}, {sort: {updateTime: -1}});
-  });
+  });*/
+  /*
   Meteor.publish("msgGroup", function(){
     if(this.userId === null)
       return this.ready();
     else
       return MsgGroup.find({"users.userId": this.userId});
   });
+  */
   Meteor.publish('versions', function() {
     return Versions.find({});
   });
@@ -2773,6 +2777,7 @@ if(Meteor.isServer){
       return doc._id === userId
     }
   });
+    /*
   Messages.allow({
     insert: function (userId, doc) {
       // 处理群消息的接收对象
@@ -2915,6 +2920,8 @@ if(Meteor.isServer){
       return userId === doc.userId;
     }
   });
+  */
+    /*
   MsgGroup.allow({
     insert: function (userId, doc) {
       return doc.create.userId === userId;
@@ -2948,7 +2955,7 @@ if(Meteor.isServer){
       return userId === doc.userId;
     }
   });
-
+*/
   SearchSource.defineSource('topics', function(searchText, options) {
     var options = {sort: {createdAt: -1}, limit: 20};
 

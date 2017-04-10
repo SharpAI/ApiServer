@@ -16,14 +16,17 @@ if(Meteor.isServer){
   GroupUsers = new Mongo.Collection(PRFIX + 'groups_users', options);
   MsgSession = new Mongo.Collection(PRFIX + 'msg_session');
 }else{
-  Messages = new Mongo.Collection(PRFIX + 'messages', {connection: null});
-  MsgSession = new Mongo.Collection(PRFIX + 'msg_session');
   Groups = new Mongo.Collection(PRFIX + 'groups');
   GroupUsers = new Mongo.Collection(PRFIX + 'groups_users');
 
   Meteor.startup(function() {
     //var LocalMessagesObservor = new PersistentMinimongo2(Messages, 'workai');
-    Ground.Collection(Messages, 'gdb');
+    //Ground.Collection(Messages, 'gdb');
+
+    Messages = new Ground.Collection(PRFIX + 'messages', { connection: null })
+
+    SimpleChat.Messages = Messages;
+    //SimpleChat.MsgSession = MsgSession;
   });
 }
 
@@ -73,11 +76,6 @@ if(Meteor.isServer){
   });
 }
 
-if(Meteor.isClient){
-  SimpleChat.Messages = Messages;
-}
-
-SimpleChat.MsgSession = MsgSession;
 SimpleChat.Groups = Groups;
 SimpleChat.GroupUsers = GroupUsers;
 

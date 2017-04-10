@@ -330,6 +330,7 @@ Template._simpleChatToChatLabel.events({
         if(err)
           return PUB.toast('标记成功~');
 
+        console.log(res);
         PeopleHis.update({_id: data.people_his_id}, {
           $set: {fix_name: name, msg_to: data.to},
           $push: {fix_names: {
@@ -715,7 +716,6 @@ Template._simpleChatToChatLayout.events({
     var data = Blaze.getData(Blaze.getView(document.getElementsByClassName('simple-chat')[0]));
     Router.go('/groupsProfile/'+data.id);
   }
-
 });
 
 Template._simpleChatToChatItem.helpers({
@@ -734,7 +734,9 @@ Template._simpleChatToChatItem.helpers({
     try{
       var data = list_data.get();
       return data[_.pluck(data, '_id').indexOf(id)].show_time;
-    }catch(ex){return false;}
+    } catch(e){
+      return false
+    }
   },
   get_time: function(id){
     var data = list_data.get();
@@ -806,7 +808,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
   console.log('SimpleChat.onMqttMessage, topic: ' + topic + ', msg: ' + msg);
   var group = topic.substring(topic.lastIndexOf('/') + 1);
   var msgObj = JSON.parse(msg);
-  var last_msg = Messages.findOne({}, {sort: {create_time: -1}});
+  //var last_msg = Messages.findOne({}, {sort: {create_time: -1}});
 
   if(Messages.find({_id: msgObj._id}).count() > 0)
     return;
@@ -830,6 +832,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
   }else{
     Messages.insert(msgObj);
   }
+  last_msg = msgObj;
 };
 
 

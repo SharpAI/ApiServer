@@ -734,7 +734,9 @@ Template._simpleChatToChatItem.helpers({
     try{
       var data = list_data.get();
       return data[_.pluck(data, '_id').indexOf(id)].show_time;
-    }catch(ex){return false;}
+    } catch(e){
+      return false
+    }
   },
   get_time: function(id){
     var data = list_data.get();

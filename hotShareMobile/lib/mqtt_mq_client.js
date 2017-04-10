@@ -6,11 +6,13 @@ if(Meteor.isClient){
     initMQTT = function(clientId){
         var mqttOptions = {
             clean:false,
-            keepalive:30,
-            reconnectPeriod:20*1000,
+            keepalive:20,
+            reconnectPeriod:10*1000,
+            incomingStore: mqtt_store_manager.incoming,
+            outgoingStore: mqtt_store_manager.outgoing,
             clientId:clientId
         }
-        mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80');
+        mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80',mqttOptions);
         mqtt_connection.on('connect',function(){
             console.log('Connected to mqtt server');
             //mqtt_connection.subscribe('workai');
@@ -66,6 +68,7 @@ if(Meteor.isClient){
       try {
           if (mqtt_connection) {
               mqtt_connection.end();
+              mqtt_connection = null
           }
       } catch (error) {
         console.log(error)
@@ -105,6 +108,7 @@ if(Meteor.isClient){
         if(Meteor.userId()){
             Meteor.setTimeout(function(){
                 initMQTT(getMqttClientID());
+                sendMqttMessage('presence/'+Meteor.userId(),{online:true})
             },1000)
         } else {
             uninitMQTT()
