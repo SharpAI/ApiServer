@@ -124,7 +124,11 @@ var onFixName = function(id, uuid, his_id, url, to, value, type){
       // sendMqttMessage('workai', msg);
       sendMqttMessage('trainset', {url: url, person_id: '', device_id: uuid, face_id: id, drop: true});
       break;
-  }
+  };
+  Meteor.setTimeout(function() {
+    $('.simple-chat-label').remove();
+    $('#swipebox-overlay').remove();
+  }, 500);
 };
 
 var showBoxView = null;
@@ -168,6 +172,7 @@ Template._simpleChatToChatLabelBox.events({
       $input.show();
     }else{
       $input.hide();
+      $select.show();
     }
   }
 });
