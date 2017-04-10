@@ -1,6 +1,6 @@
 App.info({
   id: 'org.workai.everywhere',
-  version: '0.1.9',
+  version: '0.1.10',
   name: 'WorkAI',
   description: 'Share everything with everyone',
   author: 'hotShare Design Team',
