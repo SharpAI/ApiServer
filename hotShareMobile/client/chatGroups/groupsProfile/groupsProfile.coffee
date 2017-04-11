@@ -35,6 +35,17 @@ if Meteor.isClient
       Session.set("groupsProfileMenu","setGroupname")
     'click .barcode': (event)->
       Session.set("groupsProfileMenu","groupBarCode")
+    'click .deleteAndExit':(event)->
+      PUB.confirm('删除并退出后，将不再接收此群聊消息',()->
+        Meteor.call('remove-group-user',Session.get('groupsId'),Meteor.userId(),(err,id)->
+          console.log(err)
+          if err or !id
+            return PUB.toast('删除失败，请重试~')
+          if mqtt_connection 
+            mqtt_connection.unsubscribe("/msg/g/" + id)
+          PUB.back()
+        )
+        )
 
   Template.groupUsers.helpers
     groupUsers:()->

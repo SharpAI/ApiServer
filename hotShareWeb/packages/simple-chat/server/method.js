@@ -90,6 +90,13 @@ Meteor.methods({
           }
         }
     return id;
+  },
+  'remove-group-user':function(id,userId){
+    var groupuser = GroupUsers.findOne({group_id: id,user_id: userId});
+    if (groupuser) {
+      GroupUsers.remove({_id:groupuser._id});
+    }
+    return id;
   }
 });
 
