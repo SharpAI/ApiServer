@@ -39,16 +39,16 @@
           <div class="post-head-right rightDropMenu dropdown">
             {{#if isMyPost}}
               <button class="dropdown-toggle btn btn-flat" id="menu1" data-toggle="dropdown" style="padding-right: 5px;">{{_ "operate"}}</button>
-            {{else}}
-              <button class="dropdown-toggle btn btn-flat" id="menu1" data-toggle="dropdown" style="padding-right: 5px;">{{_ "share"}}</button>
+            <!-- {{else}}
+              <button class="dropdown-toggle btn btn-flat" id="menu1" data-toggle="dropdown" style="padding-right: 5px;">{{_ "share"}}</button> -->
             {{/if}}
             <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
               {{#if isMyPost}}
                 <li role="presentation"><a id="unpublish" role="menuitem" tabindex="-1" ><i class="fa fa-file-o fa-fw"></i>{{_ "cancelPublish"}}</a></li>
                 <li role="presentation"><a id="edit" role="menuitem" tabindex="-1" ><i class="fa fa-pencil fa-fw"></i>{{_ "edit"}}</a></li>
-                <li role="presentation" class="divider"></li>
+                <!-- <li role="presentation" class="divider"></li> -->
               {{/if}}
-              <li role="presentation"><a id="WXSessionShare" role="menuitem" tabindex="-1" ><i class="fa fa-weixin fa-fw"></i>{{_ "shareWechatFriend"}}</a></li>
+              <!-- <li role="presentation"><a id="WXSessionShare" role="menuitem" tabindex="-1" ><i class="fa fa-weixin fa-fw"></i>{{_ "shareWechatFriend"}}</a></li>
               <li role="presentation"><a id="WXTimelineShare" role="menuitem" tabindex="-1" ><i class="fa fa-weixin fa-fw"></i>{{_ "shareWechatFriendField"}}</a></li>
               {{#if shareToStoryGroup}}
                 <li role="presentation"><a id="ShareStoryGroup" role="menuitem" tabindex="-1" ><i class="fa fa-weixin fa-fw"></i>{{_ "shareStoryGroup"}}</a></li>
@@ -58,7 +58,7 @@
               {{/if}}
               <li role="presentation"><a id="QQShare" role="menuitem" tabindex="-1" ><i class="fa fa-qq fa-fw"></i>{{_ "shareQQ"}}</a></li>
               <li role="presentation"><a id="QQZoneShare" role="menuitem" tabindex="-1" ><i class="fa fa-qq fa-fw"></i>{{_ "shareQQZone"}}</a></li>
-              <li role="presentation"><a id="socialShare" role="menuitem" tabindex="-1" ><i class="fa fa-share-alt fa-fw"></i>{{_ "shareMore"}}</a></li>
+              <li role="presentation"><a id="socialShare" role="menuitem" tabindex="-1" ><i class="fa fa-share-alt fa-fw"></i>{{_ "shareMore"}}</a></li> -->
             </ul>
           </div>
         {{/if}}
