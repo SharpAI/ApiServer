@@ -38,7 +38,7 @@ Router.route(AppConfig.path + '/to/:type', {
       where: where,
       messages: function(){
         return message_list.get();
-      }, 
+      },
       loading: is_loading.get()
     };
   }
@@ -219,6 +219,7 @@ Template._simpleChatToChat.onRendered(function(){
 
       if (doc.to_type === data.type && doc.to.id === data.id){
         console.log('message insert');
+        Meteor.setTimeout(function(){$('.box').scrollTop($('.box ul').height());}, 200);
         console.log('data:', Messages.find(data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
         message_list.set(Messages.find(data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
       }
