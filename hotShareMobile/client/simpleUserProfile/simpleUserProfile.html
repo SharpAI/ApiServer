@@ -1,0 +1,85 @@
+<template name="simpleUserProfile">
+    <div class="simpleUserProfile userProfileMarginTop">
+        <div class="head">
+            <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+            {{#if profile.profile.fullname}}
+                <div>{{profile.profile.fullname}}</div>
+            {{else}}
+                <div>{{profile.username}}</div>
+            {{/if}}
+            <div class="rightDropMenu dropdown">
+                <div class="rightButton dropdown-toggle" id="btn-more" data-toggle="dropdown">
+                  <img src="/more.png" height="30" >
+                </div>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="btn-more">
+                  <!-- <li role="presentation"><a id="addNewFriends" role="menuitem" tabindex="-1" ><span class="add-more-drop-item"><span class="fa fa-plus"></span><i class="fa fa-user"></i></span> 添加朋友</a></li> -->
+                  {{#if inBlackList}}
+                    <li role="presentation"><a id="removeFormBlacklist" role="menuitem" tabindex="-1" >移出黑名单</a></li>
+                  {{else}}
+                    <li role="presentation"><a id="addToBlacklist" role="menuitem" tabindex="-1" >加入黑名单</a></li>
+                  {{/if}}
+                  {{#if isFollowed}}
+                    <li role="presentation"><a id="deleteUser" role="menuitem" tabindex="-1" >删除</a></li>
+                  {{/if}}
+                  
+                </ul>
+            </div>
+
+        </div>
+        <div class="userProfileTop">
+            <img class="icon" src="{{profile.profile.icon}}" width='70' height='70'>
+            <span class="userName">
+            {{#if profile.profile.fullname}}
+              {{profile.profile.fullname}}
+            {{else}}
+              {{profile.username}}
+            {{/if}}
+              {{#if isMale profile.profile.sex}}
+                  <img src="/male.png" width='20' height='20'>
+              {{/if}}
+              {{#if isFemale profile.profile.sex}}
+                  <img src="/female.png" width='20' height='20'>
+              {{/if}}
+            </span>
+            <span class="location">{{location}}</span>
+            <span class="desc">{{profile.profile.desc}}</span>
+        </div>
+        <div class="showPostsLine"></div>
+        <div class="userProfileCenter">
+          <div class="post">
+              <span class="postLeft">最近浏览的故事</span>
+          </div>
+          {{#if compareViewsCount 0}}
+              <div class="postImages swipe-control">
+                  <ul>
+                    {{#each viewLists}}
+                      {{#if postId}}
+                          <li id="{{postId}}">
+                              <div class="postMainImage" style="background-image:url({{mainImage}})"></div>
+                              <h6 class="title" style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
+                                {{title}}
+                              </h6>
+                          </li>
+                      {{/if}}
+                    {{/each}}
+                  </ul>
+              </div>
+          {{/if}}
+        </div>
+        
+        <div class="showPostsLine"></div>
+        <div class="userProfileBottom">
+          {{#if isFollowed}}
+            <div class="sendMesssage botton_btn">发消息</div>
+          {{else}}
+            <div class="addToAddressbook botton_btn">添加到通讯录</div>
+          {{/if}}
+        </div>
+        <!-- <div class="showPostsLine"></div>
+        <div class="post">
+            <span class="postLeft">喜欢的故事</span>
+        </div>
+      {{>favoritePosts}} -->
+    </div>
+</template>
+

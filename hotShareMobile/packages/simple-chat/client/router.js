@@ -789,6 +789,10 @@ Template._simpleChatToChatLayout.events({
   'click .groupsProfile':function(e,t){
     var data = Blaze.getData(Blaze.getView(document.getElementsByClassName('simple-chat')[0]));
     Router.go('/groupsProfile/'+data.id);
+  },
+  'click .userProfile':function(e,t){
+    var data = Blaze.getData(Blaze.getView(document.getElementsByClassName('simple-chat')[0]));
+    PUB.page('/simpleUserProfile/'+data.id);
   }
 
 });

@@ -166,6 +166,10 @@ if Meteor.isClient
       Session.set('groupsId',this.params._id)
       this.render 'groupsProfile'
       return
+    Router.route '/simpleUserProfile/:_id',()->
+      Session.set('simpleUserProfileUserId',this.params._id)
+      this.render 'simpleUserProfile'
+      return
     Router.route '/explore',()->
       if Meteor.isCordova is true
         this.render 'explore'

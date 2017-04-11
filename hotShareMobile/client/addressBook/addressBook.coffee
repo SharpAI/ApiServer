@@ -36,10 +36,11 @@ if Meteor.isClient
       #PUB.page('/recentlyList')
     'click .followItem': (event)->
       console.log 'click .followItem'
-      url = '/simple-chat/to/user?id='+ this.followerId
-      setTimeout ()->
-        PUB.page(url)
-      ,animatePageTrasitionTimeout
+      PUB.page('/simpleUserProfile/'+this.followerId);
+      # url = '/simple-chat/to/user?id='+ this.followerId
+      # setTimeout ()->
+      #   PUB.page(url)
+      # ,animatePageTrasitionTimeout
       # if isIOS
       #   if (event.clientY + $('.home #footer').height()) >=  $(window).height()
       #     console.log 'should be triggered in scrolling'
