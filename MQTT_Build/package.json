@@ -23,7 +23,7 @@
   },
   "homepage": "http://tiegushi.com",
   "dependencies": {
-    "mqtt":"^2.5.2",
+    "mqtt":"^2.6.2",
     "mqtt-level-store": "^1.1.0"
   }
 }
