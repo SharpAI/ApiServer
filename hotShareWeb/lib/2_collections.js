@@ -2558,46 +2558,47 @@ if(Meteor.isServer){
             }
           }
       }
-    //  跳过审核
-    var postSafe = false;
-    //如果开启自动审核，　通过绿网检查即为通过审核
-    if (autoReview) {
-      if(isPostSafe(doc.title,doc.addontitle,doc.mainImage,doc.pub)){
-          postSafe =true;
-      }
-    }
-    else {
-      user = Meteor.users.findOne({_id: doc.owner});
-      if(user && user.profile && user.profile.isTrusted){ // 是受信用户
-          if(isPostSafe(doc.title,doc.addontitle,doc.mainImage,doc.pub)){
-              postSafe =true;
-          }
-      }
-    }
+
+    // //  跳过审核
+    // var postSafe = false;
+    // //如果开启自动审核，　通过绿网检查即为通过审核
+    // if (autoReview) {
+    //   if(isPostSafe(doc.title,doc.addontitle,doc.mainImage,doc.pub)){
+    //       postSafe =true;
+    //   }
+    // }
+    // else {
+    //   user = Meteor.users.findOne({_id: doc.owner});
+    //   if(user && user.profile && user.profile.isTrusted){ // 是受信用户
+    //       if(isPostSafe(doc.title,doc.addontitle,doc.mainImage,doc.pub)){
+    //           postSafe =true;
+    //       }
+    //   }
+    // }
 
 
-    if(!postSafe){
-      doc.isReview = false;
+    // if(!postSafe){
+    //   doc.isReview = false;
 
-     Meteor.defer(function(){
-        var postInfo = {
-            post:'http://cdn.tiegushi.com/posts/'+doc._id,
-            browse:doc.browse,
-            title:doc.title,
-            addontitle:doc.addontitle,
-            owner:doc.owner,
-            _id:doc._id,
-            ownerName:doc.ownerName,
-            createdAt:doc.createdAt,
-            mainImage:doc.mainImage,
-            status: '待审核'
-        }
-        postMessageToGeneralChannel(JSON.stringify(postInfo))
-     });
+    //  Meteor.defer(function(){
+    //     var postInfo = {
+    //         post:'http://cdn.tiegushi.com/posts/'+doc._id,
+    //         browse:doc.browse,
+    //         title:doc.title,
+    //         addontitle:doc.addontitle,
+    //         owner:doc.owner,
+    //         _id:doc._id,
+    //         ownerName:doc.ownerName,
+    //         createdAt:doc.createdAt,
+    //         mainImage:doc.mainImage,
+    //         status: '待审核'
+    //     }
+    //     postMessageToGeneralChannel(JSON.stringify(postInfo))
+    //  });
 
-      insertRePost(doc);
-      return true;
-    }
+    //   insertRePost(doc);
+    //   return true;
+    // }
 
     doc.isReview = true;
 
