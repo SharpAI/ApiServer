@@ -825,8 +825,14 @@ SimpleChat.onMqttMessage = function(topic, msg) {
   var msgObj = JSON.parse(msg);
   var last_msg = Messages.findOne({}, {sort: {create_time: -1}});
 
-  if(Messages.find({_id: msgObj._id}).count() > 0)
+  if(Messages.find({_id: msgObj._id}).count() > 0){
+    // 自己发送的消息且本地已经存在
+    if (msgObj && msgObj.form.id === Meteor.userId())
+      return;
+
     msgObj._id = new Mongo.ObjectID()._str;
+  }
+  
   try{
     console.log('last_msg:', last_msg);
     msgObj.create_time = msgObj.create_time ? new Date(msgObj.create_time) : new Date();
