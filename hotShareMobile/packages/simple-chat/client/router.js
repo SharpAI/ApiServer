@@ -880,19 +880,27 @@ window.___message = {
     });
   }
 };
-
+last_msg = null;
 SimpleChat.onMqttMessage = function(topic, msg) {
   console.log('SimpleChat.onMqttMessage, topic: ' + topic + ', msg: ' + msg);
   var group = topic.substring(topic.lastIndexOf('/') + 1);
   var msgObj = JSON.parse(msg);
-  var last_msg = Messages.findOne({}, {sort: {create_time: -1}});
+  //var last_msg = Messages.findOne({}, {sort: {create_time: -1}});
+  if(msgObj.form.id === Meteor.userId()){
+    return;
+  }
+  if(last_msg && last_msg._id === msgObj._id){
+    return;
+  }
+  last_msg = msgObj;
 
   if(Messages.find({_id: msgObj._id}).count() > 0){
     // 自己发送的消息且本地已经存在
-    if (msgObj && msgObj.form.id === Meteor.userId())
-      return;
+    //if (msgObj && msgObj.form.id === Meteor.userId())
+    //  return;
 
-    msgObj._id = new Mongo.ObjectID()._str;
+    //msgObj._id = new Mongo.ObjectID()._str;
+    return
   }
   
   try{

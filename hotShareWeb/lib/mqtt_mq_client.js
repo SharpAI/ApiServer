@@ -3,6 +3,7 @@
  */
 if(Meteor.isClient){
     mqtt_connection = null;
+    mqtt_connected = false;
     initMQTT = function(clientId){
         if(!mqtt_connection){
             var mqttOptions = {
@@ -15,21 +16,23 @@ if(Meteor.isClient){
             }
             mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80',mqttOptions);
             mqtt_connection.on('connect',function(){
-                console.log('Connected to mqtt server');
-                //mqtt_connection.subscribe('workai');
-                subscribeMyChatGroups();
-                subscribeMqttUser(Meteor.userId());
-                sendMqttMessage('presence/'+Meteor.userId(),{online:true})
-                mqtt_connection.on('message', function(topic, message) {
-                    console.log('on mqtt message topic: ' + topic + ', message: ' + message.toString());
-                    SimpleChat.onMqttMessage(topic, message.toString());
-                });
+                if(!mqtt_connected){
+                    mqtt_connected = true;
+                    console.log('Connected to mqtt server');
+                    //mqtt_connection.subscribe('workai');
+                    subscribeMyChatGroups();
+                    subscribeMqttUser(Meteor.userId());
+                    sendMqttMessage('/presence/'+Meteor.userId(),{online:true})
+                }
+            });
+
+            mqtt_connection.on('message', function(topic, message) {
+                console.log('on mqtt message topic: ' + topic + ', message: ' + message.toString());
+                SimpleChat.onMqttMessage(topic, message.toString());
             });
             sendMqttMessage=function(topic,message){
-                Meteor.defer(function(){
-                    console.log('sendMqttMessage:', topic, message);
-                    mqtt_connection.publish(topic,JSON.stringify(message),{qos:1})
-                })
+                console.log('sendMqttMessage:', topic, message);
+                mqtt_connection.publish(topic,JSON.stringify(message),{qos:1})
             };
             subscribeMqttGroup=function(group_id) {
                 if (mqtt_connection) {
@@ -71,7 +74,8 @@ if(Meteor.isClient){
       try {
           if (mqtt_connection) {
               mqtt_connection.end();
-              mqtt_connection = null
+              mqtt_connected = false;
+              mqtt_connection = null;
           }
       } catch (error) {
         console.log(error)
