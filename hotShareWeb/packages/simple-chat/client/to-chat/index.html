@@ -71,6 +71,11 @@
           <img class="work-ai-img swipebox" data-type="images" data-peoplehisid="{{people_his_id}}" src="{{url}}" />
           {{/each}}
         </div>
+        {{#if wait_lable}}
+        <div class="line-label-box"><div class="check">标记</div><div class="no">删除</div></div>
+        {{else}}
+        <div class="line-label-box"><div class="yes">是本人</div><div class="no">删除</div></div>
+        {{/if}}
         {{/if}}
       {{else}}
         {{#if show_images images}}
