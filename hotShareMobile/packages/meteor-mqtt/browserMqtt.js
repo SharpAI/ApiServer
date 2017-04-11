@@ -1061,6 +1061,9 @@ function extend() {
          */
         openDB: function () {
 
+            if (this.idb === null) {
+              return;
+            }
             var openRequest = this.idb.open(this.dbName, this.dbVersion);
             var preventSuccessCallback = false;
 
