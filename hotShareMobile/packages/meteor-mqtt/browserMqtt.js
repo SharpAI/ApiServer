@@ -1060,6 +1060,10 @@ function extend() {
          *
          */
         openDB: function () {
+            //此处是因为不加判断在iOS 8上会报错，程序被卡死
+            if (this.idb === null) {
+              return;
+            }
 
             var openRequest = this.idb.open(this.dbName, this.dbVersion);
             var preventSuccessCallback = false;
