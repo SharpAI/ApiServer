@@ -14,7 +14,7 @@ if(Meteor.isClient){
                 outgoingStore: mqtt_store_manager.outgoing,
                 clientId:clientId
             }
-            mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80',mqttOptions);
+            mqtt_connection=mqtt.connect('ws://mq.tiegushi.com:80',mqttOptions);
             mqtt_connection.on('connect',function(){
                 if(!mqtt_connected){
                     mqtt_connected = true;
