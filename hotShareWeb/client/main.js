@@ -1,5 +1,5 @@
 if (Meteor.isClient) {
-  Session.set("DocumentTitle",'WorkAI');
+  Session.set("DocumentTitle",'点圈');
   Deps.autorun(function(){
     document.title = Session.get("DocumentTitle");
   });
