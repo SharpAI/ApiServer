@@ -18,6 +18,17 @@ if Meteor.isClient
             if (target.data("visible"))
                 target.data("visible", false);
   Template.chatGroups.helpers
+    msgSession2: ()->
+      return SimpleChat.MsgSession.find({userId: Meteor.userId()}, {sort: {sessionType: 1, updateAt: -1}})
+    isGroup: (msg)->
+      return msg.to_type is 'group'
+    hasVal: (val)->
+      console.log('hasVal:', if val then true else false)
+      return if val then true else false
+    hasCount: (val)->
+      return val > 0
+    formatTime: (val)->
+      return get_diff_time(val)
     msgSession: ()->
       SimpleChat.GroupUsers.find({user_id:Meteor.userId()}, {sort: {createdAt: -1}})
     myChatGroups:()->
@@ -59,15 +70,13 @@ if Meteor.isClient
           if me.profile.waitReadCount > 0
             Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
       PUB.page('/bell')
-    'click .groupsItem': (event)->
+    'click li': (event)->
       if isIOS
         if (event.clientY + $('.home #footer').height()) >=  $(window).height()
           console.log 'should be triggered in scrolling'
           return false
-      $('.chatGroups').addClass('animated ' + animateOutLowerEffect);
-      console.log this
-      type = $(event.currentTarget).attr('data-type')
-      url = '/simple-chat/to/'+type+'?id='+ (if type is 'group' then this.group_id else this.followerId)
+      url = '/simple-chat/to/'+this.sessionType+'?id='+ this.toUserId
+      SimpleChat.MsgSession.update({_id: this._id}, {$set: {count: 0}})
       setTimeout ()->
         PUB.page(url)
       ,animatePageTrasitionTimeout
