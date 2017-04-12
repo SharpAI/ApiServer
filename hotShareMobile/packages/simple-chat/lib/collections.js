@@ -53,6 +53,13 @@ if(Meteor.isServer){
 
     if (!msgObj)
       return;
+    if (doc.to_type === 'user' && doc.to.id == Meteor.userId()) {
+      //ta 被我拉黑
+      if(BlackList.find({blackBy: Meteor.userId(), blacker:{$in: [doc.to.id]}}).count() === 0){
+        console.log(doc.to.id+'被我拉黑');
+        return;
+      }
+    }
 
     msgObj.userId = Meteor.userId();
     msgObj.userName = AppConfig.get_user_name(Meteor.user());

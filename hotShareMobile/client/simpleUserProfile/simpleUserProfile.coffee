@@ -90,12 +90,15 @@ if Meteor.isClient
     'click #addToBlacklist':()->
       blackerId = Session.get("simpleUserProfileUserId")
       FollowerId = Follower.findOne({userId: Meteor.userId(),followerId: blackerId})
+      MsgSessionId = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId: blackerId})
       if BlackList.find({blackBy: Meteor.userId(), blacker:{$in: [blackerId]}}).count() is 0
         if BlackList.find({blackBy: Meteor.userId()}).count() is 0
           #Meteor.call('addBlackList', blackerId, Meteor.userId())
           BlackList.insert({blacker: [blackerId],blackBy: Meteor.userId()})
           if FollowerId
             Follower.remove(FollowerId._id)
+          if MsgSessionId
+            SimpleChat.MsgSession.remove(MsgSessionId._id)
           Session.set('fromeaddblacllist', true)
           Router.go '/my_blacklist'
         else
@@ -103,6 +106,8 @@ if Meteor.isClient
           BlackList.update({_id: id}, {$addToSet: {blacker: blackerId}})
           if FollowerId
             Follower.remove(FollowerId._id)
+          if MsgSessionId
+            SimpleChat.MsgSession.remove(MsgSessionId._id)
           Session.set('fromeaddblacllist', true)
           Router.go '/my_blacklist'
       else
