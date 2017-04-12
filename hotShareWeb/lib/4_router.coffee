@@ -540,7 +540,7 @@ if Meteor.isServer
     people = People.findOne({id: id, uuid: uuid})
     name = PERSON.getName(uuid, id)
     device = PERSON.upsetDevice(uuid)
-    
+
     if !people
       people = {_id: new Mongo.ObjectID()._str, id: id, uuid: uuid,name: name,embed: null,local_url: null,aliyun_url: url}
       People.insert(people)
@@ -624,7 +624,7 @@ if Meteor.isServer
   Router.route('/restapi/workai-join-group', {where: 'server'}).get(()->
       uuid = this.params.query.uuid
       group_id = this.params.query.group_id
-      console.log '/restapi/workai-join-group get request, uuid:' + uuid + ', group_id:' + group
+      console.log '/restapi/workai-join-group get request, uuid:' + uuid + ', group_id:' + group_id
       unless uuid or group_id
         console.log '/restapi/workai-join-group get unless resturn'
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
@@ -646,6 +646,25 @@ if Meteor.isServer
           user_icon: if user.profile and user.profile.icon then user.profile.icon else '/userPicture.png'
           create_time: new Date()
         });
+        sendMqttMessage('/msg/g/'+ group_id, {
+          _id: new Mongo.ObjectID()._str
+          form: {
+            id: user._id
+            name: user.username
+            icon: '/userPicture.png'
+          }
+          to: {
+            id: group_id
+            name: group.name
+            icon: group.icon
+          }
+          images: []
+          to_type: "group"
+          type: "text"
+          text: '设备 ['+user.username+'] 加入了聊天室!'
+          create_time: new Date()
+          is_read: false
+        })
       console.log('user:', user)
       console.log('device:', device)
       this.response.end('{"result": "ok"}\n')
@@ -676,5 +695,24 @@ if Meteor.isServer
           user_icon: if user.profile and user.profile.icon then user.profile.icon else '/userPicture.png'
           create_time: new Date()
         });
+        sendMqttMessage('/msg/g/'+ group_id, {
+          _id: new Mongo.ObjectID()._str
+          form: {
+            id: user._id
+            name: user.username
+            icon: '/userPicture.png'
+          }
+          to: {
+            id: group_id
+            name: group.name
+            icon: group.icon
+          }
+          images: []
+          to_type: "group"
+          type: "text"
+          text: '设备 ['+user.username+'] 加入了聊天室!'
+          create_time: new Date()
+          is_read: false
+        })
       this.response.end('{"result": "ok"}\n')
     )
