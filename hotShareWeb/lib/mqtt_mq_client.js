@@ -27,8 +27,13 @@ if(Meteor.isClient){
             });
 
             mqtt_connection.on('message', function(topic, message) {
+              try {
                 console.log('on mqtt message topic: ' + topic + ', message: ' + message.toString());
                 SimpleChat.onMqttMessage(topic, message.toString());
+              }
+              catch (ex) {
+                console.log('exception onMqttMessage: ' + ex);
+              }
             });
             sendMqttMessage=function(topic,message){
                 console.log('sendMqttMessage:', topic, message);

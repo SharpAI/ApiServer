@@ -9,7 +9,7 @@ if(Meteor.isServer){
             reconnectPeriod:20*1000,
             clientId:clientId
         }
-        mqtt_connection=mqtt.connect('ws://rpcserver.raidcdn.com:80',mqttOptions);
+        mqtt_connection=mqtt.connect('ws://mq.tiegushi.com:80',mqttOptions);
         mqtt_connection.on('connect',function(){
             console.log('Connected to mqtt server');
         });
