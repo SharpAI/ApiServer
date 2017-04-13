@@ -43,6 +43,9 @@ if Meteor.isClient
             return PUB.toast('删除失败，请重试~')
           if mqtt_connection 
             mqtt_connection.unsubscribe("/msg/g/" + id)
+          MsgSessionId = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId: blackerId})
+          if MsgSessionId
+            SimpleChat.MsgSession.remove(MsgSessionId._id)
           PUB.back()
         )
         )

@@ -119,6 +119,9 @@ if Meteor.isClient
                      followerId: Session.get('simpleUserProfileUserId')
                  })._id
       Follower.remove(FollowerId)
+      MsgSessionId = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId: blackerId})
+      if MsgSessionId
+        SimpleChat.MsgSession.remove(MsgSessionId._id)
     'click .addToAddressbook':()->
       follow =  Meteor.users.findOne({_id:Session.get('simpleUserProfileUserId')})
       if follow.profile.fullname
