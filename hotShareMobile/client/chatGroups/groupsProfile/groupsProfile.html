@@ -19,7 +19,8 @@
                 <!-- <div class="shareGroup eachViewer">
                 <span>分享群聊</span>
             </div> -->
-                <ul class="set-up comFadeIn" style="margin-top: 0px;">
+                {{#if isGroup}}
+                <ul class="set-up comFadeIn" style="margin-top: 0px;margin-bottom: 10px;">
                     <li class="name">
                         <label>群聊名称</label>
                         <div class="value">{{groupName}}<i class="fa fa-angle-right"></i></div>
@@ -31,7 +32,12 @@
                     </li>
                     {{/if}}
                 </ul>
+                {{/if}}
+                <div class="emptyMessages">清空聊天记录</div>
+                <div class="line" style="height: 12px;"></div>
+                {{#if isGroup}}
                 <div class="deleteAndExit">删除并退出</div>
+                {{/if}}
             </div>
         </div>
     </div>
@@ -40,18 +46,29 @@
     <div class="groupUsers">
         <div class="contentList">
             <ul style="padding: 0;">
-                {{#each groupUsers}}
-                <li id="{{_id}}">
-                    <div class='box'>
-                        <div class='boxcontent'>
-                            <img class="usericon" src="{{user_icon}}">
+                {{#if isGroup}}
+                    {{#each groupUsers}}
+                    <li id="{{user_id}}" class="userItem">
+                        <div class='box'>
+                            <div class='boxcontent'>
+                                <img class="usericon" src="{{user_icon}}">
+                            </div>
                         </div>
-                    </div>
-                    <div class="userName">{{user_name}}</div>
-                </li>
-                {{/each}}
+                        <div class="userName">{{user_name}}</div>
+                    </li>
+                    {{/each}}
+                {{else}}
+                    <li id="{{chat_user_id}}" class="userItem">
+                        <div class='box'>
+                            <div class='boxcontent'>
+                                <img class="usericon" src="{{chat_user_Icon}}">
+                            </div>
+                        </div>
+                        <div class="userName">{{chat_user_Name}}</div>
+                    </li>
+                {{/if}}
                 {{#if isMobile}}
-                    <li>
+                    <li >
                         <div class='box'>
                             <div class='boxcontent'>
                                 <img id="addUserInGroup" src="/addUser.png">

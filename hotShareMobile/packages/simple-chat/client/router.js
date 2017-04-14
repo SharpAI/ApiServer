@@ -215,13 +215,13 @@ var setMsgList = function(where, action){
 
   if (setMsgListLastTime && new Date() - setMsgListLastTime > 5000){
     message_list.set(Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
-    if(action === 'insert'){Meteor.setTimeout(function(){$('.box').scrollTop($('.box ul').height());}, 200);}
+    if(action === 'insert' || action === 'remove'){Meteor.setTimeout(function(){$('.box').scrollTop($('.box ul').height());}, 200);}
     setMsgListLastTime = new Date();
     console.log('update message');
   } else {
     setMsgListTime = Meteor.setTimeout(function(){
       message_list.set(Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
-      if(action === 'insert'){Meteor.setTimeout(function(){$('.box').scrollTop($('.box ul').height());}, 200);}
+      if(action === 'insert' || action === 'remove'){Meteor.setTimeout(function(){$('.box').scrollTop($('.box ul').height());}, 200);}
       setMsgListTime = null;
       setMsgListLastTime = new Date();
       console.log('update message');
@@ -257,7 +257,13 @@ Template._simpleChatToChat.onRendered(function(){
       }
     });
     Messages.after.remove(function (userId, doc){
-      // setMsgList(page_data.where, 'remove');
+      console.log('message remove');
+      if (!page_data)
+        return;
+      if (doc.to_type === page_data.type && doc.to.id === page_data.id){
+        console.log('message update');
+        setMsgList(page_data.where, 'remove');
+      }
     });
     Messages.onBefore = true;
   }
@@ -804,11 +810,12 @@ Template._simpleChatToChatLayout.events({
   },
   'click .groupsProfile':function(e,t){
     var data = Blaze.getData(Blaze.getView(document.getElementsByClassName('simple-chat')[0]));
-    Router.go('/groupsProfile/'+data.id);
+    Router.go('/groupsProfile/'+data.type+'/'+data.id);
   },
   'click .userProfile':function(e,t){
     var data = Blaze.getData(Blaze.getView(document.getElementsByClassName('simple-chat')[0]));
-    PUB.page('/simpleUserProfile/'+data.id);
+    Router.go('/groupsProfile/'+data.type+'/'+data.id);
+    //PUB.page('/simpleUserProfile/'+data.id);
   }
 
 });

@@ -52,3 +52,7 @@ if Meteor.isClient
       Session.set("groupsProfileMenu","groupInformation")
     'click #addUserInGroup':(event)->
       Session.set("groupsProfileMenu","inviteFriendIntoGroup")
+    'click .userItem': (event)->
+      #Session.set("groupsProfileMenu","setGroupname")
+      console.log event.currentTarget.id
+      PUB.page('/simpleUserProfile/'+event.currentTarget.id);

@@ -3,7 +3,10 @@ if Meteor.isClient
   Template.inviteFriendIntoGroup.rendered=->
     users.set([])
     groupid = Session.get('groupsId')
-    Meteor.subscribe("get-group-user",groupid)
+    if Session.get('groupsType') is 'group'
+       Meteor.subscribe("get-group-user",groupid)
+    else
+       users.set([{'followerId':groupid}])
     $('.content').css 'min-height',$(window).height()
 #    $('.mainImage').css('height',$(window).height()*0.55)
     $(window).scroll (event)->
@@ -32,7 +35,13 @@ if Meteor.isClient
     is_selected: (followerId)->
       return _.pluck(users.get(), 'followerId').indexOf(followerId) isnt -1
     is_invited:(followerId)->
-      SimpleChat.GroupUsers.findOne({group_id:Session.get('groupsId'),user_id:followerId})
+      if Session.get('groupsType') is 'group'
+        SimpleChat.GroupUsers.findOne({group_id:Session.get('groupsId'),user_id:followerId})
+      else
+        if  Session.get('groupsId') is followerId
+          return true
+        else
+          return false
   Template.inviteFriendIntoGroup.events
     'click .leftButton':(event)->
       Session.set("groupsProfileMenu","groupInformation")
@@ -41,12 +50,37 @@ if Meteor.isClient
       if selected.length <= 0
         Session.set("groupsProfileMenu","groupInformation")
         return 
-      Meteor.call 'add-group-urser', Session.get('groupsId'), _.pluck(selected, 'followerId'), (err, id)->
-        console.log(err)
-        if err or !id
-          return PUB.toast('添加失败，请重试~')
-        Session.set("groupsProfileMenu","groupInformation")
-        
+      if Session.get('groupsType') is 'group'
+        Meteor.call 'add-group-urser', Session.get('groupsId'), _.pluck(selected, 'followerId'), (err, id)->
+          console.log(err)
+          if err or !id
+            return PUB.toast('添加失败，请重试~')
+          Session.set("groupsProfileMenu","groupInformation")
+      else
+        groupid = new Mongo.ObjectID()._str;
+        Meteor.call 'create-group',groupid,null,_.pluck(selected, 'followerId'), (err, id)->
+          console.log(err)
+          if err or !id
+            return PUB.toast('添加失败，请重试~')
+          Meteor.subscribe('get-group',groupid,{
+            onReady:()->
+              group = SimpleChat.Groups.findOne({_id:groupid});
+              user = Meteor.user();
+              msgObj = {
+                toUserId: group._id,
+                toUserName: group.name, 
+                toUserIcon: group.icon, 
+                sessionType: 'group',
+                userId:user._id,
+                userName:user.profile.fullname || user.username,
+                userIcon:user.profile.icon || '/userPicture.png',
+                lastText:'',
+                createAt:new Date(),
+                updateAt:new Date()
+              };
+              SimpleChat.MsgSession.insert(msgObj)
+          })
+          Router.go('/simple-chat/to/group?id='+id)
     'click .followItem': (event)->
       # console.log(this);
       $i = $(event.currentTarget).find('i');

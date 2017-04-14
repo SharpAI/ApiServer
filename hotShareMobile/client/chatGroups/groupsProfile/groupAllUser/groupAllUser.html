@@ -25,7 +25,7 @@
                             <center style="color: gray;">搜索中<i class="fa fa-spinner fa-pulse"></i></center>
                         {{/if}} 
                         {{#each getGroupsUsers}}
-                            <li id="{{_id}}">
+                            <li id="{{user_id}}" class="userItem">
                                 <div class='box'>
                                     <div class='boxcontent'>
                                         <img class="usericon" src="{{user_icon}}">
@@ -36,7 +36,7 @@
                         {{/each}} 
                     {{else}}
                         {{#each groupUsers}}
-                            <li id="{{_id}}">
+                            <li id="{{user_id}}">
                                 <div class='box'>
                                     <div class='boxcontent'>
                                         <img class="usericon" src="{{user_icon}}">

@@ -20,6 +20,27 @@ if (Meteor.isClient) {
                 }
                 if (result === 'succ') {
                    PUB.toast('添加成功');
+                   Meteor.subscribe('get-group', {
+                      onReady: function() {
+                        var group, msgObj, user;
+                        group = SimpleChat.Groups.findOne({
+                          _id: groupid
+                        });
+                        user = Meteor.user();
+                        msgObj = {
+                          toUserId: group._id,
+                          toUserName: group.name,
+                          toUserIcon: group.icon,
+                          sessionType: 'group',
+                          userId: user._id,
+                          userName: user.profile.fullname || user.username,
+                          userIcon: user.profile.icon || '/userPicture.png',
+                          lastText: '',
+                          createAt: new Date()
+                        };
+                        return SimpleChat.MsgSession.insert(msgObj);
+                      }
+                    });
                    return Router.go(gotoPage);
                 }
                 if (result === 'not find group') {

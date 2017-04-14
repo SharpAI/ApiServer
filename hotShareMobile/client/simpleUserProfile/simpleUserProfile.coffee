@@ -119,7 +119,7 @@ if Meteor.isClient
                      followerId: Session.get('simpleUserProfileUserId')
                  })._id
       Follower.remove(FollowerId)
-      MsgSessionId = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId: blackerId})
+      MsgSessionId = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId: Session.get('simpleUserProfileUserId')})
       if MsgSessionId
         SimpleChat.MsgSession.remove(MsgSessionId._id)
     'click .addToAddressbook':()->

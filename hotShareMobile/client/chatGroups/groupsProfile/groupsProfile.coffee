@@ -9,6 +9,11 @@ if Meteor.isClient
     Meteor.subscribe("get-group",groupid)
     Meteor.subscribe('group-user-counter',groupid)
   Template.groupInformation.helpers
+    isGroup:()->
+      if Session.get('groupsType') is 'group'
+        return true
+      else
+        return false
     groupName:()->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       if group and group.name
@@ -29,7 +34,8 @@ if Meteor.isClient
   Template.groupInformation.events
     'click #groupsProfilePageback':(event)->
       groupid = Session.get('groupsId')
-      url = '/simple-chat/to/group?id='+groupid
+      type = Session.get('groupsType')
+      url = '/simple-chat/to/'+type+'?id='+groupid
       Router.go(url)
     'click .name': (event)->
       Session.set("groupsProfileMenu","setGroupname")
@@ -43,14 +49,47 @@ if Meteor.isClient
             return PUB.toast('删除失败，请重试~')
           if mqtt_connection 
             mqtt_connection.unsubscribe("/msg/g/" + id)
-          MsgSessionId = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId: blackerId})
+          MsgSessionId = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId: id})
           if MsgSessionId
             SimpleChat.MsgSession.remove(MsgSessionId._id)
-          PUB.back()
+          where = {'to.id': id, to_type: 'group'};
+          SimpleChat.Messages.remove(where);
+          Meteor.setTimeout(()->
+            PUB.back()
+          ,100)
         )
-        )
+      )
+    'click .emptyMessages':(event)->
+      PUB.confirm('确定要清空聊天记录吗？',()->
+        type = Session.get('groupsType')
+        to = Session.get('groupsId')
+        if type is 'group'
+          where = {'to.id': to, to_type: type};
+        else
+          where = {
+            $or: [
+              {'form.id': Meteor.userId(), 'to.id': to, to_type: type}, 
+              {'form.id': to, 'to.id': Meteor.userId(), to_type: type}  
+            ]
+          };
+        console.log('where:', where);
+        window.plugins.toast.showLongCenter('请稍候~')
+        SimpleChat.Messages.remove(where);
+        console.log '聊天记录已清空';
+        SimpleChat.MsgSession.update({toUserId:to},{$set:{lastText:''}})
+        window.plugins.toast.hide();
+        # groupid = Session.get('groupsId')
+        # type = Session.get('groupsType')
+        # url = '/simple-chat/to/'+type+'?id='+groupid
+        # Router.go(url)
+      )
 
   Template.groupUsers.helpers
+    isGroup:()->
+      if Session.get('groupsType') is 'group'
+        return true
+      else
+        return false
     groupUsers:()->
       limit = withShowGroupsUserMaxCount || 29;
       return SimpleChat.GroupUsers.find({group_id:Session.get('groupsId')},{sort: {createdAt: 1},limit:limit})
@@ -59,6 +98,20 @@ if Meteor.isClient
       return Counts.get('groupsUserCountBy-'+Session.get('groupsId')) > limit
     isMobile:()->
       Meteor.isCordova
+    chat_user_id:()->
+      Session.get('groupsId')
+    chat_user_Icon:()->
+      users = Meteor.users.findOne({_id:Session.get('groupsId')})
+      if users and users.profile
+         return users.profile.icon
+      else
+         return '/userPicture.png'
+    chat_user_Name:()->
+      users = Meteor.users.findOne({_id:Session.get('groupsId')})
+      if users and users.profile
+         return users.profile.fullname || users.username
+      else
+         return ''
 
   Template.groupUsers.events
     'click #addUserInGroup':(event)->
@@ -67,6 +120,8 @@ if Meteor.isClient
       Session.set("groupsProfileMenu","groupAllUser")
     'click .userItem': (event)->
       #Session.set("groupsProfileMenu","setGroupname")
+      console.log event.currentTarget.id
+      PUB.page('/simpleUserProfile/'+event.currentTarget.id);
    
   Template.setGroupname.helpers
     groupName:()->
@@ -83,7 +138,9 @@ if Meteor.isClient
     'submit .setGroupname-form': (e)->
       if e.target.text.value isnt ''
         console.log 'Change Groups Name to ' +e.target.text.value
-        Meteor.call('updateGroupName',Session.get('groupsId'),e.target.text.value)
+        Meteor.call('updateGroupName',Session.get('groupsId'),e.target.text.value,(error)->
+            SimpleChat.MsgSession.update({toUserId:to},{$set:{toUserName:e.target.text.value}})
+          )
 
         Session.set("groupsProfileMenu","groupInformation")
 
