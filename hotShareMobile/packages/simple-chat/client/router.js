@@ -4,6 +4,7 @@ var list_limit = new ReactiveVar(list_limit_val);
 var page_title = new ReactiveVar('聊天室');
 var list_data = new ReactiveVar([]);
 var message_list = new ReactiveVar([]);
+var page_data = null;
 
 Router.route(AppConfig.path + '/to/:type', {
   layoutTemplate: '_simpleChatToChatLayout',
@@ -42,6 +43,13 @@ Router.route(AppConfig.path + '/to/:type', {
       loading: is_loading.get()
     };
   }
+});
+
+Template._simpleChatToChatLayout.onRendered(function(){
+  page_data = this.data;
+});
+Template._simpleChatToChatLayout.onDestroyed(function(){
+  page_data = null;
 });
 
 var time_list = [];
@@ -197,6 +205,30 @@ Template._simpleChatToChat.onDestroyed(function(){
   }
 });
 
+var setMsgListTime = null;
+var setMsgListLastTime = null;
+var setMsgList = function(where, action){
+  if (setMsgListTime){
+    Meteor.clearTimeout(setMsgListTime);
+    setMsgListTime = null;
+  }
+
+  if (setMsgListLastTime && new Date() - setMsgListLastTime > 5000){
+    message_list.set(Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
+    if(action === 'insert'){Meteor.setTimeout(function(){$('.box').scrollTop($('.box ul').height());}, 200);}
+    setMsgListLastTime = new Date();
+    console.log('update message');
+  } else {
+    setMsgListTime = Meteor.setTimeout(function(){
+      message_list.set(Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
+      if(action === 'insert'){Meteor.setTimeout(function(){$('.box').scrollTop($('.box ul').height());}, 200);}
+      setMsgListTime = null;
+      setMsgListLastTime = new Date();
+      console.log('update message');
+    }, 600);
+  }
+};
+
 Template._simpleChatToChat.onRendered(function(){
   is_loading.set(true);
   list_limit.set(list_limit_val);
@@ -209,39 +241,23 @@ Template._simpleChatToChat.onRendered(function(){
   message_list.set(Messages.find(slef.data.where, {limit: list_limit_val, sort: {create_time: -1}}).fetch().reverse());
   if (!Messages.onBefore){
     Messages.after.insert(function (userId, doc) {
-      var chatBox = document.getElementsByClassName('simple-chat');
-      if (chatBox.length <= 0)
+      if (!page_data)
         return;
-
-      var data = Blaze.getData(chatBox[0]);
-      if (!data)
-        return;
-
-      if (doc.to_type === data.type && doc.to.id === data.id){
+      if (doc.to_type === page_data.type && doc.to.id === page_data.id){
         console.log('message insert');
-        Meteor.setTimeout(function(){$('.box').scrollTop($('.box ul').height());}, 200);
-        console.log('data:', Messages.find(data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
-        message_list.set(Messages.find(data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
+        setMsgList(page_data.where, 'insert');
       }
     });
     Messages.after.update(function (userId, doc, fieldNames, modifier, options) {
-      var chatBox = document.getElementsByClassName('simple-chat');
-      if (chatBox.length <= 0)
+      if (!page_data)
         return;
-
-      var data = Blaze.getData(chatBox[0]);
-      if (!data)
-        return;
-
-      if (doc.to_type === data.type && doc.to.id === data.id){
+      if (doc.to_type === page_data.type && doc.to.id === page_data.id){
         console.log('message update');
-        console.log('data:', Messages.find(data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
-        message_list.set(Messages.find(data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
+        setMsgList(page_data.where, 'update');
       }
     });
     Messages.after.remove(function (userId, doc){
-      // console.log('message remove');
-      // message_list.set(Messages.find(slef.data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
+      // setMsgList(page_data.where, 'remove');
     });
     Messages.onBefore = true;
   }
