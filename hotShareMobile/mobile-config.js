@@ -57,15 +57,15 @@ App.launchScreens({
 });
 
 App.configurePlugin('cordova-plugin-x-socialsharing', {
-    APP_ID: 'wxcfcf19c225a36351'
+    APP_ID: 'wxcd969948062270d4'
 });
 
 App.configurePlugin('com.leon.cordova.wechat', {
-    APP_ID: 'wxcfcf19c225a36351',
+    APP_ID: 'wxcd969948062270d4',
     QQ_APP_ID: '1106023181'
 });
 App.configurePlugin('com.share.wechatShare', {
-    APP_ID: 'wxcfcf19c225a36351',
+    APP_ID: 'wxcd969948062270d4',
 });
 
 App.configurePlugin('org.zy.yuancheng.qq', {
