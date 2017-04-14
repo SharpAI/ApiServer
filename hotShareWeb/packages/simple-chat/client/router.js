@@ -38,7 +38,8 @@ Router.route(AppConfig.path + '/to/:type', {
       type: slef.params.type,
       where: where,
       messages: function(){
-        return message_list.get();
+        return Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse();
+        // return message_list.get();
       },
       loading: is_loading.get()
     };
@@ -56,7 +57,7 @@ var time_list = [];
 var init_page = false;
 var fix_data_timeInterval = null;
 var fix_data = function(){
-  var data = message_list.get(); //Blaze.getData($('.simple-chat')[0]).messages.fetch();
+  var data = page_data.messages(); // message_list.get(); //Blaze.getData($('.simple-chat')[0]).messages.fetch();
   data.sort(function(a, b){
     return a.create_time - b.create_time;
   });
@@ -205,28 +206,8 @@ Template._simpleChatToChat.onDestroyed(function(){
   }
 });
 
-var setMsgListTime = null;
-var setMsgListLastTime = null;
 var setMsgList = function(where, action){
-  if (setMsgListTime){
-    Meteor.clearTimeout(setMsgListTime);
-    setMsgListTime = null;
-  }
-
-  if (setMsgListLastTime && new Date() - setMsgListLastTime > 5000){
-    message_list.set(Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
-    if(action === 'insert'){Meteor.setTimeout(function(){$('.box').scrollTop($('.box ul').height());}, 200);}
-    setMsgListLastTime = new Date();
-    console.log('update message');
-  } else {
-    setMsgListTime = Meteor.setTimeout(function(){
-      message_list.set(Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
-      if(action === 'insert'){Meteor.setTimeout(function(){$('.box').scrollTop($('.box ul').height());}, 200);}
-      setMsgListTime = null;
-      setMsgListLastTime = new Date();
-      console.log('update message');
-    }, 600);
-  }
+  if(action === 'insert'){Meteor.setTimeout(function(){$('.box').scrollTop($('.box ul').height());}, 200);}
 };
 
 Template._simpleChatToChat.onRendered(function(){
@@ -238,7 +219,6 @@ Template._simpleChatToChat.onRendered(function(){
   message_list.set([]);
   var slef = this;
 
-  message_list.set(Messages.find(slef.data.where, {limit: list_limit_val, sort: {create_time: -1}}).fetch().reverse());
   if (!Messages.onBefore){
     Messages.after.insert(function (userId, doc) {
       if (!page_data)
@@ -287,7 +267,6 @@ Template._simpleChatToChat.onRendered(function(){
       // if(slef.data.messages.count() >= list_limit.get())
       is_loading.set(true);
       list_limit.set(list_limit.get()+list_limit_val);
-      message_list.set(Messages.find(slef.data.where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse());
       Meteor.setTimeout(function(){is_loading.set(false);}, 500);
     }
   });
