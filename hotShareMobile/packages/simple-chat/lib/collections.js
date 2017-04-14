@@ -40,8 +40,8 @@ if(Meteor.isServer){
     var msgObj = null;
     switch(doc.to_type){
       case 'group':
-        if (GroupUsers.find({group_id: doc.to.id}).count() > 0) // -> my group
-          msgObj = {toUserId: doc.to.id, toUserName: doc.to.name, toUserIcon: doc.to.icon, sessionType: 'group'};
+        //if (GroupUsers.find({group_id: doc.to.id}).count() > 0) // -> my group
+        msgObj = {toUserId: doc.to.id, toUserName: doc.to.name, toUserIcon: doc.to.icon, sessionType: 'group'};
         break;
       case 'user':
         if (doc.form.id === Meteor.userId()) // me -> ta
