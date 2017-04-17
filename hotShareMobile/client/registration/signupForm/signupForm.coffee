@@ -102,7 +102,11 @@ Template.signupForm.events
                 console.log 'setUserInfo was Error!'
                 return
             #Router.go '/registerFollow'
-            ScanBarcodeByBarcodeScanner()
+            #ScanBarcodeByBarcodeScanner()
+            if window.localStorage.getItem("isSecondUse") == 'true'
+              Router.go('/')
+            else
+              Router.go('/introductoryPage')
             return
     false
 

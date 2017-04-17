@@ -20,7 +20,7 @@ if (Meteor.isClient) {
                 }
                 if (result === 'succ') {
                    PUB.toast('添加成功');
-                   Meteor.subscribe('get-group', {
+                   Meteor.subscribe('get-group',groupid, {
                       onReady: function() {
                         var group, msgObj, user;
                         group = SimpleChat.Groups.findOne({
@@ -80,6 +80,114 @@ if (Meteor.isClient) {
         //disableSuccessBeep: false // iOS
       }
     );
+  }
+  window.DecodeImageFromAlum = function(){
+    function decodecallback(result){
+      var gotoPage = '/';
+      var  requiredStr = rest_api_url+'/simple-chat/to/group?id='
+      if (result && result.indexOf(requiredStr)=== 0) {
+        var groupid = result.substring(requiredStr.length);
+        console.log('groupid==='+groupid);
+        if (groupid && groupid.length > 0) {
+          Meteor.call('add-group-urser', groupid, [Meteor.userId()], function(err, result) {
+            if (err) {
+              console.log(err);
+              return PUB.toast('添加失败，请重试~');
+            }
+            if (result === 'succ') {
+               PUB.toast('添加成功');
+               Meteor.subscribe('get-group',groupid, {
+                  onReady: function() {
+                    var group, msgObj, user;
+                    group = SimpleChat.Groups.findOne({
+                      _id: groupid
+                    });
+                    if (group) {
+                      user = Meteor.user();
+                      msgObj = {
+                        toUserId: group._id,
+                        toUserName: group.name,
+                        toUserIcon: group.icon,
+                        sessionType: 'group',
+                        userId: user._id,
+                        userName: user.profile.fullname || user.username,
+                        userIcon: user.profile.icon || '/userPicture.png',
+                        lastText: '',
+                        createAt: new Date()
+                      };
+                      SimpleChat.MsgSession.insert(msgObj);
+                    }
+                  }
+                });
+               return Router.go(gotoPage);
+            }
+            if (result === 'not find group') {
+              PUB.toast('二维码格式错误');
+              return Router.go(gotoPage);
+            }
+          });
+        }
+        else{
+          Router.go(gotoPage);
+          PUB.toast('二维码格式错误')
+        }
+      }
+      else{
+        Router.go(gotoPage);
+        PUB.toast('二维码格式错误')
+      }
+    }
+    if(device.platform === 'Android' ){
+      pictureSource = navigator.camera.PictureSourceType;
+      destinationType = navigator.camera.DestinationType;
+      encodingType = navigator.camera.EncodingType;
+
+      navigator.camera.getPicture(function(s){
+        console.log('##RDBG pic get: ' + s);
+
+        localFile = s.substring(7);
+        console.log('##RDBG local file: ' + localFile);
+        questionMark = localFile.indexOf('?');
+        if (questionMark > 0) {
+          localFile = localFile.substring(0, questionMark);
+          console.log('##RDBG local file: ' + localFile);
+        }
+
+        cordova.plugins.barcodeScanner.decodeImage(localFile, function (result) {
+          console.log("##RDBG decodeImage suc: " + result);
+          decodecallback(result);
+        }, function (err) {
+          console.log('##RDBG decodeImage err: ' + err);
+        });
+      }, function(err) {
+        console.log('##RDBG pic get fail: ' + err);
+      }, {
+        quality: 20,
+        targetWidth: 1900,
+        targetHeight: 1900,
+        destinationType: destinationType.FILE_URI,
+        sourceType: pictureSource.SAVEDPHOTOALBUM
+      });
+    }
+    else {
+      window.imagePicker.getPictures(function (results) {
+        for (var i = 0; i < results.length; i++) {
+          localFile = results[i].substring(7);
+          console.log('##RDBG local file: ' + localFile);
+
+          cordova.plugins.barcodeScanner.decodeImage(localFile, function (result) {
+            console.log("##RDBG decodeImage suc: " + result);
+            decodecallback(result);
+          }, function (err) {
+            console.log('##RDBG decodeImage err: ' + err);
+          });
+        }
+      }, function (error) {
+        console.log('getPictures Error: ' + error);
+      }, {
+          maximumImagesCount: 1
+        });
+    }
   }
   Meteor.startup(function(){
       if (Accounts._resetPasswordToken) {
@@ -156,7 +264,14 @@ if (Meteor.isClient) {
                 if (!error){
                     console.log('Registration Succ, goto Follow page');
                     //Router.go('/registerFollow');
-                    ScanBarcodeByBarcodeScanner();
+                    var flag = window.localStorage.getItem("isSecondUse") === 'true';
+                    if (flag) {
+                      Router.go('/');
+                    }
+                    else{
+                      Router.go('/introductoryPage');
+                    }
+
                 } else {
                     $('.agreeDeal').css('display',"none");
                     PUB.toast ('匿名服务暂时不可用，请稍后重试');
@@ -207,7 +322,14 @@ if (Meteor.isClient) {
           {
               Meteor.users.update({_id: Meteor.userId()}, {$set: {"profile.new": true}});
                 //return Router.go('/registerFollow');
-                ScanBarcodeByBarcodeScanner();
+                // ScanBarcodeByBarcodeScanner();
+                var flag = window.localStorage.getItem("isSecondUse") === 'true';
+                if (flag) {
+                  Router.go('/');
+                }
+                else{
+                  Router.go('/introductoryPage');
+                }
           }
           else
             return Router.go('/');

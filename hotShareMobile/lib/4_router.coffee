@@ -225,6 +225,14 @@ if Meteor.isClient
     Router.route '/recoveryForm', ()->
       this.render 'recoveryForm'
       return
+    Router.route '/introductoryPage',()->
+      this.render 'introductoryPage'
+      Session.set 'channel','introductoryPage'
+      return
+    Router.route '/introductoryPage1',()->
+      this.render 'introductoryPage1'
+      Session.set 'channel','introductoryPage1'
+      return
 
     Router.route '/webHome',()->
       this.render 'webHome'

@@ -83,7 +83,11 @@ Template.loginForm.events
           t.find('#sub-login').disabled = false
           t.find('#sub-login').value = '登 录'
         else
-          Router.go '/'
+          #Router.go '/'
+          if window.localStorage.getItem("isSecondUse") == 'true'
+            Router.go('/')
+          else
+            Router.go('/introductoryPage')
           checkShareUrl()
           return
       false 
