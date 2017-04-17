@@ -585,7 +585,15 @@ if Meteor.isServer
           is_read: false
         })
       )
-
+  
+  update_group_dataset = (group_id,dataset)->
+    unless group_id
+      group_id = 'b82cc56c599e4c143442c6d0'
+    group = SimpleChat.Groups.findOne({_id:group_id})
+    if group
+      SimpleChat.Groups.update({_id:group_id},{$set:{announcement:dataset}})
+    
+    
   Router.route('/restapi/workai', {where: 'server'}).get(()->
       id = this.params.query.id
       img_url = this.params.query.img_url
@@ -714,5 +722,30 @@ if Meteor.isServer
           create_time: new Date()
           is_read: false
         })
+      this.response.end('{"result": "ok"}\n')
+    )
+
+  Router.route('/restapi/workai-group-dataset', {where: 'server'}).get(()->
+      group_id = this.params.query.group_id
+      value = this.params.query.value
+      #uuid = this.params.query.uuid
+      console.log '/restapi/workai-group-dataset get request, group_id:' + group_id + ', value:' + value
+      unless value 
+        return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
+      # insert_msg2(id, img_url, uuid)
+      update_group_dataset(group_id,value)
+      this.response.end('{"result": "ok"}\n')
+    ).post(()->
+      if this.request.body.hasOwnProperty('group_id')
+        group_id = this.request.body.id
+      if this.request.body.hasOwnProperty('value')
+        value = this.request.body.img_url
+      # if this.request.body.hasOwnProperty('uuid')
+      #   uuid = this.request.body.uuid
+      console.log '/restapi/workai-group-dataset get request, group_id:' + group_id + ', value:' + value
+      unless value 
+        return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
+      #insert_msg2(id, img_url, uuid)
+      update_group_dataset(group_id,value)
       this.response.end('{"result": "ok"}\n')
     )
