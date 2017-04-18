@@ -575,7 +575,7 @@ if Meteor.isServer
           ]
           to_type: "group"
           type: "text"
-          text: if !name then '['+device.name+','+id+']: -> 需要标注' else name + ' 加入聊天室'
+          text: if !name then '1 张照片需要标注' else name + ' 加入聊天室'
           create_time: new Date()
           people_id: id
           people_uuid: uuid
