@@ -562,7 +562,7 @@ if Meteor.isServer
           _id: new Mongo.ObjectID()._str
           form: {
             id: user._id
-            name: user.username
+            name: if user.profile and user.profile.fullname then user.profile.fullname + '['+user.username+']' else user.username
             icon: '/userPicture.png'
           }
           to: {
@@ -571,11 +571,11 @@ if Meteor.isServer
             icon: userGroup.group_icon
           }
           images: [
-            {_id: new Mongo.ObjectID()._str, people_his_id: _id, url: url, label: name} # 暂一次只能发一张图
+            {_id: new Mongo.ObjectID()._str, id: id, people_his_id: _id, url: url, label: name} # 暂一次只能发一张图
           ]
           to_type: "group"
           type: "text"
-          text: if !name then '['+device.name+','+id+']: -> 需要标注' else name + ' 加入聊天室'
+          text: if !name then '1 张照片需要标注' else name + ' 加入聊天室'
           create_time: new Date()
           people_id: id
           people_uuid: uuid

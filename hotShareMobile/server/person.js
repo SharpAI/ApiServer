@@ -12,6 +12,26 @@ PERSON = {
     }
     return device;
   },
+  removeName: function(uuid, id){
+    var person = Person.findOne({uudi: uuid, 'faces.id': id});
+    if (person){
+      if (person.faceId === id){
+        if (person.faces.length <= 1)
+          return Person.remove({_id: person._id});
+        Person.update({_id: person._id}, {
+          $set: {faceId: person.faces[0].id, url: person.faces[0].url},
+          $pop: {faces: -1}
+        });
+      } else {
+        var faces = person.faces;
+        faces.splice(_.pluck(faces, 'id').indexOf(id), 1);
+        Person.update({_id: person._id}, {
+          $set: {faces: faces}
+        });
+      }
+    }
+    PersonNames.remove({uuid: uuid, id: id});
+  },
   setName: function(uuid, id, url, name){
     var person = Person.findOne({uuid: uuid, name: name});
     var dervice = PERSON.upsetDevice(uuid);
@@ -73,6 +93,22 @@ PERSON = {
       id: person.id,
       faceId: person.faceId
     };
+  },
+  getIdByNames: function(uuid, names){
+    var limit = names.length;
+    var peoples = People.find({name: {$in: names}, uuid: uuid}, {sort: {updateTime: -1}, limit: limit}).fetch();
+    var result = {};
+    
+    if (peoples.length <= 0){
+      for(var i=0;i<names.length;i++)
+        result[names[i]] = {id: null, faceId: null};
+    } else {
+      for(var i=0;i<peoples.length;i++)
+        result[peoples[i].name] = {id: peoples[i].id, faceId: peoples[i].faceId};
+    }
+
+    console.log('getIdByNames:', result);
+    return result;
   }
 };
 
@@ -85,5 +121,20 @@ Meteor.methods({
   },
   'get-id-by-name': function(uuid, name){
     return PERSON.getIdByName(uuid, name) || {};
+  },
+  'get-id-by-names': function(uuid, names){
+    return PERSON.getIdByNames(uuid, names) || {};
+  },
+  'set-person-names': function(items){
+    console.log('set-person-names:', items);
+    for(var i=0;i<items.length;i++)
+      PERSON.setName(items[i].uuid, items[i].id, items[i].url, items[i].name);
+  },
+  'remove-person': function(uuid, id){
+    return PERSON.removeName(uuid, id);
+  },
+  'remove-persons': function(items){
+    for(var i=0;i<items.length;i++)
+      PERSON.removeName(items[i].uuid, items[i].id);
   }
 })

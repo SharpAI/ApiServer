@@ -160,6 +160,7 @@ if (Meteor.isCordova) {
                 }
             }
         }
+        mqttEventResume();
     }
     function eventPause(){
       if(withAutoSavedOnPaused) {
@@ -167,6 +168,7 @@ if (Meteor.isCordova) {
               Template.addPost.__helpers.get('saveDraft')()
           }
       }
+      mqttEventPause();
     }
 
     function eventBackButton(){
