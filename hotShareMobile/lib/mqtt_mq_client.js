@@ -116,6 +116,20 @@ if(Meteor.isClient){
       console.log("##RDBG getMqttClientID: " + client_id);
       return client_id;
     };
+    mqttEventResume = function() {
+      console.log('##RDBG, mqttEventResume, reestablish mqtt connection');
+      Meteor.setTimeout(function() {
+        if(Meteor.userId()){
+          initMQTT(getMqttClientID());
+        }
+      }, 1000);
+    };
+    mqttEventPause = function() {
+      console.log('##RDBG, mqttEventPause, disconnect mqtt');
+      Meteor.setTimeout(function() {
+        uninitMQTT();
+      }, 1000);
+    };
     Deps.autorun(function(){
         if(Meteor.userId()){
             Meteor.setTimeout(function(){
