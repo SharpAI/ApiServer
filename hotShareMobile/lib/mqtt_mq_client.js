@@ -126,9 +126,7 @@ if(Meteor.isClient){
     };
     mqttEventPause = function() {
       console.log('##RDBG, mqttEventPause, disconnect mqtt');
-      Meteor.setTimeout(function() {
-        uninitMQTT();
-      }, 1000);
+      uninitMQTT();
     };
     Deps.autorun(function(){
         if(Meteor.userId()){
