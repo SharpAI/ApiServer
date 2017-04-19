@@ -71,6 +71,7 @@ Template._simpleChatLabelLabel.events({
 
     updateObj.label_complete = true;
     updateObj.images = msgObj.images;
+    updateObj.create_time = new Date();
 
     // remove
     if (removes.length > 0)

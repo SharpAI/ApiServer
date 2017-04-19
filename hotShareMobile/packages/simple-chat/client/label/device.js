@@ -42,6 +42,9 @@ Template._simpleChatLabelDevice.helpers({
   is_next: function(){
     return index.get() < images.get().length - 1;
   },
+  is_prev: function(){
+    return index.get() >= 1;
+  },
   name: function(){
     console.log(names.get());
     return names.get()[index.get()];
@@ -64,25 +67,41 @@ Template._simpleChatLabelDevice.events({
   'click .leftButton': function(){
     Template._simpleChatLabelDevice.close();
   },
-  'click .rightButton.next': function(e, t){
-    if (!t.$('#device-input-name').val())
-      return PUB.toast('请输入或选择名字~');
-    
-    var nas = names.get();
-    nas[index.get()] = t.$('#device-input-name').val();
-    names.set(nas);
+  'click .next-group': function(e, t){
+    if (t.$('#device-input-name').val()){
+      var nas = names.get();
+      nas[index.get()] = t.$('#device-input-name').val();
+      names.set(nas);
+    }
     t.$('#device-input-name').val('');
     index.set(index.get()+1);
   },
+  'click .prev-group': function(e, t){
+    if (t.$('#device-input-name').val()){
+      var nas = names.get();
+      nas[index.get()] = t.$('#device-input-name').val();
+      names.set(nas);
+    }
+    t.$('#device-input-name').val('');
+    index.set(index.get()-1);
+  },
   'click .rightButton.save': function(e, t){
-    if (!t.$('#device-input-name').val())
-      return PUB.toast('请输入或选择名字~');
-
     var nas = names.get();
-    nas[index.get()] = t.$('#device-input-name').val();
-    names.set(nas);
+    if (t.$('#device-input-name').val()){
+      nas[index.get()] = t.$('#device-input-name').val();
+      names.set(nas);
+    }
 
-    var nas = names.get();
+    var is_save = false;
+    for(var i=0;i<nas.length;i++){
+      if (nas[i]){
+        is_save = true;
+        break;
+      }
+    }
+    if (is_save != true)
+      return PUB.toast('你没有标注任何内容~');
+
     var msgObj = message.get();
     Meteor.call('get-id-by-names', msgObj.people_uuid, nas, function(err, res){
       if (err || !res)
@@ -98,9 +117,11 @@ Template._simpleChatLabelDevice.events({
           var is_break = false;
           for (var iii=0;iii<imgs[ii].images.length;iii++){
             if (imgs[ii].images[iii]._id === msgObj.images[i]._id && imgs[ii].images[iii].selected){
-              msgObj.images[i].label = nas[ii];
-              if (_.pluck(setNames, 'id').indexOf(msgObj.images[i].id) === -1)
-                setNames.push({uuid: msgObj.people_uuid, id: msgObj.images[i].id, url: msgObj.images[i].url, name: nas[ii]});
+              if (nas[ii]){
+                msgObj.images[i].label = nas[ii];
+                if (_.pluck(setNames, 'id').indexOf(msgObj.images[i].id) === -1)
+                  setNames.push({uuid: msgObj.people_uuid, id: msgObj.images[i].id, url: msgObj.images[i].url, name: nas[ii]});
+              }
               is_break = true;
               break;
             }
@@ -125,6 +146,7 @@ Template._simpleChatLabelDevice.events({
         updateObj.label_complete = true;
       updateObj.images = msgObj.images;
       updateObj.text = msgObj.text;
+      updateObj.create_time = new Date();
 
       // update label
       if (setNames.length > 0)

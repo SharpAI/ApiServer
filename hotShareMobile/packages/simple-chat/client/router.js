@@ -510,6 +510,22 @@ Template._simpleChatToChatItem.events({
     //       });
     //     });
     // });
+  },
+  'click .show_more': function(e, t){
+    var $li = $('li#' + this._id);
+    var $imgs = $li.find('.text .imgs');
+    var $labels = $li.find('.text .imgs-1-item');
+    var $show = $li.find('.show_more');
+
+    if ($imgs.css('height') === '70px' || $labels.css('height') === '55px'){
+      $imgs.css('height', 'auto');
+      $labels.css('height', 'auto');
+      $show.html('<i class="fa fa-angle-up"></i>');
+    } else {
+      $imgs.css('height', '70px');
+      $labels.css('height', '55px');
+      $show.html('<i class="fa fa-angle-right"></i>');
+    }
   }
 });
 
@@ -825,17 +841,55 @@ Template._simpleChatToChatItem.helpers({
     }
     return false;
   },
+  is_remove: function(images){
+    for(var i=0;i<images.length;i++){
+      if (images[i].remove)
+        return true;
+    }
+    return false;
+  },
+  is_label: function(images){
+    for(var i=0;i<images.length;i++){
+      if (images[i].label)
+        return true;
+    }
+    return false;
+  },
+  is_remove_label: function(images){
+    for(var i=0;i<images.length;i++){
+      if (images[i].remove || images[i].label)
+        return true;
+    }
+    return false;
+  },
+  is_wait_img: function(images){
+    for(var i=0;i<images.length;i++){
+      if (!images[i].remove && !images[i].label && !images[i].error)
+        return true;
+    }
+    return false;
+  },
+  is_wait_item: function(item){
+    return !item.remove && !item.label && !item.error;
+  },
   ta_me: function(id){
     return id != Meteor.userId() ? 'ta' : 'me';
   },
   show_images: function(images){
-    if(images && images.length > 9){
-      $('li#' + this._id + ' div.text .imgs').css('height', '95px');
-      $('li#' + this._id + ' div.text .imgs').css('overflow', 'hidden');
-      $('li#' + this._id + ' div.text .imgs-1-box').css('display', 'none');
-      $('li#' + this._id + ' div.showmore').show();
-    }
-    return images && images.length > 0;
+    var $li = $('li#' + this._id);
+    var $imgs = $li.find('.text .imgs');
+    var $labels = $li.find('.text .imgs-1-item');
+    var is_scroll = false;
+
+    $imgs.scrollTop(10);
+    if ($imgs.scrollTop() > 0){is_scroll = true;$imgs.scrollTop(0);}
+    $labels.each(function(){
+      $(this).scrollTop(10);
+      if ($(this).scrollTop() > 0){is_scroll = true;$(this).scrollTop(0);}
+    });
+
+    if (is_scroll)
+      $li.find('.show_more').show();
   },
   is_show_time: function(id){
     try{
