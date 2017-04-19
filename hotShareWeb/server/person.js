@@ -96,15 +96,15 @@ PERSON = {
   },
   getIdByNames: function(uuid, names){
     var limit = names.length;
-    var peoples = People.find({name: {$in: names}, uuid: uuid}, {sort: {updateTime: -1}, limit: limit}).fetch();
+    var persons = Person.find({name: {$in: names}, uuid: uuid}, {sort: {updateTime: -1}, limit: limit}).fetch();
     var result = {};
     
-    if (peoples.length <= 0){
+    if (persons.length <= 0){
       for(var i=0;i<names.length;i++)
         result[names[i]] = {id: null, faceId: null};
     } else {
-      for(var i=0;i<peoples.length;i++)
-        result[peoples[i].name] = {id: peoples[i].id, faceId: peoples[i].faceId};
+      for(var i=0;i<persons.length;i++)
+        result[persons[i].name] = {id: persons[i].id, faceId: persons[i].faceId};
     }
 
     console.log('getIdByNames:', result);
@@ -137,4 +137,4 @@ Meteor.methods({
     for(var i=0;i<items.length;i++)
       PERSON.removeName(items[i].uuid, items[i].id);
   }
-});
+})
