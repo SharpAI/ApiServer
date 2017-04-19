@@ -110,7 +110,7 @@ Template._simpleChatLabelDevice.events({
       var updateObj = {};
       var imgs = images.get();
       var setNames = [];
-      
+
       // set label name
       for (var i=0;i<msgObj.images.length;i++){
         for(var ii=0;ii<imgs.length;ii++){
@@ -154,8 +154,12 @@ Template._simpleChatLabelDevice.events({
 
       console.log('names:', res);
       for (var i=0;i<updateObj.images.length;i++){
-        if (updateObj.images[i].label)
-          sendMqttMessage('trainset', {url: updateObj.images[i].url, person_id: res && res[updateObj.images[i].label].id ? res[updateObj.images[i].label].id : '', device_id: updateObj.images[i].people_uuid, face_id: res && res[updateObj.images[i].label].faceId ? res[updateObj.images[i].label].faceId : updateObj.images[i].id, drop: false});
+        if (updateObj.images[i].label) {
+          var trainsetObj = {group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, person_id: res && res[updateObj.images[i].label].id ? res[updateObj.images[i].label].id : '', device_id: msgObj.people_uuid, face_id: res && res[updateObj.images[i].label].faceId ? res[updateObj.images[i].label].faceId : updateObj.images[i].id, drop: false};
+          console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
+          sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
+
+        }
       }
 
       // update collection
