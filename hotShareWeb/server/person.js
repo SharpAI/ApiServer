@@ -137,4 +137,4 @@ Meteor.methods({
     for(var i=0;i<items.length;i++)
       PERSON.removeName(items[i].uuid, items[i].id);
   }
-})
+});

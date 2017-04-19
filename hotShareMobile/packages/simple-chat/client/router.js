@@ -388,6 +388,12 @@ Template._simpleChatToChatItem.events({
     // update label
     var setNames = [];
     for (var i=0;i<this.images.length;i++){
+      if (this.images[i].label) {
+        var trainsetObj = {group_id: this.to.id, type: 'trainset', url: this.images[i].url, person_id: '', device_id: this.people_uuid, face_id: this.images[i].id, drop: false};
+        console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
+        sendMqttMessage('/device/'+this.to.id, trainsetObj);
+      }
+
       if (_.pluck(setNames, 'id').indexOf(this.images[i].id) === -1)
         setNames.push({uuid: this.people_uuid, id: this.images[i].id, url: this.images[i].url, name: this.images[i].label});
     }
