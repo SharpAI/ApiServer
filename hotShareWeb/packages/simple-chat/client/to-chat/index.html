@@ -63,41 +63,116 @@
     <div class="icon"><img src="{{form.icon}}" /></div>
     <div class="name">{{form.name}}</div>
     {{#if text}}
-    <div class="text">{{text}}
-      {{#if people_id}}
-        {{#if show_images images}}
-        <div class="imgs">
-          {{#each images}}
-          <img class="work-ai-img swipebox" data-type="images" data-peoplehisid="{{people_his_id}}" src="{{url}}" />
-          {{/each}}
-        </div>
-        {{#if wait_lable}}
-        <div class="line-label-box"><div class="check">标记</div><div class="no">删除</div></div>
-        {{else}}
-        <div class="line-label-box"><div class="yes">对</div><div class="no">错</div></div>
+      <div class="text">{{text}}
+        {{#if people_id}}
+        <!--标记消息 start-->
+          {{#if label_complete}}
+            {{#if is_error images}}
+              <div class="imgs-1-box">
+                <div class="imgs-1-item">
+                  <div class="my-btn">对</div>
+                  {{#each images}}
+                  {{#if error}}
+                  {{else}}
+                  <img class="work-ai-img swipebox" data-type="images" data-peoplehisid="{{people_his_id}}" src="{{url}}" />
+                  {{/if}}
+                  {{/each}}
+                </div>
+                <div class="imgs-1-item">
+                  <div class="my-btn">错</div>
+                  {{#each images}}
+                  {{#if error}}
+                  <img class="work-ai-img swipebox" data-type="images" data-peoplehisid="{{people_his_id}}" src="{{url}}" />
+                  {{/if}}
+                  {{/each}}
+                </div>
+              </div>
+            {{else}}
+              {{#if is_remove_label images}}
+              <div class="imgs-1-box">
+                {{#if is_label images}}
+                <div class="imgs-1-item">
+                  <div class="my-btn">标</div>
+                  {{#each images}}
+                  {{#if label}}
+                  <img class="work-ai-img swipebox" data-type="images" data-peoplehisid="{{people_his_id}}" src="{{url}}" />
+                  {{/if}}
+                  {{/each}}
+                </div>
+                {{/if}}
+                {{#if is_remove images}}
+                <div class="imgs-1-item">
+                  <div class="my-btn">删</div>
+                  {{#each images}}
+                  {{#if remove}}
+                  <img class="work-ai-img swipebox" data-type="images" data-peoplehisid="{{people_his_id}}" src="{{url}}" />
+                  {{/if}}
+                  {{/each}}
+                </div>
+                {{/if}}
+              </div>
+              {{/if}}
+            {{/if}}
+          {{else}}
+            {{#if wait_lable}}
+              {{#if is_wait_img images}}
+                <div class="imgs">
+                  {{#each images}}
+                  {{#if is_wait_item this}}
+                  <img class="work-ai-img swipebox" data-type="images" data-peoplehisid="{{people_his_id}}" src="{{url}}" />
+                  {{/if}}
+                  {{/each}}
+                </div>
+              {{/if}}
+              {{#if is_remove_label images}}
+                <div class="imgs-1-box">
+                  {{#if is_label images}}
+                  <div class="imgs-1-item">
+                    <div class="my-btn">标</div>
+                    {{#each images}}
+                    {{#if label}}
+                    <img class="work-ai-img swipebox" data-type="images" data-peoplehisid="{{people_his_id}}" src="{{url}}" />
+                    {{/if}}
+                    {{/each}}
+                  </div>
+                  {{/if}}
+                  {{#if is_remove images}}
+                  <div class="imgs-1-item">
+                    <div class="my-btn">删</div>
+                    {{#each images}}
+                    {{#if remove}}
+                    <img class="work-ai-img swipebox" data-type="images" data-peoplehisid="{{people_his_id}}" src="{{url}}" />
+                    {{/if}}
+                    {{/each}}
+                  </div>
+                  {{/if}}
+                </div>
+              {{/if}}
+              <div class="line-label-box"><div class="check">标记</div><div class="remove">删除</div></div>
+            {{else}}
+              <div class="imgs">
+                {{#each images}}
+                <img class="work-ai-img swipebox" data-type="images" data-peoplehisid="{{people_his_id}}" src="{{url}}" />
+                {{/each}}
+              </div>
+              <div class="line-label-box"><div class="yes">对</div><div class="no">错</div></div>
+            {{/if}}
+          {{/if}}
+          <div class="show_more" style="display:none; position: absolute;right: -5px;top: -5px;height: 48px;line-height: 48px;width: 60px;text-align: center;color: #9e9e9e;padding: 0;font-size: 20px;"><i class="fa fa-angle-right"></i></div>
+          {{show_images images}}
+        <!--标记消息 end-->
         {{/if}}
-        {{/if}}
+      </div>
+    {{else}}
+      {{#if image}}
+      <div class="img"><img class="swipebox" src="{{image}}" /></div>
       {{else}}
-        {{#if show_images images}}
-        <div class="imgs">
-          {{#each images}}
-          <img class="swipebox" data-type="images" src="{{url}}" />
-          {{/each}}
-        </div>
-        {{/if}}
+      <div class="img"><img src="{{thumbnail}}" /></div>
       {{/if}}
-      <div id="{{_id}}" class="showmore">查看全部</div>
-    </div>
-    {{else}}
-    {{#if image}}
-    <div class="img"><img class="swipebox" src="{{image}}" /></div>
-    {{else}}
-    <div class="img"><img src="{{thumbnail}}" /></div>
     {{/if}}
-    {{/if}}
-    {{#if device_name}}
-    <div class="form-to"><div>来自：{{device_name}}</div></div>
-    {{/if}}
+    <!--{{#if label_complete}}
+    <div class="form-to"><div>已标记完成</div></div>
+    {{/if}}-->
   </li>
 </template>
 
