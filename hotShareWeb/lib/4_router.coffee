@@ -585,15 +585,15 @@ if Meteor.isServer
           is_read: false
         })
       )
-  
+
   update_group_dataset = (group_id,dataset)->
     unless group_id
       group_id = 'b82cc56c599e4c143442c6d0'
     group = SimpleChat.Groups.findOne({_id:group_id})
     if group
       SimpleChat.Groups.update({_id:group_id},{$set:{announcement:dataset}})
-    
-    
+
+
   Router.route('/restapi/workai', {where: 'server'}).get(()->
       id = this.params.query.id
       img_url = this.params.query.img_url
@@ -730,7 +730,7 @@ if Meteor.isServer
       value = this.params.query.value
       #uuid = this.params.query.uuid
       console.log '/restapi/workai-group-dataset get request, group_id:' + group_id + ', value:' + value
-      unless value 
+      unless value
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
       # insert_msg2(id, img_url, uuid)
       update_group_dataset(group_id,value)
@@ -743,9 +743,29 @@ if Meteor.isServer
       # if this.request.body.hasOwnProperty('uuid')
       #   uuid = this.request.body.uuid
       console.log '/restapi/workai-group-dataset get request, group_id:' + group_id + ', value:' + value
-      unless value 
+      unless value
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
       #insert_msg2(id, img_url, uuid)
       update_group_dataset(group_id,value)
       this.response.end('{"result": "ok"}\n')
+    )
+
+  Router.route('/restapi/workai-getgroupid', {where: 'server'}).get(()->
+      uuid = this.params.query.uuid
+
+      console.log '/restapi/workai-getgroupid get request, uuid:' + uuid
+      unless uuid
+        console.log '/restapi/workai-getgroupid get unless resturn'
+        return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
+
+      user = Meteor.users.findOne({username: uuid})
+      device_group = ''
+      if user
+        groupUser = SimpleChat.GroupUsers.find({user_id: user._id})
+        groupUser.forEach((device)->
+          if device.group_id
+            device_group += device.group_id
+            device_group += ','
+        )
+      this.response.end(device_group)
     )
