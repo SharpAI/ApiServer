@@ -381,6 +381,9 @@ Template._simpleChatToChatItem.events({
     //   });
     // });
   },
+  'click .crop':function(){
+    Template._simpleChatLabelCrop.open(this);
+  },
   'click .remove': function(){
     Template._simpleChatLabelRemove.open(this);
   },
@@ -940,8 +943,21 @@ window.___message = {
       to: to,
       to_type: data.type,
       type: 'image',
-      thumbnail: '/packages/feiwu_simple-chat/images/sendingBmp.gif',
+      images:[
+        {
+          _id: new Mongo.ObjectID()._str,
+          id:'',
+          url:null,
+          label:null,
+          people_his_id:id,
+          thumbnail: '/packages/feiwu_simple-chat/images/sendingBmp.gif'
+        }
+      ],
+      //thumbnail: '/packages/feiwu_simple-chat/images/sendingBmp.gif',
       create_time: new Date(),
+      people_uuid:'',
+      people_his_id:id,
+      wait_lable:true,
       is_read: false
     }, function(err, id){
       console.log('insert id:', id);
@@ -949,9 +965,13 @@ window.___message = {
     });
   },
   update: function(id, url){
-    var msg = Messages.find({_id: id});
+    var msg = Messages.findOne({_id: id});
+    var images = msg.images;
+    for (var i = 0; i < images.length; i++) {
+      images[i].url = url;
+    }
     Messages.update({_id: id}, {$set: {
-      image: url
+      images: images
     }}, function(){
       console.log('update id:', id);
       $('.box').scrollTop($('.box ul').height());

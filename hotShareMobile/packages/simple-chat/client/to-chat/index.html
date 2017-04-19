@@ -154,7 +154,7 @@
                   {{/if}}
                 </div>
               {{/if}}
-              <div class="line-label-box"><div class="check">标记</div><div class="remove">删除</div></div>
+              <div class="line-label-box"><div class="check">标记</div><div class="crop">裁剪</div><div class="remove">删除</div></div>
             {{else}}
               <div class="imgs">
                 {{#each images}}
@@ -168,13 +168,23 @@
           {{show_images images}}
         <!--标记消息 end-->
         {{/if}}
-      </div>
+    </div>
     {{else}}
-      {{#if image}}
-      <div class="img"><img class="swipebox" src="{{image}}" /></div>
-      {{else}}
-      <div class="img"><img src="{{thumbnail}}" /></div>
-      {{/if}}
+    <div class="img">
+      <div class="imgs">
+        {{#each images}}
+          {{#if url}}
+            <img class="work-ai-img swipebox" data-type="images" data-peoplehisid="{{people_his_id}}" src="{{url}}" />
+          {{else}}
+            <img src="{{thumbnail}}" />
+          {{/if}}
+        {{/each}}
+      </div>
+      <div class="line-label-box crop-lable-box"><div class="check">标记</div><div class="crop">裁剪</div><div class="remove">删除</div></div>
+    </div>
+    <!-- {{else}}
+    <div class="img"><img src="{{thumbnail}}" /></div>
+    {{/if}} -->
     {{/if}}
     <!--{{#if label_complete}}
     <div class="form-to"><div>已标记完成</div></div>
