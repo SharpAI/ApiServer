@@ -103,10 +103,10 @@ Template.signupForm.events
                 return
             #Router.go '/registerFollow'
             #ScanBarcodeByBarcodeScanner()
-            if window.localStorage.getItem("isSecondUse") == 'true'
-              Router.go('/')
-            else
-              Router.go('/introductoryPage')
+            # if window.localStorage.getItem("isSecondUse") == 'true'
+            #   Router.go('/')
+            # else
+            Router.go('/introductoryPage')
             return
     false
 
