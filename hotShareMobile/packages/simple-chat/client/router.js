@@ -1026,6 +1026,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
     type: 'text'
   };
 
+  msgObj.msg_ids = [{id: msgObj._id}];
   msgObj.create_time = msgObj.create_time ? new Date(msgObj.create_time) : new Date();
   if (msgObj.images && msgObj.length > 0 && msgObj.is_people && msgObj.people_id){
     for(var i=0;i<msgObj.images.length;i++)
@@ -1067,7 +1068,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
 
   Messages.update({_id: targetMsg._id}, {
     $set: setObj,
-    $push: {images: {$each: msgObj.images}}
+    $push: {images: {$each: msgObj.images}, msg_ids: {id: msgObj._id}}
   }, function(err, num){
     if (err || num <= 0)
       insertMsg(msgObj, 'update 失败');
@@ -1080,7 +1081,7 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
 
   var msgObj = JSON.parse(msg);
   var msgId = topic.split('/')[3];
-  var targetMsg = Messages.findOne({_id: msgObj.msgId});
+  var targetMsg = Messages.findOne({$or: [{'msg_ids.id': msgObj.msgId}, {_id: msgObj.msgId}]}, {sort: {create_time: -1}});
 
   if (!targetMsg)
     return;

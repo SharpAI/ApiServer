@@ -1008,6 +1008,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
     type: 'text'
   };
 
+  msgObj.msg_ids = [{id: msgObj._id}];
   msgObj.create_time = msgObj.create_time ? new Date(msgObj.create_time) : new Date();
   if (msgObj.images && msgObj.length > 0 && msgObj.is_people && msgObj.people_id){
     for(var i=0;i<msgObj.images.length;i++)
@@ -1049,10 +1050,28 @@ SimpleChat.onMqttMessage = function(topic, msg) {
 
   Messages.update({_id: targetMsg._id}, {
     $set: setObj,
-    $push: {images: {$each: msgObj.images}}
+    $push: {images: {$each: msgObj.images}, msg_ids: {id: msgObj._id}}
   }, function(err, num){
     if (err || num <= 0)
       insertMsg(msgObj, 'update 失败');
+  });
+};
+
+SimpleChat.onMqttLabelMessage = function(topic, msg) {
+  if (!topic.startsWith('/msg/l/'))
+    return;
+
+  var msgObj = JSON.parse(msg);
+  var msgId = topic.split('/')[3];
+  var targetMsg = Messages.findOne({$or: [{'msg_ids.id': msgObj.msgId}, {_id: msgObj.msgId}]}, {sort: {create_time: -1}});
+
+  if (!targetMsg)
+    return;
+  if (targetMsg.label_users && targetMsg.label_users.length > 0 && _.pluck(targetMsg.label_users, 'id').indexOf(msgObj.user.id) >= 0)
+    return;
+  Messages.update({_id: targetMsg._id}, {
+    $push: {label_users: msgObj.user},
+   //  $set: {create_time: new Date()}
   });
 };
 
