@@ -53,10 +53,7 @@ if Meteor.isClient
     isFirstLog:()->
       Session.get('isFlag');
     isAndroid:()->
-      if isAndroidFunc
-        true
-      else
-        false
+      isAndroidFunc()
   Template.home.events
     # 'click .top-series-btn': (event)->
     #    Router.go '/seriesList'
