@@ -184,6 +184,7 @@ if (Meteor.isClient) {
             decodecallback(result);
           }, function (err) {
             console.log('##RDBG decodeImage err: ' + err);
+            PUB.toast('二维码格式错误');
           });
         }
       }, function (error) {
