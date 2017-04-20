@@ -30,6 +30,15 @@ Template._simpleChatLabelDevice.open = function(msgObj){
   index.set(0);
 
   view = Blaze.render(Template._simpleChatLabelDevice, document.body);
+
+  if (nas.length === 1 && imgs[0].images.length <= 1){
+    show_label(function(name){
+      if (!name)
+        return;
+      $('#device-input-name').val(name);
+      Template._simpleChatLabelDevice.save();
+    });
+  }
 };
 
 Template._simpleChatLabelDevice.close = function(){
@@ -37,6 +46,120 @@ Template._simpleChatLabelDevice.close = function(){
     Blaze.remove(view);
   view = null;
 };
+
+Template._simpleChatLabelDevice.save = function(){
+  var nas = names.get();
+  if ($('#device-input-name').val()){
+    nas[index.get()] = $('#device-input-name').val();
+    names.set(nas);
+  }
+
+  var is_save = false;
+  for(var i=0;i<nas.length;i++){
+    if (nas[i]){
+      is_save = true;
+      break;
+    }
+  }
+  if (is_save != true)
+    return PUB.toast('你没有标注任何内容~');
+
+  var msgObj = message.get();
+  Meteor.call('get-id-by-names', msgObj.people_uuid, nas, function(err, res){
+    if (err || !res)
+      return PUB.toast('标注失败，请重试~');
+
+    var updateObj = {};
+    var imgs = images.get();
+    var setNames = [];
+
+    // set label name
+    for (var i=0;i<msgObj.images.length;i++){
+      for(var ii=0;ii<imgs.length;ii++){
+        var is_break = false;
+        for (var iii=0;iii<imgs[ii].images.length;iii++){
+          if (imgs[ii].images[iii]._id === msgObj.images[i]._id && imgs[ii].images[iii].selected){
+            if (nas[ii]){
+              msgObj.images[i].label = nas[ii];
+              if (_.pluck(setNames, 'id').indexOf(msgObj.images[i].id) === -1)
+                setNames.push({uuid: msgObj.people_uuid, id: msgObj.images[i].id, url: msgObj.images[i].url, name: nas[ii]});
+            }
+            is_break = true;
+            break;
+          }
+        }
+        if (is_break)
+          break;
+      }
+    }
+
+    // set wait label count
+    var count = 0;
+    for(var i=0;i<msgObj.images.length;i++){
+      if (!msgObj.images[i].label && !msgObj.images[i].remove && !msgObj.images[i].error)
+        count += 1;
+    }
+    if (count > 0)
+      msgObj.text = count + ' 张照片需要标注';
+    else
+      msgObj.text =  msgObj.images.length + ' 张照片已标注';
+
+    if (count <= 0)
+      updateObj.label_complete = true;
+    updateObj.images = msgObj.images;
+    updateObj.text = msgObj.text;
+    updateObj.create_time = new Date();
+
+    // update label
+    if (setNames.length > 0)
+      Meteor.call('set-person-names', setNames);
+
+    console.log('names:', res);
+    for (var i=0;i<updateObj.images.length;i++){
+      if (updateObj.images[i].label) {
+        console.log('res item obj:', res[updateObj.images[i].label]);
+        var trainsetObj = {};
+        try{trainsetObj={group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, person_id: res && res[updateObj.images[i].label].id ? res[updateObj.images[i].label].id : '', device_id: msgObj.people_uuid, face_id: res && res[updateObj.images[i].label].faceId ? res[updateObj.images[i].label].faceId : updateObj.images[i].id, drop: false};}
+        catch(ex){trainsetObj={group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, person_id: '', device_id: msgObj.people_uuid, face_id: updateObj.images[i].id, drop: false};}
+        console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
+        sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
+
+      }
+    }
+
+    // update collection
+    Messages.update({_id: msgObj._id}, {$set: updateObj}, function(){
+      var user = Meteor.user();
+      var msg = {
+        _id: new Mongo.ObjectID()._str,
+        form: {
+          id: user._id,
+          name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+          icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png'
+        },
+        to: msgObj.to,
+        to_type: "group",
+        type: "text",
+        text: '标注了 '+(msgObj.images.length-count)+' 张照片',
+        create_time: new Date(),
+        is_read: false
+      };
+      Messages.insert(msg);
+      sendMqttGroupLabelMessage(msgObj.to.id, {
+        _id: new Mongo.ObjectID()._str,
+        msgId: msgObj._id,
+        user: {
+          id: user._id,
+          name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+          icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
+        },
+        createAt: new Date()
+      });
+      sendMqttGroupMessage(msg.to.id, msg);
+    });
+    Template._simpleChatLabelDevice.close();
+  });
+}
 
 Template._simpleChatLabelDevice.helpers({
   is_next: function(){
@@ -86,117 +209,7 @@ Template._simpleChatLabelDevice.events({
     index.set(index.get()-1);
   },
   'click .rightButton.save': function(e, t){
-    var nas = names.get();
-    if (t.$('#device-input-name').val()){
-      nas[index.get()] = t.$('#device-input-name').val();
-      names.set(nas);
-    }
-
-    var is_save = false;
-    for(var i=0;i<nas.length;i++){
-      if (nas[i]){
-        is_save = true;
-        break;
-      }
-    }
-    if (is_save != true)
-      return PUB.toast('你没有标注任何内容~');
-
-    var msgObj = message.get();
-    Meteor.call('get-id-by-names', msgObj.people_uuid, nas, function(err, res){
-      if (err || !res)
-        return PUB.toast('标注失败，请重试~');
-
-      var updateObj = {};
-      var imgs = images.get();
-      var setNames = [];
-
-      // set label name
-      for (var i=0;i<msgObj.images.length;i++){
-        for(var ii=0;ii<imgs.length;ii++){
-          var is_break = false;
-          for (var iii=0;iii<imgs[ii].images.length;iii++){
-            if (imgs[ii].images[iii]._id === msgObj.images[i]._id && imgs[ii].images[iii].selected){
-              if (nas[ii]){
-                msgObj.images[i].label = nas[ii];
-                if (_.pluck(setNames, 'id').indexOf(msgObj.images[i].id) === -1)
-                  setNames.push({uuid: msgObj.people_uuid, id: msgObj.images[i].id, url: msgObj.images[i].url, name: nas[ii]});
-              }
-              is_break = true;
-              break;
-            }
-          }
-          if (is_break)
-            break;
-        }
-      }
-
-      // set wait label count
-      var count = 0;
-      for(var i=0;i<msgObj.images.length;i++){
-        if (!msgObj.images[i].label && !msgObj.images[i].remove && !msgObj.images[i].error)
-          count += 1;
-      }
-      if (count > 0)
-        msgObj.text = count + ' 张照片需要标注';
-      else
-        msgObj.text =  msgObj.images.length + ' 张照片已标注';
-
-      if (count <= 0)
-        updateObj.label_complete = true;
-      updateObj.images = msgObj.images;
-      updateObj.text = msgObj.text;
-      updateObj.create_time = new Date();
-
-      // update label
-      if (setNames.length > 0)
-        Meteor.call('set-person-names', setNames);
-
-      console.log('names:', res);
-      for (var i=0;i<updateObj.images.length;i++){
-        if (updateObj.images[i].label) {
-          console.log('res item obj:', res[updateObj.images[i].label]);
-          var trainsetObj = {};
-          try{trainsetObj={group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, person_id: res && res[updateObj.images[i].label].id ? res[updateObj.images[i].label].id : '', device_id: msgObj.people_uuid, face_id: res && res[updateObj.images[i].label].faceId ? res[updateObj.images[i].label].faceId : updateObj.images[i].id, drop: false};}
-          catch(ex){trainsetObj={group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, person_id: '', device_id: msgObj.people_uuid, face_id: updateObj.images[i].id, drop: false};}
-          console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
-          sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
-
-        }
-      }
-
-      // update collection
-      Messages.update({_id: msgObj._id}, {$set: updateObj}, function(){
-        var user = Meteor.user();
-        var msg = {
-          _id: new Mongo.ObjectID()._str,
-          form: {
-            id: user._id,
-            name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
-            icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png'
-          },
-          to: msgObj.to,
-          to_type: "group",
-          type: "text",
-          text: '标注了 '+(msgObj.images.length-count)+' 张照片',
-          create_time: new Date(),
-          is_read: false
-        };
-        Messages.insert(msg);
-        sendMqttGroupLabelMessage(msgObj.to.id, {
-          _id: new Mongo.ObjectID()._str,
-          msgId: msgObj._id,
-          user: {
-            id: user._id,
-            name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
-            icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
-          },
-          createAt: new Date()
-        });
-        sendMqttGroupMessage(msg.to.id, msg);
-      });
-      Template._simpleChatLabelDevice.close();
-    });
+    Template._simpleChatLabelDevice.save();
   },
   'click li': function(){
     var imgs = images.get();
