@@ -17,6 +17,9 @@
               <li role="presentation"><a id="createNewChatGroups" role="menuitem" tabindex="-1" ><i class="fa fa-comment add-more-drop-item"></i>发起群聊</a></li>
               <li role="presentation"><a id="addNewFriends" role="menuitem" tabindex="-1" ><span class="add-more-drop-item"><span class="fa fa-plus"></span><i class="fa fa-user"></i></span> 添加朋友</a></li>
               <li role="presentation"><a id="scanbarcode" role="menuitem" tabindex="-1" ><img class="add-more-drop-item" src="/scan_b.png" height="30" style="margin-left: -15px;">扫一扫</a></li>
+              {{#if isAndroid}}
+              <li role="presentation"><a id="scanimage" role="menuitem" tabindex="-1" ><img class="add-more-drop-item" src="/scan_b.png" height="30" style="margin-left: -15px;">扫图片</a></li>
+              {{/if}}
             </ul>
         </div>
         <!-- <div id="follow" class="leftButton"><i class="fa fa-angle-left"></i></div> -->

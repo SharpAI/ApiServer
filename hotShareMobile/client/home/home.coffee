@@ -3,7 +3,7 @@ if Meteor.isClient
   toNum = (a) ->
     if a is null or a is undefined or a is ''
       return
-      
+
     c = a.split('.')
     num_place = [
       ''
@@ -32,7 +32,7 @@ if Meteor.isClient
     _latestVersion = toNum(latestVersion)
     _version_of_build = toNum(version_of_build)
     _localLatestVersion = toNum(window.localStorage.getItem("latestVersion"))
-    
+
     if _latestVersion > _version_of_build and _latestVersion > _localLatestVersion
       window.localStorage.setItem("latestVersion", latestVersion)
       Session.set('latestVersionAlert', true)
@@ -52,6 +52,11 @@ if Meteor.isClient
       Meteor.isCordova
     isFirstLog:()->
       Session.get('isFlag');
+    isAndroid:()->
+      if isAndroidFunc
+        true
+      else
+        false
   Template.home.events
     # 'click .top-series-btn': (event)->
     #    Router.go '/seriesList'
@@ -75,6 +80,8 @@ if Meteor.isClient
       PUB.page '/searchFollow'
     'click #scanbarcode':(event)->
       ScanBarcodeByBarcodeScanner()
+    'click #scanimage':(event)->
+      DecodeImageFromAlum()
 
   Template.home.rendered=->
     flag = window.localStorage.getItem("firstLog") == 'first'
