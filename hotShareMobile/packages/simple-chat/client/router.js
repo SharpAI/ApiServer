@@ -403,6 +403,18 @@ Template._simpleChatToChatItem.events({
     if (setNames.length > 0)
       Meteor.call('set-person-names', setNames);
 
+    var user = Meteor.user();
+    sendMqttGroupLabelMessage(this.to.id, {
+      _id: new Mongo.ObjectID()._str,
+      msgId: this._id,
+      user: {
+        id: user._id,
+        name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+        icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
+      },
+      createAt: new Date()
+    });
+
     // update collection
     Messages.update({_id: this._id}, {$set: {label_complete: true}});
 
@@ -1002,7 +1014,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
     return;
 
   var msgObj = JSON.parse(msg);
-  var whereTime = new Date(format_date(new Date(), 'yyyy-MM-dd 00:00:00'));
+  var whereTime = new Date();whereTime.setHours(0);whereTime.setMinutes(0);whereTime.setSeconds(0);
   var msgType = topic.split('/')[2];
   var where = {
     to_type: msgObj.to_type,
@@ -1059,6 +1071,24 @@ SimpleChat.onMqttMessage = function(topic, msg) {
   }, function(err, num){
     if (err || num <= 0)
       insertMsg(msgObj, 'update 失败');
+  });
+};
+
+SimpleChat.onMqttLabelMessage = function(topic, msg) {
+  if (!topic.startsWith('/msg/l/'))
+    return;
+
+  var msgObj = JSON.parse(msg);
+  var msgId = topic.split('/')[3];
+  var targetMsg = Messages.findOne({_id: msgObj.msgId});
+
+  if (!targetMsg)
+    return;
+  if (targetMsg.label_users && targetMsg.label_users.length > 0 && _.pluck(targetMsg.label_users, 'id').indexOf(msgObj.user.id) >= 0)
+    return;
+  Messages.update({_id: targetMsg._id}, {
+    $push: {label_users: msgObj.user},
+   //  $set: {create_time: new Date()}
   });
 };
 

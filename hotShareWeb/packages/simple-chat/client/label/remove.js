@@ -109,6 +109,16 @@ Template._simpleChatLabelRemove.events({
         is_read: false
       };
       Messages.insert(msg);
+      sendMqttGroupLabelMessage(msgObj.to.id, {
+        _id: new Mongo.ObjectID()._str,
+        msgId: msgObj._id,
+        user: {
+          id: user._id,
+          name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+          icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
+        },
+        createAt: new Date()
+      });
       sendMqttGroupMessage(msg.to.id, msg);
     });
     Template._simpleChatLabelRemove.close();

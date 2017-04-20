@@ -29,7 +29,10 @@ if(Meteor.isClient){
             mqtt_connection.on('message', function(topic, message) {
               try {
                 console.log('on mqtt message topic: ' + topic + ', message: ' + message.toString());
-                SimpleChat.onMqttMessage(topic, message.toString());
+                if (topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))
+                  SimpleChat.onMqttMessage(topic, message.toString());
+                else if (topic.startsWith('/msg/l/'))
+                  SimpleChat.onMqttLabelMessage(topic, message.toString());
               }
               catch (ex) {
                 console.log('exception onMqttMessage: ' + ex);
@@ -41,13 +44,16 @@ if(Meteor.isClient){
             };
             subscribeMqttGroup=function(group_id) {
                 if (mqtt_connection) {
-                    console.log('sub mqtt:' + group_id);
+                    console.log('mqtt.subscribe:' + '/msg/g/'+group_id);
+                    console.log('mqtt.subscribe:' + '/msg/l/'+group_id);
                     mqtt_connection.subscribe('/msg/g/'+group_id,{qos:1});
+                    mqtt_connection.subscribe('/msg/l/'+group_id,{qos:1}); // label 消息
                 }
             };
             unsubscribeMqttGroup=function(group_id) {
                 if (mqtt_connection) {
                     mqtt_connection.unsubscribe("/msg/g/" + group_id);
+                    mqtt_connection.unsubscribe("/msg/l/" + group_id);
                 }
             };
             subscribeMqttUser=function(user_id){
@@ -72,6 +78,9 @@ if(Meteor.isClient){
             sendMqttUserMessage=function(user_id, message) {
                 // console.log('sendMqttUserMessage:', message);
                 sendMqttMessage("/msg/u/" + user_id, message);
+            };
+            sendMqttGroupLabelMessage=function(group_id, message) {
+                sendMqttMessage("/msg/l/" + group_id, message);
             };
         }
     }

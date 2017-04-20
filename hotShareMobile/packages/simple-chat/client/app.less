@@ -52,9 +52,20 @@
               padding: 5px 10px;
               left: 0px; right: 0px;
             }
+            .label_complete{
+              margin-top: 0px;margin-left: -10px;margin-right: -10px;padding-left: 10px;margin-bottom: -10px;color: #626262; position: relative; box-sizing: border-box;padding: 10px;
+              .remark{
+                border-bottom: 1px dotted #ccc;margin-bottom: 5px;padding-bottom: 5px;color: @master_color; font-size: 12px;
+                i{padding-right: 5px;}
+              }
+              .imgs{
+                height: auto;
+                img{width: 30px; height: 30px; margin: 2px;}
+              }
+            }
           }
           .line-label-box{
-            min-width: 160px; border-top: 1px solid #ccc; margin-top: 10px; margin-left: -10px; margin-right: -10px;
+            height: 40px; min-width: 160px; border-top: 1px solid #ccc; margin-top: 10px; margin-left: -10px; margin-right: -10px; margin-bottom: -10px; overflow: hidden;
             > div{width: 50%; float: left; height: 40px; line-height: 40px; color: @master_color; text-align: center; margin-bottom: -10px; border-left: 1px solid #ccc;}
             > div:first-child{border-left: nonde; margin-left: -1px;}
           }

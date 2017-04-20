@@ -155,7 +155,10 @@ Template._simpleChatLabelDevice.events({
       console.log('names:', res);
       for (var i=0;i<updateObj.images.length;i++){
         if (updateObj.images[i].label) {
-          var trainsetObj = {group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, person_id: res && res[updateObj.images[i].label].id ? res[updateObj.images[i].label].id : '', device_id: msgObj.people_uuid, face_id: res && res[updateObj.images[i].label].faceId ? res[updateObj.images[i].label].faceId : updateObj.images[i].id, drop: false};
+          console.log('res item obj:', res[updateObj.images[i].label]);
+          var trainsetObj = {};
+          try{trainsetObj={group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, person_id: res && res[updateObj.images[i].label].id ? res[updateObj.images[i].label].id : '', device_id: msgObj.people_uuid, face_id: res && res[updateObj.images[i].label].faceId ? res[updateObj.images[i].label].faceId : updateObj.images[i].id, drop: false};}
+          catch(ex){trainsetObj={group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, person_id: '', device_id: msgObj.people_uuid, face_id: updateObj.images[i].id, drop: false};}
           console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
           sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
 
@@ -180,6 +183,16 @@ Template._simpleChatLabelDevice.events({
           is_read: false
         };
         Messages.insert(msg);
+        sendMqttGroupLabelMessage(msgObj.to.id, {
+          _id: new Mongo.ObjectID()._str,
+          msgId: msgObj._id,
+          user: {
+            id: user._id,
+            name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+            icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
+          },
+          createAt: new Date()
+        });
         sendMqttGroupMessage(msg.to.id, msg);
       });
       Template._simpleChatLabelDevice.close();
