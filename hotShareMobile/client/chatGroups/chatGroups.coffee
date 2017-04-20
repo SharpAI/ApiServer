@@ -18,6 +18,8 @@ if Meteor.isClient
             if (target.data("visible"))
                 target.data("visible", false);
   Template.chatGroups.helpers
+    showBubbleTipHintTemplate:()->
+      Session.equals('needShowBubble','true')
     msgSession2: ()->
       return SimpleChat.MsgSession.find({userId: Meteor.userId()}, {sort: {sessionType: 1, updateAt: -1}})
     isGroup: (msg)->
