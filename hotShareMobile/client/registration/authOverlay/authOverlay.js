@@ -64,6 +64,10 @@ if (Meteor.isClient) {
           Router.go(gotoPage);
           return;
         }
+        if (result.alumTapped) {
+          DecodeImageFromAlum();
+          return;
+        }
       },
       function(error) {
         alert("Scanning failed: " + error);
