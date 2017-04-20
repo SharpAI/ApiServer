@@ -10,30 +10,30 @@
             <div id="groupsProfilePageback" class="leftButton back">
                 <i class="fa fa-angle-left fa-fw"></i>
             </div>
-            <strong>聊天信息</strong>
+            <strong>训练信息</strong>
         </div>
         <div class="content">
             <div id="wrapper">
                 {{> groupUsers}}
                 <div class="line" style="height: 12px;"></div>
                 <!-- <div class="shareGroup eachViewer">
-                <span>分享群聊</span>
+                <span>分享AI训练群</span>
             </div> -->
                 {{#if isGroup}}
                 <ul class="set-up comFadeIn" style="margin-top: 0px;margin-bottom: 10px;">
                     <li class="name">
-                        <label>群聊名称</label>
+                        <label>AI训练群名称</label>
                         <div class="value">{{groupName}}<i class="fa fa-angle-right"></i></div>
                     </li>
                     {{#if hasBarCode}}
                     <li class="barcode">
-                        <label>群二维码</label>
+                        <label>AI训练群二维码</label>
                         <div class="value"><img src="{{barcodeUrl}}"><i class="fa fa-angle-right"></i></div>
                     </li>
                     {{/if}}
                 </ul>
                 {{/if}}
-                <div class="emptyMessages">清空聊天记录</div>
+                <div class="emptyMessages">清空训练记录</div>
                 <div class="line" style="height: 12px;"></div>
                 {{#if isGroup}}
                 <div class="deleteAndExit">删除并退出</div>
@@ -93,7 +93,7 @@
         <div class="head" style="position: fixed;">
             <div class="title" style="position:relative;">
                 <div class="left-btn">取消</div>
-                <span class="Contacts">群聊名称</span>
+                <span class="Contacts">AI训练群名称</span>
                 <div class="right-btn">保存</div>
             </div>
         </div>
@@ -102,7 +102,7 @@
         <li>
             <div class="input">
                 <form class="setGroupname-form">
-                    <input maxlength="10" class="text" type="text" id="text" placeholder="输入新的群聊名称" value="{{groupName}}" style="color: black;" />
+                    <input maxlength="10" class="text" type="text" id="text" placeholder="输入新的AI训练群名称" value="{{groupName}}" style="color: black;" />
                 </form>
             </div>
         </li>

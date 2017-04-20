@@ -39,7 +39,7 @@ if Meteor.isClient
       Meteor.call 'create-group', null, null, _.pluck(selected, 'followerId'), (err, id)->
         console.log(err)
         if err or !id
-          return PUB.toast('创建群聊失败，请重试~')
+          return PUB.toast('创建AI训练群失败，请重试~')
         Meteor.setTimeout(
           ()->
             Router.go('/simple-chat/to/group?id=' + id)

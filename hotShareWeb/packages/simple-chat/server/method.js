@@ -6,7 +6,7 @@ Meteor.methods({
     var group = Groups.findOne({_id: id});
 
     if (!name)
-      name = '群聊 ' + (Groups.find({}).count() + 1);
+      name = 'AI训练群 ' + (Groups.find({}).count() + 1);
     if(group){
       if (slef.userId && ids.indexOf(slef.userId) === -1)
         ids.push(slef.userId);

@@ -1,7 +1,7 @@
 var list_limit_val = 20;
 var is_loading = new ReactiveVar(false);
 var list_limit = new ReactiveVar(list_limit_val);
-var page_title = new ReactiveVar('聊天室');
+var page_title = new ReactiveVar('AI训练群');
 var list_data = new ReactiveVar([]);
 var message_list = new ReactiveVar([]);
 var page_data = null;
@@ -257,7 +257,7 @@ Template._simpleChatToChat.onRendered(function(){
 
   Meteor.subscribe('get-messages', slef.data.type, slef.data.id, function(){
     if(slef.data.type != 'user'){
-      page_title.set(Groups.findOne({_id: slef.data.id}) ? Groups.findOne({_id: slef.data.id}).name : '聊天室');
+      page_title.set(Groups.findOne({_id: slef.data.id}) ? Groups.findOne({_id: slef.data.id}).name : 'AI训练群');
     }else{
       var user = Meteor.users.findOne({_id: slef.data.id});
       page_title.set(AppConfig.get_user_name(user));
@@ -1065,7 +1065,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
     if (count > 0)
       setObj.text = count + ' 张照片需要标注';
   } else {
-    setObj.text = msgObj.images[0].label + ' 加入了聊天室';
+    setObj.text = msgObj.images[0].label + '：';
   }
 
   Messages.update({_id: targetMsg._id}, {

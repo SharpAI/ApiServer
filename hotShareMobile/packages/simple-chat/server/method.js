@@ -6,7 +6,7 @@ Meteor.methods({
     var group = Groups.findOne({_id: id});
 
     if (!name)
-      name = '群聊 ' + (Groups.find({}).count() + 1);
+      name = 'AI训练群 ' + (Groups.find({}).count() + 1);
     if(group){
       if (slef.userId && ids.indexOf(slef.userId) === -1)
         ids.push(slef.userId);
@@ -120,7 +120,7 @@ Meteor.methods({
 //       user_id: doc.user_id,
 //       user_name: doc.user_name,
 //       user_icon: doc.user_icon,
-//       text: '群聊天',
+//       text: 'AI训练群',
 //       update_time: new Date(),
 //       msg_count: 1,
 //       type: 'group',

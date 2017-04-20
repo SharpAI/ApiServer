@@ -42,7 +42,7 @@ if Meteor.isClient
     'click .barcode': (event)->
       Session.set("groupsProfileMenu","groupBarCode")
     'click .deleteAndExit':(event)->
-      PUB.confirm('删除并退出后，将不再接收此群聊消息',()->
+      PUB.confirm('删除并退出后，将不再接收本AI训练群消息',()->
         Meteor.call('remove-group-user',Session.get('groupsId'),Meteor.userId(),(err,id)->
           console.log(err)
           if err or !id
@@ -60,7 +60,7 @@ if Meteor.isClient
         )
       )
     'click .emptyMessages':(event)->
-      PUB.confirm('确定要清空聊天记录吗？',()->
+      PUB.confirm('确定要清空训练记录吗？',()->
         type = Session.get('groupsType')
         to = Session.get('groupsId')
         if type is 'group'
@@ -75,7 +75,7 @@ if Meteor.isClient
         console.log('where:', where);
         window.plugins.toast.showLongCenter('请稍候~')
         SimpleChat.Messages.remove(where);
-        console.log '聊天记录已清空';
+        console.log '训练记录已清空';
         SimpleChat.MsgSession.update({toUserId:to},{$set:{lastText:''}})
         window.plugins.toast.hide();
         # groupid = Session.get('groupsId')
