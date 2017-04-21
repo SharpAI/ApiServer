@@ -18,6 +18,7 @@ if(Meteor.isServer){
 }else{
   Groups = new Mongo.Collection(PRFIX + 'groups');
   GroupUsers = new Mongo.Collection(PRFIX + 'groups_users');
+  MessageTemp = new Mongo.Collection(PRFIX + 'messages_temp', { connection: null });
 
   Meteor.startup(function() {
     //var LocalMessagesObservor = new PersistentMinimongo2(Messages, 'workai');
@@ -30,6 +31,7 @@ if(Meteor.isServer){
 
     SimpleChat.Messages = Messages;
     SimpleChat.MsgSession = MsgSession;
+    SimpleChat.MessageTemp = MessageTemp;
   });
 
   // 生成聊天会话

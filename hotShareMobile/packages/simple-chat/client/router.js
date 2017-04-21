@@ -1001,7 +1001,59 @@ window.___message = {
   }
 };
 
+var updateMessageForTemp = function(id){
+  console.log('update message from temp:', id);
+
+  MessageTemp.find({'msg.to.id': id}, {sort: {createAt: -1}, limit: 20}).fetch().forEach(function(item){
+    Meteor.setTimeout(function(){
+      MessageTemp.remove({_id: item._id});
+      onMqttMessage(item.topic, JSON.stringify(item.msg));
+    }, 0);
+  });
+};
+
+var msgGroup = [];
+var updateNewMessageInterval = null;
+var updateNewMessage = function(id){
+  if (msgGroup.indexOf(id) === -1)
+    msgGroup.push(id);
+  if (updateNewMessageInterval)
+    return;
+  
+  updateNewMessageInterval = Meteor.setInterval(function(){
+    if (MessageTemp.find({}).count() <= 0){
+      if (updateNewMessageInterval)
+        Meteor.clearInterval(updateNewMessageInterval);
+      msgGroup = [];
+      updateNewMessageInterval = null;
+    } else {
+      msgGroup.forEach(function(item){
+        updateMessageForTemp(item)
+      });
+    }
+  }, 1000*30); // 30 秒取一次最新消息
+};
+
 SimpleChat.onMqttMessage = function(topic, msg) {
+  // var msgObj = JSON.parse(msg);
+
+  // if (!(topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/')))
+  //   return;
+  // if (!msgObj.is_people)
+  //   return Messages.insert(msgObj);
+  
+  // MessageTemp.insert({
+  //   topic: topic,
+  //   msg: msgObj,
+  //   createAt: msgObj.create_time || new Date()
+  // }, function(err){
+  //   if (!err)
+  //     updateNewMessage(msgObj.to.id);
+  // });
+  onMqttMessage(topic, msg);
+};
+
+var onMqttMessage = function(topic, msg) {
   var insertMsg = function(msgObj, type){
     console.log(type, msgObj._id);
     Messages.insert(msgObj, function(err, _id){
