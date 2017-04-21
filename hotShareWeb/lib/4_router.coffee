@@ -563,7 +563,7 @@ if Meteor.isServer
           form: {
             id: user._id
             name: if user.profile and user.profile.fullname then user.profile.fullname + '['+user.username+']' else user.username
-            icon: '/userPicture.png'
+            icon: user.profile.icon
           }
           to: {
             id: userGroup.group_id
@@ -640,7 +640,7 @@ if Meteor.isServer
       device = PERSON.upsetDevice(uuid)
       user = Meteor.users.findOne({username: uuid})
       if !user
-        userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/userPicture.png'}})
+        userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/device_icon_192.png'}})
         user = Meteor.users.findOne({_id: userId})
       group = SimpleChat.Groups.findOne({_id: group_id})
       groupUser = SimpleChat.GroupUsers.findOne({group_id: group_id, user_id: user._id})
@@ -651,7 +651,7 @@ if Meteor.isServer
           group_icon: group.icon
           user_id: user._id
           user_name: if user.profile and user.profile.fullname then user.profile.fullname else user.username
-          user_icon: if user.profile and user.profile.icon then user.profile.icon else '/userPicture.png'
+          user_icon: if user.profile and user.profile.icon then user.profile.icon else '/device_icon_192.png'
           create_time: new Date()
         });
         sendMqttMessage('/msg/g/'+ group_id, {
@@ -659,7 +659,7 @@ if Meteor.isServer
           form: {
             id: user._id
             name: user.username
-            icon: '/userPicture.png'
+            icon: user.profile.icon
           }
           to: {
             id: group_id
@@ -689,7 +689,7 @@ if Meteor.isServer
       device = PERSON.upsetDevice(uuid)
       user = Meteor.users.findOne({username: uuid})
       if !user
-        userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/userPicture.png'}})
+        userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/device_icon_192.png'}})
         user = Meteor.users.findOne({_id: userId})
       group = SimpleChat.Groups.findOne({_id: group_id})
       groupUser = SimpleChat.GroupUsers.findOne({group_id: group_id, user_id: user._id})
@@ -700,7 +700,7 @@ if Meteor.isServer
           group_icon: group.icon
           user_id: user._id
           user_name: if user.profile and user.profile.fullname then user.profile.fullname else user.username
-          user_icon: if user.profile and user.profile.icon then user.profile.icon else '/userPicture.png'
+          user_icon: if user.profile and user.profile.icon then user.profile.icon else '/device_icon_192.png'
           create_time: new Date()
         });
         sendMqttMessage('/msg/g/'+ group_id, {
@@ -708,7 +708,7 @@ if Meteor.isServer
           form: {
             id: user._id
             name: user.username
-            icon: '/userPicture.png'
+            icon: user.profile.icon
           }
           to: {
             id: group_id
