@@ -18,6 +18,12 @@ Template._simpleChatLabelCrop.open = function(msgObj){
   images.set(imgs);
 
   view = Blaze.render(Template._simpleChatLabelCrop, document.body);
+
+  if (imgs.length === 1){
+    imgs[0].selected = true;
+    images.set(imgs);
+    Template._simpleChatLabelCrop.crop();
+  }
 };
 
 Template._simpleChatLabelCrop.close = function(){
@@ -26,20 +32,7 @@ Template._simpleChatLabelCrop.close = function(){
   view = null;
 };
 
-Template._simpleChatLabelCrop.helpers({
-  images: function(){
-    return images.get();
-  }
-});
-
-Template._simpleChatLabelCrop.events({
-  'click .leftButton': function(){
-    Template._simpleChatLabelCrop.close();
-  },
-  'click .rightButton.remove': function(e, t){
-    // if (!t.$('#remove-input-name').val())
-    //   return PUB.toast('请输入或选择删除的原因~');
-    
+Template._simpleChatLabelCrop.crop = function(){
     var msgObj = message.get();
     var updateObj = {};
     var imgs = images.get();
@@ -85,6 +78,20 @@ Template._simpleChatLabelCrop.events({
       });
     }
     Template._simpleChatLabelCrop.close();
+};
+
+Template._simpleChatLabelCrop.helpers({
+  images: function(){
+    return images.get();
+  }
+});
+
+Template._simpleChatLabelCrop.events({
+  'click .leftButton': function(){
+    Template._simpleChatLabelCrop.close();
+  },
+  'click .rightButton.remove': function(e, t){
+    Template._simpleChatLabelCrop.crop()
   },
   'click li': function(){
     var imgs = images.get();
