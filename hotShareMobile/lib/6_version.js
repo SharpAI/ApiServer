@@ -1,1 +1,1 @@
-version_of_build = '0.9.3';
+version_of_build = '1.0.3';
