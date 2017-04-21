@@ -39,11 +39,20 @@ Template._simpleChatLabelRemove.events({
   'click .rightButton.remove': function(e, t){
     if (!t.$('#remove-input-name').val())
       return PUB.toast('请输入或选择删除的原因~');
-    
+
     var msgObj = message.get();
     var updateObj = {};
     var imgs = images.get();
     var removes = [];
+
+    var selectedCount = 0;
+    for (var i=0;i<imgs.length;i++){
+      if (imgs[i].selected)
+        selectedCount++;
+    }
+    if (selectedCount <= 0) {
+      return PUB.toast('请选择需要删除的图片~');
+    }
 
     // set remove img
     for (var i=0;i<imgs.length;i++){
