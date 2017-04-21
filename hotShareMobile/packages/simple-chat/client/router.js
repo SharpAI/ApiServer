@@ -890,6 +890,12 @@ Template._simpleChatToChatItem.onRendered(function(){
 });
 
 Template._simpleChatToChatItem.helpers({
+  is_system_message:function(){
+    if (this.type === 'system') {
+      return true;
+    }
+    return false;
+  },
   is_error: function(images){
     for(var i=0;i<images.length;i++){
       if (images[i].error)

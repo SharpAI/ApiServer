@@ -66,7 +66,7 @@ if(Meteor.isServer){
     msgObj.userId = Meteor.userId();
     msgObj.userName = AppConfig.get_user_name(Meteor.user());
     msgObj.userIcon = AppConfig.get_user_icon(Meteor.user()); 
-    msgObj.lastText = doc.type === 'text' ? doc.text : '[图片]';
+    msgObj.lastText = doc.type === 'image' ? '[图片]' : doc.text;
     msgObj.updateAt = new Date();
 
     var msgSession = MsgSession.findOne({userId: Meteor.userId(), toUserId: msgObj.toUserId});

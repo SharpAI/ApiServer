@@ -65,6 +65,9 @@
   {{#if is_show_time _id}}
   <li id="{{_id}}" class="time">{{get_time _id}}</li>
   {{/if}}
+  {{#if is_system_message}}
+  <li id="{{_id}}" class="system_message">{{text}}</li>
+  {{else}}
   <li id="{{_id}}" class="{{ta_me form.id}}">
     <div class="icon"><img class="lazy" data-original="{{form.icon}}" /></div>
     <div class="name">{{form.name}}</div>
@@ -218,6 +221,7 @@
     <div class="form-to"><div>已标记完成</div></div>
     {{/if}}-->
   </li>
+  {{/if}}
 </template>
 
 <template name="_simpleChatToChatLabelBox">
