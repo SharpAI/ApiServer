@@ -51,6 +51,13 @@ Router.route(AppConfig.path + '/to/:type', {
             }
           }
 
+          Meteor.setTimeout(function(){
+            var $li = $('li#' + doc._id);
+            if ($li.length > 0){
+              Template._simpleChatToChatItem.initLazyLoad($li);
+            }
+          }, 300);
+
           res.splice(0, 0, doc);
         });
         return res;
@@ -873,33 +880,36 @@ Template._simpleChatToChatLayout.events({
 
 });
 
-Template._simpleChatToChatItem.onRendered(function(){
-  var t = this;
-
+Template._simpleChatToChatItem.initLazyLoad = function($li){
   // 默认图像
-  t.$('.text > .imgs img.lazy').lazyload({ 
-    container: t.$('.text > .imgs')
+  $li.find('.text > .imgs img.lazy').lazyload({ 
+    container: $('.box')
   });
 
   // 标注过的图
-  t.$('.text > .imgs-1-box img.lazy').lazyload({ 
-    container: t.$('.text > .imgs-1-box')
+  $li.find('.text > .imgs-1-box img.lazy').lazyload({ 
+    container: $('.box')
   });
 
   // 有裁剪按钮的图
-  t.$('.img > .imgs img.lazy').lazyload({ 
+  $li.find('.img > .imgs img.lazy').lazyload({ 
     container: $('.box')
   });
 
   // 标注者头像
-  t.$('.text > .label_complete .imgs img.lazy').lazyload({ 
+  $li.find('.text > .label_complete .imgs img.lazy').lazyload({ 
     container: $('.box')
   });
 
   // 用户头像
-  t.$('.icon img.lazy').lazyload({ 
+  $li.find('.icon img.lazy').lazyload({ 
     container: $('.box')
   });
+};
+
+Template._simpleChatToChatItem.onRendered(function(){
+  var t = this;
+  Template._simpleChatToChatItem.initLazyLoad(t.$('li'));
 });
 
 Template._simpleChatToChatItem.helpers({
@@ -946,17 +956,28 @@ Template._simpleChatToChatItem.helpers({
   },
   show_images: function(images){
     var $li = $('li#' + this._id);
-    var $imgs = $li.find('.text .imgs');
-    var $labels = $li.find('.text .imgs-1-item');
     var is_scroll = false;
 
-    $imgs.scrollTop(10);
-    if ($imgs.scrollTop() > 0){is_scroll = true;$imgs.scrollTop(0);}
-    $labels.each(function(){
-      $(this).scrollTop(10);
-      if ($(this).scrollTop() > 0){is_scroll = true;$(this).scrollTop(0);}
-    });
+    // 默认图像
+    var $imgs = $li.find('.text > .imgs img');
+    if ($imgs.length >= 2){
+      if ($imgs[$imgs.length-1].offsetTop != $imgs[0].offsetTop)
+        is_scroll = true;
+    }
 
+    // 标注过的图
+    $imgs = $li.find('.text > .imgs-1-box img');
+    if ($imgs.length >= 2){
+      if ($imgs[$imgs.length-1].offsetTop != $imgs[0].offsetTop)
+        is_scroll = true;
+    }
+
+    // 有裁剪按钮的图
+    $imgs = $li.find('.img > .imgs img');
+    if ($imgs.length >= 2){
+      if ($imgs[$imgs.length-1].offsetTop != $imgs[0].offsetTop)
+        is_scroll = true;
+    }
     if (is_scroll)
       $li.find('.show_more').show();
   },
