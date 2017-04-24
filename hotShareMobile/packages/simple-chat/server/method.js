@@ -58,25 +58,25 @@ Meteor.methods({
           });
         }
       }
-      sendMqttMessage('/msg/g/' + id, {
-        _id: new Mongo.ObjectID()._str,
-        form: {
-          id: '',
-          name: '系统',
-          icon: ''
-        },
-        to: {
-          id: id,
-          name: name,
-          icon: ''
-        },
-        images: [],
-        to_type: "group",
-        type: "system",
-        text: '欢迎加入'+name ,
-        create_time: new Date(),
-        is_read: false
-      });
+      // sendMqttMessage('/msg/g/' + id, {
+      //   _id: new Mongo.ObjectID()._str,
+      //   form: {
+      //     id: '',
+      //     name: '系统',
+      //     icon: ''
+      //   },
+      //   to: {
+      //     id: id,
+      //     name: name,
+      //     icon: ''
+      //   },
+      //   images: [],
+      //   to_type: "group",
+      //   type: "system",
+      //   text: '欢迎加入'+name ,
+      //   create_time: new Date(),
+      //   is_read: false
+      // });
     });
     return id;
   },

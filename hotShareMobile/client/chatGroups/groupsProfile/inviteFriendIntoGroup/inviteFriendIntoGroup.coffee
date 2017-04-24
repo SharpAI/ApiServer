@@ -62,24 +62,30 @@ if Meteor.isClient
           console.log(err)
           if err or !id
             return PUB.toast('添加失败，请重试~')
-          Meteor.subscribe('get-group',groupid,{
+          Meteor.subscribe('get-group',id,{
             onReady:()->
-              group = SimpleChat.Groups.findOne({_id:groupid});
-              user = Meteor.user();
-              msgObj = {
-                toUserId: group._id,
-                toUserName: group.name, 
-                toUserIcon: group.icon, 
-                sessionType: 'group',
-                userId:user._id,
-                userName:user.profile.fullname || user.username,
-                userIcon:user.profile.icon || '/userPicture.png',
-                lastText:'',
-                createAt:new Date(),
-                updateAt:new Date()
+              group = SimpleChat.Groups.findOne({_id:id});
+              msgObj =  {
+                _id: new Mongo.ObjectID()._str,
+                form: {
+                  id: '',
+                  name: '系统',
+                  icon: ''
+                },
+                to: {
+                  id: group._id,
+                  name: group.name,
+                  icon: group.icon
+                },
+                images: [],
+                to_type: "group",
+                type: "system",
+                text: '欢迎加入'+group.name ,
+                create_time: new Date(),
+                is_read: false
               };
-              SimpleChat.MsgSession.insert(msgObj)
-          })
+              sendMqttGroupMessage(group._id, msgObj);
+            });
           Router.go('/simple-chat/to/group?id='+id)
     'click .followItem': (event)->
       # console.log(this);

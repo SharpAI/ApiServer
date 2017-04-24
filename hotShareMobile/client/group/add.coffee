@@ -40,6 +40,30 @@ if Meteor.isClient
         console.log(err)
         if err or !id
           return PUB.toast('创建AI训练群失败，请重试~')
+        Meteor.subscribe('get-group',id,{
+            onReady:()->
+              group = SimpleChat.Groups.findOne({_id:id});
+              msgObj =  {
+                _id: new Mongo.ObjectID()._str,
+                form: {
+                  id: '',
+                  name: '系统',
+                  icon: ''
+                },
+                to: {
+                  id: group._id,
+                  name: group.name,
+                  icon: group.icon
+                },
+                images: [],
+                to_type: "group",
+                type: "system",
+                text: '欢迎加入'+group.name ,
+                create_time: new Date(),
+                is_read: false
+              };
+              sendMqttGroupMessage(group._id, msgObj);
+          })
         Meteor.setTimeout(
           ()->
             Router.go('/simple-chat/to/group?id=' + id)
