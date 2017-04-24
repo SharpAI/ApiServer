@@ -38,8 +38,22 @@ Router.route(AppConfig.path + '/to/:type', {
       type: slef.params.type,
       where: where,
       messages: function(){
-        return Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse();
-        // return message_list.get();
+        // return Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse();
+        var res = [];
+        Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}).forEach(function (doc) {
+          doc.show_time_str = get_diff_time(doc.create_time);
+          doc.has_show_time = true;
+          
+          if (res.length > 0){
+            for(var i=res.length-1;i>=0;i--){
+              if (res[i].show_time_str === doc.show_time_str)
+                res[i].has_show_time = false;
+            }
+          }
+
+          res.splice(0, 0, doc);
+        });
+        return res;
       },
       loading: is_loading.get()
     };
@@ -55,25 +69,25 @@ Template._simpleChatToChatLayout.onDestroyed(function(){
 
 var time_list = [];
 var init_page = false;
-var fix_data_timeInterval = null;
-var fix_data = function(){
-  var data = page_data.messages();// message_list.get(); //Blaze.getData($('.simple-chat')[0]).messages.fetch();
-  data.sort(function(a, b){
-    return a.create_time - b.create_time;
-  });
-  if(data.length > 0){
-    for(var i=0;i<data.length;i++){
-      data[i].show_time_str = get_diff_time(data[i].create_time);
-      if(i===0)
-        data[i].show_time = true;
-      else if(data[i].show_time_str != data[i-1].show_time_str)
-        data[i].show_time = true;
-      else
-        data[i].show_time = false;
-    }
-  }
-  list_data.set(data);
-};
+// var fix_data_timeInterval = null;
+// var fix_data = function(){
+//   var data = page_data.messages();// message_list.get(); //Blaze.getData($('.simple-chat')[0]).messages.fetch();
+//   data.sort(function(a, b){
+//     return a.create_time - b.create_time;
+//   });
+//   if(data.length > 0){
+//     for(var i=0;i<data.length;i++){
+//       data[i].show_time_str = get_diff_time(data[i].create_time);
+//       if(i===0)
+//         data[i].show_time = true;
+//       else if(data[i].show_time_str != data[i-1].show_time_str)
+//         data[i].show_time = true;
+//       else
+//         data[i].show_time = false;
+//     }
+//   }
+//   list_data.set(data);
+// };
 var get_people_names = function(){
   var names = People.find({}, {sort: {updateTime: -1}, limit: 50}).fetch();
   var result = [];
@@ -199,12 +213,12 @@ Template._simpleChatToChatLabelBox.events({
   }
 });
 
-Template._simpleChatToChat.onDestroyed(function(){
-  if(fix_data_timeInterval){
-    Meteor.clearInterval(fix_data_timeInterval);
-    fix_data_timeInterval = null;
-  }
-});
+// Template._simpleChatToChat.onDestroyed(function(){
+//   if(fix_data_timeInterval){
+//     Meteor.clearInterval(fix_data_timeInterval);
+//     fix_data_timeInterval = null;
+//   }
+// });
 
 var setMsgList = function(where, action){
   if(action === 'insert' || action === 'remove'){Meteor.setTimeout(function(){$('.box').scrollTop($('.box ul').height());}, 200);}
@@ -248,11 +262,11 @@ Template._simpleChatToChat.onRendered(function(){
     Messages.onBefore = true;
   }
 
-  if(fix_data_timeInterval){
-    Meteor.clearInterval(fix_data_timeInterval);
-    fix_data_timeInterval = null;
-  }
-  fix_data_timeInterval = Meteor.setInterval(fix_data, 1000*60);
+  // if(fix_data_timeInterval){
+  //   Meteor.clearInterval(fix_data_timeInterval);
+  //   fix_data_timeInterval = null;
+  // }
+  // fix_data_timeInterval = Meteor.setInterval(fix_data, 1000*60);
   Meteor.subscribe('people_new', function(){});
 
   Meteor.subscribe('get-messages', slef.data.type, slef.data.id, function(){

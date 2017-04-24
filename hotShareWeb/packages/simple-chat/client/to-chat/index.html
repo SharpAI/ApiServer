@@ -56,8 +56,8 @@
 </template>
 
 <template name="_simpleChatToChatItem">
-  {{#if is_show_time _id}}
-  <li id="{{_id}}" class="time">{{get_time _id}}</li>
+  {{#if has_show_time}}
+  <li id="{{_id}}" class="time">{{show_time_str}}</li>
   {{/if}}
   <li id="{{_id}}" class="{{ta_me form.id}}">
     <div class="icon"><img src="{{form.icon}}" /></div>
