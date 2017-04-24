@@ -117,12 +117,20 @@ Template._simpleChatLabelDevice.save = function(){
     console.log('names:', res);
     for (var i=0;i<updateObj.images.length;i++){
       if (updateObj.images[i].label) {
+        var labelMsgSent = updateObj.images[i].labelMsgSent;
+        if (labelMsgSent == null || labelMsgSent == undefined)
+          labelMsgSent = false;
+        if (labelMsgSent) {
+          console.log('already labeled, ignore:' + updateObj.images[i].url);
+          continue;
+        }
         console.log('res item obj:', res[updateObj.images[i].label]);
         var trainsetObj = {};
         try{trainsetObj={group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, person_id: res && res[updateObj.images[i].label].id ? res[updateObj.images[i].label].id : '', device_id: msgObj.people_uuid, face_id: res && res[updateObj.images[i].label].faceId ? res[updateObj.images[i].label].faceId : updateObj.images[i].id, drop: false};}
         catch(ex){trainsetObj={group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, person_id: '', device_id: msgObj.people_uuid, face_id: updateObj.images[i].id, drop: false};}
         console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
         sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
+        updateObj.images[i].labelMsgSent = true;
 
       }
     }
