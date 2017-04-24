@@ -31,6 +31,14 @@
                         <div class="value"><img src="{{barcodeUrl}}"><i class="fa fa-angle-right"></i></div>
                     </li>
                     {{/if}}
+                    {{#if hasAnnouncement}}
+                    <li class="announcement">
+                        <label style="top: 20px;">AI训练群公告</label>
+                        <label class="copy">复制</label>
+                        <div class="value announcementVal">{{groupAnnouncement}}
+                        </div>
+                    </li>
+                    {{/if}}
                 </ul>
                 {{/if}}
                 <div class="emptyMessages">清空训练记录</div>

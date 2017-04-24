@@ -31,6 +31,17 @@ if Meteor.isClient
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       if  group and group.barcode
         return group.barcode
+
+    hasAnnouncement:()->
+      group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
+      if  group and group.announcement
+        return true
+      else 
+        return false
+    groupAnnouncement:()->
+      group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
+      if  group and group.announcement
+        return group.announcement
   Template.groupInformation.events
     'click #groupsProfilePageback':(event)->
       groupid = Session.get('groupsId')
@@ -83,6 +94,11 @@ if Meteor.isClient
         # url = '/simple-chat/to/'+type+'?id='+groupid
         # Router.go(url)
       )
+
+    'click .copy':(event)->
+      value = $('.announcementVal').text()
+      cordova.plugins.clipboard.copy(value)
+      PUB.toast('复制成功~')
 
   Template.groupUsers.helpers
     isGroup:()->
