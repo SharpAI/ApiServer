@@ -108,7 +108,7 @@ Template._simpleChatLabelDevice.save = function(){
       updateObj.label_complete = true;
     updateObj.images = msgObj.images;
     updateObj.text = msgObj.text;
-    updateObj.create_time = new Date();
+    // updateObj.create_time = new Date();
 
     // update label
     if (setNames.length > 0)

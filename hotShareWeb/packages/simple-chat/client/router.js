@@ -542,6 +542,12 @@ Template._simpleChatToChatItem.events({
       $imgs.css('height', 'auto');
       $labels.css('height', 'auto');
       $show.html('<i class="fa fa-angle-up"></i>');
+      t.$('.text > .imgs img.lazy').lazyload({ 
+        container: $('.box')
+      });
+      t.$('.text > .imgs-1-box img.lazy').lazyload({ 
+        container: $('.box')
+      });
     } else {
       $imgs.css('height', '70px');
       $labels.css('height', '55px');
@@ -851,6 +857,35 @@ Template._simpleChatToChatLayout.events({
     PUB.page('/simpleUserProfile/'+data.id);
   }
 
+});
+
+Template._simpleChatToChatItem.onRendered(function(){
+  var t = this;
+
+  // 默认图像
+  t.$('.text > .imgs img.lazy').lazyload({ 
+    container: t.$('.text > .imgs')
+  });
+
+  // 标注过的图
+  t.$('.text > .imgs-1-box img.lazy').lazyload({ 
+    container: t.$('.text > .imgs-1-box')
+  });
+
+  // 有裁剪按钮的图
+  t.$('.img > .imgs img.lazy').lazyload({ 
+    container: $('.box')
+  });
+
+  // 标注者头像
+  t.$('.text > .label_complete .imgs img.lazy').lazyload({ 
+    container: $('.box')
+  });
+
+  // 用户头像
+  t.$('.icon img.lazy').lazyload({ 
+    container: $('.box')
+  });
 });
 
 Template._simpleChatToChatItem.helpers({

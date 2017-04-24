@@ -88,7 +88,7 @@ Template._simpleChatLabelRemove.events({
       updateObj.label_complete = true;
     updateObj.images = msgObj.images;
     updateObj.text = msgObj.text;
-    updateObj.create_time = new Date();
+    // updateObj.create_time = new Date();
 
     if (removes.length > 0)
       Meteor.call('remove-persons', removes)
