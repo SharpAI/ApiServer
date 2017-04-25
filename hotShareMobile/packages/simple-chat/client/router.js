@@ -43,7 +43,7 @@ Router.route(AppConfig.path + '/to/:type', {
         Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}).forEach(function (doc) {
           doc.show_time_str = get_diff_time(doc.create_time);
           doc.has_show_time = true;
-          
+
           if (res.length > 0){
             for(var i=res.length-1;i>=0;i--){
               if (res[i].show_time_str === doc.show_time_str)
@@ -395,7 +395,7 @@ Template._simpleChatToChatItem.events({
     //         });
     //         sendMqttMessage('trainset', {url: img.url, person_id: res.id ? res.id : '', device_id: data.people_uuid, face_id: res ? res.faceId : data.people_id, drop: false});
     //       });
-          
+
     //       onFixName(data.people_id, data.people_uuid, data.people_his_id, data.images, data.to, name, 'label');
     //       PUB.toast('标记成功~');
     //     });
@@ -472,7 +472,7 @@ Template._simpleChatToChatItem.events({
     //       });
     //       sendMqttMessage('trainset', {url: img.url, person_id: res.id ? res.id : '', device_id: data.people_uuid, face_id: res ? res.faceId : data.people_id, drop: false});
     //     });
-        
+
     //     onFixName(data.people_id, data.people_uuid, data.people_his_id, data.images, data.to, name, 'label');
     //     PUB.toast('标记成功~');
     //   });
@@ -563,10 +563,10 @@ Template._simpleChatToChatItem.events({
       $imgs.css('height', 'auto');
       $labels.css('height', 'auto');
       $show.html('<i class="fa fa-angle-up"></i>');
-      t.$('.text > .imgs img.lazy').lazyload({ 
+      t.$('.text > .imgs img.lazy').lazyload({
         container: $('.box')
       });
-      t.$('.text > .imgs-1-box img.lazy').lazyload({ 
+      t.$('.text > .imgs-1-box img.lazy').lazyload({
         container: $('.box')
       });
     } else {
@@ -883,27 +883,27 @@ Template._simpleChatToChatLayout.events({
 
 Template._simpleChatToChatItem.initLazyLoad = function($li){
   // 默认图像
-  $li.find('.text > .imgs img.lazy').lazyload({ 
+  $li.find('.text > .imgs img.lazy').lazyload({
     container: $('.box')
   });
 
   // 标注过的图
-  $li.find('.text > .imgs-1-box img.lazy').lazyload({ 
+  $li.find('.text > .imgs-1-box img.lazy').lazyload({
     container: $('.box')
   });
 
   // 有裁剪按钮的图
-  $li.find('.img > .imgs img.lazy').lazyload({ 
+  $li.find('.img > .imgs img.lazy').lazyload({
     container: $('.box')
   });
 
   // 标注者头像
-  $li.find('.text > .label_complete .imgs img.lazy').lazyload({ 
+  $li.find('.text > .label_complete .imgs img.lazy').lazyload({
     container: $('.box')
   });
 
   // 用户头像
-  $li.find('.icon img.lazy').lazyload({ 
+  $li.find('.icon img.lazy').lazyload({
     container: $('.box')
   });
 };
@@ -1096,7 +1096,7 @@ var updateNewMessage = function(id){
     msgGroup.push(id);
   if (updateNewMessageInterval)
     return;
-  
+
   updateNewMessageInterval = Meteor.setInterval(function(){
     if (MessageTemp.find({}).count() <= 0){
       if (updateNewMessageInterval)
@@ -1118,7 +1118,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
   //   return;
   // if (!msgObj.is_people)
   //   return Messages.insert(msgObj);
-  
+
   // MessageTemp.insert({
   //   topic: topic,
   //   msg: msgObj,
@@ -1142,6 +1142,7 @@ var onMqttMessage = function(topic, msg) {
   if (!(topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/')))
     return;
 
+  Session.set('hasNewLabelMsg', true);
   var msgObj = JSON.parse(msg);
   var whereTime = new Date();whereTime.setHours(0);whereTime.setMinutes(0);whereTime.setSeconds(0);
   var msgType = topic.split('/')[2];
@@ -1263,7 +1264,7 @@ last_msg = null;
 //     //msgObj._id = new Mongo.ObjectID()._str;
 //     return
 //   }
-  
+
 //   try{
 //     console.log('last_msg:', last_msg);
 //     msgObj.create_time = msgObj.create_time ? new Date(msgObj.create_time) : new Date();

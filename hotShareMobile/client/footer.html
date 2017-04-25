@@ -6,6 +6,9 @@
               <a id="home" class="foot-btn btn btn-default {{focus_style 'home'}}">
                 <i class="fa fa-comment" style="font-size: 24px;"></i>
                 <div class="footerName">点圈</div>
+                {{#if hasNewLabelMsg}}
+                <div style="height:14px; width:14px; background-color:red; position:absolute; top: 10px; right: 25px; border-radius: 50%;"></div>
+                {{/if}}
               </a>
             </div>
             <div class="btn-group">
@@ -21,7 +24,7 @@
                 <div class="footerName">发现</div>
               </a>
             </div>
-            
+
             <!-- <div class="btn-group">
                 <div id="add" data-toggle="modal" data-target="#level2-popup-menu" class="foot-btn btn btn-default {{focus_style 'add'}}">
                   <img src="/theme_blue/add.svg" style="height:50px;margin-top:-2px;"/>

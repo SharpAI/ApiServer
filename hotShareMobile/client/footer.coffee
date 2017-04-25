@@ -13,6 +13,8 @@ if Meteor.isClient
     alert 'show'
     return
   Template.footer.helpers
+    hasNewLabelMsg: ()->
+      Session.get('hasNewLabelMsg')
     display_select_import_way: ()->
       Session.equals 'display_select_import_way',true
     is_wait_read_count: (count)->
@@ -62,7 +64,7 @@ if Meteor.isClient
         return "/addressbook_s.png"
       else
         return "/addressbook.png"
-      
+
     icon_size:(channelName)->
       channel = Session.get "focusOn"
       if channel is channelName
@@ -139,6 +141,7 @@ if Meteor.isClient
     # ,100)
   Template.footer.events
     'click #home':(e)->
+      Session.set('hasNewLabelMsg', false)
       if (Session.get("myHotPostsChanged"))
         Session.set("myHotPostsChanged", false)
         navigator.notification.confirm(

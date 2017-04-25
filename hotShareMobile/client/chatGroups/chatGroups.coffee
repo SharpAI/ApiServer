@@ -54,7 +54,7 @@ if Meteor.isClient
           }).count()
         if wait_read_count > 0
           true
-        else 
+        else
           false
       else
         false
