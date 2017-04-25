@@ -27,16 +27,18 @@ if(Meteor.isClient){
             });
 
             mqtt_connection.on('message', function(topic, message) {
-              try {
-                console.log('on mqtt message topic: ' + topic + ', message: ' + message.toString());
-                if (topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))
-                  SimpleChat.onMqttMessage(topic, message.toString());
-                else if (topic.startsWith('/msg/l/'))
-                  SimpleChat.onMqttLabelMessage(topic, message.toString());
-              }
-              catch (ex) {
-                console.log('exception onMqttMessage: ' + ex);
-              }
+              Meteor.setTimeout(function() {
+                try {
+                  console.log('on mqtt message topic: ' + topic + ', message: ' + message.toString());
+                  if (topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))
+                    SimpleChat.onMqttMessage(topic, message.toString());
+                  else if (topic.startsWith('/msg/l/'))
+                    SimpleChat.onMqttLabelMessage(topic, message.toString());
+                }
+                catch (ex) {
+                  console.log('exception onMqttMessage: ' + ex);
+                }
+              }, 1500);
             });
             sendMqttMessage=function(topic,message){
                 console.log('sendMqttMessage:', topic, message);
@@ -105,7 +107,7 @@ if(Meteor.isClient){
 
       SimpleChat.GroupUsers.find({user_id: Meteor.userId()}).observe({
          added: function(document) {
-           subscribeMqttGroup(document.group_id);
+            subscribeMqttGroup(document.group_id);
          },
          changed: function(newDocument, oldDocument){
            unsubscribeMqttGroup(oldDocument.group_id);

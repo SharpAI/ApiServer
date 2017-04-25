@@ -1154,6 +1154,16 @@ var onMqttMessage = function(topic, msg) {
 
   Session.set('hasNewLabelMsg', true);
   var msgObj = JSON.parse(msg);
+
+  if (msgObj.to_type == 'group') {
+    var record = GroupUsers.findOne({group_id: msgObj.to.id, user_id: Meteor.userId()});
+    if (!record) {
+      console.log('receive group message from group that i am not in: ' + msgObj.to.id);
+      return;
+    }
+  }
+
+
   var whereTime = new Date();whereTime.setHours(0);whereTime.setMinutes(0);whereTime.setSeconds(0);
   var msgType = topic.split('/')[2];
   var where = {
