@@ -166,6 +166,10 @@ Template._simpleChatLabelDevice.save = function(){
       sendMqttGroupMessage(msg.to.id, msg);
     });
     Template._simpleChatLabelDevice.close();
+    Meteor.setTimeout(function(){
+      var $box = $('.box');
+      $box.scrollTop($box.scrollTop()+10);
+    }, 500);
   });
 }
 

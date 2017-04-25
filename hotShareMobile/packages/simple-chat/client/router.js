@@ -43,20 +43,13 @@ Router.route(AppConfig.path + '/to/:type', {
         Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}).forEach(function (doc) {
           doc.show_time_str = get_diff_time(doc.create_time);
           doc.has_show_time = true;
-
+          
           if (res.length > 0){
             for(var i=res.length-1;i>=0;i--){
               if (res[i].show_time_str === doc.show_time_str)
                 res[i].has_show_time = false;
             }
           }
-
-          Meteor.setTimeout(function(){
-            var $li = $('li#' + doc._id);
-            if ($li.length > 0){
-              Template._simpleChatToChatItem.initLazyLoad($li);
-            }
-          }, 300);
 
           res.splice(0, 0, doc);
         });
@@ -66,6 +59,24 @@ Router.route(AppConfig.path + '/to/:type', {
     };
   }
 });
+
+// lazyload
+Template._simpleChatToChatItemImg.onRendered(function(){
+  this.$("img.lazy:not([src])").lazyload({
+    container: $(".box")
+  });
+});
+Template._simpleChatToChatItemIcon.onRendered(function(){
+  this.$("img.lazy:not([src])").lazyload({
+    container: $(".box")
+  });
+});
+Template._simpleChatToChatItemIcon2.onRendered(function(){
+  this.$("img.lazy:not([src])").lazyload({
+    container: $(".box")
+  });
+});
+
 
 Template._simpleChatToChatLayout.onRendered(function(){
   page_data = this.data;
@@ -439,6 +450,11 @@ Template._simpleChatToChatItem.events({
     // update collection
     Messages.update({_id: this._id}, {$set: {label_complete: true}});
 
+    Meteor.setTimeout(function(){
+      var $box = $('.box');
+      $box.scrollTop($box.scrollTop()+10);
+    }, 500);
+
     // var data = this;
     // var names = get_people_names();
     // var name = data.images[0].label;
@@ -558,21 +574,18 @@ Template._simpleChatToChatItem.events({
     var $imgs = $li.find('.text .imgs');
     var $labels = $li.find('.text .imgs-1-item');
     var $show = $li.find('.show_more');
+    var $box = $('.box');
 
-    if ($imgs.css('height') === '70px' || $labels.css('height') === '55px'){
-      $imgs.css('height', 'auto');
-      $labels.css('height', 'auto');
+    if ($imgs.find('img._close').length > 0 || $labels.find('img._close').length > 0){
       $show.html('<i class="fa fa-angle-up"></i>');
-      t.$('.text > .imgs img.lazy').lazyload({
-        container: $('.box')
-      });
-      t.$('.text > .imgs-1-box img.lazy').lazyload({
-        container: $('.box')
-      });
+      $imgs.find('img').removeClass('_close');
+      $labels.find('img').removeClass('_close');
+      $box.scrollTop($box.scrollTop()+1);
+      // $box.scrollTop($box.scrollTop()-1);
     } else {
-      $imgs.css('height', '70px');
-      $labels.css('height', '55px');
       $show.html('<i class="fa fa-angle-right"></i>');
+      $imgs.find('img').addClass('_close');
+      $labels.find('img').addClass('_close');
     }
   }
 });
@@ -881,37 +894,37 @@ Template._simpleChatToChatLayout.events({
 
 });
 
-Template._simpleChatToChatItem.initLazyLoad = function($li){
-  // 默认图像
-  $li.find('.text > .imgs img.lazy').lazyload({
-    container: $('.box')
-  });
+// Template._simpleChatToChatItem.initLazyLoad = function($li){
+//   // 默认图像
+//   $li.find('.text > .imgs img.lazy').lazyload({ 
+//     container: $('.box')
+//   });
 
-  // 标注过的图
-  $li.find('.text > .imgs-1-box img.lazy').lazyload({
-    container: $('.box')
-  });
+//   // 标注过的图
+//   $li.find('.text > .imgs-1-box img.lazy').lazyload({ 
+//     container: $('.box')
+//   });
 
-  // 有裁剪按钮的图
-  $li.find('.img > .imgs img.lazy').lazyload({
-    container: $('.box')
-  });
+//   // 有裁剪按钮的图
+//   $li.find('.img > .imgs img.lazy').lazyload({ 
+//     container: $('.box')
+//   });
 
-  // 标注者头像
-  $li.find('.text > .label_complete .imgs img.lazy').lazyload({
-    container: $('.box')
-  });
+//   // 标注者头像
+//   $li.find('.text > .label_complete .imgs img.lazy').lazyload({ 
+//     container: $('.box')
+//   });
 
-  // 用户头像
-  $li.find('.icon img.lazy').lazyload({
-    container: $('.box')
-  });
-};
+//   // 用户头像
+//   $li.find('.icon img.lazy').lazyload({ 
+//     container: $('.box')
+//   });
+// };
 
-Template._simpleChatToChatItem.onRendered(function(){
-  var t = this;
-  Template._simpleChatToChatItem.initLazyLoad(t.$('li'));
-});
+// Template._simpleChatToChatItem.onRendered(function(){
+//   var t = this;
+//   Template._simpleChatToChatItem.initLazyLoad(t.$('li'));
+// });
 
 Template._simpleChatToChatItem.helpers({
   is_system_message:function(){
@@ -963,30 +976,27 @@ Template._simpleChatToChatItem.helpers({
   },
   show_images: function(images){
     var $li = $('li#' + this._id);
-    var is_scroll = false;
+    var is_more = false;
 
     // 默认图像
     var $imgs = $li.find('.text > .imgs img');
-    if ($imgs.length >= 2){
-      if ($imgs[$imgs.length-1].offsetTop != $imgs[0].offsetTop)
-        is_scroll = true;
+    if ($imgs.length >= 4){
+      is_more = true;
     }
 
     // 标注过的图
     $imgs = $li.find('.text > .imgs-1-box img');
-    if ($imgs.length >= 2){
-      if ($imgs[$imgs.length-1].offsetTop != $imgs[0].offsetTop)
-        is_scroll = true;
+    if ($imgs.length >= 5){
+      is_more = true;
     }
 
     // 有裁剪按钮的图
     $imgs = $li.find('.img > .imgs img');
-    if ($imgs.length >= 2){
-      if ($imgs[$imgs.length-1].offsetTop != $imgs[0].offsetTop)
-        is_scroll = true;
+    if ($imgs.length >= 4){
+      is_more = true;
     }
 
-    if (is_scroll)
+    if (is_more)
       $li.find('.show_more').show();
   },
   is_show_time: function(id){
@@ -1096,7 +1106,7 @@ var updateNewMessage = function(id){
     msgGroup.push(id);
   if (updateNewMessageInterval)
     return;
-
+  
   updateNewMessageInterval = Meteor.setInterval(function(){
     if (MessageTemp.find({}).count() <= 0){
       if (updateNewMessageInterval)
@@ -1222,6 +1232,11 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
   Messages.update({_id: targetMsg._id}, {
     $push: {label_users: msgObj.user},
    //  $set: {create_time: new Date()}
+  }, function(){
+    Meteor.setTimeout(function(){
+      var $box = $('.box');
+      $box.scrollTop($box.scrollTop()+1);
+    }, 100);
   });
 };
 

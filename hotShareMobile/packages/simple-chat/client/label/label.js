@@ -101,6 +101,10 @@ Template._simpleChatLabelLabel.events({
       PUB.toast('操作成功~');
     });
     Template._simpleChatLabelLabel.close();
+    Meteor.setTimeout(function(){
+      var $box = $('.box');
+      $box.scrollTop($box.scrollTop()+10);
+    }, 500);
   },
   'click li': function(){
     var imgs = images.get();
