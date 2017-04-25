@@ -769,3 +769,89 @@ if Meteor.isServer
         )
       this.response.end(device_group)
     )
+
+  Router.route('/restapi/workai-send2group', {where: 'server'}).get(()->
+      uuid = this.params.query.uuid
+      group_id = this.params.query.group_id
+      msg_type = this.params.query.type
+      msg_text = this.params.query.text
+
+      unless uuid or group_id
+        console.log '/restapi/workai-send2group get unless resturn'
+        return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
+
+      if (msg_type == 'text' and msg_text)
+        user = Meteor.users.findOne({username: uuid})
+        unless user
+          return this.response.end('{"result": "failed", "cause": "device not registered"}\n')
+
+        userGroup = SimpleChat.GroupUsers.findOne({user_id: user._id, group_id: group_id})
+        unless userGroup or userGroup.group_id
+          return this.response.end('{"result": "failed", "cause": "group not found"}\n')
+
+        sendMqttMessage('/msg/g/'+ userGroup.group_id, {
+          _id: new Mongo.ObjectID()._str
+          form: {
+            id: user._id
+            name: if user.profile and user.profile.fullname then user.profile.fullname + '['+user.username+']' else user.username
+            icon: user.profile.icon
+          }
+          to: {
+            id: userGroup.group_id
+            name: userGroup.group_name
+            icon: userGroup.group_icon
+          }
+          images: []
+          to_type: "group"
+          type: "text"
+          text: msg_text
+          create_time: new Date()
+          is_read: false
+        })
+
+      this.response.end('{"result": "ok"}\n')
+    ).post(()->
+      if this.request.body.hasOwnProperty('uuid')
+        uuid = this.request.body.uuid
+      if this.request.body.hasOwnProperty('group_id')
+        group_id = this.request.body.group_id
+      if this.request.body.hasOwnProperty('type')
+        msg_type = this.request.body.type
+      if this.request.body.hasOwnProperty('text')
+        msg_text = this.request.body.text
+
+      unless uuid or group_id
+        console.log '/restapi/workai-send2group get unless resturn'
+        return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
+
+      if (msg_type == 'text' and msg_text)
+        user = Meteor.users.findOne({username: uuid})
+        unless user
+          return this.response.end('{"result": "failed", "cause": "device not registered"}\n')
+
+        userGroup = SimpleChat.GroupUsers.findOne({user_id: user._id, group_id: group_id})
+        unless userGroup or userGroup.group_id
+          return this.response.end('{"result": "failed", "cause": "group not found"}\n')
+
+        sendMqttMessage('/msg/g/'+ userGroup.group_id, {
+          _id: new Mongo.ObjectID()._str
+          form: {
+            id: user._id
+            name: if user.profile and user.profile.fullname then user.profile.fullname + '['+user.username+']' else user.username
+            icon: user.profile.icon
+          }
+          to: {
+            id: userGroup.group_id
+            name: userGroup.group_name
+            icon: userGroup.group_icon
+          }
+          images: []
+          to_type: "group"
+          type: "text"
+          text: msg_text
+          create_time: new Date()
+          is_read: false
+        })
+
+      this.response.end('{"result": "ok"}\n')
+    )
