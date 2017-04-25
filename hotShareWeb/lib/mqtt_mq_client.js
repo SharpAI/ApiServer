@@ -10,8 +10,8 @@ if(Meteor.isClient){
                 clean:false,
                 keepalive:20,
                 reconnectPeriod:10*1000,
-                incomingStore: mqtt_store_manager.incoming,
-                outgoingStore: mqtt_store_manager.outgoing,
+                /*incomingStore: mqtt_store_manager.incoming,
+                outgoingStore: mqtt_store_manager.outgoing,*/
                 clientId:clientId
             }
             mqtt_connection=mqtt.connect('ws://mq.tiegushi.com:80',mqttOptions);
@@ -128,7 +128,7 @@ if(Meteor.isClient){
     Deps.autorun(function(){
         if(Meteor.userId()){
             Meteor.setTimeout(function(){
-                initMQTT(getMqttClientID());
+                initMQTT(Meteor.userId());
             },1000)
         } else {
             uninitMQTT()

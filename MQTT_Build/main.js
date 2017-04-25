@@ -3,5 +3,5 @@
  */
 
 global.mqtt = require('mqtt')
-levelStore = require('mqtt-level-store')
-global.mqtt_store_manager = levelStore('mgr');
+//levelStore = require('mqtt-level-store')
+//global.mqtt_store_manager = levelStore('mgr');
