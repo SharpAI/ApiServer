@@ -1197,8 +1197,8 @@ var onMqttMessage = function(topic, msg) {
     return console.log('已存在此消息:', msgObj._id);
   if (!targetMsg || !targetMsg.images || targetMsg.images.length <= 0)
     return insertMsg(msgObj, '无需合并消息');
-  if (targetMsg.images && targetMsg.images.length >= 20)
-    return insertMsg(msgObj, '单行照片超过 20 张');
+  if (targetMsg.images && targetMsg.images.length >= 40)
+    return insertMsg(msgObj, '单行照片超过 40 张');
   if (!msgObj.images || msgObj.images.length <= 0)
     return insertMsg(msgObj, '不是图片消息');
   if (msgObj.to_type != 'group' || !msgObj.is_people)
