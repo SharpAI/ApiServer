@@ -64,6 +64,15 @@ if Meteor.isClient
       Session.equals('followersCollection','loading')
     loadError:->
       Session.equals('followersCollection','error')
+  updateTotalReadCount = ()->
+    totalReadCount = 0
+    msgSess = SimpleChat.MsgSession.find()
+    msgSess.forEach((msg)->
+      if (msg.count)
+        totalReadCount = totalReadCount + msg.count
+    )
+    if (totalReadCount <= 0)
+      Session.set('hasNewLabelMsg', false)
   Template.chatGroups.events
     'click #sysBell':(event)->
       Meteor.defer ()->
@@ -82,3 +91,4 @@ if Meteor.isClient
       setTimeout ()->
         PUB.page(url)
       ,animatePageTrasitionTimeout
+      updateTotalReadCount()
