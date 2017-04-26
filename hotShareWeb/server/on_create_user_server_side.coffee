@@ -11,6 +11,7 @@ if Meteor.isServer
           return anonymousName
       catch
         return null
+
     Accounts.onCreateUser (options, user)->
       randomI = parseInt(Math.random()*33+1)
       if options.profile
@@ -24,6 +25,30 @@ if Meteor.isServer
           user.profile.fullname = user.profile.name
       Meteor.defer ()->
         mqttUserCreateHook(user._id,user.profile.fullname,user.username)
+
+        #默认添加一篇帖子
+        doc = Posts.findOne({_id: "uRyvJDmL88gd4BbBF"})
+        if doc
+          isInserted = FollowPosts.findOne({followby: user._id, postId: doc._id});
+          if (!isInserted)
+            FollowPosts.insert({
+              _id:doc._id,
+              postId:doc._id,
+              title:doc.title,
+              addontitle:doc.addontitle,
+              mainImage: doc.mainImage,
+              mainImageStyle:doc.mainImageStyle,
+              heart:0,
+              retweet:0,
+              comment:0,
+              browse: 0,
+              publish: doc.publish,
+              owner:doc.owner,
+              ownerName:doc.ownerName,
+              ownerIcon:doc.ownerIcon,
+              createdAt: doc.createdAt,
+              followby: user._id
+            })
 
       return user
     # 禁止相关设备创建用户
