@@ -26,6 +26,10 @@ if (Meteor.isClient) {
                         group = SimpleChat.Groups.findOne({
                           _id: groupid
                         });
+                        var msgSession = SimpleChat.MsgSession.findOne({userId: Meteor.userId(), toUserId: group._id});
+                        if (msgSession) {
+                          return;
+                        }
                         user = Meteor.user();
                         msgObj = {
                           toUserId: group._id,
@@ -36,7 +40,8 @@ if (Meteor.isClient) {
                           userName: user.profile.fullname || user.username,
                           userIcon: user.profile.icon || '/userPicture.png',
                           lastText: '',
-                          createAt: new Date()
+                          createAt: new Date(),
+                          updateAt: new Date(),
                         };
                         return SimpleChat.MsgSession.insert(msgObj);
                       }
@@ -107,6 +112,10 @@ if (Meteor.isClient) {
                       _id: groupid
                     });
                     if (group) {
+                      var msgSession = SimpleChat.MsgSession.findOne({userId: Meteor.userId(), toUserId: group._id});
+                      if (msgSession) {
+                        return;
+                      }
                       user = Meteor.user();
                       msgObj = {
                         toUserId: group._id,
@@ -117,7 +126,8 @@ if (Meteor.isClient) {
                         userName: user.profile.fullname || user.username,
                         userIcon: user.profile.icon || '/userPicture.png',
                         lastText: '',
-                        createAt: new Date()
+                        createAt: new Date(),
+                        updateAt: new Date(),
                       };
                       SimpleChat.MsgSession.insert(msgObj);
                     }
