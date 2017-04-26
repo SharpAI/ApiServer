@@ -10,7 +10,11 @@
                 {{#if isLocalImgUrlType imgUrl}}
                 <img id="{{_id}}img" class="image_{{_id}} lazy" src="{{getImageItem URI imgUrl}}" style="{{style}};" >
                 {{else}}
-                <img id="{{_id}}img" class="lazy" data-original="{{imgUrl}}" style="{{style}};" >
+                    {{#if qrcode_groupId}}
+                        <img id="{{_id}}img" class="lazy img-with-hold" data-qrcode_groupId={{qrcode_groupId}} data-original="{{imgUrl}}" style="{{style}};" >
+                    {{else}}
+                        <img id="{{_id}}img" class="lazy" data-original="{{imgUrl}}" style="{{style}};" >
+                    {{/if}}
                 {{/if}}
             </div>
         {{/if}}

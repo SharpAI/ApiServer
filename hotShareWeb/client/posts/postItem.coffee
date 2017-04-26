@@ -52,6 +52,46 @@ if Meteor.isClient
     #    ' row '+myData.data_row+' h '+myData.data_sizey+' w '+myData.data_sizex+
     #    ' H '+element.offsetHeight+'/'+element.clientHeight+' W '+element.offsetWidth+' Top '+element.offsetTop
     #)
+
+    # hold qrcode to join group
+    target = $('.img-with-hold')
+    touch.on target, 'hold', (ev) ->
+      if $(ev.target) and $(ev.target).data('qrcode_groupid')
+          groupid = $(ev.target).data('qrcode_groupid')
+          PUB.toast(groupid)
+
+          Meteor.call('add-group-urser', groupid, [ Meteor.userId() ], (err, result) ->
+            if err
+              console.log err
+              PUB.toast('添加失败，请重试~')
+            if result == 'succ'
+              Meteor.subscribe 'get-group', groupid, onReady: ->
+                group = undefined
+                msgObj = undefined
+                user = undefined
+                group = SimpleChat.Groups.findOne(_id: groupid)
+                user = Meteor.user()
+
+                msgSession = SimpleChat.MsgSession.findOne({userId: Meteor.userId(), toUserId: group._id});
+                if (msgSession)
+                  PUB.toast('您已经加入过这个训练群')
+                else
+                  msgObj = {
+                    toUserId: group._id,
+                    toUserName: group.name,
+                    toUserIcon: group.icon,
+                    sessionType: 'group',
+                    userId: user._id,
+                    userName: user.profile.fullname or user.username,
+                    userIcon: user.profile.icon or '/userPicture.png',
+                    lastText: '',
+                    createAt: new Date}
+                  SimpleChat.MsgSession.insert(msgObj)
+                  PUB.toast('添加成功')
+            else if result == 'not find group'
+              PUB.toast '二维码格式错误'
+          )
+
   Template.postItem.events
     'click .thumbsUp': (e)->
       Session.set("pcommetsId","")
