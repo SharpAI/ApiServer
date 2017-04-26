@@ -52,6 +52,17 @@
               padding: 5px 10px;
               left: 0px; right: 0px;
             }
+            .label_complete{
+              margin-top: 0px;margin-left: -10px;margin-right: -10px;padding-left: 10px;margin-bottom: -10px;color: #626262; position: relative; box-sizing: border-box;padding: 10px;
+              .remark{
+                border-bottom: 1px dotted #ccc;margin-bottom: 5px;padding-bottom: 5px;color: @master_color; font-size: 12px;
+                i{padding-right: 5px;}
+              }
+              .imgs{
+                height: auto;
+                img{width: 30px; height: 30px; margin: 2px;}
+              }
+            }
           }
           .line-label-box{
             height: 40px; min-width: 160px; border-top: 1px solid #ccc; margin-top: 10px; margin-left: -10px; margin-right: -10px; margin-bottom: -10px; overflow: hidden;
@@ -64,9 +75,10 @@
           .imgs-1-box{
             margin-top: 10px;
             .imgs-1-item{
-              position: relative; padding-left: 55px;height: 55px;overflow: hidden;
+              position: relative; padding-left: 55px;
               .my-btn{width: 45px; height: 45px; line-height: 45px; position: absolute; left: 0px; top: 0; color: @master_color; text-align: center; border: 1px solid @master_color; border-radius: 50%;font-size: 20px; font-weight: bold; margin-top: 5px; background-color: #fff}
               img{width: 45px; height: 45px; margin-top: 5px; border-radius: 3px;}
+              img._close:nth-child(n+5){display: none !important;}
             }
           }
           .icon{
@@ -78,8 +90,8 @@
             img{max-width: 100%; border-radius: 5px; z-index: 3;}
           }
           .imgs{
-            height: 70px; overflow: hidden;
             img{width: 60px; height: 60px; margin-top: 5px; border-radius: 3px;}
+            img._close:nth-child(n+4){display: none !important;}
           }
           .name{display: none;}
           .text, .img{position: relative; border-radius: 5px; border:1px solid #d2d2d2; z-index: 1;}
@@ -89,6 +101,7 @@
           }
         }
         li.time{width: 80px; background-color: #ccc; color: #fff; height: 24px; line-height: 24px; font-size: 12px; text-align: center; margin: 0px auto; border-radius: 5px;}
+        .system_message{background-color: #ccc;color: #fff;line-height: 24px;font-size: 12px;text-align: center;border-radius: 5px;margin: 0px auto;display: table;padding-left: 10px;padding-right: 10px;}
         li.ta{
           padding-left: 60px; min-height: 40px;
           .icon{left: 0px;}

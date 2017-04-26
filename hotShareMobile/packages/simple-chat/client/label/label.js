@@ -104,6 +104,7 @@ Template._simpleChatLabelLabel.events({
     Meteor.setTimeout(function(){
       var $box = $('.box');
       $box.scrollTop($box.scrollTop()+10);
+      $box.trigger("scroll");
     }, 500);
   },
   'click li': function(){

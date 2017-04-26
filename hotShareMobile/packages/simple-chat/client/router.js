@@ -453,6 +453,7 @@ Template._simpleChatToChatItem.events({
     Meteor.setTimeout(function(){
       var $box = $('.box');
       $box.scrollTop($box.scrollTop()+10);
+      $box.trigger("scroll");
     }, 500);
 
     // var data = this;
@@ -580,6 +581,7 @@ Template._simpleChatToChatItem.events({
       $show.html('<i class="fa fa-angle-up"></i>');
       $imgs.find('img').removeClass('_close');
       $labels.find('img').removeClass('_close');
+      $box.trigger("scroll");
       $box.scrollTop($box.scrollTop()+1);
       // $box.scrollTop($box.scrollTop()-1);
     } else {
