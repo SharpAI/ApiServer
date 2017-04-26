@@ -1123,23 +1123,64 @@ var updateNewMessage = function(id){
   }, 1000*30); // 30 秒取一次最新消息
 };
 
+//删除本地数据库过多的老的聊天数据
+var clearMsgTime = null;
+var clearMsgLastTime = null;
+var clearMsgForGroundDB = function(){
+  if (Meteor.userId()) {
+    Meteor.subscribe('get-my-group',Meteor.userId(), {
+      onReady: function() {
+        var myGroup = GroupUsers.find({user_id: Meteor.userId()});
+        if (myGroup) {
+          myGroup.forEach(function(item){
+            var msg = Messages.find({'to.id': item.group_id}).fetch();
+            if (msg && msg.length > 100) {
+              for (var i = 0; i < msg.length - 100; i++) {
+                Messages.remove({_id:msg[i]._id});
+              }
+            }
+          });
+        }
+      }
+    });
+  }
+}
+var clearMoreOldMessage = function(){
+   if (clearMsgTime) {
+    Meteor.clearTimeout(clearMsgTime);
+    clearMsgTime = null;
+   }
+   if (clearMsgLastTime && new Date() - clearMsgLastTime > 1000*300) {
+    clearMsgForGroundDB();
+    clearMsgLastTime = new Date();
+   }
+   else{
+    clearMsgTime = Meteor.setTimeout(function(){
+      clearMsgForGroundDB();
+      clearMsgLastTime = new Date();
+      clearMsgTime = null;
+    },1000*60);
+   }
+}
+
 SimpleChat.onMqttMessage = function(topic, msg) {
-  // var msgObj = JSON.parse(msg);
+  var msgObj = JSON.parse(msg);
 
-  // if (!(topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/')))
-  //   return;
-  // if (!msgObj.is_people)
-  //   return Messages.insert(msgObj);
+  if (!(topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/')))
+    return;
+  clearMoreOldMessage();
+  if (!msgObj.is_people)
+    return Messages.insert(msgObj);
 
-  // MessageTemp.insert({
-  //   topic: topic,
-  //   msg: msgObj,
-  //   createAt: msgObj.create_time || new Date()
-  // }, function(err){
-  //   if (!err)
-  //     updateNewMessage(msgObj.to.id);
-  // });
-  onMqttMessage(topic, msg);
+  MessageTemp.insert({
+    topic: topic,
+    msg: msgObj,
+    createAt: msgObj.create_time || new Date()
+  }, function(err){
+    if (!err)
+      updateNewMessage(msgObj.to.id);
+  });
+  //onMqttMessage(topic, msg);
 };
 
 var onMqttMessage = function(topic, msg) {
