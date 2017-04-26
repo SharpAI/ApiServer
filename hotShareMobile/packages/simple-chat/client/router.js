@@ -1172,6 +1172,7 @@ var onMqttMessage = function(topic, msg) {
     to_type: msgObj.to_type,
     wait_lable: msgObj.wait_lable,
     label_complete: {$ne: true},
+    label_start: {$ne: true},
     'to.id': msgObj.to.id,
     images: {$exists: true},
     create_time: {$gte: whereTime},
@@ -1185,7 +1186,7 @@ var onMqttMessage = function(topic, msg) {
       msgObj.images[i].id = msgObj.people_id;
   }
 
-  if (msgObj.wait_lable){where.people_uuid = msgObj.people_uuid}
+  if (msgObj.wait_lable){where.people_uuid = msgObj.people_uuid; where.people_id = msgObj.people_id;}
   else if (!msgObj.wait_lable && msgObj.images && msgObj.images.length > 0) {where['images.label'] = msgObj.images[0].label}
   else {return Messages.insert(msgObj)}
 
@@ -1196,14 +1197,14 @@ var onMqttMessage = function(topic, msg) {
     return console.log('已存在此消息:', msgObj._id);
   if (!targetMsg || !targetMsg.images || targetMsg.images.length <= 0)
     return insertMsg(msgObj, '无需合并消息');
-  if (targetMsg.images && targetMsg.images.length >= 50)
-    return insertMsg(msgObj, '单行照片超过 50 张');
+  if (targetMsg.images && targetMsg.images.length >= 20)
+    return insertMsg(msgObj, '单行照片超过 20 张');
   if (!msgObj.images || msgObj.images.length <= 0)
     return insertMsg(msgObj, '不是图片消息');
   if (msgObj.to_type != 'group' || !msgObj.is_people)
     return insertMsg(msgObj, '不是 Group 或人脸消息');
 
-  var setObj = {create_time: new Date(), 'form.name': msgObj.form.name};
+  var setObj = {/*create_time: new Date(),*/ 'form.name': msgObj.form.name};
   if (msgObj.wait_lable){
     var count = 0;
     for(var i=0;i<targetMsg.images.length;i++){
@@ -1248,6 +1249,7 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
     Meteor.setTimeout(function(){
       var $box = $('.box');
       $box.scrollTop($box.scrollTop()+1);
+      $box.trigger("scroll");
     }, 100);
   });
 };

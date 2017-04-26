@@ -1073,6 +1073,25 @@ window.___message = {
 };
 
 SimpleChat.onMqttMessage = function(topic, msg) {
+  // var msgObj = JSON.parse(msg);
+
+  // if (!(topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/')))
+  //   return;
+  // if (!msgObj.is_people)
+  //   return Messages.insert(msgObj);
+
+  // MessageTemp.insert({
+  //   topic: topic,
+  //   msg: msgObj,
+  //   createAt: msgObj.create_time || new Date()
+  // }, function(err){
+  //   if (!err)
+  //     updateNewMessage(msgObj.to.id);
+  // });
+  onMqttMessage(topic, msg);
+};
+
+var onMqttMessage = function(topic, msg) {
   var insertMsg = function(msgObj, type){
     console.log(type, msgObj._id);
     Messages.insert(msgObj, function(err, _id){
@@ -1084,13 +1103,25 @@ SimpleChat.onMqttMessage = function(topic, msg) {
   if (!(topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/')))
     return;
 
+  Session.set('hasNewLabelMsg', true);
   var msgObj = JSON.parse(msg);
+
+  if (msgObj.to_type == 'group') {
+    var record = GroupUsers.findOne({group_id: msgObj.to.id, user_id: Meteor.userId()});
+    if (!record) {
+      console.log('receive group message from group that i am not in: ' + msgObj.to.id);
+      return;
+    }
+  }
+
+
   var whereTime = new Date();whereTime.setHours(0);whereTime.setMinutes(0);whereTime.setSeconds(0);
   var msgType = topic.split('/')[2];
   var where = {
     to_type: msgObj.to_type,
     wait_lable: msgObj.wait_lable,
     label_complete: {$ne: true},
+    label_start: {$ne: true},
     'to.id': msgObj.to.id,
     images: {$exists: true},
     create_time: {$gte: whereTime},
@@ -1104,7 +1135,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
       msgObj.images[i].id = msgObj.people_id;
   }
 
-  if (msgObj.wait_lable){where.people_uuid = msgObj.people_uuid}
+  if (msgObj.wait_lable){where.people_uuid = msgObj.people_uuid; where.people_id = msgObj.people_id;}
   else if (!msgObj.wait_lable && msgObj.images && msgObj.images.length > 0) {where['images.label'] = msgObj.images[0].label}
   else {return Messages.insert(msgObj)}
 
@@ -1115,14 +1146,14 @@ SimpleChat.onMqttMessage = function(topic, msg) {
     return console.log('已存在此消息:', msgObj._id);
   if (!targetMsg || !targetMsg.images || targetMsg.images.length <= 0)
     return insertMsg(msgObj, '无需合并消息');
-  if (targetMsg.images && targetMsg.images.length >= 50)
-    return insertMsg(msgObj, '单行照片超过 50 张');
+  if (targetMsg.images && targetMsg.images.length >= 20)
+    return insertMsg(msgObj, '单行照片超过 20 张');
   if (!msgObj.images || msgObj.images.length <= 0)
     return insertMsg(msgObj, '不是图片消息');
   if (msgObj.to_type != 'group' || !msgObj.is_people)
     return insertMsg(msgObj, '不是 Group 或人脸消息');
 
-  var setObj = {create_time: new Date(), 'form.name': msgObj.form.name};
+  var setObj = {/*create_time: new Date(),*/ 'form.name': msgObj.form.name};
   if (msgObj.wait_lable){
     var count = 0;
     for(var i=0;i<targetMsg.images.length;i++){
@@ -1136,7 +1167,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
     if (count > 0)
       setObj.text = count + ' 张照片需要标注';
   } else {
-    setObj.text = msgObj.images[0].label + ' ：';
+    setObj.text = msgObj.images[0].label + '：';
   }
 
   Messages.update({_id: targetMsg._id}, {
@@ -1167,6 +1198,7 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
     Meteor.setTimeout(function(){
       var $box = $('.box');
       $box.scrollTop($box.scrollTop()+1);
+      $box.trigger("scroll");
     }, 100);
   });
 };
