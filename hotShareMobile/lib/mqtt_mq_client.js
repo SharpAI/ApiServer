@@ -26,8 +26,10 @@ if(Meteor.isClient){
                 }
             });
 
+            var conn_time = new Date().getTime();
             mqtt_connection.on('message', function(topic, message) {
-              Meteor.setTimeout(function() {
+              var cur_time = new Date().getTime();
+              if (cur_time - conn_time > 3000) {
                 try {
                   console.log('on mqtt message topic: ' + topic + ', message: ' + message.toString());
                   if (topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))
@@ -38,7 +40,22 @@ if(Meteor.isClient){
                 catch (ex) {
                   console.log('exception onMqttMessage: ' + ex);
                 }
-              }, 1500);
+              }
+              else {
+                Meteor.setTimeout(function() {
+                  try {
+                    console.log('on mqtt message topic: ' + topic + ', message: ' + message.toString());
+                    if (topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))
+                      SimpleChat.onMqttMessage(topic, message.toString());
+                    else if (topic.startsWith('/msg/l/'))
+                      SimpleChat.onMqttLabelMessage(topic, message.toString());
+                  }
+                  catch (ex) {
+                    console.log('exception onMqttMessage: ' + ex);
+                  }
+                }, 3000);
+              }
+
             });
             sendMqttMessage=function(topic,message){
                 console.log('sendMqttMessage:', topic, message);
