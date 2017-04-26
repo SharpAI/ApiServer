@@ -3,6 +3,7 @@ if Meteor.isServer
     seedrandom = Meteor.npmRequire('seedrandom')
     rng = seedrandom(new Date())
     name_numbers = RefNames.find({}).count()
+    defaultPostToFollow = Posts.findOne({_id: "uRyvJDmL88gd4BbBF"})
     @getRandomAnonymousName = ()->
       try
         skipNumber = parseInt(rng()*name_numbers)
@@ -27,26 +28,25 @@ if Meteor.isServer
         mqttUserCreateHook(user._id,user.profile.fullname,user.username)
 
         #默认添加一篇帖子
-        doc = Posts.findOne({_id: "uRyvJDmL88gd4BbBF"})
-        if doc
-          isInserted = FollowPosts.findOne({followby: user._id, postId: doc._id});
+        if defaultPostToFollow
+          isInserted = FollowPosts.findOne({followby: user._id, postId: defaultPostToFollow._id});
           if (!isInserted)
             FollowPosts.insert({
-              _id:doc._id,
-              postId:doc._id,
-              title:doc.title,
-              addontitle:doc.addontitle,
-              mainImage: doc.mainImage,
-              mainImageStyle:doc.mainImageStyle,
+              _id:defaultPostToFollow._id,
+              postId:defaultPostToFollow._id,
+              title:defaultPostToFollow.title,
+              addontitle:defaultPostToFollow.addontitle,
+              mainImage: defaultPostToFollow.mainImage,
+              mainImageStyle:defaultPostToFollow.mainImageStyle,
               heart:0,
               retweet:0,
               comment:0,
               browse: 0,
-              publish: doc.publish,
-              owner:doc.owner,
-              ownerName:doc.ownerName,
-              ownerIcon:doc.ownerIcon,
-              createdAt: doc.createdAt,
+              publish: defaultPostToFollow.publish,
+              owner:defaultPostToFollow.owner,
+              ownerName:defaultPostToFollow.ownerName,
+              ownerIcon:defaultPostToFollow.ownerIcon,
+              createdAt: defaultPostToFollow.createdAt,
               followby: user._id
             })
 
