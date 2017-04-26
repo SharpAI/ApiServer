@@ -10,7 +10,7 @@
             <i class="fa fa-check"></i>
           </div>
         </div>
-        <div class="content" style="height: 100%;overflow: auto;">
+        <div class="content" style="height: 100%;overflow: auto;-webkit-overflow-scrolling: touch;">
           <div id="wrapper">
             <div class="groupUsers">
               <div class="contentList">
@@ -20,7 +20,7 @@
                 <ul style="padding: 0;">
                   {{#each names}}
                   <li>
-                    <img class="usericon" src="{{url}}">
+                    {{> _simpleChatToChatLabelNameImg}}
                     <div class="userName">{{name}}</div>
                   </li>
                   {{/each}}
@@ -31,6 +31,9 @@
         </div>
     </div>
   </div>
+</template>
+<template name="_simpleChatToChatLabelNameImg">
+  <img class="usericon lazy" data-original="{{url}}">
 </template>
 
 <template name="_simpleChatToChatLabelRemove">

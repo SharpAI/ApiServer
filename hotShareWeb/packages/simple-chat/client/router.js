@@ -1291,9 +1291,23 @@ show_label = function(callback){
   }, document.body)
 }
 
+Template._simpleChatToChatLabelNameImg.onRendered(function(){
+  this.$("img.lazy:not([src])").lazyload({
+    threshold: 100,
+    container: $(".simple-chat-to-chat-label-name")
+  });
+});
 Template._simpleChatToChatLabelName.onRendered(function(){
   label_limit.set(40);
   Meteor.subscribe('get-label-names', label_limit.get()); // TODO：
+  var $box = this.$(".simple-chat-to-chat-label-name");
+  $box.scroll(function(){
+    if ($box.scrollTop() + $box[0].offsetHeight >= $box[0].scrollHeight){
+      label_limit.set(label_limit.get()+20);
+      Meteor.subscribe('get-label-names', label_limit.get()); // TODO：
+      console.log('load more');
+    }
+  });
 });
 Template._simpleChatToChatLabelName.helpers({
   names: function(){
