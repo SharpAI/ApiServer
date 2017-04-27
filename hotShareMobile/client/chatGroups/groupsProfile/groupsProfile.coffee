@@ -34,14 +34,18 @@ if Meteor.isClient
 
     hasAnnouncement:()->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
-      if  group and group.announcement
+      if  group and group.announcement and group.announcement.length > 0
         return true
       else 
         return false
     groupAnnouncement:()->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
-      if  group and group.announcement
-        return group.announcement
+      return group.announcement
+    isMobile:()->
+      Meteor.isCordova
+    show_more:()->
+      group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
+      return group.announcement.length > 2
   Template.groupInformation.events
     'click #groupsProfilePageback':(event)->
       groupid = Session.get('groupsId')
@@ -96,9 +100,18 @@ if Meteor.isClient
       )
 
     'click .copy':(event)->
-      value = $('.announcementVal').text()
+      value = $(event.currentTarget).prev().text()
+      console.log (value)
       cordova.plugins.clipboard.copy(value)
       PUB.toast('复制成功~')
+    'click .show_more':(event)->
+      $show = $('.show_more');
+      if $('.announcementVal').find('._close').length > 0
+        $show.html('<i class="fa fa-angle-up"></i>')
+        $('.announcementVal').find('.announcement_item').removeClass('_close');
+      else
+        $show.html('<i class="fa fa-angle-down"></i>');
+        $('.announcementVal').find('.announcement_item').addClass('_close');
 
   Template.groupUsers.helpers
     isGroup:()->

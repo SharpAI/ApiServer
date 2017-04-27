@@ -33,9 +33,22 @@
                     {{/if}}
                     {{#if hasAnnouncement}}
                     <li class="announcement">
-                        <label style="top: 20px;">AI训练群公告</label>
-                        <label class="copy">复制</label>
-                        <div class="value announcementVal">{{groupAnnouncement}}
+                        <label style="top: 20px;">群公告</label>
+                        <div class="value announcementVal">
+                        {{#each groupAnnouncement}}
+                        <div class="announcement_item _close">
+                            <div class="device_name">{{device_name}}</div>
+                            <div class="dataset_url">{{dataset_url}}</div>
+                            {{#if isMobile}}
+                            <label class="copy">复制</label>
+                            {{/if}}
+                        </div>
+                        {{/each}}
+                        {{#if show_more}}
+                        <div class="show_more" style="position: absolute;bottom: -5px;height: 48px;line-height: 48px;width: 60px;text-align: center;color: #9e9e9e;padding: 0;font-size: 20px;left: 50%;margin-left: -30px">
+                            <i class="fa fa-angle-down"></i>
+                        </div>
+                        {{/if}}
                         </div>
                     </li>
                     {{/if}}

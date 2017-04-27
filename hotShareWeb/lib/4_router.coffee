@@ -586,12 +586,31 @@ if Meteor.isServer
         })
       )
 
-  update_group_dataset = (group_id,dataset)->
-    unless group_id
-      group_id = 'b82cc56c599e4c143442c6d0'
+  update_group_dataset = (group_id,dataset_url,uuid)->
+    unless group_id and dataset_url and uuid
+      return
     group = SimpleChat.Groups.findOne({_id:group_id})
-    if group
-      SimpleChat.Groups.update({_id:group_id},{$set:{announcement:dataset}})
+    user = Meteor.users.findOne({username: uuid})
+    if group and user
+      announcement = group.announcement;
+      unless announcement
+        announcement = []
+      i = 0
+      isExit = false
+      while i < announcement.length
+        if announcement[i].uuid is uuid
+          announcement[i].dataset_url = dataset_url
+          isExit = true
+          break;
+        i++
+      unless isExit
+        announcementObj = {
+          uuid:uuid,
+          device_name:user.profile.fullname,
+          dataset_url:dataset_url
+        };
+        announcement.push(announcementObj);
+      SimpleChat.Groups.update({_id:group_id},{$set:{announcement:announcement}})
 
 
   Router.route('/restapi/workai', {where: 'server'}).get(()->
@@ -732,25 +751,25 @@ if Meteor.isServer
   Router.route('/restapi/workai-group-dataset', {where: 'server'}).get(()->
       group_id = this.params.query.group_id
       value = this.params.query.value
-      #uuid = this.params.query.uuid
-      console.log '/restapi/workai-group-dataset get request, group_id:' + group_id + ', value:' + value
-      unless value
+      uuid = this.params.query.uuid
+      console.log '/restapi/workai-group-dataset get request, group_id:' + group_id + ', value:' + value + ', uuid:' + uuid
+      unless value and group_id and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
       # insert_msg2(id, img_url, uuid)
-      update_group_dataset(group_id,value)
+      update_group_dataset(group_id,value,uuid)
       this.response.end('{"result": "ok"}\n')
     ).post(()->
       if this.request.body.hasOwnProperty('group_id')
         group_id = this.request.body.id
       if this.request.body.hasOwnProperty('value')
         value = this.request.body.img_url
-      # if this.request.body.hasOwnProperty('uuid')
-      #   uuid = this.request.body.uuid
-      console.log '/restapi/workai-group-dataset get request, group_id:' + group_id + ', value:' + value
-      unless value
+      if this.request.body.hasOwnProperty('uuid')
+        uuid = this.request.body.uuid
+      console.log '/restapi/workai-group-dataset get request, group_id:' + group_id + ', value:' + value + ', uuid:' + uuid
+      unless value and group_id and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
       #insert_msg2(id, img_url, uuid)
-      update_group_dataset(group_id,value)
+      update_group_dataset(group_id,value,uuid)
       this.response.end('{"result": "ok"}\n')
     )
 
