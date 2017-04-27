@@ -103,42 +103,71 @@ if Meteor.isClient
         catch error
           console.log  error
 
-    target = $('.img-with-hold')
+    target = this.$('.img-with-hold')
     touch.on target, 'hold', (ev) ->
-      if $(ev.target) and $(ev.target).data('qrcode_groupid')
-          groupid = $(ev.target).data('qrcode_groupid')
+      url = $(ev.target).data('original')
+      if !url
+        return
 
-          Meteor.call('add-group-urser', groupid, [ Meteor.userId() ], (err, result) ->
-            if err
-              console.log err
-              PUB.toast('添加失败，请重试~')
-            if result == 'succ'
-              Meteor.subscribe 'get-group', groupid, onReady: ->
-                group = undefined
-                msgObj = undefined
-                user = undefined
-                group = SimpleChat.Groups.findOne(_id: groupid)
-                user = Meteor.user()
+      console.log('url:', url)
+      PUB.actionSheet ['识别二维码'], '', (index)->
+        if index is 1
+          downloadFromBCS url, (toURL, source, file)->
+            if !toURL or !file
+              return PUB.toast('识别失败，请重试~')
+            console.log('downloadFromBCS:', toURL)
+            cordova.plugins.barcodeScanner.decodeImage(
+              toURL.substr('file://'.length)
+              (res)->
+                console.log('cordova.plugins.barcodeScanner.decodeImage:', res)
+                if res.indexOf('http://workaicdn.tiegushi.com/simple-chat/to/group?id=') >= 0
+                  groupid = res.substr(res.lastIndexOf('?id=')+'?id='.length)
+                  console.log('Group ID:', groupid)
+                  callback = (index)->
+                    if index is 1
+                      Meteor.call('add-group-urser', groupid, [ Meteor.userId() ], (err, result) ->
+                        if err
+                          console.log err
+                          PUB.toast('添加失败，请重试~')
+                        if result is 'succ'
+                          Meteor.subscribe 'get-group', groupid, onReady: ->
+                            group = undefined
+                            msgObj = undefined
+                            user = undefined
+                            group = SimpleChat.Groups.findOne(_id: groupid)
+                            user = Meteor.user()
 
-                msgSession = SimpleChat.MsgSession.findOne({userId: Meteor.userId(), toUserId: group._id});
-                if (msgSession)
-                  PUB.toast('您已经加入过这个训练群') 
+                            msgSession = SimpleChat.MsgSession.findOne({userId: Meteor.userId(), toUserId: group._id});
+                            if (msgSession)
+                              PUB.toast('您已经加入过这个训练群') 
+                            else
+                              msgObj = {
+                                toUserId: group._id,
+                                toUserName: group.name,
+                                toUserIcon: group.icon,
+                                sessionType: 'group',
+                                userId: user._id,
+                                userName: user.profile.fullname or user.username,
+                                userIcon: user.profile.icon or '/userPicture.png',
+                                lastText: '',
+                                createAt: new Date}
+                              SimpleChat.MsgSession.insert(msgObj)
+                              PUB.toast('添加成功')
+                        else if result IOS 'not find group'
+                          PUB.toast '二维码格式错误'
+                      )
+                  navigator.notification.confirm '发现AI训练群，是否加入？', callback, '识别结果', ['加入群', '返回']
+                else if res.indexOf('http://') >= 0
+                  callback = (index)->
+                    if index is 1
+                      cordova.InAppBrowser.open(res, '_system')
+                  navigator.notification.confirm res, callback, '识别结果', ['打开网站', '返回']
                 else
-                  msgObj = {
-                    toUserId: group._id,
-                    toUserName: group.name,
-                    toUserIcon: group.icon,
-                    sessionType: 'group',
-                    userId: user._id,
-                    userName: user.profile.fullname or user.username,
-                    userIcon: user.profile.icon or '/userPicture.png',
-                    lastText: '',
-                    createAt: new Date}
-                  SimpleChat.MsgSession.insert(msgObj)
-                  PUB.toast('添加成功')
-            else if result == 'not find group'
-              PUB.toast '二维码格式错误'
-          )
+                  navigator.notification.confirm res, null, '识别结果', ['知道了']
+              (err)->
+                console.log('cordova.plugins.barcodeScanner.decodeImage err:', err)
+                PUB.toast('识别失败，请重试~')
+            )
 
   Template.postItem.events
     'click .thumbsUp': (e)->
