@@ -536,7 +536,7 @@ if Meteor.isServer
   workaiId = 'Lh4JcxG7CnmgR3YXe'
   workaiName = 'Actiontec'
 
-  insert_msg2 = (id, url, uuid)->
+  insert_msg2 = (id, url, uuid, accuracy, fuzziness)->
     people = People.findOne({id: id, uuid: uuid})
     name = PERSON.getName(uuid, id)
     device = PERSON.upsetDevice(uuid)
@@ -571,7 +571,7 @@ if Meteor.isServer
             icon: userGroup.group_icon
           }
           images: [
-            {_id: new Mongo.ObjectID()._str, id: id, people_his_id: _id, url: url, label: name} # 暂一次只能发一张图
+            {_id: new Mongo.ObjectID()._str, id: id, people_his_id: _id, url: url, label: name, accuracy: accuracy, fuzziness: fuzziness} # 暂一次只能发一张图
           ]
           to_type: "group"
           type: "text"
@@ -601,7 +601,9 @@ if Meteor.isServer
       console.log '/restapi/workai get request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid
       unless id and img_url and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
-      insert_msg2(id, img_url, uuid)
+      accuracy = this.params.query.accuracy
+      fuzziness = this.params.query.fuzziness
+      insert_msg2(id, img_url, uuid, accuracy, fuzziness)
       this.response.end('{"result": "ok"}\n')
     ).post(()->
       if this.request.body.hasOwnProperty('id')
@@ -613,7 +615,9 @@ if Meteor.isServer
       console.log '/restapi/workai post request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid
       unless id and img_url and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
-      insert_msg2(id, img_url, uuid)
+      accuracy = this.params.query.accuracy
+      fuzziness = this.params.query.fuzziness
+      insert_msg2(id, img_url, uuid, accuracy, fuzziness)
       this.response.end('{"result": "ok"}\n')
     )
 

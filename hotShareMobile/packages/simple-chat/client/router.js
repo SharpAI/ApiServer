@@ -345,22 +345,23 @@ Template._simpleChatToChatItem.events({
         initialIndexOnArray: selected,
         hideCloseButtonOnMobile : true,
         loopAtEnd: false,
-        // beforeOpen: function(){
-        //   if (data.people_id)
-        //     labelView = Blaze.renderWithData(Template._simpleChatToChatLabel, data, document.body);
-        // },
-        // afterClose: function(){
-        //   if (data.people_id)
-        //     Blaze.remove(labelView);
-        // },
-        // indexChanged: function(index){
-        //   var data = Blaze.getData($('.simple-chat-label')[0]);
-        //   var $img = $('#swipebox-overlay .slide.current img');
+        beforeOpen: function(){
+          if (data.people_id)
+            Session.set('SimpleChatToChatLabelImage', data.images[selected]);
+            labelView = Blaze.renderWithData(Template._simleChatToSwipeBox, data, document.body);
+        },
+        afterClose: function(){
+          if (data.people_id)
+            Blaze.remove(labelView);
+        },
+        indexChanged: function(index){
+          var data = Blaze.getData($('.simple-chat-swipe-box')[0]);
+          var $img = $('#swipebox-overlay .slide.current img');
 
-        //   console.log($img.attr('src'));
-        //   console.log(_.pluck(data.images, 'url'));
-        //   Session.set('SimpleChatToChatLabelImage', data.images[index]);
-        // }
+          console.log($img.attr('src'));
+          console.log(_.pluck(data.images, 'url'));
+          Session.set('SimpleChatToChatLabelImage', data.images[index]);
+        }
       });
     }
   },
@@ -1455,3 +1456,20 @@ Template._simpleChatToChatLabelRemove.events({
     remove_view = null;
   }
 });
+
+Template._simpleChatToChatItemImg.helpers({
+  hasAccAndFuzz:function(){
+    return this.accuracy && this.fuzziness;
+  }
+})
+
+Template._simleChatToSwipeBox.helpers({
+  data:function(){
+    return Session.get('SimpleChatToChatLabelImage');
+  },
+  hasAccAndFuzz:function(){
+    var data = Session.get('SimpleChatToChatLabelImage');
+    return data.accuracy && data.fuzziness;
+  }
+})
+

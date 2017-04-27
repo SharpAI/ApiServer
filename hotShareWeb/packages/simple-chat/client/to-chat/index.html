@@ -215,7 +215,12 @@
 </template>
 
 <template name="_simpleChatToChatItemImg">
-  <img class="work-ai-img swipebox _close lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
+  <div class="img_container">
+    <img class="work-ai-img swipebox _close lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
+    {{#if hasAccAndFuzz}}
+    <div class="value_bg"><div class="accuracy">{{accuracy}}</div><div class="fuzziness">{{fuzziness}}</div></div>
+    {{/if}}
+  </div>
 </template>
 <template name="_simpleChatToChatItemIcon">
   <img class="lazy" data-original="{{icon}}" />
@@ -264,6 +269,21 @@
     <div class="btn-no"><i class="fa fa-circle-o" aria-hidden="true"></i><i class="fa fa-close" aria-hidden="true"></i></div>
     {{else}}
     <div class="btn-no" style="top: 5px;"><i class="fa fa-circle-o" aria-hidden="true"></i><i class="fa fa-close" aria-hidden="true"></i></div>
+    {{/if}}
+  </div>
+</template>
+
+<template name="_simleChatToSwipeBox">
+  <div class="simple-chat-swipe-box">
+    {{#if hasAccAndFuzz}}
+    <div class="swipe_value_bg">
+      <div class="swipe_accuracy">
+        <span>准确度:</span>{{data.accuracy}}
+      </div>
+      <div class="swipe_fuzziness">
+        <span>模糊度:</span>{{data.fuzziness}}
+      </div>
+    </div>
     {{/if}}
   </div>
 </template>

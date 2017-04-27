@@ -77,7 +77,8 @@
             .imgs-1-item{
               position: relative; padding-left: 55px;
               .my-btn{width: 45px; height: 45px; line-height: 45px; position: absolute; left: 0px; top: 0; color: @master_color; text-align: center; border: 1px solid @master_color; border-radius: 50%;font-size: 20px; font-weight: bold; margin-top: 5px; background-color: #fff}
-              img{width: 45px; height: 45px; margin-top: 5px; border-radius: 3px;}
+              img{width: 45px; height: 45px; /*margin-top: 5px; */border-radius: 3px;}
+              .img_container{width: 45px; height: 45px;}
               img._close:nth-child(n+5){display: none !important;}
             }
           }
@@ -90,8 +91,14 @@
             img{max-width: 100%; border-radius: 5px; z-index: 3;}
           }
           .imgs{
-            img{width: 60px; height: 60px; margin-top: 5px; border-radius: 3px;}
+            img{width: 60px; height: 60px; /*margin-top: 5px; */border-radius: 3px;}
             img._close:nth-child(n+4){display: none !important;}
+          }
+          .img_container{display: inline-block;position: relative;width: 60px;margin-top: 5px;height: 60px;
+            .value_bg{display: inline-block;position: absolute;left: 0;text-align: center;width: 100%;bottom: 0px;    font-size: 12px;color: rgba(255, 255, 255, 0.8);;background-color: rgba(0,0,0,0.3);
+              > div{display: inline-block;width: 50%;}
+            }
+
           }
           .name{display: none;}
           .text, .img{position: relative; border-radius: 5px; border:1px solid #d2d2d2; z-index: 1;}
@@ -179,5 +186,18 @@
       .my-btn{width: 50%; height: 48px; line-height: 48px; text-align: center; box-sizing: border-box; float: left; border-left: 1px solid #ccc; color: #2196f3;}
       .my-btn:first-child{border-left: none;}
     }
+  }
+}
+
+.simple-chat-swipe-box{
+  position: absolute; height: 85px; left: 0; top: 10%; right: 0; z-index: 99999990;
+  .swipe_value_bg{
+    color: rgba(255,255,255,0.8);
+    > div{
+      padding: 5px;
+      margin-left: 30%;
+      font-size: 16px;
+    }
+    span{margin-right: 20px;}
   }
 }
