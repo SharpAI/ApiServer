@@ -3,7 +3,7 @@
   var root = typeof exports !== "undefined" && exports !== null ? exports : this;
 
   var JPush = require("jpush-sdk");
-  var client = JPush.buildClient('50e8f00890be941f05784e6f', 'ec9940bbc7fcc646fc492ed8');
+  var client = JPush.buildClient('c8efd2f69c6cd251faa9252b', '6ca8461df032f8bae4afd11d');
 
   pushnotification = function(pushServer, itemObj) {
     function isObject(obj){ 

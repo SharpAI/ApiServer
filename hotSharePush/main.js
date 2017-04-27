@@ -21,9 +21,9 @@ var SERVER_PORT = process.env.SERVER_PORT || 80;
 var kuequeue;
 var QUEUE_SIZE = 20;
 var prefix = process.env.PREFIX || '';
-var redis_prefix = prefix+'pushnotification_task';
-var redis_prefix_us = prefix+'pushnotification_task_us';
-var DB_CONN_STR = process.env.MONGO_URL || 'mongodb://hotShareAdmin:aei_19056@db1.tiegushi.com:27017,db2.tiegushi.com:27017/hotShare?replicaSet=hotShare&readPreference=primaryPreferred&connectTimeoutMS=30000&socketTimeoutMS=30000&poolSize=20';
+var redis_prefix = prefix+'workai_pushnotification_task';
+var redis_prefix_us = prefix+'workai_pushnotification_task_us';
+var DB_CONN_STR = process.env.MONGO_URL || 'mongodb://workAIAdmin:weo23biHUI@aidb.tiegushi.com:27017/workai?replicaSet=hotShare&readPreference=primaryPreferred&connectTimeoutMS=30000&socketTimeoutMS=30000&poolSize=20';
 var MONGO_OPLOG = process.env.MONGO_OPLOG || 'mongodb://oplogger:PasswordForOplogger@host1.tiegushi.com:27017/local?authSource=admin';
 
 var pushServer = initPushServer();
@@ -42,7 +42,7 @@ var oplog_connect=function(db){
     });
   }
 
-  oplog = MongoOplog(MONGO_OPLOG, {ns: 'hotShare.pushmessages'}).tail();
+  oplog = MongoOplog(MONGO_OPLOG, {ns: 'workai.pushmessages'}).tail();
   oplog.on('insert', function (data) {
     console.log('pushmessages insert data:', data.o._id);
     if(data.o.pushMessage && data.o.pushMessage.length > 0){

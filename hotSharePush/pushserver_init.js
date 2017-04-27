@@ -18,8 +18,8 @@
     }
 
     var apnsDevCert, apnsDevKey, apnsProductionCert, apnsProductionKey, optionsDevelopment, optionsProduction;
-    apnsDevCert = fs.readFileSync(Assets.getText('ios/apn-development/HotShare_PN_DEV_Cert.pem'));
-    apnsDevKey = fs.readFileSync(Assets.getText('ios/apn-development/HotShare_PN_DEV_Key.pem'));
+    apnsDevCert = fs.readFileSync(Assets.getText('ios/apn-development/WorkAI_PN_DEV_Cert.pem'));
+    apnsDevKey = fs.readFileSync(Assets.getText('ios/apn-development/WorkAI_PN_DEV_Key.pem'));
     optionsDevelopment = {
       errorCallback: errCallback,
       passphrase: '1234',
@@ -27,8 +27,8 @@
       keyData: apnsDevKey,
       gateway: 'gateway.sandbox.push.apple.com'
     };
-    apnsProductionCert = fs.readFileSync(Assets.getText('ios/apn-production/HotShare_PN_Production_Cert.pem'));
-    apnsProductionKey = fs.readFileSync(Assets.getText('ios/apn-production/HotShare_PN_Production_Key.pem'));
+    apnsProductionCert = fs.readFileSync(Assets.getText('ios/apn-production/WorkAI_PN_Production_Cert.pem'));
+    apnsProductionKey = fs.readFileSync(Assets.getText('ios/apn-production/WorkAI_PN_Production_Key.pem'));
     //console.log("apnsProductionCert="+apnsProductionCert);
     //console.log("apnsProductionKey="+apnsProductionKey);
     optionsProduction = {
