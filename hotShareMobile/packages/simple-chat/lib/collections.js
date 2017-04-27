@@ -38,7 +38,7 @@ if(Meteor.isServer){
   var updateMsgSession = function(doc){
     if (!Meteor.userId())
       return;
-    
+
     var msgObj = null;
     switch(doc.to_type){
       case 'group':
@@ -65,7 +65,7 @@ if(Meteor.isServer){
 
     msgObj.userId = Meteor.userId();
     msgObj.userName = AppConfig.get_user_name(Meteor.user());
-    msgObj.userIcon = AppConfig.get_user_icon(Meteor.user()); 
+    msgObj.userIcon = AppConfig.get_user_icon(Meteor.user());
     msgObj.lastText = doc.type === 'image' ? '[图片]' : doc.text;
     msgObj.updateAt = new Date();
 
@@ -94,4 +94,3 @@ if(Meteor.isServer){
 
 SimpleChat.Groups = Groups;
 SimpleChat.GroupUsers = GroupUsers;
-

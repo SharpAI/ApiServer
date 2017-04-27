@@ -43,7 +43,7 @@ Router.route(AppConfig.path + '/to/:type', {
         Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}).forEach(function (doc) {
           doc.show_time_str = get_diff_time(doc.create_time);
           doc.has_show_time = true;
-          
+
           if (res.length > 0){
             for(var i=res.length-1;i>=0;i--){
               if (res[i].show_time_str === doc.show_time_str)
@@ -434,7 +434,7 @@ Template._simpleChatToChatItem.events({
         setNames.push({uuid: this.people_uuid, id: this.images[i].id, url: this.images[i].url, name: this.images[i].label});
     }
     if (setNames.length > 0)
-      Meteor.call('set-person-names', setNames);
+      Meteor.call('set-person-names', this.to.id, setNames);
 
     var user = Meteor.user();
     sendMqttGroupLabelMessage(this.to.id, {
@@ -605,7 +605,7 @@ Template._simpleChatToChatLabel.events({
     var data = this;
     var names = get_people_names();
 
-    show_label(function(name){
+    show_label(data.to.id, function(name){
       Meteor.call('get-id-by-name', data.people_uuid, name, function(err, res){
         if(err)
           return PUB.toast('标记失败，请重试~');
@@ -685,7 +685,7 @@ Template._simpleChatToChatLabel.events({
 
     showBox('提示', ['重新标记', '删除'], null, '你要重新标记照片还是删除？', function(index){
       if(index === 0)
-        show_label(function(name){
+        show_label(data.to.id, function(name){
           Meteor.call('get-id-by-name', data.people_uuid, name, function(err, res){
             if(err)
               return PUB.toast('标记失败，请重试~');
@@ -899,27 +899,27 @@ Template._simpleChatToChatLayout.events({
 
 // Template._simpleChatToChatItem.initLazyLoad = function($li){
 //   // 默认图像
-//   $li.find('.text > .imgs img.lazy').lazyload({ 
+//   $li.find('.text > .imgs img.lazy').lazyload({
 //     container: $('.box')
 //   });
 
 //   // 标注过的图
-//   $li.find('.text > .imgs-1-box img.lazy').lazyload({ 
+//   $li.find('.text > .imgs-1-box img.lazy').lazyload({
 //     container: $('.box')
 //   });
 
 //   // 有裁剪按钮的图
-//   $li.find('.img > .imgs img.lazy').lazyload({ 
+//   $li.find('.img > .imgs img.lazy').lazyload({
 //     container: $('.box')
 //   });
 
 //   // 标注者头像
-//   $li.find('.text > .label_complete .imgs img.lazy').lazyload({ 
+//   $li.find('.text > .label_complete .imgs img.lazy').lazyload({
 //     container: $('.box')
 //   });
 
 //   // 用户头像
-//   $li.find('.icon img.lazy').lazyload({ 
+//   $li.find('.icon img.lazy').lazyload({
 //     container: $('.box')
 //   });
 // };
@@ -1109,7 +1109,7 @@ var updateNewMessage = function(id){
     msgGroup.push(id);
   if (updateNewMessageInterval)
     return;
-  
+
   updateNewMessageInterval = Meteor.setInterval(function(){
     if (MessageTemp.find({}).count() <= 0){
       if (updateNewMessageInterval)
@@ -1376,10 +1376,11 @@ last_msg = null;
 // label
 var label_view = null;
 var label_limit = new ReactiveVar(0);
-show_label = function(callback){
+show_label = function(group_id, callback){
   if (label_view)
     Blaze.remove(label_view);
   label_view = Blaze.renderWithData(Template._simpleChatToChatLabelName, {
+    group_id: group_id,
     callback : callback || function(){}
   }, document.body)
 }
@@ -1392,19 +1393,19 @@ Template._simpleChatToChatLabelNameImg.onRendered(function(){
 });
 Template._simpleChatToChatLabelName.onRendered(function(){
   label_limit.set(40);
-  Meteor.subscribe('get-label-names', label_limit.get()); // TODO：
+  Meteor.subscribe('get-label-names', this.data.group_id, label_limit.get()); // TODO：
   var $box = this.$(".simple-chat-to-chat-label-name");
   $box.scroll(function(){
     if ($box.scrollTop() + $box[0].offsetHeight >= $box[0].scrollHeight){
       label_limit.set(label_limit.get()+20);
-      Meteor.subscribe('get-label-names', label_limit.get()); // TODO：
+      Meteor.subscribe('get-label-names', this.data.group_id, label_limit.get()); // TODO：
       console.log('load more');
     }
   });
 });
 Template._simpleChatToChatLabelName.helpers({
   names: function(){
-    return PersonNames.find({}, {sort: {createAt: 1}, limit: label_limit.get()});
+    return PersonNames.find({group_id: this.group_id}, {sort: {createAt: 1}, limit: label_limit.get()});
   }
 });
 Template._simpleChatToChatLabelName.events({

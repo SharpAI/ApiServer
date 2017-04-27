@@ -32,7 +32,7 @@ Template._simpleChatLabelDevice.open = function(msgObj){
   view = Blaze.render(Template._simpleChatLabelDevice, document.body);
 
   if (nas.length === 1 && imgs[0].images.length <= 1){
-    show_label(function(name){
+    show_label(msgObj.to_id, function(name){
       if (!name)
         return;
       $('#device-input-name').val(name);
@@ -112,7 +112,7 @@ Template._simpleChatLabelDevice.save = function(){
 
     // update label
     if (setNames.length > 0)
-      Meteor.call('set-person-names', setNames);
+      Meteor.call('set-person-names', msgObj.to.id, setNames);
 
     console.log('names:', res);
     for (var i=0;i<updateObj.images.length;i++){
@@ -236,7 +236,8 @@ Template._simpleChatLabelDevice.events({
     }
   },
   'click .select': function(e, t){
-    show_label(function(name){
+    var msg = message.get();
+    show_label(msg.to.id, function(name){
       if (!name)
         return;
       t.$('#device-input-name').val(name);
