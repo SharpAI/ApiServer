@@ -540,6 +540,8 @@ if Meteor.isServer
     people = People.findOne({id: id, uuid: uuid})
     name = PERSON.getName(uuid, id)
     device = PERSON.upsetDevice(uuid)
+    Accuracy =  if name then accuracy else false
+    Fuzziness = fuzziness
 
     if !people
       people = {_id: new Mongo.ObjectID()._str, id: id, uuid: uuid,name: name,embed: null,local_url: null,aliyun_url: url}
@@ -571,7 +573,7 @@ if Meteor.isServer
             icon: userGroup.group_icon
           }
           images: [
-            {_id: new Mongo.ObjectID()._str, id: id, people_his_id: _id, url: url, label: name, accuracy: accuracy, fuzziness: fuzziness} # 暂一次只能发一张图
+            {_id: new Mongo.ObjectID()._str, id: id, people_his_id: _id, url: url, label: name, accuracy: Accuracy, fuzziness: Fuzziness} # 暂一次只能发一张图
           ]
           to_type: "group"
           type: "text"
@@ -585,6 +587,9 @@ if Meteor.isServer
           is_read: false
         })
       )
+
+  @insert_msg2forTest = (id, url, uuid, accuracy, fuzziness)->
+    insert_msg2(id, url, uuid, accuracy, fuzziness)
 
   update_group_dataset = (group_id,dataset_url,uuid)->
     unless group_id and dataset_url and uuid
