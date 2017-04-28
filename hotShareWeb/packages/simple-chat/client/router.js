@@ -578,17 +578,17 @@ Template._simpleChatToChatItem.events({
     var $show = $li.find('.show_more');
     var $box = $('.box');
 
-    if ($imgs.find('img._close').length > 0 || $labels.find('img._close').length > 0){
+    if ($imgs.find('div._close').length > 0 || $labels.find('div._close').length > 0){
       $show.html('<i class="fa fa-angle-up"></i>');
-      $imgs.find('img').removeClass('_close');
-      $labels.find('img').removeClass('_close');
+      $imgs.find('.img_container').removeClass('_close');
+      $labels.find('.img_container').removeClass('_close');
       $box.trigger("scroll");
       $box.scrollTop($box.scrollTop()+1);
       // $box.scrollTop($box.scrollTop()-1);
     } else {
       $show.html('<i class="fa fa-angle-right"></i>');
-      $imgs.find('img').addClass('_close');
-      $labels.find('img').addClass('_close');
+      $imgs.find('.img_container').addClass('_close');
+      $labels.find('.img_container').addClass('_close');
     }
   }
 });

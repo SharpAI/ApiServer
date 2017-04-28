@@ -225,8 +225,8 @@
 </template>
 
 <template name="_simpleChatToChatItemImg">
-  <div class="img_container">
-    <img class="work-ai-img swipebox _close lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
+  <div class="img_container _close">
+    <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
     {{#if hasAccAndFuzz}}
     <div class="value_bg"><div class="accuracy">{{accuracy}}</div><div class="fuzziness">{{fuzziness}}</div></div>
     {{/if}}
