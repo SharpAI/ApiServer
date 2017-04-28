@@ -9,10 +9,11 @@ Template._simpleChatLabelRemove.open = function(msgObj){
   var imgs = [];
   message.set(msgObj);
   for(var i=0;i<msgObj.images.length;i++){
+    var id = msgObj.images[i].id || msgObj.people_id;
     if (msgObj.images[i].remove || msgObj.images[i].label)
       continue;
     msgObj.images[i].selected = false;
-    if (_.pluck(imgs, '_id').indexOf(msgObj.images[i]._id) === -1)
+    if (_.pluck(imgs, '_id').indexOf(id) === -1)
       imgs.push(msgObj.images[i]);
   }
   images.set(imgs);
