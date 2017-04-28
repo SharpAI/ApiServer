@@ -558,6 +558,8 @@ if Meteor.isClient
       GetTime0(new Date() - new Date(created))
     time_diff: (created)->
       GetTime0(new Date() - created)
+    withThirdPartSocialSharing:->
+      withThirdPartSocialSharing
     isMyPost:->
       if Meteor.user()
         if Posts.find({_id:this._id}).count() > 0

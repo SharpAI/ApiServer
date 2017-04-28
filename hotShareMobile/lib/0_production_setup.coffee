@@ -32,3 +32,5 @@
 @withUserInfoShowInPostHeader = false
 @withInlineComment = false
 @withInPostMassInformation = false
+@withSetTopicAndShareAfterPost = false
+@withThirdPartSocialSharing = false

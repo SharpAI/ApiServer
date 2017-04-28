@@ -1103,7 +1103,10 @@ if Meteor.isClient
       Session.set("TopicTitle", title)
       Session.set("TopicAddonTitle", addontitle)
       Session.set("TopicMainImage", mainImage)
-      Router.go('addTopicComment')
+      if withSetTopicAndShareAfterPost
+        Router.go('addTopicComment')
+      else
+        Router.go('/posts/'+postId)
   Template.addPost.helpers
     showContent:->
       Session.get('showContentInAddPost')
