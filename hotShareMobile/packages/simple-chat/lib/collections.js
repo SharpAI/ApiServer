@@ -68,9 +68,13 @@ if(Meteor.isServer){
     msgObj.userIcon = AppConfig.get_user_icon(Meteor.user());
     msgObj.lastText = doc.type === 'image' ? '[图片]' : doc.text;
     msgObj.updateAt = new Date();
+    msgObj.msgcreate_time = doc.create_time;
 
     var msgSession = MsgSession.findOne({userId: Meteor.userId(), toUserId: msgObj.toUserId});
     if (msgSession){
+      if (msgSession.msgcreate_time && msgObj.msgcreate_time - msgSession.msgcreate_time < 0 ) {
+        msgObj.lastText = msgSession.lastText;
+      }
       msgObj.createAt = msgSession.createAt;
       MsgSession.update({_id: msgSession._id}, {$set: msgObj, $inc: {count: 1}});
       console.log('update chat session:', msgObj);
