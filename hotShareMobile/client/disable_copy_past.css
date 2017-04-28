@@ -28,6 +28,10 @@ textarea {
     -ms-user-select: none ;
     user-select: none ;
 }
+.img-with-hold {
+    -webkit-user-select:none;
+    -webkit-touch-callout:none;
+}
 select {
     -webkit-user-select: none ;
     -khtml-user-select: none ;
