@@ -2,7 +2,7 @@
   {{>connectionBanner}}
   <div class="chatGroups">
     <div id="wrapper">
-      {{#if hasSysMessages}}
+      <!-- {{#if hasSysMessages}}
         <div id="sysBell" class="eachViewer">
           <img class="icon" src="/sysMessages.png">
           <span class="groupsName">系统消息</span>
@@ -13,14 +13,14 @@
         <div class="line">
               <span></span>
         </div>
-      {{/if}}
+      {{/if}} -->
       <div class="contentList">
-        {{#if loading}}
+        <!-- {{#if loading}}
           <div>{{_ "isLoading"}}</div>
         {{/if}}
         {{#if loadError}}
             <div>{{_ "loadFailNotification"}}</div>
-        {{/if}}
+        {{/if}} -->
         <ul id="msg-session">
           {{#each msgSession2}}
           <li>
@@ -38,11 +38,11 @@
           </li>
           {{/each}}
         </ul>
-        {{#if moreResults}}
+        <!-- {{#if moreResults}}
         <div id="showMoreResults" style="margin-left: 25px;">
           <span class="loading">{{_ "loading"}}</span>
         </div>
-        {{/if}}
+        {{/if}} -->
       </div>
     </div>
   </div>

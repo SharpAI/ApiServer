@@ -44,14 +44,14 @@ if Meteor.isServer
 
   @_pushnotification = (type, doc, userId)->
     if type is "palsofavourite"
-      content = '有人也赞了此故事:《' + doc.title + '》'
+      content = '有人也赞了此公告:《' + doc.title + '》'
       extras = {
         type: "palsofavourite"
         postId: doc._id
       }
       toUserId = userId
     else if type is "palsocomment"
-      content = '有人也点评了此故事:《' + doc.title + '》'
+      content = '有人也点评了此公告:《' + doc.title + '》'
       extras = {
         type: "palsocomment"
         postId: doc._id
@@ -65,7 +65,7 @@ if Meteor.isServer
       }
       toUserId = userId
     else if type is "pcommentowner"
-      content = '有人点评了您的故事:《' + doc.title + '》'
+      content = '有人点评了您的公告:《' + doc.title + '》'
       extras = {
         type: "pcommentowner"
         postId: doc._id
@@ -96,14 +96,14 @@ if Meteor.isServer
       if doc.owner == userId
         #console.log "read self post"
         return
-      content = '有人正在阅读您的故事:《' + doc.title + '》'
+      content = '有人正在阅读您的公告:《' + doc.title + '》'
       extras = {
         type: "read"
         postId: doc._id
       }
       toUserId = doc.owner
     else if type is "recommand"
-      content = doc.recommander + '推荐您阅读' + doc.ownerName + '的故事《' + doc.title + '》'
+      content = doc.recommander + '推荐您阅读' + doc.ownerName + '的公告《' + doc.title + '》'
       extras = {
         type: "recommand"
         postId: doc.postId
@@ -117,7 +117,7 @@ if Meteor.isServer
       }
       toUserId = doc.followby
     else if type is "newpost"
-      content = doc.ownerName + '发布了新故事:《' + doc.title + '》'
+      content = doc.ownerName + '发布了新公告:《' + doc.title + '》'
       extras = {
         type: "newpost"
         postId: doc._id
@@ -126,7 +126,7 @@ if Meteor.isServer
     else
       post = Posts.findOne({_id: doc.postId});
       commentText = doc.content;
-      content = '您参与讨论的故事有新回复:'+commentText
+      content = '您参与讨论的公告有新回复:'+commentText
       extras = {
         type: "recomment"
         postId: doc.postId
@@ -231,14 +231,14 @@ if Meteor.isServer
     #return _pushnotification(type, doc, userId)
     console.log "type:"+type
     if type is "palsofavourite"
-      content = '有人也赞了此故事:《' + doc.title + '》'
+      content = '有人也赞了此公告:《' + doc.title + '》'
       extras = {
         type: "palsofavourite"
         postId: doc._id
       }
       toUserId = userId
     else if type is "palsocomment"
-      content = '有人也点评了此故事:《' + doc.title + '》'
+      content = '有人也点评了此公告:《' + doc.title + '》'
       extras = {
         type: "palsocomment"
         postId: doc._id
@@ -252,7 +252,7 @@ if Meteor.isServer
       }
       toUserId = userId
     else if type is "pcommentowner"
-      content = '有人点评了您的故事:《' + doc.title + '》'
+      content = '有人点评了您的公告:《' + doc.title + '》'
       extras = {
         type: "pcommentowner"
         postId: doc._id
@@ -282,14 +282,14 @@ if Meteor.isServer
       if doc.owner == userId
         #console.log "read self post"
         return
-      content = '有人正在阅读您的故事:《' + doc.title + '》'
+      content = '有人正在阅读您的公告:《' + doc.title + '》'
       extras = {
         type: "read"
         postId: doc._id
       }
       toUserId = doc.owner
     else if type is "recommand"
-      content = doc.recommander + '推荐您阅读' + doc.ownerName + '的故事《' + doc.title + '》'
+      content = doc.recommander + '推荐您阅读' + doc.ownerName + '的公告《' + doc.title + '》'
       extras = {
         type: "recommand"
         postId: doc.postId
@@ -303,7 +303,7 @@ if Meteor.isServer
       }
       toUserId = doc.followby
     else if type is "newpost"
-      content = doc.ownerName + '发布了新故事:《' + doc.title + '》'
+      content = doc.ownerName + '发布了新公告:《' + doc.title + '》'
       extras = {
         type: "newpost"
         postId: doc._id
@@ -312,7 +312,7 @@ if Meteor.isServer
     else
       post = Posts.findOne({_id: doc.postId});
       commentText = doc.content;
-      content = '您参与讨论的故事有新回复:'+commentText
+      content = '您参与讨论的公告有新回复:'+commentText
       extras = {
         type: "recomment"
         postId: doc.postId

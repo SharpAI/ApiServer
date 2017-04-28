@@ -355,7 +355,7 @@ if Meteor.isClient
             #文章作者被加入黑名单时不提示关注作者
             if BlackList.find({blackBy: Meteor.userId(), blacker:{$in: [postContent._id]}}).count() > 0
               return
-            $('.subscribeAutorPage').show()
+            #$('.subscribeAutorPage').show()
 #    $('.textDiv1Link').linkify();
     setTimeout ()->
       $("a[target='_blank']").click((e)->
