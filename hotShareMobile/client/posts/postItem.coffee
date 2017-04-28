@@ -177,14 +177,8 @@ if Meteor.isClient
           console.log  error
 
     target = this.$('.img-with-hold')
-
-    touch.on target, 'taphold', (ev) ->
-      ev.preventDefault();
-      ev.stopImmediatePropagation();
-      return false
     touch.on target, 'hold', barcordHoldHandle
   Template.postItem.events
-    'click .img-with-hold': barcordHoldHandle
     'click .thumbsUp': (e)->
       Session.set("pcommetsId","")
       thumbsUpHandler(e,this)
