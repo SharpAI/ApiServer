@@ -20,6 +20,7 @@ if (Meteor.isClient) {
                 }
                 if (result === 'succ') {
                    PUB.toast('添加成功');
+                   gotoPage = '/simple-chat/to/group?id='+ groupid;
                    Meteor.subscribe('get-group',groupid, {
                       onReady: function() {
                         var group, msgObj, user;
@@ -58,7 +59,7 @@ if (Meteor.isClient) {
               Router.go(gotoPage);
               PUB.toast('二维码格式错误')
             }
-            
+
           }
           else{
             Router.go(gotoPage);
@@ -105,6 +106,7 @@ if (Meteor.isClient) {
             }
             if (result === 'succ') {
                PUB.toast('添加成功');
+               gotoPage = '/simple-chat/to/group?id='+ groupid;
                Meteor.subscribe('get-group',groupid, {
                   onReady: function() {
                     var group, msgObj, user;
@@ -224,7 +226,7 @@ if (Meteor.isClient) {
     } else {
     //   document.getElementById("authOverlaybg").style.backgroundImage = "url(loginbg1.png)";
       document.getElementById("authOverlaybg").style.backgroundImage = "url(theme_blue/loginbg1.jpg)";
-    }  
+    }
   });
   // Template.authOverlay.onDestroyed(function () {
   //     StatusBar.backgroundColorByHexString("#37a7fe");
@@ -435,4 +437,3 @@ if (Meteor.isClient) {
     });
   });
 }
-
