@@ -1,14 +1,14 @@
 
-@withSocialBar = true
+@withSocialBar = false
 @withAfterPostIntroduce = false
 @withChat = false
 @withDiscover = true
 @withAutoSavedOnPaused = true
 @withPostSuggestionToUser = false
-@withNewLayoutMoment = true
+@withNewLayoutMoment = false
 @withMusicSharing = true
-@withSectionMenu = true
-@withSectionShare = true
+@withSectionMenu = false
+@withSectionShare = false
 @withPostTTS = false
 @withWeChatSignatureServer = false
 @withLocalBase64 = true
@@ -27,4 +27,8 @@
 @signUpUserNameLength = 16
 @withPostTitleMaxLength = 180      #byte
 @withPostSubTitleMaxLength = 120   #byte
-@withShowGroupsUserMaxCount = 29;
+@withShowGroupsUserMaxCount = 29
+@withThumbInTextSection = false
+@withUserInfoShowInPostHeader = false
+@withInlineComment = false
+@withInPostMassInformation = false

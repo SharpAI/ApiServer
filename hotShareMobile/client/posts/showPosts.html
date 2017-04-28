@@ -17,23 +17,25 @@
         {{else}}
           <div class="post-head-right rightButton" style="font-weight:bold; color: red;" onclick="window.open('http://cdn.tiegushi.com', '_system');">{{_ "clickMeToCreate"}}</div>
         {{/if}}
-        <div class="post-user">
-          <div class="post-user-content">
-            <div class="post-user-help">
-              <div class="post-user-left">
-                {{#if isMobile}}
-                  <img class="post-user-icon icon" src="{{ownerIcon}}" width='25' height='25'>
-                {{/if}}
-              </div>
-              <div class="post-user-right">
-                <div class="post-user-right-content">
-                  <span class="post-user-name name">{{ownerName}}</span>
-                  <div class="post-user-create createAt">{{time_diff_str createdAt}}</div>
+        {{#if withUserInfo}}
+            <div class="post-user">
+              <div class="post-user-content">
+                <div class="post-user-help">
+                  <div class="post-user-left">
+                    {{#if isMobile}}
+                      <img class="post-user-icon icon" src="{{ownerIcon}}" width='25' height='25'>
+                    {{/if}}
+                  </div>
+                  <div class="post-user-right">
+                    <div class="post-user-right-content">
+                      <span class="post-user-name name">{{ownerName}}</span>
+                      <div class="post-user-create createAt">{{time_diff_str createdAt}}</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+        {{/if}}
 
         {{#if isMobile}}
           <div class="post-head-right rightDropMenu dropdown">
@@ -73,7 +75,7 @@
               </div>
           {{/if}}
         {{#if showImporting}}
-          <div class="importing">故事贴中的图片正在处理中，完成后此消息会消失...</div>
+          <div class="importing">图片正在处理中，完成后此消息会消失...</div>
         {{/if}}
 
         <div id="wrapper">
@@ -104,29 +106,31 @@
         {{> SubscribeAuthor}}
       </div>
     </div>
-    {{#if haveUrl}}
-    <div id="ViewOnWeb"><i class="fa fa-globe"></i>{{_ "readOriginalText"}}</div>
-    {{/if}}
-    {{#if browse}}
-    <div class="recommendstory"  id="shareStoryBtn">
-        <div class="description">{{browse}}人读过，分享您的故事给他们吧！<span class="shareStoryBtn">分享</span></div>
-    </div>
-    {{/if}}
-    <div class="authorInfos">
-      {{#if authorReadPopularPosts}}
-      <div class="tipAuthorHotPosts">—&nbsp;热门文章&nbsp;—</div>
-      <ul>
-        {{#each authorReadPopularPosts}}
-        <dl id="{{_id}}" class="authorReadPopularPostItem"><dd>《{{title}}》</dd></dl>
-        {{/each}}
-      </ul>
-      {{/if}}
-    </div>
-    {{#if isInSeries}}
-    <div class="postSeries">
-      <div class="postSeriesIntro">—&nbsp;该文章最近编入了合辑&nbsp;—</div>
-      <div id="{{postSeriesId}}" class="postSeriesTitle">《{{postSeriesTitle}}》</div>
-    </div>
+    {{#if withInPostMassInformation}}
+        {{#if haveUrl}}
+        <div id="ViewOnWeb"><i class="fa fa-globe"></i>{{_ "readOriginalText"}}</div>
+        {{/if}}
+        {{#if browse}}
+        <div class="recommendstory"  id="shareStoryBtn">
+            <div class="description">{{browse}}人读过，分享您的故事给他们吧！<span class="shareStoryBtn">分享</span></div>
+        </div>
+        {{/if}}
+        <div class="authorInfos">
+          {{#if authorReadPopularPosts}}
+          <div class="tipAuthorHotPosts">—&nbsp;热门文章&nbsp;—</div>
+          <ul>
+            {{#each authorReadPopularPosts}}
+            <dl id="{{_id}}" class="authorReadPopularPostItem"><dd>《{{title}}》</dd></dl>
+            {{/each}}
+          </ul>
+          {{/if}}
+        </div>
+        {{#if isInSeries}}
+        <div class="postSeries">
+          <div class="postSeriesIntro">—&nbsp;该文章最近编入了合辑&nbsp;—</div>
+          <div id="{{postSeriesId}}" class="postSeriesTitle">《{{postSeriesTitle}}》</div>
+        </div>
+        {{/if}}
     {{/if}}
     {{#if withAfterPostIntroduce}}
       <div class="write">

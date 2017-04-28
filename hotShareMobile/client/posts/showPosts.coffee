@@ -570,8 +570,12 @@ if Meteor.isClient
         true
       else
         false
+    withUserInfo:->
+      withUserInfoShowInPostHeader
     isMobile:->
       Meteor.isCordova
+    withInPostMassInformation:->
+      withInPostMassInformation
     haveUrl:->
       if Session.get("postContent").fromUrl is undefined  or Session.get("postContent").fromUrl is ''
         false

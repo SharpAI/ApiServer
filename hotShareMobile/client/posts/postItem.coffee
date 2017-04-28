@@ -272,6 +272,8 @@ if Meteor.isClient
         return true
       else
         return false
+    showInlineComment: ()->
+      withInlineComment
     isDraft: ()->
       Session.get('showDraft')
     DraftImageItem: (path,uri,id)->
