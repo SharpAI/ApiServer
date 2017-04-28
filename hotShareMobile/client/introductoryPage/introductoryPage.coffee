@@ -9,9 +9,12 @@ if Meteor.isClient
       window.localStorage.setItem("isSecondUse",'true');
       Router.go('/group/add');
     'click #skipStep':(event)->
-      Session.set('needShowBubble','true');
+      Session.set('needShowBubble','false');
       window.localStorage.setItem("isSecondUse",'true');
-      Router.go('/');
+      PUB.page '/'
+      Meteor.setTimeout ()->
+        PUB.page '/posts/uRyvJDmL88gd4BbBF'
+      ,300
   
   # Template.introductoryPage1.rendered=->
   #   $('.content').css 'min-height',$(window).height()
@@ -25,6 +28,9 @@ if Meteor.isClient
       window.localStorage.setItem("isSecondUse",'true');
       DecodeImageFromAlum();
     'click #skipStep':(event)->
-      Session.set('needShowBubble','true');
+      Session.set('needShowBubble','false');
       window.localStorage.setItem("isSecondUse",'true');
-      Router.go('/');
+      PUB.page '/'
+      Meteor.setTimeout ()->
+        PUB.page '/posts/uRyvJDmL88gd4BbBF'
+      ,300

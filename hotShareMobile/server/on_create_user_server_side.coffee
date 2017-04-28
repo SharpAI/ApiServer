@@ -26,7 +26,7 @@ if Meteor.isServer
           user.profile.fullname = user.profile.name
       Meteor.defer ()->
         mqttUserCreateHook(user._id,user.profile.fullname,user.username)
-        Meteor.call('add-group-urser','d2bc4601dfc593888618e98f',[user._id])
+        #Meteor.call('add-group-urser','d2bc4601dfc593888618e98f',[user._id])
 
         #默认添加一篇帖子
         if defaultPostToFollow
