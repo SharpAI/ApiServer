@@ -74,6 +74,7 @@ if(Meteor.isServer){
     if (msgSession){
       if (msgSession.msgcreate_time && msgObj.msgcreate_time - msgSession.msgcreate_time < 0 ) {
         msgObj.lastText = msgSession.lastText;
+        msgObj.msgcreate_time = msgSession.msgcreate_time;
       }
       msgObj.createAt = msgSession.createAt;
       MsgSession.update({_id: msgSession._id}, {$set: msgObj, $inc: {count: 1}});
