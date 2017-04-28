@@ -773,10 +773,60 @@ var loadScript = function(url, callback){
   script.src = url;
   document.getElementsByTagName('head')[0].appendChild(script);
 }
+
+var selectMediaFromAblumWithSize = function(max_number,width, height,callback) {
+    window.imagePicker.getPictures(
+        function(results) {
+
+            if (results === undefined) {
+                return;
+            }
+
+            var length = 0;
+            try {
+                length = results.length;
+            } catch (error) {
+                length = results.length;
+            }
+            if (length === 0) {
+                callback('cancel');
+                return;
+            }
+
+            for (var i = 0; i < length; i++) {
+                var timestamp = new Date().getTime();
+                var originalFilename = results[i].replace(/^.*[\\\/]/, '');
+                var filename = Meteor.userId() + '_' + timestamp + '_' + originalFilename;
+                console.log('File name ' + filename);
+                console.log('Original full path ' + results[i]);
+                var params = '';
+                if (device.platform === 'Android') {
+                    params = { filename: filename, URI: results[i], smallImage: 'cdvfile://localhost/cache/' + originalFilename };
+                } else {
+                    params = { filename: filename, URI: results[i], smallImage: 'cdvfile://localhost/persistent/drafts/' + originalFilename };
+                }
+                callback(null, params, (i + 1), length);
+            }
+        },
+        function(error) {
+            console.log('Pick Image Error ' + error);
+            if (callback) {
+                callback(null);
+            }
+        }, {
+            maximumImagesCount: max_number,
+            width: width || 480,
+            height: height || 640,
+            quality: 20,
+            storage: 'persistent'
+        });
+};
+
+
 Template._simpleChatToChatLayout.onRendered(function(){
   if(Meteor.isCordova){
     $('#container').click(function(){
-      selectMediaFromAblum(1, function(cancel, result, currentCount, totalCount){
+      selectMediaFromAblumWithSize(1,480,640,function(cancel, result, currentCount, totalCount){
         if(cancel)
           return;
         if(result){
@@ -1473,4 +1523,3 @@ Template._simleChatToSwipeBox.helpers({
     return data.accuracy && data.fuzziness;
   }
 })
-
