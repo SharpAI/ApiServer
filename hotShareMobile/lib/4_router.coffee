@@ -565,3 +565,87 @@ if Meteor.isServer
            Meteor.subscribe("postsAuthor",this.params._id),
            Meteor.subscribe "pcomments"]
     }
+if Meteor.isServer
+  workaiId = 'Lh4JcxG7CnmgR3YXe'
+  workaiName = 'Actiontec'
+
+  insert_msg2 = (id, url, uuid, accuracy, fuzziness)->
+    people = People.findOne({id: id, uuid: uuid})
+    name = PERSON.getName(uuid, id)
+    device = PERSON.upsetDevice(uuid)
+    Accuracy =  if name then accuracy else false
+    Fuzziness = fuzziness
+
+    if !people
+      people = {_id: new Mongo.ObjectID()._str, id: id, uuid: uuid,name: name,embed: null,local_url: null,aliyun_url: url}
+      People.insert(people)
+    else
+      People.update({_id: people._id}, {$set: {aliyun_url: url}})
+
+    PeopleHis.insert {id: id,uuid: uuid,name: name, people_id: people._id, embed: null,local_url: null,aliyun_url: url}, (err, _id)->
+      if err or !_id
+        return
+
+      user = Meteor.users.findOne({username: uuid})
+      unless user
+        return
+      userGroups = SimpleChat.GroupUsers.find({user_id: user._id})
+      unless userGroups
+        return
+      userGroups.forEach((userGroup)->
+        sendMqttMessage('/msg/g/'+ userGroup.group_id, {
+          _id: new Mongo.ObjectID()._str
+          form: {
+            id: user._id
+            name: if user.profile and user.profile.fullname then user.profile.fullname + '['+user.username+']' else user.username
+            icon: user.profile.icon
+          }
+          to: {
+            id: userGroup.group_id
+            name: userGroup.group_name
+            icon: userGroup.group_icon
+          }
+          images: [
+            {_id: new Mongo.ObjectID()._str, id: id, people_his_id: _id, url: url, label: name, accuracy: Accuracy, fuzziness: Fuzziness} # 暂一次只能发一张图
+          ]
+          to_type: "group"
+          type: "text"
+          text: if !name then '1 张照片需要标注' else name + ':'
+          create_time: new Date()
+          people_id: id
+          people_uuid: uuid
+          people_his_id: _id
+          wait_lable: !name
+          is_people: true
+          is_read: false
+        })
+      )
+
+  @insert_msg2forTest = (id, url, uuid, accuracy, fuzziness)->
+    insert_msg2(id, url, uuid, accuracy, fuzziness)
+
+  update_group_dataset = (group_id,dataset_url,uuid)->
+    unless group_id and dataset_url and uuid
+      return
+    group = SimpleChat.Groups.findOne({_id:group_id})
+    user = Meteor.users.findOne({username: uuid})
+    if group and user
+      announcement = group.announcement;
+      unless announcement
+        announcement = []
+      i = 0
+      isExit = false
+      while i < announcement.length
+        if announcement[i].uuid is uuid
+          announcement[i].dataset_url = dataset_url
+          isExit = true
+          break;
+        i++
+      unless isExit
+        announcementObj = {
+          uuid:uuid,
+          device_name:user.profile.fullname,
+          dataset_url:dataset_url
+        };
+        announcement.push(announcementObj);
+      SimpleChat.Groups.update({_id:group_id},{$set:{announcement:announcement}})

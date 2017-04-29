@@ -165,6 +165,18 @@ if(Meteor.isServer){
   }
 
   Meteor.setInterval(function(){
+
+      if(process.env.RESPECT_WORKING_HOUR){
+          var d = new Date();
+          var n = d.getHours();
+          var day = d.getDay();
+          if (n<20 && n>7 && day !== 6 && day !==0){
+              //console.log('Working hour')
+          } else {
+              //console.log('Not working hour')
+              return;
+          }
+      }
       if (!timeline || idx >= timeline.length) {
           var uuidIn = 'ZTEBA510'
           var uuidOut = '7249c9d4'
@@ -178,7 +190,6 @@ if(Meteor.isServer){
           idx++;
       }
       speed = (speed <=1)? 1:(speed -1);
-
     }, 1000); // 10 分钟
   });
 }
