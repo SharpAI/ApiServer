@@ -34,3 +34,5 @@
 @withInPostMassInformation = false
 @withSetTopicAndShareAfterPost = false
 @withThirdPartSocialSharing = false
+@withFirstScreenTip = false
+@withReadMoreButtonOnPost = false

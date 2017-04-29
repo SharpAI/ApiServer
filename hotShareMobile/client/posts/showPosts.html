@@ -224,11 +224,13 @@
   {{> userProfileBox}}
   </div>
   {{> shareReaderClub}}
-  {{#if showPostGroupChatIntro}}
-    {{> introsPostGroupchat}}
-  {{/if}}
-  {{#if showSaveTipHintTemplate}}
-    {{> saveTipHintTemplate}}
+  {{#if withFirstScreenTip}}
+      {{#if showPostGroupChatIntro}}
+        {{> introsPostGroupchat}}
+      {{/if}}
+      {{#if showSaveTipHintTemplate}}
+        {{> saveTipHintTemplate}}
+      {{/if}}
   {{/if}}
 </template>
 <template name="shareReaderClub">

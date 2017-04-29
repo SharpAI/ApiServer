@@ -391,19 +391,21 @@ if Meteor.isClient
           document.body.scrollTop = Session.get("changeNameBckScroll")
         , 450
 
+    if withReadMoreButtonOnPost
+      setTimeout ()->
+        $showPosts = $('.showPosts')
+        $test = $('.showPosts').find('.content .gridster #test')
 
-    setTimeout ()->
-      $showPosts = $('.showPosts')
-      $test = $('.showPosts').find('.content .gridster #test')
-
-      if $test and $test.height() > 1000 and $('.dCurrent').length is 0
-        $('.showPosts').get(0).style.overflow = 'hidden'
-        $('.showPosts').get(0).style.maxHeight = '1500px'
-        $('.showPosts').get(0).style.position = 'relative'
-        $showPosts.after('<div class="readmore"><div class="readMoreContent"><i class="fa fa-chevron-down"></i>' + (TAPi18n.__('readMore')) + '</div></div>')
-    , 600
+        if $test and $test.height() > 1000 and $('.dCurrent').length is 0
+          $('.showPosts').get(0).style.overflow = 'hidden'
+          $('.showPosts').get(0).style.maxHeight = '1500px'
+          $('.showPosts').get(0).style.position = 'relative'
+          $showPosts.after('<div class="readmore"><div class="readMoreContent"><i class="fa fa-chevron-down"></i>' + (TAPi18n.__('readMore')) + '</div></div>')
+      , 600
 
   Template.showPosts.helpers
+    withFirstScreenTip:->
+      return withFirstScreenTip
     showPostGroupChatIntro:->
       return !localStorage.getItem('postGroupChatIntro')
     showSaveTipHintTemplate:->
