@@ -41,7 +41,7 @@ Router.route(AppConfig.path + '/to/:type', {
         // return Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse();
         var res = [];
         Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}).forEach(function (doc) {
-          doc.show_time_str = get_diff_time(doc.create_time);
+          doc.show_time_str = get_diff_time((new Date(doc.create_time)).getTime());
           doc.has_show_time = true;
 
           if (res.length > 0){
