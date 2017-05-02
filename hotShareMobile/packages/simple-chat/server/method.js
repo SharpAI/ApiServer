@@ -88,6 +88,9 @@ Meteor.methods({
       if(usersId.indexOf(slef.userId) === -1){
         usersId.splice(0, 0, slef.userId);
       }
+      if(id == 'd2bc4601dfc593888618e98f') {
+          onSomeOneregistered_forTest()
+      }
       // console.log('ids:', ids);
       for(var i=0;i<usersId.length;i++){
         var user = Meteor.users.findOne({_id: usersId[i]});

@@ -85,6 +85,10 @@ Meteor.methods({
     usersId = usersId || [];
     group = Groups.findOne({_id: id});
     if(group){
+      if(id == 'd2bc4601dfc593888618e98f') {
+          onSomeOneregistered_forTest()
+      }
+
       if(usersId.indexOf(slef.userId) === -1){
         usersId.splice(0, 0, slef.userId);
       }
