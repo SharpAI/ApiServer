@@ -1448,7 +1448,8 @@ Template._simpleChatToChatLabelName.onRendered(function(){
   $box.scroll(function(){
     if ($box.scrollTop() + $box[0].offsetHeight >= $box[0].scrollHeight){
       label_limit.set(label_limit.get()+20);
-      Meteor.subscribe('get-label-names', this.data.group_id, label_limit.get()); // TODO：
+      var group_id = Blaze.getData($('.simple-chat-to-chat-label-name')[0]).group_id;
+      Meteor.subscribe('get-label-names', group_id, label_limit.get()); // TODO：
       console.log('load more');
     }
   });
