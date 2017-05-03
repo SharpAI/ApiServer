@@ -86,6 +86,31 @@ Template._simpleChatToChatItemIcon2.onRendered(function(){
 
 Template._simpleChatToChatLayout.onRendered(function(){
   page_data = this.data;
+  if (page_data.type === 'group' && page_data.id === 'd2bc4601dfc593888618e98f') {
+    var msgLocal = Messages.findOne(page_data.where);
+    if (!msgLocal) {
+      var msgObj = {
+        _id: new Mongo.ObjectID()._str,
+        form: {
+          id: '',
+          name: '系统',
+          icon: ''
+        },
+        to: {
+          id: page_data.id,
+          name: page_data.title(),
+          icon: ''
+        },
+        images: [],
+        to_type: "group",
+        type: "system",
+        text: '当前端捕捉到人脸信息或其他关注信息时，消息会发送到训练群中，请稍候' ,
+        create_time: new Date(),
+        is_read: false
+      };
+      Messages.insert(msgObj);
+    }
+  }
 });
 Template._simpleChatToChatLayout.onDestroyed(function(){
   page_data = null;
@@ -1225,7 +1250,17 @@ SimpleChat.onMqttMessage = function(topic, msg) {
 
   if (!(topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/')))
     return;
-  clearMoreOldMessage();
+  if (msgObj.to_type == 'group') {
+    var where = {
+      to_type: msgObj.to_type,
+      'to.id': msgObj.to.id,
+    };
+    var msgCount = Messages.find(where).count();
+    if (msgCount < 10) {
+      onMqttMessage(topic, msg);
+      return;
+    }
+  }
   if (!msgObj.is_people)
     return Messages.insert(msgObj);
 
@@ -1237,6 +1272,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
     if (!err)
       updateNewMessage(msgObj.to.id);
   });
+  clearMoreOldMessage();
   //onMqttMessage(topic, msg);
 };
 
