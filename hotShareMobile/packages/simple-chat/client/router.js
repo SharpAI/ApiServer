@@ -53,7 +53,13 @@ Router.route(AppConfig.path + '/to/:type', {
 
           res.splice(0, 0, doc);
         });
-        return res;
+        if(type === 'group')
+          return res;
+        else {
+          return res.sort(function(da, db) {
+            return new Date(da.create_time).getTime() - new Date(db.create_time).getTime();
+          });
+        }
       },
       loading: is_loading.get()
     };
