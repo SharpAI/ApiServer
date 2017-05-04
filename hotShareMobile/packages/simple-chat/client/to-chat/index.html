@@ -1,4 +1,4 @@
-<template name="_simpleChatToChatLayout">
+<template name="_simpleChatToChat">
   <div class="simple-chat">
     <div class="msg-box">
       <div class="header">
@@ -32,7 +32,9 @@
       </div>
       <div class="box">
         <ul class="group-list">
-          {{> yield}}
+          {{#each messages}}
+          {{> _simpleChatToChatItem}}
+          {{/each}}
         </ul>
       </div>
       <div class="footer"><form class="input-form">
@@ -55,12 +57,6 @@
   <!--<script type="text/javascript" src="/packages/feiwu_simple-chat/client/upload.min.js"></script>-->
 </template>
 
-<template name="_simpleChatToChat">
-  {{#each messages}}
-  {{> _simpleChatToChatItem}}
-  {{/each}}
-</template>
-
 <template name="_simpleChatToChatItem">
   {{#if has_show_time}}
     {{#if show_time_str}}<li class="time">{{show_time_str}}</li>{{/if}}
@@ -68,8 +64,8 @@
   {{#if is_system_message}}
   <li id="{{_id}}"><span class="system_message">{{text}}</span></li>
   {{else}}
-  <li id="{{_id}}" class="{{ta_me form.id}}">
-    <div class="icon">{{> _simpleChatToChatItemIcon2}}</div>
+  <li id="{{_id}}" class="data-show-more-render {{ta_me form.id}}">
+    <div class="icon"><!--<img class="lazy" data-original="{{form.icon}}" />-->{{> _simpleChatToChatItemIcon2}}</div>
     <div class="name">{{form.name}}</div>
     {{#if text}}
       <div class="text">{{text}}
@@ -83,6 +79,9 @@
                   {{#each images}}
                   {{#if error}}
                   {{else}}
+                  <!--<div class="img_container _close">
+                    <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
+                  </div>-->
                   {{> _simpleChatToChatItemImg}}
                   {{/if}}
                   {{/each}}
@@ -91,6 +90,9 @@
                   <div class="my-btn">错</div>
                   {{#each images}}
                   {{#if error}}
+                  <!--<div class="img_container _close">
+                    <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
+                  </div>-->
                   {{> _simpleChatToChatItemImg}}
                   {{/if}}
                   {{/each}}
@@ -103,6 +105,9 @@
                   {{#each images}}
                   {{#if remove}}
                   {{else}}
+                  <!--<div class="img_container _close">
+                    <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
+                  </div>-->
                   {{> _simpleChatToChatItemImg}}
                   {{/if}}
                   {{/each}}
@@ -122,6 +127,9 @@
                   <div class="my-btn">删</div>
                   {{#each images}}
                   {{#if remove}}
+                  <!--<div class="img_container _close">
+                    <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
+                  </div>-->
                   {{> _simpleChatToChatItemImg}}
                   {{/if}}
                   {{/each}}
@@ -135,6 +143,7 @@
               <div class="remark"><i class="fa fa-check-circle-o"></i>已完成标注</div>
               <div class="imgs">
                 {{#each label_users}}
+                <!--<img class="lazy" data-original="{{icon}}" />-->
                 {{> _simpleChatToChatItemIcon}}
                 {{/each}}
               </div>
@@ -146,6 +155,9 @@
                 <div class="imgs">
                   {{#each images}}
                   {{#if is_wait_item this}}
+                  <!--<div class="img_container _close">
+                    <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
+                  </div>-->
                   {{> _simpleChatToChatItemImg}}
                   {{/if}}
                   {{/each}}
@@ -158,6 +170,9 @@
                     <div class="my-btn">标</div>
                     {{#each images}}
                     {{#if label}}
+                    <!--<div class="img_container _close">
+                      <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
+                    </div>-->
                     {{> _simpleChatToChatItemImg}}
                     {{/if}}
                     {{/each}}
@@ -168,6 +183,9 @@
                     <div class="my-btn">删</div>
                     {{#each images}}
                     {{#if remove}}
+                    <!--<div class="img_container _close">
+                      <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
+                    </div>-->
                     {{> _simpleChatToChatItemImg}}
                     {{/if}}
                     {{/each}}
@@ -179,6 +197,9 @@
             {{else}}
               <div class="imgs">
                 {{#each images}}
+                <!--<div class="img_container _close">
+                  <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
+                </div>-->
                 {{> _simpleChatToChatItemImg}}
                 {{/each}}
               </div>
@@ -189,6 +210,7 @@
               <div class="remark" style="color:#616161;"><i class="fa fa-check-circle-o"></i>标注过的人</div>
               <div class="imgs">
                 {{#each label_users}}
+                <!--<img class="lazy" data-original="{{icon}}" />-->
                 {{> _simpleChatToChatItemIcon}}
                 {{/each}}
               </div>
@@ -204,11 +226,14 @@
     <div class="img">
       <div class="imgs">
         {{#each images}}
+          <div class="img_container _close">
           {{#if url}}
-            {{> _simpleChatToChatItemImg}}
+            <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
+            <!--{{> _simpleChatToChatItemImg}}-->
           {{else}}
             <img class="lazy" data-original="{{thumbnail}}" />
           {{/if}}
+          </div>
         {{/each}}
       </div>
       <div class="line-label-box crop-lable-box"><div class="check">标记</div><div class="crop">裁剪</div><div class="remove">删除</div></div>

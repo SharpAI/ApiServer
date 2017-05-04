@@ -1,19 +1,23 @@
-var list_limit_val = 20;
+var list_limit_val = 10;
 var is_loading = new ReactiveVar(false);
 var list_limit = new ReactiveVar(list_limit_val);
 var page_title = new ReactiveVar('AI训练群');
-var list_data = new ReactiveVar([]);
-var message_list = new ReactiveVar([]);
 var page_data = null;
+var $box = null;
+var $box_ul = null;
 
 Router.route(AppConfig.path + '/to/:type', {
-  layoutTemplate: '_simpleChatToChatLayout',
   template: '_simpleChatToChat',
   data: function () {
+    if (page_data && page_data.id === this.params.query['id'] && page_data.type === this.params.type)
+      return page_data;
+
     var slef = this;
     var to = slef.params.query['id'];
     var type = slef.params.type
     var where = null;
+
+    list_limit.set(list_limit_val);
 
     if(type === 'group')
       where = {'to.id': to, to_type: type}; // 没有判断是否在群的处理。自动加群
@@ -38,7 +42,8 @@ Router.route(AppConfig.path + '/to/:type', {
       type: slef.params.type,
       where: where,
       messages: function(){
-        // return Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}).fetch().reverse();
+        // return Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}});
+        var now = new Date();
         var res = [];
         Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}).forEach(function (doc) {
           doc.show_time_str = get_diff_time((new Date(doc.create_time)).getTime());
@@ -53,13 +58,14 @@ Router.route(AppConfig.path + '/to/:type', {
 
           res.splice(0, 0, doc);
         });
-        if(type === 'group')
-          return res;
-        else {
-          return res.sort(function(da, db) {
+
+        if(type != 'group')
+          res.sort(function(da, db) {
             return new Date(da.create_time).getTime() - new Date(db.create_time).getTime();
           });
-        }
+
+        console.log('load message:', new Date() - now, 'ms');
+        return res;
       },
       loading: is_loading.get()
     };
@@ -67,76 +73,156 @@ Router.route(AppConfig.path + '/to/:type', {
 });
 
 // lazyload
+var lazyloadInitTimeout = null;
+var lazyloadInit = function(){
+  if (lazyloadInitTimeout)
+    Meteor.clearTimeout(lazyloadInitTimeout);
+  lazyloadInitTimeout = Meteor.setTimeout(function(){
+    $box_ul.find('img.lazy:not([src])').lazyload({
+      container: $box
+    });
+    console.log('init lazyload');
+  }, 600);
+};
 Template._simpleChatToChatItemImg.onRendered(function(){
-  this.$("img.lazy:not([src])").lazyload({
-    container: $(".box")
-  });
+  lazyloadInit();
 });
 Template._simpleChatToChatItemIcon.onRendered(function(){
-  this.$("img.lazy:not([src])").lazyload({
-    container: $(".box")
-  });
+  lazyloadInit();
 });
 Template._simpleChatToChatItemIcon2.onRendered(function(){
-  this.$("img.lazy:not([src])").lazyload({
-    container: $(".box")
-  });
+  lazyloadInit();
 });
 
 
-Template._simpleChatToChatLayout.onRendered(function(){
+Template._simpleChatToChat.onRendered(function(){
+  is_loading.set(true);
+  var slef = this;
   page_data = this.data;
-  if (page_data.type === 'group' && page_data.id === 'd2bc4601dfc593888618e98f') {
-    var msgLocal = Messages.findOne(page_data.where);
-    if (!msgLocal) {
-      var msgObj = {
-        _id: new Mongo.ObjectID()._str,
-        form: {
-          id: '',
-          name: '系统',
-          icon: ''
-        },
-        to: {
-          id: page_data.id,
-          name: page_data.title(),
-          icon: ''
-        },
-        images: [],
-        to_type: "group",
-        type: "system",
-        text: '当前端捕捉到人脸信息或其他关注信息时，消息会发送到训练群中，请稍候' ,
-        create_time: new Date(),
-        is_read: false
-      };
-      Messages.insert(msgObj);
+
+  Meteor.setTimeout(function(){
+    $box = $('.box');
+    $box_ul = $('.box ul');
+
+    if (page_data.type === 'group' && page_data.id === 'd2bc4601dfc593888618e98f') {
+      var msgLocal = Messages.findOne(page_data.where);
+      if (!msgLocal) {
+        var msgObj = {
+          _id: new Mongo.ObjectID()._str,
+          form: {
+            id: '',
+            name: '系统',
+            icon: ''
+          },
+          to: {
+            id: page_data.id,
+            name: page_data.title(),
+            icon: ''
+          },
+          images: [],
+          to_type: "group",
+          type: "system",
+          text: '当前端捕捉到人脸信息或其他关注信息时，消息会发送到训练群中，请稍候' ,
+          create_time: new Date(),
+          is_read: false
+        };
+        Messages.insert(msgObj);
+      }
     }
-  }
-});
-Template._simpleChatToChatLayout.onDestroyed(function(){
-  page_data = null;
+
+    if (!Messages.onBefore){
+      Messages.after.insert(function (userId, doc) {
+        if (!page_data)
+          return;
+        if (doc.to_type === page_data.type && doc.to.id === page_data.id){
+          console.log('message insert');
+          setMsgList(page_data.where, 'insert');
+        }
+      });
+      Messages.after.update(function (userId, doc, fieldNames, modifier, options) {
+        if (!page_data)
+          return;
+        if (doc.to_type === page_data.type && doc.to.id === page_data.id){
+          console.log('message update');
+          setMsgList(page_data.where, 'update');
+        }
+      });
+      Messages.after.remove(function (userId, doc){
+        console.log('message remove');
+        if (!page_data)
+          return;
+        if (doc.to_type === page_data.type && doc.to.id === page_data.id){
+          console.log('message update');
+          setMsgList(page_data.where, 'remove');
+        }
+      });
+      Messages.onBefore = true;
+    }
+
+    Meteor.subscribe('people_new', function(){});
+    Meteor.subscribe('get-messages', slef.data.type, slef.data.id, function(){
+      if(slef.data.type != 'user'){
+        page_title.set(Groups.findOne({_id: slef.data.id}) ? Groups.findOne({_id: slef.data.id}).name : 'AI训练群');
+      }else{
+        var user = Meteor.users.findOne({_id: slef.data.id});
+        page_title.set(AppConfig.get_user_name(user));
+      }
+
+      is_loading.set(false);
+    });
+
+    $box.scroll(function () {
+      if($box.scrollTop() === 0 && !is_loading.get()){
+        // if(slef.data.messages.count() >= list_limit.get())
+        is_loading.set(true);
+        list_limit.set(list_limit.get()+list_limit_val);
+        Meteor.setTimeout(function(){is_loading.set(false);}, 500);
+      }
+    });
+
+    if(Meteor.isCordova){
+      $('#container').click(function(){
+        selectMediaFromAblumWithSize(1,480,640,function(cancel, result, currentCount, totalCount){
+          if(cancel)
+            return;
+          if(result){
+            var id = new Mongo.ObjectID()._str;
+            window.___message.insert(id); // result.smallImage
+            multiThreadUploadFile_new([{
+              type: 'image',
+              filename: result.filename,
+              URI: result.URI
+            }], 1, function(err, res){
+              if(err || res.length <= 0){
+                window.___message.remove(id);
+                return PUB.toast('上传图片失败~');
+              }
+              window.___message.update(id, res[0].imgUrl);
+            });
+          }
+        });
+      });
+    }else{
+      Meteor.setTimeout(function(){
+        // load upload.js
+        loadScript('/packages/feiwu_simple-chat/client/upload.js', function(){
+          var uploader = SimpleChat.createPlupload('selectfiles');
+          uploader.init();
+        });
+      }, 2000);
+    }
+
+    Meteor.setTimeout(function(){
+      setScrollToBottom();
+    }, 600);
+  }, 200);
 });
 
-var time_list = [];
-var init_page = false;
-// var fix_data_timeInterval = null;
-// var fix_data = function(){
-//   var data = page_data.messages();// message_list.get(); //Blaze.getData($('.simple-chat')[0]).messages.fetch();
-//   data.sort(function(a, b){
-//     return a.create_time - b.create_time;
-//   });
-//   if(data.length > 0){
-//     for(var i=0;i<data.length;i++){
-//       data[i].show_time_str = get_diff_time(data[i].create_time);
-//       if(i===0)
-//         data[i].show_time = true;
-//       else if(data[i].show_time_str != data[i-1].show_time_str)
-//         data[i].show_time = true;
-//       else
-//         data[i].show_time = false;
-//     }
-//   }
-//   list_data.set(data);
-// };
+Template._simpleChatToChat.onDestroyed(function(){
+  page_data = null;
+  $box.css('overflow', 'auto');
+});
+
 var get_people_names = function(){
   var names = People.find({}, {sort: {updateTime: -1}, limit: 50}).fetch();
   var result = [];
@@ -270,76 +356,9 @@ Template._simpleChatToChatLabelBox.events({
 // });
 
 var setMsgList = function(where, action){
-  if(action === 'insert' || action === 'remove'){Meteor.setTimeout(function(){$('.box').scrollTop($('.box ul').height());}, 200);}
+  if(action === 'insert' || action === 'remove')
+    setScrollToBottom();
 };
-
-Template._simpleChatToChat.onRendered(function(){
-  is_loading.set(true);
-  list_limit.set(list_limit_val);
-  time_list = [];
-  init_page = false;
-  list_data.set([]);
-  message_list.set([]);
-  var slef = this;
-
-  if (!Messages.onBefore){
-    Messages.after.insert(function (userId, doc) {
-      if (!page_data)
-        return;
-      if (doc.to_type === page_data.type && doc.to.id === page_data.id){
-        console.log('message insert');
-        setMsgList(page_data.where, 'insert');
-      }
-    });
-    Messages.after.update(function (userId, doc, fieldNames, modifier, options) {
-      if (!page_data)
-        return;
-      if (doc.to_type === page_data.type && doc.to.id === page_data.id){
-        console.log('message update');
-        setMsgList(page_data.where, 'update');
-      }
-    });
-    Messages.after.remove(function (userId, doc){
-      console.log('message remove');
-      if (!page_data)
-        return;
-      if (doc.to_type === page_data.type && doc.to.id === page_data.id){
-        console.log('message update');
-        setMsgList(page_data.where, 'remove');
-      }
-    });
-    Messages.onBefore = true;
-  }
-
-  // if(fix_data_timeInterval){
-  //   Meteor.clearInterval(fix_data_timeInterval);
-  //   fix_data_timeInterval = null;
-  // }
-  // fix_data_timeInterval = Meteor.setInterval(fix_data, 1000*60);
-  Meteor.subscribe('people_new', function(){});
-
-  Meteor.subscribe('get-messages', slef.data.type, slef.data.id, function(){
-    if(slef.data.type != 'user'){
-      page_title.set(Groups.findOne({_id: slef.data.id}) ? Groups.findOne({_id: slef.data.id}).name : 'AI训练群');
-    }else{
-      var user = Meteor.users.findOne({_id: slef.data.id});
-      page_title.set(AppConfig.get_user_name(user));
-    }
-
-    init_page = true;
-    $('.box').scrollTop($('.box ul').height());
-    is_loading.set(false);
-  });
-
-  $('.box').scroll(function () {
-    if($('.box').scrollTop() === 0 && !is_loading.get()){
-      // if(slef.data.messages.count() >= list_limit.get())
-      is_loading.set(true);
-      list_limit.set(list_limit.get()+list_limit_val);
-      Meteor.setTimeout(function(){is_loading.set(false);}, 500);
-    }
-  });
-});
 
 Template._simpleChatToChatItem.events({
   'click li img.swipebox': function(e){
@@ -853,49 +872,17 @@ var selectMediaFromAblumWithSize = function(max_number,width, height,callback) {
         });
 };
 
+var setScrollToBottomTimeout = null;
+var setScrollToBottom = function(){
+  if (setScrollToBottomTimeout)
+    Meteor.clearTimeout(setScrollToBottomTimeout);
+  setScrollToBottomTimeout = Meteor.setTimeout(function(){
+    console.log('set scrollTop to end');
+    $box.scrollTop($box_ul.height());
+  }, 200);
+};
 
-Template._simpleChatToChatLayout.onRendered(function(){
-  if(Meteor.isCordova){
-    $('#container').click(function(){
-      selectMediaFromAblumWithSize(1,480,640,function(cancel, result, currentCount, totalCount){
-        if(cancel)
-          return;
-        if(result){
-          var id = new Mongo.ObjectID()._str;
-          window.___message.insert(id); // result.smallImage
-          multiThreadUploadFile_new([{
-            type: 'image',
-            filename: result.filename,
-            URI: result.URI
-          }], 1, function(err, res){
-            if(err || res.length <= 0){
-              window.___message.remove(id);
-              return PUB.toast('上传图片失败~');
-            }
-            window.___message.update(id, res[0].imgUrl);
-          });
-        }
-      });
-    });
-  }else{
-    // load upload.js
-    loadScript('/packages/feiwu_simple-chat/client/upload.js', function(){
-      var uploader = SimpleChat.createPlupload('selectfiles');
-      uploader.init();
-    });
-  }
-
-  Meteor.setTimeout(function(){
-    $('body').css('overflow', 'hidden');
-    var DHeight = $('.group-list').outerHeight();
-    $('.box').scrollTop(DHeight);
-  }, 600);
-});
-Template._simpleChatToChatLayout.onDestroyed(function(){
-  $('body').css('overflow', 'auto');
-});
-
-Template._simpleChatToChatLayout.helpers({
+Template._simpleChatToChat.helpers({
   title: function(){
     return page_title.get();
   },
@@ -903,12 +890,11 @@ Template._simpleChatToChatLayout.helpers({
     return is_loading.get();
   },
   isGroups:function(){
-    var data = Blaze.getData(Blaze.getView(document.getElementsByClassName('simple-chat')[0]));
-    return data.is_group();
+    return page_data && page_data.is_group ? page_data.is_group() : false;
   }
 });
 
-Template._simpleChatToChatLayout.events({
+Template._simpleChatToChat.events({
   'focus .input-text': function(){
     Meteor.setTimeout(function(){
       $('body').scrollTop(999999);
@@ -916,7 +902,7 @@ Template._simpleChatToChatLayout.events({
   },
   'submit .input-form': function(e, t){
     try{
-      var data = Blaze.getData(Blaze.getView(document.getElementsByClassName('simple-chat')[0]));
+      var data = page_data;
       var text = $('.input-text').val();
       var to = null;
 
@@ -959,7 +945,7 @@ Template._simpleChatToChatLayout.events({
           sendMqttGroupMessage(msg.to.id, msg);
         else
           sendMqttUserMessage(msg.to.id, msg);
-        Meteor.setTimeout(function(){$('.box').scrollTop($('.box ul').height());}, 200);
+        setScrollToBottom();
       });
 
       $('.input-text').val('');
@@ -967,11 +953,11 @@ Template._simpleChatToChatLayout.events({
     }catch(ex){console.log(ex); return false;}
   },
   'click .groupsProfile':function(e,t){
-    var data = Blaze.getData(Blaze.getView(document.getElementsByClassName('simple-chat')[0]));
+    var data = page_data;
     Router.go('/groupsProfile/'+data.type+'/'+data.id);
   },
   'click .userProfile':function(e,t){
-    var data = Blaze.getData(Blaze.getView(document.getElementsByClassName('simple-chat')[0]));
+    var data = page_data;
     Router.go('/groupsProfile/'+data.type+'/'+data.id);
     //PUB.page('/simpleUserProfile/'+data.id);
   }
@@ -1009,6 +995,39 @@ Template._simpleChatToChatLayout.events({
 //   var t = this;
 //   Template._simpleChatToChatItem.initLazyLoad(t.$('li'));
 // });
+
+var renderMoreButtonTimeout = null;
+var renderMoreButton = function(){
+  if (renderMoreButtonTimeout)
+    Meteor.clearTimeout(renderMoreButtonTimeout);
+  renderMoreButtonTimeout = Meteor.setTimeout(function(){
+    $box_ul.find('li.data-show-more-render').each(function(){
+      var $li = $(this);
+      var $li_show_more = $li.find('.show_more');
+
+      // 默认图像
+      var $imgs = $li.find('.text > .imgs img');
+      if ($imgs.length >= 4){
+        $li_show_more.show();
+        return $li.removeClass('data-show-more-render');
+      }
+        
+      // 标注过的图
+      $imgs = $li.find('.text > .imgs-1-box img');
+      if ($imgs.length >= 4){
+        $li_show_more.show();
+        return $li.removeClass('data-show-more-render');
+      }
+
+      // 有裁剪按钮的图
+      $imgs = $li.find('.img > .imgs img');
+      if ($imgs.length >= 4){
+        $li_show_more.show();
+        return $li.removeClass('data-show-more-render');
+      }
+    });
+  }, 1000);
+};
 
 Template._simpleChatToChatItem.helpers({
   is_system_message:function(){
@@ -1059,45 +1078,13 @@ Template._simpleChatToChatItem.helpers({
     return id != Meteor.userId() ? 'ta' : 'me';
   },
   show_images: function(images){
-    var $li = $('li#' + this._id);
-    var is_more = false;
-
-    // 默认图像
-    var $imgs = $li.find('.text > .imgs img');
-    if ($imgs.length >= 4){
-      is_more = true;
-    }
-
-    // 标注过的图
-    $imgs = $li.find('.text > .imgs-1-box img');
-    if ($imgs.length >= 5){
-      is_more = true;
-    }
-
-    // 有裁剪按钮的图
-    $imgs = $li.find('.img > .imgs img');
-    if ($imgs.length >= 4){
-      is_more = true;
-    }
-
-    if (is_more)
-      $li.find('.show_more').show();
-  },
-  is_show_time: function(id){
-    try{
-      var data = list_data.get();
-      return data[_.pluck(data, '_id').indexOf(id)].show_time;
-    }catch(ex){return false;}
-  },
-  get_time: function(id){
-    var data = list_data.get();
-    return data[_.pluck(data, '_id').indexOf(id)].show_time_str;
+    renderMoreButton();
   }
 });
 
 window.___message = {
   insert: function(id){
-    var data = Blaze.getData(Blaze.getView(document.getElementsByClassName('simple-chat')[0]));
+    var data = page_data;
     var to = null;
 
     if(data.type === 'group'){
@@ -1331,8 +1318,8 @@ var onMqttMessage = function(topic, msg) {
     return console.log('已存在此消息:', msgObj._id);
   if (!targetMsg || !targetMsg.images || targetMsg.images.length <= 0)
     return insertMsg(msgObj, '无需合并消息');
-  if (targetMsg.images && targetMsg.images.length >= 40)
-    return insertMsg(msgObj, '单行照片超过 40 张');
+  if (targetMsg.images && targetMsg.images.length >= 20)
+    return insertMsg(msgObj, '单行照片超过 20 张');
   if (!msgObj.images || msgObj.images.length <= 0)
     return insertMsg(msgObj, '不是图片消息');
   if (msgObj.to_type != 'group' || !msgObj.is_people)
@@ -1404,66 +1391,6 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
 //   "is_people":true,
 //   "is_read":false
 // });
-
-last_msg = null;
-// SimpleChat.onMqttMessage = function(topic, msg) {
-//   console.log('SimpleChat.onMqttMessage, topic: ' + topic + ', msg: ' + msg);
-//   var group = topic.substring(topic.lastIndexOf('/') + 1);
-//   var msgObj = JSON.parse(msg);
-//   //var last_msg = Messages.findOne({}, {sort: {create_time: -1}});
-//   if(msgObj.form.id === Meteor.userId()){
-//     return;
-//   }
-//   if(last_msg && last_msg._id === msgObj._id){
-//     return;
-//   }
-//   last_msg = msgObj;
-
-//   if(Messages.find({_id: msgObj._id}).count() > 0){
-//     // 自己发送的消息且本地已经存在
-//     //if (msgObj && msgObj.form.id === Meteor.userId())
-//     //  return;
-
-//     //msgObj._id = new Mongo.ObjectID()._str;
-//     return
-//   }
-
-//   try{
-//     console.log('last_msg:', last_msg);
-//     msgObj.create_time = msgObj.create_time ? new Date(msgObj.create_time) : new Date();
-//     var group_msg = last_msg && msgObj && msgObj.to_type === 'group' && msgObj.to.id === last_msg.to.id; // 当前组消息
-//     if (!group_msg)
-//       return Messages.insert(msgObj);
-
-//     if (last_msg && last_msg.is_people === true && last_msg.images && last_msg.images.length > 0 && msgObj.images && msgObj.images.length > 0){
-//       if(!msgObj.wait_lable && msgObj.images[0].label === last_msg.images[0].label){
-//         Messages.update({_id: last_msg._id}, {
-//           $set: {create_time: msgObj.create_time},
-//           $push: {images: msgObj.images[0]}
-//         }, function(err, num){
-//           if (err || num <= 0)
-//             Messages.insert(msgObj);
-//         });
-//       }else if(msgObj.wait_lable && msgObj.people_id === last_msg.people_id && msgObj.people_uuid === last_msg.people_uuid){
-//         Messages.update({_id: last_msg._id}, {
-//           $set: {create_time: msgObj.create_time},
-//           $push: {images: msgObj.images[0]}
-//         }, function(err, num){
-//           if (err || num <= 0)
-//             Messages.insert(msgObj);
-//         });
-//       }else{
-//         Messages.insert(msgObj);
-//       }
-//     }else{
-//       Messages.insert(msgObj);
-//     }
-//   }catch(ex){
-//     console.log(ex);
-//     Messages.insert(msgObj);
-//   }
-// };
-
 
 // label
 var label_view = null;
