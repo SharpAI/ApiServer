@@ -1,4 +1,4 @@
-var list_limit_val = 10;
+var list_limit_val = 5;
 var is_loading = new ReactiveVar(false);
 var list_limit = new ReactiveVar(list_limit_val);
 var page_title = new ReactiveVar('AI训练群');
@@ -9,6 +9,9 @@ var $box_ul = null;
 Router.route(AppConfig.path + '/to/:type', {
   template: '_simpleChatToChat',
   data: function () {
+    if(type != 'group')
+      list_limit_val = 20;
+      
     if (page_data && page_data.id === this.params.query['id'] && page_data.type === this.params.type)
       return page_data;
 
