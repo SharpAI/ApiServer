@@ -6,6 +6,42 @@ var page_data = null;
 var $box = null;
 var $box_ul = null;
 
+Template._simpleChatToChat.helpers({
+  getMsg: function(){
+    if (!page_data)
+      return [];
+
+    var now = new Date();
+    var res = [];
+
+    is_loading.set(true);
+    page_data.messages().forEach(function (doc) {
+      doc.show_time_str = get_diff_time((new Date(doc.create_time)).getTime());
+      doc.has_show_time = true;
+
+      if (res.length > 0){
+        for(var i=res.length-1;i>=0;i--){
+          if (res[i].show_time_str === doc.show_time_str)
+            res[i].has_show_time = false;
+        }
+      }
+
+      res.splice(0, 0, doc);
+    });
+    if(page_data.type != 'group')
+      res.sort(function(da, db) {
+        return new Date(da.create_time).getTime() - new Date(db.create_time).getTime();
+      });
+    console.log('load message:', new Date() - now, 'ms');
+    is_loading.set(false);
+
+    return res;
+  }
+});
+Template._simpleChatToChat.onRendered(function(){
+  console.log('message view rendered');
+});
+
 Router.route(AppConfig.path + '/to/:type', {
   template: '_simpleChatToChat',
   data: function () {
@@ -45,30 +81,7 @@ Router.route(AppConfig.path + '/to/:type', {
       type: slef.params.type,
       where: where,
       messages: function(){
-        // return Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}});
-        var now = new Date();
-        var res = [];
-        Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}}).forEach(function (doc) {
-          doc.show_time_str = get_diff_time((new Date(doc.create_time)).getTime());
-          doc.has_show_time = true;
-
-          if (res.length > 0){
-            for(var i=res.length-1;i>=0;i--){
-              if (res[i].show_time_str === doc.show_time_str)
-                res[i].has_show_time = false;
-            }
-          }
-
-          res.splice(0, 0, doc);
-        });
-
-        if(type != 'group')
-          res.sort(function(da, db) {
-            return new Date(da.create_time).getTime() - new Date(db.create_time).getTime();
-          });
-
-        console.log('load message:', new Date() - now, 'ms');
-        return res;
+        return Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}});
       },
       loading: is_loading.get()
     };

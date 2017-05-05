@@ -32,7 +32,7 @@
       </div>
       <div class="box">
         <ul class="group-list">
-          {{#each messages}}
+          {{#each getMsg}}
           {{> _simpleChatToChatItem}}
           {{/each}}
         </ul>
@@ -64,7 +64,7 @@
   {{#if is_system_message}}
   <li id="{{_id}}"><span class="system_message">{{text}}</span></li>
   {{else}}
-  <li id="{{_id}}" class="data-show-more-render {{ta_me form.id}}">
+  <li id="{{_id}}" class="data-show-more-render {{ta_me form.id}}" data-time="{{create_time}}">
     <div class="icon"><!--<img class="lazy" data-original="{{form.icon}}" />-->{{> _simpleChatToChatItemIcon2}}</div>
     <div class="name">{{form.name}}</div>
     {{#if text}}
