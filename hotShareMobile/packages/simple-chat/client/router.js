@@ -40,12 +40,16 @@ Template._simpleChatToChat.helpers({
 });
 Template._simpleChatToChat.onRendered(function(){
   console.log('message view rendered');
+  page_data = this.data;
+  if(!page_data)
+    return;
+  loadMoreMesage(page_data.where, {limit: list_limit.get(), sort: {create_time: -1}}, list_limit.get());
 });
 
 Router.route(AppConfig.path + '/to/:type', {
   template: '_simpleChatToChat',
   data: function () {
-    if(type != 'group')
+    if(this.params.type != 'group')
       list_limit_val = 20;
       
     if (page_data && page_data.id === this.params.query['id'] && page_data.type === this.params.type)
@@ -193,6 +197,7 @@ Template._simpleChatToChat.onRendered(function(){
         is_loading.set(true);
         list_limit.set(list_limit.get()+list_limit_val);
         Meteor.setTimeout(function(){is_loading.set(false);}, 500);
+        loadMoreMesage(page_data.where, {limit: list_limit.get(), sort: {create_time: -1}}, list_limit.get());
       }
     });
 
@@ -1323,15 +1328,20 @@ var onMqttMessage = function(topic, msg) {
       msgObj.images[i].id = msgObj.people_id;
   }
 
+  if (Messages.find({_id: msgObj._id}).count() > 0)
+    return console.log('已存在此消息:', msgObj._id);
+
   if (msgObj.wait_lable){where.people_uuid = msgObj.people_uuid; where.people_id = msgObj.people_id;}
   else if (!msgObj.wait_lable && msgObj.images && msgObj.images.length > 0) {where['images.label'] = msgObj.images[0].label}
   else {return Messages.insert(msgObj)}
 
   console.log('SimpleChat.SimpleChat where:', where);
   var targetMsg = Messages.findOne(where, {sort: {create_time: -1}});
+  if (withMessageHisEnable && !targetMsg){
+    targetMsg = MessagesHis.findOne(where, {sort: {create_time: -1}});
+    targetMsg.hasFromHistory = true;
+  }
 
-  if (Messages.find({_id: msgObj._id}).count() > 0)
-    return console.log('已存在此消息:', msgObj._id);
   if (!targetMsg || !targetMsg.images || targetMsg.images.length <= 0)
     return insertMsg(msgObj, '无需合并消息');
   if (targetMsg.images && targetMsg.images.length >= 20)
@@ -1358,13 +1368,26 @@ var onMqttMessage = function(topic, msg) {
     setObj.text = msgObj.images[0].label + '：';
   }
 
-  Messages.update({_id: targetMsg._id}, {
-    $set: setObj,
-    $push: {images: {$each: msgObj.images}, msg_ids: {id: msgObj._id}}
-  }, function(err, num){
-    if (err || num <= 0)
-      insertMsg(msgObj, 'update 失败');
-  });
+  if (targetMsg.hasFromHistory){
+    MessagesHis.update({_id: targetMsg._id}, {
+      $set: setObj,
+      $push: {images: {$each: msgObj.images}, msg_ids: {id: msgObj._id}}
+    }, function(err, num){
+      if (err || num <= 0)
+        return insertMsg(msgObj, 'update 失败');
+      
+      var model = MessagesHis.findOne({_id: targetMsg._id});
+      model && Messages.insert(model);
+    });
+  } else{
+    Messages.update({_id: targetMsg._id}, {
+      $set: setObj,
+      $push: {images: {$each: msgObj.images}, msg_ids: {id: msgObj._id}}
+    }, function(err, num){
+      if (err || num <= 0)
+        insertMsg(msgObj, 'update 失败');
+    });
+  }
 };
 
 SimpleChat.onMqttLabelMessage = function(topic, msg) {

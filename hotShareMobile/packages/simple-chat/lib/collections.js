@@ -32,6 +32,49 @@ if(Meteor.isServer){
     SimpleChat.Messages = Messages;
     SimpleChat.MsgSession = MsgSession;
     SimpleChat.MessageTemp = MessageTemp;
+
+    // 历史消息
+    if (withMessageHisEnable){
+      console.log('=> 聊天室启用历史消息');
+      Messages = new Mongo.Collection(PRFIX + 'new_messages', { connection: null })
+      MessagesHis = new Ground.Collection(PRFIX + 'messagesHis', { connection: null });
+      SimpleChat.Messages = Messages;
+      SimpleChat.MessagesHis = MessagesHis;
+
+      Messages.after.insert(function (userId, doc) {
+        var id = doc._id;
+        var obj = delete doc._id;
+        MessagesHis.upsert({_id: id}, {$set: obj});
+      });
+      Messages.after.update(function (userId, doc, fieldNames, modifier, options) {
+        var model = Messages.findOne({_id: doc._id});
+        var id = model._id;
+        
+        if (model){
+          delete model._id;
+          MessagesHis.upsert({_id: id}, {$set: model});
+        }
+      });
+      Messages.after.remove(function (userId, doc){
+        MessagesHis.remove({_id: doc._id});
+      });
+
+      loadMoreMesage = function(where, option, limit){
+        Meteor.setTimeout(function(){
+          if (Messages.find(where, option).count() >= limit)
+            return;
+
+          MessagesHis.find(where, option).forEach(function(doc) {
+            if (Messages.find({_id: doc._id}).count() <= 0){
+              console.log('load message from history:', doc._id);
+              Messages.insert(doc);
+            }
+          });
+        }, 100);
+      };
+    } else {
+      loadMoreMesage = function(where, option, limit){};
+    }
   });
 
   // 生成聊天会话
@@ -77,8 +120,11 @@ if(Meteor.isServer){
         msgObj.msgcreate_time = msgSession.msgcreate_time;
       }
       msgObj.createAt = msgSession.createAt;
-      MsgSession.update({_id: msgSession._id}, {$set: msgObj, $inc: {count: 1}});
-      console.log('update chat session:', msgObj);
+
+      if (msgSession.createAt < msgObj.msgcreate_time){
+        MsgSession.update({_id: msgSession._id}, {$set: msgObj, $inc: {count: 1}});
+        console.log('update chat session:', msgObj);
+      }
     } else {
       msgObj.createAt = new Date();
       msgObj.count = 1;
