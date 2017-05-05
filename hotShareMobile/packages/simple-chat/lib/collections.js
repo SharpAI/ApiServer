@@ -40,11 +40,17 @@ if(Meteor.isServer){
       SimpleChat.MessagesHis = MessagesHis;
 
       Messages.after.insert(function (userId, doc) {
+        if (doc.hasFromHistory)
+          return;
+
         var id = doc._id;
         var obj = delete doc._id;
         MessagesHis.upsert({_id: id}, {$set: obj});
       });
       Messages.after.update(function (userId, doc, fieldNames, modifier, options) {
+        if (doc.hasFromHistory)
+          return;
+
         var model = Messages.findOne({_id: doc._id});
         var id = model._id;
         
@@ -82,6 +88,9 @@ if(Meteor.isServer){
   // 生成聊天会话
   var updateMsgSession = function(doc){
     console.log('updateMsgSession');
+
+    if (doc.hasFromHistory)
+      return;
     if (!Meteor.userId())
       return;
 
