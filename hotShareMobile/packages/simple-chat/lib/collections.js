@@ -26,8 +26,6 @@ if(Meteor.isServer){
 
     Messages = new Ground.Collection(PRFIX + 'messages', { connection: null })
     MsgSession = new Ground.Collection(PRFIX + 'msg_session', { connection: null });
-    Messages.after.insert(function (userId, doc) {updateMsgSession(doc);});
-    Messages.after.update(function (userId, doc, fieldNames, modifier, options) {updateMsgSession(doc);});
 
     SimpleChat.Messages = Messages;
     SimpleChat.MsgSession = MsgSession;
@@ -67,6 +65,7 @@ if(Meteor.isServer){
           MessagesHis.find(where, option).forEach(function(doc) {
             if (Messages.find({_id: doc._id}).count() <= 0){
               console.log('load message from history:', doc._id);
+              doc.hasFromHistory = true;
               Messages.insert(doc);
             }
           });
@@ -75,10 +74,14 @@ if(Meteor.isServer){
     } else {
       loadMoreMesage = function(where, option, limit){};
     }
+
+    Messages.after.insert(function (userId, doc) {updateMsgSession(doc);});
+    Messages.after.update(function (userId, doc, fieldNames, modifier, options) {updateMsgSession(doc);});
   });
 
   // 生成聊天会话
   var updateMsgSession = function(doc){
+    console.log('updateMsgSession');
     if (!Meteor.userId())
       return;
 
@@ -121,7 +124,7 @@ if(Meteor.isServer){
       }
       msgObj.createAt = msgSession.createAt;
 
-      if (msgSession.createAt < msgObj.msgcreate_time){
+      if (doc.hasFromHistory != true){
         MsgSession.update({_id: msgSession._id}, {$set: msgObj, $inc: {count: 1}});
         console.log('update chat session:', msgObj);
       }

@@ -1337,10 +1337,11 @@ var onMqttMessage = function(topic, msg) {
 
   console.log('SimpleChat.SimpleChat where:', where);
   var targetMsg = Messages.findOne(where, {sort: {create_time: -1}});
-  if (withMessageHisEnable && !targetMsg){
-    targetMsg = MessagesHis.findOne(where, {sort: {create_time: -1}});
-    targetMsg.hasFromHistory = true;
-  }
+  // TODO: 还存在问题
+  // if (withMessageHisEnable && !targetMsg){
+  //   targetMsg = MessagesHis.findOne(where, {sort: {create_time: -1}});
+  //   targetMsg.hasFromHistory = true;
+  // }
 
   if (!targetMsg || !targetMsg.images || targetMsg.images.length <= 0)
     return insertMsg(msgObj, '无需合并消息');
@@ -1351,7 +1352,7 @@ var onMqttMessage = function(topic, msg) {
   if (msgObj.to_type != 'group' || !msgObj.is_people)
     return insertMsg(msgObj, '不是 Group 或人脸消息');
 
-  var setObj = {/*create_time: new Date(),*/ 'form.name': msgObj.form.name};
+  var setObj = {/*create_time: new Date(),*/ 'form.name': msgObj.form.name, hasFromHistory: false};
   if (msgObj.wait_lable){
     var count = 0;
     for(var i=0;i<targetMsg.images.length;i++){
