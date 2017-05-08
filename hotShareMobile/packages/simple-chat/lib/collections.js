@@ -32,6 +32,7 @@ if(Meteor.isServer){
     SimpleChat.MessageTemp = MessageTemp;
 
     // 历史消息
+    withMessageHisEnable = true;
     if (withMessageHisEnable){
       console.log('=> 聊天室启用历史消息');
       Messages = new Mongo.Collection(PRFIX + 'new_messages', { connection: null })
@@ -53,7 +54,7 @@ if(Meteor.isServer){
 
         var model = Messages.findOne({_id: doc._id});
         var id = model._id;
-        
+
         if (model){
           delete model._id;
           MessagesHis.upsert({_id: id}, {$set: model});
