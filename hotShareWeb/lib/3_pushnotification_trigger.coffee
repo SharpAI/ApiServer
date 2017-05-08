@@ -228,7 +228,7 @@ if Meteor.isServer
         # )
 
   @pushnotification = (type, doc, userId)->
-    #return _pushnotification(type, doc, userId)
+    return _pushnotification(type, doc, userId)
     console.log "type:"+type
     if type is "palsofavourite"
       content = '有人也赞了此公告:《' + doc.title + '》'
