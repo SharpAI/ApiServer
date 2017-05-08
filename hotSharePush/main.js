@@ -23,8 +23,8 @@ var QUEUE_SIZE = 20;
 var prefix = process.env.PREFIX || '';
 var redis_prefix = prefix+'workai_pushnotification_task';
 var redis_prefix_us = prefix+'workai_pushnotification_task_us';
-var DB_CONN_STR = process.env.MONGO_URL || 'mongodb://workAIAdmin:weo23biHUI@aidb.tiegushi.com:27017/workai?replicaSet=hotShare&readPreference=primaryPreferred&connectTimeoutMS=30000&socketTimeoutMS=30000&poolSize=20';
-var MONGO_OPLOG = process.env.MONGO_OPLOG || 'mongodb://oplogger:PasswordForOplogger@host1.tiegushi.com:27017/local?authSource=admin';
+var DB_CONN_STR = process.env.MONGO_URL || 'mongodb://workAIAdmin:weo23biHUI@aidb.tiegushi.com:27017/workai?replicaSet=workaioplog&readPreference=primaryPreferred&connectTimeoutMS=30000&socketTimeoutMS=30000&poolSize=20';
+var MONGO_OPLOG = process.env.MONGO_OPLOG || 'mongodb://oplogger:J234sdfenvjfH@aidb.tiegushi.com:27017/local?authSource=admin';
 
 var pushServer = initPushServer();
 //pushServer.sendIOS('me', '9ce162f4beb26d45f4e91c7c83d57324a776a3fc3eaa81111e360ad0ae5e834c', 'aaa', 'aaa', 1);
