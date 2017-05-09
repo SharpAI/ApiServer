@@ -51,7 +51,7 @@ Router.route(AppConfig.path + '/to/:type', {
   data: function () {
     if(this.params.type != 'group')
       list_limit_val = 20;
-      
+
     if (page_data && page_data.id === this.params.query['id'] && page_data.type === this.params.type)
       return page_data;
 
@@ -181,12 +181,7 @@ Template._simpleChatToChat.onRendered(function(){
 
     Meteor.subscribe('people_new', function(){});
     Meteor.subscribe('get-messages', slef.data.type, slef.data.id, function(){
-      if(slef.data.type != 'user'){
-        page_title.set(Groups.findOne({_id: slef.data.id}) ? Groups.findOne({_id: slef.data.id}).name : 'AI训练群');
-      }else{
-        var user = Meteor.users.findOne({_id: slef.data.id});
-        page_title.set(AppConfig.get_user_name(user));
-      }
+
 
       is_loading.set(false);
     });
@@ -905,7 +900,12 @@ var setScrollToBottom = function(){
 
 Template._simpleChatToChat.helpers({
   title: function(){
-    return page_title.get();
+    if(this.type != 'user'){
+      return Groups.findOne({_id: this.id}).name;
+    }else{
+      var user = Meteor.users.findOne({_id: this.id});
+      return AppConfig.get_user_name(user);
+    }
   },
   loading: function(){
     return is_loading.get();
@@ -1032,7 +1032,7 @@ var renderMoreButton = function(){
         $li_show_more.show();
         return $li.removeClass('data-show-more-render');
       }
-        
+
       // 标注过的图
       $imgs = $li.find('.text > .imgs-1-box img');
       if ($imgs.length >= 4){
@@ -1376,7 +1376,7 @@ var onMqttMessage = function(topic, msg) {
     }, function(err, num){
       if (err || num <= 0)
         return insertMsg(msgObj, 'update 失败');
-      
+
       var model = MessagesHis.findOne({_id: targetMsg._id});
       model && Messages.insert(model);
     });
