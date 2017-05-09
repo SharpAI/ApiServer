@@ -5,7 +5,7 @@ if Meteor.isClient
     $('.content').css 'min-height',$(window).height()
 #    $('.mainImage').css('height',$(window).height()*0.55)
     $(window).scroll (event)->
-        target = $("#showMoreFollowsResults");
+        target = $("#showMoreResults");
         FOLLOWS_ITEMS_INCREMENT = 10;
         if (!target.length)
             return;
