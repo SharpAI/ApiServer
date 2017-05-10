@@ -49,6 +49,12 @@ Template._simpleChatLabelCrop.crop = function(){
       window.___message.insert(id); // result.smallImage
       var filenameArr = result.split('/');
       var filename = filenameArr[filenameArr.length-1];
+      var lastQuestionFlag = result.lastIndexOf('?');
+      if (lastQuestionFlag >= 0)
+        result = result.substring(0, lastQuestionFlag);
+      var lastQuestionFlag = filename.lastIndexOf('?');
+      if (lastQuestionFlag >= 0)
+        filename = filename.substring(0, lastQuestionFlag);
       multiThreadUploadFile_new([{
         type: 'image',
         filename: filename,
@@ -58,6 +64,7 @@ Template._simpleChatLabelCrop.crop = function(){
           window.___message.remove(id);
           return PUB.toast('上传图片失败~');
         }
+        console.log('##RDBG upload image url: ' + res[0].imgUrl);
         window.___message.update(id, res[0].imgUrl);
         });
     }
