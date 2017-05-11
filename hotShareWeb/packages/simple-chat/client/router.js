@@ -425,7 +425,7 @@ Template._simpleChatToChatItem.events({
     var setNames = [];
     for (var i=0;i<this.images.length;i++){
       if (this.images[i].label) {
-        var trainsetObj = {group_id: this.to.id, type: 'trainset', url: this.images[i].url, person_id: '', device_id: this.people_uuid, face_id: this.images[i].id, drop: false};
+        var trainsetObj = {group_id: this.to.id, type: 'trainset', url: this.images[i].url, person_id: '', device_id: this.people_uuid, face_id: this.images[i].id, drop: false, img_type: this.images[i].img_type};
         console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
         sendMqttMessage('/device/'+this.to.id, trainsetObj);
       }
@@ -633,8 +633,12 @@ Template._simpleChatToChatLabel.events({
             }
           });
 
+          var imgtype = '';
+          if(data && data.images && data.images[0] && data.images[0].img_type)
+              imgtype = data.images[0].img_type;
+
           onFixName(data.people_id, data.people_uuid, data.people_his_id, $img.attr('src'), data.to, name, 'label');
-          sendMqttMessage('trainset', {url: $img.attr('src'), person_id: res.id ? res.id : '', device_id: data.people_uuid, face_id: res ? res.faceId : data.people_id, drop: false});
+          sendMqttMessage('trainset', {url: $img.attr('src'), person_id: res.id ? res.id : '', device_id: data.people_uuid, face_id: res ? res.faceId : data.people_id, drop: false, img_type: imgtype});
           PUB.toast('标记成功~');
         });
       });
@@ -671,8 +675,12 @@ Template._simpleChatToChatLabel.events({
           }
         });
 
+        var imgtype = '';
+        if(data && data.images && data.images[0] && data.images[0].img_type)
+            imgtype = data.images[0].img_type;
+
         onFixName(data.people_id, data.people_uuid, data.people_his_id, $img.attr('src'), data.to, name, 'label');
-        sendMqttMessage('trainset', {url: $img.attr('src'), person_id: res.id ? res.id : '', device_id: data.people_uuid, face_id: res ? res.faceId : data.people_id, drop: false});
+        sendMqttMessage('trainset', {url: $img.attr('src'), person_id: res.id ? res.id : '', device_id: data.people_uuid, face_id: res ? res.faceId : data.people_id, drop: false, img_type: imgtype});
         PUB.toast('标记成功~');
       });
     });
@@ -712,8 +720,12 @@ Template._simpleChatToChatLabel.events({
                 }
               });
 
+              var imgtype = '';
+              if(data && data.images && data.images[0] && data.images[0].img_type)
+                  imgtype = data.images[0].img_type;
+
               onFixName(data.people_id, data.people_uuid, data.people_his_id, $img.attr('src'), data.to, name, 'label');
-              sendMqttMessage('trainset', {url: $img.attr('src'), person_id: res.id ? res.id : '', device_id: data.people_uuid, face_id: res ? res.faceId : data.people_id, drop: false});
+              sendMqttMessage('trainset', {url: $img.attr('src'), person_id: res.id ? res.id : '', device_id: data.people_uuid, face_id: res ? res.faceId : data.people_id, drop: false, img_type: imgtype});
               PUB.toast('标记成功~');
             });
           });

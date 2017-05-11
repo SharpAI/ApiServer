@@ -536,7 +536,7 @@ if Meteor.isServer
   workaiId = 'Lh4JcxG7CnmgR3YXe'
   workaiName = 'Actiontec'
 
-  insert_msg2 = (id, url, uuid, accuracy, fuzziness)->
+  insert_msg2 = (id, url, uuid, img_type, accuracy, fuzziness)->
     people = People.findOne({id: id, uuid: uuid})
     name = PERSON.getName(uuid, id)
     device = PERSON.upsetDevice(uuid)
@@ -573,7 +573,7 @@ if Meteor.isServer
             icon: userGroup.group_icon
           }
           images: [
-            {_id: new Mongo.ObjectID()._str, id: id, people_his_id: _id, url: url, label: name, accuracy: Accuracy, fuzziness: Fuzziness} # 暂一次只能发一张图
+            {_id: new Mongo.ObjectID()._str, id: id, people_his_id: _id, url: url, label: name, img_type: img_type, accuracy: Accuracy, fuzziness: Fuzziness} # 暂一次只能发一张图
           ]
           to_type: "group"
           type: "text"
@@ -589,7 +589,7 @@ if Meteor.isServer
       )
 
   @insert_msg2forTest = (id, url, uuid, accuracy, fuzziness)->
-    insert_msg2(id, url, uuid, accuracy, fuzziness)
+    insert_msg2(id, url, uuid, 'face', accuracy, fuzziness)
 
   update_group_dataset = (group_id,dataset_url,uuid)->
     unless group_id and dataset_url and uuid
@@ -622,12 +622,13 @@ if Meteor.isServer
       id = this.params.query.id
       img_url = this.params.query.img_url
       uuid = this.params.query.uuid
+      img_type = this.params.query.type
       console.log '/restapi/workai get request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid
       unless id and img_url and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
       accuracy = this.params.query.accuracy
       fuzziness = this.params.query.fuzziness
-      insert_msg2(id, img_url, uuid, accuracy, fuzziness)
+      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness)
       this.response.end('{"result": "ok"}\n')
     ).post(()->
       if this.request.body.hasOwnProperty('id')
@@ -636,12 +637,14 @@ if Meteor.isServer
         img_url = this.request.body.img_url
       if this.request.body.hasOwnProperty('uuid')
         uuid = this.request.body.uuid
-      console.log '/restapi/workai post request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid
+      if this.request.body.hasOwnProperty('type')
+        img_type = this.request.body.type
+      console.log '/restapi/workai post request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid + ' img_type=' + img_type
       unless id and img_url and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
       accuracy = this.params.query.accuracy
       fuzziness = this.params.query.fuzziness
-      insert_msg2(id, img_url, uuid, accuracy, fuzziness)
+      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness)
       this.response.end('{"result": "ok"}\n')
     )
 

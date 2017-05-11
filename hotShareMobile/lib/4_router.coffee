@@ -569,7 +569,7 @@ if Meteor.isServer
   workaiId = 'Lh4JcxG7CnmgR3YXe'
   workaiName = 'Actiontec'
 
-  insert_msg2 = (id, url, uuid, accuracy, fuzziness)->
+  insert_msg2 = (id, url, uuid, img_type, accuracy, fuzziness)->
     people = People.findOne({id: id, uuid: uuid})
     name = PERSON.getName(uuid, id)
     device = PERSON.upsetDevice(uuid)
@@ -606,7 +606,7 @@ if Meteor.isServer
             icon: userGroup.group_icon
           }
           images: [
-            {_id: new Mongo.ObjectID()._str, id: id, people_his_id: _id, url: url, label: name, accuracy: Accuracy, fuzziness: Fuzziness} # 暂一次只能发一张图
+            {_id: new Mongo.ObjectID()._str, id: id, people_his_id: _id, url: url, label: name, img_type: img_type, accuracy: Accuracy, fuzziness: Fuzziness} # 暂一次只能发一张图
           ]
           to_type: "group"
           type: "text"
@@ -621,8 +621,8 @@ if Meteor.isServer
         })
       )
 
-  @insert_msg2forTest = (id, url, uuid, accuracy, fuzziness)->
-    insert_msg2(id, url, uuid, accuracy, fuzziness)
+  @insert_msg2forTest = (id, url, uuid, img_type, accuracy, fuzziness)->
+    insert_msg2(id, url, uuid, 'face', accuracy, fuzziness)
 
   update_group_dataset = (group_id,dataset_url,uuid)->
     unless group_id and dataset_url and uuid
