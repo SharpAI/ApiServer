@@ -66,6 +66,11 @@ Template._simpleChatLabelCrop.crop = function(){
         }
         console.log('##RDBG upload image url: ' + res[0].imgUrl);
         window.___message.update(id, res[0].imgUrl);
+        Meteor.setTimeout(function() {
+          try {
+            $('.work-ai-img.lazy').lazyload();
+          } catch (e) {}
+        }, 2000);
         });
     }
     // set crop img
