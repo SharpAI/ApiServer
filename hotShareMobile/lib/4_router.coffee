@@ -558,6 +558,9 @@ if Meteor.isClient
     Router.route 'recommendStory',()->
       this.render 'recommendStory'
       return
+    Router.route '/selectTemplate',()->
+      this.render 'selectTemplate'
+      return
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->
