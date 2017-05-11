@@ -67,10 +67,10 @@ Template._simpleChatLabelCrop.crop = function(){
         console.log('##RDBG upload image url: ' + res[0].imgUrl);
         window.___message.update(id, res[0].imgUrl);
         Meteor.setTimeout(function() {
-          try {
-            $('.work-ai-img.lazy').lazyload();
-          } catch (e) {}
-        }, 2000);
+            try {
+              $('.work-ai-img.lazy').lazyload();
+            } catch (e) {}
+          }, 2000);
         });
     }
     // set crop img
@@ -107,14 +107,18 @@ Template._simpleChatLabelCrop.events({
   'click li': function(){
     var imgs = images.get();
     for(var i=0;i<imgs.length;i++){
-      if (imgs[i].selected === true && imgs[i]._id !== this._id) {
-          PUB.toast('每次只能选择一张进行裁剪哦~');
-          break;
-      }
       if (imgs[i]._id === this._id){
-        imgs[i].selected = !imgs[i].selected;
+        if (imgs[i].selected) {
+          imgs[i].selected = false;
+        }
+        else {
+          for(var j=0;j<imgs.length;j++){
+            if (imgs[j].selected)
+              return PUB.toast('每次只能选择一张进行裁剪哦~');
+          }
+          imgs[i].selected = true;
+        }
         images.set(imgs);
-        break;
       }
     }
   },
