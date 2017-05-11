@@ -31,7 +31,18 @@ if Meteor.isClient
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       if  group and group.barcode
         return group.barcode
-
+    hasTemplate:()->
+      group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
+      if  group and group.template and group.template._id
+        return true
+      else 
+        return false
+    templateName:()->
+      group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
+      return group.template.name 
+    templateIcon:()->
+      group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
+      return group.template.icon
     hasAnnouncement:()->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       if  group and group.announcement and group.announcement.length > 0

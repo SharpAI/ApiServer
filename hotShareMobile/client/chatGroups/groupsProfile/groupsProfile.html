@@ -31,6 +31,16 @@
                         <div class="value"><img src="{{barcodeUrl}}"><i class="fa fa-angle-right"></i></div>
                     </li>
                     {{/if}}
+                    {{#if hasTemplate}}
+                    <li class="group_template">
+                        <label style="top: 20px;">AI训练群模板</label>
+                        <div class="template_value">
+                            <span class="template_name">{{templateName}}</span>
+                            <img src="{{templateIcon}}">
+                            <!-- <i class="fa fa-angle-right"></i> -->
+                        </div>
+                    </li>
+                    {{/if}}
                     {{#if hasAnnouncement}}
                     <li class="announcement">
                         <label style="top: 20px;">群公告</label>

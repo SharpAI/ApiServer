@@ -1,8 +1,8 @@
-<template name="groupAdd">
+<template name="selectTemplate">
   {{>connectionBanner}}
-  <div class="groupAdd">
+  <div class="selectTemplate">
     <div class="head">
-      <strong>选择训练员</strong>
+      <strong>选择群模板</strong>
       <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
       <div class="rightButton back" style="margin-top:0px;">确定</div>
     </div>
@@ -17,32 +17,22 @@
           {{#if loadError}}
               <div>{{_ "loadFailNotification"}}</div>
           {{/if}}
-          {{#each myFollows}}
-            <div id="{{_id}}" class="followItem eachViewer">
-                {{#if is_selected followerId}}
+          {{#each groupTemplates}}
+            <div id="{{_id}}" class="tempItem eachViewer">
+                {{#if is_selected _id}}
                 <i class="fa fa-circle" aria-hidden="true"></i>
                 {{else}}
                 <i class="fa fa-circle-o" aria-hidden="true"></i>
                 {{/if}}
-                <img class="icon" src="{{followerIcon}}">
-                <span class="groupsName">{{followerName}}</span>
-                <div class="newMessage">{{count}}</div>
-                <!-- {{#if showRedSpot}}
-                  <div class="red_spot"></div>
-                {{/if}} -->
+                <img class="icon" src="{{icon}}">
+                <span class="tempName">{{name}}</span>
             </div>
             <div class="line">
                 <span></span>
             </div>
           {{/each}}
-          {{#if moreResults}}
-          <div id="showMoreResults" style="margin-left: 25px;">
-            <span class="loading">{{_ "loading"}}</span>
-          </div>
-          {{/if}}
         </div>
       </div>
     </div>
-    {{> footer}}
   </div>
 </template>

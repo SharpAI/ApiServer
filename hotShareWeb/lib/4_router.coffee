@@ -886,3 +886,35 @@ if Meteor.isServer
 
       this.response.end('{"result": "ok"}\n')
     )
+
+  Router.route('/restapi/workai-group-template', {where: 'server'}).get(()->
+      result = {
+        group_templates:[
+          {
+            "_id" : new Mongo.ObjectID()._str,
+            "name": "Work AI工作效能模版",
+            "icon": rest_api_url + "/workAIGroupTemplate/efficiency.jpg"
+           },
+          {
+            "_id" : new Mongo.ObjectID()._str,
+            "name": "家庭安全模版",
+            "icon": rest_api_url + "/workAIGroupTemplate/safety.jpg"
+           },
+          {
+            "_id" : new Mongo.ObjectID()._str,
+            "name": "NLP情绪分析模版",
+            "icon": rest_api_url + "/workAIGroupTemplate/sentiment.jpg"
+            },
+          {
+            "_id" : new Mongo.ObjectID()._str,
+            "name": "NLP通用文本分类模版",
+            "icon": rest_api_url + "/workAIGroupTemplate/classification.jpg"
+          },
+          {
+            "_id" : new Mongo.ObjectID()._str,
+            "name": "ChatBot训练模版",
+            "icon": rest_api_url + "/workAIGroupTemplate/chatBot.jpg"
+          }
+        ]}
+      this.response.end(JSON.stringify(result))
+    )

@@ -34,8 +34,11 @@ if Meteor.isClient
       history.go(-1)
     'click .rightButton':(event)->
       selected = users.get()
+      Session.set('selected_followers',_.pluck(selected, 'followerId'));
+      Router.go('/selectTemplate')
       # if selected.length <= 0
       #   return PUB.toast('没有选择任何用户~')
+      ###
       Meteor.call 'create-group', null, null, _.pluck(selected, 'followerId'), (err, id)->
         console.log(err)
         if err or !id
@@ -70,6 +73,7 @@ if Meteor.isClient
           50
         )
         history.go(-1)
+      ###
     'click .followItem': (event)->
       # console.log(this);
       $i = $(event.currentTarget).find('i');
