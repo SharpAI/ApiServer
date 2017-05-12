@@ -209,7 +209,7 @@ Meteor.methods({
         if (err) {
           return console.log ('GroupUsers remove failed');
         }
-        if (GroupUsers.find({group_id: id}).count === 0){
+        if (GroupUsers.find({group_id: id}).count() === 0){
           Groups.remove({_id:id});
         }
       });
