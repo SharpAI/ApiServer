@@ -1119,6 +1119,7 @@ window.___message = {
   insert: function(id){
     var data = page_data;
     var to = null;
+    var img_type = null;
 
     if(data.type === 'group'){
       var obj = Groups.findOne({_id: data.id});
@@ -1127,6 +1128,9 @@ window.___message = {
         name: obj.name,
         icon: obj.icon
       };
+      if (obj.template && obj.template.img_type) {
+        img_type = obj.template.img_type;
+      }
     }else{
       var obj = Meteor.users.findOne({_id: data.id});
       to = {
@@ -1153,6 +1157,7 @@ window.___message = {
           url:null,
           label:null,
           people_his_id:id,
+          img_type:img_type,
           thumbnail: '/packages/feiwu_simple-chat/images/sendingBmp.gif'
         }
       ],

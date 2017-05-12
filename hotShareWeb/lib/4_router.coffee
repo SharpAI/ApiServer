@@ -560,6 +560,10 @@ if Meteor.isServer
       unless userGroups
         return
       userGroups.forEach((userGroup)->
+        group = SimpleChat.Groups.findOne({_id:userGroup.group_id});
+        if group.template and group.template._id
+          if group.template.img_type != img_type
+            return
         sendMqttMessage('/msg/g/'+ userGroup.group_id, {
           _id: new Mongo.ObjectID()._str
           form: {
@@ -893,12 +897,14 @@ if Meteor.isServer
           {
             "_id" : new Mongo.ObjectID()._str,
             "name": "Work AI工作效能模版",
-            "icon": rest_api_url + "/workAIGroupTemplate/efficiency.jpg"
+            "icon": rest_api_url + "/workAIGroupTemplate/efficiency.jpg",
+            "img_type": "face"
            },
           {
             "_id" : new Mongo.ObjectID()._str,
             "name": "家庭安全模版",
-            "icon": rest_api_url + "/workAIGroupTemplate/safety.jpg"
+            "icon": rest_api_url + "/workAIGroupTemplate/safety.jpg",
+            "img_type": "object"
            },
           {
             "_id" : new Mongo.ObjectID()._str,
