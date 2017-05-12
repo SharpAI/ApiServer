@@ -9,7 +9,7 @@ if(Meteor.isClient){
             var mqttOptions = {
                 clean:false,
                 keepalive:20,
-                reconnectPeriod:10*1000,
+                reconnectPeriod:1*1000,
                 /*incomingStore: mqtt_store_manager.incoming,
                 outgoingStore: mqtt_store_manager.outgoing,*/
                 clientId:clientId
@@ -145,16 +145,23 @@ if(Meteor.isClient){
       return client_id;
     };
     mqttEventResume = function() {
-      console.log('##RDBG, mqttEventResume, reestablish mqtt connection');
+      /*console.log('##RDBG, mqttEventResume, reestablish mqtt connection');
       Meteor.setTimeout(function() {
         if(Meteor.userId()){
           initMQTT(getMqttClientID());
         }
-      }, 1000);
+      }, 1000);*/
+      try {
+        if (mqtt_connection) {
+          console.log('try reconnect mqtt');
+          mqtt_connection._reconnect();
+        }
+      }
+      catch (ex) { console.log('mqtt reconnect ex=', ex); }
     };
     mqttEventPause = function() {
-      console.log('##RDBG, mqttEventPause, disconnect mqtt');
-      uninitMQTT();
+      //console.log('##RDBG, mqttEventPause, disconnect mqtt');
+      //uninitMQTT();
     };
     Deps.autorun(function(){
         if(Meteor.userId()){
