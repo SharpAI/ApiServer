@@ -13,6 +13,7 @@ cordova-plugin-dialogs@1.2.0
 cordova-plugin-file@4.1.1
 cordova-plugin-file-transfer@1.6.0
 cordova-plugin-http@1.2.0
+cordova-plugin-keyboard@1.1.5
 cordova-plugin-splashscreen@https://github.com/PluginCordova/WorkAISplashScreen/tarball/ccc4546d4c7e697fcfb576aee944770359b17f0d
 cordova-plugin-statusbar@https://github.com/PluginCordova/cordova-plugin-statusbar/tarball/995e4fdf9de78609ff0fb30bab2610b9e5293410
 cordova-plugin-camera@https://github.com/PluginCordova/cordova-plugin-camera/tarball/394a5b1dbf9de3a76f64127acaf8366e4cf82920

@@ -43,6 +43,14 @@ Template._simpleChatToChat.onRendered(function(){
   page_data = this.data;
   if(!page_data)
     return;
+  if(Meteor.isCordova && device.platform === 'iOS'){
+   try{
+     Keyboard.shrinkView(true);
+     Keyboard.disableScrollingInShrinkView(true);
+   } catch (err){
+     console.log(err)
+   }
+  }
   loadMoreMesage(page_data.where, {limit: list_limit.get(), sort: {create_time: -1}}, list_limit.get());
 });
 
@@ -236,6 +244,14 @@ Template._simpleChatToChat.onRendered(function(){
 
 Template._simpleChatToChat.onDestroyed(function(){
   page_data = null;
+  if(Meteor.isCordova && device.platform === 'iOS'){
+    try{
+     Keyboard.shrinkView(false);
+     Keyboard.disableScrollingInShrinkView(false);
+    } catch (err){
+     console.log(err)
+    }
+  }
   $box.css('overflow', 'auto');
 });
 
@@ -929,11 +945,13 @@ Template._simpleChatToChat.helpers({
 
 Template._simpleChatToChat.events({
   'focus .input-text': function(){
-    Meteor.setTimeout(function(){
+    $('.box').animate({scrollTop:'999999px'}, 800);
+    /*Meteor.setTimeout(function(){
       $('body').scrollTop(999999);
-    }, 500);
+    }, 500);*/
   },
   'submit .input-form': function(e, t){
+    $('.input-text').focus();
     try{
       var data = page_data;
       var text = $('.input-text').val();
