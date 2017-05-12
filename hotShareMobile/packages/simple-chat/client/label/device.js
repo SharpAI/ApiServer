@@ -32,7 +32,7 @@ Template._simpleChatLabelDevice.open = function(msgObj){
   view = Blaze.render(Template._simpleChatLabelDevice, document.body);
 
   if (nas.length === 1 && imgs[0].images.length <= 1){
-    show_label(msgObj.to_id, function(name){
+    show_label(msgObj.to.id, function(name){
       if (!name)
         return;
       $('#device-input-name').val(name);
