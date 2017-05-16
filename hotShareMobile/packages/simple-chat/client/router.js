@@ -676,6 +676,27 @@ Template._simpleChatToChatItem.events({
       $imgs.find('.img_container').addClass('_close');
       $labels.find('.img_container').addClass('_close');
     }
+  },
+  'click .url':function(e,t){
+    var ref = cordova.ThemeableBrowser.open(this.url, '_blank', {
+      closeButton: {
+        image: 'back',
+        imagePressed: 'back_pressed',
+        align: 'left',
+        event: 'closePressed'
+      },
+      statusbar: {
+        color: '#000000'
+      },
+      toolbar: {
+        height: 44,
+        color: '#F0F0F0'
+      }
+    });
+
+    ref.addEventListener('closePressed', function(event) {
+      return ref.close();
+    });
   }
 });
 
