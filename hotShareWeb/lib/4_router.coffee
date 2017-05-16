@@ -924,3 +924,50 @@ if Meteor.isServer
         ]}
       this.response.end(JSON.stringify(result))
     )
+
+  onNewHotSharePost = (postData)->
+    console.log 'onNewHotSharePost:' , postData
+    nlp_group = SimpleChat.Groups.findOne({_id:'92bf785ddbe299bac9d1ca82'});
+    nlp_user = Meteor.users.findOne({_id: 'xWA3KLXDprNe8Lczw'});
+    sendMqttMessage('/msg/g/'+ nlp_group._id, {
+      _id: new Mongo.ObjectID()._str
+      form: {
+        id: nlp_user._id
+        name: if nlp_user.profile and nlp_user.profile.fullname then nlp_user.profile.fullname + '['+nlp_user.username+']' else nlp_user.username
+        icon: nlp_user.profile.icon
+      }
+      to: {
+        id: nlp_group._id
+        name: nlp_group.name
+        icon: nlp_group.icon
+      }
+      images: [
+      ]
+      to_type: "group"
+      type: "url"
+      text: postData.username + '发表了帖子:[' + postData.posttitle + ']'
+      url: postData.posturl
+      create_time: new Date()
+      is_read: false
+    })
+
+  Router.route('/restapi/workai-hotshare-newpost', {where: 'server'}).get(()->
+    username = this.params.query.username
+    posttitle = this.params.query.posttitle
+    posturl = this.params.query.posturl
+
+    postData = { username: username, posttitle: posttitle, posturl: posturl }
+    onNewHotSharePost(postData)
+    this.response.end('{"result": "ok"}\n')
+  ).post(()->
+    if this.request.body.hasOwnProperty('username')
+      username = this.request.body.username
+    if this.request.body.hasOwnProperty('posttitle')
+      posttitle = this.request.body.posttitle
+    if this.request.body.hasOwnProperty('posturl')
+      posturl = this.request.body.posturl
+
+    postData = { username: username, posttitle: posttitle, posturl: posturl }
+    onNewHotSharePost(postData)
+    this.response.end('{"result": "ok"}\n')
+  )
