@@ -76,7 +76,6 @@ meteorhacks:cluster@1.6.9
 meteorhacks:fast-render@2.16.0
 meteorhacks:inject-data@2.0.0
 meteorhacks:inject-initial@1.0.4
-meteorhacks:kadira@2.30.0
 meteorhacks:meteorx@1.4.1
 meteorhacks:npm@1.5.0
 meteorhacks:picker@1.0.3
@@ -94,7 +93,6 @@ modules@0.7.6_1
 modules-runtime@0.7.6_1
 mongo@1.1.12_1
 mongo-id@1.0.5
-mongo-livedata@1.0.12
 nicolaslopezj:excel-export@1.0.0
 npm-bcrypt@0.9.1_1
 npm-container@1.2.0
