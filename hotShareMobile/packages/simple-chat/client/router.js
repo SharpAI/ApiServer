@@ -122,6 +122,10 @@ Template._simpleChatToChatItemIcon2.onRendered(function(){
   lazyloadInit();
 });
 
+Template._simpleChatToChatItemThumbData.onRendered(function(){
+  lazyloadInit();
+});
+
 
 Template._simpleChatToChat.onRendered(function(){
   is_loading.set(true);

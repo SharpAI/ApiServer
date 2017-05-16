@@ -123,6 +123,17 @@ if(Meteor.isServer){
     msgObj.userName = AppConfig.get_user_name(Meteor.user());
     msgObj.userIcon = AppConfig.get_user_icon(Meteor.user());
     msgObj.lastText = doc.type === 'image' ? '[图片]' : doc.text;
+    switch(doc.type){
+      case 'image':
+        msgObj.lastText = '[图片]';
+        break;
+      case 'text':
+        msgObj.lastText = doc.text;
+        break;
+      case 'url':
+        msgObj.lastText = '[链接]' + doc.title;
+        break;
+    }
     msgObj.updateAt = new Date();
     msgObj.msgcreate_time = doc.create_time;
 
