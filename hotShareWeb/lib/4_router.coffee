@@ -947,6 +947,9 @@ if Meteor.isServer
       type: "url"
       text: postData.username + '发表了帖子:[' + postData.posttitle + ']'
       url: postData.posturl
+      title:postData.posttitle
+      thumbData:postData.mainimage
+      description:if postData.description then postData.description else postData.posturl
       create_time: new Date()
       is_read: false
     })
@@ -955,8 +958,10 @@ if Meteor.isServer
     username = this.params.query.username
     posttitle = this.params.query.posttitle
     posturl = this.params.query.posturl
+    mainimage = this.params.query.mainimage
+    description = this.params.query.description
 
-    postData = { username: username, posttitle: posttitle, posturl: posturl }
+    postData = { username: username, posttitle: posttitle, posturl: posturl ,mainimage:mainimage, description:description}
     onNewHotSharePost(postData)
     this.response.end('{"result": "ok"}\n')
   ).post(()->
@@ -966,8 +971,12 @@ if Meteor.isServer
       posttitle = this.request.body.posttitle
     if this.request.body.hasOwnProperty('posturl')
       posturl = this.request.body.posturl
+    if this.request.body.hasOwnProperty('mainimage')
+      mainimage = this.request.body.mainimage
+    if this.request.body.hasOwnProperty('description')
+      description = this.request.body.description
 
-    postData = { username: username, posttitle: posttitle, posturl: posturl }
+    postData = { username: username, posttitle: posttitle, posturl: posturl, mainimage:mainimage, description:description}
     onNewHotSharePost(postData)
     this.response.end('{"result": "ok"}\n')
   )
