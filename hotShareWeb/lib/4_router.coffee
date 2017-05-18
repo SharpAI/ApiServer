@@ -929,6 +929,10 @@ if Meteor.isServer
     console.log 'onNewHotSharePost:' , postData
     nlp_group = SimpleChat.Groups.findOne({_id:'92bf785ddbe299bac9d1ca82'});
     nlp_user = Meteor.users.findOne({_id: 'xWA3KLXDprNe8Lczw'});
+    #nlp_classname = NLP_CLASSIFY.getName()
+    nlp_classname = postData.classname
+    if nlp_classname
+      NLP_CLASSIFY.setName(nlp_group._id,nlp_classname)
     sendMqttMessage('/msg/g/'+ nlp_group._id, {
       _id: new Mongo.ObjectID()._str
       form: {
@@ -941,32 +945,38 @@ if Meteor.isServer
         name: nlp_group.name
         icon: nlp_group.icon
       }
-      images: [
-      ]
       to_type: "group"
       type: "url"
-      text: postData.username + '发表了帖子:[' + postData.posttitle + ']'
-      url: postData.posturl
-      title:postData.posttitle
-      thumbData:postData.mainimage
-      description:if postData.description then postData.description else postData.posturl
+      text: if !nlp_classname then '1 个链接需要标注' else nlp_className + ':'
+      urls:[{
+        _id:new Mongo.ObjectID()._str,
+        label: nlp_classname,
+        #class_id:postData.classid,
+        url:postData.posturl,
+        title:postData.posttitle,
+        thumbData:postData.mainimage,
+        description:if postData.description then postData.description else postData.posturl
+        }]
       create_time: new Date()
+      class_name: nlp_classname
+      wait_lable: !nlp_classname
       is_read: false
     })
 
   Router.route('/restapi/workai-hotshare-newpost', {where: 'server'}).get(()->
-    username = this.params.query.username
+    classname = this.params.query.classname
+    #username = this.params.query.username
     posttitle = this.params.query.posttitle
     posturl = this.params.query.posturl
     mainimage = this.params.query.mainimage
     description = this.params.query.description
 
-    postData = { username: username, posttitle: posttitle, posturl: posturl ,mainimage:mainimage, description:description}
+    postData = { classname: classname, posttitle: posttitle, posturl: posturl ,mainimage:mainimage, description:description}
     onNewHotSharePost(postData)
     this.response.end('{"result": "ok"}\n')
   ).post(()->
-    if this.request.body.hasOwnProperty('username')
-      username = this.request.body.username
+    if this.request.body.hasOwnProperty('classname')
+      classname = this.request.body.classname
     if this.request.body.hasOwnProperty('posttitle')
       posttitle = this.request.body.posttitle
     if this.request.body.hasOwnProperty('posturl')
@@ -976,7 +986,7 @@ if Meteor.isServer
     if this.request.body.hasOwnProperty('description')
       description = this.request.body.description
 
-    postData = { username: username, posttitle: posttitle, posturl: posturl, mainimage:mainimage, description:description}
+    postData = { classname: classname, posttitle: posttitle, posturl: posturl, mainimage:mainimage, description:description}
     onNewHotSharePost(postData)
     this.response.end('{"result": "ok"}\n')
   )

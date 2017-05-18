@@ -452,6 +452,9 @@ Template._simpleChatToChatItem.events({
     }
   },
   'click li div.showmore':function(e){
+    if (this.type === 'url') {
+      return;
+    }
     console.log(e.currentTarget.id);
     id = e.currentTarget.id;
     $('li#' + id + ' div.showmore').hide();
@@ -459,6 +462,9 @@ Template._simpleChatToChatItem.events({
     $('li#' + id + ' div.text .imgs-1-box').removeAttr('style');
   },
   'click .check': function(){
+    if (this.type === 'url') {
+      return;
+    }
     Template._simpleChatLabelDevice.open(this);
     // var data = this;
     // var names = get_people_names();
@@ -501,12 +507,21 @@ Template._simpleChatToChatItem.events({
     // });
   },
   'click .crop':function(){
+    if (this.type === 'url') {
+      return;
+    }
     Template._simpleChatLabelCrop.open(this);
   },
   'click .remove': function(){
+    if (this.type === 'url') {
+      return;
+    }
     Template._simpleChatLabelRemove.open(this);
   },
   'click .yes': function(){
+    if (this.type === 'url') {
+      return;
+    }
     // update label
     var setNames = [];
     for (var i=0;i<this.images.length;i++){
@@ -583,6 +598,9 @@ Template._simpleChatToChatItem.events({
     // });
   },
   'click .no': function(){
+    if (this.type === 'url') {
+      return;
+    }
     Template._simpleChatLabelLabel.open(this);
     // var data = this;
     // var names = get_people_names();
@@ -658,6 +676,9 @@ Template._simpleChatToChatItem.events({
     // });
   },
   'click .show_more': function(e, t){
+    if (this.type === 'url') {
+      return;
+    }
     var $li = $('li#' + this._id);
     var $imgs = $li.find('.text .imgs');
     var $labels = $li.find('.text .imgs-1-item');
@@ -676,27 +697,6 @@ Template._simpleChatToChatItem.events({
       $imgs.find('.img_container').addClass('_close');
       $labels.find('.img_container').addClass('_close');
     }
-  },
-  'click .url':function(e,t){
-    var ref = cordova.ThemeableBrowser.open(this.url, '_blank', {
-      closeButton: {
-        image: 'back',
-        imagePressed: 'back_pressed',
-        align: 'left',
-        event: 'closePressed'
-      },
-      statusbar: {
-        color: '#000000'
-      },
-      toolbar: {
-        height: 44,
-        color: '#F0F0F0'
-      }
-    });
-
-    ref.addEventListener('closePressed', function(event) {
-      return ref.close();
-    });
   }
 });
 
@@ -1112,6 +1112,12 @@ Template._simpleChatToChatItem.helpers({
     }
     return false;
   },
+  is_url_type:function(){
+    if (this.type === 'url') {
+      return true;
+    }
+    return false;
+  },
   is_error: function(images){
     for(var i=0;i<images.length;i++){
       if (images[i].error)
@@ -1366,7 +1372,9 @@ var onMqttMessage = function(topic, msg) {
       return;
     }
   }
-
+  if (msgObj.type === 'url') {
+    onMqttNLPMessage(topic,msgObj);
+  }
 
   var whereTime = new Date();whereTime.setHours(0);whereTime.setMinutes(0);whereTime.setSeconds(0);
   var msgType = topic.split('/')[2];

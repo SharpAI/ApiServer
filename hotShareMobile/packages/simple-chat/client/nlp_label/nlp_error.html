@@ -1,0 +1,30 @@
+<template name="_NLPTextLabelError">
+  <div class="_NLPTextLabelError nlp_box" style="position: absolute; z-index: 99999999; left: 0; top: 0; right: 0; bottom: 0;">
+    <div class="box" style="height: 100%;">
+        <div class="head">
+          <div class="leftButton">
+            <i class="fa fa-angle-left fa-fw"></i>
+          </div>
+          <strong>标记</strong>
+          <div class="rightButton remove">确定</div>
+        </div>
+        <div class="content" style="height: 100%; padding-bottom: 0px;">
+          <div class="contentList"  style="height: 100%; overflow: auto;-webkit-overflow-scrolling: touch;">
+            <div style="padding: 15px; padding-bottom: 5px;">请选择不属于 {{label}} 的链接？</div>
+            <ul style="padding: 0;">
+              {{#each urls}}
+                <li style="position: relative;">
+                  {{#if selected}}
+                  <i class="fa fa-circle nlp-fa" aria-hidden="true"></i>
+                  {{else}}
+                  <i class="fa fa-circle-o nlp-fa" aria-hidden="true"></i>
+                  {{/if}}
+                  {{> _NLPItemUrl}}
+                </li>
+              {{/each}}
+            </ul>
+          </div>
+        </div>
+    </div>
+  </div>
+</template>

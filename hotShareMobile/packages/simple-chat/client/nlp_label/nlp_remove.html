@@ -1,0 +1,67 @@
+<template name="_NLPTextLabelRemove">
+  <div class="_NLPTextLabelRemove nlp_box" style="position: absolute; z-index: 99999999; left: 0; top: 0; right: 0; bottom: 0;">
+    <div class="box" style="height: 100%;">
+        <div class="head">
+          <div class="leftButton">
+            <i class="fa fa-angle-left fa-fw"></i>
+          </div>
+          <strong>删除链接</strong>
+          <div class="rightButton remove">删除</div>
+        </div>
+        <div class="content" style="height: 100%; padding-bottom: 0px;">
+          <div class="contentList"  style="height: 100%; overflow: auto;-webkit-overflow-scrolling: touch;">
+            <div style="padding: 15px; padding-bottom: 5px;position: relative;">
+              <div class="select" style="width: 60px;height: 30px;line-height: 30px;position: absolute;right: 15px;top: 15px;color: #757575;text-align: center;"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+              <input id="remove-input-name" type="text" placeholder="请选择或输入删除的原因~" style="height: 30px;line-height: 30px;padding: 0px 10px;width: 100%; border: 1px solid #ccc; margin-bottom: 10px;" />
+            </div>
+            <ul style="padding: 0;">
+              {{#each urls}}
+                <li style="position: relative;">
+                  {{#if selected}}
+                  <i class="fa fa-circle nlp-fa" aria-hidden="true"></i>
+                  {{else}}
+                  <i class="fa fa-circle-o nlp-fa" aria-hidden="true"></i>
+                  {{/if}}
+                  {{> _NLPItemUrl}}
+                </li>
+              {{/each}}
+            </ul>
+          </div>
+        </div>
+    </div>
+  </div>
+</template>
+
+<template name="_NLPTextRemoveReason">
+  <div class="_NLPTextRemoveReason nlp_box" style="position: absolute; z-index: 99999999; left: 0; top: 0; right: 0; bottom: 0;">
+    <div class="box" style="height: 100%;">
+        <div class="head">
+          <div class="leftButton back">
+            <i class="fa fa-angle-left fa-fw"></i>
+          </div>
+          <strong>删除原因？</strong>
+          <div class="rightButton back">
+            <i class="fa fa-check"></i>
+          </div>
+        </div>
+        <div class="content" style="height: 100%; overflow: auto;-webkit-overflow-scrolling: touch;">
+          <div class="contentList">
+            <div style="padding: 15px; padding-bottom: 5px;">
+              <input id="label-input-name" type="text" placeholder="请输入删除链接的原因~" style="height: 30px;line-height: 30px;padding: 0px 10px;width: 100%; border: 1px solid #ccc; margin-bottom: 10px;" />
+            </div>
+            <ul style="padding: 0px 10px;">
+              <li style="margin: 0px;height: 40px;line-height: 40px;padding: 0px 10px;width: auto;box-sizing: border-box;">
+                <div class="userName" style="height: auto;">不感兴趣</div>
+              </li>
+              <li style="margin: 0px;height: 40px;line-height: 40px;padding: 0px 10px;width: auto;box-sizing: border-box;">
+                <div class="userName" style="height: auto;">其他</div>
+              </li>
+              <!-- <li style="margin: 0px;height: 40px;line-height: 40px;padding: 0px 10px;width: auto;box-sizing: border-box;">
+                <div class="userName" style="height: auto;">非人脸</div>
+              </li> -->
+            </ul>
+          </div>
+        </div>
+    </div>
+  </div>
+</template>

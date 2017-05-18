@@ -65,14 +65,11 @@
   <li id="{{_id}}"><span class="system_message">{{text}}</span></li>
   {{else}}
   <li id="{{_id}}" class="data-show-more-render {{ta_me form.id}}" data-time="{{create_time}}">
-    <div class="icon"><!--<img class="lazy" data-original="{{form.icon}}" />-->{{> _simpleChatToChatItemIcon2}}</div>
+    <div class="icon">{{> _simpleChatToChatItemIcon2}}</div>
     <div class="name">{{form.name}}</div>
-    {{#if url}}
-      <div class="url">
-        <h4>{{title}}</h4>
-        <h5>{{description}}</h5>
-        <!-- <img src="{{thumbData}}"> -->
-        {{> _simpleChatToChatItemThumbData}}
+    {{#if is_url_type}}
+      <div class="url">{{text}}
+        {{> _simpleChatToChatItemNLPText}}
       </div>
     {{else}}
       {{#if text}}
@@ -85,119 +82,87 @@
                   <div class="imgs-1-item">
                     <div class="my-btn">对</div>
                     {{#each images}}
-                    {{#if error}}
-                    {{else}}
-                    <!--<div class="img_container _close">
-                      <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
-                    </div>-->
-                    {{> _simpleChatToChatItemImg}}
-                    {{/if}}
+                      {{#if error}}
+                      {{else}}
+                        {{> _simpleChatToChatItemImg}}
+                      {{/if}}
                     {{/each}}
                   </div>
                   <div class="imgs-1-item">
                     <div class="my-btn">错</div>
                     {{#each images}}
-                    {{#if error}}
-                    <!--<div class="img_container _close">
-                      <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
-                    </div>-->
-                    {{> _simpleChatToChatItemImg}}
-                    {{/if}}
+                      {{#if error}}
+                        {{> _simpleChatToChatItemImg}}
+                      {{/if}}
                     {{/each}}
                   </div>
                 </div>
               {{else}}
                 {{#if is_remove_label images}}
-                <div class="imgs-1-box">
-                  <div class="imgs">
-                    {{#each images}}
-                    {{#if remove}}
-                    {{else}}
-                    <!--<div class="img_container _close">
-                      <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
-                    </div>-->
-                    {{> _simpleChatToChatItemImg}}
+                  <div class="imgs-1-box">
+                    <div class="imgs">
+                      {{#each images}}
+                        {{#if remove}}
+                        {{else}}
+                          {{> _simpleChatToChatItemImg}}
+                        {{/if}}
+                      {{/each}}
+                    </div>
+                    {{#if is_remove images}}
+                      <div class="imgs-1-item">
+                        <div class="my-btn">删</div>
+                        {{#each images}}
+                          {{#if remove}}
+                            {{> _simpleChatToChatItemImg}}
+                          {{/if}}
+                        {{/each}}
+                      </div>
                     {{/if}}
-                    {{/each}}
                   </div>
-                  <!--{{#if is_label images}}
-                  <div class="imgs-1-item">
-                    <div class="my-btn">标</div>
-                    {{#each images}}
-                    {{#if label}}
-                    <img class="work-ai-img swipebox" data-type="images" data-peoplehisid="{{people_his_id}}" src="{{url}}" />
-                    {{/if}}
-                    {{/each}}
-                  </div>
-                  {{/if}}-->
-                  {{#if is_remove images}}
-                  <div class="imgs-1-item">
-                    <div class="my-btn">删</div>
-                    {{#each images}}
-                    {{#if remove}}
-                    <!--<div class="img_container _close">
-                      <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
-                    </div>-->
-                    {{> _simpleChatToChatItemImg}}
-                    {{/if}}
-                    {{/each}}
-                  </div>
-                  {{/if}}
-                </div>
                 {{/if}}
               {{/if}}
               {{#if label_users}}
-              <div class="label_complete">
-                <div class="remark"><i class="fa fa-check-circle-o"></i>已完成标注</div>
-                <div class="imgs">
-                  {{#each label_users}}
-                  <!--<img class="lazy" data-original="{{icon}}" />-->
-                  {{> _simpleChatToChatItemIcon}}
-                  {{/each}}
+                <div class="label_complete">
+                  <div class="remark"><i class="fa fa-check-circle-o"></i>已完成标注</div>
+                  <div class="imgs">
+                    {{#each label_users}}
+                      {{> _simpleChatToChatItemIcon}}
+                    {{/each}}
+                  </div>
                 </div>
-              </div>
               {{/if}}
             {{else}}
               {{#if wait_lable}}
                 {{#if is_wait_img images}}
                   <div class="imgs">
                     {{#each images}}
-                    {{#if is_wait_item this}}
-                    <!--<div class="img_container _close">
-                      <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
-                    </div>-->
-                    {{> _simpleChatToChatItemImg}}
-                    {{/if}}
+                      {{#if is_wait_item this}}
+                        {{> _simpleChatToChatItemImg}}
+                      {{/if}}
                     {{/each}}
                   </div>
                 {{/if}}
                 {{#if is_remove_label images}}
                   <div class="imgs-1-box">
                     {{#if is_label images}}
-                    <div class="imgs-1-item">
-                      <div class="my-btn">标</div>
-                      {{#each images}}
-                      {{#if label}}
-                      <!--<div class="img_container _close">
-                        <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
-                      </div>-->
-                      {{> _simpleChatToChatItemImg}}
-                      {{/if}}
-                      {{/each}}
-                    </div>
+                      <div class="imgs-1-item">
+                        <div class="my-btn">标</div>
+                        {{#each images}}
+                          {{#if label}}
+                            {{> _simpleChatToChatItemImg}}
+                          {{/if}}
+                        {{/each}}
+                      </div>
                     {{/if}}
                     {{#if is_remove images}}
-                    <div class="imgs-1-item">
-                      <div class="my-btn">删</div>
-                      {{#each images}}
-                      {{#if remove}}
-                      <!--<div class="img_container _close">
-                        <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
-                      </div>-->
-                      {{> _simpleChatToChatItemImg}}
-                      {{/if}}
-                      {{/each}}
-                    </div>
+                      <div class="imgs-1-item">
+                        <div class="my-btn">删</div>
+                        {{#each images}}
+                          {{#if remove}}
+                            {{> _simpleChatToChatItemImg}}
+                          {{/if}}
+                        {{/each}}
+                      </div>
                     {{/if}}
                   </div>
                 {{/if}}
@@ -205,55 +170,49 @@
               {{else}}
                 <div class="imgs">
                   {{#each images}}
-                  <!--<div class="img_container _close">
-                    <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
-                  </div>-->
                   {{> _simpleChatToChatItemImg}}
                   {{/each}}
                 </div>
                 <div class="line-label-box"><div class="yes">对</div><div class="no">错</div></div>
               {{/if}}
               {{#if label_users}}
-              <div class="label_complete" style="border-top:1px solid #ccc;margin-top: 10px;">
-                <div class="remark" style="color:#616161;"><i class="fa fa-check-circle-o"></i>标注过的人</div>
-                <div class="imgs">
-                  {{#each label_users}}
-                  <!--<img class="lazy" data-original="{{icon}}" />-->
-                  {{> _simpleChatToChatItemIcon}}
-                  {{/each}}
+                <div class="label_complete" style="border-top:1px solid #ccc;margin-top: 10px;">
+                  <div class="remark" style="color:#616161;"><i class="fa fa-check-circle-o"></i>标注过的人</div>
+                  <div class="imgs">
+                    {{#each label_users}}
+                    <!--<img class="lazy" data-original="{{icon}}" />-->
+                    {{> _simpleChatToChatItemIcon}}
+                    {{/each}}
+                  </div>
                 </div>
-              </div>
               {{/if}}
             {{/if}}
             <div class="show_more" style="display:none; position: absolute;right: -5px;top: -5px;height: 48px;line-height: 48px;left:10px;text-align: right; color: #9e9e9e;padding: 0;font-size: 20px; padding-right: 20px;"><i class="fa fa-angle-right"></i></div>
             {{show_images images}}
           <!--标记消息 end-->
           {{/if}}
-      </div>
-      {{else}}
-      <div class="img">
-        <div class="imgs">
-          {{#each images}}
-            <div class="img_container _close">
-            {{#if url}}
-              <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
-              <!--{{> _simpleChatToChatItemImg}}-->
-            {{else}}
-              <img class="lazy" data-original="{{thumbnail}}" />
-            {{/if}}
-            </div>
-          {{/each}}
         </div>
-        <div class="line-label-box crop-lable-box"><div class="check">标记</div><div class="crop">裁剪</div><div class="remove">删除</div></div>
-      </div>
-      <!-- {{else}}
-      <div class="img"><img src="{{thumbnail}}" /></div>
-      {{/if}} -->
+      {{else}}
+        <div class="img">
+          <div class="imgs">
+            {{#each images}}
+              <div class="img_container _close">
+              {{#if url}}
+                <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
+              {{else}}
+                <img class="lazy" data-original="{{thumbnail}}" />
+              {{/if}}
+              </div>
+            {{/each}}
+          </div>
+          <div class="line-label-box crop-lable-box">
+            <div class="check">标记</div>
+            <div class="crop">裁剪</div>
+            <div class="remove">删除</div>
+          </div>
+        </div>
       {{/if}}
     {{/if}}
-    <!--{{#if label_complete}}
-    <div class="form-to"><div>已标记完成</div></div>
-    {{/if}}-->
   </li>
   {{/if}}
 </template>

@@ -131,7 +131,7 @@ if(Meteor.isServer){
         msgObj.lastText = doc.text;
         break;
       case 'url':
-        msgObj.lastText = '[链接]' + doc.title;
+        msgObj.lastText = '[链接]' + doc.urls[0].title;
         break;
     }
     msgObj.updateAt = new Date();

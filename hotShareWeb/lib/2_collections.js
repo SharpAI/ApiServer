@@ -55,6 +55,16 @@ PersonNames = new Meteor.Collection('personNames');
   updateAt: <Date>
 }*/
 
+NLPTextClassName = new Meteor.Collection('nlpTextClassName');
+/*
+NLPTextClassName = {
+  class_id: <Integer>,
+  class_name: <String>,
+  group_id:<Integer>,
+  createAt: <Date>
+}
+ */
+
 if(Meteor.isServer){
   PeopleHis.allow({
     update: function (userId, doc, fields, modifier) {

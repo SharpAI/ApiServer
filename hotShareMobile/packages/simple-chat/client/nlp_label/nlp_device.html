@@ -1,0 +1,48 @@
+<template name="_NLPTextDevice">
+  <div class="_NLPTextDevice nlp_box" style="position: absolute; z-index: 99999999; left: 0; top: 0; right: 0; bottom: 0;background: #fff;">
+    <div style="height: 100%;">
+        <div class="head">
+          <div class="leftButton">
+            <i class="fa fa-angle-left fa-fw" style="margin-top: 0px;"></i>
+          </div>
+          <strong>标注链接</strong>
+          <div class="rightButton save">保存</div>
+        </div>
+        <div class="content" style="height: 100%; padding-top: 40px;">
+          <div class="box"  style="height: 100%; overflow: auto;-webkit-overflow-scrolling: touch;">
+            <div style="padding: 15px; padding-bottom: 5px;padding: 15px;padding-bottom: 5px;position: relative;">
+              <div class="select" style="width: 60px;height: 30px;line-height: 30px;position: absolute;right: 15px;top: 15px;color: #757575;text-align: center;"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+              <input id="device-input-name" type="text" placeholder="为这组链接选个分类~" style="height: 30px;line-height: 30px;padding: 0px 10px;width: 100%; border: 1px solid #ccc; margin-bottom: 10px;" value="{{name}}" />
+            </div>
+            <ul style="padding: 0;">
+              {{#each urls}}
+                <li style="position: relative;">
+                  {{#if selected}}
+                  <i class="fa fa-circle nlp-fa" aria-hidden="true"></i>
+                  {{else}}
+                  <i class="fa fa-circle-o nlp-fa" aria-hidden="true"></i>
+                  {{/if}}
+                  {{> _NLPItemUrl}}
+                </li>
+              {{/each}}
+            </ul>
+          </div>
+        </div>
+    </div>
+  </div>
+</template>
+
+<template name="_NLPItemUrl">
+  <div class="url_container _close">
+    {{#if thumbData}}
+      {{> _simpleChatToChatItemThumbData}}
+    {{/if}}
+    <div class="content">
+      <h4>{{title}}</h4>
+      <h5>{{description}}</h5>
+    </div>
+  </div>
+  <div class="line">
+      <span></span>
+  </div>
+</template>

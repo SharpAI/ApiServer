@@ -1,0 +1,38 @@
+<template name="_NLPTextLabelName">
+  <div class="_NLPTextLabelName nlp_box" style="position: absolute; z-index: 99999999; left: 0; top: 0; right: 0; bottom: 0;">
+    <div class="box" style="height: 100%;">
+        <div class="head">
+          <div  class="leftButton back">
+            <i class="fa fa-angle-left fa-fw"></i>
+          </div>
+          <strong>选择分类</strong>
+          <div class="rightButton back">
+            <i class="fa fa-check"></i>
+          </div>
+        </div>
+        <div class="content .simple-chat-to-chat-label-name" style="height: 100%; overflow: auto;-webkit-overflow-scrolling: touch;padding-bottom:0px;">
+          <div id="wrapper">
+            <div class="groupUsers">
+              <div class="contentList">
+                <div style="padding: 15px; padding-bottom: 5px;">
+                  <input id="label-input-name" type="text" placeholder="请选择或输入类名~" style="height: 30px;line-height: 30px;padding: 0px 10px;width: 100%; border: 1px solid #ccc; margin-bottom: 10px;" />
+                </div>
+                <ul style="padding: 0;">
+                  {{#each names}}
+                  <li>
+                    <!-- {{#if selected}}
+                      <i class="fa fa-circle nlp-fa" aria-hidden="true"></i>
+                    {{else}}
+                      <i class="fa fa-circle-o nlp-fa" aria-hidden="true"></i>
+                    {{/if}} -->
+                    <div class="className">{{class_name}}</div>
+                  </li>
+                  {{/each}}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+</template>
