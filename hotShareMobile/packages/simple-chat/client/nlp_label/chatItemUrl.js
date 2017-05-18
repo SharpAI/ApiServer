@@ -1,5 +1,5 @@
 var renderMoreButtonTimeout = null;
-var box_ul = null;
+var $box_ul = null;
 var renderMoreButton = function(){
   if (renderMoreButtonTimeout)
     Meteor.clearTimeout(renderMoreButtonTimeout);
@@ -7,16 +7,17 @@ var renderMoreButton = function(){
     $box_ul.find('li.data-show-more-render').each(function(){
       var $li = $(this);
       var $li_show_more = $li.find('.show_more');
+      var $url = $li.find('.url >');
 
       // 默认链接
-      var $urls = $li.find('.url > .urls .url_container');
+      var $urls = $url.find('.urls .url_container');
       if ($urls.length >= 4){
         $li_show_more.show();
         return $li.removeClass('data-show-more-render');
       }
 
       // 标注过的链接
-      $urls = $li.find('.url > .urls-1-box .url_container');
+      $urls = $url.find('.urls-1-box .url_container');
       if ($urls.length >= 4){
         $li_show_more.show();
         return $li.removeClass('data-show-more-render');
@@ -115,7 +116,7 @@ Template._simpleChatToChatItemNLPText.events({
       if (this.urls[i].label) {
         var trainsetObj = {group_id: this.to.id, type: 'trainset', url: this.urls[i].url, class_name: this.urls[i].label};
         console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
-        sendMqttMessage('/npl_trainset/'+this.to.id, trainsetObj);
+        sendMqttMessage('/nlp_trainset/'+this.to.id, trainsetObj);
       }
 
       if (_.pluck(setNames, 'class_name').indexOf(this.urls[i].class_name) === -1)

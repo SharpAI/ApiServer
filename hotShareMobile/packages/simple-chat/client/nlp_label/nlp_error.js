@@ -71,7 +71,7 @@ Template._NLPTextLabelError.events({
       if (updateObj.urls[i].error)
         var trainsetObj = {group_id: msgObj.to.id, type: 'trainset', url: updateObj.urls[i].url, class_name: null};
         console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
-        sendMqttMessage('/npl_trainset/'+msgObj.to.id, trainsetObj);
+        sendMqttMessage('/nlp_trainset/'+msgObj.to.id, trainsetObj);
         // sendMqttMessage('trainset', {url: updateObj.urls[i].url, person_id: '', device_id: updateObj.urls[i].id, drop: true});
     }
 
