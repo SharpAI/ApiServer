@@ -126,6 +126,137 @@ Template._simpleChatToChatItemThumbData.onRendered(function(){
   lazyloadInit();
 });
 
+var createTestMessage = function(groupid) {
+  var msgObj1, msgObj2;
+  msgObj1 = {
+    _id: 'f2f37bb53b72afcbd095290e',
+    form: {
+      id: 'd22CXx4HpkF56bMth',
+      name: '设备 13[7YRBBDB722205800]',
+      icon: '/device_icon_192.png'
+    },
+    to: {
+      id: groupid,
+      name: '讯动训练营',
+      icon: ''
+    },
+    to_type: 'group',
+    type: 'text',
+    text: '3 张照片需要标注',
+    images: [
+      {
+        _id: "9f590ebd9a522dafeb274ac0",
+        accuracy: false,
+        fuzziness: "243",
+        id: "7YRBBDB7222058001495085962690",
+        img_type: "face",
+        label: null,
+        people_his_id: "MfBmtyGc6HGrmuJvM",
+        url: "http://workaiossqn.tiegushi.com/87e74a36-3b8c-11e7-b451-d065caa84bb5"
+      }, {
+        _id: "9f590ebd9a522dafeb274ac0",
+        accuracy: false,
+        fuzziness: "243",
+        id: "7YRBBDB7222058001495085962690",
+        img_type: "face",
+        label: null,
+        people_his_id: "MfBmtyGc6HGrmuJvM",
+        url: "http://workaiossqn.tiegushi.com/87e74a36-3b8c-11e7-b451-d065caa84bb5"
+      }, {
+        _id: "d2a7f9994fefb58ba992f2b5",
+        accuracy: false,
+        fuzziness: "155",
+        id: "7YRBBDB7222058001495085962690",
+        img_type: "face",
+        label: null,
+        people_his_id: "bwMqBiotYXj62J4oe",
+        url: "http://workaiossqn.tiegushi.com/8716273a-3b8c-11e7-b451-d065caa84bb5"
+      }
+    ],
+    people_uuid: "7YRBBDB722205800",
+    people_id: "7YRBBDB7222058001495085962690",
+    people_his_id: "MfBmtyGc6HGrmuJvM",
+    wait_lable: true,
+    is_read: false,
+    is_people: true,
+    create_time: new Date(),
+    hasFromHistory: true,
+    msg_ids: [
+      {
+        id: "f2f37bb53b72afcbd095290e"
+      }, {
+        id: "d369b0ef1bcd465d92de3c5d"
+      }, {
+        id: "d940b8ae826b707f1a72a9dc"
+      }
+    ]
+  };
+  msgObj2 = {
+    _id: 'eebf9c65e525bce35b23ca76',
+    form: {
+      id: 'd22CXx4HpkF56bMth',
+      name: '设备 13[7YRBBDB722205800]',
+      icon: '/device_icon_192.png'
+    },
+    to: {
+      id: groupid,
+      name: '讯动训练营',
+      icon: ''
+    },
+    to_type: 'group',
+    type: 'text',
+    text: '潘静鹏：',
+    images: [
+      {
+        _id: "40a1e4fe75430f89bf0d27fa",
+        accuracy: "0.78",
+        fuzziness: "369",
+        id: "aixia",
+        img_type: "face",
+        label: "潘静鹏",
+        people_his_id: "FoJmBR6Cec8AmssQM",
+        url: "http://workaiossqn.tiegushi.com/95723292-3b8c-11e7-b451-d065caa84bb5"
+      }, {
+        _id: "ff998283e039a5fa991ef097",
+        accuracy: "0.77",
+        fuzziness: "238",
+        id: "aixia",
+        img_type: "face",
+        label: "潘静鹏",
+        people_his_id: "aaedLtWZbbwFLZe6D",
+        url: "http://workaiossqn.tiegushi.com/949da432-3b8c-11e7-b451-d065caa84bb5"
+      }, {
+        _id: "3759946bbeaecc709d6a8a12",
+        accuracy: "0.77",
+        fuzziness: "369",
+        id: "aixia",
+        img_type: "face",
+        label: "潘静鹏",
+        people_his_id: "XtfxhP3WCXSMok4q9",
+        url: "http://workaiossqn.tiegushi.com/92fc7068-3b8c-11e7-b451-d065caa84bb5"
+      }
+    ],
+    people_uuid: "7YRBBDB722205800",
+    people_id: "aixia",
+    people_his_id: "FoJmBR6Cec8AmssQM",
+    wait_lable: false,
+    is_read: false,
+    is_people: true,
+    create_time: new Date(),
+    hasFromHistory: true,
+    msg_ids: [
+      {
+        id: "eebf9c65e525bce35b23ca76"
+      }, {
+        id: "1346d8294eff172a6c3f7812"
+      }, {
+        id: "569bde89db7b19288a1acdd9"
+      }
+    ]
+  };
+  SimpleChat.Messages.insert(msgObj1);
+  SimpleChat.Messages.insert(msgObj2);
+};
 
 Template._simpleChatToChat.onRendered(function(){
   is_loading.set(true);
@@ -159,6 +290,10 @@ Template._simpleChatToChat.onRendered(function(){
           is_read: false
         };
         Messages.insert(msgObj);
+
+        Meteor.setTimeout(function(){
+          createTestMessage(page_data.id);
+        },300)
       }
     }
 
@@ -965,6 +1100,10 @@ Template._simpleChatToChat.helpers({
   },
   isGroups:function(){
     return page_data && page_data.is_group ? page_data.is_group() : false;
+  },
+  needShowTips:function(){
+    res = window.localStorage.getItem("simple_chat_need_show_tips");
+    return res === 'true';
   }
 });
 
@@ -981,6 +1120,7 @@ Template._simpleChatToChat.events({
       var data = page_data;
       var text = $('.input-text').val();
       var to = null;
+      var is_nlp_classify_group = false;
 
       if(!text){
         $('.box').scrollTop($('.box ul').height());
@@ -993,6 +1133,9 @@ Template._simpleChatToChat.events({
           name: obj.name,
           icon: obj.icon
         };
+        if (obj.template && obj.template.type === 'nlp_classify') {
+          is_nlp_classify_group = true;
+        }
       }else{
         var obj = Meteor.users.findOne({_id: data.id});
         to = {

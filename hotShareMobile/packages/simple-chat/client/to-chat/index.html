@@ -48,6 +48,9 @@
         <div class="send-btn"><input class="btn" type="submit" value="发送" style="border-radius: 5px;" /></div>
       </form></div>
     </div>
+    {{#if needShowTips}}
+      {{> _TipHintTemplate}}
+    {{/if}}
   </div>
   <!--<script type="text/javascript" src="/packages/feiwu_simple-chat/client/lib/crypto1/crypto/crypto.js"></script>
   <script type="text/javascript" src="/packages/feiwu_simple-chat/client/lib/crypto1/hmac/hmac.js"></script>
