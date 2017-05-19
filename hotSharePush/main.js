@@ -278,7 +278,38 @@ function createTaskToKueQueue(prefix, _id, itemObj) {
     });
     return job;
 }
+function initMqttReporter(){
+    var mqtt    = require('mqtt');
+    var mqttOptions = {
+        keepalive:30,
+        reconnectPeriod:20*1000
+    }
 
+    var client  = mqtt.connect('ws://tmq.tiegushi.com:80',mqttOptions);
+    client.on('connect' ,function () {
+        console.log('Connected to server')
+    })
+
+    var statusRecordInfo = null;
+    updateSucc = function(){
+        statusRecordInfo.succ++;
+    }
+    function initStatusRecord(){
+        statusRecordInfo = {
+            service: process.env.SERVICE_NAME ? process.env.SERVICE_NAME:'pushServer',
+            production: process.env.PRODUCTION ? true:false,
+            serviceIndex: process.env.SERVICE_INDEX ? process.env.SERVICE_INDEX:0,
+            succ: 0,
+            detail:{}
+        }
+    }
+    function reportStatusToMQTTBroker(){
+        client.publish('status/service', JSON.stringify(statusRecordInfo),{qos:1});
+        initStatusRecord();
+    }
+    initStatusRecord();
+    setInterval(reportStatusToMQTTBroker,30*1000);
+}
 if (cluster.isMaster) {
     console.log("clusterWorkerSize="+clusterWorkerSize);
     for (var i = 0; i < clusterWorkerSize; i++) {
@@ -384,7 +415,7 @@ if (cluster.isMaster) {
                 });
             });
         });
-
+    initMqttReporter();
     startKueService();
     abornalDispose();
     app.use(bodyParser.urlencoded({extended: true}));
