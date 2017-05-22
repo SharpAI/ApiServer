@@ -66,7 +66,7 @@ Template._NLPTextLabelRemove.events({
     // set remove url
     for (var i=0;i<containers.length;i++){
       if (containers[i].selected) {
-        //removes.push({url:msgObj.urls[i].url, class_name: null});
+        removes.push({url:msgObj.urls[i].url, class_name: null});
         msgObj.urls[i].remove = true;
       }
     }

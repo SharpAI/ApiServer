@@ -302,7 +302,7 @@ onMqttNLPMessage = function(topic,msgObj){
 onNLPClassifyMessage = function(topic,msgObj){
   console.log('onNLPClassifyMessage!');
   if (Messages.find({_id: msgObj._id}).count() > 0){
-    var setObj = {type:msgObj.type,text:msgObj.text,urls:msgObj.urls,wait_classify:msgObj.wait_classify}
+    var setObj = {type:msgObj.type,text:msgObj.text,urls:msgObj.urls,wait_classify:msgObj.wait_classify,wait_lable:msgObj.wait_lable}
     Messages.update({_id: msgObj._id}, {
       $set: setObj
     }, function(err){
