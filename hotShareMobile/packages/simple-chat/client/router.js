@@ -1162,6 +1162,11 @@ Template._simpleChatToChat.events({
         };
       }
 
+      var wait_classify = null;
+      if (is_nlp_classify_group && inputLink) {
+        wait_classify = true;
+      }
+
       var msg = {
         _id: new Mongo.ObjectID()._str,
         form:{
@@ -1174,7 +1179,8 @@ Template._simpleChatToChat.events({
         type: 'text',
         text: text,
         create_time: new Date(),
-        is_read: false
+        is_read: false,
+        wait_classify:wait_classify
       };
       Messages.insert(msg, function(){
         if(data.type === 'group')
@@ -1184,6 +1190,7 @@ Template._simpleChatToChat.events({
             msg.url = inputLink;
             msg.wait_classify = true;
             sendMqttMessage('/nlp_user_input',msg)
+            console.log("##RDBG nlp_user_input: " + JSON.stringify(msg));
           }
         else
           sendMqttUserMessage(msg.to.id, msg);
