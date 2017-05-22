@@ -134,7 +134,7 @@ if(Meteor.isServer){
         msgObj.lastText = '[链接]' + doc.urls[0].title;
         break;
     }
-    msgObj.updateAt = new Date();
+    msgObj.updateAt = Meteor.getServerNow();
     msgObj.msgcreate_time = doc.create_time;
 
     var msgSession = MsgSession.findOne({userId: Meteor.userId(), toUserId: msgObj.toUserId});

@@ -39,6 +39,7 @@ ecmascript-runtime@0.3.14_1
 ejson@1.0.12
 email@1.1.17_1
 fastclick@1.0.12
+feiwu:server-time-diff@0.1.0
 feiwu:simple-chat@0.1.0
 fortawesome:fontawesome@4.6.3
 geojson-utils@1.0.9

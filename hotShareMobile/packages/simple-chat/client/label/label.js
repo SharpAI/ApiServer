@@ -97,7 +97,7 @@ Template._simpleChatLabelLabel.events({
           name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
           icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
         },
-        createAt: new Date()
+        createAt: Meteor.getServerNow()
       });
       PUB.toast('操作成功~');
     });

@@ -681,7 +681,7 @@ Template._simpleChatToChatItem.events({
         name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
         icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
       },
-      createAt: new Date()
+      createAt: Meteor.getServerNow()
     });
 
     // update collection
@@ -1178,9 +1178,8 @@ Template._simpleChatToChat.events({
         to_type: data.type,
         type: 'text',
         text: text,
-        create_time: new Date(),
-        is_read: false,
-        wait_classify:wait_classify
+        create_time: Meteor.getServerNow(),
+        is_read: false
       };
       Messages.insert(msg, function(){
         if(data.type === 'group')
@@ -1384,7 +1383,7 @@ window.___message = {
         }
       ],
       //thumbnail: '/packages/feiwu_simple-chat/images/sendingBmp.gif',
-      create_time: new Date(),
+      create_time: Meteor.getServerNow(),
       people_uuid:'',
       people_his_id:id,
       wait_lable:true,
