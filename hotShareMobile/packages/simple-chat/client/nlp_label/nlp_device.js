@@ -122,7 +122,7 @@ Template._NLPTextDevice.save = function(){
       }
       var trainsetObj = {group_id: msgObj.to.id, type: 'trainset', url: updateObj.urls[i].url,  class_name: updateObj.urls[i].label};
       console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
-      sendMqttMessage('/nlp_trainset/'+msgObj.to.id, trainsetObj);
+      sendMqttMessage('/nlp_trainset', trainsetObj);
       updateObj.urls[i].labelMsgSent = true;
 
     }

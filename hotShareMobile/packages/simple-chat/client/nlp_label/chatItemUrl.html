@@ -4,6 +4,7 @@
     {{#if label_complete}}
       {{#if is_error urls}}
         <div class="urls-1-box">
+          {{#if has_right_item urls}}
           <div class="urls-1-item">
             <div class="my-btn">对</div>
             {{#each urls}}
@@ -13,6 +14,7 @@
               {{/if}}
             {{/each}}
           </div>
+          {{/if}}
           <div class="urls-1-item">
             <div class="my-btn">错</div>
             {{#each urls}}

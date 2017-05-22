@@ -1122,6 +1122,23 @@ Template._simpleChatToChat.events({
       var to = null;
       var is_nlp_classify_group = false;
 
+      var isInputLink = function(link){
+        var importLink, matchArray, regexToken;
+
+        regexToken = /\b(((http|https?)+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/ig;
+
+        matchArray = regexToken.exec(link);
+
+        if (matchArray !== null) {
+          importLink = matchArray[0];
+          if (matchArray[0].indexOf('http') === -1) {
+            importLink = "http://" + matchArray[0];
+          }
+        }
+        return importLink;
+      }
+      var inputLink = isInputLink(text);
+
       if(!text){
         $('.box').scrollTop($('.box ul').height());
         return false;
@@ -1162,6 +1179,12 @@ Template._simpleChatToChat.events({
       Messages.insert(msg, function(){
         if(data.type === 'group')
           sendMqttGroupMessage(msg.to.id, msg);
+          if (is_nlp_classify_group && inputLink) {
+            msg.type = 'url';
+            msg.url = inputLink;
+            msg.wait_classify = true;
+            sendMqttMessage('/nlp_user_input',msg)
+          }
         else
           sendMqttUserMessage(msg.to.id, msg);
         setScrollToBottom();
@@ -1472,6 +1495,10 @@ SimpleChat.onMqttMessage = function(topic, msg) {
       to_type: msgObj.to_type,
       'to.id': msgObj.to.id,
     };
+    if (msgObj.wait_classify == false) {
+      onNLPClassifyMessage(topic,msgObj);
+      return;
+    }
     var msgCount = Messages.find(where).count();
     if (msgCount < 10) {
       onMqttMessage(topic, msg);

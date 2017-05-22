@@ -914,7 +914,8 @@ if Meteor.isServer
           {
             "_id" : new Mongo.ObjectID()._str,
             "name": "NLP通用文本分类模版",
-            "icon": rest_api_url + "/workAIGroupTemplate/classification.jpg"
+            "icon": rest_api_url + "/workAIGroupTemplate/classification.jpg",
+            "type":'nlp_classify'
           },
           {
             "_id" : new Mongo.ObjectID()._str,

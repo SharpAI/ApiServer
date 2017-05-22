@@ -59,6 +59,17 @@ Template._simpleChatToChatItemNLPText.helpers({
     }
     return false;
   },
+  has_right_item:function(urls){
+    is_error_count = 0;
+    for(var i=0;i<urls.length;i++){
+      if (urls[i].error)
+        is_error_count += 1;
+    }
+    if (is_error_count === urls.length) {
+      return false;
+    }
+    return true ;
+  },
   is_remove: function(urls){
     for(var i=0;i<urls.length;i++){
       if (urls[i].remove)
@@ -116,7 +127,7 @@ Template._simpleChatToChatItemNLPText.events({
       if (this.urls[i].label) {
         var trainsetObj = {group_id: this.to.id, type: 'trainset', url: this.urls[i].url, class_name: this.urls[i].label};
         console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
-        sendMqttMessage('/nlp_trainset/'+this.to.id, trainsetObj);
+        sendMqttMessage('/nlp_trainset', trainsetObj);
       }
 
       if (_.pluck(setNames, 'class_name').indexOf(this.urls[i].class_name) === -1)
@@ -286,4 +297,18 @@ onMqttNLPMessage = function(topic,msgObj){
         insertMsg(msgObj, 'update 失败');
     });
   }
+};
+
+onNLPClassifyMessage = function(topic,msgObj){
+  console.log('onNLPClassifyMessage!');
+  if (Messages.find({_id: msgObj._id}).count() > 0){
+    var setObj = {type:msgObj.type,text:msgObj.text,urls:msgObj.urls,wait_classify:msgObj.wait_classify}
+    Messages.update({_id: msgObj._id}, {
+      $set: setObj
+    }, function(err){
+      if (err)
+        console.log('message update failed!');
+    });
+  }
 }
+
