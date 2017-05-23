@@ -12,7 +12,7 @@
       </defs>
       <rect x="0" y="0" width="100%" height="100%" style="stroke: none;fill: #000; mask: url(#bubbleTipMask);"></rect>
     </svg> -->
-    <div class="chatTip-container">
+    <div class="chatTip-container" id="tipsHint">
       <!-- <div> <img src="/packages/feiwu_simple-chat/images/tips.jpg" style="width: 100%;height: 100%;" /></div> -->
       <!-- <div style="margin-top: 80px;"><img src="/bubbleTip/bubblehint2.png" style="width: 16%;"/></div>
       <div style="margin-top: 10px;"><img src="/bubbleTip/bubblehint3.png" style="width: 60%;"/></div> -->
@@ -22,9 +22,16 @@
     $('.chatTip-layer').on('click touchstart',function(e){
       e.preventDefault();
       e.stopPropagation();
+      var type = Session.get('simple_chat_tips_type');
+      if (type == 'NLP') {
+        Session.set('simple_chat_tips_type',null);
+        document.getElementById("tipsHint").style.backgroundImage = "url(/packages/feiwu_simple-chat/images/nlp_tips2.jpg)";
+        return;
+      }
       $('.simple-chat .box').removeClass('chatTip-html-body');
       $(this).remove();
-      window.localStorage.setItem("simple_chat_need_show_tips",'false');
+      //window.localStorage.setItem("simple_chat_need_show_tips",'false');
+      Session.set('simple_chat_need_show_tips',false);
     });
   </script>
 </template>

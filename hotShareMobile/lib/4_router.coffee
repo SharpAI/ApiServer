@@ -233,6 +233,10 @@ if Meteor.isClient
       this.render 'introductoryPage1'
       Session.set 'channel','introductoryPage1'
       return
+    Router.route '/introductoryPage2',()->
+      this.render 'introductoryPage2'
+      Session.set 'channel','introductoryPage2'
+      return
 
     Router.route '/webHome',()->
       this.render 'webHome'

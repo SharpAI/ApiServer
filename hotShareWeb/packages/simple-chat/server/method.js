@@ -215,6 +215,42 @@ Meteor.methods({
       });
     }
     return id;
+  },
+  'get-group-intro':function(id,type){
+    console.log('get-group-intro has been called!');
+    var group = Groups.findOne({_id: id});
+    var intro = null;
+    if (group) {
+      if (type == 'FACE') {
+        intro = '欢迎加入WORKAI 讯动训练营。我们将通过本训练营展现数据操作／模型训练流程。当用户以“ 模版名 ”模版建立训练营之后，通过实时数据采集->进行标注的方式，在嵌入式端搜集数据集、自动训练以及模型部署，实时发送深度学习模型的处理到您的训练营以及Work AI绩效系统，提供完整的数据分析结果。';
+      }
+      if (type == 'NLP') {
+        intro = '欢迎加入NLP演示训练营。我们将通过本训练营展现数据操作／模型训练流程。当用户以“NLP文本分类”模版建立训练营之后，通过输入链接->进行标注的方式，在后端搜集数据集、自动训练以及模型部署并可以通过API的方式进行文本分类预测。';
+      }
+    }
+    if (intro) {
+      var msgObj = {
+        _id: new Mongo.ObjectID()._str,
+        form: {
+          id: '',
+          name: 'WorkAI',
+          icon: 'http://data.tiegushi.com/2LxzWbzhqhKqjtbTg_1492747414703.jpg'
+        },
+        to: {
+          id: group._id,
+          name: group.name,
+          icon: group.icon
+        },
+        images: [],
+        to_type: "group",
+        type: "text",
+        text: intro,
+        create_time: new Date(),
+        is_read: false
+      };
+      return msgObj;
+    }
+    return intro;
   }
 });
 

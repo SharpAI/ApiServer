@@ -1102,8 +1102,8 @@ Template._simpleChatToChat.helpers({
     return page_data && page_data.is_group ? page_data.is_group() : false;
   },
   needShowTips:function(){
-    res = window.localStorage.getItem("simple_chat_need_show_tips");
-    return res === 'true';
+    var res = Session.get('simple_chat_need_show_tips');
+    return res == true;
   }
 });
 
@@ -1778,3 +1778,8 @@ Template._simleChatToSwipeBox.helpers({
     return data.accuracy && data.fuzziness;
   }
 })
+
+SimpleChat.onShowTipsMessages = function(need_show,type){
+  Session.set('simple_chat_need_show_tips',need_show);
+  Session.set('simple_chat_tips_type',type);
+};
