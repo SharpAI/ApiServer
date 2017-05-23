@@ -4,7 +4,7 @@ var hour = minute * 60;
 var day = hour * 24;
 var halfamonth = day * 15;
 var month = day * 30;
-var now = Meteor.getServerNow().getTime();
+var now = new Date().getTime();
 var diffValue = now - dateTimeStamp;
 if(diffValue < 0){return;}
 var monthC =diffValue/month;

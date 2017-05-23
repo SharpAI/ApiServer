@@ -115,7 +115,7 @@ Template._simpleChatLabelRemove.events({
         to_type: "group",
         type: "text",
         text: '删除了 '+removes.length+' 张照片',
-        create_time: Meteor.getServerNow(),
+        create_time: new Date(),
         is_read: false
       };
       Messages.insert(msg);
@@ -127,7 +127,7 @@ Template._simpleChatLabelRemove.events({
           name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
           icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
         },
-        createAt: Meteor.getServerNow()
+        createAt: new Date()
       });
       sendMqttGroupMessage(msg.to.id, msg);
     });

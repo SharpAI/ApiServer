@@ -149,7 +149,7 @@ Template._simpleChatLabelDevice.save = function(){
         to_type: "group",
         type: "text",
         text: '标注了 '+(msgObj.images.length-count)+' 张照片',
-        create_time: Meteor.getServerNow(),
+        create_time: new Date(),
         is_read: false
       };
       Messages.insert(msg);
