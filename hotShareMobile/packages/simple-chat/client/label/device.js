@@ -65,7 +65,7 @@ Template._simpleChatLabelDevice.save = function(){
     return PUB.toast('你没有标注任何内容~');
 
   var msgObj = message.get();
-  Meteor.call('get-id-by-names', msgObj.people_uuid, nas, function(err, res){
+  Meteor.call('get-id-by-names', msgObj.people_uuid, nas, msgObj.to.id, function(err, res){
     if (err || !res)
       return PUB.toast('标注失败，请重试~');
 

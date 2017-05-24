@@ -378,7 +378,7 @@ Template._simpleChatToChatItem.events({
     // var names = get_people_names();
 
     // show_label(function(name){
-    //   Meteor.call('get-id-by-name', data.people_uuid, name, function(err, res){
+    //   Meteor.call('get-id-by-name', data.people_uuid, name, data.to.id, function(err, res){
     //     if(err)
     //       return PUB.toast('标记失败，请重试~');
 
@@ -461,7 +461,7 @@ Template._simpleChatToChatItem.events({
     // var names = get_people_names();
     // var name = data.images[0].label;
 
-    // Meteor.call('get-id-by-name', data.people_uuid, name, function(err, res){
+    // Meteor.call('get-id-by-name', data.people_uuid, name, data.to.id, function(err, res){
     //   if(err)
     //     return PUB.toast('标记失败，请重试~');
 
@@ -504,7 +504,7 @@ Template._simpleChatToChatItem.events({
     // showBox('提示', ['重新标记', '删除'], null, '你要重新标记照片还是删除？', function(index){
     //   if(index === 0)
     //     show_label(function(name){
-    //       Meteor.call('get-id-by-name', data.people_uuid, name, function(err, res){
+    //       Meteor.call('get-id-by-name', data.people_uuid, name, data.to.id, function(err, res){
     //         if(err)
     //           return PUB.toast('标记失败，请重试~');
 
@@ -606,7 +606,7 @@ Template._simpleChatToChatLabel.events({
     var names = get_people_names();
 
     show_label(function(name){
-      Meteor.call('get-id-by-name', data.people_uuid, name, function(err, res){
+      Meteor.call('get-id-by-name', data.people_uuid, name, data.to.id, function(err, res){
         if(err)
           return PUB.toast('标记失败，请重试~');
 
@@ -649,7 +649,7 @@ Template._simpleChatToChatLabel.events({
     var data = this;
     var name = data.images[0].label;
 
-    Meteor.call('get-id-by-name', data.people_uuid, name, function(err, res){
+    Meteor.call('get-id-by-name', data.people_uuid, name, data.to.id, function(err, res){
       if(err)
         return PUB.toast('标记失败，请重试~');
 
@@ -694,7 +694,7 @@ Template._simpleChatToChatLabel.events({
     showBox('提示', ['重新标记', '删除'], null, '你要重新标记照片还是删除？', function(index){
       if(index === 0)
         show_label(function(name){
-          Meteor.call('get-id-by-name', data.people_uuid, name, function(err, res){
+          Meteor.call('get-id-by-name', data.people_uuid, name, data.to.id, function(err, res){
             if(err)
               return PUB.toast('标记失败，请重试~');
 

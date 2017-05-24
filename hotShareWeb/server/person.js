@@ -85,14 +85,27 @@ PERSON = {
       return person.name;
     return null;
   },
-  getIdByName: function(uuid, name){
-    var person = Person.findOne({uuid: uuid, name: name});
-    if (!person)
+  getIdByName: function(uuid, name, group_id){
+    if (uuid && name) {
+      var person = Person.findOne({uuid: uuid, name: name});
+      if (!person)
+        return null;
+      return {
+        id: person.id,
+        faceId: person.faceId
+      };
+    }
+    else if(group_id && name) {
+      var person = Person.findOne({group_id: group_id, name: name});
+      if (!person)
+        return null;
+      return {
+        id: person.id,
+        faceId: person.faceId
+      };
+    }
+    else
       return null;
-    return {
-      id: person.id,
-      faceId: person.faceId
-    };
   },
   getIdByNames: function(uuid, names){
     var limit = names.length;
@@ -119,8 +132,8 @@ Meteor.methods({
   'set-person-name': function(group_id, uuid, id, url, name){
     return PERSON.setName(group_id, uuid, id, url, name);
   },
-  'get-id-by-name': function(uuid, name){
-    return PERSON.getIdByName(uuid, name) || {};
+  'get-id-by-name': function(uuid, name, group_id){
+    return PERSON.getIdByName(uuid, name, group_id) || {};
   },
   'get-id-by-names': function(uuid, names){
     return PERSON.getIdByNames(uuid, names) || {};
