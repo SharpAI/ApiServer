@@ -47,8 +47,12 @@ Template._simpleChatLabelCrop.crop = function(){
     function cropcallback (result){
       var id = new Mongo.ObjectID()._str;
       window.___message.insert(id); // result.smallImage
-      var filenameArr = result.split('/');
-      var filename = filenameArr[filenameArr.length-1];
+      var timestamp = new Date().getTime();
+      var originalFilename = result.replace(/^.*[\\\/]/, '');
+      var filename = Meteor.userId() + '_' + timestamp + '_' + originalFilename;
+      console.log('File name ' + filename);
+      //var filenameArr = result.split('/');
+      //var filename = filenameArr[filenameArr.length-1];
       var lastQuestionFlag = result.lastIndexOf('?');
       if (lastQuestionFlag >= 0)
         result = result.substring(0, lastQuestionFlag);
@@ -66,11 +70,11 @@ Template._simpleChatLabelCrop.crop = function(){
         }
         console.log('##RDBG upload image url: ' + res[0].imgUrl);
         window.___message.update(id, res[0].imgUrl);
-        Meteor.setTimeout(function() {
-            try {
-              $('.work-ai-img.lazy').lazyload();
-            } catch (e) {}
-          }, 2000);
+        // Meteor.setTimeout(function() {
+        //     try {
+        //       $('.work-ai-img.lazy').lazyload();
+        //     } catch (e) {}
+        //   }, 2000);
         });
     }
     // set crop img

@@ -1411,6 +1411,7 @@ window.___message = {
         sendMqttGroupMessage(msg.to.id, Messages.findOne({_id: id}));
       else
         sendMqttUserMessage(msg.to.id, Messages.findOne({_id: id}));
+      lazyloadInit();
     });
   },
   remove: function(id){
