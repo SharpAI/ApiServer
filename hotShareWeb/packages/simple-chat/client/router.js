@@ -1086,10 +1086,6 @@ window.___message = {
 };
 
 SimpleChat.onMqttMessage = function(topic, msg) {
-  var msgObj = JSON.parse(msg);
-  msgObj.data_from = 'mqtt';
-  msg = JSON.stringify(msgObj);
-  
   // var msgObj = JSON.parse(msg);
 
   // if (!(topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/')))

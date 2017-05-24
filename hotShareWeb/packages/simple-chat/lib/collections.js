@@ -24,11 +24,6 @@ if(Meteor.isServer){
   Meteor.startup(function() {
     //var LocalMessagesObservor = new PersistentMinimongo2(Messages, 'workai');
     Ground.Collection(Messages, 'gdb');
-
-    Messages.before.insert(function (userId, doc) {
-      if (doc.data_from != 'mqtt')
-        doc.create_time = GetServerDate();
-    });
   });
 }
 
