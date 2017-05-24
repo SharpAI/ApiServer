@@ -1496,6 +1496,8 @@ var clearMoreOldMessage = function(){
 
 SimpleChat.onMqttMessage = function(topic, msg) {
   var msgObj = JSON.parse(msg);
+  msgObj.data_from = 'mqtt';
+  msg = JSON.stringify(msgObj);
 
   if (!(topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/')))
     return;

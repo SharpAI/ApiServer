@@ -36,6 +36,7 @@ ecmascript-runtime@0.3.14_1
 ejson@1.0.12
 email@1.1.17_1
 fastclick@1.0.12
+feiwu:server-time-diff@0.1.0
 feiwu:simple-chat@0.1.0
 fortawesome:fontawesome@4.6.3
 gadicohen:robots-txt@0.0.10
@@ -67,6 +68,7 @@ less@2.7.5_1
 livedata@1.0.18
 localstorage@1.0.11
 logging@1.1.15_1
+matb33:collection-hooks@0.8.4
 meteor@1.2.17_1
 meteor-base@1.0.4
 meteor-phonegap-push@0.0.1

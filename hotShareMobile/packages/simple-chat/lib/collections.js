@@ -31,6 +31,11 @@ if(Meteor.isServer){
     SimpleChat.MsgSession = MsgSession;
     SimpleChat.MessageTemp = MessageTemp;
 
+    Messages.before.insert(function (userId, doc) {
+      if (doc.data_from != 'mqtt')
+        doc.create_time = GetServerDate();
+    });
+
     // 历史消息
     withMessageHisEnable = true;
     if (withMessageHisEnable){
