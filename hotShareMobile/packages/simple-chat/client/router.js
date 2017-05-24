@@ -1123,11 +1123,13 @@ Template._simpleChatToChat.events({
       var is_nlp_classify_group = false;
 
       var isInputLink = function(link){
+
+        var decodelink = decodeURIComponent(link);
         var importLink, matchArray, regexToken;
 
         regexToken = /\b(((http|https?)+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/ig;
 
-        matchArray = regexToken.exec(link);
+        matchArray = regexToken.exec(decodelink);
 
         if (matchArray !== null) {
           importLink = matchArray[0];
