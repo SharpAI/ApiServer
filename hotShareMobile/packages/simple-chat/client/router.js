@@ -1344,6 +1344,7 @@ window.___message = {
     var data = page_data;
     var to = null;
     var img_type = null;
+    var faceId = new Mongo.ObjectID()._str;
 
     if(data.type === 'group'){
       var obj = Groups.findOne({_id: data.id});
@@ -1377,7 +1378,7 @@ window.___message = {
       images:[
         {
           _id: new Mongo.ObjectID()._str,
-          id:'',
+          id:faceId,
           url:null,
           label:null,
           people_his_id:id,
@@ -1388,6 +1389,7 @@ window.___message = {
       //thumbnail: '/packages/feiwu_simple-chat/images/sendingBmp.gif',
       create_time: new Date(),
       people_uuid:'',
+      people_id: faceId,
       people_his_id:id,
       wait_lable:true,
       is_read: false

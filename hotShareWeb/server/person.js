@@ -12,8 +12,8 @@ PERSON = {
     }
     return device;
   },
-  removeName: function(uuid, id){
-    var person = Person.findOne({uudi: uuid, 'faces.id': id});
+  removeName: function(group_id,uuid, id){
+    var person = Person.findOne({uuid: uuid, group_id:group_id ,'faces.id': id});
     if (person){
       if (person.faceId === id){
         if (person.faces.length <= 1)
@@ -30,10 +30,10 @@ PERSON = {
         });
       }
     }
-    PersonNames.remove({uuid: uuid, id: id});
+    //PersonNames.remove({uuid: uuid, id: id});
   },
   setName: function(group_id, uuid, id, url, name){
-    var person = Person.findOne({uuid: uuid, name: name});
+    var person = Person.findOne({uuid: uuid, group_id:group_id, name: name});
     var dervice = PERSON.upsetDevice(uuid);
     var personName = PersonNames.findOne({group_id: group_id, name: name});
 
@@ -50,8 +50,8 @@ PERSON = {
       else
         person.faces[_.pluck(person.faces, 'id').indexOf(id)].url = url;
       Person.update({_id: person._id}, {$set: {name: name, url: person.url, updateAt: person.updateAt, faces: person.faces}});
-    } else if (Person.find({uuid: uuid, faceId: id}).count() > 0){
-      person = Person.findOne({uuid: uuid, faceId: id});
+    } else if (Person.find({uuid: uuid, group_id: group_id, faceId: id}).count() > 0){
+      person = Person.findOne({uuid: uuid, group_id: group_id, faceId: id});
       person.name = name;
       person.url = url;
       person.updateAt = new Date();
@@ -63,7 +63,8 @@ PERSON = {
     } else {
       person = {
         _id: new Mongo.ObjectID()._str,
-        id: Person.find({uuid: uuid, faceId: id}).count() + 1,
+        id: Person.find({uuid: uuid,group_id: group_id, faceId: id}).count() + 1,
+        group_id:group_id,
         uuid: uuid,
         faceId: id,
         url: url,
@@ -79,38 +80,49 @@ PERSON = {
 
     return person;
   },
-  getName: function(uuid, id){
-    var person = Person.findOne({uuid: uuid, 'faces.id': id});
+  getName: function(uuid,group_id,id){
+    var person = null;
+    if (uuid && group_id) {
+      person = Person.findOne({uuid: uuid, group_id: group_id, 'faces.id': id});
+    }
+    else if (uuid){
+      person = Person.findOne({uuid: uuid, 'faces.id': id});
+    }
     if (person)
       return person.name;
     return null;
   },
   getIdByName: function(uuid, name, group_id){
-    if (uuid && name) {
-      var person = Person.findOne({uuid: uuid, name: name});
-      if (!person)
-        return null;
-      return {
-        id: person.id,
-        faceId: person.faceId
-      };
+    var person = null;
+    if (uuid && group_id && name) {
+      person = Person.findOne({uuid: uuid, group_id: group_id, name: name});
+    }
+    else if (uuid && name) {
+      person = Person.findOne({uuid: uuid, name: name});
     }
     else if(group_id && name) {
-      var person = Person.findOne({group_id: group_id, name: name});
-      if (!person)
-        return null;
-      return {
-        id: person.id,
-        faceId: person.faceId
-      };
+      person = Person.findOne({group_id: group_id, name: name});
     }
-    else
+    if (!person)
       return null;
+    return {
+      id: person.id,
+      faceId: person.faceId
+    };
   },
-  getIdByNames: function(uuid, names){
+  getIdByNames: function(uuid, names, group_id){
     var limit = names.length;
-    var persons = Person.find({name: {$in: names}, uuid: uuid}, {sort: {updateTime: -1}, limit: limit}).fetch();
+    var persons = null;
     var result = {};
+    if (uuid && group_id && names) {
+      persons = Person.find({name: {$in: names}, uuid: uuid ,group_id:group_id}, {sort: {updateAt: -1}, limit: limit}).fetch()
+    }
+    else if(uuid && names) {
+      persons = Person.find({name: {$in: names}, uuid: uuid}, {sort: {updateAt: -1}, limit: limit}).fetch()
+    }
+    else if(group_id && names) {
+      persons = Person.find({name: {$in: names}, group_id: group_id}, {sort: {updateAt: -1}, limit: limit}).fetch()
+    }
 
     if (persons.length <= 0){
       for(var i=0;i<names.length;i++)
@@ -135,19 +147,19 @@ Meteor.methods({
   'get-id-by-name': function(uuid, name, group_id){
     return PERSON.getIdByName(uuid, name, group_id) || {};
   },
-  'get-id-by-names': function(uuid, names){
-    return PERSON.getIdByNames(uuid, names) || {};
+  'get-id-by-names': function(uuid, names, group_id){
+    return PERSON.getIdByNames(uuid, names, group_id) || {};
   },
   'set-person-names': function(group_id, items){
     console.log('set-person-names:', items);
     for(var i=0;i<items.length;i++)
       PERSON.setName(group_id, items[i].uuid, items[i].id, items[i].url, items[i].name);
   },
-  'remove-person': function(uuid, id){
-    return PERSON.removeName(uuid, id);
+  'remove-person': function(group_id,uuid,id){
+    return PERSON.removeName(group_id,uuid, id);
   },
-  'remove-persons': function(items){
+  'remove-persons': function(group_id, items){
     for(var i=0;i<items.length;i++)
-      PERSON.removeName(items[i].uuid, items[i].id);
+      PERSON.removeName(group_id, items[i].uuid, items[i].id);
   }
 })

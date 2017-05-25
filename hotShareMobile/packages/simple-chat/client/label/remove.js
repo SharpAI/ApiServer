@@ -67,7 +67,7 @@ Template._simpleChatLabelRemove.events({
             }
           }
           if (isPush)
-            removes.push({uudi: msgObj.people_uuid, id: msgObj.images[ii].id});
+            removes.push({uuid: msgObj.people_uuid, id: msgObj.images[ii].id});
           msgObj.images[ii].remove = true;
           break;
         }
@@ -92,7 +92,7 @@ Template._simpleChatLabelRemove.events({
     // updateObj.create_time = new Date();
 
     if (removes.length > 0)
-      Meteor.call('remove-persons', removes)
+      Meteor.call('remove-persons',msgObj.to.id,removes)
 
     for (var i=0;i<updateObj.images.length;i++){
       if (updateObj.images[i].remove)
