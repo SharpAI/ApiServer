@@ -309,6 +309,9 @@ onNLPClassifyMessage = function(topic,msgObj){
       if (err)
         console.log('message update failed!');
     });
+    if (msgObj.wait_lable == false) {
+      Meteor.call('set-class-name',msgObj.to.id,msgObj.urls[0].label);
+    }
   }
 }
 
