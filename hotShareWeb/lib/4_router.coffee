@@ -666,6 +666,75 @@ if Meteor.isServer
       this.response.end('<h1>414 Request-URI Too Large</h1>')
     )
 
+  device_join_group = (uuid,group_id)->
+    device = PERSON.upsetDevice(uuid)
+    user = Meteor.users.findOne({username: uuid})
+    if !user
+      userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/device_icon_192.png'}})
+      user = Meteor.users.findOne({_id: userId})
+    group = SimpleChat.Groups.findOne({_id: group_id})
+    #一个设备只允许加入一个群
+    groupUsers = SimpleChat.GroupUsers.find({user_id: user._id})
+    hasBeenJoined = false
+    if groupUsers.count() > 0
+      groupUsers.forEach((groupUser)->
+        if groupUser.group_id is group_id
+          hasBeenJoined = true
+        else
+          _group = SimpleChat.Groups.findOne({_id: groupUser.group_id})
+          SimpleChat.GroupUsers.remove(groupUser._id)
+          sendMqttMessage('/msg/g/'+ _group._id, {
+            _id: new Mongo.ObjectID()._str
+            form: {
+              id: user._id
+              name: user.username
+              icon: user.profile.icon
+            }
+            to: {
+              id: _group._id
+              name: _group.name
+              icon: _group.icon
+            }
+            images: []
+            to_type: "group"
+            type: "text"
+            text: '设备 ['+user.username+'] 已退出该群!'
+            create_time: new Date()
+            is_read: false
+          })
+      )
+    if hasBeenJoined is false
+      SimpleChat.GroupUsers.insert({
+        group_id: group_id
+        group_name: group.name
+        group_icon: group.icon
+        user_id: user._id
+        user_name: if user.profile and user.profile.fullname then user.profile.fullname else user.username
+        user_icon: if user.profile and user.profile.icon then user.profile.icon else '/device_icon_192.png'
+        create_time: new Date()
+      });
+      sendMqttMessage('/msg/g/'+ group_id, {
+        _id: new Mongo.ObjectID()._str
+        form: {
+          id: user._id
+          name: user.username
+          icon: user.profile.icon
+        }
+        to: {
+          id: group_id
+          name: group.name
+          icon: group.icon
+        }
+        images: []
+        to_type: "group"
+        type: "text"
+        text: '设备 ['+user.username+'] 已加入!'
+        create_time: new Date()
+        is_read: false
+      })
+    console.log('user:', user)
+    console.log('device:', device)
+
   Router.route('/restapi/workai-join-group', {where: 'server'}).get(()->
       uuid = this.params.query.uuid
       group_id = this.params.query.group_id
@@ -674,73 +743,7 @@ if Meteor.isServer
         console.log '/restapi/workai-join-group get unless resturn'
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
 
-      device = PERSON.upsetDevice(uuid)
-      user = Meteor.users.findOne({username: uuid})
-      if !user
-        userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/device_icon_192.png'}})
-        user = Meteor.users.findOne({_id: userId})
-      group = SimpleChat.Groups.findOne({_id: group_id})
-      #一个设备只允许加入一个群
-      groupUsers = SimpleChat.GroupUsers.find({user_id: user._id})
-      hasBeenJoined = false;
-      if groupUsers.count() > 0
-        groupUsers.forEach((groupUser)->
-          if groupUser.group_id is group_id
-            hasBeenJoined = true
-          else
-            _group = SimpleChat.Groups.findOne({_id: groupUser.group_id})
-            SimpleChat.GroupUsers.remove(groupUser._id)
-            sendMqttMessage('/msg/g/'+ _group._id, {
-              _id: new Mongo.ObjectID()._str
-              form: {
-                id: user._id
-                name: user.username
-                icon: user.profile.icon
-              }
-              to: {
-                id: _group._id
-                name: _group.name
-                icon: _group.icon
-              }
-              images: []
-              to_type: "group"
-              type: "text"
-              text: '设备 ['+user.username+'] 已退出该群!'
-              create_time: new Date()
-              is_read: false
-            })
-        )
-      if hasBeenJoined is false
-        SimpleChat.GroupUsers.insert({
-          group_id: group_id
-          group_name: group.name
-          group_icon: group.icon
-          user_id: user._id
-          user_name: if user.profile and user.profile.fullname then user.profile.fullname else user.username
-          user_icon: if user.profile and user.profile.icon then user.profile.icon else '/device_icon_192.png'
-          create_time: new Date()
-        });
-        sendMqttMessage('/msg/g/'+ group_id, {
-          _id: new Mongo.ObjectID()._str
-          form: {
-            id: user._id
-            name: user.username
-            icon: user.profile.icon
-          }
-          to: {
-            id: group_id
-            name: group.name
-            icon: group.icon
-          }
-          images: []
-          to_type: "group"
-          type: "text"
-          text: '设备 ['+user.username+'] 已加入!'
-          create_time: new Date()
-          is_read: false
-        })
-      console.log('user:', user)
-      console.log('device:', device)
+      device_join_group(uuid,group_id)
       this.response.end('{"result": "ok"}\n')
     ).post(()->
       if this.request.body.hasOwnProperty('uuid')
@@ -752,42 +755,7 @@ if Meteor.isServer
         console.log '/restapi/workai-join-group get unless resturn'
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
 
-      device = PERSON.upsetDevice(uuid)
-      user = Meteor.users.findOne({username: uuid})
-      if !user
-        userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/device_icon_192.png'}})
-        user = Meteor.users.findOne({_id: userId})
-      group = SimpleChat.Groups.findOne({_id: group_id})
-      groupUser = SimpleChat.GroupUsers.findOne({group_id: group_id, user_id: user._id})
-      if !groupUser
-        SimpleChat.GroupUsers.insert({
-          group_id: group_id
-          group_name: group.name
-          group_icon: group.icon
-          user_id: user._id
-          user_name: if user.profile and user.profile.fullname then user.profile.fullname else user.username
-          user_icon: if user.profile and user.profile.icon then user.profile.icon else '/device_icon_192.png'
-          create_time: new Date()
-        });
-        sendMqttMessage('/msg/g/'+ group_id, {
-          _id: new Mongo.ObjectID()._str
-          form: {
-            id: user._id
-            name: user.username
-            icon: user.profile.icon
-          }
-          to: {
-            id: group_id
-            name: group.name
-            icon: group.icon
-          }
-          images: []
-          to_type: "group"
-          type: "text"
-          text: '设备 ['+user.username+'] 已加入!'
-          create_time: new Date()
-          is_read: false
-        })
+      device_join_group(uuid,group_id)
       this.response.end('{"result": "ok"}\n')
     )
 
