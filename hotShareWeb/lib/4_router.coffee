@@ -538,7 +538,7 @@ if Meteor.isServer
 
   insert_msg2 = (id, url, uuid, img_type, accuracy, fuzziness)->
     people = People.findOne({id: id, uuid: uuid})
-    name = PERSON.getName(uuid, id)
+    name = PERSON.getName(uuid,null,id)
     device = PERSON.upsetDevice(uuid)
     Accuracy =  if name then accuracy else false
     Fuzziness = fuzziness
@@ -564,6 +564,8 @@ if Meteor.isServer
         if group.template and group.template._id
           if group.template.img_type != img_type
             return
+        name = null
+        name = PERSON.getName(uuid,userGroup.group_id,id)
         sendMqttMessage('/msg/g/'+ userGroup.group_id, {
           _id: new Mongo.ObjectID()._str
           form: {
@@ -678,8 +680,37 @@ if Meteor.isServer
         userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/device_icon_192.png'}})
         user = Meteor.users.findOne({_id: userId})
       group = SimpleChat.Groups.findOne({_id: group_id})
-      groupUser = SimpleChat.GroupUsers.findOne({group_id: group_id, user_id: user._id})
-      if !groupUser
+      #一个设备只允许加入一个群
+      groupUsers = SimpleChat.GroupUsers.find({user_id: user._id})
+      hasBeenJoined = false;
+      if groupUsers.count() > 0
+        groupUsers.forEach((groupUser)->
+          if groupUser.group_id is group_id
+            hasBeenJoined = true
+          else
+            _group = SimpleChat.Groups.findOne({_id: groupUser.group_id})
+            SimpleChat.GroupUsers.remove(groupUser._id)
+            sendMqttMessage('/msg/g/'+ _group._id, {
+              _id: new Mongo.ObjectID()._str
+              form: {
+                id: user._id
+                name: user.username
+                icon: user.profile.icon
+              }
+              to: {
+                id: _group._id
+                name: _group.name
+                icon: _group.icon
+              }
+              images: []
+              to_type: "group"
+              type: "text"
+              text: '设备 ['+user.username+'] 已退出该群!'
+              create_time: new Date()
+              is_read: false
+            })
+        )
+      if hasBeenJoined is false
         SimpleChat.GroupUsers.insert({
           group_id: group_id
           group_name: group.name
