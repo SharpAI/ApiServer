@@ -13,7 +13,13 @@ PERSON = {
     return device;
   },
   removeName: function(group_id,uuid, id){
-    var person = Person.findOne({uuid: uuid, group_id:group_id ,'faces.id': id});
+    var person = null;
+    if (group_id && uuid) {
+      person = Person.findOne({uuid: uuid, group_id:group_id ,'faces.id': id});
+    }
+    else if (uuid) {
+      person = Person.findOne({uuid: uuid, group_id:group_id ,'faces.id': id});
+    }
     if (person){
       if (person.faceId === id){
         if (person.faces.length <= 1)
@@ -144,10 +150,16 @@ Meteor.methods({
   'set-person-name': function(group_id, uuid, id, url, name){
     return PERSON.setName(group_id, uuid, id, url, name);
   },
-  'get-id-by-name': function(uuid, name, group_id){
+  'get-id-by-name': function(uuid, name){
+    return PERSON.getIdByName(uuid, name, null) || {};
+  },
+  'get-id-by-names': function(uuid, names){
+    return PERSON.getIdByNames(uuid, names, null) || {};
+  },
+  'get-id-by-name1': function(uuid, name, group_id){
     return PERSON.getIdByName(uuid, name, group_id) || {};
   },
-  'get-id-by-names': function(uuid, names, group_id){
+  'get-id-by-names1': function(uuid, names, group_id){
     return PERSON.getIdByNames(uuid, names, group_id) || {};
   },
   'set-person-names': function(group_id, items){
@@ -158,7 +170,11 @@ Meteor.methods({
   'remove-person': function(group_id,uuid,id){
     return PERSON.removeName(group_id,uuid, id);
   },
-  'remove-persons': function(group_id, items){
+  'remove-persons': function(items){
+    for(var i=0;i<items.length;i++)
+      PERSON.removeName(null,items[i].uuid, items[i].id);
+  },
+  'remove-persons1': function(group_id, items){
     for(var i=0;i<items.length;i++)
       PERSON.removeName(group_id, items[i].uuid, items[i].id);
   }
