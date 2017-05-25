@@ -1502,8 +1502,10 @@ SimpleChat.onMqttMessage = function(topic, msg) {
 
   if (!(topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/')))
     return;
-  if (msgObj.create_time && msgObj.create_time.endsWith('Z'))
-      msgObj.create_time = new Date(msgObj.create_time).toString();
+  if (msgObj.create_time)
+      msgObj.create_time = new Date(msgObj.create_time);
+  else
+      msgObj.create_time = new Date();
   if (msgObj.to_type == 'group') {
     var where = {
       to_type: msgObj.to_type,
@@ -1648,8 +1650,10 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
     return;
 
   var msgObj = JSON.parse(msg);
-  if (msgObj.createAt && msgObj.createAt.endsWith('Z'))
-      msgObj.createAt = new Date(msgObj.createAt).toString();
+  if (msgObj.createAt)
+      msgObj.createAt = new Date(msgObj.createAt);
+  else
+      msgObj.createAt = new Date();
   var msgId = topic.split('/')[3];
   var targetMsg = Messages.findOne({$or: [{'msg_ids.id': msgObj.msgId}, {_id: msgObj.msgId}]}, {sort: {create_time: -1}});
 
