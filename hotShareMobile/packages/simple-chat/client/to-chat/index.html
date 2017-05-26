@@ -43,8 +43,16 @@
           #container{width: 60px; display: block;position: absolute;left: 0px;bottom: 0;height: 48px;z-index: 998;}
           #container > div{position: absolute !important;top: 0px !important;left: 0px !important;width: 60px !important;height: 48px !important;overflow: hidden !important;}
         </style>
-        <div class="btn-box image" id="selectfiles"></div>
-        <div class="input"><input class="input-text" type="text" placeholder="说点什么" /></div>
+        {{#if isNLPGroup}}
+          <div class="btn-box link">
+            <i class="fa fa-link" aria-hidden="true"></i>
+            <div>粘贴链接</div>
+          </div>
+          <div class="input"><input class="input-text" type="text" placeholder="粘帖链接，进行训练" /></div>
+        {{else}}
+          <div class="btn-box image" id="selectfiles"></div>
+          <div class="input"><input class="input-text" type="text" placeholder="说点什么" /></div>
+        {{/if}}
         <div class="send-btn"><input class="btn" type="submit" value="发送" style="border-radius: 5px;" /></div>
       </form></div>
     </div>

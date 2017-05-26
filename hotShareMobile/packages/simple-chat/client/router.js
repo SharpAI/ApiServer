@@ -68,7 +68,7 @@ Router.route(AppConfig.path + '/to/:type', {
     var type = slef.params.type
     var where = null;
 
-    list_limit.set(list_limit_val);
+    list_limit.set(10);
 
     if(type === 'group')
       where = {'to.id': to, to_type: type}; // 没有判断是否在群的处理。自动加群
@@ -301,6 +301,9 @@ Template._simpleChatToChat.onRendered(function(){
       Messages.after.insert(function (userId, doc) {
         if (!page_data)
           return;
+        if (doc.hasFromHistory === true) {
+          return;
+        }
         if (doc.to_type === page_data.type && doc.to.id === page_data.id){
           console.log('message insert');
           setMsgList(page_data.where, 'insert');
@@ -345,25 +348,44 @@ Template._simpleChatToChat.onRendered(function(){
 
     if(Meteor.isCordova){
       $('#container').click(function(){
-        selectMediaFromAblumWithSize(1,480,640,function(cancel, result, currentCount, totalCount){
-          if(cancel)
-            return;
-          if(result){
-            var id = new Mongo.ObjectID()._str;
-            window.___message.insert(id); // result.smallImage
-            multiThreadUploadFile_new([{
-              type: 'image',
-              filename: result.filename,
-              URI: result.URI
-            }], 1, function(err, res){
-              if(err || res.length <= 0){
-                window.___message.remove(id);
-                return PUB.toast('上传图片失败~');
-              }
-              window.___message.update(id, res[0].imgUrl);
-            });
-          }
-        });
+        var $link = $('.btn-box.link');
+        //nlp训练营
+        if ($link.length > 0) {
+          cordova.plugins.clipboard.paste(function(link) {
+            if (link !== null) {
+              $('.input-text').val(link);
+              Session.set('isFromClipboard',true);
+              $('.send-btn input').submit();
+              return;
+            }
+            else {
+              return PUB.toast("粘贴板内容为空~");
+            }
+          }, function() {
+            return PUB.toast("无法获得粘贴板数据，请手动粘贴\n点击输入框，长按进行粘贴");
+          });
+        }
+        else{
+          selectMediaFromAblumWithSize(1,480,640,function(cancel, result, currentCount, totalCount){
+            if(cancel)
+              return;
+            if(result){
+              var id = new Mongo.ObjectID()._str;
+              window.___message.insert(id); // result.smallImage
+              multiThreadUploadFile_new([{
+                type: 'image',
+                filename: result.filename,
+                URI: result.URI
+              }], 1, function(err, res){
+                if(err || res.length <= 0){
+                  window.___message.remove(id);
+                  return PUB.toast('上传图片失败~');
+                }
+                window.___message.update(id, res[0].imgUrl);
+              });
+            }
+          });
+        }
       });
     }else{
       Meteor.setTimeout(function(){
@@ -1101,6 +1123,15 @@ Template._simpleChatToChat.helpers({
   isGroups:function(){
     return page_data && page_data.is_group ? page_data.is_group() : false;
   },
+  isNLPGroup:function(){
+    if (page_data && page_data.id) {
+      var obj = Groups.findOne({_id: page_data.id});
+      if (obj.template && obj.template.type === 'nlp_classify') {
+        return true;
+      }
+    }
+    return false;
+  },
   needShowTips:function(){
     var res = Session.get('simple_chat_need_show_tips');
     return res == true;
@@ -1115,7 +1146,12 @@ Template._simpleChatToChat.events({
     }, 500);*/
   },
   'submit .input-form': function(e, t){
-    $('.input-text').focus();
+    if (Session.get('isFromClipboard') == true) {
+      Session.set('isFromClipboard',false);
+    }
+    else{
+      $('.input-text').focus();
+    }
     try{
       var data = page_data;
       var text = $('.input-text').val();
@@ -1467,10 +1503,10 @@ var clearMsgForGroundDB = function(){
         var myGroup = GroupUsers.find({user_id: Meteor.userId()});
         if (myGroup) {
           myGroup.forEach(function(item){
-            var msg = Messages.find({'to.id': item.group_id}).fetch();
+            var msg = MessagesHis.find({'to.id': item.group_id}).fetch();
             if (msg && msg.length > 100) {
               for (var i = 0; i < msg.length - 100; i++) {
-                Messages.remove({_id:msg[i]._id});
+                MessagesHis.remove({_id:msg[i]._id});
               }
             }
           });
