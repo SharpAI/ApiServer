@@ -262,7 +262,7 @@ if (Meteor.isCordova){
     * @return {Object} url in callback
     */
     var uploadFileInCordova = function(ImageWidth, ImageHeight, ImageQuality, callback){
-      if(device.platform === 'Android' ){
+      if(false/*device.platform === 'Android' */){
            pictureSource = navigator.camera.PictureSourceType;
            destinationType = navigator.camera.DestinationType;
 //          var cameraOptions = {
@@ -344,8 +344,8 @@ if (Meteor.isCordova){
         if (Session.get('terminateUpload')) {
             if (Session.get('flag')){
                     return;
-             } 
-             Session.set('flag',true);         
+             }
+             Session.set('flag',true);
              return callback(new Error('aboutUpload'),item)
         }
         var self = this;
@@ -370,8 +370,8 @@ if (Meteor.isCordova){
             if (Session.get('terminateUpload')) {
                 if (Session.get('flag')){
                     return;
-                } 
-                Session.set('flag',true);         
+                }
+                Session.set('flag',true);
                 return callback(new Error('aboutUpload'),item)
             }
             if (status === 'uploading' && param){
