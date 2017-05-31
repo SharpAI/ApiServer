@@ -93,6 +93,21 @@ if(Meteor.isServer){
       return {uuid: people.uuid, id: people.id};
     }
   });
+  var Fiber = Meteor.npmRequire('fibers');
+  function deferSetImmediate(func) {
+      var runFunction = function () {
+      return func.apply(null);
+      }
+      if (typeof setImmediate == 'function') {
+      setImmediate(function () {
+          Fiber(runFunction).run();
+      });
+      } else {
+      setTimeout(function () {
+          Fiber(runFunction).run();
+      }, 0);
+      }
+  }
 }
 
 // 绿网检查帖子内容

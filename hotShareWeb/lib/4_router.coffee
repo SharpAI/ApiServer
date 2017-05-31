@@ -1008,3 +1008,84 @@ if Meteor.isServer
     onNewHotSharePost(postData)
     this.response.end('{"result": "ok"}\n')
   )
+
+  upset_workai_motion = (msg, pub, groupId, userId)->
+    name = PERSON.getName(mgs.uuid, groupId, msg.id)
+    pub.unshift({
+      _id: new Mongo.ObjectID()._str
+      type: 'text'
+      isImage: false
+      owner: userId
+      text: new Date().format('yyyy-MM-dd hh:mm') + ': ' + (if name then '发现『'+name+'』' else '有新的未知信息') + '，详情：http://workaihost.tiegushi.com/motion/' + msg.id
+      style: ''
+      layout: {font: 'quota'}
+      data_row: 1
+      data_col: 1
+      data_sizex: 6
+      data_sizey: 3
+      msgObj: msg
+    })
+    pub.unshift({
+      _id: new Mongo.ObjectID()._str
+      type: 'image'
+      isImage: true
+      owner: userId
+      imgUrl: msg.img_url
+      data_row: 1
+      data_col: 1
+      data_sizex: 6
+      data_sizey: 3
+      msgObj: msg
+    })
+  Router.route('/restapi/workai-motion', {where: 'server'}).post(()->
+    payload = this.request.body || {}
+    deviceUser = Meteor.users.findOne({username: payload.uuid})|| {}
+    groupUser = SimpleChat.GroupUsers.findOne({user_id: deviceUser._id}) || {} # 一个平板只对应一个聊天群
+    group = SimpleChat.Groups.findOne({_id: groupUser.group_id})
+
+    if (!group)
+      return this.response.end('{"result": "error"}\n')
+    deferSetImmediate ()->
+      # update follow
+      SimpleChat.GroupUsers.find({group_id: group._id}).forEach (item)->
+        if (Follower.find({userId: item.user_id, followerId: deviceUser._id}).count() <= 0)
+          Follower.insert({
+            userId: item.user_id
+            followerId: deviceUser._id
+            createAt: new Date()
+          })
+
+      # update post object
+      post = Posts.findOne({owner: deviceUser._id, docType: 'motion'})
+      if (!post)
+        title: group.name
+        addontitle: '训练消息'
+        browse: 0
+        heart: []
+        retweet: []
+        comment: []
+        commentsCount: 0
+        mainImage: 'http://data.tiegushi.com/ocmainimages/mainimage1.jpg'
+        publish: true
+        owner: deviceUser._id
+        ownerName: if deviceUser.profile and deviceUser.profile.fullname then deviceUser.profile.fullname else deviceUser.username
+        ownerIcon: if deviceUser.profile and deviceUser.profile.icon then deviceUser.profile.icon else '/userPicture.png'
+        createdAt: new Date()
+        isReview: true
+        insertHook: true
+        import_status: 'done'
+        fromUrl: ''
+        docType: 'motion'
+
+      # set post collection
+      upset_workai_motion(payload, post.pub, group._id, deviceUser._id)
+      formatPostPub(post.pub)
+      if (!post._id)
+        post._id = new Mongo.ObjectID()._str
+        postsInsertHookDeferHandle(post.owner, post)
+        Posts.insert(post)
+      else
+        FollowPosts.update({postId: post._id}, {$set: {createdAt: new Date()}})
+        Posts.update({_id: post._id}, {$set: {pub: post.pub}})
+      console.log('upsert motion post:', post._id)
+    this.response.end('{"result": "ok"}\n')
