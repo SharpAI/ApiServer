@@ -1089,3 +1089,4 @@ if Meteor.isServer
         Posts.update({_id: post._id}, {$set: {pub: post.pub}})
       console.log('upsert motion post:', post._id)
     this.response.end('{"result": "ok"}\n')
+  )
