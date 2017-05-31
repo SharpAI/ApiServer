@@ -532,6 +532,24 @@ if Meteor.isServer
     this.response.end(file, 'binary')
   , { where: 'server' })
 
+  # Router.route('/apple-app-site-association', (req, res, next)->
+  #   #name = 'apple-app-site-association'
+  #   #name = 'import-server'
+  #   fs = Npm.require("fs")
+  #   path = Npm.require('path')
+  #   base = path.resolve('.');
+  #   filepath = path.resolve('.') + '/app/lib/apple-app-site-association';
+  #   #filepath = path.join(__dirname,'../server/import-server.js')
+  #   file = fs.readFileSync(filepath, 'binary');
+  #   headers = {
+  #     'Content-type': 'application/vnd.openxmlformats',
+  #     'Content-Disposition': 'attachment; apple-app-site-association'
+  #   }
+
+  #   this.response.writeHead(200, headers)
+  #   this.response.end(file, 'binary')
+  # , { where: 'server' })
+
 if Meteor.isServer
   workaiId = 'Lh4JcxG7CnmgR3YXe'
   workaiName = 'Actiontec'

@@ -123,7 +123,13 @@ if (Meteor.isCordova) {
         AppRate.preferences.storeAppURL.ios = '957024953';
         AppRate.preferences.storeAppURL.android = 'http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere';
         AppRate.promptForRating(false);
+        universalLinks.subscribe('openSimpleChatGroup',onSimpleChatPageRequested);
+    }
 
+    // openNewsDetailedPage Event Handler
+    function onSimpleChatPageRequested(eventData) {
+      console.log('Showing to user details page for some news');
+      // do some work to show detailed page
     }
 
     function checkShareExtension(){

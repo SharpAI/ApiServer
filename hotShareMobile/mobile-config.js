@@ -85,3 +85,12 @@ App.configurePlugin('jpush-phonegap-plugin', {
 App.configurePlugin('phonegap-plugin-push', {
   SENDER_ID: 'NOTUSEDFORNOW'
 });
+
+App.appendToConfig(`
+  <universal-links>
+    <ios-team-id value="D5Q4CA2T7C" />
+    <host name="workaihost.tiegushi.com" >
+      <path url="/simple-chat/to/*" event="openSimpleChatGroup" />
+    </host>
+  </universal-links>
+`);
