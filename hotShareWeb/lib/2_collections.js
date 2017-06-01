@@ -94,7 +94,7 @@ if(Meteor.isServer){
     }
   });
   var Fiber = Meteor.npmRequire('fibers');
-  function deferSetImmediate(func) {
+  deferSetImmediate = function(func){
       var runFunction = function () {
       return func.apply(null);
       }
