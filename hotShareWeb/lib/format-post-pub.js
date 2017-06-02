@@ -3,7 +3,7 @@ formatPostPub = function(pub){
     if(!pub[i]._id){pub[i]._id = new Mongo.ObjectID()._str;}
     if(pub[i].type === 'image'){
       pub[i].isImage = true;
-      pub[i].data_sizey = 3;
+      pub[i].data_sizey = pub[i].inIframe ? 4 : 3;
     }else{
       pub[i].data_sizey = 1;
     }

@@ -1009,6 +1009,17 @@ if Meteor.isServer
     this.response.end('{"result": "ok"}\n')
   )
 
+  Router.route('/restapi/workai-motion-imgs/:id', {where: 'server'}).get(()->
+    id = this.params.id
+    post = Posts.findOne({_id: id})
+    html = Assets.getText('workai-motion-imgs.html');
+    imgs = ''
+    post.docSource.imgs.forEach (img)->
+      imgs += '<li><img src="'+img+'" /></li>'
+    html = html.replace('{{imgs}}', imgs)
+
+    this.response.end(html)
+  )
   Router.route('/restapi/workai-motion', {where: 'server'}).post(()->
     payload = this.request.body || {}
     deviceUser = Meteor.users.findOne({username: payload.uuid})|| {}
@@ -1019,6 +1030,8 @@ if Meteor.isServer
       return this.response.end('{"result": "error"}\n')
     if (!payload.imgs || payload.imgs.length <= 0)
       return this.response.end('{"result": "error"}\n')
+    if (payload.imgs.length > 30)
+        payload.imgs = payload.imgs.slice(0, 29)
     deferSetImmediate ()->
       # update follow
       SimpleChat.GroupUsers.find({group_id: group._id}).forEach (item)->
@@ -1031,10 +1044,11 @@ if Meteor.isServer
           })
 
       name = PERSON.getName(payload.uuid, group._id, payload.id)
+      postId = new Mongo.ObjectID()._str
       post = {
         pub: []
         title: if name then '发现 ' + name else (if payload.type is 'face' then '发现陌生人' else '发现异常！')
-        addontitle: new Date().format('yyyy-MM-dd hh:mm:ss') + ' @' + group.name
+        addontitle: new Date().format('yyyy-MM-dd hh:mm:ss') + ' from ' + (if deviceUser.profile and deviceUser.profile.fullname then deviceUser.profile.fullname else deviceUser.username)
         browse: 0
         heart: []
         retweet: []
@@ -1045,41 +1059,58 @@ if Meteor.isServer
         owner: deviceUser._id
         ownerName: if deviceUser.profile and deviceUser.profile.fullname then deviceUser.profile.fullname else deviceUser.username
         ownerIcon: if deviceUser.profile and deviceUser.profile.icon then deviceUser.profile.icon else '/userPicture.png'
-        createdAt: new Date()
+        createdAt: new Date(payload.ts)
         isReview: true
         insertHook: true
         import_status: 'done'
         fromUrl: ''
         docType: 'motion'
+        docSource: payload
       }
-      if (payload.imgs.length > 10)
-        payload.imgs = payload.imgs.slice(0, 9)
       post.pub.push({
         _id: new Mongo.ObjectID()._str
         type: 'text'
         isImage: false
         owner: deviceUser._id
-        text: '以下为设备的截图：'
+        text: '动作:'+payload.mid+' 类型:'+payload.type+' 准确:'+payload.accuracy+' 模糊:' + payload.fuzziness + '\n设备:' + (if deviceUser.profile and deviceUser.profile.fullname then deviceUser.profile.fullname else deviceUser.username)
         style: ''
         data_row: 1
         data_col: 1
         data_sizex: 6
-        data_sizey: 3
+        data_sizey: 1
+        data_wait_init: true
       })
-      payload.imgs.forEach (img)->
-        post.pub.push({
-          _id: new Mongo.ObjectID()._str
-          type: 'image'
-          isImage: true
-          owner: deviceUser._id
-          imgUrl: img
-          data_row: 1
-          data_col: 1
-          data_sizex: 6
-          data_sizey: 3
-        })
-      formatPostPub(post.pub)
-      post._id = new Mongo.ObjectID()._str
+      post.pub.push({
+        _id: new Mongo.ObjectID()._str
+        type: 'text'
+        isImage: false
+        owner: deviceUser._id
+        text: '以下为设备的截图（可左右滑动）：'
+        style: ''
+        data_row: 2
+        data_col: 1
+        data_sizex: 6
+        data_sizey: 1
+        data_wait_init: true
+      })
+      post.pub.push({
+        _id: new Mongo.ObjectID()._str
+        type: 'image'
+        isImage: true
+        inIframe: true
+        owner: deviceUser._id
+        text: '您当前程序不支持视频观看',
+        iframe: '<iframe height="100%" width="100%" src="'+rest_api_url+'/restapi/workai-motion-imgs/'+postId+'" frameborder="0" allowfullscreen></iframe>'
+        # iframe: '<iframe height="100%" width="100%" src="/restapi/workai-motion-imgs/'+postId+'" frameborder="0" allowfullscreen></iframe>'
+        imgUrl: 'http://data.tiegushi.com/res/video_old_version.jpg',
+        data_row: 3
+        data_col: 1
+        data_sizex: 6
+        data_sizey: 3
+        data_wait_init: true
+      })
+      # formatPostPub(post.pub)
+      post._id = postId
       postsInsertHookDeferHandle(post.owner, post)
       Posts.insert(post)
       console.log('insert motion post:', post._id)
