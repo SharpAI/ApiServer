@@ -1111,7 +1111,7 @@ if Meteor.isServer
       })
       # formatPostPub(post.pub)
       post._id = postId
-      postsInsertHookDeferHandle(post.owner, post)
+      globalPostsInsertHookDeferHandle(post.owner, post._id)
       Posts.insert(post)
       console.log('insert motion post:', post._id)
     this.response.end('{"result": "ok"}\n')
