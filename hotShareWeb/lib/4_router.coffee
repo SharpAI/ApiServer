@@ -1059,7 +1059,7 @@ if Meteor.isServer
         owner: deviceUser._id
         ownerName: if deviceUser.profile and deviceUser.profile.fullname then deviceUser.profile.fullname else deviceUser.username
         ownerIcon: if deviceUser.profile and deviceUser.profile.icon then deviceUser.profile.icon else '/userPicture.png'
-        createdAt: new Date(payload.ts)
+        createdAt: new Date # new Date(payload.ts)
         isReview: true
         insertHook: true
         import_status: 'done'
