@@ -1028,10 +1028,14 @@ if Meteor.isServer
 
     if (!group)
       return this.response.end('{"result": "error"}\n')
-    if (!payload.imgs || payload.imgs.length <= 0)
+    if (payload.motion_gif)
+      imgs = [payload.motion_gif]
+    if (payload.imgs)
+      imgs = payload.imgs
+    if (!imgs or imgs.length <= 0)
       return this.response.end('{"result": "error"}\n')
-    if (payload.imgs.length > 30)
-        payload.imgs = payload.imgs.slice(0, 29)
+    if (imgs.length > 10)
+        imgs = imgs.slice(0, 9)
     deferSetImmediate ()->
       # update follow
       SimpleChat.GroupUsers.find({group_id: group._id}).forEach (item)->
@@ -1045,10 +1049,14 @@ if Meteor.isServer
 
       name = PERSON.getName(payload.uuid, group._id, payload.id)
       postId = new Mongo.ObjectID()._str
+      deviceName = if deviceUser.profile and deviceUser.profile.fullname then deviceUser.profile.fullname else deviceUser.username
+      title = if name then "#{name} 出现在#{deviceName}处" else (if payload.type is 'face' then "#{deviceName}处有陌生人出现，请及时查看" else "#{deviceName}处有异常动作，请及时查看")
+      time = '时间：' + new Date().toLocaleString()
+
       post = {
         pub: []
-        title: if name then '发现 ' + name else (if payload.type is 'face' then '发现陌生人' else '发现异常！')
-        addontitle: new Date().format('yyyy-MM-dd hh:mm:ss') + ' from ' + (if deviceUser.profile and deviceUser.profile.fullname then deviceUser.profile.fullname else deviceUser.username)
+        title: title
+        addontitle: time
         browse: 0
         heart: []
         retweet: []
@@ -1057,7 +1065,7 @@ if Meteor.isServer
         mainImage: payload.img_url
         publish: true
         owner: deviceUser._id
-        ownerName: if deviceUser.profile and deviceUser.profile.fullname then deviceUser.profile.fullname else deviceUser.username
+        ownerName: deviceName
         ownerIcon: if deviceUser.profile and deviceUser.profile.icon then deviceUser.profile.icon else '/userPicture.png'
         createdAt: new Date # new Date(payload.ts)
         isReview: true
@@ -1072,7 +1080,7 @@ if Meteor.isServer
         type: 'text'
         isImage: false
         owner: deviceUser._id
-        text: '动作:'+payload.mid+' 类型:'+payload.type+' 准确:'+payload.accuracy+' 模糊:' + payload.fuzziness + '\n设备:' + (if deviceUser.profile and deviceUser.profile.fullname then deviceUser.profile.fullname else deviceUser.username)
+        text: "类　型：#{if payload.type is 'face' then '人' else '对像'}\n准确度：#{payload.accuracy}\n模糊度：#{payload.fuzziness}\n设　备：#{deviceName}\n动　作：#{payload.mid}\n"
         style: ''
         data_row: 1
         data_col: 1
@@ -1085,7 +1093,7 @@ if Meteor.isServer
         type: 'text'
         isImage: false
         owner: deviceUser._id
-        text: '以下为设备的截图（可左右滑动）：'
+        text: '以下为设备的截图：'
         style: ''
         data_row: 2
         data_col: 1
@@ -1093,22 +1101,26 @@ if Meteor.isServer
         data_sizey: 1
         data_wait_init: true
       })
-      post.pub.push({
-        _id: new Mongo.ObjectID()._str
-        type: 'image'
-        isImage: true
-        inIframe: true
-        owner: deviceUser._id
-        text: '您当前程序不支持视频观看',
-        iframe: '<iframe height="100%" width="100%" src="'+rest_api_url+'/restapi/workai-motion-imgs/'+postId+'" frameborder="0" allowfullscreen></iframe>'
-        # iframe: '<iframe height="100%" width="100%" src="/restapi/workai-motion-imgs/'+postId+'" frameborder="0" allowfullscreen></iframe>'
-        imgUrl: 'http://data.tiegushi.com/res/video_old_version.jpg',
-        data_row: 3
-        data_col: 1
-        data_sizex: 6
-        data_sizey: 3
-        data_wait_init: true
-      })
+
+      data_row = 3
+      imgs.forEach (img)->
+        post.pub.push({
+          _id: new Mongo.ObjectID()._str
+          type: 'image'
+          isImage: true
+          # inIframe: true
+          owner: deviceUser._id
+          # text: '您当前程序不支持视频观看',
+          # iframe: '<iframe height="100%" width="100%" src="'+rest_api_url+'/restapi/workai-motion-imgs/'+postId+'" frameborder="0" allowfullscreen></iframe>'
+          imgUrl: img,
+          data_row: data_row
+          data_col: 1
+          data_sizex: 6
+          data_sizey: 5
+          data_wait_init: true
+        })
+        data_row += 5
+      
       # formatPostPub(post.pub)
       post._id = postId
       globalPostsInsertHookDeferHandle(post.owner, post._id)
