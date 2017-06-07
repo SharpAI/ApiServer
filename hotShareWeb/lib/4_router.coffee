@@ -1030,8 +1030,8 @@ if Meteor.isServer
       return this.response.end('{"result": "error"}\n')
     if (payload.motion_gif)
       imgs = [payload.motion_gif]
-    if (payload.imgs)
-      imgs = payload.imgs
+    # if (payload.imgs)
+    #   imgs = payload.imgs
     if (!imgs or imgs.length <= 0)
       return this.response.end('{"result": "error"}\n')
     if (imgs.length > 10)
