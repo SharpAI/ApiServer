@@ -1046,15 +1046,21 @@ if Meteor.isServer
             followerId: deviceUser._id
             createAt: new Date()
           })
-
+      #一个设备一天的动作只放在一个帖子里
+      devicePost = Posts.findOne({owner:deviceUser._id})
+      isTodayPost = false;
+      if(devicePost)
+        today = new Date().toDateString()
+        isTodayPost = if devicePost.createdAt.toDateString() is today then true else false;
+      console.log 'isTodayPost:'+isTodayPost
       name = PERSON.getName(payload.uuid, group._id, payload.id)
-      postId = new Mongo.ObjectID()._str
+      postId = if isTodayPost then devicePost._id else new Mongo.ObjectID()._str
       deviceName = if deviceUser.profile and deviceUser.profile.fullname then deviceUser.profile.fullname else deviceUser.username
       title = if name then "#{name} 出现在#{deviceName}处" else (if payload.type is 'face' then "#{deviceName}处有陌生人出现，请及时查看" else "#{deviceName}处有异常动作，请及时查看")
       time = '时间：' + new Date().toLocaleString()
 
       post = {
-        pub: []
+        pub: if isTodayPost then devicePost.pub else []
         title: title
         addontitle: time
         browse: 0
@@ -1062,7 +1068,7 @@ if Meteor.isServer
         retweet: []
         comment: []
         commentsCount: 0
-        mainImage: payload.img_url
+        mainImage: payload.motion_gif
         publish: true
         owner: deviceUser._id
         ownerName: deviceName
@@ -1075,7 +1081,8 @@ if Meteor.isServer
         docType: 'motion'
         docSource: payload
       }
-      post.pub.push({
+      newPub = []
+      newPub.push({
         _id: new Mongo.ObjectID()._str
         type: 'text'
         isImage: false
@@ -1088,7 +1095,7 @@ if Meteor.isServer
         data_sizey: 1
         data_wait_init: true
       })
-      post.pub.push({
+      newPub.push({
         _id: new Mongo.ObjectID()._str
         type: 'text'
         isImage: false
@@ -1104,7 +1111,7 @@ if Meteor.isServer
 
       data_row = 3
       imgs.forEach (img)->
-        post.pub.push({
+        newPub.push({
           _id: new Mongo.ObjectID()._str
           type: 'image'
           isImage: true
@@ -1120,8 +1127,14 @@ if Meteor.isServer
           data_wait_init: true
         })
         data_row += 5
-      
+      Array.prototype.push.apply(newPub, post.pub)
+      post.pub = newPub
       # formatPostPub(post.pub)
+      if isTodayPost
+        console.log('update motion post:', postId)
+        Posts.update({_id:postId},{$set:post})
+        globalPostsUpdateHookDeferHandle(post.owner, postId,null,{$set:post})
+        return;
       post._id = postId
       globalPostsInsertHookDeferHandle(post.owner, post._id)
       Posts.insert(post)

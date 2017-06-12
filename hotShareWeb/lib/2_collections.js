@@ -267,6 +267,27 @@ if(Meteor.isServer){
             }
         });
     };
+    globalPostsUpdateHookDeferHandle = function(userId, postId,fieldNames,modifier) {
+        Meteor.defer(function(){
+            var doc = Posts.findOne({"_id": postId});
+            if (doc) {
+                console.log("globalPostsUpdateHookDeferHandle: userId="+userId+", doc._id="+doc._id+", doc.import_status="+doc.import_status+", doc.isReview="+doc.isReview);
+                if (doc.isReview === true) {
+                    Posts.update({_id: postId}, {$set:{import_status: "done"}});
+                    postsUpdateHookDeferHandle(userId,doc,fieldNames,modifier)
+                    //postsInsertHookDeferHandle(userId, doc);
+                    // try{
+                    //     postsInsertHookPostToBaiduDeferHandle(doc._id);
+                    // }catch(err){
+                    // }
+                    // try{
+                    //     mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
+                    // }catch(err){
+                    // }
+                }
+            }
+        });
+    };
     var newMeetsAddedForPostFriendsDeferHandle = function(self,taId,userId,id,fields){
         Meteor.defer(function(){
             var taInfo = Meteor.users.findOne({_id: taId},{fields: {'username':1,'email':1,'profile.fullname':1,
