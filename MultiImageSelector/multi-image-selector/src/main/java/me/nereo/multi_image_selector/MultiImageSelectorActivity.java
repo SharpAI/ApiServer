@@ -291,7 +291,8 @@ public class MultiImageSelectorActivity extends AppCompatActivity
             ArrayList<String> al = new ArrayList<String>();
             try {
                 for (int i = 0; i < fileNames.size(); i++) {
-                    if (i != fileNames.get(i).getOrder()) {
+                    fileNames.get(i).setOriginalPath(fileNames.get(i).getOriginalPath());
+                    if (false/*i != fileNames.get(i).getOrder()*/) {
                         for (int j = 0; j < fileNames.size(); j++) {
                             if (i == fileNames.get(j).getOrder()) {
                                 filename = fileNames.get(j).getOriginalPath();
