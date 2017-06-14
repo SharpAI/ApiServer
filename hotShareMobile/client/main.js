@@ -83,7 +83,7 @@ if (Meteor.isCordova) {
         document.addEventListener("resume", eventResume, false);
 
         checkNewVersion2();
-        
+
         TAPi18n.precacheBundle = true;
         // if(isUSVersion){
         //   Session.set("display_lang",'en');
@@ -144,6 +144,14 @@ if (Meteor.isCordova) {
         }, function() {Session.set('wait_import_count',false);});
       }
     }
+    var lastPauseDate = null;
+    function restartApplication() {
+      var initialHref = window.location.href;
+      // Show splash screen (useful if your app takes time to load)
+      navigator.splashscreen.show();
+      // Reload original app url (ie your index.html file)
+      window.location = initialHref;
+    }
     function eventResume(){
         if (Meteor.status().connected !== true)
           Meteor.reconnect();
@@ -170,6 +178,13 @@ if (Meteor.isCordova) {
             }
         }
         mqttEventResume();
+        if (lastPauseDate != null) {
+          var now = new Date();
+          if (now.getTime() - lastPauseDate.getTime() > 5*60*1000) {
+            restartApplication();
+          }
+        }
+
     }
     function eventPause(){
       if(withAutoSavedOnPaused) {
@@ -178,6 +193,7 @@ if (Meteor.isCordova) {
           }
       }
       mqttEventPause();
+      lastPauseDate = new Date();
     }
 
     function eventBackButton(){
