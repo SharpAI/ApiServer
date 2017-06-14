@@ -40,3 +40,4 @@ phonegap-plugin-push@1.8.2
 phonegap-plugin-barcodescanner@https://github.com/PluginCordova/phonegap-plugin-barcodescanner/tarball/83b20676fe9927c86e490eeec6706bfcedd1ad25
 cordova-plugin-crop@https://github.com/PluginCordova/cordova-plugin-crop/tarball/dfa847173a9c1d449a20004f7baf5c0e8ba47bf2
 cordova-universal-links-plugin@https://github.com/PluginCordova/cordova-universal-links-plugin/tarball/5fb26f7afd108075e528dd99a04b1de50f9ac601
+cordova-plugin-zeroconf@https://github.com/PluginCordova/cordova-plugin-zeroconf/tarball/a724f682e9808fc9f5ca76fa22923ded9aa38dff

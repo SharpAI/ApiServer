@@ -127,6 +127,7 @@ if (Meteor.isCordova) {
         AppRate.preferences.storeAppURL.android = 'http://a.app.qq.com/o/simple.jsp?pkgname=org.hotshare.everywhere';
         AppRate.promptForRating(false);
         universalLinks.subscribe('openSimpleChatGroup',onSimpleChatPageRequested);
+        zeroconfWatch();
     }
 
     // openNewsDetailedPage Event Handler
@@ -152,6 +153,29 @@ if (Meteor.isCordova) {
       // Reload original app url (ie your index.html file)
       window.location = initialHref;
     }
+    function zeroconfWatch(){
+      var zeroconf = cordova.plugins.zeroconf;
+      zeroconf.watch('_zhifa._tcp.', 'local.', function(result) {
+          var action = result.action;
+          var service = result.service;
+          /* service : {
+              'domain' : 'local.',
+              'type' : '_zhifa._tcp.',
+              'name': 'cloudrouter',
+              'port' : 4000,
+              'hostname' : 'Android.local.',
+              'ipv4Addresses' : [ '192.168.31.103' ], 
+              'ipv6Addresses' : [ '2001:0:5ef5:79fb:10cb:1dbf:3f57:feb0' ],
+              'txtRecord' : {
+                  'foo' : 'bar'
+              }
+          } */
+          if (action == 'added') {
+              console.log('service added', service);
+          } else {
+              console.log('service removed', service);
+          }
+      });
     function eventResume(){
         if (Meteor.status().connected !== true)
           Meteor.reconnect();
