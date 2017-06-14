@@ -1056,9 +1056,8 @@ if Meteor.isServer
       name = PERSON.getName(payload.uuid, group._id, payload.id)
       postId = if isTodayPost then devicePost._id else new Mongo.ObjectID()._str
       deviceName = if deviceUser.profile and deviceUser.profile.fullname then deviceUser.profile.fullname else deviceUser.username
-      title = if name then "#{name} 出现在#{deviceName}处" else (if payload.type is 'face' then "#{deviceName}处有陌生人出现，请及时查看" else "#{deviceName}处有异常动作，请及时查看")
-      time = '时间：' + new Date().toLocaleString()
-
+      title = if name then "摄像头看到#{name} 在#{deviceName}" else (if payload.type is 'face' then "摄像头看到有人在#{deviceName}" else "摄像头看到#{deviceName}有动静")
+      time = '时间：' + new Date().toString()
       post = {
         pub: if isTodayPost then devicePost.pub else []
         title: title
@@ -1068,7 +1067,7 @@ if Meteor.isServer
         retweet: []
         comment: []
         commentsCount: 0
-        mainImage: payload.motion_gif
+        mainImage: if payload.motion_gif then payload.motion_gif else payload.img_url
         publish: true
         owner: deviceUser._id
         ownerName: deviceName
@@ -1082,32 +1081,32 @@ if Meteor.isServer
         docSource: payload
       }
       newPub = []
-      newPub.push({
-        _id: new Mongo.ObjectID()._str
-        type: 'text'
-        isImage: false
-        owner: deviceUser._id
-        text: "类　型：#{if payload.type is 'face' then '人' else '对像'}\n准确度：#{payload.accuracy}\n模糊度：#{payload.fuzziness}\n设　备：#{deviceName}\n动　作：#{payload.mid}\n"
-        style: ''
-        data_row: 1
-        data_col: 1
-        data_sizex: 6
-        data_sizey: 1
-        data_wait_init: true
-      })
-      newPub.push({
-        _id: new Mongo.ObjectID()._str
-        type: 'text'
-        isImage: false
-        owner: deviceUser._id
-        text: '以下为设备的截图：'
-        style: ''
-        data_row: 2
-        data_col: 1
-        data_sizex: 6
-        data_sizey: 1
-        data_wait_init: true
-      })
+      # newPub.push({
+      #   _id: new Mongo.ObjectID()._str
+      #   type: 'text'
+      #   isImage: false
+      #   owner: deviceUser._id
+      #   text: "类　型：#{if payload.type is 'face' then '人' else '对像'}\n准确度：#{payload.accuracy}\n模糊度：#{payload.fuzziness}\n设　备：#{deviceName}\n动　作：#{payload.mid}\n"
+      #   style: ''
+      #   data_row: 1
+      #   data_col: 1
+      #   data_sizex: 6
+      #   data_sizey: 1
+      #   data_wait_init: true
+      # })
+      # newPub.push({
+      #   _id: new Mongo.ObjectID()._str
+      #   type: 'text'
+      #   isImage: false
+      #   owner: deviceUser._id
+      #   text: '以下为设备的截图：'
+      #   style: ''
+      #   data_row: 2
+      #   data_col: 1
+      #   data_sizex: 6
+      #   data_sizey: 1
+      #   data_wait_init: true
+      # })
 
       data_row = 3
       imgs.forEach (img)->
@@ -1127,6 +1126,33 @@ if Meteor.isServer
           data_wait_init: true
         })
         data_row += 5
+      newPub.push({
+        _id: new Mongo.ObjectID()._str
+        type: 'text'
+        isImage: false
+        owner: deviceUser._id
+        text: time
+        style: ''
+        data_row: 1
+        data_col: 1
+        data_sizex: 6
+        data_sizey: 1
+        data_wait_init: true
+        isTime:true
+      })
+      newPub.push({
+        _id: new Mongo.ObjectID()._str
+        type: 'text'
+        isImage: false
+        owner: deviceUser._id
+        text: title
+        style: ''
+        data_row: 1
+        data_col: 1
+        data_sizex: 6
+        data_sizey: 1
+        data_wait_init: true
+      })
       Array.prototype.push.apply(newPub, post.pub)
       post.pub = newPub
       # formatPostPub(post.pub)

@@ -410,6 +410,13 @@ if Meteor.isClient
       return !localStorage.getItem('postGroupChatIntro')
     showSaveTipHintTemplate:->
       return !localStorage.getItem('savetipFlag')
+    fomat_addontitle:->
+      if this.addontitle and this.addontitle.indexOf('时间：') is 0
+        time = this.addontitle.split('时间：')[1];
+        date = new Date(time);
+        if date.toString() isnt 'Invalid Date'
+          return date.shortTime()
+      return this.addontitle
     has_share_follower: ->
       return if Meteor.user().profile and Meteor.user().profile.web_follower_count then Meteor.user().profile.web_follower_count > 0 else false
     msgs_count: ->

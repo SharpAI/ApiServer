@@ -283,6 +283,15 @@ if Meteor.isClient
         return false
     showInlineComment: ()->
       withInlineComment
+    fomat_text:()->
+      if this.text and this.text.indexOf('时间：') is 0
+        time = this.text.split('时间：')[1];
+        date = new Date(time);
+        if date.toString() isnt 'Invalid Date'
+          tempAry = date.shortTime().split(' ')
+          tempAry.splice(0, 1)
+          return tempAry.join(' ')
+      return this.text
     isDraft: ()->
       Session.get('showDraft')
     DraftImageItem: (path,uri,id)->

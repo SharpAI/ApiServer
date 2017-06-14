@@ -39,6 +39,13 @@ if Meteor.isClient
         return true
       else
         return true
+    fomat_addontitle:->
+      if this.addontitle and this.addontitle.indexOf('时间：') is 0
+        time = this.addontitle.split('时间：')[1];
+        date = new Date(time);
+        if date.toString() isnt 'Invalid Date'
+          return date.shortTime()
+      return this.addontitle
     moreResults:->
       !(FollowPosts.find().count() < Session.get("followpostsitemsLimit"))
     loading:->
