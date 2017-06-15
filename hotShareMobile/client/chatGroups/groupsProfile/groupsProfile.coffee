@@ -19,12 +19,12 @@ if Meteor.isClient
       if group and group.name
         return group.name
       else
-        return '[无]' 
+        return '[无]'
     hasBarCode:()->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       if  group and group.barcode
         return true
-      else 
+      else
         return false
 
     barcodeUrl:()->
@@ -35,11 +35,11 @@ if Meteor.isClient
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       if  group and group.template and group.template._id
         return true
-      else 
+      else
         return false
     templateName:()->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
-      return group.template.name 
+      return group.template.name
     templateIcon:()->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       return group.template.icon
@@ -47,7 +47,7 @@ if Meteor.isClient
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       if  group and group.announcement and group.announcement.length > 0
         return true
-      else 
+      else
         return false
     groupAnnouncement:()->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
@@ -73,7 +73,7 @@ if Meteor.isClient
           console.log(err)
           if err or !id
             return PUB.toast('删除失败，请重试~')
-          if mqtt_connection 
+          if mqtt_connection
             mqtt_connection.unsubscribe("/msg/g/" + id)
           MsgSessionId = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId: id})
           if MsgSessionId
@@ -85,6 +85,35 @@ if Meteor.isClient
           ,100)
         )
       )
+    'click .scanPerfBarcode':(event)->
+      console.log 'scan performance barcode'
+      cordova.plugins.barcodeScanner.scan((result)->
+        console.log("We got a barcode\n" + "Result: "
+          + result.text + "\n" + "Format: "
+          + result.format
+          + "\n" + "Cancelled: "
+          + result.cancelled);
+        if (result.text)
+          console.log 'result.txt: ' + result.text
+        if (result.cancelled)
+          return;
+        if (result.alumTapped)
+          return;
+      , (error)->
+        alert("Scanning failed: " + error);
+      , {
+          preferFrontCamera: false, # iOS and Android
+          showFlipCameraButton: true, # iOS and Android
+          showTorchButton: true, # iOS and Android
+          torchOn: true, # Android, launch with the torch switched on (if available)
+          prompt: "Place a barcode inside the scan area", # Android
+          resultDisplayDuration: 500, # Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
+          formats: "QR_CODE,PDF_417", # default: all but PDF_417 and RSS_EXPANDED
+          orientation: "landscape", # Android only (portrait|landscape), default unset so it rotates with the device
+          #disableAnimations: true, # iOS
+          #disableSuccessBeep: false // iOS
+        }
+      );
     'click .emptyMessages':(event)->
       PUB.confirm('确定要清空训练记录吗？',()->
         type = Session.get('groupsType')
@@ -94,8 +123,8 @@ if Meteor.isClient
         else
           where = {
             $or: [
-              {'form.id': Meteor.userId(), 'to.id': to, to_type: type}, 
-              {'form.id': to, 'to.id': Meteor.userId(), to_type: type}  
+              {'form.id': Meteor.userId(), 'to.id': to, to_type: type},
+              {'form.id': to, 'to.id': Meteor.userId(), to_type: type}
             ]
           };
         console.log('where:', where);
@@ -162,7 +191,7 @@ if Meteor.isClient
       #Session.set("groupsProfileMenu","setGroupname")
       console.log event.currentTarget.id
       PUB.page('/simpleUserProfile/'+event.currentTarget.id);
-   
+
   Template.setGroupname.helpers
     groupName:()->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
@@ -196,7 +225,7 @@ if Meteor.isClient
       if group and group.name
         return group.name
       else
-        return '' 
+        return ''
     barcodeUrl:()->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       if  group and group.barcode
