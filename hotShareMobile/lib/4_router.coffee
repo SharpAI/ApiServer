@@ -565,6 +565,12 @@ if Meteor.isClient
     Router.route '/selectTemplate',()->
       this.render 'selectTemplate'
       return
+    Router.route '/scene',()->
+      this.render 'scene'
+      return
+    Router.route '/addHomeAIBox',()->
+      this.render 'addHomeAIBox'
+      return
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->

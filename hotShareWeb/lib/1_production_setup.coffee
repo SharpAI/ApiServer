@@ -21,4 +21,5 @@
 @withPostSubTitleMaxLength = 60   #byte
 @signUpUserNameLength = 16
 @withShowGroupsUserMaxCount = 29
+@withEnableHomeAI = false
 

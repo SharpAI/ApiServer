@@ -1196,3 +1196,5 @@ if Meteor.isServer
       'updateGroupName':(groupId,name)->
         SimpleChat.Groups.update({_id:groupId},{$set:{name:name}})
         SimpleChat.GroupUsers.update({group_id:groupId},{$set:{group_name:name}},{multi: true})
+      'enableHomeAI':()->
+        return withEnableHomeAI;

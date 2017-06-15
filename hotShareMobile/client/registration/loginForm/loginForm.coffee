@@ -87,7 +87,15 @@ Template.loginForm.events
           if window.localStorage.getItem("isSecondUse") == 'true'
             Router.go('/')
           else
-            Router.go('/introductoryPage')
+            if window.localStorage.getItem("enableHomeAI") == 'true'
+              Router.go('/scene')
+            else
+              Meteor.call 'enableHomeAI',(err,res)->
+                if !err and res is true
+                  window.localStorage.setItem("enableHomeAI",'true')
+                  Router.go('/scene')
+                else
+                  Router.go('/introductoryPage')
           checkShareUrl()
           return
       false 
