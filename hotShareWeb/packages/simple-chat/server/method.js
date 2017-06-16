@@ -216,6 +216,10 @@ Meteor.methods({
     }
     return id;
   },
+  'set-perf-link':function(group_id,perf_url){
+    Groups.update({_id: group_id}, {$set: {perf_url: perf_url}});
+    return 'succ';
+  },
   'get-group-intro':function(id,type){
     console.log('get-group-intro has been called!');
     var group = Groups.findOne({_id: id});

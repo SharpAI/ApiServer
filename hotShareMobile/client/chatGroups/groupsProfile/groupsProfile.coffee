@@ -95,6 +95,10 @@ if Meteor.isClient
           + result.cancelled);
         if (result.text)
           console.log 'result.txt: ' + result.text
+          txtObj = JSON.parse(result.text);
+          Meteor.call('set-perf-link',Session.get('groupsId'), txtObj.reportUrl, (err, ret)->
+            console.log 'set-perf-link, err: ' + err + ', ret: ' + ret
+          )
         if (result.cancelled)
           return;
         if (result.alumTapped)
@@ -114,6 +118,13 @@ if Meteor.isClient
           #disableSuccessBeep: false // iOS
         }
       );
+    'click .checkPerf':(event)->
+      group_id = Session.get('groupsId')
+      group = SimpleChat.Groups.findOne({_id: group_id})
+      perf_url = group.perf_url
+      if (!perf_url)
+        perf_url = 'http://aixd.raidcdn.cn/reporter/f5ZocsFpQn9CApmy8'
+      cordova.InAppBrowser.open(perf_url, '_system')
     'click .emptyMessages':(event)->
       PUB.confirm('确定要清空训练记录吗？',()->
         type = Session.get('groupsType')
