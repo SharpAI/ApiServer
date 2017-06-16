@@ -176,6 +176,7 @@ if (Meteor.isCordova) {
               console.log('service removed', service);
           }
       });
+    }
     function eventResume(){
         if (Meteor.status().connected !== true)
           Meteor.reconnect();
