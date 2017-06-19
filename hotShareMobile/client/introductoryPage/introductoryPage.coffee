@@ -28,6 +28,8 @@ if Meteor.isClient
       return
 
   Template.introductoryPage.events
+    'click .leftButton':(event)->
+      Router.go('/scene');
     'click #joinGroup':(event)->
       Router.go('/introductoryPage1');
     'click #createGroup':(event)->

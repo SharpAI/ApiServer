@@ -571,6 +571,9 @@ if Meteor.isClient
     Router.route '/addHomeAIBox',()->
       this.render 'addHomeAIBox'
       return
+    Router.route '/scanFailPrompt',()->
+      this.render 'scanFailPrompt'
+      return
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->

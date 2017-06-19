@@ -9,6 +9,11 @@ if (Meteor.isClient) {
         var gotoPage = '/';
         var  requiredStr = rest_api_url+'/simple-chat/to/group?id='
         if (result.text) {
+          if (Session.get('addHomeAIBox') === true) {
+            Router.go('/scanFailPrompt');
+            Session.set('addHomeAIBox',false);
+            return;
+          }
           if (result.text.indexOf(requiredStr)=== 0) {
             var groupid = result.text.substring(requiredStr.length);
             console.log('groupid==='+groupid);
