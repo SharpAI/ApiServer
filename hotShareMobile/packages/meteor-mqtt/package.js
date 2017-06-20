@@ -7,7 +7,7 @@ Package.describe({
 });
 
 Npm.depends({
-	"mqtt": "1.0.10"
+	"mqtt": "2.9.0"
 	
 })
 

@@ -9,1794 +9,7 @@ global.mqtt = require('mqtt')
 //global.mqtt_store_manager = levelStore('mgr');
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"mqtt":3}],2:[function(require,module,exports){
-(function (process,global){
-'use strict'
-
-/**
- * Module dependencies
- */
-var events = require('events')
-var Store = require('./store')
-var eos = require('end-of-stream')
-var mqttPacket = require('mqtt-packet')
-var Writable = require('readable-stream').Writable
-var inherits = require('inherits')
-var reInterval = require('reinterval')
-var validations = require('./validations')
-var setImmediate = global.setImmediate || function (callback) {
-  // works in node v0.8
-  process.nextTick(callback)
-}
-var defaultConnectOptions = {
-  keepalive: 60,
-  reschedulePings: true,
-  protocolId: 'MQTT',
-  protocolVersion: 4,
-  reconnectPeriod: 1000,
-  connectTimeout: 30 * 1000,
-  clean: true
-}
-
-function defaultId () {
-  return 'mqttjs_' + Math.random().toString(16).substr(2, 8)
-}
-
-function sendPacket (client, packet, cb) {
-  client.emit('packetsend', packet)
-
-  var result = mqttPacket.writeToStream(packet, client.stream)
-
-  if (!result && cb) {
-    client.stream.once('drain', cb)
-  } else if (cb) {
-    cb()
-  }
-}
-
-function storeAndSend (client, packet, cb) {
-  client.outgoingStore.put(packet, function storedPacket (err) {
-    if (err) {
-      return cb && cb(err)
-    }
-    sendPacket(client, packet, cb)
-  })
-}
-
-function nop () {}
-
-/**
- * MqttClient constructor
- *
- * @param {Stream} stream - stream
- * @param {Object} [options] - connection options
- * (see Connection#connect)
- */
-function MqttClient (streamBuilder, options) {
-  var k
-  var that = this
-
-  if (!(this instanceof MqttClient)) {
-    return new MqttClient(streamBuilder, options)
-  }
-
-  this.options = options || {}
-
-  // Defaults
-  for (k in defaultConnectOptions) {
-    if (typeof this.options[k] === 'undefined') {
-      this.options[k] = defaultConnectOptions[k]
-    } else {
-      this.options[k] = options[k]
-    }
-  }
-
-  this.options.clientId = this.options.clientId || defaultId()
-
-  this.streamBuilder = streamBuilder
-
-  // Inflight message storages
-  this.outgoingStore = this.options.outgoingStore || new Store()
-  this.incomingStore = this.options.incomingStore || new Store()
-
-  // Should QoS zero messages be queued when the connection is broken?
-  this.queueQoSZero = this.options.queueQoSZero === undefined ? true : this.options.queueQoSZero
-
-  // map of subscribed topics to support reconnection
-  this._resubscribeTopics = {}
-
-  // Ping timer, setup in _setupPingTimer
-  this.pingTimer = null
-  // Is the client connected?
-  this.connected = false
-  // Are we disconnecting?
-  this.disconnecting = false
-  // Packet queue
-  this.queue = []
-  // connack timer
-  this.connackTimer = null
-  // Reconnect timer
-  this.reconnectTimer = null
-  // MessageIDs starting with 1
-  this.nextId = Math.floor(Math.random() * 65535)
-
-  // Inflight callbacks
-  this.outgoing = {}
-
-  // Mark connected on connect
-  this.on('connect', function () {
-    if (this.disconnected) {
-      return
-    }
-
-    this.connected = true
-    var outStore = null
-    outStore = this.outgoingStore.createStream()
-
-    // Control of stored messages
-    outStore.once('readable', function () {
-      function storeDeliver () {
-        var packet = outStore.read(1)
-        var cb
-
-        if (!packet) {
-          return
-        }
-
-        // Avoid unnecesary stream read operations when disconnected
-        if (!that.disconnecting && !that.reconnectTimer && that.options.reconnectPeriod > 0) {
-          outStore.read(0)
-          cb = that.outgoing[packet.messageId]
-          that.outgoing[packet.messageId] = function (err, status) {
-            // Ensure that the original callback passed in to publish gets invoked
-            if (cb) {
-              cb(err, status)
-            }
-
-            storeDeliver()
-          }
-          that._sendPacket(packet)
-        } else if (outStore.destroy) {
-          outStore.destroy()
-        }
-      }
-      storeDeliver()
-    })
-    .on('error', this.emit.bind(this, 'error'))
-  })
-
-  // Mark disconnected on stream close
-  this.on('close', function () {
-    this.connected = false
-    clearTimeout(this.connackTimer)
-  })
-
-  // Setup ping timer
-  this.on('connect', this._setupPingTimer)
-
-  // Send queued packets
-  this.on('connect', function () {
-    var queue = this.queue
-
-    function deliver () {
-      var entry = queue.shift()
-      var packet = null
-
-      if (!entry) {
-        return
-      }
-
-      packet = entry.packet
-
-      that._sendPacket(
-        packet,
-        function (err) {
-          if (entry.cb) {
-            entry.cb(err)
-          }
-          deliver()
-        }
-      )
-    }
-
-    deliver()
-  })
-
-  // resubscribe
-  this.on('reconnect', function () {
-    if (this.options.clean && Object.keys(this._resubscribeTopics).length > 0) {
-      this.subscribe(this._resubscribeTopics)
-    }
-  })
-
-  // Clear ping timer
-  this.on('close', function () {
-    if (that.pingTimer !== null) {
-      that.pingTimer.clear()
-      that.pingTimer = null
-    }
-  })
-
-  // Setup reconnect timer on disconnect
-  this.on('close', this._setupReconnect)
-
-  events.EventEmitter.call(this)
-
-  this._setupStream()
-}
-inherits(MqttClient, events.EventEmitter)
-
-/**
- * setup the event handlers in the inner stream.
- *
- * @api private
- */
-MqttClient.prototype._setupStream = function () {
-  var connectPacket
-  var that = this
-  var writable = new Writable()
-  var parser = mqttPacket.parser(this.options)
-  var completeParse = null
-  var packets = []
-
-  this._clearReconnect()
-
-  this.stream = this.streamBuilder(this)
-
-  parser.on('packet', function (packet) {
-    packets.push(packet)
-  })
-
-  function process () {
-    var packet = packets.shift()
-    var done = completeParse
-
-    if (packet) {
-      that._handlePacket(packet, process)
-    } else {
-      completeParse = null
-      done()
-    }
-  }
-
-  writable._write = function (buf, enc, done) {
-    completeParse = done
-    parser.parse(buf)
-    process()
-  }
-
-  this.stream.pipe(writable)
-
-  // Suppress connection errors
-  this.stream.on('error', nop)
-
-  // Echo stream close
-  eos(this.stream, this.emit.bind(this, 'close'))
-
-  // Send a connect packet
-  connectPacket = Object.create(this.options)
-  connectPacket.cmd = 'connect'
-  // avoid message queue
-  sendPacket(this, connectPacket)
-
-  // Echo connection errors
-  parser.on('error', this.emit.bind(this, 'error'))
-
-  // many drain listeners are needed for qos 1 callbacks if the connection is intermittent
-  this.stream.setMaxListeners(1000)
-
-  clearTimeout(this.connackTimer)
-  this.connackTimer = setTimeout(function () {
-    that._cleanUp(true)
-  }, this.options.connectTimeout)
-}
-
-MqttClient.prototype._handlePacket = function (packet, done) {
-  this.emit('packetreceive', packet)
-
-  switch (packet.cmd) {
-    case 'publish':
-      this._handlePublish(packet, done)
-      break
-    case 'puback':
-    case 'pubrec':
-    case 'pubcomp':
-    case 'suback':
-    case 'unsuback':
-      this._handleAck(packet)
-      done()
-      break
-    case 'pubrel':
-      this._handlePubrel(packet, done)
-      break
-    case 'connack':
-      this._handleConnack(packet)
-      done()
-      break
-    case 'pingresp':
-      this._handlePingresp(packet)
-      done()
-      break
-    default:
-      // do nothing
-      // maybe we should do an error handling
-      // or just log it
-      break
-  }
-}
-
-MqttClient.prototype._checkDisconnecting = function (callback) {
-  if (this.disconnecting) {
-    if (callback) {
-      callback(new Error('client disconnecting'))
-    } else {
-      this.emit('error', new Error('client disconnecting'))
-    }
-  }
-  return this.disconnecting
-}
-
-/**
- * publish - publish <message> to <topic>
- *
- * @param {String} topic - topic to publish to
- * @param {String, Buffer} message - message to publish
- * @param {Object} [opts] - publish options, includes:
- *    {Number} qos - qos level to publish on
- *    {Boolean} retain - whether or not to retain the message
- * @param {Function} [callback] - function(err){}
- *    called when publish succeeds or fails
- * @returns {MqttClient} this - for chaining
- * @api public
- *
- * @example client.publish('topic', 'message');
- * @example
- *     client.publish('topic', 'message', {qos: 1, retain: true});
- * @example client.publish('topic', 'message', console.log);
- */
-MqttClient.prototype.publish = function (topic, message, opts, callback) {
-  var packet
-
-  // .publish(topic, payload, cb);
-  if (typeof opts === 'function') {
-    callback = opts
-    opts = null
-  }
-
-  // Default opts
-  if (!opts) {
-    opts = {qos: 0, retain: false}
-  }
-
-  if (this._checkDisconnecting(callback)) {
-    return this
-  }
-
-  packet = {
-    cmd: 'publish',
-    topic: topic,
-    payload: message,
-    qos: opts.qos,
-    retain: opts.retain,
-    messageId: this._nextId()
-  }
-
-  switch (opts.qos) {
-    case 1:
-    case 2:
-
-      // Add to callbacks
-      this.outgoing[packet.messageId] = callback || nop
-      this._sendPacket(packet)
-      break
-    default:
-      this._sendPacket(packet, callback)
-      break
-  }
-
-  return this
-}
-
-/**
- * subscribe - subscribe to <topic>
- *
- * @param {String, Array, Object} topic - topic(s) to subscribe to, supports objects in the form {'topic': qos}
- * @param {Object} [opts] - optional subscription options, includes:
- *    {Number} qos - subscribe qos level
- * @param {Function} [callback] - function(err, granted){} where:
- *    {Error} err - subscription error (none at the moment!)
- *    {Array} granted - array of {topic: 't', qos: 0}
- * @returns {MqttClient} this - for chaining
- * @api public
- * @example client.subscribe('topic');
- * @example client.subscribe('topic', {qos: 1});
- * @example client.subscribe({'topic': 0, 'topic2': 1}, console.log);
- * @example client.subscribe('topic', console.log);
- */
-MqttClient.prototype.subscribe = function () {
-  var packet
-  var args = Array.prototype.slice.call(arguments)
-  var subs = []
-  var obj = args.shift()
-  var callback = args.pop() || nop
-  var opts = args.pop()
-  var invalidTopic
-  var that = this
-
-  if (typeof obj === 'string') {
-    obj = [obj]
-  }
-
-  if (typeof callback !== 'function') {
-    opts = callback
-    callback = nop
-  }
-
-  invalidTopic = validations.validateTopics(obj)
-  if (invalidTopic !== null) {
-    setImmediate(callback, new Error('Invalid topic ' + invalidTopic))
-    return this
-  }
-
-  if (this._checkDisconnecting(callback)) {
-    return this
-  }
-
-  if (!opts) {
-    opts = { qos: 0 }
-  }
-
-  if (Array.isArray(obj)) {
-    obj.forEach(function (topic) {
-      subs.push({
-        topic: topic,
-        qos: opts.qos
-      })
-    })
-  } else {
-    Object
-      .keys(obj)
-      .forEach(function (k) {
-        subs.push({
-          topic: k,
-          qos: obj[k]
-        })
-      })
-  }
-
-  packet = {
-    cmd: 'subscribe',
-    subscriptions: subs,
-    qos: 1,
-    retain: false,
-    dup: false,
-    messageId: this._nextId()
-  }
-
-  // subscriptions to resubscribe to in case of disconnect
-  subs.forEach(function (sub) {
-    that._resubscribeTopics[sub.topic] = sub.qos
-  })
-
-  this.outgoing[packet.messageId] = function (err, packet) {
-    if (!err) {
-      var granted = packet.granted
-      for (var i = 0; i < granted.length; i += 1) {
-        subs[i].qos = granted[i]
-      }
-    }
-
-    callback(err, subs)
-  }
-
-  this._sendPacket(packet)
-
-  return this
-}
-
-/**
- * unsubscribe - unsubscribe from topic(s)
- *
- * @param {String, Array} topic - topics to unsubscribe from
- * @param {Function} [callback] - callback fired on unsuback
- * @returns {MqttClient} this - for chaining
- * @api public
- * @example client.unsubscribe('topic');
- * @example client.unsubscribe('topic', console.log);
- */
-MqttClient.prototype.unsubscribe = function (topic, callback) {
-  var packet = {
-    cmd: 'unsubscribe',
-    qos: 1,
-    messageId: this._nextId()
-  }
-  var that = this
-
-  callback = callback || nop
-
-  if (this._checkDisconnecting(callback)) {
-    return this
-  }
-
-  if (typeof topic === 'string') {
-    packet.unsubscriptions = [topic]
-  } else if (typeof topic === 'object' && topic.length) {
-    packet.unsubscriptions = topic
-  }
-
-  packet.unsubscriptions.forEach(function (topic) {
-    delete that._resubscribeTopics[topic]
-  })
-
-  this.outgoing[packet.messageId] = callback
-
-  this._sendPacket(packet)
-
-  return this
-}
-
-/**
- * end - close connection
- *
- * @returns {MqttClient} this - for chaining
- * @param {Boolean} force - do not wait for all in-flight messages to be acked
- * @param {Function} cb - called when the client has been closed
- *
- * @api public
- */
-MqttClient.prototype.end = function (force, cb) {
-  var that = this
-
-  if (typeof force === 'function') {
-    cb = force
-    force = false
-  }
-
-  function closeStores () {
-    that.disconnected = true
-    that.incomingStore.close(function () {
-      that.outgoingStore.close(cb)
-    })
-  }
-
-  function finish () {
-    // defer closesStores of an I/O cycle,
-    // just to make sure things are
-    // ok for websockets
-    that._cleanUp(force, setImmediate.bind(null, closeStores))
-  }
-
-  if (this.disconnecting) {
-    return this
-  }
-
-  this._clearReconnect()
-
-  this.disconnecting = true
-
-  if (!force && Object.keys(this.outgoing).length > 0) {
-    // wait 10ms, just to be sure we received all of it
-    this.once('outgoingEmpty', setTimeout.bind(null, finish, 10))
-  } else {
-    finish()
-  }
-
-  return this
-}
-
-/**
- * _reconnect - implement reconnection
- * @api privateish
- */
-MqttClient.prototype._reconnect = function () {
-  this.emit('reconnect')
-  this._setupStream()
-}
-
-/**
- * _setupReconnect - setup reconnect timer
- */
-MqttClient.prototype._setupReconnect = function () {
-  var that = this
-
-  if (!that.disconnecting && !that.reconnectTimer && (that.options.reconnectPeriod > 0)) {
-    if (!this.reconnecting) {
-      this.emit('offline')
-      this.reconnecting = true
-    }
-    that.reconnectTimer = setInterval(function () {
-      that._reconnect()
-    }, that.options.reconnectPeriod)
-  }
-}
-
-/**
- * _clearReconnect - clear the reconnect timer
- */
-MqttClient.prototype._clearReconnect = function () {
-  if (this.reconnectTimer) {
-    clearInterval(this.reconnectTimer)
-    this.reconnectTimer = null
-  }
-}
-
-/**
- * _cleanUp - clean up on connection end
- * @api private
- */
-MqttClient.prototype._cleanUp = function (forced, done) {
-  if (done) {
-    this.stream.on('close', done)
-  }
-
-  if (forced) {
-    this.stream.destroy()
-  } else {
-    this._sendPacket(
-      { cmd: 'disconnect' },
-      setImmediate.bind(
-        null,
-        this.stream.end.bind(this.stream)
-      )
-    )
-  }
-
-  if (!this.disconnecting) {
-    this._clearReconnect()
-    this._setupReconnect()
-  }
-
-  if (this.pingTimer !== null) {
-    this.pingTimer.clear()
-    this.pingTimer = null
-  }
-}
-
-/**
- * _sendPacket - send or queue a packet
- * @param {String} type - packet type (see `protocol`)
- * @param {Object} packet - packet options
- * @param {Function} cb - callback when the packet is sent
- * @api private
- */
-MqttClient.prototype._sendPacket = function (packet, cb) {
-  if (!this.connected) {
-    if (packet.qos > 0 || packet.cmd !== 'publish' || this.queueQoSZero) {
-      this.queue.push({ packet: packet, cb: cb })
-    } else if (cb) {
-      cb(new Error('No connection to broker'))
-    }
-
-    return
-  }
-
-  // When sending a packet, reschedule the ping timer
-  this._shiftPingInterval()
-
-  if (packet.cmd !== 'publish') {
-    sendPacket(this, packet, cb)
-    return
-  }
-
-  switch (packet.qos) {
-    case 2:
-    case 1:
-      storeAndSend(this, packet, cb)
-      break
-    /**
-     * no need of case here since it will be caught by default
-     * and jshint comply that before default it must be a break
-     * anyway it will result in -1 evaluation
-     */
-    case 0:
-      /* falls through */
-    default:
-      sendPacket(this, packet, cb)
-      break
-  }
-}
-
-/**
- * _setupPingTimer - setup the ping timer
- *
- * @api private
- */
-MqttClient.prototype._setupPingTimer = function () {
-  var that = this
-
-  if (!this.pingTimer && this.options.keepalive) {
-    this.pingResp = true
-    this.pingTimer = reInterval(function () {
-      that._checkPing()
-    }, this.options.keepalive * 1000)
-  }
-}
-
-/**
- * _shiftPingInterval - reschedule the ping interval
- *
- * @api private
- */
-MqttClient.prototype._shiftPingInterval = function () {
-  if (this.pingTimer && this.options.keepalive && this.options.reschedulePings) {
-    this.pingTimer.reschedule(this.options.keepalive * 1000)
-  }
-}
-/**
- * _checkPing - check if a pingresp has come back, and ping the server again
- *
- * @api private
- */
-MqttClient.prototype._checkPing = function () {
-  if (this.pingResp) {
-    this.pingResp = false
-    this._sendPacket({ cmd: 'pingreq' })
-  } else {
-    // do a forced cleanup since socket will be in bad shape
-    this._cleanUp(true)
-  }
-}
-
-/**
- * _handlePingresp - handle a pingresp
- *
- * @api private
- */
-MqttClient.prototype._handlePingresp = function () {
-  this.pingResp = true
-}
-
-/**
- * _handleConnack
- *
- * @param {Object} packet
- * @api private
- */
-
-MqttClient.prototype._handleConnack = function (packet) {
-  var rc = packet.returnCode
-  var errors = [
-    '',
-    'Unacceptable protocol version',
-    'Identifier rejected',
-    'Server unavailable',
-    'Bad username or password',
-    'Not authorized'
-  ]
-
-  clearTimeout(this.connackTimer)
-
-  if (rc === 0) {
-    this.reconnecting = false
-    this.emit('connect', packet)
-  } else if (rc > 0) {
-    var err = new Error('Connection refused: ' + errors[rc])
-    err.code = rc
-    this.emit('error', err)
-  }
-}
-
-/**
- * _handlePublish
- *
- * @param {Object} packet
- * @api private
- */
-/*
-those late 2 case should be rewrite to comply with coding style:
-
-case 1:
-case 0:
-  // do not wait sending a puback
-  // no callback passed
-  if (1 === qos) {
-    this._sendPacket({
-      cmd: 'puback',
-      messageId: mid
-    });
-  }
-  // emit the message event for both qos 1 and 0
-  this.emit('message', topic, message, packet);
-  this.handleMessage(packet, done);
-  break;
-default:
-  // do nothing but every switch mus have a default
-  // log or throw an error about unknown qos
-  break;
-
-for now i just suppressed the warnings
-*/
-MqttClient.prototype._handlePublish = function (packet, done) {
-  var topic = packet.topic.toString()
-  var message = packet.payload
-  var qos = packet.qos
-  var mid = packet.messageId
-  var that = this
-
-  switch (qos) {
-    case 2:
-      this.incomingStore.put(packet, function () {
-        that._sendPacket({cmd: 'pubrec', messageId: mid}, done)
-      })
-      break
-    case 1:
-      // do not wait sending a puback
-      // no callback passed
-      this._sendPacket({
-        cmd: 'puback',
-        messageId: mid
-      })
-      /* falls through */
-    case 0:
-      // emit the message event for both qos 1 and 0
-      this.emit('message', topic, message, packet)
-      this.handleMessage(packet, done)
-      break
-    default:
-      // do nothing
-      // log or throw an error about unknown qos
-      break
-  }
-}
-
-/**
- * Handle messages with backpressure support, one at a time.
- * Override at will.
- *
- * @param Packet packet the packet
- * @param Function callback call when finished
- * @api public
- */
-MqttClient.prototype.handleMessage = function (packet, callback) {
-  callback()
-}
-
-/**
- * _handleAck
- *
- * @param {Object} packet
- * @api private
- */
-
-MqttClient.prototype._handleAck = function (packet) {
-  /* eslint no-fallthrough: "off" */
-  var mid = packet.messageId
-  var type = packet.cmd
-  var response = null
-  var cb = this.outgoing[mid]
-  var that = this
-
-  if (!cb) {
-    // Server sent an ack in error, ignore it.
-    return
-  }
-
-  // Process
-  switch (type) {
-    case 'pubcomp':
-      // same thing as puback for QoS 2
-    case 'puback':
-      // Callback - we're done
-      delete this.outgoing[mid]
-      this.outgoingStore.del(packet, cb)
-      break
-    case 'pubrec':
-      response = {
-        cmd: 'pubrel',
-        qos: 2,
-        messageId: mid
-      }
-
-      this._sendPacket(response)
-      break
-    case 'suback':
-      delete this.outgoing[mid]
-      cb(null, packet)
-      break
-    case 'unsuback':
-      delete this.outgoing[mid]
-      cb(null)
-      break
-    default:
-      that.emit('error', new Error('unrecognized packet type'))
-  }
-
-  if (this.disconnecting &&
-      Object.keys(this.outgoing).length === 0) {
-    this.emit('outgoingEmpty')
-  }
-}
-
-/**
- * _handlePubrel
- *
- * @param {Object} packet
- * @api private
- */
-
-MqttClient.prototype._handlePubrel = function (packet, callback) {
-  var mid = packet.messageId
-  var that = this
-
-  that.incomingStore.get(packet, function (err, pub) {
-    if (err) {
-      return that.emit('error', err)
-    }
-
-    if (pub.cmd !== 'pubrel') {
-      that.emit('message', pub.topic, pub.payload, pub)
-      that.incomingStore.put(packet)
-    }
-
-    that._sendPacket({cmd: 'pubcomp', messageId: mid}, callback)
-  })
-}
-
-/**
- * _nextId
- */
-MqttClient.prototype._nextId = function () {
-  var id = this.nextId++
-  // Ensure 16 bit unsigned int:
-  if (id === 65535) {
-    this.nextId = 1
-  }
-  return id
-}
-
-/**
- * getLastMessageId
- */
-MqttClient.prototype.getLastMessageId = function () {
-  return (this.nextId === 1) ? 65535 : (this.nextId - 1)
-}
-
-module.exports = MqttClient
-
-}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./store":7,"./validations":8,"_process":55,"end-of-stream":9,"events":53,"inherits":12,"mqtt-packet":15,"readable-stream":37,"reinterval":38}],3:[function(require,module,exports){
-(function (process){
-'use strict'
-
-var MqttClient = require('../client')
-var url = require('url')
-var xtend = require('xtend')
-var protocols = {}
-
-if (process.title !== 'browser') {
-  protocols.mqtt = require('./tcp')
-  protocols.tcp = require('./tcp')
-  protocols.ssl = require('./tls')
-  protocols.tls = require('./tls')
-  protocols.mqtts = require('./tls')
-}
-
-protocols.ws = require('./ws')
-protocols.wss = require('./ws')
-
-/**
- * Parse the auth attribute and merge username and password in the options object.
- *
- * @param {Object} [opts] option object
- */
-function parseAuthOptions (opts) {
-  var matches
-  if (opts.auth) {
-    matches = opts.auth.match(/^(.+):(.+)$/)
-    if (matches) {
-      opts.username = matches[1]
-      opts.password = matches[2]
-    } else {
-      opts.username = opts.auth
-    }
-  }
-}
-
-/**
- * connect - connect to an MQTT broker.
- *
- * @param {String} [brokerUrl] - url of the broker, optional
- * @param {Object} opts - see MqttClient#constructor
- */
-function connect (brokerUrl, opts) {
-  if ((typeof brokerUrl === 'object') && !opts) {
-    opts = brokerUrl
-    brokerUrl = null
-  }
-
-  opts = opts || {}
-
-  if (brokerUrl) {
-    var parsed = url.parse(brokerUrl, true)
-    if (parsed.port != null) {
-      parsed.port = Number(parsed.port)
-    }
-
-    opts = xtend(parsed, opts)
-
-    if (opts.protocol === null) {
-      throw new Error('Missing protocol')
-    }
-    opts.protocol = opts.protocol.replace(/:$/, '')
-  }
-
-  // merge in the auth options if supplied
-  parseAuthOptions(opts)
-
-  // support clientId passed in the query string of the url
-  if (opts.query && typeof opts.query.clientId === 'string') {
-    opts.clientId = opts.query.clientId
-  }
-
-  if (opts.cert && opts.key) {
-    if (opts.protocol) {
-      if (['mqtts', 'wss'].indexOf(opts.protocol) === -1) {
-        /*
-         * jshint and eslint
-         * complains that break from default cannot be reached after throw
-         * it is a foced exit from a control structure
-         * maybe add a check after switch to see if it went through default
-         * and then throw the error
-        */
-        /* jshint -W027 */
-        /* eslint no-unreachable:1 */
-        switch (opts.protocol) {
-          case 'mqtt':
-            opts.protocol = 'mqtts'
-            break
-          case 'ws':
-            opts.protocol = 'wss'
-            break
-          default:
-            throw new Error('Unknown protocol for secure connection: "' + opts.protocol + '"!')
-            break
-        }
-        /* eslint no-unreachable:0 */
-        /* jshint +W027 */
-      }
-    } else {
-      // don't know what protocol he want to use, mqtts or wss
-      throw new Error('Missing secure protocol key')
-    }
-  }
-
-  if (!protocols[opts.protocol]) {
-    var isSecure = ['mqtts', 'wss'].indexOf(opts.protocol) !== -1
-    opts.protocol = [
-      'mqtt',
-      'mqtts',
-      'ws',
-      'wss'
-    ].filter(function (key, index) {
-      if (isSecure && index % 2 === 0) {
-        // Skip insecure protocols when requesting a secure one.
-        return false
-      }
-      return (typeof protocols[key] === 'function')
-    })[0]
-  }
-
-  if (opts.clean === false && !opts.clientId) {
-    throw new Error('Missing clientId for unclean clients')
-  }
-
-  function wrapper (client) {
-    if (opts.servers) {
-      if (!client._reconnectCount || client._reconnectCount === opts.servers.length) {
-        client._reconnectCount = 0
-      }
-
-      opts.host = opts.servers[client._reconnectCount].host
-      opts.port = opts.servers[client._reconnectCount].port
-      opts.hostname = opts.host
-
-      client._reconnectCount++
-    }
-
-    return protocols[opts.protocol](client, opts)
-  }
-
-  return new MqttClient(wrapper, opts)
-}
-
-module.exports = connect
-module.exports.connect = connect
-module.exports.MqttClient = MqttClient
-
-}).call(this,require('_process'))
-},{"../client":2,"./tcp":4,"./tls":5,"./ws":6,"_process":55,"url":60,"xtend":47}],4:[function(require,module,exports){
-'use strict'
-var net = require('net')
-
-/*
-  variables port and host can be removed since
-  you have all required information in opts object
-*/
-function buildBuilder (client, opts) {
-  var port, host
-  opts.port = opts.port || 1883
-  opts.hostname = opts.hostname || opts.host || 'localhost'
-
-  port = opts.port
-  host = opts.hostname
-
-  return net.createConnection(port, host)
-}
-
-module.exports = buildBuilder
-
-},{"net":48}],5:[function(require,module,exports){
-'use strict'
-var tls = require('tls')
-
-function buildBuilder (mqttClient, opts) {
-  var connection
-  opts.port = opts.port || 8883
-  opts.host = opts.hostname || opts.host || 'localhost'
-
-  opts.rejectUnauthorized = opts.rejectUnauthorized !== false
-
-  connection = tls.connect(opts)
-  /* eslint no-use-before-define: [2, "nofunc"] */
-  connection.on('secureConnect', function () {
-    if (opts.rejectUnauthorized && !connection.authorized) {
-      connection.emit('error', new Error('TLS not authorized'))
-    } else {
-      connection.removeListener('error', handleTLSerrors)
-    }
-  })
-
-  function handleTLSerrors (err) {
-    // How can I get verify this error is a tls error?
-    if (opts.rejectUnauthorized) {
-      mqttClient.emit('error', err)
-    }
-
-    // close this connection to match the behaviour of net
-    // otherwise all we get is an error from the connection
-    // and close event doesn't fire. This is a work around
-    // to enable the reconnect code to work the same as with
-    // net.createConnection
-    connection.end()
-  }
-
-  connection.on('error', handleTLSerrors)
-  return connection
-}
-
-module.exports = buildBuilder
-
-},{"tls":48}],6:[function(require,module,exports){
-(function (process){
-'use strict'
-
-var websocket = require('websocket-stream')
-var urlModule = require('url')
-var WSS_OPTIONS = [
-  'rejectUnauthorized',
-  'ca',
-  'cert',
-  'key',
-  'pfx',
-  'passphrase'
-]
-var IS_BROWSER = process.title === 'browser'
-
-function buildUrl (opts, client) {
-  var url = opts.protocol + '://' + opts.hostname + ':' + opts.port + opts.path
-  if (typeof (opts.transformWsUrl) === 'function') {
-    url = opts.transformWsUrl(url, opts, client)
-  }
-  return url
-}
-
-function setDefaultOpts (opts) {
-  if (!opts.hostname) {
-    opts.hostname = 'localhost'
-  }
-  if (!opts.port) {
-    if (opts.protocol === 'wss') {
-      opts.port = 443
-    } else {
-      opts.port = 80
-    }
-  }
-  if (!opts.path) {
-    opts.path = '/'
-  }
-
-  if (!opts.wsOptions) {
-    opts.wsOptions = {}
-  }
-  if (!IS_BROWSER && opts.protocol === 'wss') {
-    // Add cert/key/ca etc options
-    WSS_OPTIONS.forEach(function (prop) {
-      if (opts.hasOwnProperty(prop) && !opts.wsOptions.hasOwnProperty(prop)) {
-        opts.wsOptions[prop] = opts[prop]
-      }
-    })
-  }
-}
-
-function createWebSocket (client, opts) {
-  var websocketSubProtocol =
-    (opts.protocolId === 'MQIsdp') && (opts.protocolVersion === 3)
-      ? 'mqttv3.1'
-      : 'mqtt'
-
-  setDefaultOpts(opts)
-  var url = buildUrl(opts, client)
-  return websocket(url, [websocketSubProtocol], opts.wsOptions)
-}
-
-function buildBuilder (client, opts) {
-  return createWebSocket(client, opts)
-}
-
-function buildBuilderBrowser (client, opts) {
-  if (!opts.hostname) {
-    opts.hostname = opts.host
-  }
-
-  if (!opts.hostname) {
-    // Throwing an error in a Web Worker if no `hostname` is given, because we
-    // can not determine the `hostname` automatically.  If connecting to
-    // localhost, please supply the `hostname` as an argument.
-    if (typeof (document) === 'undefined') {
-      throw new Error('Could not determine host. Specify host manually.')
-    }
-    var parsed = urlModule.parse(document.URL)
-    opts.hostname = parsed.hostname
-
-    if (!opts.port) {
-      opts.port = parsed.port
-    }
-  }
-  return createWebSocket(client, opts)
-}
-
-if (IS_BROWSER) {
-  module.exports = buildBuilderBrowser
-} else {
-  module.exports = buildBuilder
-}
-
-}).call(this,require('_process'))
-},{"_process":55,"url":60,"websocket-stream":45}],7:[function(require,module,exports){
-(function (process){
-'use strict'
-
-var Readable = require('readable-stream').Readable
-var streamsOpts = { objectMode: true }
-
-/**
- * In-memory implementation of the message store
- * This can actually be saved into files.
- *
- */
-function Store () {
-  if (!(this instanceof Store)) {
-    return new Store()
-  }
-
-  this._inflights = {}
-}
-
-/**
- * Adds a packet to the store, a packet is
- * anything that has a messageId property.
- *
- */
-Store.prototype.put = function (packet, cb) {
-  this._inflights[packet.messageId] = packet
-
-  if (cb) {
-    cb()
-  }
-
-  return this
-}
-
-/**
- * Creates a stream with all the packets in the store
- *
- */
-Store.prototype.createStream = function () {
-  var stream = new Readable(streamsOpts)
-  var inflights = this._inflights
-  var ids = Object.keys(this._inflights)
-  var destroyed = false
-  var i = 0
-
-  stream._read = function () {
-    if (!destroyed && i < ids.length) {
-      this.push(inflights[ids[i++]])
-    } else {
-      this.push(null)
-    }
-  }
-
-  stream.destroy = function () {
-    if (destroyed) {
-      return
-    }
-
-    var self = this
-
-    destroyed = true
-
-    process.nextTick(function () {
-      self.emit('close')
-    })
-  }
-
-  return stream
-}
-
-/**
- * deletes a packet from the store.
- */
-Store.prototype.del = function (packet, cb) {
-  packet = this._inflights[packet.messageId]
-  if (packet) {
-    delete this._inflights[packet.messageId]
-    cb(null, packet)
-  } else if (cb) {
-    cb(new Error('missing packet'))
-  }
-
-  return this
-}
-
-/**
- * get a packet from the store.
- */
-Store.prototype.get = function (packet, cb) {
-  packet = this._inflights[packet.messageId]
-  if (packet) {
-    cb(null, packet)
-  } else if (cb) {
-    cb(new Error('missing packet'))
-  }
-
-  return this
-}
-
-/**
- * Close the store
- */
-Store.prototype.close = function (cb) {
-  this._inflights = null
-  if (cb) {
-    cb()
-  }
-}
-
-module.exports = Store
-
-}).call(this,require('_process'))
-},{"_process":55,"readable-stream":37}],8:[function(require,module,exports){
-'use strict'
-
-/**
- * Validate a topic to see if it's valid or not.
- * A topic is valid if it follow below rules:
- * - Rule #1: If any part of the topic is not `+` or `#`, then it must not contain `+` and '#'
- * - Rule #2: Part `#` must be located at the end of the mailbox
- *
- * @param {String} topic - A topic
- * @returns {Boolean} If the topic is valid, returns true. Otherwise, returns false.
- */
-function validateTopic (topic) {
-  var parts = topic.split('/')
-
-  for (var i = 0; i < parts.length; i++) {
-    if (parts[i] === '+') {
-      continue
-    }
-
-    if (parts[i] === '#') {
-      // for Rule #2
-      return i === parts.length - 1
-    }
-
-    if (parts[i].indexOf('+') !== -1 || parts[i].indexOf('#') !== -1) {
-      return false
-    }
-  }
-
-  return true
-}
-
-/**
- * Validate an array of topics to see if any of them is valid or not
-  * @param {Array} topics - Array of topics
- * @returns {String} If the topics is valid, returns null. Otherwise, returns the invalid one
- */
-function validateTopics (topics) {
-  if (topics.length === 0) {
-    return 'empty_topic_list'
-  }
-  for (var i = 0; i < topics.length; i++) {
-    if (!validateTopic(topics[i])) {
-      return topics[i]
-    }
-  }
-  return null
-}
-
-module.exports = {
-  validateTopics: validateTopics
-}
-
-},{}],9:[function(require,module,exports){
-var once = require('once');
-
-var noop = function() {};
-
-var isRequest = function(stream) {
-	return stream.setHeader && typeof stream.abort === 'function';
-};
-
-var isChildProcess = function(stream) {
-	return stream.stdio && Array.isArray(stream.stdio) && stream.stdio.length === 3
-};
-
-var eos = function(stream, opts, callback) {
-	if (typeof opts === 'function') return eos(stream, null, opts);
-	if (!opts) opts = {};
-
-	callback = once(callback || noop);
-
-	var ws = stream._writableState;
-	var rs = stream._readableState;
-	var readable = opts.readable || (opts.readable !== false && stream.readable);
-	var writable = opts.writable || (opts.writable !== false && stream.writable);
-
-	var onlegacyfinish = function() {
-		if (!stream.writable) onfinish();
-	};
-
-	var onfinish = function() {
-		writable = false;
-		if (!readable) callback.call(stream);
-	};
-
-	var onend = function() {
-		readable = false;
-		if (!writable) callback.call(stream);
-	};
-
-	var onexit = function(exitCode) {
-		callback.call(stream, exitCode ? new Error('exited with error code: ' + exitCode) : null);
-	};
-
-	var onclose = function() {
-		if (readable && !(rs && rs.ended)) return callback.call(stream, new Error('premature close'));
-		if (writable && !(ws && ws.ended)) return callback.call(stream, new Error('premature close'));
-	};
-
-	var onrequest = function() {
-		stream.req.on('finish', onfinish);
-	};
-
-	if (isRequest(stream)) {
-		stream.on('complete', onfinish);
-		stream.on('abort', onclose);
-		if (stream.req) onrequest();
-		else stream.on('request', onrequest);
-	} else if (writable && !ws) { // legacy streams
-		stream.on('end', onlegacyfinish);
-		stream.on('close', onlegacyfinish);
-	}
-
-	if (isChildProcess(stream)) stream.on('exit', onexit);
-
-	stream.on('end', onend);
-	stream.on('finish', onfinish);
-	if (opts.error !== false) stream.on('error', callback);
-	stream.on('close', onclose);
-
-	return function() {
-		stream.removeListener('complete', onfinish);
-		stream.removeListener('abort', onclose);
-		stream.removeListener('request', onrequest);
-		if (stream.req) stream.req.removeListener('finish', onfinish);
-		stream.removeListener('end', onlegacyfinish);
-		stream.removeListener('close', onlegacyfinish);
-		stream.removeListener('finish', onfinish);
-		stream.removeListener('exit', onexit);
-		stream.removeListener('end', onend);
-		stream.removeListener('error', callback);
-		stream.removeListener('close', onclose);
-	};
-};
-
-module.exports = eos;
-
-},{"once":11}],10:[function(require,module,exports){
-// Returns a wrapper function that returns a wrapped callback
-// The wrapper function should do some stuff, and return a
-// presumably different callback function.
-// This makes sure that own properties are retained, so that
-// decorations and such are not lost along the way.
-module.exports = wrappy
-function wrappy (fn, cb) {
-  if (fn && cb) return wrappy(fn)(cb)
-
-  if (typeof fn !== 'function')
-    throw new TypeError('need wrapper function')
-
-  Object.keys(fn).forEach(function (k) {
-    wrapper[k] = fn[k]
-  })
-
-  return wrapper
-
-  function wrapper() {
-    var args = new Array(arguments.length)
-    for (var i = 0; i < args.length; i++) {
-      args[i] = arguments[i]
-    }
-    var ret = fn.apply(this, args)
-    var cb = args[args.length-1]
-    if (typeof ret === 'function' && ret !== cb) {
-      Object.keys(cb).forEach(function (k) {
-        ret[k] = cb[k]
-      })
-    }
-    return ret
-  }
-}
-
-},{}],11:[function(require,module,exports){
-var wrappy = require('wrappy')
-module.exports = wrappy(once)
-module.exports.strict = wrappy(onceStrict)
-
-once.proto = once(function () {
-  Object.defineProperty(Function.prototype, 'once', {
-    value: function () {
-      return once(this)
-    },
-    configurable: true
-  })
-
-  Object.defineProperty(Function.prototype, 'onceStrict', {
-    value: function () {
-      return onceStrict(this)
-    },
-    configurable: true
-  })
-})
-
-function once (fn) {
-  var f = function () {
-    if (f.called) return f.value
-    f.called = true
-    return f.value = fn.apply(this, arguments)
-  }
-  f.called = false
-  return f
-}
-
-function onceStrict (fn) {
-  var f = function () {
-    if (f.called)
-      throw new Error(f.onceError)
-    f.called = true
-    return f.value = fn.apply(this, arguments)
-  }
-  var name = fn.name || 'Function wrapped with `once`'
-  f.onceError = name + " shouldn't be called more than once"
-  f.called = false
-  return f
-}
-
-},{"wrappy":10}],12:[function(require,module,exports){
-if (typeof Object.create === 'function') {
-  // implementation from standard node.js 'util' module
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    ctor.prototype = Object.create(superCtor.prototype, {
-      constructor: {
-        value: ctor,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-  };
-} else {
-  // old school shim for old browsers
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    var TempCtor = function () {}
-    TempCtor.prototype = superCtor.prototype
-    ctor.prototype = new TempCtor()
-    ctor.prototype.constructor = ctor
-  }
-}
-
-},{}],13:[function(require,module,exports){
-'use strict'
-
-var Buffer = require('safe-buffer').Buffer
-
-/* Protocol - protocol constants */
-var protocol = module.exports
-
-/* Command code => mnemonic */
-protocol.types = {
-  0: 'reserved',
-  1: 'connect',
-  2: 'connack',
-  3: 'publish',
-  4: 'puback',
-  5: 'pubrec',
-  6: 'pubrel',
-  7: 'pubcomp',
-  8: 'subscribe',
-  9: 'suback',
-  10: 'unsubscribe',
-  11: 'unsuback',
-  12: 'pingreq',
-  13: 'pingresp',
-  14: 'disconnect',
-  15: 'reserved'
-}
-
-/* Mnemonic => Command code */
-protocol.codes = {}
-for (var k in protocol.types) {
-  var v = protocol.types[k]
-  protocol.codes[v] = k
-}
-
-/* Header */
-protocol.CMD_SHIFT = 4
-protocol.CMD_MASK = 0xF0
-protocol.DUP_MASK = 0x08
-protocol.QOS_MASK = 0x03
-protocol.QOS_SHIFT = 1
-protocol.RETAIN_MASK = 0x01
-
-/* Length */
-protocol.LENGTH_MASK = 0x7F
-protocol.LENGTH_FIN_MASK = 0x80
-
-/* Connack */
-protocol.SESSIONPRESENT_MASK = 0x01
-protocol.SESSIONPRESENT_HEADER = Buffer.from([protocol.SESSIONPRESENT_MASK])
-protocol.CONNACK_HEADER = Buffer.from([protocol.codes['connack'] << protocol.CMD_SHIFT])
-
-/* Connect */
-protocol.USERNAME_MASK = 0x80
-protocol.PASSWORD_MASK = 0x40
-protocol.WILL_RETAIN_MASK = 0x20
-protocol.WILL_QOS_MASK = 0x18
-protocol.WILL_QOS_SHIFT = 3
-protocol.WILL_FLAG_MASK = 0x04
-protocol.CLEAN_SESSION_MASK = 0x02
-protocol.CONNECT_HEADER = Buffer.from([protocol.codes['connect'] << protocol.CMD_SHIFT])
-
-function genHeader (type) {
-  return [0, 1, 2].map(function (qos) {
-    return [0, 1].map(function (dup) {
-      return [0, 1].map(function (retain) {
-        var buf = new Buffer(1)
-        buf.writeUInt8(
-          protocol.codes[type] << protocol.CMD_SHIFT |
-          (dup ? protocol.DUP_MASK : 0) |
-          qos << protocol.QOS_SHIFT | retain, 0, true)
-        return buf
-      })
-    })
-  })
-}
-
-/* Publish */
-protocol.PUBLISH_HEADER = genHeader('publish')
-
-/* Subscribe */
-protocol.SUBSCRIBE_HEADER = genHeader('subscribe')
-
-/* Unsubscribe */
-protocol.UNSUBSCRIBE_HEADER = genHeader('unsubscribe')
-
-/* Confirmations */
-protocol.ACKS = {
-  unsuback: genHeader('unsuback'),
-  puback: genHeader('puback'),
-  pubcomp: genHeader('pubcomp'),
-  pubrel: genHeader('pubrel'),
-  pubrec: genHeader('pubrec')
-}
-
-protocol.SUBACK_HEADER = Buffer.from([protocol.codes['suback'] << protocol.CMD_SHIFT])
-
-/* Protocol versions */
-protocol.VERSION3 = Buffer.from([3])
-protocol.VERSION4 = Buffer.from([4])
-
-/* QoS */
-protocol.QOS = [0, 1, 2].map(function (qos) {
-  return Buffer.from([qos])
-})
-
-/* Empty packets */
-protocol.EMPTY = {
-  pingreq: Buffer.from([protocol.codes['pingreq'] << 4, 0]),
-  pingresp: Buffer.from([protocol.codes['pingresp'] << 4, 0]),
-  disconnect: Buffer.from([protocol.codes['disconnect'] << 4, 0])
-}
-
-},{"safe-buffer":18}],14:[function(require,module,exports){
-'use strict'
-
-var Buffer = require('safe-buffer').Buffer
-var writeToStream = require('./writeToStream')
-var EE = require('events').EventEmitter
-var inherits = require('inherits')
-
-function generate (packet) {
-  var stream = new Accumulator()
-  writeToStream(packet, stream)
-  return stream.concat()
-}
-
-function Accumulator () {
-  this._array = new Array(20)
-  this._i = 0
-}
-
-inherits(Accumulator, EE)
-
-Accumulator.prototype.write = function (chunk) {
-  this._array[this._i++] = chunk
-  return true
-}
-
-Accumulator.prototype.concat = function () {
-  var length = 0
-  var lengths = new Array(this._array.length)
-  var list = this._array
-  var pos = 0
-  var i
-  var result
-
-  for (i = 0; i < list.length && list[i]; i++) {
-    if (typeof list[i] !== 'string') lengths[i] = list[i].length
-    else lengths[i] = Buffer.byteLength(list[i])
-
-    length += lengths[i]
-  }
-
-  result = Buffer.allocUnsafe(length)
-
-  for (i = 0; i < list.length && list[i]; i++) {
-    if (typeof list[i] !== 'string') {
-      list[i].copy(result, pos)
-      pos += lengths[i]
-    } else {
-      result.write(list[i], pos)
-      pos += lengths[i]
-    }
-  }
-
-  return result
-}
-
-module.exports = generate
-
-},{"./writeToStream":22,"events":53,"inherits":12,"safe-buffer":18}],15:[function(require,module,exports){
-'use strict'
-
-exports.parser = require('./parser')
-exports.generate = require('./generate')
-exports.writeToStream = require('./writeToStream')
-
-},{"./generate":14,"./parser":21,"./writeToStream":22}],16:[function(require,module,exports){
+},{"mqtt":18}],2:[function(require,module,exports){
 (function (Buffer){
 var DuplexStream = require('readable-stream/duplex')
   , util         = require('util')
@@ -2000,13 +213,13 @@ BufferList.prototype.shallowSlice = function shallowSlice (start, end) {
     , endOffset = this._offset(end)
     , buffers = this._bufs.slice(startOffset[0], endOffset[0] + 1)
 
-  if (startOffset[1] != 0)
-    buffers[0] = buffers[0].slice(startOffset[1])
-
   if (endOffset[1] == 0)
     buffers.pop()
   else
     buffers[buffers.length-1] = buffers[buffers.length-1].slice(0, endOffset[1])
+
+  if (startOffset[1] != 0)
+    buffers[0] = buffers[0].slice(startOffset[1])
 
   return new BufferList(buffers)
 }
@@ -2080,57 +293,741 @@ BufferList.prototype.destroy = function destroy () {
 module.exports = BufferList
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":49,"readable-stream/duplex":23,"util":64}],17:[function(require,module,exports){
-(function (process){
-'use strict';
+},{"buffer":47,"readable-stream/duplex":26,"util":62}],3:[function(require,module,exports){
+(function (Buffer){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-if (!process.version ||
-    process.version.indexOf('v0.') === 0 ||
-    process.version.indexOf('v1.') === 0 && process.version.indexOf('v1.8.') !== 0) {
-  module.exports = nextTick;
+// NOTE: These type checking functions intentionally don't use `instanceof`
+// because it is fragile and can be easily faked with `Object.create()`.
+
+function isArray(arg) {
+  if (Array.isArray) {
+    return Array.isArray(arg);
+  }
+  return objectToString(arg) === '[object Array]';
+}
+exports.isArray = isArray;
+
+function isBoolean(arg) {
+  return typeof arg === 'boolean';
+}
+exports.isBoolean = isBoolean;
+
+function isNull(arg) {
+  return arg === null;
+}
+exports.isNull = isNull;
+
+function isNullOrUndefined(arg) {
+  return arg == null;
+}
+exports.isNullOrUndefined = isNullOrUndefined;
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+exports.isNumber = isNumber;
+
+function isString(arg) {
+  return typeof arg === 'string';
+}
+exports.isString = isString;
+
+function isSymbol(arg) {
+  return typeof arg === 'symbol';
+}
+exports.isSymbol = isSymbol;
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+exports.isUndefined = isUndefined;
+
+function isRegExp(re) {
+  return objectToString(re) === '[object RegExp]';
+}
+exports.isRegExp = isRegExp;
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+exports.isObject = isObject;
+
+function isDate(d) {
+  return objectToString(d) === '[object Date]';
+}
+exports.isDate = isDate;
+
+function isError(e) {
+  return (objectToString(e) === '[object Error]' || e instanceof Error);
+}
+exports.isError = isError;
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+exports.isFunction = isFunction;
+
+function isPrimitive(arg) {
+  return arg === null ||
+         typeof arg === 'boolean' ||
+         typeof arg === 'number' ||
+         typeof arg === 'string' ||
+         typeof arg === 'symbol' ||  // ES6 symbol
+         typeof arg === 'undefined';
+}
+exports.isPrimitive = isPrimitive;
+
+exports.isBuffer = Buffer.isBuffer;
+
+function objectToString(o) {
+  return Object.prototype.toString.call(o);
+}
+
+}).call(this,{"isBuffer":require("../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/insert-module-globals/node_modules/is-buffer/index.js")})
+},{"../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/insert-module-globals/node_modules/is-buffer/index.js":52}],4:[function(require,module,exports){
+(function (process,Buffer){
+var stream = require('readable-stream')
+var eos = require('end-of-stream')
+var inherits = require('inherits')
+var shift = require('stream-shift')
+
+var SIGNAL_FLUSH = new Buffer([0])
+
+var onuncork = function(self, fn) {
+  if (self._corked) self.once('uncork', fn)
+  else fn()
+}
+
+var destroyer = function(self, end) {
+  return function(err) {
+    if (err) self.destroy(err.message === 'premature close' ? null : err)
+    else if (end && !self._ended) self.end()
+  }
+}
+
+var end = function(ws, fn) {
+  if (!ws) return fn()
+  if (ws._writableState && ws._writableState.finished) return fn()
+  if (ws._writableState) return ws.end(fn)
+  ws.end()
+  fn()
+}
+
+var toStreams2 = function(rs) {
+  return new (stream.Readable)({objectMode:true, highWaterMark:16}).wrap(rs)
+}
+
+var Duplexify = function(writable, readable, opts) {
+  if (!(this instanceof Duplexify)) return new Duplexify(writable, readable, opts)
+  stream.Duplex.call(this, opts)
+
+  this._writable = null
+  this._readable = null
+  this._readable2 = null
+
+  this._forwardDestroy = !opts || opts.destroy !== false
+  this._forwardEnd = !opts || opts.end !== false
+  this._corked = 1 // start corked
+  this._ondrain = null
+  this._drained = false
+  this._forwarding = false
+  this._unwrite = null
+  this._unread = null
+  this._ended = false
+
+  this.destroyed = false
+
+  if (writable) this.setWritable(writable)
+  if (readable) this.setReadable(readable)
+}
+
+inherits(Duplexify, stream.Duplex)
+
+Duplexify.obj = function(writable, readable, opts) {
+  if (!opts) opts = {}
+  opts.objectMode = true
+  opts.highWaterMark = 16
+  return new Duplexify(writable, readable, opts)
+}
+
+Duplexify.prototype.cork = function() {
+  if (++this._corked === 1) this.emit('cork')
+}
+
+Duplexify.prototype.uncork = function() {
+  if (this._corked && --this._corked === 0) this.emit('uncork')
+}
+
+Duplexify.prototype.setWritable = function(writable) {
+  if (this._unwrite) this._unwrite()
+
+  if (this.destroyed) {
+    if (writable && writable.destroy) writable.destroy()
+    return
+  }
+
+  if (writable === null || writable === false) {
+    this.end()
+    return
+  }
+
+  var self = this
+  var unend = eos(writable, {writable:true, readable:false}, destroyer(this, this._forwardEnd))
+
+  var ondrain = function() {
+    var ondrain = self._ondrain
+    self._ondrain = null
+    if (ondrain) ondrain()
+  }
+
+  var clear = function() {
+    self._writable.removeListener('drain', ondrain)
+    unend()
+  }
+
+  if (this._unwrite) process.nextTick(ondrain) // force a drain on stream reset to avoid livelocks
+
+  this._writable = writable
+  this._writable.on('drain', ondrain)
+  this._unwrite = clear
+
+  this.uncork() // always uncork setWritable
+}
+
+Duplexify.prototype.setReadable = function(readable) {
+  if (this._unread) this._unread()
+
+  if (this.destroyed) {
+    if (readable && readable.destroy) readable.destroy()
+    return
+  }
+
+  if (readable === null || readable === false) {
+    this.push(null)
+    this.resume()
+    return
+  }
+
+  var self = this
+  var unend = eos(readable, {writable:false, readable:true}, destroyer(this))
+
+  var onreadable = function() {
+    self._forward()
+  }
+
+  var onend = function() {
+    self.push(null)
+  }
+
+  var clear = function() {
+    self._readable2.removeListener('readable', onreadable)
+    self._readable2.removeListener('end', onend)
+    unend()
+  }
+
+  this._drained = true
+  this._readable = readable
+  this._readable2 = readable._readableState ? readable : toStreams2(readable)
+  this._readable2.on('readable', onreadable)
+  this._readable2.on('end', onend)
+  this._unread = clear
+
+  this._forward()
+}
+
+Duplexify.prototype._read = function() {
+  this._drained = true
+  this._forward()
+}
+
+Duplexify.prototype._forward = function() {
+  if (this._forwarding || !this._readable2 || !this._drained) return
+  this._forwarding = true
+
+  var data
+
+  while (this._drained && (data = shift(this._readable2)) !== null) {
+    if (this.destroyed) continue
+    this._drained = this.push(data)
+  }
+
+  this._forwarding = false
+}
+
+Duplexify.prototype.destroy = function(err) {
+  if (this.destroyed) return
+  this.destroyed = true
+
+  var self = this
+  process.nextTick(function() {
+    self._destroy(err)
+  })
+}
+
+Duplexify.prototype._destroy = function(err) {
+  if (err) {
+    var ondrain = this._ondrain
+    this._ondrain = null
+    if (ondrain) ondrain(err)
+    else this.emit('error', err)
+  }
+
+  if (this._forwardDestroy) {
+    if (this._readable && this._readable.destroy) this._readable.destroy()
+    if (this._writable && this._writable.destroy) this._writable.destroy()
+  }
+
+  this.emit('close')
+}
+
+Duplexify.prototype._write = function(data, enc, cb) {
+  if (this.destroyed) return cb()
+  if (this._corked) return onuncork(this, this._write.bind(this, data, enc, cb))
+  if (data === SIGNAL_FLUSH) return this._finish(cb)
+  if (!this._writable) return cb()
+
+  if (this._writable.write(data) === false) this._ondrain = cb
+  else cb()
+}
+
+
+Duplexify.prototype._finish = function(cb) {
+  var self = this
+  this.emit('preend')
+  onuncork(this, function() {
+    end(self._forwardEnd && self._writable, function() {
+      // haxx to not emit prefinish twice
+      if (self._writableState.prefinished === false) self._writableState.prefinished = true
+      self.emit('prefinish')
+      onuncork(self, cb)
+    })
+  })
+}
+
+Duplexify.prototype.end = function(data, enc, cb) {
+  if (typeof data === 'function') return this.end(null, null, data)
+  if (typeof enc === 'function') return this.end(data, null, enc)
+  this._ended = true
+  if (data) this.write(data)
+  if (!this._writableState.ending) this.write(SIGNAL_FLUSH)
+  return stream.Writable.prototype.end.call(this, cb)
+}
+
+module.exports = Duplexify
+
+}).call(this,require('_process'),require("buffer").Buffer)
+},{"_process":53,"buffer":47,"end-of-stream":5,"inherits":8,"readable-stream":35,"stream-shift":38}],5:[function(require,module,exports){
+var once = require('once');
+
+var noop = function() {};
+
+var isRequest = function(stream) {
+	return stream.setHeader && typeof stream.abort === 'function';
+};
+
+var eos = function(stream, opts, callback) {
+	if (typeof opts === 'function') return eos(stream, null, opts);
+	if (!opts) opts = {};
+
+	callback = once(callback || noop);
+
+	var ws = stream._writableState;
+	var rs = stream._readableState;
+	var readable = opts.readable || (opts.readable !== false && stream.readable);
+	var writable = opts.writable || (opts.writable !== false && stream.writable);
+
+	var onlegacyfinish = function() {
+		if (!stream.writable) onfinish();
+	};
+
+	var onfinish = function() {
+		writable = false;
+		if (!readable) callback();
+	};
+
+	var onend = function() {
+		readable = false;
+		if (!writable) callback();
+	};
+
+	var onclose = function() {
+		if (readable && !(rs && rs.ended)) return callback(new Error('premature close'));
+		if (writable && !(ws && ws.ended)) return callback(new Error('premature close'));
+	};
+
+	var onrequest = function() {
+		stream.req.on('finish', onfinish);
+	};
+
+	if (isRequest(stream)) {
+		stream.on('complete', onfinish);
+		stream.on('abort', onclose);
+		if (stream.req) onrequest();
+		else stream.on('request', onrequest);
+	} else if (writable && !ws) { // legacy streams
+		stream.on('end', onlegacyfinish);
+		stream.on('close', onlegacyfinish);
+	}
+
+	stream.on('end', onend);
+	stream.on('finish', onfinish);
+	if (opts.error !== false) stream.on('error', callback);
+	stream.on('close', onclose);
+
+	return function() {
+		stream.removeListener('complete', onfinish);
+		stream.removeListener('abort', onclose);
+		stream.removeListener('request', onrequest);
+		if (stream.req) stream.req.removeListener('finish', onfinish);
+		stream.removeListener('end', onlegacyfinish);
+		stream.removeListener('close', onlegacyfinish);
+		stream.removeListener('finish', onfinish);
+		stream.removeListener('end', onend);
+		stream.removeListener('error', callback);
+		stream.removeListener('close', onclose);
+	};
+};
+
+module.exports = eos;
+},{"once":6}],6:[function(require,module,exports){
+var wrappy = require('wrappy')
+module.exports = wrappy(once)
+
+once.proto = once(function () {
+  Object.defineProperty(Function.prototype, 'once', {
+    value: function () {
+      return once(this)
+    },
+    configurable: true
+  })
+})
+
+function once (fn) {
+  var f = function () {
+    if (f.called) return f.value
+    f.called = true
+    return f.value = fn.apply(this, arguments)
+  }
+  f.called = false
+  return f
+}
+
+},{"wrappy":44}],7:[function(require,module,exports){
+var once = require('once');
+
+var noop = function() {};
+
+var isRequest = function(stream) {
+	return stream.setHeader && typeof stream.abort === 'function';
+};
+
+var isChildProcess = function(stream) {
+	return stream.stdio && Array.isArray(stream.stdio) && stream.stdio.length === 3
+};
+
+var eos = function(stream, opts, callback) {
+	if (typeof opts === 'function') return eos(stream, null, opts);
+	if (!opts) opts = {};
+
+	callback = once(callback || noop);
+
+	var ws = stream._writableState;
+	var rs = stream._readableState;
+	var readable = opts.readable || (opts.readable !== false && stream.readable);
+	var writable = opts.writable || (opts.writable !== false && stream.writable);
+
+	var onlegacyfinish = function() {
+		if (!stream.writable) onfinish();
+	};
+
+	var onfinish = function() {
+		writable = false;
+		if (!readable) callback.call(stream);
+	};
+
+	var onend = function() {
+		readable = false;
+		if (!writable) callback.call(stream);
+	};
+
+	var onexit = function(exitCode) {
+		callback.call(stream, exitCode ? new Error('exited with error code: ' + exitCode) : null);
+	};
+
+	var onclose = function() {
+		if (readable && !(rs && rs.ended)) return callback.call(stream, new Error('premature close'));
+		if (writable && !(ws && ws.ended)) return callback.call(stream, new Error('premature close'));
+	};
+
+	var onrequest = function() {
+		stream.req.on('finish', onfinish);
+	};
+
+	if (isRequest(stream)) {
+		stream.on('complete', onfinish);
+		stream.on('abort', onclose);
+		if (stream.req) onrequest();
+		else stream.on('request', onrequest);
+	} else if (writable && !ws) { // legacy streams
+		stream.on('end', onlegacyfinish);
+		stream.on('close', onlegacyfinish);
+	}
+
+	if (isChildProcess(stream)) stream.on('exit', onexit);
+
+	stream.on('end', onend);
+	stream.on('finish', onfinish);
+	if (opts.error !== false) stream.on('error', callback);
+	stream.on('close', onclose);
+
+	return function() {
+		stream.removeListener('complete', onfinish);
+		stream.removeListener('abort', onclose);
+		stream.removeListener('request', onrequest);
+		if (stream.req) stream.req.removeListener('finish', onfinish);
+		stream.removeListener('end', onlegacyfinish);
+		stream.removeListener('close', onlegacyfinish);
+		stream.removeListener('finish', onfinish);
+		stream.removeListener('exit', onexit);
+		stream.removeListener('end', onend);
+		stream.removeListener('error', callback);
+		stream.removeListener('close', onclose);
+	};
+};
+
+module.exports = eos;
+
+},{"once":24}],8:[function(require,module,exports){
+if (typeof Object.create === 'function') {
+  // implementation from standard node.js 'util' module
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    ctor.prototype = Object.create(superCtor.prototype, {
+      constructor: {
+        value: ctor,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+  };
 } else {
-  module.exports = process.nextTick;
+  // old school shim for old browsers
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    var TempCtor = function () {}
+    TempCtor.prototype = superCtor.prototype
+    ctor.prototype = new TempCtor()
+    ctor.prototype.constructor = ctor
+  }
 }
 
-function nextTick(fn, arg1, arg2, arg3) {
-  if (typeof fn !== 'function') {
-    throw new TypeError('"callback" argument must be a function');
+},{}],9:[function(require,module,exports){
+var toString = {}.toString;
+
+module.exports = Array.isArray || function (arr) {
+  return toString.call(arr) == '[object Array]';
+};
+
+},{}],10:[function(require,module,exports){
+'use strict'
+
+var Buffer = require('safe-buffer').Buffer
+
+/* Protocol - protocol constants */
+var protocol = module.exports
+
+/* Command code => mnemonic */
+protocol.types = {
+  0: 'reserved',
+  1: 'connect',
+  2: 'connack',
+  3: 'publish',
+  4: 'puback',
+  5: 'pubrec',
+  6: 'pubrel',
+  7: 'pubcomp',
+  8: 'subscribe',
+  9: 'suback',
+  10: 'unsubscribe',
+  11: 'unsuback',
+  12: 'pingreq',
+  13: 'pingresp',
+  14: 'disconnect',
+  15: 'reserved'
+}
+
+/* Mnemonic => Command code */
+protocol.codes = {}
+for (var k in protocol.types) {
+  var v = protocol.types[k]
+  protocol.codes[v] = k
+}
+
+/* Header */
+protocol.CMD_SHIFT = 4
+protocol.CMD_MASK = 0xF0
+protocol.DUP_MASK = 0x08
+protocol.QOS_MASK = 0x03
+protocol.QOS_SHIFT = 1
+protocol.RETAIN_MASK = 0x01
+
+/* Length */
+protocol.LENGTH_MASK = 0x7F
+protocol.LENGTH_FIN_MASK = 0x80
+
+/* Connack */
+protocol.SESSIONPRESENT_MASK = 0x01
+protocol.SESSIONPRESENT_HEADER = Buffer.from([protocol.SESSIONPRESENT_MASK])
+protocol.CONNACK_HEADER = Buffer.from([protocol.codes['connack'] << protocol.CMD_SHIFT])
+
+/* Connect */
+protocol.USERNAME_MASK = 0x80
+protocol.PASSWORD_MASK = 0x40
+protocol.WILL_RETAIN_MASK = 0x20
+protocol.WILL_QOS_MASK = 0x18
+protocol.WILL_QOS_SHIFT = 3
+protocol.WILL_FLAG_MASK = 0x04
+protocol.CLEAN_SESSION_MASK = 0x02
+protocol.CONNECT_HEADER = Buffer.from([protocol.codes['connect'] << protocol.CMD_SHIFT])
+
+function genHeader (type) {
+  return [0, 1, 2].map(function (qos) {
+    return [0, 1].map(function (dup) {
+      return [0, 1].map(function (retain) {
+        var buf = new Buffer(1)
+        buf.writeUInt8(
+          protocol.codes[type] << protocol.CMD_SHIFT |
+          (dup ? protocol.DUP_MASK : 0) |
+          qos << protocol.QOS_SHIFT | retain, 0, true)
+        return buf
+      })
+    })
+  })
+}
+
+/* Publish */
+protocol.PUBLISH_HEADER = genHeader('publish')
+
+/* Subscribe */
+protocol.SUBSCRIBE_HEADER = genHeader('subscribe')
+
+/* Unsubscribe */
+protocol.UNSUBSCRIBE_HEADER = genHeader('unsubscribe')
+
+/* Confirmations */
+protocol.ACKS = {
+  unsuback: genHeader('unsuback'),
+  puback: genHeader('puback'),
+  pubcomp: genHeader('pubcomp'),
+  pubrel: genHeader('pubrel'),
+  pubrec: genHeader('pubrec')
+}
+
+protocol.SUBACK_HEADER = Buffer.from([protocol.codes['suback'] << protocol.CMD_SHIFT])
+
+/* Protocol versions */
+protocol.VERSION3 = Buffer.from([3])
+protocol.VERSION4 = Buffer.from([4])
+
+/* QoS */
+protocol.QOS = [0, 1, 2].map(function (qos) {
+  return Buffer.from([qos])
+})
+
+/* Empty packets */
+protocol.EMPTY = {
+  pingreq: Buffer.from([protocol.codes['pingreq'] << 4, 0]),
+  pingresp: Buffer.from([protocol.codes['pingresp'] << 4, 0]),
+  disconnect: Buffer.from([protocol.codes['disconnect'] << 4, 0])
+}
+
+},{"safe-buffer":37}],11:[function(require,module,exports){
+'use strict'
+
+var Buffer = require('safe-buffer').Buffer
+var writeToStream = require('./writeToStream')
+var EE = require('events').EventEmitter
+var inherits = require('inherits')
+
+function generate (packet) {
+  var stream = new Accumulator()
+  writeToStream(packet, stream)
+  return stream.concat()
+}
+
+function Accumulator () {
+  this._array = new Array(20)
+  this._i = 0
+}
+
+inherits(Accumulator, EE)
+
+Accumulator.prototype.write = function (chunk) {
+  this._array[this._i++] = chunk
+  return true
+}
+
+Accumulator.prototype.concat = function () {
+  var length = 0
+  var lengths = new Array(this._array.length)
+  var list = this._array
+  var pos = 0
+  var i
+  var result
+
+  for (i = 0; i < list.length && list[i]; i++) {
+    if (typeof list[i] !== 'string') lengths[i] = list[i].length
+    else lengths[i] = Buffer.byteLength(list[i])
+
+    length += lengths[i]
   }
-  var len = arguments.length;
-  var args, i;
-  switch (len) {
-  case 0:
-  case 1:
-    return process.nextTick(fn);
-  case 2:
-    return process.nextTick(function afterTickOne() {
-      fn.call(null, arg1);
-    });
-  case 3:
-    return process.nextTick(function afterTickTwo() {
-      fn.call(null, arg1, arg2);
-    });
-  case 4:
-    return process.nextTick(function afterTickThree() {
-      fn.call(null, arg1, arg2, arg3);
-    });
-  default:
-    args = new Array(len - 1);
-    i = 0;
-    while (i < args.length) {
-      args[i++] = arguments[i];
+
+  result = Buffer.allocUnsafe(length)
+
+  for (i = 0; i < list.length && list[i]; i++) {
+    if (typeof list[i] !== 'string') {
+      list[i].copy(result, pos)
+      pos += lengths[i]
+    } else {
+      result.write(list[i], pos)
+      pos += lengths[i]
     }
-    return process.nextTick(function afterTick() {
-      fn.apply(null, args);
-    });
   }
+
+  return result
 }
 
-}).call(this,require('_process'))
-},{"_process":55}],18:[function(require,module,exports){
-module.exports = require('buffer')
+module.exports = generate
 
-},{"buffer":49}],19:[function(require,module,exports){
+},{"./writeToStream":16,"events":51,"inherits":8,"safe-buffer":37}],12:[function(require,module,exports){
+'use strict'
+
+exports.parser = require('./parser')
+exports.generate = require('./generate')
+exports.writeToStream = require('./writeToStream')
+
+},{"./generate":11,"./parser":15,"./writeToStream":16}],13:[function(require,module,exports){
 'use strict'
 
 var Buffer = require('safe-buffer').Buffer
@@ -2147,7 +1044,7 @@ for (var i = 0; i < max; i++) {
 
 module.exports = cache
 
-},{"safe-buffer":18}],20:[function(require,module,exports){
+},{"safe-buffer":37}],14:[function(require,module,exports){
 
 function Packet () {
   this.cmd = null
@@ -2161,7 +1058,7 @@ function Packet () {
 
 module.exports = Packet
 
-},{}],21:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict'
 
 var bl = require('bl')
@@ -2538,7 +1435,7 @@ Parser.prototype._emitError = function (err) {
 
 module.exports = Parser
 
-},{"./constants":13,"./packet":20,"bl":16,"events":53,"inherits":12}],22:[function(require,module,exports){
+},{"./constants":10,"./packet":14,"bl":2,"events":51,"inherits":8}],16:[function(require,module,exports){
 'use strict'
 
 var protocol = require('./constants')
@@ -3088,10 +1985,1574 @@ function byteLength (bufOrString) {
 
 module.exports = generate
 
-},{"./constants":13,"./numbers":19,"process-nextick-args":17,"safe-buffer":18}],23:[function(require,module,exports){
+},{"./constants":10,"./numbers":13,"process-nextick-args":25,"safe-buffer":37}],17:[function(require,module,exports){
+(function (process,global){
+'use strict'
+
+/**
+ * Module dependencies
+ */
+var events = require('events')
+var Store = require('./store')
+var eos = require('end-of-stream')
+var mqttPacket = require('mqtt-packet')
+var Writable = require('readable-stream').Writable
+var inherits = require('inherits')
+var reInterval = require('reinterval')
+var validations = require('./validations')
+var setImmediate = global.setImmediate || function (callback) {
+  // works in node v0.8
+  process.nextTick(callback)
+}
+var defaultConnectOptions = {
+  keepalive: 60,
+  reschedulePings: true,
+  protocolId: 'MQTT',
+  protocolVersion: 4,
+  reconnectPeriod: 1000,
+  connectTimeout: 30 * 1000,
+  clean: true
+}
+
+function defaultId () {
+  return 'mqttjs_' + Math.random().toString(16).substr(2, 8)
+}
+
+function sendPacket (client, packet, cb) {
+  client.emit('packetsend', packet)
+
+  var result = mqttPacket.writeToStream(packet, client.stream)
+
+  if (!result && cb) {
+    client.stream.once('drain', cb)
+  } else if (cb) {
+    cb()
+  }
+}
+
+function storeAndSend (client, packet, cb) {
+  client.outgoingStore.put(packet, function storedPacket (err) {
+    if (err) {
+      return cb && cb(err)
+    }
+    sendPacket(client, packet, cb)
+  })
+}
+
+function nop () {}
+
+/**
+ * MqttClient constructor
+ *
+ * @param {Stream} stream - stream
+ * @param {Object} [options] - connection options
+ * (see Connection#connect)
+ */
+function MqttClient (streamBuilder, options) {
+  var k
+  var that = this
+
+  if (!(this instanceof MqttClient)) {
+    return new MqttClient(streamBuilder, options)
+  }
+
+  this.options = options || {}
+
+  // Defaults
+  for (k in defaultConnectOptions) {
+    if (typeof this.options[k] === 'undefined') {
+      this.options[k] = defaultConnectOptions[k]
+    } else {
+      this.options[k] = options[k]
+    }
+  }
+
+  this.options.clientId = this.options.clientId || defaultId()
+
+  this.streamBuilder = streamBuilder
+
+  // Inflight message storages
+  this.outgoingStore = this.options.outgoingStore || new Store()
+  this.incomingStore = this.options.incomingStore || new Store()
+
+  // Should QoS zero messages be queued when the connection is broken?
+  this.queueQoSZero = this.options.queueQoSZero === undefined ? true : this.options.queueQoSZero
+
+  // map of subscribed topics to support reconnection
+  this._resubscribeTopics = {}
+
+  // Ping timer, setup in _setupPingTimer
+  this.pingTimer = null
+  // Is the client connected?
+  this.connected = false
+  // Are we disconnecting?
+  this.disconnecting = false
+  // Packet queue
+  this.queue = []
+  // connack timer
+  this.connackTimer = null
+  // Reconnect timer
+  this.reconnectTimer = null
+  // MessageIDs starting with 1
+  this.nextId = Math.floor(Math.random() * 65535)
+
+  // Inflight callbacks
+  this.outgoing = {}
+
+  // Mark connected on connect
+  this.on('connect', function () {
+    if (this.disconnected) {
+      return
+    }
+
+    this.connected = true
+    var outStore = null
+    outStore = this.outgoingStore.createStream()
+
+    // Control of stored messages
+    outStore.once('readable', function () {
+      function storeDeliver () {
+        var packet = outStore.read(1)
+        var cb
+
+        if (!packet) {
+          return
+        }
+
+        // Avoid unnecesary stream read operations when disconnected
+        if (!that.disconnecting && !that.reconnectTimer && that.options.reconnectPeriod > 0) {
+          outStore.read(0)
+          cb = that.outgoing[packet.messageId]
+          that.outgoing[packet.messageId] = function (err, status) {
+            // Ensure that the original callback passed in to publish gets invoked
+            if (cb) {
+              cb(err, status)
+            }
+
+            storeDeliver()
+          }
+          that._sendPacket(packet)
+        } else if (outStore.destroy) {
+          outStore.destroy()
+        }
+      }
+      storeDeliver()
+    })
+    .on('error', this.emit.bind(this, 'error'))
+  })
+
+  // Mark disconnected on stream close
+  this.on('close', function () {
+    this.connected = false
+    clearTimeout(this.connackTimer)
+  })
+
+  // Setup ping timer
+  this.on('connect', this._setupPingTimer)
+
+  // Send queued packets
+  this.on('connect', function () {
+    var queue = this.queue
+
+    function deliver () {
+      var entry = queue.shift()
+      var packet = null
+
+      if (!entry) {
+        return
+      }
+
+      packet = entry.packet
+
+      that._sendPacket(
+        packet,
+        function (err) {
+          if (entry.cb) {
+            entry.cb(err)
+          }
+          deliver()
+        }
+      )
+    }
+
+    deliver()
+  })
+
+  var firstConnection = true
+  // resubscribe
+  this.on('connect', function () {
+    if (!firstConnection &&
+        this.options.clean &&
+        Object.keys(this._resubscribeTopics).length > 0) {
+      this._resubscribeTopics.resubscribe = true
+      this.subscribe(this._resubscribeTopics)
+    }
+
+    firstConnection = false
+  })
+
+  // Clear ping timer
+  this.on('close', function () {
+    if (that.pingTimer !== null) {
+      that.pingTimer.clear()
+      that.pingTimer = null
+    }
+  })
+
+  // Setup reconnect timer on disconnect
+  this.on('close', this._setupReconnect)
+
+  events.EventEmitter.call(this)
+
+  this._setupStream()
+}
+inherits(MqttClient, events.EventEmitter)
+
+/**
+ * setup the event handlers in the inner stream.
+ *
+ * @api private
+ */
+MqttClient.prototype._setupStream = function () {
+  var connectPacket
+  var that = this
+  var writable = new Writable()
+  var parser = mqttPacket.parser(this.options)
+  var completeParse = null
+  var packets = []
+
+  this._clearReconnect()
+
+  this.stream = this.streamBuilder(this)
+
+  parser.on('packet', function (packet) {
+    packets.push(packet)
+  })
+
+  function process () {
+    var packet = packets.shift()
+    var done = completeParse
+
+    if (packet) {
+      that._handlePacket(packet, process)
+    } else {
+      completeParse = null
+      done()
+    }
+  }
+
+  writable._write = function (buf, enc, done) {
+    completeParse = done
+    parser.parse(buf)
+    process()
+  }
+
+  this.stream.pipe(writable)
+
+  // Suppress connection errors
+  this.stream.on('error', nop)
+
+  // Echo stream close
+  eos(this.stream, this.emit.bind(this, 'close'))
+
+  // Send a connect packet
+  connectPacket = Object.create(this.options)
+  connectPacket.cmd = 'connect'
+  // avoid message queue
+  sendPacket(this, connectPacket)
+
+  // Echo connection errors
+  parser.on('error', this.emit.bind(this, 'error'))
+
+  // many drain listeners are needed for qos 1 callbacks if the connection is intermittent
+  this.stream.setMaxListeners(1000)
+
+  clearTimeout(this.connackTimer)
+  this.connackTimer = setTimeout(function () {
+    that._cleanUp(true)
+  }, this.options.connectTimeout)
+}
+
+MqttClient.prototype._handlePacket = function (packet, done) {
+  this.emit('packetreceive', packet)
+
+  switch (packet.cmd) {
+    case 'publish':
+      this._handlePublish(packet, done)
+      break
+    case 'puback':
+    case 'pubrec':
+    case 'pubcomp':
+    case 'suback':
+    case 'unsuback':
+      this._handleAck(packet)
+      done()
+      break
+    case 'pubrel':
+      this._handlePubrel(packet, done)
+      break
+    case 'connack':
+      this._handleConnack(packet)
+      done()
+      break
+    case 'pingresp':
+      this._handlePingresp(packet)
+      done()
+      break
+    default:
+      // do nothing
+      // maybe we should do an error handling
+      // or just log it
+      break
+  }
+}
+
+MqttClient.prototype._checkDisconnecting = function (callback) {
+  if (this.disconnecting) {
+    if (callback) {
+      callback(new Error('client disconnecting'))
+    } else {
+      this.emit('error', new Error('client disconnecting'))
+    }
+  }
+  return this.disconnecting
+}
+
+/**
+ * publish - publish <message> to <topic>
+ *
+ * @param {String} topic - topic to publish to
+ * @param {String, Buffer} message - message to publish
+ * @param {Object} [opts] - publish options, includes:
+ *    {Number} qos - qos level to publish on
+ *    {Boolean} retain - whether or not to retain the message
+ *    {Boolean} dup - whether or not mark a message as duplicate
+ * @param {Function} [callback] - function(err){}
+ *    called when publish succeeds or fails
+ * @returns {MqttClient} this - for chaining
+ * @api public
+ *
+ * @example client.publish('topic', 'message');
+ * @example
+ *     client.publish('topic', 'message', {qos: 1, retain: true, dup: true});
+ * @example client.publish('topic', 'message', console.log);
+ */
+MqttClient.prototype.publish = function (topic, message, opts, callback) {
+  var packet
+
+  // .publish(topic, payload, cb);
+  if (typeof opts === 'function') {
+    callback = opts
+    opts = null
+  }
+
+  // Default opts
+  if (!opts) {
+    opts = {qos: 0, retain: false, dup: false}
+  }
+
+  if (this._checkDisconnecting(callback)) {
+    return this
+  }
+
+  packet = {
+    cmd: 'publish',
+    topic: topic,
+    payload: message,
+    qos: opts.qos,
+    retain: opts.retain,
+    messageId: this._nextId(),
+    dup: opts.dup
+  }
+
+  switch (opts.qos) {
+    case 1:
+    case 2:
+
+      // Add to callbacks
+      this.outgoing[packet.messageId] = callback || nop
+      this._sendPacket(packet)
+      break
+    default:
+      this._sendPacket(packet, callback)
+      break
+  }
+
+  return this
+}
+
+/**
+ * subscribe - subscribe to <topic>
+ *
+ * @param {String, Array, Object} topic - topic(s) to subscribe to, supports objects in the form {'topic': qos}
+ * @param {Object} [opts] - optional subscription options, includes:
+ *    {Number} qos - subscribe qos level
+ * @param {Function} [callback] - function(err, granted){} where:
+ *    {Error} err - subscription error (none at the moment!)
+ *    {Array} granted - array of {topic: 't', qos: 0}
+ * @returns {MqttClient} this - for chaining
+ * @api public
+ * @example client.subscribe('topic');
+ * @example client.subscribe('topic', {qos: 1});
+ * @example client.subscribe({'topic': 0, 'topic2': 1}, console.log);
+ * @example client.subscribe('topic', console.log);
+ */
+MqttClient.prototype.subscribe = function () {
+  var packet
+  var args = Array.prototype.slice.call(arguments)
+  var subs = []
+  var obj = args.shift()
+  var resubscribe = obj.resubscribe
+  var callback = args.pop() || nop
+  var opts = args.pop()
+  var invalidTopic
+  var that = this
+
+  delete obj.resubscribe
+
+  if (typeof obj === 'string') {
+    obj = [obj]
+  }
+
+  if (typeof callback !== 'function') {
+    opts = callback
+    callback = nop
+  }
+
+  invalidTopic = validations.validateTopics(obj)
+  if (invalidTopic !== null) {
+    setImmediate(callback, new Error('Invalid topic ' + invalidTopic))
+    return this
+  }
+
+  if (this._checkDisconnecting(callback)) {
+    return this
+  }
+
+  if (!opts) {
+    opts = { qos: 0 }
+  }
+
+  if (Array.isArray(obj)) {
+    obj.forEach(function (topic) {
+      if (that._resubscribeTopics[topic] < opts.qos ||
+          !that._resubscribeTopics.hasOwnProperty(topic) ||
+          resubscribe
+        ) {
+        subs.push({
+          topic: topic,
+          qos: opts.qos
+        })
+      }
+    })
+  } else {
+    Object
+      .keys(obj)
+      .forEach(function (k) {
+        if (that._resubscribeTopics[k] < obj[k] ||
+            !that._resubscribeTopics.hasOwnProperty(k) ||
+            resubscribe
+          ) {
+          subs.push({
+            topic: k,
+            qos: obj[k]
+          })
+        }
+      })
+  }
+
+  packet = {
+    cmd: 'subscribe',
+    subscriptions: subs,
+    qos: 1,
+    retain: false,
+    dup: false,
+    messageId: this._nextId()
+  }
+
+  if (!subs.length) {
+    callback(null, [])
+    return
+  }
+
+  // subscriptions to resubscribe to in case of disconnect
+  subs.forEach(function (sub) {
+    that._resubscribeTopics[sub.topic] = sub.qos
+  })
+
+  this.outgoing[packet.messageId] = function (err, packet) {
+    if (!err) {
+      var granted = packet.granted
+      for (var i = 0; i < granted.length; i += 1) {
+        subs[i].qos = granted[i]
+      }
+    }
+
+    callback(err, subs)
+  }
+
+  this._sendPacket(packet)
+
+  return this
+}
+
+/**
+ * unsubscribe - unsubscribe from topic(s)
+ *
+ * @param {String, Array} topic - topics to unsubscribe from
+ * @param {Function} [callback] - callback fired on unsuback
+ * @returns {MqttClient} this - for chaining
+ * @api public
+ * @example client.unsubscribe('topic');
+ * @example client.unsubscribe('topic', console.log);
+ */
+MqttClient.prototype.unsubscribe = function (topic, callback) {
+  var packet = {
+    cmd: 'unsubscribe',
+    qos: 1,
+    messageId: this._nextId()
+  }
+  var that = this
+
+  callback = callback || nop
+
+  if (this._checkDisconnecting(callback)) {
+    return this
+  }
+
+  if (typeof topic === 'string') {
+    packet.unsubscriptions = [topic]
+  } else if (typeof topic === 'object' && topic.length) {
+    packet.unsubscriptions = topic
+  }
+
+  packet.unsubscriptions.forEach(function (topic) {
+    delete that._resubscribeTopics[topic]
+  })
+
+  this.outgoing[packet.messageId] = callback
+
+  this._sendPacket(packet)
+
+  return this
+}
+
+/**
+ * end - close connection
+ *
+ * @returns {MqttClient} this - for chaining
+ * @param {Boolean} force - do not wait for all in-flight messages to be acked
+ * @param {Function} cb - called when the client has been closed
+ *
+ * @api public
+ */
+MqttClient.prototype.end = function (force, cb) {
+  var that = this
+
+  if (typeof force === 'function') {
+    cb = force
+    force = false
+  }
+
+  function closeStores () {
+    that.disconnected = true
+    that.incomingStore.close(function () {
+      that.outgoingStore.close(cb)
+    })
+  }
+
+  function finish () {
+    // defer closesStores of an I/O cycle,
+    // just to make sure things are
+    // ok for websockets
+    that._cleanUp(force, setImmediate.bind(null, closeStores))
+  }
+
+  if (this.disconnecting) {
+    return this
+  }
+
+  this._clearReconnect()
+
+  this.disconnecting = true
+
+  if (!force && Object.keys(this.outgoing).length > 0) {
+    // wait 10ms, just to be sure we received all of it
+    this.once('outgoingEmpty', setTimeout.bind(null, finish, 10))
+  } else {
+    finish()
+  }
+
+  return this
+}
+
+/**
+ * _reconnect - implement reconnection
+ * @api privateish
+ */
+MqttClient.prototype._reconnect = function () {
+  this.emit('reconnect')
+  this._setupStream()
+}
+
+/**
+ * _setupReconnect - setup reconnect timer
+ */
+MqttClient.prototype._setupReconnect = function () {
+  var that = this
+
+  if (!that.disconnecting && !that.reconnectTimer && (that.options.reconnectPeriod > 0)) {
+    if (!this.reconnecting) {
+      this.emit('offline')
+      this.reconnecting = true
+    }
+    that.reconnectTimer = setInterval(function () {
+      that._reconnect()
+    }, that.options.reconnectPeriod)
+  }
+}
+
+/**
+ * _clearReconnect - clear the reconnect timer
+ */
+MqttClient.prototype._clearReconnect = function () {
+  if (this.reconnectTimer) {
+    clearInterval(this.reconnectTimer)
+    this.reconnectTimer = null
+  }
+}
+
+/**
+ * _cleanUp - clean up on connection end
+ * @api private
+ */
+MqttClient.prototype._cleanUp = function (forced, done) {
+  if (done) {
+    this.stream.on('close', done)
+  }
+
+  if (forced) {
+    this.stream.destroy()
+  } else {
+    this._sendPacket(
+      { cmd: 'disconnect' },
+      setImmediate.bind(
+        null,
+        this.stream.end.bind(this.stream)
+      )
+    )
+  }
+
+  if (!this.disconnecting) {
+    this._clearReconnect()
+    this._setupReconnect()
+  }
+
+  if (this.pingTimer !== null) {
+    this.pingTimer.clear()
+    this.pingTimer = null
+  }
+}
+
+/**
+ * _sendPacket - send or queue a packet
+ * @param {String} type - packet type (see `protocol`)
+ * @param {Object} packet - packet options
+ * @param {Function} cb - callback when the packet is sent
+ * @api private
+ */
+MqttClient.prototype._sendPacket = function (packet, cb) {
+  if (!this.connected) {
+    if (((packet.qos || 0) === 0 && this.queueQoSZero) || packet.cmd !== 'publish') {
+      this.queue.push({ packet: packet, cb: cb })
+    } else if (packet.qos > 0) {
+      this.outgoingStore.put(packet, function (err) {
+        if (err) {
+          return cb && cb(err)
+        }
+      })
+    } else if (cb) {
+      cb(new Error('No connection to broker'))
+    }
+
+    return
+  }
+
+  // When sending a packet, reschedule the ping timer
+  this._shiftPingInterval()
+
+  if (packet.cmd !== 'publish') {
+    sendPacket(this, packet, cb)
+    return
+  }
+
+  switch (packet.qos) {
+    case 2:
+    case 1:
+      storeAndSend(this, packet, cb)
+      break
+    /**
+     * no need of case here since it will be caught by default
+     * and jshint comply that before default it must be a break
+     * anyway it will result in -1 evaluation
+     */
+    case 0:
+      /* falls through */
+    default:
+      sendPacket(this, packet, cb)
+      break
+  }
+}
+
+/**
+ * _setupPingTimer - setup the ping timer
+ *
+ * @api private
+ */
+MqttClient.prototype._setupPingTimer = function () {
+  var that = this
+
+  if (!this.pingTimer && this.options.keepalive) {
+    this.pingResp = true
+    this.pingTimer = reInterval(function () {
+      that._checkPing()
+    }, this.options.keepalive * 1000)
+  }
+}
+
+/**
+ * _shiftPingInterval - reschedule the ping interval
+ *
+ * @api private
+ */
+MqttClient.prototype._shiftPingInterval = function () {
+  if (this.pingTimer && this.options.keepalive && this.options.reschedulePings) {
+    this.pingTimer.reschedule(this.options.keepalive * 1000)
+  }
+}
+/**
+ * _checkPing - check if a pingresp has come back, and ping the server again
+ *
+ * @api private
+ */
+MqttClient.prototype._checkPing = function () {
+  if (this.pingResp) {
+    this.pingResp = false
+    this._sendPacket({ cmd: 'pingreq' })
+  } else {
+    // do a forced cleanup since socket will be in bad shape
+    this._cleanUp(true)
+  }
+}
+
+/**
+ * _handlePingresp - handle a pingresp
+ *
+ * @api private
+ */
+MqttClient.prototype._handlePingresp = function () {
+  this.pingResp = true
+}
+
+/**
+ * _handleConnack
+ *
+ * @param {Object} packet
+ * @api private
+ */
+
+MqttClient.prototype._handleConnack = function (packet) {
+  var rc = packet.returnCode
+  var errors = [
+    '',
+    'Unacceptable protocol version',
+    'Identifier rejected',
+    'Server unavailable',
+    'Bad username or password',
+    'Not authorized'
+  ]
+
+  clearTimeout(this.connackTimer)
+
+  if (rc === 0) {
+    this.reconnecting = false
+    this.emit('connect', packet)
+  } else if (rc > 0) {
+    var err = new Error('Connection refused: ' + errors[rc])
+    err.code = rc
+    this.emit('error', err)
+  }
+}
+
+/**
+ * _handlePublish
+ *
+ * @param {Object} packet
+ * @api private
+ */
+/*
+those late 2 case should be rewrite to comply with coding style:
+
+case 1:
+case 0:
+  // do not wait sending a puback
+  // no callback passed
+  if (1 === qos) {
+    this._sendPacket({
+      cmd: 'puback',
+      messageId: mid
+    });
+  }
+  // emit the message event for both qos 1 and 0
+  this.emit('message', topic, message, packet);
+  this.handleMessage(packet, done);
+  break;
+default:
+  // do nothing but every switch mus have a default
+  // log or throw an error about unknown qos
+  break;
+
+for now i just suppressed the warnings
+*/
+MqttClient.prototype._handlePublish = function (packet, done) {
+  var topic = packet.topic.toString()
+  var message = packet.payload
+  var qos = packet.qos
+  var mid = packet.messageId
+  var that = this
+
+  switch (qos) {
+    case 2:
+      this.incomingStore.put(packet, function () {
+        that._sendPacket({cmd: 'pubrec', messageId: mid}, done)
+      })
+      break
+    case 1:
+      // do not wait sending a puback
+      // no callback passed
+      this._sendPacket({
+        cmd: 'puback',
+        messageId: mid
+      })
+      /* falls through */
+    case 0:
+      // emit the message event for both qos 1 and 0
+      this.emit('message', topic, message, packet)
+      this.handleMessage(packet, done)
+      break
+    default:
+      // do nothing
+      // log or throw an error about unknown qos
+      break
+  }
+}
+
+/**
+ * Handle messages with backpressure support, one at a time.
+ * Override at will.
+ *
+ * @param Packet packet the packet
+ * @param Function callback call when finished
+ * @api public
+ */
+MqttClient.prototype.handleMessage = function (packet, callback) {
+  callback()
+}
+
+/**
+ * _handleAck
+ *
+ * @param {Object} packet
+ * @api private
+ */
+
+MqttClient.prototype._handleAck = function (packet) {
+  /* eslint no-fallthrough: "off" */
+  var mid = packet.messageId
+  var type = packet.cmd
+  var response = null
+  var cb = this.outgoing[mid]
+  var that = this
+
+  if (!cb) {
+    // Server sent an ack in error, ignore it.
+    return
+  }
+
+  // Process
+  switch (type) {
+    case 'pubcomp':
+      // same thing as puback for QoS 2
+    case 'puback':
+      // Callback - we're done
+      delete this.outgoing[mid]
+      this.outgoingStore.del(packet, cb)
+      break
+    case 'pubrec':
+      response = {
+        cmd: 'pubrel',
+        qos: 2,
+        messageId: mid
+      }
+
+      this._sendPacket(response)
+      break
+    case 'suback':
+      delete this.outgoing[mid]
+      cb(null, packet)
+      break
+    case 'unsuback':
+      delete this.outgoing[mid]
+      cb(null)
+      break
+    default:
+      that.emit('error', new Error('unrecognized packet type'))
+  }
+
+  if (this.disconnecting &&
+      Object.keys(this.outgoing).length === 0) {
+    this.emit('outgoingEmpty')
+  }
+}
+
+/**
+ * _handlePubrel
+ *
+ * @param {Object} packet
+ * @api private
+ */
+
+MqttClient.prototype._handlePubrel = function (packet, callback) {
+  var mid = packet.messageId
+  var that = this
+
+  that.incomingStore.get(packet, function (err, pub) {
+    if (err) {
+      return that.emit('error', err)
+    }
+
+    if (pub.cmd !== 'pubrel') {
+      that.emit('message', pub.topic, pub.payload, pub)
+      that.incomingStore.put(packet)
+    }
+
+    that._sendPacket({cmd: 'pubcomp', messageId: mid}, callback)
+  })
+}
+
+/**
+ * _nextId
+ */
+MqttClient.prototype._nextId = function () {
+  var id = this.nextId++
+  // Ensure 16 bit unsigned int:
+  if (id === 65535) {
+    this.nextId = 1
+  }
+  return id
+}
+
+/**
+ * getLastMessageId
+ */
+MqttClient.prototype.getLastMessageId = function () {
+  return (this.nextId === 1) ? 65535 : (this.nextId - 1)
+}
+
+module.exports = MqttClient
+
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./store":22,"./validations":23,"_process":53,"end-of-stream":7,"events":51,"inherits":8,"mqtt-packet":12,"readable-stream":35,"reinterval":36}],18:[function(require,module,exports){
+(function (process){
+'use strict'
+
+var MqttClient = require('../client')
+var url = require('url')
+var xtend = require('xtend')
+var protocols = {}
+
+if (process.title !== 'browser') {
+  protocols.mqtt = require('./tcp')
+  protocols.tcp = require('./tcp')
+  protocols.ssl = require('./tls')
+  protocols.tls = require('./tls')
+  protocols.mqtts = require('./tls')
+}
+
+protocols.ws = require('./ws')
+protocols.wss = require('./ws')
+
+/**
+ * Parse the auth attribute and merge username and password in the options object.
+ *
+ * @param {Object} [opts] option object
+ */
+function parseAuthOptions (opts) {
+  var matches
+  if (opts.auth) {
+    matches = opts.auth.match(/^(.+):(.+)$/)
+    if (matches) {
+      opts.username = matches[1]
+      opts.password = matches[2]
+    } else {
+      opts.username = opts.auth
+    }
+  }
+}
+
+/**
+ * connect - connect to an MQTT broker.
+ *
+ * @param {String} [brokerUrl] - url of the broker, optional
+ * @param {Object} opts - see MqttClient#constructor
+ */
+function connect (brokerUrl, opts) {
+  if ((typeof brokerUrl === 'object') && !opts) {
+    opts = brokerUrl
+    brokerUrl = null
+  }
+
+  opts = opts || {}
+
+  if (brokerUrl) {
+    var parsed = url.parse(brokerUrl, true)
+    if (parsed.port != null) {
+      parsed.port = Number(parsed.port)
+    }
+
+    opts = xtend(parsed, opts)
+
+    if (opts.protocol === null) {
+      throw new Error('Missing protocol')
+    }
+    opts.protocol = opts.protocol.replace(/:$/, '')
+  }
+
+  // merge in the auth options if supplied
+  parseAuthOptions(opts)
+
+  // support clientId passed in the query string of the url
+  if (opts.query && typeof opts.query.clientId === 'string') {
+    opts.clientId = opts.query.clientId
+  }
+
+  if (opts.cert && opts.key) {
+    if (opts.protocol) {
+      if (['mqtts', 'wss'].indexOf(opts.protocol) === -1) {
+        /*
+         * jshint and eslint
+         * complains that break from default cannot be reached after throw
+         * it is a foced exit from a control structure
+         * maybe add a check after switch to see if it went through default
+         * and then throw the error
+        */
+        /* jshint -W027 */
+        /* eslint no-unreachable:1 */
+        switch (opts.protocol) {
+          case 'mqtt':
+            opts.protocol = 'mqtts'
+            break
+          case 'ws':
+            opts.protocol = 'wss'
+            break
+          default:
+            throw new Error('Unknown protocol for secure connection: "' + opts.protocol + '"!')
+            break
+        }
+        /* eslint no-unreachable:0 */
+        /* jshint +W027 */
+      }
+    } else {
+      // don't know what protocol he want to use, mqtts or wss
+      throw new Error('Missing secure protocol key')
+    }
+  }
+
+  if (!protocols[opts.protocol]) {
+    var isSecure = ['mqtts', 'wss'].indexOf(opts.protocol) !== -1
+    opts.protocol = [
+      'mqtt',
+      'mqtts',
+      'ws',
+      'wss'
+    ].filter(function (key, index) {
+      if (isSecure && index % 2 === 0) {
+        // Skip insecure protocols when requesting a secure one.
+        return false
+      }
+      return (typeof protocols[key] === 'function')
+    })[0]
+  }
+
+  if (opts.clean === false && !opts.clientId) {
+    throw new Error('Missing clientId for unclean clients')
+  }
+
+  function wrapper (client) {
+    if (opts.servers) {
+      if (!client._reconnectCount || client._reconnectCount === opts.servers.length) {
+        client._reconnectCount = 0
+      }
+
+      opts.host = opts.servers[client._reconnectCount].host
+      opts.port = opts.servers[client._reconnectCount].port
+      opts.hostname = opts.host
+
+      client._reconnectCount++
+    }
+
+    return protocols[opts.protocol](client, opts)
+  }
+
+  return new MqttClient(wrapper, opts)
+}
+
+module.exports = connect
+module.exports.connect = connect
+module.exports.MqttClient = MqttClient
+
+}).call(this,require('_process'))
+},{"../client":17,"./tcp":19,"./tls":20,"./ws":21,"_process":53,"url":58,"xtend":45}],19:[function(require,module,exports){
+'use strict'
+var net = require('net')
+
+/*
+  variables port and host can be removed since
+  you have all required information in opts object
+*/
+function buildBuilder (client, opts) {
+  var port, host
+  opts.port = opts.port || 1883
+  opts.hostname = opts.hostname || opts.host || 'localhost'
+
+  port = opts.port
+  host = opts.hostname
+
+  return net.createConnection(port, host)
+}
+
+module.exports = buildBuilder
+
+},{"net":46}],20:[function(require,module,exports){
+'use strict'
+var tls = require('tls')
+
+function buildBuilder (mqttClient, opts) {
+  var connection
+  opts.port = opts.port || 8883
+  opts.host = opts.hostname || opts.host || 'localhost'
+
+  opts.rejectUnauthorized = opts.rejectUnauthorized !== false
+
+  connection = tls.connect(opts)
+  /* eslint no-use-before-define: [2, "nofunc"] */
+  connection.on('secureConnect', function () {
+    if (opts.rejectUnauthorized && !connection.authorized) {
+      connection.emit('error', new Error('TLS not authorized'))
+    } else {
+      connection.removeListener('error', handleTLSerrors)
+    }
+  })
+
+  function handleTLSerrors (err) {
+    // How can I get verify this error is a tls error?
+    if (opts.rejectUnauthorized) {
+      mqttClient.emit('error', err)
+    }
+
+    // close this connection to match the behaviour of net
+    // otherwise all we get is an error from the connection
+    // and close event doesn't fire. This is a work around
+    // to enable the reconnect code to work the same as with
+    // net.createConnection
+    connection.end()
+  }
+
+  connection.on('error', handleTLSerrors)
+  return connection
+}
+
+module.exports = buildBuilder
+
+},{"tls":46}],21:[function(require,module,exports){
+(function (process){
+'use strict'
+
+var websocket = require('websocket-stream')
+var urlModule = require('url')
+var WSS_OPTIONS = [
+  'rejectUnauthorized',
+  'ca',
+  'cert',
+  'key',
+  'pfx',
+  'passphrase'
+]
+var IS_BROWSER = process.title === 'browser'
+
+function buildUrl (opts, client) {
+  var url = opts.protocol + '://' + opts.hostname + ':' + opts.port + opts.path
+  if (typeof (opts.transformWsUrl) === 'function') {
+    url = opts.transformWsUrl(url, opts, client)
+  }
+  return url
+}
+
+function setDefaultOpts (opts) {
+  if (!opts.hostname) {
+    opts.hostname = 'localhost'
+  }
+  if (!opts.port) {
+    if (opts.protocol === 'wss') {
+      opts.port = 443
+    } else {
+      opts.port = 80
+    }
+  }
+  if (!opts.path) {
+    opts.path = '/'
+  }
+
+  if (!opts.wsOptions) {
+    opts.wsOptions = {}
+  }
+  if (!IS_BROWSER && opts.protocol === 'wss') {
+    // Add cert/key/ca etc options
+    WSS_OPTIONS.forEach(function (prop) {
+      if (opts.hasOwnProperty(prop) && !opts.wsOptions.hasOwnProperty(prop)) {
+        opts.wsOptions[prop] = opts[prop]
+      }
+    })
+  }
+}
+
+function createWebSocket (client, opts) {
+  var websocketSubProtocol =
+    (opts.protocolId === 'MQIsdp') && (opts.protocolVersion === 3)
+      ? 'mqttv3.1'
+      : 'mqtt'
+
+  setDefaultOpts(opts)
+  var url = buildUrl(opts, client)
+  return websocket(url, [websocketSubProtocol], opts.wsOptions)
+}
+
+function buildBuilder (client, opts) {
+  return createWebSocket(client, opts)
+}
+
+function buildBuilderBrowser (client, opts) {
+  if (!opts.hostname) {
+    opts.hostname = opts.host
+  }
+
+  if (!opts.hostname) {
+    // Throwing an error in a Web Worker if no `hostname` is given, because we
+    // can not determine the `hostname` automatically.  If connecting to
+    // localhost, please supply the `hostname` as an argument.
+    if (typeof (document) === 'undefined') {
+      throw new Error('Could not determine host. Specify host manually.')
+    }
+    var parsed = urlModule.parse(document.URL)
+    opts.hostname = parsed.hostname
+
+    if (!opts.port) {
+      opts.port = parsed.port
+    }
+  }
+  return createWebSocket(client, opts)
+}
+
+if (IS_BROWSER) {
+  module.exports = buildBuilderBrowser
+} else {
+  module.exports = buildBuilder
+}
+
+}).call(this,require('_process'))
+},{"_process":53,"url":58,"websocket-stream":42}],22:[function(require,module,exports){
+(function (process){
+'use strict'
+
+var Readable = require('readable-stream').Readable
+var streamsOpts = { objectMode: true }
+
+/**
+ * In-memory implementation of the message store
+ * This can actually be saved into files.
+ *
+ */
+function Store () {
+  if (!(this instanceof Store)) {
+    return new Store()
+  }
+
+  this._inflights = {}
+}
+
+/**
+ * Adds a packet to the store, a packet is
+ * anything that has a messageId property.
+ *
+ */
+Store.prototype.put = function (packet, cb) {
+  this._inflights[packet.messageId] = packet
+
+  if (cb) {
+    cb()
+  }
+
+  return this
+}
+
+/**
+ * Creates a stream with all the packets in the store
+ *
+ */
+Store.prototype.createStream = function () {
+  var stream = new Readable(streamsOpts)
+  var inflights = this._inflights
+  var ids = Object.keys(this._inflights)
+  var destroyed = false
+  var i = 0
+
+  stream._read = function () {
+    if (!destroyed && i < ids.length) {
+      this.push(inflights[ids[i++]])
+    } else {
+      this.push(null)
+    }
+  }
+
+  stream.destroy = function () {
+    if (destroyed) {
+      return
+    }
+
+    var self = this
+
+    destroyed = true
+
+    process.nextTick(function () {
+      self.emit('close')
+    })
+  }
+
+  return stream
+}
+
+/**
+ * deletes a packet from the store.
+ */
+Store.prototype.del = function (packet, cb) {
+  packet = this._inflights[packet.messageId]
+  if (packet) {
+    delete this._inflights[packet.messageId]
+    cb(null, packet)
+  } else if (cb) {
+    cb(new Error('missing packet'))
+  }
+
+  return this
+}
+
+/**
+ * get a packet from the store.
+ */
+Store.prototype.get = function (packet, cb) {
+  packet = this._inflights[packet.messageId]
+  if (packet) {
+    cb(null, packet)
+  } else if (cb) {
+    cb(new Error('missing packet'))
+  }
+
+  return this
+}
+
+/**
+ * Close the store
+ */
+Store.prototype.close = function (cb) {
+  this._inflights = null
+  if (cb) {
+    cb()
+  }
+}
+
+module.exports = Store
+
+}).call(this,require('_process'))
+},{"_process":53,"readable-stream":35}],23:[function(require,module,exports){
+'use strict'
+
+/**
+ * Validate a topic to see if it's valid or not.
+ * A topic is valid if it follow below rules:
+ * - Rule #1: If any part of the topic is not `+` or `#`, then it must not contain `+` and '#'
+ * - Rule #2: Part `#` must be located at the end of the mailbox
+ *
+ * @param {String} topic - A topic
+ * @returns {Boolean} If the topic is valid, returns true. Otherwise, returns false.
+ */
+function validateTopic (topic) {
+  var parts = topic.split('/')
+
+  for (var i = 0; i < parts.length; i++) {
+    if (parts[i] === '+') {
+      continue
+    }
+
+    if (parts[i] === '#') {
+      // for Rule #2
+      return i === parts.length - 1
+    }
+
+    if (parts[i].indexOf('+') !== -1 || parts[i].indexOf('#') !== -1) {
+      return false
+    }
+  }
+
+  return true
+}
+
+/**
+ * Validate an array of topics to see if any of them is valid or not
+  * @param {Array} topics - Array of topics
+ * @returns {String} If the topics is valid, returns null. Otherwise, returns the invalid one
+ */
+function validateTopics (topics) {
+  if (topics.length === 0) {
+    return 'empty_topic_list'
+  }
+  for (var i = 0; i < topics.length; i++) {
+    if (!validateTopic(topics[i])) {
+      return topics[i]
+    }
+  }
+  return null
+}
+
+module.exports = {
+  validateTopics: validateTopics
+}
+
+},{}],24:[function(require,module,exports){
+var wrappy = require('wrappy')
+module.exports = wrappy(once)
+module.exports.strict = wrappy(onceStrict)
+
+once.proto = once(function () {
+  Object.defineProperty(Function.prototype, 'once', {
+    value: function () {
+      return once(this)
+    },
+    configurable: true
+  })
+
+  Object.defineProperty(Function.prototype, 'onceStrict', {
+    value: function () {
+      return onceStrict(this)
+    },
+    configurable: true
+  })
+})
+
+function once (fn) {
+  var f = function () {
+    if (f.called) return f.value
+    f.called = true
+    return f.value = fn.apply(this, arguments)
+  }
+  f.called = false
+  return f
+}
+
+function onceStrict (fn) {
+  var f = function () {
+    if (f.called)
+      throw new Error(f.onceError)
+    f.called = true
+    return f.value = fn.apply(this, arguments)
+  }
+  var name = fn.name || 'Function wrapped with `once`'
+  f.onceError = name + " shouldn't be called more than once"
+  f.called = false
+  return f
+}
+
+},{"wrappy":44}],25:[function(require,module,exports){
+(function (process){
+'use strict';
+
+if (!process.version ||
+    process.version.indexOf('v0.') === 0 ||
+    process.version.indexOf('v1.') === 0 && process.version.indexOf('v1.8.') !== 0) {
+  module.exports = nextTick;
+} else {
+  module.exports = process.nextTick;
+}
+
+function nextTick(fn, arg1, arg2, arg3) {
+  if (typeof fn !== 'function') {
+    throw new TypeError('"callback" argument must be a function');
+  }
+  var len = arguments.length;
+  var args, i;
+  switch (len) {
+  case 0:
+  case 1:
+    return process.nextTick(fn);
+  case 2:
+    return process.nextTick(function afterTickOne() {
+      fn.call(null, arg1);
+    });
+  case 3:
+    return process.nextTick(function afterTickTwo() {
+      fn.call(null, arg1, arg2);
+    });
+  case 4:
+    return process.nextTick(function afterTickThree() {
+      fn.call(null, arg1, arg2, arg3);
+    });
+  default:
+    args = new Array(len - 1);
+    i = 0;
+    while (i < args.length) {
+      args[i++] = arguments[i];
+    }
+    return process.nextTick(function afterTick() {
+      fn.apply(null, args);
+    });
+  }
+}
+
+}).call(this,require('_process'))
+},{"_process":53}],26:[function(require,module,exports){
 module.exports = require('./lib/_stream_duplex.js');
 
-},{"./lib/_stream_duplex.js":24}],24:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":27}],27:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // a duplex stream is just a stream that is both readable and writable.
 // Since JS doesn't have multiple prototypal inheritance, this class
 // prototypally inherits from Readable, and then parasitically from
@@ -3101,6 +3562,10 @@ module.exports = require('./lib/_stream_duplex.js');
 
 /*<replacement>*/
 
+var processNextTick = require('process-nextick-args');
+/*</replacement>*/
+
+/*<replacement>*/
 var objectKeys = Object.keys || function (obj) {
   var keys = [];
   for (var key in obj) {
@@ -3110,10 +3575,6 @@ var objectKeys = Object.keys || function (obj) {
 /*</replacement>*/
 
 module.exports = Duplex;
-
-/*<replacement>*/
-var processNextTick = require('process-nextick-args');
-/*</replacement>*/
 
 /*<replacement>*/
 var util = require('core-util-is');
@@ -3162,12 +3623,61 @@ function onEndNT(self) {
   self.end();
 }
 
+Object.defineProperty(Duplex.prototype, 'destroyed', {
+  get: function () {
+    if (this._readableState === undefined || this._writableState === undefined) {
+      return false;
+    }
+    return this._readableState.destroyed && this._writableState.destroyed;
+  },
+  set: function (value) {
+    // we ignore the value if the stream
+    // has not been initialized yet
+    if (this._readableState === undefined || this._writableState === undefined) {
+      return;
+    }
+
+    // backward compatibility, the user is explicitly
+    // managing destroyed
+    this._readableState.destroyed = value;
+    this._writableState.destroyed = value;
+  }
+});
+
+Duplex.prototype._destroy = function (err, cb) {
+  this.push(null);
+  this.end();
+
+  processNextTick(cb, err);
+};
+
 function forEach(xs, f) {
   for (var i = 0, l = xs.length; i < l; i++) {
     f(xs[i], i);
   }
 }
-},{"./_stream_readable":26,"./_stream_writable":28,"core-util-is":32,"inherits":12,"process-nextick-args":34}],25:[function(require,module,exports){
+},{"./_stream_readable":29,"./_stream_writable":31,"core-util-is":3,"inherits":8,"process-nextick-args":25}],28:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // a passthrough stream.
 // basically just the most minimal sort of Transform stream.
 // Every written chunk gets output as-is.
@@ -3194,15 +3704,37 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":27,"core-util-is":32,"inherits":12}],26:[function(require,module,exports){
+},{"./_stream_transform":30,"core-util-is":3,"inherits":8}],29:[function(require,module,exports){
 (function (process){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 'use strict';
 
-module.exports = Readable;
-
 /*<replacement>*/
+
 var processNextTick = require('process-nextick-args');
 /*</replacement>*/
+
+module.exports = Readable;
 
 /*<replacement>*/
 var isArray = require('isarray');
@@ -3226,9 +3758,14 @@ var EElistenerCount = function (emitter, type) {
 var Stream = require('./internal/streams/stream');
 /*</replacement>*/
 
-var Buffer = require('buffer').Buffer;
 /*<replacement>*/
-var bufferShim = require('buffer-shims');
+var Buffer = require('safe-buffer').Buffer;
+function _uint8ArrayToBuffer(chunk) {
+  return Buffer.from(chunk);
+}
+function _isUint8Array(obj) {
+  return Object.prototype.toString.call(obj) === '[object Uint8Array]' || Buffer.isBuffer(obj);
+}
 /*</replacement>*/
 
 /*<replacement>*/
@@ -3247,6 +3784,7 @@ if (debugUtil && debugUtil.debuglog) {
 /*</replacement>*/
 
 var BufferList = require('./internal/streams/BufferList');
+var destroyImpl = require('./internal/streams/destroy');
 var StringDecoder;
 
 util.inherits(Readable, Stream);
@@ -3285,7 +3823,7 @@ function ReadableState(options, stream) {
   this.highWaterMark = hwm || hwm === 0 ? hwm : defaultHwm;
 
   // cast to ints.
-  this.highWaterMark = ~~this.highWaterMark;
+  this.highWaterMark = Math.floor(this.highWaterMark);
 
   // A linked list is used to store data chunks instead of an array because the
   // linked list can remove elements from the beginning faster than
@@ -3299,10 +3837,10 @@ function ReadableState(options, stream) {
   this.endEmitted = false;
   this.reading = false;
 
-  // a flag to be able to tell if the onwrite cb is called immediately,
-  // or on a later tick.  We set this to true at first, because any
-  // actions that shouldn't happen until "later" should generally also
-  // not happen before the first write call.
+  // a flag to be able to tell if the event 'readable'/'data' is emitted
+  // immediately, or on a later tick.  We set this to true at first, because
+  // any actions that shouldn't happen until "later" should generally also
+  // not happen before the first read call.
   this.sync = true;
 
   // whenever we return null, then we set a flag to say
@@ -3312,14 +3850,13 @@ function ReadableState(options, stream) {
   this.readableListening = false;
   this.resumeScheduled = false;
 
+  // has it been destroyed
+  this.destroyed = false;
+
   // Crypto is kind of old and crusty.  Historically, its default string
   // encoding is 'binary' so we have to make this configurable.
   // Everything else in the universe uses 'utf8', though.
   this.defaultEncoding = options.defaultEncoding || 'utf8';
-
-  // when piping, we only care about 'readable' events that happen
-  // after read()ing all the bytes and not getting any pushback.
-  this.ranOut = false;
 
   // the number of writers that are awaiting a drain event in .pipe()s
   this.awaitDrain = 0;
@@ -3346,10 +3883,41 @@ function Readable(options) {
   // legacy
   this.readable = true;
 
-  if (options && typeof options.read === 'function') this._read = options.read;
+  if (options) {
+    if (typeof options.read === 'function') this._read = options.read;
+
+    if (typeof options.destroy === 'function') this._destroy = options.destroy;
+  }
 
   Stream.call(this);
 }
+
+Object.defineProperty(Readable.prototype, 'destroyed', {
+  get: function () {
+    if (this._readableState === undefined) {
+      return false;
+    }
+    return this._readableState.destroyed;
+  },
+  set: function (value) {
+    // we ignore the value if the stream
+    // has not been initialized yet
+    if (!this._readableState) {
+      return;
+    }
+
+    // backward compatibility, the user is explicitly
+    // managing destroyed
+    this._readableState.destroyed = value;
+  }
+});
+
+Readable.prototype.destroy = destroyImpl.destroy;
+Readable.prototype._undestroy = destroyImpl.undestroy;
+Readable.prototype._destroy = function (err, cb) {
+  this.push(null);
+  cb(err);
+};
 
 // Manually shove something into the read() buffer.
 // This returns true if the highWaterMark has not been hit yet,
@@ -3357,74 +3925,85 @@ function Readable(options) {
 // write() some more.
 Readable.prototype.push = function (chunk, encoding) {
   var state = this._readableState;
+  var skipChunkCheck;
 
-  if (!state.objectMode && typeof chunk === 'string') {
-    encoding = encoding || state.defaultEncoding;
-    if (encoding !== state.encoding) {
-      chunk = bufferShim.from(chunk, encoding);
-      encoding = '';
+  if (!state.objectMode) {
+    if (typeof chunk === 'string') {
+      encoding = encoding || state.defaultEncoding;
+      if (encoding !== state.encoding) {
+        chunk = Buffer.from(chunk, encoding);
+        encoding = '';
+      }
+      skipChunkCheck = true;
     }
+  } else {
+    skipChunkCheck = true;
   }
 
-  return readableAddChunk(this, state, chunk, encoding, false);
+  return readableAddChunk(this, chunk, encoding, false, skipChunkCheck);
 };
 
 // Unshift should *always* be something directly out of read()
 Readable.prototype.unshift = function (chunk) {
-  var state = this._readableState;
-  return readableAddChunk(this, state, chunk, '', true);
+  return readableAddChunk(this, chunk, null, true, false);
 };
 
-Readable.prototype.isPaused = function () {
-  return this._readableState.flowing === false;
-};
-
-function readableAddChunk(stream, state, chunk, encoding, addToFront) {
-  var er = chunkInvalid(state, chunk);
-  if (er) {
-    stream.emit('error', er);
-  } else if (chunk === null) {
+function readableAddChunk(stream, chunk, encoding, addToFront, skipChunkCheck) {
+  var state = stream._readableState;
+  if (chunk === null) {
     state.reading = false;
     onEofChunk(stream, state);
-  } else if (state.objectMode || chunk && chunk.length > 0) {
-    if (state.ended && !addToFront) {
-      var e = new Error('stream.push() after EOF');
-      stream.emit('error', e);
-    } else if (state.endEmitted && addToFront) {
-      var _e = new Error('stream.unshift() after end event');
-      stream.emit('error', _e);
-    } else {
-      var skipAdd;
-      if (state.decoder && !addToFront && !encoding) {
-        chunk = state.decoder.write(chunk);
-        skipAdd = !state.objectMode && chunk.length === 0;
+  } else {
+    var er;
+    if (!skipChunkCheck) er = chunkInvalid(state, chunk);
+    if (er) {
+      stream.emit('error', er);
+    } else if (state.objectMode || chunk && chunk.length > 0) {
+      if (typeof chunk !== 'string' && Object.getPrototypeOf(chunk) !== Buffer.prototype && !state.objectMode) {
+        chunk = _uint8ArrayToBuffer(chunk);
       }
 
-      if (!addToFront) state.reading = false;
-
-      // Don't add to the buffer if we've decoded to an empty string chunk and
-      // we're not in object mode
-      if (!skipAdd) {
-        // if we want the data now, just emit it.
-        if (state.flowing && state.length === 0 && !state.sync) {
-          stream.emit('data', chunk);
-          stream.read(0);
+      if (addToFront) {
+        if (state.endEmitted) stream.emit('error', new Error('stream.unshift() after end event'));else addChunk(stream, state, chunk, true);
+      } else if (state.ended) {
+        stream.emit('error', new Error('stream.push() after EOF'));
+      } else {
+        state.reading = false;
+        if (state.decoder && !encoding) {
+          chunk = state.decoder.write(chunk);
+          if (state.objectMode || chunk.length !== 0) addChunk(stream, state, chunk, false);else maybeReadMore(stream, state);
         } else {
-          // update the buffer info.
-          state.length += state.objectMode ? 1 : chunk.length;
-          if (addToFront) state.buffer.unshift(chunk);else state.buffer.push(chunk);
-
-          if (state.needReadable) emitReadable(stream);
+          addChunk(stream, state, chunk, false);
         }
       }
-
-      maybeReadMore(stream, state);
+    } else if (!addToFront) {
+      state.reading = false;
     }
-  } else if (!addToFront) {
-    state.reading = false;
   }
 
   return needMoreData(state);
+}
+
+function addChunk(stream, state, chunk, addToFront) {
+  if (state.flowing && state.length === 0 && !state.sync) {
+    stream.emit('data', chunk);
+    stream.read(0);
+  } else {
+    // update the buffer info.
+    state.length += state.objectMode ? 1 : chunk.length;
+    if (addToFront) state.buffer.unshift(chunk);else state.buffer.push(chunk);
+
+    if (state.needReadable) emitReadable(stream);
+  }
+  maybeReadMore(stream, state);
+}
+
+function chunkInvalid(state, chunk) {
+  var er;
+  if (!_isUint8Array(chunk) && typeof chunk !== 'string' && chunk !== undefined && !state.objectMode) {
+    er = new TypeError('Invalid non-string/buffer chunk');
+  }
+  return er;
 }
 
 // if it's past the high water mark, we can push in some more.
@@ -3437,6 +4016,10 @@ function readableAddChunk(stream, state, chunk, encoding, addToFront) {
 function needMoreData(state) {
   return !state.ended && (state.needReadable || state.length < state.highWaterMark || state.length === 0);
 }
+
+Readable.prototype.isPaused = function () {
+  return this._readableState.flowing === false;
+};
 
 // backwards compatibility.
 Readable.prototype.setEncoding = function (enc) {
@@ -3586,14 +4169,6 @@ Readable.prototype.read = function (n) {
   return ret;
 };
 
-function chunkInvalid(state, chunk) {
-  var er = null;
-  if (!Buffer.isBuffer(chunk) && typeof chunk !== 'string' && chunk !== null && chunk !== undefined && !state.objectMode) {
-    er = new TypeError('Invalid non-string/buffer chunk');
-  }
-  return er;
-}
-
 function onEofChunk(stream, state) {
   if (state.ended) return;
   if (state.decoder) {
@@ -3681,14 +4256,17 @@ Readable.prototype.pipe = function (dest, pipeOpts) {
 
   var doEnd = (!pipeOpts || pipeOpts.end !== false) && dest !== process.stdout && dest !== process.stderr;
 
-  var endFn = doEnd ? onend : cleanup;
+  var endFn = doEnd ? onend : unpipe;
   if (state.endEmitted) processNextTick(endFn);else src.once('end', endFn);
 
   dest.on('unpipe', onunpipe);
-  function onunpipe(readable) {
+  function onunpipe(readable, unpipeInfo) {
     debug('onunpipe');
     if (readable === src) {
-      cleanup();
+      if (unpipeInfo && unpipeInfo.hasUnpiped === false) {
+        unpipeInfo.hasUnpiped = true;
+        cleanup();
+      }
     }
   }
 
@@ -3714,7 +4292,7 @@ Readable.prototype.pipe = function (dest, pipeOpts) {
     dest.removeListener('error', onerror);
     dest.removeListener('unpipe', onunpipe);
     src.removeListener('end', onend);
-    src.removeListener('end', cleanup);
+    src.removeListener('end', unpipe);
     src.removeListener('data', ondata);
 
     cleanedUp = true;
@@ -3807,6 +4385,7 @@ function pipeOnDrain(src) {
 
 Readable.prototype.unpipe = function (dest) {
   var state = this._readableState;
+  var unpipeInfo = { hasUnpiped: false };
 
   // if we're not piping anywhere, then do nothing.
   if (state.pipesCount === 0) return this;
@@ -3822,7 +4401,7 @@ Readable.prototype.unpipe = function (dest) {
     state.pipes = null;
     state.pipesCount = 0;
     state.flowing = false;
-    if (dest) dest.emit('unpipe', this);
+    if (dest) dest.emit('unpipe', this, unpipeInfo);
     return this;
   }
 
@@ -3837,7 +4416,7 @@ Readable.prototype.unpipe = function (dest) {
     state.flowing = false;
 
     for (var i = 0; i < len; i++) {
-      dests[i].emit('unpipe', this);
+      dests[i].emit('unpipe', this, unpipeInfo);
     }return this;
   }
 
@@ -3849,7 +4428,7 @@ Readable.prototype.unpipe = function (dest) {
   state.pipesCount -= 1;
   if (state.pipesCount === 1) state.pipes = state.pipes[0];
 
-  dest.emit('unpipe', this);
+  dest.emit('unpipe', this, unpipeInfo);
 
   return this;
 };
@@ -3870,7 +4449,7 @@ Readable.prototype.on = function (ev, fn) {
       if (!state.reading) {
         processNextTick(nReadingNextTick, this);
       } else if (state.length) {
-        emitReadable(this, state);
+        emitReadable(this);
       }
     }
   }
@@ -4071,7 +4650,7 @@ function copyFromBufferString(n, list) {
 // This function is designed to be inlinable, so please take care when making
 // changes to the function body.
 function copyFromBuffer(n, list) {
-  var ret = bufferShim.allocUnsafe(n);
+  var ret = Buffer.allocUnsafe(n);
   var p = list.head;
   var c = 1;
   p.data.copy(ret);
@@ -4132,7 +4711,28 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":24,"./internal/streams/BufferList":29,"./internal/streams/stream":30,"_process":55,"buffer":49,"buffer-shims":31,"core-util-is":32,"events":53,"inherits":12,"isarray":33,"process-nextick-args":34,"string_decoder/":35,"util":48}],27:[function(require,module,exports){
+},{"./_stream_duplex":27,"./internal/streams/BufferList":32,"./internal/streams/destroy":33,"./internal/streams/stream":34,"_process":53,"core-util-is":3,"events":51,"inherits":8,"isarray":9,"process-nextick-args":25,"safe-buffer":37,"string_decoder/":39,"util":46}],30:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
 // but that's not a great name for it, since that implies a thing where
@@ -4206,7 +4806,9 @@ function afterTransform(stream, er, data) {
 
   var cb = ts.writecb;
 
-  if (!cb) return stream.emit('error', new Error('no writecb in Transform class'));
+  if (!cb) {
+    return stream.emit('error', new Error('write callback called multiple times'));
+  }
 
   ts.writechunk = null;
   ts.writecb = null;
@@ -4299,6 +4901,15 @@ Transform.prototype._read = function (n) {
   }
 };
 
+Transform.prototype._destroy = function (err, cb) {
+  var _this = this;
+
+  Duplex.prototype._destroy.call(this, err, function (err2) {
+    cb(err2);
+    _this.emit('close');
+  });
+};
+
 function done(stream, er, data) {
   if (er) return stream.emit('error', er);
 
@@ -4315,19 +4926,58 @@ function done(stream, er, data) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":24,"core-util-is":32,"inherits":12}],28:[function(require,module,exports){
+},{"./_stream_duplex":27,"core-util-is":3,"inherits":8}],31:[function(require,module,exports){
 (function (process){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
 // the drain event emission and buffering.
 
 'use strict';
 
-module.exports = Writable;
-
 /*<replacement>*/
+
 var processNextTick = require('process-nextick-args');
 /*</replacement>*/
+
+module.exports = Writable;
+
+/* <replacement> */
+function WriteReq(chunk, encoding, cb) {
+  this.chunk = chunk;
+  this.encoding = encoding;
+  this.callback = cb;
+  this.next = null;
+}
+
+// It seems a linked list but it is not
+// there will be only 2 of these for each stream
+function CorkedRequest(state) {
+  this.next = null;
+  this.entry = null;
+  this.finish = onCorkedFinish.bind(undefined, this, state);
+}
+/* </replacement> */
 
 /*<replacement>*/
 var asyncWrite = !process.browser && ['v0.10', 'v0.9.'].indexOf(process.version.slice(0, 5)) > -1 ? setImmediate : processNextTick;
@@ -4354,21 +5004,21 @@ var internalUtil = {
 var Stream = require('./internal/streams/stream');
 /*</replacement>*/
 
-var Buffer = require('buffer').Buffer;
 /*<replacement>*/
-var bufferShim = require('buffer-shims');
+var Buffer = require('safe-buffer').Buffer;
+function _uint8ArrayToBuffer(chunk) {
+  return Buffer.from(chunk);
+}
+function _isUint8Array(obj) {
+  return Object.prototype.toString.call(obj) === '[object Uint8Array]' || Buffer.isBuffer(obj);
+}
 /*</replacement>*/
+
+var destroyImpl = require('./internal/streams/destroy');
 
 util.inherits(Writable, Stream);
 
 function nop() {}
-
-function WriteReq(chunk, encoding, cb) {
-  this.chunk = chunk;
-  this.encoding = encoding;
-  this.callback = cb;
-  this.next = null;
-}
 
 function WritableState(options, stream) {
   Duplex = Duplex || require('./_stream_duplex');
@@ -4389,7 +5039,10 @@ function WritableState(options, stream) {
   this.highWaterMark = hwm || hwm === 0 ? hwm : defaultHwm;
 
   // cast to ints.
-  this.highWaterMark = ~~this.highWaterMark;
+  this.highWaterMark = Math.floor(this.highWaterMark);
+
+  // if _final has been called
+  this.finalCalled = false;
 
   // drain event flag.
   this.needDrain = false;
@@ -4399,6 +5052,9 @@ function WritableState(options, stream) {
   this.ended = false;
   // when 'finish' is emitted
   this.finished = false;
+
+  // has it been destroyed
+  this.destroyed = false;
 
   // should we decode strings into buffers before passing to _write?
   // this is here so that some node-core streams can optimize string
@@ -4481,7 +5137,7 @@ WritableState.prototype.getBuffer = function getBuffer() {
     Object.defineProperty(WritableState.prototype, 'buffer', {
       get: internalUtil.deprecate(function () {
         return this.getBuffer();
-      }, '_writableState.buffer is deprecated. Use _writableState.getBuffer ' + 'instead.')
+      }, '_writableState.buffer is deprecated. Use _writableState.getBuffer ' + 'instead.', 'DEP0003')
     });
   } catch (_) {}
 })();
@@ -4527,6 +5183,10 @@ function Writable(options) {
     if (typeof options.write === 'function') this._write = options.write;
 
     if (typeof options.writev === 'function') this._writev = options.writev;
+
+    if (typeof options.destroy === 'function') this._destroy = options.destroy;
+
+    if (typeof options.final === 'function') this._final = options.final;
   }
 
   Stream.call(this);
@@ -4567,7 +5227,11 @@ function validChunk(stream, state, chunk, cb) {
 Writable.prototype.write = function (chunk, encoding, cb) {
   var state = this._writableState;
   var ret = false;
-  var isBuf = Buffer.isBuffer(chunk);
+  var isBuf = _isUint8Array(chunk) && !state.objectMode;
+
+  if (isBuf && !Buffer.isBuffer(chunk)) {
+    chunk = _uint8ArrayToBuffer(chunk);
+  }
 
   if (typeof encoding === 'function') {
     cb = encoding;
@@ -4612,7 +5276,7 @@ Writable.prototype.setDefaultEncoding = function setDefaultEncoding(encoding) {
 
 function decodeChunk(state, chunk, encoding) {
   if (!state.objectMode && state.decodeStrings !== false && typeof chunk === 'string') {
-    chunk = bufferShim.from(chunk, encoding);
+    chunk = Buffer.from(chunk, encoding);
   }
   return chunk;
 }
@@ -4622,8 +5286,12 @@ function decodeChunk(state, chunk, encoding) {
 // If we return false, then we need a drain event, so set that flag.
 function writeOrBuffer(stream, state, isBuf, chunk, encoding, cb) {
   if (!isBuf) {
-    chunk = decodeChunk(state, chunk, encoding);
-    if (Buffer.isBuffer(chunk)) encoding = 'buffer';
+    var newChunk = decodeChunk(state, chunk, encoding);
+    if (chunk !== newChunk) {
+      isBuf = true;
+      encoding = 'buffer';
+      chunk = newChunk;
+    }
   }
   var len = state.objectMode ? 1 : chunk.length;
 
@@ -4635,7 +5303,13 @@ function writeOrBuffer(stream, state, isBuf, chunk, encoding, cb) {
 
   if (state.writing || state.corked) {
     var last = state.lastBufferedRequest;
-    state.lastBufferedRequest = new WriteReq(chunk, encoding, cb);
+    state.lastBufferedRequest = {
+      chunk: chunk,
+      encoding: encoding,
+      isBuf: isBuf,
+      callback: cb,
+      next: null
+    };
     if (last) {
       last.next = state.lastBufferedRequest;
     } else {
@@ -4660,10 +5334,15 @@ function doWrite(stream, state, writev, len, chunk, encoding, cb) {
 
 function onwriteError(stream, state, sync, er, cb) {
   --state.pendingcb;
-  if (sync) processNextTick(cb, er);else cb(er);
+  if (sync) processNextTick(afterError, stream, state, cb, er);else afterError(stream, state, cb, er);
 
   stream._writableState.errorEmitted = true;
   stream.emit('error', er);
+}
+
+function afterError(stream, state, cb, err) {
+  cb(err);
+  finishMaybe(stream, state);
 }
 
 function onwriteStateUpdate(state) {
@@ -4728,11 +5407,14 @@ function clearBuffer(stream, state) {
     holder.entry = entry;
 
     var count = 0;
+    var allBuffers = true;
     while (entry) {
       buffer[count] = entry;
+      if (!entry.isBuf) allBuffers = false;
       entry = entry.next;
       count += 1;
     }
+    buffer.allBuffers = allBuffers;
 
     doWrite(stream, state, true, state.length, buffer, '', holder.finish);
 
@@ -4806,23 +5488,37 @@ Writable.prototype.end = function (chunk, encoding, cb) {
 function needFinish(state) {
   return state.ending && state.length === 0 && state.bufferedRequest === null && !state.finished && !state.writing;
 }
-
-function prefinish(stream, state) {
-  if (!state.prefinished) {
+function callFinal(stream, state) {
+  stream._final(function (err) {
+    state.pendingcb--;
+    if (err) {
+      stream.emit('error', err);
+    }
     state.prefinished = true;
     stream.emit('prefinish');
+    finishMaybe(stream, state);
+  });
+}
+function prefinish(stream, state) {
+  if (!state.prefinished && !state.finalCalled) {
+    if (typeof stream._final === 'function') {
+      state.pendingcb++;
+      state.finalCalled = true;
+      processNextTick(callFinal, stream, state);
+    } else {
+      state.prefinished = true;
+      stream.emit('prefinish');
+    }
   }
 }
 
 function finishMaybe(stream, state) {
   var need = needFinish(state);
   if (need) {
+    prefinish(stream, state);
     if (state.pendingcb === 0) {
-      prefinish(stream, state);
       state.finished = true;
       stream.emit('finish');
-    } else {
-      prefinish(stream, state);
     }
   }
   return need;
@@ -4838,335 +5534,366 @@ function endWritable(stream, state, cb) {
   stream.writable = false;
 }
 
-// It seems a linked list but it is not
-// there will be only 2 of these for each stream
-function CorkedRequest(state) {
-  var _this = this;
-
-  this.next = null;
-  this.entry = null;
-  this.finish = function (err) {
-    var entry = _this.entry;
-    _this.entry = null;
-    while (entry) {
-      var cb = entry.callback;
-      state.pendingcb--;
-      cb(err);
-      entry = entry.next;
-    }
-    if (state.corkedRequestsFree) {
-      state.corkedRequestsFree.next = _this;
-    } else {
-      state.corkedRequestsFree = _this;
-    }
-  };
+function onCorkedFinish(corkReq, state, err) {
+  var entry = corkReq.entry;
+  corkReq.entry = null;
+  while (entry) {
+    var cb = entry.callback;
+    state.pendingcb--;
+    cb(err);
+    entry = entry.next;
+  }
+  if (state.corkedRequestsFree) {
+    state.corkedRequestsFree.next = corkReq;
+  } else {
+    state.corkedRequestsFree = corkReq;
+  }
 }
+
+Object.defineProperty(Writable.prototype, 'destroyed', {
+  get: function () {
+    if (this._writableState === undefined) {
+      return false;
+    }
+    return this._writableState.destroyed;
+  },
+  set: function (value) {
+    // we ignore the value if the stream
+    // has not been initialized yet
+    if (!this._writableState) {
+      return;
+    }
+
+    // backward compatibility, the user is explicitly
+    // managing destroyed
+    this._writableState.destroyed = value;
+  }
+});
+
+Writable.prototype.destroy = destroyImpl.destroy;
+Writable.prototype._undestroy = destroyImpl.undestroy;
+Writable.prototype._destroy = function (err, cb) {
+  this.end();
+  cb(err);
+};
 }).call(this,require('_process'))
-},{"./_stream_duplex":24,"./internal/streams/stream":30,"_process":55,"buffer":49,"buffer-shims":31,"core-util-is":32,"inherits":12,"process-nextick-args":34,"util-deprecate":36}],29:[function(require,module,exports){
+},{"./_stream_duplex":27,"./internal/streams/destroy":33,"./internal/streams/stream":34,"_process":53,"core-util-is":3,"inherits":8,"process-nextick-args":25,"safe-buffer":37,"util-deprecate":41}],32:[function(require,module,exports){
 'use strict';
 
-var Buffer = require('buffer').Buffer;
 /*<replacement>*/
-var bufferShim = require('buffer-shims');
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Buffer = require('safe-buffer').Buffer;
 /*</replacement>*/
 
-module.exports = BufferList;
-
-function BufferList() {
-  this.head = null;
-  this.tail = null;
-  this.length = 0;
+function copyBuffer(src, target, offset) {
+  src.copy(target, offset);
 }
 
-BufferList.prototype.push = function (v) {
-  var entry = { data: v, next: null };
-  if (this.length > 0) this.tail.next = entry;else this.head = entry;
-  this.tail = entry;
-  ++this.length;
-};
+module.exports = function () {
+  function BufferList() {
+    _classCallCheck(this, BufferList);
 
-BufferList.prototype.unshift = function (v) {
-  var entry = { data: v, next: this.head };
-  if (this.length === 0) this.tail = entry;
-  this.head = entry;
-  ++this.length;
-};
-
-BufferList.prototype.shift = function () {
-  if (this.length === 0) return;
-  var ret = this.head.data;
-  if (this.length === 1) this.head = this.tail = null;else this.head = this.head.next;
-  --this.length;
-  return ret;
-};
-
-BufferList.prototype.clear = function () {
-  this.head = this.tail = null;
-  this.length = 0;
-};
-
-BufferList.prototype.join = function (s) {
-  if (this.length === 0) return '';
-  var p = this.head;
-  var ret = '' + p.data;
-  while (p = p.next) {
-    ret += s + p.data;
-  }return ret;
-};
-
-BufferList.prototype.concat = function (n) {
-  if (this.length === 0) return bufferShim.alloc(0);
-  if (this.length === 1) return this.head.data;
-  var ret = bufferShim.allocUnsafe(n >>> 0);
-  var p = this.head;
-  var i = 0;
-  while (p) {
-    p.data.copy(ret, i);
-    i += p.data.length;
-    p = p.next;
+    this.head = null;
+    this.tail = null;
+    this.length = 0;
   }
-  return ret;
+
+  _createClass(BufferList, [{
+    key: 'push',
+    value: function push(v) {
+      var entry = { data: v, next: null };
+      if (this.length > 0) this.tail.next = entry;else this.head = entry;
+      this.tail = entry;
+      ++this.length;
+    }
+  }, {
+    key: 'unshift',
+    value: function unshift(v) {
+      var entry = { data: v, next: this.head };
+      if (this.length === 0) this.tail = entry;
+      this.head = entry;
+      ++this.length;
+    }
+  }, {
+    key: 'shift',
+    value: function shift() {
+      if (this.length === 0) return;
+      var ret = this.head.data;
+      if (this.length === 1) this.head = this.tail = null;else this.head = this.head.next;
+      --this.length;
+      return ret;
+    }
+  }, {
+    key: 'clear',
+    value: function clear() {
+      this.head = this.tail = null;
+      this.length = 0;
+    }
+  }, {
+    key: 'join',
+    value: function join(s) {
+      if (this.length === 0) return '';
+      var p = this.head;
+      var ret = '' + p.data;
+      while (p = p.next) {
+        ret += s + p.data;
+      }return ret;
+    }
+  }, {
+    key: 'concat',
+    value: function concat(n) {
+      if (this.length === 0) return Buffer.alloc(0);
+      if (this.length === 1) return this.head.data;
+      var ret = Buffer.allocUnsafe(n >>> 0);
+      var p = this.head;
+      var i = 0;
+      while (p) {
+        copyBuffer(p.data, ret, i);
+        i += p.data.length;
+        p = p.next;
+      }
+      return ret;
+    }
+  }]);
+
+  return BufferList;
+}();
+},{"safe-buffer":37}],33:[function(require,module,exports){
+'use strict';
+
+/*<replacement>*/
+
+var processNextTick = require('process-nextick-args');
+/*</replacement>*/
+
+// undocumented cb() API, needed for core, not for public API
+function destroy(err, cb) {
+  var _this = this;
+
+  var readableDestroyed = this._readableState && this._readableState.destroyed;
+  var writableDestroyed = this._writableState && this._writableState.destroyed;
+
+  if (readableDestroyed || writableDestroyed) {
+    if (cb) {
+      cb(err);
+    } else if (err && (!this._writableState || !this._writableState.errorEmitted)) {
+      processNextTick(emitErrorNT, this, err);
+    }
+    return;
+  }
+
+  // we set destroyed to true before firing error callbacks in order
+  // to make it re-entrance safe in case destroy() is called within callbacks
+
+  if (this._readableState) {
+    this._readableState.destroyed = true;
+  }
+
+  // if this is a duplex stream mark the writable part as destroyed as well
+  if (this._writableState) {
+    this._writableState.destroyed = true;
+  }
+
+  this._destroy(err || null, function (err) {
+    if (!cb && err) {
+      processNextTick(emitErrorNT, _this, err);
+      if (_this._writableState) {
+        _this._writableState.errorEmitted = true;
+      }
+    } else if (cb) {
+      cb(err);
+    }
+  });
+}
+
+function undestroy() {
+  if (this._readableState) {
+    this._readableState.destroyed = false;
+    this._readableState.reading = false;
+    this._readableState.ended = false;
+    this._readableState.endEmitted = false;
+  }
+
+  if (this._writableState) {
+    this._writableState.destroyed = false;
+    this._writableState.ended = false;
+    this._writableState.ending = false;
+    this._writableState.finished = false;
+    this._writableState.errorEmitted = false;
+  }
+}
+
+function emitErrorNT(self, err) {
+  self.emit('error', err);
+}
+
+module.exports = {
+  destroy: destroy,
+  undestroy: undestroy
 };
-},{"buffer":49,"buffer-shims":31}],30:[function(require,module,exports){
+},{"process-nextick-args":25}],34:[function(require,module,exports){
 module.exports = require('events').EventEmitter;
 
-},{"events":53}],31:[function(require,module,exports){
-(function (global){
-'use strict';
+},{"events":51}],35:[function(require,module,exports){
+exports = module.exports = require('./lib/_stream_readable.js');
+exports.Stream = exports;
+exports.Readable = exports;
+exports.Writable = require('./lib/_stream_writable.js');
+exports.Duplex = require('./lib/_stream_duplex.js');
+exports.Transform = require('./lib/_stream_transform.js');
+exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-var buffer = require('buffer');
-var Buffer = buffer.Buffer;
-var SlowBuffer = buffer.SlowBuffer;
-var MAX_LEN = buffer.kMaxLength || 2147483647;
-exports.alloc = function alloc(size, fill, encoding) {
-  if (typeof Buffer.alloc === 'function') {
-    return Buffer.alloc(size, fill, encoding);
+},{"./lib/_stream_duplex.js":27,"./lib/_stream_passthrough.js":28,"./lib/_stream_readable.js":29,"./lib/_stream_transform.js":30,"./lib/_stream_writable.js":31}],36:[function(require,module,exports){
+'use strict'
+
+function ReInterval (callback, interval, args) {
+  var self = this;
+
+  this._callback = callback;
+  this._args = args;
+
+  this._interval = setInterval(callback, interval, this._args);
+
+  this.reschedule = function (interval) {
+    // if no interval entered, use the interval passed in on creation
+    if (!interval)
+      interval = self._interval;
+
+    if (self._interval)
+      clearInterval(self._interval);
+    self._interval = setInterval(self._callback, interval, self._args);
+  };
+
+  this.clear = function () {
+    if (self._interval) {
+      clearInterval(self._interval);
+      self._interval = undefined;
+    }
+  };
+  
+  this.destroy = function () {
+    if (self._interval) {
+      clearInterval(self._interval);
+    }
+    self._callback = undefined;
+    self._interval = undefined;
+    self._args = undefined;
+  };
+}
+
+function reInterval () {
+  if (typeof arguments[0] !== 'function')
+    throw new Error('callback needed');
+  if (typeof arguments[1] !== 'number')
+    throw new Error('interval needed');
+
+  var args;
+
+  if (arguments.length > 0) {
+    args = new Array(arguments.length - 2);
+
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i + 2];
+    }
   }
-  if (typeof encoding === 'number') {
-    throw new TypeError('encoding must not be number');
+
+  return new ReInterval(arguments[0], arguments[1], args);
+}
+
+module.exports = reInterval;
+
+},{}],37:[function(require,module,exports){
+/* eslint-disable node/no-deprecated-api */
+var buffer = require('buffer')
+var Buffer = buffer.Buffer
+
+if (Buffer.from && Buffer.alloc && Buffer.allocUnsafe && Buffer.allocUnsafeSlow) {
+  module.exports = buffer
+} else {
+  // Copy properties from require('buffer')
+  Object.keys(buffer).forEach(function (prop) {
+    exports[prop] = buffer[prop]
+  })
+  exports.Buffer = SafeBuffer
+}
+
+function SafeBuffer (arg, encodingOrOffset, length) {
+  return Buffer(arg, encodingOrOffset, length)
+}
+
+// Copy static methods from Buffer
+Object.keys(Buffer).forEach(function (prop) {
+  SafeBuffer[prop] = Buffer[prop]
+})
+
+SafeBuffer.from = function (arg, encodingOrOffset, length) {
+  if (typeof arg === 'number') {
+    throw new TypeError('Argument must not be a number')
   }
+  return Buffer(arg, encodingOrOffset, length)
+}
+
+SafeBuffer.alloc = function (size, fill, encoding) {
   if (typeof size !== 'number') {
-    throw new TypeError('size must be a number');
+    throw new TypeError('Argument must be a number')
   }
-  if (size > MAX_LEN) {
-    throw new RangeError('size is too large');
-  }
-  var enc = encoding;
-  var _fill = fill;
-  if (_fill === undefined) {
-    enc = undefined;
-    _fill = 0;
-  }
-  var buf = new Buffer(size);
-  if (typeof _fill === 'string') {
-    var fillBuf = new Buffer(_fill, enc);
-    var flen = fillBuf.length;
-    var i = -1;
-    while (++i < size) {
-      buf[i] = fillBuf[i % flen];
+  var buf = Buffer(size)
+  if (fill !== undefined) {
+    if (typeof encoding === 'string') {
+      buf.fill(fill, encoding)
+    } else {
+      buf.fill(fill)
     }
   } else {
-    buf.fill(_fill);
+    buf.fill(0)
   }
-  return buf;
+  return buf
 }
-exports.allocUnsafe = function allocUnsafe(size) {
-  if (typeof Buffer.allocUnsafe === 'function') {
-    return Buffer.allocUnsafe(size);
-  }
+
+SafeBuffer.allocUnsafe = function (size) {
   if (typeof size !== 'number') {
-    throw new TypeError('size must be a number');
+    throw new TypeError('Argument must be a number')
   }
-  if (size > MAX_LEN) {
-    throw new RangeError('size is too large');
-  }
-  return new Buffer(size);
+  return Buffer(size)
 }
-exports.from = function from(value, encodingOrOffset, length) {
-  if (typeof Buffer.from === 'function' && (!global.Uint8Array || Uint8Array.from !== Buffer.from)) {
-    return Buffer.from(value, encodingOrOffset, length);
-  }
-  if (typeof value === 'number') {
-    throw new TypeError('"value" argument must not be a number');
-  }
-  if (typeof value === 'string') {
-    return new Buffer(value, encodingOrOffset);
-  }
-  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
-    var offset = encodingOrOffset;
-    if (arguments.length === 1) {
-      return new Buffer(value);
-    }
-    if (typeof offset === 'undefined') {
-      offset = 0;
-    }
-    var len = length;
-    if (typeof len === 'undefined') {
-      len = value.byteLength - offset;
-    }
-    if (offset >= value.byteLength) {
-      throw new RangeError('\'offset\' is out of bounds');
-    }
-    if (len > value.byteLength - offset) {
-      throw new RangeError('\'length\' is out of bounds');
-    }
-    return new Buffer(value.slice(offset, offset + len));
-  }
-  if (Buffer.isBuffer(value)) {
-    var out = new Buffer(value.length);
-    value.copy(out, 0, 0, value.length);
-    return out;
-  }
-  if (value) {
-    if (Array.isArray(value) || (typeof ArrayBuffer !== 'undefined' && value.buffer instanceof ArrayBuffer) || 'length' in value) {
-      return new Buffer(value);
-    }
-    if (value.type === 'Buffer' && Array.isArray(value.data)) {
-      return new Buffer(value.data);
-    }
-  }
 
-  throw new TypeError('First argument must be a string, Buffer, ' + 'ArrayBuffer, Array, or array-like object.');
-}
-exports.allocUnsafeSlow = function allocUnsafeSlow(size) {
-  if (typeof Buffer.allocUnsafeSlow === 'function') {
-    return Buffer.allocUnsafeSlow(size);
-  }
+SafeBuffer.allocUnsafeSlow = function (size) {
   if (typeof size !== 'number') {
-    throw new TypeError('size must be a number');
+    throw new TypeError('Argument must be a number')
   }
-  if (size >= MAX_LEN) {
-    throw new RangeError('size is too large');
+  return buffer.SlowBuffer(size)
+}
+
+},{"buffer":47}],38:[function(require,module,exports){
+module.exports = shift
+
+function shift (stream) {
+  var rs = stream._readableState
+  if (!rs) return null
+  return rs.objectMode ? stream.read() : stream.read(getStateLength(rs))
+}
+
+function getStateLength (state) {
+  if (state.buffer.length) {
+    // Since node 6.3.0 state.buffer is a BufferList not an array
+    if (state.buffer.head) {
+      return state.buffer.head.data.length
+    }
+
+    return state.buffer[0].length
   }
-  return new SlowBuffer(size);
+
+  return state.length
 }
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"buffer":49}],32:[function(require,module,exports){
-(function (Buffer){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// NOTE: These type checking functions intentionally don't use `instanceof`
-// because it is fragile and can be easily faked with `Object.create()`.
-
-function isArray(arg) {
-  if (Array.isArray) {
-    return Array.isArray(arg);
-  }
-  return objectToString(arg) === '[object Array]';
-}
-exports.isArray = isArray;
-
-function isBoolean(arg) {
-  return typeof arg === 'boolean';
-}
-exports.isBoolean = isBoolean;
-
-function isNull(arg) {
-  return arg === null;
-}
-exports.isNull = isNull;
-
-function isNullOrUndefined(arg) {
-  return arg == null;
-}
-exports.isNullOrUndefined = isNullOrUndefined;
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-exports.isNumber = isNumber;
-
-function isString(arg) {
-  return typeof arg === 'string';
-}
-exports.isString = isString;
-
-function isSymbol(arg) {
-  return typeof arg === 'symbol';
-}
-exports.isSymbol = isSymbol;
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
-exports.isUndefined = isUndefined;
-
-function isRegExp(re) {
-  return objectToString(re) === '[object RegExp]';
-}
-exports.isRegExp = isRegExp;
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-exports.isObject = isObject;
-
-function isDate(d) {
-  return objectToString(d) === '[object Date]';
-}
-exports.isDate = isDate;
-
-function isError(e) {
-  return (objectToString(e) === '[object Error]' || e instanceof Error);
-}
-exports.isError = isError;
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-exports.isFunction = isFunction;
-
-function isPrimitive(arg) {
-  return arg === null ||
-         typeof arg === 'boolean' ||
-         typeof arg === 'number' ||
-         typeof arg === 'string' ||
-         typeof arg === 'symbol' ||  // ES6 symbol
-         typeof arg === 'undefined';
-}
-exports.isPrimitive = isPrimitive;
-
-exports.isBuffer = Buffer.isBuffer;
-
-function objectToString(o) {
-  return Object.prototype.toString.call(o);
-}
-
-}).call(this,{"isBuffer":require("../../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/insert-module-globals/node_modules/is-buffer/index.js")})
-},{"../../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/insert-module-globals/node_modules/is-buffer/index.js":54}],33:[function(require,module,exports){
-var toString = {}.toString;
-
-module.exports = Array.isArray || function (arr) {
-  return toString.call(arr) == '[object Array]';
-};
-
-},{}],34:[function(require,module,exports){
-arguments[4][17][0].apply(exports,arguments)
-},{"_process":55,"dup":17}],35:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
-var Buffer = require('buffer').Buffer;
-var bufferShim = require('buffer-shims');
+var Buffer = require('safe-buffer').Buffer;
 
 var isEncoding = Buffer.isEncoding || function (encoding) {
   encoding = '' + encoding;
@@ -5243,7 +5970,7 @@ function StringDecoder(encoding) {
   }
   this.lastNeed = 0;
   this.lastTotal = 0;
-  this.lastChar = bufferShim.allocUnsafe(nb);
+  this.lastChar = Buffer.allocUnsafe(nb);
 }
 
 StringDecoder.prototype.write = function (buf) {
@@ -5436,7 +6163,10 @@ function simpleWrite(buf) {
 function simpleEnd(buf) {
   return buf && buf.length ? this.write(buf) : '';
 }
-},{"buffer":49,"buffer-shims":31}],36:[function(require,module,exports){
+},{"safe-buffer":40}],40:[function(require,module,exports){
+module.exports = require('buffer')
+
+},{"buffer":47}],41:[function(require,module,exports){
 (function (global){
 
 /**
@@ -5507,429 +6237,7 @@ function config (name) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],37:[function(require,module,exports){
-exports = module.exports = require('./lib/_stream_readable.js');
-exports.Stream = exports;
-exports.Readable = exports;
-exports.Writable = require('./lib/_stream_writable.js');
-exports.Duplex = require('./lib/_stream_duplex.js');
-exports.Transform = require('./lib/_stream_transform.js');
-exports.PassThrough = require('./lib/_stream_passthrough.js');
-
-},{"./lib/_stream_duplex.js":24,"./lib/_stream_passthrough.js":25,"./lib/_stream_readable.js":26,"./lib/_stream_transform.js":27,"./lib/_stream_writable.js":28}],38:[function(require,module,exports){
-'use strict'
-
-function ReInterval (callback, interval, args) {
-  var self = this;
-
-  this._callback = callback;
-  this._args = args;
-
-  this._interval = setInterval(callback, interval, this._args);
-
-  this.reschedule = function (interval) {
-    // if no interval entered, use the interval passed in on creation
-    if (!interval)
-      interval = self._interval;
-
-    if (self._interval)
-      clearInterval(self._interval);
-    self._interval = setInterval(self._callback, interval, self._args);
-  };
-
-  this.clear = function () {
-    if (self._interval) {
-      clearInterval(self._interval);
-      self._interval = undefined;
-    }
-  };
-  
-  this.destroy = function () {
-    if (self._interval) {
-      clearInterval(self._interval);
-    }
-    self._callback = undefined;
-    self._interval = undefined;
-    self._args = undefined;
-  };
-}
-
-function reInterval () {
-  if (typeof arguments[0] !== 'function')
-    throw new Error('callback needed');
-  if (typeof arguments[1] !== 'number')
-    throw new Error('interval needed');
-
-  var args;
-
-  if (arguments.length > 0) {
-    args = new Array(arguments.length - 2);
-
-    for (var i = 0; i < args.length; i++) {
-      args[i] = arguments[i + 2];
-    }
-  }
-
-  return new ReInterval(arguments[0], arguments[1], args);
-}
-
-module.exports = reInterval;
-
-},{}],39:[function(require,module,exports){
-(function (process,Buffer){
-var stream = require('readable-stream')
-var eos = require('end-of-stream')
-var inherits = require('inherits')
-var shift = require('stream-shift')
-
-var SIGNAL_FLUSH = new Buffer([0])
-
-var onuncork = function(self, fn) {
-  if (self._corked) self.once('uncork', fn)
-  else fn()
-}
-
-var destroyer = function(self, end) {
-  return function(err) {
-    if (err) self.destroy(err.message === 'premature close' ? null : err)
-    else if (end && !self._ended) self.end()
-  }
-}
-
-var end = function(ws, fn) {
-  if (!ws) return fn()
-  if (ws._writableState && ws._writableState.finished) return fn()
-  if (ws._writableState) return ws.end(fn)
-  ws.end()
-  fn()
-}
-
-var toStreams2 = function(rs) {
-  return new (stream.Readable)({objectMode:true, highWaterMark:16}).wrap(rs)
-}
-
-var Duplexify = function(writable, readable, opts) {
-  if (!(this instanceof Duplexify)) return new Duplexify(writable, readable, opts)
-  stream.Duplex.call(this, opts)
-
-  this._writable = null
-  this._readable = null
-  this._readable2 = null
-
-  this._forwardDestroy = !opts || opts.destroy !== false
-  this._forwardEnd = !opts || opts.end !== false
-  this._corked = 1 // start corked
-  this._ondrain = null
-  this._drained = false
-  this._forwarding = false
-  this._unwrite = null
-  this._unread = null
-  this._ended = false
-
-  this.destroyed = false
-
-  if (writable) this.setWritable(writable)
-  if (readable) this.setReadable(readable)
-}
-
-inherits(Duplexify, stream.Duplex)
-
-Duplexify.obj = function(writable, readable, opts) {
-  if (!opts) opts = {}
-  opts.objectMode = true
-  opts.highWaterMark = 16
-  return new Duplexify(writable, readable, opts)
-}
-
-Duplexify.prototype.cork = function() {
-  if (++this._corked === 1) this.emit('cork')
-}
-
-Duplexify.prototype.uncork = function() {
-  if (this._corked && --this._corked === 0) this.emit('uncork')
-}
-
-Duplexify.prototype.setWritable = function(writable) {
-  if (this._unwrite) this._unwrite()
-
-  if (this.destroyed) {
-    if (writable && writable.destroy) writable.destroy()
-    return
-  }
-
-  if (writable === null || writable === false) {
-    this.end()
-    return
-  }
-
-  var self = this
-  var unend = eos(writable, {writable:true, readable:false}, destroyer(this, this._forwardEnd))
-
-  var ondrain = function() {
-    var ondrain = self._ondrain
-    self._ondrain = null
-    if (ondrain) ondrain()
-  }
-
-  var clear = function() {
-    self._writable.removeListener('drain', ondrain)
-    unend()
-  }
-
-  if (this._unwrite) process.nextTick(ondrain) // force a drain on stream reset to avoid livelocks
-
-  this._writable = writable
-  this._writable.on('drain', ondrain)
-  this._unwrite = clear
-
-  this.uncork() // always uncork setWritable
-}
-
-Duplexify.prototype.setReadable = function(readable) {
-  if (this._unread) this._unread()
-
-  if (this.destroyed) {
-    if (readable && readable.destroy) readable.destroy()
-    return
-  }
-
-  if (readable === null || readable === false) {
-    this.push(null)
-    this.resume()
-    return
-  }
-
-  var self = this
-  var unend = eos(readable, {writable:false, readable:true}, destroyer(this))
-
-  var onreadable = function() {
-    self._forward()
-  }
-
-  var onend = function() {
-    self.push(null)
-  }
-
-  var clear = function() {
-    self._readable2.removeListener('readable', onreadable)
-    self._readable2.removeListener('end', onend)
-    unend()
-  }
-
-  this._drained = true
-  this._readable = readable
-  this._readable2 = readable._readableState ? readable : toStreams2(readable)
-  this._readable2.on('readable', onreadable)
-  this._readable2.on('end', onend)
-  this._unread = clear
-
-  this._forward()
-}
-
-Duplexify.prototype._read = function() {
-  this._drained = true
-  this._forward()
-}
-
-Duplexify.prototype._forward = function() {
-  if (this._forwarding || !this._readable2 || !this._drained) return
-  this._forwarding = true
-
-  var data
-
-  while (this._drained && (data = shift(this._readable2)) !== null) {
-    if (this.destroyed) continue
-    this._drained = this.push(data)
-  }
-
-  this._forwarding = false
-}
-
-Duplexify.prototype.destroy = function(err) {
-  if (this.destroyed) return
-  this.destroyed = true
-
-  var self = this
-  process.nextTick(function() {
-    self._destroy(err)
-  })
-}
-
-Duplexify.prototype._destroy = function(err) {
-  if (err) {
-    var ondrain = this._ondrain
-    this._ondrain = null
-    if (ondrain) ondrain(err)
-    else this.emit('error', err)
-  }
-
-  if (this._forwardDestroy) {
-    if (this._readable && this._readable.destroy) this._readable.destroy()
-    if (this._writable && this._writable.destroy) this._writable.destroy()
-  }
-
-  this.emit('close')
-}
-
-Duplexify.prototype._write = function(data, enc, cb) {
-  if (this.destroyed) return cb()
-  if (this._corked) return onuncork(this, this._write.bind(this, data, enc, cb))
-  if (data === SIGNAL_FLUSH) return this._finish(cb)
-  if (!this._writable) return cb()
-
-  if (this._writable.write(data) === false) this._ondrain = cb
-  else cb()
-}
-
-
-Duplexify.prototype._finish = function(cb) {
-  var self = this
-  this.emit('preend')
-  onuncork(this, function() {
-    end(self._forwardEnd && self._writable, function() {
-      // haxx to not emit prefinish twice
-      if (self._writableState.prefinished === false) self._writableState.prefinished = true
-      self.emit('prefinish')
-      onuncork(self, cb)
-    })
-  })
-}
-
-Duplexify.prototype.end = function(data, enc, cb) {
-  if (typeof data === 'function') return this.end(null, null, data)
-  if (typeof enc === 'function') return this.end(data, null, enc)
-  this._ended = true
-  if (data) this.write(data)
-  if (!this._writableState.ending) this.write(SIGNAL_FLUSH)
-  return stream.Writable.prototype.end.call(this, cb)
-}
-
-module.exports = Duplexify
-
-}).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":55,"buffer":49,"end-of-stream":40,"inherits":12,"readable-stream":37,"stream-shift":43}],40:[function(require,module,exports){
-var once = require('once');
-
-var noop = function() {};
-
-var isRequest = function(stream) {
-	return stream.setHeader && typeof stream.abort === 'function';
-};
-
-var eos = function(stream, opts, callback) {
-	if (typeof opts === 'function') return eos(stream, null, opts);
-	if (!opts) opts = {};
-
-	callback = once(callback || noop);
-
-	var ws = stream._writableState;
-	var rs = stream._readableState;
-	var readable = opts.readable || (opts.readable !== false && stream.readable);
-	var writable = opts.writable || (opts.writable !== false && stream.writable);
-
-	var onlegacyfinish = function() {
-		if (!stream.writable) onfinish();
-	};
-
-	var onfinish = function() {
-		writable = false;
-		if (!readable) callback();
-	};
-
-	var onend = function() {
-		readable = false;
-		if (!writable) callback();
-	};
-
-	var onclose = function() {
-		if (readable && !(rs && rs.ended)) return callback(new Error('premature close'));
-		if (writable && !(ws && ws.ended)) return callback(new Error('premature close'));
-	};
-
-	var onrequest = function() {
-		stream.req.on('finish', onfinish);
-	};
-
-	if (isRequest(stream)) {
-		stream.on('complete', onfinish);
-		stream.on('abort', onclose);
-		if (stream.req) onrequest();
-		else stream.on('request', onrequest);
-	} else if (writable && !ws) { // legacy streams
-		stream.on('end', onlegacyfinish);
-		stream.on('close', onlegacyfinish);
-	}
-
-	stream.on('end', onend);
-	stream.on('finish', onfinish);
-	if (opts.error !== false) stream.on('error', callback);
-	stream.on('close', onclose);
-
-	return function() {
-		stream.removeListener('complete', onfinish);
-		stream.removeListener('abort', onclose);
-		stream.removeListener('request', onrequest);
-		if (stream.req) stream.req.removeListener('finish', onfinish);
-		stream.removeListener('end', onlegacyfinish);
-		stream.removeListener('close', onlegacyfinish);
-		stream.removeListener('finish', onfinish);
-		stream.removeListener('end', onend);
-		stream.removeListener('error', callback);
-		stream.removeListener('close', onclose);
-	};
-};
-
-module.exports = eos;
-},{"once":42}],41:[function(require,module,exports){
-arguments[4][10][0].apply(exports,arguments)
-},{"dup":10}],42:[function(require,module,exports){
-var wrappy = require('wrappy')
-module.exports = wrappy(once)
-
-once.proto = once(function () {
-  Object.defineProperty(Function.prototype, 'once', {
-    value: function () {
-      return once(this)
-    },
-    configurable: true
-  })
-})
-
-function once (fn) {
-  var f = function () {
-    if (f.called) return f.value
-    f.called = true
-    return f.value = fn.apply(this, arguments)
-  }
-  f.called = false
-  return f
-}
-
-},{"wrappy":41}],43:[function(require,module,exports){
-module.exports = shift
-
-function shift (stream) {
-  var rs = stream._readableState
-  if (!rs) return null
-  return rs.objectMode ? stream.read() : stream.read(getStateLength(rs))
-}
-
-function getStateLength (state) {
-  if (state.buffer.length) {
-    // Since node 6.3.0 state.buffer is a BufferList not an array
-    if (state.buffer.head) {
-      return state.buffer.head.data.length
-    }
-
-    return state.buffer[0].length
-  }
-
-  return state.length
-}
-
-},{}],44:[function(require,module,exports){
-arguments[4][18][0].apply(exports,arguments)
-},{"buffer":49,"dup":18}],45:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 (function (process,global){
 'use strict'
 
@@ -6115,7 +6423,7 @@ function WebSocketStream(target, protocols, options) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":55,"duplexify":39,"readable-stream":37,"safe-buffer":44,"ws":46}],46:[function(require,module,exports){
+},{"_process":53,"duplexify":4,"readable-stream":35,"safe-buffer":37,"ws":43}],43:[function(require,module,exports){
 
 var ws = null
 
@@ -6129,7 +6437,42 @@ if (typeof WebSocket !== 'undefined') {
 
 module.exports = ws
 
-},{}],47:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
+// Returns a wrapper function that returns a wrapped callback
+// The wrapper function should do some stuff, and return a
+// presumably different callback function.
+// This makes sure that own properties are retained, so that
+// decorations and such are not lost along the way.
+module.exports = wrappy
+function wrappy (fn, cb) {
+  if (fn && cb) return wrappy(fn)(cb)
+
+  if (typeof fn !== 'function')
+    throw new TypeError('need wrapper function')
+
+  Object.keys(fn).forEach(function (k) {
+    wrapper[k] = fn[k]
+  })
+
+  return wrapper
+
+  function wrapper() {
+    var args = new Array(arguments.length)
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i]
+    }
+    var ret = fn.apply(this, args)
+    var cb = args[args.length-1]
+    if (typeof ret === 'function' && ret !== cb) {
+      Object.keys(cb).forEach(function (k) {
+        ret[k] = cb[k]
+      })
+    }
+    return ret
+  }
+}
+
+},{}],45:[function(require,module,exports){
 module.exports = extend
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -6150,9 +6493,9 @@ function extend() {
     return target
 }
 
-},{}],48:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 
-},{}],49:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -7945,7 +8288,7 @@ function isnan (val) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":50,"ieee754":51,"isarray":52}],50:[function(require,module,exports){
+},{"base64-js":48,"ieee754":49,"isarray":50}],48:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -8061,7 +8404,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],51:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -8147,9 +8490,9 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],52:[function(require,module,exports){
-arguments[4][33][0].apply(exports,arguments)
-},{"dup":33}],53:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
+arguments[4][9][0].apply(exports,arguments)
+},{"dup":9}],51:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -8453,7 +8796,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],54:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -8476,7 +8819,7 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],55:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -8658,7 +9001,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],56:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 (function (global){
 /*! https://mths.be/punycode v1.4.1 by @mathias */
 ;(function(root) {
@@ -9195,7 +9538,7 @@ process.umask = function() { return 0; };
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],57:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -9281,7 +9624,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],58:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -9368,13 +9711,13 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],59:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
-},{"./decode":57,"./encode":58}],60:[function(require,module,exports){
+},{"./decode":55,"./encode":56}],58:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -10108,7 +10451,7 @@ Url.prototype.parseHost = function() {
   if (host) this.hostname = host;
 };
 
-},{"./util":61,"punycode":56,"querystring":59}],61:[function(require,module,exports){
+},{"./util":59,"punycode":54,"querystring":57}],59:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -10126,16 +10469,16 @@ module.exports = {
   }
 };
 
-},{}],62:[function(require,module,exports){
-arguments[4][12][0].apply(exports,arguments)
-},{"dup":12}],63:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
+arguments[4][8][0].apply(exports,arguments)
+},{"dup":8}],61:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],64:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -10725,4 +11068,4 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":63,"_process":55,"inherits":62}]},{},[1]);
+},{"./support/isBuffer":61,"_process":53,"inherits":60}]},{},[1]);
