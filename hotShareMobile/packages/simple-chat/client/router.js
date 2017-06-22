@@ -371,14 +371,14 @@ Template._simpleChatToChat.onRendered(function(){
               return;
             if(result){
               var id = new Mongo.ObjectID()._str;
-              window.___message.insert(id); // result.smallImage
+              window.___message.insert(id, result.filename, result.URI); // result.smallImage
               multiThreadUploadFile_new([{
                 type: 'image',
                 filename: result.filename,
                 URI: result.URI
               }], 1, function(err, res){
                 if(err || res.length <= 0){
-                  window.___message.remove(id);
+                  window.___message.update(id, null);
                   return PUB.toast('上传图片失败~');
                 }
                 window.___message.update(id, res[0].imgUrl);
@@ -1138,6 +1138,55 @@ Template._simpleChatToChat.helpers({
   }
 });
 
+sendMqttMsg = function(){
+  var msg = _.clone(arguments[0]);
+  delete msg.send_status
+  var callback = function(err){
+    if(timeout){
+      Meteor.clearTimeout(timeout);
+      timeout = null;
+    }
+    if (err){
+      console.log('send mqtt err:', err);
+      return Messages.update({_id: msg._id}, {$set: {send_status: 'failed'}});
+    }
+    Messages.update({_id: msg._id}, {$set: {send_status: 'success'}});
+  };
+  var timeout = Meteor.setTimeout(function(){
+    var obj = Messages.findOne({_id: msg._id});
+    if (obj && obj.send_status === 'sending')
+      Messages.update({_id: msg._id}, {$set: {send_status: 'failed'}});
+  }, 1000*60*2);
+
+  Messages.update({_id: msg._id}, {$set: {send_status: 'sending'}});
+
+  if (msg.type === 'image'){
+    if(!msg.images[0].url){
+      return multiThreadUploadFile_new([{
+        type: 'image',
+        filename: msg.images[0].filename,
+        URI: msg.images[0].uri
+      }], 1, function(err, res){
+        if(err || res.length <= 0)
+          return callback(new Error('upload error'));
+
+        if(timeout){
+          Meteor.clearTimeout(timeout);
+          timeout = null;
+        }
+        window.___message.update(id, res[0].imgUrl);
+        msg = Messages.findOne({_id: msg.to.id});
+        sendMqttGroupMessage(msg.to.id, msg, callback);
+      });
+    }
+  }
+
+  if(msg.type === 'group')
+    sendMqttGroupMessage(msg.to.id, msg, callback);
+  else
+    sendMqttUserMessage(msg.to.id, msg, callback);
+};
+
 Template._simpleChatToChat.events({
   'focus .input-text': function(){
     $('.box').animate({scrollTop:'999999px'}, 800);
@@ -1218,20 +1267,11 @@ Template._simpleChatToChat.events({
         text: text,
         create_time: new Date(),
         is_read: false,
-        wait_classify:wait_classify
+        wait_classify:wait_classify,
+        send_status: 'sending'
       };
       Messages.insert(msg, function(){
-        if(data.type === 'group')
-          sendMqttGroupMessage(msg.to.id, msg);
-          if (is_nlp_classify_group && inputLink) {
-            msg.type = 'url';
-            msg.url = inputLink;
-            msg.wait_classify = true;
-            sendMqttMessage('/nlp_user_input',msg)
-            console.log("##RDBG nlp_user_input: " + JSON.stringify(msg));
-          }
-        else
-          sendMqttUserMessage(msg.to.id, msg);
+        sendMqttMsg(msg);
         setScrollToBottom();
       });
 
@@ -1316,6 +1356,54 @@ var renderMoreButton = function(){
   }, 1000);
 };
 
+Template._simpleChatToChatItem.onRendered(function(){
+  var data = this.data;
+
+  // if (data.form.id === Meteor.userId() && data.send_status === 'sending')
+  //   sendMqttMsg(data);
+
+  touch.on(this.$('li'),'hold',function(ev){
+    var msg = Messages.findOne({_id: data._id});
+    console.log('hold event:', msg);
+    if (!msg)
+      return;
+
+    if (msg.form.id === Meteor.userId() && (msg.send_status === 'failed' || msg.send_status === 'sending')){
+      switch(msg.send_status){
+        case 'failed':
+          window.plugins.actionsheet.show({
+            title: '消息发送失败，请选择？',
+            buttonLabels: ['重新发送', '删除'],
+            addCancelButtonWithLabel: '返回',
+            androidEnableCancelButton: true
+          }, function(index){
+            if (index === 1)
+              sendMqttMsg(msg);
+            else if (index === 2)
+              Messages.remove({_id: msg._id});
+          });
+          break;
+        case 'sending':
+          window.plugins.actionsheet.show({
+            title: '消息发送中，请选择？',
+            buttonLabels: ['取消发送'],
+            addCancelButtonWithLabel: '返回',
+            androidEnableCancelButton: true
+          }, function(index){
+            if (index === 1)
+              Messages.remove({_id: msg._id});
+          });
+          break;
+      }
+    }
+  });
+});
+// Template._simpleChatToChatItem.onDestroyed(function(){
+//   if(this.data.send_status === 'sending' && this.data.form.id === Meteor.userId())
+//     Messages.update({_id: this.data._id}, {$set: {send_status: 'failed'}});
+//     // sendMqttMsg(this.data);
+// });
+
 Template._simpleChatToChatItem.helpers({
   is_system_message:function(){
     if (this.type === 'system') {
@@ -1370,13 +1458,22 @@ Template._simpleChatToChatItem.helpers({
   ta_me: function(id){
     return id != Meteor.userId() ? 'ta' : 'me';
   },
+  is_me: function(id){
+    return id === Meteor.userId();
+  },
+  status_sending: function(val){
+    return val === 'sending';
+  },
+  status_failed: function(val){
+    return val === 'failed';
+  },
   show_images: function(images){
     renderMoreButton();
   }
 });
 
 window.___message = {
-  insert: function(id){
+  insert: function(id, filename, uri){
     var data = page_data;
     var to = null;
     var img_type = null;
@@ -1419,7 +1516,9 @@ window.___message = {
           label:null,
           people_his_id:id,
           img_type:img_type,
-          thumbnail: '/packages/feiwu_simple-chat/images/sendingBmp.gif'
+          thumbnail: '/packages/feiwu_simple-chat/images/sendingBmp.gif',
+          filename: filename,
+          uri: uri
         }
       ],
       //thumbnail: '/packages/feiwu_simple-chat/images/sendingBmp.gif',
@@ -1428,7 +1527,8 @@ window.___message = {
       people_id: faceId,
       people_his_id:id,
       wait_lable:true,
-      is_read: false
+      is_read: false,
+      send_status: 'sending'
     }, function(err, id){
       console.log('insert id:', id);
       $('.box').scrollTop($('.box ul').height());
@@ -1445,10 +1545,7 @@ window.___message = {
     }}, function(){
       console.log('update id:', id);
       $('.box').scrollTop($('.box ul').height());
-      if (msg.to_type === 'group')
-        sendMqttGroupMessage(msg.to.id, Messages.findOne({_id: id}));
-      else
-        sendMqttUserMessage(msg.to.id, Messages.findOne({_id: id}));
+      sendMqttMsg(msg);
       lazyloadInit();
     });
   },
