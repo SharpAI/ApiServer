@@ -608,6 +608,9 @@ Template._simpleChatToChatItem.events({
       });
     }
   },
+  'click .sendfiled':function(e){
+    sendMqttMsg(this);
+  },
   'click li div.showmore':function(e){
     if (this.type === 'url') {
       return;
