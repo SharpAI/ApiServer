@@ -171,7 +171,7 @@ if(Meteor.isClient){
           mqtt_connection._reconnect();
         }
       }
-      catch (ex) { console.log('mqtt reconnect ex=', ex);*/ }
+      catch (ex) { console.log('mqtt reconnect ex=', ex); }*/
     };
     mqttEventPause = function() {
       console.log('##RDBG, mqttEventPause, disconnect mqtt');
