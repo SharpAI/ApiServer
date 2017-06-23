@@ -2,9 +2,11 @@
   <!-- {{>connectionBanner}} -->
   <div class="introductoryPage">
     <div class="introductoryPageBg">
-      <div class="signupHeader">
-          <div id="btn_back" class="leftButton" style="color: #b7b7b7 !important;"><i class="fa fa-angle-left fa-fw"></i></div>
-      </div>
+      {{#if enable_home_ai}}
+        <div class="signupHeader">
+            <div id="btn_back" class="leftButton" style="color: #b7b7b7 !important;"><i class="fa fa-angle-left fa-fw"></i></div>
+        </div>
+      {{/if}}
       <div class="actionArea"> 
         <div id="joinGroup" class="ripple-btn introductory-btn">加入AI训练群</div>
         <div id="createGroup" class="ripple-btn introductory-btn">创建AI训练群</div>

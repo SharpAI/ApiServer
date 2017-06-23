@@ -26,7 +26,11 @@ if Meteor.isClient
         PUB.toast '添加失败，请重试~'
         return Router.go(gotoPage)
       return
-
+  Template.introductoryPage.helpers
+    enable_home_ai:()->
+      if window.localStorage.getItem("enableHomeAI") == 'true'
+        return true
+      return false
   Template.introductoryPage.events
     'click .leftButton':(event)->
       Router.go('/scene');
