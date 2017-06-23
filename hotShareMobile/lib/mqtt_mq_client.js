@@ -16,6 +16,18 @@ if(Meteor.isClient){
                 clientId:clientId
             }
             mqtt_connection=mqtt.connect('ws://mq.tiegushi.com:80',mqttOptions);
+            mqtt_connection.on('offline',function(){
+                mqtt_connected = false;
+                console.log('MQTT offline')
+            })
+            mqtt_connection.on('error',function(){
+                mqtt_connected = false;
+                console.log('MQTT error')
+            })
+            mqtt_connection.on('reconnect',function(){
+                mqtt_connected = false;
+                console.log('MQTT reconnecting')
+            })
             mqtt_connection.on('connect',function(){
                 if(!mqtt_connected){
                     mqtt_connected = true;
@@ -58,9 +70,9 @@ if(Meteor.isClient){
               }
 
             });
-            sendMqttMessage=function(topic,message){
+            sendMqttMessage=function(topic,message,callback){
                 console.log('sendMqttMessage:', topic, message);
-                mqtt_connection.publish(topic,JSON.stringify(message),{qos:1})
+                mqtt_connection.publish(topic,JSON.stringify(message),{qos:1},callback)
             };
             subscribeMqttGroup=function(group_id) {
                 if (mqtt_connection) {
@@ -92,15 +104,15 @@ if(Meteor.isClient){
             //         mqtt_connection.publish(topic,JSON.stringify(message),{qos:2})
             //     })
             // };
-            sendMqttGroupMessage=function(group_id, message) {
-                sendMqttMessage("/msg/g/" + group_id, message);
+            sendMqttGroupMessage=function(group_id, message,callback) {
+                sendMqttMessage("/msg/g/" + group_id, message,callback);
             };
-            sendMqttUserMessage=function(user_id, message) {
+            sendMqttUserMessage=function(user_id, message,callback) {
                 // console.log('sendMqttUserMessage:', message);
-                sendMqttMessage("/msg/u/" + user_id, message);
+                sendMqttMessage("/msg/u/" + user_id, message,callback);
             };
-            sendMqttGroupLabelMessage=function(group_id, message) {
-                sendMqttMessage("/msg/l/" + group_id, message);
+            sendMqttGroupLabelMessage=function(group_id, message,callback) {
+                sendMqttMessage("/msg/l/" + group_id, message,callback);
             };
         }
     }
@@ -146,23 +158,24 @@ if(Meteor.isClient){
       return client_id;
     };
     mqttEventResume = function() {
-      /*console.log('##RDBG, mqttEventResume, reestablish mqtt connection');
+      console.log('##RDBG, mqttEventResume, reestablish mqtt connection');
       Meteor.setTimeout(function() {
         if(Meteor.userId()){
-          initMQTT(getMqttClientID());
+          //initMQTT(getMqttClientID());
+          initMQTT(Meteor.userId());
         }
-      }, 1000);*/
-      try {
+      }, 1000);
+      /*try {
         if (mqtt_connection) {
           console.log('try reconnect mqtt');
           mqtt_connection._reconnect();
         }
       }
-      catch (ex) { console.log('mqtt reconnect ex=', ex); }
+      catch (ex) { console.log('mqtt reconnect ex=', ex);*/ }
     };
     mqttEventPause = function() {
-      //console.log('##RDBG, mqttEventPause, disconnect mqtt');
-      //uninitMQTT();
+      console.log('##RDBG, mqttEventPause, disconnect mqtt');
+      uninitMQTT();
     };
     Deps.autorun(function(){
         if(Meteor.userId()){
