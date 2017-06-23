@@ -23,7 +23,7 @@ callback-hook@1.0.9
 cfs:http-methods@0.0.32
 check@1.2.3
 coffeescript@1.2.4_2
-crosswalk@1.7.0
+crosswalk@1.7.1
 dburles:mongo-collection-instances@0.3.4
 ddp@1.2.5
 ddp-client@1.2.9
