@@ -8,10 +8,11 @@ if(Meteor.isClient){
         if(!mqtt_connection){
             var mqttOptions = {
                 clean:false,
-                keepalive:20,
-                reconnectPeriod:40*1000,
+                connectTimeout: 30*1000,
+                keepalive:30,
+                reconnectPeriod: 40*1000,
                 /*incomingStore: mqtt_store_manager.incoming,
-                outgoingStore: mqtt_store_manager.outgoing,*/
+                 outgoingStore: mqtt_store_manager.outgoing,*/
                 clientId:clientId
             }
             mqtt_connection=mqtt.connect('ws://mq.tiegushi.com:80',mqttOptions);
