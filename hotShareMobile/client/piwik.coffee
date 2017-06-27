@@ -6,7 +6,7 @@ window.trackEvent=(category, action)->
     else
       $.getScript('http://piwik.tiegushi.com/piwik.js' ,()->
         console.log('Got piwik')
-        window.piwik = Piwik.getTracker( 'http://piwik.tiegushi.com/piwik.php', 2 )
+        window.piwik = Piwik.getTracker( 'http://piwik.tiegushi.com/piwik.php', 14 )
         piwik.trackEvent(category, action)
       )
   catch error
@@ -20,7 +20,7 @@ window.trackImportEvent=(url)->
     else
       $.getScript('http://piwik.tiegushi.com/piwik.js' ,()->
         console.log('Got piwik')
-        window.piwik = Piwik.getTracker( 'http://piwik.tiegushi.com/piwik.php', 2 )
+        window.piwik = Piwik.getTracker( 'http://piwik.tiegushi.com/piwik.php', 14 )
         piwik.trackEvent('logs', 'import', 'URL', url)
       )
   catch error
@@ -45,7 +45,7 @@ initPiwik=(url,title)->
   else
     $.getScript('http://piwik.tiegushi.com/piwik.js' ,()->
       console.log('Got piwik')
-      window.piwik = Piwik.getTracker( 'http://piwik.tiegushi.com/piwik.php', 2 )
+      window.piwik = Piwik.getTracker( 'http://piwik.tiegushi.com/piwik.php', 14 )
       piwik.setCustomUrl(url)
       piwik.setReferrerUrl(url)
       piwik.setDocumentTitle(title)

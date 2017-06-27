@@ -91,10 +91,12 @@ Template.signupForm.events
         (err)->
           if err
             console.log err
+            trackEvent("signupuser","user signup failure.")
             PUB.toast '注册失败，邮箱或姓名可能已经存在！'
             t.find('#sub-registered').disabled = false
             t.find('#sub-registered').value = '创建帐户'
           else
+            trackEvent("signupuser","user signup succeed.")
             window.plugins.userinfo.setUserInfo Meteor.user()._id, ->
                 console.log 'setUserInfo was succeed!'
                 return
