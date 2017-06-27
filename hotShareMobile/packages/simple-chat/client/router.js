@@ -43,6 +43,8 @@ Template._simpleChatToChat.onRendered(function(){
   page_data = this.data;
   if(!page_data)
     return;
+  if(typeof(device) == "undefined")
+    return
   if(Meteor.isCordova && device.platform === 'iOS'){
    try{
      Keyboard.shrinkView(true);
@@ -683,41 +685,47 @@ Template._simpleChatToChatItem.events({
       return;
     }
     // update label
-    var setNames = [];
-    for (var i=0;i<this.images.length;i++){
-      if (this.images[i].label) {
-        var trainsetObj = {group_id: this.to.id, type: 'trainset', url: this.images[i].url, person_id: '', device_id: this.people_uuid, face_id: this.images[i].id, drop: false, img_type: this.images[i].img_type};
-        console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
-        sendMqttMessage('/device/'+this.to.id, trainsetObj);
+   var name = this.images[0].label;
+    Meteor.call('get-id-by-name1', this.people_uuid, name, this.to.id, function(err, res){
+      if (err || !res)
+        return PUB.toast('标注失败，请重试~');
+
+      var setNames = [];
+      for (var i=0;i<this.images.length;i++){
+        if (this.images[i].label) {
+          var trainsetObj = {group_id: this.to.id, type: 'trainset', url: this.images[i].url, person_id: '', device_id: this.people_uuid, face_id: res?res.faceId : this.images[i].id, drop: false, img_type: this.images[i].img_type};
+          console.log("##RDBG clicked yes: " + JSON.stringify(trainsetObj));
+          sendMqttMessage('/device/'+this.to.id, trainsetObj);
+        }
+
+        if (_.pluck(setNames, 'id').indexOf(this.images[i].id) === -1)
+          setNames.push({uuid: this.people_uuid, id: this.images[i].id, url: this.images[i].url, name: this.images[i].label});
       }
+      if (setNames.length > 0)
+        Meteor.call('set-person-names', this.to.id, setNames);
 
-      if (_.pluck(setNames, 'id').indexOf(this.images[i].id) === -1)
-        setNames.push({uuid: this.people_uuid, id: this.images[i].id, url: this.images[i].url, name: this.images[i].label});
-    }
-    if (setNames.length > 0)
-      Meteor.call('set-person-names', this.to.id, setNames);
+      var user = Meteor.user();
+      sendMqttGroupLabelMessage(this.to.id, {
+        _id: new Mongo.ObjectID()._str,
+        msgId: this._id,
+        user: {
+          id: user._id,
+          name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+          icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
+        },
+        createAt: new Date()
+      });
 
-    var user = Meteor.user();
-    sendMqttGroupLabelMessage(this.to.id, {
-      _id: new Mongo.ObjectID()._str,
-      msgId: this._id,
-      user: {
-        id: user._id,
-        name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
-        icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
-      },
-      createAt: new Date()
+      // update collection
+      Messages.update({_id: this._id}, {$set: {label_complete: true}});
+
+      Meteor.setTimeout(function(){
+        var $box = $('.box');
+        $box.scrollTop($box.scrollTop()+10);
+        $box.trigger("scroll");
+      }, 500);
+
     });
-
-    // update collection
-    Messages.update({_id: this._id}, {$set: {label_complete: true}});
-
-    Meteor.setTimeout(function(){
-      var $box = $('.box');
-      $box.scrollTop($box.scrollTop()+10);
-      $box.trigger("scroll");
-    }, 500);
-
     // var data = this;
     // var names = get_people_names();
     // var name = data.images[0].label;
