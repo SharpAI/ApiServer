@@ -45,8 +45,8 @@ if(Meteor.isServer){
           return;
 
         var id = doc._id;
-        var obj = delete doc._id;
-        MessagesHis.upsert({_id: id}, {$set: obj});
+        delete doc._id;
+        MessagesHis.upsert({_id: id}, {$set: doc});
       });
       Messages.after.update(function (userId, doc, fieldNames, modifier, options) {
         if (doc.hasFromHistory)
