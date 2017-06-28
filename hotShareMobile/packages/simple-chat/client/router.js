@@ -686,28 +686,29 @@ Template._simpleChatToChatItem.events({
     }
     // update label
    var name = this.images[0].label;
-    Meteor.call('get-id-by-name1', this.people_uuid, name, this.to.id, function(err, res){
+   var msgObj = this;
+    Meteor.call('get-id-by-name1', msgObj.people_uuid, name, msgObj.to.id, function(err, res){
       if (err || !res)
         return PUB.toast('标注失败，请重试~');
 
       var setNames = [];
-      for (var i=0;i<this.images.length;i++){
-        if (this.images[i].label) {
-          var trainsetObj = {group_id: this.to.id, type: 'trainset', url: this.images[i].url, person_id: '', device_id: this.people_uuid, face_id: res?res.faceId : this.images[i].id, drop: false, img_type: this.images[i].img_type};
+      for (var i=0;i<msgObj.images.length;i++){
+        if (msgObj.images[i].label) {
+          var trainsetObj = {group_id: msgObj.to.id, type: 'trainset', url: msgObj.images[i].url, person_id: '', device_id: msgObj.people_uuid, face_id: res?res.faceId : msgObj.images[i].id, drop: false, img_type: msgObj.images[i].img_type};
           console.log("##RDBG clicked yes: " + JSON.stringify(trainsetObj));
-          sendMqttMessage('/device/'+this.to.id, trainsetObj);
+          sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
         }
 
-        if (_.pluck(setNames, 'id').indexOf(this.images[i].id) === -1)
-          setNames.push({uuid: this.people_uuid, id: this.images[i].id, url: this.images[i].url, name: this.images[i].label});
+        if (_.pluck(setNames, 'id').indexOf(msgObj.images[i].id) === -1)
+          setNames.push({uuid: msgObj.people_uuid, id: msgObj.images[i].id, url: msgObj.images[i].url, name: msgObj.images[i].label});
       }
       if (setNames.length > 0)
-        Meteor.call('set-person-names', this.to.id, setNames);
+        Meteor.call('set-person-names', msgObj.to.id, setNames);
 
       var user = Meteor.user();
-      sendMqttGroupLabelMessage(this.to.id, {
+      sendMqttGroupLabelMessage(msgObj.to.id, {
         _id: new Mongo.ObjectID()._str,
-        msgId: this._id,
+        msgId: msgObj._id,
         user: {
           id: user._id,
           name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
@@ -717,7 +718,7 @@ Template._simpleChatToChatItem.events({
       });
 
       // update collection
-      Messages.update({_id: this._id}, {$set: {label_complete: true}});
+      Messages.update({_id: msgObj._id}, {$set: {label_complete: true}});
 
       Meteor.setTimeout(function(){
         var $box = $('.box');
