@@ -121,7 +121,8 @@ PERSON = {
     var persons = null;
     var result = {};
     if (uuid && group_id && names) {
-      persons = Person.find({name: {$in: names}, uuid: uuid ,group_id:group_id}, {sort: {updateAt: -1}, limit: limit}).fetch()
+      //persons = Person.find({name: {$in: names}, uuid: uuid ,group_id:group_id}, {sort: {updateAt: -1}, limit: limit}).fetch()
+      persons = Person.find({name: {$in: names}, group_id: group_id}, {sort: {updateAt: -1}, limit: limit}).fetch()
     }
     else if(uuid && names) {
       persons = Person.find({name: {$in: names}, uuid: uuid}, {sort: {updateAt: -1}, limit: limit}).fetch()
