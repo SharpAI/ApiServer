@@ -79,11 +79,14 @@ Template._simpleChatLabelLabel.events({
       Meteor.call('remove-persons1',msgObj.to.id,removes)
 
     for (var i=0;i<updateObj.images.length;i++){
-      if (updateObj.images[i].error)
-        var trainsetObj = {group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, drop: true, img_type: updateObj.images[i].img_type};
+      if (updateObj.images[i].error) {
+        var trainsetObj = {group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, device_id: msgObj.people_uuid,
+                           face_id: msgObj.people_id ? msgObj.people_id : updateObj.images[i].id, drop: true, img_type: updateObj.images[i].img_type,
+                           raw_face_id: updateObj.images[i].id};
         console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
         sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
         // sendMqttMessage('trainset', {url: updateObj.images[i].url, person_id: '', device_id: updateObj.images[i].id, drop: true});
+      }
     }
 
     // update collection
