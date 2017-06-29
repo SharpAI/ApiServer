@@ -1167,3 +1167,11 @@ if Meteor.isServer
       console.log('insert motion post:', post._id)
     this.response.end('{"result": "ok"}\n')
   )
+  Router.route('/restapi/date', (req, res, next)->
+    headers = {
+      'Content-type':'text/html;charest=utf-8',
+      'Date': Date.now()
+    }
+    this.response.writeHead(200, headers)
+    this.response.end(Date.now().toString())
+  , {where: 'server'})
