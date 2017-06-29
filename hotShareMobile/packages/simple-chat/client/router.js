@@ -1215,7 +1215,7 @@ sendMqttMsg = function(){
     var obj = Messages.findOne({_id: msg._id});
     if (obj && obj.send_status === 'sending')
       Messages.update({_id: msg._id}, {$set: {send_status: 'failed'}});
-  }, 1000*60*2);
+  }, 1000*15);
 
   Messages.update({_id: msg._id}, {$set: {send_status: 'sending'}});
 
