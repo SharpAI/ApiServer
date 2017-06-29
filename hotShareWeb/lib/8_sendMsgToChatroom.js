@@ -164,33 +164,34 @@ if(Meteor.isServer){
           speed = 20;
   }
 
-  Meteor.setInterval(function(){
-
-      if(process.env.RESPECT_WORKING_HOUR){
-          var d = new Date();
-          var n = d.getHours();
-          var day = d.getDay();
-          if (n<20 && n>7 && day !== 6 && day !==0){
-              //console.log('Working hour')
-          } else {
-              //console.log('Not working hour')
-              return;
+  if(process.env.SEND_TEST_MESSAGE){
+      Meteor.setInterval(function(){
+          if(process.env.RESPECT_WORKING_HOUR){
+              var d = new Date();
+              var n = d.getHours();
+              var day = d.getDay();
+              if (n<20 && n>7 && day !== 6 && day !==0){
+                  //console.log('Working hour')
+              } else {
+                  //console.log('Not working hour')
+                  return;
+              }
           }
-      }
-      if (!timeline || idx >= timeline.length) {
-          var uuidIn = 'ZTEBA510'
-          var uuidOut = '7249c9d4'
-          timeline = [];
-          timeline = initPeopleInOut(uuidIn, uuidOut);
-          idx = 0;
-      }
+          if (!timeline || idx >= timeline.length) {
+              var uuidIn = 'ZTEBA510'
+              var uuidOut = '7249c9d4'
+              timeline = [];
+              timeline = initPeopleInOut(uuidIn, uuidOut);
+              idx = 0;
+          }
 
-      for(var i=0; i< speed; i++) {
-          sendMessage2Group(idx, timeline);
-          idx++;
-      }
-      speed = (speed <=1)? 1:(speed -1);
-    }, 1000); // 10 分钟
+          for(var i=0; i< speed; i++) {
+              sendMessage2Group(idx, timeline);
+              idx++;
+          }
+          speed = (speed <=1)? 1:(speed -1);
+      }, 1000*60); // 10 分钟
+  }
   });
 }
 
