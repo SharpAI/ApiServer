@@ -146,6 +146,7 @@ PERSON = {
   },
   sendPersonInfoToWeb: function(personInfo){
     var ai_system_url = process.env.AI_SYSTEM_URL || 'http://aixd.raidcdn.cn/restapi/workai';
+    personInfo.fromWorkai = true;
     HTTP.call('POST', ai_system_url, {
       data: personInfo, timeout: 5*1000
     }, function(error, res) {
