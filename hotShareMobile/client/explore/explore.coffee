@@ -1,5 +1,8 @@
 #space 2
 if Meteor.isClient
+  Template.explore.rendered=->
+    $('.content').css 'min-height',$(window).height()
+
   Template.explore.events
     'click .top-series-btn': (event)->
        Router.go '/seriesList'
