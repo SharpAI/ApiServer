@@ -140,7 +140,7 @@ Template._simpleChatLabelDevice.save = function(){
               'group_id': msgObj.to.id,
               'img_url': updateObj.images[i].url,
               'type': updateObj.images[i].img_type,
-              'ts': new Date().getTime(),
+              'ts': new Date(updateObj.create_time).getTime(),
               'accuracy': 1,
               'fuzziness': 1
             }
