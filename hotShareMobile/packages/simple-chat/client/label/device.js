@@ -132,6 +132,21 @@ Template._simpleChatLabelDevice.save = function(){
         sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
         updateObj.images[i].labelMsgSent = true;
 
+        try {
+          if(updateObj.images[i].img_type && updateObj.images[i].img_type == 'face') {
+            var person_info = {
+              'id': res && res[updateObj.images[i].label].faceId ? res[updateObj.images[i].label].faceId : updateObj.images[i].id,
+              'uuid': msgObj.people_uuid,
+              'group_id': msgObj.to.id,
+              'img_url': updateObj.images[i].url,
+              'type': updateObj.images[i].img_type,
+              'ts': new Date().getTime(),
+              'accuracy': 1,
+              'fuzziness': 1
+            }
+            Meteor.call('send-person-to-web', person_info, function(err, res){});
+          }
+        } catch(e){}
       }
     }
 

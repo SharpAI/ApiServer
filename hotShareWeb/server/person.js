@@ -89,7 +89,8 @@ PERSON = {
   getName: function(uuid,group_id,id){
     var person = null;
     if (uuid && group_id) {
-      person = Person.findOne({uuid: uuid, group_id: group_id, 'faces.id': id});
+      //person = Person.findOne({uuid: uuid, group_id: group_id, 'faces.id': id});
+      person = Person.findOne({group_id: group_id, 'faces.id': id}, {sort: {createAt: 1}});
     }
     else if (uuid){
       person = Person.findOne({uuid: uuid, 'faces.id': id});
@@ -102,7 +103,7 @@ PERSON = {
     var person = null;
     if (uuid && group_id && name) {
       //person = Person.findOne({uuid: uuid, group_id: group_id, name: name});
-      person = Person.findOne({group_id: group_id, name: name});
+      person = Person.findOne({group_id: group_id, name: name}, {sort: {createAt: 1}});
     }
     else if (uuid && name) {
       person = Person.findOne({uuid: uuid, name: name});
@@ -142,6 +143,16 @@ PERSON = {
 
     console.log('getIdByNames:', result);
     return result;
+  },
+  sendPersonInfoToWeb: function(personInfo){
+    var ai_system_url = process.env.AI_SYSTEM_URL || 'http://aixd.raidcdn.cn/restapi/workai';
+    HTTP.call('POST', ai_system_url, {
+      data: personInfo, timeout: 5*1000
+    }, function(error, res) {
+      if (error) {
+        return console.log("post person info to aixd.raidcdn failed " + error);
+      }
+    });
   }
 };
 
@@ -179,5 +190,8 @@ Meteor.methods({
   'remove-persons1': function(group_id, items){
     for(var i=0;i<items.length;i++)
       PERSON.removeName(group_id, items[i].uuid, items[i].id);
+  },
+  'send-person-to-web': function(person){
+      PERSON.sendPersonInfoToWeb(person);
   }
 })

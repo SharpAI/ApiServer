@@ -610,6 +610,21 @@ if Meteor.isServer
           is_people: true
           is_read: false
         })
+        personInfo = PERSON.getIdByNames(uuid, [name], userGroup.group_id)
+        if img_type == 'face' && personInfo && personInfo[name] && personInfo[name].faceId
+          #console.log('post person info to aixd.raidcdn')
+          person_info = {
+            'id': personInfo[name].faceId,
+            'uuid': uuid,
+            'group_id': userGroup.group_id,
+            'img_url': url,
+            'type': img_type,
+            'ts': new Date().getTime(),
+            'accuracy': accuracy,
+            'fuzziness': fuzziness
+          }
+          #console.log("post to web =" + JSON.stringify(person_info))
+          PERSON.sendPersonInfoToWeb(person_info)
       )
 
   @insert_msg2forTest = (id, url, uuid, accuracy, fuzziness)->
