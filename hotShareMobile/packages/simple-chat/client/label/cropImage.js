@@ -17,6 +17,7 @@ Template._simpleChatLabelCrop.open = function(msgObj){
   images.set(imgs);
 
   view = Blaze.render(Template._simpleChatLabelCrop, document.body);
+  simple_chat_page_stack.push(view);
 
   if (imgs.length === 1){
     imgs[0].selected = true;
@@ -26,8 +27,10 @@ Template._simpleChatLabelCrop.open = function(msgObj){
 };
 
 Template._simpleChatLabelCrop.close = function(){
-  if (view)
+  if (view) {
     Blaze.remove(view);
+    simple_chat_page_stack.pop();
+  }
   view = null;
 };
 

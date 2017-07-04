@@ -17,11 +17,14 @@ Template._simpleChatLabelLabel.open = function(msgObj){
   images.set(imgs);
 
   view = Blaze.render(Template._simpleChatLabelLabel, document.body);
+  simple_chat_page_stack.push(view);
 };
 
 Template._simpleChatLabelLabel.close = function(){
-  if (view)
+  if (view) {
     Blaze.remove(view);
+    simple_chat_page_stack.pop();
+  }
   view = null;
 };
 

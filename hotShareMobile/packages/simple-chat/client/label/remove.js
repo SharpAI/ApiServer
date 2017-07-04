@@ -19,11 +19,14 @@ Template._simpleChatLabelRemove.open = function(msgObj){
   images.set(imgs);
 
   view = Blaze.render(Template._simpleChatLabelRemove, document.body);
+  simple_chat_page_stack.push(view);
 };
 
 Template._simpleChatLabelRemove.close = function(){
-  if (view)
+  if (view) {
     Blaze.remove(view);
+    simple_chat_page_stack.pop();
+  }
   view = null;
 };
 
@@ -36,6 +39,13 @@ Template._simpleChatLabelRemove.helpers({
 Template._simpleChatLabelRemove.events({
   'click .leftButton': function(){
     Template._simpleChatLabelRemove.close();
+  },
+  'click #imgRemoveSelectAll': function(e, t){
+    var imgs = images.get();
+    for(var i=0;i<imgs.length;i++){
+      imgs[i].selected = true;
+    }
+    images.set(imgs);
   },
   'click .rightButton.remove': function(e, t){
     if (!t.$('#remove-input-name').val())

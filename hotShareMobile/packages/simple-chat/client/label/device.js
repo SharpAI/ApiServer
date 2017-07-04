@@ -30,6 +30,7 @@ Template._simpleChatLabelDevice.open = function(msgObj){
   index.set(0);
 
   view = Blaze.render(Template._simpleChatLabelDevice, document.body);
+  simple_chat_page_stack.push(view);
 
   if (nas.length === 1 && imgs[0].images.length <= 1){
     show_label(msgObj.to.id, function(name){
@@ -42,8 +43,10 @@ Template._simpleChatLabelDevice.open = function(msgObj){
 };
 
 Template._simpleChatLabelDevice.close = function(){
-  if (view)
+  if (view) {
     Blaze.remove(view);
+    simple_chat_page_stack.pop();
+  }
   view = null;
 };
 

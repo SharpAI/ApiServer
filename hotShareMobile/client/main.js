@@ -164,7 +164,7 @@ if (Meteor.isCordova) {
               'name': 'cloudrouter',
               'port' : 4000,
               'hostname' : 'Android.local.',
-              'ipv4Addresses' : [ '192.168.31.103' ], 
+              'ipv4Addresses' : [ '192.168.31.103' ],
               'ipv6Addresses' : [ '2001:0:5ef5:79fb:10cb:1dbf:3f57:feb0' ],
               'txtRecord' : {
                   'foo' : 'bar'
@@ -289,6 +289,10 @@ if (Meteor.isCordova) {
         if($('.customerService,.customerServiceBackground').is(":visible")){
           $('.customerService,.customerServiceBackground').fadeOut(300);
         } else {
+          var v = SimpleChat.simple_chat_page_stack.pop();
+          if (v) {
+            return Blaze.remove(v);
+          }
           PUB.back();
         }
       }

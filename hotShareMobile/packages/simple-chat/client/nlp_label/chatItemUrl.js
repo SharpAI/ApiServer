@@ -236,7 +236,7 @@ onMqttNLPMessage = function(topic,msgObj){
   if (Messages.find({_id: msgObj._id}).count() > 0)
     return console.log('已存在此消息:', msgObj._id);
 
-  
+
   if (!msgObj.wait_lable && msgObj.urls && msgObj.urls.length > 0) {where['urls.label'] = msgObj.urls[0].label
   }
   else {
@@ -314,4 +314,3 @@ onNLPClassifyMessage = function(topic,msgObj){
     }
   }
 }
-

@@ -1,3 +1,6 @@
+simple_chat_page_stack = [];
+SimpleChat.simple_chat_page_stack = simple_chat_page_stack;
+
 var list_limit_val = 5;
 var is_loading = new ReactiveVar(false);
 var list_limit = new ReactiveVar(list_limit_val);
@@ -1904,7 +1907,8 @@ show_label = function(group_id, callback){
   label_view = Blaze.renderWithData(Template._simpleChatToChatLabelName, {
     group_id: group_id,
     callback : callback || function(){}
-  }, document.body)
+  }, document.body);
+  simple_chat_page_stack.push(label_view);
 }
 
 Template._simpleChatToChatLabelNameImg.onRendered(function(){
@@ -1939,6 +1943,7 @@ Template._simpleChatToChatLabelName.events({
   },
   'click .leftButton': function(){
     Blaze.remove(label_view);
+    simple_chat_page_stack.pop();
     label_view = null;
   },
   'click .rightButton': function(e, t){
@@ -1947,6 +1952,7 @@ Template._simpleChatToChatLabelName.events({
 
     t.data.callback && t.data.callback($('#label-input-name').val());
     Blaze.remove(label_view);
+    simple_chat_page_stack.pop();
     label_view = null;
   }
 });
@@ -1958,7 +1964,8 @@ show_remove = function(callback){
     Blaze.remove(remove_view);
   remove_view = Blaze.renderWithData(Template._simpleChatToChatLabelRemove, {
     callback : callback || function(){}
-  }, document.body)
+  }, document.body);
+  simple_chat_page_stack.push(remove_view);
 }
 
 Template._simpleChatToChatLabelRemove.events({
@@ -1969,6 +1976,7 @@ Template._simpleChatToChatLabelRemove.events({
   },
   'click .leftButton': function(){
     Blaze.remove(remove_view);
+    simple_chat_page_stack.pop();
     remove_view = null;
   },
   'click .rightButton': function(e, t){
@@ -1977,6 +1985,7 @@ Template._simpleChatToChatLabelRemove.events({
 
     t.data.callback && t.data.callback($('#label-input-name').val());
     Blaze.remove(remove_view);
+    simple_chat_page_stack.pop();
     remove_view = null;
   }
 });
