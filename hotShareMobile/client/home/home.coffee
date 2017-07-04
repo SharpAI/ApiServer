@@ -95,6 +95,11 @@ if Meteor.isClient
       Session.get('isFlag');
     isAndroid:()->
       isAndroidFunc()
+    showDailyReporterTip:()->
+      if localStorage.getItem('hideDailyReporterTip') is 'true'
+        return false
+      else
+        return true 
   Template.home.events
     # 'click .top-series-btn': (event)->
     #    Router.go '/seriesList'
@@ -122,7 +127,9 @@ if Meteor.isClient
       ScanBarcodeByBarcodeScanner()
     'click #scanimage':(event)->
       DecodeImageFromAlum()
-
+    'click .dailyReporterTip':(event)->
+      localStorage.setItem('hideDailyReporterTip', 'true')
+      $('.dailyReporterTip').fadeOut()
   Template.home.rendered=->
     flag = window.localStorage.getItem("firstLog") == 'first'
     Session.set('isFlag', !flag)
