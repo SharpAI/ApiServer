@@ -1128,7 +1128,7 @@ var onMqttMessage = function(topic, msg) {
   }
 
 
-  var whereTime = new Date();whereTime.setHours(0);whereTime.setMinutes(0);whereTime.setSeconds(0);
+  var whereTime = new Date((new Date().getTime() - 5*60*1000));
   var msgType = topic.split('/')[2];
   var where = {
     to_type: msgObj.to_type,
