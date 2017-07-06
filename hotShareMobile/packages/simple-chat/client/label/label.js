@@ -41,6 +41,13 @@ Template._simpleChatLabelLabel.events({
   'click .leftButton': function(){
     Template._simpleChatLabelLabel.close();
   },
+   'click #imgRemoveLabelSelectAll': function(e, t){
+    var imgs = images.get();
+    for(var i=0;i<imgs.length;i++){
+      imgs[i].selected = true;
+    }
+    images.set(imgs);
+  },
   'click .rightButton.remove': function(e, t){
     var msgObj = message.get();
     var updateObj = {};
