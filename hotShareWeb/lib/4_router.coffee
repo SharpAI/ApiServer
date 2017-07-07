@@ -557,7 +557,7 @@ if Meteor.isServer
   insert_msg2 = (id, url, uuid, img_type, accuracy, fuzziness)->
     people = People.findOne({id: id, uuid: uuid})
     name = PERSON.getName(uuid,null,id)
-    device = PERSON.upsetDevice(uuid)
+    #device = PERSON.upsetDevice(uuid, null)
     Accuracy =  if name then accuracy else false
     Fuzziness = fuzziness
 
@@ -700,12 +700,13 @@ if Meteor.isServer
     )
 
   device_join_group = (uuid,group_id)->
-    device = PERSON.upsetDevice(uuid)
+    device = PERSON.upsetDevice(uuid, group_id)
     user = Meteor.users.findOne({username: uuid})
     if !user
       userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/device_icon_192.png'}})
       user = Meteor.users.findOne({_id: userId})
     group = SimpleChat.Groups.findOne({_id: group_id})
+    AI_system_register_devices(group_id)
     #一个设备只允许加入一个群
     groupUsers = SimpleChat.GroupUsers.find({user_id: user._id})
     hasBeenJoined = false

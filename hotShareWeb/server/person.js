@@ -1,14 +1,19 @@
 PERSON = {
-  upsetDevice: function(uuid){
+  upsetDevice: function(uuid, group_id){
     var device = Devices.findOne({uuid: uuid});
     if (!device){
       device = {
         _id: new Mongo.ObjectID()._str,
         uuid: uuid,
         name: '设备 ' + (Devices.find({}).count() + 1),
+        groupId: group_id,
         createAt: new Date()
       };
       Devices.insert(device);
+    }
+    else if(!device.groupId || (group_id && device.groupId == group_id)) {
+      Devices.update({uuid: uuid}, {$set: {groupId: group_id}});
+      device = Devices.findOne({uuid: uuid});
     }
     return device;
   },
@@ -40,7 +45,7 @@ PERSON = {
   },
   setName: function(group_id, uuid, id, url, name){
     var person = Person.findOne({uuid: uuid, group_id:group_id, name: name});
-    var dervice = PERSON.upsetDevice(uuid);
+    var dervice = PERSON.upsetDevice(uuid, group_id);
     var personName = PersonNames.findOne({group_id: group_id, name: name});
 
     if (!personName)
@@ -159,7 +164,7 @@ PERSON = {
 
 Meteor.methods({
   'upset-device': function(uuid){
-    return PERSON.upsetDevice(uuid);
+    return PERSON.upsetDevice(uuid, null);
   },
   'set-person-name': function(group_id, uuid, id, url, name){
     return PERSON.setName(group_id, uuid, id, url, name);

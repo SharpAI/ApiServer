@@ -1,3 +1,30 @@
+AI_system_register_devices = function (group_id) {
+  var ai_system_url = process.env.AI_SYSTEM_URL || 'http://aixd.raidcdn.cn/restapi/workai';
+
+  if(!group_id)
+    return;
+
+  var group = Groups.findOne({_id: group_id});
+  if (group && group.companyId) {
+    var company_id = group.companyId;
+    var allDevices = Devices.find({groupId: group_id});
+    allDevices.forEach(function(device) {
+        HTTP.call('POST', ai_system_url, {
+          data: {
+              'uuid': device.uuid,
+              'companyId': company_id,
+              'group_id': group_id,
+              'imgUrl': 'http://workaiossqn.tiegushi.com/tablet.png'  //TODO:
+          }, timeout: 5*1000
+        }, function(error, res) {
+          if (error) {
+            return console.log("post device info to aixd.raidcdn failed " + error);
+          }
+        });
+    });
+  }
+}
+
 Meteor.methods({
   'create-group': function(id, name, ids){
     var slef = this;
@@ -217,7 +244,16 @@ Meteor.methods({
     return id;
   },
   'set-perf-link':function(group_id,perf_url){
-    Groups.update({_id: group_id}, {$set: {perf_url: perf_url}});
+    var companyId = null;
+    if (perf_url.lastIndexOf('/') > 0) {
+        var companyId = perf_url.slice(perf_url.lastIndexOf('/')+1)
+        if(companyId) {
+            console.log("companyId is: " + companyId)
+            AI_system_register_devices(group_id);
+        }
+    }
+
+    Groups.update({_id: group_id}, {$set: {perf_url: perf_url, companyId: companyId}});
     return 'succ';
   },
   'get-group-intro':function(id,type){
