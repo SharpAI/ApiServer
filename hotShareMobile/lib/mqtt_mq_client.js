@@ -232,14 +232,24 @@ if(Meteor.isClient){
             //     })
             // };
             sendMqttGroupMessage=function(group_id, message,callback) {
-                sendMqttMessage("/msg/g/" + group_id, message,callback);
+                if(Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType == 'admin') {
+                    console.log('>>> this is admin, send group message to myself')
+                }
+                else {
+                    sendMqttMessage("/msg/g/" + group_id, message,callback);
+                }
             };
             sendMqttUserMessage=function(user_id, message,callback) {
                 // console.log('sendMqttUserMessage:', message);
                 sendMqttMessage("/msg/u/" + user_id, message,callback);
             };
             sendMqttGroupLabelMessage=function(group_id, message,callback) {
-                sendMqttMessage("/msg/l/" + group_id, message,callback);
+                if(Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType == 'admin') {
+                    console.log('>>> this is admin, send label message to myself')
+                }
+                else {
+                    sendMqttMessage("/msg/l/" + group_id, message,callback);
+                }
             };
         }
     }
@@ -262,18 +272,32 @@ if(Meteor.isClient){
         // });
       });
 
-      SimpleChat.GroupUsers.find({user_id: Meteor.userId()}).observe({
-         added: function(document) {
-            subscribeMqttGroup(document.group_id);
-         },
-         changed: function(newDocument, oldDocument){
-           unsubscribeMqttGroup(oldDocument.group_id);
-           subscribeMqttGroup(newDocument.group_id);
-         },
-         removed: function(document){
-           unsubscribeMqttGroup(document.group_id);
-         }
-      });
+      if(Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType == 'admin') {
+          if (mqtt_connection) {
+              console.log('sub all groups mqtt');
+              mqtt_connection.subscribe('/msg/g/#', {qos:1, onSuccess:onSuccess, onFailure:onFailure});
+              function onSuccess() {
+                  console.log('mqtt subscribe group msg successfully.');
+              }
+              function onFailure() {
+                  console.log('mqtt subscribe group msg failed.');
+              }
+          }
+      }
+      else {
+          SimpleChat.GroupUsers.find({user_id: Meteor.userId()}).observe({
+             added: function(document) {
+                subscribeMqttGroup(document.group_id);
+             },
+             changed: function(newDocument, oldDocument){
+               unsubscribeMqttGroup(oldDocument.group_id);
+               subscribeMqttGroup(newDocument.group_id);
+             },
+             removed: function(document){
+               unsubscribeMqttGroup(document.group_id);
+             }
+          });
+      }
     }
     getMqttClientID = function() {
       var client_id = window.localStorage.getItem('mqtt_client_id');
