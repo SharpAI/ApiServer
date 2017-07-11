@@ -205,8 +205,14 @@ if(Meteor.isClient){
             };
             unsubscribeMqttGroup=function(group_id) {
                 if (mqtt_connection) {
-                    mqtt_connection.unsubscribe("/msg/g/" + group_id);
-                    mqtt_connection.unsubscribe("/msg/l/" + group_id);
+                    if(Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType == 'admin') {
+                        mqtt_connection.unsubscribe("/msg/g/#");
+                        mqtt_connection.unsubscribe("/msg/l/#");
+                    }
+                    else {
+                        mqtt_connection.unsubscribe("/msg/g/" + group_id);
+                        mqtt_connection.unsubscribe("/msg/l/" + group_id);
+                    }
                 }
             };
             subscribeMqttUser=function(user_id){
@@ -232,14 +238,26 @@ if(Meteor.isClient){
             //     })
             // };
             sendMqttGroupMessage=function(group_id, message,callback) {
-                sendMqttMessage("/msg/g/" + group_id, message,callback);
+                if(Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType == 'admin') {
+                    console.log('>>> this is admin, send group message to myself')
+                    onMessageOld("/msg/g/" + group_id, message);
+                }
+                else {
+                    sendMqttMessage("/msg/g/" + group_id, message,callback);
+                }
             };
             sendMqttUserMessage=function(user_id, message,callback) {
                 // console.log('sendMqttUserMessage:', message);
                 sendMqttMessage("/msg/u/" + user_id, message,callback);
             };
             sendMqttGroupLabelMessage=function(group_id, message,callback) {
-                sendMqttMessage("/msg/l/" + group_id, message,callback);
+                if(Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType == 'admin') {
+                    console.log('>>> this is admin, send label message to myself')
+                    onMessageOld("/msg/l/" + group_id, message);
+                }
+                else {
+                    sendMqttMessage("/msg/l/" + group_id, message,callback);
+                }
             };
         }
     }
@@ -262,18 +280,33 @@ if(Meteor.isClient){
         // });
       });
 
-      SimpleChat.GroupUsers.find({user_id: Meteor.userId()}).observe({
-         added: function(document) {
-            subscribeMqttGroup(document.group_id);
-         },
-         changed: function(newDocument, oldDocument){
-           unsubscribeMqttGroup(oldDocument.group_id);
-           subscribeMqttGroup(newDocument.group_id);
-         },
-         removed: function(document){
-           unsubscribeMqttGroup(document.group_id);
-         }
-      });
+      if(Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType == 'admin') {
+          if (mqtt_connection) {
+              console.log('sub all groups mqtt');
+              mqtt_connection.subscribe('/msg/g/#', {qos:1, onSuccess:onSuccess, onFailure:onFailure});
+              mqtt_connection.subscribe('/msg/l/#', {qos:1, onSuccess:onSuccess, onFailure:onFailure}); // label 消息
+              function onSuccess() {
+                  console.log('mqtt subscribe group msg successfully.');
+              }
+              function onFailure() {
+                  console.log('mqtt subscribe group msg failed.');
+              }
+          }
+      }
+      else {
+          SimpleChat.GroupUsers.find({user_id: Meteor.userId()}).observe({
+             added: function(document) {
+                subscribeMqttGroup(document.group_id);
+             },
+             changed: function(newDocument, oldDocument){
+               unsubscribeMqttGroup(oldDocument.group_id);
+               subscribeMqttGroup(newDocument.group_id);
+             },
+             removed: function(document){
+               unsubscribeMqttGroup(document.group_id);
+             }
+          });
+      }
     }
     getMqttClientID = function() {
       var client_id = window.localStorage.getItem('mqtt_client_id');

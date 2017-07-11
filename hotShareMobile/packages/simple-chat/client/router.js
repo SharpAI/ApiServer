@@ -1762,8 +1762,14 @@ var onMqttMessage = function(topic, msg) {
   if (msgObj.to_type == 'group') {
     var record = GroupUsers.findOne({group_id: msgObj.to.id, user_id: Meteor.userId()});
     if (!record) {
-      console.log('receive group message from group that i am not in: ' + msgObj.to.id);
-      return;
+      var User = Meteor.user();
+      if(User && User.profile && User.profile.userType && User.profile.userType == 'admin') {
+          console.log('this is adminstrator, show all message')
+      }
+      else {
+          console.log('receive group message from group that i am not in: ' + msgObj.to.id);
+          return;
+      }
     }
   }
   if (msgObj.type === 'url') {

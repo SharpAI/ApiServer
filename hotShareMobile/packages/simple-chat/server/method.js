@@ -13,7 +13,10 @@ Meteor.methods({
       if (ids.length > 0){
         for(var i=0;i<ids.length;i++){
           var user = Meteor.users.findOne({_id: ids[i]});
-          if (user && GroupUsers.find({group_id: id, user_id: ids[i]}).count() <= 0){
+          if(user && user.profile && user.profile.userType && user.profile.userType == 'admin') {
+              console.log('this is adminstrator, do not add to any groups')
+          }
+          else if (user && GroupUsers.find({group_id: id, user_id: ids[i]}).count() <= 0){
             GroupUsers.insert({
               group_id: id,
               group_name: group.name,
