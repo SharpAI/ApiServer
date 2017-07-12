@@ -194,6 +194,10 @@ if Meteor.isClient
       if Meteor.isCordova is true
         this.render 'dashboard'
         return
+    Router.route '/perfShow',()->
+      if Meteor.isCordova is true
+        this.render 'perfShow'
+        return
     Router.route '/followers',()->
       if Meteor.isCordova is true
         this.render 'followers'

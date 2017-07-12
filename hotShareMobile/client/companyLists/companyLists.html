@@ -1,0 +1,12 @@
+<template name="companyLists">
+  <div class="companyLists">
+    <ul id="company-list">
+      {{#each companies}}
+      <li>
+        <i class="fa fa-users" aria-hidden="true"></i>
+        <div class="name">{{companyName}}</div>
+      </li>
+      {{/each}}
+    </ul>
+  </div>
+</template>

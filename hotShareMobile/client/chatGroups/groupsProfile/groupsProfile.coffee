@@ -96,7 +96,7 @@ if Meteor.isClient
         if (result.text)
           console.log 'result.txt: ' + result.text
           txtObj = JSON.parse(result.text);
-          Meteor.call('set-perf-link',Session.get('groupsId'), txtObj.reportUrl, (err, ret)->
+          Meteor.call('set-perf-link',Session.get('groupsId'), txtObj, (err, ret)->
             console.log 'set-perf-link, err: ' + err + ', ret: ' + ret
           )
         if (result.cancelled)
@@ -121,7 +121,7 @@ if Meteor.isClient
     'click .checkPerf':(event)->
       group_id = Session.get('groupsId')
       group = SimpleChat.Groups.findOne({_id: group_id})
-      perf_url = group.perf_url
+      perf_url = group.perf_info.perf_url;
       if (!perf_url)
         perf_url = 'http://aixd.raidcdn.cn/reporter/f5ZocsFpQn9CApmy8'
       cordova.InAppBrowser.open(perf_url, '_system')

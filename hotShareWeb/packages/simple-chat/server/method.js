@@ -246,17 +246,15 @@ Meteor.methods({
     }
     return id;
   },
-  'set-perf-link':function(group_id,perf_url){
-    var companyId = null;
-    if (perf_url.lastIndexOf('/') > 0) {
-        var companyId = perf_url.slice(perf_url.lastIndexOf('/')+1)
-        if(companyId) {
-            console.log("companyId is: " + companyId)
-            AI_system_register_devices(group_id);
-        }
+  'set-perf-link':function(group_id,perf_info){
+    var companyId = perf_info.companyId;
+    if(companyId) {
+        console.log("companyId is: " + companyId)
+        AI_system_register_devices(group_id);
     }
 
-    Groups.update({_id: group_id}, {$set: {perf_url: perf_url, companyId: companyId}});
+    Groups.update({_id: group_id}, {$set: {perf_info: perf_info, companyId: companyId}});
+    GroupUsers.update({group_id: group_id}, {$set: {perf_info: perf_info, companyId: companyId}}, {multi: true});
     return 'succ';
   },
   'get-group-intro':function(id,type){
