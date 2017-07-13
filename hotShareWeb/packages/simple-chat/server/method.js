@@ -292,6 +292,11 @@ Meteor.methods({
       return msgObj;
     }
     return intro;
+  },
+  'ai-system-register-devices':function(group_id){
+    console.log("AI_system_register_devices group_id= " + group_id)
+    AI_system_register_devices(group_id);
+    return 'succ';
   }
 });
 

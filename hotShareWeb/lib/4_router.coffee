@@ -706,7 +706,12 @@ if Meteor.isServer
       userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/device_icon_192.png'}})
       user = Meteor.users.findOne({_id: userId})
     group = SimpleChat.Groups.findOne({_id: group_id})
-    AI_system_register_devices(group_id)
+    Meteor.call 'ai-system-register-devices',group_id, (err, result)->
+      if err or result isnt 'succ'
+        return console.log('register devices to AI-system failed ! err=' + err);
+      if result == 'succ'
+        return console.log('register devices to AI-system succ');
+
     #一个设备只允许加入一个群
     groupUsers = SimpleChat.GroupUsers.find({user_id: user._id})
     hasBeenJoined = false
