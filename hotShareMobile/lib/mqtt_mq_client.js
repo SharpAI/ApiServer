@@ -72,7 +72,7 @@ if(Meteor.isClient){
             }
 
             var conn_time = new Date().getTime();
-            var onMessageOld = function(topic, message){
+            var onMessageOld = function(topic, message){              
                 var cur_time = new Date().getTime();
                 if (cur_time - conn_time > 3000) {
                     try {
@@ -244,7 +244,7 @@ if(Meteor.isClient){
             sendMqttGroupMessage=function(group_id, message,callback) {
                 if(Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType == 'admin') {
                     console.log('>>> this is admin, send group message to myself')
-                    onMessageOld("/msg/g/" + group_id, message);
+                    onMessageOld("/msg/g/" + group_id, message,callback);
                 }
                 else {
                     sendMqttMessage("/msg/g/" + group_id, message,callback);
@@ -258,7 +258,11 @@ if(Meteor.isClient){
                 if(Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType == 'admin') {
                     console.log('>>> this is admin, send label message to myself')
                     onMessageOld("/msg/l/" + group_id, message);
-                }
+                    console.log('====sraita===='+JSON.stringify(message));
+                    if(message.is_admin_relay){
+                        sendMqttMessage("/msg/l/" + group_id, message,callback);
+                    }
+                } 
                 else {
                     sendMqttMessage("/msg/l/" + group_id, message,callback);
                 }

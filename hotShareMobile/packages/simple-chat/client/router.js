@@ -755,7 +755,7 @@ Template._simpleChatToChatItem.events({
       if (setNames.length > 0)
         Meteor.call('set-person-names', msgObj.to.id, setNames);
 
-      var user = Meteor.user();
+      var user = Meteor.user();  
       sendMqttGroupLabelMessage(msgObj.to.id, {
         _id: new Mongo.ObjectID()._str,
         msgId: msgObj._id,
@@ -1740,7 +1740,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
   }
   if (!msgObj.is_people)
     return Messages.insert(msgObj);
-
+  
   MessageTemp.insert({
     topic: topic,
     msg: msgObj,
@@ -1879,14 +1879,33 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
       msgObj.createAt = new Date();
   var msgId = topic.split('/')[3];
   var targetMsg = Messages.findOne({$or: [{'msg_ids.id': msgObj.msgId}, {_id: msgObj.msgId}]}, {sort: {create_time: -1}});
-
+   console.log('====sraita4===='+JSON.stringify(targetMsg));
   if (!targetMsg)
     return;
+  if(msgObj.is_admin_relay){
+    console.log('====sraita6===='+JSON.stringify(msgObj));
+    Messages.update({_id: targetMsg._id}, {
+      $set:{
+        wait_lable: false, // 设置后将只显示对错
+        label_complete: false,
+        is_read: false,
+        text: msgObj.text,
+        people_id: msgObj.people_id,
+      }
+    }, function(){
+      Meteor.setTimeout(function(){
+        var $box = $('.box');
+        $box.scrollTop($box.scrollTop()+1);
+        $box.trigger("scroll");
+      }, 100);
+    });
+    return;
+  } 
   if (targetMsg.label_users && targetMsg.label_users.length > 0 && _.pluck(targetMsg.label_users, 'id').indexOf(msgObj.user.id) >= 0)
     return;
   Messages.update({_id: targetMsg._id}, {
     $push: {label_users: msgObj.user},
-   //  $set: {create_time: new Date()}
+  //  $set: {create_time: new Date()}
   }, function(){
     Meteor.setTimeout(function(){
       var $box = $('.box');
