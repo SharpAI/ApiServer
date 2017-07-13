@@ -29,6 +29,7 @@ if (Meteor.isCordova) {
       try{
         console.log("JPushPlugin:openNotificationInAndroidCallback");
         console.log("##RDBG data: " + JSON.stringify(data));
+        SimpleChat.onPushNotifacation();
 
         bToObj = data;
         var message = bToObj.message;
@@ -78,6 +79,7 @@ if (Meteor.isCordova) {
       try{
         console.log("JPushPlugin:receiveMessageInAndroidCallback");
         console.log("##RDBG data: " + JSON.stringify(data));
+        SimpleChat.onPushNotifacation();
         /*data=data.replace('"{','{').replace('}"','}');
         var bToObj=JSON.parse(data);
         var message = bToObj.message;

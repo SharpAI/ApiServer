@@ -57,6 +57,7 @@ if (Meteor.isClient) {
             // data.additionalData
 
             console.log('Got message');
+            SimpleChat.onPushNotifacation();
             if (data.count) {
               Session.set('waitReadCount', data.count);
             }

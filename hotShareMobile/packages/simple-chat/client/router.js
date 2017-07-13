@@ -1652,6 +1652,15 @@ var updateNewMessage = function(id){
   }, 1000*30); // 30 秒取一次最新消息
 };
 
+//收到推送消息时立刻从temp中取一次数据
+SimpleChat.onPushNotifacation = function(){
+  if (MessageTemp.find({}).count() > 0) {
+    msgGroup.forEach(function(item){
+        updateMessageForTemp(item);
+      });
+  }
+};
+
 //删除本地数据库过多的老的聊天数据
 var clearMsgTime = null;
 var clearMsgLastTime = null;

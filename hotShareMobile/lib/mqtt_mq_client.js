@@ -110,7 +110,11 @@ if(Meteor.isClient){
                     var topic = message.destinationName;
                     console.log('on mqtt message topic: ' + topic + ', message: ' + message.payloadString);
                     //SimpleChat.onMqttMessage(topic, message.payloadString);
-                    onMessageOld(topic, message.payloadString);
+                    //onMessageOld(topic, message.payloadString);
+                    if (topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))
+                        SimpleChat.onMqttMessage(topic, message.payloadString);
+                    else if (topic.startsWith('/msg/l/'))
+                        SimpleChat.onMqttLabelMessage(topic, message.payloadString);
                 } catch (ex) {
                     console.log('exception onMqttMessage: ' + ex);
                 }
