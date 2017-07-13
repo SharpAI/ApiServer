@@ -202,7 +202,7 @@ if (Meteor.isCordova) {
                 }
             }
         }
-        mqttEventResume();
+        //mqttEventResume();
         if (lastPauseDate != null) {
           var now = new Date();
           if (now.getTime() - lastPauseDate.getTime() > 5*60*1000) {
@@ -217,7 +217,7 @@ if (Meteor.isCordova) {
               Template.addPost.__helpers.get('saveDraft')()
           }
       }
-      mqttEventPause();
+      //mqttEventPause();
       lastPauseDate = new Date();
     }
 

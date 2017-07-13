@@ -78,8 +78,16 @@ if Meteor.isClient
           MsgSessionId = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId: id})
           if MsgSessionId
             SimpleChat.MsgSession.remove(MsgSessionId._id)
-          where = {'to.id': id, to_type: 'group'};
-          SimpleChat.Messages.remove(where);
+          try
+            where = {'to.id': id, to_type: 'group'};
+            SimpleChat.Messages.remove(where);
+            Meteor.setTimeout(()->
+              if SimpleChat.MessagesHis.find(where).count() > 0
+                SimpleChat.MessagesHis.remove(where);
+            ,100)
+            SimpleChat.MessagesHis.remove(where);
+          catch e
+            console.log 'remove-group-user err:'+e
           Meteor.setTimeout(()->
             PUB.back()
           ,100)
@@ -140,7 +148,15 @@ if Meteor.isClient
           };
         console.log('where:', where);
         window.plugins.toast.showLongCenter('请稍候~')
-        SimpleChat.Messages.remove(where);
+        try
+          SimpleChat.Messages.remove(where);
+          Meteor.setTimeout(()->
+            if SimpleChat.MessagesHis.find(where).count() > 0
+              SimpleChat.MessagesHis.remove(where);
+          ,100)
+        catch e
+          console.log 'remove-group-user err:'+e
+
         console.log '训练记录已清空';
         SimpleChat.MsgSession.update({toUserId:to},{$set:{lastText:''}})
         window.plugins.toast.hide();
