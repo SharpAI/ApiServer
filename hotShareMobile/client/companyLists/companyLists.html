@@ -1,24 +1,26 @@
 <template name="companyLists">
-  <div class="companyLists">
-    {{#if isLoading}}
-    <div class="companyLoading" style="position:fixed; width:100%;text-align: center; margin-top:40%; color: black; font-size: 16px;">
-      <img src="/loading.gif" width="24px" height="24px"/> 加载中...
+  <div class="content">
+    <div class="companyLists">
+      {{#if isLoading}}
+      <div class="companyLoading" style="position:fixed; width:100%;text-align: center; margin-top:40%; color: black; font-size: 16px;">
+        <img src="/loading.gif" width="24px" height="24px"/> 加载中...
+      </div>
+      {{else}}
+      {{#if hasBoundCompany}}
+      <ul id="company-list">
+        {{#each companies}}
+        <li>
+          <i class="fa fa-users" aria-hidden="true"></i>
+          <div class="name">{{companyName}}</div>
+        </li>
+        {{/each}}
+      </ul>
+      {{else}}
+      <div class="noBoundCompany">
+        您还没有绑定任何公司，快到训练群扫码绑定吧!
+      </div>
+      {{/if}}
+      {{/if}}
     </div>
-    {{else}}
-    {{#if hasBoundCompany}}
-    <ul id="company-list">
-      {{#each companies}}
-      <li>
-        <i class="fa fa-users" aria-hidden="true"></i>
-        <div class="name">{{companyName}}</div>
-      </li>
-      {{/each}}
-    </ul>
-    {{else}}
-    <div class="noBoundCompany">
-      您还没有绑定任何公司，快到训练群扫码绑定吧!
-    </div>
-    {{/if}}
-    {{/if}}
   </div>
 </template>
