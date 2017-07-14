@@ -756,6 +756,21 @@ Template._simpleChatToChatItem.events({
         Meteor.call('set-person-names', msgObj.to.id, setNames);
 
       var user = Meteor.user();  
+      if(user.profile && user.profile.userType && user.profile.userType == 'admin'){
+        sendMqttGroupLabelMessage(msgObj.to.id, {
+          _id: new Mongo.ObjectID()._str,
+          msgId: msgObj._id,
+          user: {
+            id: user._id,
+            name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+            icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
+          },
+          is_admin_relay: true,
+          people_id: setNames[0].id,
+          text: setNames[0].name,
+          createAt: new Date()
+        });
+      }
       sendMqttGroupLabelMessage(msgObj.to.id, {
         _id: new Mongo.ObjectID()._str,
         msgId: msgObj._id,
@@ -818,6 +833,33 @@ Template._simpleChatToChatItem.events({
   },
   'click .no': function(){
     if (this.type === 'url') {
+      return;
+    }
+    var user = Meteor.user();
+    if(user.profile && user.profile.userType && user.profile.userType == 'admin'){
+      console.log(this)
+      var msgObj = this;
+      var images = this.images;
+      for(var i=0;i< images.length;i++){
+        // send to device
+        var trainsetObj = {
+          group_id: msgObj.to.id, 
+          type: 'trainset', 
+          url: images[i].url,
+          device_id: msgObj.people_uuid,
+          face_id: msgObj.people_id ? msgObj.people_id : images[i].id, 
+          drop: true, 
+          img_type: images[i].img_type,
+          raw_face_id: images[i].id
+        };
+        console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
+        sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
+
+        images[i].label = null;
+      }
+
+      this.images = images;
+      Template._simpleChatLabelDevice.open(this);
       return;
     }
     Template._simpleChatLabelLabel.open(this);
