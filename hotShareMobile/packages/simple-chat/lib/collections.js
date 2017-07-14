@@ -66,6 +66,17 @@ if(Meteor.isServer){
 
       loadMoreMesage = function(where, option, limit){
         Meteor.setTimeout(function(){
+          var lastMsg = Messages.findOne(where,{sort: {create_time: -1}});
+          var lastMsgHis = MessagesHis.findOne(where,{sort: {create_time: -1}});
+          if (lastMsg && lastMsgHis && (lastMsg.create_time - lastMsgHis.create_time < 0)) {
+            MessagesHis.find(where, option).forEach(function(doc) {
+            if (Messages.find({_id: doc._id}).count() <= 0){
+                console.log('load message from history:', doc._id);
+                doc.hasFromHistory = true;
+                Messages.insert(doc);
+              }
+            });
+          }
           if (Messages.find(where, option).count() >= limit)
             return;
 
