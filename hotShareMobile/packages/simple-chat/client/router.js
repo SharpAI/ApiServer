@@ -1664,7 +1664,7 @@ window.___message = {
 var updateMessageForTemp = function(id){
   console.log('update message from temp:', id);
 
-  MessageTemp.find({'msg.to.id': id}, {sort: {createAt: -1}, limit: 20}).fetch().forEach(function(item){
+  MessageTemp.find({'msg.to.id': id}, {sort: {createAt: 1}, limit: 20}).fetch().forEach(function(item){
     Meteor.setTimeout(function(){
       MessageTemp.remove({_id: item._id});
       onMqttMessage(item.topic, JSON.stringify(item.msg));
@@ -1826,8 +1826,9 @@ var onMqttMessage = function(topic, msg) {
   if (msgObj.type === 'url') {
     onMqttNLPMessage(topic,msgObj);
   }
+  msgObj.create_time = msgObj.create_time ? new Date(msgObj.create_time) : new Date();
 
-  var whereTime = new Date((new Date().getTime() - 5*60*1000));
+  var whereTime = new Date((msgObj.create_time.getTime() - 5*60*1000));
   var msgType = topic.split('/')[2];
   var where = {
     to_type: msgObj.to_type,
@@ -1841,7 +1842,7 @@ var onMqttMessage = function(topic, msg) {
   };
 
   msgObj.msg_ids = [{id: msgObj._id}];
-  msgObj.create_time = msgObj.create_time ? new Date(msgObj.create_time) : new Date();
+  
   if (msgObj.images && msgObj.length > 0 && msgObj.is_people && msgObj.people_id){
     for(var i=0;i<msgObj.images.length;i++)
       msgObj.images[i].id = msgObj.people_id;
