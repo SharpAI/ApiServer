@@ -1969,7 +1969,7 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
     return;
   }
   if(msgObj.is_admin_relay){
-    if(msgObj.admin_remove && !isAdmin){
+    if(msgObj.admin_remove){
       // admin 发送了删除消息
       Messages.remove({_id: targetMsg._id});
       return;
