@@ -181,8 +181,7 @@ Template._simpleChatLabelDevice.save = function(){
             icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
           },
           is_admin_relay: true,
-          people_id: setNames[0].id,
-          text: setNames[0].name,
+          setNames: setNames,
           createAt: new Date()
         });
       }

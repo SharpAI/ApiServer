@@ -1849,7 +1849,7 @@ var onMqttMessage = function(topic, msg) {
   };
 
   // 后收到消息处理
-  var msg_admin_realy = MsgAdminRelays.findOne({msgId: msgObj._id});
+  var msg_admin_realy = MsgAdminRelays.findOne({_id: msgObj._id});
   if(msg_admin_realy) {
     msgObj.is_admin_relay = msg_admin_realy.is_admin_relay;
     msgObj.admin_remove = msg_admin_realy.admin_remove;
@@ -1964,6 +1964,7 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
   if (!targetMsg){
     // 处理admin label消息后到的情况
     if(msgObj.is_admin_relay){
+      msgObj._id = msgObj.msgId;
       MsgAdminRelays.insert(msgObj);
     }
     return;
@@ -1974,14 +1975,18 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
       Messages.remove({_id: targetMsg._id});
       return;
     }
+    var setObj = {
+      wait_lable: false,
+      label_complete: false,
+      is_read: false,
+    };
+    
+
+    setObj.text = msgObj.setNames[0].name;
+    setObj.people_id = msgObj.setNames[0].id;
+
     Messages.update({_id: targetMsg._id}, {
-      $set:{
-        wait_lable: false, // 设置后将只显示对错
-        label_complete: false,
-        is_read: false,
-        text: msgObj.text,
-        people_id: msgObj.people_id,
-      }
+      $set:setObj
     }, function(){
       Meteor.setTimeout(function(){
         var $box = $('.box');
@@ -1989,6 +1994,21 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
         $box.trigger("scroll");
       }, 100);
     });
+    try{
+    if(msgObj.setNames.length > 1){
+    // 这里如果有多组照片，需要做拆分处理
+      for(var i=1;i< msgObj.setNames.length;i++){
+        targetMsg._id = new Mongo.ObjectID()._str;
+        targetMsg.text = msgObj.setNames[i].name;
+        targetMsg.people_id = msgObj.setNames[i].id;
+        Messages.insert(targetMsg);
+      }
+    }
+    } catch (error){
+       console.log('==lalalaalal='+error)
+    }
+    console.log('==lalalaalal='+JSON.stringify(targetMsg))
+
     return;
   } 
   if (targetMsg.label_users && targetMsg.label_users.length > 0 && _.pluck(targetMsg.label_users, 'id').indexOf(msgObj.user.id) >= 0)
