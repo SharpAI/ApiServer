@@ -9,6 +9,10 @@ var page_data = null;
 var $box = null;
 var $box_ul = null;
 
+Array.prototype.removeByIndex= function(index){
+  return this.slice(0,index).concat(this.slice(index+1,this.length));
+}
+
 Template._simpleChatToChat.helpers({
   getMsg: function(){
     if (!page_data)
@@ -1797,6 +1801,9 @@ SimpleChat.onMqttMessage = function(topic, msg) {
 
 var onMqttMessage = function(topic, msg) {
   var insertMsg = function(msgObj, type){
+    if(msgObj.admin_remove){
+      return;
+    }
     console.log(type, msgObj._id);
     Messages.insert(msgObj, function(err, _id){
       if (err)
@@ -1840,6 +1847,31 @@ var onMqttMessage = function(topic, msg) {
     create_time: {$gte: whereTime},
     type: 'text'
   };
+
+  // 后收到消息处理
+  var msg_admin_realy = MsgAdminRelays.findOne({msgId: msgObj._id});
+  if(msg_admin_realy) {
+    msgObj.is_admin_relay = msg_admin_realy.is_admin_relay;
+    msgObj.admin_remove = msg_admin_realy.admin_remove;
+
+    msgObj.people_id = msg_admin_realy.people_id;
+    msgObj.text = msg_admin_realy.text;
+    msgObj.wait_lable = false;
+    msgObj.label_complete = false;
+    msgObj.is_read = false;
+
+    var setObjExtend = {
+      is_admin_relay:msg_admin_realy.is_admin_relay,
+      admin_remove: msg_admin_realy.admin_remove,
+      people_id: msg_admin_realy.people_id,
+      text: msg_admin_realy.text,
+      wait_lable: false,
+      label_complete: false,
+      is_read: false
+    }
+    console.log('==sraita==,after the admin label'+ JSON.stringify(msgObj));
+    MsgAdminRelays.remove({_id: msg_admin_realy._id});
+  }
 
   msgObj.msg_ids = [{id: msgObj._id}];
   
@@ -1889,6 +1921,9 @@ var onMqttMessage = function(topic, msg) {
     setObj.text = msgObj.images[0].label + '：';
   }
 
+  if(setObjExtend){
+    setObj = $.extend(setObj,setObjExtend);
+  }
   if (targetMsg.hasFromHistory){
     MessagesHis.update({_id: targetMsg._id}, {
       $set: setObj,
@@ -1916,18 +1951,24 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
     return;
 
   var msgObj = JSON.parse(msg);
+  var isAdmin = Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType && Meteor.user().profile.userType == 'admin';
   if (msgObj.createAt)
       msgObj.createAt = new Date(msgObj.createAt);
   else
       msgObj.createAt = new Date();
   var msgId = topic.split('/')[3];
   var targetMsg = Messages.findOne({$or: [{'msg_ids.id': msgObj.msgId}, {_id: msgObj.msgId}]}, {sort: {create_time: -1}});
-   console.log('====sraita4===='+JSON.stringify(targetMsg));
-  if (!targetMsg)
+
+  // if (!targetMsg)
+  //   return;
+  if (!targetMsg){
+    // 处理admin label消息后到的情况
+    if(msgObj.is_admin_relay){
+      MsgAdminRelays.insert(msgObj);
+    }
     return;
+  }
   if(msgObj.is_admin_relay){
-    console.log('====sraita6===='+JSON.stringify(msgObj));
-    var isAdmin = Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType && Meteor.user().profile.userType == 'admin';
     if(msgObj.admin_remove && !isAdmin){
       // admin 发送了删除消息
       Messages.remove({_id: targetMsg._id});

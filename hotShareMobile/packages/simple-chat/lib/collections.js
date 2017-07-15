@@ -26,11 +26,13 @@ if(Meteor.isServer){
 
     Messages = new Ground.Collection(PRFIX + 'messages', { connection: null })
     MsgSession = new Ground.Collection(PRFIX + 'msg_session', { connection: null });
+    MsgAdminRelays = new Ground.Collection(PRFIX + 'msg_admin_realy', { connection: null });
 
     SimpleChat.Messages = Messages;
     SimpleChat.MsgSession = MsgSession;
     SimpleChat.MessageTemp = MessageTemp;
-
+    SimpleChat.MsgAdminRelays = MsgAdminRelays;
+    
     // 历史消息
     withMessageHisEnable = true;
     if (withMessageHisEnable){
