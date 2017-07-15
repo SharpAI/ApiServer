@@ -1927,6 +1927,12 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
     return;
   if(msgObj.is_admin_relay){
     console.log('====sraita6===='+JSON.stringify(msgObj));
+    var isAdmin = Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType && Meteor.user().profile.userType == 'admin';
+    if(msgObj.admin_remove && !isAdmin){
+      // admin 发送了删除消息
+      Messages.remove({_id: targetMsg._id});
+      return;
+    }
     Messages.update({_id: targetMsg._id}, {
       $set:{
         wait_lable: false, // 设置后将只显示对错
