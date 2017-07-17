@@ -118,8 +118,15 @@ Template._simpleChatLabelDevice.save = function(){
       Meteor.call('set-person-names', msgObj.to.id, setNames);
 
     console.log('names:', res);
+
+    var labeld_images = [];
+    var wait_label_images = [];
+
     for (var i=0;i<updateObj.images.length;i++){
       if (updateObj.images[i].label) {
+
+        labeld_images.push(updateObj.images[i]);
+
         var labelMsgSent = updateObj.images[i].labelMsgSent;
         if (labelMsgSent == null || labelMsgSent == undefined)
           labelMsgSent = false;
@@ -150,6 +157,8 @@ Template._simpleChatLabelDevice.save = function(){
             Meteor.call('send-person-to-web', person_info, function(err, res){});
           }
         } catch(e){}
+      } else {
+        wait_label_images.push(updateObj.images[i]);
       }
     }
 
@@ -182,6 +191,8 @@ Template._simpleChatLabelDevice.save = function(){
           },
           is_admin_relay: true,
           setNames: setNames,
+          labeldImages: labeld_images,
+          waitLabelImages: wait_label_images,
           createAt: new Date()
         });
       }

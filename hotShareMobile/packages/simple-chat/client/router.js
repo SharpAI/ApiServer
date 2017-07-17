@@ -1984,38 +1984,58 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
       Messages.remove({_id: targetMsg._id});
       return;
     }
-    var setObj = {
-      wait_lable: false,
-      label_complete: false,
-      is_read: false,
-    };
-    
-
-    setObj.text = msgObj.setNames[0].name;
-    setObj.people_id = msgObj.setNames[0].id;
-
-    Messages.update({_id: targetMsg._id}, {
-      $set:setObj
-    }, function(){
-      Meteor.setTimeout(function(){
-        var $box = $('.box');
-        $box.scrollTop($box.scrollTop()+1);
-        $box.trigger("scroll");
-      }, 100);
-    });
-    try{
-    if(msgObj.setNames.length > 1){
-    // 这里如果有多组照片，需要做拆分处理
-      for(var i=1;i< msgObj.setNames.length;i++){
-        targetMsg._id = new Mongo.ObjectID()._str;
-        targetMsg.text = msgObj.setNames[i].name;
-        targetMsg.people_id = msgObj.setNames[i].id;
-        Messages.insert(targetMsg);
+    // try{
+      // 处理辅助用户已经标注的图片
+      console.log('the msgObjj ='+JSON.stringify(msgObj))
+      if(msgObj.setNames.length > 0 && msgObj.labeldImages.length > 0){
+        var setObj2 = targetMsg
+        for(var i=0;i< msgObj.setNames.length;i++){
+          setObj2._id = new Mongo.ObjectID()._str;
+          setObj2.text = msgObj.setNames[i].name;
+          setObj2.people_id = msgObj.setNames[i].id;
+          setObj2.images = [];
+          setObj2.wait_lable = false;
+          setObj2.label_complete = false;
+          setObj2.is_read = false;
+          for(var j=0; j < msgObj.labeldImages.length; j++){
+            if(msgObj.setNames[i].name == msgObj.labeldImages[j].label){
+              setObj2.images.push(msgObj.labeldImages[j])
+            }
+          }
+          // ??? insert 失败？
+          console.log('the setObj2='+JSON.stringify(setObj2))
+          Messages.insert(setObj2, function(err, _id){
+            if (err)
+              console.log('the setObj2 ,insert msg error:', err);
+          });
+        }
       }
-    }
-    } catch (error){
-       console.log('==lalalaalal='+error)
-    }
+      // 处理辅助用户没有标识的图片
+      if(msgObj.waitLabelImages && msgObj.waitLabelImages.length > 0){
+        var setObj = {
+          wait_lable: true,
+          label_complete: false,
+          is_read: false,
+          images: [],
+          text: msgObj.waitLabelImages.length + '张照片需要标注'
+        };
+        for(var i=0; i< msgObj.waitLabelImages.length ; i++){
+          setObj.images.push(msgObj.waitLabelImages[i]);
+        }
+        Messages.update({_id: targetMsg._id}, {
+          $set:setObj
+        }, function(){
+          Meteor.setTimeout(function(){
+            var $box = $('.box');
+            $box.scrollTop($box.scrollTop()+1);
+            $box.trigger("scroll");
+          }, 100);
+        });
+      }
+
+    // } catch (error){
+    //    console.log('==lalalaalal='+error)
+    // }
     console.log('==lalalaalal='+JSON.stringify(targetMsg))
 
     return;
