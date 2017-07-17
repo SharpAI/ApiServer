@@ -337,7 +337,7 @@ Template._simpleChatToChat.onRendered(function(){
           images: [],
           to_type: "group",
           type: "system",
-          text: '当前端捕捉到人脸信息或其他关注信息时，消息会发送到训练群中，请稍候' ,
+          text: '当前端AI捕捉到有人在活动时，消息会发送到训练群中，请稍候' ,
           create_time: new Date(),
           is_read: false
         };
@@ -518,21 +518,21 @@ var onFixName = function(id, uuid, his_id, url, to, value, type){
 
   switch(type){
     case 'label':
-      msg.text = '此照片是"' + value + '" ~';
+      msg.text = '这是"' + value + '" ~';
       Messages.insert(msg);
       sendMqttGroupMessage(msg.to.id, msg);
       // sendMqttMessage('workai', msg);
       // sendMqttMessage('trainset', {url: url, person_id: '', device_id: uuid, face_id: id});
       break;
     case 'check':
-      msg.text = '此照片是"' + value + '" ~';
+      msg.text = '这是"' + value + '" ~';
       Messages.insert(msg);
       sendMqttGroupMessage(msg.to.id, msg);
       // sendMqttMessage('workai', msg);
       // sendMqttMessage('trainset', {url: url, person_id: '', device_id: uuid, face_id: id});
       break;
     case 'remove':
-      msg.text = '删除照片: ' + value;
+      msg.text = '删除这条信息: ' + value;
       Messages.insert(msg);
       sendMqttGroupMessage(msg.to.id, msg);
       // sendMqttMessage('workai', msg);
@@ -759,7 +759,7 @@ Template._simpleChatToChatItem.events({
       if (setNames.length > 0)
         Meteor.call('set-person-names', msgObj.to.id, setNames);
 
-      var user = Meteor.user();  
+      var user = Meteor.user();
       if(user.profile && user.profile.userType && user.profile.userType == 'admin'){
         sendMqttGroupLabelMessage(msgObj.to.id, {
           _id: new Mongo.ObjectID()._str,
@@ -847,12 +847,12 @@ Template._simpleChatToChatItem.events({
       for(var i=0;i< images.length;i++){
         // send to device
         var trainsetObj = {
-          group_id: msgObj.to.id, 
-          type: 'trainset', 
+          group_id: msgObj.to.id,
+          type: 'trainset',
           url: images[i].url,
           device_id: msgObj.people_uuid,
-          face_id: msgObj.people_id ? msgObj.people_id : images[i].id, 
-          drop: true, 
+          face_id: msgObj.people_id ? msgObj.people_id : images[i].id,
+          drop: true,
           img_type: images[i].img_type,
           raw_face_id: images[i].id
         };
@@ -1063,7 +1063,7 @@ Template._simpleChatToChatLabel.events({
     var name = Session.get('SimpleChatToChatLabelImage').label;
     var names = get_people_names();
 
-    showBox('提示', ['重新标记', '删除'], null, '你要重新标记照片还是删除？', function(index){
+    showBox('提示', ['重新标记', '删除'], null, '重新标记还是删除？', function(index){
       if(index === 0)
         show_label(data.to.id, function(name){
           Meteor.call('get-id-by-name1', data.people_uuid, name, data.to.id, function(err, res){
@@ -1795,7 +1795,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
   }
   if (!msgObj.is_people)
     return Messages.insert(msgObj);
-  
+
   MessageTemp.insert({
     topic: topic,
     msg: msgObj,
@@ -1825,7 +1825,7 @@ var onMqttMessage = function(topic, msg) {
 
   Session.set('hasNewLabelMsg', true);
   var msgObj = JSON.parse(msg);
-  
+
   if (msgObj.to_type == 'group') {
     var record = GroupUsers.findOne({group_id: msgObj.to.id, user_id: Meteor.userId()});
     if (!record) {
@@ -1883,7 +1883,7 @@ var onMqttMessage = function(topic, msg) {
   }
 
   msgObj.msg_ids = [{id: msgObj._id}];
-  
+
   if (msgObj.images && msgObj.length > 0 && msgObj.is_people && msgObj.people_id){
     for(var i=0;i<msgObj.images.length;i++)
       msgObj.images[i].id = msgObj.people_id;
@@ -1907,7 +1907,7 @@ var onMqttMessage = function(topic, msg) {
   if (!targetMsg || !targetMsg.images || targetMsg.images.length <= 0)
     return insertMsg(msgObj, '无需合并消息');
   if (targetMsg.images && targetMsg.images.length >= 20)
-    return insertMsg(msgObj, '单行照片超过 20 张');
+    return insertMsg(msgObj, '单行信息超过 20 条');
   if (!msgObj.images || msgObj.images.length <= 0)
     return insertMsg(msgObj, '不是图片消息');
   if (msgObj.to_type != 'group' || !msgObj.is_people)
@@ -1924,10 +1924,13 @@ var onMqttMessage = function(topic, msg) {
       if (!msgObj.images[i].label && !msgObj.images[i].remove && !msgObj.images[i].error)
         count += 1;
     }
-    if (count > 0)
-      setObj.text = count + ' 张照片需要标注';
+    if (count > 0){
+      setObj.text = 'AI观察到有人在活动(' + count + '次)';
+    } else {
+      setObj.text = 'AI观察到有人在活动';
+    }
   } else {
-    setObj.text = msgObj.images[0].label + '：';
+    setObj.text = 'AI观察到 '+msgObj.images[0].label + '：';
   }
 
   if(setObjExtend){
@@ -2017,7 +2020,7 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
           label_complete: false,
           is_read: false,
           images: [],
-          text: msgObj.waitLabelImages.length + '张照片需要标注'
+          text: 'AI观察到有人在活动(' + msgObj.waitLabelImages.length + '次)'
         };
         for(var i=0; i< msgObj.waitLabelImages.length ; i++){
           setObj.images.push(msgObj.waitLabelImages[i]);
@@ -2039,7 +2042,7 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
     console.log('==lalalaalal='+JSON.stringify(targetMsg))
 
     return;
-  } 
+  }
   if (targetMsg.label_users && targetMsg.label_users.length > 0 && _.pluck(targetMsg.label_users, 'id').indexOf(msgObj.user.id) >= 0)
     return;
   Messages.update({_id: targetMsg._id}, {
@@ -2154,7 +2157,7 @@ Template._simpleChatToChatLabelRemove.events({
   },
   'click .rightButton': function(e, t){
     if (!$('#label-input-name').val())
-      return PUB.toast('请输入删除照片的原因~');;
+      return PUB.toast('请输入删除信息的原因~');;
 
     t.data.callback && t.data.callback($('#label-input-name').val());
     Blaze.remove(remove_view);
