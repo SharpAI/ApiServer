@@ -178,6 +178,17 @@ if(Meteor.isServer){
     GroupUsers._ensureIndex({'group_id': 1});
     GroupUsers._ensureIndex({'group_id': 1, 'user_id': 1});
   });
+
+  Groups.allow({
+     update: function (userId, doc, fields, modifier) {
+      var user = Meteor.users.findOne({_id: userId})
+      var isAdmin = user.profile && user.profile.userType && user.profile.userType == 'admin';
+      if(!userId || !isAdmin){
+        return false
+      }
+      return true;
+    }
+  });
 }
 
 SimpleChat.Groups = Groups;

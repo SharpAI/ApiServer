@@ -69,6 +69,15 @@
                 <div class="scanPerfBarcode">扫描绩效二维码</div>
                 <div class="checkPerf">查看绩效</div>
                 <div class="line" style="height: 12px;"></div>
+                {{#if userIsAdmin}}
+                <div class="disbaleNormalLabelMsg">
+                    <div style="display: inline-block;">暂不接收label消息</div>
+                    <div style="float: right;">
+                        <input id="switchNormalLabelMsg" class="switch" type="checkbox" {{checkedIf rejectLabelMsg}}>
+                    </div>
+                </div>
+                <div class="line" style="height: 12px;"></div>
+                {{/if}}
                 {{#if isGroup}}
                 <div class="deleteAndExit">删除并退出</div>
                 {{/if}}

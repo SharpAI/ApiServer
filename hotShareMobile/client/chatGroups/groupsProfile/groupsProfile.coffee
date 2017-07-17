@@ -8,7 +8,17 @@ if Meteor.isClient
     groupid = Session.get('groupsId')
     Meteor.subscribe("get-group",groupid)
     Meteor.subscribe('group-user-counter',groupid)
+  UI.registerHelper('checkedIf',(val)->
+    return if val then 'checked' else ''
+  )
   Template.groupInformation.helpers
+    rejectLabelMsg: ()->
+      group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
+      return group.rejectLabelMsg
+    userIsAdmin: ()->
+      user = Meteor.user()
+      isAdmin = user.profile and user.profile.userType and user.profile.userType is 'admin'
+      return isAdmin && withSwitchNormalLabelMsg
     isGroup:()->
       if Session.get('groupsType') is 'group'
         return true
@@ -179,6 +189,18 @@ if Meteor.isClient
       else
         $show.html('<i class="fa fa-angle-down"></i>');
         $('.announcementVal').find('.announcement_item').addClass('_close');
+    'click #switchNormalLabelMsg':(event)->
+        $('#switchNormalLabelMsg').attr('disabled')
+        group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
+        rejectLabelMsg =  group.rejectLabelMsg
+        if rejectLabelMsg
+          SimpleChat.Groups.update({_id: Session.get('groupsId')},{$set:{rejectLabelMsg: false}},(err,result)->
+            $('#switchNormalLabelMsg').removeAttr('disabled')
+          )
+        else
+          SimpleChat.Groups.update({_id: Session.get('groupsId')},{$set:{rejectLabelMsg: true}},(err,result)->
+            $('#switchNormalLabelMsg').removeAttr('disabled')
+          )
 
   Template.groupUsers.helpers
     isGroup:()->

@@ -1757,6 +1757,15 @@ SimpleChat.onMqttMessage = function(topic, msg) {
   else
       msgObj.create_time = new Date();
   if (msgObj.to_type == 'group') {
+
+    var group_id = msgObj.to.id;
+    var group = SimpleChat.Groups.findOne({_id: group_id});
+    var isAdmin = Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType && Meteor.user().profile.userType == 'admin';
+    if(group && group.rejectLabelMsg && !isAdmin && typeof(msgObj.wait_lable) != 'undefined'){
+      console.log('辅助用户关闭了该群相应的label接收')
+      return;
+    }
+
     var where = {
       to_type: msgObj.to_type,
       'to.id': msgObj.to.id,
@@ -1816,7 +1825,7 @@ var onMqttMessage = function(topic, msg) {
 
   Session.set('hasNewLabelMsg', true);
   var msgObj = JSON.parse(msg);
-
+  
   if (msgObj.to_type == 'group') {
     var record = GroupUsers.findOne({group_id: msgObj.to.id, user_id: Meteor.userId()});
     if (!record) {
