@@ -164,6 +164,7 @@ if(Meteor.isServer){
           speed = 20;
   }
 
+  /*
   if(process.env.SEND_TEST_MESSAGE){
       Meteor.setInterval(function(){
           if(process.env.RESPECT_WORKING_HOUR){
@@ -191,7 +192,7 @@ if(Meteor.isServer){
           }
           speed = (speed <=1)? 1:(speed -1);
       }, 1000*60); // 10 分钟
-  }
+  }*/
   });
 }
 
