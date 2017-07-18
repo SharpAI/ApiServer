@@ -38,3 +38,4 @@
 @withReadMoreButtonOnPost = false
 @withEnableHaveReadMsg = true #已读消息
 @withSwitchNormalLabelMsg = true
+@MQTT_TIME_DIFF = 0

@@ -152,6 +152,7 @@ if(Meteor.isClient){
             // });
 
             sendMqttMessage=function(topic,message){
+                message.create_time = new Date(Date.now() + MQTT_TIME_DIFF);
                 console.log('sendMqttMessage:', topic, JSON.stringify(message));
                 //mqtt_connection.publish(topic,JSON.stringify(message),{qos:1},callback)
                 undeliveredMessages.push({

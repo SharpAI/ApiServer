@@ -186,6 +186,7 @@ if(Meteor.isClient){
 
             // });
             sendMqttMessage=function(topic,message,callback){
+                message.create_time = new Date(Date.now() + MQTT_TIME_DIFF);
                 console.log('sendMqttMessage:', topic, JSON.stringify(message));
                 //mqtt_connection.publish(topic,JSON.stringify(message),{qos:1},callback)
                 undeliveredMessages.push({
@@ -242,6 +243,7 @@ if(Meteor.isClient){
             //     })
             // };
             sendMqttGroupMessage=function(group_id, message,callback) {
+                message.create_time = new Date(Date.now() + MQTT_TIME_DIFF);
                 if(Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType == 'admin') {
                     console.log('>>> this is admin, send group message to myself')
                     onMessageOld("/msg/g/" + group_id, message,callback);
@@ -255,6 +257,7 @@ if(Meteor.isClient){
                 sendMqttMessage("/msg/u/" + user_id, message,callback);
             };
             sendMqttGroupLabelMessage=function(group_id, message,callback) {
+                message.create_time = new Date(Date.now() + MQTT_TIME_DIFF);
                 if(Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType == 'admin') {
                     console.log('>>> this is admin, send label message to myself')
                     onMessageOld("/msg/l/" + group_id, message);
