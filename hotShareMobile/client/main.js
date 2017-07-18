@@ -210,6 +210,13 @@ if (Meteor.isCordova) {
           }
         }
 
+        if(mqtt_connection){
+            console.log('try reconnect mqtt')
+            mqtt_connection._reconnect();
+          }
+        } catch (error) {
+          console.log('mqtt reconnect Error=',error);
+        }
     }
     function eventPause(){
       if(withAutoSavedOnPaused) {
