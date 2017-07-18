@@ -4,13 +4,30 @@
 if(Meteor.isClient){
     var myMqtt = Paho.MQTT;
     var undeliveredMessages = [];
+    var unsendMessages = [];
     mqtt_connection = null;
-    mqtt_connected = false;
+    //mqtt_connected = false;
+    var onMessageArrived = function(message) {
+        console.log("onMessageArrived:"+message.payloadString);
+        console.log('message.destinationName= '+message.destinationName);
+        console.log('message= '+JSON.stringify(message));
+        try {
+            var topic = message.destinationName;
+            console.log('on mqtt message topic: ' + topic + ', message: ' + message.payloadString);
+            if (topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))
+                SimpleChat.onMqttMessage(topic, message.payloadString);
+            else if (topic.startsWith('/msg/l/'))
+                SimpleChat.onMqttLabelMessage(topic, message.payloadString);
+        } catch (ex) {
+            console.log('exception onMqttMessage: ' + ex);
+        }
+    };
     initMQTT = function(clientId){
         if(!mqtt_connection){
             var pahoMqttOptions = {
-                timeout: 30*1000,
-                cleanSession: false,
+                timeout: 30,
+                keepAliveInterval: 10,
+                cleanSession: true,
                 onSuccess:onConnect,
                 onFailure:onFailure
             };
@@ -19,9 +36,19 @@ if(Meteor.isClient){
             mqtt_connection.onConnectionLost = onConnectionLost;
             mqtt_connection.onMessageArrived = onMessageArrived;
             mqtt_connection.onMessageDelivered = onMessageDelivered;
-            mqtt_connection.timeout = 30*1000;
-            mqtt_connection.cleanSession = false;
             mqtt_connection.connect(pahoMqttOptions);
+            function clearUndeliveredMessages() {
+                console.log('clearUndeliveredMessages: undeliveredMessages.length='+undeliveredMessages.length);
+                while (undeliveredMessages.length > 0) {
+                    console.log('undeliveredMessages.length='+undeliveredMessages.length);
+                    var undeliveredMessage = undeliveredMessages.shift();
+                    var topic = undeliveredMessage.topic;
+                    var message = undeliveredMessage.message;
+                    var onMessageDeliveredCallback = undeliveredMessage.onMessageDeliveredCallback;
+                    addToUnsendMessaages(topic, message, onMessageDeliveredCallback, 10*1000);
+                }
+            };
+            
             function onConnect() {
                 // Once a connection has been made, make a subscription and send a message.
                 console.log("mqtt onConnect");
@@ -33,25 +60,40 @@ if(Meteor.isClient){
                         console.log('MQTT_TIME_DIFF===',MQTT_TIME_DIFF)
                     }
                 });
-                if(!mqtt_connected){
-                    mqtt_connected = true;
-                    console.log('Connected to mqtt server');
-                    //mqtt_connection.subscribe('workai');
-                    subscribeMyChatGroups();
-                    subscribeMqttUser(Meteor.userId());
-                    sendMqttMessage('/presence/'+Meteor.userId(),{online:true})
+                console.log('Connected to mqtt server');
+                //mqtt_connection.subscribe('workai');
+                subscribeMyChatGroups();
+                subscribeMqttUser(Meteor.userId());
+                sendMqttMessage('/presence/'+Meteor.userId(),{online:true})
+                if (unsendMessages.length > 0) {
+                    var unsendMsg;
+                    var fifo = unsendMessages.reverse();
+                    // Send all queued messages down socket connection
+                    console.log('onConnect: Send all unsendMessages message: '+unsendMessages.length);
+                    while ((unsendMsg = fifo.pop())) {
+                        var topic = unsendMsg.topic;
+                        var message = unsendMsg.message;
+                        var callback = unsendMsg.callback;
+                        var timeoutTimer = unsendMsg.timer;
+                        clearTimeout(timeoutTimer);
+                        timeoutTimer = null;
+                        sendMqttMessage(topic, message, callback);
+                        console.log('unsendMessages send message='+JSON.stringify(message));
+                    }
                 }
             };
             function onFailure(msg) {
                 console.log('mqtt onFailure: errorCode='+msg.errorCode);
+                clearUndeliveredMessages();
                 setTimeout(function(){
                     console.log('MQTT onFailure, reconnecting...');
                     mqtt_connection.connect(pahoMqttOptions);
                 }, 1000);
             };
             function onConnectionLost(responseObject) {
-                mqtt_connected = false;
+                //mqtt_connected = false;
                 console.log('MQTT connection lost.')
+                clearUndeliveredMessages();
                 if (responseObject.errorCode !== 0)
                     console.log("onConnectionLost: "+responseObject.errorMessage);
                 setTimeout(function(){
@@ -61,13 +103,67 @@ if(Meteor.isClient){
             };
             function onMessageDelivered(message) {
                 console.log('MQTT onMessageDelivered: "' + message.payloadString + '" delivered');
-                var undeliveredMessage = undeliveredMessages.shift();
-                if (undeliveredMessage.message) {
-                    console.log('Shift undeliveredMessage: '+JSON.stringify(undeliveredMessage.message));
+                try {
+                    var messageObj = JSON.parse(message.payloadString);
+                    var msgId = messageObj.msgId;
+                    for (var i=0; i<undeliveredMessages.length; i++) {
+                        console.log(i+': '+JSON.stringify(undeliveredMessages[i]));
+                    }
+                    for (var i=0; i<undeliveredMessages.length; i++) {
+                        var undeliveredMessage = undeliveredMessages[i];
+                        if (undeliveredMessage && undeliveredMessage.message && (undeliveredMessage.message.msgId == msgId)) {
+                            console.log('Found message in undeliveredMessages!');
+                            if (undeliveredMessage.message) {
+                                console.log('Shift undeliveredMessage: '+JSON.stringify(undeliveredMessage.message));
+                            }
+                            if (undeliveredMessage.onMessageDeliveredCallback) {
+                                console.log('onMessageDelivered: Call calback');
+                                undeliveredMessage.onMessageDeliveredCallback(null, message.payloadString);
+                            }
+                            undeliveredMessages.splice(i, 1);
+                            break;
+                        }
+                    }
+                } catch (error) {
+                    console.log('JSON parse failed. Message should be a JSON string.');
                 }
-                if (undeliveredMessage.onMessageDeliveredCallback) {
-                    console.log('onMessageDelivered: Call calback');
-                    undeliveredMessage.onMessageDeliveredCallback();
+            }
+            function addToUnsendMessaages(topic,message,callback, timeout) {
+                var id;
+                if (typeof Mongo != 'undefined') {
+                    id = (new Mongo.ObjectID())._str;
+                } else {
+                    var dt = new Date();
+                    var str = (dt.getTime()+dt.getMilliseconds()+Math.random()*1000).toString();
+                    id = MD5(str);
+                }
+                var timeoutTimer = setTimeout(function() {
+                    for (var i=0; i<unsendMessages.length; i++) {
+                        if (unsendMessages[i].id == id) {
+                            console.log('unsendMessages timeout: message='+JSON.stringify(unsendMessages[i].message));
+                            callback && callback('failed', JSON.stringify(message));
+                            unsendMessages.splice(i, 1);
+                            return;
+                        }
+                    }
+                }, timeout?timeout:15*1000);
+
+                var unsendMsg = {
+                    id: id,
+                    topic: topic,
+                    message: message,
+                    callback: callback,
+                    timer: timeoutTimer
+                };
+                unsendMessages.push(unsendMsg);
+                console.log('unsendMessages push: message='+JSON.stringify(message)); 
+            }
+            function isJSON(message) {
+                if(typeof(message) == "object" && 
+                    Object.prototype.toString.call(message).toLowerCase() == "[object object]" && !message.length){
+                    return true;
+                } else {
+                    return false;
                 }
             }
 
@@ -102,98 +198,37 @@ if(Meteor.isClient){
                 }
             };
 
-            function onMessageArrived(message) {
-                console.log("onMessageArrived:"+message.payloadString);
-                console.log('message.destinationName= '+message.destinationName);
-                console.log('message= '+JSON.stringify(message));
-                try {
-                    var topic = message.destinationName;
-                    console.log('on mqtt message topic: ' + topic + ', message: ' + message.payloadString);
-                    //SimpleChat.onMqttMessage(topic, message.payloadString);
-                    //onMessageOld(topic, message.payloadString);
-                    if (topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))
-                        SimpleChat.onMqttMessage(topic, message.payloadString);
-                    else if (topic.startsWith('/msg/l/'))
-                        SimpleChat.onMqttLabelMessage(topic, message.payloadString);
-                } catch (ex) {
-                    console.log('exception onMqttMessage: ' + ex);
-                }
-                //client.disconnect(); 
-            };
-
-            // var mqttOptions = {
-            //     clean:false,
-            //     connectTimeout: 30*1000,
-            //     keepalive:30,
-            //     reconnectPeriod: 40*1000,
-            //     /*incomingStore: mqtt_store_manager.incoming,
-            //      outgoingStore: mqtt_store_manager.outgoing,*/
-            //     clientId:clientId
-            // }
-            // mqtt_connection=mqtt.connect('ws://mq.tiegushi.com:80',mqttOptions);
-            // mqtt_connection.on('offline',function(){
-            //     mqtt_connected = false;
-            //     console.log('MQTT offline')
-            // })
-            // mqtt_connection.on('error',function(){
-            //     mqtt_connected = false;
-            //     console.log('MQTT error')
-            // })
-            // mqtt_connection.on('reconnect',function(){
-            //     mqtt_connected = false;
-            //     console.log('MQTT reconnecting')
-            // })
-            // mqtt_connection.on('connect',function(){
-            //     if(!mqtt_connected){
-            //         mqtt_connected = true;
-            //         console.log('Connected to mqtt server');
-            //         //mqtt_connection.subscribe('workai');
-            //         subscribeMyChatGroups();
-            //         subscribeMqttUser(Meteor.userId());
-            //         sendMqttMessage('/presence/'+Meteor.userId(),{online:true});
-            //     }
-            // });
-
-            // var conn_time = new Date().getTime();
-            // mqtt_connection.on('message', function(topic, message) {
-            //   var cur_time = new Date().getTime();
-            //   if (cur_time - conn_time > 3000) {
-            //     try {
-            //       console.log('on mqtt message topic: ' + topic + ', message: ' + message.toString());
-            //       if (topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))
-            //         SimpleChat.onMqttMessage(topic, message.toString());
-            //       else if (topic.startsWith('/msg/l/'))
-            //         SimpleChat.onMqttLabelMessage(topic, message.toString());
-            //     }
-            //     catch (ex) {
-            //       console.log('exception onMqttMessage: ' + ex);
-            //     }
-            //   }
-            //   else {
-            //     Meteor.setTimeout(function() {
-            //       try {
-            //         console.log('on mqtt message topic: ' + topic + ', message: ' + message.toString());
-            //         if (topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))
-            //           SimpleChat.onMqttMessage(topic, message.toString());
-            //         else if (topic.startsWith('/msg/l/'))
-            //           SimpleChat.onMqttLabelMessage(topic, message.toString());
-            //       }
-            //       catch (ex) {
-            //         console.log('exception onMqttMessage: ' + ex);
-            //       }
-            //     }, 3000);
-            //   }
-
-            // });
             sendMqttMessage=function(topic,message,callback){
-                message.create_time = new Date(Date.now() + MQTT_TIME_DIFF);
-                console.log('sendMqttMessage:', topic, JSON.stringify(message));
-                //mqtt_connection.publish(topic,JSON.stringify(message),{qos:1},callback)
-                undeliveredMessages.push({
-                    message: message,
-                    onMessageDeliveredCallback: callback
-                });
-                mqtt_connection.send(topic, JSON.stringify(message), 1);
+                var msgId;
+
+                if (typeof Mongo != 'undefined') {
+                    msgId = (new Mongo.ObjectID())._str;
+                } else {
+                    var dt = new Date();
+                    var str = (dt.getTime()+dt.getMilliseconds()+Math.random()*1000).toString();
+                    msgId = MD5(str);
+                }
+                if (isJSON(message)) {
+                    var newMessage = {};
+                    newMessage.msgId = msgId;
+                    for (var key in message) { // Looping through all values of the old object 
+                        newMessage[key] = message[key];
+                    }
+                    message = newMessage;
+                }
+
+                if (mqtt_connection.isConnected()) {
+                    undeliveredMessages.push({
+                        topic: topic,
+                        message: message,
+                        onMessageDeliveredCallback: callback
+                    });
+                    console.log('sendMqttMessage:', topic, JSON.stringify(message));
+                    mqtt_connection.send(topic, JSON.stringify(message), 1);
+                    return ;
+                }
+
+                addToUnsendMessaages(topic, message, callback);
             };
             subscribeMqttGroup=function(group_id) {
                 if (mqtt_connection) {
@@ -276,7 +311,7 @@ if(Meteor.isClient){
       try {
           if (mqtt_connection) {
               mqtt_connection.disconnect();
-              mqtt_connected = false;
+              //mqtt_connected = false;
               mqtt_connection = null;
           }
       } catch (error) {

@@ -59,6 +59,7 @@ client = new Paho.MQTT.Client(location.hostname, Number(location.port), "clientI
 client.onConnectionLost = onConnectionLost;
 client.onMessageArrived = onMessageArrived;
 client.connect({onSuccess:onConnect});
+
 function onConnect() {
   // Once a connection has been made, make a subscription and send a message.
   console.log("onConnect");
@@ -371,8 +372,8 @@ Paho.MQTT = (function (global) {
 					break;
 			}
 			var connectFlags = 0;
-			if (this.cleanSession) 
-				connectFlags = 0x02;
+			//if (this.cleanSession) 
+			//	connectFlags = 0x02;
 			if (this.willMessage != undefined ) {
 				connectFlags |= 0x04;
 				connectFlags |= (this.willMessage.qos<<3);
@@ -1198,11 +1199,11 @@ Paho.MQTT = (function (global) {
 					}
 					this._sentMessages = {};
 
-					for (var key in this._receivedMessages) {
+					/*for (var key in this._receivedMessages) {
 						var receivedMessage = this._receivedMessages[key];
 						localStorage.removeItem("Received:"+this._localKey+receivedMessage.messageIdentifier);
 					}
-					this._receivedMessages = {};
+					this._receivedMessages = {};*/
 				}
 				// Client connected and ready for business.
 				if (wireMessage.returnCode === 0) {
