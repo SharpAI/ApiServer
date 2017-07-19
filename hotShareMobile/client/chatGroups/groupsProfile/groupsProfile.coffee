@@ -139,9 +139,20 @@ if Meteor.isClient
     'click .checkPerf':(event)->
       group_id = Session.get('groupsId')
       group = SimpleChat.Groups.findOne({_id: group_id})
-      perf_url = group.perf_info.perf_url;
-      if (!perf_url)
-        perf_url = 'http://aixd.raidcdn.cn/reporter/f5ZocsFpQn9CApmy8'
+
+      perf_url = null
+
+      if group is not null and group is not undefined
+          console.log "group is not 0  "
+          if group.perf_info is not null and group.perf_info is not undefined
+              console.log "perf info is not 0 "
+              if group.perf_info.perf_url is not null and group.perf_info.perf_url is not undefined
+                  perf_url = group.perf_info.perf_url
+                  console.log "perf url is not 0: " + perf_url
+
+      if perf_url is null
+          console.log "perf url is null, browser: " + perf_url
+          perf_url = 'http://aixd.raidcdn.cn/reporter/f5ZocsFpQn9CApmy8'
       cordova.InAppBrowser.open(perf_url, '_system')
     'click .emptyMessages':(event)->
       PUB.confirm('确定要清空训练记录吗？',()->
