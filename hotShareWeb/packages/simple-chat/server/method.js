@@ -1,8 +1,10 @@
 AI_system_register_devices = function (group_id) {
-  var ai_system_url = process.env.AI_SYSTEM_URL || 'http://aixd.raidcdn.cn/restapi/workai';
+  var ai_system_url = process.env.AI_SYSTEM_URL || 'http://aixd.raidcdn.cn/restapi/register';
 
-  if(!group_id)
+  if(!group_id) {
+    console.log('group_id not found');
     return;
+  }
 
   var group = Groups.findOne({_id: group_id});
   if (group && group.companyId) {
@@ -17,9 +19,10 @@ AI_system_register_devices = function (group_id) {
               'imgUrl': 'http://workaiossqn.tiegushi.com/tablet.png'  //TODO:
           }, timeout: 5*1000
         }, function(error, res) {
-          if (error) {
+          if (error)
             return console.log("post device info to aixd.raidcdn failed " + error);
-          }
+          else
+            return console.log("registered this device to aixd.raidcdn" + error);
         });
     });
   }
