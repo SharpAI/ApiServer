@@ -141,14 +141,17 @@ if Meteor.isClient
       group = SimpleChat.Groups.findOne({_id: group_id})
 
       perf_url = null
-
-      if group is not null and group is not undefined
-          console.log "group is not 0  "
-          if group.perf_info is not null and group.perf_info is not undefined
-              console.log "perf info is not 0 "
-              if group.perf_info.perf_url is not null and group.perf_info.perf_url is not undefined
-                  perf_url = group.perf_info.perf_url
-                  console.log "perf url is not 0: " + perf_url
+      console.log('Got group Info='+JSON.stringify(group))
+      if group and group.perf_info and group.perf_info.reportUrl
+          perf_url = group.perf_info.reportUrl
+          console.log "perf url is not 0: " + perf_url
+      # if group is not null and group is not undefined
+      #     console.log "group is not 0  "
+      #     if group.perf_info is not null and group.perf_info is not undefined
+      #         console.log "perf info is not 0 "
+      #         if group.perf_info.perf_url is not null and group.perf_info.perf_url is not undefined
+      #             perf_url = group.perf_info.perf_url
+      #             console.log "perf url is not 0: " + perf_url
 
       if perf_url is null
           console.log "perf url is null, browser: " + perf_url
