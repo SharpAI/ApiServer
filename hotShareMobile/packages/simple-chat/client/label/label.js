@@ -88,6 +88,8 @@ Template._simpleChatLabelLabel.events({
     if (removes.length > 0)
       Meteor.call('remove-persons1',msgObj.to.id,removes)
 
+    var relabelImages = [];
+
     for (var i=0;i<updateObj.images.length;i++){
       if (updateObj.images[i].error) {
         var trainsetObj = {group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, device_id: msgObj.people_uuid,
@@ -96,9 +98,52 @@ Template._simpleChatLabelLabel.events({
         console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
         sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
         // sendMqttMessage('trainset', {url: updateObj.images[i].url, person_id: '', device_id: updateObj.images[i].id, drop: true});
+        var image = updateObj.images[i];
+        var relabelObj = {
+          _id: new Mongo.ObjectID()._str,
+          id: image.id,
+          people_his_id:image.people_his_id,
+          url: image.url,
+          label: null,
+          img_type: image.img_type,
+          accuracy: image.accuracy,
+          fuzziness: image.fuzziness
+        };
+        relabelImages.push(relabelObj);
+
       }
     }
 
+    //生成重新可标记的数据
+    function sendReLabelMsg(){
+      if (relabelImages.length == 0) {
+        return;
+      }
+      var id = new Mongo.ObjectID()._str;
+
+      Messages.insert({
+        _id: id,
+        form:{
+            id: Meteor.userId(),
+            name: AppConfig.get_user_name(Meteor.user()),
+            icon: AppConfig.get_user_icon(Meteor.user())
+        },
+        to: msgObj.to,
+        to_type: msgObj.to_type,
+        type: 'text',
+        images:relabelImages,
+        create_time: new Date(),
+        people_uuid:msgObj.people_uuid,
+        people_id: msgObj.people_id,
+        people_his_id:msgObj.people_his_id,
+        wait_lable:true,
+        is_read: false//,
+        //send_status: 'sending'
+      }, function(err, id){
+        console.log('insert id:', id);
+        //$('.box').scrollTop($('.box ul').height());
+      });
+    }
     // update collection
     Messages.update({_id: msgObj._id}, {$set: updateObj}, function(){
       var user = Meteor.user();
@@ -112,6 +157,7 @@ Template._simpleChatLabelLabel.events({
         },
         createAt: new Date()
       });
+      sendReLabelMsg();
       PUB.toast('操作成功~');
     });
     Template._simpleChatLabelLabel.close();
