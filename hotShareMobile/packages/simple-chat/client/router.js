@@ -605,6 +605,9 @@ Template._simpleChatToChatLabelBox.events({
 // });
 
 var setMsgList = function(where, action){
+  if (action === 'update') {
+    lazyloadInit();
+  }
   if(action === 'insert' || action === 'remove')
     setScrollToBottom();
 };

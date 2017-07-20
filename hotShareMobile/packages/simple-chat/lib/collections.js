@@ -135,13 +135,13 @@ if(Meteor.isServer){
     msgObj.userId = Meteor.userId();
     msgObj.userName = AppConfig.get_user_name(Meteor.user());
     msgObj.userIcon = AppConfig.get_user_icon(Meteor.user());
-    msgObj.lastText = doc.type === 'image' ? '[图片]' : doc.text;
+    //msgObj.lastText = doc.type === 'image' ? '[图片]' : doc.text;
     switch(doc.type){
       case 'image':
         msgObj.lastText = '[图片]';
         break;
       case 'text':
-        msgObj.lastText = doc.text;
+        msgObj.lastText = doc.text ? doc.text : '图片';
         break;
       case 'url':
         msgObj.lastText = '[链接]' + doc.urls[0].title;
