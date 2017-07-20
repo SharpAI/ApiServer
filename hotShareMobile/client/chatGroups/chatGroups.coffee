@@ -21,7 +21,7 @@ if Meteor.isClient
     showBubbleTipHintTemplate:()->
       Session.equals('needShowBubble','true')
     msgSession2: ()->
-      return SimpleChat.MsgSession.find({userId: Meteor.userId()}, {sort: {sessionType: 1, updateAt: -1}})
+      return SimpleChat.MsgSession.find({userId: Meteor.userId()}, {sort: {updateAt: -1}})
     isGroup: (msg)->
       return msg.to_type is 'group'
     hasVal: (val)->

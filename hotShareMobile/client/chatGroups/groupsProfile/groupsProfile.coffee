@@ -116,6 +116,10 @@ if Meteor.isClient
           txtObj = JSON.parse(result.text);
           Meteor.call('set-perf-link',Session.get('groupsId'), txtObj, (err, ret)->
             console.log 'set-perf-link, err: ' + err + ', ret: ' + ret
+            if err
+              PUB.toast '扫描失败，请重试~'
+              return
+            PUB.toast '扫描成功！可查看绩效~'
           )
         if (result.cancelled)
           return;
