@@ -92,9 +92,18 @@ Template._simpleChatLabelLabel.events({
 
     for (var i=0;i<updateObj.images.length;i++){
       if (updateObj.images[i].error) {
-        var trainsetObj = {group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, device_id: msgObj.people_uuid,
-                           face_id: msgObj.people_id ? msgObj.people_id : updateObj.images[i].id, drop: true, img_type: updateObj.images[i].img_type,
-                           raw_face_id: updateObj.images[i].id, sqlid: updateObj.images[i].sqlid ? updateObj.images[i].sqlid : 0};
+        var trainsetObj = {
+          group_id: msgObj.to.id,
+          type: 'trainset',
+          url: updateObj.images[i].url,
+          device_id: msgObj.people_uuid,
+          face_id: msgObj.people_id ? msgObj.people_id : updateObj.images[i].id,
+          drop: true,
+          img_type: updateObj.images[i].img_type,
+          raw_face_id: updateObj.images[i].id,
+          style:updateObj.images[i].style,
+          sqlid: updateObj.images[i].sqlid ? updateObj.images[i].sqlid : 0
+        };
         console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
         sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
         // sendMqttMessage('trainset', {url: updateObj.images[i].url, person_id: '', device_id: updateObj.images[i].id, drop: true});

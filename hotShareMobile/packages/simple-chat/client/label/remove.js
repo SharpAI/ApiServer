@@ -106,7 +106,15 @@ Template._simpleChatLabelRemove.events({
 
     for (var i=0;i<updateObj.images.length;i++){
       if (updateObj.images[i].remove)
-        var trainsetObj = {group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, drop: true, img_type: updateObj.images[i].img_type};
+        var trainsetObj = {
+          group_id: msgObj.to.id,
+          type: 'trainset',
+          url: updateObj.images[i].url,
+          drop: true,
+          img_type: updateObj.images[i].img_type,
+          style:updateObj.images[i].style,
+          sqlid:updateObj.images[i].sqlid
+        };
         console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
         sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
     }

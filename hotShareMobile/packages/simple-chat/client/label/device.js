@@ -136,8 +136,33 @@ Template._simpleChatLabelDevice.save = function(){
         }
         console.log('res item obj:', res[updateObj.images[i].label]);
         var trainsetObj = {};
-        try{trainsetObj={group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, person_id: res && res[updateObj.images[i].label].id ? res[updateObj.images[i].label].id : '', device_id: msgObj.people_uuid, face_id: res && res[updateObj.images[i].label].faceId ? res[updateObj.images[i].label].faceId : updateObj.images[i].id, drop: false, img_type: updateObj.images[i].img_type};}
-        catch(ex){trainsetObj={group_id: msgObj.to.id, type: 'trainset', url: updateObj.images[i].url, person_id: '', device_id: msgObj.people_uuid, face_id: updateObj.images[i].id, drop: false, img_type: updateObj.images[i].img_type};}
+        try {
+          trainsetObj = {
+            group_id: msgObj.to.id,
+            type: 'trainset',
+            url: updateObj.images[i].url,
+            person_id: res && res[updateObj.images[i].label].id ? res[updateObj.images[i].label].id : '',
+            device_id: msgObj.people_uuid,
+            face_id: res && res[updateObj.images[i].label].faceId ? res[updateObj.images[i].label].faceId : updateObj.images[i].id,
+            drop: false,
+            img_type: updateObj.images[i].img_type,
+            style:updateObj.images[i].style,
+            sqlid:updateObj.images[i].sqlid
+          };
+        } catch (ex) {
+          trainsetObj = {
+            group_id: msgObj.to.id,
+            type: 'trainset',
+            url: updateObj.images[i].url,
+            person_id: '',
+            device_id: msgObj.people_uuid,
+            face_id: updateObj.images[i].id,
+            drop: false,
+            img_type: updateObj.images[i].img_type,
+            style:updateObj.images[i].style,
+            sqlid:updateObj.images[i].sqlid
+          };
+        }
         console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
         sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
         updateObj.images[i].labelMsgSent = true;

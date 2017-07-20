@@ -751,7 +751,18 @@ Template._simpleChatToChatItem.events({
       var setNames = [];
       for (var i=0;i<msgObj.images.length;i++){
         if (msgObj.images[i].label) {
-          var trainsetObj = {group_id: msgObj.to.id, type: 'trainset', url: msgObj.images[i].url, person_id: '', device_id: msgObj.people_uuid, face_id: res?res.faceId : msgObj.images[i].id, drop: false, img_type: msgObj.images[i].img_type};
+          var trainsetObj = {
+            group_id: msgObj.to.id,
+            type: 'trainset',
+            url: msgObj.images[i].url,
+            person_id: '',
+            device_id: msgObj.people_uuid,
+            face_id: res ? res.faceId : msgObj.images[i].id,
+            drop: false,
+            img_type: msgObj.images[i].img_type,
+            style:msgObj.images[i].style,
+            sqlid:msgObj.images[i].sqlid
+          };
           console.log("##RDBG clicked yes: " + JSON.stringify(trainsetObj));
           sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
         }
@@ -857,7 +868,9 @@ Template._simpleChatToChatItem.events({
           face_id: msgObj.people_id ? msgObj.people_id : images[i].id,
           drop: true,
           img_type: images[i].img_type,
-          raw_face_id: images[i].id
+          raw_face_id: images[i].id,
+          style:images[i].style,
+          sqlid:images[i].sqlid
         };
         console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
         sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
