@@ -554,7 +554,7 @@ if Meteor.isServer
   workaiId = 'Lh4JcxG7CnmgR3YXe'
   workaiName = 'Actiontec'
 
-  insert_msg2 = (id, url, uuid, img_type, accuracy, fuzziness)->
+  insert_msg2 = (id, url, uuid, img_type, accuracy, fuzziness, sqlid)->
     people = People.findOne({id: id, uuid: uuid})
     name = PERSON.getName(uuid,null,id)
     #device = PERSON.upsetDevice(uuid, null)
@@ -597,7 +597,7 @@ if Meteor.isServer
             icon: userGroup.group_icon
           }
           images: [
-            {_id: new Mongo.ObjectID()._str, id: id, people_his_id: _id, url: url, label: name, img_type: img_type, accuracy: Accuracy, fuzziness: Fuzziness} # 暂一次只能发一张图
+            {_id: new Mongo.ObjectID()._str, id: id, people_his_id: _id, url: url, label: name, img_type: img_type, accuracy: Accuracy, fuzziness: Fuzziness, sqlid: sqlid} # 暂一次只能发一张图
           ]
           to_type: "group"
           type: "text"
@@ -628,7 +628,7 @@ if Meteor.isServer
       )
 
   @insert_msg2forTest = (id, url, uuid, accuracy, fuzziness)->
-    insert_msg2(id, url, uuid, 'face', accuracy, fuzziness)
+    insert_msg2(id, url, uuid, 'face', accuracy, fuzziness, 0)
 
   update_group_dataset = (group_id,dataset_url,uuid)->
     unless group_id and dataset_url and uuid
@@ -666,8 +666,9 @@ if Meteor.isServer
       unless id and img_url and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
       accuracy = this.params.query.accuracy
+      sqlid = this.params.query.sqlid
       fuzziness = this.params.query.fuzziness
-      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness)
+      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid)
       this.response.end('{"result": "ok"}\n')
     ).post(()->
       if this.request.body.hasOwnProperty('id')
@@ -678,12 +679,17 @@ if Meteor.isServer
         uuid = this.request.body.uuid
       if this.request.body.hasOwnProperty('type')
         img_type = this.request.body.type
-      console.log '/restapi/workai post request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid + ' img_type=' + img_type
+      if this.request.body.hasOwnProperty('sqlid')
+        sqlid = this.request.body.sqlid
+      else
+        sqlid = 0
+
+      console.log '/restapi/workai post request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid + ' img_type=' + img_type + ' sqlid=' + sqlid
       unless id and img_url and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
       accuracy = this.params.query.accuracy
       fuzziness = this.params.query.fuzziness
-      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness)
+      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid)
       this.response.end('{"result": "ok"}\n')
     )
 
@@ -706,11 +712,6 @@ if Meteor.isServer
       userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/device_icon_192.png'}})
       user = Meteor.users.findOne({_id: userId})
     group = SimpleChat.Groups.findOne({_id: group_id})
-    Meteor.call 'ai-system-register-devices',group_id, (err, result)->
-      if err or result isnt 'succ'
-        return console.log('register devices to AI-system failed ! err=' + err);
-      if result == 'succ'
-        return console.log('register devices to AI-system succ');
 
     #一个设备只允许加入一个群
     groupUsers = SimpleChat.GroupUsers.find({user_id: user._id})
@@ -771,6 +772,12 @@ if Meteor.isServer
         create_time: new Date()
         is_read: false
       })
+
+    Meteor.call 'ai-system-register-devices',group_id, (err, result)->
+      if err or result isnt 'succ'
+        return console.log('register devices to AI-system failed ! err=' + err);
+      if result == 'succ'
+        return console.log('register devices to AI-system succ');
     console.log('user:', user)
     console.log('device:', device)
 
