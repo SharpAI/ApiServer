@@ -1525,6 +1525,9 @@ Template._simpleChatToChatItem.helpers({
     }
     return false;
   },
+  is_text_type:function(type){
+    return type === 'text'
+  },
   is_error: function(images){
     for(var i=0;i<images.length;i++){
       if (images[i].error)
@@ -1796,16 +1799,16 @@ SimpleChat.onMqttMessage = function(topic, msg) {
   if (!msgObj.is_people)
     return Messages.insert(msgObj);
 
-  MessageTemp.insert({
-    topic: topic,
-    msg: msgObj,
-    createAt: msgObj.create_time || new Date()
-  }, function(err){
-    if (!err)
-      updateNewMessage(msgObj.to.id);
-  });
+  onMqttMessage(topic, msg);
+  // MessageTemp.insert({
+  //   topic: topic,
+  //   msg: msgObj,
+  //   createAt: msgObj.create_time || new Date()
+  // }, function(err){
+  //   if (!err)
+  //     updateNewMessage(msgObj.to.id);
+  // });
   clearMoreOldMessage();
-  //onMqttMessage(topic, msg);
 };
 
 var onMqttMessage = function(topic, msg) {
@@ -1844,7 +1847,8 @@ var onMqttMessage = function(topic, msg) {
   }
   msgObj.create_time = msgObj.create_time ? new Date(msgObj.create_time) : new Date();
 
-  var whereTime = new Date((msgObj.create_time.getTime() - 5*60*1000));
+  //一分钟以内的消息
+  var whereTime = new Date((msgObj.create_time.getTime() - 60*1000));
   var msgType = topic.split('/')[2];
   var where = {
     to_type: msgObj.to_type,
@@ -1898,6 +1902,17 @@ var onMqttMessage = function(topic, msg) {
 
   console.log('SimpleChat.SimpleChat where:', where);
   var targetMsg = Messages.findOne(where, {sort: {create_time: -1}});
+  //是否是最后一条
+  var is_last_msg = false;
+  if (targetMsg) {
+    var lastMsg = Messages.findOne({to_type:msgObj.to_type,'to.id':msgObj.to.id}, {sort: {create_time: -1}});
+    if (targetMsg._id === lastMsg._id) {
+      is_last_msg = true;
+    }
+  }
+  if (!is_last_msg) {
+    return insertMsg(msgObj, '不是最后一条消息');
+  }
   // TODO: 还存在问题
   // if (withMessageHisEnable && !targetMsg){
   //   targetMsg = MessagesHis.findOne(where, {sort: {create_time: -1}});

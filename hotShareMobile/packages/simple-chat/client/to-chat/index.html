@@ -83,7 +83,7 @@
         {{> _simpleChatToChatItemNLPText}}
       </div>
     {{else}}
-      {{#if text}}
+      {{#if is_text_type type}}
         <div class="text">{{text}}
           {{#if wait_classify}}
             <center><!-- <div>努力分析中...</div> --><i class="fa fa-spinner fa-pulse"></i></center>
