@@ -141,7 +141,7 @@ if(Meteor.isServer){
         msgObj.lastText = '[图片]';
         break;
       case 'text':
-        msgObj.lastText = doc.text ? doc.text : '图片';
+        msgObj.lastText = doc.text ? doc.text : '[图片]';
         break;
       case 'url':
         msgObj.lastText = '[链接]' + doc.urls[0].title;
