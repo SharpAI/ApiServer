@@ -51,8 +51,8 @@ if(Meteor.isServer){
         MessagesHis.upsert({_id: id}, {$set: doc});
       });
       Messages.after.update(function (userId, doc, fieldNames, modifier, options) {
-        if (doc.hasFromHistory)
-          return;
+        // if (doc.hasFromHistory)
+        //   return;
 
         var model = Messages.findOne({_id: doc._id});
         var id = model._id;
@@ -147,7 +147,7 @@ if(Meteor.isServer){
         msgObj.lastText = '[链接]' + doc.urls[0].title;
         break;
     }
-    msgObj.updateAt = new Date();
+    msgObj.updateAt = doc.create_time;
     msgObj.msgcreate_time = doc.create_time;
 
     var msgSession = MsgSession.findOne({userId: Meteor.userId(), toUserId: msgObj.toUserId});
