@@ -1676,6 +1676,7 @@ var onMqttMessage = function(topic, msg) {
   var where = {
     to_type: msgObj.to_type,
     wait_lable: msgObj.wait_lable,
+    people_uuid:msgObj.people_uuid,
     label_complete: {$ne: true},
     label_start: {$ne: true},
     'to.id': msgObj.to.id,
@@ -1719,7 +1720,7 @@ var onMqttMessage = function(topic, msg) {
   if (Messages.find({_id: msgObj._id}).count() > 0)
     return console.log('已存在此消息:', msgObj._id);
 
-  if (msgObj.wait_lable){where.people_uuid = msgObj.people_uuid; where.people_id = msgObj.people_id;}
+  if (msgObj.wait_lable){where.people_id = msgObj.people_id;}
   else if (!msgObj.wait_lable && msgObj.images && msgObj.images.length > 0) {where['images.label'] = msgObj.images[0].label}
   else {return Messages.insert(msgObj)}
 
