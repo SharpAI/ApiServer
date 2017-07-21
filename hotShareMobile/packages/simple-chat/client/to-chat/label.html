@@ -6,10 +6,13 @@
             <i class="fa fa-angle-left fa-fw"></i>
           </div>
           <strong>这是谁？</strong>
+          {{#if notLoading}}
           <div id="groupsProfilePageback" class="rightButton back">
             <i class="fa fa-check"></i>
           </div>
+          {{/if}}
         </div>
+        {{#if notLoading}}
         <div class="content simple-chat-to-chat-label-name" style="height: 100%; overflow: auto;-webkit-overflow-scrolling: touch;padding-bottom:0px;">
           <div id="wrapper">
             <div class="groupUsers">
@@ -29,6 +32,11 @@
             </div>
           </div>
         </div>
+        {{else}}
+        <div class="labelNamesLoading" style="position:fixed; width:100%;text-align: center; margin-top:40%; color: black; font-size: 16px;">
+          <img src="/loading.gif" width="24px" height="24px"/> 加载中...
+        </div>
+        {{/if}}
     </div>
   </div>
 </template>

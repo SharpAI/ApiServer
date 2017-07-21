@@ -1936,18 +1936,38 @@ Template._simpleChatToChatLabelNameImg.onRendered(function(){
 });
 Template._simpleChatToChatLabelName.onRendered(function(){
   label_limit.set(40);
-  Meteor.subscribe('get-label-names', this.data.group_id, label_limit.get()); // TODO：
+  var gid = this.data.group_id;
+  Meteor.subscribe('get-label-names', this.data.group_id, label_limit.get(), {
+      onStop: function() {},
+      onReady: function(){
+          Session.set(gid + "_simpleChatToChatLabelName_loading", false);
+      }
+  }); // TODO：
   var $box = this.$(".simple-chat-to-chat-label-name");
   $box.scroll(function(){
     if ($box.scrollTop() + $box[0].offsetHeight >= $box[0].scrollHeight){
       label_limit.set(label_limit.get()+20);
       var group_id = Blaze.getData($('.simple-chat-to-chat-label-name')[0]).group_id;
-      Meteor.subscribe('get-label-names', group_id, label_limit.get()); // TODO：
+      Meteor.subscribe('get-label-names', group_id, label_limit.get(), {
+          onStop: function() {},
+          onReady: function(){
+              Session.set(group_id + "_simpleChatToChatLabelName_loading", false);
+          }
+      }); // TODO：
       console.log('load more');
     }
   });
 });
 Template._simpleChatToChatLabelName.helpers({
+  notLoading: function() {
+    var loading = Session.get(this.group_id + "_simpleChatToChatLabelName_loading");
+    if (loading != null && loading != undefined) {
+      if (loading == false)
+        return true;
+    }
+
+    return false;
+  },
   names: function(){
     return PersonNames.find({group_id: this.group_id}, {sort: {createAt: 1}, limit: label_limit.get()});
   }
