@@ -1751,6 +1751,21 @@ var onMqttMessage = function(topic, msg) {
   if (msgObj.to_type != 'group' || !msgObj.is_people)
     return insertMsg(msgObj, '不是 Group 或人脸消息');
 
+  var msg_ids = targetMsg.msg_ids;
+  var is_exist = false;
+  if (msg_ids && msg_ids.length > 0) {
+    for (var i = 0; i < msg_ids.length; i++) {
+      if (msg_ids[i].id === msgObj._id) {
+        is_exist = true;
+        console.log(msgObj._id+':此消息已合并过~');
+        break;
+      }
+    }
+  }
+  if (is_exist) {
+    return;
+  }
+
   var setObj = {/*create_time: new Date(),*/ 'form.name': msgObj.form.name, hasFromHistory: false};
   if (msgObj.wait_lable){
     var count = 0;
@@ -1774,26 +1789,13 @@ var onMqttMessage = function(topic, msg) {
   if(setObjExtend){
     setObj = $.extend(setObj,setObjExtend);
   }
-  if (targetMsg.hasFromHistory){
-    MessagesHis.update({_id: targetMsg._id}, {
-      $set: setObj,
-      $push: {images: {$each: msgObj.images}, msg_ids: {id: msgObj._id}}
-    }, function(err, num){
-      if (err || num <= 0)
-        return insertMsg(msgObj, 'update 失败');
-
-      var model = MessagesHis.findOne({_id: targetMsg._id});
-      model && Messages.insert(model);
-    });
-  } else{
-    Messages.update({_id: targetMsg._id}, {
-      $set: setObj,
-      $push: {images: {$each: msgObj.images}, msg_ids: {id: msgObj._id}}
-    }, function(err, num){
-      if (err || num <= 0)
-        insertMsg(msgObj, 'update 失败');
-    });
-  }
+  Messages.update({_id: targetMsg._id}, {
+    $set: setObj,
+    $push: {images: {$each: msgObj.images}, msg_ids: {id: msgObj._id}}
+  }, function(err, num){
+    if (err || num <= 0)
+      insertMsg(msgObj, 'update 失败');
+  });
 };
 
 SimpleChat.onMqttLabelMessage = function(topic, msg) {
