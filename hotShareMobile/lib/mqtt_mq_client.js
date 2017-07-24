@@ -5,21 +5,45 @@ if(Meteor.isClient){
     var myMqtt = Paho.MQTT;
     var undeliveredMessages = [];
     var unsendMessages = [];
+    var uninsertMessages = [];
     mqtt_connection = null;
     //mqtt_connected = false;
     var onMessageArrived = function(message) {
         console.log("onMessageArrived:"+message.payloadString);
         console.log('message.destinationName= '+message.destinationName);
         console.log('message= '+JSON.stringify(message));
-        try {
-            var topic = message.destinationName;
-            console.log('on mqtt message topic: ' + topic + ', message: ' + message.payloadString);
-            if (topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))
-                SimpleChat.onMqttMessage(topic, message.payloadString);
-            else if (topic.startsWith('/msg/l/'))
-                SimpleChat.onMqttLabelMessage(topic, message.payloadString);
-        } catch (ex) {
-            console.log('exception onMqttMessage: ' + ex);
+        function reciveMsg(message){
+            try {
+                var topic = message.destinationName;
+                console.log('on mqtt message topic: ' + topic + ', message: ' + message.payloadString);
+                if (topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/'))
+                {
+                    SimpleChat.onMqttMessage(topic, message.payloadString);
+                }
+                else if (topic.startsWith('/msg/l/'))
+                    SimpleChat.onMqttLabelMessage(topic, message.payloadString);
+            } catch (ex) {
+                console.log('exception onMqttMessage: ' + ex);
+            }
+        }
+        if (Session.equals('GroupUsersLoaded',true)) {
+            reciveMsg(message);
+        }
+        else{
+            console.log('subscribe get my group!');
+            uninsertMessages.push(message);
+            Meteor.subscribe('get-my-group', Meteor.userId(),{
+                onReady:function(){
+                    Session.set('GroupUsersLoaded',true);
+                    console.log('GroupUsersLoaded!!');
+                    if (uninsertMessages.length > 0) {
+                        for (var i = 0; i < uninsertMessages.length; i++) {
+                            reciveMsg(uninsertMessages[i]);
+                        }
+                        uninsertMessages = [];
+                    }
+                }
+            });
         }
     };
     initMQTT = function(clientId){
@@ -319,11 +343,10 @@ if(Meteor.isClient){
       }
     }
     subscribeMyChatGroups = function() {
-      Meteor.subscribe('get-my-group', Meteor.userId(), function() {
-        // userGroups = SimpleChat.GroupUsers.find({user_id: Meteor.userId()});
-        // userGroups.forEach(function(userGroup) {
-        //   subscribeMqttGroup(userGroup.group_id);
-        // });
+      Meteor.subscribe('get-my-group', Meteor.userId(),{
+        onReady:function(){
+            Session.set('GroupUsersLoaded',true);
+        }
       });
 
       if(Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType == 'admin') {
