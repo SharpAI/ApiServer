@@ -558,8 +558,6 @@ if Meteor.isServer
     people = People.findOne({id: id, uuid: uuid})
     name = PERSON.getName(uuid,null,id)
     #device = PERSON.upsetDevice(uuid, null)
-    Accuracy =  if name then accuracy else false
-    Fuzziness = fuzziness
 
     if !people
       people = {_id: new Mongo.ObjectID()._str, id: id, uuid: uuid,name: name,embed: null,local_url: null,aliyun_url: url}
@@ -584,6 +582,11 @@ if Meteor.isServer
             return
         name = null
         name = PERSON.getName(uuid,userGroup.group_id,id)
+        #没有准确度的人一定是没有识别出来的
+        name = if accuracy then name else null 
+        #没有识别的人的准确度清0
+        Accuracy =  if name then accuracy else false
+        Fuzziness = fuzziness
         sendMqttMessage('/msg/g/'+ userGroup.group_id, {
           _id: new Mongo.ObjectID()._str
           form: {
