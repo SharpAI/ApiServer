@@ -762,6 +762,9 @@ Template._simpleChatToChatItem.events({
 
       Meteor.setTimeout(function(){
         var $box = $('.box');
+        if ($('.oneself_box').length > 0) {
+           $box = $('.oneself_box');
+        }
         $box.scrollTop($box.scrollTop()+10);
         $box.trigger("scroll");
       }, 500);
@@ -807,11 +810,14 @@ Template._simpleChatToChatItem.events({
     if (this.type === 'url') {
       return;
     }
-    var $li = $('li#' + this._id);
+    var $box = $('.box');
+    if ($('.oneself_box').length > 0) {
+       $box = $('.oneself_box');
+    }
+    var $li = $box.find('li#'+ this._id);
     var $imgs = $li.find('.text .imgs');
     var $labels = $li.find('.text .imgs-1-item');
     var $show = $li.find('.show_more');
-    var $box = $('.box');
 
     if ($imgs.find('div._close').length > 0 || $labels.find('div._close').length > 0){
       $show.html('<i class="fa fa-angle-up"></i>');
@@ -1075,6 +1081,12 @@ var setScrollToBottom = function(){
     Meteor.clearTimeout(setScrollToBottomTimeout);
   setScrollToBottomTimeout = Meteor.setTimeout(function(){
     console.log('set scrollTop to end');
+    var $box = $('.box');
+    var $box_ul = $('.box ul');
+    if ($('.oneself_box').length > 0) {
+       $box = $('.oneself_box');
+       $box_ul = $('.oneself_box ul');
+    }
     $box.scrollTop($box_ul.height());
   }, 200);
 };
@@ -1271,6 +1283,7 @@ var renderMoreButton = function(){
   if (renderMoreButtonTimeout)
     Meteor.clearTimeout(renderMoreButtonTimeout);
   renderMoreButtonTimeout = Meteor.setTimeout(function(){
+    var $box_ul = $('.box ul');
     $box_ul.find('li.data-show-more-render').each(function(){
       var $li = $(this);
       var $li_show_more = $li.find('.show_more');
@@ -1878,6 +1891,9 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
         }, function(){
           Meteor.setTimeout(function(){
             var $box = $('.box');
+            if ($('.oneself_box').length > 0) {
+               $box = $('.oneself_box');
+            }
             $box.scrollTop($box.scrollTop()+1);
             $box.trigger("scroll");
           }, 100);
@@ -1899,6 +1915,9 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
   }, function(){
     Meteor.setTimeout(function(){
       var $box = $('.box');
+      if ($('.oneself_box').length > 0) {
+         $box = $('.oneself_box');
+      }
       $box.scrollTop($box.scrollTop()+1);
       $box.trigger("scroll");
     }, 100);

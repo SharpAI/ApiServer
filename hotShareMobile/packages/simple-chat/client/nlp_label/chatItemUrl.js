@@ -153,6 +153,9 @@ Template._simpleChatToChatItemNLPText.events({
 
     Meteor.setTimeout(function(){
       var $box = $('.box');
+      if ($('.oneself_box').length > 0) {
+         $box = $('.oneself_box');
+      }
       $box.scrollTop($box.scrollTop()+10);
       $box.trigger("scroll");
     }, 500);
@@ -161,11 +164,15 @@ Template._simpleChatToChatItemNLPText.events({
     Template._NLPTextLabelError.open(this);
   },
   'click .show_more': function(e, t){
-    var $li = $('li#' + this._id);
+    var $box = $('.box');
+    if ($('.oneself_box').length > 0) {
+       $box = $('.oneself_box');
+    }
+    var $li = $box.find('li#' + this._id);
     var $urls = $li.find('.url .urls');
     var $labels = $li.find('.url .urls-1-item');
     var $show = $li.find('.show_more');
-    var $box = $('.box');
+    
 
     if ($urls.find('div._close').length > 0 || $labels.find('div._close').length > 0){
       $show.html('<i class="fa fa-angle-up"></i>');

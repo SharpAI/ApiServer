@@ -236,6 +236,9 @@ Template._simpleChatLabelDevice.save = function(){
     Template._simpleChatLabelDevice.close();
     Meteor.setTimeout(function(){
       var $box = $('.box');
+      if ($('.oneself_box').length > 0) {
+         $box = $('.oneself_box');
+      }
       $box.scrollTop($box.scrollTop()+10);
       $box.trigger("scroll");
     }, 500);
