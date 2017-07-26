@@ -554,10 +554,16 @@ if Meteor.isServer
   workaiId = 'Lh4JcxG7CnmgR3YXe'
   workaiName = 'Actiontec'
 
-  insert_msg2 = (id, url, uuid, img_type, accuracy, fuzziness, sqlid, style)->
+  insert_msg2 = (id, url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts)->
     people = People.findOne({id: id, uuid: uuid})
     name = PERSON.getName(uuid,null,id)
     #device = PERSON.upsetDevice(uuid, null)
+    create_time = new Date()
+    if img_ts and current_ts
+      img_ts = Number(img_ts)
+      current_ts = Number(current_ts)
+      time_diff = img_ts + (create_time.getTime()　- current_ts)
+      create_time = new Date(time_diff)
 
     if !people
       people = {_id: new Mongo.ObjectID()._str, id: id, uuid: uuid,name: name,embed: null,local_url: null,aliyun_url: url}
@@ -605,7 +611,7 @@ if Meteor.isServer
           to_type: "group"
           type: "text"
           text: if !name then 'AI观察到有人在活动' else name + ':'
-          create_time: new Date()
+          create_time: create_time
           people_id: id
           people_uuid: uuid
           people_his_id: _id
@@ -622,7 +628,7 @@ if Meteor.isServer
             'group_id': userGroup.group_id,
             'img_url': url,
             'type': img_type,
-            'ts': new Date().getTime(),
+            'ts': create_time.getTime(),
             'accuracy': accuracy,
             'fuzziness': fuzziness
           }
@@ -672,7 +678,9 @@ if Meteor.isServer
       sqlid = this.params.query.sqlid
       style = this.params.query.style
       fuzziness = this.params.query.fuzziness
-      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style)
+      img_ts = this.params.query.img_ts
+      current_ts = this.params.query.current_ts
+      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts)
       this.response.end('{"result": "ok"}\n')
     ).post(()->
       if this.request.body.hasOwnProperty('id')
@@ -692,13 +700,17 @@ if Meteor.isServer
         style = this.request.body.style
       else
         style = 0
+      if this.request.body.hasOwnProperty('img_ts')
+        img_ts = this.request.body.img_ts
+      if this.request.body.hasOwnProperty('current_ts')
+        current_ts = this.request.body.current_ts
 
-      console.log '/restapi/workai post request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid + ' img_type=' + img_type + ' sqlid=' + sqlid + ' style=' + style
+      console.log '/restapi/workai post request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid + ' img_type=' + img_type + ' sqlid=' + sqlid + ' style=' + style + 'img_ts=' + img_ts
       unless id and img_url and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
       accuracy = this.params.query.accuracy
       fuzziness = this.params.query.fuzziness
-      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style)
+      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts)
       this.response.end('{"result": "ok"}\n')
     )
 
