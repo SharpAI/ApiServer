@@ -1976,7 +1976,7 @@ Template._simpleChatToChatLabelName.events({
   'click li': function(e, t){
     $('#label-input-name').val(this.name);
     t.$('li img').removeAttr('style');
-    $(e.currentTarget).find('img').attr('style', 'border: 1px solid #39a8fe;');
+    $(e.currentTarget).find('img').attr('style', 'border: 3px solid #39a8fe;box-shadow: 0 0 10px 3px #39a8fe;');
   },
   'click .leftButton': function(){
     Blaze.remove(label_view);

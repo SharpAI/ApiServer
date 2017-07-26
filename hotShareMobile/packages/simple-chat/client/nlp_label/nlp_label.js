@@ -22,7 +22,7 @@ Template._NLPTextLabelName.events({
   'click li': function(e, t){
     $('#label-input-name').val(this.class_name);
     t.$('li img').removeAttr('style');
-    $(e.currentTarget).find('img').attr('style', 'border: 1px solid #39a8fe;');
+    $(e.currentTarget).find('img').attr('style', 'border: 3px solid #39a8fe;box-shadow: 0 0 10px 3px #39a8fe;');
   },
   'click .leftButton': function(){
     if (nlp_label_view) {
