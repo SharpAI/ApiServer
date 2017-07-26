@@ -161,6 +161,9 @@ var lazyloadInit = function(){
     $box_ul.find('img.lazy:not([src])').lazyload({
       container: $box
     });
+    $('.oneself_box ul').find('img.lazy:not([src])').lazyload({
+      container: $('.oneself_box')
+    });
     console.log('init lazyload');
   }, 600);
 };
@@ -1255,6 +1258,10 @@ Template._simpleChatToChat.events({
     var data = page_data;
     Router.go('/groupsProfile/'+data.type+'/'+data.id);
     //PUB.page('/simpleUserProfile/'+data.id);
+  },
+  'click .ta div.icon':function(e){
+     console.log('i clicked a chat userICON');
+     Template._simpleChatOneSelfMsg.open(this);
   }
 
 });

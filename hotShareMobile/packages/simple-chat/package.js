@@ -32,6 +32,7 @@ Package.onUse(function (api) {
     'client/label/device.html', 'client/label/device.js', 'client/label/remove.html', 'client/label/remove.js', 'client/label/label.html', 'client/label/label.js', 'client/label/cropImage.html', 'client/label/cropImage.js',
     'client/nlp_label/chatItemUrl.html', 'client/nlp_label/chatItemUrl.js','client/nlp_label/chatItemUrl.less', 'client/nlp_label/nlp_device.html', 'client/nlp_label/nlp_device.js', 'client/nlp_label/nlp_label.html', 'client/nlp_label/nlp_label.js', 'client/nlp_label/nlp_remove.html', 'client/nlp_label/nlp_remove.js','client/nlp_label/nlp_error.html', 'client/nlp_label/nlp_error.js',
     'client/router.js',
-    'client/tips/tips.html','client/tips/tips.js','client/tips/tips.less'
+    'client/tips/tips.html','client/tips/tips.js','client/tips/tips.less',
+    'client/oneself_msg/oneself_msg.html','client/oneself_msg/oneself_msg.js'
   ], 'client');
 });

@@ -1,0 +1,20 @@
+<template name="_simpleChatOneSelfMsg">
+  <div class="simple-chat" style="position: absolute;z-index: 99999999;left: 0;top: 0;right: 0;bottom: 0;">
+    <div class="msg-box">
+      <div class="header">
+        <div class="left back"></div>
+        <span style="margin-left: 60px;margin-right: 10px;width: 80%;white-space: nowrap;display: inline-block;overflow: hidden;text-overflow: ellipsis;">{{title}}</span>
+        {{#if loading}}
+        <div class="loading"></div>
+        {{/if}}
+      </div>
+      <div class="box oneself_box" style="bottom: 0px;">
+        <ul class="group-list">
+          {{#each getMsg}}
+          {{> _simpleChatToChatItem}}
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
