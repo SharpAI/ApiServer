@@ -119,7 +119,8 @@ if Meteor.isClient
     'click #joinTestChatGroups':(event)->
       PUB.page '/introductoryPage2'
     'click #createNewChatGroups':(event)->
-      Router.go('/group/add')
+      #Router.go('/group/add')
+      Router.go('/selectTemplate')
       #ScanBarcodeByBarcodeScanner()
     'click #addNewFriends':(event)->
       PUB.page '/searchFollow'
