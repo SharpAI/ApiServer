@@ -70,7 +70,12 @@
 
 <template name="_simpleChatToChatItem">
   {{#if has_show_time}}
-    {{#if show_time_str}}<li class="time">{{show_time_str}}</li>{{/if}}
+    {{#if show_time_str}}
+      <li class="time">
+        <span>{{show_time_str}}</span>
+      </li>
+      <!-- <li class="time">{{show_time_str}}</li> -->
+    {{/if}}
   {{/if}}
   {{#if is_system_message}}
   <li id="{{_id}}"><span class="system_message">{{text}}</span></li>

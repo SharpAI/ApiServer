@@ -77,7 +77,9 @@ Template._simpleChatOneSelfMsg.helpers({
     is_loading.set(true);
     var messages =  Messages.find(where, {limit: list_limit.get(), sort: {create_time: -1}});
     messages.forEach(function (doc) {
-      doc.show_time_str = get_diff_time((new Date(doc.create_time)).getTime());
+      //doc.show_time_str = get_diff_time((new Date(doc.create_time)).getTime());
+      var date = new Date(doc.create_time);
+      doc.show_time_str = date.shortTime();
       doc.has_show_time = true;
 
       if (res.length > 0){
