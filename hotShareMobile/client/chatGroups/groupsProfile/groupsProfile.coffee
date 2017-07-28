@@ -260,7 +260,13 @@ if Meteor.isClient
       PUB.page('/simpleUserProfile/'+event.currentTarget.id);
 
   Template.setGroupname.helpers
+    placeholderText:()->
+      if Session.equals('fromCreateNewGroups',true)
+         return '输入AI训练群名称'
+      return '输入新的AI训练群名称'
     groupName:()->
+      if Session.equals('fromCreateNewGroups',true)
+         return Session.get('AI_Group_Name') || ''
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       if group and group.name
         return group.name
@@ -268,17 +274,29 @@ if Meteor.isClient
         return ''
   Template.setGroupname.events
     'click .left-btn':(event)->
+      if Session.equals('fromCreateNewGroups',true)
+        Session.set('fromCreateNewGroups',false);
+        Router.go('/');
       Session.set("groupsProfileMenu","groupInformation")
     'click .right-btn':(e)->
       $('.setGroupname-form').submit()
     'submit .setGroupname-form': (e)->
+      e.preventDefault();
       if e.target.text.value isnt ''
         console.log 'Change Groups Name to ' +e.target.text.value
+        if Session.equals('fromCreateNewGroups',true)
+          Session.set('fromCreateNewGroups',false);
+          Session.set('AI_Group_Name',e.target.text.value);
+          Router.go('/selectTemplate');
+          return
         Meteor.call('updateGroupName',Session.get('groupsId'),e.target.text.value,(error)->
             SimpleChat.MsgSession.update({toUserId:to},{$set:{toUserName:e.target.text.value}})
           )
 
         Session.set("groupsProfileMenu","groupInformation")
+      else
+        PUB.toast '训练群名称不能为空~'
+      false
 
   Template.groupBarCode.helpers
     groupIcon:()->

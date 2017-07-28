@@ -578,6 +578,9 @@ if Meteor.isClient
     Router.route '/scanFailPrompt',()->
       this.render 'scanFailPrompt'
       return
+    Router.route '/setGroupname',()->
+      this.render 'setGroupname'
+      return
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->

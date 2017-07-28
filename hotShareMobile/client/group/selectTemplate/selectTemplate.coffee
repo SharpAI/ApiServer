@@ -39,10 +39,12 @@ if Meteor.isClient
       selected_template = Session.get('selected_template')
       # if selected.length <= 0
       #   return PUB.toast('没有选择任何用户~')
-      Meteor.call 'create-group1', null, null, selected_followers,selected_template, (err, id)->
+      group_name = Session.get('AI_Group_Name');
+      Meteor.call 'create-group1', null, group_name, selected_followers,selected_template, (err, id)->
         console.log(err)
         if err or !id
           return PUB.toast('创建AI训练群失败，请重试~')
+        Session.set('AI_Group_Name',null);
         Meteor.subscribe('get-group',id,{
             onReady:()->
               group = SimpleChat.Groups.findOne({_id:id});
