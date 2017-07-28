@@ -62,7 +62,7 @@ AI_system_register_company = function(group_id,userId){
         if (content.result === 'success') {
           var perf_info = {
             companyId:companyId,
-            companyName:group.nam,
+            companyName:group.name,
             reportUrl:'http://aixd.raidcdn.cn/reporter/'+companyId
           };
           Set_perf_link(group_id,perf_info);
@@ -98,14 +98,16 @@ AI_system_register_company = function(group_id,userId){
 }
 
 Set_perf_link = function(group_id,perf_info){
+  if (!group_id || !perf_info) {
+    return
+  }
   var companyId = perf_info.companyId;
   if(companyId) {
       console.log("companyId is: " + companyId)
+      Groups.update({_id: group_id}, {$set: {perf_info: perf_info, companyId: companyId}});
+      GroupUsers.update({group_id: group_id}, {$set: {perf_info: perf_info, companyId: companyId}}, {multi: true});
       AI_system_register_devices(group_id);
   }
-
-  Groups.update({_id: group_id}, {$set: {perf_info: perf_info, companyId: companyId}});
-  GroupUsers.update({group_id: group_id}, {$set: {perf_info: perf_info, companyId: companyId}}, {multi: true});
 }
 
 Meteor.methods({
