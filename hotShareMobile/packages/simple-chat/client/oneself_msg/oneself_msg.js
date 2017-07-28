@@ -154,6 +154,7 @@ Template._simpleChatSetDeviceName.events({
     $('.setNickname-form').submit();
   },
   'submit .setNickname-form': function(e,t){
+    e.preventDefault();
     var newName = $('#device_nickname').val();
     console.log('Change device name to ' + newName);
     if (newName !== '') {
@@ -181,5 +182,6 @@ Template._simpleChatSetDeviceName.events({
     else{
       PUB.toast('设备名不能为空！');
     }
+    false
   }
 });

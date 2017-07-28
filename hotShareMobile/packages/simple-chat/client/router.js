@@ -1094,11 +1094,17 @@ var setScrollToBottom = function(){
 Template._simpleChatToChat.helpers({
   title: function(){
     if(this.type != 'user'){
-      return Groups.findOne({_id: this.id}).name;
+      group = Groups.findOne({_id: this.id});
+      if (group && group.name) {
+        return group.name;
+      }
     }else{
       var user = Meteor.users.findOne({_id: this.id});
-      return AppConfig.get_user_name(user);
+      if (user) {
+        return AppConfig.get_user_name(user);
+      }
     }
+    return '';
   },
   loading: function(){
     return is_loading.get();
@@ -1109,7 +1115,7 @@ Template._simpleChatToChat.helpers({
   isNLPGroup:function(){
     if (page_data && page_data.id) {
       var obj = Groups.findOne({_id: page_data.id});
-      if (obj.template && obj.template.type === 'nlp_classify') {
+      if (obj && obj.template && obj.template.type === 'nlp_classify') {
         return true;
       }
     }
