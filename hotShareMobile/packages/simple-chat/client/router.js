@@ -1639,6 +1639,11 @@ SimpleChat.onMqttMessage = function(topic, msg) {
       })
       return;
     }
+
+    if (msgObj.type === 'register_company') {
+      alert(msgObj.text);
+      return;
+    }
     //ta 被我拉黑
     if(BlackList.find({blackBy: Meteor.userId(), blacker:{$in: [msgObj.form.id]}}).count() > 0){
       console.log(msgObj.to.id+'被我拉黑');

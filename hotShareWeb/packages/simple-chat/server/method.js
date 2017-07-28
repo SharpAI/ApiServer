@@ -61,13 +61,34 @@ AI_system_register_company = function(group_id,userId){
             reportUrl:'http://aixd.raidcdn.cn/reporter/'+companyId
           };
           Set_perf_link(group_id,perf_info);
+          sendMqttMessage('/msg/u/' + creator.id, {
+              _id: new Mongo.ObjectID()._str,
+              form: {
+                id: '',
+                name: '系统',
+                icon: ''
+              },
+              to: {
+                id: user._id,
+                name: user.profile.fullname? user.profile.fullname:user.username,
+                icon: user.profile.icon
+              },
+              images: [],
+              to_type: "user",
+              type: "register_company",
+              text: '已自动为您创建 报告系统 账户：\r 账户：' + user.emails.address + '\r 默认密码：123456 \r报告系统地址 ： http://aixd.raidcdn.cn\r请及时登录系统修改默认密码',
+              create_time: new Date(),
+              is_read: false
+            });
         }
         else{
           console.log("registered this company to aixd.raidcdn" + res.error);
         }
       });
     }
-    console.log("user  email info  not found!" );
+    else{
+      console.log("user  email info  not found!" );
+    }
   }
 }
 
