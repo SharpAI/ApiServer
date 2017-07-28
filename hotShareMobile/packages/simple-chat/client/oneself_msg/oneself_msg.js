@@ -135,7 +135,8 @@ Template._simpleChatOneSelfMsg.events({
     set_device_name(page_data.form.name,function(newName){
       try{
         console.log('update msg from name :' + newName);
-        SimpleChat.Messages.update(where,{$set:{'from.name':newName}},{multi: true, upsert:false});
+        page_data.form.name = newName;
+        SimpleChat.Messages.update(where,{$set:{'form.name':newName}},{multi: true, upsert:false});
       }
       catch(error){
         console.log('update msg from name error!');

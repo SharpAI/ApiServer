@@ -114,7 +114,7 @@ Template._simpleChatLabelLabel.events({
           people_his_id:image.people_his_id,
           url: image.url,
           label: null,
-          img_type: image.img_type//,
+          img_type: image.img_type,
           // accuracy: image.accuracy,
           // fuzziness: image.fuzziness
           style:image.style,
