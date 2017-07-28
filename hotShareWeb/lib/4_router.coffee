@@ -726,12 +726,15 @@ if Meteor.isServer
       this.response.end('<h1>414 Request-URI Too Large</h1>')
     )
 
-  device_join_group = (uuid,group_id)->
-    device = PERSON.upsetDevice(uuid, group_id)
+  device_join_group = (uuid,group_id,name,in_out)->
+    device = PERSON.upsetDevice(uuid, group_id,name,in_out)
     user = Meteor.users.findOne({username: uuid})
     if !user
       userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/device_icon_192.png'},is_device:true})
       user = Meteor.users.findOne({_id: userId})
+    else
+      Meteor.users.update({_id:user._id},{$set:{'profile.fullname':name}});
+    
     group = SimpleChat.Groups.findOne({_id: group_id})
 
     #一个设备只允许加入一个群
@@ -806,23 +809,29 @@ if Meteor.isServer
       uuid = this.params.query.uuid
       group_id = this.params.query.group_id
       console.log '/restapi/workai-join-group get request, uuid:' + uuid + ', group_id:' + group_id
-      unless uuid or group_id
+      name = this.params.query.name
+      in_out = this.params.query.in_out
+      unless uuid or group_id 
         console.log '/restapi/workai-join-group get unless resturn'
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
 
-      device_join_group(uuid,group_id)
+      device_join_group(uuid,group_id,name,in_out)
       this.response.end('{"result": "ok"}\n')
     ).post(()->
       if this.request.body.hasOwnProperty('uuid')
         uuid = this.request.body.uuid
       if this.request.body.hasOwnProperty('group_id')
         group_id = this.request.body.group_id
+      if this.request.body.hasOwnProperty('name')
+        name = this.request.body.name
+      if this.request.body.hasOwnProperty('in_out')
+        in_out = this.request.body.in_out
       console.log '/restapi/workai-join-group post request, uuid:' + uuid + ', group_id:' + group_id
       unless uuid or group_id
         console.log '/restapi/workai-join-group get unless resturn'
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
 
-      device_join_group(uuid,group_id)
+      device_join_group(uuid,group_id,name,in_out)
       this.response.end('{"result": "ok"}\n')
     )
 

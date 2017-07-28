@@ -14,6 +14,8 @@ AI_system_register_devices = function (group_id) {
         HTTP.call('POST', ai_system_url, {
           data: {
               'uuid': device.uuid,
+              'device_name':device.name,
+              'in_out':device.in_out,
               'companyId': company_id,
               'group_id': group_id,
               'imgUrl': 'http://workaiossqn.tiegushi.com/tablet.png'  //TODO:
@@ -52,13 +54,17 @@ AI_system_register_company = function(group_id,userId){
       }, function(error, res) {
         if (error)
           return console.log("post company info to aixd.raidcdn failed " + error);
-        console.log("registered this company to aixd.raidcdn" + error);
-        var perf_info = {
-          companyId:companyId,
-          companyName:group.nam,
-          reportUrl:'http://aixd.raidcdn.cn/reporter/'+companyId
-        };
-        Set_perf_link(group_id,perf_info);
+        if (res.result === 'success') {
+          var perf_info = {
+            companyId:companyId,
+            companyName:group.nam,
+            reportUrl:'http://aixd.raidcdn.cn/reporter/'+companyId
+          };
+          Set_perf_link(group_id,perf_info);
+        }
+        else{
+          console.log("registered this company to aixd.raidcdn" + res.error);
+        }
       });
     }
     console.log("user  email info  not found!" );
