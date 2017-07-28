@@ -117,6 +117,8 @@ Template._simpleChatLabelLabel.events({
           img_type: image.img_type//,
           // accuracy: image.accuracy,
           // fuzziness: image.fuzziness
+          style:image.style,
+          sqlid: image.sqlid ? image.sqlid : 0
         };
         relabelImages.push(relabelObj);
 

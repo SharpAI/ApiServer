@@ -113,7 +113,8 @@ Template._simpleChatLabelRemove.events({
           drop: true,
           img_type: updateObj.images[i].img_type,
           style:updateObj.images[i].style,
-          sqlid:updateObj.images[i].sqlid
+          sqlid:updateObj.images[i].sqlid,
+          rm_reson:t.$('#remove-input-name').val()
         };
         console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
         sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
