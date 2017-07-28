@@ -11,6 +11,7 @@ AI_system_register_devices = function (group_id) {
     var company_id = group.companyId;
     var allDevices = Devices.find({groupId: group_id});
     allDevices.forEach(function(device) {
+        console.log('device in_out:'+device.in_out);
         HTTP.call('POST', ai_system_url, {
           data: {
               'uuid': device.uuid,
@@ -42,26 +43,30 @@ AI_system_register_company = function(group_id,userId){
   }
   var group = Groups.findOne({_id: group_id});
   var user = Meteor.users.findOne({_id:userId});
+  //console.log(user);
   if (group && user) {
-    if (user.emails && user.emails.address) {
+    if (user.emails && user.emails.length > 0) {
       companyId = new Mongo.ObjectID()._str;
+      emails = user.emails[0].address;
       HTTP.call('POST', ai_system_url, {
         data: {
             'companyId': companyId,
             'group_name': group.name,
-            'creator_email': user.emails.address //TODO:
+            'creator_email': emails //TODO:
         }, timeout: 5*1000
       }, function(error, res) {
         if (error)
           return console.log("post company info to aixd.raidcdn failed " + error);
-        if (res.result === 'success') {
+        var content = JSON.parse(res.content);
+        console.log('res.content.result'+content.result);
+        if (content.result === 'success') {
           var perf_info = {
             companyId:companyId,
             companyName:group.nam,
             reportUrl:'http://aixd.raidcdn.cn/reporter/'+companyId
           };
           Set_perf_link(group_id,perf_info);
-          sendMqttMessage('/msg/u/' + creator.id, {
+          sendMqttMessage('/msg/u/' + user._id, {
               _id: new Mongo.ObjectID()._str,
               form: {
                 id: '',
@@ -76,13 +81,13 @@ AI_system_register_company = function(group_id,userId){
               images: [],
               to_type: "user",
               type: "register_company",
-              text: '已自动为您创建 报告系统 账户：\r 账户：' + user.emails.address + '\r 默认密码：123456 \r报告系统地址 ： http://aixd.raidcdn.cn\r请及时登录系统修改默认密码',
+              text: '已自动为您创建 报告系统 账户：\r 账户：' + emails + '\r 默认密码：123456 \r报告系统地址 ： http://aixd.raidcdn.cn\r请及时登录系统修改默认密码',
               create_time: new Date(),
               is_read: false
             });
         }
         else{
-          console.log("registered this company to aixd.raidcdn" + res.error);
+          console.log("registered this company to aixd.raidcdn" + content.error);
         }
       });
     }
@@ -255,7 +260,7 @@ Meteor.methods({
           });
         }
       }
-      AI_system_register_company(id,slef.userId);
+      AI_system_register_company(id,user._id);
     });
     return id;
   },
