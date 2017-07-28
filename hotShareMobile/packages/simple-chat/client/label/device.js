@@ -172,6 +172,7 @@ Template._simpleChatLabelDevice.save = function(){
             var person_info = {
               'id': res && res[updateObj.images[i].label].faceId ? res[updateObj.images[i].label].faceId : updateObj.images[i].id,
               'uuid': msgObj.people_uuid,
+              'name': nas[0],
               'group_id': msgObj.to.id,
               'img_url': updateObj.images[i].url,
               'type': updateObj.images[i].img_type,

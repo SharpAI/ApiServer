@@ -625,6 +625,7 @@ if Meteor.isServer
           person_info = {
             'id': personInfo[name].faceId,
             'uuid': uuid,
+            'name': name,
             'group_id': userGroup.group_id,
             'img_url': url,
             'type': img_type,
