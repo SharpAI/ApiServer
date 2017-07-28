@@ -12,7 +12,7 @@ PERSON = {
       };
       Devices.insert(device);
     }
-    else if(!device.groupId || (group_id && device.groupId != group_id)) {
+    else{
       Devices.update({uuid: uuid}, {$set: {groupId: group_id,name:name,in_out:in_out}});
       device = Devices.findOne({uuid: uuid});
     }

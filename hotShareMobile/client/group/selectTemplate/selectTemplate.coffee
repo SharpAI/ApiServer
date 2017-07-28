@@ -33,6 +33,7 @@ if Meteor.isClient
       return false
   Template.selectTemplate.events
     'click .leftButton':(event)->
+      Session.set('fromCreateNewGroups',true);
       history.go(-1)
     'click .rightButton':(event)->
       selected_followers = Session.get('selected_followers')
