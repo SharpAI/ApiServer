@@ -40,6 +40,11 @@ Template._simpleChatOneSelfMsg.onRendered(function(){
   console.log('_simpleChatOneSelfMsg view rendered');
   if(!page_data)
     return;
+  var id = page_data.form.id;
+  var user = Meteor.users.findOne({_id:id});
+  if (!user) {
+    Meteor.subscribe('usersById',id);
+  }
   Meteor.setTimeout(function(){
     $box = $('.oneself_box');
     $box_ul = $('.oneself_box ul');
@@ -66,6 +71,14 @@ Template._simpleChatOneSelfMsg.helpers({
   },
   loading:function(){
     return is_loading.get();
+  },
+  is_device:function(){
+    var id = page_data.form.id;
+    var user = Meteor.users.findOne({_id:id});
+    if (user && user.is_device) {
+      return true;
+    }
+    return false;
   },
   getMsg: function(){
     if (!page_data)
@@ -103,8 +116,70 @@ Template._simpleChatOneSelfMsg.helpers({
   }
 });
 
+var renameView = null;
+set_device_name = function(name, callback){
+  if (renameView)
+    Blaze.remove(renameView);
+  renameView = Blaze.renderWithData(Template._simpleChatSetDeviceName, {
+    name: name,
+    callback : callback || function(){}
+  }, document.body);
+  simple_chat_page_stack.push(renameView);
+}
+
 Template._simpleChatOneSelfMsg.events({
   'click .header .back': function(){
     Template._simpleChatOneSelfMsg.close();
+  },
+  'click .header .rename':function(){
+    set_device_name(page_data.form.name,function(newName){
+      try{
+        console.log('update msg from name :' + newName);
+        SimpleChat.Messages.update(where,{$set:{'from.name':newName}},{multi: true, upsert:false});
+      }
+      catch(error){
+        console.log('update msg from name error!');
+      }
+    });
+  }
+});
+
+Template._simpleChatSetDeviceName.events({
+  'click .left-btn': function(){
+    Blaze.remove(renameView);
+    simple_chat_page_stack.pop();
+    renameView = null;
+  },
+  'click .right-btn': function(e,t){
+    $('.setNickname-form').submit();
+  },
+  'submit .setNickname-form': function(e,t){
+    var newName = $('#device_nickname').val();
+    console.log('Change device name to ' + newName);
+    if (newName !== '') {
+      if (Session.equals('isUpdating',true)) {
+        PUB.toast('正在更新请稍候！');
+      }
+      Session.set('isUpdating',true);
+      console.log('Meteor.call update-device-name');
+
+      Meteor.call('update-device-name',page_data.form.id,newName,Meteor.userId(),function(err,res){
+        console.log('update-device-name callback!');
+        if (err) {
+          PUB.toast('更改设备名称失败~请重试！');
+          return;
+        }
+        t.data.callback && t.data.callback(newName);
+        Meteor.setTimeout(function(){
+          Blaze.remove(renameView);
+          simple_chat_page_stack.pop();
+          renameView = null;
+          Session.set('isUpdating',false);
+        },300);
+      });
+    }
+    else{
+      PUB.toast('设备名不能为空！');
+    }
   }
 });

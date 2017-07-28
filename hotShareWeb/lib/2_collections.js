@@ -2166,7 +2166,8 @@ if(Meteor.isServer){
             fields: {
                 'username': 1,
                 'profile.fullname': 1,
-                'profile.icon': 1
+                'profile.icon': 1,
+                'is_device':1
             }
         });
   });

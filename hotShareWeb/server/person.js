@@ -199,5 +199,45 @@ Meteor.methods({
   },
   'send-person-to-web': function(person){
       PERSON.sendPersonInfoToWeb(person);
+  },
+  'update-device-name':function(id,val,option){
+    var user = Meteor.users.findOne({_id:id});
+    console.log('update-device-name');
+    var text = '';
+    if (!user) {
+      return;
+    }
+    if (user.profile && user.profile.fullname) {
+      text = user.profile.fullname + '更名为：'+val;
+    }
+    else{
+      text = '设备['+user.username+']更名为：'+val;
+    }
+    Meteor.users.update({_id: id}, {$set: {'profile.fullname': val}});
+    SimpleChat.GroupUsers.update({user_id:id},{$set:{'user_name':val}},{multi: true, upsert:false});
+    var optionUser =  Meteor.users.findOne({_id:option});
+    SimpleChat.GroupUsers.find({user_id: id}).observe({
+         added: function(document) {
+           sendMqttMessage('/msg/g/'+ document.group_id, {
+              _id: new Mongo.ObjectID()._str,
+              form: {
+                id: optionUser._id,
+                name: optionUser.profile.fullname || option.username,
+                icon: optionUser.profile.icon
+              },
+              to: {
+                id: document.group_id,
+                name: document.group_name,
+                icon: document.group_icon
+              },
+              images: [],
+              to_type: "group",
+              type: "text",
+              text: text,
+              create_time: new Date(),
+              is_read: false
+            })
+         }
+      });
   }
 })

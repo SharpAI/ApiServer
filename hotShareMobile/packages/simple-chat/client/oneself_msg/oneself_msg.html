@@ -3,7 +3,12 @@
     <div class="msg-box">
       <div class="header">
         <div class="left back"></div>
+        {{#if is_device}}
+        <span style="left: 70px;right: 70px;white-space: nowrap;display: inline-block;overflow: hidden;text-overflow: ellipsis;position: absolute;">{{title}}</span>
+        <div class="right rename" style="font-size: 14px;font-weight: normal;">重命名</div>
+        {{else}}
         <span style="margin-left: 60px;margin-right: 10px;width: 80%;white-space: nowrap;display: inline-block;overflow: hidden;text-overflow: ellipsis;">{{title}}</span>
+        {{/if}}
         {{#if loading}}
         <div class="loading"></div>
         {{/if}}
@@ -16,5 +21,25 @@
         </ul>
       </div>
     </div>
+  </div>
+</template>
+
+<template name="_simpleChatSetDeviceName">
+  <div class="simple-chat" style="position: absolute;z-index: 99999999;left: 0;top: 0;right: 0;bottom: 0;">
+    <div class="setNickname comFadeIn">
+      <div class="head" style="position: fixed;">
+        <div class="socialTitle" style="position:relative;">
+          <div class="left-btn">{{_ "cancel"}}</div>
+          <span class="Contacts">设备名</span>
+          <div class="right-btn" style="color: #fff;">{{_ "Save"}}</div>
+        </div>
+      </div>
+    </div>
+
+    <ul class="set-up comFadeIn" style="position: fixed; top:60px; left:0; right:0;">
+      <li style="color: #000;">
+        <div class="input"><form class="setNickname-form"><input maxlength="10" class="text" type="text" id="device_nickname" placeholder="输入新的设备名" value="{{name}}"/></form></div>
+      </li>
+    </ul>
   </div>
 </template>

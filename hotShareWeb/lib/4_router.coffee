@@ -597,7 +597,7 @@ if Meteor.isServer
           _id: new Mongo.ObjectID()._str
           form: {
             id: user._id
-            name: if user.profile and user.profile.fullname then user.profile.fullname + '['+user.username+']' else user.username
+            name: if user.profile and user.profile.fullname then user.profile.fullname else user.username
             icon: user.profile.icon
           }
           to: {
@@ -730,7 +730,7 @@ if Meteor.isServer
     device = PERSON.upsetDevice(uuid, group_id)
     user = Meteor.users.findOne({username: uuid})
     if !user
-      userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/device_icon_192.png'}})
+      userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/device_icon_192.png'},is_device:true})
       user = Meteor.users.findOne({_id: userId})
     group = SimpleChat.Groups.findOne({_id: group_id})
 
@@ -748,7 +748,7 @@ if Meteor.isServer
             _id: new Mongo.ObjectID()._str
             form: {
               id: user._id
-              name: user.username
+              name: if user.profile and user.profile.fullname then user.profile.fullname else user.username
               icon: user.profile.icon
             }
             to: {
@@ -759,7 +759,7 @@ if Meteor.isServer
             images: []
             to_type: "group"
             type: "text"
-            text: '设备 ['+user.username+'] 已退出该群!'
+            text: if user.profile and user.profile.fullname then user.profile.fullname + '[' +user.username + '] 已退出该群!' else '设备 ['+user.username+'] 已退出该群!'
             create_time: new Date()
             is_read: false
           })
@@ -778,7 +778,7 @@ if Meteor.isServer
         _id: new Mongo.ObjectID()._str
         form: {
           id: user._id
-          name: user.username
+          name: if user.profile and user.profile.fullname then user.profile.fullname else user.username
           icon: user.profile.icon
         }
         to: {
@@ -789,7 +789,7 @@ if Meteor.isServer
         images: []
         to_type: "group"
         type: "text"
-        text: '设备 ['+user.username+'] 已加入!'
+        text: if user.profile and user.profile.fullname then user.profile.fullname + '[' +user.username + '] 已加入!' else '设备 ['+user.username+'] 已加入!'
         create_time: new Date()
         is_read: false
       })
