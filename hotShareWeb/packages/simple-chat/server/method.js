@@ -28,6 +28,54 @@ AI_system_register_devices = function (group_id) {
   }
 }
 
+AI_system_register_company = function(group_id,userId){
+  var ai_system_url = 'http://aixd.raidcdn.cn/restapi/reg-group';
+  if(!group_id) {
+    console.log('group_id not found');
+    return;
+  }
+  if(!userId) {
+    console.log('userId not found');
+    return;
+  }
+  var group = Groups.findOne({_id: group_id});
+  var user = Meteor.users.findOne({_id:userId});
+  if (group && user) {
+    if (user.emails && user.emails.address) {
+      companyId = new Mongo.ObjectID()._str;
+      HTTP.call('POST', ai_system_url, {
+        data: {
+            'companyId': companyId,
+            'group_name': group.name,
+            'creator_email': user.emails.address //TODO:
+        }, timeout: 5*1000
+      }, function(error, res) {
+        if (error)
+          return console.log("post company info to aixd.raidcdn failed " + error);
+        console.log("registered this company to aixd.raidcdn" + error);
+        var perf_info = {
+          companyId:companyId,
+          companyName:group.nam,
+          reportUrl:'http://aixd.raidcdn.cn/reporter/'+companyId
+        };
+        Set_perf_link(group_id,perf_info);
+      });
+    }
+    console.log("user  email info  not found!" );
+  }
+}
+
+Set_perf_link = function(group_id,perf_info){
+  var companyId = perf_info.companyId;
+  if(companyId) {
+      console.log("companyId is: " + companyId)
+      AI_system_register_devices(group_id);
+  }
+
+  Groups.update({_id: group_id}, {$set: {perf_info: perf_info, companyId: companyId}});
+  GroupUsers.update({group_id: group_id}, {$set: {perf_info: perf_info, companyId: companyId}}, {multi: true});
+}
+
 Meteor.methods({
   'create-group': function(id, name, ids){
     var slef = this;
@@ -145,6 +193,7 @@ Meteor.methods({
     }
 
     // console.log('ids:', ids);
+    var user = Meteor.users.findOne({_id:slef.userId});
     Groups.insert({
       _id: id,
       name: name,
@@ -154,7 +203,12 @@ Meteor.methods({
       template:template,
       last_text: '',
       last_time: new Date(),
-      barcode: rest_api_url + '/restapi/workai-group-qrcode?group_id=' + id
+      barcode: rest_api_url + '/restapi/workai-group-qrcode?group_id=' + id,
+      //建群的人
+      creator:{
+        id:user._id,
+        name:user.profile && user.profile.fullname ? user.profile.fullname : user.username
+      }
     }, function(err){
       if(ids.indexOf(slef.userId) === -1)
         ids.splice(0, 0, slef.userId);
@@ -174,25 +228,7 @@ Meteor.methods({
           });
         }
       }
-      // sendMqttMessage('/msg/g/' + id, {
-      //   _id: new Mongo.ObjectID()._str,
-      //   form: {
-      //     id: '',
-      //     name: '系统',
-      //     icon: ''
-      //   },
-      //   to: {
-      //     id: id,
-      //     name: name,
-      //     icon: ''
-      //   },
-      //   images: [],
-      //   to_type: "group",
-      //   type: "system",
-      //   text: '欢迎加入'+name ,
-      //   create_time: new Date(),
-      //   is_read: false
-      // });
+      AI_system_register_company(id,slef.userId);
     });
     return id;
   },
@@ -250,14 +286,7 @@ Meteor.methods({
     return id;
   },
   'set-perf-link':function(group_id,perf_info){
-    var companyId = perf_info.companyId;
-    if(companyId) {
-        console.log("companyId is: " + companyId)
-        AI_system_register_devices(group_id);
-    }
-
-    Groups.update({_id: group_id}, {$set: {perf_info: perf_info, companyId: companyId}});
-    GroupUsers.update({group_id: group_id}, {$set: {perf_info: perf_info, companyId: companyId}}, {multi: true});
+    Set_perf_link(group_id,perf_info);
     return 'succ';
   },
   'get-group-intro':function(id,type){
