@@ -12,7 +12,13 @@ if Meteor.isClient
     if groups
       for group in groups
         if group.perf_info
-          company_array.push(group.perf_info)
+          is_exist = false
+          for item in company_array
+            if group.perf_info.companyId is item.companyId
+              is_exist = true;
+              break;
+          unless is_exist
+            company_array.push(group.perf_info)
     #company_array.push({companyName: 'text company1'})
     #company_array.push({companyName: 'test company2'})
     company_array
