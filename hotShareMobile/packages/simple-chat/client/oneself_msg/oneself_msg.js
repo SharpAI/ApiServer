@@ -136,6 +136,7 @@ Template._simpleChatOneSelfMsg.events({
       try{
         console.log('update msg from name :' + newName);
         page_data.form.name = newName;
+        $('.oneselfmsg .header span').html(newName);
         SimpleChat.Messages.update(where,{$set:{'form.name':newName}},{multi: true, upsert:false});
       }
       catch(error){
