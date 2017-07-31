@@ -351,6 +351,31 @@ Template._simpleChatToChat.onRendered(function(){
         },300)
       }
     }
+    if (page_data.type === 'group') {
+      var msgLocal = Messages.findOne(page_data.where);
+      if (!msgLocal) {
+        var msgObj = {
+          _id: new Mongo.ObjectID()._str,
+          form: {
+            id: '',
+            name: '系统',
+            icon: ''
+          },
+          to: {
+            id: page_data.id,
+            name: page_data.title(),
+            icon: ''
+          },
+          images: [],
+          to_type: "group",
+          type: "system",
+          text: '欢迎加入'+page_data.title(),
+          create_time: new Date(),
+          is_read: false
+        };
+        Messages.insert(msgObj);
+      }
+    }
 
     if (!Messages.onBefore){
       Messages.after.insert(function (userId, doc) {
