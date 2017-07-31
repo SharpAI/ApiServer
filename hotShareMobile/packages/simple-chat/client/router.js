@@ -1641,7 +1641,36 @@ SimpleChat.onMqttMessage = function(topic, msg) {
     }
 
     if (msgObj.type === 'register_company') {
-      alert(msgObj.text);
+      if (msgObj.isExist === true) {
+        function callback(){
+          Meteor.call('set-perf-link',msgObj.group_id,msgObj.perf_info,function(error,res){
+            if (error) {
+               return PUB.toast('绑定异常~');
+            }
+            PUB.toast('绑定成功！');
+          });
+        }
+        try{
+          navigator.notification.confirm(msgObj.text,function
+                (index){if(index == 2){callback()}},
+                '提示',['暂不','绑定']);
+        }
+        catch (error){
+          if(confirm(msgObj.text)){
+            callback()
+          }
+        }
+      }
+      else{
+        try{
+          navigator.notification.alert(msgObj.text,function
+                (index){},
+                '提示','我知道了');
+        }
+        catch (error){
+          alert(msgObj.text);
+        }
+      }
       return;
     }
     //ta 被我拉黑

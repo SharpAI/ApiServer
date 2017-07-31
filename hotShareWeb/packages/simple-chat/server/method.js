@@ -55,8 +55,30 @@ AI_system_register_company = function(group_id,userId){
             'creator_email': emails //TODO:
         }, timeout: 5*1000
       }, function(error, res) {
-        if (error)
-          return console.log("post company info to aixd.raidcdn failed " + error);
+        var msgObj = {
+          _id: new Mongo.ObjectID()._str,
+          form: {
+            id: '',
+            name: '系统',
+            icon: ''
+          },
+          to: {
+            id: user._id,
+            name: user.profile.fullname? user.profile.fullname:user.username,
+            icon: user.profile.icon
+          },
+          images: [],
+          to_type: "user",
+          type: "register_company",
+          text:'创建报告系统账户异常，请稍候重试~',
+          create_time: new Date(),
+          is_read: false
+        };
+        if (error){
+          console.log("post company info to aixd.raidcdn failed " + error);
+          sendMqttMessage('/msg/u/' + user._id,msgObj);
+          return;
+        }
         var content = JSON.parse(res.content);
         console.log('res.content.result'+content.result);
         if (content.result === 'success') {
@@ -66,29 +88,29 @@ AI_system_register_company = function(group_id,userId){
             reportUrl:'http://aixd.raidcdn.cn/reporter/'+companyId
           };
           Set_perf_link(group_id,perf_info);
-          sendMqttMessage('/msg/u/' + user._id, {
-              _id: new Mongo.ObjectID()._str,
-              form: {
-                id: '',
-                name: '系统',
-                icon: ''
-              },
-              to: {
-                id: user._id,
-                name: user.profile.fullname? user.profile.fullname:user.username,
-                icon: user.profile.icon
-              },
-              images: [],
-              to_type: "user",
-              type: "register_company",
-              text: '已自动为您创建 报告系统 账户：\r 账户：' + emails + '\r 默认密码：123456 \r报告系统地址 ： http://aixd.raidcdn.cn\r请及时登录系统修改默认密码',
-              create_time: new Date(),
-              is_read: false
-            });
+          msgObj.text = '已自动为您创建 报告系统 账户：\r 账户：' + emails + '\r 默认密码：123456 \r报告系统地址 ： http://aixd.raidcdn.cn\r请及时登录系统修改默认密码';
         }
         else{
           console.log("registered this company to aixd.raidcdn" + content.error);
+          console.log("registered this company to aixd.raidcdn" + content);
+          //账户已存在
+          if (content.error_code === 20003) {
+            var company = content.info;
+            if (company && company.companyName && company.companyId) {
+              console.log('company info:'+content.info.companyName);
+              msgObj.text = '检测到报告系统：' + company.companyName +'，是否进行绑定？';
+              msgObj.isExist = true;
+              msgObj.group_id = group_id;
+              msgObj.perf_info =  {
+                companyId:company.companyId,
+                companyName:company.companyName,
+                reportUrl:'http://aixd.raidcdn.cn/reporter/'+company.companyId
+              };
+            }
+          }
         }
+        sendMqttMessage('/msg/u/' + user._id,msgObj);
+        
       });
     }
     else{
