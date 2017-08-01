@@ -1,4 +1,4 @@
-AI_system_register_devices = function (group_id) {
+AI_system_register_devices = function (group_id,uuid) {
   var ai_system_url = process.env.AI_SYSTEM_URL || 'http://aixd.raidcdn.cn/restapi/register';
 
   if(!group_id) {
@@ -9,8 +9,7 @@ AI_system_register_devices = function (group_id) {
   var group = Groups.findOne({_id: group_id});
   if (group && group.companyId) {
     var company_id = group.companyId;
-    var allDevices = Devices.find({groupId: group_id});
-    allDevices.forEach(function(device) {
+    function register_device(device){
         console.log('device in_out:'+device.in_out);
         HTTP.call('POST', ai_system_url, {
           data: {
@@ -27,6 +26,17 @@ AI_system_register_devices = function (group_id) {
           else
             return console.log("registered this device to aixd.raidcdn" + error);
         });
+    }
+    if (uuid) {
+      var device = Devices.findOne({uuid:uuid});
+      if (device) {
+        register_device(device);
+      }
+      return;
+    }
+    var allDevices = Devices.find({groupId: group_id});
+    allDevices.forEach(function(device) {
+        register_device(device);
     });
   }
 }
@@ -128,7 +138,7 @@ Set_perf_link = function(group_id,perf_info){
       console.log("companyId is: " + companyId)
       Groups.update({_id: group_id}, {$set: {perf_info: perf_info, companyId: companyId}});
       GroupUsers.update({group_id: group_id}, {$set: {perf_info: perf_info, companyId: companyId}}, {multi: true});
-      AI_system_register_devices(group_id);
+      AI_system_register_devices(group_id,null);
   }
 }
 
@@ -381,9 +391,9 @@ Meteor.methods({
     }
     return intro;
   },
-  'ai-system-register-devices':function(group_id){
-    console.log("AI_system_register_devices group_id= " + group_id)
-    AI_system_register_devices(group_id);
+  'ai-system-register-devices':function(group_id,uuid){
+    console.log("AI_system_register_devices group_id= " + group_id+'& uuid='+uuid)
+    AI_system_register_devices(group_id,uuid);
     return 'succ';
   }
 });

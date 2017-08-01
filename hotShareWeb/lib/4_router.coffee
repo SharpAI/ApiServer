@@ -803,7 +803,7 @@ if Meteor.isServer
         is_read: false
       })
 
-    Meteor.call 'ai-system-register-devices',group_id, (err, result)->
+    Meteor.call 'ai-system-register-devices',group_id,uuid, (err, result)->
       if err or result isnt 'succ'
         return console.log('register devices to AI-system failed ! err=' + err);
       if result == 'succ'
@@ -817,7 +817,7 @@ if Meteor.isServer
       console.log '/restapi/workai-join-group get request, uuid:' + uuid + ', group_id:' + group_id
       name = this.params.query.name
       in_out = this.params.query.in_out
-      unless uuid or group_id
+      unless uuid or group_id or in_out or name
         console.log '/restapi/workai-join-group get unless resturn'
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
 
@@ -833,7 +833,7 @@ if Meteor.isServer
       if this.request.body.hasOwnProperty('in_out')
         in_out = this.request.body.in_out
       console.log '/restapi/workai-join-group post request, uuid:' + uuid + ', group_id:' + group_id
-      unless uuid or group_id
+      unless uuid or group_id or in_out or name
         console.log '/restapi/workai-join-group get unless resturn'
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
 
