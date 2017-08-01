@@ -1805,22 +1805,38 @@ var onMqttMessage = function(topic, msg) {
   if (Messages.find({_id: msgObj._id}).count() > 0)
     return console.log('已存在此消息:', msgObj._id);
 
-  if (msgObj.wait_lable){where.people_id = msgObj.people_id;}
-  else if (!msgObj.wait_lable && msgObj.images && msgObj.images.length > 0) {where['images.label'] = msgObj.images[0].label}
-  else {return Messages.insert(msgObj)}
+  var targetMsg = null;
 
-  console.log('SimpleChat.SimpleChat where:', where);
-  var targetMsg = Messages.findOne(where, {sort: {create_time: -1}});
-  //是否是最后一条
-  var is_last_msg = false;
-  if (targetMsg) {
-    var lastMsg = Messages.findOne({to_type:msgObj.to_type,'to.id':msgObj.to.id}, {sort: {create_time: -1}});
-    if (targetMsg._id === lastMsg._id) {
-      is_last_msg = true;
+  if (msgObj.tid && msgObj.tid !== '') {
+    //最近十条记录
+    var targetArray = Messages.find({to_type: msgObj.to_type,'to.id': msgObj.to.id}, {limit: 10, sort: {create_time: -1}}).fetch();
+    for (var i = 0; i < targetArray.length; i++) {
+      //tid 相同且没完成标记
+      if (targetArray[i].tid === msgObj.tid && targetArray[i].label_complete !== true) {
+        targetMsg = targetArray[i];
+        console.log('找到符合条件tid=' + msgObj.tid + '的记录~');
+        break;
+      }
     }
   }
-  if (!is_last_msg) {
-    return insertMsg(msgObj, '不是最后一条消息');
+  else{
+      if (msgObj.wait_lable){where.people_id = msgObj.people_id;}
+      else if (!msgObj.wait_lable && msgObj.images && msgObj.images.length > 0) {where['images.label'] = msgObj.images[0].label}
+      else {return Messages.insert(msgObj)}
+
+      console.log('SimpleChat.SimpleChat where:', where);
+      targetMsg = Messages.findOne(where, {sort: {create_time: -1}});
+      //是否是最后一条
+      var is_last_msg = false;
+      if (targetMsg) {
+        var lastMsg = Messages.findOne({to_type:msgObj.to_type,'to.id':msgObj.to.id}, {sort: {create_time: -1}});
+        if (targetMsg._id === lastMsg._id) {
+          is_last_msg = true;
+        }
+      }
+      if (!is_last_msg) {
+        return insertMsg(msgObj, '不是最后一条消息');
+      }
   }
   // TODO: 还存在问题
   // if (withMessageHisEnable && !targetMsg){
@@ -1854,22 +1870,43 @@ var onMqttMessage = function(topic, msg) {
 
   var setObj = {/*create_time: new Date(),*/ 'form.name': msgObj.form.name, hasFromHistory: false};
   if (msgObj.wait_lable){
-    var count = 0;
-    for(var i=0;i<targetMsg.images.length;i++){
-      if (!targetMsg.images[i].label && !targetMsg.images[i].remove && !targetMsg.images[i].error)
-        count += 1;
+    //根据tid合并时会出现 wait_lable不同的情况
+    if (targetMsg.wait_lable === false) {
+      setObj.text = targetMsg.text;
     }
-    for(var i=0;i<msgObj.images.length;i++){
-      if (!msgObj.images[i].label && !msgObj.images[i].remove && !msgObj.images[i].error)
-        count += 1;
-    }
-    if (count > 0){
-      setObj.text = 'AI观察到有人在活动(' + count + '次)';
-    } else {
-      setObj.text = 'AI观察到有人在活动';
+    else{
+      var count = 0;
+      for(var i=0;i<targetMsg.images.length;i++){
+        if (!targetMsg.images[i].label && !targetMsg.images[i].remove && !targetMsg.images[i].error)
+          count += 1;
+      }
+      for(var i=0;i<msgObj.images.length;i++){
+        if (!msgObj.images[i].label && !msgObj.images[i].remove && !msgObj.images[i].error)
+          count += 1;
+      }
+      if (count > 0){
+        setObj.text = 'AI观察到有人在活动(' + count + '次)';
+      } else {
+        setObj.text = 'AI观察到有人在活动';
+      }
     }
   } else {
+    if (msgObj.tid && msgObj.tid !== '' && targetMsg.wait_lable === false) {
+      var is_label_same = true; //识别出的名字是否相同
+      for(var i=0;i<targetMsg.images.length;i++){
+        if (targetMsg.images[i].label){
+          if (msgObj.images[0].label !== targetMsg.images[i].label ) {
+            is_label_same = false;
+            break;
+          }
+        }
+      }
+      if (is_label_same === false) {
+        return insertMsg(msgObj, 'tid相同，但label_name不同');
+      }
+    }
     setObj.text = 'AI观察到 '+msgObj.images[0].label + '：';
+    setObj.wait_lable = msgObj.wait_lable;
   }
 
   if(setObjExtend){
