@@ -554,7 +554,7 @@ if Meteor.isServer
   workaiId = 'Lh4JcxG7CnmgR3YXe'
   workaiName = 'Actiontec'
 
-  insert_msg2 = (id, url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts)->
+  insert_msg2 = (id, url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts,tracker_id)->
     people = People.findOne({id: id, uuid: uuid})
     name = PERSON.getName(uuid,null,id)
     #device = PERSON.upsetDevice(uuid, null)
@@ -589,7 +589,7 @@ if Meteor.isServer
         name = null
         name = PERSON.getName(uuid,userGroup.group_id,id)
         #没有准确度的人一定是没有识别出来的
-        name = if accuracy then name else null 
+        name = if accuracy then name else null
         #没有识别的人的准确度清0
         Accuracy =  if name then accuracy else false
         Fuzziness = fuzziness
@@ -618,6 +618,7 @@ if Meteor.isServer
           wait_lable: !name
           is_people: true
           is_read: false
+          tid:tracker_id
         })
         personInfo = PERSON.getIdByNames(uuid, [name], userGroup.group_id)
         if img_type == 'face' && personInfo && personInfo[name] && personInfo[name].faceId
@@ -672,6 +673,7 @@ if Meteor.isServer
       img_url = this.params.query.img_url
       uuid = this.params.query.uuid
       img_type = this.params.query.type
+      tracker_id = this.params.query.tid
       console.log '/restapi/workai get request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid
       unless id and img_url and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
@@ -681,7 +683,7 @@ if Meteor.isServer
       fuzziness = this.params.query.fuzziness
       img_ts = this.params.query.img_ts
       current_ts = this.params.query.current_ts
-      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts)
+      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts,tracker_id)
       this.response.end('{"result": "ok"}\n')
     ).post(()->
       if this.request.body.hasOwnProperty('id')
@@ -735,7 +737,7 @@ if Meteor.isServer
       user = Meteor.users.findOne({_id: userId})
     else
       Meteor.users.update({_id:user._id},{$set:{'profile.fullname':name}});
-    
+
     group = SimpleChat.Groups.findOne({_id: group_id})
 
     #一个设备只允许加入一个群
@@ -812,7 +814,7 @@ if Meteor.isServer
       console.log '/restapi/workai-join-group get request, uuid:' + uuid + ', group_id:' + group_id
       name = this.params.query.name
       in_out = this.params.query.in_out
-      unless uuid or group_id 
+      unless uuid or group_id
         console.log '/restapi/workai-join-group get unless resturn'
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
 
