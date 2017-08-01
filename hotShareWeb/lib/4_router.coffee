@@ -708,12 +708,15 @@ if Meteor.isServer
       if this.request.body.hasOwnProperty('current_ts')
         current_ts = this.request.body.current_ts
 
+      if this.request.body.hasOwnProperty('tid')
+        tracker_id = this.request.body.tid
+
       console.log '/restapi/workai post request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid + ' img_type=' + img_type + ' sqlid=' + sqlid + ' style=' + style + 'img_ts=' + img_ts
       unless id and img_url and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
       accuracy = this.params.query.accuracy
       fuzziness = this.params.query.fuzziness
-      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts)
+      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts, tracker_id)
       this.response.end('{"result": "ok"}\n')
     )
 
