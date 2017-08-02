@@ -11,7 +11,7 @@ Template._simpleChatLabelDevice.open = function(msgObj){
   message.set(msgObj);
   var imgs = [];
   for(var i=0;i<msgObj.images.length;i++){
-    var id = msgObj.images[i].id || msgObj.people_id;
+    var id = msgObj.tid || msgObj.images[i].id || msgObj.people_id;
     if (msgObj.images[i].label || msgObj.images[i].remove)
       continue;
     msgObj.images[i].selected = true;
@@ -84,7 +84,8 @@ Template._simpleChatLabelDevice.save = function(){
           if (imgs[ii].images[iii]._id === msgObj.images[i]._id && imgs[ii].images[iii].selected){
             if (nas[ii]){
               msgObj.images[i].label = nas[ii];
-              if (_.pluck(setNames, 'id').indexOf(msgObj.images[i].id) === -1)
+              var id = msgObj.tid || msgObj.images[i].id
+              if (_.pluck(setNames, 'id').indexOf(id) === -1)
                 setNames.push({uuid: msgObj.people_uuid, id: msgObj.images[i].id, url: msgObj.images[i].url, name: nas[ii]});
             }
             is_break = true;
@@ -201,7 +202,7 @@ Template._simpleChatLabelDevice.save = function(){
         to: msgObj.to,
         to_type: "group",
         type: "text",
-        text: '标注了 '+(msgObj.images.length-count)+' 张照片',
+        text: '标注了 '+(setNames.length)+' 张照片',
         create_time: new Date(),
         is_read: false
       };
