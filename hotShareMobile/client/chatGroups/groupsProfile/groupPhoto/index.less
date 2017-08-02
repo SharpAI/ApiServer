@@ -1,0 +1,28 @@
+._group-photo{
+  position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgb(238,238,238); z-index: 9999;
+  .head{
+    ul.nav{
+      width: 120px; margin: 0px auto; background-image: none;
+      li{width: 50%; height: 40px; line-height: 40px; float: left; font-size: 12px;}
+      li.hover{font-size: 14px;}
+      li.hover:before{content: ""; position: absolute; left: 50%; bottom: 0; width: 20px; height: 2px; margin-left: -10px; background-color: #fff;}
+    }
+  }
+  .content{
+    position: absolute; left: 0; right: 0; bottom: 50px; top: 45px; background-color: #fff; overflow: hidden;
+    .photos{
+      position: absolute; left: 0; right: 0; top: 0; bottom: 0; overflow: auto; visibility: hidden;
+      ul{margin: 0; padding: 10px 5px; text-align: center;}
+      li{
+        padding: 3px; display: inline-block; border-radius: 3px; overflow: hidden; position: relative;
+        img{width: 60px; height: 60px; background-color: #ccc;}
+        .selected{position: absolute;right: 5px; bottom: 5px;width: 30px;height: 30px;color: #2196f3;font-size: 20px;}
+      }
+    }
+    .photos.hover{visibility: visible;}
+  }
+  .buttons{
+    position: absolute; left: 0; right: 0; bottom: 0; height: 45px; line-height: 45px; text-align: center; font-size: 12px; color: #37a7fe; padding: 2.5px; box-sizing: border-box;
+    .btn-default{background-color: #37a7fe;color: #fff;border-radius: 5px;height: 40px;line-height: 40px; font-size:16px;}
+  }
+}

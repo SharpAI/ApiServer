@@ -2078,6 +2078,7 @@ show_label = function(group_id, callback){
   }, document.body);
   simple_chat_page_stack.push(label_view);
 }
+SimpleChat.show_label = show_label;
 
 Template._simpleChatToChatLabelNameImg.onRendered(function(){
   this.$("img.lazy:not([src])").lazyload({

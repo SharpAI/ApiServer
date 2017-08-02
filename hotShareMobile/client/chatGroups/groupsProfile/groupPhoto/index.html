@@ -1,0 +1,61 @@
+<template name="groupPhoto">
+  <div class="_group-photo">
+    <div class="head">
+      <div id="groupsProfilePageback" class="leftButton back">
+        <i class="fa fa-angle-left fa-fw"></i>
+      </div>
+      <ul class="nav">
+        <li class="{{is_hover '未标注'}}">未标注</li>
+        <li class="{{is_hover '已标注'}}">已标注</li>
+      </ul>
+    </div>
+    <div class="content">
+      <div class="photos {{is_hover '未标注'}}">
+        <ul>
+          {{#each list1}}
+            {{#each images}}
+            {{#if admin_label}}
+            {{else}}
+            {{> groupPhotoImg}}
+            {{/if}}
+            {{/each}}
+          {{/each}}
+        </ul>
+      </div>
+      <div class="photos {{is_hover '已标注'}}">
+        <ul>
+          {{#each list2}}
+            {{#each images}}
+            {{#if admin_label}}
+            {{> groupPhotoImg}}
+            {{/if}}
+            {{/each}}
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+    <div class="buttons">
+      {{#if is_type '未标注'}}
+        {{#if is_selected}}
+        <div class="btn-default">标注</div>
+        {{else}}
+        请点选照片进行标注.
+        {{/if}}
+      {{else}}
+        请切换到未标注栏，进行标注.
+      {{/if}}
+    </div>
+  </div>
+</template>
+
+<template name="groupPhotoImg">
+  <li id="{{../_id}}">
+    <!-- <img class="lazy" data-original="{{url}}" /> -->
+    <img src="{{url}}" />
+    {{#if has_selected ../_id _id}}
+    {{#if is_type '未标注'}}
+    <div class="selected"><i class="fa fa-check-square-o" aria-hidden="true"></i></div>
+    {{/if}}
+    {{/if}}
+  </li>
+</template>

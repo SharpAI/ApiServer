@@ -103,6 +103,8 @@ if Meteor.isClient
           ,100)
         )
       )
+    'click .groupPhoto':(event)->
+      Template.groupPhoto.open(Session.get('groupsId'));
     'click .scanPerfBarcode':(event)->
       console.log 'scan performance barcode'
       cordova.plugins.barcodeScanner.scan((result)->

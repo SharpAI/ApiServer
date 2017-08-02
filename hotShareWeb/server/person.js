@@ -240,5 +240,30 @@ Meteor.methods({
             })
          }
       });
+  },
+    
+  // 群相册里的批量标注
+  'upLabels': function(groupId, labelName, waitLabels){
+    this.unblock();
+
+    waitLabels.map(function(wait){
+      var name = PERSON.getIdByName(wait.uuid, labelName, groupId);
+      var mqttMsg = {
+        group_id: groupId,
+        type: 'trainset',
+        url: wait.url,
+        person_id: name && name.id ? name.id : '',
+        device_id: wait.uuid,
+        face_id: name && name.faceId ? name.faceId : wait.id,
+        drop: false,
+        img_type: wait.img_type,
+        style: wait.style,
+        sqlid: wait.sqlid
+      };
+      sendMqttMessage('/device/' + groupId, mqttMsg);
+      console.log('send mqtt to device:', mqttMsg);
+      PERSON.setName(groupId, wait.uuid, wait.id, wait.url, labelName)
+    });
+    return true;
   }
 })
