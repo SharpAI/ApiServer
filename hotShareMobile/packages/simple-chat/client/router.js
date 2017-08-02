@@ -1873,6 +1873,13 @@ var onMqttMessage = function(topic, msg) {
     //根据tid合并时会出现 wait_lable不同的情况
     if (targetMsg.wait_lable === false) {
       setObj.text = targetMsg.text;
+      var label = targetMsg.text.replace('AI观察到 ','').replace('：','');
+      for (var i = 0; i < targetMsg.images.length; i++) {
+        targetMsg.images[i].label = label;
+      }
+      for (var i = 0; i < msgObj.images.length; i++) {
+        msgObj.images[i].label = label;
+      }
     }
     else{
       var count = 0;
@@ -1906,11 +1913,27 @@ var onMqttMessage = function(topic, msg) {
       }
     }
     setObj.text = 'AI观察到 '+msgObj.images[0].label + '：';
-    setObj.wait_lable = msgObj.wait_lable;
+    if (targetMsg.tid) {
+      setObj.wait_lable = msgObj.wait_lable;
+      for (var i = 0; i < targetMsg.images.length; i++) {
+        targetMsg.images[i].label = msgObj.images[0].label;
+      }
+    }
   }
 
   if(setObjExtend){
     setObj = $.extend(setObj,setObjExtend);
+  }
+  if (targetMsg.tid) {
+    setObj.images = targetMsg.images.concat(msgObj.images);
+    Messages.update({_id: targetMsg._id}, {
+      $set: setObj,
+      $push: {msg_ids: {id: msgObj._id}}
+    }, function(err, num){
+      if (err || num <= 0)
+        insertMsg(msgObj, 'update 失败');
+    });
+    return;
   }
   Messages.update({_id: targetMsg._id}, {
     $set: setObj,
