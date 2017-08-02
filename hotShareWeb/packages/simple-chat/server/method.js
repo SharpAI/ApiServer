@@ -39,6 +39,15 @@ AI_system_register_devices = function (group_id,uuid) {
         register_device(device);
     });
   }
+  else if(uuid) {
+    console.log("tay remove device from aixd.raidcdn~");
+    HTTP.call('GET', 'http://aixd.raidcdn.cn/restapi/remove-device/'+uuid, function(error, res) {
+      if (error)
+        return console.log("remove device info to aixd.raidcdn failed " + error);
+      var content = JSON.parse(res.content);
+      console.log("removed this device （"+uuid+"）form aixd.raidcdn ："+content);
+    })
+  }
 }
 
 AI_system_register_company = function(group_id,userId){
