@@ -3,6 +3,7 @@ var type = new ReactiveVar('');
 var limit1 = new ReactiveVar(0);
 var limit2 = new ReactiveVar(0);
 var selected = new ReactiveVar([]);
+var limitSetp = 10;
 
 Template.groupPhoto.helpers({
   is_type: function(val){
@@ -92,7 +93,7 @@ var lazyloadInit = function(t){
     Meteor.clearTimeout(lazyloadInitTimeout);
   lazyloadInitTimeout = Meteor.setTimeout(function(){
     t.$('img.lazy:not([src])').lazyload({
-      container: t.$('img').parent()
+      container: t.$('li').parent()
     });
   }, 600);
 };
@@ -104,9 +105,9 @@ Template.groupPhoto.onRendered(function(){
       var top = $(this).scrollTop();
       if (height-top <= $(this).height() -20){
         if (type.get() === '未标注')
-          limit1.set(limit1.get()+20);
+          limit1.set(limit1.get()+limitSetp);
         else
-          limit2.set(limit2.get()+20);
+          limit2.set(limit2.get()+limitSetp);
         console.log('==已经滚动到底部了==');
       }
     });
@@ -147,8 +148,8 @@ Template.groupPhotoImg.events({
 Template.groupPhoto.open = function(id){
   view && Blaze.remove(view);
   type.set('未标注');
-  limit1.set(20);
-  limit2.set(20);
+  limit1.set(limitSetp);
+  limit2.set(limitSetp);
 
   var data = {
     id: id,
@@ -159,10 +160,12 @@ Template.groupPhoto.open = function(id){
   };
   view = Blaze.renderWithData(Template.groupPhoto, data, document.body);
   $('body').css('overflow', 'hidden');
+  $('.groupsProfile').hide();
 };
 
 Template.groupPhoto.close = function(){
   view && Blaze.remove(view);
   view = null;
   $('body').css('overflow', 'auto');
+  $('.groupsProfile').show();
 };
