@@ -169,9 +169,9 @@ Template._simpleChatLabelDevice.save = function(){
         updateObj.images[i].labelMsgSent = true;
 
         try {
-          if(updateObj.images[i].img_type && updateObj.images[i].img_type == 'face') {
+          if(updateObj.images[i].img_type && updateObj.images[i].img_type == 'face' && res && res[updateObj.images[i].label].faceId) {
             var person_info = {
-              'id': res && res[updateObj.images[i].label].faceId ? res[updateObj.images[i].label].faceId : updateObj.images[i].id,
+              'id': res[updateObj.images[i].label].faceId,
               'uuid': msgObj.people_uuid,
               'name': nas[0],
               'group_id': msgObj.to.id,
