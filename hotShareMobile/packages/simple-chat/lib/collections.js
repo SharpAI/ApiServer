@@ -169,6 +169,9 @@ if(Meteor.isServer){
       console.log('insert chat session:', msgObj);
     }
   };
+
+  SimpleChat.withMessageHisEnable = withMessageHisEnable;
+  SimpleChat.loadMoreMesage = loadMoreMesage;
 }
 
 if(Meteor.isServer){

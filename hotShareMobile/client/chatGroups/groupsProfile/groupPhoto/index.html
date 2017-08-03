@@ -11,8 +11,8 @@
     </div>
     <div class="con-main">
       <div class="photos {{is_hover '未标注'}}">
-        <ul>
-          {{#each list1}}
+        <ul data-type="未标注">
+          {{#each list1 id}}
             {{#each images}}
             {{#if admin_label}}
             {{else}}
@@ -23,8 +23,8 @@
         </ul>
       </div>
       <div class="photos {{is_hover '已标注'}}">
-        <ul>
-          {{#each list2}}
+        <ul data-type="已标注">
+          {{#each list2 id}}
             {{#each images}}
             {{#if admin_label}}
             {{> groupPhotoImg}}
@@ -50,11 +50,10 @@
 
 <template name="groupPhotoImg">
   <li id="{{../_id}}">
-    <img src="{{url}}" />
-    <!-- <img class="lazy" data-original="{{url}}" /> -->
+     <img class="lazy" data-original="{{url}}" /> 
     {{#if has_selected ../_id _id}}
     {{#if is_type '未标注'}}
-    <div class="selected"><i class="fa fa-check-square-o" aria-hidden="true"></i></div>
+    <div class="selected"><i class="fa fa-check" aria-hidden="true"></i></div>
     {{/if}}
     {{/if}}
   </li>

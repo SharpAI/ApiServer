@@ -14,6 +14,12 @@ Template.groupPhoto.helpers({
   },
   is_selected: function(){
     return selected.get().length > 0 ;
+  },
+  list1: function(id){
+    return SimpleChat.Messages.find({is_people: true, 'to.id': id}, {limit: limit1.get(), sort: {create_time: 1}})
+  },
+  list2: function(id){
+    return SimpleChat.Messages.find({is_people: true, 'to.id': id}, {limit: limit2.get(), sort: {create_time: 1}})
   }
 });
 
@@ -87,35 +93,51 @@ Template.groupPhoto.events({
 });
 
 // lazyload
-var lazyloadInitTimeout = null;
-var lazyloadInit = function(t){
-  if (lazyloadInitTimeout)
-    Meteor.clearTimeout(lazyloadInitTimeout);
-  lazyloadInitTimeout = Meteor.setTimeout(function(){
-    t.$('img.lazy:not([src])').lazyload({
-      container: t.$('li').parent()
+var lazyloadInitTimeout = {'未标注': null, '已标注': null};
+var lazyloadInit = function($ul, type){
+  lazyloadInitTimeout[type] && Meteor.clearTimeout(lazyloadInitTimeout[type]);
+  lazyloadInitTimeout[type] = Meteor.setTimeout(function(){
+    $ul.find('img.lazy:not([src])').lazyload({
+      container: $ul.parent()
     });
+    lazyloadInitTimeout[type] && Meteor.clearTimeout(lazyloadInitTimeout[type]);
   }, 600);
 };
 
 Template.groupPhoto.onRendered(function(){
+  SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({is_people: true, 'to.id': data.id}, {limit: limitSetp, sort: {create_time: -1}}, limitSetp);
+
+  var data = this.data;
   this.$('.photos').each(function(){
     $(this).scroll(function(){
       var height = $(this).find('> ul').height();
       var top = $(this).scrollTop();
-      if (height-top <= $(this).height() -20){
+      if ($(this).scrollTop()){
+        var limit = 0;
+        if (type.get() === '未标注'){
+          limit = limit1.get() + limitSetp;
+          limit1.set(limit);
+        } else {
+          limit = limit2.get() + limitSetp;
+          limit2.set(limit);
+        }
+        SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({is_people: true, 'to.id': data.id}, {limit: limit, sort: {create_time: -1}}, limit);
+        console.log('==已经滚动到顶部了 '+type.get()+' ==');
+      } else if (height-top <= $(this).height() -20){
         if (type.get() === '未标注')
           limit1.set(limit1.get()+limitSetp);
         else
           limit2.set(limit2.get()+limitSetp);
-        console.log('==已经滚动到底部了==');
+        console.log('==已经滚动到底部了 '+type.get()+' ==');
       }
     });
   });
 });
 
 Template.groupPhotoImg.onRendered(function(){
-  // lazyloadInit(this);
+  var $img = this.$('img');
+  // console.log($img, $img.parent().parent(), $img.parent().parent().attr('data-type'));
+  lazyloadInit($img.parent().parent(), $img.parent().parent().attr('data-type'));
 });
 
 Template.groupPhotoImg.helpers({
@@ -150,12 +172,13 @@ Template.groupPhoto.open = function(id){
   type.set('未标注');
   limit1.set(limitSetp);
   limit2.set(limitSetp);
+  selected.set([]);
 
   var data = {
     id: id,
     limit: type.get() === '未标注' ? limit1.get() : limit2.get(),
-    list1: SimpleChat.Messages.find({is_people: true, 'to.id': id}, {limit: limit1.get(), sort: {create_time: 1}}),
-    list2: SimpleChat.Messages.find({is_people: true, 'to.id': id}, {limit: limit1.get(), sort: {create_time: 1}}),
+    // list1: SimpleChat.Messages.find({is_people: true, 'to.id': id}, {limit: limit1.get(), sort: {create_time: 1}}),
+    // list2: SimpleChat.Messages.find({is_people: true, 'to.id': id}, {limit: limit1.get(), sort: {create_time: 1}}),
     type: type.get()
   };
   view = Blaze.renderWithData(Template.groupPhoto, data, document.body);
