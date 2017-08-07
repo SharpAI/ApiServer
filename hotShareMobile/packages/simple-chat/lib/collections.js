@@ -27,8 +27,10 @@ if(Meteor.isServer){
     Messages = new Ground.Collection(PRFIX + 'messages', { connection: null })
     MsgSession = new Ground.Collection(PRFIX + 'msg_session', { connection: null });
     MsgAdminRelays = new Ground.Collection(PRFIX + 'msg_admin_realy', { connection: null });
+    GroupPhotoLabel = new Ground.Collection(PRFIX + 'group_photo_label', { connection: null }); // 群相册下已标注的消息
 
     SimpleChat.Messages = Messages;
+    SimpleChat.GroupPhotoLabel = GroupPhotoLabel;
     SimpleChat.MsgSession = MsgSession;
     SimpleChat.MessageTemp = MessageTemp;
     SimpleChat.MsgAdminRelays = MsgAdminRelays;
@@ -68,6 +70,7 @@ if(Meteor.isServer){
 
       loadMoreMesage = function(where, option, limit){
         Meteor.setTimeout(function(){
+          console.log('加载历史消息');
           var lastMsg = Messages.findOne(where,{sort: {create_time: -1}});
           var lastMsgHis = MessagesHis.findOne(where,{sort: {create_time: -1}});
           if (lastMsg && lastMsgHis && (lastMsg.create_time - lastMsgHis.create_time < 0)) {
@@ -97,6 +100,9 @@ if(Meteor.isServer){
 
     Messages.after.insert(function (userId, doc) {updateMsgSession(doc);});
     Messages.after.update(function (userId, doc, fieldNames, modifier, options) {updateMsgSession(doc);});
+
+    SimpleChat.withMessageHisEnable = withMessageHisEnable;
+    SimpleChat.loadMoreMesage = loadMoreMesage;
   });
 
   // 生成聊天会话
@@ -169,9 +175,6 @@ if(Meteor.isServer){
       console.log('insert chat session:', msgObj);
     }
   };
-
-  SimpleChat.withMessageHisEnable = withMessageHisEnable;
-  SimpleChat.loadMoreMesage = loadMoreMesage;
 }
 
 if(Meteor.isServer){

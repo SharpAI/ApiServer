@@ -16,10 +16,10 @@ Template.groupPhoto.helpers({
     return selected.get().length > 0 ;
   },
   list1: function(id){
-    return SimpleChat.Messages.find({is_people: true, 'to.id': id}, {limit: limit1.get(), sort: {create_time: 1}})
+    return SimpleChat.Messages.find({is_people: true, 'to.id': id, admin_label: {$ne: true}}, {limit: limit1.get(), sort: {create_time: 1}})
   },
   list2: function(id){
-    return SimpleChat.Messages.find({is_people: true, 'to.id': id}, {limit: limit2.get(), sort: {create_time: 1}})
+    return SimpleChat.GroupPhotoLabel.find({group_id: id}, {limit: limit2.get(), sort: {create_time: 1}})
   }
 });
 
@@ -64,7 +64,9 @@ Template.groupPhoto.events({
             console.log('label', i);
             localTask.push({
               _id: ids[0],
-              index: i
+              index: i,
+              obj: img,
+              group_id: t.data.id
             });
           }
         });
@@ -82,7 +84,38 @@ Template.groupPhoto.events({
         localTask.map(function(task){
           var $set = JSON.parse('{"images.'+task.index+'.admin_label": true}');
           console.log('update local db:', $set, 'id:', task._id);
-          SimpleChat.Messages.update({_id: task._id}, {$set: $set});
+          SimpleChat.Messages.update({_id: task._id}, {$set: $set}, function(err, num){
+            if (err || num <= 0)
+              return;
+
+            // 生成群相册的标注信息（一张照片一条）
+            SimpleChat.GroupPhotoLabel.insert({
+              msg_id: task._id,
+              img__id: task.obj._id,
+              img_id: task.obj.id,
+              img_uuid: task.obj.uuid,
+              img_type: task.obj.img_type,
+              img_style: task.obj.style,
+              img_sqlid: task.obj.sqlid,
+              img_index: task.index,
+              img_label: name,
+              img_url: task.obj.url,
+              group_id: task.group_id,
+              create_time: new Date()
+            });
+            
+            // 处理是否已经全部标注
+            var obj = SimpleChat.Messages.findOne({_id: task._id});
+            if (obj && obj.images && obj.images){
+              obj.admin_label = true;
+              obj.images.map(function(img){
+                if (!img.admin_label)
+                  obj.admin_label = false;
+              });
+              if (obj.admin_label === true)
+                SimpleChat.Messages.update({_id: task._id}, {$set: {admin_label: true}});
+            }
+          });
         });
         $(e.currentTarget).html('标注');
         selected.set([]);
@@ -112,22 +145,22 @@ Template.groupPhoto.onRendered(function(){
     $(this).scroll(function(){
       var height = $(this).find('> ul').height();
       var top = $(this).scrollTop();
-      if ($(this).scrollTop()){
+      if ($(this).scrollTop() <= 0){
         var limit = 0;
         if (type.get() === '未标注'){
           limit = limit1.get() + limitSetp;
           limit1.set(limit);
+          SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({is_people: true, 'to.id': data.id}, {limit: limit, sort: {create_time: -1}}, limit);
         } else {
-          limit = limit2.get() + limitSetp;
+          limit = limit2.get() + 100;
           limit2.set(limit);
         }
-        SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({is_people: true, 'to.id': data.id}, {limit: limit, sort: {create_time: -1}}, limit);
         console.log('==已经滚动到顶部了 '+type.get()+' ==');
       } else if (height-top <= $(this).height() -20){
         if (type.get() === '未标注')
           limit1.set(limit1.get()+limitSetp);
         else
-          limit2.set(limit2.get()+limitSetp);
+          limit2.set(limit2.get()+100);
         console.log('==已经滚动到底部了 '+type.get()+' ==');
       }
     });
@@ -135,6 +168,12 @@ Template.groupPhoto.onRendered(function(){
 });
 
 Template.groupPhotoImg.onRendered(function(){
+  var $img = this.$('img');
+  // console.log($img, $img.parent().parent(), $img.parent().parent().attr('data-type'));
+  lazyloadInit($img.parent().parent(), $img.parent().parent().attr('data-type'));
+});
+
+Template.groupPhotoImg1.onRendered(function(){
   var $img = this.$('img');
   // console.log($img, $img.parent().parent(), $img.parent().parent().attr('data-type'));
   lazyloadInit($img.parent().parent(), $img.parent().parent().attr('data-type'));
@@ -171,7 +210,7 @@ Template.groupPhoto.open = function(id){
   view && Blaze.remove(view);
   type.set('未标注');
   limit1.set(limitSetp);
-  limit2.set(limitSetp);
+  limit2.set(100);
   selected.set([]);
 
   var data = {

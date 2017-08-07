@@ -25,11 +25,7 @@
       <div class="photos {{is_hover '已标注'}}">
         <ul data-type="已标注">
           {{#each list2 id}}
-            {{#each images}}
-            {{#if admin_label}}
-            {{> groupPhotoImg}}
-            {{/if}}
-            {{/each}}
+            {{> groupPhotoImg1}}
           {{/each}}
         </ul>
       </div>
@@ -56,5 +52,12 @@
     <div class="selected"><i class="fa fa-check" aria-hidden="true"></i></div>
     {{/if}}
     {{/if}}
+  </li>
+</template>
+
+<template name="groupPhotoImg1">
+  <li id="{{msg_id}}">
+     <img class="lazy" data-original="{{img_url}}" /> 
+     <div class="label">{{img_label}}</div>
   </li>
 </template>
