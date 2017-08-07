@@ -55,6 +55,9 @@ PersonNames = new Meteor.Collection('personNames');
   updateAt: <Date>
 }*/
 
+// 记录所有人的活动信息
+Activity = new Meteor.Collection('activity');
+
 NLPTextClassName = new Meteor.Collection('nlpTextClassName');
 /*
 NLPTextClassName = {

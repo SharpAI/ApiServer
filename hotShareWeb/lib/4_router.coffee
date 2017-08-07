@@ -1239,3 +1239,91 @@ if Meteor.isServer
     this.response.writeHead(200, headers)
     this.response.end(Date.now().toString())
   , {where: 'server'})
+  Router.route('/restapi/allgroupsid/:token/:skip/:limit', {where: 'server'}).get(()->
+      token = this.params.token
+      limit = this.params.limit
+      skip  = this.params.skip
+
+      headers = {
+        'Content-type':'text/html;charest=utf-8',
+        'Date': Date.now()
+      }
+      this.response.writeHead(200, headers)
+      console.log '/restapi/allgroupsid get request, token:' + token + ' limit:' + limit + ' skip:' + skip
+
+      allgroups = []
+      groups = SimpleChat.Groups.find({}, {fields:{"_id": 1, "name": 1}, limit: parseInt(limit), skip: parseInt(skip)})
+      unless groups
+        return this.response.end('[]\n')
+      groups.forEach((group)->
+        allgroups.push({'id':group._id, 'name': group.name})
+      )
+
+      this.response.end(JSON.stringify(allgroups))
+    )
+  Router.route('/restapi/groupusers/:token/:groupid/:skip/:limit', {where: 'server'}).get(()->
+      token = this.params.token
+      limit = this.params.limit
+      skip  = this.params.skip
+      groupid = this.params.groupid
+
+      headers = {
+        'Content-type':'text/html;charest=utf-8',
+        'Date': Date.now()
+      }
+      this.response.writeHead(200, headers)
+      console.log '/restapi/groupusers get request, token:' + token + ' limit:' + limit + ' skip:' + skip + ' groupid:' + groupid
+
+      group = SimpleChat.Groups.findOne({'_id': groupid})
+      unless group
+        console.log 'no group found:' + groupid
+        return this.response.end('[]\n')
+
+      #groupDevices = Devices.find({'groupId': groupid}).fetch()
+      #console.log 'no group found:' + groupDevices
+
+      allUsers = []
+      userGroups = SimpleChat.GroupUsers.find({group_id: groupid}, {fields:{"user_id": 1, "user_name": 1}, limit: parseInt(limit), skip: parseInt(skip)})
+      unless userGroups
+        return this.response.end('[]\n')
+      userGroups.forEach((userGroup)->
+        #if _.pluck(groupDevices, 'uuid').indexOf(userGroup.user_id) is -1
+        allUsers.push({'user_id':userGroup.user_id, 'user_name': userGroup.user_name})
+      )
+
+      this.response.end(JSON.stringify(allUsers))
+    )
+  Router.route('/restapi/activity/:token/:direction/:groupid/:ts/:skip/:limit', {where: 'server'}).get(()->
+      token = this.params.token
+      groupid = this.params.groupid
+      limit = this.params.limit
+      skip  = this.params.skip
+      direction = this.params.direction
+      starttime = this.params.ts
+
+      headers = {
+        'Content-type':'text/html;charest=utf-8',
+        'Date': Date.now()
+      }
+      this.response.writeHead(200, headers)
+      console.log '/restapi/user get request, token:' + token + ' limit:' + limit + ' skip:' + skip + ' groupid:' + groupid + ' Direction:' + direction + ' starttime:' + starttime
+
+      group = SimpleChat.Groups.findOne({'_id': groupid})
+      unless group
+        console.log 'no group found:' + groupid
+        return this.response.end('[]\n')
+
+      allActivity = []
+      #Activity.id is id of person name
+      groupActivity = Activity.find(
+       {'group_id': groupid, 'ts': {$gt: parseInt(starttime)}, 'in_out': direction}
+       {fields:{'id': 1, 'name': 1, 'ts': 1, 'in_out': 1, 'img_url':1}, limit: parseInt(limit), skip: parseInt(skip)}
+      )
+      unless groupActivity
+        return this.response.end('[]\n')
+      groupActivity.forEach((activity)->
+        allActivity.push({'user_id': activity.id, 'user_name': activity.name, 'in_out': activity.in_out, 'img_url': activity.img_url})
+      )
+
+      this.response.end(JSON.stringify(allActivity))
+    )

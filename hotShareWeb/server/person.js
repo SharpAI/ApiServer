@@ -151,6 +151,14 @@ PERSON = {
     return result;
   },
   sendPersonInfoToWeb: function(personInfo){
+    groupDevice = Devices.findOne({'uuid': personInfo.uuid})
+    if (!groupDevice || !groupDevice.uuid || !groupDevice.in_out) {
+        console.log('groupDevice:' + groupDevice.uuid + ' dir:' + groupDevice.in_out)
+        return console.log("Device not found, please scanf qrcode to join group")
+    }
+    personInfo.in_out = groupDevice.in_out;
+    Activity.insert(personInfo);
+
     var ai_system_url = process.env.AI_SYSTEM_URL || 'http://aixd.raidcdn.cn/restapi/workai';
     personInfo.fromWorkai = true;
     HTTP.call('POST', ai_system_url, {
