@@ -12,6 +12,13 @@ if Meteor.isClient
     return if val then 'checked' else ''
   )
   Template.groupInformation.helpers
+    groupAccuracyType: ()->
+      if localStorage.getItem('groupAccuracyType') is 'accurate'
+        return '精确'
+      else 
+        return '标准'
+    rejectUnknowMember: ()->
+      return localStorage.getItem('rejectUnknowMember') isnt 'true'
     rejectLabelMsg: ()->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       return group.rejectLabelMsg
@@ -73,6 +80,8 @@ if Meteor.isClient
       type = Session.get('groupsType')
       url = '/simple-chat/to/'+type+'?id='+groupid
       Router.go(url)
+    'click .groupAccuracy': (event)->
+      Session.set("groupsProfileMenu","groupAccuracy")
     'click .name': (event)->
       Session.set("groupsProfileMenu","setGroupname")
     'click .barcode': (event)->
@@ -221,7 +230,11 @@ if Meteor.isClient
           SimpleChat.Groups.update({_id: Session.get('groupsId')},{$set:{rejectLabelMsg: true}},(err,result)->
             $('#switchNormalLabelMsg').removeAttr('disabled')
           )
-
+    'click #switchRejectUnknowMember':(event)->
+      if localStorage.getItem('rejectUnknowMember') is 'true'
+        localStorage.setItem('rejectUnknowMember','false')
+      else
+        localStorage.setItem('rejectUnknowMember','true')
   Template.groupUsers.helpers
     isGroup:()->
       if Session.get('groupsType') is 'group'
@@ -332,3 +345,18 @@ if Meteor.isClient
         return
     'click #scanbarcode':(event)->
       ScanBarcodeByBarcodeScanner()
+  Template.groupAccuracy.helpers
+    isAccurateAccuray: ()->
+      return localStorage.getItem('groupAccuracyType') is 'accurate'
+  Template.groupAccuracy.events
+    'click .left-btn':(event)->
+      if Session.equals('fromCreateNewGroups',true)
+        Session.set('fromCreateNewGroups',false);
+        Router.go('/');
+      Session.set("groupsProfileMenu","groupInformation")
+    'click .selectAccuracy':(event)->
+      localStorage.setItem('groupAccuracyType',event.currentTarget.id)
+      if Session.equals('fromCreateNewGroups',true)
+        Session.set('fromCreateNewGroups',false);
+        Router.go('/');
+      Session.set("groupsProfileMenu","groupInformation")
