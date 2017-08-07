@@ -175,6 +175,14 @@ if Meteor.isClient
       Session.set('simpleUserProfileUserId',this.params._id)
       this.render 'simpleUserProfile'
       return
+    Router.route '/timeline',()->
+      if Meteor.isCordova is true
+        this.render 'timeline'
+        Session.set 'channel','timeline'
+      return
+    Router.route '/timelineAlbum/:_uuid',()->
+      this.render 'timelineAlbum'
+      return
     Router.route '/explore',()->
       if Meteor.isCordova is true
         this.render 'explore'

@@ -1,0 +1,26 @@
+<template name="timelineAlbum">
+<div class="timelineAlbum">
+  <div class="head">
+    <strong>相册时间轴</strong>
+    <div class="leftButton back">
+      <i class="fa fa-angle-left fa-fw"></i>
+    </div>
+  </div>
+  <div class="content">
+    <ul class="timeLine">
+      {{#each lists}}
+      {{#if isShowTime}}
+      <div class="timeLine-time"> 
+        <span class="dot-normal dot-success"></span>
+        <span class="time">{{create_time}}</span>
+      </div>
+      {{/if}}
+        {{#each images}}
+        <div class="images"><img src="{{url}}" /></div>
+        {{/each}}
+      {{/each}}
+
+    </ul>
+  </div>
+</div>
+</template>
