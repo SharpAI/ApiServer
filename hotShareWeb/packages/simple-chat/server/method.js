@@ -404,6 +404,50 @@ Meteor.methods({
     console.log("AI_system_register_devices group_id= " + group_id+'& uuid='+uuid)
     AI_system_register_devices(group_id,uuid);
     return 'succ';
+  },
+  'ai-checkin-out':function(data){
+    console.log('ai_checkin_out:',JSON.stringify(data));
+    if (data.user_id && data.face_id && data.group_id) {
+      return 'parameter incomplete';
+    }
+    var setObj = {};
+    if (data.checkin_time) {
+      setObj.checkin_time = data.checkin_time;
+    }
+    if (data.checkout_time) {
+      setObj.checkout_time = data.checkout_time;
+    }
+    if (data.relation_id) {
+      WorkAIUserRelations.update({_id:data.relation_id},{$set:setObj});
+    }
+    else{
+      var user = Meteor.users.findOne({_id:data.user_id});
+      if (!user) {
+        return 'user not found!';
+      }
+      var person = Person.findOne({group_id: data.group_id, 'faces.id': data.face_id}, {sort: {createAt: 1}});
+      if (person && person.name) {
+        console.log('person info:'+person.name);
+      }
+      else{
+        var name = user.profile && user.profile.fullname ? user.profile.fullname : user.username;
+        person = PERSON.setName(data.group_id, data.uuid, data.face_id, data.url, name);
+      }
+      var relation = WorkAIUserRelations.findOne({'app_user.id':user_id});
+      setObj.ai_person_id = person._id;
+      if (relation) {
+        WorkAIUserRelations.update({_id:relation._id},{$set:setObj});
+      }
+      else{
+        setObj.app_user = {
+          id:user._id,
+          name:user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+          icon:user.profile && user.profile.icon ? user.profile.icon : ''
+        };
+        WorkAIUserRelations.insert(setObj);
+      }
+    }
+    return 'succ';
   }
 });
 

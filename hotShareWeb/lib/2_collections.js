@@ -65,6 +65,24 @@ NLPTextClassName = {
 }
  */
 
+
+//点圈用户和平板识别出的人的关系表 
+WorkAIUserRelations = new Meteor.Collection('workaiUserRelations');
+
+/*
+WorkAIUserRelations = {
+ app_user:{
+  id:<Interger>
+  name:<String>
+ } //点圈用户
+ ai_person_id:<Integer> //平板识别的人
+ ai_in_time:<Date> //平板检测到这个人的进门时间
+ ai_out_time:<Date> //平板检测到这个人的出门时间
+ checkin_time:<Date> //app标记进门时间
+ checkout_time:<Date> //app标记出门的时间
+}
+ */
+
 if(Meteor.isServer){
   PeopleHis.allow({
     update: function (userId, doc, fields, modifier) {
