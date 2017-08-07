@@ -1,4 +1,5 @@
 if Meteor.isClient
+  @sysMsgToUserId = 'fTnmgpdDN4hF9re8F'
   Template.chatGroups.rendered=->
     $('.content').css 'min-height',$(window).height()
     #Meteor.subscribe("get-my-group", Meteor.userId())
@@ -21,7 +22,7 @@ if Meteor.isClient
     showBubbleTipHintTemplate:()->
       Session.equals('needShowBubble','true')
     msgSession2: ()->
-      return SimpleChat.MsgSession.find({userId: Meteor.userId()}, {sort: {updateAt: -1}})
+      return SimpleChat.MsgSession.find({userId: Meteor.userId(),toUserId:{$ne: sysMsgToUserId}}, {sort: {updateAt: -1}})
     isGroup: (msg)->
       return msg.to_type is 'group'
     hasVal: (val)->
@@ -35,29 +36,17 @@ if Meteor.isClient
     #   SimpleChat.GroupUsers.find({user_id:Meteor.userId()}, {sort: {createdAt: -1}})
     # myChatGroups:()->
     #   Follower.find({"userId":Meteor.userId()}, {sort: {createdAt: -1}}, {limit:Session.get("followersitemsLimit")})
-    # hasSysMessages:()->
-    #   if Feeds.find().count() > 0
-    #     true
-    #   else
-    #     false
-    # showRedSpot:()->
-    #   me = Meteor.user()
-    #   if me
-    #     wait_read_count = Feeds.find({
-    #         followby: Meteor.userId(),
-    #         isRead:{$ne: true},
-    #         checked:{$ne: true},
-    #         eventType:{$ne:'share'},
-    #         createdAt: {$gt: new Date((new Date()).getTime() - 7 * 24 * 3600 * 1000)}
-    #       },{
-    #         limit: 99
-    #       }).count()
-    #     if wait_read_count > 0
-    #       true
-    #     else
-    #       false
-    #   else
-    #     false
+    hasSysMessages:()->
+      sysMsg = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId:sysMsgToUserId})
+      if sysMsg
+        return true
+      return false
+    showRedSpot:()->
+      msgSession = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId:sysMsgToUserId})
+      if msgSession && msgSession.count
+        return msgSession.count > 0
+      else
+        return false
     # moreResults:->
     #   !(Follower.find({"userId":Meteor.userId()}).count() < Session.get("followersitemsLimit"))
     # loading:->
@@ -76,11 +65,10 @@ if Meteor.isClient
   Template.chatGroups.events
     'click #sysBell':(event)->
       Meteor.defer ()->
-        me = Meteor.user()
-        if me and me.profile and me.profile.waitReadCount
-          if me.profile.waitReadCount > 0
-            Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
-      PUB.page('/bell')
+        msgSession = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId:sysMsgToUserId});
+        if msgSession
+          SimpleChat.MsgSession.update({_id:msgSession._id},{$set:{count:0}});
+      PUB.page('/checkInOutMsgList')
     'click li': (event)->
       if isIOS
         if (event.clientY + $('.home #footer').height()) >=  $(window).height()

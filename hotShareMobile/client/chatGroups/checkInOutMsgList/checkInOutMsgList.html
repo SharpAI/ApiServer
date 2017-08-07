@@ -1,0 +1,45 @@
+<template name="checkInOutMsgList">
+  <div class="checkInOutMsgList">
+      <div class="head">
+        <div class="title">
+          <strong class="top-unread-btn active">未读</strong>
+          <strong class="top-read-btn">已读</strong>
+        </div>
+        <div class="leftButton back">
+            <i class="fa fa-angle-left fa-fw"></i>
+        </div>
+      </div>
+      <div class="content">
+          <div id="wrapper">
+          {{#if noMsg}}
+            <div class="no-msg-title">
+              暂无{{msgType}}消息
+            </div>
+          {{else}}
+            <div id="list" style="width: 100%">
+            <ul style="padding: 0 10px;">
+              {{#each mySysMsg}}
+                <li id="{{_id}}">
+                  <div class="text">{{text}}</div>
+                  {{#each images}}
+                    {{> checkInOutMsgListImageItem}}
+                  {{/each}}
+                  <div class="time">{{formatTime create_time}}</div>
+                </li>
+              {{/each}}
+            </ul>
+            {{#if moreResults}}
+              <div id="showMoreResults" style="margin-bottom: 60px;">
+                <span class="loading">{{_ "loading"}}</span>
+              </div>
+            {{/if}}
+          </div>
+          {{/if}}
+        </div>
+      </div>
+  </div>
+</template>
+
+<template name="checkInOutMsgListImageItem">
+  <img class="lazy" data-original="{{url}}">
+</template>

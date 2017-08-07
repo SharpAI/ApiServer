@@ -589,6 +589,9 @@ if Meteor.isClient
     Router.route '/setGroupname',()->
       this.render 'setGroupname'
       return
+    Router.route '/checkInOutMsgList',()->
+      this.render 'checkInOutMsgList'
+      return
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->
