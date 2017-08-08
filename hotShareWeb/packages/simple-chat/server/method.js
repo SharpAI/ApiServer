@@ -430,11 +430,13 @@ Meteor.methods({
     if (!data.user_id || !data.face_id || !person_info || ! person_info.group_id) {
       return {result:'error',reason:'参数不全'};
     }
-    var setObj = {};
+    var setObj = {group_id:person_info.group_id};
     if (data.checkin_time) {
+      setObj.in_uuid = person_info.uuid;
       setObj.checkin_time = new Date(data.checkin_time).getTime() ;
     }
     if (data.checkout_time) {
+      setObj.out_uuid = person_info.uuid;
       setObj.checkout_time = new Date(data.checkout_time).getTime();
     }
     var user = Meteor.users.findOne({_id:data.user_id});

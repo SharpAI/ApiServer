@@ -81,6 +81,9 @@ WorkAIUserRelations = {
  ai_out_time:<Date> //平板检测到这个人的出门时间
  checkin_time:<Date> //app标记进门时间
  checkout_time:<Date> //app标记出门的时间
+ in_uuid:<Integer>//进门UUID
+ out_uuid:<Integer>//出门UUID
+ group_id:<Integer>//组id
 }
  */
 
