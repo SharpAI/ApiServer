@@ -7,6 +7,12 @@ Template.timelineAlbum.onRendered(function(){
     var contentHeight = $('.content').height();
     console.log(contentTop+contentHeight)
     console.log(height)
+    if(timelineAlbumTimeout){
+      window.clearTimeout(timelineAlbumTimeout);
+    }
+    timelineAlbumTimeout = setTimeout(function() {
+      $("img.lazy").lazyload({});
+    }, 500);
     if((contentHeight + contentTop + 50 ) >= height){
       var limit = Session.get('timelineAlbumLimit') + 10
       console.log('loadMore and limit = ',limit);
@@ -15,7 +21,10 @@ Template.timelineAlbum.onRendered(function(){
     }
   });
 
-  Meteor.subscribe('get-workai-user-relation',Meteor.userId());
+  Meteor.subscribe('get-workai-user-relation',Meteor.userId());  
+  timelineAlbumTimeout = setTimeout(function() {
+      $("img.lazy").lazyload({});
+  }, 1000);
 });
 Template.timelineAlbum.helpers({
   lists: function(){

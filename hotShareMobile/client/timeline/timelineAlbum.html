@@ -18,7 +18,7 @@
       {{/if}}
         {{#each images}}
         <div class="images" id="{{id}}" data-url="{{url}}" data-type="{{img_type}}" data-label="{{label}}" data-ts="{{../ts}}">
-          <img src="{{url}}" />
+          <img class="lazy" data-original="{{url}}" />
         </div>
         {{/each}}
       {{/each}}
