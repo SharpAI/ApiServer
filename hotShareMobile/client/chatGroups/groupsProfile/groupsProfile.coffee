@@ -14,9 +14,9 @@ if Meteor.isClient
   Template.groupInformation.helpers
     groupAccuracyType: ()->
       if localStorage.getItem('groupAccuracyType') is 'accurate'
-        return '精确'
+        return '精确匹配'
       else 
-        return '标准'
+        return '宽松匹配'
     rejectUnknowMember: ()->
       return localStorage.getItem('rejectUnknowMember') isnt 'true'
     rejectLabelMsg: ()->
