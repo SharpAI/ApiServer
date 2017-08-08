@@ -105,6 +105,15 @@ if(Meteor.isServer){
   Meteor.publish('people_new', function(){
     return People.find({}, {sort: {updateTime: -1}, limit: 50});
   });
+  Meteor.publish('group_devices',function(){
+   if(this.userId){
+       var group = SimpleChat.GroupUsers.findOne({user_id:this.userId}, {sort: {createdAt: -1}});
+       if(group){
+           return Devices.find({groupId: group.group_id});
+       } 
+   }
+   return this.ready();
+ });
   Meteor.methods({
     getPeopleIdByName: function(name, uuid){
       var people = People.findOne({name: name, uuid: uuid}, {sort: {updateTime: -1}});
