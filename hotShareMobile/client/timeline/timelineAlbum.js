@@ -16,7 +16,7 @@ Template.timelineAlbum.onRendered(function(){
     if((contentHeight + contentTop + 50 ) >= height){
       var limit = Session.get('timelineAlbumLimit') + 10
       console.log('loadMore and limit = ',limit);
-      SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({people_uuid:uuid,type:'text', images: {$exists: true}}, {limit: limit, sort: {create_time: -1}}, limit);
+      SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({to_type:'group',people_uuid:uuid,type:'text', images: {$exists: true}}, {limit: limit, sort: {create_time: -1}}, limit);
       Session.set('timelineAlbumLimit',limit);
     }
   });
@@ -32,10 +32,10 @@ Template.timelineAlbum.helpers({
     var uuid = Router.current().params._uuid;
     var msgs = [];
     var tempDate = null;
-    if(SimpleChat.Messages.find({people_uuid:uuid,type:'text', images: {$exists: true}},{sort:{create_time:1}}).count() ==0){
-       SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({people_uuid:uuid,type:'text', images: {$exists: true}}, {limit: 10, sort: {create_time: -1}}, 10);
+    if(SimpleChat.Messages.find({to_type:'group',people_uuid:uuid,type:'text', images: {$exists: true}},{sort:{create_time:1}}).count() ==0){
+       SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({to_type:'group',people_uuid:uuid,type:'text', images: {$exists: true}}, {limit: 10, sort: {create_time: -1}}, 10);
     }
-    SimpleChat.Messages.find({people_uuid:uuid,type:'text', images: {$exists: true}},{sort:{create_time:-1}}).forEach(function(item){
+    SimpleChat.Messages.find({to_type:'group',people_uuid:uuid,type:'text', images: {$exists: true}},{sort:{create_time:-1}}).forEach(function(item){
       var date = new Date(item.create_time);
       var time = date.shortTime();
       var obj = {
