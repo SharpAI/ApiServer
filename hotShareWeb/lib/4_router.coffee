@@ -1330,3 +1330,42 @@ if Meteor.isServer
 
       this.response.end(JSON.stringify(allActivity))
     )
+  Router.route('/restapi/notactive/:token/:direction/:skip/:limit', {where: 'server'}).get(()->
+      token = this.params.token
+      limit = this.params.limit
+      skip  = this.params.skip
+      direction = this.params.direction
+
+      headers = {
+        'Content-type':'text/html;charest=utf-8',
+        'Date': Date.now()
+      }
+      this.response.writeHead(200, headers)
+      console.log '/restapi/user get request, token:' + token + ' limit:' + limit + ' skip:' + skip + ' Direction:' + direction
+
+      allnotActivity = []
+      notActivity = WorkAIUserRelations.find({}, {limit: parseInt(limit), skip: parseInt(skip)})
+      unless notActivity
+        return this.response.end('[]\n')
+      notActivity.forEach((item)->
+        if direction is 'in' and !item.checkin_time and !item.ai_in_time and item.in_uuid isnt undefined
+          allnotActivity.push({
+            'app_user_id': item.app_user_id
+            'app_user_name': item.app_user_name
+            'uuid': item.in_uuid
+            'groupid': item.group_id
+            'msgid': new Mongo.ObjectID()._str
+          })
+        else if direction is 'out' and !item.checkout_time and !item.ai_out_time and item.out_uuid isnt undefined
+          allnotActivity.push({
+            'app_user_id': item.app_user_id
+            'app_user_name': item.app_user_name
+            'uuid': item.out_uuid
+            'groupid': item.group_id
+            'msgid': new Mongo.ObjectID()._str
+          })
+      )
+
+      this.response.end(JSON.stringify(allnotActivity))
+    )
+

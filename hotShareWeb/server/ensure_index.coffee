@@ -72,3 +72,4 @@ if Meteor.isServer
     Recommends._ensureIndex({relatedUserId: 1})
     Recommends._ensureIndex({relatedPostId: 1})
     SeriesFollow._ensureIndex({owner: 1, seriesId: 1})
+    WorkAIUserRelations._ensureIndex({app_user_id: 1})
