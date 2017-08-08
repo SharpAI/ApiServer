@@ -65,3 +65,7 @@ Meteor.publish('get-nlp-label-names', function(group_id, limit){
   limit = limit || 20;
   return NLPTextClassName.find({group_id: group_id}, {sort: {createAt: 1}, limit: limit});
 });
+
+Meteor.publish('get-workai-user-relation',function(user_id){
+  return WorkAIUserRelations.find({'app_user_id':user_id});
+});

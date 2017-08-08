@@ -67,6 +67,6 @@ Meteor.publish('get-nlp-label-names', function(group_id, limit){
 });
 
 Meteor.publish('get-workai-user-relation',function(user_id){
-  return WorkAIUserRelations.find({'app_user.id':user_id});
+  return WorkAIUserRelations.find({'app_user_id':user_id});
 });
 
