@@ -461,6 +461,18 @@ Meteor.methods({
       WorkAIUserRelations.update({_id:relation._id},{$set:setObj});
     }
     else{
+      if (!setObj.in_uuid) {
+         var device =  GroupUsers.findOne({group_id:setObj.group_id,in_out:'in'});
+         if (device) {
+          setObj.in_uuid = device.username;
+         }
+      }
+      if (!setObj.out_uuid) {
+        var device = GroupUsers.findOne({group_id:setObj.group_id,in_out:'out'});
+        if (device) {
+          setObj.out_uuid = device.username;
+         }
+      }
       setObj.app_user_id = user._id;
       setObj.app_user_name = user_name;
       WorkAIUserRelations.insert(setObj);

@@ -749,6 +749,7 @@ if Meteor.isServer
     if groupUsers.count() > 0
       groupUsers.forEach((groupUser)->
         if groupUser.group_id is group_id
+          SimpleChat.GroupUsers.update({_id:groupUser._id},{$set:{is_device:true,in_out:in_out}});
           hasBeenJoined = true
         else
           _group = SimpleChat.Groups.findOne({_id: groupUser.group_id})
@@ -782,6 +783,8 @@ if Meteor.isServer
         user_name: if user.profile and user.profile.fullname then user.profile.fullname else user.username
         user_icon: if user.profile and user.profile.icon then user.profile.icon else '/device_icon_192.png'
         create_time: new Date()
+        is_device:true
+        in_out:in_out
       });
       sendMqttMessage('/msg/g/'+ group_id, {
         _id: new Mongo.ObjectID()._str
