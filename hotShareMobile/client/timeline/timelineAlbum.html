@@ -6,7 +6,8 @@
       <i class="fa fa-angle-left fa-fw"></i>
     </div>
   </div>
-  <div class="content">
+  <div class="content" style="position: absolute;top: 0;left: 0;bottom: 0;right: 0;overflow-x: hidden;overflow-y: auto;">
+    {{#if lists}}
     <ul class="timeLine">
       {{#each lists}}
       {{#if isShowTime}}
@@ -16,11 +17,17 @@
       </div>
       {{/if}}
         {{#each images}}
-        <div class="images"><img src="{{url}}" /></div>
+        <div class="images" data-url="{{url}}" data-type="{{type}}" data-groupid="{{groupid}}" data-ts="{{ts}}">
+          <img src="{{url}}" />
+        </div>
         {{/each}}
       {{/each}}
 
     </ul>
+    {{else}}
+    <div style="text-align: center;margin-top: 100px;">暂无数据</div>
+    {{/if}}
+  <!--<div class="loading" style="display:none;text-align:center; margin:10px;"><img src="/loading.gif" width="20">&nbsp;&nbsp;加载中...</div>-->
   </div>
 </div>
 </template>

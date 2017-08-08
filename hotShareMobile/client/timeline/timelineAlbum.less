@@ -1,5 +1,5 @@
 .timeLine{
-  margin: 10px; padding: 0;padding-left: 20px;
+  margin: 0; padding: 10px;padding-left: 30px;
   margin-top: 50px;
   .images{
     display: inline-block; width: 64px; height: 64px; padding: 0 8px 8px 0;
@@ -26,11 +26,12 @@
 }
 .timeLine:before {
     content: "";
-    position: absolute;
+    position: fixed;
     width: 2px;
     background: #bbbaba;
     left: 14px;
     top: 0;
     bottom: 0;
+    height: 100%;
     z-index: -1;
 }
