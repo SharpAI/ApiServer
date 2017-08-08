@@ -13,7 +13,9 @@ Template.timelineAlbum.onRendered(function(){
       SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({people_uuid:uuid,type:'text', images: {$exists: true}}, {limit: limit, sort: {create_time: -1}}, limit);
       Session.set('timelineAlbumLimit',limit);
     }
-  })
+  });
+
+  Meteor.subscribe('get-workai-user-relation',Meteor.userId());
 });
 Template.timelineAlbum.helpers({
   lists: function(){
@@ -28,6 +30,7 @@ Template.timelineAlbum.helpers({
       var time = date.shortTime();
       var obj = {
         create_time: time,
+        ts: item.create_time,
         images: item.images
       };
       if(tempDate !== time){
@@ -44,30 +47,75 @@ Template.timelineAlbum.events({
   'click .back': function(){
     return PUB.back();
   },
-  'click .images': function(){
+  'click .images': function(e){
     var uuid = Router.current().params._uuid;
     device = Devices.findOne({uuid: uuid});
-    // if(device){
-    //   var person_info = {
-    //     'id': res[updateObj.images[i].label].faceId,
-    //     'uuid': msgObj.people_uuid,
-    //     'name': nas[0],
-    //     'group_id': msgObj.to.id,
-    //     'img_url': updateObj.images[i].url,
-    //     'type': updateObj.images[i].img_type,
-    //     'ts': new Date(updateObj.create_time).getTime(),
-    //     'accuracy': 1,
-    //     'fuzziness': 1
-    //   }
-    // }
-    PUB.confirm('是否将该时间记录到每日出勤报告？', function(){
-      console.log('ok')
-      PUB.toast('已记录到每日出勤报告')
-      // Meteor.call('send-person-to-web',person_info,function(err, res){
-      //   if(err){
-      //     console.log('send-person-to-web Err:',err);
-      //   }
-      // })
-    })
+    var people_id = e.currentTarget.id,
+        group_id  = device.groupId;
+
+    var person_info = {
+      'name': $(e.currentTarget).data('label') || '',
+      'uuid': uuid,
+      'group_id': group_id,
+      'img_url': $(e.currentTarget).data('url'),
+      'type': $(e.currentTarget).data('type'),
+      'ts': new Date( $(e.currentTarget).data('ts')).getTime(),
+      'accuracy': 1,
+      'fuzziness': 1
+    };
+
+    var data = {
+      user_id:Meteor.userId(),
+      face_id:people_id,
+      person_info: person_info
+    };
+
+    if(device.in_out && device.in_out == 'in'){
+      data.checkin_time =  new Date( $(e.currentTarget).data('ts')).getTime()
+    } else {
+      data.checkout_time =  new Date( $(e.currentTarget).data('ts')).getTime()
+    }
+    
+    console.log(data);
+    // 检查是否标识过自己
+    var relations = WorkAIUserRelations.findOne({'app_user.id':Meteor.userId()});
+    var callbackRsu = function(res){
+
+    }
+    if(relations){ // 标识过
+      PUB.confirm('是否将该时间记录到每日出勤报告？',function(){
+        Meteor.call('ai-checkin-out',data,function(err, res){
+          if(err){
+            PUB.toast('记录失败，请重试');
+            console.log('ai-checkin-out error:' + err);
+            return;
+          }
+          if(res && res.result == 'succ'){
+            return PUB.toast('已记录到每日出勤报告');
+          } else {
+            return navigator.notification.confirm(res.text,function(index){
+
+            },res.reason,['知道了']);
+          }
+        });
+      });
+    } else {
+      PUB.confirm('是否关联？',function(){
+        Meteor.call('ai-checkin-out',data,function(err,res){
+          if(err){
+            PUB.toast('关联失败，请重试');
+            console.log('ai-checkin-out error:' + err);
+            return;
+          }
+          if(res && res.result == 'succ'){
+            return PUB.toast('已关联');
+          } else {
+            return navigator.notification.confirm(res.text,function(index){
+
+            },res.reason,['知道了']);
+          }
+        });
+      });
+    }
   }
 });
