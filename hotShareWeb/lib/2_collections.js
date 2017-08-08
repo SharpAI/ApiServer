@@ -112,6 +112,12 @@ if(Meteor.isServer){
    }
    return this.ready();
  });
+ Meteor.publish('devices-by-uuid',function(uuid){
+     if(!this.userId || !uuid){
+         return this.ready();
+     }
+     return Devices.find({uuid:uuid});
+ });
   Meteor.methods({
     getPeopleIdByName: function(name, uuid){
       var people = People.findOne({name: name, uuid: uuid}, {sort: {updateTime: -1}});

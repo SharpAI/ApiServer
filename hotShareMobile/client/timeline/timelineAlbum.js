@@ -21,6 +21,7 @@ Template.timelineAlbum.onRendered(function(){
     }
   });
 
+  Meteor.subscribe('devices-by-uuid',Router.current().params._uuid);
   Meteor.subscribe('get-workai-user-relation',Meteor.userId());  
   timelineAlbumTimeout = setTimeout(function() {
       $("img.lazy").lazyload({});
