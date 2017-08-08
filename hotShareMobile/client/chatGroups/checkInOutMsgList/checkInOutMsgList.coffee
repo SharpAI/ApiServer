@@ -73,7 +73,7 @@ Template.checkInOutMsgList.events
           else if slef.checkin_out is 'out'
             data.checkout_time = slef.create_time;
           Meteor.call('ai-checkin-out',data,(error,res)->
-            if error || !res || res.result isnt 'succ')
+            if error || !res || res.result isnt 'succ'
               PUB.toast '记录失败，请重试'
               console.log 'ai-checkin-out error:' + error
               return

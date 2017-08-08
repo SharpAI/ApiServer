@@ -74,10 +74,8 @@ WorkAIUserRelations = new Meteor.Collection('workaiUserRelations');
 
 /*
 WorkAIUserRelations = {
- app_user:{
-  id:<Interger>
-  name:<String>
- } //点圈用户
+ app_user_id:<Integer> //点圈用户
+ app_user_name:<String> //点圈用户名
  ai_person_id:<Integer> //平板识别的人
  ai_in_time:<Date> //平板检测到这个人的进门时间
  ai_out_time:<Date> //平板检测到这个人的出门时间
