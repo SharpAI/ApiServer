@@ -87,7 +87,7 @@ Template.timelineAlbum.events({
     
     console.log(data);
     // 检查是否标识过自己
-    var relations = WorkAIUserRelations.findOne({'app_user.id':Meteor.userId()});
+    var relations = WorkAIUserRelations.findOne({'app_user_id':Meteor.userId()});
     var callbackRsu = function(res){
 
     }

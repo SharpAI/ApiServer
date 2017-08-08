@@ -432,10 +432,10 @@ Meteor.methods({
     }
     var setObj = {};
     if (data.checkin_time) {
-      setObj.checkin_time = data.checkin_time;
+      setObj.checkin_time = new Date(data.checkin_time).getTime() ;
     }
     if (data.checkout_time) {
-      setObj.checkout_time = data.checkout_time;
+      setObj.checkout_time = new Date(data.checkout_time).getTime();
     }
     var user = Meteor.users.findOne({_id:data.user_id});
     if (!user) {

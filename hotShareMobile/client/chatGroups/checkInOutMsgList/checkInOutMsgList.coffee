@@ -63,7 +63,7 @@ Template.checkInOutMsgList.events
                'group_id': slef.group_id,
                'img_url': img.url,
                'type': img_type,
-               'ts': slef.create_time.getTime(),
+               'ts': new Date(slef.create_time).getTime(),
                'accuracy': img.accuracy,
                'fuzziness': img.fuzziness
             }
