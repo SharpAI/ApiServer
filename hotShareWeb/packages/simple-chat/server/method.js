@@ -406,9 +406,29 @@ Meteor.methods({
     return 'succ';
   },
   'ai-checkin-out':function(data){
+    /*
+  var data = {
+        user_id:Meteor.userId(),
+        checkin_time: create_time,
+        face_id：people_id,
+        person_info: {
+            'id': personInfo[name].faceId,
+            'uuid': uuid,
+            'name': name,
+            'group_id': userGroup.group_id,
+            'img_url': url,
+            'type': img_type,
+            'ts': create_time.getTime(),
+            'accuracy': accuracy,
+            'fuzziness': fuzziness
+          }
+      };
+
+   */
     console.log('ai_checkin_out:',JSON.stringify(data));
-    if (data.user_id && data.face_id && data.group_id) {
-      return 'parameter incomplete';
+    var person_info = data.person_info;
+    if (!data.user_id || !data.face_id || !person_info || ! person_info.group_id) {
+      return {result:'error',reason:'参数不全'};
     }
     var setObj = {};
     if (data.checkin_time) {
@@ -417,37 +437,36 @@ Meteor.methods({
     if (data.checkout_time) {
       setObj.checkout_time = data.checkout_time;
     }
-    if (data.relation_id) {
-      WorkAIUserRelations.update({_id:data.relation_id},{$set:setObj});
+    var user = Meteor.users.findOne({_id:data.user_id});
+    if (!user) {
+      return {result:'error',reason:'用户不存在'};
+    }
+    var person = Person.findOne({group_id: person_info.group_id, 'faces.id': data.face_id}, {sort: {createAt: 1}});
+    var user_name = user.profile && user.profile.fullname ? user.profile.fullname : user.username;
+    if (person && person.name) {
+      console.log('person info:'+person.name);
     }
     else{
-      var user = Meteor.users.findOne({_id:data.user_id});
-      if (!user) {
-        return 'user not found!';
-      }
-      var person = Person.findOne({group_id: data.group_id, 'faces.id': data.face_id}, {sort: {createAt: 1}});
-      if (person && person.name) {
-        console.log('person info:'+person.name);
-      }
-      else{
-        var name = user.profile && user.profile.fullname ? user.profile.fullname : user.username;
-        person = PERSON.setName(data.group_id, data.uuid, data.face_id, data.url, name);
-      }
-      var relation = WorkAIUserRelations.findOne({'app_user.id':user_id});
-      setObj.ai_person_id = person._id;
-      if (relation) {
-        WorkAIUserRelations.update({_id:relation._id},{$set:setObj});
-      }
-      else{
-        setObj.app_user = {
-          id:user._id,
-          name:user.profile && user.profile.fullname ? user.profile.fullname : user.username,
-          icon:user.profile && user.profile.icon ? user.profile.icon : ''
-        };
-        WorkAIUserRelations.insert(setObj);
-      }
+      user_name = person_info.name || user_name;
+      person = PERSON.setName(person_info.group_id, person_info.uuid, data.face_id, person_info.img_url, user_name);
     }
-    return 'succ';
+    var relation = WorkAIUserRelations.findOne({ai_person_id:person._id});
+    if (relation && relation.app_user_id !== user._id) {
+      return {result:'error',reason:'此人已被'+relation.app_user_name+'关联,请重新选择照片'};
+    }
+    setObj.ai_person_id = person._id;
+    if (relation) {
+      WorkAIUserRelations.update({_id:relation._id},{$set:setObj});
+    }
+    else{
+      setObj.app_user_id = user._id;
+      setObj.app_user_name = user_name;
+      WorkAIUserRelations.insert(setObj);
+    }
+    person_info.name = person.name;
+    person_info.id = person.faceId;
+    PERSON.sendPersonInfoToWeb(person_info);
+    return {result:'succ'};
   }
 });
 

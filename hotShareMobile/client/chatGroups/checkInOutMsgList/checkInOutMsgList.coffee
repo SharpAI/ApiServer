@@ -50,21 +50,30 @@ Template.checkInOutMsgList.events
       PUB.back()
     'click #list ul li':(e)->
       msgId = e.currentTarget.id
-      SimpleChat.Messages.update({_id:msgId},{$set:{is_read:true}});
       slef = this;
       confirm_callBack = (index)->
         if index is 1
+          img = slef.images[0];
           data = {
             user_id:Meteor.userId(),
-            face_id:slef.people_id,
-            group_id:slef.group_id,
+            face_id:img.id,
+            person_info:{
+               'uuid': slef.people_uuid,
+               'name': img.label,
+               'group_id': slef.group_id,
+               'img_url': img.url,
+               'type': img_type,
+               'ts': slef.create_time.getTime(),
+               'accuracy': img.accuracy,
+               'fuzziness': img.fuzziness
+            }
           }
           if slef.checkin_out is 'in'
             data.checkin_time = slef.create_time;
           else if slef.checkin_out is 'out'
             data.checkout_time = slef.create_time;
           Meteor.call('ai-checkin-out',data,(error,res)->
-            if error
+            if error || !res || res.result isnt 'succ')
               PUB.toast '记录失败，请重试'
               console.log 'ai-checkin-out error:' + error
               return
@@ -73,7 +82,7 @@ Template.checkInOutMsgList.events
           # ...
         else
           #跳转至时间轴
-          #
+          PUB.page 'timelineAlbum/'+slef.people_uuid
       confirm_text = '是否将该时间记录到每日出勤报告？'
       if slef.checkin_out and slef.checkin_out isnt ''
         if slef.images and slef.images.length > 0
@@ -89,4 +98,5 @@ Template.checkInOutMsgList.events
               confirm_callBack(2)
         else
           #跳转至时间轴
-          #
+          PUB.page 'timelineAlbum/'+slef.people_uuid
+      SimpleChat.Messages.update({_id:msgId},{$set:{is_read:true}});
