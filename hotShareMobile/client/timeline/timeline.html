@@ -4,6 +4,7 @@
         <strong class="top-home-btn active">时间轴</strong>
       </div>
       <div class="content">
+      {{#if devices}}
       <ul class="set-up comFadeIn" style="margin-top: 50px;margin-bottom: 10px;">
       {{#each devices}}
         <li id="{{uuid}}" class="deviceItem" style="height:60px;padding:10px 0">
@@ -17,6 +18,9 @@
         </li>
       {{/each}}
       </ul>
+      {{else}}
+      <div style="text-align: center;margin-top: 100px;">未找到设备</div>
+      {{/if}}
       </div>
   </div>
   {{> footer}}
