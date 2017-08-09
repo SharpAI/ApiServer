@@ -462,7 +462,7 @@ Meteor.methods({
     else{
       relation = WorkAIUserRelations.findOne({'app_user_id':user._id});
       if (relation) {
-        WorkAIUserRelations.update({_id:relation._id},{$set:{setObj},$push:{ai_persons:{id:person._id}}});
+        WorkAIUserRelations.update({_id:relation._id},{$set:setObj,$push:{ai_persons:{id:person._id}}});
       }
       else{
           setObj.ai_persons = [{id:person._id}];
