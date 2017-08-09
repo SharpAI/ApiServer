@@ -1411,11 +1411,26 @@ if Meteor.isServer
       console.log '/restapi/user get request, token:' + token + ' limit:' + limit + ' skip:' + skip + ' Direction:' + direction
 
       allnotActivity = []
+      daytime = new Date()
+      daytime.setSeconds(0)
+      daytime.setMinutes(0)
+      daytime.setHours(0)
+      daytime = new Date(daytime).getTime()
+
       notActivity = WorkAIUserRelations.find({}, {limit: parseInt(limit), skip: parseInt(skip)})
       unless notActivity
         return this.response.end('[]\n')
       notActivity.forEach((item)->
-        if direction is 'in' and !item.checkin_time and !item.ai_in_time and item.in_uuid isnt undefined
+        if !item.checkin_time
+          item.checkin_time = 0
+        if !item.ai_in_time
+          item.checkin_time = 0
+        if !item.checkout_time
+          item.checkout_time = 0
+        if !item.ai_out_time
+          item.ai_out_time = 0
+
+        if direction is 'in' and item.checkin_time < daytime and item.ai_in_time < daytime and item.in_uuid
           allnotActivity.push({
             'app_user_id': item.app_user_id
             'app_user_name': item.app_user_name
@@ -1423,7 +1438,7 @@ if Meteor.isServer
             'groupid': item.group_id
             'msgid': new Mongo.ObjectID()._str
           })
-        else if direction is 'out' and !item.checkout_time and !item.ai_out_time and item.out_uuid isnt undefined
+        else if direction is 'out' and item.checkout_time < daytime and item.ai_out_time < daytime and item.out_uuid
           allnotActivity.push({
             'app_user_id': item.app_user_id
             'app_user_name': item.app_user_name
