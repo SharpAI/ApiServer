@@ -566,7 +566,7 @@ if Meteor.isServer
     person = Person.findOne({group_id:data.group_id,'faces.id':data.images.id})
     if !person
       return
-    relation = WorkAIUserRelations.findOne({ai_person_id:person._id})
+    relation = WorkAIUserRelations.findOne({'ai_persons.id':person._id})
     if !relation
       return
     ai_in_time = new Date(relation.ai_in_time);

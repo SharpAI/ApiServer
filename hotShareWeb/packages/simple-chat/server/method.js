@@ -452,30 +452,36 @@ Meteor.methods({
       user_name = person_info.name || user_name;
       person = PERSON.setName(person_info.group_id, person_info.uuid, data.face_id, person_info.img_url, user_name);
     }
-    var relation = WorkAIUserRelations.findOne({ai_person_id:person._id});
+    var relation = WorkAIUserRelations.findOne({'ai_persons.id':person._id});
     if (relation && relation.app_user_id !== user._id) {
       return {result:'error',reason:'此人已被'+relation.app_user_name+'关联,请重新选择照片'};
     }
-    setObj.ai_person_id = person._id;
     if (relation) {
       WorkAIUserRelations.update({_id:relation._id},{$set:setObj});
     }
     else{
-      if (!setObj.in_uuid) {
-         var device =  GroupUsers.findOne({group_id:setObj.group_id,in_out:'in'});
-         if (device) {
-          setObj.in_uuid = device.username;
-         }
+      relation = WorkAIUserRelations.findOne({'app_user_id':user._id});
+      if (relation) {
+        WorkAIUserRelations.update({_id:relation._id},{$set:{setObj},$push:{ai_persons:{id:person._id}}});
       }
-      if (!setObj.out_uuid) {
-        var device = GroupUsers.findOne({group_id:setObj.group_id,in_out:'out'});
-        if (device) {
-          setObj.out_uuid = device.username;
-         }
+      else{
+          setObj.ai_persons = [{id:person._id}];
+          if (!setObj.in_uuid) {
+             var device =  GroupUsers.findOne({group_id:setObj.group_id,in_out:'in'});
+             if (device) {
+              setObj.in_uuid = device.username;
+             }
+          }
+          if (!setObj.out_uuid) {
+            var device = GroupUsers.findOne({group_id:setObj.group_id,in_out:'out'});
+            if (device) {
+              setObj.out_uuid = device.username;
+             }
+          }
+          setObj.app_user_id = user._id;
+          setObj.app_user_name = user_name;
+          WorkAIUserRelations.insert(setObj);
       }
-      setObj.app_user_id = user._id;
-      setObj.app_user_name = user_name;
-      WorkAIUserRelations.insert(setObj);
     }
     person_info.name = person.name;
     person_info.id = person.faceId;
