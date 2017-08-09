@@ -21,10 +21,10 @@ PERSON = {
   removeName: function(group_id,uuid, id){
     var person = null;
     if (group_id && uuid) {
-      person = Person.findOne({uuid: uuid, group_id:group_id ,'faces.id': id});
+      person = Person.findOne({uuid: uuid, group_id:group_id ,'faces.id': id}, {sort: {createAt: 1}});
     }
     else if (uuid) {
-      person = Person.findOne({uuid: uuid, group_id:group_id ,'faces.id': id});
+      person = Person.findOne({uuid: uuid, group_id:group_id ,'faces.id': id}, {sort: {createAt: 1}});
     }
     if (person){
       if (person.faceId === id){
@@ -45,7 +45,7 @@ PERSON = {
     //PersonNames.remove({uuid: uuid, id: id});
   },
   setName: function(group_id, uuid, id, url, name){
-    var person = Person.findOne({uuid: uuid, group_id:group_id, name: name});
+    var person = Person.findOne({uuid: uuid, group_id:group_id, name: name}, {sort: {createAt: 1}});
     var dervice = PERSON.upsetDevice(uuid, group_id);
     var personName = PersonNames.findOne({group_id: group_id, name: name});
 
@@ -63,7 +63,7 @@ PERSON = {
         person.faces[_.pluck(person.faces, 'id').indexOf(id)].url = url;
       Person.update({_id: person._id}, {$set: {name: name, url: person.url, updateAt: person.updateAt, faces: person.faces}});
     } else if (Person.find({uuid: uuid, group_id: group_id, faceId: id}).count() > 0){
-      person = Person.findOne({uuid: uuid, group_id: group_id, faceId: id});
+      person = Person.findOne({uuid: uuid, group_id: group_id, faceId: id}, {sort: {createAt: 1}});
       person.name = name;
       person.url = url;
       person.updateAt = new Date();
@@ -99,7 +99,7 @@ PERSON = {
       person = Person.findOne({group_id: group_id, 'faces.id': id}, {sort: {createAt: 1}});
     }
     else if (uuid){
-      person = Person.findOne({uuid: uuid, 'faces.id': id});
+      person = Person.findOne({uuid: uuid, 'faces.id': id}, {sort: {createAt: 1}});
     }
     if (person)
       return person.name;
@@ -112,10 +112,10 @@ PERSON = {
       person = Person.findOne({group_id: group_id, name: name}, {sort: {createAt: 1}});
     }
     else if (uuid && name) {
-      person = Person.findOne({uuid: uuid, name: name});
+      person = Person.findOne({uuid: uuid, name: name}, {sort: {createAt: 1}});
     }
     else if(group_id && name) {
-      person = Person.findOne({group_id: group_id, name: name});
+      person = Person.findOne({group_id: group_id, name: name}, {sort: {createAt: 1}});
     }
     if (!person)
       return null;
