@@ -22,6 +22,11 @@ if Meteor.isClient
             console.log err
           if result and result.text
             SimpleChat.Messages.insert(result);
+        relations = WorkAIUserRelations.findOne({'app_user_id':Meteor.userId()});
+        unless relations
+          Meteor.setTimeout(()->
+            Router.go('/timeline');
+          ,500);
       if result == 'not find group'
         PUB.toast '添加失败，请重试~'
         return Router.go(gotoPage)

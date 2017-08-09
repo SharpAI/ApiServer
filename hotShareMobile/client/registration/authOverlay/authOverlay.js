@@ -52,6 +52,12 @@ if (Meteor.isClient) {
                         return SimpleChat.MsgSession.insert(msgObj);
                       }
                     });
+                   var relations = WorkAIUserRelations.findOne({'app_user_id':Meteor.userId()});
+                   if (!relations) {
+                      Meteor.setTimeout(function(){
+                        Router.go('/timeline');
+                      },500);
+                    }
                    return Router.go(gotoPage);
                 }
                 if (result === 'not find group') {

@@ -317,6 +317,7 @@ if (Meteor.isClient) {
     if(Meteor.userId()){
       Meteor.subscribe("topics");
       //Meteor.subscribe("topicposts");
+      Meteor.subscribe('get-workai-user-relation',Meteor.userId());
       getHotPostsData();
     }
     document.title = Session.get("DocumentTitle");
