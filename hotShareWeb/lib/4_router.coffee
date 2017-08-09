@@ -1414,7 +1414,7 @@ if Meteor.isServer
         'Date': Date.now()
       }
       this.response.writeHead(200, headers)
-      console.log '/restapi/user get request, token:' + token + ' limit:' + limit + ' skip:' + skip + ' Direction:' + direction
+      console.log '/restapi/notactive get request, token:' + token + ' limit:' + limit + ' skip:' + skip + ' Direction:' + direction
 
       allnotActivity = []
       daytime = new Date()
@@ -1427,10 +1427,11 @@ if Meteor.isServer
       unless notActivity
         return this.response.end('[]\n')
       notActivity.forEach((item)->
+        #console.log(item)
         if !item.checkin_time
           item.checkin_time = 0
         if !item.ai_in_time
-          item.checkin_time = 0
+          item.ai_in_time= 0
         if !item.checkout_time
           item.checkout_time = 0
         if !item.ai_out_time
