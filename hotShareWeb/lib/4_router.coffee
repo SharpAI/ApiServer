@@ -554,51 +554,57 @@ if Meteor.isServer
   workaiId = 'Lh4JcxG7CnmgR3YXe'
   workaiName = 'Actiontec'
   send_greeting_msg = (data)->
+    console.log 'try send_greeting_msg~ with data:'+JSON.stringify(data)
     if !data || !data.images ||data.images.img_type isnt 'face'
+      #console.log 'invalid params'
       return
     if data.in_out is 'out'
+      #console.log 'this device is out'
       return
     else
       device =  Devices.findOne({uuid:data.people_uuid})
-      if !device || device.in_out is 'out'
+      if !device || !device.in_out || device.in_out is 'out'
+        #console.log ' not found device or in_device'
         return
       data.in_out = device.in_out
-    person = Person.findOne({group_id:data.group_id,'faces.id':data.images.id})
+    person = Person.findOne({group_id:data.group_id,'faces.id':data.images.id},{sort: {createAt: 1}})
     if !person
+      #console.log 'not find person with faceid is:'+data.images.id
       return
     relation = WorkAIUserRelations.findOne({'ai_persons.id':person._id})
     if !relation
+      #console.log 'not find workai user relations'
       return
-    ai_in_time = new Date(relation.ai_in_time);
     create_time = new Date(data.create_time);
-    today = new Date(create_time.getFullYear(), create_time.getMonth(), create_time.getDate()).getTime(); #凌晨
-    if ai_in_time.getTime() > today
-      console.log 'today greeting_msg had send'
-    else
-      WorkAIUserRelations.update({_id:relation._id},{$set:{ai_in_time:create_time.getTime()}});
-      user = Meteor.users.findOne(_id:systemUserId);
-      sendMqttMessage('/msg/u/'+ relation.app_user_id, {
-          _id: new Mongo.ObjectID()._str
-          form: { 
-            id: "fTnmgpdDN4hF9re8F",
-            name: "workAI",
-            icon: "http://data.tiegushi.com/fTnmgpdDN4hF9re8F_1493176458747.jpg"
-          }
-          to: {
-            id: relation.app_user_id
-            name: relation.app_user_name
-            icon: ''
-          }
-          images: [data.images]
-          to_type: "user"
-          type: "text"
-          text: '早上好，Work AI祝您今天有个好心情~'
-          create_time: create_time
-          group_id:data.group_id
-          people_uuid: data.people_uuid
-          is_read: false
-          checkin_out:'in'
-        })
+    if relation.ai_in_time
+      ai_in_time = new Date(relation.ai_in_time);
+      today = new Date(create_time.getFullYear(), create_time.getMonth(), create_time.getDate()).getTime(); #凌晨
+      if ai_in_time.getTime() > today
+        console.log 'today greeting_msg had send'
+        return
+    WorkAIUserRelations.update({_id:relation._id},{$set:{ai_in_time:create_time.getTime()}});
+    sendMqttMessage('/msg/u/'+ relation.app_user_id, {
+        _id: new Mongo.ObjectID()._str
+        form: { 
+          id: "fTnmgpdDN4hF9re8F",
+          name: "workAI",
+          icon: "http://data.tiegushi.com/fTnmgpdDN4hF9re8F_1493176458747.jpg"
+        }
+        to: {
+          id: relation.app_user_id
+          name: relation.app_user_name
+          icon: ''
+        }
+        images: [data.images]
+        to_type: "user"
+        type: "text"
+        text: '早上好，Work AI祝您今天有个好心情~'
+        create_time: create_time
+        group_id:data.group_id
+        people_uuid: data.people_uuid
+        is_read: false
+        checkin_out:'in'
+      })
 
 
   insert_msg2 = (id, url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts,tracker_id)->
