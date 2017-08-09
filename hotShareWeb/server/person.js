@@ -13,7 +13,9 @@ PERSON = {
       Devices.insert(device);
     }
     else{
-      Devices.update({uuid: uuid}, {$set: {groupId: group_id,name:name,in_out:in_out}});
+      if (group_id && name && in_out) {
+        Devices.update({uuid: uuid}, {$set: {groupId: group_id,name:name,in_out:in_out}});
+      }
       device = Devices.findOne({uuid: uuid});
     }
     return device;
@@ -46,7 +48,7 @@ PERSON = {
   },
   setName: function(group_id, uuid, id, url, name){
     var person = Person.findOne({uuid: uuid, group_id:group_id, name: name}, {sort: {createAt: 1}});
-    var dervice = PERSON.upsetDevice(uuid, group_id);
+    var dervice = Devices.findOne({uuid: uuid});
     var personName = PersonNames.findOne({group_id: group_id, name: name});
 
     if (!personName)
