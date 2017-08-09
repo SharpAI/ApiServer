@@ -553,6 +553,53 @@ if Meteor.isServer
 if Meteor.isServer
   workaiId = 'Lh4JcxG7CnmgR3YXe'
   workaiName = 'Actiontec'
+  send_greeting_msg = (data)->
+    if !data || !data.images ||data.images.img_type isnt 'face'
+      return
+    if data.in_out is 'out'
+      return
+    else
+      device =  Devices.findOne({uuid:data.people_uuid})
+      if !device || device.in_out is 'out'
+        return
+      data.in_out = device.in_out
+    person = Person.findOne({group_id:data.group_id,'faces.id':data.images.id})
+    if !person
+      return
+    relation = WorkAIUserRelations.findOne({ai_person_id:person._id})
+    if !relation
+      return
+    ai_in_time = new Date(relation.ai_in_time);
+    create_time = new Date(data.create_time);
+    today = new Date(create_time.getFullYear(), create_time.getMonth(), create_time.getDate()).getTime(); #凌晨
+    if ai_in_time.getTime() > today
+      console.log 'today greeting_msg had send'
+    else
+      WorkAIUserRelations.update({_id:relation._id},{$set:{ai_in_time:create_time.getTime()}});
+      user = Meteor.users.findOne(_id:systemUserId);
+      sendMqttMessage('/msg/u/'+ relation.app_user_id, {
+          _id: new Mongo.ObjectID()._str
+          form: { 
+            id: "fTnmgpdDN4hF9re8F",
+            name: "workAI",
+            icon: "http://data.tiegushi.com/fTnmgpdDN4hF9re8F_1493176458747.jpg"
+          }
+          to: {
+            id: relation.app_user_id
+            name: relation.app_user_name
+            icon: ''
+          }
+          images: [data.images]
+          to_type: "user"
+          type: "text"
+          text: '早上好，Work AI祝您今天有个好心情~'
+          create_time: create_time
+          group_id:data.group_id
+          people_uuid: data.people_uuid
+          is_read: false
+          checkin_out:'in'
+        })
+
 
   insert_msg2 = (id, url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts,tracker_id)->
     people = People.findOne({id: id, uuid: uuid})
@@ -620,22 +667,42 @@ if Meteor.isServer
           is_read: false
           tid:tracker_id
         })
-        personInfo = PERSON.getIdByNames(uuid, [name], userGroup.group_id)
-        if img_type == 'face' && personInfo && personInfo[name] && personInfo[name].faceId
-          #console.log('post person info to aixd.raidcdn')
-          person_info = {
-            'id': personInfo[name].faceId,
-            'uuid': uuid,
-            'name': name,
-            'group_id': userGroup.group_id,
-            'img_url': url,
-            'type': img_type,
-            'ts': create_time.getTime(),
-            'accuracy': accuracy,
-            'fuzziness': fuzziness
+        if name
+          msg_data = {
+            group_id:userGroup.group_id,
+            create_time:create_time,
+            people_uuid:uuid,
+            in_out:userGroup.in_out,
+            images:{
+              id: id,
+              people_his_id: _id,
+              url: url,
+              label: name,
+              img_type: img_type,
+              accuracy: Accuracy,
+              fuzziness: Fuzziness,
+              sqlid: sqlid,
+              style: style
+            }
           }
-          #console.log("post to web =" + JSON.stringify(person_info))
-          PERSON.sendPersonInfoToWeb(person_info)
+          send_greeting_msg(msg_data);
+          personInfo = PERSON.getIdByNames(uuid, [name], userGroup.group_id)
+          if img_type == 'face' && personInfo && personInfo[name] && personInfo[name].faceId
+            #console.log('post person info to aixd.raidcdn')
+            person_info = {
+              'id': personInfo[name].faceId,
+              'uuid': uuid,
+              'name': name,
+              'group_id': userGroup.group_id,
+              'img_url': url,
+              'type': img_type,
+              'ts': create_time.getTime(),
+              'accuracy': accuracy,
+              'fuzziness': fuzziness
+            }
+            #console.log("post to web =" + JSON.stringify(person_info))
+            PERSON.sendPersonInfoToWeb(person_info)
+
       )
 
   @insert_msg2forTest = (id, url, uuid, accuracy, fuzziness)->
