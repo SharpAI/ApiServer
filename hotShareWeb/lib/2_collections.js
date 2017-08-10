@@ -107,14 +107,21 @@ if(Meteor.isServer){
     return People.find({}, {sort: {updateTime: -1}, limit: 50});
   });
   Meteor.publish('group_devices',function(){
-   if(this.userId){
-       var group = SimpleChat.GroupUsers.findOne({user_id:this.userId}, {sort: {createdAt: -1}});
-       if(group){
-           return Devices.find({groupId: group.group_id});
-       } 
-   }
-   return this.ready();
- });
+    if(this.userId){
+        var groupIds = []
+        var groups = SimpleChat.GroupUsers.find({user_id:this.userId}).fetch();
+        for(var i = 0;i< groups.length; i++){
+            groupIds.push(groups[i].group_id);
+        }
+        if(groupIds){
+            return [
+                Devices.find({groupId: {$in:groupIds}}),
+                SimpleChat.GroupUsers.find({user_id:this.userId})
+            ];
+        } 
+    }
+    return this.ready();
+  });
  Meteor.publish('devices-by-uuid',function(uuid){
      if(!this.userId || !uuid){
          return this.ready();

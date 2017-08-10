@@ -96,9 +96,16 @@ if(Meteor.isServer){
 
   Meteor.publish('group_devices',function(){
     if(this.userId){
-        var group = SimpleChat.GroupUsers.findOne({user_id:this.userId}, {sort: {createdAt: -1}});
-        if(group){
-            return Devices.find({groupId: group.group_id});
+        var groupIds = []
+        var groups = SimpleChat.GroupUsers.find({user_id:this.userId}).fetch();
+        for(var i = 0;i< groups.length; i++){
+            groupIds.push(groups[i].group_id);
+        }
+        if(groupIds){
+            return [
+                Devices.find({groupId: {$in:groupIds}}),
+                SimpleChat.GroupUsers.find({user_id:this.userId})
+            ];
         } 
     }
     return this.ready();

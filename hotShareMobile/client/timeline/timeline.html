@@ -3,21 +3,26 @@
       <div class="head">
         <strong class="top-home-btn active">时间轴</strong>
       </div>
-      <div class="content">
-      {{#if devices}}
-      <ul class="set-up comFadeIn" style="margin-top: 50px;margin-bottom: 10px;">
-      {{#each devices}}
-        <li id="{{uuid}}" class="deviceItem" style="height:60px;padding:10px 0">
-            <img class="usericon" src="/device_icon_192.png" width="40" height="40" style="border-radius:4px;">
-            {{#if name}}
-            <label style="margin-left:48px;">{{name}}</label>
-            {{else}}
-            <label style="margin-left:48px;">未知设备</label>
-            {{/if}}
-            <div class="value" style="float:right; margin:10px;">{{in_out}}<i class="fa fa-angle-right"></i></div>
-        </li>
-      {{/each}}
+      <div class="content" style="padding-top:50px;padding-bottom:50px;">
+      {{#if lists}}
+      {{#each lists}}
+        <div id="{{group_id}}" class="line" style="height: 20px; text-align:left; padding-left:10px; color:#555;">{{group_name}}</div>
+        <ul class="set-up comFadeIn">
+        {{#each devices}}
+          {{#if uuid}}
+          <li id="{{uuid}}" class="deviceItem" style="height:60px;padding:10px 0">
+              <img class="usericon" src="/device_icon_192.png" width="40" height="40" style="border-radius:4px;">
+              {{#if name}}
+              <label style="margin-left:48px;">{{name}}</label>
+              {{else}}
+              <label style="margin-left:48px;">未知设备</label>
+              {{/if}}
+              <div class="value" style="float:right; margin:10px;">{{in_out}}<i class="fa fa-angle-right"></i></div>
+          </li>
+          {{/if}}
+        {{/each}}
       </ul>
+      {{/each}}
       {{else}}
       <div style="text-align: center;margin-top: 100px;">未找到设备</div>
       {{/if}}

@@ -6,8 +6,19 @@ Template.timeline.onRendered(function () {
 
 
 Template.timeline.helpers({
-  devices: function(){
-    return Devices.find({}).fetch();
+  lists: function(){
+    var lists = [];
+    SimpleChat.GroupUsers.find({user_id:Meteor.userId()},{sort:{create_time:-1}}).forEach(function(item){
+      var devices =  Devices.find({groupId: item.group_id},{sort:{createAt:-1}}).fetch();
+      if(devices.length > 0){
+        lists.push({
+          group_id: item.group_id,
+          group_name: item.group_name,
+          devices:devices
+        });
+      }
+    });
+    return lists;
   }
 });
 
