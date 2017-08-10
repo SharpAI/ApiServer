@@ -558,12 +558,9 @@ if Meteor.isServer
     if !data || !data.images ||data.images.img_type isnt 'face'
       #console.log 'invalid params'
       return
-    if data.in_out is 'out'
-      #console.log 'this device is out'
-      return
-    else
+    if !data.in_out
       device =  Devices.findOne({uuid:data.people_uuid})
-      if !device || !device.in_out || device.in_out is 'out'
+      if !device || !device.in_out
         #console.log ' not found device or in_device'
         return
       data.in_out = device.in_out
@@ -576,6 +573,9 @@ if Meteor.isServer
       #console.log 'not find workai user relations'
       return
     create_time = new Date(data.create_time);
+    if data.in_out is 'out'
+      WorkAIUserRelations.update({_id:relation._id},{$set:{ai_out_time:create_time.getTime()}});
+      return
     if relation.ai_in_time
       ai_in_time = new Date(relation.ai_in_time);
       today = new Date(create_time.getFullYear(), create_time.getMonth(), create_time.getDate()).getTime(); #凌晨
