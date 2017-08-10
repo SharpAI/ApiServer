@@ -24,6 +24,10 @@
                   {{#each images}}
                     {{> checkInOutMsgListImageItem}}
                   {{/each}}
+                  {{#if isStartWork}}
+                  <div class="workTime">{{workTimeType}}时间：{{start_work_time create_time}}<div class="check_in_btn"><span>修 改</span></div>
+                  </div>
+                  {{/if}}
                   <div class="time">{{formatTime create_time}}</div>
                 </li>
               {{/each}}

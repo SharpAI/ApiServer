@@ -29,6 +29,20 @@ Template.checkInOutMsgList.helpers
     if is_read
       return '已读'
     return '未读'
+  isStartWork:()->
+    if this.images and this.images.length > 0
+      return true
+    return false
+  workTimeType:()->
+    if this.checkin_out is 'in'
+      return '上班'
+    else if this.checkin_out is 'out'
+      return '下班'
+    return ''
+  start_work_time:(val)->
+    date = new Date(val)
+    return date.getHours()+':'+ date.getMinutes()
+
   formatTime: (val)->
       return get_diff_time(val)
   mySysMsg:()->
@@ -89,16 +103,17 @@ Template.checkInOutMsgList.events
       confirm_text = '是否将该时间记录到每日出勤报告？'
       if slef.checkin_out and slef.checkin_out isnt ''
         if slef.images and slef.images.length > 0
-          try
-            navigator.notification.confirm(confirm_text,
-                (index)->
-                  confirm_callBack(index)
-                ,'提示',['确定','修改']);
-          catch e
-            if confirm(confirm_text)
-              confirm_callBack(1)
-            else
-              confirm_callBack(2)
+
+          # try
+          #   navigator.notification.confirm(confirm_text,
+          #       (index)->
+          #         confirm_callBack(index)
+          #       ,'提示',['确定','修改']);
+          # catch e
+          #   if confirm(confirm_text)
+          #     confirm_callBack(1)
+          #   else
+          #     confirm_callBack(2)
         else
           #跳转至时间轴
           if slef.people_uuid
@@ -106,3 +121,5 @@ Template.checkInOutMsgList.events
           else
             PUB.page '/timeline'
       SimpleChat.Messages.update({_id:msgId},{$set:{is_read:true}});
+    'click .check_in_btn':(e)->
+      PUB.page '/timelineAlbum/'+this.people_uuid
