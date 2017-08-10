@@ -213,7 +213,7 @@ PERSON = {
     var today2 = Number(date.replace(/-/gi,""));
     console.log(">>> " + today2)
 
-    workstatus = WorkStatus.find({'group_id': relation.group_id, 'app_user_id': relation.app_user_id});
+    workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'app_user_id': relation.app_user_id});
     if (!workstatus) {
       WorkStatus.insert({
         "app_user_id" : relation.app_user_id,

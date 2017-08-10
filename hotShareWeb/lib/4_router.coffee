@@ -693,7 +693,8 @@ if Meteor.isServer
           }
           send_greeting_msg(msg_data);
           personInfo = PERSON.getIdByNames(null, [name], userGroup.group_id)
-          PERSON.updateWorkStatus(personInfo[name].faceId)
+          person = Person.findOne({group_id: userGroup.group_id, faceId: personInfo[name].faceId}, {sort: {createAt: 1}});
+          PERSON.updateWorkStatus(person._id)
           if img_type == 'face' && personInfo && personInfo[name] && personInfo[name].faceId
             #console.log('post person info to aixd.raidcdn')
             person_info = {
