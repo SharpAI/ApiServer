@@ -1403,18 +1403,20 @@ if Meteor.isServer
 
       this.response.end(JSON.stringify(allActivity))
     )
-  Router.route('/restapi/notactive/:token/:direction/:skip/:limit', {where: 'server'}).get(()->
-      token = this.params.token
-      limit = this.params.limit
-      skip  = this.params.skip
-      direction = this.params.direction
+
+  Router.route('/restapi/active/:active/:token/:direction/:skip/:limit', {where: 'server'}).get(()->
+      token = this.params.token         #
+      limit = this.params.limit         #
+      skip  = this.params.skip          #
+      direction = this.params.direction #'in'/'out'
+      active = this.params.active       #'active'/'notactive'
 
       headers = {
         'Content-type':'text/html;charest=utf-8',
         'Date': Date.now()
       }
       this.response.writeHead(200, headers)
-      console.log '/restapi/notactive get request, token:' + token + ' limit:' + limit + ' skip:' + skip + ' Direction:' + direction
+      console.log '/restapi/:active get request, token:' + token + ' limit:' + limit + ' skip:' + skip + ' Direction:' + direction + ' active:' + active
 
       allnotActivity = []
       daytime = new Date()
@@ -1437,22 +1439,48 @@ if Meteor.isServer
         if !item.ai_out_time
           item.ai_out_time = 0
 
-        if direction is 'in' and item.checkin_time < daytime and item.ai_in_time < daytime and item.in_uuid
-          allnotActivity.push({
-            'app_user_id': item.app_user_id
-            'app_user_name': item.app_user_name
-            'uuid': item.in_uuid
-            'groupid': item.group_id
-            'msgid': new Mongo.ObjectID()._str
-          })
-        else if direction is 'out' and item.checkout_time < daytime and item.ai_out_time < daytime and item.out_uuid
-          allnotActivity.push({
-            'app_user_id': item.app_user_id
-            'app_user_name': item.app_user_name
-            'uuid': item.out_uuid
-            'groupid': item.group_id
-            'msgid': new Mongo.ObjectID()._str
-          })
+        if active is 'notactive'
+          if direction is 'in' and item.checkin_time < daytime and item.ai_in_time < daytime
+            allnotActivity.push({
+              'app_user_id': item.app_user_id
+              'app_user_name': item.app_user_name
+              'uuid': item.in_uuid
+              'groupid': item.group_id
+              #'checkin_time': new Date(item.checkin_time)
+              #'ai_in_time': new Date(item.ai_in_time)
+              'msgid': new Mongo.ObjectID()._str
+            })
+          else if direction is 'out' and item.checkout_time < daytime and item.ai_out_time < daytime
+            allnotActivity.push({
+              'app_user_id': item.app_user_id
+              'app_user_name': item.app_user_name
+              'uuid': item.out_uuid
+              'groupid': item.group_id
+              #'checkout_time': new Date(item.checkout_time)
+              #'ai_out_time': new Date(item.ai_out_time)
+              'msgid': new Mongo.ObjectID()._str
+            })
+        else if active is 'active'
+          if direction is 'in' and (item.checkin_time > daytime or item.ai_in_time > daytime)
+            allnotActivity.push({
+              'app_user_id': item.app_user_id
+              'app_user_name': item.app_user_name
+              'uuid': item.in_uuid
+              'groupid': item.group_id
+              #'checkin_time': new Date(item.checkin_time)
+              #'ai_in_time': new Date(item.ai_in_time)
+              'msgid': new Mongo.ObjectID()._str
+            })
+          else if direction is 'out' and (item.checkout_time > daytime or item.ai_out_time > daytime)
+            allnotActivity.push({
+              'app_user_id': item.app_user_id
+              'app_user_name': item.app_user_name
+              'uuid': item.out_uuid
+              'groupid': item.group_id
+              #'checkout_time': new Date(item.checkout_time)
+              #'ai_out_time': new Date(item.ai_out_time)
+              'msgid': new Mongo.ObjectID()._str
+            })
       )
 
       this.response.end(JSON.stringify(allnotActivity))
