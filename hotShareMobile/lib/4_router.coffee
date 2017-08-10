@@ -180,6 +180,11 @@ if Meteor.isClient
         this.render 'timeline'
         Session.set 'channel','timeline'
       return
+    Router.route '/homePage',()->
+      if Meteor.isCordova is true
+        this.render 'homePage'
+        Session.set 'channel','homePage'
+      return
     Router.route '/timelineAlbum/:_uuid',()->
       this.render 'timelineAlbum'
       return

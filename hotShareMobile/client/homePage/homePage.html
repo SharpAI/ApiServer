@@ -1,0 +1,173 @@
+<template name="homePage">
+  <style>
+    td,th{vertical-align:middle;text-align:center;}
+    td i.fa {font-size: 22px;}
+    .tips-table{border:none;}
+    .tips-table td{text-align: justify;}
+    .tips-table td i.fa{font-size:18px;}
+    .editWhatsUp{white-space: nowrap; max-width: 200px;overflow: hidden; text-overflow: ellipsis;}
+  </style>
+  <div class="homePage">
+      <div class="head">
+        <strong class="top-home-btn active">主页</strong>
+      </div>
+      <div class="content" style="padding-top:50px;padding-bottom:50px;">
+      <!-- status lists start -->
+      <div style="margin:10px;">
+        {{#if lists}}
+        {{#each lists}}
+        <div class="panel panel-default">
+        <div id="{{group_id}}" class="panel-heading">{{group_name}}</div>
+        <table class="table table-bordered">
+          <thead>
+              <tr role="row">
+                <th>姓名</th>
+                <th style="width: 60px;text-align: center;">状态</th>
+                <th>进</th>
+                <th>出</th>
+                <th>今日简述</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each workstatus group_id}}
+              <tr>
+                <td>{{person_name}}</td>
+                <td>
+                  {{#if isStatusIN status}}
+                  <i class="fa fa-map-marker " style="color:green;"></i>
+                  {{else}}
+                  <i class="fa fa-map-marker " style="color:gray;"></i>
+                  {{/if}}
+                </td>
+
+                {{#if isInStatusNormal in_status}}
+                <td><i class="fa fa-clock-o" style="color:green;"></i></td>
+                {{/if}}
+                {{#if isInStatusWarning in_status}}
+                <td><i class="fa fa-clock-o" style="color:red;"></i></td>
+                {{/if}}
+                {{#if isInStatusError in_status}}
+                  {{#if isMySelf app_user_id}}
+                  <td id="{{group_id}}" data-inout="in" class="modifyMyStatus"><i class="fa fa-exclamation-circle" style="color:red;"></i></td>
+                  {{else}}
+                  <td id="{{group_id}}" data-inout="in"><i class="fa fa-exclamation-circle" style="color:red;"></i></td>
+                  {{/if}}
+                {{/if}}
+                {{#if isInStatusUnknown in_status}}
+                <td><i class="fa fa-ellipsis-h" style="color:gray;"></i></td>
+                {{/if}}
+
+                {{#if isOutStatusNormal out_status}}
+                <td><i class="fa fa-clock-o" style="color:green;"></i></td>
+                {{/if}}
+                {{#if isOutStatusWarning out_status}}
+                <td><i class="fa fa-clock-o" style="color:red;"></i></td>
+                {{/if}}
+                {{#if isOutStatusError out_status}}
+                  {{#if isMySelf app_user_id}}
+                  <td id="{{group_id}}" data-inout="out" class="modifyMyStatus"><i class="fa fa-exclamation-circle" style="color:red;"></i></td>
+                  {{else}}
+                  <td id="{{group_id}}" data-inout="out"><i class="fa fa-exclamation-circle" style="color:red;"></i></td>
+                  {{/if}}
+                {{/if}}
+                {{#if isOutStatusUnknown out_status}}
+                <td><i class="fa fa-ellipsis-h" style="color:gray;"></i></td>
+                {{/if}}
+
+                {{#if isMySelf app_user_id}}
+                <td class="editWhatsUp" id="{{_id}}" data-whatsup="{{whats_up}}">
+                    <i class="fa fa-pencil" style="color:gray; font-size:14px;"></i>
+                    {{whats_up}}
+                </td>
+                {{else}}
+                <td>{{whats_up}}</td>
+                {{/if}}
+              </tr>
+              {{/each}}
+            </tbody>
+        </table>
+        </div>
+        {{/each}}
+        <div style="background: #e2e2e2;border-radius: 8px;padding: 10px;border: dotted 1px gray;">
+          <table class="tips-table table-condensed">
+            <tbody>
+              <tr>
+                <td style="text-align:center;"><i class="fa fa-map-marker" style="color:green;"></i></td>
+                <td>在公司</td>
+                <td style="text-align:center;"><i class="fa fa-map-marker" style="color:gray;"></i></td>
+                <td>不在公司</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><i class="fa fa-clock-o" style="color:green;"></i></td>
+                <td colspan="3">工作时间小于8小时 或 9:00am前上班</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><i class="fa fa-clock-o" style="color:red;"></i></td>
+                <td colspan="3">工作时间大于8小时 或 9:00am后上班</td>
+              </tr>
+              <tr>
+                <td style="text-align:center;"><i class="fa fa-exclamation-circle" style="color:red;"></i></td>
+                <td colspan="3">记录到出但没记录到进 或 记录到两次进但没记录到出</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        {{/if}}
+      </div>
+      <!-- status lists end -->
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document" style="top:50px; bottom:auto;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">编辑今日简述</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+        <div class="form-group">
+          <textarea id="EditorWhatsUp" rows="5"  class="form-control" placeholder="编辑今日简述" style="height: auto !important;resize: none;"></textarea>
+        </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="button" id="" class="btn btn-primary saveWhatsUp">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="selectDevicesInOut" tabindex="-1" role="dialog" aria-labelledby="selectDevicesInOutLabel">
+  <div class="modal-dialog" role="document" style="top:50px; bottom:auto;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="selectDevicesInOutLabel">选择设备</h4>
+      </div>
+      <div class="modal-body">
+        <ul class="set-up comFadeIn">
+        {{#each devices}}
+          {{#if uuid}}
+          <li id="{{uuid}}" class="deviceItem" style="height:60px;padding:10px 0">
+              <img class="usericon" src="/device_icon_192.png" width="40" height="40" style="border-radius:4px;">
+              {{#if name}}
+              <label style="margin-left:48px;">{{name}}</label>
+              {{else}}
+              <label style="margin-left:48px;">未知设备</label>
+              {{/if}}
+              <div class="value" style="float:right; margin:10px;">{{in_out}}<i class="fa fa-angle-right"></i></div>
+          </li>
+          {{/if}}
+        {{/each}}
+      </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+  </div>
+  {{> footer}}
+</template>

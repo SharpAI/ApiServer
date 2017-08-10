@@ -87,6 +87,22 @@ WorkAIUserRelations = {
 }
  */
 
+// WorkStatus
+WorkStatus = new Meteor.Collection('workStatus');
+/*
+{
+    app_user_id:<Integer> //点圈用户
+    app_user_name:<String> //点圈用户名
+    group_id: <String>, // 组id
+    date: <Integer>, // 20170810
+    person_id: <String>, //
+    person_name: <String>,
+    status: <String>, // in || out
+    in_status:<String>, // normal || warning || error || unknown
+    out_status: <String>, // normal || warning || error || unknown
+    whats_up: <String>
+}
+*/
 if(Meteor.isServer){
   PeopleHis.allow({
     update: function (userId, doc, fields, modifier) {
@@ -106,6 +122,31 @@ if(Meteor.isServer){
   Meteor.publish('people_new', function(){
     return People.find({}, {sort: {updateTime: -1}, limit: 50});
   });
+
+  Meteor.publish('WorkStatus',function(date){
+    if(!date){
+        return this.ready();
+    }
+    var groupIds = [];
+    var groups = SimpleChat.GroupUsers.find({user_id:this.userId}).fetch();
+    for(var i = 0;i< groups.length; i++){
+        groupIds.push(groups[i].group_id);
+    }
+    if(groupIds){
+      return WorkStatus.find({date: date,group_id:{$in:groupIds}});
+    }
+    return this.ready();
+  });
+
+  WorkStatus.allow({
+      update: function(userId, doc, fields, modifier){
+          if(userId === doc.app_user_id){
+              return true;
+          }
+          return false;
+      }
+  });
+
   Meteor.publish('group_devices',function(){
     if(this.userId){
         var groupIds = []

@@ -70,7 +70,7 @@ if Meteor.isClient
       if channel is channelName
         return true
     display_footer:()->
-      show_foot_url = ['/','/timeline', '/addressBook', '/explore', '/user']
+      show_foot_url = ['/','/homePage', '/addressBook', '/explore', '/user']
       console.log "document_body_scrollTop=" + Session.get("document_body_scrollTop")
       setTimeout(
         ()->
@@ -155,7 +155,7 @@ if Meteor.isClient
         )
         return
       PUB.page('/')
-    'click #timeline':(e)->
+    'click #homePage':(e)->
       Session.set('hasNewLabelMsg', false)
       if (Session.get("myHotPostsChanged"))
         Session.set("myHotPostsChanged", false)
@@ -164,12 +164,12 @@ if Meteor.isClient
           (index)->
             if index is 2
               saveHotPosts()
-            PUB.page('/timeline')
+            PUB.page('/homePage')
           '提示'
           ['暂不','保存']
         )
         return
-      PUB.page('/timeline')
+      PUB.page('/homePage')
     'click #addressBook':(e)->
       if (Session.get("myHotPostsChanged"))
         Session.set("myHotPostsChanged", false)
