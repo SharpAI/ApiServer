@@ -148,6 +148,97 @@ PERSON = {
         return console.log("post person info to aixd.raidcdn failed " + error);
       }
     });
+  },
+  //App用户关联过的员工，更新考勤信息
+  updateWorkStatus: function(ai_person_id){
+    relation = WorkAIUserRelations.findOne({'ai_persons.id': ai_person_id})
+    if(!relation || !relation.app_user_id || !relation.group_id || !relation.ai_persons || !relation.person_name) {
+      console.log("invalid arguments of updateWorkStatus")
+      return
+    }
+    //TODO: 两边时间格式不统一，比较起来不方便
+    var now = new Date();
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+
+    //不是今天的记录都设置为0
+    relation.checkout_time = (!relation.checkout_time) ? 0 : (relation.checkout_time < today) ? 0 : relation.checkout_time;
+    relation.checkin_time  = (!relation.checkin_time)  ? 0 : (relation.checkin_time  < today) ? 0 : relation.checkin_time;
+    relation.ai_in_time    = (!relation.ai_in_time)    ? 0 : (relation.ai_in_time    < today) ? 0 : relation.ai_in_time;
+    relation.ai_out_time   = (!relation.ai_out_time)   ? 0 : (relation.ai_out_time   < today) ? 0 : relation.ai_out_time;
+
+    var outtime = 0;
+    outtime = (relation.checkout_time > relation.ai_out_time) ? relation.checkout_time : relation.ai_out_time;
+    outtime = (outtime > today) ? outtime : 0;
+
+    var intime = 0;
+    if(relation.ai_in_time == 0 || relation.checkin_time == 0) {
+      //取出不等于0的就是intime
+      intime = (relation.ai_in_time > relation.checkin_time) ? relation.ai_in_time : relation.checkin_time;
+    }
+    else {
+      //取出较小的就是intime
+      intime = (relation.ai_in_time > relation.checkin_time) ? relation.checkin_time : relation.ai_in_time;
+    }
+
+    var now_status = "out"; //in/out
+    var in_status = "unknown";
+    var out_status = "unknown";
+    //normal   工作时间小于8小时 或 9:00am前上班
+
+    //有in没有out就是绿色，其他是灰色
+    if(intime > today && intime > outtime)
+      now_status = "in";
+
+    //9点以前上班是绿色, 之后是红色
+    if(intime == 0)
+      in_status = "unknown";
+    else if(intime > 0 && intime <= (today + 9*60*60*1000))
+      in_status = "normal";
+    else if(intime > 0 && intime > (today + 9*60*60*1000))
+      in_status = "warning";
+
+    if(outtime == 0)
+      out_status = "unknown";
+    //没看到in却有out,或者先看到出后看到进
+    else if(outtime > 0 && (intime ==0 || intime > outtime))
+      out_status = "error"
+    //不足8小时
+    else if(outtime > 0 && intime > 0 && outtime > intime && (outtime - intime) > 8*60*60*1000)
+      out_status = "warning"
+
+    var in_uuid = relation.in_uuid;
+    var out_uuid = relation.out_uuid;
+
+    var date = (new Date()).format("yyyy-MM-dd")
+    var today2 = Number(date.replace(/-/gi,""));
+    console.log(">>> " + today2)
+
+    workstatus = WorkStatus.find({'group_id': relation.group_id, 'app_user_id': relation.app_user_id});
+    if (!workstatus) {
+      WorkStatus.insert({
+        "app_user_id" : relation.app_user_id,
+        "group_id"    : relation.group_id,
+        "date"        : today2,
+        "person_id"   : relation.ai_persons,
+        "person_name" : relation.person_name,
+        "status"      : now_status,
+        "in_status"   : in_status,
+        "out_status"  : out_status,
+        "in_uuid"     : relation.in_uuid,
+        "out_uuid"    : relation.out_uuid,
+        "whats_up"    : ""
+      });
+    }
+    else {
+      WorkStatus.update({_id: workstatus._id}, {$set: {
+        "date"        : today2,
+        "status"      : now_status,
+        "in_status"   : in_status,
+        "out_status"  : out_status,
+        "in_uuid"     : relation.in_uuid,
+        "out_uuid"    : relation.out_uuid,
+      }});
+    }
   }
 };
 

@@ -427,10 +427,10 @@ Meteor.methods({
    */
     console.log('ai_checkin_out:',JSON.stringify(data));
     var person_info = data.person_info;
-    if (!data.user_id || !data.face_id || !person_info || ! person_info.group_id) {
+    if (!data.user_id || !data.face_id || !person_info || ! person_info.group_id || ! person_info.name) {
       return {result:'error',reason:'参数不全'};
     }
-    var setObj = {group_id:person_info.group_id};
+    var setObj = {group_id:person_info.group_id, person_name: person_info.name};
     if (data.checkin_time) {
       setObj.in_uuid = person_info.uuid;
       setObj.checkin_time = new Date(data.checkin_time).getTime() ;
@@ -485,6 +485,7 @@ Meteor.methods({
     }
     person_info.name = person.name;
     person_info.id = person.faceId;
+    PERSON.updateWorkStatus(person_info.id)
     PERSON.sendPersonInfoToWeb(person_info);
     return {result:'succ'};
   }
