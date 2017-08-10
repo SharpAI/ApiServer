@@ -22,11 +22,8 @@ PERSON = {
   },
   removeName: function(group_id,uuid, id){
     var person = null;
-    if (group_id && uuid) {
-      person = Person.findOne({uuid: uuid, group_id:group_id ,'faces.id': id}, {sort: {createAt: 1}});
-    }
-    else if (uuid) {
-      person = Person.findOne({uuid: uuid, group_id:group_id ,'faces.id': id}, {sort: {createAt: 1}});
+    if (group_id && id) {
+      person = Person.findOne({group_id:group_id ,'faces.id': id}, {sort: {createAt: 1}});
     }
     if (person){
       if (person.faceId === id){
@@ -47,14 +44,14 @@ PERSON = {
     //PersonNames.remove({uuid: uuid, id: id});
   },
   setName: function(group_id, uuid, id, url, name){
-    var person = Person.findOne({uuid: uuid, group_id:group_id, name: name}, {sort: {createAt: 1}});
+    var person = Person.findOne({group_id:group_id, name: name}, {sort: {createAt: 1}});
     var dervice = Devices.findOne({uuid: uuid});
     var personName = PersonNames.findOne({group_id: group_id, name: name});
 
     if (!personName)
-      PersonNames.insert({group_id: group_id, url: url, uuid: uuid, id: id, name: name, createAt: new Date(), updateAt: new Date()});
+      PersonNames.insert({group_id: group_id, url: url, id: id, name: name, createAt: new Date(), updateAt: new Date()});
     else
-      PersonNames.update({_id: name._id}, {$set: {name: name, url: url, uuid: uuid, id: id, updateAt: new Date()}})
+      PersonNames.update({_id: name._id}, {$set: {name: name, url: url, id: id, updateAt: new Date()}})
 
     if (person){
       person.url = url;
@@ -64,8 +61,8 @@ PERSON = {
       else
         person.faces[_.pluck(person.faces, 'id').indexOf(id)].url = url;
       Person.update({_id: person._id}, {$set: {name: name, url: person.url, updateAt: person.updateAt, faces: person.faces}});
-    } else if (Person.find({uuid: uuid, group_id: group_id, faceId: id}).count() > 0){
-      person = Person.findOne({uuid: uuid, group_id: group_id, faceId: id}, {sort: {createAt: 1}});
+    } else if (Person.find({group_id: group_id, faceId: id}).count() > 0){
+      person = Person.findOne({group_id: group_id, faceId: id}, {sort: {createAt: 1}});
       person.name = name;
       person.url = url;
       person.updateAt = new Date();
@@ -77,9 +74,8 @@ PERSON = {
     } else {
       person = {
         _id: new Mongo.ObjectID()._str,
-        id: Person.find({uuid: uuid,group_id: group_id, faceId: id}).count() + 1,
+        id: Person.find({group_id: group_id, faceId: id}).count() + 1,
         group_id:group_id,
-        uuid: uuid,
         faceId: id,
         url: url,
         name: name,
@@ -96,12 +92,8 @@ PERSON = {
   },
   getName: function(uuid,group_id,id){
     var person = null;
-    if (uuid && group_id) {
-      //person = Person.findOne({uuid: uuid, group_id: group_id, 'faces.id': id});
+    if (id && group_id) {
       person = Person.findOne({group_id: group_id, 'faces.id': id}, {sort: {createAt: 1}});
-    }
-    else if (uuid){
-      person = Person.findOne({uuid: uuid, 'faces.id': id}, {sort: {createAt: 1}});
     }
     if (person)
       return person.name;
@@ -109,14 +101,7 @@ PERSON = {
   },
   getIdByName: function(uuid, name, group_id){
     var person = null;
-    if (uuid && group_id && name) {
-      //person = Person.findOne({uuid: uuid, group_id: group_id, name: name});
-      person = Person.findOne({group_id: group_id, name: name}, {sort: {createAt: 1}});
-    }
-    else if (uuid && name) {
-      person = Person.findOne({uuid: uuid, name: name}, {sort: {createAt: 1}});
-    }
-    else if(group_id && name) {
+    if (group_id && name) {
       person = Person.findOne({group_id: group_id, name: name}, {sort: {createAt: 1}});
     }
     if (!person)
@@ -130,14 +115,7 @@ PERSON = {
     var limit = names.length;
     var persons = null;
     var result = {};
-    if (uuid && group_id && names) {
-      //persons = Person.find({name: {$in: names}, uuid: uuid ,group_id:group_id}, {sort: {updateAt: -1}, limit: limit}).fetch()
-      persons = Person.find({name: {$in: names}, group_id: group_id}, {sort: {createAt: 1}, limit: limit}).fetch()
-    }
-    else if(uuid && names) {
-      persons = Person.find({name: {$in: names}, uuid: uuid}, {sort: {createAt: 1}, limit: limit}).fetch()
-    }
-    else if(group_id && names) {
+    if(group_id && names) {
       persons = Person.find({name: {$in: names}, group_id: group_id}, {sort: {createAt: 1}, limit: limit}).fetch()
     }
 

@@ -608,8 +608,8 @@ if Meteor.isServer
 
 
   insert_msg2 = (id, url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts,tracker_id)->
-    people = People.findOne({id: id, uuid: uuid})
-    name = PERSON.getName(uuid,null,id)
+    #people = People.findOne({id: id, uuid: uuid})
+    name = null
     #device = PERSON.upsetDevice(uuid, null)
     create_time = new Date()
     if img_ts and current_ts
@@ -618,13 +618,13 @@ if Meteor.isServer
       time_diff = img_ts + (create_time.getTime()　- current_ts)
       create_time = new Date(time_diff)
 
-    if !people
-      people = {_id: new Mongo.ObjectID()._str, id: id, uuid: uuid,name: name,embed: null,local_url: null,aliyun_url: url}
-      People.insert(people)
-    else
-      People.update({_id: people._id}, {$set: {aliyun_url: url}})
+    #if !people
+    #  people = {_id: new Mongo.ObjectID()._str, id: id, uuid: uuid,name: name,embed: null,local_url: null,aliyun_url: url}
+    #  People.insert(people)
+    #else
+    #  People.update({_id: people._id}, {$set: {aliyun_url: url}})
 
-    PeopleHis.insert {id: id,uuid: uuid,name: name, people_id: people._id, embed: null,local_url: null,aliyun_url: url}, (err, _id)->
+    PeopleHis.insert {id: id,uuid: uuid,name: name, people_id: id, embed: null,local_url: null,aliyun_url: url}, (err, _id)->
       if err or !_id
         return
 
@@ -640,7 +640,7 @@ if Meteor.isServer
           if group.template.img_type != img_type
             return
         name = null
-        name = PERSON.getName(uuid,userGroup.group_id,id)
+        name = PERSON.getName(null, userGroup.group_id,id)
         #没有准确度的人一定是没有识别出来的
         name = if accuracy then name else null
         #没有识别的人的准确度清0
@@ -692,7 +692,7 @@ if Meteor.isServer
             }
           }
           send_greeting_msg(msg_data);
-          personInfo = PERSON.getIdByNames(uuid, [name], userGroup.group_id)
+          personInfo = PERSON.getIdByNames(null, [name], userGroup.group_id)
           if img_type == 'face' && personInfo && personInfo[name] && personInfo[name].faceId
             #console.log('post person info to aixd.raidcdn')
             person_info = {
@@ -1446,8 +1446,8 @@ if Meteor.isServer
               'app_user_name': item.app_user_name
               'uuid': item.in_uuid
               'groupid': item.group_id
-              #'checkin_time': new Date(item.checkin_time)
-              #'ai_in_time': new Date(item.ai_in_time)
+              'checkin_time': new Date(item.checkin_time)
+              'ai_in_time': new Date(item.ai_in_time)
               'msgid': new Mongo.ObjectID()._str
             })
           else if direction is 'out' and item.checkout_time < daytime and item.ai_out_time < daytime
@@ -1456,8 +1456,8 @@ if Meteor.isServer
               'app_user_name': item.app_user_name
               'uuid': item.out_uuid
               'groupid': item.group_id
-              #'checkout_time': new Date(item.checkout_time)
-              #'ai_out_time': new Date(item.ai_out_time)
+              'checkout_time': new Date(item.checkout_time)
+              'ai_out_time': new Date(item.ai_out_time)
               'msgid': new Mongo.ObjectID()._str
             })
         else if active is 'active'
@@ -1467,8 +1467,8 @@ if Meteor.isServer
               'app_user_name': item.app_user_name
               'uuid': item.in_uuid
               'groupid': item.group_id
-              #'checkin_time': new Date(item.checkin_time)
-              #'ai_in_time': new Date(item.ai_in_time)
+              'checkin_time': new Date(item.checkin_time)
+              'ai_in_time': new Date(item.ai_in_time)
               'msgid': new Mongo.ObjectID()._str
             })
           else if direction is 'out' and (item.checkout_time > daytime or item.ai_out_time > daytime)
@@ -1477,8 +1477,8 @@ if Meteor.isServer
               'app_user_name': item.app_user_name
               'uuid': item.out_uuid
               'groupid': item.group_id
-              #'checkout_time': new Date(item.checkout_time)
-              #'ai_out_time': new Date(item.ai_out_time)
+              'checkout_time': new Date(item.checkout_time)
+              'ai_out_time': new Date(item.ai_out_time)
               'msgid': new Mongo.ObjectID()._str
             })
       )
