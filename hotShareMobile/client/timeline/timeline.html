@@ -1,7 +1,10 @@
 <template name="timeline">
   <div class="timeline">
       <div class="head">
-        <strong class="top-home-btn active">时间轴</strong>
+        <strong class="top-home-btn active">设备列表</strong>
+        <div class="leftButton back">
+          <i class="fa fa-angle-left fa-fw"></i>
+        </div>
       </div>
       <div class="content" style="padding-top:50px;padding-bottom:50px;">
       {{#if lists}}
@@ -28,5 +31,5 @@
       {{/if}}
       </div>
   </div>
-  {{> footer}}
+  <!-- {{> footer}} -->
 </template>

@@ -23,6 +23,9 @@ Template.timeline.helpers({
 });
 
 Template.timeline.events({
+  'click .back': function(){
+    return PUB.back();
+  },
   'click .deviceItem': function(e){
     return PUB.page('/timelineAlbum/'+e.currentTarget.id);
   }

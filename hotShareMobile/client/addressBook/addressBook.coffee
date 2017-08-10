@@ -32,6 +32,8 @@ if Meteor.isClient
       #PUB.page('/newFriendsList')
     'click .groupslist':(event)->
       PUB.page('/groupsList')
+    'click .devicelist':(event)->
+      PUB.page('/timeline')
     'click .recentlyPeople':(event)->
       #PUB.page('/recentlyList')
     'click .followItem': (event)->
