@@ -82,7 +82,10 @@ Template.checkInOutMsgList.events
           # ...
         else
           #跳转至时间轴
-          PUB.page '/timelineAlbum/'+slef.people_uuid
+          if slef.people_uuid
+            PUB.page '/timelineAlbum/'+slef.people_uuid
+          else
+            PUB.page '/timeline'
       confirm_text = '是否将该时间记录到每日出勤报告？'
       if slef.checkin_out and slef.checkin_out isnt ''
         if slef.images and slef.images.length > 0
@@ -98,5 +101,8 @@ Template.checkInOutMsgList.events
               confirm_callBack(2)
         else
           #跳转至时间轴
-          PUB.page '/timelineAlbum/'+slef.people_uuid
+          if slef.people_uuid
+            PUB.page '/timelineAlbum/'+slef.people_uuid
+          else
+            PUB.page '/timeline'
       SimpleChat.Messages.update({_id:msgId},{$set:{is_read:true}});
