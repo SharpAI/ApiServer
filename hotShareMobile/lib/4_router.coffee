@@ -100,8 +100,14 @@ if Meteor.isClient
           window.iabHandle.close()
           window.iabHandle = null
     Router.route '/',()->
+      # this.render 'home'
+      # Session.set 'channel','home'
+      this.render 'homePage'
+      Session.set 'channel','homePage'
+      return
+    Router.route '/message',()->
       this.render 'home'
-      Session.set 'channel','home'
+      Session.set 'channel','message'
       return
     Router.route '/group/add',()->
       if Meteor.isCordova is true

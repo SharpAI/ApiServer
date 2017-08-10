@@ -70,7 +70,7 @@ if Meteor.isClient
       if channel is channelName
         return true
     display_footer:()->
-      show_foot_url = ['/','/homePage', '/addressBook', '/explore', '/user']
+      show_foot_url = ['/','/message','/addressBook', '/explore', '/user']
       console.log "document_body_scrollTop=" + Session.get("document_body_scrollTop")
       setTimeout(
         ()->
@@ -140,7 +140,22 @@ if Meteor.isClient
     #   handleDirectLinkImport(url)
     # ,100)
   Template.footer.events
-    'click #home':(e)->
+    'click #message':(e)->
+      Session.set('hasNewLabelMsg', false)
+      if (Session.get("myHotPostsChanged"))
+        Session.set("myHotPostsChanged", false)
+        navigator.notification.confirm(
+          '您改变了热门帖子, 要保存吗?'
+          (index)->
+            if index is 2
+              saveHotPosts()
+            PUB.page('/message')
+          '提示'
+          ['暂不','保存']
+        )
+        return
+      PUB.page('/message')
+    'click #homePage':(e)->
       Session.set('hasNewLabelMsg', false)
       if (Session.get("myHotPostsChanged"))
         Session.set("myHotPostsChanged", false)
@@ -155,21 +170,6 @@ if Meteor.isClient
         )
         return
       PUB.page('/')
-    'click #homePage':(e)->
-      Session.set('hasNewLabelMsg', false)
-      if (Session.get("myHotPostsChanged"))
-        Session.set("myHotPostsChanged", false)
-        navigator.notification.confirm(
-          '您改变了热门帖子, 要保存吗?'
-          (index)->
-            if index is 2
-              saveHotPosts()
-            PUB.page('/homePage')
-          '提示'
-          ['暂不','保存']
-        )
-        return
-      PUB.page('/homePage')
     'click #addressBook':(e)->
       if (Session.get("myHotPostsChanged"))
         Session.set("myHotPostsChanged", false)
