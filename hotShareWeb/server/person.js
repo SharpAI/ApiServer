@@ -310,8 +310,8 @@ PERSON = {
       $set:{}
     };
     selector["perMin."+minutes+'.'+ts] = ts
-    modifier["$set"]["perMin."+minutes+".$."+app_user_id] = user_id;
-    modifier["$set"]["perMin."+minutes+".$."+app_user_name] = user_name;
+    modifier["$set"]["perMin."+minutes+".$.app_user_id"] = user_id;
+    modifier["$set"]["perMin."+minutes+".$.app_user_name"] = user_name;
     DeviceTimeLine.update(selector,modifier,function(err,res){
       if(err){
         console.log('updateToDeviceTimeline2 Err:'+err);
