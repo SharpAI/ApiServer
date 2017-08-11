@@ -5,12 +5,18 @@
     <div class="leftButton back">
       <i class="fa fa-angle-left fa-fw"></i>
     </div>
+    <!--{{#if isMultiSelect}}
+    <div id="cancelSelect" class="rightButton" style="padding-top:0;right:48px;">取消</div>
+    <div id="confirmSelect" class="rightButton" style="padding-top:0;">确定</div>
+    {{else}}
+    <div id="multiSelect" class="rightButton" style="padding-top:0;">多选</div>
+    {{/if}}-->
   </div>
   <div class="content" style="position: absolute;top: 0;left: 0;bottom: 0;right: 0;overflow-x: hidden;overflow-y: auto;-webkit-overflow-scrolling: touch;">
     {{#if lists}}
     <ul class="timeLine">
       <div style="color: #FF9800;font-size: 16px;"> 点击头像，选择您的上/下班时间</div>
-      {{#each lists}}
+      <!--{{#each lists}}
       {{#if isShowTime}}
       <div class="timeLine-time"> 
         <span class="dot-normal dot-success"></span>
@@ -22,8 +28,26 @@
           <img class="lazy" data-original="{{url}}" />
         </div>
         {{/each}}
-      {{/each}}
+      {{/each}}-->
 
+      {{#each lists}}
+        <div class="timeLine-time"> 
+          <span class="dot-normal dot-success"></span>
+          <span class="time">{{formatDate time}}</span>
+        </div>
+        {{#each images}}
+        {{#if app_user_id}}
+        <div class="images images-no-click" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
+          <div class="linked-helper">已关联</div>
+          <img class="lazy" data-original="{{img_url}}" />
+        </div>
+        {{else}}
+        <div class="images images-click-able" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
+          <img class="lazy" data-original="{{img_url}}" />
+        </div>
+        {{/if}}
+        {{/each}}
+      {{/each}}
     </ul>
     {{else}}
     <div style="text-align: center;margin-top: 100px;">暂无数据</div>

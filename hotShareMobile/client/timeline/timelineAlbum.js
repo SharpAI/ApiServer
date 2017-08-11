@@ -1,6 +1,8 @@
 Template.timelineAlbum.onRendered(function(){
+  Session.set('timelineAlbumMultiSelect',false);
   Session.set('timelineAlbumLimit',10);
   var uuid = Router.current().params._uuid;
+  Meteor.subscribe('device-timeline',uuid,Session.get('timelineAlbumLimit'));
   $('.content').scroll(function(){
     var height = $('.timeLine').height();
     var contentTop = $('.content').scrollTop();
@@ -16,7 +18,8 @@ Template.timelineAlbum.onRendered(function(){
     if((contentHeight + contentTop + 50 ) >= height){
       var limit = Session.get('timelineAlbumLimit') + 10
       console.log('loadMore and limit = ',limit);
-      SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({to_type:'group',people_uuid:uuid,type:'text', images: {$exists: true}}, {limit: limit, sort: {create_time: -1}}, limit);
+      // SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({to_type:'group',people_uuid:uuid,type:'text', images: {$exists: true}}, {limit: limit, sort: {create_time: -1}}, limit);
+      Meteor.subscribe('device-timeline',uuid,Session.get('timelineAlbumLimit'));
       Session.set('timelineAlbumLimit',limit);
     }
   });
@@ -28,48 +31,76 @@ Template.timelineAlbum.onRendered(function(){
   }, 1000);
 });
 Template.timelineAlbum.helpers({
+  // lists: function(){
+  //   var uuid = Router.current().params._uuid;
+  //   var msgs = [];
+  //   var tempDate = null;
+  //   if(SimpleChat.Messages.find({to_type:'group',people_uuid:uuid,type:'text', images: {$exists: true}},{sort:{create_time:1}}).count() ==0){
+  //      SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({to_type:'group',people_uuid:uuid,type:'text', images: {$exists: true}}, {limit: 10, sort: {create_time: -1}}, 10);
+  //   }
+  //   SimpleChat.Messages.find({to_type:'group',people_uuid:uuid,type:'text', images: {$exists: true}},{sort:{create_time:-1}}).forEach(function(item){
+  //     var date = new Date(item.create_time);
+  //     var time = date.shortTime();
+  //     var obj = {
+  //       create_time: time,
+  //       ts: item.create_time,
+  //       images: item.images
+  //     };
+  //     if(tempDate !== time){
+  //       obj.isShowTime = true;
+  //     }
+  //     msgs.push(obj);
+  //     tempDate = time;
+  //   });
+  //   return msgs;
+  // },
+
   lists: function(){
     var uuid = Router.current().params._uuid;
-    var msgs = [];
-    var tempDate = null;
-    if(SimpleChat.Messages.find({to_type:'group',people_uuid:uuid,type:'text', images: {$exists: true}},{sort:{create_time:1}}).count() ==0){
-       SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({to_type:'group',people_uuid:uuid,type:'text', images: {$exists: true}}, {limit: 10, sort: {create_time: -1}}, 10);
-    }
-    SimpleChat.Messages.find({to_type:'group',people_uuid:uuid,type:'text', images: {$exists: true}},{sort:{create_time:-1}}).forEach(function(item){
-      var date = new Date(item.create_time);
-      var time = date.shortTime();
-      var obj = {
-        create_time: time,
-        ts: item.create_time,
-        images: item.images
-      };
-      if(tempDate !== time){
-        obj.isShowTime = true;
+    DeviceTimeLine.find({uuid: uuid},{sort:{hour:-1}}).forEach(function(item){
+    DeviceTimeLine.forEach(function(item){
+      for(x in item.perMin){
+        var hour = new Date(item.hour)
+        hour = hour.setMinutes(x);
+        var tmpObj = {
+          time: hour,
+          images: []
+        }
+        item.perMin[x].forEach(function(img){
+          tmpObj.images.push(img);
+        });
+        lists.push(tmpObj);
       }
-      msgs.push(obj);
-      tempDate = time;
-    });
-    return msgs;
+    })
+    return lists;
+  },
+  formatDate: function(time){
+    var date = new Date(time);
+    return date.shortTime()
+  },
+  isMultiSelect: function(){
+    return Session.equals('timelineAlbumMultiSelect',true);
   }
+
 });
 
 Template.timelineAlbum.events({
   'click .back': function(){
     return PUB.back();
   },
-  'click .images': function(e){
+  'click .images-click-able': function(e){
     var uuid = Router.current().params._uuid;
     device = Devices.findOne({uuid: uuid});
     var people_id = e.currentTarget.id,
         group_id  = device.groupId;
 
     var person_info = {
-      'name': $(e.currentTarget).data('label') || '',
+      'name': $(e.currentTarget).data('name') || '',
       'uuid': uuid,
       'group_id': group_id,
-      'img_url': $(e.currentTarget).data('url'),
-      'type': $(e.currentTarget).data('type'),
-      'ts': new Date( $(e.currentTarget).data('ts')).getTime(),
+      'img_url': $(e.currentTarget).data('imgurl'),
+      'type': 'face',
+      'ts': $(e.currentTarget).data('ts'),
       'accuracy': 1,
       'fuzziness': 1
     };
