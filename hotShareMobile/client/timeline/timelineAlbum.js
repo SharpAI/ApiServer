@@ -57,8 +57,8 @@ Template.timelineAlbum.helpers({
 
   lists: function(){
     var uuid = Router.current().params._uuid;
+    var lists = [];
     DeviceTimeLine.find({uuid: uuid},{sort:{hour:-1}}).forEach(function(item){
-    DeviceTimeLine.forEach(function(item){
       for(x in item.perMin){
         var hour = new Date(item.hour)
         hour = hour.setMinutes(x);
@@ -72,6 +72,9 @@ Template.timelineAlbum.helpers({
         lists.push(tmpObj);
       }
     })
+    lists.sort(function(a,b){
+      return a.time < b.time;
+    });
     return lists;
   },
   formatDate: function(time){
