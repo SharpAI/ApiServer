@@ -1458,8 +1458,6 @@ if Meteor.isServer
               'app_user_name': item.app_user_name
               'uuid': item.in_uuid
               'groupid': item.group_id
-              'checkin_time': new Date(item.checkin_time)
-              'ai_in_time': new Date(item.ai_in_time)
               'msgid': new Mongo.ObjectID()._str
             })
           else if direction is 'out' and item.checkout_time < daytime and item.ai_out_time < daytime
@@ -1468,8 +1466,6 @@ if Meteor.isServer
               'app_user_name': item.app_user_name
               'uuid': item.out_uuid
               'groupid': item.group_id
-              'checkout_time': new Date(item.checkout_time)
-              'ai_out_time': new Date(item.ai_out_time)
               'msgid': new Mongo.ObjectID()._str
             })
         else if active is 'active'
@@ -1479,8 +1475,6 @@ if Meteor.isServer
               'app_user_name': item.app_user_name
               'uuid': item.in_uuid
               'groupid': item.group_id
-              'checkin_time': new Date(item.checkin_time)
-              'ai_in_time': new Date(item.ai_in_time)
               'msgid': new Mongo.ObjectID()._str
             })
           else if direction is 'out' and (item.checkout_time > daytime or item.ai_out_time > daytime)
@@ -1489,8 +1483,6 @@ if Meteor.isServer
               'app_user_name': item.app_user_name
               'uuid': item.out_uuid
               'groupid': item.group_id
-              'checkout_time': new Date(item.checkout_time)
-              'ai_out_time': new Date(item.ai_out_time)
               'msgid': new Mongo.ObjectID()._str
             })
       )
