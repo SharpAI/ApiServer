@@ -90,6 +90,30 @@ WorkStatus = new Meteor.Collection('workStatus');
     whats_up: <String>
 }
 */
+
+DeviceTimeLine = new Meteor.Collection('device_timeline');
+/*
+{
+  "hour":"",
+  "uuid":"",
+  "group_id":"",
+  "perMin":{
+    "01":[{
+      "person_id":"",
+      "person_name":"",// 允许为空
+      "img_url":"",
+      "app_user_id":"",// 关联过有，未关联没有
+      "app_user_name":"",// 关联过有，未关联没有
+      "sqlid": "sqlid", 
+      "style": "style",
+      "ts":""
+    }],
+    "11":[{
+
+    }]
+  }
+}
+*/
 if(Meteor.isServer){
   PeopleHis.allow({
     update: function (userId, doc, fields, modifier) {
@@ -156,6 +180,15 @@ if(Meteor.isServer){
      }
      return Devices.find({uuid:uuid});
   });
+
+  Meteor.publish('device-timeline', function(uuid,limit){
+    var limit = limit || 10;
+    if(!this.userId || !uuid){
+      return this.ready();
+    }
+    return DeviceTimeLine.find({uuid: uuid},{sort:{hour:-1},limit: limit});
+  });
+
   Meteor.methods({
     getPeopleIdByName: function(name, uuid){
       var people = People.findOne({name: name, uuid: uuid}, {sort: {updateTime: -1}});

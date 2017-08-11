@@ -239,6 +239,71 @@ PERSON = {
         "out_uuid"    : relation.out_uuid,
       }});
     }
+  },
+  // update Device TimeLine
+  updateToDeviceTimeline: function(uuid,group_id,obj){
+    console.log('updateToDeviceTimeline= uuid:'+uuid+', group_id:'+group_id+' ,obj:'+JSON.stringify(obj));
+    if(!uuid || !group_id || !obj){
+      return;
+    }
+    var hour = new Date();
+    hour.setMinutes(0);
+    hour.setSeconds(0);
+    hour.setMilliseconds(0);
+
+    var minutes = new Date();
+    minutes = minutes.getMinutes();
+
+    var selector = {
+      hour: hour,
+      uuid: uuid,
+      group_id: group_id
+    };
+    var modifier = {
+      $push:{}
+    };
+    obj.ts = Date.now();
+    modifier["$push"]["perMin."+minutes] = obj;
+    DeviceTimeLine.update(selector, modifier, {upsert: true},function(err,res){
+      if(err){
+        console.log('updateToDeviceTimeline2 Err:'+err);
+      } else {
+        console.log('updateToDeviceTimeline2 Success');
+      }
+    });
+  },
+  updateToDeviceTimeline2: function(uuid, group_id,user_id,user_name,ts){
+    console.log('updateToDeviceTimeline2= uuid:'+uuid+', group_id:'+group_id+' ,user_id:'+user_id+', user_name'+user_name+', ts:'+ts);
+    if(!uuid || !group_id || !user_id || !user_name){
+      return;
+    }
+    var hour = new Date(ts);
+    hour.setMinutes(0);
+    hour.setSeconds(0);
+    hour.setMilliseconds(0);
+
+    var minutes = new Date(ts);
+    minutes = minutes.getMinutes();
+
+    var selector = {
+      hour: hour,
+      uuid: uuid,
+      group_id: group_id,
+    };
+    var modifier = {
+      $set:{}
+    };
+    selector["perMin."+minutes+'.'+ts] = ts
+    modifier["$set"]["perMin."+minutes+".$."+app_user_id] = user_id;
+    modifier["$set"]["perMin."+minutes+".$."+app_user_name] = user_name;
+    DeviceTimeLine.update(selector,modifier,function(err,res){
+      if(err){
+        console.log('updateToDeviceTimeline2 Err:'+err);
+      } else {
+        console.log('updateToDeviceTimeline2 Success');
+      }
+    });
+
   }
 };
 

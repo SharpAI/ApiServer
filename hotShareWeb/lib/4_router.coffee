@@ -673,6 +673,16 @@ if Meteor.isServer
           is_read: false
           tid:tracker_id
         })
+
+        # update to DeviceTimeLine
+        var timeObj = {
+          person_id: id,
+          person_name: name,
+          img_url: url,
+          sqlid: sqlid, 
+          style: style
+        }
+        PERSON.updateToDeviceTimeline(uuid,userGroup.group_id,timeObj)
         if name
           msg_data = {
             group_id:userGroup.group_id,
