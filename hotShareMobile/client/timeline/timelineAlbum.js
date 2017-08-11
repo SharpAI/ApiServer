@@ -134,6 +134,12 @@ Template.timelineAlbum.events({
             console.log('ai-checkin-out error:' + err);
             return;
           }
+          if(timelineAlbumTimeout){
+            window.clearTimeout(timelineAlbumTimeout);
+          }
+          timelineAlbumTimeout = setTimeout(function() {
+            $("img.lazy").lazyload({});
+          }, 500);
           if(res && res.result == 'succ'){
             return PUB.toast('已记录到每日出勤报告');
           } else {
@@ -151,6 +157,12 @@ Template.timelineAlbum.events({
             console.log('ai-checkin-out error:' + err);
             return;
           }
+          if(timelineAlbumTimeout){
+            window.clearTimeout(timelineAlbumTimeout);
+          }
+          timelineAlbumTimeout = setTimeout(function() {
+            $("img.lazy").lazyload({});
+          }, 500);
           if(res && res.result == 'succ'){
             return PUB.toast('已关联');
           } else {
