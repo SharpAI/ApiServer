@@ -156,7 +156,7 @@ Template.homePage.events({
     var in_out = $(e.currentTarget).data('inout');
     modifyMyStatusFun(group_id,in_out);
   },
-  'click .checkInTime .reReckInTime':function(e){
+  'click .checkInTime, click .reReckInTime':function(e){
     var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
     if (workstatus && workstatus.group_id) {
       modifyMyStatusFun(workstatus.group_id,'in');
@@ -165,7 +165,7 @@ Template.homePage.events({
       PUB.page('/timeline');
     }
   },
-  'click .checkOutTime .reReckOutTime':function(e){
+  'click .checkOutTime,click .reReckOutTime':function(e){
     var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
     if (workstatus && workstatus.group_id) {
       modifyMyStatusFun(workstatus.group_id,'out');
