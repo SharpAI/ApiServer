@@ -16,6 +16,7 @@
       <div style="margin:10px;">
         {{#if lists}}
         {{#each lists}}
+        {{#if workstatus group_id}}
         <div class="panel panel-default">
         <div id="{{group_id}}" class="panel-heading">{{group_name}}</div>
         <table class="table table-bordered">
@@ -87,6 +88,7 @@
             </tbody>
         </table>
         </div>
+        {{/if}}
         {{/each}}
         <div style="background: #e2e2e2;border-radius: 8px;padding: 10px;border: dotted 1px gray;">
           <table class="tips-table table-condensed">
