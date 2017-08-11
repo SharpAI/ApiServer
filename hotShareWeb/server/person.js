@@ -170,6 +170,9 @@ PERSON = {
     outtime = (relation.checkout_time > relation.ai_out_time) ? relation.checkout_time : relation.ai_out_time;
     outtime = (outtime > today) ? outtime : 0;
 
+    //最新一次进门的时间
+    var lastest_in_time = (relation.checkin_time > relation.ai_in_time) ? relation.checkin_time : relation.ai_in_time;
+
     var intime = 0;
     if(relation.ai_in_time == 0 || relation.checkin_time == 0) {
       //取出不等于0的就是intime
@@ -198,7 +201,7 @@ PERSON = {
     //normal   工作时间大于8小时 或 9:00am前上班
 
     //有in没有out就是绿色，其他是灰色
-    if(intime > today && intime > outtime)
+    if(lastest_in_time > today && lastest_in_time > outtime)
       now_status = "in";
 
     //9点以前上班是绿色, 之后是红色
