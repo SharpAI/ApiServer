@@ -41,6 +41,36 @@ Template.homePage.helpers({
     }
     return [];
   },
+  hasIntime:function(){
+    var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
+    if (workstatus && workstatus.in_time) {
+      return true;
+    }
+    return false;
+  },
+  inTime:function(){
+    var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
+    if (workstatus && workstatus.in_time) {
+      return workstatus.in_time;
+    }
+    return '';
+  },
+  hasOutTime:function(){
+    var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
+    if (workstatus && workstatus.out_time) {
+      return true;
+    }
+    return false;
+
+  },
+  outTime:function(){
+    var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
+    if (workstatus && workstatus.out_time) {
+      return workstatus.out_time;
+    }
+    return '';
+
+  },
   isStatusIN: function(status){
     return status === 'in';
   },
@@ -73,6 +103,27 @@ Template.homePage.helpers({
     return Meteor.userId() === app_user_id;
   }
 });
+var modifyMyStatusFun = function(group_id,in_out){
+    if (!group_id || !in_out) {
+      return;
+    }
+    var deviceCount = Devices.find({groupId: group_id,in_out:in_out},{sort:{createAt:-1}}).count();
+    console.log(in_out);
+    console.log(group_id);
+    console.log(deviceCount);
+    if(deviceCount === 0){
+      return PUB.toast('未找到该群组下，方向为"'+in_out+'"的设备');
+    }
+    if(deviceCount === 1){
+      var device = Devices.findOne({groupId: group_id,in_out:in_out},{sort:{createAt:-1}})
+      return PUB.page('/timelineAlbum/'+device.uuid);
+    }
+    if(deviceCount > 1){
+      Session.set('modifyMyStatus_group_id',group_id);
+      Session.set('modifyMyStatus_in_out',in_out);
+      return $('#selectDevicesInOut').modal('show');
+    }
+};
 
 Template.homePage.events({
   'click .deviceItem': function(e){
@@ -103,21 +154,24 @@ Template.homePage.events({
   'click .modifyMyStatus':function(e){
     var group_id = e.currentTarget.id;
     var in_out = $(e.currentTarget).data('inout');
-    var deviceCount = Devices.find({groupId: group_id,in_out:in_out},{sort:{createAt:-1}}).count();
-    console.log(in_out);
-    console.log(group_id);
-    console.log(deviceCount);
-    if(deviceCount === 0){
-      return PUB.toast('未找到该群组下，方向为"'+in_out+'"的设备');
+    modifyMyStatusFun(group_id,in_out);
+  },
+  'click .checkInTime .reReckInTime':function(e){
+    var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
+    if (workstatus && workstatus.group_id) {
+      modifyMyStatusFun(workstatus.group_id,'in');
     }
-    if(deviceCount === 1){
-      var device = Devices.findOne({groupId: group_id,in_out:in_out},{sort:{createAt:-1}})
-      return PUB.page('/timelineAlbum/'+device.uuid);
+    else{
+      PUB.page('/timeline');
     }
-    if(deviceCount > 1){
-      Session.set('modifyMyStatus_group_id',group_id);
-      Session.set('modifyMyStatus_in_out',in_out);
-      return $('#selectDevicesInOut').modal('show');
+  },
+  'click .checkOutTime .reReckOutTime':function(e){
+    var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
+    if (workstatus && workstatus.group_id) {
+      modifyMyStatusFun(workstatus.group_id,'out');
+    }
+    else{
+      PUB.page('/timeline');
     }
   }
 })

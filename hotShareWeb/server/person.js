@@ -179,11 +179,23 @@ PERSON = {
       //取出较小的就是intime
       intime = (relation.ai_in_time > relation.checkin_time) ? relation.checkin_time : relation.ai_in_time;
     }
+    var in_time = null;//上班时间
+    if (intime > 0) {
+      var in_time_date = new Date(intime);
+      in_time = in_time_date.getHours()+':'+in_time_date.getMinutes();
+
+    }
+    var out_time = null;//下班时间
+    if (out_time > 0) {
+      var out_time_date = new Date(outtime);
+      out_time = out_time_date.getHours()+':'+out_time_date.getMinutes();
+
+    }
 
     var now_status = "out"; //in/out
     var in_status = "unknown";
     var out_status = "unknown";
-    //normal   工作时间小于8小时 或 9:00am前上班
+    //normal   工作时间大于8小时 或 9:00am前上班
 
     //有in没有out就是绿色，其他是灰色
     if(intime > today && intime > outtime)
@@ -226,7 +238,9 @@ PERSON = {
         "out_status"  : out_status,
         "in_uuid"     : relation.in_uuid,
         "out_uuid"    : relation.out_uuid,
-        "whats_up"    : ""
+        "whats_up"    : "",
+        "in_time"     : in_time,
+        "out_time"    : out_time
       });
     }
     else {
@@ -237,6 +251,8 @@ PERSON = {
         "out_status"  : out_status,
         "in_uuid"     : relation.in_uuid,
         "out_uuid"    : relation.out_uuid,
+        "in_time"     : in_time,
+        "out_time"    : out_time
       }});
     }
   },
