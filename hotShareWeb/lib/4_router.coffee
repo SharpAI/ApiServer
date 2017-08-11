@@ -675,7 +675,7 @@ if Meteor.isServer
         })
 
         # update to DeviceTimeLine
-        var timeObj = {
+        timeObj = {
           person_id: id,
           person_name: name,
           img_url: url,
