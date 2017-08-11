@@ -165,13 +165,14 @@ PERSON = {
     relation.checkin_time  = (!relation.checkin_time)  ? 0 : (relation.checkin_time  < today) ? 0 : relation.checkin_time;
     relation.ai_in_time    = (!relation.ai_in_time)    ? 0 : (relation.ai_in_time    < today) ? 0 : relation.ai_in_time;
     relation.ai_out_time   = (!relation.ai_out_time)   ? 0 : (relation.ai_out_time   < today) ? 0 : relation.ai_out_time;
+    relation.ai_lastest_in_time   = (!relation.ai_lastest_in_time)   ? 0 : (relation.ai_lastest_in_time   < today) ? 0 : relation.ai_lastest_in_time;
 
     var outtime = 0;
     outtime = (relation.checkout_time > relation.ai_out_time) ? relation.checkout_time : relation.ai_out_time;
     outtime = (outtime > today) ? outtime : 0;
 
     //最新一次进门的时间
-    var lastest_in_time = (relation.checkin_time > relation.ai_in_time) ? relation.checkin_time : relation.ai_in_time;
+    var lastest_in_time = (relation.checkin_time > relation.ai_lastest_in_time) ? relation.checkin_time : relation.ai_lastest_in_time;
 
     var intime = 0;
     if(relation.ai_in_time == 0 || relation.checkin_time == 0) {

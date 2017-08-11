@@ -576,7 +576,8 @@ if Meteor.isServer
     if data.in_out is 'out'
       WorkAIUserRelations.update({_id:relation._id},{$set:{ai_out_time:create_time.getTime()}});
       return
-    if relation.ai_in_time
+    WorkAIUserRelations.update({_id:relation._id},{$set:{ai_lastest_in_time:create_time.getTime()}});#平板最新拍到的时间
+    if relation.ai_in_time 
       ai_in_time = new Date(relation.ai_in_time);
       today = new Date(create_time.getFullYear(), create_time.getMonth(), create_time.getDate()).getTime(); #凌晨
       if ai_in_time.getTime() > today
