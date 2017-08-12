@@ -1,6 +1,23 @@
 <template name="chatGroups">
-  {{>connectionBanner}}
-  <div class="chatGroups">
+  <div class="chatGroups home">
+    <div class="head">
+      <strong>消息</strong>
+      <div class="rightDropMenu dropdown">
+          <div class="rightButton dropdown-toggle" id="add-more" data-toggle="dropdown">
+            <img src="/add_more.png" height="30" >
+          </div>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="add-more">
+            <li role="presentation"><a id="joinTestChatGroups" role="menuitem" tabindex="-1" ><i class="fa fa-users add-more-drop-item"></i>加入AI体验群</a></li>
+            <li role="presentation"><a id="createNewChatGroups" role="menuitem" tabindex="-1" ><i class="fa fa-comment add-more-drop-item"></i>创建AI训练群</a></li>
+            <li role="presentation"><a id="addNewFriends" role="menuitem" tabindex="-1" ><span class="add-more-drop-item"><span class="fa fa-plus"></span><i class="fa fa-user"></i></span> 添加训练员</a></li>
+            <li role="presentation"><a id="scanbarcode" role="menuitem" tabindex="-1" ><img class="add-more-drop-item" src="/scan_b.png" height="30" style="margin-left: -15px;">扫一扫</a></li>
+            {{#if isAndroid}}
+            <li role="presentation"><a id="scanimage" role="menuitem" tabindex="-1" ><img class="add-more-drop-item" src="/scan_b.png" height="30" style="margin-left: -15px;">扫图片</a></li>
+            {{/if}}
+          </ul>
+      </div>
+    </div>
+    <div class="content">
     <div id="wrapper">
       {{#if hasSysMessages}}
         <div id="sysBell" class="eachViewer">
@@ -45,6 +62,8 @@
         {{/if}} -->
       </div>
     </div>
+    </div>
+    {{> footer}}
   </div>
   {{#if showBubbleTipHintTemplate}}
     {{> bubbleTipHintTemplate}}

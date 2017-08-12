@@ -100,13 +100,11 @@ if Meteor.isClient
           window.iabHandle.close()
           window.iabHandle = null
     Router.route '/',()->
-      # this.render 'home'
-      # Session.set 'channel','home'
-      this.render 'homePage'
-      Session.set 'channel','homePage'
+      this.render 'home'
+      Session.set 'channel','home'
       return
     Router.route '/message',()->
-      this.render 'home'
+      this.render 'chatGroups'
       Session.set 'channel','message'
       return
     Router.route '/group/add',()->
@@ -186,11 +184,11 @@ if Meteor.isClient
         this.render 'timeline'
         Session.set 'channel','timeline'
       return
-    Router.route '/homePage',()->
-      if Meteor.isCordova is true
-        this.render 'homePage'
-        Session.set 'channel','homePage'
-      return
+    # Router.route '/homePage',()->
+    #   if Meteor.isCordova is true
+    #     this.render 'homePage'
+    #     Session.set 'channel','homePage'
+    #   return
     Router.route '/timelineAlbum/:_uuid',()->
       this.render 'timelineAlbum'
       return

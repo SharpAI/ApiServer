@@ -63,6 +63,19 @@ if Meteor.isClient
     if (totalReadCount <= 0)
       Session.set('hasNewLabelMsg', false)
   Template.chatGroups.events
+    'click #joinTestChatGroups':(event)->
+      PUB.page '/introductoryPage2'
+    'click #createNewChatGroups':(event)->
+      #Router.go('/group/add')
+      Session.set('fromCreateNewGroups',true);
+      Router.go('/setGroupname');
+      #ScanBarcodeByBarcodeScanner()
+    'click #addNewFriends':(event)->
+      PUB.page '/searchFollow'
+    'click #scanbarcode':(event)->
+      ScanBarcodeByBarcodeScanner()
+    'click #scanimage':(event)->
+      DecodeImageFromAlum()
     'click #sysBell':(event)->
       Meteor.defer ()->
         msgSession = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId:sysMsgToUserId});

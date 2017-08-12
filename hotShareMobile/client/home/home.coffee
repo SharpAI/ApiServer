@@ -116,19 +116,6 @@ if Meteor.isClient
     'click .btn-rate2':()->
       $('.app-rate').fadeOut()
       promptForRatingWindowButtonClickHandler(3)
-    'click #joinTestChatGroups':(event)->
-      PUB.page '/introductoryPage2'
-    'click #createNewChatGroups':(event)->
-      #Router.go('/group/add')
-      Session.set('fromCreateNewGroups',true);
-      Router.go('/setGroupname');
-      #ScanBarcodeByBarcodeScanner()
-    'click #addNewFriends':(event)->
-      PUB.page '/searchFollow'
-    'click #scanbarcode':(event)->
-      ScanBarcodeByBarcodeScanner()
-    'click #scanimage':(event)->
-      DecodeImageFromAlum()
     'click .dailyReporterTip':(event)->
       localStorage.setItem('hideDailyReporterTip', 'true')
       $('.dailyReporterTip').fadeOut()
