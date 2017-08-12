@@ -129,7 +129,7 @@ Template.timelineAlbum.events({
     var relations = WorkAIUserRelations.findOne({'app_user_id':Meteor.userId()});
     var callbackRsu = function(res){
 
-    }
+    };
     if(relations){ // 标识过
       confirm_text = '是否将该时间记录到每日出勤报告？';
       if(person_name){
@@ -161,6 +161,20 @@ Template.timelineAlbum.events({
       confirm_text = '是否关联？';
       if(person_name){
         confirm_text = '是否关联「'+person_name+'」？';
+      }
+      else{
+        confirm_text = '请选择一张有名字的照片或前往聊天室进行标记~';
+        var url = '/simple-chat/to/group?id='+ group_id;
+        try{
+          navigator.notification.confirm(confirm_text,function
+                (index){if (index === 2) {PUB.page(url);}},
+                '提示',['重选','转入聊天室']);
+        }
+        catch (error){
+          if(confirm(confirm_text)){
+            PUB.page(url);
+          }
+        }
       }
       PUB.confirm(confirm_text,function(){
         Meteor.call('ai-checkin-out',data,function(err,res){
