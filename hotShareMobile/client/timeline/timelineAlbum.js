@@ -96,9 +96,10 @@ Template.timelineAlbum.events({
     device = Devices.findOne({uuid: uuid});
     var people_id = e.currentTarget.id,
         group_id  = device.groupId;
-
+    var person_name = $(e.currentTarget).data('name') || '';
+    var confirm_text = '';
     var person_info = {
-      'name': $(e.currentTarget).data('name') || '',
+      'name': person_name,
       'uuid': uuid,
       'group_id': group_id,
       'img_url': $(e.currentTarget).data('imgurl'),
@@ -127,7 +128,11 @@ Template.timelineAlbum.events({
 
     }
     if(relations){ // 标识过
-      PUB.confirm('是否将该时间记录到每日出勤报告？',function(){
+      confirm_text = '是否将该时间记录到每日出勤报告？';
+      if(person_name){
+        confirm_text = '是否将该时间记录到「'+person_name+'」每日出勤报告？'
+      }
+      PUB.confirm(confirm_text,function(){
         Meteor.call('ai-checkin-out',data,function(err, res){
           if(err){
             PUB.toast('记录失败，请重试');
@@ -150,7 +155,11 @@ Template.timelineAlbum.events({
         });
       });
     } else {
-      PUB.confirm('是否关联？',function(){
+      confirm_text = '是否关联？';
+      if(person_name){
+        confirm_text = '是否关联「'+person_name+'」？';
+      }
+      PUB.confirm(confirm_text,function(){
         Meteor.call('ai-checkin-out',data,function(err,res){
           if(err){
             PUB.toast('关联失败，请重试');

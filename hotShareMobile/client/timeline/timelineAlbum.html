@@ -40,10 +40,12 @@
         <div class="images images-no-click" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
           <div class="linked-helper">已关联</div>
           <img class="lazy" data-original="{{img_url}}" />
+          <div class="person-name">{{person_name}}</div>
         </div>
         {{else}}
         <div class="images images-click-able" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
           <img class="lazy" data-original="{{img_url}}" />
+          <div class="person-name">{{person_name}}</div>
         </div>
         {{/if}}
         {{/each}}
