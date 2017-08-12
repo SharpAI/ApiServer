@@ -190,7 +190,7 @@ PERSON = {
 
     }
     var out_time = null;//下班时间
-    if (out_time > 0) {
+    if (outtime > 0) {
       var out_time_date = new Date(outtime);
       out_time = out_time_date.getHours()+':'+out_time_date.getMinutes();
 
