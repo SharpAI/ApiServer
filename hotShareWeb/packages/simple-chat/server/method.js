@@ -430,7 +430,7 @@ Meteor.methods({
     if (!data.user_id || !data.face_id || !person_info || ! person_info.group_id) {
       return {result:'error',reason:'参数不全'};
     }
-    var setObj = {group_id:person_info.group_id, person_name: person_info.name};
+    var setObj = {group_id:person_info.group_id};
     if (data.checkin_time) {
       setObj.in_uuid = person_info.uuid;
       setObj.checkin_time = new Date(data.checkin_time).getTime() ;
@@ -452,6 +452,7 @@ Meteor.methods({
       user_name = person_info.name || user_name;
       person = PERSON.setName(person_info.group_id, person_info.uuid, data.face_id, person_info.img_url, user_name);
     }
+    setObj.person_name = person.name;
     var relation = WorkAIUserRelations.findOne({'ai_persons.id':person._id});
     if (relation && relation.app_user_id !== user._id) {
       return {result:'error',reason:'此人已被'+relation.app_user_name+'关联,请重新选择照片'};
@@ -460,7 +461,7 @@ Meteor.methods({
       WorkAIUserRelations.update({_id:relation._id},{$set:setObj});
     }
     else{
-      relation = WorkAIUserRelations.findOne({'app_user_id':user._id});
+      relation = WorkAIUserRelations.findOne({'app_user_id':user._id,'group_id':person_info.group_id});
       if (relation) {
         WorkAIUserRelations.update({_id:relation._id},{$set:setObj,$push:{ai_persons:{id:person._id}}});
       }
@@ -485,7 +486,7 @@ Meteor.methods({
     }
     person_info.name = person.name;
     person_info.id = person.faceId;
-    PERSON.updateWorkStatus(person._id)
+    PERSON.updateWorkStatus(person._id);
     PERSON.sendPersonInfoToWeb(person_info);
     PERSON.updateToDeviceTimeline2(person_info.uuid,person_info.group_id,user._id,user_name,person_info.ts);
     return {result:'succ'};
