@@ -30,6 +30,9 @@ Template.timelineAlbum.onRendered(function(){
       $("img.lazy").lazyload({});
   }, 1000);
 });
+Template.timelineAlbum.onDestroyed(function(){
+  Session.set('wantModify',false);
+});
 Template.timelineAlbum.helpers({
   // lists: function(){
   //   var uuid = Router.current().params._uuid;
@@ -120,7 +123,7 @@ Template.timelineAlbum.events({
     } else {
       data.checkout_time =  new Date( $(e.currentTarget).data('ts')).getTime()
     }
-    
+    data.wantModify = Session.get('wantModify');
     console.log(data);
     // 检查是否标识过自己
     var relations = WorkAIUserRelations.findOne({'app_user_id':Meteor.userId()});

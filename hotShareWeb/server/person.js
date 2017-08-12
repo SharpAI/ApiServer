@@ -183,18 +183,18 @@ PERSON = {
       //取出较小的就是intime
       intime = (relation.ai_in_time > relation.checkin_time) ? relation.checkin_time : relation.ai_in_time;
     }
-    var in_time = null;//上班时间
-    if (intime > 0) {
-      var in_time_date = new Date(intime);
-      in_time = in_time_date.getHours()+':'+in_time_date.getMinutes();
+    // var in_time = null;//上班时间
+    // if (intime > 0) {
+    //   var in_time_date = new Date(intime);
+    //   in_time = in_time_date.getHours()+':'+in_time_date.getMinutes();
 
-    }
-    var out_time = null;//下班时间
-    if (outtime > 0) {
-      var out_time_date = new Date(outtime);
-      out_time = out_time_date.getHours()+':'+out_time_date.getMinutes();
+    // }
+    // var out_time = null;//下班时间
+    // if (outtime > 0) {
+    //   var out_time_date = new Date(outtime);
+    //   out_time = out_time_date.getHours()+':'+out_time_date.getMinutes();
 
-    }
+    // }
 
     var now_status = "out"; //in/out
     var in_status = "unknown";
@@ -243,8 +243,8 @@ PERSON = {
         "in_uuid"     : relation.in_uuid,
         "out_uuid"    : relation.out_uuid,
         "whats_up"    : "",
-        "in_time"     : in_time,
-        "out_time"    : out_time
+        "in_time"     : intime,
+        "out_time"    : outtime
       });
     }
     else {
@@ -255,8 +255,8 @@ PERSON = {
         "out_status"  : out_status,
         "in_uuid"     : relation.in_uuid,
         "out_uuid"    : relation.out_uuid,
-        "in_time"     : in_time,
-        "out_time"    : out_time
+        "in_time"     : intime,
+        "out_time"    : outtime
       }});
     }
   },

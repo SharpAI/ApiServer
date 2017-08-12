@@ -14,6 +14,39 @@
       <div class="content" style="padding-top:50px;padding-bottom:50px;">
       <!-- status lists start -->
       <div style="margin:10px;">
+        {{#if hasTwoMoreGroup}}
+        {{#each myGroupWorkStatus}}
+        <div class="panel panel-default">
+          <div class="panel-heading">我的考勤({{group_name}})</div>
+          <div style="font-weight: 400;">
+            <div style="position: relative;padding: 10px 0;border: solid 1px #eee;">
+              <i class="fa fa-circle " style="color: #27d496;font-size: 20px;padding: 10px;margin: auto;position: absolute;"></i>
+                <div  style="display: inline-block;margin-left: 40px;font-weight: 400;">
+                  <div>上班</div><div style="color: #868686">09:00</div>
+                </div>
+                {{#if hasIntime in_time}}
+                <span style="color: #868686;padding: 10px 0;right: 60px;position: absolute;">{{inTime in_time}}</span>
+                <span  class="reReckInTime" style="right: 20px;position: absolute;color: #27d496;padding: 10px 0;" data-groupid="{{group_id}}">重打</span>
+                {{else}}
+                <span class="checkInTime" style="color: #fff;background-color: #3db1fa;padding: 5px 10px;right: 30px;margin-top: 5px; border-radius: 5px;position: absolute;" data-groupid="{{group_id}}">未打卡</span>
+                {{/if}}
+            </div>
+            <div style="position: relative;padding: 10px 0;">
+              <i class="fa fa-circle " style="color: #f1b725;font-size: 20px;padding: 10px;margin: auto;position: absolute;"></i>
+                <div  style="display: inline-block;margin-left: 40px;font-weight: 400;">
+                  <div>下班</div><div style="color: #868686">18:00</div>
+                </div>
+                {{#if hasOutTime out_time}}
+                <span style="color: #868686;padding: 10px 0;right: 60px;position: absolute;">{{outTime out_time}}</span>
+                <span class="reCheckOutTime" style="right: 20px;position: absolute;color: #27d496;padding: 10px 0;" data-groupid="{{group_id}}">重打</span>
+                {{else}}
+                <span class="checkOutTime" style="color: #fff;background-color: #3db1fa;padding: 5px 10px;right: 30px;margin-top: 5px; border-radius: 5px;position: absolute;" data-groupid="{{group_id}}">未打卡</span>
+                {{/if}}
+            </div>
+          </div>
+        </div>
+        {{/each}}
+        {{else}}
         <div class="panel panel-default">
           <div class="panel-heading">我的考勤</div>
           <div style="font-weight: 400;">
@@ -43,6 +76,7 @@
             </div>
           </div>
         </div>
+        {{/if}}
         {{#if lists}}
         {{#each lists}}
         {{#if workstatus group_id}}

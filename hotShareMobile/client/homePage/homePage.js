@@ -41,32 +41,68 @@ Template.homePage.helpers({
     }
     return [];
   },
-  hasIntime:function(){
-    var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
-    if (workstatus && workstatus.in_time) {
+  hasTwoMoreGroup:function(){
+    var workstatus = WorkStatus.find({app_user_id:Meteor.userId()});
+    if (workstatus && workstatus.count() > 1) {
       return true;
     }
     return false;
   },
-  inTime:function(){
+  myGroupWorkStatus:function(){
+    return WorkStatus.find({app_user_id:Meteor.userId()}).fetch();
+  },
+  hasIntime:function(in_time){
+    if (in_time && in_time !== 0) {
+      return true;
+    }
     var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
-    if (workstatus && workstatus.in_time) {
-      return workstatus.in_time;
+    if (workstatus && workstatus.in_time && workstatus.in_time !== 0) {
+      return true;
+    }
+    return false;
+  },
+  inTime:function(in_time){
+    var intime = in_time;
+    if (!in_time) {
+      var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
+      if (workstatus && workstatus.in_time) {
+        intime = workstatus.in_time;
+      }
+    }
+    if (intime && intime !== 0) {
+      var inDate = new Date(intime);
+      if (inDate.toString() !== 'Invalid Date' ) {
+        return inDate.shortTime();
+      }
+      return intime;
     }
     return '';
   },
-  hasOutTime:function(){
+  hasOutTime:function(out_time){
+    if (out_time && out_time !== 0) {
+      return true;
+    }
     var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
-    if (workstatus && workstatus.out_time) {
+    if (workstatus && workstatus.out_time && workstatus.out_time !== 0) {
       return true;
     }
     return false;
 
   },
-  outTime:function(){
-    var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
-    if (workstatus && workstatus.out_time) {
-      return workstatus.out_time;
+  outTime:function(out_time){
+    var outtime = out_time;
+    if (!out_time) {
+      var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
+      if (workstatus && workstatus.out_time) {
+        outtime = workstatus.out_time;
+      }
+    }
+    if (outtime && outtime !== 0) {
+      var outDate = new Date(outtime);
+      if (outDate.toString() !== 'Invalid Date' ) {
+        return outDate.shortTime();
+      }
+      return outtime;
     }
     return '';
 
@@ -157,6 +193,12 @@ Template.homePage.events({
     modifyMyStatusFun(group_id,in_out);
   },
   'click .checkInTime, click .reReckInTime':function(e){
+    var group_id = $(e.currentTarget).data('groupid');
+    Session.set('wantModify',true);
+    if (group_id) {
+      modifyMyStatusFun(group_id,'in');
+      return;
+    }
     var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
     if (workstatus && workstatus.group_id) {
       modifyMyStatusFun(workstatus.group_id,'in');
@@ -166,6 +208,12 @@ Template.homePage.events({
     }
   },
   'click .checkOutTime,click .reReckOutTime':function(e){
+    var group_id = $(e.currentTarget).data('groupid');
+    Session.set('wantModify',true);
+    if (group_id) {
+      modifyMyStatusFun(group_id,'out');
+      return;
+    }
     var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
     if (workstatus && workstatus.group_id) {
       modifyMyStatusFun(workstatus.group_id,'out');

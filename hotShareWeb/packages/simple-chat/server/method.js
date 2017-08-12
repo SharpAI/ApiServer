@@ -411,6 +411,7 @@ Meteor.methods({
         user_id:Meteor.userId(),
         checkin_time: create_time,
         face_id：people_id,
+        wantModify:true
         person_info: {
             'id': personInfo[name].faceId,
             'uuid': uuid,
@@ -434,10 +435,16 @@ Meteor.methods({
     if (data.checkin_time) {
       setObj.in_uuid = person_info.uuid;
       setObj.checkin_time = new Date(data.checkin_time).getTime() ;
+      if (data.wantModify) {
+        setObj.ai_in_time = setObj.checkin_time;
+      }
     }
     if (data.checkout_time) {
       setObj.out_uuid = person_info.uuid;
       setObj.checkout_time = new Date(data.checkout_time).getTime();
+      if (data.wantModify) {
+        setObj.ai_out_time = setObj.checkout_time;
+      }
     }
     var user = Meteor.users.findOne({_id:data.user_id});
     if (!user) {

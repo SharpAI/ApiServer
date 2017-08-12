@@ -122,4 +122,5 @@ Template.checkInOutMsgList.events
             PUB.page '/timeline'
       SimpleChat.Messages.update({_id:msgId},{$set:{is_read:true}});
     'click .check_in_btn':(e)->
+      Session.set('wantModify',true);
       PUB.page '/timelineAlbum/'+this.people_uuid
