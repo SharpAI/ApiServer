@@ -64,17 +64,22 @@ if Meteor.isClient
       Session.set('hasNewLabelMsg', false)
   Template.chatGroups.events
     'click #joinTestChatGroups':(event)->
+      event.stopImmediatePropagation()
       PUB.page '/introductoryPage2'
     'click #createNewChatGroups':(event)->
+      event.stopImmediatePropagation()
       #Router.go('/group/add')
       Session.set('fromCreateNewGroups',true);
       Router.go('/setGroupname');
       #ScanBarcodeByBarcodeScanner()
     'click #addNewFriends':(event)->
+      event.stopImmediatePropagation()
       PUB.page '/searchFollow'
     'click #scanbarcode':(event)->
+      event.stopImmediatePropagation()
       ScanBarcodeByBarcodeScanner()
     'click #scanimage':(event)->
+      event.stopImmediatePropagation()
       DecodeImageFromAlum()
     'click #sysBell':(event)->
       Meteor.defer ()->
