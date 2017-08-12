@@ -1873,7 +1873,14 @@ var onMqttMessage = function(topic, msg) {
     //根据tid合并时会出现 wait_lable不同的情况
     if (targetMsg.wait_lable === false) {
       setObj.text = targetMsg.text;
-      var label = targetMsg.text.replace('AI观察到 ','').replace('：','');
+      //var label = targetMsg.text.replace('AI观察到 ','').replace('：','');
+      var label = '';
+      for (var i = 0; i < targetMsg.images.length; i++) {
+        if (targetMsg.images[i].label) {
+          label = targetMsg.images[i].label;
+          break;
+        }
+      }
       for (var i = 0; i < targetMsg.images.length; i++) {
         targetMsg.images[i].label = label;
       }
