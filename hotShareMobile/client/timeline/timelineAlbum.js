@@ -158,9 +158,9 @@ Template.timelineAlbum.events({
         });
       });
     } else {
-      confirm_text = '是否关联？';
+      confirm_text = '是否选择此照片？';
       if(person_name){
-        confirm_text = '是否关联「'+person_name+'」？';
+        confirm_text = '此照片是：「'+person_name+'」，是否选择？';
       }
       else{
         confirm_text = '请选择一张有名字的照片或前往聊天室进行标记~';
@@ -179,7 +179,7 @@ Template.timelineAlbum.events({
       PUB.confirm(confirm_text,function(){
         Meteor.call('ai-checkin-out',data,function(err,res){
           if(err){
-            PUB.toast('关联失败，请重试');
+            PUB.toast('请重试');
             console.log('ai-checkin-out error:' + err);
             return;
           }
@@ -190,7 +190,7 @@ Template.timelineAlbum.events({
             $("img.lazy").lazyload({});
           }, 500);
           if(res && res.result == 'succ'){
-            return PUB.toast('已关联');
+            return PUB.toast('已记录到每日出勤报告');
           } else {
             return navigator.notification.confirm(res.text,function(index){
 

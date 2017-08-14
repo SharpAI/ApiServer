@@ -472,7 +472,7 @@ Meteor.methods({
     setObj.person_name = person.name;
     var relation = WorkAIUserRelations.findOne({'ai_persons.id':person._id});
     if (relation && relation.app_user_id !== user._id) {
-      return {result:'error',reason:'此人已被'+relation.app_user_name+'关联,请重新选择照片'};
+      return {result:'error',reason:'此人已被'+relation.app_user_name+'选择,请重新选择照片'};
     }
     if (relation) {
       WorkAIUserRelations.update({_id:relation._id},{$set:setObj});
