@@ -43,7 +43,9 @@ if Meteor.isClient
       Router.go('/introductoryPage1');
     'click #createGroup':(event)->
       window.localStorage.setItem("isSecondUse",'true');
-      Router.go('/group/add');
+      #Router.go('/group/add');
+      Session.set('fromCreateNewGroups',true);
+      Router.go('/setGroupname');
     'click #joinTestGroup':(event)->
       # Session.set('needShowBubble','false');
       # window.localStorage.setItem("isSecondUse",'true');
