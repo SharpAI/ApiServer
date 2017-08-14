@@ -137,6 +137,24 @@ Template.homePage.helpers({
   },
   isMySelf: function(app_user_id){
     return Meteor.userId() === app_user_id;
+  },
+  clockDataOut: function(){
+    return {
+      _id: this._id,
+      time: this.out_time,
+      in_out:'out',
+      style: (this.out_status === 'warning')?'fill:red;':'fill:green;',
+      pathStyle:(this.out_status === 'warning')?'stroke:red;':'stroke:green;'
+    }
+  },
+  clockDataIn: function(){
+    return {
+      _id: this._id,
+      time: this.in_time,
+      in_out:'in',
+      style: (this.in_status === 'warning')?'fill:red;':'fill:green;',
+      pathStyle:(this.in_status === 'warning')?'stroke:red;':'stroke:green;'
+    }
   }
 });
 var modifyMyStatusFun = function(group_id,in_out){
@@ -223,3 +241,16 @@ Template.homePage.events({
     }
   }
 })
+
+
+Template.svgClockIcon.onRendered(function(){
+  console.log(JSON.stringify(this.data))
+  var date = new Date(this.data.time);
+  MINUTE = 60, HOUR   = 60*MINUTE,
+  seconds = date.getSeconds(),
+  minutes = (date.getMinutes()*MINUTE) + seconds,
+  hours = (date.getHours()*HOUR)+minutes;
+
+  document.getElementById(this.data.in_out+'-minute-hand-'+this.data._id).setAttribute('transform', 'rotate('+360*(minutes/HOUR)+',16,17)');
+  document.getElementById(this.data.in_out+'-hour-hand-'+this.data._id).setAttribute('transform', 'rotate('+360*(hours/(12*HOUR))+',16,17)');
+});
