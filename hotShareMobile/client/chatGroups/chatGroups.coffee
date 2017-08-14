@@ -1,7 +1,7 @@
 if Meteor.isClient
   @sysMsgToUserId = 'fTnmgpdDN4hF9re8F'
   Template.chatGroups.rendered=->
-    $('.content').css 'min-height',$(window).height()
+    #$('.content').css 'min-height',$(window).height()
     #Meteor.subscribe("get-my-group", Meteor.userId())
 #    $('.mainImage').css('height',$(window).height()*0.55)
     # $(window).scroll (event)->

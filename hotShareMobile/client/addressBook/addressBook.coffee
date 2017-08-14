@@ -1,13 +1,13 @@
 if Meteor.isClient
   Template.addressBook.rendered=->
-    $('.content').css 'min-height',$(window).height()
+    #$('.content').css 'min-height',$(window).height()
 #    $('.mainImage').css('height',$(window).height()*0.55)
-    $(window).scroll (event)->
+    $('.content').scroll (event)->
         target = $("#showMoreFollowsResults");
         FOLLOWS_ITEMS_INCREMENT = 10;
         if (!target.length)
             return;
-        threshold = $(window).scrollTop() + $(window).height() - target.height();
+        threshold = $('.content').scrollTop() + $('.content').height() - target.height();
         if target.offset().top < threshold
             if (!target.data("visible"))
                 target.data("visible", true);

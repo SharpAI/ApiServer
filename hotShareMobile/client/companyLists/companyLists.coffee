@@ -1,6 +1,6 @@
 if Meteor.isClient
   Template.companyLists.rendered=->
-    $('.content').css 'min-height',$(window).height()
+    #$('.content').css 'min-height',$(window).height()
   Template.companyLists.onRendered ()->
     Meteor.subscribe('get-my-group', Meteor.userId(), {
       onReady: ()->
