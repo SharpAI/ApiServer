@@ -826,7 +826,7 @@ if Meteor.isServer
       userId = Accounts.createUser({username: uuid, password: '123456', profile: {fullname: device.name, icon: '/device_icon_192.png'},is_device:true})
       user = Meteor.users.findOne({_id: userId})
     else
-      Meteor.users.update({_id:user._id},{$set:{'profile.fullname':name}});
+      Meteor.users.update({_id:user._id},{$set:{'profile.fullname':device.name}});
 
     group = SimpleChat.Groups.findOne({_id: group_id})
 
@@ -836,7 +836,7 @@ if Meteor.isServer
     if groupUsers.count() > 0
       groupUsers.forEach((groupUser)->
         if groupUser.group_id is group_id
-          SimpleChat.GroupUsers.update({_id:groupUser._id},{$set:{is_device:true,in_out:in_out}});
+          SimpleChat.GroupUsers.update({_id:groupUser._id},{$set:{is_device:true,in_out:in_out,user_name:device.name}});
           hasBeenJoined = true
         else
           _group = SimpleChat.Groups.findOne({_id: groupUser.group_id})
