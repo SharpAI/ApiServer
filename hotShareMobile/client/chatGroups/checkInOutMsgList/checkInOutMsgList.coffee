@@ -61,6 +61,9 @@ Template.checkInOutMsgList.events
       $(event.currentTarget).addClass('active')
       SimpleChat.loadMoreMesage({'to.id':Meteor.userId(),'form.id':sysMsgToUserId,is_read:Session.get('sysMsgIsRead')},{limit:Session.get('sysMsgLimit'),sort:{create_time:-1}},Session.get('sysMsgLimit'));
     'click .leftButton': (event)->
+      msgSession = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId:sysMsgToUserId});
+      if msgSession
+        SimpleChat.MsgSession.update({_id:msgSession._id},{$set:{count:0}});
       PUB.back()
     'click #list ul li':(e)->
       msgId = e.currentTarget.id

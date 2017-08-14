@@ -82,10 +82,10 @@ if Meteor.isClient
       event.stopImmediatePropagation()
       DecodeImageFromAlum()
     'click #sysBell':(event)->
-      Meteor.defer ()->
-        msgSession = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId:sysMsgToUserId});
-        if msgSession
-          SimpleChat.MsgSession.update({_id:msgSession._id},{$set:{count:0}});
+      # Meteor.defer ()->
+      #   msgSession = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId:sysMsgToUserId});
+      #   if msgSession
+      #     SimpleChat.MsgSession.update({_id:msgSession._id},{$set:{count:0}});
       PUB.page('/checkInOutMsgList')
     'click li': (event)->
       if isIOS
