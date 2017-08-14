@@ -326,6 +326,7 @@ Meteor.methods({
           var isExist = GroupUsers.findOne({group_id: group._id,user_id: user._id});
           if (isExist) {
             console.log('GroupUsers isExist');
+            GroupUsers.update({group_id: isExist._id}, {$set: {perf_info: group.perf_info, companyId: group.companyId}});
             continue;
           }
           // console.log(user);
@@ -333,6 +334,8 @@ Meteor.methods({
             group_id: group._id,
             group_name: group.name,
             group_icon: group.icon,
+            perf_info:group.perf_info,
+            companyId:group.companyId,
             user_id: user._id,
             user_name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
             user_icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
