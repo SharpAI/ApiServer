@@ -582,7 +582,7 @@ if Meteor.isServer
       today = new Date(create_time.getFullYear(), create_time.getMonth(), create_time.getDate()).getTime(); #凌晨
       if ai_in_time.getTime() > today
         console.log 'today greeting_msg had send'
-        WorkAIUserRelations.update({_id:relation._id},{$set:{ai_in_time:create_time.getTime()}});
+        #WorkAIUserRelations.update({_id:relation._id},{$set:{ai_in_time:create_time.getTime()}});
         return
     WorkAIUserRelations.update({_id:relation._id},{$set:{ai_in_time:create_time.getTime()}});
     sendMqttMessage('/msg/u/'+ relation.app_user_id, {
