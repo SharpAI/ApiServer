@@ -5,6 +5,9 @@
   <div class="home">
     {{#if wasLogon}}
       {{> homePage}}
+      {{#if showScanTipHintTemplate}}
+        {{> scanTipHintTemplate}}
+      {{/if}}
       <!-- {{#if showDailyReporterTip}}
       <div class="dailyReporterTip">
         <svg style="width: 100%; height: 100%;" viewBox="0,0,100%,100%">

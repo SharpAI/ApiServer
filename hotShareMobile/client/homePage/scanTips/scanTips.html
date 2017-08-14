@@ -1,0 +1,29 @@
+<template name="scanTipHintTemplate">
+  <div class="scantip-layer">
+    <svg style="width: 100%;height: 100%;" viewBox="0,0,100%,100%">
+      <defs>
+        <filter id="scantipFilter" x="-0.1" y="-0.1">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
+        </filter>
+        <mask id="scantipMask">
+          <rect x="0" y="0" width="100%" height="100%" style="stroke:none;fill: #ffffff;opacity: 0.8;"></rect>
+          <ellipse cx="10%" cy="100%" rx="40" ry="25" fill="#000" transform="translate(0,-25)" filter="url(#scantipFilter)"></ellipse>
+        </mask>
+      </defs>
+      <rect x="0" y="0" width="100%" height="100%" style="stroke: none;fill: #000; mask: url(#scantipMask);"></rect>
+    </svg>
+    <div class="scantip-container">
+      <div> <img src="/scantip/scanhint1.png" width="180px"/></div>
+      <div style="margin-top: 80px;"><img src="/scantip/scanhint2.png" style="width: 60px;margin-right: 50%;"/></div>
+    </div>
+  </div>
+  <script>
+    $('.scantip-layer').on('click touchstart',function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      $('body').removeClass('scantip-html-body');
+      $(this).remove();
+      localStorage.setItem('scantipFlag',true);
+    });
+  </script>
+</template>

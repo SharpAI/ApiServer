@@ -100,6 +100,9 @@ if Meteor.isClient
         return false
       else
         return true 
+    showScanTipHintTemplate:()->
+      !localStorage.getItem('scantipFlag')
+      
   Template.home.events
     # 'click .top-series-btn': (event)->
     #    Router.go '/seriesList'
