@@ -20,13 +20,18 @@
             <ul style="padding: 0 10px;">
               {{#each mySysMsg}}
                 <li id="{{_id}}">
-                  <div class="text">{{text}}</div>
+                  {{#if isStartWork}}
                   {{#each images}}
                     {{> checkInOutMsgListImageItem}}
                   {{/each}}
-                  {{#if isStartWork}}
-                  <div class="workTime">{{workTimeType}}时间：{{start_work_time create_time}}<div class="check_in_btn"><span>修 改</span></div>
+                  <div class="textContent">
+                    <div class="text">{{text}}</div>
+                    <div class="workTime">{{workTimeType}}时间：{{start_work_time create_time}}
+                    </div>
+                    <div class="check_in_btn"><span>修 改</span></div>
                   </div>
+                  {{else}}
+                  <div class="text">{{text}}</div>
                   {{/if}}
                   <div class="time">{{formatTime create_time}}</div>
                 </li>

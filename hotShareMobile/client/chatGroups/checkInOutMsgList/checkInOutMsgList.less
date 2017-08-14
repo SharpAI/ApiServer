@@ -23,35 +23,47 @@
 			color: #9e9e9e;
 	    }
 	    ul li{
-	    	padding-bottom: 5px;
-			margin-bottom: 10px;
+	    	padding: 10px 0;
 			border-bottom-style: solid;
 			border-bottom-width: 1px;
 			border-bottom-color: #dbdbdb;
 			position: relative;
+			font-size: 13px;
 			img{
-				width: 80px;
+				width: 60px;
 				object-fit: cover;
 				margin-top: 5px;
+				position: absolute;
 			}
-			.text{width: 80%;}
-    		.time{height: 20px; line-height: 20px; position: absolute; right: 10px; top: 0px; color: #9e9e9e; font-size: 12px;}
+			.textContent{
+				margin-left: 70px;
+				position: relative;
+				margin-right: 60px;
+				/* margin-top: 10px; */
+				font-size: 13px;
+				height: 80px;
+				.text{margin-bottom: 15px;top: 0px;position: relative;width: 100%}
+			}
+			.text{margin-right: 60px;}
+    		.time{height: 20px; line-height: 20px; position: absolute; right: 10px; top: 10px; color: #9e9e9e; font-size: 12px;}
     		.workTime{
+    			/*
     			display: inline-table;
 				margin-left: 20px;
 				text-align: center;
 				margin-top: -10px;
-				.check_in_btn{
-					color: #37a7fe;
-					font-weight: 400;
-					margin-top: 10px;
-					span{
-						border: solid 1px;
-						padding: 1px 8px;
-						border-radius: 5px;
-					}
-				}
+				*/
+				margin-bottom: 5px;
     		}
+    		.check_in_btn{
+				color: #37a7fe;
+				font-weight: 400;
+				span{
+					border: solid 1px;
+					padding: 1px 8px;
+					border-radius: 5px;
+				}
+			}
 	    }
 	}
 }
