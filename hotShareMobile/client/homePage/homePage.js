@@ -1,7 +1,7 @@
 Template.homePage.onRendered(function () {
-  var date = new Date();
-  date = date.parseDate('YYYY-MM-DD');
-  date = Number(date.replace(/-/gi,""));
+  var date = Date.now();
+  var mod = 24 * 60 * 60 *1000;
+  date = date - (date%mod);
   Meteor.subscribe('group_devices',function(){
     Session.set('groupDevicesLoading',false);
   });
@@ -41,9 +41,9 @@ Template.homePage.helpers({
   },
   workstatus: function(group_id){
     if(group_id){
-      var date = new Date();
-      date = date.parseDate('YYYY-MM-DD');
-      date = Number(date.replace(/-/gi,""));
+      var date = Date.now();
+      var mod = 24 * 60 * 60 *1000;
+      date = date - (date%mod);
       return WorkStatus.find({
         group_id: group_id,
         date: date
