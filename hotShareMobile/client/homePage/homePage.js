@@ -157,6 +157,7 @@ var modifyMyStatusFun = function(group_id,in_out){
     if(deviceCount > 1){
       Session.set('modifyMyStatus_group_id',group_id);
       Session.set('modifyMyStatus_in_out',in_out);
+      $('.homePage .content').addClass('content_box');
       return $('#selectDevicesInOut').modal('show');
     }
 };
@@ -164,6 +165,7 @@ var modifyMyStatusFun = function(group_id,in_out){
 Template.homePage.events({
   'click .deviceItem': function(e){
     $('#selectDevicesInOut').modal('hide');
+    $('.homePage .content').removeClass('content_box');
     setTimeout(function(){
       PUB.page('/timelineAlbum/'+e.currentTarget.id);
     },1000);
@@ -171,6 +173,7 @@ Template.homePage.events({
   'click .editWhatsUp':function(e){
     var _id = e.currentTarget.id;
     var whats_up = $(e.currentTarget).data('whatsup');
+    $('.homePage .content').addClass('content_box');
     $('.saveWhatsUp').attr('id',_id);
     $('#EditorWhatsUp').val(whats_up);
     $('#myModal').modal('show');
@@ -186,6 +189,10 @@ Template.homePage.events({
       $set:{whats_up:whats_up}
     });
     $('#myModal').modal('hide');
+    $('.homePage .content').removeClass('content_box');
+  },
+  'click .close ,click .cancelWhatsUp':function(e){
+    $('.homePage .content').removeClass('content_box');
   },
   'click .modifyMyStatus':function(e){
     var group_id = e.currentTarget.id;
