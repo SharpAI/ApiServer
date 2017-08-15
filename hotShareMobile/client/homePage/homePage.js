@@ -173,5 +173,8 @@ Template.homePage.events({
   'click .inOutPicPreview': function(e){
     $('.blur-element').removeClass('blur-element');
     $('.inOutPicPreview').fadeOut('fast');
+  },
+  'click .check_in_out':function(e){
+    Router.go('/timeline');
   }
 })

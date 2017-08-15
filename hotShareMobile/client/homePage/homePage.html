@@ -36,7 +36,7 @@
       <!-- status lists start -->
       <div style="margin:10px;">
       {{#if isLoading}}
-      <div style="position:fixed; width:100%;text-align: center; margin-top:40%; color: black; font-size: 16px;">
+      <div class="workstatusLoading">
         <img src="/isLoading.gif"/>
       </div>
       {{else}}
@@ -169,8 +169,9 @@
           </table>
         </div>
         {{else}}
-          <div style="position:fixed; width:100%;text-align: center; margin-top:40%; color: black; font-size: 16px;">
+          <div class="workstatusLoading">
             <img src="/loadError.png"/>
+            <div style="color: #888;font-size: 14px;">暂无报告，快去<span class="check_in_out" style="color: #37a7fe">打卡</span>吧！</div>
           </div>
         {{/if}}
       {{/if}}
