@@ -41,72 +41,6 @@ Template.homePage.helpers({
     }
     return [];
   },
-  hasTwoMoreGroup:function(){
-    var workstatus = WorkStatus.find({app_user_id:Meteor.userId()});
-    if (workstatus && workstatus.count() > 1) {
-      return true;
-    }
-    return false;
-  },
-  myGroupWorkStatus:function(){
-    return WorkStatus.find({app_user_id:Meteor.userId()}).fetch();
-  },
-  hasIntime:function(in_time){
-    if (in_time && in_time !== 0) {
-      return true;
-    }
-    var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
-    if (workstatus && workstatus.in_time && workstatus.in_time !== 0) {
-      return true;
-    }
-    return false;
-  },
-  inTime:function(in_time){
-    var intime = in_time;
-    if (!in_time) {
-      var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
-      if (workstatus && workstatus.in_time) {
-        intime = workstatus.in_time;
-      }
-    }
-    if (intime && intime !== 0) {
-      var inDate = new Date(intime);
-      if (inDate.toString() !== 'Invalid Date' ) {
-        return inDate.shortTime();
-      }
-      return intime;
-    }
-    return '';
-  },
-  hasOutTime:function(out_time){
-    if (out_time && out_time !== 0) {
-      return true;
-    }
-    var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
-    if (workstatus && workstatus.out_time && workstatus.out_time !== 0) {
-      return true;
-    }
-    return false;
-
-  },
-  outTime:function(out_time){
-    var outtime = out_time;
-    if (!out_time) {
-      var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
-      if (workstatus && workstatus.out_time) {
-        outtime = workstatus.out_time;
-      }
-    }
-    if (outtime && outtime !== 0) {
-      var outDate = new Date(outtime);
-      if (outDate.toString() !== 'Invalid Date' ) {
-        return outDate.shortTime();
-      }
-      return outtime;
-    }
-    return '';
-
-  },
   isStatusIN: function(status){
     return status === 'in';
   },
@@ -155,7 +89,7 @@ Template.homePage.helpers({
     return hour;
   }
 });
-var modifyMyStatusFun = function(group_id,in_out){
+modifyMyStatusFun = function(group_id,in_out){
     if (!group_id || !in_out) {
       return;
     }
@@ -174,6 +108,7 @@ var modifyMyStatusFun = function(group_id,in_out){
       Session.set('modifyMyStatus_group_id',group_id);
       Session.set('modifyMyStatus_in_out',in_out);
       $('.homePage .content').addClass('content_box');
+      $('.user .content').addClass('content_box');
       return $('#selectDevicesInOut').modal('show');
     }
 };
@@ -214,36 +149,6 @@ Template.homePage.events({
     var group_id = e.currentTarget.id;
     var in_out = $(e.currentTarget).data('inout');
     modifyMyStatusFun(group_id,in_out);
-  },
-  'click .checkInTime, click .reReckInTime':function(e){
-    var group_id = $(e.currentTarget).data('groupid');
-    Session.set('wantModify',true);
-    if (group_id) {
-      modifyMyStatusFun(group_id,'in');
-      return;
-    }
-    var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
-    if (workstatus && workstatus.group_id) {
-      modifyMyStatusFun(workstatus.group_id,'in');
-    }
-    else{
-      PUB.page('/timeline');
-    }
-  },
-  'click .checkOutTime,click .reReckOutTime':function(e){
-    var group_id = $(e.currentTarget).data('groupid');
-    Session.set('wantModify',true);
-    if (group_id) {
-      modifyMyStatusFun(group_id,'out');
-      return;
-    }
-    var workstatus = WorkStatus.findOne({app_user_id:Meteor.userId()});
-    if (workstatus && workstatus.group_id) {
-      modifyMyStatusFun(workstatus.group_id,'out');
-    }
-    else{
-      PUB.page('/timeline');
-    }
   },
   'click .in-out-pic': function(e){
     var src = $(e.currentTarget).attr('src')

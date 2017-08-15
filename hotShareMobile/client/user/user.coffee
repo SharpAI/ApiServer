@@ -1,5 +1,8 @@
 #space 2
 if Meteor.isClient
+  today = new Date();
+  today = today.parseDate('YYYY-MM-DD');
+  today = Number(today.replace(/-/gi,""));
   Meteor.startup ()->
     ###
     Session.setDefault('myFollowedByCount',0)
@@ -201,6 +204,55 @@ if Meteor.isClient
         Session.get(mImg)
       else
         this.mainImage
+    hasTwoMoreGroup:()->
+      workstatus = WorkStatus.find({app_user_id:Meteor.userId(),date: today});
+      if workstatus and workstatus.count() > 1
+        return true
+      return false
+    myGroupWorkStatus:()->
+      return WorkStatus.find({app_user_id:Meteor.userId(),date: today}).fetch()
+    hasIntime:(in_time)->
+      if in_time and in_time isnt 0
+        return true
+      workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date: today})
+      if (workstatus and workstatus.in_time and workstatus.in_time isnt 0)
+        return true
+      return false
+    inTime:(in_time)->
+      intime = in_time
+      if (!in_time)
+        workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date: today})
+        if (workstatus and workstatus.in_time)
+          intime = workstatus.in_time
+      if (intime and intime isnt 0)
+        inDate = new Date(intime);
+        if (inDate.toString() isnt 'Invalid Date' )
+          return inDate.shortTime()
+        return intime;
+      return '';
+    hasOutTime:(out_time)->
+      if (out_time and out_time isnt 0)
+        return true
+      workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date: today})
+      if (workstatus and workstatus.out_time and workstatus.out_time isnt 0)
+        return true
+      return false
+    outTime:(out_time)->
+      outtime = out_time
+      if (!out_time)
+        workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date: today})
+        if (workstatus and workstatus.out_time)
+          outtime = workstatus.out_time
+      if (outtime and outtime isnt 0)
+        outDate = new Date(outtime);
+        if (outDate.toString() isnt 'Invalid Date' )
+          return outDate.shortTime()
+        return outtime
+      return '';
+    devices: ()->
+      group_id = Session.get('modifyMyStatus_group_id');
+      in_out = Session.get('modifyMyStatus_in_out');
+      return Devices.find({groupId: group_id,in_out:in_out},{sort:{createAt:-1}}).fetch();
   Template.user.events
     'focus #search-box': (event)->
        PostsSearch.cleanHistory()
@@ -310,6 +362,34 @@ if Meteor.isClient
       Meteor.setTimeout ()->
         PUB.page('/myPosts')
       ,animatePageTrasitionTimeout
+    'click .checkInTime, click .reReckInTime':(e)->
+      group_id = $(e.currentTarget).data('groupid')
+      Session.set('wantModify',true);
+      if (group_id)
+        modifyMyStatusFun(group_id,'in')
+        return;
+      workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date:today})
+      if (workstatus && workstatus.group_id)
+        modifyMyStatusFun(workstatus.group_id,'in')
+      else
+        PUB.page('/timeline')
+    'click .checkOutTime,click .reReckOutTime':(e)->
+      group_id = $(e.currentTarget).data('groupid')
+      Session.set('wantModify',true)
+      if (group_id) 
+        modifyMyStatusFun(group_id,'out')
+        return
+      workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date:today});
+      if (workstatus && workstatus.group_id) 
+        modifyMyStatusFun(workstatus.group_id,'out')
+      else
+        PUB.page('/timeline')
+    'click .deviceItem': (e)->
+      $('#selectDevicesInOut').modal('hide');
+      $('.user .content').removeClass('content_box');
+      setTimeout(()->
+        PUB.page('/timelineAlbum/'+e.currentTarget.id);
+      ,1000);
 
   Template.searchMyPosts.rendered=->
 #    $('.content').css 'min-height',$(window).height()

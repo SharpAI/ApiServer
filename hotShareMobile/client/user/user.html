@@ -38,6 +38,97 @@
     <div class="line" style="padding-bottom: 0 !important;">
       <span></span>
     </div>
+    {{#if hasTwoMoreGroup}}
+        {{#each myGroupWorkStatus}}
+        <div class="panel panel-default" style="margin-bottom: 0px;">
+          <div class="panel-heading">我的考勤({{group_name}})</div>
+          <div style="font-weight: 400;">
+            <div style="position: relative;padding: 10px 0;border: solid 1px #eee;">
+              <i class="fa fa-circle " style="color: #27d496;font-size: 20px;padding: 10px;margin: auto;position: absolute;"></i>
+                <div  style="display: inline-block;margin-left: 40px;font-weight: 400;">
+                  <div>上班</div><div style="color: #868686">09:00</div>
+                </div>
+                {{#if hasIntime in_time}}
+                <span style="color: #868686;padding: 10px 0;right: 60px;position: absolute;">{{inTime in_time}}</span>
+                <span  class="reReckInTime" style="right: 20px;position: absolute;color: #27d496;padding: 10px 0;" data-groupid="{{group_id}}">重打</span>
+                {{else}}
+                <span class="checkInTime" style="color: #fff;background-color: #3db1fa;padding: 5px 10px;right: 30px;margin-top: 5px; border-radius: 5px;position: absolute;" data-groupid="{{group_id}}" >未打卡</span>
+                {{/if}}
+            </div>
+            <div style="position: relative;padding: 10px 0;">
+              <i class="fa fa-circle " style="color: #f1b725;font-size: 20px;padding: 10px;margin: auto;position: absolute;"></i>
+                <div  style="display: inline-block;margin-left: 40px;font-weight: 400;">
+                  <div>下班</div><div style="color: #868686">18:00</div>
+                </div>
+                {{#if hasOutTime out_time}}
+                <span style="color: #868686;padding: 10px 0;right: 60px;position: absolute;">{{outTime out_time}}</span>
+                <span class="reCheckOutTime" style="right: 20px;position: absolute;color: #27d496;padding: 10px 0;" data-groupid="{{group_id}}">重打</span>
+                {{else}}
+                <span class="checkOutTime" style="color: #fff;background-color: #3db1fa;padding: 5px 10px;right: 30px;margin-top: 5px; border-radius: 5px;position: absolute;" data-groupid="{{group_id}}">未打卡</span>
+                {{/if}}
+            </div>
+          </div>
+        </div>
+        {{/each}}
+        {{else}}
+        <div class="panel panel-default">
+          <div class="panel-heading">我的考勤</div>
+          <div style="font-weight: 400;">
+            <div style="position: relative;padding: 10px 0;border: solid 1px #eee;">
+              <i class="fa fa-circle " style="color: #27d496;font-size: 20px;padding: 10px;margin: auto;position: absolute;"></i>
+                <div  style="display: inline-block;margin-left: 40px;font-weight: 400;">
+                  <div>上班</div><div style="color: #868686">09:00</div>
+                </div>
+                {{#if hasIntime}}
+                <span style="color: #868686;padding: 10px 0;right: 60px;position: absolute;">{{inTime}}</span>
+                <span  class="reReckInTime" style="right: 20px;position: absolute;color: #27d496;padding: 10px 0;">重打</span>
+                {{else}}
+                <span class="checkInTime" style="color: #fff;background-color: #3db1fa;padding: 5px 10px;right: 30px;margin-top: 5px; border-radius: 5px;position: absolute;">未打卡</span>
+                {{/if}}
+            </div>
+            <div style="position: relative;padding: 10px 0;">
+              <i class="fa fa-circle " style="color: #f1b725;font-size: 20px;padding: 10px;margin: auto;position: absolute;"></i>
+                <div  style="display: inline-block;margin-left: 40px;font-weight: 400;">
+                  <div>下班</div><div style="color: #868686">18:00</div>
+                </div>
+                {{#if hasOutTime}}
+                <span style="color: #868686;padding: 10px 0;right: 60px;position: absolute;">{{outTime}}</span>
+                <span class="reCheckOutTime" style="right: 20px;position: absolute;color: #27d496;padding: 10px 0;">重打</span>
+                {{else}}
+                <span class="checkOutTime" style="color: #fff;background-color: #3db1fa;padding: 5px 10px;right: 30px;margin-top: 5px; border-radius: 5px;position: absolute;">未打卡</span>
+                {{/if}}
+            </div>
+          </div>
+        </div>
+    {{/if}}
+    <div class="modal fade" id="selectDevicesInOut" tabindex="-1" role="dialog" aria-labelledby="selectDevicesInOutLabel">
+      <div class="modal-dialog" role="document" style="top:50px; bottom:auto;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="selectDevicesInOutLabel">选择设备</h4>
+          </div>
+          <div class="modal-body">
+            <ul class="set-up comFadeIn">
+            {{#each devices}}
+              {{#if uuid}}
+              <li id="{{uuid}}" class="deviceItem" style="height:60px;padding:10px 0">
+                  <img class="usericon" src="/device_icon_192.png" width="40" height="40" style="border-radius:4px;">
+                  {{#if name}}
+                  <label style="margin-left:48px;">{{name}}</label>
+                  {{else}}
+                  <label style="margin-left:48px;">未知设备</label>
+                  {{/if}}
+                  <div class="value" style="float:right; margin:10px;">{{in_out}}<i class="fa fa-angle-right"></i></div>
+              </li>
+              {{/if}}
+            {{/each}}
+          </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
     {{#if showGrayZone draftsCount postsCount}}
     <div style="height: 20px;background: #eee;"></div>
     {{/if}}
