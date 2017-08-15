@@ -1,4 +1,11 @@
 <template name="timelineAlbum">
+<style>
+  input,textarea { 
+    -webkit-touch-callout: default;
+    -webkit-user-select: text; 
+    user-select: text;
+  }
+</style>
 <div class="timelineAlbum">
   <div class="head">
     <strong>相册时间轴</strong>
@@ -57,4 +64,23 @@
   <!--<div class="loading" style="display:none;text-align:center; margin:10px;"><img src="/loading.gif" width="20">&nbsp;&nbsp;加载中...</div>-->
   </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="setPicturePersonName" tabindex="-1" role="dialog" aria-labelledby="setPicturePersonNameLabel">
+  <div class="modal-dialog" role="document" style="top:50px; bottom:auto;">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="picturePersonName">设置姓名</label>
+          <input type="text" class="form-control" id="picturePersonName" placeholder="请输入姓名">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default cancelWhatsUp" data-dismiss="modal">取消</button>
+        <button type="button" id="" class="btn btn-primary confirmPersonName">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal END -->
 </template>

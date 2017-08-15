@@ -166,18 +166,24 @@ Template.timelineAlbum.events({
         confirm_text = '此照片是：「'+person_name+'」，是否选择？';
       }
       else{
-        confirm_text = '请选择一张有名字的照片或前往聊天室进行标记~';
-        var url = '/simple-chat/to/group?id='+ group_id;
-        try{
-          navigator.notification.confirm(confirm_text,function
-                (index){if (index === 2) {PUB.page(url);}},
-                '提示',['重选','转入聊天室']);
-        }
-        catch (error){
-          if(confirm(confirm_text)){
-            PUB.page(url);
-          }
-        }
+        Session.set('setPicturePersonNameData',data);
+        $('#picturePersonName').val("");
+        Meteor.setTimeout(function(){
+          $('#picturePersonName').focus();
+        },800);
+        return $('#setPicturePersonName').modal('show');
+        // confirm_text = '请选择一张有名字的照片或前往聊天室进行标记~';
+        // var url = '/simple-chat/to/group?id='+ group_id;
+        // try{
+        //   navigator.notification.confirm(confirm_text,function
+        //         (index){if (index === 2) {PUB.page(url);}},
+        //         '提示',['重选','转入聊天室']);
+        // }
+        // catch (error){
+        //   if(confirm(confirm_text)){
+        //     PUB.page(url);
+        //   }
+        // }
       }
       PUB.confirm(confirm_text,function(){
         Meteor.call('ai-checkin-out',data,function(err,res){
@@ -203,5 +209,37 @@ Template.timelineAlbum.events({
         });
       });
     }
+  },
+  'click .confirmPersonName': function(e){
+    var name = $('#picturePersonName').val();
+    if(!name || name.length < 1){
+      PUB.toast('请输入姓名');
+      return $('#picturePersonName').focus();
+    }
+    var data = Session.get('setPicturePersonNameData');
+    data.person_info.name = name;
+    console.log(data);
+    Meteor.call('ai-checkin-out',data,function(err,res){
+      $('#setPicturePersonName').modal('hide');
+      if(err){
+        PUB.toast('请重试');
+        console.log('ai-checkin-out error:' + err);
+        return;
+      }
+      if(timelineAlbumTimeout){
+        window.clearTimeout(timelineAlbumTimeout);
+      }
+      timelineAlbumTimeout = setTimeout(function() {
+        $("img.lazy").lazyload({});
+      }, 500);
+      if(res && res.result == 'succ'){
+        PUB.toast('已记录到每日出勤报告');
+        return PUB.back();
+      } else {
+        return navigator.notification.confirm(res.text,function(index){
+
+        },res.reason,['知道了']);
+      }
+    });
   }
 });
