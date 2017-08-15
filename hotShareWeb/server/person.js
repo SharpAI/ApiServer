@@ -229,7 +229,7 @@ PERSON = {
     var today2 = Number(date.replace(/-/gi,""));
     console.log(">>> " + today2)
 
-    workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'app_user_id': relation.app_user_id});
+    workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'app_user_id': relation.app_user_id, 'date': today2});
     if (!workstatus) {
       WorkStatus.insert({
         "app_user_id" : relation.app_user_id,
@@ -249,7 +249,6 @@ PERSON = {
     }
     else {
       WorkStatus.update({_id: workstatus._id}, {$set: {
-        "date"        : today2,
         "status"      : now_status,
         "in_status"   : in_status,
         "out_status"  : out_status,
