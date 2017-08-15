@@ -4,12 +4,22 @@ Template.homePage.onRendered(function () {
   date = Number(date.replace(/-/gi,""));
   Meteor.subscribe('group_devices',function(){
     Session.set('groupDevicesLoading',false);
-  })
-  Meteor.subscribe('WorkStatus',date);
+  });
+  Meteor.subscribe('WorkStatus',date,{
+     onReady:function(){
+      Session.set('WorkStatusLoading',false);
+    }
+  });
 });
 
 
 Template.homePage.helpers({
+  isLoading:function(){
+    if (Session.get('WorkStatusLoading') === false) {
+      return false;
+    }
+    return true;
+  },
   lists: function(){
     var lists = [];
     SimpleChat.GroupUsers.find({user_id:Meteor.userId()},{sort:{create_time:-1}}).forEach(function(item){

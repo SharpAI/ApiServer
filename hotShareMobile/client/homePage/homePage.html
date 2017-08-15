@@ -35,6 +35,11 @@
       {{>connectionBanner}}
       <!-- status lists start -->
       <div style="margin:10px;">
+      {{#if isLoading}}
+      <div style="position:fixed; width:100%;text-align: center; margin-top:40%; color: black; font-size: 16px;">
+        <img src="/isLoading.gif"/>
+      </div>
+      {{else}}
         {{#if lists}}
         {{#each lists}}
         {{#if workstatus group_id}}
@@ -163,7 +168,12 @@
             </tbody>
           </table>
         </div>
+        {{else}}
+          <div style="position:fixed; width:100%;text-align: center; margin-top:40%; color: black; font-size: 16px;">
+            <img src="/loadError.png"/>
+          </div>
         {{/if}}
+      {{/if}}
       </div>
       <!-- status lists end -->
 
