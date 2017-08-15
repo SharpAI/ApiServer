@@ -239,8 +239,9 @@ PERSON = {
     var in_uuid = relation.in_uuid;
     var out_uuid = relation.out_uuid;
 
-    var date = (new Date()).format("yyyy-MM-dd")
-    var today2 = Number(date.replace(/-/gi,""));
+    var date = Date.now();
+    var mod = 24*60*60*1000;
+    today2 = date - (date % mod);
     console.log(">>> " + today2)
 
     workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'app_user_id': relation.app_user_id, 'date': today2});

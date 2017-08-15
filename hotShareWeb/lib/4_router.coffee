@@ -1501,13 +1501,10 @@ if Meteor.isServer
       this.response.writeHead(200, headers)
       console.log '/restapi/resetworkstatus get request'
 
-      date = new Date()
-      date = date.format('yyyy-MM-dd')
-      date = Number(date.replace(/-/gi,""))
-
-      nextday = new Date((new Date().getTime()) + 24*60*60*1000)
-      nextday = nextday.format('yyyy-MM-dd')
-      nextday = Number(nextday.replace(/-/gi,""))
+      date = Date.now();
+      mod = 24*60*60*1000;
+      date = date - (date % mod)
+      nextday = date + mod
 
       relations = WorkAIUserRelations.find({})
       relations.observeChanges({
