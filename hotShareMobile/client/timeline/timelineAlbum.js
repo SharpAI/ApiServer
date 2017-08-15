@@ -120,8 +120,10 @@ Template.timelineAlbum.events({
 
     if(device.in_out && device.in_out == 'in'){
       data.checkin_time =  new Date( $(e.currentTarget).data('ts')).getTime()
+      data.checkin_image = $(e.currentTarget).data('imgurl');
     } else {
       data.checkout_time =  new Date( $(e.currentTarget).data('ts')).getTime()
+      data.checkout_image = $(e.currentTarget).data('imgurl');
     }
     data.wantModify = Session.get('wantModify');
     console.log(data);
