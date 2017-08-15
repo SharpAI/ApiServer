@@ -149,7 +149,8 @@ Template.timelineAlbum.events({
             $("img.lazy").lazyload({});
           }, 500);
           if(res && res.result == 'succ'){
-            return PUB.toast('已记录到每日出勤报告');
+            PUB.toast('已记录到每日出勤报告');
+            return PUB.back();
           } else {
             return navigator.notification.confirm(res.text,function(index){
 
@@ -190,7 +191,8 @@ Template.timelineAlbum.events({
             $("img.lazy").lazyload({});
           }, 500);
           if(res && res.result == 'succ'){
-            return PUB.toast('已记录到每日出勤报告');
+            PUB.toast('已记录到每日出勤报告');
+            return PUB.back();
           } else {
             return navigator.notification.confirm(res.text,function(index){
 
