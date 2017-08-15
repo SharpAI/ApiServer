@@ -14,16 +14,20 @@
     </svg>
     <div class="scantip-container">
       <div> <img src="/scantip/scanhint1.png" width="180px"/></div>
-      <div style="margin-top: 80px;"><img src="/scantip/scanhint2.png" style="width: 60px;margin-right: 50%;"/></div>
+      <button id="confirmScanTipHintTip" onclick="hideScanTipLayer();"></button>
+      <div style="margin-top: 20px;"><img src="/scantip/scanhint2.png" style="width: 60px;margin-right: 50%;"/></div>
     </div>
   </div>
   <script>
+    function hideScanTipLayer(){
+      $('body').removeClass('scantip-html-body');
+      $('.scantip-layer').remove();
+      localStorage.setItem('scantipFlag',true);
+    }
     $('.scantip-layer').on('click touchstart',function(e){
       e.preventDefault();
       e.stopPropagation();
-      $('body').removeClass('scantip-html-body');
-      $(this).remove();
-      localStorage.setItem('scantipFlag',true);
+      hideScanTipLayer();
     });
   </script>
 </template>
