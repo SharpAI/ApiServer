@@ -233,6 +233,8 @@ PERSON = {
     //不足8小时
     else if(outtime > 0 && intime > 0 && outtime > intime && (outtime - intime) < 8*60*60*1000)
       out_status = "warning"
+    else if(outtime > 0 && intime > 0 && outtime > intime && (outtime - intime) >= 8*60*60*1000)
+      out_status = "normal"
 
     var in_uuid = relation.in_uuid;
     var out_uuid = relation.out_uuid;
