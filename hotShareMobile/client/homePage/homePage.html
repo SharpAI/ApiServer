@@ -1,15 +1,30 @@
 <template name="homePage">
   <style>
-    td,th{vertical-align:middle;text-align:center;}
-    td i.fa {font-size: 22px;}
+    td,th{vertical-align:middle !important;text-align:center;}
+    td i.fa {font-size: 22px; vertical-align: middle;}
     .tips-table{border:none;}
     .tips-table td{text-align: justify;}
     .tips-table td i.fa{font-size:18px;}
-    .editWhatsUp{white-space: nowrap; max-width: 200px;overflow: hidden; text-overflow: ellipsis;}
+    /*.editWhatsUp{white-space: nowrap; max-width: 200px;overflow: hidden; text-overflow: ellipsis;}*/
     input,textarea { 
       -webkit-touch-callout: default;
       -webkit-user-select: text; 
       user-select: text;
+    }
+    .whats-up{
+      text-align: justify;
+      font-size:12px;
+      height:30px;
+      line-height:30px;
+      max-width: 200px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .in-out-pic{
+      width: 30px;
+      height:30px;
+      border: none;
+      border-radius:4px;
+      margin-left: 4px;
     }
   </style>
   <div class="homePage">
@@ -88,39 +103,52 @@
         {{#if workstatus group_id}}
         <div class="panel panel-default">
         <div id="{{group_id}}" class="panel-heading">{{group_name}}</div>
-        <table class="table table-bordered">
+        <table class="table table-bordered table-condensed">
           <thead>
               <tr role="row">
                 <th>姓名</th>
                 <th style="width: 60px;text-align: center;">状态</th>
                 <th>进</th>
                 <th>出</th>
-                <th>今日简述</th>
+                <!--<th>今日简述</th>-->
               </tr>
             </thead>
             <tbody>
               {{#each workstatus group_id}}
               <tr>
-                <td>{{person_name}}</td>
-                <td>
+                <td rowspan="2" style="width:64px;">{{person_name}}</td>
+                <td style="width:100px;">
                   {{#if isStatusIN status}}
                   <i class="fa fa-map-marker " style="color:green;"></i>
                   {{else}}
                   <i class="fa fa-map-marker " style="color:gray;"></i>
                   {{/if}}
+                  {{InComTimeLen}}
                 </td>
 
                 {{#if isInStatusNormal in_status}}
-                <td><i class="fa fa-clock-o" style="color:green;"></i></td>
+                <td>
+                  <i class="fa fa-clock-o" style="color:green;"></i>
+                  <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" />
+                </td>
                 {{/if}}
                 {{#if isInStatusWarning in_status}}
-                <td><i class="fa fa-clock-o" style="color:red;"></i></td>
+                <td>
+                  <i class="fa fa-clock-o" style="color:red;"></i>
+                  <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" />
+                </td>
                 {{/if}}
                 {{#if isInStatusError in_status}}
                   {{#if isMySelf app_user_id}}
-                  <td id="{{group_id}}" data-inout="in" class="modifyMyStatus"><i class="fa fa-exclamation-circle" style="color:red;"></i></td>
+                  <td id="{{group_id}}" data-inout="in" class="modifyMyStatus">
+                    <i class="fa fa-exclamation-circle" style="color:red;"></i>
+                    <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" />
+                  </td>
                   {{else}}
-                  <td id="{{group_id}}" data-inout="in"><i class="fa fa-exclamation-circle" style="color:red;"></i></td>
+                  <td id="{{group_id}}" data-inout="in">
+                    <i class="fa fa-exclamation-circle" style="color:red;"></i>
+                    <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" />
+                  </td>
                   {{/if}}
                 {{/if}}
                 {{#if isInStatusUnknown in_status}}
@@ -128,29 +156,44 @@
                 {{/if}}
 
                 {{#if isOutStatusNormal out_status}}
-                <td><i class="fa fa-clock-o" style="color:green;"></i></td>
+                <td>
+                  <i class="fa fa-clock-o" style="color:green;"></i>
+                  <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" />
+                </td>
                 {{/if}}
                 {{#if isOutStatusWarning out_status}}
-                <td><i class="fa fa-clock-o" style="color:red;"></i></td>
+                <td>
+                  <i class="fa fa-clock-o" style="color:red;"></i>
+                  <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" />
+                </td>
                 {{/if}}
                 {{#if isOutStatusError out_status}}
                   {{#if isMySelf app_user_id}}
-                  <td id="{{group_id}}" data-inout="out" class="modifyMyStatus"><i class="fa fa-exclamation-circle" style="color:red;"></i></td>
+                  <td id="{{group_id}}" data-inout="out" class="modifyMyStatus">
+                    <i class="fa fa-exclamation-circle" style="color:red;"></i>
+                    <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" />
+                  </td>
                   {{else}}
-                  <td id="{{group_id}}" data-inout="out"><i class="fa fa-exclamation-circle" style="color:red;"></i></td>
+                  <td id="{{group_id}}" data-inout="out">
+                    <i class="fa fa-exclamation-circle" style="color:red;"></i>
+                    <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" />
+                  </td>
                   {{/if}}
                 {{/if}}
                 {{#if isOutStatusUnknown out_status}}
                 <td><i class="fa fa-ellipsis-h" style="color:gray;"></i></td>
                 {{/if}}
 
+                
+              </tr>
+              <tr>
                 {{#if isMySelf app_user_id}}
-                <td class="editWhatsUp" id="{{_id}}" data-whatsup="{{whats_up}}">
+                <td colspan="3" class="whats-up editWhatsUp" id="{{_id}}" data-whatsup="{{whats_up}}">
                     <i class="fa fa-pencil" style="color:gray; font-size:14px;"></i>
                     {{whats_up}}
                 </td>
                 {{else}}
-                <td>{{whats_up}}</td>
+                <td colspan="3" class="whats-up">{{whats_up}}</td>
                 {{/if}}
               </tr>
               {{/each}}
@@ -241,4 +284,10 @@
       </div>
   </div>
   {{> footer}}
+  <div class="inOutPicPreview">
+    <div class="imgLayer">
+      <img src=""/>
+    </div>
+    <div class="timeLayer">08：56</div>
+  </div>
 </template>

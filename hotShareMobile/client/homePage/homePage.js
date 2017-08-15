@@ -137,6 +137,22 @@ Template.homePage.helpers({
   },
   isMySelf: function(app_user_id){
     return Meteor.userId() === app_user_id;
+  },
+  InComTimeLen: function(){
+    var diff = 0;
+    var out_time = this.out_time || Date.now();
+    if(this.in_time){
+      diff = out_time - this.in_time;
+    }
+    var min = diff / 1000 / 60 ;
+    var hour = Math.floor(min/60)+' h '+Math.floor(min%60) + ' min';
+    if(min < 60){
+      hour = Math.floor(min%60) + ' min';
+    }
+    if(diff == 0){
+      hour = '0 min';
+    }
+    return hour;
   }
 });
 var modifyMyStatusFun = function(group_id,in_out){
@@ -228,5 +244,18 @@ Template.homePage.events({
     else{
       PUB.page('/timeline');
     }
+  },
+  'click .in-out-pic': function(e){
+    var src = $(e.currentTarget).attr('src')
+    var time = new Date($(e.currentTarget).data('time'));
+    $('.timeLayer').html(time.shortTime());
+    $('.imgLayer img').attr('src',src);
+    $('.homePage').addClass('blur-element');
+    $('#footer').addClass('blur-element');
+    $('.inOutPicPreview').fadeIn('fast');
+  },
+  'click .inOutPicPreview': function(e){
+    $('.blur-element').removeClass('blur-element');
+    $('.inOutPicPreview').fadeOut('fast');
   }
 })
