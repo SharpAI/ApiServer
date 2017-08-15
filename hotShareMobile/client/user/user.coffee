@@ -1,8 +1,8 @@
 #space 2
 if Meteor.isClient
-  today = new Date();
-  today = today.parseDate('YYYY-MM-DD');
-  today = Number(today.replace(/-/gi,""));
+  today = Date.now();
+  mod = 24 * 60 * 60 *1000;
+  today = today - (today%mod);
   Meteor.startup ()->
     ###
     Session.setDefault('myFollowedByCount',0)
