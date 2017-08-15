@@ -151,6 +151,7 @@ Template.homePage.events({
     modifyMyStatusFun(group_id,in_out);
   },
   'click .in-out-pic': function(e){
+    e.stopImmediatePropagation();
     var src = $(e.currentTarget).attr('src')
     var time = new Date($(e.currentTarget).data('time'));
     $('.timeLayer').html(time.shortTime());
