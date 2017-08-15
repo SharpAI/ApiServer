@@ -459,13 +459,16 @@ Meteor.methods({
       console.log('person info:'+person.name);
     }
     else{
-      var relation = WorkAIUserRelations.findOne({'app_user_id':user._id,'group_id':person_info.group_id});
-      var person_name = '';
-      if (relation && relation.person_name) {
-        person_name = relation.person_name;
-      }
-      else{
-        return {result:'error',reason:'请选择一张有名字的照片或前往聊天室进行标记~'};
+      var person_name = person_info.name;
+      if (!person_name) {
+        var relation = WorkAIUserRelations.findOne({'app_user_id':user._id,'group_id':person_info.group_id});
+        
+        if (relation && relation.person_name) {
+          person_name = relation.person_name;
+        }
+        else{
+          return {result:'error',reason:'请选择一张有名字的照片或前往聊天室进行标记~'};
+        }
       }
       person = PERSON.setName(person_info.group_id, person_info.uuid, data.face_id, person_info.img_url, person_name);
     }
