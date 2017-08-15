@@ -11,9 +11,6 @@
       -webkit-user-select: text; 
       user-select: text;
     }
-    svg line {
-      shape-rendering: crispEdges;
-    }
   </style>
   <div class="homePage">
       <div class="head">
@@ -114,16 +111,10 @@
                 </td>
 
                 {{#if isInStatusNormal in_status}}
-                <!--<td><i class="fa fa-clock-o" style="color:green;"></i></td>-->
-                <td>
-                  {{> Template.dynamic template="svgClockIcon" data=clockDataIn }}
-                </td>
+                <td><i class="fa fa-clock-o" style="color:green;"></i></td>
                 {{/if}}
                 {{#if isInStatusWarning in_status}}
-                <!--<td><i class="fa fa-clock-o" style="color:red;"></i></td>-->
-                <td>
-                  {{> Template.dynamic template="svgClockIcon" data=clockDataIn }}
-                </td>
+                <td><i class="fa fa-clock-o" style="color:red;"></i></td>
                 {{/if}}
                 {{#if isInStatusError in_status}}
                   {{#if isMySelf app_user_id}}
@@ -137,16 +128,10 @@
                 {{/if}}
 
                 {{#if isOutStatusNormal out_status}}
-                <!--<td><i class="fa fa-clock-o" style="color:green;"></i></td>-->
-                <td>
-                  {{> Template.dynamic template="svgClockIcon" data=clockDataOut }}
-                </td>
+                <td><i class="fa fa-clock-o" style="color:green;"></i></td>
                 {{/if}}
                 {{#if isOutStatusWarning out_status}}
-                <!--<td><i class="fa fa-clock-o" style="color:red;"></i></td>-->
-                <td>
-                  {{> Template.dynamic template="svgClockIcon" data=clockDataOut }}
-                </td>
+                <td><i class="fa fa-clock-o" style="color:red;"></i></td>
                 {{/if}}
                 {{#if isOutStatusError out_status}}
                   {{#if isMySelf app_user_id}}
@@ -256,20 +241,4 @@
       </div>
   </div>
   {{> footer}}
-</template>
-
-
-<template name="svgClockIcon">
-  <svg viewBox="0 0 34 34" style="{{style}} width:26px; height:26px;">
-    <use xlink:href="#{{in_out}}-clock-icon-{{_id}}"></use>
-  </svg>
-
-    <g id="{{in_out}}-clock-icon-{{_id}}">
-      <rect id="{{in_out}}-minute-hand-{{_id}}" transform="rotate(0 16 17)" x="15.386" y="6.464" width="2.0" height="11.439" />
-      <rect id="{{in_out}}-hour-hand-{{_id}}" transform="rotate(0 16 17)" x="15.386" y="10.291" width="2.5" height="7.626" />
-
-      <path stroke-width="1" style="{{pathStyle}}" d="M15.879,2.531c-8.14,0-14.739,6.599-14.739,14.739c0,8.14,6.599,14.739,14.739,14.739s14.739-6.6,14.739-14.739
-      C30.618,9.13,24.02,2.531,15.879,2.531z M15.879,30.852c-7.511,0-13.6-6.089-13.6-13.6c0-7.511,6.089-13.601,13.6-13.601  c7.511,0,13.6,6.089,13.6,13.601C29.479,24.763,23.391,30.852,15.879,30.852z"
-      />
-    </g>
 </template>
