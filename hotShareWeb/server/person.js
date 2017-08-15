@@ -378,6 +378,8 @@ Meteor.methods({
       PERSON.removeName(group_id, items[i].uuid, items[i].id);
   },
   'send-person-to-web': function(person){
+      personItem = Person.findOne({faceId:person.id,group_id:person.group_id});
+      person.id = personItem._id;
       PERSON.sendPersonInfoToWeb(person);
   },
   'update-device-name':function(id,val,option){

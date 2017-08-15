@@ -704,13 +704,13 @@ if Meteor.isServer
             }
           }
           send_greeting_msg(msg_data);
-          personInfo = PERSON.getIdByNames(null, [name], userGroup.group_id)
+          #personInfo = PERSON.getIdByNames(null, [name], userGroup.group_id)
           person = Person.findOne({group_id: userGroup.group_id, faceId: personInfo[name].faceId}, {sort: {createAt: 1}});
           PERSON.updateWorkStatus(person._id)
-          if img_type == 'face' && personInfo && personInfo[name] && personInfo[name].faceId
+          if img_type == 'face' && person && person.faceId
             #console.log('post person info to aixd.raidcdn')
             person_info = {
-              'id': personInfo[name].faceId,
+              'id': person._id,
               'uuid': uuid,
               'name': name,
               'group_id': userGroup.group_id,
