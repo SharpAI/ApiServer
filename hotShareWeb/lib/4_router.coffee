@@ -574,7 +574,7 @@ if Meteor.isServer
       return
     create_time = new Date(data.create_time);
     if data.in_out is 'out'
-      WorkAIUserRelations.update({_id:relation._id},{$set:{ai_out_time:create_time.getTime()}});
+      WorkAIUserRelations.update({_id:relation._id},{$set:{ai_out_time:create_time.getTime(), ai_out_image: data.images.url}});
       return
     WorkAIUserRelations.update({_id:relation._id},{$set:{ai_lastest_in_time:create_time.getTime()}});#平板最新拍到的时间
     if relation.ai_in_time 
@@ -584,7 +584,7 @@ if Meteor.isServer
         console.log 'today greeting_msg had send'
         #WorkAIUserRelations.update({_id:relation._id},{$set:{ai_in_time:create_time.getTime()}});
         return
-    WorkAIUserRelations.update({_id:relation._id},{$set:{ai_in_time:create_time.getTime()}});
+    WorkAIUserRelations.update({_id:relation._id},{$set:{ai_in_time:create_time.getTime(), ai_in_image: data.images.url}});
     sendMqttMessage('/msg/u/'+ relation.app_user_id, {
         _id: new Mongo.ObjectID()._str
         form: { 

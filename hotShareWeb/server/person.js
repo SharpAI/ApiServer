@@ -196,10 +196,22 @@ PERSON = {
 
     // }
 
+    var in_image = '';
+    var out_image = '';
     var now_status = "out"; //in/out
     var in_status = "unknown";
     var out_status = "unknown";
     //normal   工作时间大于8小时 或 9:00am前上班
+
+    //in/out image
+    if(intime > today && intime == relation.ai_in_time)
+      in_image = relation.ai_in_image;
+    else if(intime > today && intime == relation.checkin_time)
+      in_image = relation.checkin_image;
+    if(outtime > today && outtime == relation.ai_out_time)
+      out_image = relation.ai_out_image;
+    else if(outtime > today && outtime == relation.checkout_time)
+      out_image = relation.checkout_image;
 
     //有in没有out就是绿色，其他是灰色
     if(lastest_in_time > today && lastest_in_time > outtime)
@@ -244,6 +256,8 @@ PERSON = {
         "out_uuid"    : relation.out_uuid,
         "whats_up"    : "",
         "in_time"     : intime,
+        "in_image"    : in_image,
+        "out_image"   : out_image,
         "out_time"    : outtime
       });
     }
@@ -255,6 +269,8 @@ PERSON = {
         "in_uuid"     : relation.in_uuid,
         "out_uuid"    : relation.out_uuid,
         "in_time"     : intime,
+        "in_image"    : in_image,
+        "out_image"   : out_image,
         "out_time"    : outtime
       }});
     }
