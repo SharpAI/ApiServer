@@ -221,6 +221,8 @@ Template.timelineAlbum.events({
     console.log(data);
     Meteor.call('ai-checkin-out',data,function(err,res){
       $('#setPicturePersonName').modal('hide');
+      $('body').removeClass('modal-open');
+      $('.modal-backdrop').remove();
       if(err){
         PUB.toast('请重试');
         console.log('ai-checkin-out error:' + err);
