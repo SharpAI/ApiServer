@@ -44,7 +44,7 @@ if Meteor.isClient
       Meteor.call 'create-group1', null, group_name, selected_followers,selected_template, (err, id)->
         console.log(err)
         if err or !id
-          return PUB.toast('创建AI训练群失败，请重试~')
+          return PUB.toast('创建公司失败，请重试~')
         Session.set('AI_Group_Name',null);
         Meteor.subscribe('get-group',id,{
             onReady:()->

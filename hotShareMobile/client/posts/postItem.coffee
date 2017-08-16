@@ -90,7 +90,7 @@ if Meteor.isClient
 
                           msgSession = SimpleChat.MsgSession.findOne({userId: Meteor.userId(), toUserId: group._id});
                           if (msgSession)
-                            PUB.toast('您已经加入过这个训练群')
+                            PUB.toast('您已经加入过这个公司')
                           else
                             msgObj = {
                               toUserId: group._id,
@@ -104,15 +104,15 @@ if Meteor.isClient
                               createAt: new Date}
                             SimpleChat.MsgSession.insert(msgObj)
                             PUB.toast('添加成功')
-                          navigator.notification.confirm '是否转到加入的AI训练群？', (index)->
+                          navigator.notification.confirm '是否转到加入的公司？', (index)->
                             if index is 2
                               gotoPage = '/simple-chat/to/group?id='+ groupid
                               Router.go(gotoPage)
-                          , '转入训练群', ['稍后再说','好']
+                          , '转入公司', ['稍后再说','好']
                       else if result IOS 'not find group'
                         PUB.toast '二维码格式错误'
                     )
-                navigator.notification.confirm '发现AI训练群，是否加入？', callback, '识别结果', ['返回','加入群']
+                navigator.notification.confirm '发现公司，是否加入？', callback, '识别结果', ['返回','加入群']
               else if res.indexOf('http://') >= 0
                 callback = (index)->
                   if index is 2

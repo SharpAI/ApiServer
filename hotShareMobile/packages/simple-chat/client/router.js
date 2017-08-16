@@ -4,7 +4,7 @@ SimpleChat.simple_chat_page_stack = simple_chat_page_stack;
 var list_limit_val = 5;
 var is_loading = new ReactiveVar(false);
 var list_limit = new ReactiveVar(list_limit_val);
-var page_title = new ReactiveVar('AI训练群');
+var page_title = new ReactiveVar('公司');
 var page_data = null;
 var $box = null;
 var $box_ul = null;
@@ -340,7 +340,7 @@ Template._simpleChatToChat.onRendered(function(){
           images: [],
           to_type: "group",
           type: "system",
-          text: '当前端AI捕捉到有人在活动时，消息会发送到训练群中，请稍候' ,
+          text: '当前端AI捕捉到有人在活动时，消息会发送到公司群中，请稍候' ,
           create_time: new Date(),
           is_read: false
         };

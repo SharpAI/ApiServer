@@ -152,7 +152,7 @@ Template.messageGroupCreate.events
                       userName: Meteor.user().profile.fullname || Meteor.user().username
                       userIcon: Meteor.user().profile.icon || '/userPicture.png'
                       toGroupId: group._id
-                      text: "#{Meteor.user().profile.fullname || Meteor.user().username}邀请#{addName}加入了AI训练群"
+                      text: "#{Meteor.user().profile.fullname || Meteor.user().username}邀请#{addName}加入了公司"
                       isRead: false
                       msgType: 'text'
                       sesType: 'chatNotify'
@@ -290,7 +290,7 @@ Template.messageGroupCreateName.events
               userName: Meteor.user().profile.fullname || Meteor.user().username
               userIcon: Meteor.user().profile.icon || '/userPicture.png'
               toGroupId: _id
-              text: "#{Meteor.user().profile.fullname || Meteor.user().username}邀请#{userNames}加入了AI训练群"
+              text: "#{Meteor.user().profile.fullname || Meteor.user().username}邀请#{userNames}加入了公司"
               isRead: false
               msgType: 'text'
               sesType: 'chatNotify'

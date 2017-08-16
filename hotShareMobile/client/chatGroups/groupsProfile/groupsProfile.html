@@ -10,30 +10,30 @@
             <div id="groupsProfilePageback" class="leftButton back">
                 <i class="fa fa-angle-left fa-fw"></i>
             </div>
-            <strong>训练信息</strong>
+            <strong>公司信息</strong>
         </div>
         <div class="content">
             <div id="wrapper">
                 {{> groupUsers}}
                 <div class="line" style="height: 12px;"></div>
                 <!-- <div class="shareGroup eachViewer">
-                <span>分享AI训练群</span>
+                <span>分享公司</span>
             </div> -->
                 {{#if isGroup}}
                 <ul class="set-up comFadeIn" style="margin-top: 0px;margin-bottom: 10px;">
                     <li class="name">
-                        <label>AI训练群名称</label>
+                        <label>公司名称</label>
                         <div class="value">{{groupName}}<i class="fa fa-angle-right"></i></div>
                     </li>
                     {{#if hasBarCode}}
                     <li class="barcode">
-                        <label>AI训练群二维码</label>
+                        <label>公司二维码</label>
                         <div class="value"><img src="{{barcodeUrl}}"><i class="fa fa-angle-right"></i></div>
                     </li>
                     {{/if}}
                     {{#if hasTemplate}}
                     <li class="group_template">
-                        <label style="top: 20px;">AI训练群模板</label>
+                        <label style="top: 20px;">公司模板</label>
                         <div class="template_value">
                             <span class="template_name">{{templateName}}</span>
                             <img src="{{templateIcon}}">
@@ -43,7 +43,7 @@
                     {{/if}}
                     {{#if hasAnnouncement}}
                     <li class="announcement">
-                        <label style="top: 20px;">群公告</label>
+                        <label style="top: 20px;">公告</label>
                         <div class="value announcementVal">
                         {{#each groupAnnouncement}}
                         <div class="announcement_item _close">
@@ -135,7 +135,7 @@
             </ul>
             {{#if moreResults}}
             <div id="showAllResults">
-                <span class="showAllResults">查看全部训练员</span>
+                <span class="showAllResults">查看全部成员</span>
             </div>
             {{/if}}
         </div>
@@ -148,7 +148,7 @@
         <div class="head" style="position: fixed;">
             <div class="title" style="position:relative;">
                 <div class="left-btn">取消</div>
-                <span class="Contacts">AI训练群名称</span>
+                <span class="Contacts">公司名称</span>
                 <div class="right-btn">保存</div>
             </div>
         </div>
@@ -171,7 +171,7 @@
                 <div id="groupBarCodePageback" class="leftButton back">
                     <i class="fa fa-angle-left fa-fw"></i>
                 </div>
-                <span>训练群二维码</span>
+                <span>公司二维码</span>
                 <div class="rightDropMenu dropdown">
                     <div class="rightButton dropdown-toggle" id="btn-more" data-toggle="dropdown">
                       <img src="/more.png" height="30" >

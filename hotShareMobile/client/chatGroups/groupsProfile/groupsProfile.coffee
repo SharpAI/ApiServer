@@ -87,7 +87,7 @@ if Meteor.isClient
     'click .barcode': (event)->
       Session.set("groupsProfileMenu","groupBarCode")
     'click .deleteAndExit':(event)->
-      PUB.confirm('删除并退出后，将不再接收本AI训练群消息',()->
+      PUB.confirm('删除并退出后，将不再接收本公司消息',()->
         Meteor.call('remove-group-user',Session.get('groupsId'),Meteor.userId(),(err,id)->
           console.log(err)
           if err or !id
@@ -277,8 +277,8 @@ if Meteor.isClient
   Template.setGroupname.helpers
     placeholderText:()->
       if Session.equals('fromCreateNewGroups',true)
-         return '输入AI训练群名称'
-      return '输入新的AI训练群名称'
+         return '输入公司名称'
+      return '输入新的公司名称'
     groupName:()->
       if Session.equals('fromCreateNewGroups',true)
          return Session.get('AI_Group_Name') || ''
@@ -310,7 +310,7 @@ if Meteor.isClient
 
         Session.set("groupsProfileMenu","groupInformation")
       else
-        PUB.toast '训练群名称不能为空~'
+        PUB.toast '公司名称不能为空~'
       false
 
   Template.groupBarCode.helpers
