@@ -105,7 +105,7 @@ Template._simpleChatLabelRemove.events({
       Meteor.call('remove-persons1',msgObj.to.id,removes)
 
     for (var i=0;i<updateObj.images.length;i++){
-      if (updateObj.images[i].remove)
+      if (updateObj.images[i].remove){
         var trainsetObj = {
           group_id: msgObj.to.id,
           type: 'trainset',
@@ -118,6 +118,7 @@ Template._simpleChatLabelRemove.events({
         };
         console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
         sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
+      }
     }
 
     // update collection
