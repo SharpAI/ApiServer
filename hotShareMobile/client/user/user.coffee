@@ -272,6 +272,12 @@ if Meteor.isClient
       group_id = Session.get('modifyMyStatus_group_id');
       in_out = Session.get('modifyMyStatus_in_out');
       return Devices.find({groupId: group_id,in_out:in_out},{sort:{createAt:-1}}).fetch();
+    hasJoinGroup:()->
+      SimpleChat.GroupUsers.find({user_id:Meteor.userId()}).count() > 0
+    hasTwoMore:()->
+      SimpleChat.GroupUsers.find({user_id:Meteor.userId()}).count() > 2
+    groupList:()->
+      SimpleChat.GroupUsers.find({user_id:Meteor.userId()}, {limit:2, sort: {create_time: -1}}).fetch()
   Template.user.events
     'focus #search-box': (event)->
        PostsSearch.cleanHistory()
@@ -409,6 +415,19 @@ if Meteor.isClient
       setTimeout(()->
         PUB.page('/timelineAlbum/'+e.currentTarget.id);
       ,1000);
+    'click .groupItem':(e)->
+      console.log 'click .groupItem'
+      $('.user').addClass('animated ' + animateOutLowerEffect);
+      console.log this.group_id
+      url = '/simple-chat/to/group?id='+this.group_id
+      setTimeout ()->
+        PUB.page(url)
+      ,animatePageTrasitionTimeout
+    'click .check_all':(e)->
+      $('.user').addClass('animated ' + animateOutLowerEffect);
+      setTimeout ()->
+        PUB.page('/groupsList');
+      ,animatePageTrasitionTimeout
 
   Template.searchMyPosts.rendered=->
 #    $('.content').css 'min-height',$(window).height()

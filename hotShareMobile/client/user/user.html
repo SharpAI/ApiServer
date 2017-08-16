@@ -141,6 +141,29 @@
         <div align="center">{{_ "loading"}}</div>
     </div>
     {{/if}}
+    {{#if hasJoinGroup}}
+    <div class="groupsList">
+      <div class="item_head">
+        <span>我的公司</span>
+        {{#if hasTwoMore}}
+        <span class="check_all">查看全部></span>
+        {{/if}}
+      </div>
+      {{#each groupList}}
+        <div id="{{group_id}}" class="groupItem eachViewer"  style="background-color:#fff;">
+            {{#if group_icon}}
+            <img class="icon" src="{{group_icon}}">
+            {{else}}
+            <i class="fa fa-users" aria-hidden="true"></i>
+            {{/if}}
+            <span class="groupsName">{{group_name}}</span>
+        </div>
+        <div class="line">
+            <span></span>
+        </div>
+      {{/each}}
+    </div>
+    {{/if}}
       <!--
       <div class="good">
         <div class="praise">0 个赞</div>
