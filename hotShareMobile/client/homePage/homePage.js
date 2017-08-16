@@ -176,5 +176,16 @@ Template.homePage.events({
   },
   'click .check_in_out':function(e){
     Router.go('/timeline');
+  },
+  'click .panel-heading':function(e){
+    var group_id = e.currentTarget.id;
+    var group = SimpleChat.GroupUsers.findOne({group_id:group_id,user_id:Meteor.userId()});
+    if (group.companyId) {
+      Session.set('reportUrl', group.perf_info.reportUrl);
+      Router.go('perfShow');
+    }
+    else{
+      PUB.toast('尚未绑定公司~快去扫描绩效二维码进行绑定吧！');
+    }
   }
 })
