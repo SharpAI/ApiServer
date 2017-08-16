@@ -20,6 +20,11 @@
     {{/if}}-->
   </div>
   <div class="content" style="position: absolute;top: 0;left: 0;bottom: 0;right: 0;overflow-x: hidden;overflow-y: auto;-webkit-overflow-scrolling: touch;">
+    {{#if isLoading}}
+    <div class="waitForReportIframe" style="position:fixed; width:100%;text-align: center; margin-top:40%; color: black; font-size: 16px;">
+      <img src="/loading.gif" width="24px" height="24px"/> 加载中...
+    </div>
+    {{else}}
     {{#if lists}}
     <ul class="timeLine">
       <div style="color: #FF9800;font-size: 16px;"> 点击头像，选择您的上/下班时间</div>
@@ -60,6 +65,7 @@
     </ul>
     {{else}}
     <div style="text-align: center;margin-top: 100px;">暂无数据</div>
+    {{/if}}
     {{/if}}
   <!--<div class="loading" style="display:none;text-align:center; margin:10px;"><img src="/loading.gif" width="20">&nbsp;&nbsp;加载中...</div>-->
   </div>

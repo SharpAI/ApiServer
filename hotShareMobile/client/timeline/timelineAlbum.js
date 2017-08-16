@@ -2,7 +2,10 @@ Template.timelineAlbum.onRendered(function(){
   Session.set('timelineAlbumMultiSelect',false);
   Session.set('timelineAlbumLimit',10);
   var uuid = Router.current().params._uuid;
-  Meteor.subscribe('device-timeline',uuid,Session.get('timelineAlbumLimit'));
+  Session.set('timelineAlbumLoading',true);
+  Meteor.subscribe('device-timeline',uuid,Session.get('timelineAlbumLimit'),function(){
+    Session.set('timelineAlbumLoading',false);
+  });
   $('.content').scroll(function(){
     var height = $('.timeLine').height();
     var contentTop = $('.content').scrollTop();
@@ -57,7 +60,12 @@ Template.timelineAlbum.helpers({
   //   });
   //   return msgs;
   // },
-
+  isLoading:function(){
+    if (Session.get('timelineAlbumLoading') === false) {
+      return false;
+    }
+    return true;
+  },
   lists: function(){
     var uuid = Router.current().params._uuid;
     var lists = [];
