@@ -508,6 +508,7 @@ Meteor.methods({
     }
     person_info.name = person.name;
     person_info.id = person._id;
+    person_info.wantModify = data.wantModify;
     PERSON.updateWorkStatus(person._id);
     PERSON.sendPersonInfoToWeb(person_info);
     PERSON.updateToDeviceTimeline2(person_info.uuid,person_info.group_id,user._id,user_name,person_info.ts);
