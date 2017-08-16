@@ -40,8 +40,10 @@
     </div>
     {{#if hasTwoMoreGroup}}
         {{#each myGroupWorkStatus}}
+        {{#if workstatus group_id}}
         <div class="panel panel-default" style="margin-bottom: 0px;">
           <div class="panel-heading">我的考勤({{group_name}})</div>
+          {{#each workstatus group_id}}
           <div style="font-weight: 400;">
             <div style="position: relative;padding: 10px 0;border: solid 1px #eee;">
               <i class="fa fa-circle " style="color: #27d496;font-size: 20px;padding: 10px;margin: auto;position: absolute;"></i>
@@ -68,7 +70,9 @@
                 {{/if}}
             </div>
           </div>
+          {{/each}}
         </div>
+        {{/if}}
         {{/each}}
         {{else}}
         <div class="panel panel-default" style="margin-bottom: 0px">

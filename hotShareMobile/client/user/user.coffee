@@ -210,9 +210,26 @@ if Meteor.isClient
         return true
       return false
     myGroupWorkStatus:()->
-      return WorkStatus.find({app_user_id:Meteor.userId(),date: today}).fetch()
+      lists = [];
+      SimpleChat.GroupUsers.find({user_id:Meteor.userId()},{sort:{create_time:-1}}).forEach((item)->
+          lists.push({
+            group_id: item.group_id,
+            group_name: item.group_name
+          });
+      );
+      return lists;
+    workstatus: (group_id)->
+      if(group_id)
+        return WorkStatus.find({
+          group_id: group_id,
+          app_user_id:Meteor.userId(),
+          date: today
+        }).fetch();
+      return [];
     hasIntime:(in_time)->
-      if in_time and in_time isnt 0
+      if in_time is 0
+        return false
+      else if in_time > 0
         return true
       workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date: today})
       if (workstatus and workstatus.in_time and workstatus.in_time isnt 0)
@@ -231,7 +248,9 @@ if Meteor.isClient
         return intime;
       return '';
     hasOutTime:(out_time)->
-      if (out_time and out_time isnt 0)
+      if out_time is 0
+        return false
+      else if out_time > 0
         return true
       workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date: today})
       if (workstatus and workstatus.out_time and workstatus.out_time isnt 0)
@@ -373,7 +392,7 @@ if Meteor.isClient
         modifyMyStatusFun(workstatus.group_id,'in')
       else
         PUB.page('/timeline')
-    'click .checkOutTime,click .reReckOutTime':(e)->
+    'click .checkOutTime, click .reCheckOutTime':(e)->
       group_id = $(e.currentTarget).data('groupid')
       Session.set('wantModify',true)
       if (group_id) 
