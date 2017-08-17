@@ -1,4 +1,6 @@
-server_domain_name = "workaicdn.tiegushi.com";
+//server_domain_name = "workaicdn.tiegushi.com";
+//测试版
+server_domain_name = "testworkai.tiegushi.com";
 if (withZhiFaCDN) {
   server_domain_name = "cdcdn.tiegushi.com:8080";
 }

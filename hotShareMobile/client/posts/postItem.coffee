@@ -71,7 +71,7 @@ if Meteor.isClient
             toURL.substr('file://'.length)
             (res)->
               console.log('cordova.plugins.barcodeScanner.decodeImage:', res)
-              if res.indexOf('http://workaicdn.tiegushi.com/simple-chat/to/group?id=') >= 0
+              if res.indexOf('http://workaicdn.tiegushi.com/simple-chat/to/group?id=') >= 0 || res.indexOf('http://testworkai.tiegushi.com/simple-chat/to/group?id=') >= 0
                 groupid = res.substr(res.lastIndexOf('?id=')+'?id='.length)
                 console.log('Group ID:', groupid)
                 callback = (index)->
