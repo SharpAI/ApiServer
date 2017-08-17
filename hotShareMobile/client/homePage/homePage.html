@@ -110,7 +110,7 @@
                   {{#if isMySelf app_user_id}}
                   <td id="{{group_id}}" data-inout="in" class="modifyMyStatus"> — </td>
                   {{else}}
-                  <td> — </td>
+                  <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="modifyTaStatus"> — </td>
                   {{/if}}
                 {{/if}}
 
@@ -143,7 +143,7 @@
                   {{#if isMySelf app_user_id}}
                   <td id="{{group_id}}" data-inout="out" class="modifyMyStatus"> — </td>
                   {{else}}
-                  <td> — </td>
+                  <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="modifyTaStatus"> — </td>
                   {{/if}}
                 {{/if}}
 

@@ -157,10 +157,11 @@ Template.homePage.helpers({
     return hour;
   }
 });
-modifyMyStatusFun = function(group_id,in_out){
+modifyStatusFun = function(group_id,in_out,taId){
     if (!group_id || !in_out) {
       return;
     }
+    Session.set('modifyMyStatus_ta_id',null);
     var deviceCount = Devices.find({groupId: group_id,in_out:in_out},{sort:{createAt:-1}}).count();
     console.log(in_out);
     console.log(group_id);
@@ -170,11 +171,15 @@ modifyMyStatusFun = function(group_id,in_out){
     }
     if(deviceCount === 1){
       var device = Devices.findOne({groupId: group_id,in_out:in_out},{sort:{createAt:-1}})
+      if(taId){
+        PUB.page('/timelineAlbum/'+device.uuid+'?taId='+taId);
+      }
       return PUB.page('/timelineAlbum/'+device.uuid);
     }
     if(deviceCount > 1){
       Session.set('modifyMyStatus_group_id',group_id);
       Session.set('modifyMyStatus_in_out',in_out);
+      Session.set('modifyMyStatus_ta_id',taId);
       $('.homePage .content').addClass('content_box');
       $('.user .content').addClass('content_box');
       return $('#selectDevicesInOut').modal('show');
@@ -185,8 +190,13 @@ Template.homePage.events({
   'click .deviceItem': function(e){
     $('#selectDevicesInOut').modal('hide');
     $('.homePage .content').removeClass('content_box');
+    var taId = Session.set('modifyMyStatus_ta_id',taId);
+    var pageUrl = '/timelineAlbum/'+e.currentTarget.id;
+    if(taId){
+      pageUrl = '/timelineAlbum/'+e.currentTarget.id+'?taId='+taId;
+    }
     setTimeout(function(){
-      PUB.page('/timelineAlbum/'+e.currentTarget.id);
+      PUB.page(pageUrl);
     },1000);
   },
   'click .editWhatsUp':function(e){
@@ -246,7 +256,18 @@ Template.homePage.events({
   'click .modifyMyStatus':function(e){
     var group_id = e.currentTarget.id;
     var in_out = $(e.currentTarget).data('inout');
-    modifyMyStatusFun(group_id,in_out);
+    modifyStatusFun(group_id,in_out);
+  },
+  'click .modifyTaStatus': function(e){
+    var group_id = e.currentTarget.id;
+    var in_out = $(e.currentTarget).data('inout');
+    var taId = $(e.currentTarget).data('ta');
+    var taName = $(e.currentTarget).data('taname');
+    navigator.notification.confirm('要帮「'+taName+'」签到吗？',function(index){
+      if(index === 2){
+        modifyStatusFun(group_id, in_out, taId);
+      }
+    },'提示',['取消','帮TA签到']);
   },
   'click .in-out-pic': function(e){
     e.stopImmediatePropagation();

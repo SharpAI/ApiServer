@@ -1,4 +1,8 @@
 Template.timelineAlbum.onRendered(function(){
+  var taId = Router.current().params.query.taId;
+  if(taId){
+    Meteor.subscribe('usersById',taId);
+  }
   Session.set('timelineAlbumMultiSelect',false);
   Session.set('timelineAlbumLimit',10);
   var uuid = Router.current().params._uuid;
@@ -126,17 +130,50 @@ Template.timelineAlbum.events({
       person_info: person_info
     };
 
+    var msgText = '';
+
     if(device.in_out && device.in_out == 'in'){
       data.checkin_time =  new Date( $(e.currentTarget).data('ts')).getTime()
       data.checkin_image = $(e.currentTarget).data('imgurl');
+      msgText = '我代签了你的上班时间';
     } else {
       data.checkout_time =  new Date( $(e.currentTarget).data('ts')).getTime()
       data.checkout_image = $(e.currentTarget).data('imgurl');
+      msgText = '我代签了你的下班时间';
     }
     data.wantModify = Session.get('wantModify');
+
+    // 帮别人签到
+    var taId = Router.current().params.query.taId;
+    var msgObj;
+    if(taId){
+      data.user_id = taId;
+
+      var user = Meteor.user();
+      var taUser = Meteor.users.findOne({_id: taId});
+      msgObj = {
+        _id: new Mongo.ObjectID()._str,
+        form:{
+          id: user._id,
+          name: user.profile.fullname? user.profile.fullname: user.username,
+          icon: user.profile.icon
+        },
+        to: {
+          id:   taUser._id,
+          name: taUser.profile.fullname? taUser.profile.fullname: taUser.username,
+          icon: taUser.profile.icon
+        },
+        to_type: 'user',
+        type: 'text',
+        text: msgText,
+        create_time: new Date(),
+        is_read: false,
+        send_status: 'sending'
+      };
+    }
     console.log(data);
     // 检查是否标识过自己
-    var relations = WorkAIUserRelations.findOne({'app_user_id':Meteor.userId(),group_id:group_id});
+    var relations = WorkAIUserRelations.findOne({'app_user_id':data.user_id,group_id:group_id});
     var callbackRsu = function(res){
 
     };
@@ -160,6 +197,11 @@ Template.timelineAlbum.events({
           }, 500);
           if(res && res.result == 'succ'){
             PUB.toast('已记录到每日出勤报告');
+            // 发送代Ta 签到成功通知
+            if(taId){
+              console.log(msgObj)
+              sendMqttUserMessage(taId,msgObj);
+            }
             return PUB.back();
           } else {
             return navigator.notification.confirm(res.text,function(index){
@@ -208,6 +250,11 @@ Template.timelineAlbum.events({
           }, 500);
           if(res && res.result == 'succ'){
             PUB.toast('已记录到每日出勤报告');
+            // 发送代Ta 签到成功通知
+            if(taId){
+              console.log(msgObj)
+              sendMqttUserMessage(taId,msgObj);
+            }
             return PUB.back();
           } else {
             return navigator.notification.confirm(res.text,function(index){
@@ -244,6 +291,11 @@ Template.timelineAlbum.events({
       }, 500);
       if(res && res.result == 'succ'){
         PUB.toast('已记录到每日出勤报告');
+        // 发送代Ta 签到成功通知
+        if(taId){
+          console.log(msgObj)
+          sendMqttUserMessage(taId,msgObj);
+        }
         return PUB.back();
       } else {
         return navigator.notification.confirm(res.text,function(index){
