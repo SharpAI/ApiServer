@@ -1507,30 +1507,29 @@ if Meteor.isServer
       nextday = date + mod
 
       relations = WorkAIUserRelations.find({})
-      relations.observeChanges({
-        added:  (id, fields)->
-          if fields && fields.group_id && fields.app_user_id
-            #console.log('>>> ' + JSON.stringify(fields))
-            workstatus = WorkStatus.findOne({'group_id': relations.group_id, 'app_user_id': relations.app_user_id, 'date': date})
-            if !workstatus
-              newWorkStatus = {
-                "app_user_id" : fields.app_user_id
-                "group_id"    : fields.group_id
-                "date"        : nextday
-                "person_id"   : fields.ai_persons
-                "person_name" : fields.person_name
-                "status"      : "out"
-                "in_status"   : "unknown"
-                "out_status"  : "unknown"
-                "in_uuid"     : fields.in_uuid
-                "out_uuid"    : fields.out_uuid
-                "whats_up"    : ""
-                "in_time"     : 0
-                "out_time"    : 0
-              }
-              #console.log('>>> new a WorkStatus ' + JSON.stringify(newWorkStatus))
-              WorkStatus.insert(newWorkStatus)
-      })
+      relations.forEach((fields)->
+        if fields && fields.group_id && fields.app_user_id
+          #console.log('>>> ' + JSON.stringify(fields))
+          workstatus = WorkStatus.findOne({'group_id': fields.group_id, 'app_user_id': fields.app_user_id, 'date': nextday})
+          if !workstatus
+            newWorkStatus = {
+              "app_user_id" : fields.app_user_id
+              "group_id"    : fields.group_id
+              "date"        : nextday
+              "person_id"   : fields.ai_persons
+              "person_name" : fields.person_name
+              "status"      : "out"
+              "in_status"   : "unknown"
+              "out_status"  : "unknown"
+              "in_uuid"     : fields.in_uuid
+              "out_uuid"    : fields.out_uuid
+              "whats_up"    : ""
+              "in_time"     : 0
+              "out_time"    : 0
+            }
+            #console.log('>>> new a WorkStatus ' + JSON.stringify(newWorkStatus))
+            WorkStatus.insert(newWorkStatus)
+      )
 
       this.response.end(JSON.stringify({result: 'ok'}))
     )
