@@ -146,8 +146,38 @@ Template.homePage.events({
     var _id = e.currentTarget.id;
     var whats_up = $('#EditorWhatsUp').val();
     $('#'+_id).data('whatsup',whats_up);
+    var group_id = $('#'+_id).data('groupid');
+    var group = SimpleChat.GroupUsers.findOne({group_id:group_id,user_id: Meteor.userId()});
     WorkStatus.update({_id:_id},{
       $set:{whats_up:whats_up}
+    },function(err,num){
+      if(err){
+        return PUB.toast('请重试');
+      }
+      if(!group){
+        return;
+      }
+      var msgObj = {
+        _id: new Mongo.ObjectID()._str,
+        form:{
+          id: group.user_id,
+          name: group.user_name,
+          icon: group.user_icon
+        },
+        to: {
+          id:   group.group_id,
+          name: group.group_name,
+          icon: group.group_icon 
+        },
+        to_type: 'group',
+        type: 'text',
+        text: '我更新了今日简述：\r\n'+whats_up,
+        create_time: new Date(),
+        is_read: false,
+        send_status: 'sending'
+      };
+      console.log(msgObj)
+      sendMqttGroupMessage(group_id,msgObj);
     });
     $('#myModal').modal('hide');
     $('.homePage .content').removeClass('content_box');
