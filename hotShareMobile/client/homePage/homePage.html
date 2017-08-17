@@ -28,10 +28,23 @@
     }
   </style>
   <div class="homePage">
-      <div class="head">
+      <div class="head" style="height: 80px;">
         <strong class="top-home-btn active">主页</strong>
+        <div class="date_select">
+          {{#if has_day_before}}
+          <span class="day_before select_btn">前一天</span>
+          {{else}}
+          <span class="day_before_disable select_btn">前一天</span>
+          {{/if}}
+          <span class="title">{{day_title}}</span>
+          {{#if has_day_after}}
+          <span class="day_after select_btn">后一天</span>
+          {{else}}
+          <span class="day_after_disable select_btn">后一天</span>
+          {{/if}}
+        </div>
       </div>
-      <div class="content">
+      <div class="content" style="top: 80px;">
       {{>connectionBanner}}
       <!-- status lists start -->
       <div style="margin:10px;">

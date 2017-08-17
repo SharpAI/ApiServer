@@ -2,6 +2,8 @@ Template.homePage.onRendered(function () {
   var date = Date.now();
   var mod = 24 * 60 * 60 *1000;
   date = date - (date%mod);
+  Session.set('theCurrentDay',date); //当前显示的日期
+  Session.set('today',date); //今天
   Meteor.subscribe('group_devices',function(){
     Session.set('groupDevicesLoading',false);
   });
@@ -12,6 +14,48 @@ Template.homePage.onRendered(function () {
   });
 });
 
+var parseDate = function(currentDay){
+  var today = new Date(Session.get('today'));
+  var month = currentDay.getMonth() + 1;
+  var date = month + '月' +currentDay.getDate() +'日';
+  if (currentDay.getDate() === today.getDate()) {
+    date = date + ' 今天';
+  }
+  else if (currentDay.getDate() - today.getDate() === -1 ) {
+    date = date + ' 昨天';
+  }
+  else {
+    var day = '';
+    switch(currentDay.getDay())
+    {
+    case 0:
+      day = '星期日';
+      break;
+    case 1:
+      day = '星期一';
+      break;
+    case 2:
+      day = '星期二';
+      break;
+    case 3:
+      day = '星期三';
+      break;
+    case 4:
+      day = '星期四';
+      break;
+    case 5:
+      day = '星期五';
+      break;
+    case 6:
+      day = '星期六';
+      break;
+    default:
+      break;
+    }
+    date = date + ' ' +day;
+  }
+  return date;
+};
 
 Template.homePage.helpers({
   isLoading:function(){
@@ -19,6 +63,22 @@ Template.homePage.helpers({
       return false;
     }
     return true;
+  },
+  has_day_before:function(){
+    var currentDay = Session.get('theCurrentDay'); //当前显示的日期
+    var today = Session.get('today'); //今天
+    var lastday =  today - 7 * 24 * 60 * 60 *1000; //7天前
+    return currentDay > lastday;
+  },
+  day_title:function(){
+    var currentDay = Session.get('theCurrentDay'); //当前显示的日期
+    currentDay = new Date(currentDay);
+    return parseDate(currentDay);
+  },
+  has_day_after:function(){
+    var currentDay = Session.get('theCurrentDay'); //当前显示的日期
+    var today = Session.get('today'); //今天
+    return currentDay < today;
   },
   lists: function(){
     var lists = [];
@@ -41,9 +101,7 @@ Template.homePage.helpers({
   },
   workstatus: function(group_id){
     if(group_id){
-      var date = Date.now();
-      var mod = 24 * 60 * 60 *1000;
-      date = date - (date%mod);
+      var date = Session.get('theCurrentDay');
       return WorkStatus.find({
         group_id: group_id,
         date: date
@@ -217,5 +275,27 @@ Template.homePage.events({
     else{
       PUB.toast('尚未绑定公司~快去扫描绩效二维码进行绑定吧！');
     }
+  },
+  'click .day_before':function(){
+    var currentDay = Session.get('theCurrentDay');
+    currentDay = currentDay - 24 * 60 * 60 * 1000;
+    Session.set('theCurrentDay', currentDay);
+    Session.set('WorkStatusLoading',true);
+    Meteor.subscribe('WorkStatus',currentDay,{
+      onReady:function(){
+        Session.set('WorkStatusLoading',false);
+      }
+    });
+  },
+  'click .day_after':function(){
+    var currentDay = Session.get('theCurrentDay');
+    currentDay = currentDay + 24 * 60 * 60 * 1000;
+    Session.set('theCurrentDay', currentDay);
+    Session.set('WorkStatusLoading',true);
+    Meteor.subscribe('WorkStatus',currentDay,{
+      onReady:function(){
+        Session.set('WorkStatusLoading',false);
+      }
+    });
   }
-})
+});
