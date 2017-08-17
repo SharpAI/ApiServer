@@ -261,7 +261,7 @@ Template.homePage.events({
   'click .modifyTaStatus': function(e){
     var group_id = e.currentTarget.id;
     var in_out = $(e.currentTarget).data('inout');
-    var taId = $(e.currentTarget).data('ta');
+    var taId = $(e.currentTarget).data('taid');
     var taName = $(e.currentTarget).data('taname');
     navigator.notification.confirm('要帮「'+taName+'」签到吗？',function(index){
       if(index === 2){
