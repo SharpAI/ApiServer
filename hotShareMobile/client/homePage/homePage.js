@@ -1,9 +1,12 @@
 Template.homePage.onRendered(function () {
-  var date = Date.now();
-  var mod = 24 * 60 * 60 *1000;
-  date = date - (date%mod);
-  Session.set('theCurrentDay',date); //当前显示的日期
-  Session.set('today',date); //今天
+  var now = new Date();
+  var displayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  var date = Date.UTC(now.getUTCFullYear(),now.getUTCMonth(), now.getUTCDate() , 
+      0, 0, 0, 0);
+
+  Session.set('theCurrentDay',date); //UTC日期
+  Session.set('theDisplayDay',displayDate); //当前显示的日期
+  Session.set('today',displayDate); //今天
   Meteor.subscribe('group_devices',function(){
     Session.set('groupDevicesLoading',false);
   });
@@ -65,18 +68,18 @@ Template.homePage.helpers({
     return true;
   },
   has_day_before:function(){
-    var currentDay = Session.get('theCurrentDay'); //当前显示的日期
+    var currentDay = Session.get('theDisplayDay'); //当前显示的日期
     var today = Session.get('today'); //今天
     var lastday =  today - 7 * 24 * 60 * 60 *1000; //7天前
     return currentDay > lastday;
   },
   day_title:function(){
-    var currentDay = Session.get('theCurrentDay'); //当前显示的日期
+    var currentDay = Session.get('theDisplayDay'); //当前显示的日期
     currentDay = new Date(currentDay);
     return parseDate(currentDay);
   },
   has_day_after:function(){
-    var currentDay = Session.get('theCurrentDay'); //当前显示的日期
+    var currentDay = Session.get('theDisplayDay'); //当前显示的日期
     var today = Session.get('today'); //今天
     return currentDay < today;
   },
@@ -301,6 +304,12 @@ Template.homePage.events({
     var currentDay = Session.get('theCurrentDay');
     currentDay = currentDay - 24 * 60 * 60 * 1000;
     Session.set('theCurrentDay', currentDay);
+    
+    var theDisplayDay = Session.get('theDisplayDay');
+    theDisplayDay = theDisplayDay - 24 * 60 * 60 * 1000;
+    Session.set('theDisplayDay', theDisplayDay);
+    
+    
     Session.set('WorkStatusLoading',true);
     Meteor.subscribe('WorkStatus',currentDay,{
       onReady:function(){
@@ -312,6 +321,11 @@ Template.homePage.events({
     var currentDay = Session.get('theCurrentDay');
     currentDay = currentDay + 24 * 60 * 60 * 1000;
     Session.set('theCurrentDay', currentDay);
+    
+    var theDisplayDay = Session.get('theDisplayDay');
+    theDisplayDay = theDisplayDay + 24 * 60 * 60 * 1000;
+    Session.set('theDisplayDay', theDisplayDay);
+    
     Session.set('WorkStatusLoading',true);
     Meteor.subscribe('WorkStatus',currentDay,{
       onReady:function(){
