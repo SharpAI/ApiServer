@@ -216,6 +216,7 @@ Template.timelineAlbum.events({
         confirm_text = '此照片是：「'+person_name+'」，是否选择？';
       }
       else{
+        data.msgText = msgText;
         Session.set('setPicturePersonNameData',data);
         $('#picturePersonName').val("");
         Meteor.setTimeout(function(){
@@ -273,6 +274,33 @@ Template.timelineAlbum.events({
     }
     var data = Session.get('setPicturePersonNameData');
     data.person_info.name = name;
+    var taId = Router.current().params.query.taId;
+    var msgObj;
+    if(taId){
+      data.user_id = taId;
+
+      var user = Meteor.user();
+      var taUser = Meteor.users.findOne({_id: taId});
+      msgObj = {
+        _id: new Mongo.ObjectID()._str,
+        form:{
+          id: user._id,
+          name: user.profile.fullname? user.profile.fullname: user.username,
+          icon: user.profile.icon
+        },
+        to: {
+          id:   taUser._id,
+          name: taUser.profile.fullname? taUser.profile.fullname: taUser.username,
+          icon: taUser.profile.icon
+        },
+        to_type: 'user',
+        type: 'text',
+        text: data.msgText,
+        create_time: new Date(),
+        is_read: false,
+        // send_status: 'sending'
+      };
+    }
     console.log(data);
     Meteor.call('ai-checkin-out',data,function(err,res){
       $('#setPicturePersonName').modal('hide');
