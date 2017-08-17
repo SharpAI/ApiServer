@@ -168,7 +168,7 @@ Template.timelineAlbum.events({
         text: msgText,
         create_time: new Date(),
         is_read: false,
-        send_status: 'sending'
+        // send_status: 'sending'
       };
     }
     console.log(data);

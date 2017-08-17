@@ -172,7 +172,7 @@ modifyStatusFun = function(group_id,in_out,taId){
     if(deviceCount === 1){
       var device = Devices.findOne({groupId: group_id,in_out:in_out},{sort:{createAt:-1}})
       if(taId){
-        PUB.page('/timelineAlbum/'+device.uuid+'?taId='+taId);
+        return PUB.page('/timelineAlbum/'+device.uuid+'?taId='+taId);
       }
       return PUB.page('/timelineAlbum/'+device.uuid);
     }
@@ -242,7 +242,7 @@ Template.homePage.events({
         text: '我更新了今日简述：\r\n'+whats_up,
         create_time: new Date(),
         is_read: false,
-        send_status: 'sending'
+        // send_status: 'sending'
       };
       console.log(msgObj)
       sendMqttGroupMessage(group_id,msgObj);
