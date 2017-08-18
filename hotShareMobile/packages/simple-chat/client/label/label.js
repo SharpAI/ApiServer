@@ -89,6 +89,7 @@ Template._simpleChatLabelLabel.events({
       Meteor.call('remove-persons1',msgObj.to.id,removes)
 
     var relabelImages = [];
+    var newImageId = new Mongo.ObjectID()._str;
 
     for (var i=0;i<updateObj.images.length;i++){
       if (updateObj.images[i].error) {
@@ -110,7 +111,7 @@ Template._simpleChatLabelLabel.events({
         var image = updateObj.images[i];
         var relabelObj = {
           _id: new Mongo.ObjectID()._str,
-          id: image.id,
+          id: newImageId,
           people_his_id:image.people_his_id,
           url: image.url,
           label: null,
