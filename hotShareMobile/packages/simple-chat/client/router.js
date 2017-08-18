@@ -50,7 +50,7 @@ var  keyboardHeightHandle = function(event){
   console.log ('Keyboard height is: ' + event.keyboardHeight);
   Session.set('keyboardHeight',event.keyboardHeight);
   if (event.keyboardHeight === 0) {
-    $('.simple-chat').heigh('100%');
+    $('.simple-chat').height('100%');
   }
 };
 
@@ -61,6 +61,9 @@ window.onresize = function(){
     var maxWindowHeight = Session.get('currentWindowHeight'); //不弹键盘时的高度;
     if ((maxWindowHeight - $(window).height() <= 20 ) && keyboardHeight > 0) {
       $('.simple-chat').height($(window).height()-keyboardHeight);
+    }
+    if (keyboardHeight === 0) {
+      $('.simple-chat').height('100%');
     }
   },100);
 };
