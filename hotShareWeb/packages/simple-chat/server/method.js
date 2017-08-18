@@ -1,3 +1,4 @@
+var async =  Meteor.npmRequire('async');
 AI_system_register_devices = function (group_id,uuid) {
   var ai_system_url = process.env.AI_SYSTEM_URL || 'http://aixd.raidcdn.cn/restapi/register';
 
@@ -165,11 +166,11 @@ sendGroupDelOrQuitMsg = function(group_id,form,to,to_type) {
       group_id: group_id
     };
     if (to_type == 'user') {
-      msgObj.text = form.name + ' 解散了 [' + toUser.name + ']';
+      msgObj.text = form.name + ' 解散了 [' + to.name + ']';
       msgObj.is_group_del = true;
-      return sendMqttUserMessage(toUser.id, msgObj);
+      return sendMqttUserMessage(to.id, msgObj);
     } else {
-      msgObj.text = form.name + ' 退出了 [' + toUser.name + ']';
+      msgObj.text = form.name + ' 退出了 [' + to.name + ']';
       return sendMqttGroupMessage(group_id, msgObj);
     }
   } catch (error){
@@ -383,7 +384,7 @@ Meteor.methods({
       var user = Meteor.users.findOne({_id: userId})
       async.each(groupUsers, function(item, callback) {
 
-          sendGroupDelOrQuitMsg(group_id,{
+          sendGroupDelOrQuitMsg(id,{
             id:   user._id,
             name: user.profile.fullname ? user.profile.fullname : user.username,
             icon: user.profile.icon
@@ -415,7 +416,7 @@ Meteor.methods({
     var groupuser = GroupUsers.findOne({group_id: id,user_id: userId});
     if (groupuser) {
       // send group quit message
-      sendGroupDelOrQuitMsg(group_id,{
+      sendGroupDelOrQuitMsg(id,{
         id: groupuser.user_id,
         name: groupuser.user_name,
         icon: groupuser.user_icon
@@ -424,7 +425,7 @@ Meteor.methods({
         name: groupuser.group_name,
         icon: groupuser.group_icon
       }, 'group');
-      
+
       GroupUsers.remove({_id:groupuser._id},function(err,res){
         if (err) {
           return console.log ('GroupUsers remove failed');
