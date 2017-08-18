@@ -120,10 +120,12 @@ Template.checkInOutMsgList.events
         else
           #跳转至时间轴
           if slef.people_uuid
+            Session.set('wantModifyTime',slef.create_time);
             PUB.page '/timelineAlbum/'+slef.people_uuid
           else
             PUB.page '/timeline'
       SimpleChat.Messages.update({_id:msgId},{$set:{is_read:true}});
     'click .check_in_btn':(e)->
       Session.set('wantModify',true);
+      Session.set('wantModifyTime',this.create_time);
       PUB.page '/timelineAlbum/'+this.people_uuid

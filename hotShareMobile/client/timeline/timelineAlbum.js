@@ -8,9 +8,19 @@ Template.timelineAlbum.onRendered(function(){
   Session.set('timelineAlbumLimit',10);
   var uuid = Router.current().params._uuid;
   Session.set('timelineAlbumLoading',true);
-  Meteor.subscribe('device-timeline',uuid,Session.get('timelineAlbumLimit'),function(){
-    Session.set('timelineAlbumLoading',false);
-  });
+  var hour = Session.get('wantModifyTime');
+  if (hour) {
+    Session.set('timelineAlbumGteLimit',0); //大于某段时间的
+    Meteor.subscribe('device-timeline-with-hour',uuid,{$lte:hour},-1,Session.get('timelineAlbumLimit'),function(){
+      Session.set('timelineAlbumLoading',false);
+    });
+  }
+  else{
+    Meteor.subscribe('device-timeline',uuid,Session.get('timelineAlbumLimit'),function(){
+      Session.set('timelineAlbumLoading',false);
+    });
+  }
+  var isLoadMore = false;
   $('.content').scroll(function(){
     var height = $('.timeLine').height();
     var contentTop = $('.content').scrollTop();
@@ -23,11 +33,30 @@ Template.timelineAlbum.onRendered(function(){
     timelineAlbumTimeout = setTimeout(function() {
       $("img.lazy").lazyload({});
     }, 500);
-    if((contentHeight + contentTop + 50 ) >= height){
-      var limit = Session.get('timelineAlbumLimit') + 10
+    if (-10 < contentTop < 0) {
+      isLoadMore = false;
+    }
+    if (contentTop < -50 && hour && !isLoadMore) {
+      isLoadMore = true;
+      var limit = Session.get('timelineAlbumGteLimit') + 10;
+      console.log('loadMore and limit = '+limit+'hour = '+hour);
+      Meteor.subscribe('device-timeline-with-hour',uuid,{$gte:hour},1,limit,function(){
+        Session.set('timelineAlbumLoading',false);
+      });
+      Session.set('timelineAlbumGteLimit',limit);
+    }
+    else if((contentHeight + contentTop + 50 ) >= height){
+      var limit = Session.get('timelineAlbumLimit') + 10;
       console.log('loadMore and limit = ',limit);
       // SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({to_type:'group',people_uuid:uuid,type:'text', images: {$exists: true}}, {limit: limit, sort: {create_time: -1}}, limit);
-      Meteor.subscribe('device-timeline',uuid,Session.get('timelineAlbumLimit'));
+      if (hour) {
+        Meteor.subscribe('device-timeline-with-hour',uuid,{$lte:hour},-1,limit,function(){
+          Session.set('timelineAlbumLoading',false);
+        });
+      }
+      else{
+        Meteor.subscribe('device-timeline',uuid,limit);
+      }
       Session.set('timelineAlbumLimit',limit);
     }
   });
@@ -40,6 +69,7 @@ Template.timelineAlbum.onRendered(function(){
 });
 Template.timelineAlbum.onDestroyed(function(){
   Session.set('wantModify',false);
+  Session.set('wantModifyTime',null);
 });
 Template.timelineAlbum.helpers({
   // lists: function(){
@@ -74,23 +104,64 @@ Template.timelineAlbum.helpers({
   lists: function(){
     var uuid = Router.current().params._uuid;
     var lists = [];
-    DeviceTimeLine.find({uuid: uuid},{sort:{hour:-1}}).forEach(function(item){
-      var tmpArr = [];
-      for(x in item.perMin){
-        var hour = new Date(item.hour)
-        hour = hour.setMinutes(x);
-        var tmpObj = {
-          time: hour,
-          images: []
+    var hour = Session.get('wantModifyTime');
+    if (hour) {
+      DeviceTimeLine.find({uuid: uuid,hour:{$lte:hour}},{sort:{hour:-1}}).forEach(function(item){
+        var tmpArr = [];
+        for(x in item.perMin){
+          var hour = new Date(item.hour)
+          hour = hour.setMinutes(x);
+          var tmpObj = {
+            time: hour,
+            images: []
+          }
+          item.perMin[x].forEach(function(img){
+            tmpObj.images.push(img);
+          });
+          tmpArr.push(tmpObj);
         }
-        item.perMin[x].forEach(function(img){
-          tmpObj.images.push(img);
+        tmpArr.reverse();
+        lists = lists.concat(tmpArr);
+      });
+      if (Session.get('timelineAlbumGteLimit') > 0) {
+        DeviceTimeLine.find({uuid: uuid,hour:{$gte:hour}},{sort:{hour:1},limit:Session.get('timelineAlbumGteLimit')}).forEach(function(item){
+          var tmpArr = [];
+          for(x in item.perMin){
+            var hour = new Date(item.hour)
+            hour = hour.setMinutes(x);
+            var tmpObj = {
+              time: hour,
+              images: []
+            }
+            item.perMin[x].forEach(function(img){
+              tmpObj.images.push(img);
+            });
+            tmpArr.push(tmpObj);
+          }
+          tmpArr.reverse();
+          lists = tmpArr.concat(lists);
         });
-        tmpArr.push(tmpObj);
       }
-      tmpArr.reverse();
-      lists = lists.concat(tmpArr);
-    })
+    }
+    else{
+      DeviceTimeLine.find({uuid: uuid},{sort:{hour:-1}}).forEach(function(item){
+        var tmpArr = [];
+        for(x in item.perMin){
+          var hour = new Date(item.hour)
+          hour = hour.setMinutes(x);
+          var tmpObj = {
+            time: hour,
+            images: []
+          }
+          item.perMin[x].forEach(function(img){
+            tmpObj.images.push(img);
+          });
+          tmpArr.push(tmpObj);
+        }
+        tmpArr.reverse();
+        lists = lists.concat(tmpArr);
+      });
+    }
     return lists;
   },
   formatDate: function(time){

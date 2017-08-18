@@ -201,7 +201,20 @@ if(Meteor.isServer){
     }
     return DeviceTimeLine.find({uuid: uuid},{sort:{hour:-1},limit: limit});
   });
-  
+
+ Meteor.publish('device-timeline-with-hour', function(uuid,options,sort,limit){
+    var limit = limit || 10;
+    if(!this.userId || !uuid){
+      return this.ready();
+    }
+    // console.log('publish device-timeline-with-hour');
+    // console.log('uuid:'+uuid);
+    // console.log('options:'+JSON.stringify(options));
+    // console.log('sort:'+sort);
+    // console.log('limit:'+limit);
+    return DeviceTimeLine.find({uuid: uuid,hour: options},{sort:{hour:sort},limit: limit});
+  });
+
   Meteor.methods({
     getPeopleIdByName: function(name, uuid){
       var people = People.findOne({name: name, uuid: uuid}, {sort: {updateTime: -1}});
