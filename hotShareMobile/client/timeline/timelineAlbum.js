@@ -2,6 +2,7 @@ Template.timelineAlbum.onRendered(function(){
   var taId = Router.current().params.query.taId;
   if(taId){
     Meteor.subscribe('usersById',taId);
+    Meteor.subscribe('get-workai-user-relation',taId);
   }
   Session.set('timelineAlbumMultiSelect',false);
   Session.set('timelineAlbumLimit',10);
