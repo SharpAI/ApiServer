@@ -7,15 +7,17 @@ if (Meteor.isClient) {
           "Format: " + result.format + "\n" +
           "Cancelled: " + result.cancelled);
         var gotoPage = '/';
-        var  requiredStr = rest_api_url+'/simple-chat/to/group?id='
+        //var  requiredStr = rest_api_url+'/simple-chat/to/group?id=' 
         if (result.text) {
           if (Session.get('addHomeAIBox') === true) {
             Router.go('/scanFailPrompt');
             Session.set('addHomeAIBox',false);
             return;
           }
-          if (result.text.indexOf(requiredStr)=== 0) {
-            var groupid = result.text.substring(requiredStr.length);
+          //if (result.text.indexOf(requiredStr)=== 0) {
+          if (result.text.indexOf('http://workaicdn.tiegushi.com/simple-chat/to/group?id=') >= 0 || result.text.indexOf('http://testworkai.tiegushi.com/simple-chat/to/group?id=') >= 0){
+            //var groupid = result.text.substring(requiredStr.length);
+            var groupid = result.text.substr(result.text.lastIndexOf('?id=')+'?id='.length);
             console.log('groupid==='+groupid);
             if (groupid && groupid.length > 0) {
               Meteor.call('add-group-urser', groupid, [Meteor.userId()], function(err, result) {
@@ -105,9 +107,8 @@ if (Meteor.isClient) {
   window.DecodeImageFromAlum = function(){
     function decodecallback(result){
       var gotoPage = '/';
-      var  requiredStr = rest_api_url+'/simple-chat/to/group?id='
-      if (result && result.indexOf(requiredStr)=== 0) {
-        var groupid = result.substring(requiredStr.length);
+      if (result && (result.indexOf('http://workaicdn.tiegushi.com/simple-chat/to/group?id=') >= 0 || result.text.indexOf('http://testworkai.tiegushi.com/simple-chat/to/group?id=') >= 0)){
+        var groupid = result.substr(result.lastIndexOf('?id=')+'?id='.length);
         console.log('groupid==='+groupid);
         if (groupid && groupid.length > 0) {
           Meteor.call('add-group-urser', groupid, [Meteor.userId()], function(err, result) {
