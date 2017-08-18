@@ -4,7 +4,7 @@
 if(Meteor.isServer){
     initMQTT = function(clientId){
         var mqttOptions = {
-            clean:true,
+            clean:false,
             keepalive:30,
             reconnectPeriod:20*1000,
             clientId:clientId
