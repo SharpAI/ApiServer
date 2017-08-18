@@ -106,7 +106,7 @@ Template.timelineAlbum.helpers({
     var lists = [];
     var hour = Session.get('wantModifyTime');
     if (hour) {
-      DeviceTimeLine.find({uuid: uuid,hour:{$lte:hour}},{sort:{hour:-1}}).forEach(function(item){
+      DeviceTimeLine.find({uuid: uuid,hour:{$lte:hour}},{sort:{hour:-1},limit:Session.get('timelineAlbumLimit')}).forEach(function(item){
         var tmpArr = [];
         for(x in item.perMin){
           var hour = new Date(item.hour)
@@ -144,7 +144,7 @@ Template.timelineAlbum.helpers({
       }
     }
     else{
-      DeviceTimeLine.find({uuid: uuid},{sort:{hour:-1}}).forEach(function(item){
+      DeviceTimeLine.find({uuid: uuid},{sort:{hour:-1},limit:Session.get('timelineAlbumLimit')}).forEach(function(item){
         var tmpArr = [];
         for(x in item.perMin){
           var hour = new Date(item.hour)
