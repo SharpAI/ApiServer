@@ -391,22 +391,22 @@ if Meteor.isClient
       group_id = $(e.currentTarget).data('groupid')
       Session.set('wantModify',true);
       if (group_id)
-        modifyMyStatusFun(group_id,'in')
+        modifyStatusFun(group_id,'in')
         return;
       workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date:today})
       if (workstatus && workstatus.group_id)
-        modifyMyStatusFun(workstatus.group_id,'in')
+        modifyStatusFun(workstatus.group_id,'in')
       else
         PUB.page('/timeline')
     'click .checkOutTime, click .reCheckOutTime':(e)->
       group_id = $(e.currentTarget).data('groupid')
       Session.set('wantModify',true)
       if (group_id) 
-        modifyMyStatusFun(group_id,'out')
+        modifyStatusFun(group_id,'out')
         return
       workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date:today});
       if (workstatus && workstatus.group_id) 
-        modifyMyStatusFun(workstatus.group_id,'out')
+        modifyStatusFun(workstatus.group_id,'out')
       else
         PUB.page('/timeline')
     'click .deviceItem': (e)->
