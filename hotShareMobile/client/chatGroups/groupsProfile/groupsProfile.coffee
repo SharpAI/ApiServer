@@ -1,4 +1,29 @@
-if Meteor.isClient
+if Meteor.isClient 
+  groupDelOrQuitCB = (err,id,isDel)->
+    errMsg = '退出失败，请重试~'
+    if isDel
+      errMsg = '删除失败，请重试~'
+    console.log(err)
+    if err or !id
+      return PUB.toast(errMsg)
+    if mqtt_connection
+      mqtt_connection.unsubscribe("/msg/g/" + id)
+    MsgSessionId = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId: id})
+    if MsgSessionId
+      SimpleChat.MsgSession.remove(MsgSessionId._id)
+    try
+      where = {'to.id': id, to_type: 'group'};
+      SimpleChat.Messages.remove(where);
+      Meteor.setTimeout(()->
+        if SimpleChat.MessagesHis.find(where).count() > 0
+          SimpleChat.MessagesHis.remove(where);
+      ,100)
+      SimpleChat.MessagesHis.remove(where);
+    catch e
+      console.log 'remove-group-user err:'+e
+    Meteor.setTimeout(()->
+      PUB.back()
+    ,100)
   Session.setDefault("groupsProfileMenu",'groupInformation')
   Template.groupsProfile.helpers
     whichOne:()->
@@ -74,6 +99,12 @@ if Meteor.isClient
     show_more:()->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       return group.announcement.length > 2
+    isGroupCreator:()->
+      group = SimpleChat.Groups.findOne({_id: Session.get('groupsId')})
+      if group and group.creator and group.creator.id is Meteor.userId()
+        return true
+      return false
+
   Template.groupInformation.events
     'click #groupsProfilePageback':(event)->
       groupid = Session.get('groupsId')
@@ -87,29 +118,37 @@ if Meteor.isClient
     'click .barcode': (event)->
       Session.set("groupsProfileMenu","groupBarCode")
     'click .deleteAndExit':(event)->
-      PUB.confirm('删除并退出后，将不再接收本公司消息',()->
+      if event.currentTarget.id is 'delThisGroup'
+        return PUB.confirm('删除后，将不再保留本公司相关信息',()->
+          Meteor.call('creator-delete-group',Session.get('groupsId'), Meteor.userId(),(err,id)->
+            groupDelOrQuitCB(err,id,true)
+          )
+        )
+
+      PUB.confirm('退出后，将不再接收本公司消息',()->
         Meteor.call('remove-group-user',Session.get('groupsId'),Meteor.userId(),(err,id)->
-          console.log(err)
-          if err or !id
-            return PUB.toast('删除失败，请重试~')
-          if mqtt_connection
-            mqtt_connection.unsubscribe("/msg/g/" + id)
-          MsgSessionId = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId: id})
-          if MsgSessionId
-            SimpleChat.MsgSession.remove(MsgSessionId._id)
-          try
-            where = {'to.id': id, to_type: 'group'};
-            SimpleChat.Messages.remove(where);
-            Meteor.setTimeout(()->
-              if SimpleChat.MessagesHis.find(where).count() > 0
-                SimpleChat.MessagesHis.remove(where);
-            ,100)
-            SimpleChat.MessagesHis.remove(where);
-          catch e
-            console.log 'remove-group-user err:'+e
-          Meteor.setTimeout(()->
-            PUB.back()
-          ,100)
+          groupDelOrQuitCB(err,id, false)
+          # console.log(err)
+          # if err or !id
+          #   return PUB.toast('删除失败，请重试~')
+          # if mqtt_connection
+          #   mqtt_connection.unsubscribe("/msg/g/" + id)
+          # MsgSessionId = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId: id})
+          # if MsgSessionId
+          #   SimpleChat.MsgSession.remove(MsgSessionId._id)
+          # try
+          #   where = {'to.id': id, to_type: 'group'};
+          #   SimpleChat.Messages.remove(where);
+          #   Meteor.setTimeout(()->
+          #     if SimpleChat.MessagesHis.find(where).count() > 0
+          #       SimpleChat.MessagesHis.remove(where);
+          #   ,100)
+          #   SimpleChat.MessagesHis.remove(where);
+          # catch e
+          #   console.log 'remove-group-user err:'+e
+          # Meteor.setTimeout(()->
+          #   PUB.back()
+          # ,100)
         )
       )
     'click .groupPhoto':(event)->

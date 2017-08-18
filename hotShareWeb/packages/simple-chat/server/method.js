@@ -151,6 +151,31 @@ Set_perf_link = function(group_id,perf_info){
   }
 }
 
+sendGroupDelOrQuitMsg = function(group_id,form,to,to_type) {
+  try{
+    var msgObj = {
+      _id: new Mongo.ObjectID()._str,
+      form: form,
+      to: to,
+      to_type: to_type,
+      type: 'text',
+      text: '',
+      create_time: new Date(),
+      is_read: false,
+      group_id: group_id
+    };
+    if (to_type == 'user') {
+      msgObj.text = form.name + ' 解散了 [' + toUser.name + ']';
+      msgObj.is_group_del = true;
+      return sendMqttUserMessage(toUser.id, msgObj);
+    } else {
+      msgObj.text = form.name + ' 退出了 [' + toUser.name + ']';
+      return sendMqttGroupMessage(group_id, msgObj);
+    }
+  } catch (error){
+    console.log('sendGroupDelOrQuitMsg Err:',error);
+  }
+};
 Meteor.methods({
   'create-group': function(id, name, ids){
     var slef = this;
@@ -349,9 +374,57 @@ Meteor.methods({
       return 'not find group';
     }
   },
+  'creator-delete-group': function(id, userId){
+    try{
+      // step 1. remove group
+      Groups.remove({_id: id});
+      // step 2. send group delete message
+      groupUsers = GroupUsers.find({group_id: id}).fetch();
+      var user = Meteor.users.findOne({_id: userId})
+      async.each(groupUsers, function(item, callback) {
+
+          sendGroupDelOrQuitMsg(group_id,{
+            id:   user._id,
+            name: user.profile.fullname ? user.profile.fullname : user.username,
+            icon: user.profile.icon
+          }, {
+            id: item.user_id,
+            name: item.user_name,
+            icon: item.user_icon
+          }, 'user');
+          callback && callback();
+      }, function(err) {
+          // if any of the file processing produced an error, err would equal that error
+          if( err ) {
+            console.log('send group delete message Err:',err);
+          } else {
+            // step 3.  remove group_users
+            GroupUsers.remove({group_id: id});
+            
+            // toDo . delete web 系统的company信息
+            // toDo .删除考勤记录
+          }
+      });
+      return true;
+    } catch (error){
+      console.log('creator-delete-group Err:',error)
+      return false
+    }
+  },
   'remove-group-user':function(id,userId){
     var groupuser = GroupUsers.findOne({group_id: id,user_id: userId});
     if (groupuser) {
+      // send group quit message
+      sendGroupDelOrQuitMsg(group_id,{
+        id: groupuser.user_id,
+        name: groupuser.user_name,
+        icon: groupuser.user_icon
+      }, {
+        id: groupuser.group_id,
+        name: groupuser.group_name,
+        icon: groupuser.group_icon
+      }, 'group');
+      
       GroupUsers.remove({_id:groupuser._id},function(err,res){
         if (err) {
           return console.log ('GroupUsers remove failed');

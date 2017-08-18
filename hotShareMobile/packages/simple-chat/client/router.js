@@ -1698,6 +1698,25 @@ SimpleChat.onMqttMessage = function(topic, msg) {
       }
       return;
     }
+
+    //群主解散了该群
+    if (msgObj.is_group_del && msgObj.group_id) {
+      var id = msgObj.group_id;
+      if (mqtt_connection) {
+        mqtt_connection.unsubscribe("/msg/g/" + id);
+      }
+      MsgSession.remove({userId: Meteor.userId(),toUserId:id});
+      try{
+        var where = {'to.id': id, to_type: 'group'};
+        Messages.remove(where);
+        Meteor.setTimeout(function(){
+          MessagesHis.remove(where);
+        },100);
+      }
+      catch(error){
+        console.log('remove msg err when group has been deleted');
+      }
+    }
     //ta 被我拉黑
     if(BlackList.find({blackBy: Meteor.userId(), blacker:{$in: [msgObj.form.id]}}).count() > 0){
       console.log(msgObj.to.id+'被我拉黑');
