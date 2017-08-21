@@ -224,9 +224,9 @@ Template.timelineAlbum.events({
       msgObj = {
         _id: new Mongo.ObjectID()._str,
         form:{
-          id: '',
-          name: '系统',
-          icon: ''
+          id: device.uuid,
+          name: device.name,
+          icon: '/device_icon_192.png'
         },
         to: {
           id:   taUser._id,
@@ -234,7 +234,7 @@ Template.timelineAlbum.events({
           icon: taUser.profile.icon
         },
         to_type: 'user',
-        type: 'system',
+        type: 'text',
         text: msgText,
         create_time: new Date(),
         is_read: false,
@@ -354,9 +354,9 @@ Template.timelineAlbum.events({
       msgObj = {
         _id: new Mongo.ObjectID()._str,
         form: {
-          id: '',
-          name: '系统',
-          icon: ''
+          id: device.uuid,
+          name: device.name,
+          icon: '/device_icon_192.png'
         },
         to: {
           id:   taUser._id,
@@ -364,7 +364,7 @@ Template.timelineAlbum.events({
           icon: taUser.profile.icon
         },
         to_type: 'user',
-        type: 'system',
+        type: 'text',
         text: data.msgText,
         create_time: new Date(),
         is_read: false
