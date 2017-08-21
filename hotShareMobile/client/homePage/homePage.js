@@ -266,8 +266,7 @@ Template.homePage.events({
     var in_out = $(e.currentTarget).data('inout');
     var taId = $(e.currentTarget).data('taid');
     var taName = $(e.currentTarget).data('taname');
-    console.log(taId)
-    return modifyStatusFun(group_id, in_out, taId);
+
     navigator.notification.confirm('要帮「'+taName+'」签到吗？',function(index){
       if(index === 2){
         modifyStatusFun(group_id, in_out, taId);
