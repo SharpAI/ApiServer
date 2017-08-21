@@ -1,7 +1,7 @@
 Template.homePage.onRendered(function () {
   var now = new Date();
   var displayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-  var date = Date.UTC(now.getUTCFullYear(),now.getUTCMonth(), now.getUTCDate() , 
+  var date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 
       0, 0, 0, 0);
 
   Session.set('theCurrentDay',date); //UTC日期
@@ -276,7 +276,17 @@ Template.homePage.events({
     e.stopImmediatePropagation();
     var src = $(e.currentTarget).attr('src')
     var time = new Date($(e.currentTarget).data('time'));
-    $('.timeLayer').html(time.shortTime());
+    var group_id = $(e.currentTarget).data('groupid')
+    var time_offset = 0
+    if (group_id == '73c125cc48a83a95882fced3'){
+      //SWLAB 
+      time_offset = -7
+    }else if (group_id == 'd2bc4601dfc593888618e98f'){
+      //Kuming LAB
+      time_offset = 8
+    }
+    
+    $('.timeLayer').html(time.shortTime(time_offset));
     $('.imgLayer img').attr('src',src);
     $('.homePage').addClass('blur-element');
     $('#footer').addClass('blur-element');

@@ -84,25 +84,25 @@
                 {{#if isInStatusNormal in_status}}
                 <td>
                   <i class="fa fa-clock-o" style="color:green;"></i>
-                  <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" />
+                  <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" data-groupid="{{group_id}}"/>
                 </td>
                 {{/if}}
                 {{#if isInStatusWarning in_status}}
                 <td>
                   <i class="fa fa-clock-o" style="color:red;"></i>
-                  <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" />
+                  <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" data-groupid="{{group_id}}"/>
                 </td>
                 {{/if}}
                 {{#if isInStatusError in_status}}
                   {{#if isMySelf app_user_id}}
                   <td id="{{group_id}}" data-inout="in" class="modifyMyStatus">
                     <i class="fa fa-exclamation-circle" style="color:red;"></i>
-                    <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" />
+                    <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" data-groupid="{{group_id}}"/>
                   </td>
                   {{else}}
                   <td id="{{group_id}}" data-inout="in">
                     <i class="fa fa-exclamation-circle" style="color:red;"></i>
-                    <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" />
+                    <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" data-groupid="{{group_id}}"/>
                   </td>
                   {{/if}}
                 {{/if}}
@@ -117,25 +117,25 @@
                 {{#if isOutStatusNormal out_status}}
                 <td>
                   <i class="fa fa-clock-o" style="color:green;"></i>
-                  <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" />
+                  <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}"/>
                 </td>
                 {{/if}}
                 {{#if isOutStatusWarning out_status}}
                 <td>
                   <i class="fa fa-clock-o" style="color:red;"></i>
-                  <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" />
+                  <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}"/>
                 </td>
                 {{/if}}
                 {{#if isOutStatusError out_status}}
                   {{#if isMySelf app_user_id}}
                   <td id="{{group_id}}" data-inout="out" class="modifyMyStatus">
                     <i class="fa fa-exclamation-circle" style="color:red;"></i>
-                    <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" />
+                    <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}"/>
                   </td>
                   {{else}}
                   <td id="{{group_id}}" data-inout="out">
                     <i class="fa fa-exclamation-circle" style="color:red;"></i>
-                    <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" />
+                    <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}" />
                   </td>
                   {{/if}}
                 {{/if}}
