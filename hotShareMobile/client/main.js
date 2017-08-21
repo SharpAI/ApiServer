@@ -279,7 +279,13 @@ if (Meteor.isCordova) {
             $('.agreeDeal').css('display',"block")
           },10);
         }
-      } else if (currentRoute == "recoveryForm"){
+      }  else if (currentRoute == "checkInOutMsgList"){
+        var msgSession = SimpleChat.MsgSession.findOne({userId: Meteor.userId(),toUserId:sysMsgToUserId});
+        if (msgSession)
+          SimpleChat.MsgSession.update({_id:msgSession._id},{$set:{count:0}});
+        PUB.back();
+      }
+      else if (currentRoute == "recoveryForm"){
         Router.go('/loginForm');
       } else if (currentRoute == undefined || currentRoute =="search" || currentRoute =="add" || currentRoute =="bell" || currentRoute =="user" || currentRoute == "authOverlay") {
         window.plugins.toast.showShortBottom('再点击一次退出!');

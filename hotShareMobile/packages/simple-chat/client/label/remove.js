@@ -22,6 +22,15 @@ Template._simpleChatLabelRemove.open = function(msgObj){
   simple_chat_page_stack.push(view);
 };
 
+Template._simpleChatLabelRemove.onRendered(function(){
+  this.$("#remove-input-name").bind("input propertychange",function (e) {
+        var length = $(e.currentTarget).val().length;
+        if (length === 0) {
+          $(e.currentTarget).attr('placeholder','请选择或输入删除的原因~');
+        }
+    });
+});
+
 Template._simpleChatLabelRemove.close = function(){
   if (view) {
     Blaze.remove(view);
@@ -65,6 +74,7 @@ Template._simpleChatLabelRemove.events({
       return PUB.toast('请选择需要删除的图片~');
     }
 
+    isRemoving = true;
     // set remove img
     for (var i=0;i<imgs.length;i++){
       for(var ii=0;ii<msgObj.images.length;ii++){
@@ -134,7 +144,7 @@ Template._simpleChatLabelRemove.events({
         to: msgObj.to,
         to_type: "group",
         type: "text",
-        text: '删除了 '+removes.length+' 张照片',
+        text: '删除了 '+selectedCount+' 张照片',
         create_time: new Date(),
         is_read: false
       };
@@ -191,6 +201,7 @@ Template._simpleChatLabelRemove.events({
       if (!text)
         return;
       t.$('#remove-input-name').val(text);
+      t.$('#remove-input-name').attr('placeholder','');
     });
   }
 });

@@ -37,6 +37,7 @@ Template._simpleChatLabelDevice.open = function(msgObj){
       if (!name)
         return;
       $('#device-input-name').val(name);
+      $('#device-input-name').attr('placeholder','');
       Template._simpleChatLabelDevice.save();
     });
   }
@@ -247,6 +248,15 @@ Template._simpleChatLabelDevice.save = function(){
   });
 }
 
+Template._simpleChatLabelDevice.onRendered(function(){
+  this.$("#device-input-name").bind("input propertychange",function (e) {
+        var length = $(e.currentTarget).val().length;
+        if (length === 0) {
+          $(e.currentTarget).attr('placeholder','为这组照片取个名字~');
+        }
+    });
+});
+
 Template._simpleChatLabelDevice.helpers({
   is_next: function(){
     return index.get() < images.get().length - 1;
@@ -314,6 +324,7 @@ Template._simpleChatLabelDevice.events({
       if (!name)
         return;
       t.$('#device-input-name').val(name);
+      t.$('#device-input-name').attr('placeholder','');
     });
   }
 });

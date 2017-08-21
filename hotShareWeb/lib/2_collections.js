@@ -191,7 +191,10 @@ if(Meteor.isServer){
      if(!this.userId || !uuid){
          return this.ready();
      }
-     return Devices.find({uuid:uuid});
+     return [
+         Devices.find({uuid:uuid}),
+         Meteor.users.find({username: uuid})
+     ];
  });
 
  Meteor.publish('device-timeline', function(uuid,limit){
@@ -199,7 +202,10 @@ if(Meteor.isServer){
     if(!this.userId || !uuid){
       return this.ready();
     }
-    return DeviceTimeLine.find({uuid: uuid},{sort:{hour:-1},limit: limit});
+    return [
+        DeviceTimeLine.find({uuid: uuid},{sort:{hour:-1},limit: limit}),
+        Meteor.users.find({username: uuid})
+    ];
   });
 
  Meteor.publish('device-timeline-with-hour', function(uuid,options,sort,limit){

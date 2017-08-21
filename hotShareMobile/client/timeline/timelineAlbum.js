@@ -202,16 +202,14 @@ Template.timelineAlbum.events({
       person_info: person_info
     };
 
-    var msgText = '';
+    var msgText = '「' + device.name + '」提醒你： 有人帮你签到了';
 
     if(device.in_out && device.in_out == 'in'){
       data.checkin_time =  new Date( $(e.currentTarget).data('ts')).getTime()
       data.checkin_image = $(e.currentTarget).data('imgurl');
-      msgText = '我代签了你的上班时间';
     } else {
       data.checkout_time =  new Date( $(e.currentTarget).data('ts')).getTime()
       data.checkout_image = $(e.currentTarget).data('imgurl');
-      msgText = '我代签了你的下班时间';
     }
     data.wantModify = Session.get('wantModify');
 
@@ -221,14 +219,15 @@ Template.timelineAlbum.events({
     if(taId){
       data.user_id = taId;
 
-      var user = Meteor.user();
+      // var user = Meteor.user();
+      var deviceUser = Meteor.users.findOne({username: uuid});
       var taUser = Meteor.users.findOne({_id: taId});
       msgObj = {
         _id: new Mongo.ObjectID()._str,
         form:{
-          id: user._id,
-          name: user.profile.fullname? user.profile.fullname: user.username,
-          icon: user.profile.icon
+          id: deviceUser._id,
+          name: deviceUser.profile.fullname,
+          icon: deviceUser.profile.icon
         },
         to: {
           id:   taUser._id,
@@ -240,7 +239,6 @@ Template.timelineAlbum.events({
         text: msgText,
         create_time: new Date(),
         is_read: false,
-        // send_status: 'sending'
       };
     }
     console.log(data);
@@ -351,14 +349,16 @@ Template.timelineAlbum.events({
     if(taId){
       data.user_id = taId;
 
-      var user = Meteor.user();
+      // var user = Meteor.user();
+      var deviceUser = Meteor.users.findOne({username: Router.current().params._uuid});
       var taUser = Meteor.users.findOne({_id: taId});
+      // var device = Devices.findOne({uuid: Router.current().params._uuid});
       msgObj = {
         _id: new Mongo.ObjectID()._str,
-        form:{
-          id: user._id,
-          name: user.profile.fullname? user.profile.fullname: user.username,
-          icon: user.profile.icon
+        form: {
+          id: deviceUser._id,
+          name: deviceUser.profile.fullname,
+          icon: deviceUser.profile.icon
         },
         to: {
           id:   taUser._id,
@@ -369,8 +369,7 @@ Template.timelineAlbum.events({
         type: 'text',
         text: data.msgText,
         create_time: new Date(),
-        is_read: false,
-        // send_status: 'sending'
+        is_read: false
       };
     }
     console.log(data);

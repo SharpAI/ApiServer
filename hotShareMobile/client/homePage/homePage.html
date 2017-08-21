@@ -82,13 +82,13 @@
                 </td>
 
                 {{#if isInStatusNormal in_status}}
-                <td>
+                <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="in" class="modifyTaStatus">
                   <i class="fa fa-clock-o" style="color:green;"></i>
                   <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" data-groupid="{{group_id}}"/>
                 </td>
                 {{/if}}
                 {{#if isInStatusWarning in_status}}
-                <td>
+                <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="in" class="modifyTaStatus">
                   <i class="fa fa-clock-o" style="color:red;"></i>
                   <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" data-groupid="{{group_id}}"/>
                 </td>
@@ -100,7 +100,7 @@
                     <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" data-groupid="{{group_id}}"/>
                   </td>
                   {{else}}
-                  <td id="{{group_id}}" data-inout="in">
+                  <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="in" class="modifyTaStatus">
                     <i class="fa fa-exclamation-circle" style="color:red;"></i>
                     <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" data-groupid="{{group_id}}"/>
                   </td>
@@ -110,18 +110,18 @@
                   {{#if isMySelf app_user_id}}
                   <td id="{{group_id}}" data-inout="in" class="modifyMyStatus"> — </td>
                   {{else}}
-                  <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="modifyTaStatus"> — </td>
+                  <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="in" class="modifyTaStatus"> — </td>
                   {{/if}}
                 {{/if}}
 
                 {{#if isOutStatusNormal out_status}}
-                <td>
+                <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="modifyTaStatus">
                   <i class="fa fa-clock-o" style="color:green;"></i>
                   <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}"/>
                 </td>
                 {{/if}}
                 {{#if isOutStatusWarning out_status}}
-                <td>
+                <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="modifyTaStatus">
                   <i class="fa fa-clock-o" style="color:red;"></i>
                   <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}"/>
                 </td>
@@ -133,7 +133,7 @@
                     <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}"/>
                   </td>
                   {{else}}
-                  <td id="{{group_id}}" data-inout="out">
+                  <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="modifyTaStatus">
                     <i class="fa fa-exclamation-circle" style="color:red;"></i>
                     <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}" />
                   </td>

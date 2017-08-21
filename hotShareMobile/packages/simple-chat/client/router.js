@@ -2162,6 +2162,12 @@ Template._simpleChatToChatLabelName.onRendered(function(){
       console.log('load more');
     }
   });
+  this.$("#label-input-name").bind("input propertychange",function (e) {
+        var length = $(e.currentTarget).val().length;
+        if (length === 0) {
+          $(e.currentTarget).attr('placeholder','请选择或输入名字~');
+        }
+    });
 });
 Template._simpleChatToChatLabelName.helpers({
   notLoading: function() {
@@ -2180,6 +2186,7 @@ Template._simpleChatToChatLabelName.helpers({
 Template._simpleChatToChatLabelName.events({
   'click li': function(e, t){
     $('#label-input-name').val(this.name);
+    $('#label-input-name').attr('placeholder','');
     t.$('li img').removeAttr('style');
     $(e.currentTarget).find('img').attr('style', 'border: 3px solid #39a8fe;box-shadow: 0 0 10px 3px #39a8fe;');
   },
@@ -2210,9 +2217,20 @@ show_remove = function(callback){
   simple_chat_page_stack.push(remove_view);
 }
 
+Template._simpleChatToChatLabelRemove.onRendered(function(){
+  this.$("#label-input-name").bind("input propertychange",function (e) {
+        var length = $(e.currentTarget).val().length;
+        if (length === 0) {
+          $(e.currentTarget).attr('placeholder','请输入删除照片的原因~');
+        }
+    });
+
+});
+
 Template._simpleChatToChatLabelRemove.events({
   'click li': function(e, t){
     $('#label-input-name').val($(e.currentTarget).find('.userName').text());
+    $('#label-input-name').attr('placeholder','');
     // t.$('li img').removeAttr('style');
     // $(e.currentTarget).find('img').attr('style', 'border: 1px solid #39a8fe;');
   },

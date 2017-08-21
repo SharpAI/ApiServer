@@ -186,7 +186,10 @@ if(Meteor.isServer){
     if(!this.userId || !uuid){
       return this.ready();
     }
-    return DeviceTimeLine.find({uuid: uuid},{sort:{hour:-1},limit: limit});
+    return [
+        DeviceTimeLine.find({uuid: uuid},{sort:{hour:-1},limit: limit}),
+        Meteor.users.find({username: uuid})
+    ];
   });
 
   Meteor.methods({
