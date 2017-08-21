@@ -193,7 +193,7 @@ Template.homePage.events({
   'click .deviceItem': function(e){
     $('#selectDevicesInOut').modal('hide');
     $('.homePage .content').removeClass('content_box');
-    var taId = Session.set('modifyMyStatus_ta_id',taId);
+    var taId = Session.get('modifyMyStatus_ta_id');
     var pageUrl = '/timelineAlbum/'+e.currentTarget.id;
     if(taId){
       pageUrl = '/timelineAlbum/'+e.currentTarget.id+'?taId='+taId;
@@ -266,6 +266,8 @@ Template.homePage.events({
     var in_out = $(e.currentTarget).data('inout');
     var taId = $(e.currentTarget).data('taid');
     var taName = $(e.currentTarget).data('taname');
+    console.log(taId)
+    return modifyStatusFun(group_id, in_out, taId);
     navigator.notification.confirm('要帮「'+taName+'」签到吗？',function(index){
       if(index === 2){
         modifyStatusFun(group_id, in_out, taId);
