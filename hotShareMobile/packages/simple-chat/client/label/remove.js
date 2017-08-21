@@ -144,7 +144,7 @@ Template._simpleChatLabelRemove.events({
         to: msgObj.to,
         to_type: "group",
         type: "text",
-        text: '删除了 '+removes.length+' 张照片',
+        text: '删除了 '+selectedCount+' 张照片',
         create_time: new Date(),
         is_read: false
       };
