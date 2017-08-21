@@ -98,3 +98,40 @@ if Meteor.isClient
         PUB.page(url)
       ,animatePageTrasitionTimeout
       updateTotalReadCount()
+    'click .delBtnContent': (e,t)->
+      e.stopImmediatePropagation();
+      isSysDel = $(e.currentTarget).hasClass('sysDelBtn');
+      userId = Meteor.userId();
+      if isSysDel
+        SimpleChat.MsgSession.remove({userId: userId,toUserId:sysMsgToUserId},(err,num)->
+          if(err)
+            return console.log('del MsgSession Err:',err);
+          console.log('num =',num)
+          # remove local msg with this Session
+          SimpleChat.Messages.remove({'to.id': sysMsgToUserId,'form.id': userId});
+          SimpleChat.Messages.remove({'to.id': userId,'form.id': sysMsgToUserId});
+          Meteor.setTimeout(()->
+            SimpleChat.MessagesHis.remove({'to.id': sysMsgToUserId,'form.id': userId});
+            SimpleChat.MessagesHis.remove({'to.id': userId,'form.id': sysMsgToUserId});
+          ,100)
+        );
+        return;
+      _id = e.currentTarget.id;
+      type = $(e.currentTarget).data('type');
+      toUserId = $(e.currentTarget).data('touserid');
+      $(e.target).parents('li').slideUp('fast', ()->
+        $(e.target).parent('li').remove();
+        # remove current list
+        SimpleChat.MsgSession.remove({_id: _id},(err,num)->
+          if(err)
+            return console.log('del MsgSession Err:',err);
+          console.log('num =',num)
+          # remove local msg with this Session
+          SimpleChat.Messages.remove({'to.id': toUserId,'form.id': userId});
+          SimpleChat.Messages.remove({'to.id': userId,'form.id': toUserId});
+          Meteor.setTimeout(()->
+            SimpleChat.MessagesHis.remove({'to.id': toUserId,'form.id': userId});
+            SimpleChat.MessagesHis.remove({'to.id': userId,'form.id': toUserId});
+          ,100)
+        );
+      );
