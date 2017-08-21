@@ -227,7 +227,7 @@ Template.timelineAlbum.events({
           id: '',
           name: '系统',
           icon: ''
-        }
+        },
         to: {
           id:   taUser._id,
           name: taUser.profile.fullname? taUser.profile.fullname: taUser.username,
@@ -357,7 +357,7 @@ Template.timelineAlbum.events({
           id: '',
           name: '系统',
           icon: ''
-        }
+        },
         to: {
           id:   taUser._id,
           name: taUser.profile.fullname? taUser.profile.fullname: taUser.username,
