@@ -242,7 +242,22 @@ PERSON = {
     var date = Date.now();
     var mod = 24*60*60*1000;
     today2 = date - (date % mod);
-    console.log(">>> " + today2)
+
+    var setObj = {
+        "status"      : now_status,
+        "in_status"   : in_status,
+        "out_status"  : out_status,
+        "in_time"     : intime,
+        "out_time"    : outtime
+    };
+    if(relation.in_uuid)
+      setObj.in_uuid = relation.in_uuid;
+    if(relation.out_uuid)
+      setObj.out_uuid = relation.out_uuid;
+    if(in_image)
+      setObj.in_image = in_image;
+    if(out_image)
+      setObj.out_image = out_image;
 
     workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'app_user_id': relation.app_user_id, 'date': today2});
     if (!workstatus) {
@@ -265,17 +280,7 @@ PERSON = {
       });
     }
     else {
-      WorkStatus.update({_id: workstatus._id}, {$set: {
-        "status"      : now_status,
-        "in_status"   : in_status,
-        "out_status"  : out_status,
-        "in_uuid"     : relation.in_uuid,
-        "out_uuid"    : relation.out_uuid,
-        "in_time"     : intime,
-        "in_image"    : in_image,
-        "out_image"   : out_image,
-        "out_time"    : outtime
-      }});
+      WorkStatus.update({_id: workstatus._id}, {$set: setObj});
     }
   },
   // update Device TimeLine
