@@ -219,14 +219,15 @@ Template.timelineAlbum.events({
     if(taId){
       data.user_id = taId;
 
-      var user = Meteor.user();
+      // var user = Meteor.user();
+      var deviceUser = Meteor.users.findOne({username: uuid});
       var taUser = Meteor.users.findOne({_id: taId});
       msgObj = {
         _id: new Mongo.ObjectID()._str,
         form:{
-          id: device.uuid,
-          name: device.name,
-          icon: '/device_icon_192.png'
+          id: deviceUser._id,
+          name: deviceUser.profile.fullname,
+          icon: deviceUser.profile.icon
         },
         to: {
           id:   taUser._id,
@@ -348,15 +349,16 @@ Template.timelineAlbum.events({
     if(taId){
       data.user_id = taId;
 
-      var user = Meteor.user();
+      // var user = Meteor.user();
+      var deviceUser = Meteor.users.findOne({username: Router.current().params._uuid});
       var taUser = Meteor.users.findOne({_id: taId});
-      var device = Devices.findOne({uuid: Router.current().params._uuid});
+      // var device = Devices.findOne({uuid: Router.current().params._uuid});
       msgObj = {
         _id: new Mongo.ObjectID()._str,
         form: {
-          id: device.uuid,
-          name: device.name,
-          icon: '/device_icon_192.png'
+          id: deviceUser._id,
+          name: deviceUser.profile.fullname,
+          icon: deviceUser.profile.icon
         },
         to: {
           id:   taUser._id,
