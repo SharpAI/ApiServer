@@ -202,16 +202,14 @@ Template.timelineAlbum.events({
       person_info: person_info
     };
 
-    var msgText = '';
+    var msgText = '「' + device.name + '」提醒你： 有人帮你签到了';
 
     if(device.in_out && device.in_out == 'in'){
       data.checkin_time =  new Date( $(e.currentTarget).data('ts')).getTime()
       data.checkin_image = $(e.currentTarget).data('imgurl');
-      msgText = '我代签了你的上班时间';
     } else {
       data.checkout_time =  new Date( $(e.currentTarget).data('ts')).getTime()
       data.checkout_image = $(e.currentTarget).data('imgurl');
-      msgText = '我代签了你的下班时间';
     }
     data.wantModify = Session.get('wantModify');
 
@@ -226,21 +224,20 @@ Template.timelineAlbum.events({
       msgObj = {
         _id: new Mongo.ObjectID()._str,
         form:{
-          id: user._id,
-          name: user.profile.fullname? user.profile.fullname: user.username,
-          icon: user.profile.icon
-        },
+          id: '',
+          name: '系统',
+          icon: ''
+        }
         to: {
           id:   taUser._id,
           name: taUser.profile.fullname? taUser.profile.fullname: taUser.username,
           icon: taUser.profile.icon
         },
         to_type: 'user',
-        type: 'text',
+        type: 'system',
         text: msgText,
         create_time: new Date(),
         is_read: false,
-        // send_status: 'sending'
       };
     }
     console.log(data);
@@ -353,24 +350,24 @@ Template.timelineAlbum.events({
 
       var user = Meteor.user();
       var taUser = Meteor.users.findOne({_id: taId});
+      var device = Devices.findOne({uuid: Router.current().params._uuid});
       msgObj = {
         _id: new Mongo.ObjectID()._str,
-        form:{
-          id: user._id,
-          name: user.profile.fullname? user.profile.fullname: user.username,
-          icon: user.profile.icon
-        },
+        form: {
+          id: '',
+          name: '系统',
+          icon: ''
+        }
         to: {
           id:   taUser._id,
           name: taUser.profile.fullname? taUser.profile.fullname: taUser.username,
           icon: taUser.profile.icon
         },
         to_type: 'user',
-        type: 'text',
+        type: 'system',
         text: data.msgText,
         create_time: new Date(),
-        is_read: false,
-        // send_status: 'sending'
+        is_read: false
       };
     }
     console.log(data);
