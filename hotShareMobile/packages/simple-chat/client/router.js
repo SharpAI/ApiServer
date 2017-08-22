@@ -56,16 +56,18 @@ var  keyboardHeightHandle = function(event){
 
 window.onresize = function(){
   console.log('window height:'+$(window).height());
-  Meteor.setTimeout(function(){
-    var keyboardHeight = Session.get('keyboardHeight');
-    var maxWindowHeight = Session.get('currentWindowHeight'); //不弹键盘时的高度;
-    if ((maxWindowHeight - $(window).height() <= 20 ) && keyboardHeight > 0) {
-      $('.simple-chat').height($(window).height()-keyboardHeight);
-    }
-    if (keyboardHeight === 0) {
-      $('.simple-chat').height('100%');
-    }
-  },100);
+  if(Meteor.isCordova && device.platform === 'iOS'){
+    Meteor.setTimeout(function(){
+      var keyboardHeight = Session.get('keyboardHeight');
+      var maxWindowHeight = Session.get('currentWindowHeight'); //不弹键盘时的高度;
+      if ((maxWindowHeight - $(window).height() <= 20 ) && keyboardHeight > 0) {
+        $('.simple-chat').height($(window).height()-keyboardHeight);
+      }
+      if (keyboardHeight === 0) {
+        $('.simple-chat').height('100%');
+      }
+    },100);
+  }
 };
 
 Template._simpleChatToChat.onRendered(function(){
