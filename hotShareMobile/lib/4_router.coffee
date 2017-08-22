@@ -700,3 +700,32 @@ if Meteor.isServer
     this.response.writeHead(200, headers)
     this.response.end(Date.now().toString())
   , {where: 'server'})
+  Router.route('/restapi/timeline/video/', {where: 'server'}).post(()->
+    payload = this.request.body || {}
+    console.log('/restapi/timeline/video/ request body = ',JSON.stringify(payload))
+
+    if (!payload.uuid or !payload.person_id or !payload.video_post or !payload.video_src or !payload.ts or !payload.ts_offset)
+      return this.response.end('{"result": "error", "reson":"参数不全或格式错误！"}\n')
+
+    # step 1. get group_id by uuid
+    device = Devices.findOne({uuid: payload.uuid})
+    if device and device.groupId
+      group_id = device.groupId
+
+    # step 2. get person_name by person_id
+    person_name = PERSON.getName(payload.uuid, group_id, payload.person_id)
+    if (!person_name)
+      person_name = ""
+    
+    PERSON.updateToDeviceTimeline(payload.uuid,group_id,{
+      is_video: true,
+      person_id: payload.person_id,
+      person_name: person_name,
+      video_post: payload.video_post,
+      video_src: payload.video_src,
+      ts: Number(payload.ts),
+      ts_offset: Number(payload.ts_offset)
+    })
+    
+    return this.response.end('{"result": "success"}\n')
+  )

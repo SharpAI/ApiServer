@@ -305,7 +305,9 @@ PERSON = {
     var modifier = {
       $push:{}
     };
-    obj.ts = Date.now();
+    if(!obj.ts){
+      obj.ts = Date.now();
+    }
     modifier["$push"]["perMin."+minutes] = obj;
     DeviceTimeLine.update(selector, modifier, {upsert: true},function(err,res){
       if(err){

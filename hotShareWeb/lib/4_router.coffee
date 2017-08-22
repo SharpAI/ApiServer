@@ -1534,3 +1534,41 @@ if Meteor.isServer
       this.response.end(JSON.stringify({result: 'ok'}))
     )
 
+ 
+  # params = {
+  #   uuid: 设备UUID,
+  #   person_id: id,
+  #   video_post: 视频封面图地址,
+  #   video_src: 视频播放地址
+  #   ts: 时间戳
+  #   ts_offset: 时区 (eg : 东八区 是 -8);
+  # }
+  Router.route('/restapi/timeline/video/', {where: 'server'}).post(()->
+    payload = this.request.body || {}
+    console.log('/restapi/timeline/video/ request body = ',JSON.stringify(payload))
+
+    if (!payload.uuid or payload.person_id !payload.video_post or !payload.video_src or !payload.ts or !payload.ts_offset)
+      return this.response.end('{"result": "error", "reson":"参数不全或格式错误！"}\n')
+
+    # step 1. get group_id by uuid
+    device = Devices.findOne({uuid: payload.uuid})
+    if device and device.groupId
+      group_id = device.groupId
+
+    # step 2. get person_name by person_id
+    person_name = getName(payload.uuid, group_id, payload.person_id)
+    if (!person_name)
+      person_name = ""
+
+    PERSON.updateToDeviceTimeline(payload.uuid,group_id,{
+      is_video: true,
+      person_id: payload.person_id,
+      person_name: person_name,
+      video_post: payload.video_post,
+      video_src: payload.video_src,
+      ts: payload.ts,
+      ts_offset: payload.ts_offset
+    })
+    
+    return this.response.end('{"result": "success"}\n')
+  )
