@@ -70,6 +70,7 @@ Template.timelineAlbum.onRendered(function(){
 Template.timelineAlbum.onDestroyed(function(){
   Session.set('wantModify',false);
   Session.set('wantModifyTime',null);
+  Session.set('modifyMyStatus_ta_name',null);
 });
 Template.timelineAlbum.helpers({
   // lists: function(){
@@ -183,7 +184,8 @@ Template.timelineAlbum.events({
     device = Devices.findOne({uuid: uuid});
     var people_id = e.currentTarget.id,
         group_id  = device.groupId;
-    var person_name = $(e.currentTarget).data('name') || '';
+    var taName = Session.get('modifyMyStatus_ta_name');
+    var person_name = $(e.currentTarget).data('name') || taName ||'';
     var confirm_text = '';
     var person_info = {
       'name': person_name,
@@ -241,13 +243,16 @@ Template.timelineAlbum.events({
         is_read: false,
       };
     }
+    else if (taName) { //帮标识过但没关联的人代签
+      data.user_id = null;
+    }
     console.log(data);
     // 检查是否标识过自己
     var relations = WorkAIUserRelations.findOne({'app_user_id':data.user_id,group_id:group_id});
     var callbackRsu = function(res){
 
     };
-    if(relations){ // 标识过
+    if(relations || taName ){ // 标识过
       confirm_text = '是否将该时间记录到每日出勤报告？';
       if(person_name){
         confirm_text = '是否将该时间记录到「'+person_name+'」每日出勤报告？'

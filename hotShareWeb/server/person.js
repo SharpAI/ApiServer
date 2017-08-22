@@ -152,7 +152,7 @@ PERSON = {
   //App用户关联过的员工，更新考勤信息
   updateWorkStatus: function(ai_person_id){
     relation = WorkAIUserRelations.findOne({'ai_persons.id': ai_person_id})
-    if(!relation || !relation.app_user_id || !relation.group_id || !relation.ai_persons || !relation.person_name) {
+    if(!relation || !relation.group_id || !relation.ai_persons || !relation.person_name) {
       console.log("invalid arguments of updateWorkStatus")
       return
     }
@@ -259,7 +259,12 @@ PERSON = {
     if(out_image)
       setObj.out_image = out_image;
 
-    workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'app_user_id': relation.app_user_id, 'date': today2});
+    if (relation.app_user_id) {
+      workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'app_user_id': relation.app_user_id, 'date': today2});
+    }
+    else{
+      workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'person_name': relation.person_name, 'date': today2});
+    }
     if (!workstatus) {
       WorkStatus.insert({
         "app_user_id" : relation.app_user_id,

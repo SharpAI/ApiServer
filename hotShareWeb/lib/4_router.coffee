@@ -585,6 +585,8 @@ if Meteor.isServer
         #WorkAIUserRelations.update({_id:relation._id},{$set:{ai_in_time:create_time.getTime()}});
         return
     WorkAIUserRelations.update({_id:relation._id},{$set:{ai_in_time:create_time.getTime(), ai_in_image: data.images.url}});
+    if !relation.app_user_id
+      return
     sendMqttMessage('/msg/u/'+ relation.app_user_id, {
         _id: new Mongo.ObjectID()._str
         form: { 

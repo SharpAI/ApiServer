@@ -513,10 +513,10 @@ Meteor.methods({
    */
     console.log('ai_checkin_out:',JSON.stringify(data));
     var person_info = data.person_info;
-    if (!data.user_id || !data.face_id || !person_info || ! person_info.group_id) {
+    if (!data.face_id || !person_info || ! person_info.group_id) {
       return {result:'error',reason:'参数不全'};
     }
-    var setObj = {group_id:person_info.group_id};
+    var setObj = {group_id:person_info.group_id,app_user_id:data.user_id};
     if (data.checkin_time) {
       setObj.in_uuid = person_info.uuid;
       setObj.checkin_time = new Date(data.checkin_time).getTime() ;
@@ -533,20 +533,41 @@ Meteor.methods({
         setObj.checkout_image = data.checkout_image;
       }
     }
+    //聊天室标记
+    if (data.formLabel) {
+      var device = Devices.findOne({uuid:person_info.uuid});
+      if (device) {
+        if (device.in_out === 'in') {
+          setObj.checkin_time = person_info.ts;
+          data.checkin_image = person_info.img_url;
+        }
+        else if (device.in_out === 'out') {
+          setObj.checkout_time = person_info.ts;
+          data.checkout_image = person_info.img_url;
+        }
+      }
+    }
     var user = Meteor.users.findOne({_id:data.user_id});
     if (!user) {
-      return {result:'error',reason:'用户不存在'};
+      console.log('label some person~');
+      //return {result:'error',reason:'用户不存在'};
     }
+    setObj.isWaitRelation = data.user_id ? false :true ; //是否关联了App账号
     var person = Person.findOne({group_id: person_info.group_id, 'faces.id': data.face_id}, {sort: {createAt: 1}});
-    var user_name = user.profile && user.profile.fullname ? user.profile.fullname : user.username;
+    var user_name = user ? (user.profile && user.profile.fullname ? user.profile.fullname : user.username) : '';
     if (person && person.name) {
       console.log('person info:'+person.name);
     }
     else{
       var person_name = person_info.name;
-      if (!person_name) {
-        var relation = WorkAIUserRelations.findOne({'app_user_id':user._id,'group_id':person_info.group_id});
-        
+      if (!person_name) { //打卡时选择了没有识别出的人且没输入名字的
+        var relation  = null;
+        if (!user) { //标识了但是没关联过App用户的
+          return {result:'error',reason:'请选择一张有名字的照片或前往聊天室进行标记~'};
+        }
+        else{
+          relation = WorkAIUserRelations.findOne({'app_user_id':user._id,'group_id':person_info.group_id});
+        }
         if (relation && relation.person_name) {
           person_name = relation.person_name;
         }
@@ -557,43 +578,54 @@ Meteor.methods({
       person = PERSON.setName(person_info.group_id, person_info.uuid, data.face_id, person_info.img_url, person_name);
     }
     setObj.person_name = person.name;
+    setObj.app_user_name = user_name;
     var relation = WorkAIUserRelations.findOne({'ai_persons.id':person._id});
-    if (relation && relation.app_user_id !== user._id) {
+    if (relation && user && relation.app_user_id !== user._id) {
       return {result:'error',reason:'此人已被'+relation.app_user_name+'选择,请重新选择照片'};
     }
+    if (!relation){
+      if (user) { //关联过的人
+        relation = WorkAIUserRelations.findOne({'app_user_id':user._id,'group_id':person_info.group_id});
+      }
+      else{ //没关联的人
+        relation = WorkAIUserRelations.findOne({'person_name':setObj.person_name,'group_id':person_info.group_id});
+      }
+    }
     if (relation) {
-      WorkAIUserRelations.update({_id:relation._id},{$set:setObj});
+      if (!relation.checkin_image) {
+        setObj.checkin_image = data.checkin_image;
+      }
+      if (!relation.checkout_image) {
+        data.checkout_image = data.checkout_image;
+      }
+      WorkAIUserRelations.update({_id:relation._id},{$set:setObj,$push:{ai_persons:{id:person._id}}});
     }
     else{
-      relation = WorkAIUserRelations.findOne({'app_user_id':user._id,'group_id':person_info.group_id});
-      if (relation) {
-        WorkAIUserRelations.update({_id:relation._id},{$set:setObj,$push:{ai_persons:{id:person._id}}});
-      }
-      else{
-          setObj.ai_persons = [{id:person._id}];
-          if (!setObj.in_uuid) {
-             var device =  GroupUsers.findOne({group_id:setObj.group_id,in_out:'in'});
-             if (device) {
-              setObj.in_uuid = device.username;
-             }
-          }
-          if (!setObj.out_uuid) {
-            var device = GroupUsers.findOne({group_id:setObj.group_id,in_out:'out'});
-            if (device) {
-              setObj.out_uuid = device.username;
-             }
-          }
-          setObj.app_user_id = user._id;
-          setObj.app_user_name = user_name;
-          WorkAIUserRelations.insert(setObj);
-      }
+        setObj.ai_persons = [{id:person._id}];
+        if (!setObj.in_uuid) {
+           var device =  GroupUsers.findOne({group_id:setObj.group_id,in_out:'in'});
+           if (device) {
+            setObj.in_uuid = device.username;
+           }
+        }
+        if (!setObj.out_uuid) {
+          var device = GroupUsers.findOne({group_id:setObj.group_id,in_out:'out'});
+          if (device) {
+            setObj.out_uuid = device.username;
+           }
+        }
+        setObj.checkin_image = data.checkin_image;
+        setObj.checkout_image = data.checkout_image;
+        WorkAIUserRelations.insert(setObj);
     }
     person_info.name = person.name;
     person_info.id = person._id;
     person_info.wantModify = data.wantModify;
     PERSON.updateWorkStatus(person._id);
     PERSON.sendPersonInfoToWeb(person_info);
-    PERSON.updateToDeviceTimeline2(person_info.uuid,person_info.group_id,user._id,user_name,person_info.ts);
+    if (user) {
+      PERSON.updateToDeviceTimeline2(person_info.uuid,person_info.group_id,user._id,user_name,person_info.ts);
+    }
     return {result:'succ'};
   }
 });

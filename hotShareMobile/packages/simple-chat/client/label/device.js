@@ -170,19 +170,25 @@ Template._simpleChatLabelDevice.save = function(){
         updateObj.images[i].labelMsgSent = true;
 
         try {
-          if(updateObj.images[i].img_type && updateObj.images[i].img_type == 'face' && res && res[updateObj.images[i].label].faceId) {
+          if(updateObj.images[i].img_type && updateObj.images[i].img_type == 'face') {
             var person_info = {
-              'id': res[updateObj.images[i].label].faceId,
+              //'id': res[updateObj.images[i].label].faceId,
               'uuid': msgObj.people_uuid,
               'name': nas[0],
               'group_id': msgObj.to.id,
               'img_url': updateObj.images[i].url,
               'type': updateObj.images[i].img_type,
-              'ts': new Date(updateObj.create_time).getTime(),
+              'ts': new Date(msgObj.create_time).getTime(),
               'accuracy': 1,
               'fuzziness': 1
-            }
-            Meteor.call('send-person-to-web', person_info, function(err, res){});
+            };
+            var data = {
+              face_id:updateObj.images[i].id,
+              person_info: person_info,
+              formLabel:true //是否是聊天室标记
+            };
+            //Meteor.call('send-person-to-web', person_info, function(err, res){});
+            Meteor.call('ai-checkin-out',data,function(err,res){});
           }
         } catch(e){}
       } else {
