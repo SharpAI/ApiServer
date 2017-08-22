@@ -1741,6 +1741,11 @@ SimpleChat.onMqttMessage = function(topic, msg) {
         Meteor.setTimeout(function(){
           MessagesHis.remove(where);
         },100);
+        // 如果在群聊天窗口， 需要返回主页
+        var currUrl = Router.current().url;
+        if(currUrl.match('/simple-chat/to/group?') ){
+          PUB.back();
+        }
       }
       catch(error){
         console.log('remove msg err when group has been deleted');
