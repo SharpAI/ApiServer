@@ -163,6 +163,12 @@ Template.homePage.helpers({
       hour = '0 min';
     }
     return hour;
+  },
+  modifyStatusClass: function(app_user_id){
+    if(Meteor.userId() !== app_user_id){
+      return 'modifyTaStatus';
+    }
+    return '';
   }
 });
 modifyStatusFun = function(group_id,in_out,taId){
