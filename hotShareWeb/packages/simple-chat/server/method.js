@@ -152,7 +152,7 @@ Set_perf_link = function(group_id,perf_info){
   }
 }
 
-sendGroupDelOrQuitMsg = function(group_id,form,to,to_type) {
+sendGroupDelOrQuitMsg = function(group_id,group_name,form,to,to_type) {
   try{
     var msgObj = {
       _id: new Mongo.ObjectID()._str,
@@ -166,12 +166,12 @@ sendGroupDelOrQuitMsg = function(group_id,form,to,to_type) {
       group_id: group_id
     };
     if (to_type == 'user') {
-      msgObj.text = form.name + ' 解散了 [' + to.name + ']';
+      msgObj.text = form.name + ' 解散了 [' + group_name + ']';
       msgObj.is_group_del = true;
-      return sendMqttUserMessage(to.id, msgObj);
+      return sendMqttUserMessage && sendMqttUserMessage(to.id, msgObj);
     } else {
-      msgObj.text = form.name + ' 退出了 [' + to.name + ']';
-      return sendMqttGroupMessage(group_id, msgObj);
+      msgObj.text = form.name + ' 退出了 [' + group_name + ']';
+      return sendMqttGroupMessage && sendMqttGroupMessage(group_id, msgObj);
     }
   } catch (error){
     console.log('sendGroupDelOrQuitMsg Err:',error);
@@ -384,7 +384,7 @@ Meteor.methods({
       var user = Meteor.users.findOne({_id: userId})
       async.each(groupUsers, function(item, callback) {
 
-          sendGroupDelOrQuitMsg(id,{
+          sendGroupDelOrQuitMsg(id,item.group_name,{
             id:   user._id,
             name: user.profile.fullname ? user.profile.fullname : user.username,
             icon: user.profile.icon
@@ -416,7 +416,7 @@ Meteor.methods({
     var groupuser = GroupUsers.findOne({group_id: id,user_id: userId});
     if (groupuser) {
       // send group quit message
-      sendGroupDelOrQuitMsg(id,{
+      sendGroupDelOrQuitMsg(id,groupuser.group_name,{
         id: groupuser.user_id,
         name: groupuser.user_name,
         icon: groupuser.user_icon
