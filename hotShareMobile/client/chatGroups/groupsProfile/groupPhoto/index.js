@@ -104,6 +104,29 @@ Template.groupPhoto.events({
               create_time: new Date()
             });
             
+            try {
+              if(task.obj.img_type && task.obj.img_type == 'face') {
+                var person_info = {
+                  //'id': res[updateObj.images[i].label].faceId,
+                  'uuid': task.obj,
+                  'name': name,
+                  'group_id': task.group_id,
+                  'img_url': task.obj.url,
+                  'type': task.obj.img_type,
+                  'ts': new Date(task.create_time).getTime(),
+                  'accuracy': 1,
+                  'fuzziness': 1
+                };
+                var data = {
+                  face_id:task.obj.id,
+                  person_info: person_info,
+                  formLabel:true //是否是聊天室标记
+                };
+                //Meteor.call('send-person-to-web', person_info, function(err, res){});
+                Meteor.call('ai-checkin-out',data,function(err,res){});
+              }
+            } catch(e){}
+
             // 处理是否已经全部标注
             var obj = SimpleChat.Messages.findOne({_id: task._id});
             if (obj && obj.images && obj.images){

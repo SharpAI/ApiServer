@@ -784,6 +784,32 @@ Template._simpleChatToChatItem.events({
       if (setNames.length > 0)
         Meteor.call('set-person-names', msgObj.to.id, setNames);
 
+      for (var i=0;i<msgObj.images.length;i++){
+        if (msgObj.images[i].label) {
+          try {
+            if(msgObj.images[i].img_type && msgObj.images[i].img_type == 'face') {
+              var person_info = {
+                //'id': res[updateObj.images[i].label].faceId,
+                'uuid': msgObj.people_uuid,
+                'name': msgObj.images[i].label,
+                'group_id': msgObj.to.id,
+                'img_url': msgObj.images[i].url,
+                'type': msgObj.images[i].img_type,
+                'ts': new Date(msgObj.create_time).getTime(),
+                'accuracy': 1,
+                'fuzziness': 1
+              };
+              var data = {
+                face_id:msgObj.images[i].id,
+                person_info: person_info,
+                formLabel:true //是否是聊天室标记
+              };
+              //Meteor.call('send-person-to-web', person_info, function(err, res){});
+              Meteor.call('ai-checkin-out',data,function(err,res){});
+            }
+          } catch(e){}
+        }
+      }
       var user = Meteor.user();
       if(user.profile && user.profile.userType && user.profile.userType == 'admin'){
         sendMqttGroupLabelMessage(msgObj.to.id, {
