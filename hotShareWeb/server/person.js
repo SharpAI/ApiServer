@@ -157,8 +157,38 @@ PERSON = {
       return
     }
     //TODO: 两边时间格式不统一，比较起来不方便
-    var now = new Date();
+    //var now = new Date();
+    //var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+
+    var time_offset = 8; //US is -7, China is +8 
+    
+    if (relation.group_id == '73c125cc48a83a95882fced3'){
+      //SWLAB 
+      time_offset = -7
+    }else if (relation.group_id == 'd2bc4601dfc593888618e98f'){
+      //Kuming LAB
+      time_offset = 8
+    }
+    
+    //var group = SimpleChat.Groups.findOne({_id: group_id});
+    //if (group && group.offsetTimeZone) {
+    //   offsetTimeZone = group.offsetTimeZone; 
+    //}
+    
+    console.log('offsetTimeZone ' + time_offset);
+    function DateTimezone(offset) {
+      var d = new Date();
+      var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+      var local_now = new Date(utc + (3600000*offset))
+
+      return local_now;
+    }
+    
+    var now = DateTimezone(time_offset);
     var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    var today_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 
+      0, 0, 0, 0);
+
 
     //不是今天的记录都设置为0
     relation.checkout_time = (!relation.checkout_time) ? 0 : (relation.checkout_time < today) ? 0 : relation.checkout_time;
@@ -239,9 +269,9 @@ PERSON = {
     var in_uuid = relation.in_uuid;
     var out_uuid = relation.out_uuid;
 
-    var date = Date.now();
-    var mod = 24*60*60*1000;
-    today2 = date - (date % mod);
+    //var date = Date.now();
+    //var mod = 24*60*60*1000;
+    //today2 = date - (date % mod);
 
     var setObj = {
         "status"      : now_status,
@@ -260,16 +290,16 @@ PERSON = {
       setObj.out_image = out_image;
 
     if (relation.app_user_id) {
-      workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'app_user_id': relation.app_user_id, 'date': today2});
+      workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'app_user_id': relation.app_user_id, 'date': today_utc});
     }
     else{
-      workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'person_name': relation.person_name, 'date': today2});
+      workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'person_name': relation.person_name, 'date': today_utc});
     }
     if (!workstatus) {
       WorkStatus.insert({
         "app_user_id" : relation.app_user_id,
         "group_id"    : relation.group_id,
-        "date"        : today2,
+        "date"        : today_utc,
         "person_id"   : relation.ai_persons,
         "person_name" : relation.person_name,
         "status"      : now_status,
