@@ -384,15 +384,17 @@ Meteor.methods({
       var user = Meteor.users.findOne({_id: userId})
       async.each(groupUsers, function(item, callback) {
 
-          sendGroupDelOrQuitMsg(id,item.group_name,{
-            id:   user._id,
-            name: user.profile.fullname ? user.profile.fullname : user.username,
-            icon: user.profile.icon
-          }, {
-            id: item.user_id,
-            name: item.user_name,
-            icon: item.user_icon
-          }, 'user');
+          if(user._id != item.user_id) {
+            sendGroupDelOrQuitMsg(id,item.group_name,{
+              id:   user._id,
+              name: user.profile.fullname ? user.profile.fullname : user.username,
+              icon: user.profile.icon
+            }, {
+              id: item.user_id,
+              name: item.user_name,
+              icon: item.user_icon
+            }, 'user');
+          }
           callback && callback();
       }, function(err) {
           // if any of the file processing produced an error, err would equal that error
@@ -404,6 +406,9 @@ Meteor.methods({
             
             // toDo . delete web 系统的company信息
             // toDo .删除考勤记录
+
+            //删除这个组所有人的关联关系，下次不再初始化考勤
+            WorkAIUserRelations.remove({"group_id" : id});
           }
       });
       return true;
@@ -434,6 +439,9 @@ Meteor.methods({
           Groups.remove({_id:id});
         }
       });
+
+      //删除这个人在这个组的关联关系，下次不再初始化考勤
+      WorkAIUserRelations.remove({"group_id" : id, "app_user_id": userId});
     }
     return id;
   },
