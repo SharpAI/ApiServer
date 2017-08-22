@@ -28,9 +28,9 @@
     }
   </style>
   <div class="homePage">
-      <div class="head" style="height: 80px;">
+      <div class="head">
         <strong class="top-home-btn active">主页</strong>
-        <div class="date_select">
+        <!--<div class="date_select">
           {{#if has_day_before}}
           <span class="day_before select_btn">前一天</span>
           {{else}}
@@ -42,9 +42,9 @@
           {{else}}
           <span class="day_after_disable select_btn">后一天</span>
           {{/if}}
-        </div>
+        </div>-->
       </div>
-      <div class="content" style="top: 80px;">
+      <div class="content">
       {{>connectionBanner}}
       <!-- status lists start -->
       <div style="margin:10px;">
@@ -55,9 +55,23 @@
       {{else}}
         {{#if lists}}
         {{#each lists}}
-        {{#if workstatus group_id}}
+        <!--{{#if workstatus group_id}}-->
         <div class="panel panel-default">
-        <div id="{{group_id}}" class="panel-heading">{{group_name}}</div>
+        <div id="{{group_id}}" class="panel-heading">
+          {{group_name}}
+          <div class="date_select">
+            {{#if has_day_after group_id}}
+            <span class="day_after select_btn" data-groupid="{{group_id}}"><i class="fa fa-angle-right fa-fw"></i></span>
+            {{/if}}
+            {{#if has_day_before group_id}}
+            <span class="day_before select_btn" data-groupid="{{group_id}}"><i class="fa fa-angle-left fa-fw"></i></span>
+            {{/if}}
+            {{#if show_back_today group_id}}
+            <span class="day_today select_btn" data-groupid="{{group_id}}">今天</span>
+            {{/if}}
+            <div class="title">{{day_title group_id}}</div>
+          </div>
+        </div>
         <table class="table table-bordered table-condensed">
           <thead>
               <tr role="row">
@@ -163,7 +177,7 @@
             </tbody>
         </table>
         </div>
-        {{/if}}
+        <!--{{/if}}-->
         {{/each}}
         <div style="background: #e2e2e2;border-radius: 8px;padding: 10px;border: dotted 1px gray;">
           <table class="tips-table table-condensed">

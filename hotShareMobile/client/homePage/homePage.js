@@ -67,21 +67,26 @@ Template.homePage.helpers({
     }
     return true;
   },
-  has_day_before:function(){
-    var currentDay = Session.get('theDisplayDay'); //当前显示的日期
+  has_day_before:function(group_id){
+    var currentDay = Session.get('theDisplayDay-'+group_id) || Session.get('theDisplayDay'); //当前显示的日期
     var today = Session.get('today'); //今天
     var lastday =  today - 7 * 24 * 60 * 60 *1000; //7天前
     return currentDay > lastday;
   },
-  day_title:function(){
-    var currentDay = Session.get('theDisplayDay'); //当前显示的日期
+  day_title:function(group_id){
+    var currentDay = Session.get('theDisplayDay-'+group_id) || Session.get('theDisplayDay'); //当前显示的日期
     currentDay = new Date(currentDay);
     return parseDate(currentDay);
   },
-  has_day_after:function(){
-    var currentDay = Session.get('theDisplayDay'); //当前显示的日期
+  has_day_after:function(group_id){
+    var currentDay = Session.get('theDisplayDay-'+group_id) || Session.get('theDisplayDay'); //当前显示的日期
     var today = Session.get('today'); //今天
     return currentDay < today;
+  },
+  show_back_today: function(group_id){
+    var currentDay = Session.get('theDisplayDay-'+group_id) || Session.get('theDisplayDay'); //当前显示的日期
+    var today = Session.get('today'); //今天
+    return currentDay !== today;
   },
   lists: function(){
     var lists = [];
@@ -104,7 +109,7 @@ Template.homePage.helpers({
   },
   workstatus: function(group_id){
     if(group_id){
-      var date = Session.get('theCurrentDay');
+      var date = Session.get('theCurrentDay-'+group_id) || Session.get('theCurrentDay');
       return WorkStatus.find({
         group_id: group_id,
         date: date
@@ -313,34 +318,56 @@ Template.homePage.events({
       PUB.toast('尚未绑定公司~快去扫描绩效二维码进行绑定吧！');
     }
   },
-  'click .day_before':function(){
-    var currentDay = Session.get('theCurrentDay');
+  'click .day_before':function(e){
+    e.stopImmediatePropagation();
+    var group_id = $(e.currentTarget).data('groupid');
+    var currentDay = Session.get('theCurrentDay-'+group_id) || Session.get('theCurrentDay');
     currentDay = currentDay - 24 * 60 * 60 * 1000;
-    Session.set('theCurrentDay', currentDay);
+    Session.set('theCurrentDay-'+group_id, currentDay);
     
-    var theDisplayDay = Session.get('theDisplayDay');
+    var theDisplayDay = Session.get('theDisplayDay-'+group_id) || Session.get('theDisplayDay');
     theDisplayDay = theDisplayDay - 24 * 60 * 60 * 1000;
-    Session.set('theDisplayDay', theDisplayDay);
+    Session.set('theDisplayDay-'+group_id, theDisplayDay);
     
     
     Session.set('WorkStatusLoading',true);
-    Meteor.subscribe('WorkStatus',currentDay,{
+    console.log(currentDay)
+    console.log(group_id)
+    Meteor.subscribe('WorkStatusByGroup',currentDay,group_id,{
       onReady:function(){
         Session.set('WorkStatusLoading',false);
       }
     });
   },
-  'click .day_after':function(){
-    var currentDay = Session.get('theCurrentDay');
+  'click .day_after':function(e){
+    e.stopImmediatePropagation();
+    var group_id = $(e.currentTarget).data('groupid');
+    var currentDay = Session.get('theCurrentDay-'+group_id) || Session.get('theCurrentDay');
     currentDay = currentDay + 24 * 60 * 60 * 1000;
-    Session.set('theCurrentDay', currentDay);
+    Session.set('theCurrentDay-'+group_id, currentDay);
     
-    var theDisplayDay = Session.get('theDisplayDay');
+    var theDisplayDay = Session.get('theDisplayDay-'+group_id) || Session.get('theDisplayDay');
     theDisplayDay = theDisplayDay + 24 * 60 * 60 * 1000;
-    Session.set('theDisplayDay', theDisplayDay);
+    Session.set('theDisplayDay-'+group_id, theDisplayDay);
     
     Session.set('WorkStatusLoading',true);
-    Meteor.subscribe('WorkStatus',currentDay,{
+    Meteor.subscribe('WorkStatusByGroup',currentDay,group_id,{
+      onReady:function(){
+        Session.set('WorkStatusLoading',false);
+      }
+    });
+  },
+  'click .day_today': function(e){
+    e.stopImmediatePropagation();
+    var group_id = $(e.currentTarget).data('groupid');
+    var currentDay = Session.get('theCurrentDay');
+    Session.set('theCurrentDay-'+group_id, currentDay);
+
+    var theDisplayDay = Session.get('theDisplayDay');
+    Session.set('theDisplayDay-'+group_id, theDisplayDay);
+    
+    Session.set('WorkStatusLoading',true);
+    Meteor.subscribe('WorkStatusByGroup',currentDay,group_id,{
       onReady:function(){
         Session.set('WorkStatusLoading',false);
       }
