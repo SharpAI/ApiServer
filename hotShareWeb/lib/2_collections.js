@@ -157,7 +157,7 @@ if(Meteor.isServer){
         groupIds.push(groups[i].group_id);
     }
     if(groupIds){
-      return return [
+      return [
           WorkStatus.find({date: date,group_id:{$in:groupIds}}),
           SimpleChat.Groups.find({_id: {$in: groupIds}})
       ];
