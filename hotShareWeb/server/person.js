@@ -352,11 +352,14 @@ PERSON = {
       }
     });
   },
-  updateToDeviceTimeline2: function(uuid, group_id,user_id,user_name,ts){
-    console.log('updateToDeviceTimeline2= uuid:'+uuid+', group_id:'+group_id+' ,user_id:'+user_id+', user_name'+user_name+', ts:'+ts);
-    if(!uuid || !group_id || !user_id || !user_name){
+  updateToDeviceTimeline2: function(obj){
+    console.log('updateToDeviceTimeline2= '+JSON.stringify(obj));
+    if(!obj.uuid || !obj.group_id || !obj.ts){
       return;
     }
+    var ts = obj.ts;
+    var person_name = obj.person_name || null;
+
     var hour = new Date(ts);
     hour.setMinutes(0);
     hour.setSeconds(0);
@@ -367,15 +370,18 @@ PERSON = {
 
     var selector = {
       hour: hour,
-      uuid: uuid,
-      group_id: group_id,
+      uuid: obj.uuid,
+      group_id: obj.group_id,
     };
     var modifier = {
       $set:{}
     };
     selector["perMin."+minutes+".ts"] = ts
-    modifier["$set"]["perMin."+minutes+".$.app_user_id"] = user_id;
-    modifier["$set"]["perMin."+minutes+".$.app_user_name"] = user_name;
+    if(obj.user_id && obj.user_name){
+      modifier["$set"]["perMin."+minutes+".$.app_user_id"] = obj.user_id;
+      modifier["$set"]["perMin."+minutes+".$.app_user_name"] = obj.user_name;
+    }
+    modifier["$set"]["perMin."+minutes+".$.person_name"] = person_name;
     DeviceTimeLine.update(selector,modifier,function(err,res){
       if(err){
         console.log('updateToDeviceTimeline2 Err:'+err);
