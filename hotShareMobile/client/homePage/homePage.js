@@ -173,7 +173,7 @@ Template.homePage.helpers({
     if(Meteor.userId() !== app_user_id){
       return 'modifyTaStatus';
     }
-    return '';
+    return 'modifyMyStatus';
   }
 });
 modifyStatusFun = function(group_id,in_out,taId){
