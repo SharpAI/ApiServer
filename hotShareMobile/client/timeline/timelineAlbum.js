@@ -416,5 +416,33 @@ Template.timelineAlbum.events({
         },res.reason,['知道了']);
       }
     });
+  },
+  // 显示视频预览层
+  'click .video-click-able':function(e){
+    var uuid = Router.current().params._uuid;
+    device = Devices.findOne({uuid: uuid});
+    var person_id = e.currentTarget.id,
+        group_id  = device.groupId;
+    var person_name = $(e.currentTarget).data('name') || '';
+    var video_src = $(e.currentTarget).data('videosrc');
+    var video_post = $(e.currentTarget).data('videopost');
+
+    Session.set('video_preview_data',{
+      uuid: uuid,
+      group_id : group_id,
+      person_id: person_id,
+      person_name: person_name,
+      video_post: video_post,
+      video_src: video_src
+    });
+    $('.videoPreviewLayer').fadeIn(function(){
+      window.VideoPlayer = videojs('#timeline-video-preview')
+      VideoPlayer.currentTime(0)
+      VideoPlayer.play();
+    });
+  },
+  'click .videoPreviewLayer': function(e){
+    VideoPlayer.pause();
+    $('.videoPreviewLayer').fadeOut();
   }
 });

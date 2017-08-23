@@ -37,3 +37,30 @@
     height: 100%;
     z-index: -1;
 }
+
+.videoPreviewLayer{
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000;
+  z-index: 99999;
+  display: none;
+  .videoLayer{
+    position: absolute; 
+    top: 10%;
+    left: 0;
+    height: 50%;
+    width: 100%;
+  }
+  .selectVideoButton{
+    position: absolute;
+    bottom: 64px;
+    height: 64px;
+    line-height: 64px;
+    text-align: center;
+    width: 100%;
+    font-size: 16px;
+  }
+}
