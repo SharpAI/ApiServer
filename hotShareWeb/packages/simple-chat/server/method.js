@@ -577,13 +577,6 @@ Meteor.methods({
       }
       person = PERSON.setName(person_info.group_id, person_info.uuid, data.face_id, person_info.img_url, person_name);
     }
-    //关联时输入的名字和person表的名字不一致
-    if (person_name && person_name !== person.name) {
-      console.log('person_info name isnt person name');
-      PERSON.removeName(person_info.group_id, person_info.uuid, data.face_id);
-      person = PERSON.setName(person_info.group_id,person_info.uuid,data.face_id,person_info.img_url,person_info.name);
-    }
-    setObj.person_name = person.name;
     if (data.user_id) {
       setObj.app_user_id = data.user_id;
       setObj.app_user_name = user_name;
@@ -603,6 +596,17 @@ Meteor.methods({
         relation = WorkAIUserRelations.findOne({'person_name':setObj.person_name,'group_id':person_info.group_id});
       }
     }
+    //关联时输入的名字和person表的名字不一致或者person表的名字与关联用户的人名不一样
+    //例如：app账号：天天向上 关联的用户名：张骏
+    //     有人在聊天室将没有识别的张骏的图片错误label成了宋荣鹏
+    //     app用户在打卡的时候选择张骏的图片时就应该先将错误的label数据删除
+    person_name = relation.person_name || person_info.name;
+    if (person_name && person_name !== person.name) {
+      console.log('person_info name isnt person name');
+      PERSON.removeName(person_info.group_id, person_info.uuid, data.face_id);
+      person = PERSON.setName(person_info.group_id,person_info.uuid,data.face_id,person_info.img_url,person_name);
+    }
+    setObj.person_name = person.name;
     if (relation) {
       if (!relation.checkin_image) {
         setObj.checkin_image = data.checkin_image;
@@ -642,9 +646,15 @@ Meteor.methods({
     person_info.wantModify = data.wantModify;
     PERSON.updateWorkStatus(person._id);
     PERSON.sendPersonInfoToWeb(person_info);
-    if (user) {
-      PERSON.updateToDeviceTimeline2(person_info.uuid,person_info.group_id,user._id,user_name,person_info.ts);
-    }
+    var timeLineData = {
+      uuid:person_info.uuid,
+      group_id:person_info.group_id,
+      user_id: user ? user._id : null,
+      user_name:user_name,
+      person_name:person.name,
+      ts:person_info.ts
+    };
+    PERSON.updateToDeviceTimeline2(timeLineData);
     return {result:'succ'};
   }
 });

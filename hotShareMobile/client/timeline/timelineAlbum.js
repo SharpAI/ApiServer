@@ -262,8 +262,9 @@ Template.timelineAlbum.events({
     };
     if(relations || taName ){ // 标识过
       confirm_text = '是否将该时间记录到每日出勤报告？';
+      person_name = relations ? relations.person_name : taName;
       if(person_name){
-        confirm_text = '是否将该时间记录到「'+person_name+'」每日出勤报告？'
+        confirm_text = '是否将该时间记录到「'+ person_name +'」每日出勤报告？'
       }
       PUB.confirm(confirm_text,function(){
         Meteor.call('ai-checkin-out',data,function(err, res){
