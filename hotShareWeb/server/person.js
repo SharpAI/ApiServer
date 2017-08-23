@@ -170,7 +170,7 @@ PERSON = {
     //   time_offset = 8
     // }
     
-    var group = SimpleChat.Groups.findOne({_id: group_id});
+    var group = SimpleChat.Groups.findOne({_id: relation.group_id});
     if (group && group.offsetTimeZone) {
       time_offset = group.offsetTimeZone;
     }

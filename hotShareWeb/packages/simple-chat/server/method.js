@@ -590,7 +590,9 @@ Meteor.methods({
     }
     setObj.isWaitRelation = data.user_id ? false :true ; //是否关联了App账号
     var relation = WorkAIUserRelations.findOne({'ai_persons.id':person._id});
-    if (relation && user && relation.app_user_id !== user._id) {
+    //console.log('user :'+JSON.stringify(user));
+    //console.log('relation: '+JSON.stringify(relation));
+    if (relation && user && relation.app_user_id && relation.app_user_id !== user._id) {
       return {result:'error',reason:'此人已被'+relation.app_user_name+'选择,请重新选择照片'};
     }
     if (!relation){
