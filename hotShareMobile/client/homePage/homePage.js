@@ -81,6 +81,11 @@ Template.homePage.helpers({
   has_day_after:function(group_id){
     var currentDay = Session.get('theDisplayDay-'+group_id) || Session.get('theDisplayDay'); //当前显示的日期
     var today = Session.get('today'); //今天
+    
+    // 可以查看后面两天天数据
+    today = new Date(today);
+    today.setDate(today.getDate() + 2);
+    today = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
     return currentDay < today;
   },
   show_back_today: function(group_id){
