@@ -58,6 +58,7 @@ if Meteor.isClient
             Session.set('followToWithLimitCollection','loaded')
         })
         Meteor.subscribe("userRelation")
+        Meteor.subscribe("userGroups")
         Meteor.subscribe('myCounter',{
           onReady:()->
             Session.set('myCounterCollection','loaded')
@@ -234,16 +235,24 @@ if Meteor.isClient
       if (workstatus and workstatus.in_time and workstatus.in_time isnt 0)
         return true
       return false
-    inTime:(in_time)->
+    inTime:(in_time,group_id)->
+      time_offset = 8
       intime = in_time
       if (!in_time)
         workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date: today})
         if (workstatus and workstatus.in_time)
           intime = workstatus.in_time
+        if (workstatus and workstatus.group_id)
+          group_id = workstatus.group_id
+
+      group = SimpleChat.Groups.findOne({_id: group_id})
+      if (group and group.offsetTimeZone)
+        time_offset = group.offsetTimeZone
+
       if (intime and intime isnt 0)
         inDate = new Date(intime);
         if (inDate.toString() isnt 'Invalid Date' )
-          return inDate.shortTime()
+          return inDate.shortTime(time_offset)
         return intime;
       return '';
     hasOutTime:(out_time)->
@@ -255,16 +264,24 @@ if Meteor.isClient
       if (workstatus and workstatus.out_time and workstatus.out_time isnt 0)
         return true
       return false
-    outTime:(out_time)->
+    outTime:(out_time, group_id)->
+      time_offset = 8
       outtime = out_time
       if (!out_time)
         workstatus = WorkStatus.findOne({app_user_id:Meteor.userId(),date: today})
         if (workstatus and workstatus.out_time)
           outtime = workstatus.out_time
+        if (workstatus and workstatus.group_id)
+          group_id = workstatus.group_id
+
+      group = SimpleChat.Groups.findOne({_id: group_id})
+      if (group and group.offsetTimeZone)
+        time_offset = group.offsetTimeZone
+
       if (outtime and outtime isnt 0)
         outDate = new Date(outtime);
         if (outDate.toString() isnt 'Invalid Date' )
-          return outDate.shortTime()
+          return outDate.shortTime(time_offset)
         return outtime
       return '';
     devices: ()->

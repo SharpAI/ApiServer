@@ -51,7 +51,7 @@
                   <div>上班</div><div style="color: #868686">09:00</div>
                 </div>
                 {{#if hasIntime in_time}}
-                <span style="color: #868686;padding: 10px 0;right: 60px;position: absolute;">{{inTime in_time}}</span>
+                <span style="color: #868686;padding: 10px 0;right: 60px;position: absolute;">{{inTime in_time group_id}}</span>
                 <span  class="reReckInTime" style="right: 20px;position: absolute;color: #27d496;padding: 10px 0;" data-groupid="{{group_id}}">重打</span>
                 {{else}}
                 <span class="checkInTime" style="color: #fff;background-color: #3db1fa;padding: 5px 10px;right: 30px;margin-top: 5px; border-radius: 5px;position: absolute;" data-groupid="{{group_id}}" >未打卡</span>
@@ -63,7 +63,7 @@
                   <div>下班</div><div style="color: #868686">18:00</div>
                 </div>
                 {{#if hasOutTime out_time}}
-                <span style="color: #868686;padding: 10px 0;right: 60px;position: absolute;">{{outTime out_time}}</span>
+                <span style="color: #868686;padding: 10px 0;right: 60px;position: absolute;">{{outTime out_time group_id}}</span>
                 <span class="reCheckOutTime" style="right: 20px;position: absolute;color: #27d496;padding: 10px 0;" data-groupid="{{group_id}}">重打</span>
                 {{else}}
                 <span class="checkOutTime" style="color: #fff;background-color: #3db1fa;padding: 5px 10px;right: 30px;margin-top: 5px; border-radius: 5px;position: absolute;" data-groupid="{{group_id}}">未打卡</span>

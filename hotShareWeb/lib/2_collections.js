@@ -147,6 +147,21 @@ if(Meteor.isServer){
     return People.find({}, {sort: {updateTime: -1}, limit: 50});
   });
 
+  Meteor.publish('userGroups', function(){
+    if(!this.userId){
+        return this.ready();
+    }
+    var groupIds = [];
+    var groups = SimpleChat.GroupUsers.find({user_id:this.userId}).fetch();
+    for(var i = 0;i< groups.length; i++){
+        groupIds.push(groups[i].group_id);
+    }
+    if(groupIds){
+      return SimpleChat.Groups.find({_id: {$in: groupIds}});
+    }
+    return this.ready();
+  });
+
   Meteor.publish('WorkStatus',function(date){
     if(!date){
         return this.ready();
