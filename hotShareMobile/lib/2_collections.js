@@ -196,9 +196,11 @@ if(Meteor.isServer){
     if(!this.userId || !uuid){
       return this.ready();
     }
+    var device = Devices.findOne({uuid: uuid});
     return [
         DeviceTimeLine.find({uuid: uuid},{sort:{hour:-1},limit: limit}),
-        Meteor.users.find({username: uuid})
+        Meteor.users.find({username: uuid}),
+        SimpleChat.Groups.find({_id: device.groupId})
     ];
   });
 

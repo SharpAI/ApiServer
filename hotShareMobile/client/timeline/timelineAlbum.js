@@ -167,7 +167,15 @@ Template.timelineAlbum.helpers({
   },
   formatDate: function(time){
     var date = new Date(time);
-    return date.shortTime()
+    var device = Devices.findOne({uuid: Router.current().params._uuid});
+    var group_id = device.groupId;
+    var time_offset = 8;
+    var group = SimpleChat.Groups.findOne({_id: group_id});
+    console.log(group);
+    if (group && group.offsetTimeZone) {
+      time_offset = group.offsetTimeZone;
+    }
+    return date.shortTime(time_offset)
   },
   isMultiSelect: function(){
     return Session.equals('timelineAlbumMultiSelect',true);
