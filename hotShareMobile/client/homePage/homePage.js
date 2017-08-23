@@ -153,19 +153,34 @@ Template.homePage.helpers({
   isMySelf: function(app_user_id){
     return Meteor.userId() === app_user_id;
   },
-  InComTimeLen: function(){
+  InComTimeLen: function(group_id){
     var diff = 0;
     var out_time = this.out_time;
     var today_end = this.out_time;
-    //FIXME: 计算上会不会有时区问题?
-    if(this.in_time)
-        today_end = new Date(this.in_time).setUTCHours(23,50,0,0);
+    var time_offset = 8
+    var group = SimpleChat.Groups.findOne({_id: group_id});
+    if (group && group.offsetTimeZone) {
+      time_offset = group.offsetTimeZone;
+    }
+
+    //计算out_time
+    if(this.in_time) {
+      var today_start_utc = new Date(Date.now()).setUTCHours(0,0,0,0);
+
+      //不是今天的时间
+      if(!out_time && today_start_utc > this.in_time) {
+        day_end = new Date(this.in_time).setUTCHours(0,0,0,0) + (24 - time_offset)*60*60*1000 - 1;
+        out_time = day_end
+      }
+      //今天的时间
+      else if(!out_time && today_start_utc <= this.in_time) {
+        var now_time = Date.now();
+        out_time = now_time;
+      }
+    }
 
     if(this.in_time && out_time){
       diff = out_time - this.in_time;
-    }
-    else if(this.in_time && !out_time){
-      diff = today_end - this.in_time;
     }
 
     if(diff > 24*60*60*1000)
