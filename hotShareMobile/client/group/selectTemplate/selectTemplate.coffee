@@ -41,7 +41,8 @@ if Meteor.isClient
       # if selected.length <= 0
       #   return PUB.toast('没有选择任何用户~')
       group_name = Session.get('AI_Group_Name');
-      Meteor.call 'create-group1', null, group_name, selected_followers,selected_template, (err, id)->
+      offsetTimeZone = (new Date().getTimezoneOffset())/-60
+      Meteor.call 'create-group1', null, group_name, selected_followers,selected_template,offsetTimeZone, (err, id)->
         console.log(err)
         if err or !id
           return PUB.toast('创建公司失败，请重试~')

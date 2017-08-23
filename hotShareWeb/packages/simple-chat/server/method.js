@@ -262,7 +262,7 @@ Meteor.methods({
     });
     return id;
   },
-  'create-group1': function(id, name, ids, template){
+  'create-group1': function(id, name, ids, template,offsetTimeZone){
     var slef = this;
     id = id || new Mongo.ObjectID()._str;
     ids = ids || [];
@@ -285,6 +285,7 @@ Meteor.methods({
               user_id: user._id,
               user_name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
               user_icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
+              offsetTimeZone: offsetTimeZone,
               create_time: new Date()
             });
           }
