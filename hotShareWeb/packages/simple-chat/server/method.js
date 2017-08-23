@@ -517,7 +517,7 @@ Meteor.methods({
     if (!data.face_id || !person_info || ! person_info.group_id) {
       return {result:'error',reason:'参数不全'};
     }
-    var setObj = {group_id:person_info.group_id,app_user_id:data.user_id};
+    var setObj = {group_id:person_info.group_id};
     if (data.checkin_time) {
       setObj.in_uuid = person_info.uuid;
       setObj.checkin_time = new Date(data.checkin_time).getTime() ;
@@ -553,14 +553,13 @@ Meteor.methods({
       console.log('label some person~');
       //return {result:'error',reason:'用户不存在'};
     }
-    setObj.isWaitRelation = data.user_id ? false :true ; //是否关联了App账号
     var person = Person.findOne({group_id: person_info.group_id, 'faces.id': data.face_id}, {sort: {createAt: 1}});
     var user_name = user ? (user.profile && user.profile.fullname ? user.profile.fullname : user.username) : '';
+    var person_name = person_info.name;
     if (person && person.name) {
       console.log('person info:'+person.name);
     }
     else{
-      var person_name = person_info.name;
       if (!person_name) { //打卡时选择了没有识别出的人且没输入名字的
         var relation  = null;
         if (!user) { //标识了但是没关联过App用户的
@@ -578,8 +577,18 @@ Meteor.methods({
       }
       person = PERSON.setName(person_info.group_id, person_info.uuid, data.face_id, person_info.img_url, person_name);
     }
+    //关联时输入的名字和person表的名字不一致
+    if (person_name && person_name !== person.name) {
+      console.log('person_info name isnt person name');
+      PERSON.removeName(person_info.group_id, person_info.uuid, data.face_id);
+      person = PERSON.setName(person_info.group_id,person_info.uuid,data.face_id,person_info.img_url,person_info.name);
+    }
     setObj.person_name = person.name;
-    setObj.app_user_name = user_name;
+    if (data.user_id) {
+      setObj.app_user_id = data.user_id;
+      setObj.app_user_name = user_name;
+    }
+    setObj.isWaitRelation = data.user_id ? false :true ; //是否关联了App账号
     var relation = WorkAIUserRelations.findOne({'ai_persons.id':person._id});
     if (relation && user && relation.app_user_id !== user._id) {
       return {result:'error',reason:'此人已被'+relation.app_user_name+'选择,请重新选择照片'};
@@ -599,7 +608,14 @@ Meteor.methods({
       if (!relation.checkout_image) {
         data.checkout_image = data.checkout_image;
       }
-      WorkAIUserRelations.update({_id:relation._id},{$set:setObj,$push:{ai_persons:{id:person._id}}});
+      if (!relation.isWaitRelation) {
+        setObj.isWaitRelation = false;
+      }
+      if(_.pluck(relation.ai_persons, 'id').indexOf(person._id) === -1){
+        relation.ai_persons.push({id: person._id});
+        setObj.ai_persons = relation.ai_persons;
+      }
+      WorkAIUserRelations.update({_id:relation._id},{$set:setObj});
     }
     else{
         setObj.ai_persons = [{id:person._id}];
