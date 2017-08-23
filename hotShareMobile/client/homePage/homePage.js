@@ -297,7 +297,7 @@ Template.homePage.events({
     var src = $(e.currentTarget).attr('src')
     var time = new Date($(e.currentTarget).data('time'));
     var group_id = $(e.currentTarget).data('groupid')
-    var time_offset = 0
+    var time_offset = 8
     if (group_id == '73c125cc48a83a95882fced3'){
       //SWLAB 
       time_offset = -7
