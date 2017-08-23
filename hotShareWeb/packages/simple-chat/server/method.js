@@ -521,17 +521,17 @@ Meteor.methods({
     if (data.checkin_time) {
       setObj.in_uuid = person_info.uuid;
       setObj.checkin_time = new Date(data.checkin_time).getTime() ;
+      setObj.checkin_image = data.checkin_image;
       if (data.wantModify) {
         setObj.ai_in_time = setObj.checkin_time;
-        setObj.checkin_image = data.checkin_image;
       }
     }
     if (data.checkout_time) {
       setObj.out_uuid = person_info.uuid;
       setObj.checkout_time = new Date(data.checkout_time).getTime();
+      setObj.checkout_image = data.checkout_image;
       if (data.wantModify) {
         setObj.ai_out_time = setObj.checkout_time;
-        setObj.checkout_image = data.checkout_image;
       }
     }
     //聊天室标记
