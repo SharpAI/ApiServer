@@ -298,12 +298,17 @@ Template.homePage.events({
     var time = new Date($(e.currentTarget).data('time'));
     var group_id = $(e.currentTarget).data('groupid')
     var time_offset = 8
-    if (group_id == '73c125cc48a83a95882fced3'){
-      //SWLAB 
-      time_offset = -7
-    }else if (group_id == 'd2bc4601dfc593888618e98f'){
-      //Kuming LAB
-      time_offset = 8
+    // if (group_id == '73c125cc48a83a95882fced3'){
+    //   //SWLAB 
+    //   time_offset = -7
+    // }else if (group_id == 'd2bc4601dfc593888618e98f'){
+    //   //Kuming LAB
+    //   time_offset = 8
+    // }
+    
+    var group = SimpleChat.Groups.findOne({_id: group_id});
+    if (group && group.offsetTimeZone) {
+      time_offset = group.offsetTimeZone;
     }
     
     $('.timeLayer').html(time.shortTime(time_offset));
