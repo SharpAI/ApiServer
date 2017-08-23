@@ -155,10 +155,24 @@ Template.homePage.helpers({
   },
   InComTimeLen: function(){
     var diff = 0;
-    var out_time = this.out_time || Date.now();
-    if(this.in_time){
+    var out_time = this.out_time;
+    var today_end = this.out_time;
+    //FIXME: 计算上会不会有时区问题?
+    if(this.in_time)
+        today_end = new Date(this.in_time).setUTCHours(23,50,0,0);
+
+    if(this.in_time && out_time){
       diff = out_time - this.in_time;
     }
+    else if(this.in_time && !out_time){
+      diff = today_end - this.in_time;
+    }
+
+    if(diff > 24*60*60*1000)
+      diff = 24*60*60*1000;
+    else if(diff < 0)
+      diff = 0;
+
     var min = diff / 1000 / 60 ;
     var hour = Math.floor(min/60)+' h '+Math.floor(min%60) + ' min';
     if(min < 60){
