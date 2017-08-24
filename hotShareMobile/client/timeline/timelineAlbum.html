@@ -61,10 +61,10 @@
         {{#each images}}
         {{#if app_user_id}}
           {{#if is_video}}
-          <div class="videos video-no-click" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{video_post}}" data-ts="{{ts}}" data-tsoffset="{{ts_offset}}">
+          <div class="videos video-no-click" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{video_post}}" data-ts="{{ts}}" data-tsoffset="{{ts_offset}}" data-isvideo="true" data-videosrc="{{video_src}}">
             <img class="lazy" data-original="{{video_post}}" />
             <div class="video-play-tip"><img src="/music_pic_default.png"/> </div>
-            <div class="select-video-disable"  id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{video_post}}" data-ts="{{ts}}" data-tsoffset="{{ts_offset}}">已选择</div>
+            <div class="select-video-disable"  id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{video_post}}" data-ts="{{ts}}" data-tsoffset="{{ts_offset}}" data-isvideo="true" data-videosrc="{{video_src}}">已选择</div>
             <div class="person-name">{{person_name}}</div>
           </div>
           {{else}}
@@ -76,10 +76,10 @@
           {{/if}}
         {{else}}
           {{#if is_video}}
-          <div class="videos video-click-able"  id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{video_post}}" data-ts="{{ts}}" data-tsoffset="{{ts_offset}}">
+          <div class="videos video-click-able"  id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{video_post}}" data-ts="{{ts}}" data-tsoffset="{{ts_offset}}" data-videosrc="{{video_src}}">
             <img class="lazy" data-original="{{video_post}}" />
             <div class="video-play-tip"><img src="/music_pic_default.png"/> </div>
-            <div class="select-video-enable"  id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{video_post}}" data-ts="{{ts}}" data-tsoffset="{{ts_offset}}">选择</div>
+            <div class="select-video-enable"  id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{video_post}}" data-ts="{{ts}}" data-tsoffset="{{ts_offset}}" data-isvideo="true" data-videosrc="{{video_src}}">选择</div>
             <div class="person-name">{{person_name}}</div>
           </div>
           {{else}}
@@ -123,8 +123,8 @@
 <div class="videoPreviewLayer">
   <div class="videoLayer">
     <video id="timeline-video-preview" class="video-js vjs-default-skin" preload="auto" width="100%" height="100%"
-       poster="{{video_post}}"  webkit-playsinline="true" playsinline="true">
-      <source src="http://183.60.197.33/4/n/a/f/y/nafytkwzorwmwhzjtnpxicpcjbbtki/he.yinyuetai.com/88E80159367811983D10442E9386805D.mp4" type='video/mp4' />
+       poster="{{video_post}}" webkit-playsinline="true" playsinline="true" >
+      <source src="" type='video/mp4' />
       <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
     </video>
   </div>

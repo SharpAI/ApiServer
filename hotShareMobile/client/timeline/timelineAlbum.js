@@ -59,10 +59,6 @@ Template.timelineAlbum.onRendered(function(){
       }
       Session.set('timelineAlbumLimit',limit);
     }
-
-    $('video').each(function () {
-      enableInlineVideo(this);
-    });
   });
 
   Meteor.subscribe('devices-by-uuid',Router.current().params._uuid);
@@ -193,6 +189,13 @@ Template.timelineAlbum.events({
   },
   'click .images-click-able, click .select-video-enable': function(e){
     e.stopImmediatePropagation();
+
+    // is_video
+    var is_video = false;
+    console.log($(e.currentTarget).data('isvideo'))
+    if($(e.currentTarget).data('isvideo')){
+      is_video = true;
+    }
     var uuid = Router.current().params._uuid;
     device = Devices.findOne({uuid: uuid});
     var people_id = e.currentTarget.id,
@@ -217,6 +220,11 @@ Template.timelineAlbum.events({
       'accuracy': 1,
       'fuzziness': 1
     };
+
+    // 是video 的处理
+    if(is_video){
+      person_info.type = 'video';
+    }
 
     var data = {
       user_id:Meteor.userId(),
@@ -450,30 +458,21 @@ Template.timelineAlbum.events({
   },
   // 显示视频预览层
   'click .videos':function(e){
-    var uuid = Router.current().params._uuid;
-    device = Devices.findOne({uuid: uuid});
-    var person_id = e.currentTarget.id,
-        group_id  = device.groupId;
-    var person_name = $(e.currentTarget).data('name') || '';
     var video_src = $(e.currentTarget).data('videosrc');
     var video_post = $(e.currentTarget).data('videopost');
-
-    Session.set('video_preview_data',{
-      uuid: uuid,
-      group_id : group_id,
-      person_id: person_id,
-      person_name: person_name,
-      video_post: video_post,
-      video_src: video_src
-    });
     $('.videoPreviewLayer').fadeIn(function(){
-      window.VideoPlayer = videojs('#timeline-video-preview')
-      VideoPlayer.currentTime(0)
-      VideoPlayer.play();
+      videojs("timeline-video-preview", {}, function() {
+        window.VideoPlayer = this;
+        $("#timeline-video-preview source").attr("src", video_src);
+        VideoPlayer.src(video_src);
+        VideoPlayer.load(video_src);
+        VideoPlayer.play();
+      });
     });
   },
   'click .videoPreviewLayer': function(e){
     VideoPlayer.pause();
+    VideoPlayer = null;
     $('.videoPreviewLayer').fadeOut();
   }
 });
