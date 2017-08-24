@@ -277,6 +277,12 @@ PERSON = {
       setObj.in_image = in_image;
     if(out_image)
       setObj.out_image = out_image;
+    if (relation.checkin_video) {
+      setObj.in_video = relation.checkin_video;
+    }
+    if (relation.checkout_video) {
+      setObj.out_video = relation.checkout_video;
+    }
 
     if (relation.app_user_id) {
       workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'app_user_id': relation.app_user_id, 'date': today_utc});
@@ -299,8 +305,10 @@ PERSON = {
         "whats_up"    : "",
         "in_time"     : intime,
         "in_image"    : in_image,
+        "in_video"    : relation.checkin_video,
         "out_image"   : out_image,
-        "out_time"    : outtime
+        "out_time"    : outtime,
+        "out_video"   : relation.checkout_video
       });
     }
     else {

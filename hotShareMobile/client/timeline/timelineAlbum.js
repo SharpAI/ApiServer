@@ -224,6 +224,7 @@ Template.timelineAlbum.events({
     // 是video 的处理
     if(is_video){
       person_info.type = 'video';
+      person_info.video_src = $(e.currentTarget).data('videosrc');
     }
 
     var data = {
@@ -272,7 +273,8 @@ Template.timelineAlbum.events({
             id: people_id,
             url: $(e.currentTarget).data('imgurl'),
             label: person_name,
-            img_type: 'face'
+            img_type: is_video ? 'video' : 'face',
+            video_src:person_info.video_src
           }
         ],
         people_uuid: uuid,
@@ -335,9 +337,10 @@ Template.timelineAlbum.events({
         });
       });
     } else {
-      confirm_text = '是否选择此照片？';
+      var tips = is_video ? '视频' : '照片';
+      confirm_text = '是否选择此' + tips +'？';
       if(person_name){
-        confirm_text = '此照片是：「'+person_name+'」，是否选择？';
+        confirm_text = '此' + tips +'是：「'+person_name+'」，是否选择？';
       }
       else{
         data.msgText = msgText;

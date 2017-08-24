@@ -545,6 +545,9 @@ Meteor.methods({
       setObj.in_uuid = person_info.uuid;
       setObj.checkin_time = new Date(data.checkin_time).getTime() ;
       setObj.checkin_image = data.checkin_image;
+      if (person_info.video_src) {
+        setObj.checkin_video = person_info.video_src;
+      }
       if (data.wantModify) {
         setObj.ai_in_time = setObj.checkin_time;
       }
@@ -553,6 +556,9 @@ Meteor.methods({
       setObj.out_uuid = person_info.uuid;
       setObj.checkout_time = new Date(data.checkout_time).getTime();
       setObj.checkout_image = data.checkout_image;
+      if (person_info.video_src) {
+        setObj.checkout_video = person_info.video_src;
+      }
       if (data.wantModify) {
         setObj.ai_out_time = setObj.checkout_time;
       }
