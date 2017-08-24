@@ -353,7 +353,7 @@ Template.homePage.events({
   'click .check_in_out':function(e){
     Router.go('/timeline');
   },
-  'click .panel-heading':function(e){
+  /*'click .panel-heading':function(e){
     var group_id = e.currentTarget.id;
     var group = SimpleChat.GroupUsers.findOne({group_id:group_id,user_id:Meteor.userId()});
     if (group.companyId) {
@@ -363,7 +363,7 @@ Template.homePage.events({
     else{
       PUB.toast('尚未绑定公司~快去扫描绩效二维码进行绑定吧！');
     }
-  },
+  },*/
   'click .day_before':function(e){
     e.stopImmediatePropagation();
     var group_id = $(e.currentTarget).data('groupid');
