@@ -1510,9 +1510,9 @@ if Meteor.isServer
 
       relations = WorkAIUserRelations.find({})
       relations.forEach((fields)->
-        if fields && fields.group_id && fields.app_user_id
+        if fields && fields.group_id
           #console.log('>>> ' + JSON.stringify(fields))
-          workstatus = WorkStatus.findOne({'group_id': fields.group_id, 'app_user_id': fields.app_user_id, 'date': nextday})
+          workstatus = WorkStatus.findOne({'group_id': fields.group_id, 'date': nextday})
           if !workstatus
             newWorkStatus = {
               "app_user_id" : fields.app_user_id
