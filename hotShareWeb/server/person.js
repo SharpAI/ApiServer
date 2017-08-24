@@ -156,20 +156,9 @@ PERSON = {
       console.log("invalid arguments of updateWorkStatus")
       return
     }
-    //TODO: 两边时间格式不统一，比较起来不方便
-    //var now = new Date();
-    //var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
     var time_offset = 8; //US is -7, China is +8 
-    
-    // if (relation.group_id == '73c125cc48a83a95882fced3'){
-    //   //SWLAB 
-    //   time_offset = -7
-    // }else if (relation.group_id == 'd2bc4601dfc593888618e98f'){
-    //   //Kuming LAB
-    //   time_offset = 8
-    // }
-    
+
     var group = SimpleChat.Groups.findOne({_id: relation.group_id});
     if (group && group.offsetTimeZone) {
       time_offset = group.offsetTimeZone;
@@ -315,6 +304,36 @@ PERSON = {
       });
     }
     else {
+      if (outtime > workstatus.out_time){
+        
+        var deviceUser = Meteor.users.findOne({username: relation.out_uuid});
+        
+        var msgObj = {
+          _id: new Mongo.ObjectID()._str,
+          form:{
+            id: deviceUser._id,
+            name: deviceUser.profile.fullname,
+            icon: deviceUser.profile.icon
+          },
+          to: {
+            id:   relation.app_user_id,
+            name: relation.person_name,
+            icon: ''
+          },
+          to_type: 'user',
+          type: 'text',
+          text: '你已经下班了吗?',
+          create_time: new Date(),
+          is_read: false,
+        };
+        
+        if(relation.app_user_id){
+          console.log(msgObj)
+          sendMqttUserMessage(relation.app_user_id,msgObj);
+        }
+      }
+      
+      
       WorkStatus.update({_id: workstatus._id}, {$set: setObj});
     }
   },
