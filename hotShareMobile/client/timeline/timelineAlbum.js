@@ -59,6 +59,10 @@ Template.timelineAlbum.onRendered(function(){
       }
       Session.set('timelineAlbumLimit',limit);
     }
+
+    $('video').each(function () {
+      enableInlineVideo(this);
+    });
   });
 
   Meteor.subscribe('devices-by-uuid',Router.current().params._uuid);
@@ -187,7 +191,8 @@ Template.timelineAlbum.events({
   'click .back': function(){
     return PUB.back();
   },
-  'click .images-click-able': function(e){
+  'click .images-click-able, click .select-video-enable': function(e){
+    e.stopImmediatePropagation();
     var uuid = Router.current().params._uuid;
     device = Devices.findOne({uuid: uuid});
     var people_id = e.currentTarget.id,
@@ -444,7 +449,7 @@ Template.timelineAlbum.events({
     });
   },
   // 显示视频预览层
-  'click .video-click-able':function(e){
+  'click .videos':function(e){
     var uuid = Router.current().params._uuid;
     device = Devices.findOne({uuid: uuid});
     var person_id = e.currentTarget.id,
