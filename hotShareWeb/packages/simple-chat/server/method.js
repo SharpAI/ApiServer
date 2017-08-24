@@ -517,6 +517,29 @@ Meteor.methods({
     if (!data.face_id || !person_info || ! person_info.group_id) {
       return {result:'error',reason:'参数不全'};
     }
+
+    /*重打卡/代打卡　选择了不是今天的图片，要写到对应的天的考勤记录里面,不要更新WorkAIUserRelations*/
+    var isToday = true;
+    var time_offset = 8; //US is -7, China is +8
+    var group = SimpleChat.Groups.findOne({_id: person_info.group_id});
+    if (group && group.offsetTimeZone) {
+      time_offset = group.offsetTimeZone;
+    }
+    function DateTimezone(offset) {
+      var d = new Date();
+      var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+      var local_now = new Date(utc + (3600000*offset))
+      return local_now;
+    }
+    var now = DateTimezone(time_offset);
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    var today_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 0, 0, 0, 0);
+
+    if((data.checkout_tiime && data.checkout_time < today_utc) || (data.checkin_time && data.checkin_time < today_utc)) {
+      console.log('ai_checkin_out: not today out/in ')
+      isToday = false;
+    }
+
     var setObj = {group_id:person_info.group_id};
     if (data.checkin_time) {
       setObj.in_uuid = person_info.uuid;
@@ -534,6 +557,7 @@ Meteor.methods({
         setObj.ai_out_time = setObj.checkout_time;
       }
     }
+
     //聊天室标记
     if (data.formLabel) {
       var device = Devices.findOne({uuid:person_info.uuid});
@@ -621,7 +645,8 @@ Meteor.methods({
         relation.ai_persons.push({id: person._id});
         setObj.ai_persons = relation.ai_persons;
       }
-      WorkAIUserRelations.update({_id:relation._id},{$set:setObj});
+      if(isToday == true)
+        WorkAIUserRelations.update({_id:relation._id},{$set:setObj});
     }
     else{
         setObj.ai_persons = [{id:person._id}];
@@ -644,7 +669,11 @@ Meteor.methods({
     person_info.name = person.name;
     person_info.id = person._id;
     person_info.wantModify = data.wantModify;
-    PERSON.updateWorkStatus(person._id);
+    if(isToday == true)
+      PERSON.updateWorkStatus(person._id);
+    //TODO: update history WorkStatus
+    //else
+    //  PERSON.updateWorkStatus(person._id, setObj);
     PERSON.sendPersonInfoToWeb(person_info);
     var timeLineData = {
       uuid:person_info.uuid,
