@@ -194,6 +194,13 @@ Template.timelineAlbum.events({
         group_id  = device.groupId;
     var taName = Session.get('modifyMyStatus_ta_name');
     var person_name = $(e.currentTarget).data('name') || taName ||'';
+    var time_offset = 8;
+    var group = SimpleChat.Groups.findOne({_id: group_id});
+    console.log(group);
+    if (group && group.offsetTimeZone) {
+      time_offset = group.offsetTimeZone;
+    }
+
     var confirm_text = '';
     var person_info = {
       'name': person_name,
@@ -247,6 +254,19 @@ Template.timelineAlbum.events({
         to_type: 'user',
         type: 'text',
         text: msgText,
+        images:[
+          {
+            id: people_id,
+            url: $(e.currentTarget).data('imgurl'),
+            label: person_name,
+            img_type: 'face'
+          }
+        ],
+        people_uuid: uuid,
+        checkin_time:data.checkin_time,
+        checkout_time:data.checkout_time,
+        is_agent_check:true, //是否是代签消息
+        offsetTimeZone:time_offset,
         create_time: new Date(),
         is_read: false,
       };
@@ -257,6 +277,7 @@ Template.timelineAlbum.events({
     console.log(data);
     // 检查是否标识过自己
     var relations = WorkAIUserRelations.findOne({'app_user_id':data.user_id,group_id:group_id});
+    var formPage = Router.current().params.query.from;
     var callbackRsu = function(res){
 
     };
@@ -285,6 +306,11 @@ Template.timelineAlbum.events({
             if(taId){
               console.log(msgObj)
               sendMqttUserMessage(taId,msgObj);
+            }
+            if (formPage && formPage === 'agentMsg') {
+              var msgId = Router.current().params.query.msgId;
+              var reCheckTime = data.checkin_time || data.checkout_time;
+              SimpleChat.Messages.update({_id:msgId},{$set:{hadReCheck:true,is_right:false,reCheckTime:reCheckTime,offsetTimeZone:time_offset}});
             }
             return PUB.back();
           } else {

@@ -2299,6 +2299,36 @@ Template._simleChatToSwipeBox.helpers({
   }
 })
 
+Template._checkAgentMsgItem.helpers({
+  is_up_down:function(){
+    if (this.checkin_time) {
+      return '上班'
+    }
+    else if (this.checkout_time) {
+      return '下班'
+    }
+  },
+  fomat_time:function(timedata){
+    var time = timedata || this.checkin_time || this.checkout_time;
+    var timeDate = new Date(time);
+    return timeDate.shortTime(this.offsetTimeZone);
+  }
+})
+
+Template._checkAgentMsgItem.events({
+  'click .is_right':function(){
+    Messages.update({_id:this._id},{$set:{hadReCheck:true,is_right:true}});
+  },
+  'click .is_error':function(){
+    Session.set('wantModify',true);
+    var time = this.checkin_time || this.checkout_time;
+    time = new Date(time);
+    Session.set('wantModifyTime',time);
+    PUB.page('/timelineAlbum/'+this.people_uuid+'?from=agentMsg&msgId='+this._id);
+  }
+})
+
+
 SimpleChat.onShowTipsMessages = function(need_show,type){
   Session.set('simple_chat_need_show_tips',need_show);
   Session.set('simple_chat_tips_type',type);

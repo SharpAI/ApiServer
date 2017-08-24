@@ -221,6 +221,7 @@
             {{show_images images}}
           <!--标记消息 end-->
           {{/if}}
+          {{> _checkAgentMsgItem}}
         </div>
       {{else}}
         <div class="img">
@@ -337,3 +338,41 @@
     {{/if}}
   </div>
 </template>
+
+<template name="_checkAgentMsgItem">
+  {{#if is_agent_check}}
+  <div class="agentItem">
+    <div class="imgs">
+      {{#each images}}
+        {{> _simpleChatToChatItemImg}}
+      {{/each}}
+      <div class="time_box">
+        <div>{{is_up_down}}时间：</div>
+        <div style="margin-left: 10px">
+          <div>
+            {{#if is_right}}
+            <i class="fa fa-check" aria-hidden="true" style="color: #35afd8;"></i>
+            {{else}}
+            {{#if reCheckTime}}
+            <i class="fa fa-close" aria-hidden="true" style="color: red; padding-right: 4px;"></i>
+            {{/if}}
+            {{/if}}
+            {{fomat_time}}
+          </div>
+          {{#if reCheckTime}}
+            <div>
+              <i class="fa fa-check" aria-hidden="true" style="color: #35afd8;"></i>
+              {{fomat_time reCheckTime}}
+            </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+    {{#if hadReCheck}}
+    {{else}}
+    <div class="line-label-box"><div class="is_right">确认</div><div class="is_error">修改</div></div>
+    {{/if}}
+  </div>
+  {{/if}}
+</template>
+
