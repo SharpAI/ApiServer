@@ -464,6 +464,10 @@ Template.timelineAlbum.events({
   'click .videos':function(e){
     var video_src = $(e.currentTarget).data('videosrc');
     var video_post = $(e.currentTarget).data('videopost');
+    $('.videoLayer').append('<video id="timeline-video-preview" class="video-js vjs-default-skin" preload="auto" width="100%" height="100%" poster="{{video_post}}" webkit-playsinline="true" playsinline="true" loop>\
+      <source src="" type="video/mp4" />\
+      <p class="vjs-no-js">Not supports HTML5 video</p>\
+    </video>');
     $('.videoPreviewLayer').fadeIn(function(){
       videojs("timeline-video-preview", {}, function() {
         window.VideoPlayer = this;
@@ -476,7 +480,8 @@ Template.timelineAlbum.events({
   },
   'click .videoPreviewLayer': function(e){
     VideoPlayer.pause();
-    VideoPlayer = null;
+    // VideoPlayer = null;
+    videojs("timeline-video-preview").dispose();
     $('.videoPreviewLayer').fadeOut();
   }
 });

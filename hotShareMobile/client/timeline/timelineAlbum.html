@@ -122,19 +122,9 @@
 <!-- video preview layer-->
 <div class="videoPreviewLayer">
   <div class="videoLayer">
-    <video id="timeline-video-preview" class="video-js vjs-default-skin" preload="auto" width="100%" height="100%"
-       poster="{{video_post}}" webkit-playsinline="true" playsinline="true" loop>
-      <source src="" type='video/mp4' />
-      <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
-    </video>
+    
   </div>
   <!--<div class="selectVideoButton">选择</div>-->
 </div>
 <!-- video preview layer end -->
-<script>
-$('.videoLayer').on('click',function(){
-  VideoPlayer = videojs('#timeline-video-preview')
-  VideoPlayer.play();
-})
-</script>
 </template>
