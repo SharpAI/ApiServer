@@ -324,6 +324,7 @@ Template.timelineAlbum.events({
               var msgId = Router.current().params.query.msgId;
               var reCheckTime = data.checkin_time || data.checkout_time;
               SimpleChat.Messages.update({_id:msgId},{$set:{hadReCheck:true,is_right:false,reCheckTime:reCheckTime,offsetTimeZone:time_offset}});
+              return Router.go('/simple-chat/to/user?id='+deviceUser._id);
             }
             return PUB.back();
           } else {
