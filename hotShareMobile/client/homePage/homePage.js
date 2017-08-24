@@ -18,45 +18,46 @@ Template.homePage.onRendered(function () {
 });
 
 var parseDate = function(currentDay){
-  var today = new Date(Session.get('today'));
+  //var today = new Date(Session.get('today'));
+  var year = currentDay.getFullYear();
   var month = currentDay.getMonth() + 1;
-  var date = month + '月' +currentDay.getDate() +'日';
-  if (currentDay.getDate() === today.getDate()) {
-    date = date + ' 今天';
-  }
-  else if (currentDay.getDate() - today.getDate() === -1 ) {
-    date = date + ' 昨天';
-  }
-  else {
+  var date = year + '-' + month + '-' +currentDay.getDate();
+  // if (currentDay.getDate() === today.getDate()) {
+  //   date = date + ' 今天';
+  // }
+  // else if (currentDay.getDate() - today.getDate() === -1 ) {
+  //   date = date + ' 昨天';
+  // }
+  //else {
     var day = '';
     switch(currentDay.getDay())
     {
     case 0:
-      day = '星期日';
+      day = '周日';
       break;
     case 1:
-      day = '星期一';
+      day = '周一';
       break;
     case 2:
-      day = '星期二';
+      day = '周二';
       break;
     case 3:
-      day = '星期三';
+      day = '周三';
       break;
     case 4:
-      day = '星期四';
+      day = '周四';
       break;
     case 5:
-      day = '星期五';
+      day = '周五';
       break;
     case 6:
-      day = '星期六';
+      day = '周六';
       break;
     default:
       break;
     }
     date = date + ' ' +day;
-  }
+  //}
   return date;
 };
 
@@ -66,6 +67,12 @@ Template.homePage.helpers({
       return false;
     }
     return true;
+  },
+  isLoadingGroup:function(group_id){
+    if (Session.get('WorkStatusLoading_' + group_id) === true) {
+      return true;
+    }
+    return false;
   },
   has_day_before:function(group_id){
     var currentDay = Session.get('theDisplayDay-'+group_id) || Session.get('theDisplayDay'); //当前显示的日期
@@ -376,12 +383,12 @@ Template.homePage.events({
     Session.set('theDisplayDay-'+group_id, theDisplayDay);
     
     
-    Session.set('WorkStatusLoading',true);
+    Session.set('WorkStatusLoading_' + group_id,true);
     console.log(currentDay)
     console.log(group_id)
     Meteor.subscribe('WorkStatusByGroup',currentDay,group_id,{
       onReady:function(){
-        Session.set('WorkStatusLoading',false);
+        Session.set('WorkStatusLoading_' + group_id,false);
       }
     });
   },
@@ -396,10 +403,10 @@ Template.homePage.events({
     theDisplayDay = theDisplayDay + 24 * 60 * 60 * 1000;
     Session.set('theDisplayDay-'+group_id, theDisplayDay);
     
-    Session.set('WorkStatusLoading',true);
+    Session.set('WorkStatusLoading_' + group_id,true);
     Meteor.subscribe('WorkStatusByGroup',currentDay,group_id,{
       onReady:function(){
-        Session.set('WorkStatusLoading',false);
+        Session.set('WorkStatusLoading_' + group_id,false);
       }
     });
   },
@@ -412,10 +419,10 @@ Template.homePage.events({
     var theDisplayDay = Session.get('theDisplayDay');
     Session.set('theDisplayDay-'+group_id, theDisplayDay);
     
-    Session.set('WorkStatusLoading',true);
+    Session.set('WorkStatusLoading_' + group_id,true);
     Meteor.subscribe('WorkStatusByGroup',currentDay,group_id,{
       onReady:function(){
-        Session.set('WorkStatusLoading',false);
+        Session.set('WorkStatusLoading_' + group_id,false);
       }
     });
   }

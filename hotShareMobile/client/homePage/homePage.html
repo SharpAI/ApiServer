@@ -57,21 +57,28 @@
         {{#each lists}}
         <!--{{#if workstatus group_id}}-->
         <div class="panel panel-default">
-        <div id="{{group_id}}" class="panel-heading">
-          {{group_name}}
+        <div id="{{group_id}}" class="panel-heading" style="padding-bottom: 5px;">
           <div class="date_select">
-            {{#if has_day_after group_id}}
-            <span class="day_after select_btn" data-groupid="{{group_id}}"><i class="fa fa-angle-right fa-fw"></i></span>
-            {{/if}}
             {{#if has_day_before group_id}}
             <span class="day_before select_btn" data-groupid="{{group_id}}"><i class="fa fa-angle-left fa-fw"></i></span>
             {{/if}}
-            {{#if show_back_today group_id}}
+            <!-- {{#if show_back_today group_id}}
             <span class="day_today select_btn" data-groupid="{{group_id}}">今天</span>
+            {{/if}} -->
+            <div class="title">
+              <div>{{group_name}}</div>
+              <div>{{day_title group_id}}</div>
+            </div>
+            {{#if has_day_after group_id}}
+            <span class="day_after select_btn" data-groupid="{{group_id}}"><i class="fa fa-angle-right fa-fw"></i></span>
             {{/if}}
-            <div class="title">{{day_title group_id}}</div>
           </div>
         </div>
+        {{#if isLoadingGroup group_id}}
+        <div class="workstatusLoading" style="position: relative;margin: 0px;padding: 10px 0;">
+          <img style="width: 60px;" src="/isLoading.gif"/>
+        </div>
+        {{else}}
         <table class="table table-bordered table-condensed">
           <thead>
               <tr role="row">
@@ -176,6 +183,7 @@
               {{/each}}
             </tbody>
         </table>
+        {{/if}}
         </div>
         <!--{{/if}}-->
         {{/each}}
