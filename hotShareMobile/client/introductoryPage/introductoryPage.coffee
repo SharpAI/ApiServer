@@ -50,7 +50,13 @@ if Meteor.isClient
       # Session.set('needShowBubble','false');
       # window.localStorage.setItem("isSecondUse",'true');
       # joinTestGroup()
-      PUB.page('/introductoryPage2')
+      Session.set('needShowBubble','false');
+      window.localStorage.setItem("isSecondUse",'true');
+      #讯动训练营
+      groupid = 'd2bc4601dfc593888618e98f' 
+      type = 'FACE'
+      joinTestGroup(groupid,type)
+      #PUB.page('/introductoryPage2')
      'click #skipStep':(event)->
       Session.set('needShowBubble','false');
       window.localStorage.setItem("isSecondUse",'true');
@@ -76,7 +82,13 @@ if Meteor.isClient
       # Session.set('needShowBubble','false');
       # window.localStorage.setItem("isSecondUse",'true');
       # joinTestGroup()
-      PUB.page('/introductoryPage2')
+      #PUB.page('/introductoryPage2')
+      Session.set('needShowBubble','false');
+      window.localStorage.setItem("isSecondUse",'true');
+      #讯动训练营
+      groupid = 'd2bc4601dfc593888618e98f' 
+      type = 'FACE'
+      joinTestGroup(groupid,type)
     'click #skipStep':(event)->
       Session.set('needShowBubble','false');
       window.localStorage.setItem("isSecondUse",'true');

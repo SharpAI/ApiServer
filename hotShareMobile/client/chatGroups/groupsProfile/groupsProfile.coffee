@@ -340,8 +340,9 @@ if Meteor.isClient
         console.log 'Change Groups Name to ' +e.target.text.value
         if Session.equals('fromCreateNewGroups',true)
           Session.set('fromCreateNewGroups',false);
-          Session.set('AI_Group_Name',e.target.text.value);
-          Router.go('/selectTemplate');
+          #Session.set('AI_Group_Name',e.target.text.value);
+          create_group_fun(e.target.text.value);
+          #Router.go('/selectTemplate');
           return
         Meteor.call('updateGroupName',Session.get('groupsId'),e.target.text.value,(error)->
             SimpleChat.MsgSession.update({toUserId:to},{$set:{toUserName:e.target.text.value}})
