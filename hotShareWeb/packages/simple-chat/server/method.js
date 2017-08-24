@@ -593,14 +593,14 @@ Meteor.methods({
         relation = WorkAIUserRelations.findOne({'app_user_id':user._id,'group_id':person_info.group_id});
       }
       else{ //没关联的人
-        relation = WorkAIUserRelations.findOne({'person_name':setObj.person_name,'group_id':person_info.group_id});
+        relation = WorkAIUserRelations.findOne({'person_name':person_name,'group_id':person_info.group_id});
       }
     }
     //关联时输入的名字和person表的名字不一致或者person表的名字与关联用户的人名不一样
     //例如：app账号：天天向上 关联的用户名：张骏
     //     有人在聊天室将没有识别的张骏的图片错误label成了宋荣鹏
     //     app用户在打卡的时候选择张骏的图片时就应该先将错误的label数据删除
-    person_name = relation.person_name || person_info.name;
+    person_name = relation && relation.person_name ? relation.person_name : person_name;
     if (person_name && person_name !== person.name) {
       console.log('person_info name isnt person name');
       PERSON.removeName(person_info.group_id, person_info.uuid, data.face_id);
