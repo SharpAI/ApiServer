@@ -173,11 +173,18 @@
               <tr>
                 {{#if isMySelf app_user_id}}
                 <td colspan="3" class="whats-up editWhatsUp" id="{{_id}}" data-groupid="{{group_id}}" data-whatsup="{{whats_up}}">
-                    <i class="fa fa-pencil" style="color:gray; font-size:14px;"></i>
-                    {{whats_up}}
+                    {{#if whats_up}}
+                        {{whats_up}}
+                    {{else}}
+                        <i class="fa fa-pencil" style="color:gray; font-size:14px;">今天还没有工作安排...</i>
+                    {{/if}}
                 </td>
                 {{else}}
-                <td colspan="3" class="whats-up">{{whats_up}}</td>
+                    {{#if whats_up}}
+                        <td colspan="3" class="whats-up">{{whats_up}}</td>
+                    {{else}}
+                        <td colspan="3" class="whats-up">今天还没有工作安排...</td>
+                    {{/if}}
                 {{/if}}
               </tr>
               {{/each}}
