@@ -1,15 +1,21 @@
+window.lazyTimelineImgTimeout = null;
 var lazyTimelineImg = function(){
-  console.log('Inetrval call')
-  $("img.lazy").lazyload({
-    threshold : 100
-  });
-  $('img.lazy').load(function() {
-    console.log($(this).attr('src') + ' loaded');
-    var self = $(this);
-    if(self.attr('data-original') == self.attr('src')){
-      self.addClass('img-loaded').removeClass('lazy');
-    }
-  });
+  if(lazyTimelineImgTimeout){
+    window.clearTimeout(lazyTimelineImgTimeout)
+  }
+  lazyTimelineImgTimeout = window.setTimeout(function(){
+    console.log('lazyTimelineImg call')
+    $("img.lazy").lazyload({
+      threshold : 100
+    });
+    $('img.lazy').load(function() {
+      console.log($(this).attr('src') + ' loaded');
+      var self = $(this);
+      if(self.attr('data-original') == self.attr('src')){
+        self.addClass('img-loaded').removeClass('lazy');
+      }
+    });
+  },50);
 }
 Template.timelineAlbum.onRendered(function(){
   var taId = Router.current().params.query.taId;
@@ -40,14 +46,7 @@ Template.timelineAlbum.onRendered(function(){
     var contentHeight = $('.content').height();
     console.log(contentTop+contentHeight)
     console.log(height)
-    // if(timelineAlbumTimeout){
-    //   window.clearTimeout(timelineAlbumTimeout);
-    // }
-    // timelineAlbumTimeout = setTimeout(function() {
-    //   $("img.lazy").lazyload({
-    //     threshold : 400
-    //   });
-    // }, 200);
+
     if (-10 < contentTop < 0) {
       isLoadMore = false;
     }
@@ -57,7 +56,6 @@ Template.timelineAlbum.onRendered(function(){
       console.log('loadMore and limit = '+limit+'hour = '+hour);
       Meteor.subscribe('device-timeline-with-hour',uuid,{$gte:hour},1,limit,function(){
         Session.set('timelineAlbumLoading',false);
-        lazyTimelineImg();
       });
       Session.set('timelineAlbumGteLimit',limit);
     }
@@ -68,38 +66,31 @@ Template.timelineAlbum.onRendered(function(){
       if (hour) {
         Meteor.subscribe('device-timeline-with-hour',uuid,{$lte:hour},-1,limit,function(){
           Session.set('timelineAlbumLoading',false);
-          lazyTimelineImg();
         });
       }
       else{
         Meteor.subscribe('device-timeline',uuid,limit);
       }
-      lazyTimelineImg();
       Session.set('timelineAlbumLimit',limit);
     }
+    lazyTimelineImg();
   });
 
   Meteor.subscribe('devices-by-uuid',Router.current().params._uuid);
   //Meteor.subscribe('get-workai-user-relation',Meteor.userId());  
 
-  // timelineAlbumTimeout = setTimeout(function() {
-  //     $("img.lazy").lazyload({
-  //       threshold : 400
-  //     });
-  //     $('img.lazy').load(function() {
-  //       console.log($(this).attr('src') + ' loaded');
-  //       $(this).addClass('img-loaded').removeClass('lazy');
-  //     });
-  // }, 1000);
-  window.timelineImgLazyInterval = window.setInterval(lazyTimelineImg,500);
+  Tracker.autorun(function (c) {
+    if (Session.equals("timelineAlbumLoading", false)){
+      lazyTimelineImg();
+      c.stop();
+    }
+  });
 });
 Template.timelineAlbum.onDestroyed(function(){
   Session.set('wantModify',false);
   Session.set('wantModifyTime',null);
   Session.set('modifyMyStatus_ta_name',null);
 
-  // clear Inetrval
-  window.clearInterval(timelineImgLazyInterval);
 });
 Template.timelineAlbum.helpers({
   // lists: function(){
