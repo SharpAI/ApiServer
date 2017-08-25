@@ -337,7 +337,7 @@ PERSON = {
         
         if(relation.app_user_id){
           console.log(msgObj)
-          sendMqttUserMessage(relation.app_user_id,msgObj);
+          // sendMqttUserMessage(relation.app_user_id,msgObj);
         }
       }
       

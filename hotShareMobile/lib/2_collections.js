@@ -22,6 +22,7 @@ Moments = new Meteor.Collection('moments');
 BlackList = new Meteor.Collection('blackList');
 AssociatedUsers = new Meteor.Collection('associatedusers');
 UserRelation = new Meteor.Collection('userrelation'); // 用户关系，为了不和以前的产生冲突，使用新表
+UserCheckoutEndLog = new Meteor.Collection('usercheckoutendlog');//用户下班的最后一条消息
 
 Recommends = new Meteor.Collection('recommends');
 Series = new Meteor.Collection('series');

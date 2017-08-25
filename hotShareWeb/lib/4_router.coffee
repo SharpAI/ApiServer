@@ -598,7 +598,7 @@ if Meteor.isServer
     result = '您的上班时间是 ' + result;
     return result;
 
-  send_greeting_msg = (data)->
+  @send_greeting_msg = (data)->
     console.log 'try send_greeting_msg~ with data:'+JSON.stringify(data)
     if !data || !data.images ||data.images.img_type isnt 'face'
       #console.log 'invalid params'
@@ -687,6 +687,7 @@ if Meteor.isServer
     #else
     #  People.update({_id: people._id}, {$set: {aliyun_url: url}})
 
+    device = Devices.findOne({uuid: uuid})
     PeopleHis.insert {id: id,uuid: uuid,name: name, people_id: id, embed: null,local_url: null,aliyun_url: url}, (err, _id)->
       if err or !_id
         return
@@ -764,10 +765,8 @@ if Meteor.isServer
               style: style
             }
           }
-          send_greeting_msg(msg_data);
-          #personInfo = PERSON.getIdByNames(null, [name], userGroup.group_id)
           person = Person.findOne({group_id: userGroup.group_id, name: name}, {sort: {createAt: 1}});
-          PERSON.updateWorkStatus(person._id)
+          person_info = null
           if img_type == 'face' && person && person.faceId
             #console.log('post person info to aixd.raidcdn')
             person_info = {
@@ -781,7 +780,26 @@ if Meteor.isServer
               'accuracy': accuracy,
               'fuzziness': fuzziness
             }
-            #console.log("post to web =" + JSON.stringify(person_info))
+
+          relation = WorkAIUserRelations.findOne({'ai_persons.id': person._id})
+          if (device.in_out is 'out' and relation)
+            checkout_msg = {
+              userId: relation.app_user_id,
+              userName: relation.app_user_name,
+              params: {
+                msg_data: msg_data,
+                person: person,
+                person_info: person_info
+              }
+            }
+            UserCheckoutEndLog.remove({userId: relation.app_user_id})
+            UserCheckoutEndLog.insert(checkout_msg)
+            sendUserCheckoutEvent(uuid, relation.app_user_id)
+            return 
+
+          send_greeting_msg(msg_data);
+          PERSON.updateWorkStatus(person._id)
+          if person_info
             PERSON.sendPersonInfoToWeb(person_info)
 
       )
