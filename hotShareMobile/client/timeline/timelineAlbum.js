@@ -243,7 +243,7 @@ Template.timelineAlbum.events({
     var people_id = e.currentTarget.id,
         group_id  = device.groupId;
     var taName = Session.get('modifyMyStatus_ta_name');
-    var person_name = $(e.currentTarget).data('name') || taName ||'';
+    var person_name = taName ||'';
     var time_offset = 8;
     var group = SimpleChat.Groups.findOne({_id: group_id});
     console.log(group);
