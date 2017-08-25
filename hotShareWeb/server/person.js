@@ -189,7 +189,8 @@ PERSON = {
     var outtime = 0;
     outtime = (relation.checkout_time > relation.ai_out_time) ? relation.checkout_time : relation.ai_out_time;
     outtime = (outtime > today) ? outtime : 0;
-
+    
+    
     //最新一次进门的时间
     var lastest_in_time = (relation.checkin_time > relation.ai_lastest_in_time) ? relation.checkin_time : relation.ai_lastest_in_time;
 
@@ -214,6 +215,9 @@ PERSON = {
     //   out_time = out_time_date.getHours()+':'+out_time_date.getMinutes();
 
     // }
+    
+    intime = (intime > today_utc)?intime:0
+    outtime = (outtime >= intime)?outtime: 0;
 
     var in_image = '';
     var out_image = '';
@@ -261,6 +265,7 @@ PERSON = {
     //var date = Date.now();
     //var mod = 24*60*60*1000;
     //today2 = date - (date % mod);
+    
 
     var setObj = {
         "status"      : now_status,
