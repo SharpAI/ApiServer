@@ -571,10 +571,12 @@ Meteor.methods({
         if (device.in_out === 'in') {
           setObj.checkin_time = person_info.ts;
           data.checkin_image = person_info.img_url;
+          setObj.checkin_image = person_info.img_url;
         }
         else if (device.in_out === 'out') {
           setObj.checkout_time = person_info.ts;
           data.checkout_image = person_info.img_url;
+          setObj.checkout_image = person_info.img_url;
         }
       }
     }
