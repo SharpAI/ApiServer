@@ -102,6 +102,11 @@ Template.timelineAlbum.helpers({
     }
     return true;
   },
+  uuid: function() {
+    var uuid = Router.current().params._uuid;
+    var device = Devices.findOne({uuid: uuid});
+    return device.name;
+  }, 
   lists: function(){
     var uuid = Router.current().params._uuid;
     var lists = [];
