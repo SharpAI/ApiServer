@@ -1,3 +1,16 @@
+var lazyTimelineImg = function(){
+  console.log('Inetrval call')
+  $("img.lazy").lazyload({
+    threshold : 100
+  });
+  $('img.lazy').load(function() {
+    console.log($(this).attr('src') + ' loaded');
+    var self = $(this);
+    if(self.attr('data-original') == self.attr('src')){
+      self.addClass('img-loaded').removeClass('lazy');
+    }
+  });
+}
 Template.timelineAlbum.onRendered(function(){
   var taId = Router.current().params.query.taId;
   if(taId){
@@ -27,12 +40,14 @@ Template.timelineAlbum.onRendered(function(){
     var contentHeight = $('.content').height();
     console.log(contentTop+contentHeight)
     console.log(height)
-    if(timelineAlbumTimeout){
-      window.clearTimeout(timelineAlbumTimeout);
-    }
-    timelineAlbumTimeout = setTimeout(function() {
-      $("img.lazy").lazyload({});
-    }, 500);
+    // if(timelineAlbumTimeout){
+    //   window.clearTimeout(timelineAlbumTimeout);
+    // }
+    // timelineAlbumTimeout = setTimeout(function() {
+    //   $("img.lazy").lazyload({
+    //     threshold : 400
+    //   });
+    // }, 200);
     if (-10 < contentTop < 0) {
       isLoadMore = false;
     }
@@ -42,6 +57,7 @@ Template.timelineAlbum.onRendered(function(){
       console.log('loadMore and limit = '+limit+'hour = '+hour);
       Meteor.subscribe('device-timeline-with-hour',uuid,{$gte:hour},1,limit,function(){
         Session.set('timelineAlbumLoading',false);
+        lazyTimelineImg();
       });
       Session.set('timelineAlbumGteLimit',limit);
     }
@@ -52,25 +68,38 @@ Template.timelineAlbum.onRendered(function(){
       if (hour) {
         Meteor.subscribe('device-timeline-with-hour',uuid,{$lte:hour},-1,limit,function(){
           Session.set('timelineAlbumLoading',false);
+          lazyTimelineImg();
         });
       }
       else{
         Meteor.subscribe('device-timeline',uuid,limit);
       }
+      lazyTimelineImg();
       Session.set('timelineAlbumLimit',limit);
     }
   });
 
   Meteor.subscribe('devices-by-uuid',Router.current().params._uuid);
   //Meteor.subscribe('get-workai-user-relation',Meteor.userId());  
-  timelineAlbumTimeout = setTimeout(function() {
-      $("img.lazy").lazyload({});
-  }, 1000);
+
+  // timelineAlbumTimeout = setTimeout(function() {
+  //     $("img.lazy").lazyload({
+  //       threshold : 400
+  //     });
+  //     $('img.lazy').load(function() {
+  //       console.log($(this).attr('src') + ' loaded');
+  //       $(this).addClass('img-loaded').removeClass('lazy');
+  //     });
+  // }, 1000);
+  window.timelineImgLazyInterval = window.setInterval(lazyTimelineImg,500);
 });
 Template.timelineAlbum.onDestroyed(function(){
   Session.set('wantModify',false);
   Session.set('wantModifyTime',null);
   Session.set('modifyMyStatus_ta_name',null);
+
+  // clear Inetrval
+  window.clearInterval(timelineImgLazyInterval);
 });
 Template.timelineAlbum.helpers({
   // lists: function(){
@@ -110,6 +139,7 @@ Template.timelineAlbum.helpers({
   lists: function(){
     var uuid = Router.current().params._uuid;
     var lists = [];
+    var personIds = [];
     var hour = Session.get('wantModifyTime');
     if (hour) {
       DeviceTimeLine.find({uuid: uuid,hour:{$lte:hour}},{sort:{hour:-1},limit:Session.get('timelineAlbumLimit')}).forEach(function(item){
@@ -122,7 +152,10 @@ Template.timelineAlbum.helpers({
             images: []
           }
           item.perMin[x].forEach(function(img){
-            tmpObj.images.push(img);
+            if(personIds.indexOf(img.person_id) < 0 || img.person_name){
+              personIds.push(img.person_id)
+              tmpObj.images.push(img);
+            }
           });
           tmpArr.push(tmpObj);
         }
@@ -140,7 +173,10 @@ Template.timelineAlbum.helpers({
               images: []
             }
             item.perMin[x].forEach(function(img){
-              tmpObj.images.push(img);
+              if(personIds.indexOf(img.person_id) < 0  || img.person_name){
+                personIds.push(img.person_id)
+                tmpObj.images.push(img);
+              }
             });
             tmpArr.push(tmpObj);
           }
@@ -160,7 +196,10 @@ Template.timelineAlbum.helpers({
             images: []
           }
           item.perMin[x].forEach(function(img){
-            tmpObj.images.push(img);
+            if(personIds.indexOf(img.person_id) < 0 || img.person_name){
+              personIds.push(img.person_id)
+              tmpObj.images.push(img);
+            }
           });
           tmpArr.push(tmpObj);
         }
@@ -168,6 +207,7 @@ Template.timelineAlbum.helpers({
         lists = lists.concat(tmpArr);
       });
     }
+    personIds = [];
     return lists;
   },
   formatDate: function(time){
@@ -314,12 +354,12 @@ Template.timelineAlbum.events({
             console.log('ai-checkin-out error:' + err);
             return;
           }
-          if(timelineAlbumTimeout){
-            window.clearTimeout(timelineAlbumTimeout);
-          }
-          timelineAlbumTimeout = setTimeout(function() {
-            $("img.lazy").lazyload({});
-          }, 500);
+          // if(timelineAlbumTimeout){
+          //   window.clearTimeout(timelineAlbumTimeout);
+          // }
+          // timelineAlbumTimeout = setTimeout(function() {
+          //   $("img.lazy").lazyload({});
+          // }, 500);
           if(res && res.result == 'succ'){
             PUB.toast('已记录到每日出勤报告');
             // 发送代Ta 签到成功通知
@@ -375,12 +415,12 @@ Template.timelineAlbum.events({
             console.log('ai-checkin-out error:' + err);
             return;
           }
-          if(timelineAlbumTimeout){
-            window.clearTimeout(timelineAlbumTimeout);
-          }
-          timelineAlbumTimeout = setTimeout(function() {
-            $("img.lazy").lazyload({});
-          }, 500);
+          // if(timelineAlbumTimeout){
+          //   window.clearTimeout(timelineAlbumTimeout);
+          // }
+          // timelineAlbumTimeout = setTimeout(function() {
+          //   $("img.lazy").lazyload({});
+          // }, 500);
           if(res && res.result == 'succ'){
             PUB.toast('已记录到每日出勤报告');
             // 发送代Ta 签到成功通知
@@ -444,12 +484,12 @@ Template.timelineAlbum.events({
         console.log('ai-checkin-out error:' + err);
         return;
       }
-      if(timelineAlbumTimeout){
-        window.clearTimeout(timelineAlbumTimeout);
-      }
-      timelineAlbumTimeout = setTimeout(function() {
-        $("img.lazy").lazyload({});
-      }, 500);
+      // if(timelineAlbumTimeout){
+      //   window.clearTimeout(timelineAlbumTimeout);
+      // }
+      // timelineAlbumTimeout = setTimeout(function() {
+      //   $("img.lazy").lazyload({});
+      // }, 500);
       if(res && res.result == 'succ'){
         PUB.toast('已记录到每日出勤报告');
         // 发送代Ta 签到成功通知
