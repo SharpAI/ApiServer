@@ -152,12 +152,14 @@ Template.timelineAlbum.helpers({
             images: []
           }
           item.perMin[x].forEach(function(img){
-            if(personIds.indexOf(img.person_id) < 0 || img.person_name){
+            if(personIds.indexOf(img.person_id) < 0){
               personIds.push(img.person_id)
               tmpObj.images.push(img);
             }
           });
-          tmpArr.push(tmpObj);
+          if(tmpObj.images.length > 0){
+            tmpArr.push(tmpObj);
+          }
         }
         tmpArr.reverse();
         lists = lists.concat(tmpArr);
@@ -173,12 +175,14 @@ Template.timelineAlbum.helpers({
               images: []
             }
             item.perMin[x].forEach(function(img){
-              if(personIds.indexOf(img.person_id) < 0  || img.person_name){
+              if(personIds.indexOf(img.person_id) < 0){
                 personIds.push(img.person_id)
                 tmpObj.images.push(img);
               }
             });
-            tmpArr.push(tmpObj);
+            if(tmpObj.images.length > 0){
+              tmpArr.push(tmpObj);
+            }
           }
           tmpArr.reverse();
           lists = tmpArr.concat(lists);
@@ -196,12 +200,14 @@ Template.timelineAlbum.helpers({
             images: []
           }
           item.perMin[x].forEach(function(img){
-            if(personIds.indexOf(img.person_id) < 0 || img.person_name){
+            if(personIds.indexOf(img.person_id) < 0){
               personIds.push(img.person_id)
               tmpObj.images.push(img);
             }
           });
-          tmpArr.push(tmpObj);
+          if(tmpObj.images.length > 0){
+            tmpArr.push(tmpObj);
+          }
         }
         tmpArr.reverse();
         lists = lists.concat(tmpArr);
