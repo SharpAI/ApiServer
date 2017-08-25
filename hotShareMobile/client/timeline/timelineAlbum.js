@@ -338,6 +338,7 @@ Template.timelineAlbum.events({
     }
     else if (taName) { //帮标识过但没关联的人代签
       data.user_id = null;
+      data.wantModify = true;
     }
     console.log(data);
     // 检查是否标识过自己
