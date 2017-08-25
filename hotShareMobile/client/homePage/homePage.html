@@ -172,7 +172,7 @@
               </tr>
               <tr>
                 {{#if isMySelf app_user_id}}
-                <td colspan="3" class="whats-up editWhatsUp" id="{{_id}}" data-groupid="{{group_id}}" data-whatsup="{{whats_up}}">
+                <td colspan="3" class="whats-up editWhatsUp" id="{{_id}}" data-groupid="{{group_id}}" data-whatsup="{{whats_up}}" style="white-space:normal">
                     {{#if whats_up}}
                         {{whats_up}}
                     {{else}}
@@ -181,7 +181,7 @@
                 </td>
                 {{else}}
                     {{#if whats_up}}
-                        <td colspan="3" class="whats-up">{{whats_up}}</td>
+                        <td colspan="3" class="whats-up" style="white-space:normal">{{whats_up}}</td>
                     {{else}}
                         <td colspan="3" class="whats-up">今天还没有工作安排...</td>
                     {{/if}}
