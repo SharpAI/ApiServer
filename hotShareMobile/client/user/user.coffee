@@ -1,7 +1,8 @@
 #space 2
 if Meteor.isClient
   now = new Date();
-  today = Date.UTC(now.getUTCFullYear(),now.getUTCMonth(), now.getUTCDate() , 0, 0, 0, 0);
+  today = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate(), 0, 0, 0, 0);
+  
   Meteor.startup ()->
     ###
     Session.setDefault('myFollowedByCount',0)
