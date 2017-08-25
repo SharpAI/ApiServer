@@ -620,7 +620,7 @@ Meteor.methods({
     // if (relation && user && relation.app_user_id && relation.app_user_id !== user._id) {
     //   return {result:'error',reason:'此人已被'+relation.app_user_name+'选择,请重新选择照片'};
     // }
-    if (user) {
+    if (!relation && user) {
       relation = WorkAIUserRelations.findOne({'app_user_id':user._id,'group_id':person_info.group_id});
     }
     if (!relation && person_name) {
