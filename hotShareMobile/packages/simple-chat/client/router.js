@@ -2317,7 +2317,7 @@ Template._checkAgentMsgItem.helpers({
 
 Template._checkAgentMsgItem.events({
   'click .is_right':function(){
-    Messages.update({_id:this._id},{$set:{hadReCheck:true,is_right:true}});
+    Messages.update({_id:this._id},{$set:{hadReCheck:true,is_right:true,text:''}});
   },
   'click .is_error':function(){
     Session.set('wantModify',true);

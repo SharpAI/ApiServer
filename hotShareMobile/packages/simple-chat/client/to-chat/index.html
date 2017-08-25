@@ -347,6 +347,7 @@
         {{> _simpleChatToChatItemImg}}
       {{/each}}
       <div class="time_box">
+        {{#if hadReCheck}}
         <div>{{is_up_down}}时间：</div>
         <div style="margin-left: 10px">
           <div>
@@ -366,6 +367,7 @@
             </div>
           {{/if}}
         </div>
+        {{/if}}
       </div>
     </div>
     {{#if hadReCheck}}

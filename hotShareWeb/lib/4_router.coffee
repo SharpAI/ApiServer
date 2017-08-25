@@ -553,6 +553,51 @@ if Meteor.isServer
 if Meteor.isServer
   workaiId = 'Lh4JcxG7CnmgR3YXe'
   workaiName = 'Actiontec'
+  fomat_greeting_text = (time,time_offset)->
+    DateTimezone = (d, time_offset)->
+      if (time_offset == undefined)
+        if (d.getTimezoneOffset() == 420)
+            time_offset = -7
+        else 
+            time_offset = 8
+      # 取得 UTC time
+      utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+      local_now = new Date(utc + (3600000*time_offset))
+      today_now = new Date(local_now.getFullYear(), local_now.getMonth(), local_now.getDate(), 
+      local_now.getHours(), local_now.getMinutes());
+
+      return today_now;
+    
+    self = this;
+    now = new Date();
+    result = '';
+    self = DateTimezone(this, time_offset);
+
+    # DayDiff = now.getDate() - self.getDate();
+    Minutes = self.getHours() * 60 + self.getMinutes();
+    # if (DayDiff === 0) {
+    #     result += '今天 '
+    # } else if (DayDiff === 1) {
+    #     result += '昨天 '
+    # } else {
+    #     result += self.parseDate('YYYY-MM-DD') + ' ';
+    # }
+    if (Minutes >= 0 && Minutes < 360)
+        result += '凌晨 ';
+    if (Minutes >= 360 && Minutes < 660)
+        result += '上午 ';
+    if (Minutes >= 660 && Minutes < 780)
+        result += '中午 ';
+    if (Minutes >= 780 && Minutes < 960)
+        result += '下午 ';
+    if (Minutes >= 960 && Minutes < 1080)
+        result += '傍晚 ';
+    if (Minutes >= 1080 && Minutes < 1440)
+        result += '晚上 ';
+    result += self.parseDate('h:mm');
+    result = '您的上班时间是 ' + result;
+    return result;
+
   send_greeting_msg = (data)->
     console.log 'try send_greeting_msg~ with data:'+JSON.stringify(data)
     if !data || !data.images ||data.images.img_type isnt 'face'
@@ -587,12 +632,23 @@ if Meteor.isServer
     WorkAIUserRelations.update({_id:relation._id},{$set:{ai_in_time:create_time.getTime(), ai_in_image: data.images.url}});
     if !relation.app_user_id
       return
+    deviceUser = Meteor.users.findOne({username: data.people_uuid});
+    time_offset = 8;
+    group = SimpleChat.Groups.findOne({_id: data.group_id});
+    if (group && group.offsetTimeZone)
+      time_offset = group.offsetTimeZone;
+
     sendMqttMessage('/msg/u/'+ relation.app_user_id, {
         _id: new Mongo.ObjectID()._str
-        form: { 
-          id: "fTnmgpdDN4hF9re8F",
-          name: "workAI",
-          icon: "http://data.tiegushi.com/fTnmgpdDN4hF9re8F_1493176458747.jpg"
+        # form: { 
+        #   id: "fTnmgpdDN4hF9re8F",
+        #   name: "workAI",
+        #   icon: "http://data.tiegushi.com/fTnmgpdDN4hF9re8F_1493176458747.jpg"
+        # }
+        form:{
+          id: deviceUser._id,
+          name: deviceUser.profile.fullname,
+          icon: deviceUser.profile.icon
         }
         to: {
           id: relation.app_user_id
@@ -602,8 +658,11 @@ if Meteor.isServer
         images: [data.images]
         to_type: "user"
         type: "text"
-        text: '早上好，Work AI祝您今天有个好心情~'
-        create_time: create_time
+        text: fomat_greeting_text(create_time,time_offset)
+        create_time: new Date()
+        checkin_time:create_time
+        is_agent_check:true
+        offsetTimeZone:time_offset
         group_id:data.group_id
         people_uuid: data.people_uuid
         is_read: false

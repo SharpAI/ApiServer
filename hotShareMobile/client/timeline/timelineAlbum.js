@@ -275,14 +275,22 @@ Template.timelineAlbum.events({
       person_info: person_info
     };
 
-    var msgText = '「' + device.name + '」提醒你： 有人帮你签到了';
+    var msgText = '「' + device.name + '」提醒你：';
+
+    var date = new Date($(e.currentTarget).data('ts'));
+    date = date.shortTime(time_offset);
+    date = date.split(" ");
+    date.splice(0,1);
+    date = date.join(" ");
 
     if(device.in_out && device.in_out == 'in'){
       data.checkin_time =  new Date( $(e.currentTarget).data('ts')).getTime()
       data.checkin_image = $(e.currentTarget).data('imgurl');
+      msgText = "您的上班时间是 " + date;
     } else {
       data.checkout_time =  new Date( $(e.currentTarget).data('ts')).getTime()
       data.checkout_image = $(e.currentTarget).data('imgurl');
+      msgText = "您的下班时间是 " + date;
     }
     data.wantModify = Session.get('wantModify');
 
@@ -367,7 +375,7 @@ Template.timelineAlbum.events({
             if (formPage && formPage === 'agentMsg') {
               var msgId = Router.current().params.query.msgId;
               var reCheckTime = data.checkin_time || data.checkout_time;
-              SimpleChat.Messages.update({_id:msgId},{$set:{hadReCheck:true,is_right:false,reCheckTime:reCheckTime,offsetTimeZone:time_offset}});
+              SimpleChat.Messages.update({_id:msgId},{$set:{hadReCheck:true,is_right:false,reCheckTime:reCheckTime,offsetTimeZone:time_offset,text:''}});
               return Router.go('/simple-chat/to/user?id='+deviceUser._id);
             }
             return PUB.back();
