@@ -1,7 +1,30 @@
 if Meteor.isClient
   # Template.introductoryPage.rendered=->
   #   $('.content').css 'min-height',$(window).height()
+  joinTestGroup2 = (groupid, type)->
+    Meteor.call 'add-group-urser', groupid, [ Meteor.userId() ], (err, result)->
+      if err
+        console.log err
+        return PUB.toast('添加失败，请重试~')
+      gotoPage = '/'
+      if result is 'succ'
+        PUB.toast '添加成功'
+        SimpleChat.onShowTipsMessages(true,type)
+        Meteor.call 'get-group-intro', groupid, type, (err,result)->
+          if err
+            console.log err
+          if result and result.text
+            SimpleChat.Messages.insert(result)
+      if result == 'not find group'
+        PUB.toast '添加失败，请重试~'
+      # show TestGroup Tip
+      Meteor.setTimeout ()->
+        $('body').append('<div class="joinTestGroupTips" onclick="$(this).remove();"></div>')
+      ,300
+      return Router.go(gotoPage)
+
   joinTestGroup = (groupid,type)->
+    return joinTestGroup2(groupid, type)
     #groupid = 'd2bc4601dfc593888618e98f'
     Meteor.call 'add-group-urser', groupid, [ Meteor.userId() ], (err, result) ->
       if err
