@@ -293,7 +293,7 @@ PERSON = {
     if (relation.app_user_id) {
       workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'app_user_id': relation.app_user_id, 'date': today_utc});
     }
-    if (!workstatus && person_name) {
+    if (!workstatus && relation.person_name) {
       workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'person_name': relation.person_name, 'date': today_utc});
     }
     if (!workstatus) {
