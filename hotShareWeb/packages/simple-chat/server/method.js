@@ -535,7 +535,7 @@ Meteor.methods({
     var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
     var today_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 0, 0, 0, 0);
 
-    if((data.checkout_tiime && data.checkout_time < today_utc) || (data.checkin_time && data.checkin_time < today_utc)) {
+    if((data.checkout_time && data.checkout_time < today_utc) || (data.checkin_time && data.checkin_time < today_utc)) {
       console.log('ai_checkin_out: not today out/in ')
       isToday = false;
     }
@@ -681,9 +681,8 @@ Meteor.methods({
     person_info.wantModify = data.wantModify;
     if(isToday == true)
       PERSON.updateWorkStatus(person._id);
-    //TODO: update history WorkStatus
-    //else
-    //  PERSON.updateWorkStatus(person._id, setObj);
+    else
+      PERSON.updateWorkStatusHistory(setObj);
     PERSON.sendPersonInfoToWeb(person_info);
     var timeLineData = {
       uuid:person_info.uuid,

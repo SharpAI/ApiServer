@@ -351,6 +351,161 @@ PERSON = {
       WorkStatus.update({_id: workstatus._id}, {$set: setObj});
     }
   },
+  //更新历史考勤信息
+  updateWorkStatusHistory: function(workStatusObj){
+  //{
+  //  "group_id": "cc30c1b5b49ea17c7145b270",
+  //  "in_uuid": "7YRBBDB712001377",
+  //  "checkin_time": 1503559323910,
+  //  "checkin_image": "http://workaiossqn.tiegushi.com/ed506346-889c-11e7-bcbb-d065caa7da61",
+  //  "app_user_id": "iXSQHnLkDqEQ9cZFC",
+  //  "app_user_name": "天天向上",
+  //  "isWaitRelation": false,
+  //  "person_name": "lambda"
+  //}
+    if(!(workStatusObj && (workStatusObj.checkin_time || workStatusObj.checkout_time) && workStatusObj.group_id))
+      return;
+
+    var time_offset = 8; //US is -7, China is +8 
+    var group = SimpleChat.Groups.findOne({_id: workStatusObj.group_id});
+    if (group && group.offsetTimeZone) {
+      time_offset = group.offsetTimeZone;
+    }
+
+    if(workStatusObj.checkin_time)
+      var day = new Date(workStatusObj.checkin_time);
+    else if(workStatusObj.checkout_time)
+      var day = new Date(workStatusObj.checkout_time);
+    var day_utc = Date.UTC(day.getFullYear(), day.getMonth(), day.getDate() , 0, 0, 0, 0);
+    var day_local = day_utc - (3600000*time_offset)
+    var workstatus = null;
+
+    var workstatus = null;
+    if (workStatusObj.app_user_id) {
+      workstatus = WorkStatus.findOne({'group_id': workStatusObj.group_id, 'app_user_id': workStatusObj.app_user_id, 'date': day_utc});
+    }
+    if (!workstatus && workStatusObj.person_name) {
+      workstatus = WorkStatus.findOne({'group_id': workStatusObj.group_id, 'person_name': workStatusObj.person_name, 'date': day_utc});
+    }
+
+    var in_image = '';
+    var out_image = '';
+    var in_video = '';
+    var out_video = '';
+    var now_status = "out"; //in/out
+    var in_status = "unknown";
+    var out_status = "unknown";
+    var intime = 0;
+    var outtime = 0;
+    var checkin_time = 0;
+    var checkout_time = 0;
+
+    if(workStatusObj && workStatusObj.in_uuid && workStatusObj.checkin_time && workStatusObj.checkin_image) {
+      checkin_time = workStatusObj.checkin_time;
+    }
+    else if(workStatusObj && workStatusObj.out_uuid && workStatusObj.checkout_time && workStatusObj.checkout_image) {
+      checkout_time = workStatusObj.checkout_time;
+    }
+
+    //这一天存在考勤记录
+    if (workstatus) {
+      intime = workstatus.in_time ? workstatus.in_time : 0;
+      outtime = workstatus.out_time ? workstatus.out_time : 0;
+
+      //进
+      if(checkin_time>0) {
+          intime = (intime>0 && intime<checkin_time) ? intime : checkin_time;
+          in_image = (intime>0 && intime>checkin_time) ? workstatus.in_image : workStatusObj.checkin_image;
+          in_video = (intime>0 && intime>checkin_time) ? workstatus.checkin_video : workStatusObj.checkin_video;
+          in_status = workstatus.in_status;
+          out_status = workstatus.out_status;
+      }
+      //出
+      if(checkout_time>0) {
+          outtime = (outtime>0 && outtime>checkout_time) ? outtime : checkout_time;
+          out_image = (outtime>0 && outtime>checkout_time) ? workstatus.out_image : workStatusObj.checkout_image;
+          out_video = (outtime>0 && outtime>checkout_time) ? workstatus.out_video : workStatusObj.checkout_video;
+          in_status = workstatus.in_status;
+          out_status = workstatus.out_status;
+      }
+    }
+    else {
+      if(checkin_time>0) {
+        in_image = workstatus.in_image;
+        intime = checkin_time;
+      }
+      if(checkout_time>0) {
+        out_image = workstatus.out_image;
+        outtime = checkout_time;
+      }
+    }
+
+    //9点以前上班是绿色, 之后是红色
+    if(intime == 0)
+      in_status = "unknown";
+    else if(intime > 0 && intime <= (day_local + 9*60*60*1000))
+      in_status = "normal";
+    else if(intime > 0 && intime > (day_local + 9*60*60*1000))
+      in_status = "warning";
+
+    if(outtime == 0)
+      out_status = "unknown";
+    //没看到in却有out,或者先看到出后看到进
+    else if(outtime > 0 && (intime ==0 || intime > outtime))
+      out_status = "error"
+    //不足8小时
+    else if(outtime > 0 && intime > 0 && outtime > intime && (outtime - intime) < 8*60*60*1000)
+      out_status = "warning"
+    else if(outtime > 0 && intime > 0 && outtime > intime && (outtime - intime) >= 8*60*60*1000)
+      out_status = "normal"
+
+    var setObj = {
+        "status"      : now_status,
+        "in_status"   : in_status,
+        "out_status"  : out_status,
+        "in_time"     : intime,
+        "out_time"    : outtime
+    };
+    if(workStatusObj.in_uuid)
+      setObj.in_uuid = workStatusObj.in_uuid;
+    if(workStatusObj.out_uuid)
+      setObj.out_uuid = workStatusObj.out_uuid;
+    if(in_image)
+      setObj.in_image = in_image;
+    if(out_image)
+      setObj.out_image = out_image;
+    if (workStatusObj.checkin_video) {
+      setObj.in_video = workStatusObj.checkin_video;
+    }
+    if (workStatusObj.checkout_video) {
+      setObj.out_video = workStatusObj.checkout_video;
+    }
+
+    if (!workstatus) {
+      WorkStatus.insert({
+        "app_user_id" : workStatusObj.app_user_id,
+        "group_id"    : workStatusObj.group_id,
+        "date"        : day_utc,
+        "person_id"   : workStatusObj.ai_persons,
+        "person_name" : workStatusObj.person_name,
+        "status"      : now_status,
+        "in_status"   : in_status,
+        "out_status"  : out_status,
+        "in_uuid"     : workStatusObj.in_uuid,
+        "out_uuid"    : workStatusObj.out_uuid,
+        "whats_up"    : "",
+        "in_time"     : intime,
+        "in_image"    : in_image,
+        "in_video"    : workStatusObj.checkin_video,
+        "out_image"   : out_image,
+        "out_time"    : outtime,
+        "out_video"   : workStatusObj.checkout_video
+      });
+    }
+    else {
+      WorkStatus.update({_id: workstatus._id}, {$set: setObj});
+    }
+  },
   // update Device TimeLine
   updateToDeviceTimeline: function(uuid,group_id,obj){
     console.log('updateToDeviceTimeline= uuid:'+uuid+', group_id:'+group_id+' ,obj:'+JSON.stringify(obj));
