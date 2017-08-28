@@ -2284,8 +2284,21 @@ Template._simpleChatToChatLabelRemove.events({
 });
 
 Template._simpleChatToChatItemImg.helpers({
+  isVideo:function(){
+    if (this.img_type === 'video') {
+      return true;
+    }
+    return false;
+  },
   hasAccAndFuzz:function(){
     return this.accuracy && this.fuzziness;
+  }
+})
+
+Template._simpleChatToChatItemImg.events({
+  'click .video_container':function(e){
+    var video_src = $(e.currentTarget).data('videosrc');
+    openVideoInBrowser(video_src);
   }
 })
 

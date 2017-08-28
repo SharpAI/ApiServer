@@ -260,12 +260,19 @@
 </template>
 
 <template name="_simpleChatToChatItemImg">
+  {{#if isVideo}}
+  <div class="video_container video-click-able"  id="{{id}}" data-imgurl="{{url}}" data-videosrc="{{video_src}}">
+    <img class="lazy" data-original="{{url}}" />
+    <div class="video-play-tip"><img src="/music_pic_default.png"/> </div>
+  </div>
+  {{else}}
   <div class="img_container">
     <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
     {{#if hasAccAndFuzz}}
     <div class="value_bg"><div class="accuracy">{{accuracy}}</div><div class="fuzziness">{{fuzziness}}</div></div>
     {{/if}}
   </div>
+  {{/if}}
 </template>
 <template name="_simpleChatToChatItemIcon">
   <img class="lazy" data-original="{{icon}}" />

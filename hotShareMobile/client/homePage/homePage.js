@@ -348,14 +348,28 @@ Template.homePage.events({
     }
     
     $('.timeLayer').html(time.shortTime(time_offset));
-    $('.imgLayer img').attr('src',src);
+    $('.imgLayer img.img_item').attr('src',src);
+    var video_src = this.in_video || this.out_video;
+    if (video_src) {
+      $('.img_container .video-play-tip').show();
+      $('.img_container').addClass('videos');
+      $('.img_container').data('videosrc',video_src);
+    }
     $('.homePage').addClass('blur-element');
     $('#footer').addClass('blur-element');
     $('.inOutPicPreview').fadeIn('fast');
   },
   'click .inOutPicPreview': function(e){
+    $('.img_container .video-play-tip').hide();
+    $('.img_container').data('videosrc','');
+    $('.img_container').removeClass('videos');
     $('.blur-element').removeClass('blur-element');
     $('.inOutPicPreview').fadeOut('fast');
+  },
+  'click .videos':function(e){
+    e.stopImmediatePropagation();
+    var video_src = $(e.currentTarget).data('videosrc');
+    openVideoInBrowser(video_src);
   },
   'click .check_in_out':function(e){
     Router.go('/timeline');
