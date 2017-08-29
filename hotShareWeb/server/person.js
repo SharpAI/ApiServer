@@ -321,29 +321,31 @@ PERSON = {
       if (outtime > workstatus.out_time){
         
         var deviceUser = Meteor.users.findOne({username: relation.out_uuid});
-        
-        var msgObj = {
-          _id: new Mongo.ObjectID()._str,
-          form:{
-            id: deviceUser._id,
-            name: deviceUser.profile.fullname,
-            icon: deviceUser.profile.icon
-          },
-          to: {
-            id:   relation.app_user_id,
-            name: relation.person_name,
-            icon: ''
-          },
-          to_type: 'user',
-          type: 'text',
-          text: '你已经下班了吗?',
-          create_time: new Date(),
-          is_read: false,
-        };
-        
-        if(relation.app_user_id){
-          console.log(msgObj)
-          // sendMqttUserMessage(relation.app_user_id,msgObj);
+
+        if (deviceUser) {
+          var msgObj = {
+            _id: new Mongo.ObjectID()._str,
+            form:{
+              id: deviceUser._id,
+              name: deviceUser.profile.fullname,
+              icon: deviceUser.profile.icon
+            },
+            to: {
+              id:   relation.app_user_id,
+              name: relation.person_name,
+              icon: ''
+            },
+            to_type: 'user',
+            type: 'text',
+            text: '你已经下班了吗?',
+            create_time: new Date(),
+            is_read: false,
+          };
+          
+          if(relation.app_user_id){
+            console.log(msgObj)
+            // sendMqttUserMessage(relation.app_user_id,msgObj);
+          }
         }
       }
       
