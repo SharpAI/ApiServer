@@ -347,7 +347,9 @@ PERSON = {
         }
       }
       
-      
+      if (!workstatus.app_user_id && relation.app_user_id) {
+        setObj.app_user_id = relation.app_user_id;
+      }
       WorkStatus.update({_id: workstatus._id}, {$set: setObj});
     }
   },
