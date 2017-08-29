@@ -58,28 +58,4 @@ if (Meteor.isServer){
       return true;
     }
   });
-} else {
-  if (Meteor.isCordova){
-    Meteor.startup(function(){
-      var eventResume = function(){
-        // 恢复APP的时候提示您是否已经下班？
-        Tracker.autorun(function(){
-          if (Meteor.userId()){
-            Meteor.call('getUCS', function(err, res){
-              if (!err && res){
-                PUB.confirm('您确定已经下班了吗？', function(){
-                  Meteor.call('upUCS', function(err1, res1){
-                    console.log('您确定已经下班了吗？', (!err1 || !res1) ? 'succ' : 'error');
-                    if (err1 || !res1)
-                      return PUB.alert('操作失败~');
-                  });
-                });
-              }
-            });
-          }
-        });
-      };
-      document.addEventListener("resume", eventResume, false);
-    });
-  }
 }
