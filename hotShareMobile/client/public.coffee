@@ -142,8 +142,8 @@ pages = ['/user', '/bell', '/search']
                 '确定'
             )
         catch error
-            if confirm(msg)
-                callback
+            alert(msg)
+            callback
     "confirm":(msg, callback)->
         try
             navigator.notification.confirm(

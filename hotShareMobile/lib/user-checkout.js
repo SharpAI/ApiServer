@@ -26,6 +26,12 @@ if (Meteor.isServer){
     });
   };
 
+  Meteor.publish('getUCS', function(){
+    if (!this.userId)
+      return this.ready();
+    return UserCheckoutEndLog.find({userId: this.userId});
+  });
+
   Meteor.methods({
     // 获取用户需要弹窗提示：您已经下班了吗？
     getUCS: function(){
@@ -65,21 +71,15 @@ if (Meteor.isServer){
   };
 
   Meteor.startup(function(){
-    var eventResume = function(){
-      // 恢复APP的时候提示您是否已经下班？
-      Tracker.autorun(function(){
-        if (Meteor.userId()){
-          Meteor.call('getUCS', function(err, res){
-            if (!err && res){
-              var now = new Date();
-              if (res != true)
-                now = new Date(res);
-              showConfirm(now);
-            }
-          });
-        }
-      });
-    };
-    document.addEventListener("resume", eventResume, false);
+    Tracker.autorun(function(){
+      if (Meteor.userId())
+        Meteor.subscribe('getUCS');
+
+      if (Meteor.userId() && UserCheckoutEndLog.find({userId: Meteor.userId()}).count() > 0){
+        var checkout_log = UserCheckoutEndLog.findOne({userId: Meteor.userId()});
+        var now = checkout_log.createAt ? checkout_log.createAt : new Date();
+        showConfirm(now);
+      }
+    });
   });
 }

@@ -33,6 +33,12 @@ if (Meteor.isServer){
     }, 1000*5);
   };
 
+  Meteor.publish('getUCS', function(){
+    if (!this.userId)
+      return this.ready();
+    return UserCheckoutEndLog.find({userId: this.userId});
+  });
+
   Meteor.methods({
     // 获取用户需要弹窗提示：您已经下班了吗？
     getUCS: function(){
