@@ -18,6 +18,7 @@ if Meteor.isClient
       if result == 'not find group'
         PUB.toast '添加失败，请重试~'
       # show TestGroup Tip
+      Session.set('homePagesForm', 'joinTestGroup')
       Meteor.setTimeout ()->
         $('body').append('<div class="joinTestGroupTips" onclick="$(this).remove();"></div>')
       ,300

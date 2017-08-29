@@ -15,6 +15,10 @@ Template.homePage.onRendered(function () {
       Session.set('WorkStatusLoading',false);
     }
   });
+  if(!Session.equals('homePagesForm', 'joinTestGroup')){
+    $('body').append('<div class="homePageTips1" onclick="$(this).remove();"></div>');
+  }
+  Session.set('homePagesForm', '')
 });
 
 var parseDate = function(currentDay){
