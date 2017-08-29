@@ -24,11 +24,27 @@
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .in-out-pic{
-      width: 30px;
-      height:30px;
+      width: 28px;
+      height:28px;
       border: none;
       border-radius:4px;
-      margin-left: 4px;
+      margin-right: 2px;
+    }
+    .fa-as-btn{
+      border-radius: 4px;
+      width: 28px;
+      height: 28px;
+      line-height: 28px;
+      text-align: center;
+      background: #c1c1c1;
+      font-size: 16px !important;
+      background: linear-gradient(#efefef,#cccccc);
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    .modifyTaStatus,.modifyMyStatus{
+      min-width: 70px;
+      padding: 4px 2px !important;
     }
   </style>
   <div class="homePage">
@@ -109,26 +125,26 @@
 
                   {{#if isInStatusNormal in_status}}
                   <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="in" class="{{modifyStatusClass app_user_id}}">
-                    <i class="fa fa-hand-pointer-o" style="color:green;"></i>
                     <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" data-groupid="{{group_id}}"/>
+                    <i class="fa fa-pencil fa-as-btn" style="color:green;"></i>
                   </td>
                   {{/if}}
                   {{#if isInStatusWarning in_status}}
                   <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="in" class="{{modifyStatusClass app_user_id}}">
-                    <i class="fa fa-hand-pointer-o" style="color:red;"></i>
                     <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" data-groupid="{{group_id}}"/>
+                    <i class="fa fa-pencil fa-as-btn" style="color:orangered;"></i>
                   </td>
                   {{/if}}
                   {{#if isInStatusError in_status}}
                     {{#if isMySelf app_user_id}}
                     <td id="{{group_id}}" data-inout="in" class="modifyMyStatus">
-                      <i class="fa fa-exclamation-circle" style="color:red;"></i>
                       <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" data-groupid="{{group_id}}"/>
+                      <i class="fa fa-pencil fa-as-btn" style="color:red;"></i>
                     </td>
                     {{else}}
                     <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="in" class="{{modifyStatusClass app_user_id}}">
-                      <i class="fa fa-exclamation-circle" style="color:red;"></i>
                       <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" data-groupid="{{group_id}}"/>
+                      <i class="fa fa-pencil fa-as-btn" style="color:red;"></i>
                     </td>
                     {{/if}}
                   {{/if}}
@@ -142,26 +158,26 @@
 
                   {{#if isOutStatusNormal out_status}}
                   <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="{{modifyStatusClass app_user_id}}">
-                    <i class="fa fa-hand-pointer-o" style="color:green;"></i>
                     <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}"/>
+                    <i class="fa fa-pencil fa-as-btn" style="color:green;"></i>
                   </td>
                   {{/if}}
                   {{#if isOutStatusWarning out_status}}
                   <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="{{modifyStatusClass app_user_id}}">
-                    <i class="fa fa-hand-pointer-o" style="color:red;"></i>
                     <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}"/>
+                    <i class="fa fa-pencil fa-as-btn" style="color:orangered;"></i>
                   </td>
                   {{/if}}
                   {{#if isOutStatusError out_status}}
                     {{#if isMySelf app_user_id}}
                     <td id="{{group_id}}" data-inout="out" class="modifyMyStatus">
-                      <i class="fa fa-exclamation-circle" style="color:red;"></i>
                       <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}"/>
+                      <i class="fa fa-pencil fa-as-btn" style="color:red;"></i>
                     </td>
                     {{else}}
                     <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="{{modifyStatusClass app_user_id}}">
-                      <i class="fa fa-exclamation-circle" style="color:red;"></i>
                       <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}" />
+                      <i class="fa fa-pencil fa-as-btn" style="color:red;"></i>
                     </td>
                     {{/if}}
                   {{/if}}
@@ -212,15 +228,15 @@
                 <td>不在公司</td>
               </tr>
               <tr>
-                <td style="text-align:center;"><i class="fa fa-clock-o" style="color:green;"></i></td>
+                <td style="text-align:center;"><i class="fa fa-pencil fa-as-btn" style="color:green;"></i></td>
                 <td colspan="3">工作时间大于8小时 或 9:00am前上班</td>
               </tr>
               <tr>
-                <td style="text-align:center;"><i class="fa fa-clock-o" style="color:red;"></i></td>
+                <td style="text-align:center;"><i class="fa fa-pencil fa-as-btn" style="color:orangered;"></i></td>
                 <td colspan="3">工作时间小于8小时 或 9:00am后上班</td>
               </tr>
               <tr>
-                <td style="text-align:center;"><i class="fa fa-exclamation-circle" style="color:red;"></i></td>
+                <td style="text-align:center;"><i class="fa fa-pencil fa-as-btn" style="color:red;"></i></td>
                 <td colspan="3">记录到出但没记录到进 或 记录到两次进但没记录到出</td>
               </tr>
             </tbody>
