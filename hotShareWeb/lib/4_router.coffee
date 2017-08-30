@@ -786,6 +786,7 @@ if Meteor.isServer
             checkout_msg = {
               userId: relation.app_user_id,
               userName: relation.app_user_name,
+              createAt: new Date(),
               params: {
                 msg_data: msg_data,
                 person: person,
@@ -1609,6 +1610,38 @@ if Meteor.isServer
             #console.log('>>> new a WorkStatus ' + JSON.stringify(newWorkStatus))
             WorkStatus.insert(newWorkStatus)
       )
+
+      # 计算没有确认下班的数据
+      docs = UserCheckoutEndLog.find({}).fetch()
+      docs.map (doc)->
+        # remove
+        UserCheckoutEndLog.remove({_id: doc._id})
+
+        # 状态
+        startUTC = Date.UTC(doc.params.msg_data.create_time.getUTCFullYear(), doc.params.msg_data.create_time.getUTCMonth(), doc.params.msg_data.create_time.getUTCDate(), 0, 0, 0, 0)
+        endUTC = Date.UTC(doc.params.msg_data.create_time.getUTCFullYear(), doc.params.msg_data.create_time.getUTCMonth(), doc.params.msg_data.create_time.getUTCDate(), 23, 59, 59, 0)
+        workstatus = WorkStatus.findOne({'group_id': doc.params.msg_data.group_id, 'date': {$gte: startUTC, $lte: endUTC}})
+
+        # local date
+        now = new Date()
+        group = SimpleChat.Groups.findOne({_id: doc.params.msg_data.group_id})
+        if (group and group.offsetTimeZone)
+          now = new Date((now.getTime()+(now.getTimezoneOffset()*60000)) + (3600000*group.offsetTimeZone))
+        else
+          now = new Date((now.getTime()+(now.getTimezoneOffset()*60000)) + (3600000*8))
+
+        # console.log('===1==', workstatus.status)
+        unless (workstatus and workstatus.status is 'out')
+          # console.log('===2==', doc.userName, doc.params.msg_data.create_time.getUTCDate(), now.getUTCDate())
+          # 当天数据
+          if (doc.params.msg_data.create_time.getUTCDate() is now.getUTCDate())
+            # console.log('===3==', doc.userName)
+            send_greeting_msg(doc.params.msg_data);
+            PERSON.updateWorkStatus(doc.params.person._id)
+            if (doc.params.person_info)
+              PERSON.sendPersonInfoToWeb(doc.params.person_info)
+          else
+            # TODO:
 
       this.response.end(JSON.stringify({result: 'ok'}))
     )
