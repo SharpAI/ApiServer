@@ -15,7 +15,7 @@ var lazyTimelineImg = function(){
         self.addClass('img-loaded').removeClass('lazy');
       }
     });
-  },50);
+  },600);
 }
 Template.timelineAlbum.onRendered(function(){
   var taId = Router.current().params.query.taId;
@@ -32,11 +32,13 @@ Template.timelineAlbum.onRendered(function(){
     Session.set('timelineAlbumGteLimit',0); //大于某段时间的
     Meteor.subscribe('device-timeline-with-hour',uuid,{$lte:hour},-1,Session.get('timelineAlbumLimit'),function(){
       Session.set('timelineAlbumLoading',false);
+      lazyTimelineImg();
     });
   }
   else{
     Meteor.subscribe('device-timeline',uuid,Session.get('timelineAlbumLimit'),function(){
       Session.set('timelineAlbumLoading',false);
+      lazyTimelineImg();
     });
   }
   var isLoadMore = false;
@@ -79,12 +81,19 @@ Template.timelineAlbum.onRendered(function(){
   Meteor.subscribe('devices-by-uuid',Router.current().params._uuid);
   //Meteor.subscribe('get-workai-user-relation',Meteor.userId());  
 
-  Tracker.autorun(function (c) {
-    if (Session.equals("timelineAlbumLoading", false)){
+  // Tracker.autorun(function (c) {
+  //   if (Session.equals("timelineAlbumLoading", false)){
+  //     lazyTimelineImg();
+  //     c.stop();
+  //   }
+  // });
+
+  // 有新img元素时触发lazyload
+  Tracker.autorun(function(c) {
+    if(Session.get('timelineAlbumCounts')){
       lazyTimelineImg();
-      c.stop();
     }
-  });
+  })
 });
 Template.timelineAlbum.onDestroyed(function(){
   Session.set('wantModify',false);
@@ -128,6 +137,7 @@ Template.timelineAlbum.helpers({
     return device.name;
   }, 
   lists: function(){
+    var timelineAlbumCounts = 0;
     var uuid = Router.current().params._uuid;
     var lists = [];
     var personIds = [];
@@ -150,6 +160,7 @@ Template.timelineAlbum.helpers({
           });
           if(tmpObj.images.length > 0){
             tmpArr.push(tmpObj);
+            timelineAlbumCounts += tmpObj.images.length;
           }
         }
         tmpArr.reverse();
@@ -173,6 +184,7 @@ Template.timelineAlbum.helpers({
             });
             if(tmpObj.images.length > 0){
               tmpArr.push(tmpObj);
+              timelineAlbumCounts += tmpObj.images.length;
             }
           }
           tmpArr.reverse();
@@ -198,6 +210,7 @@ Template.timelineAlbum.helpers({
           });
           if(tmpObj.images.length > 0){
             tmpArr.push(tmpObj);
+            timelineAlbumCounts += tmpObj.images.length;
           }
         }
         tmpArr.reverse();
@@ -205,6 +218,7 @@ Template.timelineAlbum.helpers({
       });
     }
     personIds = [];
+    Session.set('timelineAlbumCounts', timelineAlbumCounts);
     return lists;
   },
   formatDate: function(time){
