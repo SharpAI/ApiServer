@@ -276,7 +276,11 @@ Template.homePage.events({
     var whats_up = $('#EditorWhatsUp').val();
     $('#'+_id).data('whatsup',whats_up);
     var group_id = $('#'+_id).data('groupid');
+    var statusId = $('#'+_id).data('id');
     var group = SimpleChat.GroupUsers.findOne({group_id:group_id,user_id: Meteor.userId()});
+    console.log("group info is:", JSON.stringify(group));
+    var editorName = group.user_name;
+    whats_up = editorName + ":" + whats_up;
     WorkStatus.update({_id:_id},{
       $set:{whats_up:whats_up}
     },function(err,num){
@@ -300,7 +304,7 @@ Template.homePage.events({
         },
         to_type: 'group',
         type: 'text',
-        text: '我更新了今日简述：\r\n'+whats_up,
+        text: '更新了今日简述：\r\n'+whats_up,
         create_time: new Date(),
         is_read: false,
         // send_status: 'sending'

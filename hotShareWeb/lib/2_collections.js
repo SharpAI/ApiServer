@@ -190,10 +190,10 @@ if(Meteor.isServer){
   
   WorkStatus.allow({
       update: function(userId, doc, fields, modifier){
-          if(userId === doc.app_user_id){
+          //if(userId === doc.app_user_id){
               return true;
-          }
-          return false;
+          //}
+          //return false;
       }
   });
 

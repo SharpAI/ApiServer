@@ -200,7 +200,9 @@
                   
                 </tr>
                 <tr>
+                  <!--
                   {{#if isMySelf app_user_id}}
+                  -->
                   <td colspan="3" class="whats-up editWhatsUp" id="{{_id}}" data-groupid="{{group_id}}" data-whatsup="{{whats_up}}" style="white-space:normal">
                       {{#if whats_up}}
                           <i class="fa fa-pencil" style="color:gray; font-size:14px;">{{whats_up}}</i>
@@ -208,6 +210,7 @@
                           <i class="fa fa-pencil" style="color:gray; font-size:14px;">今天还没有工作安排...</i>
                       {{/if}}
                   </td>
+                  <!--
                   {{else}}
                       {{#if whats_up}}
                           <td colspan="3" class="whats-up" style="white-space:normal">{{whats_up}}</td>
@@ -215,6 +218,7 @@
                           <td colspan="3" class="whats-up">今天还没有工作安排...</td>
                       {{/if}}
                   {{/if}}
+                  -->
                 </tr>
                 {{/each}}
               </tbody>
