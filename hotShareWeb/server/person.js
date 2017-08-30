@@ -224,15 +224,21 @@ PERSON = {
     var now_status = "out"; //in/out
     var in_status = "unknown";
     var out_status = "unknown";
+    var in_video = '';
+    var out_video = '';
     //normal   工作时间大于8小时 或 9:00am前上班
 
     //in/out image
-    if(intime > today && intime == relation.checkin_time)
+    if(intime > today && intime == relation.checkin_time){
       in_image = relation.checkin_image;
+      in_video = relation.checkin_video;
+    }
     else if(intime > today && intime == relation.ai_in_time)
       in_image = relation.ai_in_image;
-    if(outtime > today && outtime == relation.checkout_time)
+    if(outtime > today && outtime == relation.checkout_time){
       out_image = relation.checkout_image;
+      out_video = relation.checkout_video;
+    }
     else if(outtime > today && outtime == relation.ai_out_time)
       out_image = relation.ai_out_image;
 
@@ -282,11 +288,11 @@ PERSON = {
       setObj.in_image = in_image;
     if(out_image)
       setObj.out_image = out_image;
-    if (relation.checkin_video) {
-      setObj.in_video = relation.checkin_video;
+    if (in_video) {
+      setObj.in_video = in_video;
     }
-    if (relation.checkout_video) {
-      setObj.out_video = relation.checkout_video;
+    if (out_video) {
+      setObj.out_video = out_video;
     }
 
     var workstatus = null;
@@ -311,10 +317,10 @@ PERSON = {
         "whats_up"    : "",
         "in_time"     : intime,
         "in_image"    : in_image,
-        "in_video"    : relation.checkin_video,
+        "in_video"    : in_video,
         "out_image"   : out_image,
         "out_time"    : outtime,
-        "out_video"   : relation.checkout_video
+        "out_video"   : out_video
       });
     }
     else {
