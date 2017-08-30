@@ -77,7 +77,7 @@ if (Meteor.isServer){
 
       if (Meteor.userId() && UserCheckoutEndLog.find({userId: Meteor.userId()}).count() > 0){
         var checkout_log = UserCheckoutEndLog.findOne({userId: Meteor.userId()});
-        var now = checkout_log.createAt ? checkout_log.createAt : new Date();
+        var now = checkout_log && checkout_log.params && checkout_log.params.msg_data && checkout_log.params.msg_data.create_time ? checkout_log.params.msg_data.create_time : new Date();
         showConfirm(now);
       }
     });
