@@ -61,11 +61,11 @@
         {{#each images}}
         {{#if app_user_id}}
           {{#if is_video}}
-          <div class="videos video-no-click" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{video_post}}" data-ts="{{ts}}" data-tsoffset="{{ts_offset}}" data-isvideo="true" data-videosrc="{{video_src}}">
+          <div class="videos video-click-able"  id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{video_post}}" data-ts="{{ts}}" data-tsoffset="{{ts_offset}}" data-videosrc="{{video_src}}">
             <img class="lazy" data-original="{{video_post}}" />
             <div class="video-play-tip"><img src="/music_pic_default.png"/> </div>
-            <div class="select-video-disable"  id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{video_post}}" data-ts="{{ts}}" data-tsoffset="{{ts_offset}}" data-isvideo="true" data-videosrc="{{video_src}}">已选择</div>
-            <div class="person-name">{{person_name}}</div>
+            <div class="select-video-enable"  id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{video_post}}" data-ts="{{ts}}" data-tsoffset="{{ts_offset}}" data-isvideo="true" data-videosrc="{{video_src}}">选择</div>
+            <div class="relations-info">{{relations_info}}</div>
           </div>
           {{else}}
           <div class="images images-no-click" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
@@ -80,7 +80,7 @@
             <img class="lazy" data-original="{{video_post}}" />
             <div class="video-play-tip"><img src="/music_pic_default.png"/> </div>
             <div class="select-video-enable"  id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{video_post}}" data-ts="{{ts}}" data-tsoffset="{{ts_offset}}" data-isvideo="true" data-videosrc="{{video_src}}">选择</div>
-            <div class="person-name">{{person_name}}</div>
+            <div class="relations-info">{{relations_info}}</div>
           </div>
           {{else}}
           <div class="images images-click-able" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">

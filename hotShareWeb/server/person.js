@@ -315,13 +315,13 @@ PERSON = {
     else{
         setObj.ai_persons = [{id:person._id}];
         if (!setObj.in_uuid) {
-           var device =  GroupUsers.findOne({group_id:setObj.group_id,in_out:'in'});
+           var device = SimpleChat.GroupUsers.findOne({group_id:setObj.group_id,in_out:'in'});
            if (device) {
             setObj.in_uuid = device.username;
            }
         }
         if (!setObj.out_uuid) {
-          var device = GroupUsers.findOne({group_id:setObj.group_id,in_out:'out'});
+          var device = SimpleChat.GroupUsers.findOne({group_id:setObj.group_id,in_out:'out'});
           if (device) {
             setObj.out_uuid = device.username;
            }
@@ -344,7 +344,8 @@ PERSON = {
       user_id: user ? user._id : null,
       user_name:user_name,
       person_name:person.name,
-      ts:person_info.ts
+      ts:person_info.ts,
+      type:person_info.type
     };
     PERSON.updateToDeviceTimeline2(timeLineData);
     return {result:'succ'};
@@ -776,12 +777,55 @@ PERSON = {
     var modifier = {
       $set:{}
     };
-    selector["perMin."+minutes+".ts"] = ts
-    if(obj.user_id && obj.user_name){
-      modifier["$set"]["perMin."+minutes+".$.app_user_id"] = obj.user_id;
-      modifier["$set"]["perMin."+minutes+".$.app_user_name"] = obj.user_name;
+    selector["perMin."+minutes+".ts"] = ts;
+    if (obj.type === 'video') {
+      var deviceTimilineItem = DeviceTimeLine.findOne(selector);
+      if (deviceTimilineItem) {
+        var count = 1;
+        //有人选择过
+        //console.log('deviceTimilineItem==='+JSON.stringify(deviceTimilineItem));
+        var imgIndex = _.pluck(deviceTimilineItem.perMin[minutes], 'ts').indexOf(ts);
+        if (imgIndex == -1) {
+          return;
+        }
+        var imgItem = deviceTimilineItem.perMin[minutes][imgIndex];
+        console.log('imageItem==='+JSON.stringify(imgItem));
+        if (imgItem.relations) {
+          var index = _.pluck(imgItem.relations, 'person_name').indexOf(obj.person_name);
+          console.log('index==='+index);
+          if(index === -1){
+            imgItem.relations.push({app_user_id: obj.user_id,app_user_name:obj.user_name,person_name:obj.person_name});
+            count += imgItem.relations.length;
+          }
+          else{
+            imgItem.relations[index].app_user_id = obj.user_id;
+            imgItem.relations[index].app_user_name = obj.user_name;
+            count = imgItem.relations.length;
+          }
+        }
+        //处理老版本的已选择的情况
+        else if (imgItem.app_user_id) {
+          imgItem.relations = [{app_user_id: obj.user_id,app_user_name:obj.user_name,person_name:obj.person_name}];
+          if (imgItem.app_user_id != obj.user_id) {
+            imgItem.relations.push({app_user_id: imgItem.app_user_id,app_user_name:imgItem.app_user_name,person_name:imgItem.person_name});
+            count += 1;
+          }
+        }
+        else{
+          imgItem.relations = [{app_user_id: obj.user_id,app_user_name:obj.user_name,person_name:obj.person_name}];
+        }
+        modifier["$set"]["perMin."+minutes+".$.relations"] = imgItem.relations;
+        modifier["$set"]["perMin."+minutes+".$.relations_info"] = count + '人已选';
+
+      }
     }
-    modifier["$set"]["perMin."+minutes+".$.person_name"] = person_name;
+    else{
+      if(obj.user_id && obj.user_name){
+        modifier["$set"]["perMin."+minutes+".$.app_user_id"] = obj.user_id;
+        modifier["$set"]["perMin."+minutes+".$.app_user_name"] = obj.user_name;
+      }
+      modifier["$set"]["perMin."+minutes+".$.person_name"] = person_name;
+    }
     DeviceTimeLine.update(selector,modifier,function(err,res){
       if(err){
         console.log('updateToDeviceTimeline2 Err:'+err);
