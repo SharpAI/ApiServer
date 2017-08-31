@@ -149,8 +149,209 @@ PERSON = {
       }
     });
   },
+  //打卡签到
+  aiCheckInOutHandle:function(data){
+    /*
+    var data = {
+          user_id:Meteor.userId(),
+          checkin_time: create_time,
+          face_id：people_id,
+          wantModify:true
+          person_info: {
+              'id': personInfo[name].faceId,
+              'uuid': uuid,
+              'name': name,
+              'group_id': userGroup.group_id,
+              'img_url': url,
+              'type': img_type,
+              'ts': create_time.getTime(),
+              'accuracy': accuracy,
+              'fuzziness': fuzziness
+            }
+        };
+     */
+    console.log('ai_checkin_out:',JSON.stringify(data));
+    var person_info = data.person_info;
+    if (!data.face_id || !person_info || ! person_info.group_id) {
+      return {result:'error',reason:'参数不全'};
+    }
+
+    /*重打卡/代打卡　选择了不是今天的图片，要写到对应的天的考勤记录里面,不要更新WorkAIUserRelations*/
+    var isToday = true;
+    var time_offset = 8; //US is -7, China is +8
+    var group = SimpleChat.Groups.findOne({_id: person_info.group_id});
+    if (group && group.offsetTimeZone) {
+      time_offset = group.offsetTimeZone;
+    }
+    function DateTimezone(offset) {
+      var d = new Date();
+      var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+      var local_now = new Date(utc + (3600000*offset))
+      return local_now;
+    }
+    var now = DateTimezone(time_offset);
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    var today_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 0, 0, 0, 0);
+
+    if((data.checkout_time && data.checkout_time < today_utc) || (data.checkin_time && data.checkin_time < today_utc) || (person_info.ts && person_info.ts < today_utc)) {
+      console.log('ai_checkin_out: not today out/in ')
+      isToday = false;
+    }
+
+    var setObj = {group_id:person_info.group_id};
+    if (data.checkin_time) {
+      setObj.in_uuid = person_info.uuid;
+      setObj.checkin_time = new Date(data.checkin_time).getTime() ;
+      setObj.checkin_image = data.checkin_image;
+      setObj.checkin_video = person_info.video_src;
+      if (data.wantModify) {
+        setObj.ai_in_time = setObj.checkin_time;
+      }
+    }
+    if (data.checkout_time) {
+      setObj.out_uuid = person_info.uuid;
+      setObj.checkout_time = new Date(data.checkout_time).getTime();
+      setObj.checkout_image = data.checkout_image;
+      setObj.checkout_video = person_info.video_src;
+      if (data.wantModify) {
+        setObj.ai_out_time = setObj.checkout_time;
+      }
+    }
+
+    //聊天室标记
+    if (data.formLabel) {
+      var device = Devices.findOne({uuid:person_info.uuid});
+      if (device) {
+        if (device.in_out === 'in') {
+          setObj.checkin_time = person_info.ts;
+          data.checkin_image = person_info.img_url;
+          setObj.checkin_image = person_info.img_url;
+        }
+        else if (device.in_out === 'out') {
+          setObj.checkout_time = person_info.ts;
+          data.checkout_image = person_info.img_url;
+          setObj.checkout_image = person_info.img_url;
+        }
+      }
+    }
+    var user = Meteor.users.findOne({_id:data.user_id});
+    if (!user) {
+      console.log('label some person~');
+      //return {result:'error',reason:'用户不存在'};
+    }
+    var person = Person.findOne({group_id: person_info.group_id, 'faces.id': data.face_id}, {sort: {createAt: 1}});
+    var user_name = user ? (user.profile && user.profile.fullname ? user.profile.fullname : user.username) : '';
+    var person_name = person_info.name;
+    var relation  = null;
+    if (person && person.name) {
+      console.log('person info:'+person.name);
+    }
+    else{
+      if (!person_name) { //打卡时选择了没有识别出的人且没输入名字的
+        if (!user) { //标识了但是没关联过App用户的
+          return {result:'error',reason:'请选择一张有名字的照片或前往聊天室进行标记~'};
+        }
+        else{
+          relation = WorkAIUserRelations.findOne({'app_user_id':user._id,'group_id':person_info.group_id});
+        }
+        if (relation && relation.person_name) {
+          person_name = relation.person_name;
+        }
+        else{
+          return {result:'error',reason:'请选择一张有名字的照片或前往聊天室进行标记~'};
+        }
+      }
+      person = PERSON.setName(person_info.group_id, person_info.uuid, data.face_id, person_info.img_url, person_name);
+    }
+    if (data.user_id) {
+      setObj.app_user_id = data.user_id;
+      setObj.app_user_name = user_name;
+    }
+    setObj.isWaitRelation = data.user_id ? false :true ; //是否关联了App账号
+    //relation = WorkAIUserRelations.findOne({'ai_persons.id':person._id});
+    //console.log('user :'+JSON.stringify(user));
+    //console.log('relation: '+JSON.stringify(relation));
+    // if (relation && user && relation.app_user_id && relation.app_user_id !== user._id) {
+    //   return {result:'error',reason:'此人已被'+relation.app_user_name+'选择,请重新选择照片'};
+    // }
+    if (!relation && user) {
+      relation = WorkAIUserRelations.findOne({'app_user_id':user._id,'group_id':person_info.group_id});
+    }
+    if (!relation && person_name) {
+      relation = WorkAIUserRelations.findOne({'person_name':person_name,'group_id':person_info.group_id});
+      //名字被占用了的情况
+      if (relation && relation.app_user_id && user && relation.app_user_id !== user._id) {
+        return {result:'error',reason:'名称「' + person_name + '」已被用户 ' + relation.app_user_name + '使用，请换一个新的名称'};
+      }
+    }
+    person_name = relation && relation.person_name ? relation.person_name : person_name;
+    //关联时输入的名字和person表的名字不一致或者person表的名字与关联用户的人名不一样
+    //例如：app账号：天天向上 关联的用户名：张骏
+    //     有人在聊天室将没有识别的张骏的图片错误label成了宋荣鹏
+    //     app用户在打卡的时候选择张骏的图片时就应该先将错误的label数据删除
+    if (person_name && person_name !== person.name) {
+      console.log('person_info name isnt person name');
+      PERSON.removeName(person_info.group_id, person_info.uuid, data.face_id);
+      person = PERSON.setName(person_info.group_id,person_info.uuid,data.face_id,person_info.img_url,person_name);
+    }
+    setObj.person_name = person.name;
+    if (relation) {
+      if (!relation.checkin_image) {
+        setObj.checkin_image = data.checkin_image;
+      }
+      if (!relation.checkout_image) {
+        data.checkout_image = data.checkout_image;
+      }
+      if (!relation.isWaitRelation) {
+        setObj.isWaitRelation = false;
+      }
+      if(_.pluck(relation.ai_persons, 'id').indexOf(person._id) === -1){
+        relation.ai_persons.push({id: person._id});
+        setObj.ai_persons = relation.ai_persons;
+      }
+      if(isToday == true)
+        WorkAIUserRelations.update({_id:relation._id},{$set:setObj});
+    }
+    else{
+        setObj.ai_persons = [{id:person._id}];
+        if (!setObj.in_uuid) {
+           var device =  GroupUsers.findOne({group_id:setObj.group_id,in_out:'in'});
+           if (device) {
+            setObj.in_uuid = device.username;
+           }
+        }
+        if (!setObj.out_uuid) {
+          var device = GroupUsers.findOne({group_id:setObj.group_id,in_out:'out'});
+          if (device) {
+            setObj.out_uuid = device.username;
+           }
+        }
+        setObj.checkin_image = data.checkin_image;
+        setObj.checkout_image = data.checkout_image;
+        WorkAIUserRelations.insert(setObj);
+    }
+    person_info.name = person.name;
+    person_info.id = person._id;
+    person_info.wantModify = data.wantModify;
+    if(isToday == true)
+      PERSON.updateWorkStatus(person._id);
+    else
+      PERSON.updateWorkStatusHistory(setObj);
+    PERSON.sendPersonInfoToWeb(person_info);
+    var timeLineData = {
+      uuid:person_info.uuid,
+      group_id:person_info.group_id,
+      user_id: user ? user._id : null,
+      user_name:user_name,
+      person_name:person.name,
+      ts:person_info.ts
+    };
+    PERSON.updateToDeviceTimeline2(timeLineData);
+    return {result:'succ'};
+  },
   //App用户关联过的员工，更新考勤信息
   updateWorkStatus: function(ai_person_id){
+    console.log('updateWorkStatus -->'+ai_person_id);
     relation = WorkAIUserRelations.findOne({'ai_persons.id': ai_person_id})
     if(!relation || !relation.group_id || !relation.ai_persons || !relation.person_name) {
       console.log("invalid arguments of updateWorkStatus")
@@ -363,6 +564,7 @@ PERSON = {
   },
   //更新历史考勤信息
   updateWorkStatusHistory: function(workStatusObj){
+    console.log('updateWorkStatusHistory --->'+JSON.stringify(workStatusObj));
   //{
   //  "group_id": "cc30c1b5b49ea17c7145b270",
   //  "in_uuid": "7YRBBDB712001377",

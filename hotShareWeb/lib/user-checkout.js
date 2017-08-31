@@ -57,10 +57,18 @@ if (Meteor.isServer){
         return false;
 
       UserCheckoutEndLog.remove({_id: doc._id});
-      send_greeting_msg(doc.params.msg_data);
-      PERSON.updateWorkStatus(doc.params.person._id)
-      if (doc.params.person_info)
-        PERSON.sendPersonInfoToWeb(doc.params.person_info)
+      var data = {
+        user_id:this.userId,
+        checkout_time: doc.params.person_info.ts,
+        face_id:doc.params.msg_data.images.id,
+        wantModify:true,
+        person_info:doc.params.person_info
+      };
+      PERSON.aiCheckInOutHandle(data);
+      // send_greeting_msg(doc.params.msg_data);
+      // PERSON.updateWorkStatus(doc.params.person._id)
+      // if (doc.params.person_info)
+      //   PERSON.sendPersonInfoToWeb(doc.params.person_info)
       return true;
     }
   });
