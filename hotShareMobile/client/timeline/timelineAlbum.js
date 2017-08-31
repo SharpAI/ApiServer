@@ -83,6 +83,34 @@ var checkInOutWithOutName = function(type,name,taId,taName){
   });
 };
 
+subscribeTimelineDate = function(times){
+  var limit = Session.get('timelineAlbumLimit');
+  var count = Session.get('timelineAlbumListsCounts');
+
+  var hour = Session.get('wantModifyTime');
+  var uuid = Router.current().params._uuid;
+  
+  Session.set('subscribeTimelineDateTimes',times)
+  // subscribe
+  if(count < 10 && times < 10){
+    limit += 1;
+    Session.set('timelineAlbumLimit',limit);
+    if (hour) {
+      Session.set('timelineAlbumGteLimit',0); //大于某段时间的
+      Meteor.subscribe('device-timeline-with-hour',uuid,{$lte:hour},-1,limit,function(){
+        return subscribeTimelineDate(times);
+      });
+    }
+    else{
+      Meteor.subscribe('device-timeline',uuid,limit,function(){
+        return subscribeTimelineDate(times);
+      });
+    }
+  } else {
+    return false;
+  }
+};
+
 Template.timelineAlbum.onRendered(function(){
   var taId = Router.current().params.query.taId;
   if(taId){
@@ -90,7 +118,7 @@ Template.timelineAlbum.onRendered(function(){
     Meteor.subscribe('get-workai-user-relation',taId);
   }
   Session.set('timelineAlbumMultiSelect',false);
-  Session.set('timelineAlbumLimit',10);
+  Session.set('timelineAlbumLimit',1);
   var uuid = Router.current().params._uuid;
   Meteor.subscribe('user-relations-bygroup',uuid);
   Session.set('timelineAlbumLoading',true);
@@ -100,12 +128,18 @@ Template.timelineAlbum.onRendered(function(){
     Meteor.subscribe('device-timeline-with-hour',uuid,{$lte:hour},-1,Session.get('timelineAlbumLimit'),function(){
       Session.set('timelineAlbumLoading',false);
       lazyTimelineImg();
+      Meteor.setTimeout(function(){
+        subscribeTimelineDate(1);
+      },100);
     });
   }
   else{
     Meteor.subscribe('device-timeline',uuid,Session.get('timelineAlbumLimit'),function(){
       Session.set('timelineAlbumLoading',false);
       lazyTimelineImg();
+      Meteor.setTimeout(function(){
+        subscribeTimelineDate(1);
+      },100);
     });
   }
   var isLoadMore = false;
@@ -121,26 +155,29 @@ Template.timelineAlbum.onRendered(function(){
     }
     if (contentTop < -50 && hour && !isLoadMore) {
       isLoadMore = true;
-      var limit = Session.get('timelineAlbumGteLimit') + 10;
+      var limit = Session.get('timelineAlbumGteLimit') + 1;
       console.log('loadMore and limit = '+limit+'hour = '+hour);
       Meteor.subscribe('device-timeline-with-hour',uuid,{$gte:hour},1,limit,function(){
         Session.set('timelineAlbumLoading',false);
+        Session.set('timelineAlbumGteLimit',limit);
       });
-      Session.set('timelineAlbumGteLimit',limit);
     }
     else if((contentHeight + contentTop + 50 ) >= height){
-      var limit = Session.get('timelineAlbumLimit') + 10;
+      var limit = Session.get('timelineAlbumLimit') + 1;
       console.log('loadMore and limit = ',limit);
       // SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({to_type:'group',people_uuid:uuid,type:'text', images: {$exists: true}}, {limit: limit, sort: {create_time: -1}}, limit);
       if (hour) {
         Meteor.subscribe('device-timeline-with-hour',uuid,{$lte:hour},-1,limit,function(){
           Session.set('timelineAlbumLoading',false);
+          Session.set('timelineAlbumLimit',limit);
         });
       }
       else{
-        Meteor.subscribe('device-timeline',uuid,limit);
+        Meteor.subscribe('device-timeline',uuid,limit,function(){
+          Session.set('timelineAlbumLimit',limit);
+        });
       }
-      Session.set('timelineAlbumLimit',limit);
+      // Session.set('timelineAlbumLimit',limit);
     }
     lazyTimelineImg();
   });
@@ -286,6 +323,7 @@ Template.timelineAlbum.helpers({
     }
     personIds = [];
     Session.set('timelineAlbumCounts', timelineAlbumCounts);
+    Session.set('timelineAlbumListsCounts',lists.length);
     return lists;
   },
   formatDate: function(time){
