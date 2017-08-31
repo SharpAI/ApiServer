@@ -284,8 +284,8 @@ Template.homePage.events({
     var statusId = $('#'+_id).data('id');
     var group = SimpleChat.GroupUsers.findOne({group_id:group_id,user_id: Meteor.userId()});
     console.log("group info is:", JSON.stringify(group));
-    var editorName = group.user_name;
-    whats_up = editorName + ":" + whats_up;
+    //var editorName = group.user_name;
+    //whats_up = editorName + ":" + whats_up;
     WorkStatus.update({_id:_id},{
       $set:{whats_up:whats_up}
     },function(err,num){
