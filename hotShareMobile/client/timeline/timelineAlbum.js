@@ -433,6 +433,10 @@ Template.timelineAlbum.events({
     var callbackRsu = function(res){
 
     };
+    if(relations && relations.person_name !== $(e.currentTarget).data('name') && Router.current().params.query.form === 'timeline'){
+      // 如果从设备列表过来，并且选择的不是自己， 提示关联到某个人
+      return $('#selectPerson').modal('show');
+    }
     if(relations || taName ){ // 标识过
       confirm_text = '是否将该时间记录到每日出勤报告？';
       person_name = relations ? relations.person_name : taName;

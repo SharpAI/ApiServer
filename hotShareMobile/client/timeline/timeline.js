@@ -27,6 +27,6 @@ Template.timeline.events({
     return PUB.back();
   },
   'click .deviceItem': function(e){
-    return PUB.page('/timelineAlbum/'+e.currentTarget.id);
+    return PUB.page('/timelineAlbum/'+e.currentTarget.id+'?form=timeline');
   }
 })
