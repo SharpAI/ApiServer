@@ -183,8 +183,13 @@ Template.homePage.helpers({
         day_end = new Date(this.in_time).setUTCHours(0,0,0,0) + (24 - time_offset)*60*60*1000 - 1;
         out_time = day_end
       }
-      //今天的时间
+      //今天的时间（没有离开过公司）
       else if(!out_time && today_start_utc <= this.in_time) {
+        var now_time = Date.now();
+        out_time = now_time;
+      }
+      //今天的时间（离开公司又回到公司）
+      else if(out_time && this.status === 'in' && today_start_utc <= this.in_time) {
         var now_time = Date.now();
         out_time = now_time;
       }
@@ -330,11 +335,12 @@ Template.homePage.events({
     var taName = $(e.currentTarget).data('taname');
     Session.set('modifyMyStatus_ta_name',taName);
 
-    navigator.notification.confirm('要帮「'+taName+'」签到吗？',function(index){
-      if(index === 2){
-        modifyStatusFun(group_id, in_out, taId);
-      }
-    },'提示',['取消','帮TA签到']);
+    modifyStatusFun(group_id, in_out, taId);
+    // navigator.notification.confirm('要帮「'+taName+'」签到吗？',function(index){
+    //   if(index === 2){
+    //     modifyStatusFun(group_id, in_out, taId);
+    //   }
+    // },'提示',['取消','帮TA签到']);
   },
   'click .in-out-pic': function(e){
     e.stopImmediatePropagation();
