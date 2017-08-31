@@ -106,7 +106,7 @@
     <div class="modal-content">
       <div class="modal-body">
         <div class="form-group">
-          <label for="picturePersonName">设置姓名</label>
+          <label for="picturePersonName">添加组员</label>
           <input type="text" class="form-control" id="picturePersonName" placeholder="请输入姓名">
         </div>
       </div>
@@ -127,4 +127,33 @@
   <!--<div class="selectVideoButton">选择</div>-->
 </div>
 <!-- video preview layer end -->
+
+  <!-- select person modal -->
+  <div class="modal fade" id="selectPerson" tabindex="-1" role="dialog" aria-labelledby="sselectPersonLabel">
+    <div class="modal-dialog" role="document" style="top:40px;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="selectPersonLabel">将时间记录到</h4>
+        </div>
+        <div class="modal-body" style="height: 380px; overflow-y:auto;">
+          <ul class="set-up comFadeIn" style="padding-left:0;">
+          {{#each relations}}
+            {{#if person_name}}
+            <li id="{{app_user_id}}" class="personItem" data-name="{{app_user_name}}" data-pname="{{person_name}}" style="height:60px;padding:10px 0">
+                <label>{{person_name}}</label>
+                <div class="value" style="float:right; margin:10px;"><i class="fa fa-angle-right"></i></div>
+            </li>
+            {{/if}}
+          {{/each}}
+        </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary addNewPerson">添加组员</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- select person end-->
 </template>

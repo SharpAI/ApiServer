@@ -17,6 +17,72 @@ var lazyTimelineImg = function(){
     });
   },600);
 }
+
+var checkInOutWithOutName = function(type,name,taId,taName){
+  var data = Session.get('setPicturePersonNameData');
+  data.person_info.name = name;
+  var taId = taId || Router.current().params.query.taId;
+  var msgObj;
+  if(taId){
+    data.user_id = taId;
+    var deviceUser = Meteor.users.findOne({username: Router.current().params._uuid});
+    var taUser = Meteor.users.findOne({_id: taId});
+    if(taUser){
+      taName = taUser.profile.fullname? taUser.profile.fullname: taUser.username;
+      var taIcon = taUser.profile.icon;
+    }
+    msgObj = {
+      _id: new Mongo.ObjectID()._str,
+      form: {
+        id: deviceUser._id,
+        name: deviceUser.profile.fullname,
+        icon: deviceUser.profile.icon
+      },
+      to: {
+        id:   taId,
+        name: taName,
+        icon: taIcon || ''
+      },
+      to_type: 'user',
+      type: 'text',
+      text: data.msgText,
+      create_time: new Date(),
+      is_read: false
+    };
+
+  }
+
+  console.log(data);
+  Meteor.call('ai-checkin-out',data,function(err,res){
+    if(type === 'confirmPersonName'){
+      $('#setPicturePersonName').modal('hide');
+      $('body').removeClass('modal-open');
+      $('.modal-backdrop').remove();
+    }
+    if(type == 'personItem'){
+      $('#selectPerson').modal('hide');
+    }
+    if(err){
+      PUB.toast('请重试');
+      console.log('ai-checkin-out error:' + err);
+      return;
+    }
+    if(res && res.result == 'succ'){
+      PUB.toast('已记录到每日出勤报告');
+      // 发送代Ta 签到成功通知
+      if(taId){
+        console.log(msgObj)
+        sendMqttUserMessage(taId,msgObj);
+      }
+      return PUB.back();
+    } else {
+      return navigator.notification.confirm(res.text,function(index){
+
+      },res.reason,['知道了']);
+    }
+  });
+};
+
 Template.timelineAlbum.onRendered(function(){
   var taId = Router.current().params.query.taId;
   if(taId){
@@ -26,6 +92,7 @@ Template.timelineAlbum.onRendered(function(){
   Session.set('timelineAlbumMultiSelect',false);
   Session.set('timelineAlbumLimit',10);
   var uuid = Router.current().params._uuid;
+  Meteor.subscribe('user-relations-bygroup',uuid);
   Session.set('timelineAlbumLoading',true);
   var hour = Session.get('wantModifyTime');
   if (hour) {
@@ -235,6 +302,11 @@ Template.timelineAlbum.helpers({
   },
   isMultiSelect: function(){
     return Session.equals('timelineAlbumMultiSelect',true);
+  },
+  relations: function(){
+    var device = Devices.findOne({uuid: Router.current().params._uuid});
+    var group_id = device.groupId;
+    return WorkAIUserRelations.find({'group_id':group_id}).fetch();
   }
 
 });
@@ -410,11 +482,12 @@ Template.timelineAlbum.events({
       else{
         data.msgText = msgText;
         Session.set('setPicturePersonNameData',data);
-        $('#picturePersonName').val("");
-        Meteor.setTimeout(function(){
-          $('#picturePersonName').focus();
-        },800);
-        return $('#setPicturePersonName').modal('show');
+        return $('#selectPerson').modal('show');
+        // $('#picturePersonName').val("");
+        // Meteor.setTimeout(function(){
+        //   $('#picturePersonName').focus();
+        // },800);
+        // return $('#setPicturePersonName').modal('show');
         // confirm_text = '请选择一张有名字的照片或前往聊天室进行标记~';
         // var url = '/simple-chat/to/group?id='+ group_id;
         // try{
@@ -464,6 +537,7 @@ Template.timelineAlbum.events({
       PUB.toast('请输入姓名');
       return $('#picturePersonName').focus();
     }
+    return checkInOutWithOutName('confirmPersonName',name);
     var data = Session.get('setPicturePersonNameData');
     data.person_info.name = name;
     var taId = Router.current().params.query.taId;
@@ -549,5 +623,21 @@ Template.timelineAlbum.events({
     // VideoPlayer = null;
     videojs("timeline-video-preview").dispose();
     $('.videoPreviewLayer').fadeOut();
+  },
+  'click .personItem': function(e){
+    var person_name = $(e.currentTarget).data('pname');
+    var data = Session.get('setPicturePersonNameData');
+    var taId = e.currentTarget.id;
+    var taName = $(e.currentTarget).data('name');
+    return checkInOutWithOutName('personItem',person_name, taId, taName);
+  },
+  // 添加组员
+  'click .addNewPerson': function(){
+    $('#selectPerson').modal('hide');
+    $('#picturePersonName').val("");
+    Meteor.setTimeout(function(){
+      $('#picturePersonName').focus();
+    },800);
+    return $('#setPicturePersonName').modal('show');
   }
 });

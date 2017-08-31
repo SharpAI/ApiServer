@@ -70,3 +70,11 @@ Meteor.publish('get-workai-user-relation',function(user_id){
   return WorkAIUserRelations.find({'app_user_id':user_id});
 });
 
+Meteor.publish('user-relations-bygroup',function(uuid){
+  var device = Devices.findOne({uuid:uuid});
+  if(device && device.groupId){
+    var group_id = device.groupId
+    return WorkAIUserRelations.find({'group_id':group_id});
+  }
+  return this.ready();
+});
