@@ -90,9 +90,9 @@ subscribeTimelineDate = function(times){
   var hour = Session.get('wantModifyTime');
   var uuid = Router.current().params._uuid;
   
-  Session.set('subscribeTimelineDateTimes',times)
   // subscribe
   if(count < 10 && times < 10){
+    times += 1;
     limit += 1;
     Session.set('timelineAlbumLimit',limit);
     if (hour) {
