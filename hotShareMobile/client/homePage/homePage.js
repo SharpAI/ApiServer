@@ -219,6 +219,29 @@ Template.homePage.helpers({
       return 'modifyTaStatus';
     }
     return 'modifyMyStatus';
+  },
+  whatsUpLists: function(){
+    console.log(this);
+    var lists = [];
+    if(typeof(this.whats_up) == 'string'){ // 旧数据兼容
+      lists.push({
+        person_name: this.person_name,
+        content: this.whats_up,
+        ts: this.in_time // 当天上班时间
+      });
+    } else {
+      lists = this.whats_up;
+    }
+    return lists;
+  },
+  getShortTime(ts,group_id){
+    var time_offset = 8
+    var group = SimpleChat.Groups.findOne({_id: group_id});
+    if (group && group.offsetTimeZone) {
+      time_offset = group.offsetTimeZone;
+    }
+    var time = new Date(ts);
+    return time.shortTime(time_offset,true);
   }
 });
 modifyStatusFun = function(group_id,in_out,taId){
@@ -270,7 +293,8 @@ Template.homePage.events({
     var whats_up = $(e.currentTarget).data('whatsup');
     $('.homePage .content').addClass('content_box');
     $('.saveWhatsUp').attr('id',_id);
-    $('#EditorWhatsUp').val(whats_up);
+    Session.set('editWhatsUpData',this);
+    $('#EditorWhatsUp').val('');
     $('#myModal').modal('show');
     setTimeout(function(){
       $('#EditorWhatsUp').focus();
@@ -278,14 +302,36 @@ Template.homePage.events({
   },
   'click .saveWhatsUp':function(e){
     var _id = e.currentTarget.id;
-    var whats_up = $('#EditorWhatsUp').val();
+    var content = $('#EditorWhatsUp').val();
+    if(!content || content.length < 1 || content.replace(/\s+/gim, '').length ==0){ // 内容为空或者全是空白字符， 不能提交
+      $('#EditorWhatsUp').val('');
+      return $('#EditorWhatsUp').focus();
+    }
+    var data = Session.get('editWhatsUpData');
+    console.log(data);
     $('#'+_id).data('whatsup',whats_up);
     var group_id = $('#'+_id).data('groupid');
     var statusId = $('#'+_id).data('id');
     var group = SimpleChat.GroupUsers.findOne({group_id:group_id,user_id: Meteor.userId()});
     console.log("group info is:", JSON.stringify(group));
-    //var editorName = group.user_name;
+    var editorName = group.user_name;
     //whats_up = editorName + ":" + whats_up;
+
+    var whats_up = data.whats_up || []
+    if(whats_up && typeof(whats_up) === 'string'){
+      whats_up = [{
+        person_name: data.person_name,
+        content: whats_up,
+        ts: data.in_time // 当天上班时间
+      }]
+    }
+
+    whats_up.push({
+      person_name: editorName,
+      content: content,
+      ts: Date.now()
+    });
+     
     WorkStatus.update({_id:_id},{
       $set:{whats_up:whats_up}
     },function(err,num){
@@ -309,7 +355,7 @@ Template.homePage.events({
         },
         to_type: 'group',
         type: 'text',
-        text: '更新了今日简述：\r\n'+whats_up,
+        text: editorName+' 更新了今日简述：\r\n'+content,
         create_time: new Date(),
         is_read: false,
         // send_status: 'sending'

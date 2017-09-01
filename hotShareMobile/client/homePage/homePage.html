@@ -23,6 +23,8 @@
       max-width: 200px;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
+    .whats-up i{float: left;}
+    .whats-up p {padding-left: 20px; margin-bottom: 5px;}
     .in-out-pic{
       width: 28px;
       height:28px;
@@ -205,7 +207,10 @@
                   -->
                   <td colspan="3" class="whats-up editWhatsUp" id="{{_id}}" data-groupid="{{group_id}}" data-whatsup="{{whats_up}}" style="white-space:normal">
                       {{#if whats_up}}
-                          <i class="fa fa-pencil" style="color:gray; font-size:14px;">{{whats_up}}</i>
+                          <i class="fa fa-pencil" style="color:gray; font-size:14px;"></i>
+                          {{#each whatsUpLists}}
+                          <p><strong>{{person_name}}</strong>[{{getShortTime ts ../group_id}}]: {{content}}</p>
+                          {{/each}}
                       {{else}}
                           <i class="fa fa-pencil" style="color:gray; font-size:14px;">今天还没有工作安排...</i>
                       {{/if}}

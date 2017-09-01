@@ -22,7 +22,8 @@ Date.prototype.parseDate = function (pattern) {
             D = date.getDate(),
             DD = ('0' + D).slice(-2),
             h = (date.getHours() > 12)?(date.getHours()-12):date.getHours() ,
-            hh = ('0' + h).slice(-2),
+            // hh = ('0' + h).slice(-2),
+            hh = (date.getHours() > 12)?date.getHours():'0' + date.getHours(),
             m = date.getMinutes(),
             mm = ('0' + m).slice(-2),
             s = date.getSeconds(),
@@ -63,7 +64,7 @@ Date.prototype.parseDate = function (pattern) {
     return format(self, pattern);
 }
 
-Date.prototype.shortTime = function (time_offset) {
+Date.prototype.shortTime = function (time_offset, only_H_S) {
     /**
      * 0：00—6:00凌晨,6:00—11:00上午，11:00—13:00中午，13:00—16:00下午，16:00—18:00傍晚，18:00—24:00晚上
      * exmaple:
@@ -122,5 +123,8 @@ Date.prototype.shortTime = function (time_offset) {
         result += '晚上 ';
     }
     result += self.parseDate('h:mm');
+    if(only_H_S){
+        return self.parseDate('hh:mm');
+    }
     return result;
 }
