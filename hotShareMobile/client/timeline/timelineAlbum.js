@@ -56,12 +56,12 @@ var checkInOutWithOutName = function(type,name,taId,taName){
   Meteor.call('ai-checkin-out',data,function(err,res){
     if(type === 'confirmPersonName'){
       $('#setPicturePersonName').modal('hide');
-      $('body').removeClass('modal-open');
-      $('.modal-backdrop').remove();
     }
     if(type == 'personItem'){
       $('#selectPerson').modal('hide');
     }
+    $('body').removeClass('modal-open');
+    $('.modal-backdrop').remove();
     if(err){
       PUB.toast('请重试');
       console.log('ai-checkin-out error:' + err);
@@ -73,6 +73,9 @@ var checkInOutWithOutName = function(type,name,taId,taName){
       if(taId){
         console.log(msgObj)
         sendMqttUserMessage(taId,msgObj);
+      }
+      if (Router.current().params.query.form === 'timeline') {
+        return;
       }
       return PUB.back();
     } else {
