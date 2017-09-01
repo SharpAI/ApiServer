@@ -66,6 +66,8 @@ Template.groupPhoto.events({
               _id: ids[0],
               index: i,
               obj: img,
+              uuid:msgObj.people_uuid,
+              create_time:msgObj.create_time,
               group_id: t.data.id
             });
           }
@@ -93,7 +95,7 @@ Template.groupPhoto.events({
               msg_id: task._id,
               img__id: task.obj._id,
               img_id: task.obj.id,
-              img_uuid: task.obj.uuid,
+              img_uuid: task.uuid,
               img_type: task.obj.img_type,
               img_style: task.obj.style,
               img_sqlid: task.obj.sqlid,
@@ -108,7 +110,7 @@ Template.groupPhoto.events({
               if(task.obj.img_type && task.obj.img_type == 'face') {
                 var person_info = {
                   //'id': res[updateObj.images[i].label].faceId,
-                  'uuid': task.obj,
+                  'uuid': task.uuid,
                   'name': name,
                   'group_id': task.group_id,
                   'img_url': task.obj.url,
