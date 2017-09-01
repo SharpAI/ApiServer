@@ -20,7 +20,7 @@ var lazyTimelineImg = function(){
 
 var checkInOutWithOutName = function(type,name,taId,taName){
   var data = Session.get('setPicturePersonNameData');
-  data.person_info.name = name;
+  data.person_info.name = taName || name;
   var taId = taId || Router.current().params.query.taId;
   var msgObj;
   if(taId){
@@ -50,6 +50,14 @@ var checkInOutWithOutName = function(type,name,taId,taName){
       is_read: false
     };
 
+  }
+  else if (taName) { //帮标识过但没关联的人代签
+    data.user_id = null;
+  }
+  else{
+    if (Router.current().params.query.form === 'timeline') {
+      data.user_id = null;
+    }
   }
 
   console.log(data);
