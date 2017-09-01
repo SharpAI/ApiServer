@@ -203,6 +203,7 @@ Template.timelineAlbum.onDestroyed(function(){
   Session.set('wantModify',false);
   Session.set('wantModifyTime',null);
   Session.set('modifyMyStatus_ta_name',null);
+  Session.set('setPicturePersonNameData',null);
 
 });
 Template.timelineAlbum.helpers({
@@ -466,13 +467,17 @@ Template.timelineAlbum.events({
     }
     console.log(data);
     // 检查是否标识过自己
-    var relations = WorkAIUserRelations.findOne({'app_user_id':data.user_id,group_id:group_id});
+    var relations = null;
+    if (data.user_id) {
+      relations = WorkAIUserRelations.findOne({'app_user_id':data.user_id,group_id:group_id});
+    }
     var formPage = Router.current().params.query.from;
     var callbackRsu = function(res){
 
     };
     if(relations && relations.person_name !== $(e.currentTarget).data('name') && Router.current().params.query.form === 'timeline'){
       // 如果从设备列表过来，并且选择的不是自己， 提示关联到某个人
+      Session.set('setPicturePersonNameData',data);
       return $('#selectPerson').modal('show');
     }
     if(relations || taName ){ // 标识过
