@@ -3,6 +3,12 @@ pages = ['/user', '/bell', '/search']
 
 #公共函数
 @PUB =
+    'showWaitLoading':(text)->
+        this.hideWaitLoading()
+        text = text || '加载中...'
+        $('body').append('<div class="actionWaitLoading"><div class="loadingContainer"><img src="/loading.gif" width="28" height="28"/><p>'+text+'</p></div></div>')
+    'hideWaitLoading':()->
+        $('.actionWaitLoading').remove()
     'isUrl':(str_url)->
         `
         var strRegex = '^((https|http|ftp|rtsp|mms)?://)'

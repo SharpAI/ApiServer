@@ -53,7 +53,9 @@ var checkInOutWithOutName = function(type,name,taId,taName){
   }
 
   console.log(data);
+  PUB.showWaitLoading('正在处理');
   Meteor.call('ai-checkin-out',data,function(err,res){
+    PUB.hideWaitLoading();
     if(type === 'confirmPersonName'){
       $('#setPicturePersonName').modal('hide');
     }
@@ -490,7 +492,9 @@ Template.timelineAlbum.events({
         confirm_text = '是否将该时间记录到「'+ person_name +'」每日出勤报告？'
       }
       PUB.confirm(confirm_text,function(){
+        PUB.showWaitLoading('正在处理');
         Meteor.call('ai-checkin-out',data,function(err, res){
+          PUB.hideWaitLoading();
           if(err){
             PUB.toast('记录失败，请重试');
             console.log('ai-checkin-out error:' + err);
@@ -552,7 +556,9 @@ Template.timelineAlbum.events({
         // }
       }
       PUB.confirm(confirm_text,function(){
+        PUB.showWaitLoading('正在处理');
         Meteor.call('ai-checkin-out',data,function(err,res){
+          PUB.hideWaitLoading();
           if(err){
             PUB.toast('请重试');
             console.log('ai-checkin-out error:' + err);
@@ -619,7 +625,9 @@ Template.timelineAlbum.events({
       };
     }
     console.log(data);
+    PUB.showWaitLoading('正在处理');
     Meteor.call('ai-checkin-out',data,function(err,res){
+      PUB.hideWaitLoading();
       $('#setPicturePersonName').modal('hide');
       $('body').removeClass('modal-open');
       $('.modal-backdrop').remove();
