@@ -355,7 +355,7 @@ Template.homePage.events({
         },
         to_type: 'group',
         type: 'text',
-        text: editorName+' 更新了今日简述：\r\n'+content,
+        text: '更新了今日简述：\r\n'+content,
         create_time: new Date(),
         is_read: false,
         // send_status: 'sending'
