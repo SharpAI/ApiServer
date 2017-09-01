@@ -234,7 +234,7 @@ Template.homePage.helpers({
     }
     return lists;
   },
-  getShortTime(ts,group_id){
+  getShortTime: function(ts,group_id){
     var time_offset = 8
     var group = SimpleChat.Groups.findOne({_id: group_id});
     if (group && group.offsetTimeZone) {
