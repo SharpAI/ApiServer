@@ -492,7 +492,11 @@ Meteor.methods({
     return 'succ';
   },
   'ai-checkin-out':function(data){
-    PERSON.aiCheckInOutHandle(data);
+    try{
+      return PERSON.aiCheckInOutHandle(data);
+    } catch (err){
+      return err;
+    }
   }
 });
 
