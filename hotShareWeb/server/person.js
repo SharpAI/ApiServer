@@ -919,26 +919,34 @@ Meteor.methods({
   },
     
   // 群相册里的批量标注
-  'upLabels': function(groupId, labelName, waitLabels){
+  'upLabels': function(groupId, data, waitLabels, type){
     this.unblock();
 
     waitLabels.map(function(wait){
-      var name = PERSON.getIdByName(wait.uuid, labelName, groupId);
-      var mqttMsg = {
-        group_id: groupId,
-        type: 'trainset',
-        url: wait.url,
-        person_id: name && name.id ? name.id : '',
-        device_id: wait.uuid,
-        face_id: name && name.faceId ? name.faceId : wait.id,
-        drop: false,
-        img_type: wait.img_type,
-        style: wait.style,
-        sqlid: wait.sqlid
-      };
-      sendMqttMessage('/device/' + groupId, mqttMsg);
-      console.log('send mqtt to device:', mqttMsg);
-      PERSON.setName(groupId, wait.uuid, wait.id, wait.url, labelName)
+      var trainsetObj = {
+          group_id: groupId,
+          type: 'trainset',
+          url: wait.url,
+          img_type: wait.img_type,
+          style: wait.style,
+          sqlid: wait.sqlid
+        };
+      if (type === 'delete') {
+        trainsetObj.drop = true;
+        trainsetObj.rm_reson = data ;
+        sendMqttMessage('/device/' + groupId, trainsetObj);
+        console.log('send mqtt to device:', trainsetObj);
+        PERSON.removeName(groupId, wait.uuid, wait.id);
+        return;
+      }
+      var name = PERSON.getIdByName(wait.uuid, data, groupId);
+      trainsetObj.person_id = name && name.id ? name.id : '';
+      trainsetObj.device_id = wait.uuid;
+      trainsetObj.face_id = name && name.faceId ? name.faceId : wait.id;
+      trainsetObj.drop = false;
+      sendMqttMessage('/device/' + groupId, trainsetObj);
+      console.log('send mqtt to device:', trainsetObj);
+      PERSON.setName(groupId, wait.uuid, wait.id, wait.url, data);
     });
     return true;
   }

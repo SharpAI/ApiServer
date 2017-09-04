@@ -31,12 +31,12 @@ Template.groupPhoto.events({
     type.set($(e.currentTarget).html());
   },
   'click .btn-default': function(e, t){
-    if ($(e.currentTarget).html() != '标注')
-      return;
-
-    SimpleChat.show_label(t.data.id, function(name){
-      if(!name)
+    var type = '';
+    var call_back_handle = function(nameOrReason){
+      if (!nameOrReason) {
+        $('.btn-default').show();
         return;
+      }
 
       var localTask = [];
       var wait_labels = [];
@@ -74,13 +74,15 @@ Template.groupPhoto.events({
         });
       });
 
-      console.log('name:', name, 'labels:', wait_labels);
+      console.log('nameOrReason:', nameOrReason, 'labels:', wait_labels);
       console.log('local task:', localTask);
 
-      Meteor.call('upLabels', t.data.id, name, wait_labels, function(err, res){
+      Meteor.call('upLabels', t.data.id, nameOrReason, wait_labels,type, function(err, res){
+        var flag = type === 'label' ? '标注' : '删除';
         if (err || !res){
-          $(e.currentTarget).html('标注');
-          return alert('标注失败~');
+          $(e.currentTarget).html(flag);
+          $('.btn-default').show();
+          return alert(flag + '失败~');
         }
 
         localTask.map(function(task){
@@ -89,7 +91,8 @@ Template.groupPhoto.events({
           SimpleChat.Messages.update({_id: task._id}, {$set: $set}, function(err, num){
             if (err || num <= 0)
               return;
-
+            var flag_label = type === 'label' ? nameOrReason : '已删';
+            var is_delete = type === 'label' ? false : true;
             // 生成群相册的标注信息（一张照片一条）
             SimpleChat.GroupPhotoLabel.insert({
               msg_id: task._id,
@@ -100,18 +103,32 @@ Template.groupPhoto.events({
               img_style: task.obj.style,
               img_sqlid: task.obj.sqlid,
               img_index: task.index,
-              img_label: name,
+              img_label: flag_label,
               img_url: task.obj.url,
+              is_delete:is_delete,
               group_id: task.group_id,
               create_time: new Date()
             });
-            
+            // 处理是否已经全部标注
+            var obj = SimpleChat.Messages.findOne({_id: task._id});
+            if (obj && obj.images && obj.images){
+              obj.admin_label = true;
+              obj.images.map(function(img){
+                if (!img.admin_label)
+                  obj.admin_label = false;
+              });
+              if (obj.admin_label === true)
+                SimpleChat.Messages.update({_id: task._id}, {$set: {admin_label: true}});
+            }
+            if (is_delete) {
+              return;
+            }
             try {
               if(task.obj.img_type && task.obj.img_type == 'face') {
                 var person_info = {
                   //'id': res[updateObj.images[i].label].faceId,
                   'uuid': task.uuid,
-                  'name': name,
+                  'name': nameOrReason,
                   'group_id': task.group_id,
                   'img_url': task.obj.url,
                   'type': task.obj.img_type,
@@ -129,26 +146,40 @@ Template.groupPhoto.events({
               }
             } catch(e){}
 
-            // 处理是否已经全部标注
-            var obj = SimpleChat.Messages.findOne({_id: task._id});
-            if (obj && obj.images && obj.images){
-              obj.admin_label = true;
-              obj.images.map(function(img){
-                if (!img.admin_label)
-                  obj.admin_label = false;
-              });
-              if (obj.admin_label === true)
-                SimpleChat.Messages.update({_id: task._id}, {$set: {admin_label: true}});
-            }
           });
         });
-        $(e.currentTarget).html('标注');
+        $(e.currentTarget).html(flag);
+        $('.btn-default').show();
         selected.set([]);
-        alert('标注完成~');
+        alert(flag+'完成~');
+        loadMoreImg();
       });
-    });
+
+    };
+    if ($(e.currentTarget).html() == '删除'){
+      type = 'delete';
+      $('.label-btn').hide();
+      SimpleChat.show_remove(call_back_handle);
+      return;
+    }
+    else if ($(e.currentTarget).html() == '标注') {
+      type = 'label';
+      $('.del-btn').hide();
+      SimpleChat.show_label(t.data.id, call_back_handle);
+    }
   }
 });
+
+
+var loadMoreImg = function(){
+  var img_item_count = $('.wait-label-item').length;
+  if (img_item_count >= 20) {
+    return;
+  }
+  limit = limit1.get() + limitSetp;
+  limit1.set(limit);
+  SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({is_people: true, 'to.id': data.id,admin_label: {$ne: true}}, {limit: limit, sort: {create_time: -1}}, limit);
+}
 
 // lazyload
 var lazyloadInitTimeout = {'未标注': null, '已标注': null};
@@ -163,7 +194,7 @@ var lazyloadInit = function($ul, type){
 };
 
 Template.groupPhoto.onRendered(function(){
-  SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({is_people: true, 'to.id': data.id}, {limit: limitSetp, sort: {create_time: -1}}, limitSetp);
+  SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({is_people: true, 'to.id': data.id,admin_label: {$ne: true}}, {limit: limitSetp, sort: {create_time: -1}}, limitSetp);
 
   var data = this.data;
   this.$('.photos').each(function(){
@@ -175,7 +206,7 @@ Template.groupPhoto.onRendered(function(){
         if (type.get() === '未标注'){
           limit = limit1.get() + limitSetp;
           limit1.set(limit);
-          SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({is_people: true, 'to.id': data.id}, {limit: limit, sort: {create_time: -1}}, limit);
+          SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({is_people: true, 'to.id': data.id,admin_label: {$ne: true}}, {limit: limit, sort: {create_time: -1}}, limit);
         } else {
           limit = limit2.get() + 100;
           limit2.set(limit);

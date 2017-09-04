@@ -33,9 +33,10 @@
     <div class="buttons">
       {{#if is_type '未标注'}}
         {{#if is_selected}}
-        <div class="btn-default">标注</div>
+        <div class="btn-default label-btn">标注</div>
+        <div class="btn-default del-btn" style="background-color: #f56262;color: #ffffff;margin-top: 3px;">删除</div>
         {{else}}
-        请点选照片进行标注.
+        请点选照片进行标注或删除.
         {{/if}}
       {{else}}
         请切换到未标注栏，进行标注.
@@ -45,7 +46,7 @@
 </template>
 
 <template name="groupPhotoImg">
-  <li id="{{../_id}}">
+  <li id="{{../_id}}" class="wait-label-item">
      <img class="lazy" data-original="{{url}}" /> 
     {{#if has_selected ../_id _id}}
     {{#if is_type '未标注'}}

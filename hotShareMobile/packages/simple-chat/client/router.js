@@ -925,7 +925,7 @@ Template._simpleChatToChatLabel.events({
     var $img = $('#swipebox-overlay .slide.current img');
     var data = this;
     var names = get_people_names();
-
+    
     show_label(data.to.id, function(name){
       Meteor.call('get-id-by-name1', data.people_uuid, name, data.to.id, function(err, res){
         if(err)
@@ -2249,6 +2249,7 @@ show_remove = function(callback){
   }, document.body);
   simple_chat_page_stack.push(remove_view);
 }
+SimpleChat.show_remove = show_remove;
 
 Template._simpleChatToChatLabelRemove.onRendered(function(){
   this.$("#label-input-name").bind("input propertychange",function (e) {
