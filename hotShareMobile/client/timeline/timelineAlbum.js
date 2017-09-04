@@ -25,30 +25,49 @@ var checkInOutWithOutName = function(type,name,taId,taName){
   var msgObj;
   if(taId){
     data.user_id = taId;
-    var deviceUser = Meteor.users.findOne({username: Router.current().params._uuid});
-    var taUser = Meteor.users.findOne({_id: taId});
-    if(taUser){
-      taName = taUser.profile.fullname? taUser.profile.fullname: taUser.username;
-      var taIcon = taUser.profile.icon;
+    if (taId !== Meteor.userId()) {
+      var deviceUser = Meteor.users.findOne({username: Router.current().params._uuid});
+      var taUser = Meteor.users.findOne({_id: taId});
+      var person_info = data.person_info;
+      var time_offset = 8;
+      var group = SimpleChat.Groups.findOne({_id: person_info.group_id});
+      console.log(group);
+      if (group && group.offsetTimeZone) {
+        time_offset = group.offsetTimeZone;
+      }
+      msgObj = {
+        _id: new Mongo.ObjectID()._str,
+        form:{
+          id: deviceUser._id,
+          name: deviceUser.profile.fullname,
+          icon: deviceUser.profile.icon
+        },
+        to: {
+          id:   taUser._id,
+          name: taUser.profile.fullname? taUser.profile.fullname: taUser.username,
+          icon: taUser.profile.icon
+        },
+        to_type: 'user',
+        type: 'text',
+        text: data.msgText,
+        images:[
+          {
+            id: data.face_id,
+            url: person_info.img_url,
+            label: person_info.name,
+            img_type: person_info.type,
+            video_src:person_info.video_src
+          }
+        ],
+        people_uuid: person_info.uuid,
+        checkin_time:data.checkin_time,
+        checkout_time:data.checkout_time,
+        is_agent_check:true, //是否是代签消息
+        offsetTimeZone:time_offset,
+        create_time: new Date(),
+        is_read: false,
+      };
     }
-    msgObj = {
-      _id: new Mongo.ObjectID()._str,
-      form: {
-        id: deviceUser._id,
-        name: deviceUser.profile.fullname,
-        icon: deviceUser.profile.icon
-      },
-      to: {
-        id:   taId,
-        name: taName,
-        icon: taIcon || ''
-      },
-      to_type: 'user',
-      type: 'text',
-      text: data.msgText,
-      create_time: new Date(),
-      is_read: false
-    };
 
   }
   else if (taName) { //帮标识过但没关联的人代签
@@ -490,6 +509,7 @@ Template.timelineAlbum.events({
     };
     if(relations && relations.person_name !== $(e.currentTarget).data('name') && Router.current().params.query.form === 'timeline'){
       // 如果从设备列表过来，并且选择的不是自己， 提示关联到某个人
+      data.msgText = msgText;
       Session.set('setPicturePersonNameData',data);
       return $('#selectPerson').modal('show');
     }
