@@ -409,7 +409,15 @@ Template.homePage.events({
     
     $('.timeLayer').html(time.shortTime(time_offset));
     $('.imgLayer img.img_item').attr('src',src);
-    var video_src = this.in_video || this.out_video;
+    // var video_src = this.in_video || this.out_video;
+    var in_out = $(e.currentTarget).data('inout');
+    var video_src = null;
+    if(in_out == 'in'){
+      video_src = this.in_video;
+    }
+    if(in_out == 'out'){
+      video_src = this.out_video;
+    }
     if (video_src) {
       $('.img_container .video-play-tip').show();
       $('.img_container').addClass('videos');
