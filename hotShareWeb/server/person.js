@@ -309,6 +309,38 @@ PERSON = {
         relation.ai_persons.push({id: person._id});
         setObj.ai_persons = relation.ai_persons;
       }
+      //聊天室标记或者打卡设备记录考勤时，如果选取的照片拍摄时间小于当前的考勤上班时间或大于当前的下班时间才应当更新考勤；如果是主页考勤点更改上下班时间或个人信息重打卡则都更改
+      if (!data.wantModify) {
+        var time = setObj.checkin_time || setObj.checkout_time;
+        var day = new Date(time);
+        var day_utc = Date.UTC(day.getFullYear(), day.getMonth(), day.getDate() , 0, 0, 0, 0);
+        var workstatus = null;
+        if (relation.app_user_id) {
+          workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'app_user_id': relation.app_user_id, 'date': day_utc});
+        }
+        if (!workstatus && relation.person_name) {
+          workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'person_name': relation.person_name, 'date': day_utc});
+        }
+        if (workstatus) {
+          //当前考勤上班时间小于标记时间
+          if (workstatus.in_time && setObj.checkin_time && workstatus.in_time > 0 && workstatus.in_time < setObj.checkin_time) {
+            // delete setObj.checkin_time;
+            // delete setObj.checkin_image;
+            // delete setObj.checkin_video;
+            console.log('workstatus in_time earlier than setObj checkin_time');
+            setObj.checkin_time = workstatus.in_time;
+            setObj.checkin_image = workstatus.in_image;
+            setObj.checkin_video = workstatus.in_video;
+          }
+          //当前考勤下班时间大于标记时间
+          if (workstatus.out_time && setObj.checkout_time && workstatus.out_time > setObj.checkout_time) {
+            console.log('workstatus out_time later than setObj checkout_time');
+            setObj.checkout_time = workstatus.out_time;
+            setObj.checkout_image = workstatus.out_image;
+            setObj.checkout_video = workstatus.out_video;
+          }
+        }
+      }
       if(isToday == true)
         WorkAIUserRelations.update({_id:relation._id},{$set:setObj});
     }
