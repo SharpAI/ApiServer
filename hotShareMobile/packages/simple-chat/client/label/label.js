@@ -53,7 +53,7 @@ Template._simpleChatLabelLabel.events({
     var updateObj = {};
     var imgs = images.get();
     var removes = [];
-
+    
     // set remove img
     for (var i=0;i<imgs.length;i++){
       for(var ii=0;ii<msgObj.images.length;ii++){
@@ -66,7 +66,7 @@ Template._simpleChatLabelLabel.events({
             }
           }
           if (isPush)
-            removes.push({uuid: msgObj.people_uuid, id: msgObj.images[ii].id});
+            removes.push({uuid: msgObj.people_uuid, id: msgObj.images[ii].id, img_url: imgs[i].url});
           msgObj.images[ii].error = true;
           break;
         }

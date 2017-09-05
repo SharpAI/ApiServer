@@ -826,7 +826,45 @@ PERSON = {
       }
     });
 
-  }
+  },
+  // 标错时， 修正 WorkAIUserRelations
+  fixRelation: function(group_id, img_url){
+    // 匹配到第一次进的图像
+    var relation1 = WorkAIUserRelations.findOne({group_id: group_id,ai_in_image: img_url});
+    if(relation1){ 
+      var setObj = {};
+      if(relation1.ai_lastest_in_time && relation1.ai_lastest_in_image){
+        return WorkAIUserRelations.update({_id: relation1._id},{
+          $set:{
+            ai_in_time: relation1.ai_lastest_in_time,
+            ai_in_image: relation1.ai_lastest_in_image || relation1.ai_in_image
+          }
+        });
+      }
+    }
+
+    // 匹配到最后一次进的图像
+    var relation2 = WorkAIUserRelations.findOne({group_id: group_id,ai_lastest_in_image: img_url});
+    if(relation2){
+      return WorkAIUserRelations.update({_id: relation2._id},{
+        $set: {
+          ai_lastest_in_time: relation2.ai_in_time,
+          ai_lastest_in_image: relation2.ai_in_image
+        }
+      });
+    }
+
+    // 匹配到出的图像
+    var relation3 = WorkAIUserRelations.findOne({group_id: group_id, ai_out_image: img_url});
+    if(relation3){
+      return WorkAIUserRelations.update({_id: relation3._id},{
+        $set: {
+          ai_out_time: null,
+          ai_out_image: ''
+        }
+      });
+    }
+  };
 };
 
 Meteor.methods({
@@ -861,8 +899,10 @@ Meteor.methods({
       PERSON.removeName(null,items[i].uuid, items[i].id);
   },
   'remove-persons1': function(group_id, items){
-    for(var i=0;i<items.length;i++)
+    for(var i=0;i<items.length;i++){
       PERSON.removeName(group_id, items[i].uuid, items[i].id);
+      PERSON.fixRelation(group_id, items[i].img_url);
+    }
   },
   'send-person-to-web': function(person){
       personItem = Person.findOne({faceId:person.id,group_id:person.group_id});
