@@ -79,7 +79,7 @@ Template.signupForm.events
       PUB.toast '密码至少要6位！'
     else
       t.find('#sub-registered').disabled = true
-      t.find('#sub-registered').value = '正在提交信息...'
+      t.find('#sub-registered').innerText = '正在提交信息...'
       Accounts.createUser
         username:Session.get('userName')
         email:email
@@ -94,7 +94,7 @@ Template.signupForm.events
             trackEvent("signupuser","user signup failure.")
             PUB.toast '注册失败，邮箱或姓名可能已经存在！'
             t.find('#sub-registered').disabled = false
-            t.find('#sub-registered').value = '创建帐户'
+            t.find('#sub-registered').innerText = '创建帐户'
           else
             trackEvent("signupuser","user signup succeed.")
             window.plugins.userinfo.setUserInfo Meteor.user()._id, ->

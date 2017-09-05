@@ -76,12 +76,12 @@ Template.loginForm.events
         PUB.toast '请输入密码！'
         return
       t.find('#sub-login').disabled = true
-      t.find('#sub-login').value = '正在登录...'
+      t.find('#sub-login').innerText = '正在登录...'
       Meteor.loginWithPassword name, pass,(error)->
         if error
           PUB.toast '帐号或密码有误！'
           t.find('#sub-login').disabled = false
-          t.find('#sub-login').value = '登 录'
+          t.find('#sub-login').innerText = '登 录'
         else
           Router.go '/'
           ###
@@ -127,10 +127,10 @@ Template.recoveryForm.events
       if email is ''
         return
       t.find('#sub-recovery').disabled = true
-      t.find('#sub-recovery').value = '正在重设...'
+      t.find('#sub-recovery').innerText = '正在重设...'
       Accounts.forgotPassword {email:email},(error)->
         t.find('#sub-recovery').disabled = false
-        t.find('#sub-recovery').value = '重设'
+        t.find('#sub-recovery').innerText = '重设'
         if error
           if error.error is 403 and error.reason is 'User not found'
             PUB.toast '您填写的邮件地址不存在！'
