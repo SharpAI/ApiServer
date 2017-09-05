@@ -490,12 +490,8 @@ PERSON = {
       setObj.in_image = in_image;
     if(out_image)
       setObj.out_image = out_image;
-    if (in_video) {
-      setObj.in_video = in_video;
-    }
-    if (out_video) {
-      setObj.out_video = out_video;
-    }
+    setObj.in_video = in_video;
+    setObj.out_video = out_video;
 
     var workstatus = null;
     if (relation.app_user_id) {
@@ -687,12 +683,8 @@ PERSON = {
       setObj.in_image = in_image;
     if(out_image)
       setObj.out_image = out_image;
-    if (workStatusObj.checkin_video) {
-      setObj.in_video = workStatusObj.checkin_video;
-    }
-    if (workStatusObj.checkout_video) {
-      setObj.out_video = workStatusObj.checkout_video;
-    }
+    setObj.in_video = in_video;
+    setObj.out_video = out_video;
 
     if (!workstatus) {
       WorkStatus.insert({
