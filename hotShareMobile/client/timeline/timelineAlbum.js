@@ -20,7 +20,7 @@ var lazyTimelineImg = function(){
 
 var checkInOutWithOutName = function(type,name,taId,taName){
   var data = Session.get('setPicturePersonNameData');
-  data.person_info.name = taName || name;
+  data.person_info.name = name;
   var taId = taId || Router.current().params.query.taId;
   var msgObj;
   if(taId){
@@ -70,11 +70,12 @@ var checkInOutWithOutName = function(type,name,taId,taName){
     }
 
   }
-  else if (taName) { //帮标识过但没关联的人代签
-    data.user_id = null;
-  }
   else{
-    if (Router.current().params.query.form === 'timeline') {
+    if (Session.get('fromUserInfomation')) { //个人信息，未打卡(没关联过)
+      Session.set('fromUserInfomation',false);
+      data.user_id = Meteor.userId();
+    }
+    else{
       data.user_id = null;
     }
   }

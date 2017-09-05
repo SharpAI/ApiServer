@@ -414,6 +414,7 @@ if Meteor.isClient
       if (workstatus && workstatus.group_id)
         modifyStatusFun(workstatus.group_id,'in')
       else
+        Session.set('fromUserInfomation',true);
         PUB.page('/timeline')
     'click .checkOutTime, click .reCheckOutTime':(e)->
       group_id = $(e.currentTarget).data('groupid')
@@ -425,6 +426,7 @@ if Meteor.isClient
       if (workstatus && workstatus.group_id) 
         modifyStatusFun(workstatus.group_id,'out')
       else
+        Session.set('fromUserInfomation',true);
         PUB.page('/timeline')
     'click .deviceItem': (e)->
       $('#selectDevicesInOut').modal('hide');
