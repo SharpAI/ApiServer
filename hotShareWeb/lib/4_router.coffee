@@ -568,10 +568,10 @@ if Meteor.isServer
 
       return today_now;
     
-    self = this;
+    self = time;
     now = new Date();
     result = '';
-    self = DateTimezone(this, time_offset);
+    self = DateTimezone(time, time_offset);
 
     # DayDiff = now.getDate() - self.getDate();
     Minutes = self.getHours() * 60 + self.getMinutes();
