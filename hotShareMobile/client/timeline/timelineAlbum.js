@@ -1,3 +1,41 @@
+function LazyImg(option){
+  this.settings = option || {};
+  this.settings.selector = '.lazy';
+  
+  this.settings.src = 'data-original';
+  this.settings.threshold = 100;
+  this.container = this.settings.container || document.body;
+  this.images = document.querySelectorAll(this.settings.selector);
+  this.lazyedImages = document.querySelectorAll('.lazyed');
+};
+
+LazyImg.prototype = {
+  init: function() {
+    var seeHeight = this.container.clientHeight + this.settings.threshold; // 可见区域高度
+    var self = this;
+    self.images.forEach(function(img){
+      var src = img.getAttribute(self.settings.src);
+      var rect = img.getBoundingClientRect()
+      console.log(rect.top + rect.height)
+      console.log(seeHeight)
+      if( (rect.top + rect.height) > 0 && (rect.top + rect.height) < seeHeight){ // 处理在可见区域内的图片
+        if("img" === img.tagName.toLowerCase()){
+          img.src = src;
+          img.className = 'lazyed';
+        }
+      }
+    });
+    // 处理data-original 和 src不一致的情况
+    self.lazyedImages.forEach(function(img){
+      var original = img.getAttribute(self.settings.src);
+      var src = img.getAttribute('src');
+      if(original !== src){
+        img.src = original;
+      }
+    });
+  }
+};
+
 window.lazyTimelineImgTimeout = null;
 var lazyTimelineImg = function(){
   if(lazyTimelineImgTimeout){
@@ -5,16 +43,18 @@ var lazyTimelineImg = function(){
   }
   lazyTimelineImgTimeout = window.setTimeout(function(){
     console.log('lazyTimelineImg call')
-    $("img.lazy").lazyload({
-      threshold : 100
-    });
-    $('img.lazy').load(function() {
-      console.log($(this).attr('src') + ' loaded');
-      var self = $(this);
-      if(self.attr('data-original') == self.attr('src')){
-        self.addClass('img-loaded').removeClass('lazy');
-      }
-    });
+    // $("img.lazy").lazyload({
+    //   threshold : 100
+    // });
+    // $('img.lazy').load(function() {
+    //   console.log($(this).attr('src') + ' loaded');
+    //   var self = $(this);
+    //   if(self.attr('data-original') == self.attr('src')){
+    //     self.addClass('img-loaded').removeClass('lazy');
+    //   }
+    // });
+    lazyImg = new LazyImg(document.querySelector('.content'))
+    lazyImg.init();
   },600);
 }
 
