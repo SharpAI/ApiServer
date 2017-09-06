@@ -107,7 +107,7 @@ if (Meteor.isClient) {
   window.DecodeImageFromAlum = function(){
     function decodecallback(result){
       var gotoPage = '/';
-      if (result && (result.indexOf('http://workaicdn.tiegushi.com/simple-chat/to/group?id=') >= 0 || result.text.indexOf('http://testworkai.tiegushi.com/simple-chat/to/group?id=') >= 0)){
+      if (result && (result.indexOf('http://workaicdn.tiegushi.com/simple-chat/to/group?id=') >= 0 || result.indexOf('http://testworkai.tiegushi.com/simple-chat/to/group?id=') >= 0)){
         var groupid = result.substr(result.lastIndexOf('?id=')+'?id='.length);
         console.log('groupid==='+groupid);
         if (groupid && groupid.length > 0) {
