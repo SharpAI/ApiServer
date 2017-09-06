@@ -9,31 +9,30 @@ function LazyImg(option){
   this.lazyedImages = document.querySelectorAll('.lazyed');
 };
 
-LazyImg.prototype = {
-  init: function() {
-    var seeHeight = this.container.clientHeight + this.settings.threshold; // 可见区域高度
-    var self = this;
-    self.images.forEach(function(img){
-      var src = img.getAttribute(self.settings.src);
-      var rect = img.getBoundingClientRect()
-      console.log(rect.top + rect.height)
-      console.log(seeHeight)
-      if( (rect.top + rect.height) > 0 && (rect.top + rect.height) < seeHeight){ // 处理在可见区域内的图片
-        if("img" === img.tagName.toLowerCase()){
-          img.src = src;
-          img.className = 'lazyed';
-        }
+LazyImg.prototype.init = function() {
+  var seeHeight = this.container.clientHeight + this.settings.threshold; // 可见区域高度
+  var self = this;
+  [].forEach.call(self.images,function(img){
+    var src = img.getAttribute(self.settings.src);
+    var rect = img.getBoundingClientRect()
+    console.log(rect.top + rect.height)
+    console.log(seeHeight)
+    if( (rect.top + rect.height) > 0 && (rect.top + rect.height) < seeHeight){ // 处理在可见区域内的图片
+      if("img" === img.tagName.toLowerCase()){
+        img.src = src;
+        img.className = 'lazyed';
       }
-    });
-    // 处理data-original 和 src不一致的情况
-    self.lazyedImages.forEach(function(img){
-      var original = img.getAttribute(self.settings.src);
-      var src = img.getAttribute('src');
-      if(original !== src){
-        img.src = original;
-      }
-    });
-  }
+    }
+  });
+  // 处理data-original 和 src不一致的情况
+
+  [].forEach.call(self.lazyedImages,function(img){
+    var original = img.getAttribute(self.settings.src);
+    var src = img.getAttribute('src');
+    if(original !== src){
+      img.src = original;
+    }
+  });
 };
 
 window.lazyTimelineImgTimeout = null;
