@@ -343,6 +343,15 @@ PERSON = {
       }
       if(isToday == true)
         WorkAIUserRelations.update({_id:relation._id},{$set:setObj});
+      else
+        if(data.user_id && !relation.app_user_id){
+          var setObj2 = {
+            app_user_id:data.user_id,
+            app_user_name:user_name,
+            isWaitRelation:false,
+          };
+          WorkAIUserRelations.update({_id:relation._id},{$set:setObj2});
+      }
     }
     else{
         setObj.ai_persons = [{id:person._id}];
