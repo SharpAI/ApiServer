@@ -123,6 +123,8 @@ pages = ['/user', '/bell', '/search']
                     Router.go('/'+page.view)
             else
                 Router.go('/')
+        else
+          Router.go('/')
         #nowPage = Session.get('view')
         #Session.set 'view',Session.get('referrer')
         #if nowPage isnt 'partner_detail' and nowPage isnt 'add_partner'
