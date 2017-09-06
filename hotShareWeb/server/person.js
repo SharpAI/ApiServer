@@ -20,12 +20,15 @@ PERSON = {
     }
     return device;
   },
-  removeName: function(group_id,uuid, id){
+  removeName: function(group_id,uuid, id,url,is_video){
     var person = null;
     if (group_id && id) {
       person = Person.findOne({group_id:group_id ,'faces.id': id}, {sort: {createAt: 1}});
     }
     if (person){
+      if (!is_video) {
+        PERSON.fixRelationOrWorkStatus(group_id, url,person._id);
+      }
       if (person.faceId === id){
         if (person.faces.length <= 1)
           return Person.remove({_id: person._id});
@@ -291,7 +294,11 @@ PERSON = {
     //     app用户在打卡的时候选择张骏的图片时就应该先将错误的label数据删除
     if (person_name && person_name !== person.name) {
       console.log('person_info name isnt person name');
-      PERSON.removeName(person_info.group_id, person_info.uuid, data.face_id);
+      var is_video = false;
+      if (person_info.type === 'video') {
+        is_video = true;
+      }
+      PERSON.removeName(person_info.group_id, person_info.uuid, data.face_id,person_info.img_url,is_video);
       person = PERSON.setName(person_info.group_id,person_info.uuid,data.face_id,person_info.img_url,person_name);
     }
     setObj.person_name = person.name;
@@ -868,17 +875,63 @@ PERSON = {
     });
 
   },
-  // 标错时， 修正 WorkAIUserRelations
-  fixRelation: function(group_id, img_url){
+  // 标错时， 修正 WorkAIUserRelations或workStatus
+  fixRelationOrWorkStatus: function(group_id, img_url,person_id){
+    console.log('try to fix Relation Or WorkStatus');
+    var updateHandle = function(relation_id,time){
+      var relation = WorkAIUserRelations.findOne({_id:relation_id});
+      if (relation && time) {
+        var isToday = true;
+        var time_offset = 8; //US is -7, China is +8
+        var group = SimpleChat.Groups.findOne({_id: group_id});
+        if (group && group.offsetTimeZone) {
+          time_offset = group.offsetTimeZone;
+        }
+        var DateTimezone = function (offset) {
+          var d = new Date();
+          var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+          var local_now = new Date(utc + (3600000*offset));
+          return local_now;
+        };
+        var now = DateTimezone(time_offset);
+        var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        var today_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 0, 0, 0, 0);
+
+        if(time < today_utc) {
+          console.log('fixRelationOrWorkStatus: not today out/in ');
+          isToday = false;
+        }
+        if(isToday == true){
+          PERSON.updateWorkStatus(person_id);
+        }
+        else{
+          if ((!relation.checkin_time) || (relation.ai_in_time && relation.checkin_time && relation.ai_in_time < checkin_time)) {
+            relation.checkin_time = relation.ai_in_time;
+            relation.checkin_image = relation.ai_in_image;
+            relation.checkin_video = '';
+          }
+          if ((!relation.checkout_time) || (relation.ai_out_time && relation.checkout_time && relation.ai_out_time > checkout_time)) {
+            relation.checkout_time = relation.ai_out_time;
+            relation.checkin_image = relation.ai_in_image;
+            relation.checkout_video = '';
+          }
+          PERSON.updateWorkStatusHistory(relation);
+        }
+      }
+    };
     // 匹配到第一次进的图像
     var relation1 = WorkAIUserRelations.findOne({group_id: group_id,ai_in_image: img_url});
-    if(relation1){ 
+    if(relation1){
       var setObj = {};
       if(relation1.ai_lastest_in_time && relation1.ai_lastest_in_image){
         return WorkAIUserRelations.update({_id: relation1._id},{
           $set:{
             ai_in_time: relation1.ai_lastest_in_time,
             ai_in_image: relation1.ai_lastest_in_image || relation1.ai_in_image
+          }
+        },function(error){
+          if (!error) {
+            updateHandle(relation1._id,relation1.ai_in_time);
           }
         });
       }
@@ -892,6 +945,10 @@ PERSON = {
           ai_lastest_in_time: relation2.ai_in_time,
           ai_lastest_in_image: relation2.ai_in_image
         }
+      },function(error){
+        if (!error) {
+          updateHandle(relation2._id,relation2.ai_lastest_in_time);
+        }
       });
     }
 
@@ -903,9 +960,37 @@ PERSON = {
           ai_out_time: null,
           ai_out_image: ''
         }
+      },function(error){
+        if (!error) {
+          updateHandle(relation3._id,relation3.ai_out_time);
+        }
       });
     }
-  };
+
+    //匹配历史考勤表
+    var workStatus1 = WorkStatus.findOne({group_id:group_id,in_image:img_url});
+    if (workStatus1) {
+      return WorkStatus.update({_id:workStatus1._id},{
+                $set:{
+                  in_time:0,
+                  in_image:'',
+                  in_status:'unknown',
+                  now_status:'out'
+                }
+              });
+    }
+
+    var workStatus2 = WorkStatus.findOne({group_id:group_id,out_image:img_url});
+    if (workStatus2) {
+      return WorkStatus.update({_id:workStatus2._id},{
+                $set:{
+                  out_time:0,
+                  out_image:'',
+                  out_status:'unknown'
+                }
+              });
+    }
+  }
 };
 
 Meteor.methods({
@@ -941,8 +1026,7 @@ Meteor.methods({
   },
   'remove-persons1': function(group_id, items){
     for(var i=0;i<items.length;i++){
-      PERSON.removeName(group_id, items[i].uuid, items[i].id);
-      PERSON.fixRelation(group_id, items[i].img_url);
+      PERSON.removeName(group_id, items[i].uuid, items[i].id,items[i].img_url);
     }
   },
   'send-person-to-web': function(person){
@@ -1009,7 +1093,7 @@ Meteor.methods({
         trainsetObj.rm_reson = data ;
         sendMqttMessage('/device/' + groupId, trainsetObj);
         console.log('send mqtt to device:', trainsetObj);
-        PERSON.removeName(groupId, wait.uuid, wait.id);
+        PERSON.removeName(groupId, wait.uuid, wait.id,wait.url);
         return;
       }
       var name = PERSON.getIdByName(wait.uuid, data, groupId);
