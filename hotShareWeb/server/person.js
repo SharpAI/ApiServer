@@ -924,11 +924,21 @@ PERSON = {
     if(relation1){
       var setObj = {};
       if(relation1.ai_lastest_in_time && relation1.ai_lastest_in_image){
-        return WorkAIUserRelations.update({_id: relation1._id},{
-          $set:{
-            ai_in_time: relation1.ai_lastest_in_time,
-            ai_in_image: relation1.ai_lastest_in_image || relation1.ai_in_image
+        if(relation1.ai_in_time == relation1.ai_lastest_in_time){
+          setObj = {
+            ai_in_time: null,
+            ai_in_image: '',
+            ai_lastest_in_time: null,
+            ai_lastest_in_image: ''
           }
+        } else {
+          setObj = {
+            ai_in_time: relation1.ai_lastest_in_time,
+            ai_in_image: relation1.ai_lastest_in_image
+          }
+        }
+        return WorkAIUserRelations.update({_id: relation1._id},{
+          $set:setObj
         },function(error){
           if (!error) {
             updateHandle(relation1._id,relation1.ai_in_time);
@@ -975,7 +985,7 @@ PERSON = {
                   in_time:0,
                   in_image:'',
                   in_status:'unknown',
-                  now_status:'out'
+                  status:'out'
                 }
               });
     }
