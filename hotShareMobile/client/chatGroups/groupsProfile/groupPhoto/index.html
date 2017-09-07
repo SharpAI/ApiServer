@@ -64,7 +64,7 @@
 
 <template name="groupPhotoImg1">
   {{#each faces}}
-  <li id="{{msg_id}}" class="labeled-item">
+  <li id="{{msg_id}}" class="labeled-item" data-did="{{../deviceId}}" data-gid="{{../group_id}}" data-fid="{{../faceId}}" data-name="{{../name}}">
      <img class="lazy" data-original="{{url}}" /> 
      {{#if has_selected id}}
      <div class="selected"><i class="fa fa-check" aria-hidden="true"></i></div>

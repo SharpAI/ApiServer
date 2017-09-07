@@ -44,7 +44,30 @@ PERSON = {
         });
       }
     }
-    //PersonNames.remove({uuid: uuid, id: id});
+    //PersonNames.remove({uuid: uuid, id: id});  [{id:'1'},{}] ['1','2']
+  },
+  removeFace: function(obj){
+    var person = null;
+    var faces = [];
+    if(obj.group_id){
+      person = Person.findOne({group_id: obj.group_id, faceId: obj.faceId});
+    }
+    if(person){
+      faces = person.faces;
+      var faceId = person.faceId;
+      if(faceId === obj.face_id){
+        if(faces.length <= 1){
+          return Person.remove({_id: person._id});
+        }
+        Person.update({_id: person._id}, {
+          $set: {faceId: person.faces[0].id, url: person.faces[0].url},
+          $pop: {faces: -1}
+        });
+      } else {
+        faces.splice(_.pluck(faces, 'id').indexOf(obj.face_id), 1);
+        Person.update({_id: person._id},{$set: {faces: faces}});
+      }
+    }
   },
   setName: function(group_id, uuid, id, url, name){
     var person = Person.findOne({group_id:group_id, name: name}, {sort: {createAt: 1}});
@@ -1037,6 +1060,11 @@ Meteor.methods({
   'remove-persons1': function(group_id, items){
     for(var i=0;i<items.length;i++){
       PERSON.removeName(group_id, items[i].uuid, items[i].id,items[i].img_url);
+    }
+  },
+  'remove-person-face': function(lists){
+    for(var i=0; i< lists.length;i++){
+      PERSON.removeFace(lists[i]);
     }
   },
   'send-person-to-web': function(person){

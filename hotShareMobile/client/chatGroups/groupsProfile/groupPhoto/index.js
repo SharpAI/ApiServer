@@ -186,7 +186,30 @@ Template.groupPhoto.events({
       console.log('is not a');
       var lists = lebeledPreLists.get();
       console.log(lists);
-      // To DO
+      // 从person 表中删除相应face
+      Meteor.call('remove-person-face',lists, function(err, res){
+        if(err){
+          console.log('groupPhoto labeled del Err:'+err);
+          return PUB.toast('删除失败，请重试!');
+        }
+        for(var i=0; i < lists.length; i++) {
+        // 告诉平板， 这不是a
+        var trainsetObj = {
+          group_id: lists[i].group_id,
+          type: 'trainset',
+          url: lists[i].face_url,
+          person_id: '',
+          device_id: lists[i].device_id,
+          face_id: lists[i].face_id,
+          drop: true,
+          img_type: 'face',
+          style:'front',
+          sqlid: 0
+        }
+        console.log('groupPhoto labeled del trainsetObj='+JSON.stringify(trainsetObj));
+        sendMqttMessage('/device/'+lists[i].group_id, trainsetObj);
+        };
+      });
       return;
     }
   }
@@ -337,7 +360,14 @@ Template.groupPhotoImg1.events({
       lists.splice(index,1);
     } else {
       res.push(id);
-      lists.push(this);
+      lists.push({
+        face_id: this.id,
+        face_url: this.url,
+        group_id: $(e.currentTarget).data('gid'),
+        device_id: $(e.currentTarget).data('did'),
+        faceId: $(e.currentTarget).data('fid'),
+        name: $(e.currentTarget).data('name')
+      });
     }
     console.log(res);
     console.log(lists);
