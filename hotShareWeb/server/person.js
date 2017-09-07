@@ -29,20 +29,20 @@ PERSON = {
       if (!is_video) {
         PERSON.fixRelationOrWorkStatus(group_id, url,person._id);
       }
-      if (person.faceId === id){
-        if (person.faces.length <= 1)
-          return Person.remove({_id: person._id});
-        Person.update({_id: person._id}, {
-          $set: {faceId: person.faces[0].id, url: person.faces[0].url},
-          $pop: {faces: -1}
-        });
-      } else {
-        var faces = person.faces;
-        faces.splice(_.pluck(faces, 'id').indexOf(id), 1);
-        Person.update({_id: person._id}, {
-          $set: {faces: faces}
-        });
-      }
+      // if (person.faceId === id){
+      //   if (person.faces.length <= 1)
+      //     return Person.remove({_id: person._id});
+      //   Person.update({_id: person._id}, {
+      //     $set: {faceId: person.faces[0].id, url: person.faces[0].url},
+      //     $pop: {faces: -1}
+      //   });
+      // } else {
+      //   var faces = person.faces;
+      //   faces.splice(_.pluck(faces, 'id').indexOf(id), 1);
+      //   Person.update({_id: person._id}, {
+      //     $set: {faces: faces}
+      //   });
+      // }
     }
     //PersonNames.remove({uuid: uuid, id: id});  [{id:'1'},{}] ['1','2']
   },
