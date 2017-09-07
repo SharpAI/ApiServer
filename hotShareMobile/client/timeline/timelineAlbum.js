@@ -82,9 +82,9 @@ var checkInOutWithOutName = function(type,name,taId,taName){
           icon: deviceUser.profile.icon
         },
         to: {
-          id:   taUser._id,
-          name: taUser.profile.fullname? taUser.profile.fullname: taUser.username,
-          icon: taUser.profile.icon
+          id: taId,
+          name: taName,
+          icon: taUser ? taUser.profile.icon : ''
         },
         to_type: 'user',
         type: 'text',
