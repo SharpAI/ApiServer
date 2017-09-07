@@ -3,6 +3,8 @@ var type = new ReactiveVar('');
 var limit1 = new ReactiveVar(0);
 var limit2 = new ReactiveVar(0);
 var selected = new ReactiveVar([]);
+var selected2 = new ReactiveVar([]);
+var lebeledPreLists = new ReactiveVar([]);
 var limitSetp = 10;
 
 Template.groupPhoto.helpers({
@@ -15,11 +17,15 @@ Template.groupPhoto.helpers({
   is_selected: function(){
     return selected.get().length > 0 ;
   },
+  is_selected2: function(){
+    return selected2.get().length > 0 ;
+  },
   list1: function(id){
     return SimpleChat.Messages.find({is_people: true, 'to.id': id, admin_label: {$ne: true}}, {limit: limit1.get(), sort: {create_time: 1}})
   },
   list2: function(id){
-    return SimpleChat.GroupPhotoLabel.find({group_id: id}, {limit: limit2.get(), sort: {create_time: 1}})
+    // return SimpleChat.GroupPhotoLabel.find({group_id: id}, {limit: limit2.get(), sort: {create_time: 1}})
+    return Person.find({group_id: id},{limit: limit2.get(), sort:{createAt: -1}}).fetch();
   }
 });
 
@@ -156,16 +162,32 @@ Template.groupPhoto.events({
       });
 
     };
-    if ($(e.currentTarget).html() == '删除'){
+    if (e.currentTarget.id == 'not-label-label'){
       type = 'delete';
       $('.label-btn').hide();
       SimpleChat.show_remove(call_back_handle);
       return;
     }
-    else if ($(e.currentTarget).html() == '标注') {
+    if (e.currentTarget.id == 'not-label-del') {
       type = 'label';
       $('.del-btn').hide();
       SimpleChat.show_label(t.data.id, call_back_handle);
+      return;
+    }
+
+    if (e.currentTarget.id == 'labeled-label'){
+      console.log('a is not b');
+      var lists = lebeledPreLists.get();
+      console.log(lists);
+      // To DO
+      return;
+    }
+    if (e.currentTarget.id == 'labeled-del') {
+      console.log('is not a');
+      var lists = lebeledPreLists.get();
+      console.log(lists);
+      // To DO
+      return;
     }
   }
 });
@@ -194,9 +216,18 @@ var lazyloadInit = function($ul, type){
 };
 
 Template.groupPhoto.onRendered(function(){
+  var group_id = Router.current().params._id;
+  Meteor.subscribe('group_person',group_id, limit2.get(),{
+    onReady: function(){
+
+    },
+    onStop: function(err){
+      console.log(err);
+    }
+  });
+  var data = this.data;
   SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({is_people: true, 'to.id': data.id,admin_label: {$ne: true}}, {limit: limitSetp, sort: {create_time: -1}}, limitSetp);
 
-  var data = this.data;
   this.$('.photos').each(function(){
     $(this).scroll(function(){
       var height = $(this).find('> ul').height();
@@ -210,6 +241,7 @@ Template.groupPhoto.onRendered(function(){
         } else {
           limit = limit2.get() + 100;
           limit2.set(limit);
+          Meteor.subscribe('group_person',group_id, limit2.get());
         }
         console.log('==已经滚动到顶部了 '+type.get()+' ==');
       } else if (height-top <= $(this).height() -20){
@@ -287,3 +319,29 @@ Template.groupPhoto.close = function(){
   $('body').css('overflow', 'auto');
   $('.groupsProfile').show();
 };
+
+Template.groupPhotoImg1.helpers({
+  has_selected: function(id){
+    return selected2.get().indexOf(id) >= 0;
+  },
+});
+
+Template.groupPhotoImg1.events({
+  'click li': function(e){
+    var id = this.id;
+    var res = selected2.get();
+    var index = res.indexOf(id);
+    var lists = lebeledPreLists.get();
+    if(index >= 0){
+      res.splice(index, 1);
+      lists.splice(index,1);
+    } else {
+      res.push(id);
+      lists.push(this);
+    }
+    console.log(res);
+    console.log(lists);
+    selected2.set(res);
+    lebeledPreLists.set(lists);
+  }
+})

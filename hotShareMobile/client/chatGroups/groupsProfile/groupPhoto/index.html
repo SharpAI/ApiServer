@@ -33,13 +33,19 @@
     <div class="buttons">
       {{#if is_type '未标注'}}
         {{#if is_selected}}
-        <div class="btn-default label-btn">标注</div>
-        <div class="btn-default del-btn" style="background-color: #f56262;color: #ffffff;margin-top: 3px;">删除</div>
+        <div id="not-label-label" class="btn-default label-btn">标注</div>
+        <div id="not-label-del" class="btn-default del-btn" style="background-color: #f56262;color: #ffffff;margin-top: 3px;">删除</div>
         {{else}}
         请点选照片进行标注或删除.
         {{/if}}
       {{else}}
-        请切换到未标注栏，进行标注.
+        <!--请切换到未标注栏，进行标注.-->
+        {{#if is_selected2}}
+        <div id="labeled-label" class="btn-default label-btn">标注</div>
+        <div id="labeled-del" class="btn-default del-btn" style="background-color: #f56262;color: #ffffff;margin-top: 3px;">删除</div>
+        {{else}}
+        请点选标注错的照片进行删除
+        {{/if}}
       {{/if}}
     </div>
   </div>
@@ -57,8 +63,13 @@
 </template>
 
 <template name="groupPhotoImg1">
-  <li id="{{msg_id}}">
-     <img class="lazy" data-original="{{img_url}}" /> 
-     <div class="label">{{img_label}}</div>
+  {{#each faces}}
+  <li id="{{msg_id}}" class="labeled-item">
+     <img class="lazy" data-original="{{url}}" /> 
+     {{#if has_selected id}}
+     <div class="selected"><i class="fa fa-check" aria-hidden="true"></i></div>
+     {{/if}}
+     <div class="label">{{../name}}</div>
   </li>
+  {{/each}}
 </template>

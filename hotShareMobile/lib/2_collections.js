@@ -131,6 +131,16 @@ if(Meteor.isServer){
       return true;
     }
   });
+
+  // 发布 group 已经标注的person 信息
+  Meteor.publish('group_person', function(group_id, limit){
+    if(!this.userId || !group_id){
+      return this.ready();
+    }
+    var limit = limit || 10;
+    return Person.find({group_id: group_id},{limit: limit,sort:{createAt: -1}});
+  });
+
   Meteor.publish('people_new', function(){
     return People.find({}, {sort: {updateTime: -1}, limit: 50});
   });
