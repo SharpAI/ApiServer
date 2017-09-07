@@ -322,7 +322,8 @@ PERSON = {
         is_video = true;
       }
       PERSON.removeName(person_info.group_id, person_info.uuid, data.face_id,person_info.img_url,is_video);
-      person = PERSON.setName(person_info.group_id,person_info.uuid,data.face_id,person_info.img_url,person_name);
+      var newImageId = new Mongo.ObjectID()._str;
+      person = PERSON.setName(person_info.group_id,person_info.uuid,newImageId,person_info.img_url,person_name);
     }
     setObj.person_name = person.name;
     if (relation) {
