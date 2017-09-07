@@ -162,13 +162,13 @@ Template.groupPhoto.events({
       });
 
     };
-    if (e.currentTarget.id == 'not-label-label'){
+    if (e.currentTarget.id == 'not-label-del'){
       type = 'delete';
       $('.label-btn').hide();
       SimpleChat.show_remove(call_back_handle);
       return;
     }
-    if (e.currentTarget.id == 'not-label-del') {
+    if (e.currentTarget.id == 'not-label-label') {
       type = 'label';
       $('.del-btn').hide();
       SimpleChat.show_label(t.data.id, call_back_handle);
