@@ -206,6 +206,7 @@ Template.groupPhoto.events({
           style:'front',
           sqlid: 0
         }
+        $('#'+lists[i].face_id).remove();
         console.log('groupPhoto labeled del trainsetObj='+JSON.stringify(trainsetObj));
         sendMqttMessage('/device/'+lists[i].group_id, trainsetObj);
         };
