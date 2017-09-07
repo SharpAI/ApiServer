@@ -337,6 +337,13 @@ Template.groupPhoto.open = function(id){
 };
 
 Template.groupPhoto.close = function(){
+  // 释放变量
+  limit1.set(0);
+  limit2.set(0);
+  selected.set([]);
+  selected2.set([]);
+  lebeledPreLists.set([]);
+  
   view && Blaze.remove(view);
   view = null;
   $('body').css('overflow', 'auto');
