@@ -6,6 +6,12 @@ Template.timeline.onRendered(function () {
 
 
 Template.timeline.helpers({
+  isLoading:function(){
+    if (Session.get('groupDevicesLoading') === false) {
+      return false;
+    }
+    return true;
+  },
   lists: function(){
     var lists = [];
     SimpleChat.GroupUsers.find({user_id:Meteor.userId()},{sort:{create_time:-1}}).forEach(function(item){
