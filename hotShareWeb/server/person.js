@@ -228,7 +228,7 @@ PERSON = {
     if (data.checkin_time) {
       setObj.in_uuid = person_info.uuid;
       setObj.checkin_time = new Date(data.checkin_time).getTime() ;
-      setObj.checkin_image = data.checkin_image;
+      setObj.checkin_image = data.checkin_image || person_info.img_url;
       setObj.checkin_video = person_info.video_src;
       if (data.wantModify) {
         setObj.ai_in_time = setObj.checkin_time;
@@ -237,7 +237,7 @@ PERSON = {
     if (data.checkout_time) {
       setObj.out_uuid = person_info.uuid;
       setObj.checkout_time = new Date(data.checkout_time).getTime();
-      setObj.checkout_image = data.checkout_image;
+      setObj.checkout_image = data.checkout_image || person_info.img_url;
       setObj.checkout_video = person_info.video_src;
       if (data.wantModify) {
         setObj.ai_out_time = setObj.checkout_time;

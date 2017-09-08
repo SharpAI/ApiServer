@@ -60,6 +60,7 @@ if (Meteor.isServer){
       var data = {
         user_id:this.userId,
         checkout_time: doc.params.person_info.ts,
+        checkout_image:doc.params.person_info.img_url,
         face_id:doc.params.msg_data.images.id,
         wantModify:true,
         person_info:doc.params.person_info
