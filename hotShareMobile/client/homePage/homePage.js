@@ -179,7 +179,7 @@ Template.homePage.helpers({
       var today_start_utc = new Date(Date.now()).setUTCHours(0,0,0,0);
 
       //不是今天的时间
-      if(!out_time && today_start_utc > this.in_time) {
+      if(!out_time && (today_start_utc - time_offset*60*60*1000)  > this.in_time) {
         day_end = new Date(this.in_time).setUTCHours(0,0,0,0) + (24 - time_offset)*60*60*1000 - 1;
         out_time = day_end
       }
