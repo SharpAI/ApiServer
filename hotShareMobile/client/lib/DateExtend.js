@@ -91,7 +91,7 @@ Date.prototype.shortTime = function (time_offset, only_H_S) {
     }
     
     var self = this;
-    var now = new Date();
+    var now = DateTimezone(new Date(), time_offset);
     var result = '';
     var self = DateTimezone(this, time_offset);
 
