@@ -48,7 +48,6 @@ if (Meteor.isServer){
     },
     // 用户明确已经下班的处理
     upUCS: function(){
-      console.log('=====', this.userId);
       if (!this.userId)
         return false;
       
@@ -70,6 +69,44 @@ if (Meteor.isServer){
       // PERSON.updateWorkStatus(doc.params.person._id)
       // if (doc.params.person_info)
       //   PERSON.sendPersonInfoToWeb(doc.params.person_info)
+      return true;
+    },
+    // 选择没有下班
+    upUCSN: function(){
+      if (!this.userId)
+        return false;
+      
+      var doc = UserCheckoutEndLog.findOne({userId: this.userId});
+      if (!doc)
+        return false;
+
+      var startUTC = Date.UTC(doc.params.msg_data.create_time.getUTCFullYear(), doc.params.msg_data.create_time.getUTCMonth(), doc.params.msg_data.create_time.getUTCDate(), 0, 0, 0, 0)
+      var endUTC = Date.UTC(doc.params.msg_data.create_time.getUTCFullYear(), doc.params.msg_data.create_time.getUTCMonth(), doc.params.msg_data.create_time.getUTCDate(), 23, 59, 59, 0)
+      var workStatus = WorkStatus.findOne({group_id: doc.params.msg_data.group_id, app_user_id: this.userId, date: {$gte: startUTC, $lte: endUTC}});
+      var workUserRet = WorkAIUserRelations.findOne({group_id: doc.params.msg_data.group_id, app_user_id: this.userId});
+
+      if (workStatus && workStatus.out_time){
+        WorkStatus.update({_id: workStatus._id}, {$set: {status: 'in', out_status: 'unknown', out_time: 0}});
+        console.log('update WorkStatus');
+      }
+      if (workUserRet && workUserRet.checkout_time && workUserRet.checkout_time != 0){
+        WorkAIUserRelations.update({_id: workUserRet._id}, {$set: {checkout_time: null, ai_out_time: null, ai_out_image: null, checkout_image: null, checkout_video: null}});
+        console.log('update WorkAIUserRelations');
+      }
+
+      // TODO通知WEB
+      if (doc.params && doc.params.person_info){
+        var ai_system_url = process.env.AI_SYSTEM_URL || 'http://aixd.raidcdn.cn/restapi/rmout';
+        //var ai_system_url = process.env.AI_SYSTEM_URL || 'http://192.168.0.121:3030/restapi/rmout';
+        doc.params.person_info.fromWorkai = true;
+        HTTP.call('POST', ai_system_url, {
+          data: doc.params.person_info, timeout: 5*1000
+        }, function(error, res) {
+          if (error) {
+            return console.log("post person info to aixd.raidcdn failed " + error);
+          }
+        });
+      }
       return true;
     }
   });

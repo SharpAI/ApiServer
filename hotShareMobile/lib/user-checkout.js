@@ -54,19 +54,62 @@ if (Meteor.isServer){
       if (doc.params.person_info)
         PERSON.sendPersonInfoToWeb(doc.params.person_info)
       return true;
+    },
+    // 选择没有下班
+    upUCSN: function(){
+      if (!this.userId)
+        return false;
+      
+      var doc = UserCheckoutEndLog.findOne({userId: this.userId});
+      if (!doc)
+        return false;
+
+      var startUTC = Date.UTC(doc.params.msg_data.create_time.getUTCFullYear(), doc.params.msg_data.create_time.getUTCMonth(), doc.params.msg_data.create_time.getUTCDate(), 0, 0, 0, 0)
+      var endUTC = Date.UTC(doc.params.msg_data.create_time.getUTCFullYear(), doc.params.msg_data.create_time.getUTCMonth(), doc.params.msg_data.create_time.getUTCDate(), 23, 59, 59, 0)
+      var workStatus = WorkStatus.findOne({group_id: doc.params.msg_data.group_id, app_user_id: this.userId, date: {$gte: startUTC, $lte: endUTC}});
+      var workUserRet = WorkAIUserRelations.findOne({group_id: doc.params.msg_data.group_id, app_user_id: this.userId});
+
+      if (workStatus && workStatus.out_time){
+        WorkStatus.update({_id: workStatus._id}, {$set: {status: 'in', out_status: 'unknown', out_time: 0}});
+        console.log('update WorkStatus');
+      }
+      if (workUserRet && workUserRet.checkout_time && workUserRet.checkout_time != 0){
+        WorkAIUserRelations.update({_id: workUserRet._id}, {$set: {checkout_time: null, ai_out_time: null, ai_out_image: null, checkout_image: null, checkout_video: null}});
+        console.log('update WorkAIUserRelations');
+      }
+
+      // TODO通知WEB
+      if (doc.params && doc.params.person_info){
+        var ai_system_url = process.env.AI_SYSTEM_URL || 'http://aixd.raidcdn.cn/restapi/rmout';
+        //var ai_system_url = process.env.AI_SYSTEM_URL || 'http://192.168.0.121:3030/restapi/rmout';
+        doc.params.person_info.fromWorkai = true;
+        HTTP.call('POST', ai_system_url, {
+          data: doc.params.person_info, timeout: 5*1000
+        }, function(error, res) {
+          if (error) {
+            return console.log("post person info to aixd.raidcdn failed " + error);
+          }
+        });
+      }
+      return true;
     }
   });
 } else if (Meteor.isClient){
   var showConfirm = function(time){
-    Template._user_checkout_confirm.open('系统于 '+time.toLocaleString()+' 检测到你离开了公司，请确认是否已经下班了?', function(){
-      Meteor.call('upUCS', function(err1, res1){
-        console.log('您确定已经下班了吗？', (!err1 || !res1) ? 'succ' : 'error');
-        if (err1 || !res1){
-          PUB.alert('操作失败，请重试~', function(){
-            showConfirm(time);
-          });
-        }
-      });
+    Template._user_checkout_confirm.open('系统于 '+time.toLocaleString()+' 检测到你离开了公司，请确认是否已经下班了?', function(result){
+      if (result){
+        Meteor.call('upUCS', function(err1, res1){
+          console.log('您确定已经下班了吗？', (!err1 || !res1) ? 'succ' : 'error');
+          if (err1 || !res1){
+            PUB.alert('操作失败，请重试~', function(){
+              showConfirm(time);
+            });
+          }
+        });
+      } else {
+        Meteor.call('upUCSN');
+        console.log('===no===');
+      }
     });
   };
 

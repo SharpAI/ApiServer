@@ -12,14 +12,16 @@ Template._user_checkout_confirm.events({
   'click ._user_checkout_confirm_mask': function(){
     view && Blaze.remove(view);
     view = null;
+    // callback && callback(false);
   },
   'click .no': function(){
     view && Blaze.remove(view);
     view = null;
+    callback && callback(false);
   },
   'click .yes': function(){
     view && Blaze.remove(view);
     view = null;
-    callback && callback();
+    callback && callback(true);
   }
 });
