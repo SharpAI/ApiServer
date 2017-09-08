@@ -60,6 +60,7 @@
           return client.push().setPlatform('ios', 'android').setAudience(JPush.registration_id(token)).setNotification('回复通知', JPush.ios(content, null, null, null, extras), JPush.android(content, null, 1, extras)).setOptions(null, 60).send(function(err, res) {
                 if (err) {
                     console.log('Send Jpush error: '+err.message);
+                    //update_workai_pushNotifacation_status();
                 } else {
                     console.log('Sendno: ' + res.sendno);
                     console.log('Msg_id: ' + res.msg_id);
@@ -71,7 +72,7 @@
     pushServer.sendIOS('me', token, '', content, waitReadCount);
 }*/
           console.log("Send notification: iOS,  token="+token+", content="+content);
-          return pushServer.sendIOS('me', token, '', content, waitReadCount);
+          return pushServer.sendIOS(userId, token, '', content, waitReadCount);
         } else if (pushToken.type === 'GCM') {
           token = pushToken.token;
           console.log("Send notification: GCM,  token="+token+", content="+content);

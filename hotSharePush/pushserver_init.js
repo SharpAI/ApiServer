@@ -11,10 +11,29 @@
   Assets.getText = function(str) {
     return require('path').dirname(process.mainModule.filename)+'/private/'+str;
   }
+  update_workai_pushNotifacation_status = function(userId){
+    var workaiUserRelations = db.collection('workaiUserRelations');
+    workaiUserRelations.findOne({app_user_id:userId},function(err,relationObj){
+      if (err) {
+        console.log('Error:' + err);
+        return;
+      }
+      if (!relationObj) {
+        console.log('workaiUserRelations not found');
+        return;
+      }
+      workaiUserRelations.update({_id:relation._id},{$set:{app_notifaction_status:'off'}});
+      var workStatus = db.collection('workStatus');
+      workStatus.update({app_user_id:userId},{$set:{app_notifaction_status:'off'}},{multi: true});
+    });
+  };
   initPushServer = function() {
     var errCallback = function(errorNum, notification){
         console.log('Error is: %s', errorNum);
         console.log("Note " + JSON.stringify(notification));
+        if (notification && notification.messageFrom) {
+          update_workai_pushNotifacation_status(notification.messageFrom);
+        }
     }
 
     var apnsDevCert, apnsDevKey, apnsProductionCert, apnsProductionKey, optionsDevelopment, optionsProduction;

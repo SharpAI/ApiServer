@@ -292,6 +292,7 @@ PERSON = {
     if (data.user_id) {
       setObj.app_user_id = data.user_id;
       setObj.app_user_name = user_name;
+      setObj.app_notifaction_status = user && user.token ? 'on' : 'off';
     }
     setObj.isWaitRelation = data.user_id ? false :true ; //是否关联了App账号
     //relation = WorkAIUserRelations.findOne({'ai_persons.id':person._id});
@@ -380,6 +381,7 @@ PERSON = {
             app_user_id:data.user_id,
             app_user_name:user_name,
             isWaitRelation:false,
+            app_notifaction_status:user && user.token ? 'on' : 'off'
           };
           WorkAIUserRelations.update({_id:relation._id},{$set:setObj2});
       }
@@ -575,6 +577,7 @@ PERSON = {
     if (!workstatus) {
       WorkStatus.insert({
         "app_user_id" : relation.app_user_id,
+        "app_notifaction_status":relation.app_notifaction_status,
         "group_id"    : relation.group_id,
         "date"        : today_utc,
         "person_id"   : relation.ai_persons,
@@ -628,6 +631,7 @@ PERSON = {
       if (!workstatus.app_user_id && relation.app_user_id) {
         setObj.app_user_id = relation.app_user_id;
       }
+      setObj.app_notifaction_status = relation.app_notifaction_status;
       WorkStatus.update({_id: workstatus._id}, {$set: setObj});
     }
   },
@@ -757,10 +761,12 @@ PERSON = {
       setObj.out_image = out_image;
     setObj.in_video = in_video;
     setObj.out_video = out_video;
+    setObj.app_notifaction_status = workStatusObj.app_notifaction_status;
 
     if (!workstatus) {
       WorkStatus.insert({
         "app_user_id" : workStatusObj.app_user_id,
+        "app_notifaction_status":workStatusObj.app_notifaction_status,
         "group_id"    : workStatusObj.group_id,
         "date"        : day_utc,
         "person_id"   : workStatusObj.ai_persons,
@@ -1145,5 +1151,16 @@ Meteor.methods({
       PERSON.setName(groupId, wait.uuid, wait.id, wait.url, data);
     });
     return true;
+  },
+  update_WorkAI_PushNotifacaton_Status:function(userId,status){
+    console.log('try to update WorkAI PushNotifacaton Status');
+    if (!userId || !status) {
+      return;
+    }
+    var relation = WorkAIUserRelations.findOne({app_user_id:userId});
+    if (relation) {
+      WorkAIUserRelations.update({_id:relation._id},{$set:{app_notifaction_status:status}});
+      WorkStatus.update({app_user_id:userId},{$set:{app_notifaction_status:status}},{multi: true});
+    }
   }
 })

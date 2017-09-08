@@ -133,6 +133,9 @@ Template.homePage.helpers({
     }
     return [];
   },
+  enable_push:function(app_notifaction_status){
+    return app_notifaction_status === 'on';
+  },
   isStatusIN: function(status){
     return status === 'in';
   },
