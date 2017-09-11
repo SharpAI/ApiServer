@@ -128,6 +128,7 @@ if (Meteor.isCordova) {
         AppRate.promptForRating(false);
         universalLinks.subscribe('openSimpleChatGroup',onSimpleChatPageRequested);
         zeroconfWatch();
+        window.checkNotificationServicesEnabled();
     }
 
     // openNewsDetailedPage Event Handler
@@ -177,7 +178,52 @@ if (Meteor.isCordova) {
           }
       });
     }
+    window.checkNotificationServicesEnabled = function(){
+      var callbackHandle = function(data){
+        console.log('data.isEnabled:'+data.isEnabled);
+        var status = data.isEnabled ? 'on' :'off';
+        Meteor.call('update_WorkAI_PushNotifacaton_Status',Meteor.userId(),status);
+        var hasShow = Session.get('notificationConfim');
+
+        if (!data.isEnabled && !hasShow) {
+          navigator.notification.confirm('能及时收到考勤提醒',function(index){
+              Session.set('notificationConfim','showed');
+              if (index == 2) {
+                if (device.platform === 'iOS') {
+                  window.plugins.appsetup.openSettings();
+                }
+                else{
+                  window.plugins.jPushPlugin.goToSet();
+                }
+              }
+          },'开启推送',['以后再说','马上开启']);
+        }
+        else if (data.isEnabled){
+          Session.set('notificationConfim',null);
+        }
+      };
+      if (device.platform === 'iOS') {
+        PushNotification.hasPermission(callbackHandle);
+      }
+      else{
+        window.plugins.jPushPlugin.getUserNotificationSettings(function(result) {
+          var data = {};
+          if(result == 0) {
+            // 系统设置中已关闭应用推送。
+            data.isEnabled = false;
+          } else if(result > 0) {
+            // 系统设置中打开了应用推送。
+            data.isEnabled = true;
+          }
+          callbackHandle(data);
+        });
+      }
+    }
+
     function eventResume(){
+        if ($('body').text().length === 0 || $('body').text().indexOf("Oops, looks like there's no route on the client or the server for url:") > -1 ) {
+          location.reload();
+        }
         if (Meteor.status().connected !== true)
           Meteor.reconnect();
         checkNewVersion2();
@@ -187,6 +233,7 @@ if (Meteor.isCordova) {
                 window.refreshMainDataSource();
                 checkShareUrl();
                 checkShareExtension();
+                window.checkNotificationServicesEnabled();
                 if(Meteor.user().profile.waitReadCount > 0){
                   Meteor.users.update({_id: Meteor.user()._id}, {$set: {'profile.waitReadCount': 0}});
                 }

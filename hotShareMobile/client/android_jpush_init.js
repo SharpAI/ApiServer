@@ -123,7 +123,6 @@ if (Meteor.isCordova) {
                   Session.set('registrationType','JPush');
                   window.clearInterval(registerInterval);
                   window.updatePushNotificationToken('JPush',registrationID);
-                  Meteor.call('update_WorkAI_PushNotifacaton_Status',Meteor.userId(),'on');
                 } else {
                     window.clearInterval(registerInterval);
                 }
@@ -132,7 +131,6 @@ if (Meteor.isCordova) {
                     window.clearInterval(registerInterval);
                     return;
                 }
-                Meteor.call('update_WorkAI_PushNotifacaton_Status',Meteor.userId(),'off');
                 console.log("Didn't get registrationID, need retry later");
               }
             })

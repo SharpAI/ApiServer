@@ -45,9 +45,6 @@ if (Meteor.isClient) {
             Session.set('registrationType', 'iOS');
             localStorage.setItem('registrationID', result);
             window.clearInterval(registerInterval1);
-            if (result) {
-              Meteor.call('update_WorkAI_PushNotifacaton_Status',Meteor.userId(),'on');
-            }
             return window.updatePushNotificationToken('iOS', result);
           });
 
@@ -79,7 +76,6 @@ if (Meteor.isClient) {
           });
 
           push.on('error', function (e) {
-            Meteor.call('update_WorkAI_PushNotifacaton_Status',Meteor.userId(),'off');
             // e.message
             return console.log('No Push Notification support in this build error = ' + e.message);
           });
