@@ -317,7 +317,6 @@ Template.timelineAlbum.helpers({
     var timelineAlbumCounts = 0;
     var uuid = Router.current().params._uuid;
     var lists = [];
-    var personIds = [];
     var hour = Session.get('wantModifyTime');
     if (hour) {
       DeviceTimeLine.find({uuid: uuid,hour:{$lte:hour}},{sort:{hour:-1},limit:Session.get('timelineAlbumLimit')}).forEach(function(item){
@@ -329,6 +328,7 @@ Template.timelineAlbum.helpers({
             time: hour,
             images: []
           }
+          var personIds = [];
           item.perMin[x].forEach(function(img){
             if(personIds.indexOf(img.person_id) < 0){
               personIds.push(img.person_id)
@@ -353,6 +353,7 @@ Template.timelineAlbum.helpers({
               time: hour,
               images: []
             }
+            var personIds = [];
             item.perMin[x].forEach(function(img){
               if(personIds.indexOf(img.person_id) < 0){
                 personIds.push(img.person_id)
@@ -379,6 +380,7 @@ Template.timelineAlbum.helpers({
             time: hour,
             images: []
           }
+          var personIds = [];
           item.perMin[x].forEach(function(img){
             if(personIds.indexOf(img.person_id) < 0){
               personIds.push(img.person_id)
