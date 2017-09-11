@@ -1165,7 +1165,7 @@ Meteor.methods({
     }
   },
   'update_workai_hide_it': function(group_id, person_name, hide_it){
-    if(!group_id || !person_name || !hide_it){
+    if(!group_id || !person_name || hide_it == undefined){
       return;
     }
     var selector = {

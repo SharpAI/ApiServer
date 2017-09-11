@@ -65,6 +65,8 @@ Template.groupUserHide.events({
   },
   'click .btnShow': function(e){
     var _id = e.currentTarget.id;
+    var group_id = this.group_id;
+    var person_name = this.person_name;
     // PUB.showWaitLoading('正在处理');
     WorkAIUserRelations.update({_id: _id},{
       $set: {hide_it: false}
@@ -73,11 +75,13 @@ Template.groupUserHide.events({
       if(err){
         return console.log(err);
       }
-      Meteor.call('update_workai_hide_it', this.group_id, this.person_name, false);
+      Meteor.call('update_workai_hide_it', group_id, person_name, false);
     });
   },
   'click .btnHide': function(e){
     var _id = e.currentTarget.id;
+    var group_id = this.group_id;
+    var person_name = this.person_name;
     // PUB.showWaitLoading('正在处理')
     WorkAIUserRelations.update({_id: _id},{
       $set: {hide_it: true}
@@ -86,7 +90,7 @@ Template.groupUserHide.events({
       if(err){
        return console.log(err);
       }
-      Meteor.call('update_workai_hide_it', this.group_id, this.person_name, true);
+      Meteor.call('update_workai_hide_it', group_id, person_name, true);
     });
   }
 })
