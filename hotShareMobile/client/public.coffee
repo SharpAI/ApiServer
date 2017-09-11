@@ -65,12 +65,15 @@ pages = ['/user', '/bell', '/search']
                 Session.set 'document_body_scrollTop', value
                 break
         unless view is undefined or view is ""
+            scroll_top = document.body.scrollTop
+            if view is 'home'
+                scroll_top = $('.content').scrollTop()
             if history.length > 0 and view is history[history.length-1].view
-                history[history.length-1].scrollTop = document.body.scrollTop
+                history[history.length-1].scrollTop = scroll_top
             else
                 history.push {
                     view: view
-                    scrollTop: document.body.scrollTop
+                    scrollTop: scroll_top
                 }
             Session.set "history_view", history
         #if Session.get('view') isnt 'partner_detail' and Session.get('view') isnt 'add_partner'

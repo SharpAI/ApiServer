@@ -19,6 +19,7 @@ Template.homePage.onRendered(function () {
     $('body').append('<div class="homePageTips1" onclick="$(this).remove();"></div>');
   }
   Session.set('homePagesForm', '')
+  $('.content').scrollTop(Session.get('document_body_scrollTop'))
 });
 
 var parseDate = function(currentDay){
