@@ -1606,6 +1606,7 @@ if Meteor.isServer
               "whats_up"    : ""
               "in_time"     : 0
               "out_time"    : 0
+              "hide_it"     : if fields.hide_it then fields.hide_it else  false
             }
             #console.log('>>> new a WorkStatus ' + JSON.stringify(newWorkStatus))
             WorkStatus.insert(newWorkStatus)

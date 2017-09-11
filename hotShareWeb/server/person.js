@@ -593,7 +593,8 @@ PERSON = {
         "in_video"    : in_video,
         "out_image"   : out_image,
         "out_time"    : outtime,
-        "out_video"   : out_video
+        "out_video"   : out_video,
+        "hide_it"     : relation.hide_it? relation.hide_it: false
       });
     }
     else {
@@ -1162,5 +1163,15 @@ Meteor.methods({
       WorkAIUserRelations.update({_id:relation._id},{$set:{app_notifaction_status:status}});
       WorkStatus.update({app_user_id:userId},{$set:{app_notifaction_status:status}},{multi: true});
     }
+  },
+  'update_workai_hide_it': function(group_id, person_name, hide_it){
+    if(!group_id || !person_name || !hide_it){
+      return;
+    }
+    var selector = {
+      group_id: group_id,
+      person_name: person_name
+    }
+    WorkStatus.update(selector,{$set:{hide_it: hide_it}},{multi: true});
   }
 })

@@ -1,0 +1,31 @@
+<template name="groupUserHide">
+<div class="groupUserHide">
+  <div class="head">
+    <strong>报告栏成员管理</strong>
+    <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+  </div>
+  <div class="content" style="padding-top:50px;">
+    <ul class="userHideLists">
+      {{#each lists}}
+      {{#if person_name}}
+      <li class="userHideItem">
+        <img class="icon" src="{{icon}}" width="40" height="40">
+        {{#if isHide}}
+        <div id="{{_id}}" class="right-btn btnShow">显示</div>
+        <!--<div class="status-tip status-hide"></div>-->
+        {{else}}
+        <div id="{{_id}}" class="right-btn btnHide">隐藏</div>
+        <!--<div class="status-tip status-show"></div>-->
+        {{/if}}
+        <p class="userName">{{person_name}}</p>
+      </li>
+      {{/if}}
+      {{/each}}
+      {{#if isLoading}}
+      <div class="loading"><img src="/loading.gif" width="24" height="24"/> &nbsp;加载中</div>
+      {{/if}}
+    </ul>
+  </div>
+
+</div>
+</template>

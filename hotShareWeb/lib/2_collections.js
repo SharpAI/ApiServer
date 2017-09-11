@@ -129,6 +129,15 @@ DeviceTimeLine = new Meteor.Collection('device_timeline');
 }
 */
 if(Meteor.isServer){
+  WorkAIUserRelations.allow({
+    update: function(userId, doc, fields, modifier) {
+      if(userId && modifier['$set'].hide_it !== undefined){
+        return true;
+      }
+      return false;
+    }
+  });
+
   PeopleHis.allow({
     update: function (userId, doc, fields, modifier) {
       var user = Meteor.users.findOne({_id: userId})

@@ -115,6 +115,7 @@
               </thead>
               <tbody>
                 {{#each workstatus group_id}}
+                {{#unless hide_it}}
                 <tr>
                   <td rowspan="2" style="width:64px;">
                     {{person_name}}
@@ -240,6 +241,7 @@
                   {{/if}}
                   -->
                 </tr>
+                {{/unless}}
                 {{/each}}
               </tbody>
           </table>

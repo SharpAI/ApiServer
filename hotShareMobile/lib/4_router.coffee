@@ -601,6 +601,9 @@ if Meteor.isClient
     Router.route '/checkInOutMsgList',()->
       this.render 'checkInOutMsgList'
       return
+    Router.route '/groupUserHide/:_id',()->
+      this.render 'groupUserHide'
+      return
 if Meteor.isServer
   Router.route '/posts/:_id', {
       waitOn: ->

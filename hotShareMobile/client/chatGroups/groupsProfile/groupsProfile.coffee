@@ -106,6 +106,9 @@ if Meteor.isClient
       return false
 
   Template.groupInformation.events
+    'click .groupUserHide':(event)->
+      group_id = Session.get('groupsId')
+      PUB.page('/groupUserHide/'+group_id)
     'click #groupsProfilePageback':(event)->
       groupid = Session.get('groupsId')
       type = Session.get('groupsType')

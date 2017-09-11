@@ -78,3 +78,47 @@ Meteor.publish('user-relations-bygroup', function(uuid){
   }
   return this.ready();
 });
+
+Meteor.publish('group-user-relations',function(group_id,limit){
+  if(!this.userId || !group_id){
+    return this.ready();
+  }
+  var limit = limit || 20;
+  return WorkAIUserRelations.find({'group_id':group_id},{limit: limit});
+});
+
+// Meteor.publish('group-user-relations',function(group_id){
+//   if(!this.userId || !group_id){
+//     return this.ready();
+//   }
+
+//   var getIcon = function(fields){
+//     var app_user_icon = '/userPicture.png';
+//     if(fields.app_user_id){
+//       var user = Meteor.users.findOne({_id: fields.app_user_id});
+//       if(user && user.profile && user.profile.icon){
+//         app_user_icon = user.profile.icon;
+//       }
+//     }
+//     return app_user_icon;
+//   };
+
+//   var self = this;
+//   var handle = WorkAIUserRelations.find({'group_id':group_id}).observeChanges({
+//     added: function(id, fields){
+//       fields.app_user_icon = getIcon(fields);
+//       self.added("workaiUserRelations", id, fields);
+//     },
+//     changed: function(id, fields){
+//       fields.app_user_icon = getIcon(fields);
+//       self.changed("workaiUserRelations", id, fields);
+//     },
+//     removed: function(id){
+//       self.removed("workaiUserRelations",id);
+//     }
+//   });
+//   self.onStop(function () {
+//     handle.stop();
+//   });
+//   return self.ready();
+// });

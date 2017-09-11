@@ -78,3 +78,11 @@ Meteor.publish('user-relations-bygroup',function(uuid){
   }
   return this.ready();
 });
+
+Meteor.publish('group-user-relations',function(group_id,limit){
+  if(!this.userId || !group_id){
+    return this.ready();
+  }
+  var limit = limit || 20;
+  return WorkAIUserRelations.find({'group_id':group_id},{limit: limit});
+});
