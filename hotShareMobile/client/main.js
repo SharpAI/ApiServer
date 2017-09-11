@@ -45,7 +45,48 @@ if (Meteor.isCordova) {
                 Session.set("token", '');
             }
         });
-    }
+    };
+    window.checkNotificationServicesEnabled = function(){
+      var callbackHandle = function(data){
+        console.log('data.isEnabled:'+data.isEnabled);
+        var status = data.isEnabled ? 'on' :'off';
+        Meteor.call('update_WorkAI_PushNotifacaton_Status',Meteor.userId(),status);
+        var hasShow = Session.get('notificationConfim');
+
+        if (!data.isEnabled && !hasShow) {
+          navigator.notification.confirm('能及时收到考勤提醒',function(index){
+              Session.set('notificationConfim','showed');
+              if (index == 2) {
+                if (device.platform === 'iOS') {
+                  window.plugins.appsetup.openSettings();
+                }
+                else{
+                  //window.plugins.jPushPlugin.goToSet();
+                }
+              }
+          },'开启推送',['以后再说','马上开启']);
+        }
+        else if (data.isEnabled){
+          Session.set('notificationConfim',null);
+        }
+      };
+      if (device.platform === 'iOS') {
+        PushNotification.hasPermission(callbackHandle);
+      }
+      else{
+        window.plugins.jPushPlugin.getUserNotificationSettings(function(result) {
+          var data = {};
+          if(result == 0) {
+            // 系统设置中已关闭应用推送。
+            data.isEnabled = false;
+          } else if(result > 0) {
+            // 系统设置中打开了应用推送。
+            data.isEnabled = true;
+          }
+          callbackHandle(data);
+        });
+      }
+    };
   Meteor.startup(function(){
     Session.setDefault('hottestPosts', [])
     getUserLanguage = function() {
@@ -177,47 +218,6 @@ if (Meteor.isCordova) {
               console.log('service removed', service);
           }
       });
-    }
-    window.checkNotificationServicesEnabled = function(){
-      var callbackHandle = function(data){
-        console.log('data.isEnabled:'+data.isEnabled);
-        var status = data.isEnabled ? 'on' :'off';
-        Meteor.call('update_WorkAI_PushNotifacaton_Status',Meteor.userId(),status);
-        var hasShow = Session.get('notificationConfim');
-
-        if (!data.isEnabled && !hasShow) {
-          navigator.notification.confirm('能及时收到考勤提醒',function(index){
-              Session.set('notificationConfim','showed');
-              if (index == 2) {
-                if (device.platform === 'iOS') {
-                  window.plugins.appsetup.openSettings();
-                }
-                else{
-                  window.plugins.jPushPlugin.goToSet();
-                }
-              }
-          },'开启推送',['以后再说','马上开启']);
-        }
-        else if (data.isEnabled){
-          Session.set('notificationConfim',null);
-        }
-      };
-      if (device.platform === 'iOS') {
-        PushNotification.hasPermission(callbackHandle);
-      }
-      else{
-        window.plugins.jPushPlugin.getUserNotificationSettings(function(result) {
-          var data = {};
-          if(result == 0) {
-            // 系统设置中已关闭应用推送。
-            data.isEnabled = false;
-          } else if(result > 0) {
-            // 系统设置中打开了应用推送。
-            data.isEnabled = true;
-          }
-          callbackHandle(data);
-        });
-      }
     }
 
     function eventResume(){
