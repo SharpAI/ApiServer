@@ -783,7 +783,8 @@ PERSON = {
         "in_video"    : workStatusObj.checkin_video,
         "out_image"   : out_image,
         "out_time"    : outtime,
-        "out_video"   : workStatusObj.checkout_video
+        "out_video"   : workStatusObj.checkout_video,
+        "hide_it"     : workStatusObj.hide_it? workStatusObj.hide_it: false
       });
     }
     else {
