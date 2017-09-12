@@ -175,6 +175,31 @@ PERSON = {
       }
     });
   },
+  checkIsToday:function(checktime,group_id){
+    var isToday = true;
+    var time_offset = 8; //US is -7, China is +8
+    var group = SimpleChat.Groups.findOne({_id:group_id});
+    if (group && group.offsetTimeZone) {
+      time_offset = group.offsetTimeZone;
+    }
+    function DateTimezone(date,offset) {
+      //var d = new Date();
+      var utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+      var local_now = new Date(utc + (3600000*offset));
+      var today_now = new Date(local_now.getFullYear(), local_now.getMonth(), local_now.getDate(),
+        local_now.getHours(), local_now.getMinutes());
+      return today_now;
+    }
+    var now = DateTimezone(new Date(),time_offset);
+    checktime = DateTimezone(new Date(checktime),time_offset);
+
+    var DayDiff = now.getDate() - checktime.getDate();
+    if (DayDiff != 0){
+      console.log('ai_checkin_out: not today out/in ');
+      isToday = false;
+    }
+    return isToday;
+  },
   //打卡签到
   aiCheckInOutHandle:function(data){
     /*
@@ -203,26 +228,8 @@ PERSON = {
     }
 
     /*重打卡/代打卡　选择了不是今天的图片，要写到对应的天的考勤记录里面,不要更新WorkAIUserRelations*/
-    var isToday = true;
-    var time_offset = 8; //US is -7, China is +8
-    var group = SimpleChat.Groups.findOne({_id: person_info.group_id});
-    if (group && group.offsetTimeZone) {
-      time_offset = group.offsetTimeZone;
-    }
-    function DateTimezone(offset) {
-      var d = new Date();
-      var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
-      var local_now = new Date(utc + (3600000*offset))
-      return local_now;
-    }
-    var now = DateTimezone(time_offset);
-    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    var today_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 0, 0, 0, 0);
-
-    if((data.checkout_time && data.checkout_time < today_utc) || (data.checkin_time && data.checkin_time < today_utc) || (person_info.ts && person_info.ts < today_utc)) {
-      console.log('ai_checkin_out: not today out/in ')
-      isToday = false;
-    }
+    var checktime = data.checkout_time || data.checkin_time || person_info.ts;
+    var isToday = PERSON.checkIsToday(checktime,person_info.group_id);
 
     var setObj = {group_id:person_info.group_id};
     if (data.checkin_time) {
@@ -913,26 +920,7 @@ PERSON = {
     var updateHandle = function(relation_id,time){
       var relation = WorkAIUserRelations.findOne({_id:relation_id});
       if (relation && time) {
-        var isToday = true;
-        var time_offset = 8; //US is -7, China is +8
-        var group = SimpleChat.Groups.findOne({_id: group_id});
-        if (group && group.offsetTimeZone) {
-          time_offset = group.offsetTimeZone;
-        }
-        var DateTimezone = function (offset) {
-          var d = new Date();
-          var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
-          var local_now = new Date(utc + (3600000*offset));
-          return local_now;
-        };
-        var now = DateTimezone(time_offset);
-        var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-        var today_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 0, 0, 0, 0);
-
-        if(time < today_utc) {
-          console.log('fixRelationOrWorkStatus: not today out/in ');
-          isToday = false;
-        }
+        var isToday = PERSON.checkIsToday(time,group_id);
         if(isToday == true){
           PERSON.updateWorkStatus(person_id);
         }
