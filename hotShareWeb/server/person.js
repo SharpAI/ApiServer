@@ -486,6 +486,12 @@ PERSON = {
       //取出较小的就是intime
       intime = (relation.ai_in_time > relation.checkin_time) ? relation.checkin_time : relation.ai_in_time;
     }
+
+    // 如果存在 checkin_time , 那么 in_time 以 checkin_time
+    if(relation.checkin_time && relation.checkin_time !== 0) { 
+      intime = relation.checkin_time;
+    }
+
     // var in_time = null;//上班时间
     // if (intime > 0) {
     //   var in_time_date = new Date(intime);
