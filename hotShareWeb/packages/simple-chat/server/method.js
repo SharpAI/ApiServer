@@ -285,7 +285,6 @@ Meteor.methods({
               user_id: user._id,
               user_name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
               user_icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
-              offsetTimeZone: offsetTimeZone,
               create_time: new Date()
             });
           }
@@ -303,6 +302,7 @@ Meteor.methods({
       describe: '',
       create_time: new Date(),
       template:template,
+      offsetTimeZone: offsetTimeZone,
       last_text: '',
       last_time: new Date(),
       barcode: rest_api_url + '/restapi/workai-group-qrcode?group_id=' + id,
