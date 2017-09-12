@@ -182,18 +182,21 @@ Template.homePage.helpers({
     if(this.in_time) {
       var today_start_utc = new Date(Date.now()).setUTCHours(0,0,0,0);
 
+      var date = new Date(this.in_time);
+      var fomatDate = date.shortTime(time_offset);
+      var isToday = fomatDate.indexOf('今天') > -1 ? true : false;
       //不是今天的时间
-      if(!out_time && (today_start_utc - time_offset*60*60*1000)  > this.in_time) {
+      if(!out_time && !isToday) {
         day_end = new Date(this.in_time).setUTCHours(0,0,0,0) + (24 - time_offset)*60*60*1000 - 1;
         out_time = day_end
       }
       //今天的时间（没有离开过公司）
-      else if(!out_time && today_start_utc <= this.in_time) {
+      else if(!out_time && isToday) {
         var now_time = Date.now();
         out_time = now_time;
       }
       //今天的时间（离开公司又回到公司）
-      else if(out_time && this.status === 'in' && today_start_utc <= this.in_time) {
+      else if(out_time && this.status === 'in' && isToday) {
         var now_time = Date.now();
         out_time = now_time;
       }
