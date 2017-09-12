@@ -379,6 +379,11 @@ Template.homePage.events({
   'click .modifyMyStatus':function(e){
     var group_id = e.currentTarget.id;
     var in_out = $(e.currentTarget).data('inout');
+    var currentDay = Session.get('theDisplayDay-'+group_id) || Session.get('theDisplayDay'); //当前显示的日期
+    currentDay = new Date(currentDay);
+    currentDay.setHours(23);
+    currentDay.setMinutes(59);
+    Session.set('wantModifyTime',currentDay);
     modifyStatusFun(group_id,in_out);
   },
   'click .modifyTaStatus': function(e){
@@ -386,6 +391,11 @@ Template.homePage.events({
     var in_out = $(e.currentTarget).data('inout');
     var taId = $(e.currentTarget).data('taid');
     var taName = $(e.currentTarget).data('taname');
+    var currentDay = Session.get('theDisplayDay-'+group_id) || Session.get('theDisplayDay'); //当前显示的日期
+    currentDay = new Date(currentDay);
+    currentDay.setHours(23);
+    currentDay.setMinutes(59);
+    Session.set('wantModifyTime',currentDay);
     Session.set('modifyMyStatus_ta_name',taName);
 
     modifyStatusFun(group_id, in_out, taId);
