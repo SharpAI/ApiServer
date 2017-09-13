@@ -611,13 +611,27 @@ if Meteor.isServer
       data.in_out = device.in_out
     person = Person.findOne({group_id:data.group_id,'faces.id':data.images.id},{sort: {createAt: 1}})
     if !person
-      #console.log 'not find person with faceid is:'+data.images.id
+      console.log 'not find person with faceid is:'+data.images.id
       return
     relation = WorkAIUserRelations.findOne({'ai_persons.id':person._id})
+    create_time = new Date(data.create_time);
     if !relation
       #console.log 'not find workai user relations'
+      WorkAIUserRelations.insert({
+        group_id:data.group_id,
+        person_name:person.name,
+        in_uuid:device.uuid,
+        ai_in_time:create_time.getTime(),
+        ai_lastest_in_time:create_time.getTime(),
+        ai_in_image:data.images.url,
+        ai_lastest_in_image:data.images.url,
+        ai_persons: [
+          {
+            id : person._id
+          }
+        ]
+        });
       return
-    create_time = new Date(data.create_time);
     if data.in_out is 'out'
       WorkAIUserRelations.update({_id:relation._id},{$set:{ai_out_time:create_time.getTime(), ai_out_image: data.images.url}});
       return
