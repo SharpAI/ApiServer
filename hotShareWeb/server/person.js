@@ -468,16 +468,15 @@ PERSON = {
 
 
     //不是今天的记录都设置为0
-    relation.checkout_time = (!relation.checkout_time) ? 0 : (relation.checkout_time < today) ? 0 : relation.checkout_time;
-    relation.checkin_time  = (!relation.checkin_time)  ? 0 : (relation.checkin_time  < today) ? 0 : relation.checkin_time;
-    relation.ai_in_time    = (!relation.ai_in_time)    ? 0 : (relation.ai_in_time    < today) ? 0 : relation.ai_in_time;
-    relation.ai_out_time   = (!relation.ai_out_time)   ? 0 : (relation.ai_out_time   < today) ? 0 : relation.ai_out_time;
-    relation.ai_lastest_in_time   = (!relation.ai_lastest_in_time)   ? 0 : (relation.ai_lastest_in_time   < today) ? 0 : relation.ai_lastest_in_time;
+    relation.checkout_time = (!relation.checkout_time) ? 0 : (!PERSON.checkIsToday(relation.checkout_time,relation.group_id)) ? 0 : relation.checkout_time;
+    relation.checkin_time  = (!relation.checkin_time)  ? 0 : (!PERSON.checkIsToday(relation.checkin_time,relation.group_id)) ? 0 : relation.checkin_time;
+    relation.ai_in_time    = (!relation.ai_in_time)    ? 0 : (!PERSON.checkIsToday(relation.ai_in_time,relation.group_id)) ? 0 : relation.ai_in_time;
+    relation.ai_out_time   = (!relation.ai_out_time)   ? 0 : (!PERSON.checkIsToday(relation.ai_out_time,relation.group_id)) ? 0 : relation.ai_out_time;
+    relation.ai_lastest_in_time   = (!relation.ai_lastest_in_time)   ? 0 : (!PERSON.checkIsToday(relation.ai_lastest_in_time,relation.group_id)) ? 0 : relation.ai_lastest_in_time;
 
     var outtime = 0;
     outtime = (relation.checkout_time > relation.ai_out_time) ? relation.checkout_time : relation.ai_out_time;
-    outtime = (outtime > today) ? outtime : 0;
-    
+    outtime = (PERSON.checkIsToday(outtime,relation.group_id)) ? outtime : 0;
     
     //最新一次进门的时间
     var lastest_in_time = (relation.checkin_time > relation.ai_lastest_in_time) ? relation.checkin_time : relation.ai_lastest_in_time;

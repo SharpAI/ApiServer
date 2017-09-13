@@ -138,6 +138,19 @@ Template.homePage.helpers({
     return app_notifaction_status === 'on';
   },
   isStatusIN: function(status){
+    if (this.in_time > 0) {
+      var date = new Date(this.in_time);
+      var time_offset = 8
+      var group = SimpleChat.Groups.findOne({_id: this.group_id});
+      if (group && group.offsetTimeZone) {
+        time_offset = group.offsetTimeZone;
+      }
+      var fomatDate = date.shortTime(time_offset);
+      var isToday = fomatDate.indexOf('今天') > -1 ? true : false;
+      if (!isToday) {
+        return false;
+      }
+    }
     return status === 'in';
   },
   isInStatusNormal: function(in_status){
@@ -169,6 +182,7 @@ Template.homePage.helpers({
     return Meteor.userId() === app_user_id;
   },
   InComTimeLen: function(group_id){
+    var group_id = this.group_id;
     var diff = 0;
     var out_time = this.out_time;
     var today_end = this.out_time;
@@ -178,17 +192,37 @@ Template.homePage.helpers({
       time_offset = group.offsetTimeZone;
     }
 
+    function DateTimezone(d, time_offset) {
+        if (time_offset == undefined){
+            if (d.getTimezoneOffset() == 420){
+                time_offset = -7
+            }else {
+                time_offset = 8
+            }
+        }
+        // 取得 UTC time
+        var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+        var local_now = new Date(utc + (3600000*time_offset))
+        var today_now = new Date(local_now.getFullYear(), local_now.getMonth(), local_now.getDate(), 
+        local_now.getHours(), local_now.getMinutes());
+      
+        return today_now;
+    }
+
     //计算out_time
     if(this.in_time) {
-      var today_start_utc = new Date(Date.now()).setUTCHours(0,0,0,0);
+      //var today_start_utc = new Date(Date.now()).setUTCHours(0,0,0,0);
 
       var date = new Date(this.in_time);
       var fomatDate = date.shortTime(time_offset);
       var isToday = fomatDate.indexOf('今天') > -1 ? true : false;
       //不是今天的时间
       if(!out_time && !isToday) {
-        day_end = new Date(this.in_time).setUTCHours(0,0,0,0) + (24 - time_offset)*60*60*1000 - 1;
-        out_time = day_end
+        date = DateTimezone(date,time_offset);
+        date_end = new Date(date).setHours(23,59,59);
+        //day_end = new Date(this.in_time).setUTCHours(0,0,0,0) + (24 - time_offset)*60*60*1000 - 1;
+        out_time = day_end;
+        this.in_time = date.getTime();
       }
       //今天的时间（没有离开过公司）
       else if(!out_time && isToday) {
