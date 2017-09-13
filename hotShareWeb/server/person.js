@@ -351,8 +351,13 @@ PERSON = {
       //聊天室标记或者打卡设备记录考勤时，如果选取的照片拍摄时间小于当前的考勤上班时间或大于当前的下班时间才应当更新考勤；如果是主页考勤点更改上下班时间或个人信息重打卡则都更改
       if (!data.wantModify) {
         var time = setObj.checkin_time || setObj.checkout_time;
-        var day = new Date(time);
-        var day_utc = Date.UTC(day.getFullYear(), day.getMonth(), day.getDate() , 0, 0, 0, 0);
+        var d = new Date(time);
+        var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+        var now = new Date(utc + (3600000*time_offset));
+        var day = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        var day_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 0, 0, 0, 0);
+        console.log('day_utc:'+day_utc);
+
         var workstatus = null;
         if (relation.app_user_id) {
           workstatus = WorkStatus.findOne({'group_id': relation.group_id, 'app_user_id': relation.app_user_id, 'date': day_utc});
