@@ -636,10 +636,10 @@ if Meteor.isServer
       WorkAIUserRelations.update({_id:relation._id},{$set:{ai_out_time:create_time.getTime(), ai_out_image: data.images.url}});
       return
     WorkAIUserRelations.update({_id:relation._id},{$set:{ai_lastest_in_time:create_time.getTime(),ai_lastest_in_image:data.images.url}});#平板最新拍到的时间
-    if relation.ai_in_time 
-      ai_in_time = new Date(relation.ai_in_time);
-      today = new Date(create_time.getFullYear(), create_time.getMonth(), create_time.getDate()).getTime(); #凌晨
-      if ai_in_time.getTime() > today
+    if relation.ai_in_time and PERSON.checkIsToday(relation.ai_in_time,data.group_id)
+      # ai_in_time = new Date(relation.ai_in_time);
+      # today = new Date(create_time.getFullYear(), create_time.getMonth(), create_time.getDate()).getTime(); #凌晨
+      # if ai_in_time.getTime() > today
         console.log 'today greeting_msg had send'
         #WorkAIUserRelations.update({_id:relation._id},{$set:{ai_in_time:create_time.getTime()}});
         return
