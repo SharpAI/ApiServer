@@ -671,13 +671,20 @@ PERSON = {
       time_offset = group.offsetTimeZone;
     }
 
-    if(workStatusObj.checkin_time)
-      var day = new Date(workStatusObj.checkin_time);
-    else if(workStatusObj.checkout_time)
-      var day = new Date(workStatusObj.checkout_time);
-    var day_utc = Date.UTC(day.getFullYear(), day.getMonth(), day.getDate() , 0, 0, 0, 0);
-    var day_local = day_utc - (3600000*time_offset)
-    var workstatus = null;
+    function DateTimezone(offset) {
+      var time = workStatusObj.checkin_time || workStatusObj.checkout_time;
+      var d = new Date(time);
+      var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+      var local_now = new Date(utc + (3600000*offset))
+
+      return local_now;
+    }
+    
+    var now = DateTimezone(time_offset);
+    var day = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    var day_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 
+      0, 0, 0, 0);
+    console.log('day_utc:'+day_utc);
 
     var workstatus = null;
     if (workStatusObj.app_user_id) {
@@ -742,9 +749,9 @@ PERSON = {
     //9点以前上班是绿色, 之后是红色
     if(intime == 0)
       in_status = "unknown";
-    else if(intime > 0 && intime <= (day_local + 9*60*60*1000))
+    else if(intime > 0 && intime <= (day + 9*60*60*1000))
       in_status = "normal";
-    else if(intime > 0 && intime > (day_local + 9*60*60*1000))
+    else if(intime > 0 && intime > (day + 9*60*60*1000))
       in_status = "warning";
 
     if(outtime == 0)
