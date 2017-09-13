@@ -620,7 +620,7 @@ if Meteor.isServer
       WorkAIUserRelations.insert({
         group_id:data.group_id,
         person_name:person.name,
-        in_uuid:device.uuid,
+        in_uuid:data.people_uuid,
         ai_in_time:create_time.getTime(),
         ai_lastest_in_time:create_time.getTime(),
         ai_in_image:data.images.url,
@@ -1053,7 +1053,7 @@ if Meteor.isServer
   Router.route('/restapi/workai-getgroupid', {where: 'server'}).get(()->
       uuid = this.params.query.uuid
 
-      console.log '/restapi/workai-getgroupid get request, uuid:' + uuid
+      #console.log '/restapi/workai-getgroupid get request, uuid:' + uuid
       unless uuid
         console.log '/restapi/workai-getgroupid get unless resturn'
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
