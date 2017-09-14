@@ -219,7 +219,7 @@ Template.homePage.helpers({
       //不是今天的时间
       if(!out_time && !isToday) {
         date = DateTimezone(date,time_offset);
-        date_end = new Date(date).setHours(23,59,59);
+        day_end = new Date(date).setHours(23,59,59);
         //day_end = new Date(this.in_time).setUTCHours(0,0,0,0) + (24 - time_offset)*60*60*1000 - 1;
         out_time = day_end;
         this.in_time = date.getTime();
