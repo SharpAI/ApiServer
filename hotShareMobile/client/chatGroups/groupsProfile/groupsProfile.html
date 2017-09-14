@@ -69,6 +69,12 @@
                         </div>
                     </li>
                     {{/if}}
+                    {{#if isGroupAdmin}}
+                    <li id="groupInOutTime">
+                        <label>上下班时间设置</label>
+                        <div class="value">{{getGroupInOutTime}}<i class="fa fa-angle-right"></i></div>
+                    </li>
+                    {{/if}}
                 </ul>
                 {{#if isGroupAdmin}}
                 <div class="line" style="height: 20px;text-align:left;padding-left:10px;color:#555;">识别规则</div>
@@ -117,6 +123,25 @@
             </div>
         </div>
     </div>
+    <script>
+    $(function(){
+      $('#groupInOutTime').mobiscroll().range({
+        theme: 'material',
+        lang: 'zh',
+        display: 'bottom', 
+        controls: ['time'], 
+        maxWidth: 100,
+        setText: '设置',
+        onSet: function(value, inst) {
+          var val = value.valueText;
+          var vals = val.split(' - ');
+          var group_intime = vals[0];
+          var group_outtime = vals[1];
+          Meteor.call('updateGroupInOutTime',Session.get('groupsId'),group_intime, group_outtime);
+        }
+      }) 
+    });
+    </script>
 </template>
 <template name="groupUsers">
     <div class="groupUsers">

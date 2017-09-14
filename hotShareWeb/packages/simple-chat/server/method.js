@@ -510,6 +510,14 @@ Meteor.methods({
   'removeGroupUser': function(group_id, user_id){
     GroupUsers.remove({group_id: group_id, user_id: user_id});
     return true;
+  },
+  'updateGroupInOutTime': function(_id, group_intime,group_outtime){
+    Groups.update({_id: _id},{
+      $set:{
+        group_intime: group_intime,
+        group_outtime:group_outtime
+      }
+    });
   }
 });
 

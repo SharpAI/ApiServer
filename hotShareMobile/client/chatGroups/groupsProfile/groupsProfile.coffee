@@ -33,11 +33,20 @@ if Meteor.isClient
     groupid = Session.get('groupsId')
     Meteor.subscribe("get-group",groupid)
     Meteor.subscribe('group-user-counter',groupid)
-    Meteor.subscribe('loginuser-in-group',groupid, Meteor.userId());
+    Meteor.subscribe('loginuser-in-group',groupid, Meteor.userId())
   UI.registerHelper('checkedIf',(val)->
     return if val then 'checked' else ''
   )
   Template.groupInformation.helpers
+    getGroupInOutTime: ()->
+      group_intime = '09:00'
+      group_outtime = '18:00'
+      group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
+      if group and group.group_intime
+        group_intime = group.group_intime
+      if group and group.group_outtime
+        group_outtime = group.group_outtime
+      return group_intime+' - '+group_outtime
     groupAccuracyType: ()->
       if localStorage.getItem('groupAccuracyType') is 'accurate'
         return '精确匹配'
@@ -123,6 +132,9 @@ if Meteor.isClient
       return false      
 
   Template.groupInformation.events
+    'click #groupInOutTime':(event)->
+       $('#groupInOutTime').mobiscroll('show')
+       return false
     'click .groupUserHide':(event)->
       group_id = Session.get('groupsId')
       PUB.page('/groupUserHide/'+group_id)
