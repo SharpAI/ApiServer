@@ -225,7 +225,7 @@
                       {{#if whats_up}}
                           <i class="fa fa-pencil" style="color:gray; font-size:14px;"></i>
                           {{#each whatsUpLists}}
-                          <p><strong>{{person_name}}</strong>[{{getShortTime ts ../group_id}}]: {{content}}</p>
+                          <p style="white-space: pre-wrap;"><strong>{{person_name}}</strong>[{{getShortTime ts ../group_id}}]: {{content}}</p>
                           {{/each}}
                       {{else}}
                           <i class="fa fa-pencil" style="color:gray; font-size:14px;">今天还没有工作安排...</i>
