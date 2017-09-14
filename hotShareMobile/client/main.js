@@ -61,7 +61,7 @@ if (Meteor.isCordova) {
                   window.plugins.appsetup.openSettings();
                 }
                 else{
-                  //window.plugins.jPushPlugin.goToSet();
+                  window.plugins.jPushPlugin.goToSet();
                 }
               }
           },'开启推送',['以后再说','马上开启']);
