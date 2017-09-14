@@ -299,8 +299,8 @@ modifyStatusFun = function(group_id,in_out,taId){
     }
     if(deviceCount === 1){
       var device = Devices.findOne({groupId: group_id,in_out:in_out},{sort:{createAt:-1}})
+      Session.set('wantModify',true);
       if(taId){
-        Session.set('wantModify',true);
         return PUB.page('/timelineAlbum/'+device.uuid+'?taId='+taId);
       }
       return PUB.page('/timelineAlbum/'+device.uuid);
@@ -321,8 +321,8 @@ Template.homePage.events({
     $('.homePage .content').removeClass('content_box');
     var taId = Session.get('modifyMyStatus_ta_id');
     var pageUrl = '/timelineAlbum/'+e.currentTarget.id;
+    Session.set('wantModify',true);
     if(taId){
-      Session.set('wantModify',true);
       pageUrl = '/timelineAlbum/'+e.currentTarget.id+'?taId='+taId;
     }
     setTimeout(function(){

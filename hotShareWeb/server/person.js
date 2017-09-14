@@ -353,6 +353,11 @@ PERSON = {
         var time = setObj.checkin_time || setObj.checkout_time;
         var d = new Date(time);
         var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+        var time_offset = 8; //US is -7, China is +8
+        var group = SimpleChat.Groups.findOne({_id:setObj.group_id});
+        if (group && group.offsetTimeZone) {
+          time_offset = group.offsetTimeZone;
+        }
         var now = new Date(utc + (3600000*time_offset));
         var day = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
         var day_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 0, 0, 0, 0);
