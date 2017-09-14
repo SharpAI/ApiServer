@@ -517,6 +517,18 @@ Meteor.methods({
         group_intime: group_intime,
         group_outtime:group_outtime
       }
+    },function(error){
+      if (error) {
+        console.log('updateGroupInOutTime:'+error);
+        return;
+      }
+      WorkAIUserRelations.find({group_id:_id}).observe({
+        added:function(document){
+          if (document && document.ai_persons && document.ai_persons.length > 0) {
+            PERSON.updateWorkStatus(document.ai_persons[0].id);
+          }
+        }
+      });
     });
   }
 });
