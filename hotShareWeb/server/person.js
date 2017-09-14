@@ -21,6 +21,7 @@ PERSON = {
     return device;
   },
   removeName: function(group_id,uuid, id,url,is_video){
+    console.log('try remove name');
     var person = null;
     if (group_id && id) {
       person = Person.findOne({group_id:group_id ,'faces.id': id}, {sort: {createAt: 1}});
@@ -47,6 +48,7 @@ PERSON = {
     //PersonNames.remove({uuid: uuid, id: id});  [{id:'1'},{}] ['1','2']
   },
   removeFace: function(obj){
+    console.log('try remove faces');
     var person = null;
     var faces = [];
     if(obj.group_id){
@@ -194,6 +196,7 @@ PERSON = {
     checktime = DateTimezone(new Date(checktime),time_offset);
 
     var DayDiff = now.getDate() - checktime.getDate();
+
     if (DayDiff != 0){
       console.log('ai_checkin_out: not today out/in ');
       isToday = false;
@@ -452,11 +455,20 @@ PERSON = {
 
     var time_offset = 8; //US is -7, China is +8 
 
+    var group_intime = '09:00'; //默认上班时间9点
+    var group_outtime = '18:00'; //默认下班时间18点
+
     var group = SimpleChat.Groups.findOne({_id: relation.group_id});
     if (group && group.offsetTimeZone) {
       time_offset = group.offsetTimeZone;
     }
-    
+    if (group && group.group_intime) {
+      group_intime = group.group_intime;
+    }
+    if (group && group.group_outtime) {
+      group_outtime = group.group_outtime;
+    }
+
     console.log('offsetTimeZone ' + time_offset);
     function DateTimezone(offset) {
       var d = new Date();
@@ -470,6 +482,14 @@ PERSON = {
     var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
     var today_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 
       0, 0, 0, 0);
+    
+    var group_intime_ary = group_intime.split(":");
+    group_intime = new Date(now.getFullYear(), now.getMonth(), now.getDate(),group_intime_ary[0],group_intime_ary[1]).getTime();
+    //console.log('group_intime:'+group_intime);
+
+    var group_outtime_ary = group_outtime.split(":");
+    group_outtime = new Date(now.getFullYear(), now.getMonth(), now.getDate(),group_outtime_ary[0],group_outtime_ary[1]).getTime();
+    //console.log('group_outtime:'+group_intime);
 
 
     //不是今天的记录都设置为0
@@ -481,7 +501,7 @@ PERSON = {
 
     var outtime = 0;
     outtime = (relation.checkout_time > relation.ai_out_time) ? relation.checkout_time : relation.ai_out_time;
-    outtime = (PERSON.checkIsToday(outtime,relation.group_id)) ? outtime : 0;
+    outtime = (outtime > 0) ? ((PERSON.checkIsToday(outtime,relation.group_id)) ? outtime : 0 ): 0;
     
     //最新一次进门的时间
     var lastest_in_time = (relation.checkin_time > relation.ai_lastest_in_time) ? relation.checkin_time : relation.ai_lastest_in_time;
@@ -545,12 +565,15 @@ PERSON = {
       now_status = "in";
 
     //9点以前上班是绿色, 之后是红色
-    if(intime == 0)
+    if(intime == 0){
       in_status = "unknown";
-    else if(intime > 0 && intime <= (today + 9*60*60*1000))
+    }
+    else if(intime > 0 && intime <= group_intime){
       in_status = "normal";
-    else if(intime > 0 && intime > (today + 9*60*60*1000))
+    }
+    else if(intime > 0 && intime > group_intime){
       in_status = "warning";
+    }
 
     if(outtime == 0)
       out_status = "unknown";
@@ -558,9 +581,9 @@ PERSON = {
     else if(outtime > 0 && (intime ==0 || intime > outtime))
       out_status = "error"
     //不足8小时
-    else if(outtime > 0 && intime > 0 && outtime > intime && (outtime - intime) < 8*60*60*1000)
+    else if(outtime > 0 && intime > 0 && outtime > intime && (outtime - intime) < (group_outtime - group_intime))
       out_status = "warning"
-    else if(outtime > 0 && intime > 0 && outtime > intime && (outtime - intime) >= 8*60*60*1000)
+    else if(outtime > 0 && intime > 0 && outtime > intime && (outtime - intime) >= (group_outtime - group_intime))
       out_status = "normal"
 
     var in_uuid = relation.in_uuid;
@@ -675,9 +698,18 @@ PERSON = {
       return;
 
     var time_offset = 8; //US is -7, China is +8 
-    var group = SimpleChat.Groups.findOne({_id: workStatusObj.group_id});
+    var group_intime = '09:00'; //默认上班时间9点
+    var group_outtime = '18:00'; //默认下班时间18点
+
+    var group = SimpleChat.Groups.findOne({_id: relation.group_id});
     if (group && group.offsetTimeZone) {
       time_offset = group.offsetTimeZone;
+    }
+    if (group && group.group_intime) {
+      group_intime = group.group_intime;
+    }
+    if (group && group.group_outtime) {
+      group_outtime = group.group_outtime;
     }
 
     function DateTimezone(offset) {
@@ -694,6 +726,11 @@ PERSON = {
     var day_utc = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 
       0, 0, 0, 0);
     console.log('day_utc:'+day_utc);
+
+    var group_intime_ary = group_intime.split(":");
+    group_intime = new Date(now.getFullYear(), now.getMonth(), now.getDate(),group_intime_ary[0],group_intime_ary[1]).getTime();
+    var group_outtime_ary = group_outtime.split(":");
+    group_outtime = new Date(now.getFullYear(), now.getMonth(), now.getDate(),group_outtime_ary[0],group_outtime_ary[1]).getTime();
 
     var workstatus = null;
     if (workStatusObj.app_user_id) {
@@ -758,9 +795,9 @@ PERSON = {
     //9点以前上班是绿色, 之后是红色
     if(intime == 0)
       in_status = "unknown";
-    else if(intime > 0 && intime <= (day + 9*60*60*1000))
+    else if(intime > 0 && intime <= (group_intime))
       in_status = "normal";
-    else if(intime > 0 && intime > (day + 9*60*60*1000))
+    else if(intime > 0 && intime > (group_intime))
       in_status = "warning";
 
     if(outtime == 0)
@@ -769,9 +806,9 @@ PERSON = {
     else if(outtime > 0 && (intime ==0 || intime > outtime))
       out_status = "error"
     //不足8小时
-    else if(outtime > 0 && intime > 0 && outtime > intime && (outtime - intime) < 8*60*60*1000)
+    else if(outtime > 0 && intime > 0 && outtime > intime && (outtime - intime) < (group_outtime - group_intime))
       out_status = "warning"
-    else if(outtime > 0 && intime > 0 && outtime > intime && (outtime - intime) >= 8*60*60*1000)
+    else if(outtime > 0 && intime > 0 && outtime > intime && (outtime - intime) >= (group_outtime - group_intime))
       out_status = "normal"
 
     var setObj = {
