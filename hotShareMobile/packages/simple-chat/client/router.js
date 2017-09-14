@@ -43,6 +43,13 @@ Template._simpleChatToChat.helpers({
     is_loading.set(false);
 
     return res;
+  },
+  hasNewMsg:function(){
+    var newMsgCount = Session.get('newMsgCount');
+    return newMsgCount > 0;
+  },
+  newMsgCount:function(){
+    return Session.get('newMsgCount');
   }
 });
 
@@ -73,6 +80,7 @@ window.onresize = function(){
 Template._simpleChatToChat.onRendered(function(){
   console.log('message view rendered');
   Session.set('currentWindowHeight',$(window).height());
+  Session.set('shouldScrollToBottom',true);
   page_data = this.data;
   if(!page_data)
     return;
@@ -455,6 +463,9 @@ Template._simpleChatToChat.onRendered(function(){
         Meteor.setTimeout(function(){is_loading.set(false);}, 500);
         loadMoreMesage(page_data.where, {limit: list_limit.get(), sort: {create_time: -1}}, list_limit.get());
       }
+      if ($box.scrollTop()+$box.height() >= $box_ul.height()) {
+        Session.set('newMsgCount',0);
+      }
     });
 
     if(Meteor.isCordova){
@@ -516,6 +527,7 @@ Template._simpleChatToChat.onRendered(function(){
 
 Template._simpleChatToChat.onDestroyed(function(){
   page_data = null;
+  Session.set('newMsgCount',0);
   if(Meteor.isCordova && device.platform === 'iOS'){
     try{
      Keyboard.shrinkView(false);
@@ -840,14 +852,14 @@ Template._simpleChatToChatItem.events({
       // update collection
       Messages.update({_id: msgObj._id}, {$set: {label_complete: true}});
 
-      Meteor.setTimeout(function(){
-        var $box = $('.box');
-        if ($('.oneself_box').length > 0) {
-           $box = $('.oneself_box');
-        }
-        $box.scrollTop($box.scrollTop()+10);
-        $box.trigger("scroll");
-      }, 500);
+      // Meteor.setTimeout(function(){
+      //   var $box = $('.box');
+      //   if ($('.oneself_box').length > 0) {
+      //      $box = $('.oneself_box');
+      //   }
+      //   $box.scrollTop($box.scrollTop()+10);
+      //   $box.trigger("scroll");
+      // }, 500);
 
     });
   },
@@ -1160,12 +1172,16 @@ var setScrollToBottom = function(){
   if (setScrollToBottomTimeout)
     Meteor.clearTimeout(setScrollToBottomTimeout);
   setScrollToBottomTimeout = Meteor.setTimeout(function(){
-    console.log('set scrollTop to end');
+    console.log('try set scrollTop to end');
     var $box = $('.box');
     var $box_ul = $('.box ul');
     if ($('.oneself_box').length > 0) {
        $box = $('.oneself_box');
        $box_ul = $('.oneself_box ul');
+    }
+    var enableScroll = Session.get('shouldScrollToBottom');
+    if (!enableScroll) {
+      return;
     }
     $box.scrollTop($box_ul.height());
   }, 200);
@@ -1341,6 +1357,7 @@ Template._simpleChatToChat.events({
       };
       Messages.insert(msg, function(){
         sendMqttMsg(msg);
+        Session.set('shouldScrollToBottom',true);
         setScrollToBottom();
       });
 
@@ -1360,8 +1377,13 @@ Template._simpleChatToChat.events({
   'click .ta div.icon':function(e){
      console.log('i clicked a chat userICON');
      Template._simpleChatOneSelfMsg.open(this);
+  },
+  'click .hasNewMsg':function(e){
+     e.preventDefault();
+     Session.set('shouldScrollToBottom',true);
+     setScrollToBottom();
+     Session.set('newMsgCount',0);
   }
-
 });
 
 var renderMoreButtonTimeout = null;
@@ -1784,6 +1806,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
     }
   }
   if (!msgObj.is_people)
+    shouldScrollToBottom(msgObj);
     return Messages.insert(msgObj);
 
   onMqttMessage(topic, msg);
@@ -1798,12 +1821,33 @@ SimpleChat.onMqttMessage = function(topic, msg) {
   clearMoreOldMessage();
 };
 
+var shouldScrollToBottom = function(msg){
+  if (msg.to_type === page_data.type && msg.to.id === page_data.id){
+      var $box = $('.box');
+      var $box_ul = $('.box ul');
+      if ($('.oneself_box').length > 0) {
+         $box = $('.oneself_box');
+         $box_ul = $('.oneself_box ul');
+      }
+      var enableScroll = false;
+      if ($box.scrollTop() + $box.height() >= $box_ul.height()) {
+         enableScroll = true;
+      }
+      Session.set('shouldScrollToBottom',enableScroll);
+      if (!enableScroll && msg.form.id != Meteor.userId()) {
+        var newMsgCount = Session.get('newMsgCount');
+        Session.set('newMsgCount',newMsgCount+1);
+      }
+  }
+};
+
 var onMqttMessage = function(topic, msg) {
   var insertMsg = function(msgObj, type){
     if(msgObj.admin_remove){
       return;
     }
     console.log(type, msgObj._id);
+    shouldScrollToBottom(msgObj);
     Messages.insert(msgObj, function(err, _id){
       if (err)
         console.log('insert msg error:', err);
@@ -2100,14 +2144,14 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
         Messages.update({_id: targetMsg._id}, {
           $set:setObj
         }, function(){
-          Meteor.setTimeout(function(){
-            var $box = $('.box');
-            if ($('.oneself_box').length > 0) {
-               $box = $('.oneself_box');
-            }
-            $box.scrollTop($box.scrollTop()+1);
-            $box.trigger("scroll");
-          }, 100);
+          // Meteor.setTimeout(function(){
+          //   var $box = $('.box');
+          //   if ($('.oneself_box').length > 0) {
+          //      $box = $('.oneself_box');
+          //   }
+          //   $box.scrollTop($box.scrollTop()+1);
+          //   $box.trigger("scroll");
+          // }, 100);
         });
       }
 
@@ -2124,14 +2168,14 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
     $push: {label_users: msgObj.user},
   //  $set: {create_time: new Date()}
   }, function(){
-    Meteor.setTimeout(function(){
-      var $box = $('.box');
-      if ($('.oneself_box').length > 0) {
-         $box = $('.oneself_box');
-      }
-      $box.scrollTop($box.scrollTop()+1);
-      $box.trigger("scroll");
-    }, 100);
+    // Meteor.setTimeout(function(){
+    //   var $box = $('.box');
+    //   if ($('.oneself_box').length > 0) {
+    //      $box = $('.oneself_box');
+    //   }
+    //   $box.scrollTop($box.scrollTop()+1);
+    //   $box.trigger("scroll");
+    // }, 100);
   });
 };
 
@@ -2173,6 +2217,7 @@ Template._simpleChatToChatLabelNameImg.onRendered(function(){
   });
 });
 Template._simpleChatToChatLabelName.onRendered(function(){
+  console.log('Template._simpleChatToChatLabelName.onRendered');
   label_limit.set(40);
   var gid = this.data.group_id;
   Meteor.subscribe('get-label-names', this.data.group_id, label_limit.get(), {
