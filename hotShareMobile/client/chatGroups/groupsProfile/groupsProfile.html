@@ -21,10 +21,17 @@
             </div> -->
                 {{#if isGroup}}
                 <ul class="set-up comFadeIn" style="margin-top: 0px;margin-bottom: 10px;">
+                    {{#if isGroupCreator}}
+                    <li class="name editName">
+                        <label>公司名称</label>
+                        <div class="value">{{groupName}}<i class="fa fa-angle-right"></i></div>
+                    </li>
+                    {{else}}
                     <li class="name">
                         <label>公司名称</label>
                         <div class="value">{{groupName}}<i class="fa fa-angle-right"></i></div>
                     </li>
+                    {{/if}}
                     {{#if hasBarCode}}
                     <li class="barcode">
                         <label>公司二维码</label>
@@ -63,6 +70,7 @@
                     </li>
                     {{/if}}
                 </ul>
+                {{#if isGroupAdmin}}
                 <div class="line" style="height: 20px;text-align:left;padding-left:10px;color:#555;">识别规则</div>
                 <ul class="set-up comFadeIn" style="margin-top: 0px;margin-bottom: 10px;">
                     <li class="">
@@ -80,12 +88,15 @@
                         <div class="value"><i class="fa fa-angle-right"></i></div>
                     </li>
                 </ul>
+                {{/if}}
                 <div class="line" style="height: 12px;"></div>
                 <div class="groupPhoto">群相册</div>
                 <div class="scanPerfBarcode">扫描绩效二维码</div>
                 <div class="checkPerf">查看绩效</div>
                 {{/if}}
+                {{#if isGroupAdmin}}
                 <div class="emptyMessages">清空训练记录</div>
+                {{/if}}
                 <div class="line" style="height: 12px;"></div>
                 {{#if userIsAdmin}}
                 <div class="disbaleNormalLabelMsg">
@@ -117,6 +128,9 @@
                         <div class='box'>
                             <div class='boxcontent'>
                                 <img class="usericon" src="{{user_icon}}">
+                                {{#if isGroupAdmin}}
+                                <div class="group-admin-label"><img src="/img/admin-portal.png" width="20"/></div>
+                                {{/if}}
                             </div>
                         </div>
                         <div class="userName">{{user_name}}</div>

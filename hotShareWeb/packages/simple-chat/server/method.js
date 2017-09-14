@@ -497,6 +497,19 @@ Meteor.methods({
     } catch (err){
       return err;
     }
+  },
+  'modifyGroupUserAdmin': function(group_id, user_id, isAdmin){
+    var groupUser = SimpleChat.GroupUsers.findOne({group_id:group_id, user_id: user_id})
+    if(groupUser){
+      SimpleChat.GroupUsers.update({_id: groupUser._id},{$set:{isGroupAdmin: isAdmin}})
+      return true;
+    } else {
+      return false;
+    }
+  },
+  'removeGroupUser': function(group_id, user_id){
+    GroupUsers.remove({group_id: group_id, user_id: user_id});
+    return true;
   }
 });
 

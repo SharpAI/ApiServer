@@ -44,6 +44,10 @@ Meteor.publish('get-group-user', function(id){
   return GroupUsers.find({group_id: id});
 });
 
+Meteor.publish('loginuser-in-group', function(group_id, user_id){
+  return GroupUsers.find({group_id: group_id, user_id: user_id});
+});
+
 Meteor.publish('get-group-user-with-limit', function(id,limit){
   return GroupUsers.find({group_id: id},{limit:limit});
 });

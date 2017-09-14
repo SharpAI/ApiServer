@@ -33,6 +33,7 @@ if Meteor.isClient
     groupid = Session.get('groupsId')
     Meteor.subscribe("get-group",groupid)
     Meteor.subscribe('group-user-counter',groupid)
+    Meteor.subscribe('loginuser-in-group',groupid, Meteor.userId());
   UI.registerHelper('checkedIf',(val)->
     return if val then 'checked' else ''
   )
@@ -100,10 +101,26 @@ if Meteor.isClient
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       return group.announcement.length > 2
     isGroupCreator:()->
+      # 具有以下特殊权限
+      # 1.公司名称修改
+      # 2.解散公司
+      # 3.群管理员管理权限
+
       group = SimpleChat.Groups.findOne({_id: Session.get('groupsId')})
       if group and group.creator and group.creator.id is Meteor.userId()
         return true
       return false
+    isGroupAdmin:()->
+      # 具有以下特殊权限
+      # 1.清空训练记录
+      # 2.报告栏成员管理
+      # 3.识别规则设置
+      if Template.groupInformation.__helpers.get('isGroupCreator')()
+        return true
+      groupUser = SimpleChat.GroupUsers.findOne({group_id:Session.get('groupsId'), user_id: Meteor.userId()})
+      if groupUser and groupUser.isGroupAdmin
+        return true
+      return false      
 
   Template.groupInformation.events
     'click .groupUserHide':(event)->
@@ -116,7 +133,7 @@ if Meteor.isClient
       Router.go(url)
     'click .groupAccuracy': (event)->
       Session.set("groupsProfileMenu","groupAccuracy")
-    'click .name': (event)->
+    'click .editName': (event)->
       Session.set("groupsProfileMenu","setGroupname")
     'click .barcode': (event)->
       Session.set("groupsProfileMenu","groupBarCode")

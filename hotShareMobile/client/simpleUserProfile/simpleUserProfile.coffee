@@ -37,6 +37,9 @@ if Meteor.isClient
     # offSettop = $('.userProfileBottom').offset().top
     # $('.userProfileBottom').css('height',$(window).height()-40-offSettop)
     $('.page').addClass('scrollable')
+    groupid = Session.get('groupsId')
+    Meteor.subscribe("get-group",groupid)
+    Meteor.subscribe('loginuser-in-group',groupid, Meteor.userId());
     Meteor.subscribe('usersById',Session.get("simpleUserProfileUserId"))
   Template.simpleUserProfile.helpers
     isMale:(sex)->
@@ -65,8 +68,41 @@ if Meteor.isClient
         return true
       else
         return false
+    isGroupCreator:()->
+      # 具有以下特殊权限
+      # 1.公司名称修改
+      # 2.解散公司
+      # 3.群管理员管理权限
+      group = SimpleChat.Groups.findOne({_id: Session.get('groupsId')})
+      if group and group.creator and group.creator.id is Meteor.userId()
+        return true
+      return false
+    isGroupAdmin:()->
+      # 具有以下特殊权限
+      # 1.清空训练记录
+      # 2.报告栏成员管理
+      # 3.识别规则设置
+      if Template.simpleUserProfile.__helpers.get('isGroupCreator')()
+        return true
+      groupUser = SimpleChat.GroupUsers.findOne({group_id:Session.get('groupsId'), user_id: Meteor.userId()})
+      if groupUser and groupUser.isGroupAdmin
+        return true
+      return false 
 
   Template.simpleUserProfile.events
+    'click #setAsGroupAdmin':()->
+      user_id = Session.get("simpleUserProfileUserId")
+      group_id = Session.get('groupsId')
+      Meteor.call('modifyGroupUserAdmin', group_id, user_id, true)
+    'click #unSetGroupAdmin':()->
+      user_id = Session.get("simpleUserProfileUserId")
+      group_id = Session.get('groupsId')
+      Meteor.call('modifyGroupUserAdmin', group_id, user_id, false)
+    'click removeFormGroup':()->
+      user_id = Session.get("simpleUserProfileUserId")
+      group_id = Session.get('groupsId')
+      Meteor.call('removeGroupUser', group_id, user_id)
+      return PUB.back()
     'click .simpleUserProfile .back':()->
       PUB.back()
     'click #removeFormBlacklist':()->

@@ -40,6 +40,9 @@
                                 <div class='box'>
                                     <div class='boxcontent'>
                                         <img class="usericon" src="{{user_icon}}">
+                                        {{#if isGroupAdmin}}
+                                        <div class="group-admin-label"><img src="/img/admin-portal.png" width="20"/></div>
+                                        {{/if}}
                                     </div>
                                 </div>
                                 <div class="userName">{{user_name}}</div>

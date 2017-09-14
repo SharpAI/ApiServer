@@ -7,23 +7,30 @@
             {{else}}
                 <div>{{profile.username}}</div>
             {{/if}}
+            {{#if isGroupCreator}}
             <div class="rightDropMenu dropdown">
                 <div class="rightButton dropdown-toggle" id="btn-more" data-toggle="dropdown">
                   <img src="/more.png" height="30" >
                 </div>
                 <ul class="dropdown-menu" role="menu" aria-labelledby="btn-more">
                   <!-- <li role="presentation"><a id="addNewFriends" role="menuitem" tabindex="-1" ><span class="add-more-drop-item"><span class="fa fa-plus"></span><i class="fa fa-user"></i></span> 添加朋友</a></li> -->
-                  {{#if inBlackList}}
+                  <!--{{#if inBlackList}}
                     <li role="presentation"><a id="removeFormBlacklist" role="menuitem" tabindex="-1" >移出黑名单</a></li>
                   {{else}}
                     <li role="presentation"><a id="addToBlacklist" role="menuitem" tabindex="-1" >加入黑名单</a></li>
                   {{/if}}
                   {{#if isFollowed}}
                     <li role="presentation"><a id="deleteUser" role="menuitem" tabindex="-1" >删除</a></li>
+                  {{/if}}-->
+                  {{#if isGroupAdmin}}
+                  <li role="presentation"><a id="unSetGroupAdmin" role="menuitem" tabindex="-1">取消管理权限</a></li>
+                  {{else}}
+                  <li role="presentation"><a id="setAsGroupAdmin" role="menuitem" tabindex="-1">设置为管理</a></li>
                   {{/if}}
-                  
+                  <li role="presentation"><a id="removeFormGroup" role="menuitem" tabindex="-1">移除该成员</a></li>
                 </ul>
             </div>
+            {{/if}}
 
         </div>
         <div class="userProfileTop">
