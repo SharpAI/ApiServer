@@ -61,7 +61,8 @@ Template.groupUserHide.helpers({
 
 Template.groupUserHide.events({
   'click .back': function(e){
-    return PUB.back();
+    var group_id = Router.current().params._id;
+    return Router.go('/groupsProfile/group/'+ group_id);
   },
   'click .btnShow': function(e){
     var _id = e.currentTarget.id;
