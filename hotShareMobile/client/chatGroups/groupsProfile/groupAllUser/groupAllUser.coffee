@@ -30,6 +30,11 @@ if Meteor.isClient
        return Session.get('searchLoading')
     groupUsers:()->
       return SimpleChat.GroupUsers.find({group_id:Session.get('groupsId')},{sort: {createdAt: 1}})
+    userIsGroupCreator:()->
+      group = SimpleChat.Groups.findOne({_id: Session.get('groupsId')})
+      if group and group.creator and group.creator.id is this.user_id
+        return true
+      return false
     # getGroupsUsers:()->
     #     groupUsersSearchData = GroupUsersSearch.getData(
     #       transform: (matchText, regExp) ->

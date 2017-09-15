@@ -39,7 +39,7 @@ if Meteor.isClient
     $('.page').addClass('scrollable')
     groupid = Session.get('groupsId')
     Meteor.subscribe("get-group",groupid)
-    Meteor.subscribe('loginuser-in-group',groupid, Meteor.userId());
+    Meteor.subscribe('loginuser-in-group',groupid,Session.get("simpleUserProfileUserId"));
     Meteor.subscribe('usersById',Session.get("simpleUserProfileUserId"))
   Template.simpleUserProfile.helpers
     isMale:(sex)->
@@ -77,17 +77,6 @@ if Meteor.isClient
       if group and group.creator and group.creator.id is Meteor.userId()
         return true
       return false
-    isGroupAdmin:()->
-      # 具有以下特殊权限
-      # 1.清空训练记录
-      # 2.报告栏成员管理
-      # 3.识别规则设置
-      if Template.simpleUserProfile.__helpers.get('isGroupCreator')()
-        return true
-      groupUser = SimpleChat.GroupUsers.findOne({group_id:Session.get('groupsId'), user_id: Meteor.userId()})
-      if groupUser and groupUser.isGroupAdmin
-        return true
-      return false 
 
   Template.simpleUserProfile.events
     'click #setAsGroupAdmin':()->

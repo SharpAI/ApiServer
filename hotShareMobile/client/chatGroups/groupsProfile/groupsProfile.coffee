@@ -337,6 +337,11 @@ if Meteor.isClient
          return users.profile.fullname || users.username
       else
          return ''
+    userIsGroupCreator:()->
+      group = SimpleChat.Groups.findOne({_id: Session.get('groupsId')})
+      if group and group.creator and group.creator.id is this.user_id
+        return true
+      return false
 
   Template.groupUsers.events
     'click #addUserInGroup':(event)->

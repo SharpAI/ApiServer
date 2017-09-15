@@ -161,6 +161,9 @@
                         <div class='box'>
                             <div class='boxcontent'>
                                 <img class="usericon" src="{{user_icon}}">
+                                {{#if userIsGroupCreator}}
+                                <div class="group-admin-label"><img src="/img/creator-portal.png" width="20"/></div>
+                                {{/if}}
                                 {{#if isGroupAdmin}}
                                 <div class="group-admin-label"><img src="/img/admin-portal.png" width="20"/></div>
                                 {{/if}}
