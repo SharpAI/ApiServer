@@ -1,14 +1,25 @@
 <template name="perfShow">
   <div class="perfShow">
     <div class="head">
-      <strong>绩效展示</strong>
+      <strong>{{title}}</strong>
       <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
     </div>
-    <div class="imgContainer" style="position: absolute; overflow: auto !important;-webkit-overflow-scrolling: touch !important;width: 100%;height: 100%;">
-        <div class="waitForReportIframe" style="position:fixed; width:100%;text-align: center; margin-top:40%; color: black; font-size: 16px;">
+    <div class="imgContainer" style="position: absolute; overflow: auto !important;-webkit-overflow-scrolling: touch !important;width: 100%;height: 100%;  background: #efefef;
+    padding: 10px;padding-top:50px;">
+        <!-- 不再从 web系统 加载报告栏 -->
+        <!--<div class="waitForReportIframe" style="position:fixed; width:100%;text-align: center; margin-top:40%; color: black; font-size: 16px;">
           <img src="/loading.gif" width="24px" height="24px"/> 加载中...
         </div>
-        <iframe style="display:none;" height="100%" width="100%" src="{{reportUrl}}" frameborder="0" allowfullscreen="" onload="$('.waitForReportIframe').remove(); $(this).fadeIn();"></iframe>
+        <iframe style="display:none;" height="100%" width="100%" src="{{reportUrl}}" frameborder="0" allowfullscreen="" onload="$('.waitForReportIframe').remove(); $(this).fadeIn();"></iframe>-->
+    
+       <h4 style="font-size:14px; line-height:28px; color:#3e3e3e; margin-top:10px;">最近一周平均在岗时间</h4>
+        <div id="weeklyBarChart" style="height:200px; background:#fff; border-radius:4px;" data-ts="{{weeklyBarChart.ts}}" data-times="{{weeklyBarChart.times}}">
+        
+        </div>
+        <h4 style="font-size:14px; line-height:28px; color:#3e3e3e; margin-top:10px;">最近一月平均在岗时间</h4>
+        <div id="monthlyBarChart" style="height:200px; background:#fff; border-radius:4px;" data-t="{{monthlyBarChart.t}}" data-ts="{{monthlyBarChart.ts}}" data-times="{{monthlyBarChart.times}}">
+        
+        </div>
     </div>
   </div>
 </template>

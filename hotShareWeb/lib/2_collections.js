@@ -199,6 +199,13 @@ if(Meteor.isServer){
     return this.ready();
   });
 
+  Meteor.publish('groupWorkStatusHistory', function(group_id, dates){
+    if(!group_id || !dates){
+        return this.ready();
+    }
+    return WorkStatus.find({ date:{$in: dates},group_id: group_id},{sort:{date:-1}})
+  });
+
   Meteor.publish('WorkStatusByGroup', function(date, group_id){
     if(!date || !group_id){
         return this.ready();
