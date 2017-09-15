@@ -124,8 +124,17 @@ Router.route(AppConfig.path + '/to/:type', {
 
     list_limit.set(10);
 
-    if(type === 'group')
+    if(type === 'group'){
       where = {'to.id': to, to_type: type}; // 没有判断是否在群的处理。自动加群
+      Meteor.subscribe('get-group',to,{
+        onReady:function(){
+          var group = Groups.findOne({_id:to});
+          if(group &&  group.groupAccuracyType && group.groupAccuracyType == 'accurate'){ //精确匹配
+            where.wait_lable = {$ne: true};
+          }
+        }
+      });
+    }
     else
       where = {
         $or: [

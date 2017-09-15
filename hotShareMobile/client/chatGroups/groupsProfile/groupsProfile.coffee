@@ -48,7 +48,10 @@ if Meteor.isClient
         group_outtime = group.group_outtime
       return group_intime+' - '+group_outtime
     groupAccuracyType: ()->
-      if localStorage.getItem('groupAccuracyType') is 'accurate'
+      group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
+      if group and group.groupAccuracyType
+        groupAccuracyType = group.groupAccuracyType
+      if groupAccuracyType is 'accurate'
         return '精确匹配'
       else 
         return '宽松匹配'
@@ -419,7 +422,10 @@ if Meteor.isClient
       ScanBarcodeByBarcodeScanner()
   Template.groupAccuracy.helpers
     isAccurateAccuray: ()->
-      return localStorage.getItem('groupAccuracyType') is 'accurate'
+      group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
+      if group and group.groupAccuracyType
+        groupAccuracyType = group.groupAccuracyType
+      return groupAccuracyType is 'accurate'
   Template.groupAccuracy.events
     'click .left-btn':(event)->
       if Session.equals('fromCreateNewGroups',true)
@@ -427,7 +433,8 @@ if Meteor.isClient
         Router.go('/');
       Session.set("groupsProfileMenu","groupInformation")
     'click .selectAccuracy':(event)->
-      localStorage.setItem('groupAccuracyType',event.currentTarget.id)
+      groupAccuracyType =event.currentTarget.id;
+      Meteor.call('updateGroupAccuracyType',Session.get('groupsId'),groupAccuracyType)
       if Session.equals('fromCreateNewGroups',true)
         Session.set('fromCreateNewGroups',false);
         Router.go('/');

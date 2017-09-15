@@ -530,6 +530,9 @@ Meteor.methods({
         }
       });
     });
+  },
+  'updateGroupAccuracyType':function(id,groupAccuracyType){
+    Groups.update({_id:id},{$set:{groupAccuracyType:groupAccuracyType}});
   }
 });
 
