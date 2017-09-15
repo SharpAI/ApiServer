@@ -71,7 +71,7 @@ PERSON = {
       }
     }
   },
-  setName: function(group_id, uuid, id, url, name){
+  setName: function(group_id, uuid, id, url, name,is_video){
     var person = Person.findOne({group_id:group_id, name: name}, {sort: {createAt: 1}});
     var dervice = Devices.findOne({uuid: uuid});
     var personName = PersonNames.findOne({group_id: group_id, name: name});
@@ -82,6 +82,9 @@ PERSON = {
       PersonNames.update({_id: name._id}, {$set: {name: name, url: url, id: id, updateAt: new Date()}})
 
     if (person){
+      if (is_video) {
+        return person;
+      }
       person.url = url;
       person.updateAt = new Date();
       if(_.pluck(person.faces, 'id').indexOf(id) === -1)
@@ -94,10 +97,12 @@ PERSON = {
       person.name = name;
       person.url = url;
       person.updateAt = new Date();
-      if(_.pluck(person.faces, 'id').indexOf(id) === -1)
-        person.faces.push({id: id, url: url});
-      else
-        person.faces[_.pluck(person.faces, 'id').indexOf(id)].url = url;
+      if (!is_video) {
+        if(_.pluck(person.faces, 'id').indexOf(id) === -1)
+          person.faces.push({id: id, url: url});
+        else
+          person.faces[_.pluck(person.faces, 'id').indexOf(id)].url = url;
+      }
       Person.update({_id: person._id}, {$set: {name: name, url: person.url, updateAt: person.updateAt, faces: person.faces}});
     } else {
       person = {
@@ -113,6 +118,10 @@ PERSON = {
         createAt: new Date(),
         updateAt: new Date()
       };
+      if (is_video) {
+        delete person.faces;
+        delete person.faceId;
+      }
       Person.insert(person);
     }
 
@@ -279,6 +288,10 @@ PERSON = {
     var user_name = user ? (user.profile && user.profile.fullname ? user.profile.fullname : user.username) : '';
     var person_name = person_info.name;
     var relation  = null;
+    var is_video = false;
+    if (person_info.type === 'video') {
+      is_video = true;
+    }
     if (person && person.name) {
       console.log('person info:'+person.name);
     }
@@ -297,7 +310,7 @@ PERSON = {
           return {result:'error',reason:'请选择一张有名字的照片或前往聊天室进行标记~'};
         }
       }
-      person = PERSON.setName(person_info.group_id, person_info.uuid, data.face_id, person_info.img_url, person_name);
+      person = PERSON.setName(person_info.group_id, person_info.uuid, data.face_id, person_info.img_url, person_name,is_video);
     }
     if (data.user_id) {
       setObj.app_user_id = data.user_id;
@@ -328,13 +341,9 @@ PERSON = {
     //     app用户在打卡的时候选择张骏的图片时就应该先将错误的label数据删除
     if (person_name && person_name !== person.name) {
       console.log('person_info name isnt person name');
-      var is_video = false;
-      if (person_info.type === 'video') {
-        is_video = true;
-      }
       PERSON.removeName(person_info.group_id, person_info.uuid, data.face_id,person_info.img_url,is_video);
       var newImageId = new Mongo.ObjectID()._str;
-      person = PERSON.setName(person_info.group_id,person_info.uuid,newImageId,person_info.img_url,person_name);
+      person = PERSON.setName(person_info.group_id,person_info.uuid,newImageId,person_info.img_url,person_name,is_video);
     }
     setObj.person_name = person.name;
     if (relation) {
