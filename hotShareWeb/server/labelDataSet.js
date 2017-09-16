@@ -34,7 +34,7 @@ LABLE_DADASET_Handle = {
     	LableDadaSet.insert(datasetObj);
     }
     else{
-    	LABLE_DADASET_Handle_Handle.update(doc);
+    	LABLE_DADASET_Handle.update(doc);
     }
   },
   update:function(doc){
@@ -73,13 +73,13 @@ LABLE_DADASET_Handle = {
     if (dataset.id != id) {
       //更新旧的id存在的person表
       doc.id = dataset.id;
-      LABLE_DADASET_Handle_Handle.updatePerson(doc);
+      LABLE_DADASET_Handle.updatePerson(doc);
     }
     // 同一张未识别的图片，两个人标记时选择了不同的人
     if (dataset.name != doc.name) {
     	doc.id = dataset.id;
     	doc.name = dataset.name;
-    	LABLE_DADASET_Handle_Handle.updatePersonWithName(doc);
+    	LABLE_DADASET_Handle.updatePersonWithName(doc);
     }
   },
   remove:function(doc){
@@ -88,7 +88,7 @@ LABLE_DADASET_Handle = {
       return;
     }
     LableDadaSet.remove({group_id:doc.group_id,url:doc.url});
-    LABLE_DADASET_Handle_Handle.updatePerson(doc);
+    LABLE_DADASET_Handle.updatePerson(doc);
   },
   updatePersonWithName:function(doc){
   	if (!doc || !doc.group_id || !doc.id || !doc.url || !doc.name) {
@@ -124,10 +124,15 @@ LABLE_DADASET_Handle = {
      }
   },
   updatePerson:function(doc){
-  	if (!doc || !doc.group_id || !doc.id || !doc.url) {
+    if (!doc || !doc.group_id || !doc.id || !doc.url) {
       return;
     }
-	//如果此图片存在于person表中，需要替换
+
+    var group_id = doc.group_id;
+    var id = doc.id;
+    var url = doc.url;
+
+    //如果此图片存在于person表中，需要替换
     var person = Person.findOne({group_id:group_id ,'faces.id': id}, {sort: {createAt: 1}});
     if (!person) {
       return;
