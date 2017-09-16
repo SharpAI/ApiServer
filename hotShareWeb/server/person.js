@@ -22,6 +22,14 @@ PERSON = {
   },
   removeName: function(group_id,uuid, id,url,is_video){
     console.log('try remove name');
+    console.log('>>> id=' + id + ' url=' + url)
+
+    /* 这张图片是误识别的，并且被人错误标注“对” */
+    Person.find({group_id:group_id ,'faces.url': url}).forEach(function(item){
+        console.log('>>> remove mistake url and id, person.name=' + item.name + ' id=' + id + ' url=' + url)
+        Person.update({"_id": item._id}, {$pull: {'faces': {"url": url}}})
+    });
+
     var person = null;
     if (group_id && id) {
       person = Person.findOne({group_id:group_id ,'faces.id': id}, {sort: {createAt: 1}});
