@@ -1132,9 +1132,10 @@ Meteor.methods({
   'set-person-names': function(group_id, items){
     console.log('set-person-names:', items);
     var slef = this;
-    for(var i=0;i<items.length;i++)
+    for(var i=0;i<items.length;i++) {
       PERSON.setName(group_id, items[i].uuid, items[i].id, items[i].url, items[i].name);
       LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[i].uuid,id:items[i].id,url:items[i].url,name:items[i].name,user_id:slef.userId,action:'聊天室标记'});
+    }
   },
   'remove-person': function(group_id,uuid,id){
     return PERSON.removeName(group_id,uuid, id);
