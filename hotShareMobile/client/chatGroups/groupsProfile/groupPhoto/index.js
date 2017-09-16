@@ -25,7 +25,7 @@ Template.groupPhoto.helpers({
   },
   list2: function(id){
     // return SimpleChat.GroupPhotoLabel.find({group_id: id}, {limit: limit2.get(), sort: {create_time: 1}})
-    return Person.find({group_id: id},{limit: limit2.get(), sort:{createAt: -1}}).fetch();
+    return LableDadaSet.find({group_id: id},{limit: limit2.get(), sort:{createAt: -1}}).fetch();
   }
 });
 

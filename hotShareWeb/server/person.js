@@ -100,7 +100,10 @@ PERSON = {
       else
         person.faces[_.pluck(person.faces, 'id').indexOf(id)].url = url;
       Person.update({_id: person._id}, {$set: {name: name, url: person.url, updateAt: person.updateAt, faces: person.faces}});
-    } else if (Person.find({group_id: group_id, faceId: id}).count() > 0){
+    }
+    //此段代码会导致person表的名字会被篡改
+    /*
+    else if (Person.find({group_id: group_id, faceId: id}).count() > 0){
       person = Person.findOne({group_id: group_id, faceId: id}, {sort: {createAt: 1}});
       person.name = name;
       person.url = url;
@@ -112,7 +115,8 @@ PERSON = {
           person.faces[_.pluck(person.faces, 'id').indexOf(id)].url = url;
       }
       Person.update({_id: person._id}, {$set: {name: name, url: person.url, updateAt: person.updateAt, faces: person.faces}});
-    } else {
+    }*/
+     else {
       person = {
         _id: new Mongo.ObjectID()._str,
         id: Person.find({group_id: group_id, faceId: id}).count() + 1,
@@ -319,6 +323,10 @@ PERSON = {
         }
       }
       person = PERSON.setName(person_info.group_id, person_info.uuid, data.face_id, person_info.img_url, person_name,is_video);
+      if (!is_video) {
+        LABLE_DADASET_Handle.insert({group_id:person_info.group_id,id:data.face_id,url:person_info.img_url,uuid:person_info.uuid,user_id:'',name:person_name,action:'时间轴打卡时选择了未识别的照片'});
+      }
+
     }
     if (data.user_id) {
       setObj.app_user_id = data.user_id;
@@ -352,6 +360,9 @@ PERSON = {
       PERSON.removeName(person_info.group_id, person_info.uuid, data.face_id,person_info.img_url,is_video);
       var newImageId = new Mongo.ObjectID()._str;
       person = PERSON.setName(person_info.group_id,person_info.uuid,newImageId,person_info.img_url,person_name,is_video);
+      if (!is_video) {
+        LABLE_DADASET_Handle.insert({group_id:person_info.group_id,id:newImageId,url:person_info.img_url,uuid:person_info.uuid,user_id:'',name:person_name,action:'时间轴打卡时输入的名字与person中对应的人名字不一样'});
+      }
     }
     setObj.person_name = person.name;
     if (relation) {
@@ -1120,8 +1131,10 @@ Meteor.methods({
   },
   'set-person-names': function(group_id, items){
     console.log('set-person-names:', items);
+    var slef = this;
     for(var i=0;i<items.length;i++)
       PERSON.setName(group_id, items[i].uuid, items[i].id, items[i].url, items[i].name);
+      LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[i].uuid,id:items[i].id,url:items[i].url,name:items[i].name,user_id:slef.userId,action:'聊天室标记'});
   },
   'remove-person': function(group_id,uuid,id){
     return PERSON.removeName(group_id,uuid, id);
@@ -1131,13 +1144,21 @@ Meteor.methods({
       PERSON.removeName(null,items[i].uuid, items[i].id);
   },
   'remove-persons1': function(group_id, items){
+    var slef = this;
     for(var i=0;i<items.length;i++){
       PERSON.removeName(group_id, items[i].uuid, items[i].id,items[i].img_url);
+      LABLE_DADASET_Handle.remove({group_id:group_id,id:items[i].id,url:items[i].img_url,user_id:slef.userId,action:'聊天室标错或者删除'});
     }
   },
   'remove-person-face': function(lists){
     for(var i=0; i< lists.length;i++){
-      PERSON.removeFace(lists[i]);
+      //PERSON.removeFace(lists[i]);
+      var data = {
+        group_id:lists[i].group_id,
+        id:lists[i].face_id,
+        url:lists[i].url,
+      };
+      LABLE_DADASET_Handle.remove(data);
     }
   },
   'send-person-to-web': function(person){
@@ -1189,6 +1210,7 @@ Meteor.methods({
   // 群相册里的批量标注
   'upLabels': function(groupId, data, waitLabels, type){
     this.unblock();
+    var slef = this;
 
     waitLabels.map(function(wait){
       var trainsetObj = {
@@ -1205,6 +1227,7 @@ Meteor.methods({
         sendMqttMessage('/device/' + groupId, trainsetObj);
         console.log('send mqtt to device:', trainsetObj);
         PERSON.removeName(groupId, wait.uuid, wait.id,wait.url);
+        LABLE_DADASET_Handle.remove({group_id:groupId,id:wait.id,url:wait.url,user_id:slef.userId,action:'群相册--未标注里点删除'});
         return;
       }
       var name = PERSON.getIdByName(wait.uuid, data, groupId);
@@ -1215,6 +1238,7 @@ Meteor.methods({
       sendMqttMessage('/device/' + groupId, trainsetObj);
       console.log('send mqtt to device:', trainsetObj);
       PERSON.setName(groupId, wait.uuid, wait.id, wait.url, data);
+      LABLE_DADASET_Handle.insert({group_id:groupId,id:wait.id,url:wait.url,uuid:wait.uuid,name:data,user_id:slef.userId,action:'群相册--未标注里点标记'});
     });
     return true;
   },
@@ -1238,5 +1262,8 @@ Meteor.methods({
       person_name: person_name
     }
     WorkStatus.update(selector,{$set:{hide_it: hide_it}},{multi: true});
+  },
+  'initLableDataSet':function(){
+    LABLE_DADASET_Handle.initLableDataSet();
   }
 })
