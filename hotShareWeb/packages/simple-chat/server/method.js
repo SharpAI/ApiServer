@@ -532,7 +532,14 @@ Meteor.methods({
     });
   },
   'updateGroupAccuracyType':function(id,groupAccuracyType){
-    Groups.update({_id:id},{$set:{groupAccuracyType:groupAccuracyType}});
+    //console.log('updateGroupAccuracyType:'+JSON.stringify(this));
+    if (!this.userId) {
+      return;
+    }
+    var target = GroupUsers.findOne({group_id:id,user_id:this.userId});
+    if (target) {
+      GroupUsers.update({_id:target._id},{$set:{groupAccuracyType:groupAccuracyType}});
+    }
   }
 });
 

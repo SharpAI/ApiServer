@@ -76,7 +76,6 @@
                     </li>
                     {{/if}}
                 </ul>
-                {{#if isGroupAdmin}}
                 <div class="line" style="height: 20px;text-align:left;padding-left:10px;color:#555;">识别规则</div>
                 <ul class="set-up comFadeIn" style="margin-top: 0px;margin-bottom: 10px;">
                     <li class="">
@@ -88,6 +87,7 @@
                         <div class="value">{{groupAccuracyType}}<i class="fa fa-angle-right"></i></div>
                     </li>
                 </ul>
+                {{#if isGroupAdmin}}
                 <ul class="set-up comFadeIn" style="margin-top: 0px;margin-bottom: 10px;">
                     <li class="groupUserHide">
                         <label>报告栏成员管理</label>

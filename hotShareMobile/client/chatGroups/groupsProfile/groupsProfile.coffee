@@ -48,7 +48,7 @@ if Meteor.isClient
         group_outtime = group.group_outtime
       return group_intime+' - '+group_outtime
     groupAccuracyType: ()->
-      group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
+      group =  SimpleChat.GroupUsers.findOne({group_id:Session.get('groupsId'),user_id:Meteor.userId()})
       if group and group.groupAccuracyType
         groupAccuracyType = group.groupAccuracyType
       if groupAccuracyType is 'accurate'
@@ -427,7 +427,7 @@ if Meteor.isClient
       ScanBarcodeByBarcodeScanner()
   Template.groupAccuracy.helpers
     isAccurateAccuray: ()->
-      group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
+      group =  SimpleChat.GroupUsers.findOne({group_id:Session.get('groupsId'),user_id:Meteor.userId()})
       if group and group.groupAccuracyType
         groupAccuracyType = group.groupAccuracyType
       return groupAccuracyType is 'accurate'
