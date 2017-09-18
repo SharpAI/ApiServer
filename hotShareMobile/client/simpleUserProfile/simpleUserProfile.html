@@ -22,7 +22,7 @@
                   {{#if isFollowed}}
                     <li role="presentation"><a id="deleteUser" role="menuitem" tabindex="-1" >删除</a></li>
                   {{/if}}-->
-                  {{#if isGroupAdmin}}
+                  {{#if userIsGroupAdmin}}
                   <li role="presentation"><a id="unSetGroupAdmin" role="menuitem" tabindex="-1">取消管理权限</a></li>
                   {{else}}
                   <li role="presentation"><a id="setAsGroupAdmin" role="menuitem" tabindex="-1">设置为管理</a></li>

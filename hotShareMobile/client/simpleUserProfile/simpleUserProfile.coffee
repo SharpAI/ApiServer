@@ -77,6 +77,11 @@ if Meteor.isClient
       if group and group.creator and group.creator.id is Meteor.userId()
         return true
       return false
+    userIsGroupAdmin:()->
+      groupUser = SimpleChat.GroupUsers.findOne({group_id:Session.get('groupsId'), user_id: Session.get("simpleUserProfileUserId")})
+      if groupUser and groupUser.isGroupAdmin
+        return true
+      return false
 
   Template.simpleUserProfile.events
     'click #setAsGroupAdmin':()->
