@@ -796,7 +796,7 @@ if Meteor.isServer
             }
 
           relation = WorkAIUserRelations.findOne({'ai_persons.id': person._id})
-          if (device.in_out is 'out' and relation)
+          if (device.in_out is 'out' and relation and relation.app_user_id)
             checkout_msg = {
               userId: relation.app_user_id,
               userName: relation.app_user_name,
