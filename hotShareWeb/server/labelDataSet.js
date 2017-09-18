@@ -94,6 +94,7 @@ LABLE_DADASET_Handle = {
   	if (!doc || !doc.group_id || !doc.id || !doc.url || !doc.name) {
       return;
     }
+    var group_id = doc.group_id;
     //如果此图片存在于person表中，需要替换
     var person = Person.findOne({group_id:group_id ,'name': doc.name}, {sort: {createAt: 1}});
     if (!person) {
@@ -105,7 +106,7 @@ LABLE_DADASET_Handle = {
     if (person.url == url || person.faceId == doc.id) {}
     if(index != -1 || person.url == url || person.faceId == doc.id){
     	if (index != -1  && person.faces[index].id === doc.id) {
-    		person.faces.splice(_.pluck(faces, 'id').indexOf(id), 1);
+    		person.faces.splice(_.pluck(person.faces, 'id').indexOf(doc.id), 1);
     		if (person.faces.length == 0) {
 				return Person.remove({_id:person._id});
 			}
@@ -158,7 +159,7 @@ LABLE_DADASET_Handle = {
       }
       else{
         //数据集中没有此id更多的图片了
-        person.faces.splice(_.pluck(faces, 'id').indexOf(id), 1);
+        person.faces.splice(_.pluck(person.faces, 'id').indexOf(id), 1);
         if (person.faceId == id) {
           if (person.faces.length == 0) {
             return Person.remove({_id:person._id});
@@ -168,12 +169,12 @@ LABLE_DADASET_Handle = {
             person.url = person.faces[0].url;
           }
         }
-        Person.update({_id:person._id},{$set:{faceId:person.faceId,url:person.url,faces:faces}});
+        Person.update({_id:person._id},{$set:{faceId:person.faceId,url:person.url,faces:person.faces}});
       }
     }
   },
   initLableDataSet:function(){
-    Person.find().forEach(function(fields){
+    Person.find({},{sort: {updateAt:1}}).forEach(function(fields){
       if (fields.faces && fields.faces.length > 0) {
         for (var i = 0; i < fields.faces.length; i++) {
           LABLE_DADASET_Handle.insert({group_id:fields.group_id,name:fields.name,id:fields.faces[i].id,url:fields.faces[i].url,action:'Person表数据移植',user_id:'4jQXwnAuLnHcYJxwJ'});
