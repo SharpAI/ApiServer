@@ -115,6 +115,24 @@ DeviceTimeLine = new Meteor.Collection('device_timeline');
   }
 }
 */
+LableDadaSet = new Meteor.Collection('label_dataset');
+/*
+{
+  "id":"",
+  "name":"",
+  "group_id":"",
+  "url":'',
+  "createAt":''
+  "operator":[{
+    user_name:操作的人的app名字
+    user_id:app的userid，
+    ts：操作时间
+    action：具体的动作（标记，删除等）
+    },
+    ...
+  ]
+}
+*/
 if(Meteor.isServer){
   WorkAIUserRelations.allow({
     update: function(userId, doc, fields, modifier) {
@@ -146,8 +164,8 @@ if(Meteor.isServer){
     if(!this.userId || !group_id){
       return this.ready();
     }
-    var limit = limit || 10;
-    return Person.find({group_id: group_id},{limit: limit,sort:{createAt: -1}});
+    var limit = limit || 40;
+    return LableDadaSet.find({group_id: group_id},{limit: limit,sort:{createAt: -1}});
   });
 
   Meteor.publish('people_new', function(){

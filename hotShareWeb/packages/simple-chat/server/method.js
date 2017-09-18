@@ -493,6 +493,9 @@ Meteor.methods({
   },
   'ai-checkin-out':function(data){
     try{
+      if (this.userId) {
+        data.operator = this.userId;
+      }
       return PERSON.aiCheckInOutHandle(data);
     } catch (err){
       return err;

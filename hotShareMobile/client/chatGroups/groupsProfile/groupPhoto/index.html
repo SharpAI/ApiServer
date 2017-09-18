@@ -63,7 +63,6 @@
 </template>
 
 <template name="groupPhotoImg1">
-  {{#each faces}}
   <li id="{{id}}" class="labeled-item" data-did="{{uuid}}" data-gid="{{group_id}}" data-fid="{{id}}" data-name="{{name}}">
      <img class="lazy" data-original="{{url}}" /> 
      {{#if has_selected id}}
@@ -71,7 +70,6 @@
      {{/if}}
      <div class="label">{{name}}</div>
   </li>
-  {{/each}}
 
   <!-- {{#each faces}}
   <li id="{{id}}" class="labeled-item" data-did="{{../deviceId}}" data-gid="{{../group_id}}" data-fid="{{../faceId}}" data-name="{{../name}}">

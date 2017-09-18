@@ -62,7 +62,8 @@ if (Meteor.isServer){
         checkout_image:doc.params.person_info.img_url,
         face_id:doc.params.msg_data.images.id,
         wantModify:true,
-        person_info:doc.params.person_info
+        person_info:doc.params.person_info,
+        operator:this.userId
       };
       PERSON.aiCheckInOutHandle(data);
       // send_greeting_msg(doc.params.msg_data);

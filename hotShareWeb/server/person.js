@@ -324,7 +324,7 @@ PERSON = {
       }
       person = PERSON.setName(person_info.group_id, person_info.uuid, data.face_id, person_info.img_url, person_name,is_video);
       if (!is_video) {
-        LABLE_DADASET_Handle.insert({group_id:person_info.group_id,id:data.face_id,url:person_info.img_url,uuid:person_info.uuid,user_id:'',name:person_name,action:'时间轴打卡时选择了未识别的照片'});
+        LABLE_DADASET_Handle.insert({group_id:person_info.group_id,id:data.face_id,url:person_info.img_url,uuid:person_info.uuid,user_id:data.operator,name:person_name,action:'时间轴打卡时选择了未识别的照片'});
       }
 
     }
