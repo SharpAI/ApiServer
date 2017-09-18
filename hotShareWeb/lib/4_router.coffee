@@ -820,8 +820,8 @@ if Meteor.isServer
             if group and group.offsetTimeZone
               time_offset = group.offsetTimeZone
 
-            group_outtime_H = parseInt(group_out_time.split(":")[0])
-            group_outtime_M = parseInt(group_out_time.split(":")[1])
+            group_outtime_H = parseInt(group_outtime.split(":")[0])
+            group_outtime_M = parseInt(group_outtime.split(":")[1])
 
             out_time = create_time.getTime()
             group_out_time = Date.UTC(create_time.getUTCFullYear(),create_time.getUTCMonth(),create_time.getUTCDate(),group_outtime_H,group_outtime_M,0)
