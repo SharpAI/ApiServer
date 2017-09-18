@@ -525,6 +525,7 @@ Template._simpleChatToChat.onRendered(function(){
     }
 
     Meteor.setTimeout(function(){
+      // 用户发图
       setScrollToBottom();
     }, 600);
   }, 200);
@@ -675,8 +676,11 @@ var setMsgList = function(where, action){
   if (action === 'update') {
     lazyloadInit();
   }
-  if(action === 'insert' || action === 'remove')
-    setScrollToBottom();
+  // 加载更多消息， 不自动滚动消息页面
+  if(action === 'insert' || action === 'remove'){
+  //   setScrollToBottom();
+  }
+  
 };
 
 Template._simpleChatToChatItem.events({
@@ -1363,6 +1367,7 @@ Template._simpleChatToChat.events({
       Messages.insert(msg, function(){
         sendMqttMsg(msg);
         Session.set('shouldScrollToBottom',true);
+        // 用户输入
         setScrollToBottom();
       });
 
@@ -1386,6 +1391,7 @@ Template._simpleChatToChat.events({
   'click .hasNewMsg':function(e){
      e.preventDefault();
      Session.set('shouldScrollToBottom',true);
+    //  主动点击有 x 条新消息
      setScrollToBottom();
      Session.set('newMsgCount',0);
   }
