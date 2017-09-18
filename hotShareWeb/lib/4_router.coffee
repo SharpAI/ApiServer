@@ -810,7 +810,24 @@ if Meteor.isServer
             UserCheckoutEndLog.remove({userId: relation.app_user_id})
             UserCheckoutEndLog.insert(checkout_msg)
             sendUserCheckoutEvent(uuid, relation.app_user_id)
-            return 
+            # return 
+            # 到下班时间后，不终止后续处理
+            group_outtime = '18:00'
+            time_offset = 8
+            if (group and group.group_outtime)
+              group_outtime = group.group_outtime
+
+            if group and group.offsetTimeZone
+              time_offset = group.offsetTimeZone
+
+            group_outtime_H = parseInt(group_out_time.split(":")[0])
+            group_outtime_M = parseInt(group_out_time.split(":")[1])
+
+            out_time = create_time.getTime()
+            group_out_time = Date.UTC(create_time.getUTCFullYear(),create_time.getUTCMonth(),create_time.getUTCDate(),group_outtime_H,group_outtime_M,0)
+            group_out_time += time_offset * 60 * 60 * 1000
+            if (out_time < group_out_time)
+              return
 
           send_greeting_msg(msg_data);
           PERSON.updateWorkStatus(person._id)
