@@ -80,7 +80,7 @@ window.onresize = function(){
 Template._simpleChatToChat.onRendered(function(){
   console.log('message view rendered');
   Session.set('currentWindowHeight',$(window).height());
-  Session.set('shouldScrollToBottom',true);
+  // Session.set('shouldScrollToBottom',true);
   page_data = this.data;
   if(!page_data)
     return;
@@ -678,7 +678,7 @@ var setMsgList = function(where, action){
   }
   // 加载更多消息， 不自动滚动消息页面
   if(action === 'insert' || action === 'remove'){
-  //   setScrollToBottom();
+    shouldScrollToBottom();
   }
   
 };
@@ -1188,10 +1188,10 @@ var setScrollToBottom = function(){
        $box = $('.oneself_box');
        $box_ul = $('.oneself_box ul');
     }
-    var enableScroll = Session.get('shouldScrollToBottom');
-    if (!enableScroll) {
-      return;
-    }
+    // var enableScroll = Session.get('shouldScrollToBottom');
+    // if (!enableScroll) {
+    //   return;
+    // }
     $box.scrollTop($box_ul.height());
   }, 200);
 };
@@ -1366,7 +1366,7 @@ Template._simpleChatToChat.events({
       };
       Messages.insert(msg, function(){
         sendMqttMsg(msg);
-        Session.set('shouldScrollToBottom',true);
+        // Session.set('shouldScrollToBottom',true);
         // 用户输入
         setScrollToBottom();
       });
@@ -1390,7 +1390,7 @@ Template._simpleChatToChat.events({
   },
   'click .hasNewMsg':function(e){
      e.preventDefault();
-     Session.set('shouldScrollToBottom',true);
+    //  Session.set('shouldScrollToBottom',true);
     //  主动点击有 x 条新消息
      setScrollToBottom();
      Session.set('newMsgCount',0);
@@ -1604,7 +1604,8 @@ window.___message = {
       send_status: 'sending'
     }, function(err, id){
       console.log('insert id:', id);
-      $('.box').scrollTop($('.box ul').height());
+      // $('.box').scrollTop($('.box ul').height());
+      shouldScrollToBottom();
     });
   },
   update: function(id, url){
@@ -1617,7 +1618,8 @@ window.___message = {
       images: images
     }}, function(){
       console.log('update id:', id);
-      $('.box').scrollTop($('.box ul').height());
+      // $('.box').scrollTop($('.box ul').height());
+      shouldScrollToBottom(msg);
       sendMqttMsg(msg);
       lazyloadInit();
     });
@@ -1625,7 +1627,8 @@ window.___message = {
   remove: function(id){
     Messages.remove({_id: id}, function(){
       console.log('remove id:', id);
-      $('.box').scrollTop($('.box ul').height());
+      // $('.box').scrollTop($('.box ul').height());
+      shouldScrollToBottom();
     });
   }
 };
@@ -1833,7 +1836,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
 };
 
 var shouldScrollToBottom = function(msg){
-  if (msg.to_type === page_data.type && msg.to.id === page_data.id){
+  // if (msg.to_type === page_data.type && msg.to.id === page_data.id){
       var $box = $('.box');
       var $box_ul = $('.box ul');
       if ($('.oneself_box').length > 0) {
@@ -1844,12 +1847,18 @@ var shouldScrollToBottom = function(msg){
       if ($box.scrollTop() + $box.height() >= $box_ul.height()) {
          enableScroll = true;
       }
-      Session.set('shouldScrollToBottom',enableScroll);
-      if (!enableScroll && msg.form.id != Meteor.userId()) {
-        var newMsgCount = Session.get('newMsgCount');
-        Session.set('newMsgCount',newMsgCount+1);
+      // Session.set('shouldScrollToBottom',enableScroll);
+      if (!enableScroll) {
+        if(msg && msg.to_type === page_data.type && msg.to.id === page_data.id && msg.form.id != Meteor.userId()){
+          var newMsgCount = Session.get('newMsgCount');
+          Session.set('newMsgCount',newMsgCount+1);
+        }
+      } else {
+        // 消息页面位于底部， 直接滚动到最新一条
+        console.warn('auto scroll to end');
+        setScrollToBottom();
       }
-  }
+  // }
 };
 
 var onMqttMessage = function(topic, msg) {
