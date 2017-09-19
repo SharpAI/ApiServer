@@ -562,7 +562,8 @@ PERSON = {
 
     // }
     
-    intime = (intime > today_utc)?intime:0
+    // intime = (intime > today_utc)?intime:0
+    intime = PERSON.checkIsToday(intime,relation.group_id)?intime:0;
     outtime = (outtime >= intime)?outtime: 0;
 
     var in_image = '';
