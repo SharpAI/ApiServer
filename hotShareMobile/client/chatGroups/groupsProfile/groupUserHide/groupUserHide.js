@@ -51,6 +51,9 @@ Template.groupUserHide.helpers({
     // }
     return '/userPicture.png';
   },
+  isShow:function(){
+    return !this.hide_it;
+  },
   isHide: function(){
     return this.hide_it;
   },
@@ -63,6 +66,21 @@ Template.groupUserHide.events({
   'click .back': function(e){
     var group_id = Router.current().params._id;
     return Router.go('/groupsProfile/group/'+ group_id);
+  },
+  'click .switch':function(e){
+    var _id = e.currentTarget.id;
+    var isHide = this.hide_it;
+    var group_id = this.group_id;
+    var person_name = this.person_name;
+    WorkAIUserRelations.update({_id: _id},{
+        $set: {hide_it: !isHide}
+      }, function(err, result){
+        // PUB.hideWaitLoading();
+        if(err){
+          return console.log(err);
+        }
+        Meteor.call('update_workai_hide_it', group_id, person_name, !isHide);
+      });
   },
   'click .btnShow': function(e){
     var _id = e.currentTarget.id;

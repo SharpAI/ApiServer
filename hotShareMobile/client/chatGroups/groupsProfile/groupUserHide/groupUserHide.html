@@ -10,13 +10,12 @@
       {{#if person_name}}
       <li class="userHideItem">
         <img class="icon" src="{{icon}}" width="40" height="40">
-        {{#if isHide}}
+        <div class="right-btn" style="background: #fff;"><input id="{{_id}}" class="switch" style="margin-top:-6px;" type="checkbox" {{checkedIf isShow}}></div>
+        <!-- {{#if isHide}}
         <div id="{{_id}}" class="right-btn btnShow">显示</div>
-        <!--<div class="status-tip status-hide"></div>-->
         {{else}}
         <div id="{{_id}}" class="right-btn btnHide">隐藏</div>
-        <!--<div class="status-tip status-show"></div>-->
-        {{/if}}
+        {{/if}} -->
         <p class="userName">{{person_name}}</p>
       </li>
       {{/if}}
