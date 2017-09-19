@@ -1157,7 +1157,7 @@ Meteor.methods({
       var data = {
         group_id:lists[i].group_id,
         id:lists[i].face_id,
-        url:lists[i].url,
+        url:lists[i].face_url,
       };
       LABLE_DADASET_Handle.remove(data);
     }
