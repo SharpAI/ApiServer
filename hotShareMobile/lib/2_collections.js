@@ -164,8 +164,16 @@ if(Meteor.isServer){
     if(!this.userId || !group_id){
       return this.ready();
     }
-    var limit = limit || 40;
-    return LableDadaSet.find({group_id: group_id},{limit: limit,sort:{createAt: -1}});
+    var limit = limit || 50;
+    return Person.find({group_id: group_id},{limit: limit,sort:{createAt: -1}});
+  });
+
+  Meteor.publish('person_labelDataset',function(group_id,name,limit){
+    if (!group_id || !name) {
+      return this.ready();
+    }
+    var limit = limit || 50;
+    return LableDadaSet.find({group_id: group_id,name:name},{limit: limit,sort:{createAt: -1}});
   });
 
   Meteor.publish('people_new', function(){

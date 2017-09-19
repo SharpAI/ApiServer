@@ -1,7 +1,9 @@
 var view = null;
+var dadaset_view = null;
 var type = new ReactiveVar('');
 var limit1 = new ReactiveVar(0);
 var limit2 = new ReactiveVar(0);
+var limit3 = new ReactiveVar(0);
 var selected = new ReactiveVar([]);
 var selected2 = new ReactiveVar([]);
 var lebeledPreLists = new ReactiveVar([]);
@@ -10,6 +12,9 @@ var limitSetp = 10;
 Template.groupPhoto.helpers({
   is_type: function(val){
     return type.get() === val;
+  },
+  isLoading:function(){
+    return Session.get('group_person_loaded') != true;
   },
   is_hover: function(val){
     return type.get() === val ? 'hover' : '';
@@ -25,7 +30,7 @@ Template.groupPhoto.helpers({
   },
   list2: function(id){
     // return SimpleChat.GroupPhotoLabel.find({group_id: id}, {limit: limit2.get(), sort: {create_time: 1}})
-    return LableDadaSet.find({group_id: id},{limit: limit2.get(), sort:{createAt: -1}}).fetch();
+    return Person.find({group_id: id},{limit: limit2.get(), sort:{createAt: -1}}).fetch();
   }
 });
 
@@ -232,7 +237,7 @@ var loadMoreImg = function(){
 }
 
 // lazyload
-var lazyloadInitTimeout = {'未标注': null, '已标注': null};
+var lazyloadInitTimeout = {'未标注': null, '已标注': null,'labelDataset':null};
 var lazyloadInit = function($ul, type){
   lazyloadInitTimeout[type] && Meteor.clearTimeout(lazyloadInitTimeout[type]);
   lazyloadInitTimeout[type] = Meteor.setTimeout(function(){
@@ -247,7 +252,7 @@ Template.groupPhoto.onRendered(function(){
   var group_id = Router.current().params._id;
   Meteor.subscribe('group_person',group_id, limit2.get(),{
     onReady: function(){
-
+      Session.set('group_person_loaded',true);
     },
     onStop: function(err){
       console.log(err);
@@ -267,7 +272,7 @@ Template.groupPhoto.onRendered(function(){
           limit1.set(limit);
           SimpleChat.withMessageHisEnable && SimpleChat.loadMoreMesage({is_people: true, 'to.id': data.id,admin_label: {$ne: true}}, {limit: limit, sort: {create_time: -1}}, limit);
         } else {
-          limit = limit2.get() + 100;
+          limit = limit2.get() + 50;
           limit2.set(limit);
           Meteor.subscribe('group_person',group_id, limit2.get());
         }
@@ -276,7 +281,7 @@ Template.groupPhoto.onRendered(function(){
         if (type.get() === '未标注')
           limit1.set(limit1.get()+limitSetp);
         else
-          limit2.set(limit2.get()+100);
+          limit2.set(limit2.get()+50);
         console.log('==已经滚动到底部了 '+type.get()+' ==');
       }
     });
@@ -326,7 +331,7 @@ Template.groupPhoto.open = function(id){
   view && Blaze.remove(view);
   type.set('未标注');
   limit1.set(limitSetp);
-  limit2.set(100);
+  limit2.set(50);
   selected.set([]);
 
   var data = {
@@ -336,6 +341,7 @@ Template.groupPhoto.open = function(id){
     // list2: SimpleChat.Messages.find({is_people: true, 'to.id': id}, {limit: limit1.get(), sort: {create_time: 1}}),
     type: type.get()
   };
+  Session.set('group_person_loaded',false);
   view = Blaze.renderWithData(Template.groupPhoto, data, document.body);
   $('body').css('overflow', 'hidden');
   $('.groupsProfile').hide();
@@ -355,15 +361,58 @@ Template.groupPhoto.close = function(){
   $('.groupsProfile').show();
 };
 
-Template.groupPhotoImg1.helpers({
+
+// Template.groupPhotoImg1.helpers({
+//   has_selected: function(id){
+//     return selected2.get().indexOf(id) >= 0;
+//   },
+// });
+
+Template.groupPhotoImg1.events({
+  'click li': function(e){
+    var name = this.name;
+    var group_id = this.group_id;
+    return Template.person_labelDataset.open(group_id,name);
+    /*var id = this.id;
+    var res = selected2.get();
+    var index = res.indexOf(id);
+    var lists = lebeledPreLists.get();
+    if(index >= 0){
+      res.splice(index, 1);
+      lists.splice(index,1);
+    } else {
+      res.push(id);
+      lists.push({
+        face_id: this.id,
+        face_url: this.url,
+        group_id: $(e.currentTarget).data('gid'),
+        device_id: $(e.currentTarget).data('did'),
+        faceId: $(e.currentTarget).data('fid'),
+        name: $(e.currentTarget).data('name')
+      });
+    }
+    console.log(res);
+    console.log(lists);
+    selected2.set(res);
+    lebeledPreLists.set(lists);*/
+  }
+})
+
+Template.labelDatasetImg.onRendered(function(){
+  var $img = this.$('img');
+  // console.log($img, $img.parent().parent(), $img.parent().parent().attr('data-type'));
+  lazyloadInit($img.parent().parent(), $img.parent().parent().attr('data-type'));
+});
+
+Template.labelDatasetImg.helpers({
   has_selected: function(id){
     return selected2.get().indexOf(id) >= 0;
   },
 });
 
-Template.groupPhotoImg1.events({
+Template.labelDatasetImg.events({
   'click li': function(e){
-    var id = this.id;
+    var id = this._id;
     var res = selected2.get();
     var index = res.indexOf(id);
     var lists = lebeledPreLists.get();
@@ -386,4 +435,110 @@ Template.groupPhotoImg1.events({
     selected2.set(res);
     lebeledPreLists.set(lists);
   }
-})
+});
+
+Template.person_labelDataset.open = function(group_id,name){
+  dadaset_view && Blaze.remove(dadaset_view);
+  limit3.set(50);
+  selected2.set([]);
+
+  var data = {
+    group_id: group_id,
+    name:name,
+    limit: limit3.get(),
+  };
+  Session.set('lableDadaSetLoaded',false);
+  dadaset_view = Blaze.renderWithData(Template.person_labelDataset, data, document.body);
+};
+
+Template.person_labelDataset.close = function(){
+    // 释放变量
+  limit3.set(0);
+  selected2.set([]);
+  lebeledPreLists.set([]);
+  
+  dadaset_view && Blaze.remove(dadaset_view);
+  dadaset_view = null;
+};
+
+Template.person_labelDataset.onRendered(function(){
+  var data = this.data;
+  var group_id = data && data.group_id ;
+  Meteor.subscribe('person_labelDataset',group_id,data.name, limit3.get(),{
+    onReady: function(){
+      Session.set('lableDadaSetLoaded',true);
+    },
+    onStop: function(err){
+      console.log(err);
+    }
+  });
+  $('.photos').scroll(function(){
+    var height = $(this).find('> ul').height();
+    var top = $(this).scrollTop();
+    if (height-top <= $(this).height() -20){
+      var limit = limit3.get() + 50;
+      limit3.set(limit);
+      Meteor.subscribe('person_labelDataset',group_id,data.name, limit3.get());
+    }
+  });
+});
+
+Template.person_labelDataset.helpers({
+  list:function(){
+    return LableDadaSet.find({group_id: this.group_id,name:this.name},{limit: limit3.get(), sort:{createAt: -1}}).fetch();
+  },
+  is_selected2:function(){
+    return selected2.get().length > 0 ;
+  },
+  isLoading:function(){
+    return Session.get('lableDadaSetLoaded') != true;
+  }
+});
+
+Template.person_labelDataset.events({
+  'click .back': function(){
+    Template.person_labelDataset.close();
+  },
+  'click .btn-default': function(e, t){
+    if (e.currentTarget.id == 'labeled-del') {
+      console.log('is not a');
+      var lists = lebeledPreLists.get();
+      console.log(lists);
+      // 从person 表中删除相应face
+      Meteor.call('remove-person-face',lists, function(err, res){
+        if(err){
+          console.log('groupPhoto labeled del Err:'+err);
+          return PUB.toast('删除失败，请重试!');
+        }
+        for(var i=0; i < lists.length; i++) {
+          // 告诉平板， 这不是a
+          var trainsetObj = {
+            group_id: lists[i].group_id,
+            type: 'trainset',
+            url: lists[i].face_url,
+            person_id: '',
+            device_id: lists[i].device_id,
+            face_id: lists[i].face_id,
+            drop: true,
+            img_type: 'face',
+            style:'front',
+            sqlid: 0
+          }
+          console.log('groupPhoto labeled del trainsetObj='+JSON.stringify(trainsetObj));
+          sendMqttMessage('/device/'+lists[i].group_id, trainsetObj);
+          try{
+            $('#'+lists[i].face_id).remove();
+          } catch (err){}
+        };
+        selected2.set([]);
+        lebeledPreLists.set([]);
+      });
+      return;
+    }
+  }
+});
+
+
+
+
+
