@@ -1849,7 +1849,7 @@ var shouldScrollToBottom = function(msg){
       }
       // Session.set('shouldScrollToBottom',enableScroll);
       if (!enableScroll) {
-        if(msg && msg.to_type === page_data.type && msg.to.id === page_data.id && msg.form.id != Meteor.userId()){
+        if(msg && page_data && msg.to_type === page_data.type && msg.to.id === page_data.id && msg.form.id != Meteor.userId()){
           var newMsgCount = Session.get('newMsgCount');
           Session.set('newMsgCount',newMsgCount+1);
         }
