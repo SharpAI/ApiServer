@@ -66,6 +66,7 @@ Template.groupPhoto.events({
                 uuid: msgObj.people_uuid,
                 url: img.url,
                 img_type: img.img_type,
+                label:img.label,
                 style: img.style,
                 sqlid: img.sqlid
               });

@@ -1233,6 +1233,10 @@ Meteor.methods({
         return;
       }
       var name = PERSON.getIdByName(wait.uuid, data, groupId);
+      var label = wait.label; //平板识别出的名字
+      if (label && label != name) { //用户标记的名字和平板识别的名字不一样
+        wait.id = new Mongo.ObjectID()._str;
+      }
       trainsetObj.person_id = name && name.id ? name.id : '';
       trainsetObj.device_id = wait.uuid;
       trainsetObj.face_id = name && name.faceId ? name.faceId : wait.id;
