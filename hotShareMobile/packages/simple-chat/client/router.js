@@ -1867,6 +1867,7 @@ var shouldScrollToBottom = function(msg){
         if(msg && page_data && msg.to_type === page_data.type && msg.to.id === page_data.id && msg.form.id != Meteor.userId()){
           var newMsgCount = Session.get('newMsgCount');
           Session.set('newMsgCount',newMsgCount+1);
+          list_limit.set(list_limit.get()+1);
         }
       } else {
         // 消息页面位于底部， 直接滚动到最新一条
@@ -2145,7 +2146,7 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
         var setObj2 = targetMsg
         for(var i=0;i< msgObj.setNames.length;i++){
           setObj2._id = new Mongo.ObjectID()._str;
-          setObj2.text = msgObj.setNames[i].name;
+          setObj2.text = 'AI观察到 '+ msgObj.setNames[i].name+':';
           setObj2.people_id = msgObj.setNames[i].id;
           setObj2.images = [];
           setObj2.wait_lable = false;
