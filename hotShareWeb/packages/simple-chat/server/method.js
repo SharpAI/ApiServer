@@ -412,7 +412,7 @@ Meteor.methods({
             WorkAIUserRelations.remove({"group_id" : id});
           }
       });
-      return true;
+      return id;
     } catch (error){
       console.log('creator-delete-group Err:',error)
       return false
