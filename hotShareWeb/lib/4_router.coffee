@@ -822,11 +822,13 @@ if Meteor.isServer
 
             group_outtime_H = parseInt(group_outtime.split(":")[0])
             group_outtime_M = parseInt(group_outtime.split(":")[1])
+            group_out_minutes = group_outtime_H * 60 + group_outtime_M
 
-            out_time = create_time.getTime()
-            group_out_time = Date.UTC(create_time.getUTCFullYear(),create_time.getUTCMonth(),create_time.getUTCDate(),group_outtime_H,group_outtime_M,0)
-            group_out_time += time_offset * 60 * 60 * 1000
-            if (out_time < group_out_time)
+            out_time_H = parseInt(create_time.getUTCHours() + time_offset)
+            out_time_M = create_time.getMinutes()
+            out_time_minutes = out_time_H * 60 + out_time_M
+
+            if (out_time_minutes < group_out_minutes)
               return
 
           send_greeting_msg(msg_data);
