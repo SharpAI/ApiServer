@@ -92,7 +92,7 @@ if Meteor.isClient
       user_id = Session.get("simpleUserProfileUserId")
       group_id = Session.get('groupsId')
       Meteor.call('modifyGroupUserAdmin', group_id, user_id, false)
-    'click removeFormGroup':()->
+    'click #removeFormGroup':()->
       user_id = Session.get("simpleUserProfileUserId")
       group_id = Session.get('groupsId')
       Meteor.call('removeGroupUser', group_id, user_id)
