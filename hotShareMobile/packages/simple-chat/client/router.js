@@ -844,8 +844,10 @@ Template._simpleChatToChatItem.events({
           is_admin_relay: true,
           people_id: setNames[0].id,
           text: setNames[0].name,
+          admin_label_false: true,
           createAt: new Date()
         });
+        return;
       }
       sendMqttGroupLabelMessage(msgObj.to.id, {
         _id: new Mongo.ObjectID()._str,
@@ -901,20 +903,20 @@ Template._simpleChatToChatItem.events({
         images[i].label = null;
       }
 
-      // 同时删除普通用户识别错的消息
-      sendMqttGroupLabelMessage(msgObj.to.id, {
-        _id: new Mongo.ObjectID()._str,
-        msgId: msgObj._id,
-        user: {
-          id: user._id,
-          name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
-          icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
-        },
-        is_admin_relay: true,
-        text: msgObj.text,
-        admin_remove: true,
-        createAt: new Date()
-      });
+       // 同时删除普通用户识别错的消息
+      // sendMqttGroupLabelMessage(msgObj.to.id, {
+      //   _id: new Mongo.ObjectID()._str,
+      //   msgId: msgObj._id,
+      //   user: {
+      //     id: user._id,
+      //     name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+      //     icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
+      //   },
+      //   is_admin_relay: true,
+      //   text: msgObj.text,
+      //   admin_remove: true,
+      //   createAt: new Date()
+      // });
 
       this.images = images;
       Template._simpleChatLabelDevice.open(this);
@@ -2195,7 +2197,14 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
     //    console.log('==lalalaalal='+error)
     // }
     console.log('==lalalaalal='+JSON.stringify(targetMsg))
-
+    // 处理用户标注错时， 相应消息的更正
+    if(msgObj.admin_label_false && targetMsg){
+      Messages.update({_id: targetMsg._id},{
+        $set:{
+          text: 'AI观察到 '+msgObj.text + ':'
+        }
+      },function(){});
+    }
     return;
   }
   if (targetMsg.label_users && targetMsg.label_users.length > 0 && _.pluck(targetMsg.label_users, 'id').indexOf(msgObj.user.id) >= 0)
