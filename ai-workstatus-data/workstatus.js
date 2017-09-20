@@ -1,5 +1,5 @@
-var db = connect('数据库链接地址');
-db.auth('数据库用户名','数据库秘密');
+var db = connect('aidb.tiegushi.com:27017/workai');
+db.auth('workAIAdmin','weo23biHUI');
 
 fillWorkStatus = function(group_id, dayLen, time_offset){
   print('START fillWorkStatus');
@@ -18,7 +18,9 @@ fillWorkStatus = function(group_id, dayLen, time_offset){
     ts.setUTCDate(ts.getUTCDate() - i);
     ts.setUTCHours(0,0,0,0);
     print(ts)
-    var dayInweek = ts.getDay();
+    var ts2 = new Date(ts);
+    ts2.setUTCHours((0-time_offset),0,0,0);
+    var dayInweek = ts2.getDay();
     // if(time_offset = -7){
     //   dayInweek -= 1;
     // }
@@ -50,15 +52,17 @@ fillWorkStatus = function(group_id, dayLen, time_offset){
       if(!out_image && person){
         out_image = person.url;
       }
-      var max = 90 * 60 * 1000;
-      var min = 30 * 60 * 1000;
+      var max1 = 30 * 60 * 1000;
+      var max2 = 90 * 60 * 1000;
+      var min1 = 10 * 60 * 1000;
+      var min2 = 30 * 60 * 1000;
       var in_minutes = group_intime_M;
       var out_minutes = group_outtime_M;
       in_time = Date.UTC(ts.getUTCFullYear(),ts.getUTCMonth(),ts.getUTCDate(),group_intime_H,in_minutes);
       out_time = Date.UTC(ts.getUTCFullYear(),ts.getUTCMonth(),ts.getUTCDate(),group_outtime_H,out_minutes);
 
-      in_time += time_offset * 60 * 60 * 1000 + parseInt(Math.random()*(max-min+1)+min,10) * (Math.random()>0.5?1:-1);
-      out_time += time_offset * 60 * 60 * 1000 + parseInt(Math.random()*(max-min+1)+min,10) * (Math.random()>0.5?1:-1);
+      in_time -= time_offset * 60 * 60 * 1000 + parseInt(Math.random()*(max1-min1+1)+min1,10) * (Math.random()>0.5?1:-1);
+      out_time -= time_offset * 60 * 60 * 1000 + parseInt(Math.random()*(max2-min2+1)+min2,10) * (Math.random()>0.5?1:-1);
       var in_out_status = 'normal';
       if(dayInweek == 0 || dayInweek == 6){
         in_time = 0;
@@ -92,4 +96,8 @@ fillWorkStatus = function(group_id, dayLen, time_offset){
   print('END fillWorkStatus');
 }
 
-fillWorkStatus('ae64c98bdff9b674fb5dad4b',30,8);
+// 上海办公室
+fillWorkStatus('ae64c98bdff9b674fb5dad4b',33,8);
+
+// SWLAB
+// fillWorkStatus('73c125cc48a83a95882fced3',14,-7);
