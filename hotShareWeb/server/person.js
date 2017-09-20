@@ -730,7 +730,7 @@ PERSON = {
     var group_intime = '09:00'; //默认上班时间9点
     var group_outtime = '18:00'; //默认下班时间18点
 
-    var group = SimpleChat.Groups.findOne({_id: relation.group_id});
+    var group = SimpleChat.Groups.findOne({_id: workStatusObj.group_id});
     if (group && group.offsetTimeZone) {
       time_offset = group.offsetTimeZone;
     }
