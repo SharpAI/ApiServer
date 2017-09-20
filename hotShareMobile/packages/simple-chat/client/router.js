@@ -897,9 +897,24 @@ Template._simpleChatToChatItem.events({
         };
         console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
         sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
-
+        
         images[i].label = null;
       }
+
+      // 同时删除普通用户识别错的消息
+      sendMqttGroupLabelMessage(msgObj.to.id, {
+        _id: new Mongo.ObjectID()._str,
+        msgId: msgObj._id,
+        user: {
+          id: user._id,
+          name: user.profile && user.profile.fullname ? user.profile.fullname : user.username,
+          icon: user.profile && user.profile.icon ? user.profile.icon : '/userPicture.png',
+        },
+        is_admin_relay: true,
+        text: msgObj.text,
+        admin_remove: true,
+        createAt: new Date()
+      });
 
       this.images = images;
       Template._simpleChatLabelDevice.open(this);
