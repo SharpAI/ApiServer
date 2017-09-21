@@ -86,8 +86,17 @@ Template._simpleChatLabelDevice.save = function(){
             if (nas[ii]){
               msgObj.images[i].label = nas[ii];
               var id = msgObj.tid || msgObj.images[i].id
-              if (_.pluck(setNames, 'id').indexOf(id) === -1)
-                setNames.push({uuid: msgObj.people_uuid, id: msgObj.images[i].id, url: msgObj.images[i].url, name: nas[ii]});
+              if (_.pluck(setNames, 'id').indexOf(id) === -1) {
+                //有name说明是识别了，但是识别错了，管理员要修改这个人的name, 把这次修改记录到person的已标注里面
+                if(msgObj && msgObj.images && msgObj.images[i].label) {
+                  if(nas && nas.length>0 && nas[ii] && res && res[nas[ii]] && res[nas[ii]].faceId) {
+                    setNames.push({uuid: msgObj.people_uuid, id: res[nas[ii]].faceId, url: msgObj.images[i].url, name: nas[ii]});
+                  }
+                }
+                else {
+                  setNames.push({uuid: msgObj.people_uuid, id: msgObj.images[i].id, url: msgObj.images[i].url, name: nas[ii]});
+                }
+              }
             }
             is_break = true;
             break;
