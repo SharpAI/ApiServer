@@ -255,7 +255,7 @@ if(Meteor.isClient){
                 addToUnsendMessaages(topic, message, callback);
             };
             subscribeMqttGroup=function(group_id) {
-                if (mqtt_connection) {
+                if (mqtt_connection && group_id) {
                     console.log('sub mqtt:' + group_id);
                     mqtt_connection.subscribe('/msg/g/'+group_id,{qos:1, onSuccess:onSuccess, onFailure:onFailure});
                     mqtt_connection.subscribe('/msg/l/'+group_id,{qos:1, onSuccess:onSuccess, onFailure:onFailure}); // label 消息
@@ -268,7 +268,7 @@ if(Meteor.isClient){
                 }
             };
             unsubscribeMqttGroup=function(group_id) {
-                if (mqtt_connection) {
+                if (mqtt_connection && group_id) {
                     if(Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType == 'admin') {
                         mqtt_connection.unsubscribe("/msg/g/#");
                         mqtt_connection.unsubscribe("/msg/l/#");
@@ -280,7 +280,7 @@ if(Meteor.isClient){
                 }
             };
             subscribeMqttUser=function(user_id){
-                if (mqtt_connection) {
+                if (mqtt_connection && user_id) {
                     console.log('sub mqtt:' + user_id);
                     mqtt_connection.subscribe('/msg/u/'+user_id,{qos:1, onSuccess:onSuccess, onFailure:onFailure});
                     function onSuccess() {
@@ -292,7 +292,7 @@ if(Meteor.isClient){
                 }
             };
             unsubscribeMqttUser=function(user_id){
-                if (mqtt_connection) {
+                if (mqtt_connection && user_id) {
                     mqtt_connection.unsubscribe("/msg/u/" + user_id);
                 }
             };
@@ -368,6 +368,9 @@ if(Meteor.isClient){
                 subscribeMqttGroup(document.group_id);
              },
              changed: function(newDocument, oldDocument){
+               if (oldDocument.group_id === newDocument.group_id)
+                 return;
+
                unsubscribeMqttGroup(oldDocument.group_id);
                subscribeMqttGroup(newDocument.group_id);
              },
