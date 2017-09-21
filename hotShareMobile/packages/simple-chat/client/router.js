@@ -1873,7 +1873,7 @@ var shouldScrollToBottom = function(msg){
         }
       } else {
         // 消息页面位于底部， 直接滚动到最新一条
-        console.warn('auto scroll to end');
+        // console.warn('auto scroll to end');
         setScrollToBottom();
       }
   // }
