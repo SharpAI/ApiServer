@@ -227,8 +227,10 @@ Template._simpleChatLabelDevice.save = function(){
           setNames: setNames,
           labeldImages: labeld_images,
           waitLabelImages: wait_label_images,
+          admin_label_unknown: true,
           createAt: new Date()
         });
+        return;
       }
       sendMqttGroupLabelMessage(msgObj.to.id, {
         _id: new Mongo.ObjectID()._str,
