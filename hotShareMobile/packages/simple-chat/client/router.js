@@ -2160,14 +2160,17 @@ SimpleChat.onMqttLabelMessage = function(topic, msg) {
               }
             }
             // step2. 重新insert消息
-            Messages.insert({
+            var msgToInsrtObj = {};
+            msgToInsrtObj = $.extend(true,msgToInsrtObj, targetMsg,{
               text: 'AI观察到 '+ msgObj.setNames[i].name+':',
               people_id: msgObj.setNames[i].id,
               images: imageLists,
               wait_lable: false,
               label_complete: false,
               is_read: false
-            },function(){});
+            });
+
+            Messages.insert(msgToInsrtObj,function(){});
 
           }
         }
