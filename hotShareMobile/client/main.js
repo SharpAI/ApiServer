@@ -259,7 +259,8 @@ if (Meteor.isCordova) {
         try{
           if(mqtt_connection){
             console.log('try reconnect mqtt')
-            mqtt_connection._reconnect();
+            // mqtt_connection._reconnect();
+            mqttEventResume();
           }
         } catch (error) {
           console.log('mqtt reconnect Error=',error);
@@ -371,7 +372,7 @@ if (Meteor.isClient) {
       Meteor.subscribe("topics");
       //Meteor.subscribe("topicposts");
       Meteor.subscribe('get-workai-user-relation',Meteor.userId());
-      getHotPostsData();
+      // getHotPostsData();
     }
     document.title = Session.get("DocumentTitle");
   });
