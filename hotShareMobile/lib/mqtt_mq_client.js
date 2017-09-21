@@ -268,12 +268,12 @@ if(Meteor.isClient){
                 }
             };
             unsubscribeMqttGroup=function(group_id) {
-                if (mqtt_connection && group_id) {
+                if (mqtt_connection) {
                     if(Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType == 'admin') {
                         mqtt_connection.unsubscribe("/msg/g/#");
                         mqtt_connection.unsubscribe("/msg/l/#");
                     }
-                    else {
+                    else if (group_id) {}{
                         mqtt_connection.unsubscribe("/msg/g/" + group_id);
                         mqtt_connection.unsubscribe("/msg/l/" + group_id);
                     }
