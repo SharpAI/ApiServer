@@ -59,5 +59,24 @@ Template.clusteringFixPerson.events({
     console.log(lists);
     selectedLists.set(lists);
     $(e.currentTarget).toggleClass('selected');
+  },
+  'click #clusteringDel': function(e){
+    var ids = selectedLists.get();
+    var count = 0;
+    // PUB.showWaitLoading('处理中');
+    ids.forEach(function(item){
+      Clustering.update({_id: item},{
+        $set:{isOneSelf: false}
+      },function(error, result){
+        // PUB.hideWaitLoading();
+        if(error){
+          console.log(error)
+        } 
+        ids.splice(ids.indexOf(item),1);
+        count += 1;
+        // PUB.toast('删除了'+ count + '张照片，还剩'+ ids.length + '张！');
+        selectedLists.set(ids);
+      });
+    });
   }
 })

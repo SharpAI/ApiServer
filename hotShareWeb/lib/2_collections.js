@@ -187,6 +187,16 @@ if(Meteor.isServer){
     }
   });
 
+  Clustering.allow({
+    update: function (userId, doc, fields, modifier) {
+      var user = Meteor.users.findOne({_id: userId})
+      if(user && user.profile && user.profile.userType && user.profile.userType == 'admin'){
+          return true;
+      }
+      return false;
+    }
+  });
+
   // 发布：纠错
   Meteor.publish('clusteringLists', function(group_id, faceId, limit){
     if(!this.userId || !group_id || !faceId){
