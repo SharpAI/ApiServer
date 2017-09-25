@@ -730,7 +730,7 @@ if Meteor.isServer
                 id:pid,
                 url:person.url
               }
-              if(_.pluck(p_ids_name, 'id').indexOf(pid) === -1)
+              if(_.pluck(p_ids_name, 'id').indexOf(pid) is -1)
                 p_ids_name.push(p_person)
 
         #没有准确度的人一定是没有识别出来的

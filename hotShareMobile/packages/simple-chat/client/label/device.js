@@ -34,6 +34,7 @@ Template._simpleChatLabelDevice.open = function(msgObj){
     nas[index.get()] = msgObj.label_name;
     names.set(nas);
     Template._simpleChatLabelDevice.save();
+    return;
   }
 
   view = Blaze.render(Template._simpleChatLabelDevice, document.body);
