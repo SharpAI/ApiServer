@@ -184,6 +184,12 @@ if Meteor.isClient
         this.render 'timeline'
         Session.set 'channel','timeline'
       return
+    Router.route '/clusteringFix/:_id',()->
+      this.render 'clusteringFix'
+      return
+    Router.route '/clusteringFixPerson/:gid/:fid',()->
+      this.render 'clusteringFixPerson'
+      return
     # Router.route '/homePage',()->
     #   if Meteor.isCordova is true
     #     this.render 'homePage'

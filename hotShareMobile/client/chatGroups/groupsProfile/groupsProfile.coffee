@@ -38,6 +38,11 @@ if Meteor.isClient
     return if val then 'checked' else ''
   )
   Template.groupInformation.helpers
+    userTypeIsAdmin:()->
+      user = Meteor.user()
+      if user and user.profile and user.profile.userType is 'admin'
+        return true
+      return false
     getGroupInOutTime: ()->
       group_intime = '09:00'
       group_outtime = '18:00'
@@ -135,6 +140,9 @@ if Meteor.isClient
       return false      
 
   Template.groupInformation.events
+    'click #clusteringFix': (event)->
+      group_id = Session.get('groupsId')
+      PUB.page('/clusteringFix/'+ group_id)
     'click #groupInOutTime':(event)->
        $('#groupInOutTime').mobiscroll('show')
        return false

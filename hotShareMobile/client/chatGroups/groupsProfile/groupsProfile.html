@@ -76,6 +76,12 @@
                         <div class="value">{{getGroupInOutTime}}<i class="fa fa-angle-right"></i></div>
                     </li>
                     {{/if}}
+                    {{#if userTypeIsAdmin}}
+                    <li id="clusteringFix">
+                        <label>聚类挑错</label>
+                        <div class="value"> <i class="fa fa-angle-right"></i></div>
+                    </li>
+                    {{/if}}
                 </ul>
                 <div class="line" style="height: 20px;text-align:left;padding-left:10px;color:#555;">识别规则</div>
                 <ul class="set-up comFadeIn" style="margin-top: 0px;margin-bottom: 10px;">

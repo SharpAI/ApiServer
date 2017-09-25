@@ -1,0 +1,21 @@
+<template name="clusteringFixPerson">
+<div class="clustering">
+  <div class="head">
+    <div class="leftButton back">
+      <i class="fa fa-angle-left fa-fw"></i>
+    </div>
+    <div class="title">聚类挑错</div>
+  </div>
+  <ul class="clusteringLists">
+    {{#each lists}}
+    <li id="{{_id}}" class="clusteringItem">
+      <img src="{{url}}" />
+      <p class="personName">{{name}}</p>
+    </li>
+    {{/each}}
+  </ul>
+  {{#if selectedListsCount}}
+  <div id="clusteringDel">删除({{selectedListsCount}})</div>
+  {{/if}}
+</div>
+</template>

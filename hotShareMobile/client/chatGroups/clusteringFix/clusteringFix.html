@@ -1,0 +1,19 @@
+<template name="clusteringFix">
+<div class="clustering">
+  <div class="head">
+    <div class="leftButton back">
+      <i class="fa fa-angle-left fa-fw"></i>
+    </div>
+    <div class="title">聚类挑错</div>
+  </div>
+  <ul class="personLists">
+    {{#each lists}}
+    <li id="{{faceId}}" class="personListItem">
+      <div class="right-ft"><i class="fa fa-angle-right fa-fw"></i></div>
+      <img src="{{url}}" />
+      <p class="personName">{{name}}</p>
+    </li>
+    {{/each}}
+  </ul>
+</div>
+</template>
