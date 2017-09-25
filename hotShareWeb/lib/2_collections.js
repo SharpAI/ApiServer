@@ -187,6 +187,15 @@ if(Meteor.isServer){
     }
   });
 
+  // 发布：纠错
+  Meteor.publish('clusteringLists', function(group_id, faceId, limit){
+    if(!this.userId || !group_id || !faceId){
+        return this.ready();
+    }
+    var limit = limit || 30;
+    return Clustering.find({group_id: group_id, faceId: faceId, isOneSelf: true},{limit: limit})
+  });
+  
   // 发布 group 已经标注的person 信息
   Meteor.publish('group_person', function(group_id, limit){
     if(!this.userId || !group_id){

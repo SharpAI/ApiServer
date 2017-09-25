@@ -133,6 +133,17 @@ LableDadaSet = new Meteor.Collection('label_dataset');
   ]
 }
 */
+Clustering = new Meteor.Collection('clustering');
+/*
+{
+    group_id: 'xx',
+    faceId: Id_xx,
+    totalFaces: 1,
+    url: 'http: //xx',
+    rawfilepath: '/dataset/A/1.png',
+    isOneSelf: true
+}
+*/
 if(Meteor.isServer){
   WorkAIUserRelations.allow({
     update: function(userId, doc, fields, modifier) {
@@ -157,6 +168,15 @@ if(Meteor.isServer){
       }
       return true;
     }
+  });
+
+  // 发布：纠错
+  Meteor.publish('clusteringLists', function(group_id, faceId, limit){
+    if(!this.userId || !group_id || !faceId){
+        return this.ready();
+    }
+    var limit = limit || 30;
+    return Clustering.find({group_id: group_id, faceId: faceId, isOneSelf: true},{limit: limit})
   });
 
   // 发布 group 已经标注的person 信息

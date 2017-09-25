@@ -1,17 +1,27 @@
 var limit = new ReactiveVar(0);
 var selectedLists = new ReactiveVar([]);
-var limitSetp = 10
+var limitSetp = 50
 
 Template.clusteringFixPerson.onRendered(function() {
-  limit.set(30);
+  limit.set(50);
   var group_id = Router.current().params.gid;
   var faceId = Router.current().params.fid;
-  Meteor.subscribe('group_person',group_id, limit.get(),{
-    onReady: function(){
-      Session.set('group_person_loaded',true);
-    },
-    onStop: function(err){
-      console.log(err);
+  Session.set('group_person_loaded',false);
+  Session.set('group_person_loadmore','loaded');
+  Meteor.subscribe('clusteringLists',group_id, faceId, limit.get(),function(){
+    Session.set('group_person_loaded',true);
+  });
+
+  // scroll Loading
+  $(document).scroll(function(){
+    if($('ul').height() - document.body.clientHeight - $(document).scrollTop() + 50 <= 0){
+      console.log('start load more');
+      Session.set('group_person_loadmore','loading');
+      var limitCount = limit.get() + limitSetp;
+      Meteor.subscribe('clusteringLists',group_id,faceId, limitCount,function(){
+        Session.set('group_person_loadmore','loaded');
+        limit.set(limitCount);
+      });
     }
   });
 });
@@ -20,11 +30,17 @@ Template.clusteringFixPerson.helpers({
   lists: function(){
     var group_id = Router.current().params.gid;
     var faceId = Router.current().params.fid;
-    return Person.find({group_id: group_id},{limit: limit.get(), sort:{createAt: -1}}).fetch();
+    return Clustering.find({group_id: group_id, faceId: faceId, isOneSelf: true},{limit: limit.get()}).fetch();
   },
   selectedListsCount: function(){
     var lists = selectedLists.get() || [];
     return lists.length;
+  },
+  isLoaded: function(){
+    return Session.get('group_person_loaded');
+  },
+  isLoadingMore: function(){
+    return Session.equals('group_person_loadmore','loading');
   }
 });
 
