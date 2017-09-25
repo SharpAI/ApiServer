@@ -1718,3 +1718,50 @@ if Meteor.isServer
     
     return this.response.end('{"result": "success"}\n')
   )
+  Router.route('/restapi/clustering', {where: 'server'}).get(()->
+      # 8a057a14544805ce73cd30fa
+      group_id = this.params.query.group_id
+      faceId = this.params.query.faceId
+      totalFaces = this.params.query.totalFaces
+      url = this.params.query.url
+      rawfilepath = this.params.query.rawfilepath
+      isOneSelf = true
+
+      console.log '/restapi/clustering get request, group_id:' + group_id + ', faceId:' + faceId + ',totalFaces:' + totalFaces + ',url' + url + ',rawfilepath' + rawfilepath + ',isOneSelf' + isOneSelf
+      unless group_id and isOneSelf
+        return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
+
+      #返回标注过的数据集
+      this.response.end('{"result": "ok"}\n')
+    ).post(()->
+      if this.request.body.hasOwnProperty('group_id')
+        group_id = this.request.body.group_id
+      if this.request.body.hasOwnProperty('faceId')
+        faceId = this.request.body.faceId
+      if this.request.body.hasOwnProperty('totalFaces')
+        totalFaces = this.request.body.totalFaces
+      if this.request.body.hasOwnProperty('url')
+        url = this.request.body.url
+      if this.request.body.hasOwnProperty('rawfilepath')
+        rawfilepath = this.request.body.rawfilepath
+      if this.request.body.hasOwnProperty('isOneSelf')
+        isOneSelf = this.request.body.isOneSelf
+
+      console.log '/restapi/clustering post request, group_id:' + group_id + ', faceId:' + faceId + ',totalFaces:' + totalFaces + ',url' + url + ',rawfilepath' + rawfilepath + ',isOneSelf' + isOneSelf
+      unless group_id and faceId and url
+        return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
+
+      #插入数据库
+      #Clustering
+      clusteringObj = {
+          group_id: group_id,
+          faceId: faceId,
+          totalFaces: totalFaces,
+          url: url,
+          rawfilepath: rawfilepath,
+          isOneSelf: isOneSelf
+      }
+      #Clustering.insert(clusteringObj)
+      console.log('>>> ' + JSON.stringify(clusteringObj))
+      this.response.end('{"result": "ok"}\n')
+    )

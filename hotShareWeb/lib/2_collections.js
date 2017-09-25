@@ -149,6 +149,18 @@ LableDadaSet = new Meteor.Collection('label_dataset');
 }
 */
 
+Clustering = new Meteor.Collection('clustering');
+/*
+{
+    group_id: 'xx',
+    faceId: Id_xx,
+    totalFaces: 1,
+    url: 'http: //xx',
+    rawfilepath: '/dataset/A/1.png',
+    isOneSelf: true
+}
+*/
+
 if(Meteor.isServer){
   WorkAIUserRelations.allow({
     update: function(userId, doc, fields, modifier) {
