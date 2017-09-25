@@ -29,10 +29,17 @@ Template._simpleChatLabelDevice.open = function(msgObj){
   images.set(imgs);
   index.set(0);
 
+  //已经选择过人了，平板判断的最大可能的三个人中选择了某个人
+  if (msgObj.label_name) {
+    nas[index.get()] = msgObj.label_name;
+    names.set(nas);
+    Template._simpleChatLabelDevice.save();
+  }
+
   view = Blaze.render(Template._simpleChatLabelDevice, document.body);
   simple_chat_page_stack.push(view);
 
-  if (nas.length === 1 && imgs[0].images.length <= 1){
+  if ( msgObj.need_show_label_now || (nas.length === 1 && imgs[0].images.length <= 1)){
     show_label(msgObj.to.id, function(name){
       if (!name)
         return;
@@ -49,6 +56,8 @@ Template._simpleChatLabelDevice.close = function(){
     simple_chat_page_stack.pop();
   }
   view = null;
+  PUB.hideWaitLoading();
+  $('#selectPerson').modal('hide');
 };
 
 Template._simpleChatLabelDevice.save = function(){

@@ -684,7 +684,7 @@ if Meteor.isServer
       })
 
 
-  insert_msg2 = (id, url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts,tracker_id)->
+  insert_msg2 = (id, url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts,tracker_id,p_ids)->
     #people = People.findOne({id: id, uuid: uuid})
     name = null
     #device = PERSON.upsetDevice(uuid, null)
@@ -719,6 +719,20 @@ if Meteor.isServer
             return
         name = null
         name = PERSON.getName(null, userGroup.group_id,id)
+        p_ids_name = [];
+        #存在可能性最大的三个人的id
+        if p_ids and p_ids.length > 0
+          for pid in array
+            person = Person.findOne({group_id:userGroup.group_id,'faces.id':pid},{sort:{createAt:1}});
+            if person
+              p_person = {
+                name:person.name,
+                id:pid,
+                url:person.url
+              }
+              if(_.pluck(p_ids_name, 'id').indexOf(pid) === -1)
+                p_ids_name.push(p_person)
+
         #没有准确度的人一定是没有识别出来的
         name = if accuracy then name else null
         #没有识别的人的准确度清0
@@ -737,7 +751,7 @@ if Meteor.isServer
             icon: userGroup.group_icon
           }
           images: [
-            {_id: new Mongo.ObjectID()._str, id: id, people_his_id: _id, url: url, label: name, img_type: img_type, accuracy: Accuracy, fuzziness: Fuzziness, sqlid: sqlid, style: style} # 暂一次只能发一张图
+            {_id: new Mongo.ObjectID()._str, id: id, people_his_id: _id, url: url, label: name, img_type: img_type, accuracy: Accuracy, fuzziness: Fuzziness, sqlid: sqlid, style: style,p_ids:p_ids_name} # 暂一次只能发一张图
           ]
           to_type: "group"
           type: "text"
@@ -911,12 +925,15 @@ if Meteor.isServer
       if this.request.body.hasOwnProperty('tid')
         tracker_id = this.request.body.tid
 
+      if this.request.body.hasOwnProperty('p_ids') #可能性最大的三个人的id
+        p_ids = this.request.body.p_ids
+
       console.log '/restapi/workai post request, id:' + id + ', img_url:' + img_url + ',uuid:' + uuid + ' img_type=' + img_type + ' sqlid=' + sqlid + ' style=' + style + 'img_ts=' + img_ts
       unless id and img_url and uuid
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
       accuracy = this.params.query.accuracy
       fuzziness = this.params.query.fuzziness
-      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts, tracker_id)
+      insert_msg2(id, img_url, uuid, img_type, accuracy, fuzziness, sqlid, style,img_ts,current_ts, tracker_id,p_ids)
       this.response.end('{"result": "ok"}\n')
     )
 

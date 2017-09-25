@@ -50,6 +50,9 @@ Template._simpleChatToChat.helpers({
   },
   newMsgCount:function(){
     return Session.get('newMsgCount');
+  },
+  p_ids:function(){
+    return Session.get('setPicturePersonNameData');
   }
 });
 
@@ -755,6 +758,24 @@ Template._simpleChatToChatItem.events({
     if (this.type === 'url') {
       return;
     }
+    var user = Meteor.user();
+    if(user.profile && user.profile.userType && user.profile.userType == 'admin'){
+      var need_show_possible_person = false;
+      for (var i = 0; i < this.images.length; i++) {
+        var imgObj = this.images[i];
+        if (imgObj.p_ids && imgObj.p_ids.length > 0) {
+          need_show_possible_person = true;
+          Session.set('setPicturePersonNameData',imgObj.p_ids);
+          break;
+        }
+      }
+      Session.set('setLabelDeviceData',this);
+      if (need_show_possible_person) {
+        $('#selectPerson').modal('show');
+        return;
+      }
+
+    }
     Template._simpleChatLabelDevice.open(this);
   },
   'click .crop':function(){
@@ -1411,6 +1432,18 @@ Template._simpleChatToChat.events({
     //  主动点击有 x 条新消息
      setScrollToBottom();
      Session.set('newMsgCount',0);
+  },
+  'click .addNewPerson':function(e){
+    var data = Session.get('setLabelDeviceData');
+    data.need_show_label_now = true;
+    Template._simpleChatLabelDevice.open(data);
+  },
+  'click .personItem':function(e){
+    var data = Session.get('setLabelDeviceData');
+    var person_name = $(e.currentTarget).data('pname');
+    data.label_name = person_name;
+    PUB.showWaitLoading('正在处理');
+    Template._simpleChatLabelDevice.open(data);
   }
 });
 
