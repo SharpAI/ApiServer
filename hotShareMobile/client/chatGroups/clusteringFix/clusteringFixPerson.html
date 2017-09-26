@@ -10,7 +10,7 @@
     {{#if isLoaded}}
     {{#each lists}}
     <li id="{{_id}}" class="clusteringItem">
-      <img src="{{url}}" />
+      <img class="lazy" data-original="{{url}}" />
     </li>
     {{/each}}
     {{else}}

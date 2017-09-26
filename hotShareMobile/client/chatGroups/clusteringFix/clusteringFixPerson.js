@@ -2,6 +2,17 @@ var limit = new ReactiveVar(0);
 var selectedLists = new ReactiveVar([]);
 var limitSetp = 50
 
+window.clusteringLazyloadInterval = null;
+var initLazyload = function(){
+  if(clusteringLazyloadInterval){
+    window.clearInterval(clusteringLazyloadInterval);
+  }
+  window.setInterval(function(){
+    $('ul').find('img.lazy:not([src])').lazyload({
+      container: $('ul')
+    });
+  },600);
+}
 Template.clusteringFixPerson.onRendered(function() {
   limit.set(50);
   var group_id = Router.current().params.gid;
@@ -24,6 +35,8 @@ Template.clusteringFixPerson.onRendered(function() {
       });
     }
   });
+
+  initLazyload();
 });
 
 Template.clusteringFixPerson.helpers({
@@ -79,4 +92,11 @@ Template.clusteringFixPerson.events({
       });
     });
   }
-})
+});
+
+
+Template.clusteringFixPerson.onDestroyed(function(){
+  if(clusteringLazyloadInterval){
+    window.clearInterval(clusteringLazyloadInterval);
+  }
+});

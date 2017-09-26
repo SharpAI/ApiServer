@@ -11,7 +11,7 @@
     {{#each lists}}
     <li id="{{faceId}}" class="personListItem">
       <div class="right-ft"><i class="fa fa-angle-right fa-fw"></i></div>
-      <img src="{{url}}" />
+      <img class="lazy" data-original="{{url}}" />
       <p class="personName">{{name}}</p>
     </li>
     {{/each}}
