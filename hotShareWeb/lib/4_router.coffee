@@ -722,7 +722,7 @@ if Meteor.isServer
         p_ids_name = [];
         #存在可能性最大的三个人的id
         if p_ids and p_ids.length > 0
-          for pid in array
+          for pid in p_ids
             person = Person.findOne({group_id:userGroup.group_id,'faces.id':pid},{sort:{createAt:1}});
             if person
               p_person = {

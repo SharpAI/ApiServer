@@ -50,9 +50,6 @@ Template._simpleChatToChat.helpers({
   },
   newMsgCount:function(){
     return Session.get('newMsgCount');
-  },
-  p_ids:function(){
-    return Session.get('setPicturePersonNameData');
   }
 });
 
@@ -211,6 +208,9 @@ var lazyloadInit = function(){
   }, 600);
 };
 Template._simpleChatToChatItemImg.onRendered(function(){
+  lazyloadInit();
+});
+Template._simpleChatToChatPItemImg.onRendered(function(){
   lazyloadInit();
 });
 Template._simpleChatToChatItemIcon.onRendered(function(){
@@ -758,24 +758,6 @@ Template._simpleChatToChatItem.events({
     if (this.type === 'url') {
       return;
     }
-    var user = Meteor.user();
-    if(user.profile && user.profile.userType && user.profile.userType == 'admin'){
-      var need_show_possible_person = false;
-      for (var i = 0; i < this.images.length; i++) {
-        var imgObj = this.images[i];
-        if (imgObj.p_ids && imgObj.p_ids.length > 0) {
-          need_show_possible_person = true;
-          Session.set('setPicturePersonNameData',imgObj.p_ids);
-          break;
-        }
-      }
-      Session.set('setLabelDeviceData',this);
-      if (need_show_possible_person) {
-        $('#selectPerson').modal('show');
-        return;
-      }
-
-    }
     Template._simpleChatLabelDevice.open(this);
   },
   'click .crop':function(){
@@ -970,6 +952,18 @@ Template._simpleChatToChatItem.events({
       $imgs.find('.img_container').addClass('_close');
       $labels.find('.img_container').addClass('_close');
     }
+  },
+  'click .determine':function(e){
+    var data = this;
+    var person_name = $(e.currentTarget).parent().find('.p_imgBg.selected img').data('pname');
+    data.label_name = person_name;
+    PUB.showWaitLoading('正在处理');
+    Template._simpleChatLabelDevice.open(data);
+  },
+  'click .wantSelectElse':function(){
+    var data = this;
+    data.need_show_label_now = true;
+    Template._simpleChatLabelDevice.open(data);
   }
 });
 
@@ -1432,18 +1426,6 @@ Template._simpleChatToChat.events({
     //  主动点击有 x 条新消息
      setScrollToBottom();
      Session.set('newMsgCount',0);
-  },
-  'click .addNewPerson':function(e){
-    var data = Session.get('setLabelDeviceData');
-    data.need_show_label_now = true;
-    Template._simpleChatLabelDevice.open(data);
-  },
-  'click .personItem':function(e){
-    var data = Session.get('setLabelDeviceData');
-    var person_name = $(e.currentTarget).data('pname');
-    data.label_name = person_name;
-    PUB.showWaitLoading('正在处理');
-    Template._simpleChatLabelDevice.open(data);
   }
 });
 
@@ -1592,6 +1574,34 @@ Template._simpleChatToChatItem.helpers({
   },
   show_images: function(images){
     renderMoreButton();
+  },
+  has_p_ids:function(images){
+    var has_val = false;
+    var user = Meteor.user();
+    if(user.profile && user.profile.userType && user.profile.userType == 'admin'){
+      for (var i = 0; i < images.length; i++) {
+        if (images[i].p_ids && images[i].p_ids.length > 0){
+          has_val = true;
+          break;
+        }
+      }
+    }
+    return has_val;
+  },
+  p_ids:function(images){
+    var temp_ary = [];
+    for (var i = 0; i < images.length; i++) {
+      var pids = images[i].p_ids;
+      if (pids && pids.length > 0){
+        for (var j = 0; j < pids.length; j++) {
+          var pid = pids[j].id;
+          if(_.pluck(temp_ary, 'id').indexOf(pid) === -1){
+            temp_ary.push(pids[j]);
+          }
+        }
+      }
+    }
+    return temp_ary;
   }
 });
 
@@ -2405,6 +2415,16 @@ Template._simpleChatToChatItemImg.events({
   'click .video_container':function(e){
     var video_src = $(e.currentTarget).data('videosrc');
     openVideoInBrowser(video_src);
+  }
+})
+
+Template._simpleChatToChatPItemImg.events({
+  'click .img_container':function(e,t){
+    $('.p_imgBg').removeClass('selected');
+    $(e.currentTarget).addClass('selected');
+    $(e.currentTarget).parent().parent().find('.determine').show();
+    // $('p_imgBg img').removeAttr('style');
+    // $(e.currentTarget).find('img').attr('style', 'border: 3px solid #39a8fe;box-shadow: 0 0 10px 3px #39a8fe;');
   }
 })
 

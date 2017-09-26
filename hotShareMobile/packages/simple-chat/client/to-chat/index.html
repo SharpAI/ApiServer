@@ -41,33 +41,6 @@
           <span>{{newMsgCount}}条新消息</span>
         </div>
         {{/if}}
-        <!-- select person modal -->
-        <div class="modal fade" id="selectPerson" tabindex="-1" role="dialog" aria-labelledby="sselectPersonLabel">
-          <div class="modal-dialog" role="document" style="top:40px;">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="selectPersonLabel">此照片是</h4>
-              </div>
-              <div class="modal-body" style="height: 380px; overflow-y:auto;">
-                <ul class="set-up comFadeIn" style="padding-left:0;">
-                {{#each p_ids}}
-                  <li id="{{id}}" class="personItem"  data-pname="{{name}}" style="height:60px;padding:10px 0">
-                      <img src="{{url}}">
-                      <label>{{name}}</label>
-                      <div class="value" style="float:right; margin:10px;"><i class="fa fa-angle-right"></i></div>
-                  </li>
-                {{/each}}
-              </ul>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary addNewPerson">更多</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- select person end-->
       </div>
       <div class="footer"><form class="input-form">
         <div id="container"></div>
@@ -228,7 +201,20 @@
                     {{/if}}
                   </div>
                 {{/if}}
+                {{#if has_p_ids images}}
+                <div class="label-box">
+                  <div>请点击与上图是同一个人的照片</div>
+                  <div>
+                    {{#each p_ids images}}
+                      {{> _simpleChatToChatPItemImg}}
+                    {{/each}}
+                    <span class="wantSelectElse">都不是</span>
+                  </div>
+                  <div class="determine">确定</div>
+                </div>
+                {{else}}
                 <div class="line-label-box crop-lable-box"><div class="check">标记</div><div class="crop">裁剪</div><div class="remove">删除</div></div>
+                {{/if}}
               {{else}}
                 <div class="imgs">
                   {{#each images}}
@@ -306,6 +292,18 @@
   </div>
   {{/if}}
 </template>
+
+<template name="_simpleChatToChatPItemImg">
+  <div class="img_container p_imgBg">
+    <img class="work-ai-img lazy" data-type="images" data-pname="{{name}}"  data-original="{{url}}" />
+    {{#if name}}
+    <div class="value_bg">
+      <div class="person_name">{{name}}</div>
+    </div>
+    {{/if}}
+  </div>
+</template>
+
 <template name="_simpleChatToChatItemIcon">
   <img class="lazy" data-original="{{icon}}" />
 </template>
