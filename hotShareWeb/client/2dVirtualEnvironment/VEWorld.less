@@ -1,0 +1,125 @@
+.VEWorld{
+  height: 100%;
+  width: 100%;
+  background: #efefef;
+  margin:0;
+  padding: 0;
+  .officeLists{
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    .officeItem{
+      width: 33%;
+      height: 100%;
+      padding: 5px;
+      list-style: none;
+      float: left;
+      box-sizing: border-box;
+      .officeItem-box{
+        height: 100%;
+        box-sizing: border-box;
+        background: #fff;
+        border: 2px solid #888;
+        text-align: center;
+      }
+      h4{
+        text-align: center;
+        display: inline-block;
+        border: 1px solid #ccc;
+        padding: 4px 10px;
+        background: #9E9E9E;
+      }
+    }
+
+  }
+}
+
+.VEOffice{
+  .officeName {
+    position: fixed;
+    top: 0;
+    display: inline-block;
+    right: 0;
+    text-align: center;
+    background: #607D8B;
+    color: white;
+    padding: 10px;
+    border: 1px solid #000;
+    outline: 1px solid #888;
+    border-right: 0;
+  }
+  .backBtn{
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    padding: 0;
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.34);
+    top: 10px;
+    left: 10px;
+    position: fixed;    
+    text-align: center;
+    color: #fff;
+    i{font-size: 26px; height: 40px;line-height: 40px;}
+  }
+  .officeItem{
+    position: absolute;
+    margin-bottom: 60px;
+    left: 20px;
+    bottom: 10px;
+  }
+  .person {
+    height: 80px;
+    width: 60px;
+    border: 1px solid #ccc;
+    overflow: hidden;
+    border-radius: 4px;
+    background-color: white;
+  }
+  .person:after,.person:before{
+    position: absolute;
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 10px solid #fff;
+    left: 50%;
+    margin-left: -5px;
+    top: 80px;
+  }
+  .person:after{
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 12px solid #ccc;
+    z-index: -2;
+    margin-left: -6px;
+  }
+  .person .person-img{
+    width:60px;
+    height: 60px;
+    img{width: 60px; height: 60px; object-fit: cover;}
+  }
+  .person .person-name {
+    height: 20px;
+    font-size: 14px;
+    line-height: 20px;
+    margin: 0;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .person-mark {
+    font-size: 20px;
+    text-align: center;
+    margin-top: 10px;
+    color: #797979;
+    z-index: -9;
+    position: absolute;
+    left: 0;
+    right: 0;
+  }
+}

@@ -68,6 +68,10 @@ if Meteor.isClient
     return
   Router.route '/import', ()->
     this.render 'importPost'
+  Router.route '/VEWorld', ()->
+    this.render 'VEWorld'
+  Router.route '/VEOffice/:_id', ()->
+    this.render 'VEOffice'
   Router.route '/series/:_id', {
       waitOn: ->
         [subs.subscribe("oneSeries", this.params._id)]
