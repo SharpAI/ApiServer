@@ -305,7 +305,7 @@ if(Meteor.isClient){
                 message.create_time = new Date(Date.now() + MQTT_TIME_DIFF);
                 if(Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType == 'admin') {
                     console.log('>>> this is admin, send group message to myself')
-                    onMessageOld("/msg/g/" + group_id, message,callback);
+                    onMessageOld("/msg/g/" + group_id, JSON.stringify(message),callback);
                 }
                 else {
                     sendMqttMessage("/msg/g/" + group_id, message,callback);
@@ -319,10 +319,10 @@ if(Meteor.isClient){
                 message.create_time = new Date(Date.now() + MQTT_TIME_DIFF);
                 if(Meteor.user() && Meteor.user().profile && Meteor.user().profile.userType == 'admin') {
                     console.log('>>> this is admin, send label message to myself')
-                    onMessageOld("/msg/l/" + group_id, message);
+                    onMessageOld("/msg/l/" + group_id, JSON.stringify(message));
                     console.log('====sraita===='+JSON.stringify(message));
                     if(message.is_admin_relay){
-                        sendMqttMessage("/msg/l/" + group_id, message,callback);
+                        sendMqttMessage("/msg/l/" + group_id, JSON.stringify(message),callback);
                     }
                 } 
                 else {
