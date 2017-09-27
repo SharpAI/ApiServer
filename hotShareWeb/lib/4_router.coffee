@@ -1726,7 +1726,7 @@ if Meteor.isServer
     person_name = PERSON.getName(payload.uuid, group_id, payload.person_id)
     if (!person_name)
       person_name = ""
-    
+
     PERSON.updateToDeviceTimeline(payload.uuid,group_id,{
       is_video: true,
       person_id: payload.person_id,
@@ -1736,24 +1736,39 @@ if Meteor.isServer
       ts: Number(payload.ts),
       ts_offset: Number(payload.ts_offset)
     })
-    
+
     return this.response.end('{"result": "success"}\n')
   )
   Router.route('/restapi/clustering', {where: 'server'}).get(()->
-      # 8a057a14544805ce73cd30fa
       group_id = this.params.query.group_id
       faceId = this.params.query.faceId
       totalFaces = this.params.query.totalFaces
       url = this.params.query.url
       rawfilepath = this.params.query.rawfilepath
-      isOneSelf = true
+      isOneSelf = this.params.query.isOneSelf
+      if isOneSelf == 'true'
+        isOneSelf = true
+      else
+        isOneSelf = false
 
       console.log '/restapi/clustering get request, group_id:' + group_id + ', faceId:' + faceId + ',totalFaces:' + totalFaces + ',url' + url + ',rawfilepath' + rawfilepath + ',isOneSelf' + isOneSelf
       unless group_id and isOneSelf
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
 
+      #取回这个组某个人所有正确/不正确的图片
+      if group_id and faceId
+        dataset={'group_id': group_id, 'faceId': faceId, 'dataset': []}
+        allClustering = Clustering.find({'group_id': group_id, 'faceId': faceId, 'isOneSelf': isOneSelf}).fetch()
+        allClustering.forEach((fields)->
+          dataset.dataset.push({url:fields.url, rawfilepath: fields.rawfilepath})
+        )
+      else
+        dataset={'group_id': group_id, 'dataset': []}
+
+      #取回这个组某个人所有不正确的图片
+
       #返回标注过的数据集
-      this.response.end('{"result": "ok"}\n')
+      this.response.end(JSON.stringify(dataset))
     ).post(()->
       if this.request.body.hasOwnProperty('group_id')
         group_id = this.request.body.group_id
@@ -1768,12 +1783,32 @@ if Meteor.isServer
       if this.request.body.hasOwnProperty('isOneSelf')
         isOneSelf = this.request.body.isOneSelf
 
+      if isOneSelf == "true"
+        isOneSelf = true
+
       console.log '/restapi/clustering post request, group_id:' + group_id + ', faceId:' + faceId + ',totalFaces:' + totalFaces + ',url' + url + ',rawfilepath' + rawfilepath + ',isOneSelf' + isOneSelf
       unless group_id and faceId and url
         return this.response.end('{"result": "failed", "cause": "invalid params"}\n')
 
       #插入数据库
-      #Clustering
+      person = Person.findOne({group_id: group_id, 'faceId': faceId},{sort: {createAt: 1}})
+      if !person
+        person = {
+          _id: new Mongo.ObjectID()._str,
+          id: 1,
+          group_id: group_id,
+          faceId: faceId,
+          url: url,
+          name: faceId,
+          faces: [],
+          deviceId: 'clustering',
+          DeviceName: 'clustering',
+          createAt: new Date(),
+          updateAt: new Date()
+        };
+        Person.insert(person)
+        console.log('>>> new people' + faceId)
+
       clusteringObj = {
           group_id: group_id,
           faceId: faceId,
@@ -1782,7 +1817,7 @@ if Meteor.isServer
           rawfilepath: rawfilepath,
           isOneSelf: isOneSelf
       }
-      #Clustering.insert(clusteringObj)
-      console.log('>>> ' + JSON.stringify(clusteringObj))
+      Clustering.insert(clusteringObj)
+      #console.log('>>> ' + JSON.stringify(clusteringObj))
       this.response.end('{"result": "ok"}\n')
     )
