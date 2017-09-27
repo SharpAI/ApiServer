@@ -48,6 +48,7 @@
     border: 1px solid #000;
     outline: 1px solid #888;
     border-right: 0;
+    z-index: 99;
   }
   .backBtn{
     border-radius: 50%;
@@ -62,13 +63,15 @@
     position: fixed;    
     text-align: center;
     color: #fff;
+    z-index: 99;
     i{font-size: 26px; height: 40px;line-height: 40px;}
   }
   .officeItem{
     position: absolute;
-    margin-bottom: 60px;
+    height: 118px;
     left: 20px;
     bottom: 10px;
+    z-index: 0;
   }
   .person {
     height: 80px;
@@ -77,6 +80,9 @@
     overflow: hidden;
     border-radius: 4px;
     background-color: white;
+  }
+  .person.selected {
+    box-shadow: 0px 0px 4px 2px #03A9F4;
   }
   .person:after,.person:before{
     position: absolute;

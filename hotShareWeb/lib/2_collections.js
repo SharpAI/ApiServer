@@ -267,11 +267,18 @@ if(Meteor.isServer){
     return WorkStatus.find({ date:{$in: dates},group_id: group_id},{sort:{date:-1}})
   });
 
-  Meteor.publish('WorkStatusByGroup', function(date, group_id){
+  Meteor.publish('WorkStatusByGroup', function(date, group_id, status){
     if(!date || !group_id){
         return this.ready();
     }
-    return WorkStatus.find({date: date,group_id: group_id});
+    var selector = {
+        date: date,
+        group_id: group_id
+    };
+    if(status){
+        selector.status = status
+    }
+    return WorkStatus.find(selector);
   });
   
   WorkStatus.allow({
