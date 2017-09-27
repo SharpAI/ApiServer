@@ -53,6 +53,10 @@ Template.VEOffice.helpers({
 });
 
 Template.VEOffice.events({
+  // 返回上级页面
+  'click .backBtn': function(e){
+    return Router.go('/VEWorld');
+  },
   // 处理点击时，提高显示层级
   'click .officeItem': function(e){
     $('.officeItem').css('z-index','0').find('.person').removeClass('selected');

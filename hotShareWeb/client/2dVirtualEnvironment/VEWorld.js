@@ -1,4 +1,5 @@
 Template.VEWorld.onRendered(function() {
+var groupIds = ['d2bc4601dfc593888618e98f','ae64c98bdff9b674fb5dad4b','73c125cc48a83a95882fced3'];
 
 var color = ['#a6c84c', '#ffa022', '#46bee9'];
 var series =  [
@@ -42,9 +43,10 @@ latlong.SH = {'latitude':31.23667, 'longitude':121.477664}; // 121.477664,31.236
 latlong.LA = {'latitude':33.978945, 'longitude':-117.643241}; //-117.643241,33.978945
 
 var mapData = [
-{'code':'KM' , 'name':'昆明办公室', 'value':8, 'color':'#eea638'},
-{'code':'SH' , 'name':'上海办公室', 'value':40, 'color':'#eea638'},
-{'code':'LA' , 'name':'SWLAB', 'value':12, 'color':'#a7a737'}];
+{'code':'KM' , 'name':'讯动办公室', 'value':8, 'color':'#eea638','group_id':'d2bc4601dfc593888618e98f'},
+{'code':'SH' , 'name':'上海办公室', 'value':40, 'color':'#eea638','group_id':'ae64c98bdff9b674fb5dad4b'},
+{'code':'LA' , 'name':'SWLAB', 'value':12, 'color':'#a7a737', 'group_id':'73c125cc48a83a95882fced3'}];
+var mapOffices = ['讯动办公室','上海办公室','SWLAB'];
 
 var max = -Infinity;
 var min = Infinity;
@@ -122,9 +124,19 @@ option = {
                         itemOpt.value
                     ],
                     label: {
+                        normal:{
+                            show: true,
+                            color: '#fff',
+                            position: 'right',
+                            formatter: function (params) {
+                                var value = (params.value + '').split(',');
+                                value = value[2] + '(人) 在线';
+                                return  params.name + ': ' + value;
+                            }
+                        },
                         emphasis: {
                             position: 'right',
-                            show: true
+                            show: false
                         }
                     },
                     itemStyle: {
@@ -141,4 +153,16 @@ option = {
 themap = echarts.init(document.getElementById('VEWorld'))
 
 themap.setOption(option);
+
+// 注册地图点击事件
+themap.on('click', function (params) {
+    // 控制台打印数据的名称
+    console.log(params.name);
+    var index = mapOffices.indexOf(params.name);
+    if(index > -1){
+        var group_id = mapData[index].group_id;
+        return Router.go('/VEOffice/'+group_id);
+    }
+});
+
 })
