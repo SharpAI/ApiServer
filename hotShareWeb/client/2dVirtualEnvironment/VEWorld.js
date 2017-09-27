@@ -84,7 +84,7 @@ option = {
         min: 0,
         max: max,
         inRange: {
-            symbolSize: [10, 20]
+            symbolSize: 30
         }
     },
     geo: {
@@ -126,8 +126,9 @@ option = {
                     label: {
                         normal:{
                             show: true,
-                            color: '#fff',
+                            color: '#ffffff',
                             position: 'right',
+                            offset:[-30,30],
                             formatter: function (params) {
                                 var value = (params.value + '').split(',');
                                 value = value[2] + '(人) 在线';
@@ -157,12 +158,20 @@ themap.setOption(option);
 // 注册地图点击事件
 themap.on('click', function (params) {
     // 控制台打印数据的名称
-    console.log(params.name);
-    var index = mapOffices.indexOf(params.name);
-    if(index > -1){
-        var group_id = mapData[index].group_id;
-        return Router.go('/VEOffice/'+group_id);
+    console.log(params.componentType);
+    if (params.componentType === 'series') {
+        var index = mapOffices.indexOf(params.name);
+        if(index > -1){
+            var group_id = mapData[index].group_id;
+            return Router.go('/VEOffice/'+group_id);
+        }
+    } else {
+        return false;
     }
+});
+
+themap.on('dblclick',function (param){
+    return false;
 });
 
 })

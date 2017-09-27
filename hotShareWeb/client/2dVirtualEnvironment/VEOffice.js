@@ -32,9 +32,9 @@ Template.VEOffice.helpers({
     return WorkStatus.find({date: date,group_id: group_id, status:'in'}).fetch();
   },
   calcPosition: function(){
-    var max_X = window.screen.width - 60,
+    var max_X = $('body').width() - 60,
         min_X = 0,
-        max_Y = window.screen.height - 118,
+        max_Y = $('body').height() - 118,
         min_Y = 0;
     var position = calcPosition(max_X,min_X, max_Y,min_Y);
     return 'left:'+ position.left + 'px;bottom:'+ position.bottom + 'px';
