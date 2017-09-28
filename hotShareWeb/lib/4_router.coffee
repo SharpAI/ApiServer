@@ -640,6 +640,14 @@ if Meteor.isServer
       WorkAIUserRelations.update({_id:relation._id},{$set:{ai_out_time:create_time.getTime(), ai_out_image: data.images.url}});
       return
     WorkAIUserRelations.update({_id:relation._id},{$set:{ai_lastest_in_time:create_time.getTime(),ai_lastest_in_image:data.images.url}});#平板最新拍到的时间
+    #再次拍到进门需要把下班的提示移除
+    if relation.app_user_id
+      endlog = UserCheckoutEndLog.findOne({userId:relation.app_user_id});
+      if endlog
+        outtime = endlog.params.person_info.ts;
+        if outtime and PERSON.checkIsToday(outtime,data.group_id) and outtime < create_time.getTime()
+           UserCheckoutEndLog.remove({_id:endlog._id});
+
     if relation.ai_in_time and PERSON.checkIsToday(relation.ai_in_time,data.group_id)
       # ai_in_time = new Date(relation.ai_in_time);
       # today = new Date(create_time.getFullYear(), create_time.getMonth(), create_time.getDate()).getTime(); #凌晨
