@@ -203,7 +203,7 @@ if(Meteor.isServer){
         return this.ready();
     }
     var limit = limit || 30;
-    return Clustering.find({group_id: group_id, faceId: faceId, isOneSelf: true},{limit: limit})
+    return Clustering.find({group_id: group_id, faceId: faceId, marked: {$ne: true}},{limit: limit})
   });
   
   // 发布 group 已经标注的person 信息

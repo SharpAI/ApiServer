@@ -19,13 +19,13 @@
     </div>
     {{/if}}
   </ul>
+  {{#if lists}}
+  <div id="clusteringDel">完成标注</div>
+  {{/if}}
   {{#if isLoadingMore}}
   <div style="width:100%;text-align: center; margin:10px 0; color: black; font-size: 16px;">
     <img src="/loading.gif" width="24px" height="24px"/> 加载中...
   </div>
-  {{/if}}
-  {{#if selectedListsCount}}
-  <div id="clusteringDel">删除({{selectedListsCount}})</div>
   {{/if}}
 </div>
 </template>

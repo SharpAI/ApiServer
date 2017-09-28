@@ -99,6 +99,22 @@ if Meteor.isServer
       FavouritePosts.insert({postId: postId, userId: userId, createdAt: new Date(), updateAt: new Date()})
   Meteor.startup ()->
     Meteor.methods
+      "clusteringFixPersons": (ids, marked_ids)->
+        try
+          result1 = Clustering.update({_id: {$in: ids}},{
+            $set:{
+              isOneSelf: false,
+              marked: true
+            }
+          },{multi: true})
+
+          result2 = Clustering.update({_id: {$in: marked_ids}},{
+            $set:{marked: true}
+          },{multi: true})
+          return '标记'+(result1 + result2) + '张(其中'+result1 + '为错，'+ result2 + '为对）'
+        catch error
+          console.log('clusteringFixPersons Err=',JSON.stringify(error))
+          return false
       'clearDiscoverMSG': (userId,postId)->
         if !Match.test(userId, String) or !Match.test(postId, String)
           return {msg: 'failed'}

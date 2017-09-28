@@ -14,7 +14,11 @@ var initLazyload = function(){
   },600);
 }
 Template.clusteringFixPerson.onRendered(function() {
-  limit.set(50);
+  var rowHeight = Math.ceil(($('body').width() - 10) / 5);
+  var rowCount = Math.floor(($('body').height() - 80) / rowHeight)
+  var canFill = rowCount * 5;
+
+  limit.set(canFill);
   var group_id = Router.current().params.gid;
   var faceId = Router.current().params.fid;
   Session.set('group_person_loaded',false);
@@ -24,17 +28,17 @@ Template.clusteringFixPerson.onRendered(function() {
   });
 
   // scroll Loading
-  $(document).scroll(function(){
-    if($('ul').height() - document.body.clientHeight - $(document).scrollTop() + 50 <= 0){
-      console.log('start load more');
-      Session.set('group_person_loadmore','loading');
-      var limitCount = limit.get() + limitSetp;
-      Meteor.subscribe('clusteringLists',group_id,faceId, limitCount,function(){
-        Session.set('group_person_loadmore','loaded');
-        limit.set(limitCount);
-      });
-    }
-  });
+  // $(document).scroll(function(){
+  //   if($('ul').height() - document.body.clientHeight - $(document).scrollTop() + 50 <= 0){
+  //     console.log('start load more');
+  //     Session.set('group_person_loadmore','loading');
+  //     var limitCount = limit.get() + limitSetp;
+  //     Meteor.subscribe('clusteringLists',group_id,faceId, limitCount,function(){
+  //       Session.set('group_person_loadmore','loaded');
+  //       limit.set(limitCount);
+  //     });
+  //   }
+  // });
 
   initLazyload();
 });
@@ -43,7 +47,7 @@ Template.clusteringFixPerson.helpers({
   lists: function(){
     var group_id = Router.current().params.gid;
     var faceId = Router.current().params.fid;
-    return Clustering.find({group_id: group_id, faceId: faceId, isOneSelf: true},{limit: limit.get()}).fetch();
+    return Clustering.find({group_id: group_id, faceId: faceId, marked: {$ne: true}},{limit: limit.get()}).fetch();
   },
   selectedListsCount: function(){
     var lists = selectedLists.get() || [];
@@ -74,22 +78,23 @@ Template.clusteringFixPerson.events({
     $(e.currentTarget).toggleClass('selected');
   },
   'click #clusteringDel': function(e){
-    var ids = selectedLists.get();
-    var count = 0;
-    // PUB.showWaitLoading('处理中');
-    ids.forEach(function(item){
-      Clustering.update({_id: item},{
-        $set:{isOneSelf: false}
-      },function(error, result){
-        // PUB.hideWaitLoading();
-        if(error){
-          console.log(error)
-        } 
-        ids.splice(ids.indexOf(item),1);
-        count += 1;
-        // PUB.toast('删除了'+ count + '张照片，还剩'+ ids.length + '张！');
-        selectedLists.set(ids);
-      });
+    var ids = selectedLists.get() || [];
+    var marked_ids = [];
+    PUB.showWaitLoading('处理中');
+
+    $('.clusteringItem').not('.selected').each(function(item){
+      marked_ids.push($(this).attr('id'))
+    });
+    console.log(marked_ids);
+
+    Meteor.call('clusteringFixPersons',ids, marked_ids,function(error, result){
+      PUB.hideWaitLoading();
+      if(error){
+        console.log(error);
+        return PUB.toast('请重试！');
+      }
+      selectedLists.set([]);
+      return PUB.toast(result);
     });
   }
 });
