@@ -822,6 +822,11 @@ if Meteor.isServer
             }
 
           relation = WorkAIUserRelations.findOne({'ai_persons.id': person._id})
+          if (device.in_out is 'in' and relation and relation.app_user_id)
+            wsts = WorkStatus.findOne({group_id: userGroup.group_id, app_user_id: relation.app_user_id}, {sort: {date: -1}})
+            if (wsts and !wsts.whats_up)
+              CreateSatsUpTipTask(relation.app_user_id, userGroup.group_id, device.uuid)
+
           if (device.in_out is 'out' and relation and relation.app_user_id)
             checkout_msg = {
               userId: relation.app_user_id,
@@ -861,7 +866,6 @@ if Meteor.isServer
           PERSON.updateWorkStatus(person._id)
           if person_info
             PERSON.sendPersonInfoToWeb(person_info)
-
       )
 
   @insert_msg2forTest = (id, url, uuid, accuracy, fuzziness)->
@@ -893,6 +897,22 @@ if Meteor.isServer
         announcement.push(announcementObj);
       SimpleChat.Groups.update({_id:group_id},{$set:{announcement:announcement}})
 
+
+  # test
+  # Meteor.startup ()->
+  #   insert_msg2(
+  #     '7YRBBDB72200271715027668215821893',
+  #     'http://workaiossqn.tiegushi.com/8acb7f90-92e1-11e7-8070-d065caa7da61',
+  #     '28DDU17602003551',
+  #     'face',
+  #     '0.9',
+  #     '100',
+  #     '0',
+  #     'front',
+  #     1506588441021,
+  #     1506588441021, 
+  #     ''
+  #   )
 
   Router.route('/restapi/workai', {where: 'server'}).get(()->
       id = this.params.query.id
