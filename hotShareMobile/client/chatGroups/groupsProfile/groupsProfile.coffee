@@ -62,6 +62,11 @@ if Meteor.isClient
         return '宽松匹配'
     rejectUnknowMember: ()->
       return localStorage.getItem('rejectUnknowMember') isnt 'true'
+    whats_up_send: ()->
+      group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
+      if group
+        return group.whats_up_send
+      return false
     rejectLabelMsg: ()->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       return group.rejectLabelMsg
@@ -317,6 +322,13 @@ if Meteor.isClient
         localStorage.setItem('rejectUnknowMember','false')
       else
         localStorage.setItem('rejectUnknowMember','true')
+    'click #switch_whats_up_send':(event)->
+      group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
+      if (group && group.whats_up_send)
+        Meteor.call('uGroupWhatsUp', Session.get('groupsId'), false)
+      else
+        Meteor.call('uGroupWhatsUp', Session.get('groupsId'), true)
+
   Template.groupUsers.helpers
     isGroup:()->
       if Session.get('groupsType') is 'group'

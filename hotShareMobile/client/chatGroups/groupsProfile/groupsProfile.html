@@ -83,6 +83,17 @@
                     </li>
                     {{/if}}
                 </ul>
+
+                {{#if isGroupAdmin}}
+                <div class="line" style="height: 20px;text-align:left;padding-left:10px;color:#555;">工作相关</div>
+                <ul class="set-up comFadeIn" style="margin-top: 0px;margin-bottom: 10px;">
+                    <li class="">
+                        <label>提醒填写工作安排</label>
+                        <div class="value"><input id="switch_whats_up_send" class="switch" style="margin-top:-6px;" type="checkbox" {{checkedIf whats_up_send}}></div>
+                    </li>
+                </ul>
+                {{/if}}
+
                 <div class="line" style="height: 20px;text-align:left;padding-left:10px;color:#555;">识别规则</div>
                 <ul class="set-up comFadeIn" style="margin-top: 0px;margin-bottom: 10px;">
                     <li class="">
