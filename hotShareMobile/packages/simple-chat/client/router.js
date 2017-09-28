@@ -1577,15 +1577,21 @@ Template._simpleChatToChatItem.helpers({
   },
   has_p_ids:function(images){
     var has_val = false;
-    var user = Meteor.user();
-    if(user.profile && user.profile.userType && user.profile.userType == 'admin'){
-      for (var i = 0; i < images.length; i++) {
-        if (images[i].p_ids && images[i].p_ids.length > 0){
-          has_val = true;
-          break;
-        }
+    for (var i = 0; i < images.length; i++) {
+      if (images[i].p_ids && images[i].p_ids.length > 0){
+        has_val = true;
+        break;
       }
     }
+    // var user = Meteor.user();
+    // if(user.profile && user.profile.userType && user.profile.userType == 'admin'){
+    //   for (var i = 0; i < images.length; i++) {
+    //     if (images[i].p_ids && images[i].p_ids.length > 0){
+    //       has_val = true;
+    //       break;
+    //     }
+    //   }
+    // }
     return has_val;
   },
   p_ids:function(images){
