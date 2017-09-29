@@ -1,9 +1,10 @@
 <template name="VEOffice">
-<div class="VEOffice">
+<!--<div class="VEOffice">
   <div class="backBtn">
     <i class="fa fa-angle-left" aria-hidden="true"></i>
   </div>
   <h3 class="officeName">{{getGroupName}}</h3>
+  <div id="backSide"></div>
   <ul class="officeLists">
     {{#each lists}}
     <li class="officeItem" style="{{calcPosition}}">
@@ -19,5 +20,31 @@
     </li>
     {{/each}}
   </ul>
+</div>-->
+<div id="officeBox" class="officeBox">
+  <div class="cubeBox">
+    <div id="cube-front" class="cube cube-front" style="{{transSide 'front'}}">FRONT</div>
+    <div id="cube-back" class="cube cube-back" style="{{transSide 'back'}}">BACK</div>
+    <div id="cube-left" class="cube cube-left" style="{{transSide 'left'}}">LEFT</div>
+    <div id="cube-right" class="cube cube-right" style="{{transSide 'right'}}">RIGHT</div>
+    <div id="cube-top" class="cube cube-top" style="{{transSide 'top'}}">TOP</div>
+    <div id="cube-bottom" class="cube cube-bottom" style="{{transSide 'bottom'}}">
+      <ul class="officeLists">
+        {{#each lists}}
+        <li class="officeItem" style="{{calcPosition}}">
+          <div class="person">
+            <div class="person-img">
+              <img src="{{getPersonImg}}"/>
+            </div>
+            <h4 class="person-name">{{person_name}}</h4>
+          </div>
+          <div class="person-mark">
+            <i class="fa fa-street-view"></i>
+          </div>
+        </li>
+        {{/each}}
+      </ul>
+    </div>
+  </div>
 </div>
 </template>
