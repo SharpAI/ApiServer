@@ -43,9 +43,9 @@ latlong.SH = {'latitude':31.23667, 'longitude':121.477664}; // 121.477664,31.236
 latlong.LA = {'latitude':33.978945, 'longitude':-117.643241}; //-117.643241,33.978945
 
 var mapData = [
-{'code':'KM' , 'name':'讯动办公室', 'value':8, 'color':'#eea638','group_id':'d2bc4601dfc593888618e98f'},
-{'code':'SH' , 'name':'上海办公室', 'value':40, 'color':'#eea638','group_id':'ae64c98bdff9b674fb5dad4b'},
-{'code':'LA' , 'name':'SWLAB', 'value':12, 'color':'#a7a737', 'group_id':'73c125cc48a83a95882fced3'}];
+{'code':'KM' , 'name':'讯动办公室', 'value':8, 'color':'#eea638','group_id':'d2bc4601dfc593888618e98f','country':'china'},
+{'code':'SH' , 'name':'上海办公室', 'value':40, 'color':'#eea638','group_id':'ae64c98bdff9b674fb5dad4b','country':'china'},
+{'code':'LA' , 'name':'SWLAB', 'value':12, 'color':'#a7a737', 'group_id':'73c125cc48a83a95882fced3','country':'usa'}];
 var mapOffices = ['讯动办公室','上海办公室','SWLAB'];
 
 var max = -Infinity;
@@ -92,6 +92,13 @@ option = {
         type: 'map',
         map: 'world',
         roam: true,
+        roamController: {
+            show: true,
+            x: 'right',
+            mapTypeControl: {
+                'china': true
+            }
+        },
         zoom:1.2,
         label: {
             emphasis: {
@@ -162,8 +169,24 @@ themap.on('click', function (params) {
     if (params.componentType === 'series') {
         var index = mapOffices.indexOf(params.name);
         if(index > -1){
+            console.log(params)
+            var x = params.event.offsetX;
+            var y = params.event.offsetY;
             var group_id = mapData[index].group_id;
-            return Router.go('/VEOffice/'+group_id);
+            // 先进行地图缩放
+            var country = mapData[index].country;
+            
+            option.geo.map = country;
+            // option.geo.zoom = 3;
+            option.series.center = ['50%','0%'];
+            themap.setOption(option, true)
+            Meteor.setTimeout(function(){
+                $('#VEWorld').addClass('worldScaleOut');
+            },500);
+            Meteor.setTimeout(function(){
+                $('#VEWorld').hide();
+                Router.go('/VEOffice/'+group_id);
+            },2000);
         }
     } else {
         return false;
