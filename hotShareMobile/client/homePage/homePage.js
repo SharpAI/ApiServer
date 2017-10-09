@@ -109,13 +109,20 @@ Template.homePage.helpers({
     var lists = [];
     SimpleChat.GroupUsers.find({user_id:Meteor.userId()},{sort:{create_time:-1}}).forEach(function(item){
       var devices =  Devices.find({groupId: item.group_id},{sort:{createAt:-1}}).fetch();
+      var obj = {
+        group_id: item.group_id,
+        group_name: item.group_name,
+        devices:[]
+      };
       if(devices.length > 0){
-        lists.push({
-          group_id: item.group_id,
-          group_name: item.group_name,
-          devices:devices
-        });
+        // lists.push({
+        //   group_id: item.group_id,
+        //   group_name: item.group_name,
+        //   devices:devices
+        // });
+        obj.devices = devices;
       }
+      lists.push(obj);
     });
     return lists;
   },
