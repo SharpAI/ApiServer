@@ -15,4 +15,5 @@ Package.onUse(function(api) {
   api.addFiles('echarts.min.js', 'client', {bare:true});
   api.addFiles(['map/world.js'], 'client', {bare:true});
   api.addFiles(['map/china.js'], 'client', {bare:true});
+  api.addFiles(['map/usa.js'], 'client', {bare:true});
 });
