@@ -79,6 +79,25 @@ PERSON = {
       }
     }
   },
+  removeFace2: function(group_id, id, url){
+    console.log('remove face form Person');
+    var person = Person.findOne({group_id: group_id, 'faces.id': id});
+    if(person){
+      var faces = person.faces;
+      faces.splice(_.pluck(faces, 'id').indexOf(id), 1);
+      if(faces.length === 0){
+        return Person.remove({_id: person._id});
+      } else {
+        return Person.update({_id: person._id},{
+          $set:{
+            url: faces[faces.length - 1].url,
+            faces: faces,
+            updateAt: new Date()
+          }
+        });
+      }
+    }
+  },
   setName: function(group_id, uuid, id, url, name,is_video){
     var person = Person.findOne({group_id:group_id, name: name}, {sort: {createAt: 1}});
     var dervice = Devices.findOne({uuid: uuid});
@@ -1134,14 +1153,7 @@ Meteor.methods({
     console.log('set-person-names:', items);
     var slef = this;
     for(var i=0;i<items.length;i++) {
-      var data = {
-        group_id: group_id,
-        id: items[i].id,
-        url: items[i].url
-      };
-      // 标记时， 先移除错误的标记（处理第二个用户再次标记情况）
-      LABLE_DADASET_Handle.remove(data);
-      
+      PERSON.removeFace2(group_id, items[i].id, items[i].img_url);
       PERSON.setName(group_id, items[i].uuid, items[i].id, items[i].url, items[i].name);
       LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[i].uuid,id:items[i].id,url:items[i].url,name:items[i].name,user_id:slef.userId,action:'聊天室标记'});
     }
@@ -1156,6 +1168,7 @@ Meteor.methods({
   'remove-persons1': function(group_id, items){
     var slef = this;
     for(var i=0;i<items.length;i++){
+      PERSON.removeFace2(group_id, items[i].id, items[i].img_url);
       PERSON.removeName(group_id, items[i].uuid, items[i].id,items[i].img_url);
       LABLE_DADASET_Handle.remove({group_id:group_id,id:items[i].id,url:items[i].img_url,user_id:slef.userId,action:'聊天室标错或者删除'});
     }
