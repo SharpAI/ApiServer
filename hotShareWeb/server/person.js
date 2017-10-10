@@ -86,6 +86,11 @@ PERSON = {
       var faces = person.faces;
       faces.splice(_.pluck(faces, 'id').indexOf(id), 1);
       if(faces.length === 0){
+        // 这里同时移除相应的personNames 记录
+        var personName = PersonNames.findOne({group_id: group_id,id:id, name:person.name});
+        if(personName){
+          PersonNames.remove({_id: personName._id});
+        }
         return Person.remove({_id: person._id});
       } else {
         return Person.update({_id: person._id},{
