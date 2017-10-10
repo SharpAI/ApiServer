@@ -1134,6 +1134,14 @@ Meteor.methods({
     console.log('set-person-names:', items);
     var slef = this;
     for(var i=0;i<items.length;i++) {
+      var data = {
+        group_id: group_id,
+        id: items[i].id,
+        url: items[i].url
+      };
+      // 标记时， 先移除错误的标记（处理第二个用户再次标记情况）
+      LABLE_DADASET_Handle.remove(data);
+      
       PERSON.setName(group_id, items[i].uuid, items[i].id, items[i].url, items[i].name);
       LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[i].uuid,id:items[i].id,url:items[i].url,name:items[i].name,user_id:slef.userId,action:'聊天室标记'});
     }

@@ -65,11 +65,11 @@ LABLE_DADASET_Handle = {
 	  		};
 	  		LableDadaSet.update({_id:dataset._id},{$set:updateObj,$push:{operator:operator}});
 	  	}
-	}
-	else{
-	  	LableDadaSet.update({_id:dataset._id},{$set:updateObj});
-	}
-	//标错后重标会存在id变化的情况
+    }
+    else{
+        LableDadaSet.update({_id:dataset._id},{$set:updateObj});
+    }
+    //标错后重标会存在id变化的情况
     if (dataset.id != id) {
       //更新旧的id存在的person表
       doc.id = dataset.id;
