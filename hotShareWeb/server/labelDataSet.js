@@ -69,6 +69,7 @@ LABLE_DADASET_Handle = {
     else{
         LableDadaSet.update({_id:dataset._id},{$set:updateObj});
     }
+    console.log('wait update dataset: '+JSON.stringify(dataset));
     //标错后重标会存在id变化的情况
     if (dataset.id != id) {
       //更新旧的id存在的person表
@@ -91,6 +92,7 @@ LABLE_DADASET_Handle = {
     LABLE_DADASET_Handle.updatePerson(doc);
   },
   updatePersonWithName:function(doc){
+    console.log('try updatePersonWithName:'+JSON.stringify(doc));
   	if (!doc || !doc.group_id || !doc.id || !doc.url || !doc.name) {
       return;
     }
@@ -108,8 +110,13 @@ LABLE_DADASET_Handle = {
     	if (index != -1  && person.faces[index].id === doc.id) {
     		person.faces.splice(_.pluck(person.faces, 'id').indexOf(doc.id), 1);
     		if (person.faces.length == 0) {
-				return Person.remove({_id:person._id});
-			}
+          // 这里同时移除相应的personNames 记录
+          var personName = PersonNames.findOne({group_id: group_id,id:doc.id, name:person.name});
+          if(personName){
+            PersonNames.remove({_id: personName._id});
+          }
+  				return Person.remove({_id:person._id});
+  			}
     	}
     	else if (index != -1) {
     	    var newdataset = LableDadaSet.findOne({id:person.faces[index].id},{sort: {createAt: -1}});
@@ -125,6 +132,7 @@ LABLE_DADASET_Handle = {
      }
   },
   updatePerson:function(doc){
+    console.log('try updatePerson:'+JSON.stringify(doc));
     if (!doc || !doc.group_id || !doc.id || !doc.url) {
       return;
     }
@@ -162,6 +170,11 @@ LABLE_DADASET_Handle = {
         person.faces.splice(_.pluck(person.faces, 'id').indexOf(id), 1);
         if (person.faceId == id) {
           if (person.faces.length == 0) {
+            // 这里同时移除相应的personNames 记录
+            var personName = PersonNames.findOne({group_id: group_id,id:id, name:person.name});
+            if(personName){
+              PersonNames.remove({_id: personName._id});
+            }
             return Person.remove({_id:person._id});
           }
           else{
@@ -173,7 +186,7 @@ LABLE_DADASET_Handle = {
       }
     }
   },
-  initLableDataSet:function(){
+  /*initLableDataSet:function(){
     Person.find({},{sort: {updateAt:1}}).forEach(function(fields){
       if (fields.faces && fields.faces.length > 0) {
         for (var i = 0; i < fields.faces.length; i++) {
@@ -181,5 +194,5 @@ LABLE_DADASET_Handle = {
         }
       }
     });
-  }
+  },*/
 };
