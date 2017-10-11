@@ -56,6 +56,7 @@ Template._simpleChatLabelRemove.events({
     }
     images.set(imgs);
   },
+  // 聊天室，对照片进行删除
   'click .rightButton.remove': function(e, t){
     if (!t.$('#remove-input-name').val())
       return PUB.toast('请输入或选择删除的原因~');
@@ -87,7 +88,7 @@ Template._simpleChatLabelRemove.events({
             }
           }
           if (isPush)
-            removes.push({uuid: msgObj.people_uuid, id: msgObj.images[ii].id});
+            removes.push({uuid: msgObj.people_uuid, id: msgObj.images[ii].id, img_url: msgObj.images[ii].url});
           msgObj.images[ii].remove = true;
           break;
         }
@@ -110,6 +111,7 @@ Template._simpleChatLabelRemove.events({
     updateObj.images = msgObj.images;
     updateObj.text = msgObj.text;
     // updateObj.create_time = new Date();
+    console.log('will remove ', JSON.stringify(removes))
 
     if (removes.length > 0)
       Meteor.call('remove-persons1',msgObj.to.id,removes)
