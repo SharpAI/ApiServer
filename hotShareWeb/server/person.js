@@ -25,10 +25,10 @@ PERSON = {
     console.log('>>> id=' + id + ' url=' + url)
 
     /* 这张图片是误识别的，并且被人错误标注“对” */
-    Person.find({group_id:group_id ,'faces.url': url}).forEach(function(item){
-        console.log('>>> remove mistake url and id, person.name=' + item.name + ' id=' + id + ' url=' + url)
-        Person.update({"_id": item._id}, {$pull: {'faces': {"url": url}}})
-    });
+    // Person.find({group_id:group_id ,'faces.url': url}).forEach(function(item){
+    //     console.log('>>> remove mistake url and id, person.name=' + item.name + ' id=' + id + ' url=' + url)
+    //     Person.update({"_id": item._id}, {$pull: {'faces': {"url": url}}})
+    // });
 
     var person = null;
     if (group_id && id) {
@@ -76,31 +76,6 @@ PERSON = {
       } else {
         faces.splice(_.pluck(faces, 'id').indexOf(obj.face_id), 1);
         Person.update({_id: person._id},{$set: {faces: faces}});
-      }
-    }
-  },
-  removeFace2: function(group_id, id, url){
-    console.log('remove face form Person');
-    var person = Person.findOne({group_id: group_id, 'faces.id': id});
-    if(person){
-      var faces = person.faces;
-      faces.splice(_.pluck(faces, 'id').indexOf(id), 1);
-      if(faces.length === 0){
-        // 这里同时移除相应的personNames 记录
-        var personName = PersonNames.findOne({group_id: group_id,id:id, name:person.name});
-        if(personName){
-          PersonNames.remove({_id: personName._id});
-        }
-        return Person.remove({_id: person._id});
-      } else {
-        return Person.update({_id: person._id},{
-          $set:{
-            faceId: faces[0].id,
-            url: faces[0].url,
-            faces: faces,
-            updateAt: new Date()
-          }
-        });
       }
     }
   },
@@ -1160,7 +1135,6 @@ Meteor.methods({
     console.log('set-person-names:', items);
     var slef = this;
     for(var i=0;i<items.length;i++) {
-      PERSON.removeFace2(group_id, items[i].id, items[i].img_url);
       PERSON.setName(group_id, items[i].uuid, items[i].id, items[i].url, items[i].name);
       LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[i].uuid,id:items[i].id,url:items[i].url,name:items[i].name,user_id:slef.userId,action:'聊天室标记'});
     }
@@ -1175,7 +1149,6 @@ Meteor.methods({
   'remove-persons1': function(group_id, items){
     var slef = this;
     for(var i=0;i<items.length;i++){
-      PERSON.removeFace2(group_id, items[i].id, items[i].img_url);
       PERSON.removeName(group_id, items[i].uuid, items[i].id,items[i].img_url);
       LABLE_DADASET_Handle.remove({group_id:group_id,id:items[i].id,url:items[i].img_url,user_id:slef.userId,action:'聊天室标错或者删除'});
     }
