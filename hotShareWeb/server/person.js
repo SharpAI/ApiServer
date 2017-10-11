@@ -95,7 +95,8 @@ PERSON = {
       } else {
         return Person.update({_id: person._id},{
           $set:{
-            url: faces[faces.length - 1].url,
+            faceId: faces[0].id,
+            url: faces[0].url,
             faces: faces,
             updateAt: new Date()
           }
@@ -110,8 +111,8 @@ PERSON = {
 
     if (!personName)
       PersonNames.insert({group_id: group_id, url: url, id: id, name: name, createAt: new Date(), updateAt: new Date()});
-    else
-      PersonNames.update({_id: name._id}, {$set: {name: name, url: url, id: id, updateAt: new Date()}})
+    // else
+    //   PersonNames.update({_id: name._id}, {$set: {name: name, url: url, id: id, updateAt: new Date()}})
 
     if (person){
       if (is_video) {
@@ -123,7 +124,8 @@ PERSON = {
         person.faces.push({id: id, url: url});
       else
         person.faces[_.pluck(person.faces, 'id').indexOf(id)].url = url;
-      Person.update({_id: person._id}, {$set: {name: name, url: person.url, updateAt: person.updateAt, faces: person.faces}});
+      // Person.update({_id: person._id}, {$set: {name: name, url: person.url, updateAt: person.updateAt, faces: person.faces}});
+      Person.update({_id: person._id}, {$set: {updateAt: person.updateAt, faces: person.faces}});
     }
     //此段代码会导致person表的名字会被篡改
     /*
@@ -1174,7 +1176,7 @@ Meteor.methods({
     var slef = this;
     for(var i=0;i<items.length;i++){
       PERSON.removeFace2(group_id, items[i].id, items[i].img_url);
-      PERSON.removeName(group_id, items[i].uuid, items[i].id,items[i].img_url);
+      // PERSON.removeName(group_id, items[i].uuid, items[i].id,items[i].img_url);
       LABLE_DADASET_Handle.remove({group_id:group_id,id:items[i].id,url:items[i].img_url,user_id:slef.userId,action:'聊天室标错或者删除'});
     }
   },
