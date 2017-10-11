@@ -2038,6 +2038,10 @@ var onMqttMessage = function(topic, msg) {
         break;
       }
     }
+    //tid相同但是识别的名字不同,且识别度在0.85以上时不合并
+    if (targetMsg && !targetMsg.wait_lable && !msgObj.wait_lable&& targetMsg.images && msgObj.images && targetMsg.images.length > 0 && msgObj.images.length > 0 && targetMsg.images[0].label != msgObj.images[0].label && msgObj.images[0].accuracy >= 0.85) {
+      targetMsg = null;
+    }
   }
   else{
       if (msgObj.wait_lable){where.people_id = msgObj.people_id;}
