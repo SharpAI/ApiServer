@@ -740,9 +740,10 @@ if Meteor.isServer
               p_person = {
                 name:person.name,
                 id:pid,
-                url:person.url
+                url:person.url,
+                p_id:person._id
               }
-              if(_.pluck(p_ids_name, 'id').indexOf(pid) is -1)
+              if(_.pluck(p_ids_name, 'p_id').indexOf(person._id) is -1)
                 p_ids_name.push(p_person)
 
         #没有准确度的人一定是没有识别出来的
