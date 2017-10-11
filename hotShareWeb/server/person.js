@@ -1176,7 +1176,7 @@ Meteor.methods({
     var slef = this;
     for(var i=0;i<items.length;i++){
       PERSON.removeFace2(group_id, items[i].id, items[i].img_url);
-      // PERSON.removeName(group_id, items[i].uuid, items[i].id,items[i].img_url);
+      PERSON.removeName(group_id, items[i].uuid, items[i].id,items[i].img_url);
       LABLE_DADASET_Handle.remove({group_id:group_id,id:items[i].id,url:items[i].img_url,user_id:slef.userId,action:'聊天室标错或者删除'});
     }
   },
