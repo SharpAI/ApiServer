@@ -1895,9 +1895,10 @@ SimpleChat.onMqttMessage = function(topic, msg) {
       return;
     }
   }
-  if (!msgObj.is_people)
+  if (!msgObj.is_people){
     shouldScrollToBottom(msgObj);
     return Messages.insert(msgObj);
+  }
 
   onMqttMessage(topic, msg);
   // MessageTemp.insert({
@@ -2027,21 +2028,38 @@ var onMqttMessage = function(topic, msg) {
 
   var targetMsg = null;
 
+  var accuracy_default = 0.85; //期望准确值
+
   if (msgObj.tid && msgObj.tid !== '') {
     //最近十条记录
     var targetArray = Messages.find({to_type: msgObj.to_type,'to.id': msgObj.to.id}, {limit: 10, sort: {create_time: -1}}).fetch();
     for (var i = 0; i < targetArray.length; i++) {
-      //tid 相同且没完成标记
-      if (targetArray[i].tid === msgObj.tid && targetArray[i].label_complete !== true) {
-        targetMsg = targetArray[i];
-        console.log('找到符合条件tid=' + msgObj.tid + '的记录~');
-        break;
+      if (targetArray[i].label_complete !== true) {
+        //tid 相同且没完成标记
+        if (targetArray[i].tid === msgObj.tid) {
+          targetMsg = targetArray[i];
+          console.log('找到符合条件tid=' + msgObj.tid + '的记录~');
+          break;
+        }
+        else{
+          //tid不同的未识别people_id相同
+          if (msgObj.wait_lable && targetArray[i].people_id === msgObj.people_id) {
+            targetMsg = targetArray[i];
+            console.log('tid不同但是people_id相同 都是：' + msgObj.people_id + '的记录~');
+          }
+          //tid不同但是识别结果相同
+          else if (!msgObj.wait_lable && !targetArray[i].wait_lable && targetArray[i].images && msgObj.images && targetArray[i].images.length > 0 && targetArray[i].images.length > 0 && targetArray[i].images[0].label == msgObj.images[0].label && msgObj.images[0].accuracy >= accuracy_default) {
+            targetMsg = targetArray[i];
+            console.log('tid不同但是识别结果相同 都是：' + msgObj.images[0].label + '的记录~');
+            break;
+          }
+        }
       }
     }
     //tid相同但是识别的名字不同,且识别度在0.85以上时不合并
-    if (targetMsg && !targetMsg.wait_lable && !msgObj.wait_lable&& targetMsg.images && msgObj.images && targetMsg.images.length > 0 && msgObj.images.length > 0 && targetMsg.images[0].label != msgObj.images[0].label && msgObj.images[0].accuracy >= 0.85) {
-      targetMsg = null;
-    }
+    // if (targetMsg && targetMsg.tid === msgObj.tid && !targetMsg.wait_lable && !msgObj.wait_lable && targetMsg.images && msgObj.images && targetMsg.images.length > 0 && msgObj.images.length > 0 && targetMsg.images[0].label != msgObj.images[0].label && msgObj.images[0].accuracy >= accuracy_default) {
+    //   targetMsg = null;
+    // }
   }
   else{
       if (msgObj.wait_lable){where.people_id = msgObj.people_id;}
