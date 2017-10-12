@@ -1307,6 +1307,9 @@ sendMqttMsg = function(){
     }
   }
 
+  if (msg.wait_clearqueue === true) {
+    sendMqttMessage('/clearqueue/'+msg.to.id, msg,callback);
+  }
   if(msg.to_type === 'group')
     sendMqttGroupMessage(msg.to.id, msg, callback);
   else
@@ -1396,6 +1399,9 @@ Template._simpleChatToChat.events({
         wait_classify:wait_classify,
         send_status: 'sending'
       };
+      if (text == 'demo') {
+        msg.wait_clearqueue= true;
+      }
       Messages.insert(msg, function(){
         sendMqttMsg(msg);
         // Session.set('shouldScrollToBottom',true);
