@@ -23,11 +23,29 @@
 </div>-->
 <div id="officeBox" class="officeBox">
   <div class="cubeBox">
-    <div id="cube-front" class="cube cube-front" style="{{transSide 'front'}}">FRONT</div>
-    <div id="cube-back" class="cube cube-back" style="{{transSide 'back'}}">BACK</div>
-    <div id="cube-left" class="cube cube-left" style="{{transSide 'left'}}">LEFT</div>
-    <div id="cube-right" class="cube cube-right" style="{{transSide 'right'}}">RIGHT</div>
-    <div id="cube-top" class="cube cube-top" style="{{transSide 'top'}}">TOP</div>
+    <div id="cube-front" class="cube cube-front" style="{{transSide 'front'}}">
+      <div class="cube-door">
+        <img src="/veWorld/room_door.jpg"/>
+        <img src="/veWorld/room_window.jpg" style="left: 30%;height: 50%;bottom: 20%;"/>
+      </div>
+    </div>
+    <div id="cube-back" class="cube cube-back" style="{{transSide 'back'}}">
+      <div class="light-logo">
+        <h1 class="logo"> Work AI</h1>
+        <h4 class="office-name">讯动办公室</h4>
+      </div>
+    </div>
+    <div id="cube-left" class="cube cube-left" style="{{transSide 'left'}}">
+      <div class="left-draw">
+        <img src="/veWorld/room_wall_draw.png"/>
+      </div>
+    </div>
+    <div id="cube-right" class="cube cube-right" style="{{transSide 'right'}}">
+      <div class="right-clock">
+        <img src="/veWorld/room_wall_clock.png"/>
+      </div>
+    </div>
+    <div id="cube-top" class="cube cube-top" style="{{transSide 'top'}}"></div>
     <div id="cube-bottom" class="cube cube-bottom" style="{{transSide 'bottom'}}">
       <ul class="officeLists">
         {{#each lists}}

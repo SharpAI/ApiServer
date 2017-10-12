@@ -79,9 +79,10 @@ Template.VEOffice.helpers({
         // max_X = 400;
         // max_Y = 400;
     var position = calcPosition(max_X,min_X, max_Y,min_Y);
-    var scale = calcScale();
+    // var scale = calcScale();
+    var scale = 0.6;
     return 'left:'+ position.left + 'px;bottom:'+ position.bottom + 'px;transform:rotateX(-90deg) rotateY(180deg) scale('+scale+')';
-    return 'left:'+ position.left + 'px;bottom:'+ position.bottom + 'px;';
+    return 'left:'+ position.left + 'px;bottom:'+ position.bottom + 'px;transform:rotateX(-90deg) rotateY(180deg) ';
   },
   getPersonImg: function(){
     return this.in_image || this.out_image
