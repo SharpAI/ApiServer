@@ -1,10 +1,19 @@
 <template name="VEOffice">
-<!--<div class="VEOffice">
+<div class="VEOffice">
   <div class="backBtn">
     <i class="fa fa-angle-left" aria-hidden="true"></i>
   </div>
-  <h3 class="officeName">{{getGroupName}}</h3>
-  <div id="backSide"></div>
+  <div class="employeeInfo">
+    <div class="icon">
+      <img src="{{employeeInfo.in_image}}" />
+    </div>
+    <div class="name">姓名：{{employeeInfo.person_name}}</div>
+    <div class="status">状态：{{employeeInfo.status}} ({{getInStatus employeeInfo.in_status}})</div>
+    <div class="in-time">上班时间：{{getInTime employeeInfo.in_time}}</div>
+    <!--<div class="timeLen">上班时长： 4小时35分钟</div>-->
+  </div>
+  <h3 class="officeName">{{getGroupName}} ({{onlineCount}} 人在公司)</h3>
+  <!--<div id="backSide"></div>
   <ul class="officeLists">
     {{#each lists}}
     <li class="officeItem" style="{{calcPosition}}">
@@ -19,8 +28,8 @@
       </div>
     </li>
     {{/each}}
-  </ul>
-</div>-->
+  </ul>-->
+</div>
 <div id="officeBox" class="officeBox">
   <div class="cubeBox">
     <div id="cube-front" class="cube cube-front" style="{{transSide 'front'}}">
@@ -32,7 +41,7 @@
     <div id="cube-back" class="cube cube-back" style="{{transSide 'back'}}">
       <div class="light-logo">
         <h1 class="logo"> Work AI</h1>
-        <h4 class="office-name">讯动办公室</h4>
+        <h4 class="office-name">{{getGroupName}}</h4>
       </div>
     </div>
     <div id="cube-left" class="cube cube-left" style="{{transSide 'left'}}">

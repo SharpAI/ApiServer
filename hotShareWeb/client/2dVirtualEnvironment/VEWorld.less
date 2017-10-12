@@ -35,28 +35,23 @@
   }
 }
 
-.officeBox{
-  .officeLists{
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-  }
+.VEOffice{
+  position: absolute;
+  z-index: 9999;
+  width: 100%;
+  text-align: center;
   .officeName {
-    position: fixed;
     top: 0;
     display: inline-block;
     right: 0;
     text-align: center;
-    background: #607D8B;
+    background: rgba(0, 0, 0, 0.43);
     color: white;
     padding: 10px;
-    border: 1px solid #000;
-    outline: 1px solid #888;
-    border-right: 0;
+    border: 1px solid #ffffff;
     z-index: 99;
     cursor: pointer;
+    margin: 10px auto;
   }
   .backBtn{
     border-radius: 50%;
@@ -75,6 +70,32 @@
     cursor: pointer;
     i{font-size: 26px; height: 40px;line-height: 40px;}
   }
+  .employeeInfo {
+    background: rgba(0, 14, 21, 0.59);
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    color: #fff;
+    padding: 16px;
+    display: none;
+    text-align: justify;
+    .icon img{
+      border: 2px solid #03A9F4;
+      border-radius: 8px;
+      width: 100px;
+      height: 100px;
+    }
+  }
+}
+.officeBox{
+  .officeLists{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
   .officeItem{
     position: absolute;
     height: 118px;
@@ -84,7 +105,7 @@
     TRANSFORM-ORIGIN: bottom;
     transform: rotateX(-90deg);
     transform-style: preserve-3d;
-    // animation:officeItems 2s linear infinite;
+    animation:officeItems 126s linear infinite;
   }
   .person {
     height: 80px;
@@ -93,7 +114,8 @@
     overflow: hidden;
     border-radius: 4px;
     background-color: white;
-    animation:officeItems 16s linear infinite;
+    transform: rotateY(-180deg);
+    // animation:officeItems 16s linear infinite;
   }
   .person.selected {
     box-shadow: 0px 0px 4px 2px #03A9F4;
@@ -136,7 +158,7 @@
     font-size: 20px;
     text-align: center;
     margin-top: 10px;
-    color: #797979;
+    color: #009688;
     z-index: -9;
     position: absolute;
     left: 0;

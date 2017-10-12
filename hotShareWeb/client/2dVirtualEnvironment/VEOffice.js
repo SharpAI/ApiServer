@@ -18,7 +18,14 @@ var calcScale = function(){
   var scale = Math.floor(Math.random() * (max - min + 1)) + min;
   return parseFloat(scale / 10);
 }
+var addZero = function(val){
+  if(val < 10){
+    return '0' + val;
+  }
+  return ''+val;
+}
 Template.VEOffice.onRendered(function () {
+  window.VEOffice_employeeInfo_Timeout = null;
   var now = new Date();
   var displayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
   var date = Date.UTC(now.getFullYear(),now.getMonth(), now.getDate() , 
@@ -80,8 +87,8 @@ Template.VEOffice.helpers({
         // max_Y = 400;
     var position = calcPosition(max_X,min_X, max_Y,min_Y);
     // var scale = calcScale();
-    var scale = 0.6;
-    return 'left:'+ position.left + 'px;bottom:'+ position.bottom + 'px;transform:rotateX(-90deg) rotateY(180deg) scale('+scale+')';
+    var scale = 0.5;
+    return 'left:'+ position.left + 'px;bottom:'+ position.bottom + 'px;transform:rotateX(-90deg) scale('+scale+')';
     return 'left:'+ position.left + 'px;bottom:'+ position.bottom + 'px;transform:rotateX(-90deg) rotateY(180deg) ';
   },
   getPersonImg: function(){
@@ -123,6 +130,26 @@ Template.VEOffice.helpers({
       defalut:
         return '';
     }
+  },
+  employeeInfo: function(){
+    return Session.get('employeeInfo');
+  },
+  getInStatus: function(in_status){
+    if(in_status ==='normal'){
+      return '正常';
+    }
+    return '异常';
+  },
+  getInTime: function(ts){
+    var date = new Date(ts);
+    var hour = date.getHours();
+    var minutes = date.getMinutes();
+    return addZero(hour) + ':'+ addZero(minutes);
+  },
+  onlineCount: function(){
+    var group_id = Router.current().params._id;
+    var date = Session.get('theCurrentDay')
+    return WorkStatus.find({date: date,group_id: group_id, status:'in'}).count();
   }
 });
 
@@ -133,7 +160,15 @@ Template.VEOffice.events({
   },
   // 处理点击时，提高显示层级
   'click .officeItem': function(e){
+    Session.set('employeeInfo',this);
     $('.officeItem').css('z-index','0').find('.person').removeClass('selected');
     $(e.currentTarget).css('z-index','9').find('.person').addClass('selected');
+    $('.employeeInfo').show();
+    if(VEOffice_employeeInfo_Timeout){
+      window.clearTimeout(VEOffice_employeeInfo_Timeout);
+    }
+    VEOffice_employeeInfo_Timeout = window.setTimeout(function(){
+      $('.employeeInfo').hide();
+    },5000);
   }
 });
