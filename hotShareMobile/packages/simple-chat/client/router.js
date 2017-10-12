@@ -1610,8 +1610,8 @@ Template._simpleChatToChatItem.helpers({
       var pids = images[i].p_ids;
       if (pids && pids.length > 0){
         for (var j = 0; j < pids.length; j++) {
-          var pid = pids[j].id;
-          if(_.pluck(temp_ary, 'id').indexOf(pid) === -1){
+          var pid = pids[j].p_id;
+          if(_.pluck(temp_ary, 'p_id').indexOf(pid) === -1){
             temp_ary.push(pids[j]);
           }
         }
