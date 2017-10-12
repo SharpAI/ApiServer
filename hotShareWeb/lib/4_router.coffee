@@ -788,7 +788,8 @@ if Meteor.isServer
           style: style
         }
         PERSON.updateToDeviceTimeline(uuid,userGroup.group_id,timeObj)
-        if name
+        #识别准确度在0.85以上才自动打卡
+        if name and accuracy >= withDefaultAccuracy
           msg_data = {
             group_id:userGroup.group_id,
             create_time:create_time,

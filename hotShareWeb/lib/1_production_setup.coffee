@@ -22,4 +22,5 @@
 @signUpUserNameLength = 16
 @withShowGroupsUserMaxCount = 29
 @withEnableHomeAI = false
+@withDefaultAccuracy = 0.85 #默认最低识别准确度
 
