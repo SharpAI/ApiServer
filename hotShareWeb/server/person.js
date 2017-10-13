@@ -1164,6 +1164,22 @@ Meteor.methods({
       LABLE_DADASET_Handle.remove(data);
     }
   },
+  'removePersonById': function(_id){
+    var person = Person.findOne({_id: _id});
+    var faces = [];
+    if(person){
+      faces = person.faces;
+      for(var i=0; i< faces.length;i++){
+        var data = {
+          group_id:person.group_id,
+          id:faces[i].face_id,
+          url:faces[i].face_url,
+        };
+        LABLE_DADASET_Handle.remove(data);
+      }
+    }
+    return Person.remove({_id: _id});
+  },
   'send-person-to-web': function(person){
       personItem = Person.findOne({faceId:person.id,group_id:person.group_id});
       person.id = personItem._id;

@@ -31,6 +31,17 @@ Template.groupPhoto.helpers({
   list2: function(id){
     // return SimpleChat.GroupPhotoLabel.find({group_id: id}, {limit: limit2.get(), sort: {create_time: 1}})
     return Person.find({group_id: id},{limit: limit2.get(), sort:{createAt: -1}}).fetch();
+  },
+  conMainStyle: function(){
+    if(type.get() === '未标注'){
+      if(selected.get().length > 0){
+        return 'bottom: 100px;';
+      } else {
+        return 'bottom: 40px;';
+      } 
+    } else {
+      return 'bottom: 60px;';
+    }
   }
 });
 
