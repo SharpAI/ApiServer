@@ -1851,3 +1851,38 @@ if Meteor.isServer
       #console.log('>>> ' + JSON.stringify(clusteringObj))
       this.response.end('{"result": "ok"}\n')
     )
+  Router.route('/restapi/datasync/:token/:groupid', {where: 'server'}).get(()->
+      token = this.params.token
+      groupid = this.params.groupid
+
+      headers = {
+        'Content-type':'text/html;charest=utf-8',
+        'Date': Date.now()
+      }
+      this.response.writeHead(200, headers)
+      console.log '/restapi/datasync get request, token:' + token + ' groupid:' + groupid
+
+      group = SimpleChat.Groups.findOne({'_id': groupid})
+      unless group
+        console.log 'no group found:' + groupid
+        return this.response.end('[]\n')
+
+      syncDateSet=[]
+
+      #取出群相册里面所有已经标注的数据
+      persons = Person.find({group_id: groupid},{fields:{name: 1, faceId:1}}).fetch()
+      persons.forEach((item)->
+        urls=[]
+        if item and item.name
+          dataset = LableDadaSet.find({group_id: groupid ,name: item.name}, {fields:{url: 1}}).fetch()
+          dataset.forEach((item2)->
+            if item2 and item2.url
+              urls.push(item2.url)
+          )
+
+        if item and item.faceId
+          syncDateSet.push({faceId: item.faceId, urls: urls})
+      )
+
+      this.response.end(JSON.stringify(syncDateSet))
+    )
