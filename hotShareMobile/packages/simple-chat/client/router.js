@@ -1605,13 +1605,13 @@ Template._simpleChatToChatItem.helpers({
     return has_val;
   },
   has_p_ids_style: function(){
-    var images = this.images || [];
-    for (var i = 0; i < images.length; i++) {
-      if (images[i].p_ids && images[i].p_ids.length > 0){
-        return 'max-width: 100%; padding-right:16px;'
-        break;
-      }
-    }
+    // var images = this.images || [];
+    // for (var i = 0; i < images.length; i++) {
+    //   if (images[i].p_ids && images[i].p_ids.length > 0){
+    //     return 'max-width: 100%; padding-right:16px;'
+    //     break;
+    //   }
+    // }
     return '';
   },
   p_ids:function(images){
