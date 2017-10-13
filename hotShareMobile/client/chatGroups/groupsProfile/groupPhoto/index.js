@@ -191,7 +191,7 @@ Template.groupPhoto.events({
     if (e.currentTarget.id == 'labeled-del') {
       console.log('is not a');
       var lists = lebeledPreLists.get();
-      console.log(lists);
+      console.log(lists);     
       // 从person 表中删除相应face
       Meteor.call('remove-person-face',lists, function(err, res){
         if(err){
@@ -497,6 +497,32 @@ Template.person_labelDataset.helpers({
 });
 
 Template.person_labelDataset.events({
+  // 全选
+  'click #selectAll': function(){
+    var lists = [];
+    var preLists = [];
+    LableDadaSet.find({group_id: this.group_id,name:this.name},{limit: limit3.get(), sort:{createAt: -1}}).forEach(function(item){
+      lists.push(item._id);
+      preLists.push({
+        face_id: item.id,
+        face_url: item.url,
+        group_id: item.group_id,
+        device_id: item.uuid,
+        faceId: item.id,
+        name: item.name
+      });
+    });
+
+    console.log(lists);
+    console.log(preLists);
+    selected2.set(lists);
+    lebeledPreLists.set(preLists);
+  },
+  // 全不选
+  'click #unSelectAll': function(){
+    selected2.set([]);
+    lebeledPreLists.set([]);
+  },
   'click .back': function(){
     Template.person_labelDataset.close();
   },
