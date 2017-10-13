@@ -2038,9 +2038,9 @@ var onMqttMessage = function(topic, msg) {
 
   if (msgObj.tid && msgObj.tid !== '') {
     //最近十条记录
-    var targetArray = Messages.find({to_type: msgObj.to_type,'to.id': msgObj.to.id}, {limit: 10, sort: {create_time: -1}}).fetch();
+    var targetArray = Messages.find({to_type: msgObj.to_type,'to.id': msgObj.to.id,create_time: {$lte: msgObj.create_time},people_uuid:msgObj.people_uuid}, {limit: 10, sort: {create_time: -1}}).fetch();
     for (var i = 0; i < targetArray.length; i++) {
-      if (targetArray[i].label_complete !== true) {
+      if (targetArray[i].label_complete !== true && targetArray[i].label_start !== true) {
         //tid 相同且没完成标记
         if (targetArray[i].tid === msgObj.tid) {
           targetMsg = targetArray[i];
