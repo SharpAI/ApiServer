@@ -3,6 +3,7 @@ var images = new ReactiveVar([]);
 var index = new ReactiveVar(0);
 var message = new ReactiveVar(null);
 var names = new ReactiveVar([]);
+var isSelectedAll = new ReactiveVar(true);
 
 Template._simpleChatLabelDevice.open = function(msgObj){
   if (view)
@@ -306,10 +307,26 @@ Template._simpleChatLabelDevice.helpers({
   },
   id: function(){
     return images.get()[index.get()].images[0].id;
+  },
+  isSelectedAll: function(){
+    return isSelectedAll.get();
   }
 });
 
 Template._simpleChatLabelDevice.events({
+  'click #imgRemoveLabelSelectAll': function(e, t){
+    var imgs = images.get();
+    var indx = index.get();
+    for(var i=0;i<imgs[indx].images.length;i++){
+      if(isSelectedAll.get()){
+        imgs[indx].images[i].selected = false;
+      } else {
+        imgs[indx].images[i].selected = true;
+      }
+    }
+    images.set(imgs);
+    isSelectedAll.set(!isSelectedAll.get());
+  },
   'click .leftButton': function(){
     Template._simpleChatLabelDevice.close();
   },
