@@ -1307,7 +1307,8 @@ sendMqttMsg = function(){
     }
   }
 
-  if (msg.wait_clearqueue === true) {
+  //查询apk队列或者清空队列
+  if (msg.wait_clearqueue === true || msg.wait_queryqueue === true) {
     sendMqttMessage('/clearqueue/'+msg.to.id, msg,callback);
   }
   if(msg.to_type === 'group')
@@ -1399,8 +1400,11 @@ Template._simpleChatToChat.events({
         wait_classify:wait_classify,
         send_status: 'sending'
       };
-      if (text == 'demo') {
+      if (text == 'clearqueue') {
         msg.wait_clearqueue= true;
+      }
+      else if (text == 'queryqueue'){
+        msg.wait_queryqueue = true;
       }
       Messages.insert(msg, function(){
         sendMqttMsg(msg);
