@@ -68,11 +68,35 @@
             <div class="relations-info">{{relations_info}}</div>
           </div>
           {{else}}
-          <div class="images images-no-click" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
-            <div class="linked-helper">已选</div>
-            <img class="lazy" data-original="{{img_url}}" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAANSURBVBhXYzh8+PB/AAffA0nNPuCLAAAAAElFTkSuQmCC"/>
-            <div class="person-name">{{person_name}}</div>
-          </div>
+            {{#if mergedImgs}}
+              {{#if mergedIsExtend}}
+              <div class="images images-no-click" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
+                <div class="linked-helper">已选</div>
+                <img class="lazy" data-original="{{img_url}}" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAANSURBVBhXYzh8+PB/AAffA0nNPuCLAAAAAElFTkSuQmCC"/>
+                <div class="person-name">{{person_name}}</div>
+              </div>
+              {{#each mergedImgs}}
+              <div class="images images-no-click" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
+                <div class="linked-helper">已选</div>
+                <img class="lazy" data-original="{{img_url}}" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAANSURBVBhXYzh8+PB/AAffA0nNPuCLAAAAAElFTkSuQmCC"/>
+                <div class="person-name">{{person_name}}</div>
+              </div>
+              {{/each}}
+              {{else}}
+              <div class="images images-no-click images-merged" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
+                <div class="linked-helper">已选</div>
+                <img class="lazy" data-original="{{img_url}}" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAANSURBVBhXYzh8+PB/AAffA0nNPuCLAAAAAElFTkSuQmCC"/>
+                <div class="merged-count">{{getMergedImgsCount mergedImgs}} 张</div>
+                <div class="person-name">{{person_name}}</div>
+              </div>
+              {{/if}}
+            {{else}}
+            <div class="images images-no-click" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
+              <div class="linked-helper">已选</div>
+              <img class="lazy" data-original="{{img_url}}" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAANSURBVBhXYzh8+PB/AAffA0nNPuCLAAAAAElFTkSuQmCC"/>
+              <div class="person-name">{{person_name}}</div>
+            </div>
+            {{/if}}
           {{/if}}
         {{else}}
           {{#if is_video}}
@@ -83,10 +107,31 @@
             <div class="relations-info">{{relations_info}}</div>
           </div>
           {{else}}
-          <div class="images images-click-able" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
-            <img class="lazy" data-original="{{img_url}}" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAANSURBVBhXYzh8+PB/AAffA0nNPuCLAAAAAElFTkSuQmCC"/>
-            <div class="person-name">{{person_name}}</div>
-          </div>
+            {{#if mergedImgs}}
+              {{#if mergedIsExtend}}
+              <div class="images images-click-able" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
+                <img class="lazy" data-original="{{img_url}}" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAANSURBVBhXYzh8+PB/AAffA0nNPuCLAAAAAElFTkSuQmCC"/>
+                <div class="person-name">{{person_name}}</div>
+              </div>
+              {{#each mergedImgs}}
+              <div class="images images-click-able" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
+                <img class="lazy" data-original="{{img_url}}" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAANSURBVBhXYzh8+PB/AAffA0nNPuCLAAAAAElFTkSuQmCC"/>
+                <div class="person-name">{{person_name}}</div>
+              </div>
+              {{/each}}
+              {{else}}
+              <div class="images images-click-able images-merged" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
+                <img class="lazy" data-original="{{img_url}}" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAANSURBVBhXYzh8+PB/AAffA0nNPuCLAAAAAElFTkSuQmCC"/>
+                <div class="merged-count">{{getMergedImgsCount mergedImgs}} 张</div>
+                <div class="person-name">{{person_name}}</div>
+              </div>
+              {{/if}}
+            {{else}}
+            <div class="images images-click-able" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
+              <img class="lazy" data-original="{{img_url}}" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAANSURBVBhXYzh8+PB/AAffA0nNPuCLAAAAAElFTkSuQmCC"/>
+              <div class="person-name">{{person_name}}</div>
+            </div>
+            {{/if}}
           {{/if}}
         {{/if}}
         {{/each}}

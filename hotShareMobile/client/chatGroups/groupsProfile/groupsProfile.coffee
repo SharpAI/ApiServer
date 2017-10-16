@@ -3,7 +3,6 @@ if Meteor.isClient
     group_intime = '09:00'
     group_outtime = '18:00'
     group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
-    console.warn('group is ',JSON.stringify(group))
 
     if (group and group.group_intime)
       group_intime = group.group_intime

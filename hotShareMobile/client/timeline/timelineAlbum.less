@@ -6,6 +6,42 @@
     .linked-helper{position: absolute;left: 0;background: rgba(0, 0, 0, 0.34);border-radius: 0 0 4px 4px;cursor: not-allowed;bottom: 20px;height: 20px;right: 0;color: #fff;text-align: center;font-size: 12px;line-height: 20px;}
     img{width: 80px;height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box;}
     .person-name,.relations-info{font-size: 12px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;height: 20px;padding: 4px; position: absolute;}
+    .person-name{
+      height: 30px;
+      line-height: 30px;
+      padding: 0;
+    }
+    .merged-count {
+      position: absolute;
+      top: 60px;
+      right: 0;
+      background: rgba(0, 0, 0, 0.64);
+      color: #fff;
+      font-size: 12px;
+      padding: 0 4px;
+    }
+  }
+  .images-merged img {
+    padding: 4px;
+    border-radius: 2px;
+  }
+  .images-merged:before, .images-merged:after {
+    background: #fff;
+    content: "";
+    border-radius: 2px;
+    bottom: 18px;
+    top: 0px;
+    position: absolute;
+    border: 10px solid #fff;
+    left: 0;
+    box-sizing: border-box;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    right: 0;
+    z-index: -10;
+  }
+  .images-merged:after{
+    bottom: 15px;
+    z-index: -20;
   }
   div.videos{
     // width:100%;height: 160px; position: relative;margin-bottom: 10px;

@@ -1,3 +1,4 @@
+var mergedExtendLists = new ReactiveVar([]);
 function LazyImg(option){
   this.settings = option || {};
   this.settings.selector = '.lazy';
@@ -330,9 +331,14 @@ Template.timelineAlbum.helpers({
           }
           var personIds = [];
           item.perMin[x].forEach(function(img){
-            if(personIds.indexOf(img.person_id) < 0){
+            var index = personIds.indexOf(img.person_id);
+            if(index < 0){
               personIds.push(img.person_id)
               tmpObj.images.push(img);
+            } else {
+              var mergedImgs = tmpObj.images[index].mergedImgs || [];
+              mergedImgs.push(img);
+              tmpObj.images[index].mergedImgs = mergedImgs;
             }
           });
           if(tmpObj.images.length > 0){
@@ -355,9 +361,14 @@ Template.timelineAlbum.helpers({
             }
             var personIds = [];
             item.perMin[x].forEach(function(img){
-              if(personIds.indexOf(img.person_id) < 0){
+              var index = personIds.indexOf(img.person_id);
+              if(index < 0){
                 personIds.push(img.person_id)
                 tmpObj.images.push(img);
+              } else {
+                var mergedImgs = tmpObj.images[index].mergedImgs || [];
+                mergedImgs.push(img);
+                tmpObj.images[index].mergedImgs = mergedImgs;
               }
             });
             if(tmpObj.images.length > 0){
@@ -382,9 +393,14 @@ Template.timelineAlbum.helpers({
           }
           var personIds = [];
           item.perMin[x].forEach(function(img){
-            if(personIds.indexOf(img.person_id) < 0){
+            var index = personIds.indexOf(img.person_id);
+            if(index < 0){
               personIds.push(img.person_id)
               tmpObj.images.push(img);
+            } else {
+              var mergedImgs = tmpObj.images[index].mergedImgs || [];
+              mergedImgs.push(img);
+              tmpObj.images[index].mergedImgs = mergedImgs;
             }
           });
           if(tmpObj.images.length > 0){
@@ -420,6 +436,17 @@ Template.timelineAlbum.helpers({
     var device = Devices.findOne({uuid: Router.current().params._uuid});
     var group_id = device.groupId;
     return WorkAIUserRelations.find({'group_id':group_id}).fetch();
+  },
+  getMergedImgsCount: function(arr){
+    var arr = arr || [];
+    return arr.length + 1;
+  },
+  mergedIsExtend: function(){
+    var id = this.person_id +'_'+this.ts;
+    if(mergedExtendLists.get().indexOf(id) > -1){
+      return true;
+    }
+    return false;
   }
 
 });
@@ -427,6 +454,18 @@ Template.timelineAlbum.helpers({
 Template.timelineAlbum.events({
   'click .back': function(){
     return PUB.back();
+  },
+  // 展开合并的图片
+  'click .images-merged': function(e){
+    e.stopImmediatePropagation();
+    var lists = mergedExtendLists.get();
+    var id = this.person_id +'_'+this.ts;
+    var index = lists.indexOf(id);
+    if(lists.indexOf(id) < 0){
+      lists.push(id);
+    } 
+    mergedExtendLists.set(lists);
+    lazyTimelineImg();
   },
   'click .images-click-able, click .select-video-enable': function(e){
     e.stopImmediatePropagation();
