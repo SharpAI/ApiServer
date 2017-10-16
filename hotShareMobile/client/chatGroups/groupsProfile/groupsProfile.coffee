@@ -1,4 +1,46 @@
 if Meteor.isClient 
+  initGroupInOutTimeSet = ()->
+    group_intime = '09:00'
+    group_outtime = '18:00'
+    group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
+    console.warn('group is ',JSON.stringify(group))
+
+    if (group and group.group_intime)
+      group_intime = group.group_intime
+  
+    if (group && group.group_outtime)
+      group_outtime = group.group_outtime
+
+    group_intime = group_intime.split(":")
+    group_outtime = group_outtime.split(":")
+
+    $('#groupInOutTime').mobiscroll().range({
+      defaultVaule: [new Date(),new Date()],
+      theme: 'material',
+      lang: 'zh',
+      display: 'bottom', 
+      controls: ['time'], 
+      maxWidth: 100,
+      setText: '设置',
+      fromText: '上班时间',
+      toText:'下班时间',
+      defaultValue: [
+          new Date(new Date().setHours(group_intime[0], group_intime[1], 0, 0)),new Date(new Date().setHours(group_outtime[0], group_outtime[1], 0, 0))
+      ],
+      onSet: (value, inst)->
+        val = value.valueText;
+        vals = val.split(' - ');
+        group_intime = vals[0];
+        group_outtime = vals[1];
+
+        inArr = group_intime.split(":")
+        outArr = group_outtime.split(":")
+        inMin = Number(inArr[0]) * 60 + Number(inArr[1])
+        outMin = Number(outArr[0]) * 60 + Number(outArr[1])
+        if(outMin <= inMin)
+          return PUB.toast('下班时间早于上班时间，请重试')
+        Meteor.call('updateGroupInOutTime',Session.get('groupsId'),group_intime, group_outtime)
+    })
   groupDelOrQuitCB = (err,id,isDel)->
     errMsg = '退出失败，请重试~'
     if isDel
@@ -31,7 +73,12 @@ if Meteor.isClient
   Template.groupInformation.rendered=->
     $('.content').css 'min-height',$(window).height()
     groupid = Session.get('groupsId')
-    Meteor.subscribe("get-group",groupid)
+    Meteor.subscribe("get-group",groupid, {
+      onReady:()->
+        initGroupInOutTimeSet()
+      onError:()->
+        initGroupInOutTimeSet
+    })
     Meteor.subscribe('group-user-counter',groupid)
     Meteor.subscribe('loginuser-in-group',groupid, Meteor.userId())
   UI.registerHelper('checkedIf',(val)->
