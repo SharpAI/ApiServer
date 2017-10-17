@@ -2067,9 +2067,9 @@ var onMqttMessage = function(topic, msg) {
         }
         else{
           //一分钟以前的
-          // if (targetArray[i].create_time < whereTime) {
-          //   break;
-          // }
+          if (targetArray[i].create_time < whereTime) {
+            break;
+          }
           //tid不同的未识别people_id相同
           if (msgObj.wait_lable && targetArray[i].people_id === msgObj.people_id) {
             targetMsg = targetArray[i];
