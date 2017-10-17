@@ -1804,6 +1804,13 @@ var clearMoreOldMessage = function(){
 SimpleChat.onMqttMessage = function(topic, msg) {
   var msgObj = JSON.parse(msg);
 
+  //Messages表尚未初始化
+  if (!Messages) {
+    console.log('Messages is undefined ,will initCollection');
+    initCollection();
+  }
+
+  //console.log('SimpleChat.onMqttMessage:'+msg);
   if (!(topic.startsWith('/msg/g/') || topic.startsWith('/msg/u/')))
     return;
   if (msgObj.create_time)
@@ -1828,6 +1835,7 @@ SimpleChat.onMqttMessage = function(topic, msg) {
       onNLPClassifyMessage(topic,msgObj);
       return;
     }
+    //console.log('》》》》》》》》》》》》》》》》》try to find Messages');
     var msgCount = Messages.find(where).count();
     if (msgCount < 10) {
       onMqttMessage(topic, msg);
@@ -1907,6 +1915,11 @@ SimpleChat.onMqttMessage = function(topic, msg) {
   }
   if (!msgObj.is_people){
     shouldScrollToBottom(msgObj);
+    //应当避免消息重复
+    if (Messages.findOne({_id:msgObj._id})) {
+      //消息已存在
+      return;
+    }
     return Messages.insert(msgObj);
   }
 
@@ -1950,6 +1963,7 @@ var shouldScrollToBottom = function(msg){
 };
 
 var onMqttMessage = function(topic, msg) {
+  //console.log('>>>>>>>>>>>>> onMqttMessage has been called :'+msg);
   var insertMsg = function(msgObj, type){
     if(msgObj.admin_remove){
       return;
@@ -2052,6 +2066,10 @@ var onMqttMessage = function(topic, msg) {
           break;
         }
         else{
+          //一分钟以前的
+          // if (targetArray[i].create_time < whereTime) {
+          //   break;
+          // }
           //tid不同的未识别people_id相同
           if (msgObj.wait_lable && targetArray[i].people_id === msgObj.people_id) {
             targetMsg = targetArray[i];

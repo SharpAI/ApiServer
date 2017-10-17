@@ -20,9 +20,12 @@ if(Meteor.isServer){
   GroupUsers = new Mongo.Collection(PRFIX + 'groups_users');
   MessageTemp = new Mongo.Collection(PRFIX + 'messages_temp', { connection: null });
 
-  Meteor.startup(function() {
+  initCollection = function() {
     //var LocalMessagesObservor = new PersistentMinimongo2(Messages, 'workai');
     //Ground.Collection(Messages, 'gdb');
+    if (Messages) {
+      return;
+    }
 
     Messages = new Ground.Collection(PRFIX + 'messages', { connection: null })
     MsgSession = new Ground.Collection(PRFIX + 'msg_session', { connection: null });
@@ -103,6 +106,13 @@ if(Meteor.isServer){
 
     SimpleChat.withMessageHisEnable = withMessageHisEnable;
     SimpleChat.loadMoreMesage = loadMoreMesage;
+  };
+
+  Meteor.startup(function(){
+    if (!Messages) {
+      console.log('Meteor startup has been done ,will initCollection');
+      initCollection();
+    }
   });
 
   // 生成聊天会话
