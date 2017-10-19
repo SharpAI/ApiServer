@@ -1177,6 +1177,9 @@ Meteor.methods({
         };
         LABLE_DADASET_Handle.remove(data);
       }
+      PersonNames.remove({group_id:person.group_id, name:person.name});
+      WorkAIUserRelations.remove({'ai_persons.id': person._id});
+      WorkStatus.remove({'person_id.id': person._id});
     }
     return Person.remove({_id: _id});
   },

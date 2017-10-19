@@ -115,6 +115,8 @@ LABLE_DADASET_Handle = {
           if(personName){
             PersonNames.remove({_id: personName._id});
           }
+          WorkAIUserRelations.remove({'ai_persons.id': person._id});
+          WorkStatus.remove({'person_id.id': person._id});
   				return Person.remove({_id:person._id});
   			}
     	}
@@ -175,6 +177,8 @@ LABLE_DADASET_Handle = {
             if(personName){
               PersonNames.remove({_id: personName._id});
             }
+            WorkAIUserRelations.remove({'ai_persons.id': person._id});
+            WorkStatus.remove({'person_id.id': person._id});
             return Person.remove({_id:person._id});
           }
           else{
