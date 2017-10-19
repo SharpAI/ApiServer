@@ -1,3 +1,18 @@
+cleanLeftRelationAndStatusDate = function(){
+  // 清理，移除person后遗留的相关数据（仅在本地开发环境下使用）
+  WorkAIUserRelations.find({}).forEach(function(item){
+    item.ai_persons.forEach(function(personIds){
+      var person = null;
+      person = Person.findOne({_id: personIds.id});
+      if(!person){
+        console.log(item.person_name+' need remove from relations at group '+ item.group_id + ' and person id is '+ personIds.id);
+        WorkAIUserRelations.remove({_id: item._id});
+        WorkStatus.remove({group_id: item.group_id, 'person_id.id': personIds.id});
+      }
+    })
+  });
+};
+
 PERSON = {
   upsetDevice: function(uuid, group_id,name,in_out){
     var device = Devices.findOne({uuid: uuid});
@@ -1291,5 +1306,9 @@ Meteor.methods({
   },
   'initLableDataSet':function(){
     LABLE_DADASET_Handle.initLableDataSet();
-  }
+  },
+  // 'cleanLeftRelationAndStatusDate': function(){
+  //   // 清理，移除person后遗留的相关数据（仅在本地开发环境下使用）
+  //   cleanLeftRelationAndStatusDate();
+  // }
 })
