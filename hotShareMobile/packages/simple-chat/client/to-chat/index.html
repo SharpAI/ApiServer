@@ -203,14 +203,16 @@
                 {{/if}}
                 {{#if has_p_ids images}}
                 <div class="label-box">
-                  <div>请点击与上图是同一个人的照片</div>
+                  <div class="top_div">请点击与上图是同一个人的照片</div>
                   <div>
                     {{#each p_ids images}}
                       {{> _simpleChatToChatPItemImg}}
                     {{/each}}
                   </div>
-                  <div class="wantSelectElse">都不是</div>
-                  <div class="determine">确定</div>
+                  <div class="bottom_div">
+                    <div class="wantSelectElse">都不是</div>
+                    <div class="determine">确定</div>
+                  </div>
                 </div>
                 {{else}}
                 <div class="line-label-box crop-lable-box"><div class="check">标记</div><div class="crop">裁剪</div><div class="remove">删除</div></div>
