@@ -861,8 +861,9 @@ if Meteor.isServer
             out_time_M = create_time.getMinutes()
             out_time_minutes = out_time_H * 60 + out_time_M
 
-            if (out_time_minutes < group_out_minutes)
-              return
+            # 到下班时间后，不自动 checkout(这里先取消， 目前：统一采用自动checkout的方式，但保留手动checkout)
+            # if (out_time_minutes < group_out_minutes)   
+            #   return
 
           send_greeting_msg(msg_data);
           PERSON.updateWorkStatus(person._id)
@@ -1693,6 +1694,7 @@ if Meteor.isServer
               "hide_it"     : if fields.hide_it then fields.hide_it else  false
             }
             #console.log('>>> new a WorkStatus ' + JSON.stringify(newWorkStatus))
+            
             WorkStatus.insert(newWorkStatus)
       )
 
