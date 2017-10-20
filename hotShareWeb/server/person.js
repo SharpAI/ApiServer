@@ -151,6 +151,34 @@ PERSON = {
         delete person.faceId;
       }
       Person.insert(person);
+      //标记新人，立即训练
+      var obj = SimpleChat.Groups.findOne({_id: group_id});
+      var to = {
+        id: obj._id,
+        name: obj.name,
+        icon: obj.icon
+      };
+      var device_user = Meteor.users.findOne({username: uuid})
+      var form = {};
+      if (device_user) {
+        form = {
+            id: device_user._id,
+            name: device_user.profile && device_user.profile.fullname ? device_user.profile.fullname : device_user.username,
+            icon: device_user.profile.icon
+          };
+      }
+      var msg = {
+        _id: new Mongo.ObjectID()._str,
+        form:form,
+        to: to,
+        to_type: 'group',
+        type: 'text',
+        text: 'train',
+        create_time: new Date(),
+        is_read: false,
+        is_trigger_train:true
+      };
+      sendMqttGroupMessage(group_id,msg);
     }
 
     return person;
