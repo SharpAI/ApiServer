@@ -290,6 +290,12 @@ Template.homePage.helpers({
     }
     var time = new Date(ts);
     return time.shortTime(time_offset,true);
+  },
+  historyUnknownOutStyle: function(group_id){
+    if(Session.get('theDisplayDay-'+group_id) && Session.get('theDisplayDay-'+group_id) !== Session.get('today')){
+      return 'color: red;';
+    }
+    return '';
   }
 });
 modifyStatusFun = function(group_id,in_out,taId){

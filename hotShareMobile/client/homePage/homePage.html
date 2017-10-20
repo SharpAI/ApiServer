@@ -209,9 +209,9 @@
                   {{/if}}
                   {{#if isOutStatusUnknown out_status}}
                     {{#if isMySelf app_user_id}}
-                    <td id="{{group_id}}" data-inout="out" class="modifyMyStatus"> — </td>
+                    <td id="{{group_id}}" data-inout="out" class="modifyMyStatus" style="{{historyUnknownOutStyle group_id}}"> — </td>
                     {{else}}
-                    <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="{{modifyStatusClass app_user_id}}"> — </td>
+                    <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="{{modifyStatusClass app_user_id}}" style="{{historyUnknownOutStyle group_id}}"> — </td>
                     {{/if}}
                   {{/if}}
 
