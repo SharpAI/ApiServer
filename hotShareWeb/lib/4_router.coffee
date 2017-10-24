@@ -840,9 +840,9 @@ if Meteor.isServer
                 person_info: person_info
               }
             }
-            UserCheckoutEndLog.remove({userId: relation.app_user_id})
-            UserCheckoutEndLog.insert(checkout_msg)
-            sendUserCheckoutEvent(uuid, relation.app_user_id)
+            # UserCheckoutEndLog.remove({userId: relation.app_user_id})
+            # UserCheckoutEndLog.insert(checkout_msg)
+            # sendUserCheckoutEvent(uuid, relation.app_user_id)
             # return 
             # 到下班时间后，不终止后续处理
             group_outtime = '18:00'
