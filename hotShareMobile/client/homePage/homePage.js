@@ -291,11 +291,22 @@ Template.homePage.helpers({
     var time = new Date(ts);
     return time.shortTime(time_offset,true);
   },
-  historyUnknownOutStyle: function(group_id){
-    if(Session.get('theDisplayDay-'+group_id) && Session.get('theDisplayDay-'+group_id) !== Session.get('today')){
-      return 'color: red;';
+
+  isHistoryNoOut: function(group_id){
+    var outtime = 0;
+
+    if(this.out_time){
+      outtime = this.out_time;
     }
-    return '';
+    var isHistory = false;
+    if(Session.get('theDisplayDay-'+group_id) && Session.get('theDisplayDay-'+group_id) !== Session.get('today')){
+      isHistory = true;
+    }
+    var noOut = false;
+    if(outtime == 0){
+      noOut = true;
+    }
+    return isHistory && noOut;
   }
 });
 modifyStatusFun = function(group_id,in_out,taId){
