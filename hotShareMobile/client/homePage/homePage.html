@@ -181,41 +181,49 @@
                     <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="in" class="{{modifyStatusClass app_user_id}}"> — </td>
                     {{/if}}
                   {{/if}}
-
-                  {{#if isOutStatusNormal out_status}}
-                  <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="{{modifyStatusClass app_user_id}}">
-                    <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}" data-inout="out"/>
-                    <!--<i class="fa fa-pencil fa-as-btn" style="color:green;"></i>-->
-                    <img src="/img/home_clock_green.png" width="30" height="30"/>
-                  </td>
-                  {{/if}}
-                  {{#if isOutStatusWarning out_status}}
-                  <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="{{modifyStatusClass app_user_id}}">
-                    <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}" data-inout="out"/>
-                    <!--<i class="fa fa-pencil fa-as-btn" style="color:orangered;"></i>-->
-                    <img src="/img/home_clock_orangered.png" width="30" height="30"/>
-                  </td>
-                  {{/if}}
-                  {{#if isOutStatusError out_status}}
-                    {{#if isMySelf app_user_id}}
-                    <td id="{{group_id}}" data-inout="out" class="modifyMyStatus">
-                      <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}" data-inout="out"/>
-                      <!--<i class="fa fa-pencil fa-as-btn" style="color:red;"></i>-->
-                      <img src="/img/home_clock_red.png" width="30" height="30"/>
-                    </td>
-                    {{else}}
-                    <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="{{modifyStatusClass app_user_id}}">
-                      <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}" data-inout="out"/>
-                      <!--<i class="fa fa-pencil fa-as-btn" style="color:red;"></i>-->
-                      <img src="/img/home_clock_red.png" width="30" height="30"/>
-                    </td>
-                    {{/if}}
-                  {{/if}}
-                  {{#if isOutStatusUnknown out_status}}
+                  
+                  {{#if isStatusIN status}}
                     {{#if isMySelf app_user_id}}
                     <td id="{{group_id}}" data-inout="out" class="modifyMyStatus"> — </td>
                     {{else}}
                     <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="{{modifyStatusClass app_user_id}}"> — </td>
+                    {{/if}}
+                  {{else}}
+                    {{#if isOutStatusNormal out_status}}
+                    <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="{{modifyStatusClass app_user_id}}">
+                      <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}" data-inout="out"/>
+                      <!--<i class="fa fa-pencil fa-as-btn" style="color:green;"></i>-->
+                      <img src="/img/home_clock_green.png" width="30" height="30"/>
+                    </td>
+                    {{/if}}
+                    {{#if isOutStatusWarning out_status}}
+                    <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="{{modifyStatusClass app_user_id}}">
+                      <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}" data-inout="out"/>
+                      <!--<i class="fa fa-pencil fa-as-btn" style="color:orangered;"></i>-->
+                      <img src="/img/home_clock_orangered.png" width="30" height="30"/>
+                    </td>
+                    {{/if}}
+                    {{#if isOutStatusError out_status}}
+                      {{#if isMySelf app_user_id}}
+                      <td id="{{group_id}}" data-inout="out" class="modifyMyStatus">
+                        <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}" data-inout="out"/>
+                        <!--<i class="fa fa-pencil fa-as-btn" style="color:red;"></i>-->
+                        <img src="/img/home_clock_red.png" width="30" height="30"/>
+                      </td>
+                      {{else}}
+                      <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="{{modifyStatusClass app_user_id}}">
+                        <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}" data-inout="out"/>
+                        <!--<i class="fa fa-pencil fa-as-btn" style="color:red;"></i>-->
+                        <img src="/img/home_clock_red.png" width="30" height="30"/>
+                      </td>
+                      {{/if}}
+                    {{/if}}
+                    {{#if isOutStatusUnknown out_status}}
+                      {{#if isMySelf app_user_id}}
+                      <td id="{{group_id}}" data-inout="out" class="modifyMyStatus"> — </td>
+                      {{else}}
+                      <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="{{modifyStatusClass app_user_id}}"> — </td>
+                      {{/if}}
                     {{/if}}
                   {{/if}}
                   
