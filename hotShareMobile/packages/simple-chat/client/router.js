@@ -955,7 +955,7 @@ Template._simpleChatToChatItem.events({
   },
   'click .determine':function(e){
     var data = this;
-    var person_name = $(e.currentTarget).parent().find('.p_imgBg.selected img').data('pname');
+    var person_name = $(e.currentTarget).parent().parent().find('.p_imgBg.selected img').data('pname');
     data.label_name = person_name;
     PUB.showWaitLoading('正在处理');
     Template._simpleChatLabelDevice.open(data);
