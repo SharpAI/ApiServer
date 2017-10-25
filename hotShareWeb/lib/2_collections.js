@@ -161,6 +161,18 @@ Clustering = new Meteor.Collection('clustering');
 }
 */
 
+//不可用的邮箱账号
+UnavailableEmails = new Meteor.Collection('unavailableEmails');
+/*
+{
+  address:'xx',
+  createAt:,
+  reason:'xx',
+}
+ */
+
+
+
 if(Meteor.isServer){
   WorkAIUserRelations.allow({
     update: function(userId, doc, fields, modifier) {

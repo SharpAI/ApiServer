@@ -1,0 +1,33 @@
+<tr>
+  <td rowspan="2" style="width:64px;">
+    {{person_name}}
+    <!-- <div>
+      <i class="fa fa-user app-user-status" style="color:{{app_user_status_color}};"></i>
+      {{app_notifaction_status}}
+    </div> -->
+  </td>
+  <td style="width:100px;">
+    <!-- <i class="fa fa-map-marker " style="color:{{isStatusIN_color}};"></i> -->
+    {{InComTimeLen}}
+  </td>
+
+  <td style="{{isInStatusNotUnknownStyle}}">
+    <img class="in-out-pic" src="{{in_image}}" data-inout="in" />
+    <!-- <img src="/img/home_clock_{{isInStatusNormal_ImgColor}}.png" width="30" height="30"/> -->
+    <span style="color: {{in_time_Color}};vertical-align: middle;">{{in_time}}</span>
+  </td>
+  <td style="{{isInStatusUnknownStyle}}"> — </td>
+
+  <td style="{{historyUnknownOutStyle}}"> — </td>
+
+  <td style="{{isOutStatusNotUnknownStyle}}">
+    <img class="in-out-pic" src="{{out_image}}" data-inout="out"/>
+    <!-- <img src="/img/home_clock_{{isOutStatusNormal_ImgColor}}.png" width="30" height="30"/> -->
+    <span style="color: {{out_time_Color}};vertical-align: middle;">{{out_time}}</span>
+  </td>
+</tr>
+<tr>
+  <td colspan="3" class="whats-up editWhatsUp"  style="white-space:normal">
+      {{whats_up}}
+  </td>
+</tr>

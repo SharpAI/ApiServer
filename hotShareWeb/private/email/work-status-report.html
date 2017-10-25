@@ -1,0 +1,229 @@
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+    .table {
+      width:100%;
+      max-width:100%;
+      margin-bottom:20px
+    }
+    .table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td {
+      padding:8px;
+      line-height:1.42857143;
+      vertical-align:top;
+      border-top:1px solid #ddd
+    }
+    .table>thead>tr>th {
+      vertical-align:bottom;
+      border-bottom:2px solid #ddd
+    }
+    .table>caption+thead>tr:first-child>th, .table>colgroup+thead>tr:first-child>th, .table>thead:first-child>tr:first-child>th, .table>caption+thead>tr:first-child>td, .table>colgroup+thead>tr:first-child>td, .table>thead:first-child>tr:first-child>td {
+      border-top:0
+    }
+    .table>tbody+tbody {
+      border-top:2px solid #ddd
+    }
+
+    .table .table {
+      background-color:#fff
+    }
+    .table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+      padding:5px
+    }
+    .table-bordered {
+      border:1px solid #ddd
+    }
+    .table-bordered>thead>tr>th, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>tbody>tr>td, .table-bordered>tfoot>tr>td {
+      border:1px solid #ddd
+    }
+    .table-bordered>thead>tr>th, .table-bordered>thead>tr>td {
+      border-bottom-width:2px
+    }
+    .table-striped>tbody>tr:nth-child(odd) {
+    background-color:#f9f9f9
+    }
+    .table-hover>tbody>tr:hover {
+      background-color:#f5f5f5
+    }
+    table col[class*=col-] {
+    position:static;
+    display:table-column;
+    float:none
+    }
+    table td[class*=col-], table th[class*=col-] {
+    position:static;
+    display:table-cell;
+    float:none
+    }
+    .table>thead>tr>td.active, .table>tbody>tr>td.active, .table>tfoot>tr>td.active, .table>thead>tr>th.active, .table>tbody>tr>th.active, .table>tfoot>tr>th.active, .table>thead>tr.active>td, .table>tbody>tr.active>td, .table>tfoot>tr.active>td, .table>thead>tr.active>th, .table>tbody>tr.active>th, .table>tfoot>tr.active>th {
+      background-color:#f5f5f5
+    }
+    .table-hover>tbody>tr>td.active:hover, .table-hover>tbody>tr>th.active:hover, .table-hover>tbody>tr.active:hover>td, .table-hover>tbody>tr:hover>.active, .table-hover>tbody>tr.active:hover>th {
+      background-color:#e8e8e8
+    }
+    .table>thead>tr>td.success, .table>tbody>tr>td.success, .table>tfoot>tr>td.success, .table>thead>tr>th.success, .table>tbody>tr>th.success, .table>tfoot>tr>th.success, .table>thead>tr.success>td, .table>tbody>tr.success>td, .table>tfoot>tr.success>td, .table>thead>tr.success>th, .table>tbody>tr.success>th, .table>tfoot>tr.success>th {
+      background-color:#dff0d8
+    }
+    .table-hover>tbody>tr>td.success:hover, .table-hover>tbody>tr>th.success:hover, .table-hover>tbody>tr.success:hover>td, .table-hover>tbody>tr:hover>.success, .table-hover>tbody>tr.success:hover>th {
+      background-color:#d0e9c6
+    }
+    .table>thead>tr>td.info, .table>tbody>tr>td.info, .table>tfoot>tr>td.info, .table>thead>tr>th.info, .table>tbody>tr>th.info, .table>tfoot>tr>th.info, .table>thead>tr.info>td, .table>tbody>tr.info>td, .table>tfoot>tr.info>td, .table>thead>tr.info>th, .table>tbody>tr.info>th, .table>tfoot>tr.info>th {
+      background-color:#d9edf7
+    }
+    .table-hover>tbody>tr>td.info:hover, .table-hover>tbody>tr>th.info:hover, .table-hover>tbody>tr.info:hover>td, .table-hover>tbody>tr:hover>.info, .table-hover>tbody>tr.info:hover>th {
+      background-color:#c4e3f3
+    }
+    .table>thead>tr>td.warning, .table>tbody>tr>td.warning, .table>tfoot>tr>td.warning, .table>thead>tr>th.warning, .table>tbody>tr>th.warning, .table>tfoot>tr>th.warning, .table>thead>tr.warning>td, .table>tbody>tr.warning>td, .table>tfoot>tr.warning>td, .table>thead>tr.warning>th, .table>tbody>tr.warning>th, .table>tfoot>tr.warning>th {
+      background-color:#fcf8e3
+    }
+    .table-hover>tbody>tr>td.warning:hover, .table-hover>tbody>tr>th.warning:hover, .table-hover>tbody>tr.warning:hover>td, .table-hover>tbody>tr:hover>.warning, .table-hover>tbody>tr.warning:hover>th {
+      background-color:#faf2cc
+    }
+    .table>thead>tr>td.danger, .table>tbody>tr>td.danger, .table>tfoot>tr>td.danger, .table>thead>tr>th.danger, .table>tbody>tr>th.danger, .table>tfoot>tr>th.danger, .table>thead>tr.danger>td, .table>tbody>tr.danger>td, .table>tfoot>tr.danger>td, .table>thead>tr.danger>th, .table>tbody>tr.danger>th, .table>tfoot>tr.danger>th {
+      background-color:#f2dede
+    }
+    .table-hover>tbody>tr>td.danger:hover, .table-hover>tbody>tr>th.danger:hover, .table-hover>tbody>tr.danger:hover>td, .table-hover>tbody>tr:hover>.danger, .table-hover>tbody>tr.danger:hover>th {
+      background-color:#ebcccc
+    }
+    .table-responsive {
+      min-height:.01%;
+      overflow-x:auto
+    }
+    @media screen and (max-width:767px) {
+    .table-responsive {
+    width:100%;
+    margin-bottom:15px;
+    overflow-y:hidden;
+    -ms-overflow-style:-ms-autohiding-scrollbar;
+    border:1px solid #ddd
+    }
+    .table-responsive>.table {
+    margin-bottom:0
+    }
+    .table-responsive>.table>thead>tr>th, .table-responsive>.table>tbody>tr>th, .table-responsive>.table>tfoot>tr>th, .table-responsive>.table>thead>tr>td, .table-responsive>.table>tbody>tr>td, .table-responsive>.table>tfoot>tr>td {
+    white-space:nowrap
+    }
+    .table-responsive>.table-bordered {
+    border:0
+    }
+    .table-responsive>.table-bordered>thead>tr>th:first-child, .table-responsive>.table-bordered>tbody>tr>th:first-child, .table-responsive>.table-bordered>tfoot>tr>th:first-child, .table-responsive>.table-bordered>thead>tr>td:first-child, .table-responsive>.table-bordered>tbody>tr>td:first-child, .table-responsive>.table-bordered>tfoot>tr>td:first-child {
+    border-left:0
+    }
+    .table-responsive>.table-bordered>thead>tr>th:last-child, .table-responsive>.table-bordered>tbody>tr>th:last-child, .table-responsive>.table-bordered>tfoot>tr>th:last-child, .table-responsive>.table-bordered>thead>tr>td:last-child, .table-responsive>.table-bordered>tbody>tr>td:last-child, .table-responsive>.table-bordered>tfoot>tr>td:last-child {
+    border-right:0
+    }
+    .table-responsive>.table-bordered>tbody>tr:last-child>th, .table-responsive>.table-bordered>tfoot>tr:last-child>th, .table-responsive>.table-bordered>tbody>tr:last-child>td, .table-responsive>.table-bordered>tfoot>tr:last-child>td {
+    border-bottom:0
+    }
+    }
+    .table-bordered {
+      border: 1px solid #ddd !important;
+      width: 100%;
+      max-width: 100%;
+    }
+    .panel{ 
+            border-radius: 2px;
+            border: 0;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12), 0 1px 6px rgba(0, 0, 0, 0.12);
+            border-color: #ddd;
+            margin-bottom: 20px;
+            background-color: #fff;}
+    td,th{vertical-align:middle !important;text-align:center!important;padding:0!important;}
+    .table td, .table th {
+      background-color:#fff!important
+    }
+    .table-bordered th, .table-bordered td {
+      border:1px solid #ddd!important
+    }
+    td i.fa {font-size: 22px; vertical-align: middle;}
+    .app-user-status{font-size: 12px !important;}
+    .tips-table{border:none;}
+    .tips-table td{text-align: justify;}
+    .tips-table td i.fa{font-size:18px;}
+    .whats-up{
+      text-align: justify;
+      font-size:12px;
+      height:30px;
+      line-height:30px;
+      max-width: 200px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .whats-up i{float: left;}
+    .whats-up p {padding-left: 20px; margin-bottom: 5px;}
+    .in-out-pic{
+      width: 28px;
+      height:28px;
+      border: none;
+      border-radius:4px;
+      margin: 5px;
+      vertical-align: middle;
+    }
+</style>
+</head>
+<div style="text-align:center;"><table width="600" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;"><tbody><tr><td>
+  <div style="width:600px;text-align:left;font:12px/15px simsun;color:#000;background:#fff; border:1px solid #e3e3e3;">
+    <div style=" padding: 16px; height:48px;background:#F7F7F7;">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAD4AAAArCAYAAAFX3Qv6AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3NpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpmNzcyZTczNC1jZjM5LTQzZDItOGEzYy03MDJlMDUwMWNjYmQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MDREOUJBMDRCMTRGMTFFNzk4MTU5NDkwQ0JENjcyMzkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MDREOUJBMDNCMTRGMTFFNzk4MTU5NDkwQ0JENjcyMzkiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MWQwNDA4OGUtNDIwYS00MTRiLWEzOTgtNzQ5YmU1ODZjMjlmIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOmY3NzJlNzM0LWNmMzktNDNkMi04YTNjLTcwMmUwNTAxY2NiZCIvPiA8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"
+      alt="点圈" style="margin:0;padding:0;width:54px; height:43px; display:block; float: left;"/>
+      <h1 style="margin:0;padding:0;display:inline-block; margin-left:16px; height:48px; line-height:48px; font-size:26px; color:#777777; float: left;">点圈</h1>
+    </div>
+    <div style="text-align: left; font-size:14px; padding:0 32px;">
+      <div style="margin:48px 0; margin-top:32px; padding:0;">
+      	<h1 style="font-size: 20px; line-height:25px; color:#225599;">{{group.name}} 每日出勤报告{{date.fomatStr}}</h1>
+        <div class="panel panel-default">
+          <table class="table table-bordered table-condensed">
+            <thead>
+                <tr role="row">
+                  <th>姓名</th>
+                  <th style="width: 60px;text-align: center;">工作时长</th>
+                  <th>上班时间</th>
+                  <th>下班时间</th>
+                  <!-- <th>今日简述</th> -->
+                </tr>
+              </thead>
+              <tbody>
+                {{workStatus.content}}
+              <!-- <tr>
+                <td rowspan="2" style="width:64px;">
+                  Doris
+                </td>
+                <td style="width:100px;">
+                  18 min
+                </td>
+
+                <td style="">
+                  <img class="in-out-pic" src="http://workaiossqn.tiegushi.com/6447c724-821b-11e7-ab0a-d065caa81a04" data-inout="in"/>
+                  <span style="color: orange;vertical-align: middle;">10:20</span>
+                </td>
+
+                <td style="color: red;"> — </td>
+              </tr>
+              <tr>
+                <td colspan="3" class="whats-up editWhatsUp"  style="white-space:normal">
+                    今日没有工作安排
+                </td>
+              </tr> -->
+              </tbody>
+          </table>
+        </div>
+    </div>
+    </div>
+    <div style="border-top: 1px solid #ccc; margin: 0 32px; height:64px; padding:16px 0;">
+      <div style=" width: 64px; height: 64px; display:inline-block; float: left;">
+        <img src="http://workaihost.tiegushi.com/img/logo.png" width="64px"/> 
+      </div>
+      <div style="margin: 0 auto; text-align:left; float: left; margin-left: 16px; " >
+        <p style="margin:0;padding:0;line-height:26px; font-size:16px; color:#666; text-align: left; margin-bottom:8px;">公司签到AI小助手</p>
+        <a href="https://itunes.apple.com/app/id1217329672" target="_blank" title="下载点圈iPhone版" style="text-align:center; display: inline-block; margin: 0; padding:6px 16px; text-decoration: none; color:#00c4ff; border:#00c4ff 1px solid; border-radius:4px;">iPhone</a>
+        <a href="http://app.mi.com/details?id=org.workai.everywhere" target="_blank" title="下载点圈Android版"  style="text-align:center; display: inline-block; margin: 0; margin-left:16px; padding:6px 16px; text-decoration: none; color:#00c4ff; border:#00c4ff 1px solid; border-radius:4px;">Android</a>
+      </div>
+    </div>
+    <div style="height:32px; background: #00c4ff;"></div>
+    <div style="padding:0;margin:0; height:48px; text-align: center; ">
+      <p style="padding:0;margin:0; line-height:48px; height:48px; font-size:14px;">Copyright © 2016-2017 点圈</p>
+    </div>
+  </div>
+</td></tr></tbody></table></div>

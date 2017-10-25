@@ -1888,3 +1888,229 @@ if Meteor.isServer
 
       this.response.end(JSON.stringify(syncDateSet))
     )
+
+  getInComTimeLen = (workstatus) ->
+    group_id = workstatus.group_id;
+    diff = 0;
+    out_time = workstatus.out_time;
+    today_end = workstatus.out_time;
+    time_offset = 8
+    group = SimpleChat.Groups.findOne({_id: group_id});
+    if (group && group.offsetTimeZone)
+      time_offset = group.offsetTimeZone;
+    DateTimezone = (d, time_offset) ->
+        if (time_offset == undefined)
+          if (d.getTimezoneOffset() == 420)
+              time_offset = -7
+          else
+              time_offset = 8
+        #取得 UTC time
+        utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+        local_now = new Date(utc + (3600000*time_offset))
+        today_now = new Date(local_now.getFullYear(), local_now.getMonth(), local_now.getDate(), 
+        local_now.getHours(), local_now.getMinutes());
+      
+        return today_now;
+
+    #计算out_time
+    if(workstatus.in_time)
+      date = new Date(workstatus.in_time);
+      fomatDate = date.shortTime(time_offset);
+      isToday = PERSON.checkIsToday(workstatus.in_time,group_id)
+      #不是今天的时间
+      if(!out_time && !isToday)
+        date = DateTimezone(date,time_offset);
+        day_end = new Date(date).setHours(23,59,59);
+        #day_end = new Date(this.in_time).setUTCHours(0,0,0,0) + (24 - time_offset)*60*60*1000 - 1;
+        out_time = day_end;
+        workstatus.in_time = date.getTime();
+      #今天的时间（没有离开过公司）
+      else if(!out_time and isToday)
+        now_time = Date.now();
+        out_time = now_time;
+      #今天的时间（离开公司又回到公司）
+      else if(out_time and workstatus.status is 'in' and isToday)
+        now_time = Date.now();
+        out_time = now_time;
+
+    if(workstatus.in_time and out_time)
+      diff = out_time - workstatus.in_time;
+
+    if(diff > 24*60*60*1000)
+      diff = 24*60*60*1000;
+    else if(diff < 0)
+      diff = 0;
+
+    min = diff / 1000 / 60 ;
+    hour = Math.floor(min/60)+' h '+Math.floor(min%60) + ' min';
+    if(min < 60)
+      hour = Math.floor(min%60) + ' min';
+    if(diff == 0)
+      hour = '0 min';
+    return hour;
+
+  getShortTime = (ts,group_id)->
+    time_offset = 8
+    group = SimpleChat.Groups.findOne({_id: group_id});
+    if (group && group.offsetTimeZone)
+      time_offset = group.offsetTimeZone;
+    time = new Date(ts);
+    return time.shortTime(time_offset,true);
+
+  sendEmailToGroupUsers = (group_id)->
+    if !group_id
+      return
+    group = SimpleChat.Groups.findOne({_id:group_id});
+    if !group
+      return
+
+    date = Date.now();
+    mod = 24*60*60*1000;
+    date = date - (date % mod)
+    yesterday = date - mod
+    console.log 'date:'+ yesterday
+    workstatus_content = ''
+    WorkStatus.find({'group_id': group_id, 'date': yesterday}).forEach((target)->
+      unless target.hide_it
+        text = Assets.getText('email/work-status-content.html');
+        text = text.replace('{{person_name}}', target.person_name);
+        # app_user_status_color = 'gray'
+        # app_notifaction_status = ''
+        # if target.app_user_id
+        #   app_user_status_color = 'green'
+        #   if target.app_notifaction_status is 'on'
+        #     app_notifaction_status = '<i class="fa fa-bell app-user-status" style="color:green;"></i>'
+        #   app_user_status = '<i class="fa fa-user app-user-status" style="color:green;"></i>'+app_notifaction_status
+        # text = text.replace('{{app_user_status_color}}',app_user_status_color);
+        # text = text.replace('{{app_notifaction_status}}',app_notifaction_status);
+        isStatusIN_color =  if target.status is 'in' then 'green' else 'gray'
+        if target.in_time > 0
+          if PERSON.checkIsToday(target.in_time,group_id)
+            isStatusIN_color = 'gray'
+        # text = text.replace('{{isStatusIN_color}}',isStatusIN_color);
+
+        InComTimeLen = getInComTimeLen(target)
+        text = text.replace('{{InComTimeLen}}',InComTimeLen);
+        isInStatusNotUnknownStyle = if target.in_status is 'unknown' then 'display:none;' else 'display:table-cell;'
+        text = text.replace('{{isInStatusNotUnknownStyle}}',isInStatusNotUnknownStyle);
+        isInStatusUnknownStyle = if target.in_status is 'unknown' then 'display:table-cell;' else 'display:none;'
+        text = text.replace('{{isInStatusUnknownStyle}}',isInStatusUnknownStyle);
+        if target.in_status isnt 'unknown'
+          text = text.replace('{{in_image}}',target.in_image);
+          text = text.replace('{{in_time}}',getShortTime(target.in_time,group_id))
+          in_time_Color = 'green'
+          if target.in_status is 'warning'
+            in_time_Color = 'orange'
+          else if target.in_status is 'error'
+            in_time_Color = 'red'
+          text = text.replace('{{in_time_Color}}',in_time_Color);
+        historyUnknownOutStyle = 'display:none;'
+        if isStatusIN_color is 'green'
+          historyUnknownOutStyle = 'display:table-cell;color:red;'
+        else
+          if target.out_status is 'unknown'
+            historyUnknownOutStyle = 'display:table-cell;'
+        text = text.replace('{{historyUnknownOutStyle}}',historyUnknownOutStyle);
+
+        isOutStatusNotUnknownStyle = if historyUnknownOutStyle is 'display:none;' then 'display:table-cell;' else 'display:none;'
+        text = text.replace('{{isOutStatusNotUnknownStyle}}',isOutStatusNotUnknownStyle);
+        if historyUnknownOutStyle is 'display:none;'
+          text = text.replace('{{out_image}}',target.out_image);
+          text = text.replace('{{out_time}}',getShortTime(target.out_time,group_id));
+          out_time_Color = 'green'
+          if target.out_status is 'warning'
+            out_time_Color = 'orange'
+          else if target.out_status is 'error'
+            out_time_Color = 'red'
+          text = text.replace('{{out_time_Color}}',out_time_Color);
+        whats_up = ''
+        if target.whats_up
+          whatsUpLists = [];
+          if typeof(target.whats_up) is 'string'
+            whatsUpLists.push({
+              person_name:target.person_name,
+              content:target.whats_up,
+              ts:target.in_time
+              })
+            # ...
+          else
+            whatsUpLists = target.whats_up
+          for item in whatsUpLists
+            whats_up = whats_up + '<p style="white-space: pre-wrap;"><strong>'+item.person_name+'</strong>['+getShortTime(item.ts,group_id)+']'+item.content
+        else
+          whats_up = '今天还没有工作安排...'
+        text = text.replace('{{whats_up}}',whats_up);
+
+        workstatus_content = workstatus_content + text
+
+      )
+    if workstatus_content.length > 0
+      text = Assets.getText('email/work-status-report.html');
+      text = text.replace('{{group.name}}', group.name);
+      y_date = new Date(yesterday)
+      year = y_date.getFullYear();
+      month = y_date.getMonth() + 1;
+      y_date_title = '(' + year + '-' + month + '-' +y_date.getDate() + ')';
+      text = text.replace('{{date.fomatStr}}',y_date_title)
+      text = text.replace('{{workStatus.content}}', workstatus_content);
+      subject = group.name + ' 每日出勤报告'+y_date_title
+    else
+      return
+
+      #console.log 'html:'+ JSON.stringify(text)
+    SimpleChat.GroupUsers.find({group_id:group_id}).forEach(
+      (fields)->
+        if fields and fields.user_id
+          user_id = fields.user_id
+          #user_id = 'GriTByu7MhRGhQdPD'
+          user = Meteor.users.findOne({_id:user_id});
+          if user and user.emails and user.emails.length > 0
+            email_address = user.emails[0].address
+            #email_address = 'dsun@actionteca.com'
+            isUnavailable = UnavailableEmails.findOne({address:email_address});
+            unless isUnavailable
+              #email_address = user.emails[0].address
+              console.log 'groupuser : ' + user.profile.fullname + '  email address is :' + user.emails[0].address
+
+              try
+                Email.send({
+                  to:email_address,
+                  from:'故事帖<notify@mail.tiegushi.com>',
+                  subject:subject,
+                  html : text,
+                  envelope:{
+                    from:'故事帖<notify@mail.tiegushi.com>',
+                    to:email_address + '<' + email_address + '>'
+                  }
+                })
+                console.log 'try send mail to:'+email_address
+              catch e
+                console.log 'exception:send mail error = %s, userEmail = %s',e,email_address
+                ###
+                unavailableEmail = UnavailableEmails.findOne({address:email_address})
+                if unavailableEmail
+                  UnavailableEmails.update({reason:e});
+                else
+                  UnavailableEmails.insert({address:email_address,reason:e,createAt:new Date()});
+                ###
+    )
+
+
+  Router.route('/restapi/sendReportByEmail/:token',{where:'server'}).get(()->
+      token = this.params.token         #
+
+      headers = {
+        'Content-type':'text/html;charest=utf-8',
+        'Date': Date.now()
+      }
+      this.response.writeHead(200, headers)
+      console.log '/restapi/sendReportByEmail get request'
+      #sendEmailToGroupUsers('ae64c98bdff9b674fb5dad4b')
+      groups = SimpleChat.Groups.find({})
+      groups.forEach((fields)->
+        if fields
+          sendEmailToGroupUsers(fields._id)
+        )
+
+      this.response.end(JSON.stringify({result: 'ok'}))
+    )

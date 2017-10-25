@@ -46,7 +46,7 @@ Date.prototype.parseDate = function (pattern) {
             DD = ('0' + D).slice(-2),
             h = (date.getHours() > 12)?(date.getHours()-12):date.getHours() ,
             // hh = ('0' + h).slice(-2),
-            hh = (date.getHours() > 12)?date.getHours():'0' + date.getHours(),
+            hh = (date.getHours() > 9)?date.getHours():'0' + date.getHours(),
             m = date.getMinutes(),
             mm = ('0' + m).slice(-2),
             s = date.getSeconds(),
@@ -85,4 +85,69 @@ Date.prototype.parseDate = function (pattern) {
         return result;
     };
     return format(self, pattern);
+}
+
+Date.prototype.shortTime = function (time_offset, only_H_S) {
+    /**
+     * 0：00—6:00凌晨,6:00—11:00上午，11:00—13:00中午，13:00—16:00下午，16:00—18:00傍晚，18:00—24:00晚上
+     * exmaple:
+     * d = new Date()
+     * d.shortTime() // "今天 中午 12:27"
+     */
+    
+    
+    function DateTimezone(d, time_offset) {
+        if (time_offset == undefined){
+            if (d.getTimezoneOffset() == 420){
+                time_offset = -7
+            }else {
+                time_offset = 8
+            }
+        }
+        // 取得 UTC time
+        var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+        var local_now = new Date(utc + (3600000*time_offset))
+        var today_now = new Date(local_now.getFullYear(), local_now.getMonth(), local_now.getDate(), 
+        local_now.getHours(), local_now.getMinutes());
+      
+        return today_now;
+    }
+    
+    var self = this;
+    var now = DateTimezone(new Date(), time_offset);
+    var result = '';
+    var self = DateTimezone(this, time_offset);
+
+    var DayDiff = now.getDate() - self.getDate();
+    var Minutes = self.getHours() * 60 + self.getMinutes();
+    if (DayDiff === 0) {
+        result += '今天 '
+    } else if (DayDiff === 1) {
+        result += '昨天 '
+    } else {
+        result += self.parseDate('YYYY-MM-DD') + ' ';
+    }
+    if (Minutes >= 0 && Minutes < 360) {
+        result += '凌晨 ';
+    }
+    if (Minutes >= 360 && Minutes < 660) {
+        result += '上午 ';
+    }
+    if (Minutes >= 660 && Minutes < 780) {
+        result += '中午 ';
+    }
+    if (Minutes >= 780 && Minutes < 960) {
+        result += '下午 ';
+    }
+    if (Minutes >= 960 && Minutes < 1080) {
+        result += '傍晚 ';
+    }
+    if (Minutes >= 1080 && Minutes < 1440) {
+        result += '晚上 ';
+    }
+    result += self.parseDate('h:mm');
+    if(only_H_S){
+        return self.parseDate('hh:mm');
+    }
+    return result;
 }
