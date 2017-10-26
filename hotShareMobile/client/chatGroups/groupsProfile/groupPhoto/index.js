@@ -35,17 +35,29 @@ Template.groupPhoto.helpers({
     var arrPinyin = [];
     Person.find({group_id: id},{limit: limit2.get(), sort:{createAt: -1}}).forEach(function(item){
       if(item.name && item.name.charCodeAt(0) > 255){
+        item.pinyin = makePy(item.name)[0];
         arrPinyin.push(item);
       } else {
         arrEnglish.push(item);
       }
     });
-    arrEnglish = arrEnglish.sort(function(a,b){
-      return a.name.toLowerCase().charCodeAt(0) - b.name.toLowerCase().charCodeAt(0);
-    });
-    arrPinyin = arrPinyin.sort(function(a,b){
-      return makePy(a.name)[0].toLowerCase().charCodeAt(0) - makePy(b.name)[0].toLowerCase().charCodeAt(0);
-    });
+    var compare = function (prop) {
+        return function (obj1, obj2) {
+            var val1 = obj1[prop];
+            var val2 = obj2[prop];
+            val1 = val1.replace(/(^\s*)|(\s*$)/g, ""); 
+            val2 = val2.replace(/(^\s*)|(\s*$)/g, ""); 
+            if (val1 < val2) {
+                return -1;
+            } else if (val1 > val2) {
+                return 1;
+            } else {
+                return 0;
+            }            
+        } 
+    }
+    arrEnglish = arrEnglish.sort(compare("name"));
+    arrPinyin = arrPinyin.sort(compare("pinyin"));
     arrEnglish = arrEnglish.concat(arrPinyin);
     return arrEnglish;
   },
