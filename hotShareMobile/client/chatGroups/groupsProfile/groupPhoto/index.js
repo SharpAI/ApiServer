@@ -30,7 +30,24 @@ Template.groupPhoto.helpers({
   },
   list2: function(id){
     // return SimpleChat.GroupPhotoLabel.find({group_id: id}, {limit: limit2.get(), sort: {create_time: 1}})
-    return Person.find({group_id: id},{limit: limit2.get(), sort:{createAt: -1}}).fetch();
+    // return Person.find({group_id: id},{limit: limit2.get(), sort:{createAt: -1}}).fetch();
+    var arrEnglish = [];
+    var arrPinyin = [];
+    Person.find({group_id: id},{limit: limit2.get(), sort:{createAt: -1}}).forEach(function(item){
+      if(item.name && item.name.charCodeAt(0) > 255){
+        arrPinyin.push(item);
+      } else {
+        arrEnglish.push(item);
+      }
+    });
+    arrEnglish = arrEnglish.sort(function(a,b){
+      return a.name.toLowerCase().charCodeAt(0) - b.name.toLowerCase().charCodeAt(0);
+    });
+    arrPinyin = arrPinyin.sort(function(a,b){
+      return makePy(a.name)[0].toLowerCase().charCodeAt(0) - makePy(b.name)[0].toLowerCase().charCodeAt(0);
+    });
+    arrEnglish = arrEnglish.concat(arrPinyin);
+    return arrEnglish;
   },
   conMainStyle: function(){
     if(type.get() === '未标注'){
