@@ -144,6 +144,7 @@ Template.homePage.helpers({
   enable_push:function(app_notifaction_status){
     return app_notifaction_status === 'on';
   },
+  //显示在公司的状态（历史考勤都离开公司）
   isStatusIN: function(status){
     if (this.in_time > 0) {
       var date = new Date(this.in_time);
@@ -158,6 +159,10 @@ Template.homePage.helpers({
         return false;
       }
     }
+    return status === 'in';
+  },
+  //当天在公司的状态
+  isCurrentStatusIN:function(status){
     return status === 'in';
   },
   isInStatusNormal: function(in_status){
@@ -223,8 +228,8 @@ Template.homePage.helpers({
       var date = new Date(this.in_time);
       var fomatDate = date.shortTime(time_offset);
       var isToday = fomatDate.indexOf('今天') > -1 ? true : false;
-      //不是今天的时间
-      if(!out_time && !isToday) {
+      //不是今天的时间没有out_time的或者是不是今天时间，最后一次拍到的是进门的状态的都计算到当天结束
+      if((!out_time && !isToday) || (this.status === 'in' && !isToday)) {
         date = DateTimezone(date,time_offset);
         day_end = new Date(date).setHours(23,59,59);
         //day_end = new Date(this.in_time).setUTCHours(0,0,0,0) + (24 - time_offset)*60*60*1000 - 1;

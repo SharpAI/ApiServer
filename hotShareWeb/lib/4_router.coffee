@@ -1918,8 +1918,8 @@ if Meteor.isServer
       date = new Date(workstatus.in_time);
       fomatDate = date.shortTime(time_offset);
       isToday = PERSON.checkIsToday(workstatus.in_time,group_id)
-      #不是今天的时间
-      if(!out_time && !isToday)
+      #不是今天的时间没有out_time的或者是不是今天时间，最后一次拍到的是进门的状态的都计算到当天结束
+      if((!out_time and !isToday) or (workstatus.status is 'in' and !isToday))
         date = DateTimezone(date,time_offset);
         day_end = new Date(date).setHours(23,59,59);
         #day_end = new Date(this.in_time).setUTCHours(0,0,0,0) + (24 - time_offset)*60*60*1000 - 1;
@@ -1985,9 +1985,9 @@ if Meteor.isServer
         # text = text.replace('{{app_user_status_color}}',app_user_status_color);
         # text = text.replace('{{app_notifaction_status}}',app_notifaction_status);
         isStatusIN_color =  if target.status is 'in' then 'green' else 'gray'
-        if target.in_time > 0
-          if PERSON.checkIsToday(target.in_time,group_id)
-            isStatusIN_color = 'gray'
+        # if target.in_time > 0
+        #   if PERSON.checkIsToday(target.in_time,group_id)
+        #     isStatusIN_color = 'gray'
         # text = text.replace('{{isStatusIN_color}}',isStatusIN_color);
 
         InComTimeLen = getInComTimeLen(target)
