@@ -785,7 +785,8 @@ if Meteor.isServer
           person_name: name,
           img_url: url,
           sqlid: sqlid, 
-          style: style
+          style: style,
+          ts:create_time.getTime()
         }
         PERSON.updateToDeviceTimeline(uuid,userGroup.group_id,timeObj)
         #识别准确度在0.85以上才自动打卡

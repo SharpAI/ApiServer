@@ -936,12 +936,13 @@ PERSON = {
     if(!uuid || !group_id || !obj){
       return;
     }
-    var hour = new Date();
+    var create_time = obj.ts || Date.now();
+    var hour = new Date(create_time);
     hour.setMinutes(0);
     hour.setSeconds(0);
     hour.setMilliseconds(0);
 
-    var minutes = new Date();
+    var minutes = new Date(create_time);
     minutes = minutes.getMinutes();
 
     var selector = {
