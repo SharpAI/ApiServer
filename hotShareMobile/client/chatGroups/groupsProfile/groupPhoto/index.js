@@ -45,8 +45,12 @@ Template.groupPhoto.helpers({
         return function (obj1, obj2) {
             var val1 = obj1[prop];
             var val2 = obj2[prop];
+            // 移除首尾空格
             val1 = val1.replace(/(^\s*)|(\s*$)/g, ""); 
             val2 = val2.replace(/(^\s*)|(\s*$)/g, ""); 
+            // 统一英文字符为大写
+            val1 = val1.toLocaleUpperCase();
+            val2 = val2.toLocaleUpperCase();
             if (val1 < val2) {
                 return -1;
             } else if (val1 > val2) {
