@@ -51,7 +51,7 @@ if(Meteor.isClient){
             var pahoMqttOptions = {
                 timeout: 30,
                 keepAliveInterval: 10,
-                cleanSession: true,
+                cleanSession: false,
                 onSuccess:onConnect,
                 onFailure:onFailure
             };
