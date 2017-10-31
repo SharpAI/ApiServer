@@ -176,13 +176,13 @@ if(Meteor.isServer){
 
       if (doc.hasFromHistory != true){
         MsgSession.update({_id: msgSession._id}, {$set: msgObj, $inc: {count: 1}});
-        console.log('update chat session:', msgObj);
+        console.log('update chat session:', JSON.stringify(msgObj));
       }
     } else {
       msgObj.createAt = new Date();
       msgObj.count = 1;
       MsgSession.insert(msgObj);
-      console.log('insert chat session:', msgObj);
+      console.log('insert chat session:', JSON.stringify(msgObj));
     }
   };
 }
