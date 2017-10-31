@@ -63,6 +63,7 @@ Template._simpleChatLabelDevice.close = function(){
 };
 
 Template._simpleChatLabelDevice.save = function(){
+  PUB.showWaitLoading('正在处理')
   var nas = names.get();
   if ($('#device-input-name').val()){
     nas[index.get()] = $('#device-input-name').val();
@@ -81,6 +82,7 @@ Template._simpleChatLabelDevice.save = function(){
 
   var msgObj = message.get();
   Meteor.call('get-id-by-names1', msgObj.people_uuid, nas, msgObj.to.id, function(err, res){
+    PUB.hideWaitLoading()
     if (err || !res)
       return PUB.toast('标注失败，请重试~');
 
