@@ -1,4 +1,6 @@
+// Mongo.setConnectionOptions({server: {reconnectTries:Infinity}});
 Posts = new Meteor.Collection('posts');
+RePosts = new Meteor.Collection('rePosts');
 FollowPosts = new Meteor.Collection('followposts');
 Feeds = new Meteor.Collection('feeds');
 Drafts = new Meteor.Collection(null);
@@ -22,11 +24,21 @@ Moments = new Meteor.Collection('moments');
 BlackList = new Meteor.Collection('blackList');
 AssociatedUsers = new Meteor.Collection('associatedusers');
 UserRelation = new Meteor.Collection('userrelation'); // 用户关系，为了不和以前的产生冲突，使用新表
+PushMessages = new Meteor.Collection('pushmessages');
 UserCheckoutEndLog = new Meteor.Collection('usercheckoutendlog');//用户下班的最后一条消息
 
 Recommends = new Meteor.Collection('recommends');
 Series = new Meteor.Collection('series');
 SeriesFollow = new Meteor.Collection('seriesfollow');
+
+LogonIPLogs = new Meteor.Collection('loginiplogs');
+
+Configs = new Meteor.Collection('configs');
+
+// 删除帖子
+LockedUsers = new Meteor.Collection('lockedUsers');
+BackUpPosts = new Meteor.Collection('backUpPosts');
+reporterLogs = new Meteor.Collection('reporterLogs');
 
 People = new Meteor.Collection('people');
 PeopleHis = new Meteor.Collection('peopleHis');
@@ -47,6 +59,9 @@ PersonNames = new Meteor.Collection('personNames');
   updateAt: <Date>
 }*/
 
+// 记录所有人的活动信息
+Activity = new Meteor.Collection('activity');
+
 NLPTextClassName = new Meteor.Collection('nlpTextClassName');
 /*
 NLPTextClassName = {
@@ -64,7 +79,7 @@ WorkAIUserRelations = new Meteor.Collection('workaiUserRelations');
 WorkAIUserRelations = {
  app_user_id:<Integer> //点圈用户
  app_user_name:<String> //点圈用户名
- ai_person_id:<Integer> //平板识别的人
+ ai_persons:[{id:}] //平板识别的人
  ai_in_time:<Date> //平板检测到这个人的进门时间
  ai_out_time:<Date> //平板检测到这个人的出门时间
  checkin_time:<Date> //app标记进门时间
@@ -115,6 +130,8 @@ DeviceTimeLine = new Meteor.Collection('device_timeline');
   }
 }
 */
+
+
 LableDadaSet = new Meteor.Collection('label_dataset');
 /*
 {
@@ -133,6 +150,7 @@ LableDadaSet = new Meteor.Collection('label_dataset');
   ]
 }
 */
+
 Clustering = new Meteor.Collection('clustering');
 /*
 {
@@ -144,6 +162,19 @@ Clustering = new Meteor.Collection('clustering');
     isOneSelf: true
 }
 */
+
+//不可用的邮箱账号
+UnavailableEmails = new Meteor.Collection('unavailableEmails');
+/*
+{
+  address:'xx',
+  createAt:,
+  reason:'xx',
+}
+ */
+
+
+
 if(Meteor.isServer){
   WorkAIUserRelations.allow({
     update: function(userId, doc, fields, modifier) {
@@ -179,6 +210,7 @@ if(Meteor.isServer){
       return false;
     }
   });
+
   // 发布：纠错
   Meteor.publish('clusteringLists', function(group_id, faceId, limit){
     if(!this.userId || !group_id || !faceId){
@@ -187,7 +219,7 @@ if(Meteor.isServer){
     var limit = limit || 30;
     return Clustering.find({group_id: group_id, faceId: faceId, marked: {$ne: true}},{limit: limit})
   });
-
+  
   // 发布 group 已经标注的person 信息
   Meteor.publish('group_person', function(group_id, limit){
     if(!this.userId || !group_id){
@@ -204,7 +236,7 @@ if(Meteor.isServer){
     var limit = limit || 50;
     return LableDadaSet.find({group_id: group_id,name:name},{limit: limit,sort:{createAt: -1}});
   });
-
+  
   Meteor.publish('people_new', function(){
     return People.find({}, {sort: {updateTime: -1}, limit: 50});
   });
@@ -249,13 +281,20 @@ if(Meteor.isServer){
     return WorkStatus.find({ date:{$in: dates},group_id: group_id},{sort:{date:-1}})
   });
 
-  Meteor.publish('WorkStatusByGroup', function(date, group_id){
+  Meteor.publish('WorkStatusByGroup', function(date, group_id, status){
     if(!date || !group_id){
         return this.ready();
     }
-    return WorkStatus.find({date: date,group_id: group_id});
+    var selector = {
+        date: date,
+        group_id: group_id
+    };
+    if(status){
+        selector.status = status
+    }
+    return WorkStatus.find(selector);
   });
-
+  
   WorkStatus.allow({
       update: function(userId, doc, fields, modifier){
           //if(userId === doc.app_user_id){
@@ -281,14 +320,17 @@ if(Meteor.isServer){
     }
     return this.ready();
   });
-  Meteor.publish('devices-by-uuid',function(uuid){
+ Meteor.publish('devices-by-uuid',function(uuid){
      if(!this.userId || !uuid){
          return this.ready();
      }
-     return Devices.find({uuid:uuid});
-  });
+     return [
+         Devices.find({uuid:uuid}),
+         Meteor.users.find({username: uuid})
+     ];
+ });
 
-  Meteor.publish('device-timeline', function(uuid,limit){
+ Meteor.publish('device-timeline', function(uuid,limit){
     var limit = limit || 10;
     if(!this.userId || !uuid){
       return this.ready();
@@ -297,6 +339,23 @@ if(Meteor.isServer){
     return [
         DeviceTimeLine.find({uuid: uuid},{sort:{hour:-1},limit: limit}),
         Meteor.users.find({username: uuid}),
+        SimpleChat.Groups.find({_id: device.groupId})
+    ];
+  });
+
+ Meteor.publish('device-timeline-with-hour', function(uuid,options,sort,limit){
+    var limit = limit || 10;
+    if(!this.userId || !uuid){
+      return this.ready();
+    }
+    // console.log('publish device-timeline-with-hour');
+    // console.log('uuid:'+uuid);
+    // console.log('options:'+JSON.stringify(options));
+    // console.log('sort:'+sort);
+    // console.log('limit:'+limit);
+    var device = Devices.findOne({uuid: uuid});
+    return [
+        DeviceTimeLine.find({uuid: uuid,hour: options},{sort:{hour:sort},limit: limit}),
         SimpleChat.Groups.find({_id: device.groupId})
     ];
   });
@@ -310,12 +369,54 @@ if(Meteor.isServer){
       return {uuid: people.uuid, id: people.id};
     }
   });
+  var Fiber = Meteor.npmRequire('fibers');
+  deferSetImmediate = function(func){
+      var runFunction = function () {
+      return func.apply(null);
+      }
+      if (typeof setImmediate == 'function') {
+      setImmediate(function () {
+          Fiber(runFunction).run();
+      });
+      } else {
+      setTimeout(function () {
+          Fiber(runFunction).run();
+      }, 0);
+      }
+  }
 }
 
+// 绿网检查帖子内容
+isPostSafe = function(title,addontitle,mainImage,pub){
+    // check title
+    if(syncCheckKeywords(title)){
+        return false;
+    }
+    // check addontitle
+    if(syncCheckKeywords(addontitle)){
+        return false;
+    }
+    // check mainImage
+
+    // check pub
+    for(var i=0;i<pub.length; i++){
+        // check text
+        if(pub[i].type === 'text'){
+            if(syncCheckKeywords(pub[i].text)){
+                console.log('检测到不安全内容');
+                return false;
+            }
+        }
+        // check image
+        // if(pub[i].type === 'image'){
+
+        // }
+    }
+    return true;
+}
 GetStringByteLength = function(str){
   return str ? str.replace(/[^\x00-\xff]/g, 'xx').length : 0;
 }
-
 if(Meteor.isServer)
   PushSendLogs = new Meteor.Collection('pushSendLogs');
 
@@ -324,6 +425,9 @@ ReaderPopularPosts = new Meteor.Collection('readerpopularposts');
 FavouritePosts = new Meteor.Collection('favouriteposts');
 
 ShareURLs = new Meteor.Collection('shareURLs');
+
+//推送设备token（同一手机只绑定最近一次登录的用户）
+PushTokens = new Meteor.Collection('pushTokens');
 
 if(Meteor.isClient){
   PostFriends = new Meteor.Collection("postfriends");
@@ -339,11 +443,23 @@ if(Meteor.isClient){
 if(Meteor.isServer){
   RefNames = new Meteor.Collection("refnames");
   PComments = new Meteor.Collection("pcomments");
-  // 服务器启动时查询topicId 和 '婚恋摄影家'用户Id
-  Meteor.startup(function () {
-    topicId = Topics.findOne({text: '婚恋摄影家'})._id;
-    tagFollowerId = Meteor.users.findOne({'profile.fullname':'婚恋摄影家'})._id;
-  });
+  PShares = new Meteor.Collection("pshares");
+  var insertRePost = function(doc){
+    Meteor.defer(function(){
+      RePosts.insert(doc);
+    });
+  }
+}
+
+if (Meteor.isServer) {
+  autoReview = false;
+  cfg = Configs.findOne({name: 'reviewConfig'});
+  if (cfg) {
+    autoReview = cfg.items.autoReview;
+  }
+  else {
+    Configs.insert({name: 'reviewConfig', items: {autoReview: false}});
+  }
 }
 
 // 为老版本计算默认 topicpost 数据
@@ -405,6 +521,50 @@ if(Meteor.isServer){
             }
         });
     }
+    /*Meteor.startup(function(){
+        postsInsertHookPostToBaiduDeferHandle('CJj4k9fhj2hrrZhCb')
+    })*/
+    globalPostsInsertHookDeferHandle = function(userId, postId) {
+        Meteor.defer(function(){
+            var doc = Posts.findOne({"_id": postId});
+            if (doc) {
+                console.log("globalPostsInsertHookDeferHandle: userId="+userId+", doc._id="+doc._id+", doc.import_status="+doc.import_status+", doc.isReview="+doc.isReview);
+                if (doc.isReview === true) {
+                    Posts.update({_id: postId}, {$set:{import_status: "done"}});
+                    postsInsertHookDeferHandle(userId, doc);
+                    try{
+                        postsInsertHookPostToBaiduDeferHandle(doc._id);
+                    }catch(err){
+                    }
+                    try{
+                        mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
+                    }catch(err){
+                    }
+                }
+            }
+        });
+    };
+    globalPostsUpdateHookDeferHandle = function(userId, postId,fieldNames,modifier) {
+        Meteor.defer(function(){
+            var doc = Posts.findOne({"_id": postId});
+            if (doc) {
+                console.log("globalPostsUpdateHookDeferHandle: userId="+userId+", doc._id="+doc._id+", doc.import_status="+doc.import_status+", doc.isReview="+doc.isReview);
+                if (doc.isReview === true) {
+                    Posts.update({_id: postId}, {$set:{import_status: "done"}});
+                    postsUpdateHookDeferHandle(userId,doc,fieldNames,modifier)
+                    //postsInsertHookDeferHandle(userId, doc);
+                    // try{
+                    //     postsInsertHookPostToBaiduDeferHandle(doc._id);
+                    // }catch(err){
+                    // }
+                    // try{
+                    //     mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
+                    // }catch(err){
+                    // }
+                }
+            }
+        });
+    };
     var newMeetsAddedForPostFriendsDeferHandle = function(self,taId,userId,id,fields){
         Meteor.defer(function(){
             var taInfo = Meteor.users.findOne({_id: taId},{fields: {'username':1,'email':1,'profile.fullname':1,
@@ -454,7 +614,6 @@ if(Meteor.isServer){
             }
             //getViewLists(self,taId,3);
             self.added("postfriends", id, fields);
-            self.count++;
         });
     };
     var newMeetsAddedForNewFriendsDeferHandle = function(self,taId,userId,id,fields){
@@ -570,16 +729,20 @@ if(Meteor.isServer){
     };
     var getViewLists = function(obj,userId,limit){
         var views = Viewers.find({userId: userId},{sort:{createdAt: -1},limit:limit});
+        var viewlistsIds = [];
         if (views.count()>0){
             views.forEach(function(fields){
                 var viewItem = Posts.findOne({"_id":fields.postId});
                 if(viewItem)
                 {
-                    fields.mainImage = viewItem.mainImage;
-                    fields.title = viewItem.title;
-                    try{
-                        obj.added("viewlists", fields._id, fields);
-                    }catch(error){
+                    if(viewlistsIds.indexOf(viewItem._id) === -1){
+                        viewlistsIds.push(fields.postId);
+                        fields.mainImage = viewItem.mainImage;
+                        fields.title = viewItem.title;
+                        try{
+                            obj.added("viewlists", fields._id, fields);
+                        }catch(error){
+                        }
                     }
                 }
             });
@@ -624,6 +787,7 @@ if(Meteor.isServer){
                 }
             });
             if (viewposts.count() > 0 && currentpost && userinfo) {
+                try {
                 viewposts.forEach(function (pdata) {
                     if(pdata.postId !== postId)
                     {
@@ -684,15 +848,28 @@ if(Meteor.isServer){
                         }
                     }
                 });
+                } catch (error) {
+                    console.log("Exception: viewposts.forEach, error="+error);
+                }
             }
         });
     }
-    var publicPostsPublisherDeferHandle = function(userId,postId) {
+    var publicPostsPublisherDeferHandle = function(userId,postId,self) {
         console.log('publicPostsPublisherDeferHandle...');
         Meteor.defer(function(){
+            try {
+                var postInfo=Posts.findOne({_id:postId},{fields:{owner:1}})
+                if(postInfo){
+                    // console.log('owner is '+postInfo.owner);
+                    newMeetsAddedForPostFriendsDeferHandleV2(self,postInfo.owner,userId,postInfo.owner,{me:userId,ta:postInfo.owner});
+                }
+            } catch (error){
+            }
+
             var needUpdateMeetCount = false;
             try {
                 if(userId && postId ){
+                    var postInfo=Posts.findOne({_id:postId},{fields:{owner:1}});
                     if( Viewers.find({postId:postId,userId:userId}).count() === 0 ){
                         needUpdateMeetCount = true;
                         var userinfo = Meteor.users.findOne({_id: userId },{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
@@ -703,13 +880,14 @@ if(Meteor.isServer){
                                 userId:userId,
                                 userIcon: userinfo.profile.icon,
                                 anonymous: userinfo.profile.anonymous,
+                                owner: postInfo.owner,
                                 createdAt: new Date()
                             });
                         }
                     } else {
                         userinfo = Meteor.users.findOne({_id: userId},{fields: {'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1}});
                         if(userinfo) {
-                            Viewers.update({postId: postId, userId: userId}, {$set: {createdAt: new Date()}});
+                            Viewers.update({postId: postId, userId: userId}, {$set: {createdAt: new Date()}, owner: postInfo.owner});
                         }
                     }
                 }
@@ -773,87 +951,19 @@ if(Meteor.isServer){
             catch(error){}
         });
     };
-    var topicPostsInsertHookDeferHandle = function(userId, doc, topicId, followerId){
-      Meteor.defer(function(){
-        try{
-          console.log('------------调用了为文章添加标题后的Handle---------------');
-          // var topicId = Topics.findOne({text: '婚恋摄影家'})._id;
-          // var followerId = Meteor.users.findOne({'profile.fullname':'婚恋摄影家'})._id;
-          var follows = Follower.find({followerId: followerId});
-          var post;
-          if(follows.count()>0 && doc.topicId === topicId){
-            follows.forEach(function(data){
-              if(data.userId !== doc.owner){ //判断是不是当前用户
-                post = Posts.findOne({_id: doc.postId});
-                if(data.owner === suggestPostsUserId){
-                  FollowPosts.insert({
-                    _id: doc.postId,
-                    postId: doc.postId,
-                    title: doc.title,
-                    addontitle: doc.addontitle,
-                    mainImage: doc.mainImage,
-                    mainImageStyle:post.mainImageStyle,
-                    heart:0,
-                    retweet:0,
-                    comment:0,
-                    browse: 0,
-                    publish: post.publish,
-                    owner:doc.owner,
-                    ownerName:doc.ownerName,
-                    ownerIcon:doc.ownerIcon,
-                    createdAt: doc.createdAt,
-                    followby: data.userId,
-                    tag: '婚恋摄影家'
-                  });
-                } else {
-                  FollowPosts.insert({
-                    postId: doc.postId,
-                    title: doc.title,
-                    addontitle: doc.addontitle,
-                    mainImage: doc.mainImage,
-                    mainImageStyle:post.mainImageStyle,
-                    heart:0,
-                    retweet:0,
-                    comment:0,
-                    browse: 0,
-                    publish: post.publish,
-                    owner:doc.owner,
-                    ownerName:doc.ownerName,
-                    ownerIcon:doc.ownerIcon,
-                    createdAt: doc.createdAt,
-                    followby: data.userId,
-                    tag: '婚恋摄影家'
-                  });
-                }
-                Feeds.insert({
-                  owner:doc.owner,
-                  ownerName:doc.ownerName,
-                  ownerIcon:doc.ownerIcon,
-                  eventType:'SelfPosted',
-                  postId:doc._id,
-                  postTitle:doc.title,
-                  mainImage:doc.mainImage,
-                  createdAt:doc.createdAt,
-                  heart:0,
-                  retweet:0,
-                  comment:0,
-                  followby: data.userId
-                });
-                pushnotification("newpost",doc,data.userId);
-                waitReadCount = Meteor.users.findOne({_id:data.userId}).profile.waitReadCount;
-                if(waitReadCount === undefined || isNaN(waitReadCount))
-                {
-                  waitReadCount = 0;
-                }
-                Meteor.users.update({_id: data.userId}, {$set: {'profile.waitReadCount': waitReadCount+1}});
-              }
-            });
-          }
-        }catch(error){}
-      });
+    var postsInsertHookPostToBaiduDeferHandle = function(postid) {
+        Meteor.defer(function () {
+            if(postid && postid!==''){
+                var link='http://www.tiegushi.com/posts/'+postid;
+                HTTP.post('http://data.zz.baidu.com/urls?site=www.tiegushi.com&token=sra0FwZC821iV2M0',{content:link},
+                    function (error, result) {
+                        // console.log('post to baidu '+link+' result '+JSON.stringify(result));
+                    })
+            }
+        })
     }
 
-    var sendEmailToSubscriber = function(ptype, pindex, postId, fromUserId, toUserId) {
+  sendEmailToSubscriber = function(ptype, pindex, postId, fromUserId, toUserId) {
         Meteor.defer(function() {
             var content, i, item, len, post, ref, text;
             post = Posts.findOne({
@@ -879,20 +989,26 @@ if(Meteor.isServer){
                 subject = '有人踩了此故事：《' + title + '》';
                 action = '踩';
             }
+            else if(ptype === 'pcommentReply'){
+                subject = '有人回复了您在：《' + title + '》的评论';
+                action = '回复';
+            }
 
            text = Assets.getText('email/comment-post.html');
-           text = text.replace('{{post.title}}', title);
-           text = text.replace('{{post.subtitle}}', addontitle);
+           //text = text.replace('{{post.title}}', antiSpam(post.title));
+           //text = text.replace('{{post.subtitle}}', antiSpam(post.addontitle));
+           text = text.replace('{{post.title}}', post.title);
+           text = text.replace('{{post.subtitle}}', post.addontitle);
            text = text.replace('{{action.owner}}', actionUser.profile.fullname ? actionUser.profile.fullname : actionUser.username);
-           text = text.replace('{{post.icon}}', actionUser.profile.icon);
            if(actionUser.profile.icon == '/userPicture.png'){
                text = text.replace('{{post.icon}}', 'http://' + server_domain_name + actionUser.profile.icon);
            } else {
                text = text.replace('{{post.icon}}', actionUser.profile.icon);
            }
+        //    text = text.replace('{{post.icon}}', 'http://' + server_domain_name + actionUser.profile.icon);
            text = text.replace('{{action}}', action);
-           text = text.replace('{{post.time}}', new Date().toLocaleString());
-           text = text.replace('{{post.href}}', 'http://' + server_domain_name + '/posts/' + post._id);
+           text = text.replace('{{post.time}}', PUB.formatTime(new Date()));
+           text = text.replaceAll('{{post.href}}', 'http://' + server_domain_name + '/posts/' + post._id);
            text = text.replace('{{post.mainImage}}', post.mainImage);
            content = '[暂无内容]';
 
@@ -911,6 +1027,9 @@ if(Meteor.isServer){
                 }
            }
 
+           if(content.length > 100){
+               content = content.slice(0,100);
+           }
             text = text.replace('{{post-content}}', content);
 
             try {
@@ -920,85 +1039,124 @@ if(Meteor.isServer){
                     subject: subject,
                     html: text,
                     envelope: {
-                            from: "故事贴<notify@mail.tiegushi.com>",
-                            to: notifyUser.userEmail + "<" + notifyUser.userEmail + ">"
+                        from: "故事贴<notify@mail.tiegushi.com>",
+                        to: notifyUser.userEmail + "<" + notifyUser.userEmail + ">"
                     }
                 });
 
-                console.log('send mail to:', notifyUser.userEmail);
+                // console.log('send mail to:', notifyUser.userEmail);
             } catch (_error) {
               ex = _error;
-              console.log("err is: ", ex);
+              //console.log("err is: ", ex);
+              console.log("Exception: sendEmailToSubscriber: error=%s, notifyUser.userEmail=%s", ex, notifyUser.userEmail);
             }
 
         });
     };
 
-    var sendEmailToFollower = function(id, userId){
-        Meteor.defer(function() {
-            var content, i, item, len, post, ref, text;
-            post = Posts.findOne({
-                _id: id
-            });
-           var reg = new RegExp('[.^*#]','g');
-           var title = post.title.replace(reg,'-');
-           var addontitle = post.addontitle.replace(reg,'-');;
-
-           text = Assets.getText('email/push-post.html');
-           text = text.replace('{{post.title}}', title);
-           text = text.replace('{{post.subtitle}}', addontitle);
-           text = text.replace('{{post.author}}', post.ownerName);
-           if(post.ownerIcon == '/userPicture.png'){
-               text = text.replace('{{post.icon}}', 'http://cdn.tiegushi.com/posts/' + post.ownerIcon);
-           } else {
-               text = text.replace('{{post.icon}}', post.ownerIcon);
-           }
-           text = text.replace('{{post.time}}', new Date().toLocaleString());
-           text = text.replace('{{post.href}}', 'http://cdn.tiegushi.com/posts/' + post._id);
-           text = text.replace('{{post.mainImage}}', post.mainImage);
-           content = '[暂无内容]';
-
-           ref = post.pub;
-           for (i = 0, len = ref.length; i < len; i++) {
-               item = ref[i];
-               if (item.type === 'text') {
-                   content = item.text;
-                   break;
-                }
+    var sendEmailToFollower = function(userEmail, subject, mailText){
+        // console.log('给web关注者发送邮件')
+        Meteor.defer(function () {
+            try {
+                // console.log(">>before Send")
+                Email.send({
+                    bcc: userEmail,
+                    from: '故事贴<notify@mail.tiegushi.com>',
+                    subject: subject,
+                    html: mailText
+                });
+                // console.log('send mail to:', userEmail);
+            } catch (error) {
+                //console.log("Exception: sendEmailToFollower: err=", error);
+                console.log("Exception: sendEmailToFollower: err=%s, userEmail=%s", error, userEmail);
             }
-
-            text = text.replace('{{post-content}}', content);
-
-            return Follower.find({
-                userId: userId
-            }).fetch().forEach(function(item) {
-                var ex;
-                try {
-                    Email.send({
-                        to: item.userEmail,
-                        from: '故事贴<notify@mail.tiegushi.com>',
-                        subject: '您在故事贴上关注的“' + post.ownerName + '”' + '发表了新故事' + '：《' + title + '》',
-                        html: text,
-                        envelope: {
-                            from: "故事贴<notify@mail.tiegushi.com>",
-                            to: item.userEmail + "<" + item.userEmail + ">"
-                        }
-                    });
-
-                    console.log('send mail to:', item.userEmail);
-                } catch (_error) {
-                    ex = _error;
-                    console.log("err is: ", ex);
-                }
-            });
         });
     }
+
+    var sendEmailToSeriesFollower = function(seriesId) {
+      Meteor.defer(function(){
+          try{
+              var text = Assets.getText('email/series-notify.html');
+              var series = Series.findOne({_id: seriesId});
+              if (series && series.followingEmails && series.followingEmails.length > 0) {
+                Email.send({
+                    to: series.followingEmails.toString(),
+                    from: '故事贴<notify@mail.tiegushi.com>',
+                    subject: '合辑变更通知',
+                    body: '您关注的合辑：' +series.title + '  内容有变化, 请访问查看！',
+                    html: text
+                });
+              }
+
+          } catch (error){
+              //console.log(e);
+              console.log("Exception: sendEmailToSeriesFollower: error=%s", error);
+          }
+      });
+    };
 
     var postsInsertHookDeferHandle = function(userId,doc){
         Meteor.defer(function(){
             try{
+                var postInfo = {
+                    post:'http://cdn.tiegushi.com/posts/'+doc._id,
+                    browse:doc.browse,
+                    title:doc.title,
+                    addontitle:doc.addontitle,
+                    owner:doc.owner,
+                    _id:doc._id,
+                    ownerName:doc.ownerName,
+                    createdAt:doc.createdAt,
+                    mainImage:doc.mainImage,
+                    status: '已审核'
+                }
+                postMessageToGeneralChannel(JSON.stringify(postInfo))
+            } catch(e){
+
+            }
+            try{
                 var follows=Follower.find({followerId:userId});
                 if(follows.count()>0){
+                    //  sendEmailToFollower mail html start
+                    var content, i, item, len, post, ref, mailText, subject;
+                    var userEmail = [];
+                    var post = Posts.findOne({_id: doc._id});
+                    if (!post) {
+                        console.log("Can't find the post: id="+doc._id);
+                    }
+                    var reg = new RegExp('[.^*#]','g');
+                    var title = post.title.replace(reg,'-');
+                    var addontitle = post.addontitle.replace(reg,'-');
+                    subject = '您在故事贴上关注的“' + post.ownerName + '”' + '发表了新故事' + '：《' + title + '》';
+                    mailText = Assets.getText('email/push-post.html');
+                    mailText = mailText.replace('{{post.title}}', title);
+                    mailText = mailText.replace('{{post.subtitle}}', addontitle);
+                    mailText = mailText.replace('{{post.author}}', post.ownerName);
+                    if(post.ownerIcon == '/userPicture.png'){
+                        mailText = mailText.replace('{{post.icon}}', 'http://' + server_domain_name + post.ownerIcon);
+                    } else {
+                        mailText = mailText.replace('{{post.icon}}', post.ownerIcon);
+                    }
+                    var dt = post.createdAt;
+                    mailText = mailText.replace('{{post.time}}', PUB.formatTime(dt));
+                    mailText = mailText.replaceAll('{{post.href}}', 'http://' + server_domain_name + '/posts/' + post._id);
+                    mailText = mailText.replace('{{post.mainImage}}', post.mainImage);
+                    content = '[暂无内容]';
+                    if (post.pub) {
+                        ref = post.pub;
+                        for (i = 0, len = ref.length; i < len; i++) {
+                            item = ref[i];
+                            if (item.type === 'text') {
+                                content = item.text;
+                                break;
+                            }
+                        }
+                    }
+                    if(content.length > 100){
+                        content = content.slice(0,100);
+                    }
+                    mailText = mailText.replace('{{post-content}}', content);
+                    // sendEmailToFollower mail html end
                     follows.forEach(function(data){
                         if(data.userId === suggestPostsUserId)
                         {
@@ -1056,18 +1214,26 @@ if(Meteor.isServer){
                             comment:0,
                             followby: data.userId
                         });
-                        pushnotification("newpost",doc,data.userId);
-                        sendEmailToFollower(doc._id, data.userId);
-                        dataUser = Meteor.users.findOne({_id:data.userId})
-                        waitReadCount = dataUser && dataUser.profile && dataUser.waitReadCount ? dataUser.profile.waitReadCount : 0;
+                        if(data.userEmail){
+                            console.log(data.userEmail)
+                            userEmail.push(data.userEmail);
+                        }
+                        // waitReadCount = Meteor.users.findOne({_id:data.userId}).profile.waitReadCount;
+                        var dataUser = Meteor.users.findOne({_id:data.userId});
+                        waitReadCount = dataUser && dataUser.profile && dataUser.profile.waitReadCount ? dataUser.profile.waitReadCount : 0;
                         if(waitReadCount === undefined || isNaN(waitReadCount))
                         {
                             waitReadCount = 0;
                         }
                         Meteor.users.update({_id: data.userId}, {$set: {'profile.waitReadCount': waitReadCount+1}});
+                        pushnotification("newpost",doc,data.userId);
                     });
+
+                    if (userEmail.length > 0) {
+                        sendEmailToFollower(userEmail, subject, mailText);
+                    }
                 }
-                var isInserted = FollowPosts.findOne({postId:doc._id, followby: userId}) ? true : false;
+                var isInserted = FollowPosts.findOne({followby: userId,postId:doc._id}) ? true : false;
                 if (!isInserted)  {
                     if(userId === suggestPostsUserId)
                     {
@@ -1108,11 +1274,16 @@ if(Meteor.isServer){
                             ownerIcon:doc.ownerIcon,
                             createdAt: doc.createdAt,
                             followby: userId
+                        }, function(error, _id){
+                            console.log('error: ' + error);
+                            // console.log('_id: ' + _id);
                         });
                     }
                 }
             }
-            catch(error){}
+            catch(error){
+                console.log("Exception: postsInsertHookDeferHandle: err=", error);
+            }
             try {
                 var pullingConn = Cluster.discoverConnection("pulling");
                 pullingConn.call("pullFromServer", doc._id);
@@ -1121,10 +1292,10 @@ if(Meteor.isServer){
 
             try {
                 var recommendUserIds = [];
-                Recommends.find({relatedUserId: doc.owner, isInit: {$exists: false}/*, relatedPostId: {$exists: false}*/}).forEach(function(item) {
+                Recommends.find({relatedUserId: doc.owner, relatedPostId: {$exists: false}}).forEach(function(item) {
                     if (!~recommendUserIds.indexOf(item.recommendUserId)) {
                         recommendUserIds.push(item.recommendUserId);
-                        Recommends.update({_id: item._id}, {$set: {relatedPostId: doc._id, isInit: true}});
+                        Recommends.update({_id: item._id}, {$set: {relatedPostId: doc._id}});
                     }
                 });
             }
@@ -1164,341 +1335,162 @@ if(Meteor.isServer){
             catch(error){}
         });
     };
-    var updateServerSidePcommentsHookDeferHandle = function(userId,doc,ptype,pindex){
+    var postsUpdateHookDeferHandle = function(userId,doc,fieldNames, modifier){
         Meteor.defer(function(){
-            try{
-                var set_notifiedUsersId = [];
-                var userinfo = Meteor.users.findOne({_id: userId },{'username':1,'profile.fullname':1,'profile.icon':1, 'profile.anonymous':1});
-                var needRemove = false;
-                if(ptype ==="like" && doc.pub[pindex].likeUserId && doc.pub[pindex].likeUserId[userId] === true)
-                    needRemove = true;
-                if(ptype ==="dislike" && doc.pub[pindex].dislikeUserId && doc.pub[pindex].dislikeUserId[userId] === true)
-                    needRemove = true;
-
-                // 段落转发
-                if(ptype === 'pshare'){
-                  if(PShares.find({postId:doc._id,pindex:pindex,userId: userId}).count() > 0)
-                    return PShares.update({postId:doc._id,pindex:pindex,userId: userId},{$set:{createdAt: new Date()}});
-
-                  return PShares.insert({
-                    postId:doc._id,
-                    pindex:pindex,
-                    ptype:ptype,
-                    userId: userId,
-                    createdAt: new Date()
-                  });
-                }
-                if(needRemove){
-                    //console.log('need remove '+needRemove)
-                    PComments.remove({
-                        postId:doc._id,
-                        pindex:pindex,
-                        ptype:ptype,
-                        commentUserId: userId
-                    });
-                } else {
-                    PComments.insert({
-                        postId:doc._id,
-                        pindex:pindex,
-                        ptype:ptype,
-                        commentUserId: userId,
-                        createdAt: new Date()
-                    });
-                }
-                var pcs=PComments.find({postId:doc._id});
-                //console.log("=======pcs.count=="+pcs.count()+"======================");
-                if(pcs.count()>0)
-                {
-                    //有人点评了您点评过的帖子
-                    pcs.forEach(function(data) {
-                        if(data.commentUserId !== userId && data.commentUserId !== doc.owner)
-                        {
-                            if (['pcomments', 'like', 'dislike'].indexOf(ptype) > -1 && needRemove === false && set_notifiedUsersId.indexOf(data.commentUserId) === -1) {
-                                set_notifiedUsersId.push(data.commentUserId);
-                                sendEmailToSubscriber(ptype, pindex, doc._id, userId, data.commentUserId);
-                            }
-
-                            var pfeeds = Feeds.findOne({
-                                owner: userId,
-                                followby: data.commentUserId,
-                                checked: false,
-                                postId: data.postId,
-                                pindex: pindex
-                            });
-                            if (pfeeds || needRemove) {
-                                //console.log("==================already have feed==========");
-                                if (pfeeds && needRemove)
-                                    Feeds.remove(pfeeds);
-                            } else {
-                                if (userinfo) {
-                                    Feeds.insert({
-                                        owner: userId,
-                                        ownerName: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
-                                        ownerIcon: userinfo.profile.icon,
-                                        eventType: 'pcomment',
-                                        postId: data.postId,
-                                        postTitle: doc.title,
-                                        addontitle: doc.addontitle,
-                                        pindex: pindex,
-                                        pindexText: pindex && pindex >= 0 ? doc.pub[pindex].text : '',
-                                        meComment: PComments.find({commentUserId:data.commentUserId,postId:doc._id,pindex:pindex}).count() > 0,//我是否点评过此段落
-                                        mainImage: doc.mainImage,
-                                        createdAt: new Date(),
-                                        heart: 0,
-                                        retweet: 0,
-                                        comment: 0,
-                                        followby: data.commentUserId,
-                                        checked: false
-                                    });
-                                    var notifyUser = Meteor.users.findOne({_id: data.commentUserId})
-                                    var waitReadCount = notifyUser.profile.waitReadCount;
-                                    var broswerUser = notifyUser.profile.browser;
-                                    if(broswerUser === undefined || isNaN(broswerUser)){
-                                        broswerUser = false;
-                                    }
-                                    if (waitReadCount === undefined || isNaN(waitReadCount)) {
-                                        waitReadCount = 0;
-                                    }
-                                    if(broswerUser === false)
-                                    {
-                                        Meteor.users.update({_id: data.commentUserId}, {$set: {'profile.waitReadCount': waitReadCount + 1}});
-                                        pushnotification("palsocomment", doc, data.commentUserId);
-                                    }
-                                }
-                            }
-                        }
-                        //别人赞了你评论的帖子
-                        if(doc.pub[pindex].likeUserId && (Object.keys(doc.pub[pindex].likeUserId)).length > 0) {
-                            (Object.keys(doc.pub[pindex].likeUserId)).forEach(function(likeUserId) {
-                                //if(doc.pub[pindex].likeUserId !== userId && doc.pub[pindex].likeUserId !== doc.owner) {
-                                if(likeUserId !== userId && likeUserId !== doc.owner) {
-                                    var pfeeds = Feeds.findOne({
-                                        owner: userId,
-                                        //followby: doc.pub[pindex].likeUserId,
-                                        followby: likeUserId,
-                                        checked: false,
-                                        postId: data.postId,
-                                        pindex: pindex
-                                    });
-                                    if (pfeeds || needRemove) {
-                                        //console.log("==================already have feed==========");
-                                        if (pfeeds && needRemove)
-                                            Feeds.remove(pfeeds);
-                                    } else {
-                                        if (userinfo) {
-                                            Feeds.insert({
-                                                owner: userId,
-                                                ownerName: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
-                                                ownerIcon: userinfo.profile.icon,
-                                                eventType: 'pfavourite',
-                                                postId: data.postId,
-                                                postTitle: doc.title,
-                                                addontitle: doc.addontitle,
-                                                pindex: pindex,
-                                                pindexText: pindex && pindex >= 0 ? doc.pub[pindex].text : '',
-                                                meComment: PComments.find({commentUserId:data.commentUserId,postId:doc._id,pindex:pindex}).count() > 0,//我是否点评过此段落
-                                                mainImage: doc.mainImage,
-                                                createdAt: new Date(),
-                                                heart: 0,
-                                                retweet: 0,
-                                                comment: 0,
-                                                //followby: doc.pub[pindex].likeUserId,
-                                                followby: likeUserId,
-                                                checked: false
-                                            });
-                                            //var notifyThumbhandUpUser = Meteor.users.findOne({_id: doc.pub[pindex].likeUserId})
-                                            var notifyThumbhandUpUser = Meteor.users.findOne({_id: likeUserId})
-                                            var waitThumbhandUpReadCount = notifyThumbhandUpUser.profile.waitReadCount;
-                                            var broswerThumbhandUpUser = notifyThumbhandUpUser.profile.browser;
-                                            if(notifyThumbhandUpUser === undefined || isNaN(notifyThumbhandUpUser)){
-                                                notifyThumbhandUpUser = false;
-                                            }
-                                            if (waitThumbhandUpReadCount === undefined || isNaN(waitThumbhandUpReadCount)) {
-                                                waitThumbhandUpReadCount = 0;
-                                            }
-                                            if(notifyThumbhandUpUser === false)
-                                            {
-                                                //Meteor.users.update({_id: doc.pub[pindex].likeUserId}, {$set: {'profile.waitReadCount': waitReadCount + 1}});
-                                                Meteor.users.update({_id: likeUserId}, {$set: {'profile.waitReadCount': waitReadCount + 1}});
-                                                //pushnotification("palsofavourite", doc, doc.pub[pindex].likeUserId);
-                                                pushnotification("palsofavourite", doc, likeUserId);
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    });
-                }
-
-                //有人点评了您的转发，只支持Web端转发。--begin
-                if(PShares.find({postId:doc._id,pindex:pindex}).count() > 0){
-                  PShares.find({postId:doc._id,pindex:pindex}).forEach(function(item){
-                    if(item.userId === userId)
-                      return;
-                    if(needRemove){
-                      Feeds.remove({owner: userId, postId: doc._id, pindex: pindex, followby: item.userId, eventType: 'pcommentShare'})
-                    } else {
-                        if(Feeds.find({owner: userId, postId: doc._id, pindex: pindex, followby: item.userId, eventType: 'pcommentShare'}).count() > 0)
-                            return Feeds.update({owner: userId, postId: doc._id, pindex: pindex, followby: item.userId, eventType: 'pcommentShare'}, {$set:{checked: false, createdAt: new Date()}});
-
-                        Feeds.insert({
-                            owner: userId,
-                            ownerName: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
-                            ownerIcon: userinfo.profile.icon,
-                            eventType: 'pcommentShare',
+            try {
+                var postOwner = modifier.$set.owner;
+                var follows = Follower.find({
+                    followerId: postOwner
+                });
+                if (follows.count() > 0) {
+                    follows.forEach(function(data) {
+                        var followPost = FollowPosts.findOne({
                             postId: doc._id,
-                            postTitle: doc.title,
-                            addontitle: doc.addontitle,
-                            pindex: pindex,
-                            pindexText: pindex && pindex >= 0 ? doc.pub[pindex].text : '',
-                            mainImage: doc.mainImage,
-                            createdAt: new Date(),
-                            heart: 0,
-                            retweet: 0,
-                            comment: 0,
-                            followby: item.userId,
-                            checked: false
-                        });
-                    }
-                  });
-                }
-
-                // @feiwu: 以下处理暂时保留，还不清楚处理逻辑
-                //1.查谁转发了这个帖子
-                var fds=Feeds.find({postId:doc._id,eventType:"share"})
-                if(fds.count()>0)
-                {
-                    fds.forEach(function(data){
-                        //不是点评的人转发的，不是作者转发的
-                        if(data.followby !== userId && data.followby !== doc.owner)
-                        {
-                            var pfeeds = Feeds.findOne({
-                                owner: userId,
-                                followby: data.commentUserId,
-                                checked: false,
-                                postId: data.postId,
-                                pindex: pindex
-                            });
-                            if (pfeeds || needRemove) {
-                                //console.log("==================already have feed==========");
-                                if (pfeeds && needRemove)
-                                    Feeds.remove(pfeeds);
-                            } else {
-                                if (userinfo) {
-                                    //是否已经有消息提醒
-                                    if(Feeds.find({owner: userId,postId:doc._id,eventType:"pcomment",followby: data.followby,checked: false}).count()===0)
-                                    {
-                                        Feeds.insert({
-                                            owner: userId,
-                                            ownerName: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
-                                            ownerIcon: userinfo.profile.icon,
-                                            eventType: 'pcommentShare',
-                                            postId: data.postId,
-                                            postTitle: doc.title,
-                                            addontitle: doc.addontitle,
-                                            pindex: pindex,
-                                            pindexText: pindex && pindex >= 0 ? doc.pub[pindex].text : '',
-                                            mainImage: doc.mainImage,
-                                            createdAt: new Date(),
-                                            heart: 0,
-                                            retweet: 0,
-                                            comment: 0,
-                                            followby: data.followby,
-                                            checked: false
-                                        });
-                                    }
+                            followby: data.userId
+                        })
+                        if (followPost) {
+                            FollowPosts.update({
+                                followby: data.userId,
+                                postId: doc._id
+                            }, {
+                                $set: {
+                                    title: modifier.$set.title,
+                                    addontitle: modifier.$set.addontitle,
+                                    mainImage: modifier.$set.mainImage,
+                                    mainImageStyle: modifier.$set.mainImageStyle,
+                                    publish: modifier.$set.publish,
+                                    owner: modifier.$set.owner,
+                                    ownerName: modifier.$set.ownerName,
+                                    ownerIcon: modifier.$set.ownerIcon,
+                                    createdAt: modifier.$set.createdAt,
                                 }
-                            }
-
-                        }
-                    })
-                }
-                //有人点评了您的转发，只支持Web端转发。--end
-
-                //有人点评了您发表的帖子
-                if(doc.owner !== userId)
-                {
-                    var pfeeds=Feeds.findOne({owner:userId,followby:doc.owner,checked:false,postId:doc._id,pindex:pindex});
-                    //if(pfeeds || needRemove){
-                    if(needRemove){
-                        //console.log("==================already have feed==========");
-                        if(pfeeds && needRemove)
-                            Feeds.remove(pfeeds);
-                    }else {
-                        if (userinfo) {
-                            Feeds.insert({
-                                owner: userId,
-                                ownerName: userinfo.profile.fullname ? userinfo.profile.fullname : userinfo.username,
-                                ownerIcon: userinfo.profile.icon,
-                                eventType: 'pcommentowner',
+                            });
+                        } else {
+                            FollowPosts.insert({
                                 postId: doc._id,
-                                postTitle: doc.title,
-                                addontitle:doc.addontitle,
-                                pindex:pindex,
-                                mainImage: doc.mainImage,
-                                createdAt: new Date(),
+                                title: modifier.$set.title,
+                                addontitle: modifier.$set.addontitle,
+                                mainImage: modifier.$set.mainImage,
+                                mainImageStyle: modifier.$set.mainImageStyle,
                                 heart: 0,
                                 retweet: 0,
                                 comment: 0,
-                                followby: doc.owner,
-                                checked: false
-                            });
-                            var waitReadCount = Meteor.users.findOne({_id: doc.owner}).profile.waitReadCount;
-                            if (waitReadCount === undefined || isNaN(waitReadCount)) {
-                                waitReadCount = 0;
-                            }
-                            Meteor.users.update({_id: doc.owner}, {$set: {'profile.waitReadCount': waitReadCount + 1}});
-                            pushnotification("pcommentowner", doc, userId);
-                        }
-                    }
-                }
-            }catch(error){
-                //console.log("=====================error:"+error+"=====================");
-            }
-        });
-    };
-    var postsUpdateHookDeferHandle = function(userId,doc,fieldNames, modifier){
-        Meteor.defer(function(){
-            try{
-                var follows=Follower.find({followerId:userId});
-                if(follows.count()>0){
-                    follows.forEach(function(data){
-                        FollowPosts.update(
-                            {postId:doc._id, followby:data.userId},
-                            {$set:{
-                                title:modifier.$set.title,
-                                addontitle:modifier.$set.addontitle,
-                                mainImage: modifier.$set.mainImage,
-                                mainImageStyle: modifier.$set.mainImageStyle,
+                                browse: 0,
                                 publish: modifier.$set.publish,
                                 owner: modifier.$set.owner,
                                 ownerName: modifier.$set.ownerName,
-                                ownerIcon: modifier.$set.ownerIcon
-                            }
-                            }
-                        );
+                                ownerIcon: modifier.$set.ownerIcon,
+                                createdAt: modifier.$set.createdAt,
+                                followby: data.userId
+                            }, function(error, _id) {
+                                console.log('error: ' + error);
+                                // console.log('_id: ' + _id);
+                            });
+                        }
                     });
                 }
-                FollowPosts.update(
-                    {postId:doc._id, followby:userId},
-                    {$set:{
-                        title:modifier.$set.title,
-                        addontitle:modifier.$set.addontitle,
+
+                var followPost = FollowPosts.findOne({
+                    postId: doc._id,
+                    followby: postOwner
+                })
+                if (followPost) {
+                    FollowPosts.update({
+                        followby: postOwner,
+                        postId: doc._id
+                    }, {
+                        $set: {
+                            title: modifier.$set.title,
+                            addontitle: modifier.$set.addontitle,
+                            mainImage: modifier.$set.mainImage,
+                            mainImageStyle: modifier.$set.mainImageStyle,
+                            publish: modifier.$set.publish,
+                            owner: modifier.$set.owner,
+                            ownerName: modifier.$set.ownerName,
+                            ownerIcon: modifier.$set.ownerIcon,
+                            createdAt: modifier.$set.createdAt,
+                        }
+                    });
+                } else {
+                    FollowPosts.insert({
+                        postId: doc._id,
+                        title: modifier.$set.title,
+                        addontitle: modifier.$set.addontitle,
                         mainImage: modifier.$set.mainImage,
                         mainImageStyle: modifier.$set.mainImageStyle,
+                        heart: 0,
+                        retweet: 0,
+                        comment: 0,
+                        browse: 0,
                         publish: modifier.$set.publish,
                         owner: modifier.$set.owner,
                         ownerName: modifier.$set.ownerName,
-                        ownerIcon: modifier.$set.ownerIcon
-                    }
-                    }
-                );
+                        ownerIcon: modifier.$set.ownerIcon,
+                        createdAt: modifier.$set.createdAt,
+                        followby: postOwner
+                    }, function(error, _id) {
+                        console.log('error: ' + error);
+                        // console.log('_id: ' + _id);
+                    });
+                }
+
             }
-            catch(error){}
+            catch(error){
+                console.log('posts update error: ' + error)
+            }
         });
     };
-    var followerInsertHookDeferHook=function(userId,doc,topicId){
+
+    // web端关注作者, 发送第一封email
+    var followerHookForWeb = function(userId, doc, action, modifier) {
+      Meteor.defer(function(){
+        action = action || 'insert';
+        if(action === 'insert')
+          Meteor.users.update({_id: doc.followerId}, {$inc: {'profile.web_follower_count': 1}});
+      });
+
+      //check repeated same email Accounts
+      if (action === "update") {
+        if (modifier["$set"] && modifier["$set"].userEmail) {
+          if (doc.userEmail === modifier["$set"].userEmail) {
+            console.log("##RDBG email not changed");
+            return;
+          }
+        }
+      }
+
+      var userEmail = null;
+      if (action === "insert")
+        userEmail = doc.userEmail;
+      else if (action === "update")
+        userEmail = modifier["$set"].userEmail;
+
+      if (!userEmail) {
+        console.log("null userEmail");
+        return;
+      }
+
+      // console.log("send mail to: " + userEmail);
+
+       // send mail
+        var text = Assets.getText('email/follower-notify.html');
+        Meteor.defer(function(){
+            try{
+                Email.send({
+                    to: userEmail,
+                    from: '故事贴<notify@mail.tiegushi.com>',
+                    subject: '成功关注作者：'+doc.followerName + '',
+                    body: '成功关注作者：'+doc.followerName + ',我们会不定期的为您推送关注作者的新文章！',
+                    html: text
+                });
+
+            } catch (error){
+                //console.log(e);
+                console.log("Exception: followerHookForWeb: error=%s, userEmail=%s", error, userEmail);
+            }
+        });
+    }
+    var followerInsertHookDeferHook=function(userId,doc){
         Meteor.defer(function(){
             try{
                 Meets.update({me:doc.userId,ta:doc.followerId},{$set:{isFriend:true}});
@@ -1506,51 +1498,7 @@ if(Meteor.isServer){
             catch(error){}
             try{
                 var posts=Posts.find({owner: doc.followerId});
-                // var topicId = Topics.findOne({text: '婚恋摄影家'})._id;
-                var topicPosts = TopicPosts.find({topicId: topicId});
-                var post;
-                if(topicPosts.count()>0 && doc.followerName == '婚恋摄影家'){
-                  console.log("--用户关注tag--");
-                  topicPosts.forEach(function(data){
-                      post = Posts.findOne({_id: data.postId});
-                      if(doc.userId === suggestPostsUserId)
-                        {
-                            FollowPosts.insert({
-                                _id:data.postId,
-                                postId:data.postId,
-                                title:data.title,
-                                addontitle:data.addontitle,
-                                mainImage: data.mainImage,
-                                mainImageStyle: post.mainImageStyle,
-                                publish: post.publish,
-                                owner:data.owner,
-                                ownerName:data.ownerName,
-                                ownerIcon:data.ownerIcon,
-                                createdAt: data.createdAt,
-                                followby: doc.userId,
-                                tag: '婚恋摄影家'
-                            });
-                        }
-                        else
-                        {
-                            FollowPosts.insert({
-                                postId:data.postId,
-                                title:data.title,
-                                addontitle:data.addontitle,
-                                mainImage: data.mainImage,
-                                mainImageStyle:post.mainImageStyle,
-                                owner: data.owner,
-                                publish: post.publish,
-                                ownerName:data.ownerName,
-                                ownerIcon:data.ownerIcon,
-                                createdAt: data.createdAt,
-                                followby: doc.userId,
-                                tag: '婚恋摄影家'
-                            });
-                        }
-                    });
-                }
-                else if(posts.count()>0){
+                if(posts.count()>0){
                     posts.forEach(function(data){
                         if(doc.userId === suggestPostsUserId)
                         {
@@ -1598,11 +1546,7 @@ if(Meteor.isServer){
             }
             catch(error){}
             try{
-                if(doc.followerName === '婚恋摄影家'){
-                  FollowPosts.remove({tag: '婚恋摄影家', followby: userId});
-                } else {
-                  FollowPosts.remove({owner:doc.followerId,followby:userId});
-                }
+                FollowPosts.remove({owner:doc.followerId,followby:userId});
             }
             catch(error){}
         });
@@ -1638,7 +1582,9 @@ if(Meteor.isServer){
                         comment: 0,
                         followby: post.owner
                     });
-                    var waitReadCount = Meteor.users.findOne({_id: post.owner}).profile.waitReadCount;
+                    var dataUser = Meteor.users.findOne({_id:post.owner});
+                    var waitReadCount = dataUser && dataUser.profile && dataUser.profile.waitReadCount ? dataUser.profile.waitReadCount : 0;
+                    // var waitReadCount = Meteor.users.findOne({_id: post.owner}).profile.waitReadCount;
                     if (waitReadCount === undefined || isNaN(waitReadCount)) {
                         waitReadCount = 0;
                     }
@@ -1662,7 +1608,9 @@ if(Meteor.isServer){
                                 comment: 0,
                                 followby: recomments[item].commentUserId
                             });
-                            waitReadCount = Meteor.users.findOne({_id: recomments[item].commentUserId}).profile.waitReadCount;
+                            dataUser = Meteor.users.findOne({_id: recomments[item].commentUserId});
+                            waitReadCount = dataUser && dataUser.profile && dataUser.profile.waitReadCount ? dataUser.profile.waitReadCount : 0;
+                            // waitReadCount = Meteor.users.findOne({_id: recomments[item].commentUserId}).profile.waitReadCount;
                             if (waitReadCount === undefined || isNaN(waitReadCount)) {
                                 waitReadCount = 0;
                             }
@@ -1723,6 +1671,129 @@ if(Meteor.isServer){
             }
         });
     };
+
+    Meteor.publish('seriesFollow', function(seriesId) {
+      return SeriesFollow.find({owner: this.userId, seriesId: seriesId}, {limit: 1});
+    });
+
+    Meteor.publish('postInfoById', function(id) {
+      return Posts.find({_id: id}, {limit: 1});
+    });
+
+    Meteor.publish('userNewBellCount', function(userId) {
+      var self = this;
+      var count = 0;
+      var feeds = [];
+      var initializing = true;
+
+      var handle = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).observeChanges({
+        added: function (id) {
+          count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
+          feeds = Feeds.find({followby: userId}, {sort: {createdAt: -1}, limit: 30}).fetch();
+          self.added("userNewBellCount", id, {count: count, feeds: feeds});
+        },
+        changed: function (id) {
+          count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
+          feeds = Feeds.find({followby: userId}, {sort: {createdAt: -1}, limit: 30}).fetch();
+          try {
+             self.changed("userNewBellCount", id, {count: count, feeds: feeds});
+          }
+          catch (e) {
+          }
+
+        },
+        removed: function (id) {
+          count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
+          feeds = Feeds.find({followby: userId}, {sort: {createdAt: -1}, limit: 30}).fetch();
+          self.removed("userNewBellCount", id, {count: count, feeds: feeds});
+        }
+      });
+
+      initializing = false;
+      count = Feeds.find({followby: userId, isRead: {$ne: true},checked: {$ne: true}}, {limit: 30}).count();
+      feeds = Feeds.find({followby: userId}, {sort: {createdAt: -1}, limit: 30}).fetch();
+      self.added("userNewBellCount", userId, {count: count, feeds: feeds});
+    //   self.added("userNewBellCount", userId, {count: count});
+      self.ready();
+
+      self.onStop(function () {
+        handle.stop();
+      });
+    });
+
+    Meteor.publish('serverImportPostStatus',function(postId){
+        var self = this;
+        var initializing = true;
+        var post = [];
+        var pub = [];
+        var reload = false;
+
+        var handle = Posts.find({_id: postId}).observeChanges({
+            added: function (id) {
+                post = Posts.findOne({_id: postId});
+                status = post.import_status;
+                reload = false;
+                post.pub.forEach(function(item){
+                    if(item.isImage){
+                        pub.push({_id: item._id, imgUrl:item.imgUrl,index:item.index,souImgUrl:item.souImgUrl})
+                    }
+                    if(item.inIframe || item.type === 'video' || item.type === 'music')
+                        reload = true;
+                });
+                self.added("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub, reload: reload});
+            },
+            changed: function (id) {
+                post = Posts.findOne({_id: postId});
+                reload = false;
+                post.pub.forEach(function(item){
+                    if(item.isImage){
+                        pub.push({_id: item._id, imgUrl:item.imgUrl,index:item.index,souImgUrl:item.souImgUrl})
+                    }
+                    if(item.inIframe || item.type === 'video' || item.type === 'music')
+                        reload = true;
+                });
+                try {
+                        self.changed("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub, reload: reload});
+                    } catch (e) {
+                    }
+            },
+            removed: function (id) {
+                post = Posts.findOne({_id: postId});
+                reload = false;
+                post.pub.forEach(function(item){
+                    if(item.isImage){
+                        pub.push({_id: item._id, imgUrl:item.imgUrl,index:item.index,souImgUrl:item.souImgUrl})
+                    }
+                    if(item.inIframe || item.type === 'video' || item.type === 'music')
+                        reload = true;
+                });
+                self.removed("serverImportPostStatus", id, {import_status:post.import_status,mainImage: post.mainImage, pub: pub, reload: reload});
+            }
+        });
+        initializing = false;
+        post = Posts.findOne({_id: postId});
+        post.pub.forEach(function(item){
+            if(item.isImage){
+                pub.push({_id: item._id, imgUrl:item.imgUrl,index:item.index,souImgUrl:item.souImgUrl})
+            }
+            if(item.inIframe || item.type === 'video' || item.type === 'music')
+                reload = true;
+        });
+        self.added("serverImportPostStatus", postId, {import_status:post.import_status,mainImage: post.mainImage, pub: pub, reload: reload});
+        self.ready();
+
+        self.onStop(function () {
+            handle.stop();
+        });
+    });
+
+    Meteor.publish('configs', function() {
+      if(this.userId === null){
+          return this.ready();
+      }
+      return Configs.find();
+    });
+
     Meteor.publish("list_recommends", function(postId) {
         if(this.userId === null){
             return this.ready();
@@ -1751,28 +1822,35 @@ if(Meteor.isServer){
             });*/
         }
     });
-    
+
     Meteor.publish("mySeries", function(limit) {
         if(this.userId === null || !Match.test(limit, Number))
           return this.ready();
         else
-          return Series.find({owner: this.userId,publish: true}, {sort: {createdAt: -1}, limit:limit});
+          return Series.find({owner: this.userId}, {sort: {createdAt: -1}, limit:limit});
     });
-
     Meteor.publish("oneSeries", function(seriesId){
         if(this.userId === null)
-          return this.ready();
-        else
-          return Series.find({_id: seriesId});
-    });
-
-    Meteor.publish("seriesPosts", function(ids){
-        if(this.userId === null){
             return this.ready();
-        } else {
-            return Posts.find({})
+        else {
+            var cursor = Series.find({_id: seriesId});
+            cursor.observeChanges({
+              changed:function (id,fields){
+                  var item = null;
+                  var needNotify = false;
+                  for (item in fields) {
+                    if (item == 'title' || item == 'postLists') {
+                      needNotify = true;
+                    }
+                  }
+                  if (needNotify) {
+                    sendEmailToSeriesFollower(seriesId);
+                  }
+              }
+            });
+            return cursor;
         }
-    })
+    });
     Meteor.publish("suggestPosts", function (limit) {
         if(this.userId === null){
             return this.ready();
@@ -1920,7 +1998,7 @@ if(Meteor.isServer){
             var self = this;
             self.count = 0;
             self.meeterIds=[];
-            publicPostsPublisherDeferHandle(userId,postId);
+            //publicPostsPublisherDeferHandle(userId,postId,self);
             var handle = Meets.find({me: userId,meetOnPostId:postId},{sort: {createdAt: -1},limit:limit}).observeChanges({
                 added: function (id,fields) {
                     var taId = fields.ta;
@@ -1954,24 +2032,36 @@ if(Meteor.isServer){
             var self = this;
             self.count = 0;
             self.meeterIds=[];
-            self.added("postfriendsCount", userId+'_'+postId, {count: 0});
-            publicPostsPublisherDeferHandle(userId,postId);
+            self.docIds=[];
+            try{self.added("postfriendsCount", userId+'_'+postId, {count: 0});}catch(e){}
+            //此处为了修复再次打开帖子时新朋友消失的问题，需要publicPostsPublisherDeferHandle重新计算相遇次数
+            if(limit <= 10){
+                publicPostsPublisherDeferHandle(userId,postId,self);
+            }
             var handle = Meets.find({me: userId,meetOnPostId:postId},{sort: {createdAt: -1},limit:limit}).observeChanges({
                 added: function (id,fields) {
-                    console.log(self.meeterIds.length);
                     var taId = fields.ta;
                     //Call defered function here:
                     if (taId !== userId){
-                        if(self.meeterIds.indexOf(taId) === -1){
+                        if(!~self.meeterIds.indexOf(taId)){
                             self.meeterIds.push(taId);
+                            self.docIds.push(id);
                             newMeetsAddedForPostFriendsDeferHandleV2(self,taId,userId,id,fields);
                         }
                     }
-                    self.changed("postfriendsCount", userId+'_'+postId, {count: Meets.find({me: userId,meetOnPostId:postId}).count()});
+                    try{self.changed("postfriendsCount", userId+'_'+postId, {count: Meets.find({me: userId,meetOnPostId:postId}).count()});}catch(e){}
+                    self.count++;
                 },
                 changed: function (id,fields) {
-                    self.changed("postfriends", id, fields);
-                    self.changed("postfriendsCount", userId+'_'+postId, {count: Meets.find({me: userId,meetOnPostId:postId}).count()});
+                    // self.changed("postfriends", id, fields);
+                    if(~self.docIds.indexOf(id)){
+                        try{
+                            self.changed("postfriends", id, fields);
+                        }
+                        catch(error){
+                        }
+                    }
+                    try{self.changed("postfriendsCount", userId+'_'+postId, {count: Meets.find({me: userId,meetOnPostId:postId}).count()});}catch(e){}
                 }/*,
                  removed:function (id,fields) {
                  self.removed("postfriends", id, fields);
@@ -1981,6 +2071,7 @@ if(Meteor.isServer){
             self.onStop(function () {
                 handle.stop();
                 delete self.meeterIds
+                delete self.docIds
             });
         }
     });
@@ -2051,7 +2142,7 @@ if(Meteor.isServer){
       );
   });
   Meteor.publish('allBlackList', function () {
-    return BlackList.find({},{limit: 10});
+    return BlackList.find({blackBy:this.userId},{limit: 1});
   });
   Meteor.publish("refcomments", function() {
     Max = RefComments.find().count()-8;
@@ -2095,6 +2186,9 @@ if(Meteor.isServer){
     else
       return Posts.find({owner: this.userId},{sort: {createdAt: -1}});
   });
+  Meteor.publish("staticPost", function(postId) {
+    return Posts.find({_id: postId},{sort: {createdAt: -1}});
+  });
   Meteor.publish('pcomments', function() {
       if(this.userId === null)
           return this.ready();
@@ -2112,11 +2206,21 @@ if(Meteor.isServer){
           return this.ready();
       else {
           Counts.publish(this, 'myPostsCount', Posts.find({owner: this.userId,publish: {$ne: false}}), {nonReactive: true });
-          Counts.publish(this, 'mySavedDraftsCount', SavedDrafts.find({owner: this.userId}), {nonReactive: true });
-          Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { nonReactive: true });
-          Counts.publish(this, 'myFollowedByCount-'+this.userId, Follower.find({followerId:this.userId,userEmail: {$exists: false}}), { noReady: true });
-          Counts.publish(this, 'myFollowToCount', Follower.find({userId:this.userId}), {nonReactive: true });
+          Counts.publish(this, 'mySavedDraftsCount', SavedDrafts.find({owner: this.userId}), {reactive: true });
+          //Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { nonReactive: true });
+          Counts.publish(this, 'myFollowedByCount', Follower.find({followerId:this.userId}), { reactive: true });
+          Counts.publish(this, 'myFollowedByCount-'+this.userId, Follower.find({followerId:this.userId, userEmail: {$exists: false}}), { noReady: true });
+          //Counts.publish(this, 'myFollowToCount', Follower.find({userId:this.userId}), {nonReactive: true });
+          Counts.publish(this, 'myFollowToCount', Follower.find({userId:this.userId}), {reactive: true });
+          Counts.publish(this, 'myEmailFollowerCount', Follower.find({followerId:this.userId, userEmail: {$exists: true}}), {reactive: true });
           Counts.publish(this, 'myEmailFollowerCount-'+this.userId, Follower.find({followerId:this.userId, userEmail: {$exists: true}}), {noReady: true });
+      }
+  });
+  Meteor.publish('authorReadPopularPosts', function(owner,currPostId,limit){
+     if(this.userId === null|| !Match.test(limit, Number)) {
+          return this.ready();
+      } else {
+          return Posts.find({owner: owner, publish: true},{sort: {browse: -1},limit: limit,fields:{title:1,publish:1,owner:1,browse:1,latestSeries:1}});
       }
   });
   Meteor.publish("userRecommendStory", function(limit) {
@@ -2124,7 +2228,7 @@ if(Meteor.isServer){
           return this.ready();
       }
       else{
-          return Posts.find({owner: this.userId, publish: {$ne: false}},{sort: {createdAt: -1},limit:limit,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1,pub:1}});
+          return Posts.find({owner: this.userId, publish: true},{sort: {createdAt: -1},limit:limit,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1,latestSeries:1}});
       }
   });
   Meteor.publish("postsWithLimit", function(limit) {
@@ -2132,20 +2236,9 @@ if(Meteor.isServer){
           return this.ready();
       }
       else{
-          return Posts.find({owner: this.userId, publish: {$ne: false}},{sort: {createdAt: -1},limit:limit,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1}});
+          return Posts.find({owner: this.userId, publish: true},{sort: {createdAt: -1},limit:limit,fields:{mainImage:1,title:1,addontitle:1,publish:1,owner:1,ownerName:1,createdAt:1,ownerIcon:1,browse:1,latestSeries:1}});
       }
   });
-
-  /*
-  Meteor.publish("mypostedposts", function(postId) {
-      if(this.userId === null) {
-          return this.ready();
-      }
-      else{
-          return Posts.find({_id: postId},{sort: {createdAt: -1}});
-      }
-  });
-*/
   Meteor.publish("savedDraftsWithLimit", function(limit) {
       if(this.userId === null|| !Match.test(limit, Number)){
           return this.ready();
@@ -2198,29 +2291,61 @@ if(Meteor.isServer){
       else
         return Posts.find({_id: postId});
   });
-
   Meteor.publish('postViewCounter', function(postId) {
-    Counts.publish(this, 'post_viewer_count_'+this.userId, Viewers.find({
+    Counts.publish(this, 'post_viewer_count_'+this.userId+'_'+postId, Viewers.find({
         postId: postId, userId: this.userId
     },{limit:1,fields: { '_id': 1, 'count': 1 }}), {countFromField: function(doc){
         return doc.count;
     }});
   });
-
   Meteor.publish('postsAuthor', function(postId) {
-    var owner = Posts.findOne({_id:postId}).owner;
-    return Meteor.users.find({_id:owner},{limit:1,fields:{'username': 1,'profile.fullname': 1,'profile.icon': 1,'profile.followTips':1}});
+    var post,owner;
+    post = Posts.findOne({_id:postId})
+    if(post && post.owner){
+        owner = post.owner;
+        return Meteor.users.find({_id:owner},{fields:{'username': 1,'profile.fullname': 1,'profile.icon': 1,'profile.followTips':1, 'myHotPosts':1}});
+    } else {
+        return this.ready();
+    }
   });
   Meteor.publish("publicPosts", function(postId) {
-      if(this.userId === null || !Match.test(postId, String))
-        return this.ready();
-      else{
+      if(!Match.test(postId, String)){
+          return this.ready();
+      }else if(this.userId === null){
+          return Posts.find({_id: postId})
+      }else{
         var self = this;
+        var userId = this.userId;
         //publicPostsPublisherDeferHandle(self.userId,postId);
+
+          var self = this;
+          self.count = 0;
+          self.meeterIds=[];
+        publicPostsPublisherDeferHandle(userId,postId,self);
         updateMomentsDeferHandle(self,postId);
         mqttPostViewHook(self.userId,postId);
-        return Posts.find({_id: postId});
+
+        return [
+          Posts.find({_id: postId}),
+          //Viewers.find({postId: postId, userId: this.userId}, {sort: {count: -1}, limit: tip_follower_read_count}),
+        //   Meteor.users.find({_id: Posts.findOne({_id: postId}).owner}),
+          Follower.find({userId: this.userId})
+        ];
       }
+  });
+
+  //Added for the static web to trigger post reading related operation
+  Meteor.publish("reading", function (postId) {
+      if(this.userId === null || !Match.test(postId, String)){
+          return this.ready();
+      }
+      var self = this;
+      self.count = 0;
+      self.meeterIds=[];
+      publicPostsPublisherDeferHandle(this.userId,postId,self);
+      updateMomentsDeferHandle(self,postId);
+      mqttPostViewHook(self.userId,postId);
+      return this.ready();
   });
   /*Meteor.publish("drafts", function() {
         return Drafts.find({owner: this.userId});
@@ -2231,11 +2356,23 @@ if(Meteor.isServer){
     else
       return SavedDrafts.find({owner: this.userId},{sort: {createdAt: -1}});
   });
+  Meteor.publish("loginFeeds", function() {
+    if(this.userId === null)
+      return this.ready();
+    else
+      return Feeds.find({followby: this.userId}, {sort: {createdAt: -1}, limit:50});
+  });
   Meteor.publish("feeds", function(limit) {
     if(this.userId === null || !Match.test(limit, Number))
       return this.ready();
     else
       return Feeds.find({followby: this.userId}, {sort: {createdAt: -1}, limit:limit});
+  });
+  Meteor.publish("feedsByUserId", function(userId, limit) {
+    if(this.userId === null || !Match.test(limit, Number))
+      return this.ready();
+    else
+      return Feeds.find({followby: userId}, {sort: {createdAt: -1}, limit:limit});
   });
   Meteor.publish("userFeeds", function(followId,postId) {
     if(this.userId === null || !Match.test(followId, String) || !Match.test(postId, String))
@@ -2305,7 +2442,8 @@ if(Meteor.isServer){
             fields: {
                 'username': 1,
                 'profile.fullname': 1,
-                'profile.icon': 1
+                'profile.icon': 1,
+                'is_device':1
             }
         });
   });
@@ -2323,7 +2461,7 @@ if(Meteor.isServer){
     if(!Match.test(postId, String) || !Match.test(userId, String))
       return this.ready();
     else
-      return Viewers.find({postId: postId,userId: userId}, {sort: {createdAt: -1}, limit:2});
+      return Viewers.find({postId: postId, userId: userId}, {sort: {createdAt: -1}, limit:2});
   });
   Meteor.publish("recentPostsViewByUser", function(userId) {
     if(!Match.test(userId, String))
@@ -2342,80 +2480,7 @@ if(Meteor.isServer){
       return this.ready();
     else
       return Reports.find({postId: postId},{limit:5});
-  });/*
-  Meteor.publish("messages", function(to){
-    if(this.userId === null || to === null || to === undefined)
-      return this.ready();
-
-    var filter = {};
-    to = to || {};
-
-    switch(to.type){
-      case "user":
-        filter = {
-          $or: [
-            // 我发给ta的
-            {userId: this.userId, toUserId: to.id},
-            // ta发给我的
-            {userId: to.id, toUserId: this.userId}
-          ]
-        };
-        break;
-      case "group":
-        var group = MsgGroup.findOne(to.id);
-        filter = {
-          $or: [
-            // 我发的群消息
-            {userId: this.userId, toGroupId: group._id},
-            // 给我的群消息
-            {'toUsers.userId': this.userId, toGroupId: group._id}
-          ]
-        };
-        break;
-      case "session":
-        var session = MsgSession.findOne(to.id);
-        if(session.sesType === 'singleChat'){
-          filter = {
-            $or: [
-              // 我发给ta的
-              {userId: this.userId, toUserId: session.toUserId},
-              // ta发给我的
-              {userId: session.toUserId, toUserId: this.userId}
-            ]
-          };
-        }else{
-          filter = {
-            $or: [
-              // 我发的群消息
-              {userId: this.userId, toGroupId: session.toGroupId},
-              // 给我的群消息
-              {'toUsers.userId': this.userId, toGroupId: session.toGroupId}
-            ]
-          };
-        }
-        break;
-      default:
-        return this.ready();
-    }
-
-    return Messages.find(filter, {sort: {createTime: 1}});
   });
-  */
-    /*
-  Meteor.publish("msgSession", function(){
-    if(this.userId === null)
-      return this.ready();
-    else
-      return MsgSession.find({userId: this.userId}, {sort: {updateTime: -1}});
-  });*/
-  /*
-  Meteor.publish("msgGroup", function(){
-    if(this.userId === null)
-      return this.ready();
-    else
-      return MsgGroup.find({"users.userId": this.userId});
-  });
-  */
   Meteor.publish('versions', function() {
     return Versions.find({});
   });
@@ -2429,6 +2494,23 @@ if(Meteor.isServer){
         })
         return [
             ReaderPopularPosts.find({userId: this.userId},{limit:5}),
+            Posts.find({_id:{$in: postIds}})
+        ]
+    }
+    else {
+        return this.ready();
+    }
+  });
+
+  Meteor.publish('readerpopularpostsbyuid', function(uid) {
+    if(this.userId) {
+        // return ReaderPopularPosts.find({userId: this.userId},{limit:3});
+        var postIds = [];
+        ReaderPopularPosts.find({userId: uid},{limit:5}).forEach(function(item){
+            postIds.push(item.postId)
+        })
+        return [
+            ReaderPopularPosts.find({userId: uid},{limit:5}),
             Posts.find({_id:{$in: postIds}})
         ]
     }
@@ -2459,7 +2541,12 @@ if(Meteor.isServer){
               }
           },
           changed: function(_id, record){
-              pub.changed('associatedusers', _id, record);
+              try {
+                    pub.changed('associatedusers', _id, record);
+                  }
+              catch (e) {
+                  }
+
           },
           removed: function(_id, record){
               pub.removed('associatedusers', _id, record);
@@ -2480,7 +2567,11 @@ if(Meteor.isServer){
               }
           },
           changed: function(_id, record){
-              pub.changed('associatedusers', _id, record);
+              try {
+                    pub.changed('associatedusers', _id, record);
+                  }
+              catch (e) {
+                  }
           },
           removed: function(_id, record){
               pub.removed('associatedusers', _id, record);
@@ -2509,6 +2600,115 @@ if(Meteor.isServer){
         return this.ready();
     }
   });
+
+//   监控
+  Meteor.publish('rpOwner', function(userId) {
+      return Meteor.users.find({_id: userId}, {
+          fields: {username: 1, 'profile.icon': 1, 'profile.fullname': 1,'token':1,'profile.location':1,'profile.lastLogonIP':1,'type':1,'anonymous':1}});
+  });
+  Meteor.publish('reporter_post_one', function(id) {
+      return Posts.find({_id: id}, {limit:1});
+  });
+  Meteor.publish('rpPosts', function(type,selects,options) {
+      // console.log ('type='+type)
+      // console.log(type == 'montior')
+      // console.log(JSON.stringify(selects));
+      options.limit = options.limit || 10;
+      options.skip = options.skip || 0;
+      console.log('options:', options);
+
+      if(type == 'montior'){
+        options.fields = options.fields || {title:1,addontitle:1,ownerName:1,createdAt:1,reviewAt:1,owner:1};
+        if(selects.startDate && selects.endDate){
+            // Counts.publish(this,'rpPostsCounts',Posts.find({
+            //     isReview:true,
+            //     createdAt:{
+            //         $gt: new Date(selects.startDate),
+            //         $lte: new Date(selects.endDate),
+            //         $exists: true
+            //     }},options),{noReady: true});
+            return Posts.find({
+                isReview:true,
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate)}
+                },options);
+        }
+        //Counts.publish(this,'rpPostsCounts',Posts.find({isReview:true,createdAt:{$exists: true}}),{noReady: true});
+        return Posts.find({isReview:true},options);
+      }
+      if(type == 'recover'){
+          if(selects.startDate && selects.endDate){
+            // Counts.publish(this,'rpPostsCounts',BackUpPosts.find({
+            //     createdAt:{
+            //         $gt: new Date(selects.startDate),
+            //         $lte: new Date(selects.endDate),
+            //         $exists: true}
+            //     },options),{noReady: true});
+            return BackUpPosts.find({
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate)}
+                },options);
+        }
+        // Counts.publish(this,'rpPostsCounts',BackUpPosts.find({createdAt:{$exists: true}}),{noReady: true});
+        return BackUpPosts.find({},options)
+      }
+      if(type == 'review'){
+        if(selects.startDate && selects.endDate){
+            // console.log('1')
+            // Counts.publish(this,'rpPostsCounts',RePosts.find({
+            //     createdAt:{
+            //         $gt: new Date(selects.startDate),
+            //         $lte: new Date(selects.endDate),
+            //         $exists: true
+            //     }},options),{noReady: true});
+            return RePosts.find({
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate)}
+                },options);
+        }
+        // Counts.publish(this,'rpPostsCounts',RePosts.find({createdAt:{$exists: true}}),{noReady: true});
+        return RePosts.find({},options);
+        // if(selects.startDate && selects.endDate){
+        //     // console.log('1')
+        //     Counts.publish(this,'rpPostsCounts',Posts.find({
+        //         isReview: false,
+        //         createdAt:{
+        //             $gt: new Date(selects.startDate),
+        //             $lte: new Date(selects.endDate),
+        //             $exists: true
+        //         }},options),{noReady: true});
+        //     return Posts.find({
+        //         isReview: false,
+        //         createdAt:{
+        //             $gt: new Date(selects.startDate),
+        //             $lte: new Date(selects.endDate)}
+        //         },options);
+        // }
+        // Counts.publish(this,'rpPostsCounts',Posts.find({createdAt:{$exists: true},isReview: false}),{noReady: true});
+        // return Posts.find({isReview: false},options);
+      }
+      if(type == 'unblock'){
+          if(selects.startDate && selects.endDate){
+            // Counts.publish(this,'rpPostsCounts',LockedUsers.find({
+            //     createdAt:{
+            //         $gt: new Date(selects.startDate),
+            //         $lte: new Date(selects.endDate),
+            //         $exists: true}
+            //     },options),{noReady: true});
+            return LockedUsers.find({
+                createdAt:{
+                    $gt: new Date(selects.startDate),
+                    $lte: new Date(selects.endDate)}
+                },options);
+        }
+        // Counts.publish(this,'rpPostsCounts',LockedUsers.find({createdAt:{$exists: true}}),{noReady: true});
+        return LockedUsers.find({},options)
+      }
+  });
+
   function publishTheFavouritePosts(self,userId,limit){
       var pub = self
       var cursorHandle=FavouritePosts.find({userId: userId}, {sort: {createdAt: -1}, limit: limit}).observeChanges({
@@ -2524,7 +2724,12 @@ if(Meteor.isServer){
               })
           },
           changed: function(_id, record){
-              pub.changed('favouriteposts', _id, record);
+              try {
+                   pub.changed('favouriteposts', _id, record);
+                  }
+              catch (e) {
+                  }
+
           },
           removed: function(_id, record){
               pub.removed('favouriteposts', _id, record);
@@ -2554,14 +2759,7 @@ if(Meteor.isServer){
     return publishTheFavouritePosts(this,userId,limit)
   });
 
-  Meteor.publish('SaveDraftsByLogin', function() {
-    if(!this.userId)
-      return [];
-
-    return SavedDrafts.find({owner: this.userId}, {sort: {createdAt: -1}});
-  });
-
-   Meteor.publish('webUserPublishPosts', function(limit) {
+  Meteor.publish('webUserPublishPosts', function(limit) {
     if(!this.userId)
       return this.ready();
 
@@ -2575,9 +2773,12 @@ if(Meteor.isServer){
         console.log(userId)
         return doc.owner === userId;
     },
-    update: function(userId, doc) {
+    update: function(userId, doc, fieldNames, modifier) {
+        if (fieldNames == 'followingEmails') {
+          return true;
+        }
         return doc.owner === userId;
-    },
+     },
     remove: function(userId, doc) {
         return doc.owner === userId;
     }
@@ -2594,13 +2795,25 @@ if(Meteor.isServer){
         return doc.owner === userId;
     }
   });
-  
+
   Recommends.allow({
-      update: function(userId, doc, fieldNames, modifier) {
-        if(modifier.$set["readUsers"]){
-            return true;
-        }
-        return false;
+    update: function(userId, doc, fieldNames, modifier) {
+      if(modifier.$set["readUsers"]){
+          return true;
+      }
+      return false;
+    }
+  });
+
+  LogonIPLogs.allow({
+      insert: function (userId, doc) {
+          return doc.userId === userId;
+      },
+      update: function (userId, doc, fields, modifier) {
+          return doc.userId === userId;
+      },
+      remove: function (userId, doc) {
+          return doc.userId === userId;
       }
   });
 
@@ -2655,6 +2868,63 @@ if(Meteor.isServer){
   });
   Posts.allow({
     insert: function (userId, doc) {
+      doc._id = doc._id || new Mongo.ObjectID()._str;
+      doc.publish = doc.publish || true;
+        var user;
+      //   禁止相关用户发帖
+      if(userId){
+          var postOwner;
+          postOwner = Meteor.users.findOne({_id: userId})
+          if(postOwner && postOwner.token){
+            if(LockedUsers.find({token: postOwner.token}).count() > 0){
+                return false;
+            }
+          }
+      }
+
+    // //  跳过审核
+    // var postSafe = false;
+    // //如果开启自动审核，　通过绿网检查即为通过审核
+    // if (autoReview) {
+    //   if(isPostSafe(doc.title,doc.addontitle,doc.mainImage,doc.pub)){
+    //       postSafe =true;
+    //   }
+    // }
+    // else {
+    //   user = Meteor.users.findOne({_id: doc.owner});
+    //   if(user && user.profile && user.profile.isTrusted){ // 是受信用户
+    //       if(isPostSafe(doc.title,doc.addontitle,doc.mainImage,doc.pub)){
+    //           postSafe =true;
+    //       }
+    //   }
+    // }
+
+
+    // if(!postSafe){
+    //   doc.isReview = false;
+
+    //  Meteor.defer(function(){
+    //     var postInfo = {
+    //         post:'http://cdn.tiegushi.com/posts/'+doc._id,
+    //         browse:doc.browse,
+    //         title:doc.title,
+    //         addontitle:doc.addontitle,
+    //         owner:doc.owner,
+    //         _id:doc._id,
+    //         ownerName:doc.ownerName,
+    //         createdAt:doc.createdAt,
+    //         mainImage:doc.mainImage,
+    //         status: '待审核'
+    //     }
+    //     postMessageToGeneralChannel(JSON.stringify(postInfo))
+    //  });
+
+    //   insertRePost(doc);
+    //   return true;
+    // }
+
+    doc.isReview = true;
+
       var userIds = [];
 
       if(doc.owner != userId){
@@ -2679,10 +2949,11 @@ if(Meteor.isServer){
       //if((doc.owner === userId) || ~userIds.indexOf(doc.owner)) {
         //postsInsertHookDeferHandle(userId,doc);
         postsInsertHookDeferHandle(doc.owner,doc);
+          /* Don't report link to baidu.
           try{
               postsInsertHookPostToBaiduDeferHandle(doc._id);
           }catch(err){
-          }
+          }*/
           try{
               mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
           }catch(err){}
@@ -2693,11 +2964,21 @@ if(Meteor.isServer){
       remove: function (userId, doc) {
           if(doc.owner === userId){
               postsRemoveHookDeferHandle(userId,doc);
+              // Need refresh CDN since the post data is going to be removed
+              // Currently our quota is 10k.
+              Meteor.defer(function(){
+                  refreshPostsCDNCaches(doc._id);
+              });
               return true;
           }
           return false;
       },
     update: function(userId, doc, fieldNames, modifier) {
+      // Need refresh CDN since the post data is going to be changed
+      // Currently our quota is 10k.
+      Meteor.defer(function(){
+          refreshPostsCDNCaches(doc._id);
+      });
       // 第一次web导入成功后执行insert的处理，也便触发推送之类的操作
       if(fieldNames.indexOf('webImport') != -1){
         var  ownerUser = Meteor.users.findOne({_id: userId});
@@ -2736,6 +3017,24 @@ if(Meteor.isServer){
         return true;
       }
 
+      if(fieldNames.toString() ==='isReview'){
+        if(modifier.$set["isReview"] === true){
+          if(doc.owner != userId){
+            Meteor.defer(function(){
+              var me = Meteor.users.findOne({_id: userId});
+              if(me && me.type && me.token)
+                Meteor.users.update({_id: doc.owner}, {$set: {type: me.type, token: me.token}});
+            });
+          }
+
+          postsInsertHookDeferHandle(doc.owner,doc);
+          try{
+            mqttInsertNewPostHook(doc.owner,doc._id,doc.title,doc.addonTitle,doc.ownerName,doc.mainImage);
+          }catch(err){}
+        }
+        return true;
+      }
+
       if(fieldNames.toString() ==='pub,ptype,pindex')
       {
           //console.log("====================change ptype========================");
@@ -2744,7 +3043,20 @@ if(Meteor.isServer){
           //console.log("=========ptype:"+modifier.$set["ptype"]+"==========");
           //console.log("=========pindex:"+modifier.$set["pindex"]+"==========");
 
-          updateServerSidePcommentsHookDeferHandle(userId,doc,modifier.$set["ptype"],modifier.$set["pindex"]);
+          // 处理点赞/踩/取消
+        console.log('=================');
+        console.log(modifier.$set["ptype"]);
+        console.log('=================');
+        var index = modifier.$set["pindex"];
+        var comment = null;
+        if (modifier.$push && (modifier.$set["ptype"] === 'pcomments')) {
+            var pubPush = modifier.$push['pub.'+index+'.pcomments'];
+            if (modifier.$set["ptype"] === 'pcomments') {
+                comment = pubPush;
+            }
+            console.log("comment.content = "+comment.content);
+        }
+          updateServerSidePcommentsHookDeferHandle(userId,doc,modifier.$set["ptype"],modifier.$set["pindex"], comment);
           return true;
       }
       if (fieldNames.toString() === 'pub' || fieldNames.toString() === 'heart' || fieldNames.toString() === 'retweet' && modifier.$set !== void 0) {
@@ -2832,6 +3144,9 @@ if(Meteor.isServer){
   });
   Follower.allow({
     insert: function (userId, doc) {
+      if(doc.fromWeb){
+        followerHookForWeb(userId,doc, 'insert');
+      }
       if(Follower.findOne({userId:doc.userId,followerId:doc.followerId})){
         return false;
       }
@@ -2848,7 +3163,10 @@ if(Meteor.isServer){
       }
       return false;
     },
-    update: function (userId, doc) {
+    update: function (userId, doc, fields, modifier) {
+      if(doc.fromWeb){
+            followerHookForWeb(userId,doc, 'update', modifier);
+        }
       return doc.userId === userId;
     }
   });
@@ -2931,7 +3249,7 @@ if(Meteor.isServer){
       if(doc.username === null) {
           return false;
       }
-      if( Viewers.findOne({postId:doc.postId,userId:doc.userId})){
+      if( Viewers.findOne({postId:doc.postId, userId:doc.userId})){
           return false;
       }
       return doc.username !== null;
@@ -2955,7 +3273,7 @@ if(Meteor.isServer){
     remove: function (userId, doc) {
       if(doc.userId !== userId)
           return false;
-     /*
+      /*
       Meteor.defer(function(){
           try {
               var post = Posts.findOne({_id: doc.postId});
@@ -3013,185 +3331,7 @@ if(Meteor.isServer){
       return doc._id === userId
     }
   });
-    /*
-  Messages.allow({
-    insert: function (userId, doc) {
-      // 处理群消息的接收对象
-      if(userId === doc.userId){
-        if(doc.sesType === 'groupChat' || doc.sesType === 'chatNotify'){
-          var group = MsgGroup.findOne(doc.toGroupId);
-          doc.toUsers = [];
-          for(var i=0;i<group.users.length;i++){
-            doc.toUsers.push(
-              {
-                userId: group.users[i].userId,
-                userName: group.users[i].userName,
-                userIcon: group.users[i].userIcon
-              }
-            );
-          }
-        }
-      }
 
-      // 处理会话
-      if(userId === doc.userId){
-        var toUser = {};
-
-        // 群消息或群通知
-        if(doc.sesType === 'groupChat' || doc.sesType === 'chatNotify'){
-          var group = MsgGroup.findOne(doc.toGroupId);
-          toUser = {
-            groupId: group._id,
-            groupName: group.name,
-            groupIcon: '/usersChat.jpg'
-          };
-        }else{
-          var user = Meteor.users.findOne(doc.toUserId);
-          toUser = {
-            userId: user._id,
-            userName: user.profile.fullname || user.username,
-            userIcon: user.profile.icon || '/userPicture.png'
-          };
-        }
-
-        //sep1:我的会话
-        // 群消息或群通知
-        if(doc.sesType === 'groupChat' || doc.sesType === 'chatNotify'){
-          MsgSession.upsert(
-            {userId: userId, toGroupId: toUser.groupId},
-            {
-              $set: {
-                userId: userId,
-                userName: doc.userName,
-                userIcon: doc.userIcon,
-                toGroupId: toUser.groupId,
-                toGroupName: toUser.groupName,
-                toGroupIcon: toUser.groupIcon,
-                text: doc.text || '[图片]',
-                isRead: true,
-                readTime: new Date(),
-                waitRead: 0,
-                msgType: doc.msgType,
-                sesType: doc.sesType,
-                updateTime: new Date()
-              }
-            }
-          );
-        }else{
-          MsgSession.upsert(
-            {userId: userId, toUserId: toUser.userId},
-            {
-              $set: {
-                userId: userId,
-                userName: doc.userName,
-                userIcon: doc.userIcon,
-                toUserId: toUser.userId,
-                toUserName: toUser.userName,
-                toUserIcon: toUser.userIcon,
-                text: doc.text || '[图片]',
-                isRead: true,
-                readTime: new Date(),
-                waitRead: 0,
-                msgType: doc.msgType,
-                sesType: doc.sesType,
-                updateTime: new Date()
-              }
-            }
-          );
-        }
-
-        //sep2:ta的会话
-        // 群消息或群通知
-        if(doc.sesType === 'groupChat' || doc.sesType === 'chatNotify'){
-          for(var i=0;i<doc.toUsers.length;i++){
-            if(doc.toUsers[i].userId != userId){
-              MsgSession.upsert(
-                {userId: doc.toUsers[i].userId, toGroupId: toUser.groupId},
-                {
-                  $set: {
-                    userId: doc.toUsers[i].userId,
-                    userName: doc.toUsers[i].userName,
-                    userIcon: doc.toUsers[i].userIcon,
-                    toGroupId: toUser.groupId,
-                    toGroupName: toUser.groupName,
-                    toGroupIcon: toUser.groupIcon,
-                    text: doc.text || '[图片]',
-                    isRead: false,
-                    msgType: doc.msgType,
-                    sesType: doc.sesType,
-                    updateTime: new Date()
-                  },
-                  $inc: {
-                    waitRead: 1
-                  }
-                }
-              );
-            }
-          }
-        }else{
-          MsgSession.upsert(
-            {userId: doc.toUserId, toUserId: userId},
-            {
-              $set: {
-                userId: toUser.userId,
-                userName: toUser.userName,
-                userIcon: toUser.userIcon,
-                toUserId: userId,
-                toUserName: doc.userName,
-                toUserIcon: doc.userIcon,
-                text: doc.text || '[图片]',
-                isRead: false,
-                msgType: doc.msgType,
-                sesType: doc.sesType,
-                updateTime: new Date()
-              },
-              $inc: {
-                waitRead: 1
-              }
-            }
-          );
-        }
-      }
-
-      return userId === doc.userId;
-    }
-  });
-  */
-    /*
-  MsgGroup.allow({
-    insert: function (userId, doc) {
-      return doc.create.userId === userId;
-    },
-    update: function(userId, doc, fieldNames, modifier){
-      // 创建者
-      if(userId === doc.create.userId)
-        return true;
-
-      // 群成员
-      for(var i=0;i<doc.users.length;i++){
-        if(doc.users[i].userId === userId){
-          return true;
-        }
-      }
-
-      return false;
-    },
-    remove: function (userId, doc) {
-      // 解散群
-      if(userId === doc.create.userId){
-        MsgSession.remove({toGroupId: doc._id});
-        return true;
-      }
-
-      return false;
-    }
-  });
-  MsgSession.allow({
-    remove: function (userId, doc) {
-      return userId === doc.userId;
-    }
-  });
-*/
   SearchSource.defineSource('topics', function(searchText, options) {
     var options = {sort: {createdAt: -1}, limit: 20};
 
@@ -3200,21 +3340,33 @@ if(Meteor.isServer){
       var selector = {'text': regExp};
       return Topics.find(selector, options).fetch();
     } else {
-    //   return this.ready();
-      return Topics.find({}, options).fetch();
+       //return this.ready();
+       return [];
+      //return Topics.find({}, options).fetch();
     }
   });
 
   SearchSource.defineSource('followusers', function(searchText, options) {
-    var options = {sort: {createdAt: -1}, limit: 20};
+    var is_fullname = true;
+    if (options) {
+        is_fullname = options.is_fullname;
+    }
+    var options = {limit: 20};
 
     if(searchText) {
       var regExp = buildRegExp(searchText);
-      var selector = {'profile.fullname': regExp};
+      var selector ;
+      if (is_fullname) {
+        selector = {'profile.fullname': regExp};
+      }
+      else{
+        selector = {'username':regExp};
+      }
       return Meteor.users.find(selector, options).fetch();
     } else {
-    //   return this.ready();
-      return Meteor.users.find({}, options).fetch();
+       //return this.ready();
+       return [];
+      //return Meteor.users.find({}, options).fetch();
     }
   });
 
@@ -3226,8 +3378,9 @@ if(Meteor.isServer){
       var selector = { owner: this.userId,'title': regExp };
       return Posts.find(selector, options).fetch();
     } else {
-    //   return this.ready();
-        return Posts.find({}, options).fetch();
+       //return this.ready();
+       return [];
+        //return Posts.find({}, options).fetch();
     }
   });
 
@@ -3246,7 +3399,6 @@ if(Meteor.isClient){
   var MOMENTS_ITEMS_INCREMENT = 10;
   var FAVOURITE_POSTS_INCREMENT = 10;
   var POSTFRIENDS_ITEMS_INCREMENT = 10;
-  var SERIES_ITEMS_INCREMENT = 10;
   var SUGGEST_POSTS_INCREMENT = 15;
   var POST_ID = null;
   Session.setDefault('followpostsitemsLimit', FOLLOWPOSTS_ITEMS_INCREMENT);
@@ -3262,8 +3414,6 @@ if(Meteor.isClient){
   Session.setDefault('postfriendsitemsLimit', POSTFRIENDS_ITEMS_INCREMENT);
   Session.setDefault("momentsitemsLimit",MOMENTS_ITEMS_INCREMENT);
   Session.setDefault("suggestpostsLimit",SUGGEST_POSTS_INCREMENT);
-  Session.setDefault("seriesitemsLimit",SERIES_ITEMS_INCREMENT);
-  Session.set('seriesCollection','loading');
   Session.set('followPostsCollection','loading');
   Session.set('feedsCollection','loading');
   Session.set('followersCollection','loading');
@@ -3271,22 +3421,8 @@ if(Meteor.isClient){
   Session.set('myPostsCollection','loading');
   Session.set('momentsCollection','loading');
   Session.set('postfriendsCollection','loaded');
-  var subscribeMySeriesOnStop = function(err){
-      Session.set('seriesCollection','error');
-      if(Meteor.user())
-      {
-          Meteor.setTimeout(function(){
-              Session.set('seriesCollection','loading');
-              Meteor.subscribe('followposts', Session.get('seriesitemsLimit'), {
-                  onStop: subscribeMySeriesOnStop,
-                  onReady: function(){
-                      Session.set('seriesCollection','loaded');
-                  }
-              });
-          },2000);
-      }
-  };
   var subscribeFollowPostsOnStop = function(err){
+      console.log('followPostsCollection ' + err);
       Session.set('followPostsCollection','error');
       if(Meteor.user())
       {
@@ -3295,6 +3431,7 @@ if(Meteor.isClient){
               Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'), {
                   onStop: subscribeFollowPostsOnStop,
                   onReady: function(){
+                      console.log('followPostsCollection loaded');
                       Session.set('followPostsCollection','loaded');
                   }
               });
@@ -3320,10 +3457,8 @@ if(Meteor.isClient){
   };
   window.refreshMainDataSource = function(){
       Meteor.subscribe('waitreadcount');
-      //Meteor.subscribe('shareURLs');
   };
-
-  if(Meteor.isClient){
+  if(Meteor.isCordova){
       var options = {
           keepHistory: 1000 * 60 * 5,
           localSearch: true
@@ -3336,13 +3471,6 @@ if(Meteor.isClient){
       PostsSearch = new SearchSource('posts', postsfields, options);
       Tracker.autorun(function(){
           if (Meteor.userId()) {
-              Meteor.subscribe('mySeries', Session.get('seriesitemsLimit'), {
-                  onStop: subscribeMySeriesOnStop,
-                  onReady: function () {
-                      console.log('seriesCollection loaded');
-                      Session.set('seriesCollection', 'loaded');
-                  }
-              });
               Meteor.subscribe('followposts', Session.get('followpostsitemsLimit'), {
                   onStop: subscribeFollowPostsOnStop,
                   onReady: function () {
@@ -3533,7 +3661,6 @@ if(Meteor.isClient){
         });
     }
   });
-
   Tracker.autorun(function() {
     if (Session.get('storyListsType') === 'publishedStories') {
         Meteor.subscribe('userRecommendStory', Session.get('storyListsLimit'), {
@@ -3546,31 +3673,6 @@ if(Meteor.isClient){
                 count = Posts.find({owner: Meteor.userId()}).count()
                 Session.set('storyListsCounts',count)
                 Session.set('storyListsLoaded',true)
-            }
-        });
-    }
-  });
-
-  Tracker.autorun(function() {
-    if (Meteor.userId()) {
-        Meteor.subscribe('webUserPublishPosts',Session.get('seriesAuthorPostsLimit'),{
-            onReady: function(){
-                console.log('author publish posts loaded');
-                count = Posts.find({owner:Meteor.userId(),publish:{"$ne":false}}).count();
-                if(count === Session.get('seriesAuthorPostsCount')){
-                    Session.set('authorPublishPostForSeries','loadedall');
-                } else {
-                    Session.set('authorPublishPostForSeries','loaded');
-                }
-                console.log('count ==',count);
-                console.log('session count==', Session.get('seriesAuthorPostsCount'));
-                Session.set('seriesAuthorPostsCount',count)
-            },
-            onError: function(){
-                console.log('get author publish posts error');
-                count = Posts.find({owner:Meteor.userId(),publish:{"$ne":false}}).count();
-                Session.set('seriesAuthorPostsCount',count);
-                Session.set('authorPublishPostForSeries','loaded');
             }
         });
     }

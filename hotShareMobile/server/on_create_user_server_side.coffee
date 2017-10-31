@@ -27,7 +27,6 @@ if Meteor.isServer
       Meteor.defer ()->
         mqttUserCreateHook(user._id,user.profile.fullname,user.username)
         #Meteor.call('add-group-urser','d2bc4601dfc593888618e98f',[user._id])
-
         #默认添加一篇帖子
         if defaultPostToFollow
           isInserted = FollowPosts.findOne({followby: user._id, postId: defaultPostToFollow._id});
