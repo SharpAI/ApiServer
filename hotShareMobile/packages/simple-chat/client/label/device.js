@@ -101,8 +101,10 @@ Template._simpleChatLabelDevice.save = function(){
                 //有name说明是识别了，但是识别错了，管理员要修改这个人的name, 把这次修改记录到person的已标注里面
                 var setNameObj = {uuid: msgObj.people_uuid, id: msgObj.images[i].id, url: msgObj.images[i].url, name: nas[ii]};
                 if(msgObj && msgObj.images /*&& msgObj.images[i].label*/) {
-                  if(nas && nas.length>0 && nas[ii] && res && res[nas[ii]] && res[nas[ii]].faceId) {
-                    setNameObj.id = (nas[ii] && res[nas[ii]] && res[nas[ii]].faceId) ? res[nas[ii]].faceId : new Mongo.ObjectID()._str;
+                  if(nas && nas.length>0 && nas[ii] && res && res[nas[ii]] /*&& res[nas[ii]].faceId*/) {
+                    var theFaceId = (nas[ii] && res[nas[ii]] && res[nas[ii]].faceId) ? res[nas[ii]].faceId : new Mongo.ObjectID()._str;
+                    setNameObj.id = theFaceId;
+                    msgObj.theFaceId = theFaceId;
                   }
                 }
                 setNames.push(setNameObj);
@@ -165,7 +167,7 @@ Template._simpleChatLabelDevice.save = function(){
             url: updateObj.images[i].url,
             person_id: res && res[updateObj.images[i].label].id ? res[updateObj.images[i].label].id : '',
             device_id: msgObj.people_uuid,
-            face_id: res && res[updateObj.images[i].label].faceId ? res[updateObj.images[i].label].faceId : updateObj.images[i].id,
+            face_id: res && res[updateObj.images[i].label].faceId ? res[updateObj.images[i].label].faceId : updateObj.images[i].theFaceId,
             drop: false,
             img_type: updateObj.images[i].img_type,
             style:updateObj.images[i].style,
@@ -178,7 +180,7 @@ Template._simpleChatLabelDevice.save = function(){
             url: updateObj.images[i].url,
             person_id: '',
             device_id: msgObj.people_uuid,
-            face_id: updateObj.images[i].id,
+            face_id: updateObj.images[i].theFaceId,
             drop: false,
             img_type: updateObj.images[i].img_type,
             style:updateObj.images[i].style,
