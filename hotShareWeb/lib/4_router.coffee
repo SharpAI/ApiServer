@@ -2057,7 +2057,7 @@ if Meteor.isServer
       subject = group.name + ' 每日出勤报告'+y_date_title
     else
       return
-
+    
       #console.log 'html:'+ JSON.stringify(text)
     SimpleChat.GroupUsers.find({group_id:group_id}).forEach(
       (fields)->
@@ -2076,11 +2076,11 @@ if Meteor.isServer
               try
                 Email.send({
                   to:email_address,
-                  from:'故事帖<notify@mail.tiegushi.com>',
+                  from:'点圈<notify@mail.tiegushi.com>',
                   subject:subject,
                   html : text,
                   envelope:{
-                    from:'故事帖<notify@mail.tiegushi.com>',
+                    from:'点圈<notify@mail.tiegushi.com>',
                     to:email_address + '<' + email_address + '>'
                   }
                 })
@@ -2098,20 +2098,96 @@ if Meteor.isServer
 
 
   Router.route('/restapi/sendReportByEmail/:token',{where:'server'}).get(()->
-      token = this.params.token         #
+    token = this.params.token         #
 
-      headers = {
-        'Content-type':'text/html;charest=utf-8',
-        'Date': Date.now()
-      }
-      this.response.writeHead(200, headers)
-      console.log '/restapi/sendReportByEmail get request'
-      #sendEmailToGroupUsers('ae64c98bdff9b674fb5dad4b')
-      groups = SimpleChat.Groups.find({})
-      groups.forEach((fields)->
-        if fields
-          sendEmailToGroupUsers(fields._id)
-        )
+    headers = {
+      'Content-type':'text/html;charest=utf-8',
+      'Date': Date.now()
+    }
+    this.response.writeHead(200, headers)
+    console.log '/restapi/sendReportByEmail get request'
+    #sendEmailToGroupUsers('ae64c98bdff9b674fb5dad4b')
+    groups = SimpleChat.Groups.find({})
+    groups.forEach((fields)->
+      if fields
+        sendEmailToGroupUsers(fields._id)
+      )
 
-      this.response.end(JSON.stringify({result: 'ok'}))
-    )
+    this.response.end(JSON.stringify({result: 'ok'}))
+  )
+  
+  # 定义相应的mailgun webhook, dropped,hardbounces,unsubscribe 下次不再向相应的邮件地址发信
+  # docs: https://documentation.mailgun.com/en/latest/user_manual.html#webhooks
+  @mailGunSendHooks = (address, type, reason)->
+    if !address and !reason
+      return console.log('need email address and webhook reason')
+
+    console.log('Email send Hooks, send to '+address + ' failed , reason: '+ reason)
+
+    unavailableEmail = UnavailableEmails.findOne({address: address})
+    if unavailableEmail
+      UnavailableEmails.update({_id: unavailableEmail._id},{$set:{
+        reason:reason
+      }})
+    else
+      UnavailableEmails.insert({
+        address: address,
+        reason: reason
+        createAt: new Date()
+      })
+
+  # 发信失败跟踪 (Dropped Messages)
+  Router.route('/hooks/emails/dropped', {where: 'server'}).post(()->
+
+    data = this.request.body
+    mailGunSendHooks(emails,'dropped')
+    headers = {
+      'Content-type': 'application/vnd.openxmlformats',
+      'Content-Disposition': 'attachment; filename=' + title + '.xlsx'
+    }
+
+    this.response.writeHead(200, headers)
+    this.response.end('{"result": "ok"}\n')
+  )
+
+  # 硬/软 退信跟踪 (Hard Bounces)
+  Router.route('/hooks/emails/bounced', {where: 'server'}).post(()->
+    data = this.request.body
+    type = data.event || 'bounced'
+    mailGunSendHooks(data.recipient,type)
+    headers = {
+      'Content-type': 'application/vnd.openxmlformats',
+      'Content-Disposition': 'attachment; filename=' + title + '.xlsx'
+    }
+
+    this.response.writeHead(200, headers)
+    this.response.end('{"result": "ok"}\n')
+  )
+
+  # 垃圾邮件跟踪 (Spam Complaints)
+  Router.route('/hooks/emails/complained', {where: 'server'}).post(()->
+    data = this.request.body
+    type = data.event || 'complained'
+    mailGunSendHooks(data.recipient,type)
+    headers = {
+      'Content-type': 'application/vnd.openxmlformats',
+      'Content-Disposition': 'attachment; filename=' + title + '.xlsx'
+    }
+
+    this.response.writeHead(200, headers)
+    this.response.end('{"result": "ok"}\n')
+  )
+
+  # 取消订阅跟踪 (Unsubscribes)
+  Router.route('/hooks/emails/unsubscribe', {where: 'server'}).post(()->
+    data = this.request.body
+    type = data.event || 'unsubscribe'
+    mailGunSendHooks(data.recipient,type)
+    headers = {
+      'Content-type': 'application/vnd.openxmlformats',
+      'Content-Disposition': 'attachment; filename=' + title + '.xlsx'
+    }
+
+    this.response.writeHead(200, headers)
+    this.response.end('{"result": "ok"}\n')
+  )
