@@ -41,6 +41,7 @@ if Meteor.isClient
     Meteor.subscribe("get-group",groupid)
     Meteor.subscribe('loginuser-in-group',groupid,Session.get("simpleUserProfileUserId"));
     Meteor.subscribe('usersById',Session.get("simpleUserProfileUserId"))
+    $(document).scrollTop(0)
   Template.simpleUserProfile.helpers
     isFromChat:()->
       return Router.current().params.query && Router.current().params.query.from is 'chat'
