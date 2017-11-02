@@ -106,9 +106,7 @@ Template._simpleChatLabelDevice.save = function(){
                 var setNameObj = {uuid: msgObj.people_uuid, id: msgObj.images[i].id, url: msgObj.images[i].url, name: nas[ii]};
                 if(msgObj && msgObj.images /*&& msgObj.images[i].label*/) {
                   if(nas && nas.length>0 && nas[ii] && res && res[nas[ii]] /*&& res[nas[ii]].faceId*/) {
-                    var theFaceId = (nas[ii] && res[nas[ii]] && res[nas[ii]].faceId) ? res[nas[ii]].faceId : new Mongo.ObjectID()._str;
-                    setNameObj.id = theFaceId;
-                    msgObj.theFaceId = theFaceId;
+                    setNameObj.id = (nas[ii] && res[nas[ii]] && res[nas[ii]].faceId) ? res[nas[ii]].faceId : new Mongo.ObjectID()._str;
                   }
                 }
                 setNames.push(setNameObj);
@@ -145,6 +143,7 @@ Template._simpleChatLabelDevice.save = function(){
     if (setNames.length > 0)
       Meteor.call('set-person-names', msgObj.to.id, setNames);
 
+    console.log('setNames', setNames);
     console.log('names:', res);
 
     var labeld_images = [];
@@ -162,8 +161,14 @@ Template._simpleChatLabelDevice.save = function(){
           console.log('already labeled, ignore:' + updateObj.images[i].url);
           continue;
         }
-        console.log('res item obj:', res[updateObj.images[i].label]);
+        console.log('res item obj:', res[updateObj.images[i].label]); 
         var trainsetObj = {};
+        var theFaceId = '';
+        if(res && res[updateObj.images[i].label] && res[updateObj.images[i].label].faceId){
+          theFaceId = res[updateObj.images[i].label].faceId;
+        } else if(setNames && setNames[0] && setNames[0].id){
+          theFaceId = setNames[0].id;
+        }
         try {
           trainsetObj = {
             group_id: msgObj.to.id,
@@ -171,7 +176,7 @@ Template._simpleChatLabelDevice.save = function(){
             url: updateObj.images[i].url,
             person_id: res && res[updateObj.images[i].label].id ? res[updateObj.images[i].label].id : '',
             device_id: msgObj.people_uuid,
-            face_id: res && res[updateObj.images[i].label].faceId ? res[updateObj.images[i].label].faceId : updateObj.images[i].theFaceId,
+            face_id: theFaceId,
             drop: false,
             img_type: updateObj.images[i].img_type,
             style:updateObj.images[i].style,
@@ -184,7 +189,7 @@ Template._simpleChatLabelDevice.save = function(){
             url: updateObj.images[i].url,
             person_id: '',
             device_id: msgObj.people_uuid,
-            face_id: updateObj.images[i].theFaceId,
+            face_id: theFaceId,
             drop: false,
             img_type: updateObj.images[i].img_type,
             style:updateObj.images[i].style,
