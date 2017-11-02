@@ -77,8 +77,10 @@ Template._simpleChatLabelDevice.save = function(){
       break;
     }
   }
-  if (is_save != true)
+  if (is_save != true){
+    PUB.hideWaitLoading();
     return PUB.toast('你没有标注任何内容~');
+  }
 
   var msgObj = message.get();
   Meteor.call('get-id-by-names1', msgObj.people_uuid, nas, msgObj.to.id, function(err, res){
