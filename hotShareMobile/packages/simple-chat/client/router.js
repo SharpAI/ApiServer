@@ -1423,8 +1423,8 @@ Template._simpleChatToChat.events({
   },
   'click .userProfile':function(e,t){
     var data = page_data;
-    Router.go('/groupsProfile/'+data.type+'/'+data.id);
-    //PUB.page('/simpleUserProfile/'+data.id);
+    // Router.go('/groupsProfile/'+data.type+'/'+data.id);
+    Router.go('/simpleUserProfile/'+data.id+'?from=chat');
   },
   'click .ta div.icon':function(e){
      console.log('i clicked a chat userICON');

@@ -42,6 +42,8 @@ if Meteor.isClient
     Meteor.subscribe('loginuser-in-group',groupid,Session.get("simpleUserProfileUserId"));
     Meteor.subscribe('usersById',Session.get("simpleUserProfileUserId"))
   Template.simpleUserProfile.helpers
+    isFromChat:()->
+      return Router.current().params.query && Router.current().params.query.from is 'chat'
     isMale:(sex)->
       sex is 'male'
     isFemale:(sex)->
@@ -98,7 +100,11 @@ if Meteor.isClient
       Meteor.call('removeGroupUser', group_id, user_id)
       return PUB.back()
     'click .simpleUserProfile .back':()->
-      PUB.back()
+      historyArr = Session.get("history_view")
+      if (historyArr and historyArr.length > 0)
+        PUB.back()
+      else
+        history.go(-1)
     'click #removeFormBlacklist':()->
       blackId = Session.get("simpleUserProfileUserId")
       BlackList.update({_id: blackId}, {$pull: {blacker: id}})
