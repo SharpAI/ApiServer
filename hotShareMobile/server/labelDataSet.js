@@ -16,7 +16,7 @@ LABLE_DADASET_Handle = {
     		url:url,
     		name:name,
     		uuid:doc.uuid,
-        sqlId:doc.sqlid,
+        sqlid:doc.sqlid,
         style: doc.style,
     		createAt:new Date(),
     	};
