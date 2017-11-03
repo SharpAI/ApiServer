@@ -1882,7 +1882,7 @@ if Meteor.isServer
             if item2 and item2.url
               urls.push({
                 url:item2.url,
-                style: item2.style || null,
+                style: item2.style || 'front',
                 sqlid: item2.sqlid || null
               })
           )
