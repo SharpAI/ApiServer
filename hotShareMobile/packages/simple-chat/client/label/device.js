@@ -103,7 +103,7 @@ Template._simpleChatLabelDevice.save = function(){
               var id = msgObj.tid || msgObj.images[i].id
               if (_.pluck(setNames, 'id').indexOf(id) === -1) {
                 //有name说明是识别了，但是识别错了，管理员要修改这个人的name, 把这次修改记录到person的已标注里面
-                var setNameObj = {uuid: msgObj.people_uuid, id: msgObj.images[i].id, url: msgObj.images[i].url, name: nas[ii]};
+                var setNameObj = {uuid: msgObj.people_uuid, id: msgObj.images[i].id, url: msgObj.images[i].url, name: nas[ii], sqlid: msgObj.images[i].sqlid, style: msgObj.images[i].style};
                 if(msgObj && msgObj.images /*&& msgObj.images[i].label*/) {
                   if(nas && nas.length>0 && nas[ii] && res && res[nas[ii]] /*&& res[nas[ii]].faceId*/) {
                     setNameObj.id = (nas[ii] && res[nas[ii]] && res[nas[ii]].faceId) ? res[nas[ii]].faceId : new Mongo.ObjectID()._str;

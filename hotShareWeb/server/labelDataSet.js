@@ -8,7 +8,7 @@ LABLE_DADASET_Handle = {
     var id = doc.id;
     var url = doc.url;
     var name = doc.name;
-    var dataset = LableDadaSet.findOne({group_id:group_id,url:url});
+    var dataset = LableDadaSet.findOne({group_id:group_id,url:url}); 
     if (!dataset) {
     	var datasetObj = {
     		group_id:group_id,
@@ -16,6 +16,8 @@ LABLE_DADASET_Handle = {
     		url:url,
     		name:name,
     		uuid:doc.uuid,
+        sqlId:doc.sqlid,
+        style: doc.style,
     		createAt:new Date(),
     	};
     	if (doc.user_id) {
@@ -31,6 +33,7 @@ LABLE_DADASET_Handle = {
 	      		datasetObj.operator = [operator];
 	      	}
 	    }
+      console.log('LableDadaSet is:', JSON.stringify(datasetObj));
     	LableDadaSet.insert(datasetObj);
     }
     else{

@@ -803,7 +803,7 @@ Template._simpleChatToChatItem.events({
         }
 
         if (_.pluck(setNames, 'id').indexOf(msgObj.images[i].id) === -1)
-          setNames.push({uuid: msgObj.people_uuid, id: msgObj.images[i].id, url: msgObj.images[i].url, name: msgObj.images[i].label});
+          setNames.push({uuid: msgObj.people_uuid, id: msgObj.images[i].id, url: msgObj.images[i].url, name: msgObj.images[i].label,sqlid:msgObj.images[i].sqlid,style:msgObj.images[i].style});
       }
       if (setNames.length > 0)
         Meteor.call('set-person-names', msgObj.to.id, setNames);

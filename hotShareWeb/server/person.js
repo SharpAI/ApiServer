@@ -368,7 +368,8 @@ PERSON = {
       }
       person = PERSON.setName(person_info.group_id, person_info.uuid, data.face_id, person_info.img_url, person_name,is_video);
       if (!is_video) {
-        LABLE_DADASET_Handle.insert({group_id:person_info.group_id,id:data.face_id,url:person_info.img_url,uuid:person_info.uuid,user_id:data.operator,name:person_name,action:'时间轴打卡时选择了未识别的照片'});
+        console.log('LABLE_DADASET_Handle 1')
+        LABLE_DADASET_Handle.insert({group_id:person_info.group_id,id:data.face_id,url:person_info.img_url,uuid:person_info.uuid,sqlid:person_info.sqlid,style:person_info.style,user_id:data.operator,name:person_name,action:'时间轴打卡时选择了未识别的照片'});
       }
 
     }
@@ -405,7 +406,8 @@ PERSON = {
       var newImageId = new Mongo.ObjectID()._str;
       person = PERSON.setName(person_info.group_id,person_info.uuid,newImageId,person_info.img_url,person_name,is_video);
       if (!is_video) {
-        LABLE_DADASET_Handle.insert({group_id:person_info.group_id,id:newImageId,url:person_info.img_url,uuid:person_info.uuid,user_id:'',name:person_name,action:'时间轴打卡时输入的名字与person中对应的人名字不一样'});
+        console.log('LABLE_DADASET_Handle 2')
+        LABLE_DADASET_Handle.insert({group_id:person_info.group_id,id:newImageId,url:person_info.img_url,uuid:person_info.uuid,sqlid:person_info.sqlid,style:person_info.style,user_id:'',name:person_name,action:'时间轴打卡时输入的名字与person中对应的人名字不一样'});
       }
     }
     setObj.person_name = person.name;
@@ -1180,7 +1182,8 @@ Meteor.methods({
     var slef = this;
     for(var i=0;i<items.length;i++) {
       PERSON.setName(group_id, items[i].uuid, items[i].id, items[i].url, items[i].name);
-      LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[i].uuid,id:items[i].id,url:items[i].url,name:items[i].name,user_id:slef.userId,action:'聊天室标记'});
+      console.log('LABLE_DADASET_Handle 3')
+      LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[i].uuid,id:items[i].id,url:items[i].url,name:items[i].name,sqlid:items[i].sqlid,style:items[i].style,user_id:slef.userId,action:'聊天室标记'});
     }
   },
   'remove-person': function(group_id,uuid,id){
@@ -1308,7 +1311,8 @@ Meteor.methods({
       sendMqttMessage('/device/' + groupId, trainsetObj);
       console.log('send mqtt to device:', trainsetObj);
       PERSON.setName(groupId, wait.uuid, wait.id, wait.url, data);
-      LABLE_DADASET_Handle.insert({group_id:groupId,id:wait.id,url:wait.url,uuid:wait.uuid,name:data,user_id:slef.userId,action:'群相册--未标注里点标记'});
+      console.log('LABLE_DADASET_Handle 4')
+      LABLE_DADASET_Handle.insert({group_id:groupId,id:wait.id,url:wait.url,uuid:wait.uuid,name:data,sqlid:wait.sqlid,style:wait.style,user_id:slef.userId,action:'群相册--未标注里点标记'});
     });
     return true;
   },
