@@ -139,7 +139,9 @@ LableDadaSet = new Meteor.Collection('label_dataset');
   "name":"",
   "group_id":"",
   "url":'',
-  "createAt":''
+  "sqlId":"",
+  "style": "left_side", 侧脸 || 正脸
+  "createAt":'',
   "operator":[{
     user_name:操作的人的app名字
     user_id:app的userid，

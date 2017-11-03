@@ -81,8 +81,10 @@ Template.checkInOutMsgList.events
                'img_url': img.url,
                'type': img_type,
                'ts': new Date(slef.create_time).getTime(),
-               'accuracy': img.accuracy,
-               'fuzziness': img.fuzziness
+               'accuracy': img.accuracy, # 准确度
+               'fuzziness': img.fuzziness, # 模糊度
+               'sqlid': img.sqlid, 
+               'style': img.style # 正脸 || 侧脸
             }
           }
           if slef.checkin_out is 'in'

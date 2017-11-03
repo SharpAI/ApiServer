@@ -211,7 +211,9 @@ Template._simpleChatLabelDevice.save = function(){
               'type': updateObj.images[i].img_type,
               'ts': new Date(msgObj.create_time).getTime(),
               'accuracy': 1,
-              'fuzziness': 1
+              'fuzziness': 1,
+              'sqlid': updateObj.images[i].sqlid,
+              'style': updateObj.images[i].style
             };
             var data = {
               face_id:updateObj.images[i].id,
@@ -219,6 +221,7 @@ Template._simpleChatLabelDevice.save = function(){
               formLabel:true //是否是聊天室标记
             };
             //Meteor.call('send-person-to-web', person_info, function(err, res){});
+            console.log('data in device.js is: ',JSON.stringify(data));
             Meteor.call('ai-checkin-out',data,function(err,res){});
           }
         } catch(e){}

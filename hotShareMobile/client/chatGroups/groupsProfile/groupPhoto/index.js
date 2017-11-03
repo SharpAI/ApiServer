@@ -190,13 +190,16 @@ Template.groupPhoto.events({
                   'type': task.obj.img_type,
                   'ts': new Date(task.create_time).getTime(),
                   'accuracy': 1,
-                  'fuzziness': 1
+                  'fuzziness': 1,
+                  'sqlid': task.obj.sqlid,
+                  'style': task.obj.style
                 };
                 var data = {
                   face_id:task.obj.id,
                   person_info: person_info,
                   formLabel:true //是否是聊天室标记
                 };
+                console.log('data in index.js is: ',JSON.stringify(data));
                 //Meteor.call('send-person-to-web', person_info, function(err, res){});
                 Meteor.call('ai-checkin-out',data,function(err,res){});
               }

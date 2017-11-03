@@ -122,6 +122,7 @@ var checkInOutWithOutName = function(type,name,taId,taName){
 
   console.log(data);
   PUB.showWaitLoading('正在处理');
+  console.log('data is 2', JSON.stringify(data))
   Meteor.call('ai-checkin-out',data,function(err,res){
     PUB.hideWaitLoading();
     if(type === 'confirmPersonName'){
@@ -498,9 +499,11 @@ Template.timelineAlbum.events({
       'type': 'face',
       'ts': $(e.currentTarget).data('ts'),
       'accuracy': 1,
-      'fuzziness': 1
+      'fuzziness': 1,
+      'sqlid': $(e.currentTarget).data('sqlid'),
+      'style': $(e.currentTarget).data('style')
     };
-
+    console.log('person_info in timelineAlbum.js is: ',JSON.stringify(person_info));
     // 是video 的处理
     if(is_video){
       person_info.type = 'video';
@@ -602,6 +605,7 @@ Template.timelineAlbum.events({
       }
       PUB.confirm(confirm_text,function(){
         PUB.showWaitLoading('正在处理');
+        console.log('data is 3', JSON.stringify(data))
         Meteor.call('ai-checkin-out',data,function(err, res){
           PUB.hideWaitLoading();
           if(err){
@@ -666,6 +670,7 @@ Template.timelineAlbum.events({
       }
       PUB.confirm(confirm_text,function(){
         PUB.showWaitLoading('正在处理');
+        console.log('data is 1', JSON.stringify(data))
         Meteor.call('ai-checkin-out',data,function(err,res){
           PUB.hideWaitLoading();
           if(err){
@@ -735,6 +740,7 @@ Template.timelineAlbum.events({
     }
     console.log(data);
     PUB.showWaitLoading('正在处理');
+    console.log('data is 4', JSON.stringify(data))
     Meteor.call('ai-checkin-out',data,function(err,res){
       PUB.hideWaitLoading();
       $('#setPicturePersonName').modal('hide');

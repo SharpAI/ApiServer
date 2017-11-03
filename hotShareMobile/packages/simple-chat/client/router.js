@@ -537,7 +537,7 @@ Template._simpleChatToChat.onRendered(function(){
 Template._simpleChatToChat.onDestroyed(function(){
   page_data = null;
   Session.set('newMsgCount',0);
-  if(Meteor.isCordova && device.platform === 'iOS'){
+  if(Meteor.isCordova && (typeof(device) !== 'undefined') && device.platform === 'iOS'){
     try{
      Keyboard.shrinkView(false);
      Keyboard.disableScrollingInShrinkView(false);
@@ -821,7 +821,9 @@ Template._simpleChatToChatItem.events({
                 'type': msgObj.images[i].img_type,
                 'ts': new Date(msgObj.create_time).getTime(),
                 'accuracy': 1,
-                'fuzziness': 1
+                'fuzziness': 1,
+                'sqlid':msgObj.images[i].sqlid,
+                'style':msgObj.images[i].style
               };
               var data = {
                 face_id:msgObj.images[i].id,
