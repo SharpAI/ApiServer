@@ -1877,10 +1877,14 @@ if Meteor.isServer
       persons.forEach((item)->
         urls=[]
         if item and item.name
-          dataset = LableDadaSet.find({group_id: groupid ,name: item.name}, {fields:{url: 1}}).fetch()
+          dataset = LableDadaSet.find({group_id: groupid ,name: item.name}, {fields:{url: 1,style:1,sqlid:1}}).fetch()
           dataset.forEach((item2)->
             if item2 and item2.url
-              urls.push(item2.url)
+              urls.push({
+                url:item2.url,
+                style: item2.style || null,
+                sqlid: item2.sqlid || null
+              })
           )
 
         if item and item.faceId
