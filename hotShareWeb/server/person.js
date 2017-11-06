@@ -13,6 +13,7 @@ cleanLeftRelationAndStatusDate = function(){
   });
 };
 
+var Fiber = Npm.require('fibers');
 PERSON = {
   upsetDevice: function(uuid, group_id,name,in_out){
     var device = Devices.findOne({uuid: uuid});
@@ -180,7 +181,11 @@ PERSON = {
         is_read: false,
         is_trigger_train:true
       };
-      sendMqttGroupMessage(group_id,msg);
+      try{
+        sendMqttGroupMessage(group_id,msg);
+      } catch (e){
+        console.log('try sendMqttGroupMessage Err:',e)
+      }
     }
     callback && callback();
     return person;
@@ -1186,13 +1191,15 @@ Meteor.methods({
       PERSON.setName(group_id, items[i].uuid, items[i].id, items[i].url, items[i].name);
       console.log('LABLE_DADASET_Handle 3')
       LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[i].uuid,id:items[i].id,url:items[i].url,name:items[i].name,sqlid:items[i].sqlid,style:items[i].style,user_id:slef.userId,action:'聊天室标记'});
-    }*/
+    }*/ 
     forEachAsynSeries(items, 1, function(item, index, callback){
+      Fiber(function(){
         PERSON.setName(group_id, item.uuid, item.id, item.url, item.name, function(){
             console.log('LABLE_DADASET_Handle 3')
             LABLE_DADASET_Handle.insert({group_id:group_id,uuid:item.uuid,id:item.id,url:item.url,name:item.name,sqlid:item.sqlid,style:item.style,user_id:slef.userId,action:'聊天室标记'});
             callback();
         });
+      }).run();
     }, function(error) {
         console.log('PERSON.setName all done');
     });
