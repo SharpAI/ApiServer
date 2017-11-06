@@ -2,6 +2,9 @@
  * Created by simba on 5/12/16.
  */
 if(Meteor.isServer){
+    sendMqttUserMessage = null;
+    sendMqttGroupMessage= null;
+
     initMQTT = function(clientId){
         var mqttOptions = {
             clean:true,
@@ -44,7 +47,15 @@ if(Meteor.isServer){
                 })
             }catch(e){}
         }
+        sendMqttUserMessage=function(user_id, message) {
+            // console.log('sendMqttUserMessage:', message);
+            sendMqttMessage("/msg/u/" + user_id, message);
+        };
+        sendMqttGroupMessage=function(group_id, message) {
+            sendMqttMessage("/msg/g/" + group_id, message);
+        };
     }
+
 
     Meteor.startup(function(){
         initMQTT(null);
