@@ -105,8 +105,12 @@ Template._simpleChatLabelDevice.save = function(){
                 //有name说明是识别了，但是识别错了，管理员要修改这个人的name, 把这次修改记录到person的已标注里面
                 var setNameObj = {uuid: msgObj.people_uuid, id: msgObj.images[i].id, url: msgObj.images[i].url, name: nas[ii], sqlid: msgObj.images[i].sqlid, style: msgObj.images[i].style};
                 if(msgObj && msgObj.images /*&& msgObj.images[i].label*/) {
-                  if(nas && nas.length>0 && nas[ii] && res && res[nas[ii]] /*&& res[nas[ii]].faceId*/) {
-                    setNameObj.id = (nas[ii] && res[nas[ii]] && res[nas[ii]].faceId) ? res[nas[ii]].faceId : new Mongo.ObjectID()._str;
+                  if(nas && nas[ii] && res && res[nas[ii]] && res[nas[ii]].faceId){
+                    setNameObj.id = res[nas[ii]].faceId;
+                  } else if (msgObj && msgObj.images && msgObj.images[0] && msgObj.images[0].id){
+                    setNameObj.id = msgObj.images[0].id;
+                  } else {
+                    setNameObj.id = new Mongo.ObjectID()._str;
                   }
                 }
                 setNames.push(setNameObj);
@@ -166,6 +170,8 @@ Template._simpleChatLabelDevice.save = function(){
         var theFaceId = '';
         if(res && res[updateObj.images[i].label] && res[updateObj.images[i].label].faceId){
           theFaceId = res[updateObj.images[i].label].faceId;
+        } else if (updateObj.images && updateObj.images[0] && updateObj.images[0]){
+          theFaceId = updateObj.images[0].id;
         } else if(setNames && setNames[0] && setNames[0].id){
           theFaceId = setNames[0].id;
         }
@@ -197,7 +203,9 @@ Template._simpleChatLabelDevice.save = function(){
           };
         }
         console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
-        sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
+        if(trainsetObj.face_id){
+          sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
+        }
         updateObj.images[i].labelMsgSent = true;
 
         try {
