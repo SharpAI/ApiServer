@@ -1185,12 +1185,14 @@ Meteor.methods({
   'set-person-names': function(group_id, items){
     console.log('set-person-names:', items);
     var slef = this;
-    /*for(var i=0;i<items.length;i++) {
+    for(var i=0;i<items.length;i++) {
       PERSON.setName(group_id, items[i].uuid, items[i].id, items[i].url, items[i].name);
       console.log('LABLE_DADASET_Handle 3')
       LABLE_DADASET_Handle.insert({group_id:group_id,uuid:items[i].uuid,id:items[i].id,url:items[i].url,name:items[i].name,sqlid:items[i].sqlid,style:items[i].style,user_id:slef.userId,action:'聊天室标记'});
-    }*/ 
-    forEachAsynSeries(items, 1, function(item, index, callback){
+    }
+
+    // forEachAsynSeries + Fiber (出现两个 同名 person, 其中一个faceId 为空 & 数据集不全【label_dataset 中标记4张，只记录 1 张的情况】，先用回 for 循环的方式)
+    /*forEachAsynSeries(items, 1, function(item, index, callback){
       Fiber(function(){
         PERSON.setName(group_id, item.uuid, item.id, item.url, item.name, function(){
             console.log('LABLE_DADASET_Handle 3')
@@ -1200,7 +1202,7 @@ Meteor.methods({
       }).run();
     }, function(error) {
         console.log('PERSON.setName all done');
-    });
+    });*/
   },
   'remove-person': function(group_id,uuid,id){
     return PERSON.removeName(group_id,uuid, id);
