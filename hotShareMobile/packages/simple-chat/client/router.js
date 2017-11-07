@@ -785,7 +785,7 @@ Template._simpleChatToChatItem.events({
 
       var setNames = [];
       for (var i=0;i<msgObj.images.length;i++){
-        if (msgObj.images[i].label) {
+        //if (msgObj.images[i].label) {
           var trainsetObj = {
             group_id: msgObj.to.id,
             type: 'trainset',
@@ -800,9 +800,9 @@ Template._simpleChatToChatItem.events({
           };
           console.log("##RDBG clicked yes: " + JSON.stringify(trainsetObj));
           sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
-        }
+        //}
 
-        if (_.pluck(setNames, 'id').indexOf(msgObj.images[i].id) === -1)
+        //if (_.pluck(setNames, 'id').indexOf(msgObj.images[i].id) === -1)
           setNames.push({uuid: msgObj.people_uuid, id: msgObj.images[i].id, url: msgObj.images[i].url, name: msgObj.images[i].label,sqlid:msgObj.images[i].sqlid,style:msgObj.images[i].style});
       }
       if (setNames.length > 0)

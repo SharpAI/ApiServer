@@ -9,6 +9,7 @@ Template._simpleChatLabelDevice.open = function(msgObj){
   if (view)
     Template._simpleChatLabelDevice.close();
 
+  console.log("FrankDebug: set msgObj="+JSON.stringify(msgObj));
   message.set(msgObj);
   var imgs = [];
   for(var i=0;i<msgObj.images.length;i++){
@@ -93,6 +94,7 @@ Template._simpleChatLabelDevice.save = function(){
     var setNames = [];
 
     // set label name
+    console.log("FrankDebug: get msgObj="+JSON.stringify(msgObj));
     for (var i=0;i<msgObj.images.length;i++){
       for(var ii=0;ii<imgs.length;ii++){
         var is_break = false;
@@ -101,6 +103,7 @@ Template._simpleChatLabelDevice.save = function(){
             if (nas[ii]){
               // msgObj.images[i].label = nas[ii];
               var id = msgObj.tid || msgObj.images[i].id
+              console.log("FrankDebug: i="+i+", nas[ii]="+nas[ii]+", id="+id);
               if (_.pluck(setNames, 'id').indexOf(id) === -1) {
                 //有name说明是识别了，但是识别错了，管理员要修改这个人的name, 把这次修改记录到person的已标注里面
                 var setNameObj = {uuid: msgObj.people_uuid, id: msgObj.images[i].id, url: msgObj.images[i].url, name: nas[ii], sqlid: msgObj.images[i].sqlid, style: msgObj.images[i].style};
@@ -111,6 +114,7 @@ Template._simpleChatLabelDevice.save = function(){
                     setNameObj.id = (setNames[0] && setNames[0].id) ? setNames[0].id : new Mongo.ObjectID()._str;
                   }
                 }
+                console.log("FrankDebug: i="+i+", setNameObj="+JSON.stringify(setNameObj));
                 setNames.push(setNameObj);
                 msgObj.images[i].label = nas[ii];
               }
@@ -145,6 +149,7 @@ Template._simpleChatLabelDevice.save = function(){
     if (setNames.length > 0)
       Meteor.call('set-person-names', msgObj.to.id, setNames);
 
+    console.log('setNames', JSON.stringify(setNames));
     console.log('setNames', setNames);
     console.log('names:', res);
 
