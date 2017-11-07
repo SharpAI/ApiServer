@@ -1235,15 +1235,19 @@ Meteor.methods({
     var person = Person.findOne({_id: _id});
     var faces = [];
     if(person){
-      faces = person.faces;
-      for(var i=0; i< faces.length;i++){
-        var data = {
-          group_id:person.group_id,
-          id:faces[i].face_id,
-          url:faces[i].face_url,
-        };
-        LABLE_DADASET_Handle.remove(data);
-      }
+
+      // faces = person.faces;
+      // for(var i=0; i< faces.length;i++){
+      //   var data = {
+      //     group_id:person.group_id,
+      //     id:faces[i].face_id,
+      //     url:faces[i].face_url,
+      //   };
+      //   LABLE_DADASET_Handle.remove(data);
+      // }
+
+      LableDadaSet.remove({group_id: person.group_id, name: person.name});
+
       PersonNames.remove({group_id:person.group_id, name:person.name});
       WorkAIUserRelations.remove({'ai_persons.id': person._id});
       WorkStatus.remove({'person_id.id': person._id});

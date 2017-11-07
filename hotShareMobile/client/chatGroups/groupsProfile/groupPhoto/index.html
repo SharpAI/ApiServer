@@ -68,7 +68,7 @@
 
 <template name="groupPhotoImg1">
   <li id="{{_id}}" class="labeled-item" data-did="{{deviceId}}" data-gid="{{group_id}}" data-fid="{{faceId}}" data-name="{{name}}">
-     <img class="lazy" data-original="{{url}}" id={{_id}} data-name="{{name}}"/> 
+     <img class="lazy" data-original="{{url}}" id={{_id}}  data-gid="{{group_id}}" data-fid="{{faceId}}"  data-name="{{name}}"/> 
      <!-- {{#if has_selected id}}
      <div class="selected"><i class="fa fa-check" aria-hidden="true"></i></div>
      {{/if}} -->
@@ -90,12 +90,21 @@
       var self = $(this);
       var _id = self.attr('id');
       var name = self.data('name');
+
       PUB.confirm('要删除「'+name+'」吗?',function(){
         Meteor.call('removePersonById',_id, function(error, result){
           if(error){
             console.log(error)
             return PUB.toast('删除失败，请重试！');
           }
+          var group_id = self.data('gid');
+          var trainsetObj = {
+            group_id: group_id,
+            face_id: self.data('fid'),
+            drop_person: true,
+          };
+          console.log('removePersonById'+JSON.stringify(trainsetObj));
+          sendMqttMessage('/device/'+group_id, trainsetObj);
           return PUB.toast('已删除');
         });
       });

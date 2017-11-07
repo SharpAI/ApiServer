@@ -116,6 +116,7 @@ PERSON = {
       else
         person.faces[_.pluck(person.faces, 'id').indexOf(id)].url = url;
       // Person.update({_id: person._id}, {$set: {name: name, url: person.url, updateAt: person.updateAt, faces: person.faces}});
+      console.log("update person.faces = "+JSON.stringify(person.faces));
       Person.update({_id: person._id}, {$set: {updateAt: person.updateAt, faces: person.faces}});
     }
     //此段代码会导致person表的名字会被篡改
@@ -151,6 +152,7 @@ PERSON = {
         delete person.faces;
         delete person.faceId;
       }
+      console.log("insert person = "+JSON.stringify(person));
       Person.insert(person);
       //标记新人，立即训练
       var obj = SimpleChat.Groups.findOne({_id: group_id});
@@ -1233,15 +1235,19 @@ Meteor.methods({
     var person = Person.findOne({_id: _id});
     var faces = [];
     if(person){
-      faces = person.faces;
-      for(var i=0; i< faces.length;i++){
-        var data = {
-          group_id:person.group_id,
-          id:faces[i].face_id,
-          url:faces[i].face_url,
-        };
-        LABLE_DADASET_Handle.remove(data);
-      }
+
+      // faces = person.faces;
+      // for(var i=0; i< faces.length;i++){
+      //   var data = {
+      //     group_id:person.group_id,
+      //     id:faces[i].face_id,
+      //     url:faces[i].face_url,
+      //   };
+      //   LABLE_DADASET_Handle.remove(data);
+      // }
+
+      LableDadaSet.remove({group_id: person.group_id, name: person.name});
+
       PersonNames.remove({group_id:person.group_id, name:person.name});
       WorkAIUserRelations.remove({'ai_persons.id': person._id});
       WorkStatus.remove({'person_id.id': person._id});
