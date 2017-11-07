@@ -107,10 +107,8 @@ Template._simpleChatLabelDevice.save = function(){
                 if(msgObj && msgObj.images /*&& msgObj.images[i].label*/) {
                   if(nas && nas[ii] && res && res[nas[ii]] && res[nas[ii]].faceId){
                     setNameObj.id = res[nas[ii]].faceId;
-                  } else if (msgObj && msgObj.images && msgObj.images[0] && msgObj.images[0].id){
-                    setNameObj.id = msgObj.images[0].id;
                   } else {
-                    setNameObj.id = new Mongo.ObjectID()._str;
+                    setNameObj.id = (setNames[0] && setNames[0].id) ? setNames[0].id : new Mongo.ObjectID()._str;
                   }
                 }
                 setNames.push(setNameObj);
@@ -170,9 +168,7 @@ Template._simpleChatLabelDevice.save = function(){
         var theFaceId = '';
         if(res && res[updateObj.images[i].label] && res[updateObj.images[i].label].faceId){
           theFaceId = res[updateObj.images[i].label].faceId;
-        } else if (updateObj.images && updateObj.images[0] && updateObj.images[0]){
-          theFaceId = updateObj.images[0].id;
-        } else if(setNames && setNames[0] && setNames[0].id){
+        } else {
           theFaceId = setNames[0].id;
         }
         try {
@@ -224,7 +220,8 @@ Template._simpleChatLabelDevice.save = function(){
               'style': updateObj.images[i].style
             };
             var data = {
-              face_id:updateObj.images[i].id,
+              // face_id:updateObj.images[i].id, // 这里也有问题
+              face_id: theFaceId,
               person_info: person_info,
               formLabel:true //是否是聊天室标记
             };
