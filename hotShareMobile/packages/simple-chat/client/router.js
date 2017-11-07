@@ -2475,7 +2475,13 @@ Template._simpleChatToChatItemImg.helpers({
     return false;
   },
   hasAccAndFuzz:function(){
-    return this.accuracy && this.fuzziness;
+    return this.accuracy || this.fuzziness;
+  },
+  hasAcc:function(){
+    return this.accuracy;
+  },
+  hasFuzz:function(){
+    return this.fuzziness;
   }
 })
 
@@ -2502,7 +2508,15 @@ Template._simleChatToSwipeBox.helpers({
   },
   hasAccAndFuzz:function(){
     var data = Session.get('SimpleChatToChatLabelImage');
-    return data.accuracy && data.fuzziness;
+    return data.accuracy || data.fuzziness;
+  },
+  hasAcc:function(){
+    var data = Session.get('SimpleChatToChatLabelImage');
+    return data.accuracy;
+  },
+  hasFuzz:function(){
+    var data = Session.get('SimpleChatToChatLabelImage');
+    return data.fuzziness;
   }
 })
 
