@@ -276,6 +276,16 @@ if Meteor.isServer
           InjectData.pushData(res, "wechatsign",  signature);
     catch error
       return null
+  # 获取对应时区的时间
+  getLocalTimeByOffset = (i)->
+    if typeof i isnt 'number'
+      return 
+    d = new Date()
+    len = d.getTime()
+    offset = d.getTimezoneOffset() * 60000
+    utcTime = len + offset
+    return new Date(utcTime + 3600000 * i)
+
   Router.configure {
     waitOn: ()->
       if this and this.path
@@ -1675,9 +1685,22 @@ if Meteor.isServer
       relations = WorkAIUserRelations.find({})
       relations.forEach((fields)->
         if fields && fields.group_id
+          # 按 group 所在时区初始化 workStatus 数据
+          timeOffset = 8
+          shouldInitWorkStatus = false
+          group = SimpleChat.Groups.findOne({_id: fields.group_id})
+          if (group and group.offsetTimeZone)
+            timeOffset = parseInt(group.offsetTimeZone)
+
+          # 根据时区 获取 group 对应时区时间
+          group_local_time = getLocalTimeByOffset(timeOffset)
+          group_local_time_hour = group_local_time.getHours()
+          if group_local_time_hour is 0
+            shouldInitWorkStatus = true
+            console.log('now should init the offsetTimeZone: ', timeOffset)
           #console.log('>>> ' + JSON.stringify(fields))
           workstatus = WorkStatus.findOne({'group_id': fields.group_id, 'date': nextday, 'person_name': fields.person_name})
-          if !workstatus
+          if !workstatus and shouldInitWorkStatus
             newWorkStatus = {
               "app_user_id" : fields.app_user_id
               "group_id"    : fields.group_id
