@@ -304,6 +304,12 @@ Template.timelineAlbum.helpers({
   //   });
   //   return msgs;
   // },
+  showAccAndFuzz: function(accuracy,fuzziness){
+    if(!accuracy && !fuzziness){
+      return false;
+    }
+    return withAccuracyFuzzinesssInTimeLine
+  },
   isLoading:function(){
     if (Session.get('timelineAlbumLoading') === false) {
       return false;

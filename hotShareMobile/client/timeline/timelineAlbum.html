@@ -111,11 +111,23 @@
               {{#if mergedIsExtend}}
               <div class="images images-click-able" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
                 <img class="lazy" data-original="{{img_url}}" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAANSURBVBhXYzh8+PB/AAffA0nNPuCLAAAAAElFTkSuQmCC"/>
+                {{#if showAccAndFuzz accuracy fuzziness}}
+                <div class="value_bg">
+                  <div class="accuracy">{{accuracy}}</div>
+                  <div class="fuzziness">{{fuzziness}}</div>
+                </div>
+                {{/if}}
                 <div class="person-name">{{person_name}}</div>
               </div>
               {{#each mergedImgs}}
               <div class="images images-click-able" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
                 <img class="lazy" data-original="{{img_url}}" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAANSURBVBhXYzh8+PB/AAffA0nNPuCLAAAAAElFTkSuQmCC"/>
+                {{#if showAccAndFuzz accuracy fuzziness}}
+                <div class="value_bg">
+                  <div class="accuracy">{{accuracy}}</div>
+                  <div class="fuzziness">{{fuzziness}}</div>
+                </div>
+                {{/if}}
                 <div class="person-name">{{person_name}}</div>
               </div>
               {{/each}}
@@ -129,6 +141,12 @@
             {{else}}
             <div class="images images-click-able" id="{{person_id}}" data-name="{{person_name}}" data-imgurl="{{img_url}}" data-sqlid="{{sqlid}}" data-style="{{style}}" data-ts="{{ts}}">
               <img class="lazy" data-original="{{img_url}}" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAANSURBVBhXYzh8+PB/AAffA0nNPuCLAAAAAElFTkSuQmCC"/>
+              {{#if showAccAndFuzz accuracy fuzziness}}
+              <div class="value_bg">
+                <div class="accuracy">{{accuracy}}</div>
+                <div class="fuzziness">{{fuzziness}}</div>
+              </div>
+              {{/if}}
               <div class="person-name">{{person_name}}</div>
             </div>
             {{/if}}
