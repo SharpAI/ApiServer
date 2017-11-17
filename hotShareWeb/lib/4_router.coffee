@@ -797,7 +797,7 @@ if Meteor.isServer
           sqlid: sqlid, 
           style: style,
           accuracy: Accuracy, # 准确度(分数)
-          fuzziness: Fuzzinesss, # 模糊度
+          fuzziness: Fuzziness, # 模糊度
           ts:create_time.getTime()
         }
         PERSON.updateToDeviceTimeline(uuid,userGroup.group_id,timeObj)
