@@ -99,9 +99,13 @@ if Meteor.isClient
         if window.iabHandle
           window.iabHandle.close()
           window.iabHandle = null
+    # Router.route '/',()->
+    #   this.render 'home'
+    #   Session.set 'channel','home'
+    #   return
     Router.route '/',()->
-      this.render 'home'
-      Session.set 'channel','home'
+      this.render 'chatGroups'
+      Session.set 'channel','message'
       return
     Router.route '/message',()->
       this.render 'chatGroups'
