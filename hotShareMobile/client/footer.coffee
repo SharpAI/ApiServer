@@ -149,15 +149,13 @@ if Meteor.isClient
           (index)->
             if index is 2
               saveHotPosts()
-            # PUB.page('/message')
-            PUB.page('/')
+            PUB.page('/message')
           '提示'
           ['暂不','保存']
         )
         return
-      # PUB.page('/message')
-      PUB.page('/')
-    'click #homePage':(e)->
+      PUB.page('/message')
+    'click #home':(e)->
       Session.set('hasNewLabelMsg', false)
       if (Session.get("myHotPostsChanged"))
         Session.set("myHotPostsChanged", false)
