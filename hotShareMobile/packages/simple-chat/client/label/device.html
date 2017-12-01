@@ -17,9 +17,13 @@
             <div class="groupUsers"  style="height: 100%;">
               <div class="contentList"  style="height: 100%; overflow: auto;-webkit-overflow-scrolling: touch;">
                 <div style="padding: 15px; padding-bottom: 5px;padding: 15px;padding-bottom: 5px;position: relative;">
+                  {{#if input_name_direct}}
+                  <input id="device-input-name" type="text" placeholder="为这组照片取个名字~" style="height: 30px;line-height: 30px;padding: 0px 10px;width: 100%; border: 1px solid #ccc; margin-bottom: 10px;" value="{{name}}" />
+                  {{else}}
                   <div class="select" style="width: 60px;height: 30px;line-height: 30px;position: absolute;right: 15px;top: 15px;color: #757575;text-align: center;"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
                   <!-- <input id="device-input-name" type="text" placeholder="为这组照片 (id: {{id}}) 取个名字~" style="height: 30px;line-height: 30px;padding: 0px 10px;width: 100%; border: 1px solid #ccc; margin-bottom: 10px;" value="{{name}}" /> -->
                   <input id="device-input-name" type="text" placeholder="为这组照片取个名字~" style="height: 30px;line-height: 30px;padding: 0px 10px;width: 100%; border: 1px solid #ccc; margin-bottom: 10px;" value="{{name}}" />
+                  {{/if}}
                 </div>
                 <ul style="padding: 0;">
                   {{#each images}}

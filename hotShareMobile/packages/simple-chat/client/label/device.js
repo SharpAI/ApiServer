@@ -4,6 +4,7 @@ var index = new ReactiveVar(0);
 var message = new ReactiveVar(null);
 var names = new ReactiveVar([]);
 var isSelectedAll = new ReactiveVar(true);
+var input_name_direct = new ReactiveVar(true);
 
 Template._simpleChatLabelDevice.open = function(msgObj){
   if (view)
@@ -38,6 +39,17 @@ Template._simpleChatLabelDevice.open = function(msgObj){
     Template._simpleChatLabelDevice.save();
     return;
   }
+
+  // 标注新人， 直接显示输入name
+  if (msgObj.input_name_direct){
+    input_name_direct.set(true);
+    view = Blaze.render(Template._simpleChatLabelDevice, document.body);
+    simple_chat_page_stack.push(view);
+    return;
+  } else {
+    input_name_direct.set(false);
+  }
+
 
   view = Blaze.render(Template._simpleChatLabelDevice, document.body);
   simple_chat_page_stack.push(view);
@@ -334,6 +346,9 @@ Template._simpleChatLabelDevice.helpers({
   },
   isSelectedAll: function(){
     return isSelectedAll.get();
+  },
+  input_name_direct: function(){
+    return input_name_direct.get();
   }
 });
 
