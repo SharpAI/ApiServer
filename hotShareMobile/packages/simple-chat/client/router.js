@@ -965,7 +965,7 @@ Template._simpleChatToChatItem.events({
   'click .wantSelectElse':function(){
     var data = this;
     //data.need_show_label_now = true;
-    data.input_name_direct = true;
+    // data.input_name_direct = true;
     Template._simpleChatLabelDevice.open(data);
   }
 });
