@@ -1,0 +1,239 @@
+<template name="groupCheckInoutInfo">
+<div class="groupCheckInoutInfo">
+  <div class="panel panel-default" id="panel-{{group_id}}">
+    <div id="{{group_id}}" class="panel-heading" style="padding-bottom: 5px;">
+      <div class="date_select">
+        {{#if has_day_before}}
+        <span class="day_before select_btn" data-groupid="{{group_id}}"><i class="fa fa-angle-left fa-fw"></i></span>
+        {{/if}}
+        <div class="title">
+          <div>{{day_title}}</div>
+        </div>
+        {{#if has_day_after}}
+        <span class="day_after select_btn" data-groupid="{{group_id}}"><i class="fa fa-angle-right fa-fw"></i></span>
+        {{/if}}
+      </div>
+    </div>
+    {{#if isLoading}}
+    <div class="workstatusLoading" style="position: relative;margin: 0px;padding: 10px 0; margin-top:30px;">
+      <img style="width: 60px;" src="/isLoading.gif"/>
+    </div>
+    {{else}}
+      {{#if workStatusList}}
+      <table class="table table-condensed">
+        <thead>
+            <tr role="row">
+              <th>姓名</th>
+              <th style="width: 60px;text-align: center;">状态</th>
+              <th>进</th>
+              <th>出</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each workStatusList}}
+            {{#unless hide_it}}
+            <tr>
+              <td rowspan="2" style="width:64px;">
+                {{person_name}}
+                <div>
+                  {{#if app_user_id}}
+                  <i class="fa fa-user app-user-status" style="color:green;"></i>
+                    {{#if enable_push app_notifaction_status}}
+                    <i class="fa fa-bell app-user-status" style="color:green;"></i>
+                    {{else}}
+                    <i class="fa fa-bell app-user-status" style="color:gray;"></i>
+                    {{/if}}
+                  {{else}}
+                  <i class="fa fa-user app-user-status" style="color:gray;"></i>
+                  {{/if}}
+                </div>
+              </td>
+              <td style="width:100px;">
+                {{#if isStatusIN status}}
+                  <i class="fa fa-map-marker " style="color:green;"></i>                     
+                {{else}}
+                  <i class="fa fa-map-marker " style="color:gray;"></i>
+                {{/if}}
+                {{#if isHistoryNoOut group_id}}
+                  <span style="color: red;"> — </span>
+                {{else}}
+                  {{InComTimeLen group_id}}
+                {{/if}}
+              </td>
+
+              {{#if isInStatusNormal in_status}}
+              <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="in" class="{{modifyStatusClass app_user_id}}">
+                <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" data-groupid="{{group_id}}" data-inout="in"/>
+                <!--<i class="fa fa-pencil fa-as-btn" style="color:green;"></i>-->
+                <img src="/img/home_clock_green.png" width="30" height="30"/>
+              </td>
+              {{/if}}
+              {{#if isInStatusWarning in_status}}
+              <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="in" class="{{modifyStatusClass app_user_id}}">
+                <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" data-groupid="{{group_id}}" data-inout="in"/>
+                <!--<i class="fa fa-pencil fa-as-btn" style="color:orangered;"></i>-->
+                <img src="/img/home_clock_orangered.png" width="30" height="30"/>
+              </td>
+              {{/if}}
+              {{#if isInStatusError in_status}}
+                {{#if isMySelf app_user_id}}
+                <td id="{{group_id}}" data-inout="in" class="modifyMyStatus">
+                  <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" data-groupid="{{group_id}}" data-inout="in"/>
+                  <!--<i class="fa fa-pencil fa-as-btn" style="color:red;"></i>-->
+                  <img src="/img/home_clock_red.png" width="30" height="30"/>
+                </td>
+                {{else}}
+                <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="in" class="{{modifyStatusClass app_user_id}}">
+                  <img class="in-out-pic" data-time="{{in_time}}" src="{{in_image}}" data-groupid="{{group_id}}" data-inout="in"/>
+                  <!--<i class="fa fa-pencil fa-as-btn" style="color:red;"></i>-->
+                  <img src="/img/home_clock_red.png" width="30" height="30"/>
+                </td>
+                {{/if}}
+              {{/if}}
+              {{#if isInStatusUnknown in_status}}
+                {{#if isMySelf app_user_id}}
+                <td id="{{group_id}}" data-inout="in" class="modifyMyStatus"> — </td>
+                {{else}}
+                <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="in" class="{{modifyStatusClass app_user_id}}"> — </td>
+                {{/if}}
+              {{/if}}
+              
+              {{#if isCurrentStatusIN status}}
+                {{#if isMySelf app_user_id}}
+                <td id="{{group_id}}" data-inout="out" class="modifyMyStatus"> — </td>
+                {{else}}
+                <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="{{modifyStatusClass app_user_id}}"> — </td>
+                {{/if}}
+              {{else}}
+                {{#if isOutStatusNormal out_status}}
+                <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="{{modifyStatusClass app_user_id}}">
+                  <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}" data-inout="out"/>
+                  <!--<i class="fa fa-pencil fa-as-btn" style="color:green;"></i>-->
+                  <img src="/img/home_clock_green.png" width="30" height="30"/>
+                </td>
+                {{/if}}
+                {{#if isOutStatusWarning out_status}}
+                <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="{{modifyStatusClass app_user_id}}">
+                  <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}" data-inout="out"/>
+                  <!--<i class="fa fa-pencil fa-as-btn" style="color:orangered;"></i>-->
+                  <img src="/img/home_clock_orangered.png" width="30" height="30"/>
+                </td>
+                {{/if}}
+                {{#if isOutStatusError out_status}}
+                  {{#if isMySelf app_user_id}}
+                  <td id="{{group_id}}" data-inout="out" class="modifyMyStatus">
+                    <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}" data-inout="out"/>
+                    <!--<i class="fa fa-pencil fa-as-btn" style="color:red;"></i>-->
+                    <img src="/img/home_clock_red.png" width="30" height="30"/>
+                  </td>
+                  {{else}}
+                  <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="{{modifyStatusClass app_user_id}}">
+                    <img class="in-out-pic" data-time="{{out_time}}" src="{{out_image}}" data-groupid="{{group_id}}" data-inout="out"/>
+                    <!--<i class="fa fa-pencil fa-as-btn" style="color:red;"></i>-->
+                    <img src="/img/home_clock_red.png" width="30" height="30"/>
+                  </td>
+                  {{/if}}
+                {{/if}}
+                {{#if isOutStatusUnknown out_status}}
+                  {{#if isMySelf app_user_id}}
+                  <td id="{{group_id}}" data-inout="out" class="modifyMyStatus"> — </td>
+                  {{else}}
+                  <td id="{{group_id}}" data-taid="{{app_user_id}}" data-taname="{{person_name}}" data-inout="out" class="{{modifyStatusClass app_user_id}}"> — </td>
+                  {{/if}}
+                {{/if}}
+              {{/if}}
+              
+            </tr>
+            <tr>
+              <!--
+              {{#if isMySelf app_user_id}}
+              -->
+              <td colspan="3" class="whats-up editWhatsUp" id="{{_id}}" data-groupid="{{group_id}}" data-whatsup="{{whats_up}}" style="white-space:normal">
+                  {{#if whats_up}}
+                      <i class="fa fa-pencil" style="color:gray; font-size:14px;"></i>
+                      {{#each whatsUpLists}}
+                      <p style="white-space: pre-wrap;"><strong>{{person_name}}</strong>[{{getShortTime ts ../group_id}}]: {{content}}</p>
+                      {{/each}}
+                  {{else}}
+                      <i class="fa fa-pencil" style="color:gray; font-size:14px;">今天还没有工作安排...</i>
+                  {{/if}}
+              </td>
+            </tr>
+            {{/unless}}
+            {{/each}}
+          </tbody>
+      </table>
+      {{else}}
+      <div style="margin-top:60px; text-align:center;">暂无记录</div>
+      {{/if}}
+    {{/if}}
+  </div>
+
+
+  <!-- Modal EditWhatUp Start -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document" style="top:50px; bottom:auto;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">编辑今日简述</h4>
+        </div>
+        <div class="modal-body">
+          <form>
+          <div class="form-group">
+            <textarea id="EditorWhatsUp" rows="5"  class="form-control" placeholder="编辑今日简述" style="height: auto !important;resize: none;"></textarea>
+          </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default cancelWhatsUp" data-dismiss="modal">取消</button>
+          <button type="button" id="" class="btn btn-primary saveWhatsUp">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal EditWhatUp End -->
+
+  <!-- Modal selectDevicesInOut Start -->
+  <div class="modal fade" id="selectDevicesInOut" tabindex="-1" role="dialog" aria-labelledby="selectDevicesInOutLabel">
+    <div class="modal-dialog" role="document" style="top:50px; bottom:auto;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="selectDevicesInOutLabel">选择设备</h4>
+        </div>
+        <div class="modal-body">
+          <ul class="set-up comFadeIn">
+          {{#each devices}}
+            {{#if uuid}}
+            <li id="{{uuid}}" class="deviceItem" style="height:60px;padding:10px 0">
+                <img class="usericon" src="/device_icon_192.png" width="40" height="40" style="border-radius:4px;">
+                {{#if name}}
+                <label style="margin-left:48px;">{{name}}</label>
+                {{else}}
+                <label style="margin-left:48px;">未知设备</label>
+                {{/if}}
+                <div class="value" style="float:right; margin:10px;">{{in_out}}<i class="fa fa-angle-right"></i></div>
+            </li>
+            {{/if}}
+          {{/each}}
+        </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal selectDevicesInOut End -->
+
+  <!-- inOutPicPreview Start -->
+  <div class="inOutPicPreview">
+    <div class="imgLayer">
+      <div class="img_container">
+        <img class="img_item" src=""/>
+        <div class="video-play-tip"><img src="/music_pic_default.png"/> </div>
+      </div>
+    </div>
+    <div class="timeLayer">08：56</div>
+  </div>
+  <!-- inOutPicPreview End -->
+</div>
+</template>
