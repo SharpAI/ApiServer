@@ -5,6 +5,7 @@ if (withZhiFaCDN) {
   server_domain_name = "cdcdn.tiegushi.com:8080";
 }
 chat_server_url = 'chat.tiegushi.com';
+sign_server_url = 'http://sign.tiegushi.com:8080/sign/';
 //import_server_url = 'urlanalyser.tiegushi.com';
 import_server_url = 'http://urlanalyser.tiegushi.com:8080/import';
 import_cancel_url = 'http://urlanalyser.tiegushi.com:8080/import-cancel';
