@@ -347,9 +347,10 @@ if (Meteor.isClient) {
           PUB.toast('微信登陆失败');
           return console.log(err);
         } else {
+          PUB.toast('微信登陆成功');
           if(Meteor.user().profile.new === undefined || Meteor.user().profile.new === true)
           {
-              Meteor.users.update({_id: Meteor.userId()}, {$set: {"profile.new": true}});
+              Meteor.users.update({_id: Meteor.userId()}, {$set: {"profile.new": false}});
                 //return Router.go('/registerFollow');
                 // ScanBarcodeByBarcodeScanner();
                 var flag = window.localStorage.getItem("isSecondUse") === 'true';
