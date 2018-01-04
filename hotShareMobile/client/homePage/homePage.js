@@ -1,3 +1,5 @@
+var showTimeLayerGroupUser = new ReactiveVar({});
+
 Template.homePage.onRendered(function () {
   var now = new Date();
   var displayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -67,6 +69,27 @@ var parseDate = function(currentDay){
 };
 
 Template.homePage.helpers({
+  timeLayer: function(){
+    var _obj = showTimeLayerGroupUser.get();
+    var status = WorkStatus.findOne({_id: _obj._id});
+    
+    var time = null;
+    var result = {};
+    if(_obj.in_out == 'in'){
+      time = new Date(status.in_time);
+      time = time.shortTime(_obj.time_offset);
+       result.src = status.in_image;
+      result.video_src = status.in_video;
+    } else {
+      time = new Date(status.out_time);
+      time = time.shortTime(_obj.time_offset)
+      
+      result.src = status.out_image;
+      result.video_src = status.out_video;
+    }
+    result.time = time;
+    return result;
+  },
   isLoading:function(){
     if (Session.get('WorkStatusLoading') === false) {
       return false;
@@ -487,8 +510,8 @@ Template.homePage.events({
       time_offset = group.offsetTimeZone;
     }
     
-    $('.timeLayer').html(time.shortTime(time_offset));
-    $('.imgLayer img.img_item').attr('src',src);
+    // $('.timeLayer').html(time.shortTime(time_offset));
+    // $('.imgLayer img.img_item').attr('src',src);
     // var video_src = this.in_video || this.out_video;
     var in_out = $(e.currentTarget).data('inout');
     var video_src = null;
@@ -498,11 +521,17 @@ Template.homePage.events({
     if(in_out == 'out'){
       video_src = this.out_video;
     }
-    if (video_src) {
-      $('.img_container .video-play-tip').show();
-      $('.img_container').addClass('videos');
-      $('.img_container').data('videosrc',video_src);
-    }
+
+    showTimeLayerGroupUser.set({
+      _id: this._id,
+      in_out: in_out,
+      time_offset: time_offset
+    });
+    // if (video_src) {
+    //   $('.img_container .video-play-tip').show();
+    //   $('.img_container').addClass('videos');
+    //   $('.img_container').data('videosrc',video_src);
+    // }
     $('.homePage').addClass('blur-element');
     $('#footer').addClass('blur-element');
     $('.inOutPicPreview').fadeIn('fast');
