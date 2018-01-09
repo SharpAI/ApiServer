@@ -1321,6 +1321,21 @@ sendMqttMsg = function(){
 };
 
 Template._simpleChatToChat.events({
+  'click #showScripts': function(e){
+    $('.scriptsLayer').fadeIn();
+    $('#showScripts').hide();
+  },
+  'click .scriptsItem': function(e){
+    $('.scriptsLayer').fadeOut();
+    $('#showScripts').fadeIn();
+    var cmd = $(e.currentTarget).data('script');
+    console.log('cmd is '+cmd);
+    // TODO: send command
+  },
+  'click .scriptsLayer': function(e){
+    $('.scriptsLayer').fadeOut();
+    $('#showScripts').fadeIn();
+  },
   'focus .input-text': function(){
     $('.box').animate({scrollTop:'999999px'}, 800);
     /*Meteor.setTimeout(function(){

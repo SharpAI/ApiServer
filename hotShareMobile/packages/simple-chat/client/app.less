@@ -246,7 +246,7 @@
       .hasNewMsg{
         position: fixed;
         bottom: 60px;
-        z-index: 999999;
+        z-index: 9990;
         text-align: center;
         left: 0px;
         right: 0px;
@@ -335,5 +335,68 @@
     display: inline-block;
     margin-left: 70px;
     height: 70px;
+  }
+}
+
+
+#showScripts {
+  position: fixed;
+  bottom: 100px;
+  right: 8px;
+  border: none;
+  z-index: 9990;
+  outline: none;
+  border-radius: 50%;
+  padding: 8px;
+  i {
+      height: 50px;
+      width: 50px;
+      background: #35afd8;
+      line-height: 50px;
+      text-align: center;
+      border-radius: 50%;
+      font-size: 20px;
+  }
+}
+
+.scriptsLayer{
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.64);
+  z-index: 9999;
+  .scriptsList{
+    position: absolute;
+    bottom: 64px;
+    margin: 16px;
+    padding: 0;
+    left: 0;
+    right: 0;
+  }
+  .scriptsItem{
+    width: 25%;
+    list-style: none;
+    float: left;
+    text-align: center;
+    i{
+      width: 50px;
+      height: 50px;
+      line-height: 46px;
+      font-size: 20px;
+      border-radius: 50%;
+      border: 1px solid #35afd8;
+      outline: none;
+      background: #35afd8;
+      color: #fff;
+    }
+    p{
+      height: 20px;
+      line-height: 20px;
+      font-size: 14px;
+      margin: 5px;
+    }
   }
 }
