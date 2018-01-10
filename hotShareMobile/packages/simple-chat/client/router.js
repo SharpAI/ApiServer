@@ -683,7 +683,7 @@ var setMsgList = function(where, action){
   if(action === 'insert' || action === 'remove'){
     shouldScrollToBottom();
   }
-  
+
 };
 
 Template._simpleChatToChatItem.events({
@@ -904,7 +904,7 @@ Template._simpleChatToChatItem.events({
         };
         console.log("##RDBG trainsetObj: " + JSON.stringify(trainsetObj));
         sendMqttMessage('/device/'+msgObj.to.id, trainsetObj);
-        
+
         images[i].label = null;
       }
 
@@ -981,7 +981,7 @@ Template._simpleChatToChatLabel.events({
     var $img = $('#swipebox-overlay .slide.current img');
     var data = this;
     var names = get_people_names();
-    
+
     show_label(data.to.id, function(name){
       Meteor.call('get-id-by-name1', data.people_uuid, name, data.to.id, function(err, res){
         if(err)
@@ -1264,6 +1264,18 @@ Template._simpleChatToChat.helpers({
   needShowTips:function(){
     var res = Session.get('simple_chat_need_show_tips');
     return res == true;
+  },
+  inDevMode:function(){
+    var ret_val = false;
+    var res = Session.get('inDevMode');
+    if (res == null || res == undefined) {
+      res = localStorage.getItem('inDevMode');
+    }
+    if (res == true || res == 'true') {
+      ret_val = true;
+    }
+    Session.set('inDevMode', ret_val);
+    return ret_val;
   }
 });
 
@@ -1330,7 +1342,65 @@ Template._simpleChatToChat.events({
     $('#showScripts').fadeIn();
     var cmd = $(e.currentTarget).data('script');
     console.log('cmd is '+cmd);
-    // TODO: send command
+
+    if (cmd == "clear")
+      text = "clearqueue";
+    else if (cmd == "query")
+      text = "queryqueue";
+    else if (cmd == "start")
+      text = "startframecapturing";
+    else if (cmd == "stop")
+      text = "stopframecapturing";
+    else {
+      return;
+    }
+
+    try{
+      var data = page_data;
+      var to = null;
+
+      if(data.type === 'group'){
+        var obj = Groups.findOne({_id: data.id});
+        to = {
+          id: data.id,
+          name: obj.name,
+          icon: obj.icon
+        };
+      }else{
+        var obj = Meteor.users.findOne({_id: data.id});
+        to = {
+          id: t.data.id,
+          name: AppConfig.get_user_name(obj),
+          icon: AppConfig.get_user_icon(obj)
+        };
+      }
+
+      var msg = {
+        _id: new Mongo.ObjectID()._str,
+        form:{
+          id: Meteor.userId(),
+          name: AppConfig.get_user_name(Meteor.user()),
+          icon: AppConfig.get_user_icon(Meteor.user())
+        },
+        to: to,
+        to_type: data.type,
+        type: 'text',
+        text: text,
+        create_time: new Date(),
+        is_read: false,
+        wait_classify:false,
+        send_status: 'sending'
+      };
+      msg.wait_clearqueue= true;
+
+      Messages.insert(msg, function(){
+        sendMqttMsg(msg);
+        // Session.set('shouldScrollToBottom',true);
+        // 用户输入
+        setScrollToBottom();
+      });
+      return false;
+    }catch(ex){console.log(ex); return false;}
   },
   'click .scriptsLayer': function(e){
     $('.scriptsLayer').fadeOut();

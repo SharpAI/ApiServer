@@ -50,6 +50,11 @@
             <span ><i class="fa fa-angle-right fa-fw"></i></span>
         </div>
         {{/unless}}
+        {{#if inDevMode}}
+        <div class='devmode bottomBorder boxTitle ripple-label'>{{_ "devMode"}}<span><i class="fa fa-check-square-o fa-fw"></i></span></div>
+        {{else}}
+        <div class='devmode bottomBorder boxTitle ripple-label'>{{_ "devMode"}}<span><i class="fa fa-square-o fa-fw"></i></span></div>
+        {{/if}}
         <div class='about boxTitle ripple-label'>{{_ "about"}}<span><i class="fa fa-angle-right fa-fw"></i></span></div>
        </div>
       <!--<div class="clear box boxTitle boxCenter">清除缓存</div>-->

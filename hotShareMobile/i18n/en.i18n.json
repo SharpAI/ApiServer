@@ -241,12 +241,13 @@
   "language": "语言",
   "English": "English",
   "Chinese": "中文",
-  
+
   "version":"新版本检测",
   "latestversion":"当前已是最新版本",
   "Newversion":"有新版本",
 
   "about": "关于点圈",
+  "devMode": "开发者模式",
   "aboutTitle": "关于 点圈",
   "ver": "版本",
   "logOut": "退出登录",

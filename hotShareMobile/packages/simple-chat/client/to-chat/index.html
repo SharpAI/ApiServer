@@ -66,18 +66,19 @@
     {{/if}}
   </div>
 
+  {{#if inDevMode}}
   <button id="showScripts" class="">
     <i class="fa fa-code"></i>
   </button>
   <div class="scriptsLayer">
     <ul class="scriptsList">
-      <li class="scriptsItem" data-script="ping">
+      <li class="scriptsItem" data-script="clear">
         <i class="fa fa-mouse-pointer fa-fw"></i>
-        <p>Ping</p>
+        <p>Clear</p>
       </li>
-      <li class="scriptsItem" data-script="queryqueue">
+      <li class="scriptsItem" data-script="query">
         <i class="fa fa-search fa-fw"></i>
-        <p>Queue</p>
+        <p>Query</p>
       </li>
       <li class="scriptsItem" data-script="start">
         <i class="fa fa-play fa-fw"></i>
@@ -89,6 +90,7 @@
       </li>
     </ul>
   </div>
+  {{/if}}
   <!--<script type="text/javascript" src="/packages/feiwu_simple-chat/client/lib/crypto1/crypto/crypto.js"></script>
   <script type="text/javascript" src="/packages/feiwu_simple-chat/client/lib/crypto1/hmac/hmac.js"></script>
   <script type="text/javascript" src="/packages/feiwu_simple-chat/client/lib/crypto1/sha1/sha1.js"></script>
@@ -444,4 +446,3 @@
   </div>
   {{/if}}
 </template>
-
