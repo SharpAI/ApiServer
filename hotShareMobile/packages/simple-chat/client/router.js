@@ -1351,6 +1351,12 @@ Template._simpleChatToChat.events({
       text = "startframecapturing";
     else if (cmd == "stop")
       text = "stopframecapturing";
+    else if (cmd == "startvideo")
+      text = "startvideocapturing";
+    else if (cmd == "stopvideo")
+      text = "stopvideocapturing";
+    else if (cmd == "train")
+      text = "train";
     else {
       return;
     }
@@ -1391,7 +1397,8 @@ Template._simpleChatToChat.events({
         wait_classify:false,
         send_status: 'sending'
       };
-      msg.wait_clearqueue= true;
+      if (cmd != 'train')
+        msg.wait_clearqueue= true;
 
       Messages.insert(msg, function(){
         sendMqttMsg(msg);
