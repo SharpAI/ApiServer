@@ -334,6 +334,12 @@ Template.groupPhoto.onRendered(function(){
       }
     });
   });
+
+  // disable img longpress default events
+  $(document).on('touchstart','img', function(e){
+    e.stopPropagation();
+    e.preventDefault();
+  });
 });
 
 Template.groupPhotoImg.onRendered(function(){

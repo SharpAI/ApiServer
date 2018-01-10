@@ -87,6 +87,7 @@
   <script type="text/javascript">
     touch.on($('#{{_id}}'),'hold',function(e){
       e.stopPropagation();
+      e.preventDefault();
       var self = $(this);
       var _id = self.attr('id');
       var name = self.data('name');
