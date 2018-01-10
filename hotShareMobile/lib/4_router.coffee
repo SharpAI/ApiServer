@@ -198,6 +198,9 @@ if Meteor.isClient
     Router.route '/timelineAlbum/:_uuid',()->
       this.render 'timelineAlbum'
       return
+    Router.route '/device/dashboard/:group_id',()->
+      this.render 'deviceDashboard'
+      return
     Router.route '/explore',()->
       if Meteor.isCordova is true
         this.render 'explore'

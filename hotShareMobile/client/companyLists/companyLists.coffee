@@ -37,5 +37,7 @@ if Meteor.isClient
   Template.companyLists.events
     'click .companyLists ul li':(e, t)->
       # Session.set('reportUrl', this.reportUrl)
-      Session.set('perfShowTitle', this.group_name)
-      Router.go '/perfShow/'+this.group_id
+      # Session.set('perfShowTitle', this.group_name)
+      # Router.go '/perfShow/'+this.group_id
+      Session.set('deviceDashboardTitle', this.group_name)
+      Router.go '/device/dashboard/'+this.group_id

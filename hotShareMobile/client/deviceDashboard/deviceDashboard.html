@@ -1,0 +1,32 @@
+<template name="deviceDashboard">
+<div class="deviceDashboard">
+  <div class="head">
+    <strong>{{groupName}}</strong>
+    <div class="leftButton back"><i class="fa fa-angle-left fa-fw"></i></div>
+    <div class="rightButton" style="padding-top:0;"><i class="fa fa-exchange fa-fw" style="font-size:20px;"></i></div>
+  </div>
+  <ul class="lists">
+    {{#if isOut}}
+    <p class="tip">当前显示设备(方向): 出</p> 
+    {{else}}
+    <p class="tip">当前显示设备(方向): 进</p> 
+    {{/if}}
+    {{#each lists}}
+      {{#if isShowOut}}
+      <li class="listsItem">
+        <img src="{{out_image}}"/>
+        <p>{{person_name}}</p>
+        <span class="time">{{getTime}}</span>
+      </li>
+      {{/if}}
+      {{#if isShowIn}}
+      <li class="listsItem">
+        <img src="{{in_image}}"/>
+        <p>{{person_name}}</p>
+        <span class="time">{{getTime}}</span>
+      </li>
+      {{/if}}
+    {{/each}}
+  </ul>
+</div>
+</template>
