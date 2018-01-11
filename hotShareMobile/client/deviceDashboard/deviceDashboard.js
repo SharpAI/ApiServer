@@ -1,7 +1,7 @@
 var date = new ReactiveVar(null);
 var today         = new ReactiveVar(null);
+var time_offset = new ReactiveVar(8);
 
-var group        = new ReactiveVar({});
 var lists         = new ReactiveVar([]);
 var isOut        = new ReactiveVar(true);
 
@@ -16,6 +16,14 @@ Template.deviceDashboard.onRendered(function () {
   date.set(_date); //UTC日期
   today.set(_today);
 
+  Meteor.subscribe('get-group', group_id,{
+    onReady: function(){
+      var _group = SimpleChat.Groups.findOne({_id: group_id});
+      if(_group && _group.offsetTimeZone){
+        time_offset.set(_group.offsetTimeZone);
+      }
+    }
+  });
   Meteor.subscribe('WorkStatusByGroup',date.get(), group_id,{
      onReady:function(){
       var _lists = WorkStatus.find({group_id: group_id, date: date.get()}).fetch();
@@ -57,13 +65,8 @@ Template.deviceDashboard.helpers({
       return '-/-';
     }
     
-    var time_offset = 8;
-    var _group = group.get();
-    if (_group && _group.offsetTimeZone) {
-      time_offset = _group.offsetTimeZone;
-    }
     var time = new Date(ts);
-    return time.shortTime(time_offset);
+    return time.shortTime(time_offset.get());
   }
 });
 
