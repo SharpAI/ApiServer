@@ -16,14 +16,14 @@
       <li class="listsItem">
         <img src="{{out_image}}"/>
         <p>{{person_name}}</p>
-        <span class="time">{{getTime}}</span>
+        <span class="time">{{getTime out_time}}</span>
       </li>
       {{/if}}
       {{#if isShowIn}}
       <li class="listsItem">
         <img src="{{in_image}}"/>
         <p>{{person_name}}</p>
-        <span class="time">{{getTime}}</span>
+        <span class="time">{{getTime in_time}}</span>
       </li>
       {{/if}}
     {{/each}}

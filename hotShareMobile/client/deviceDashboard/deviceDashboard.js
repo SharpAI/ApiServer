@@ -4,7 +4,7 @@ var today         = new ReactiveVar(null);
 
 var group        = new ReactiveVar({});
 var lists         = new ReactiveVar([]);
-var isOut        = new ReactiveVar(false);
+var isOut        = new ReactiveVar(true);
 
 Template.deviceDashboard.onRendered(function () {
   var now = new Date();
@@ -20,7 +20,7 @@ Template.deviceDashboard.onRendered(function () {
 
   Meteor.subscribe('WorkStatusByGroup',date, group_id,{
      onReady:function(){
-      var _lists = WorkStatus.find({group_id: group_id}).fetch();
+      var _lists = WorkStatus.find({group_id: group_id, date: date}).fetch();
       console.log(_lists);
       lists.set(_lists);
     }
@@ -44,15 +44,7 @@ Template.deviceDashboard.helpers({
   isShowIn: function(){
     return !isOut.get() && this.in_image;
   },
-  getTime: function(){
-    var ts = null;
-    if(isOut.get()){
-      ts = this.out_time;
-    } else {
-      ts = this.in_time;
-    }
-
-    console.log(ts)
+  getTime: function(ts){
     if(!ts || ts == null || ts == 0){
       return '-/-';
     }
@@ -63,7 +55,7 @@ Template.deviceDashboard.helpers({
       time_offset = _group.offsetTimeZone;
     }
     var time = new Date(ts);
-    return time.shortTime(time_offset,true);
+    return time.shortTime(time_offset);
   }
 });
 
