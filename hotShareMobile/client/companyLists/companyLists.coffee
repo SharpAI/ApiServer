@@ -40,4 +40,4 @@ if Meteor.isClient
       # Session.set('perfShowTitle', this.group_name)
       # Router.go '/perfShow/'+this.group_id
       Session.set('deviceDashboardTitle', this.group_name)
-      Router.go '/device/dashboard/'+this.group_id
+      PUB.page '/device/dashboard/'+this.group_id
