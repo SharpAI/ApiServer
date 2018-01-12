@@ -65,6 +65,44 @@
       {{> _TipHintTemplate}}
     {{/if}}
   </div>
+
+  {{#if inDevMode}}
+  <button id="showScripts" class="">
+    <i class="fa fa-code"></i>
+  </button>
+  <div class="scriptsLayer">
+    <ul class="scriptsList">
+      <li class="scriptsItem" data-script="clear">
+        <i class="fa fa-mouse-pointer fa-fw"></i>
+        <p>Clear</p>
+      </li>
+      <li class="scriptsItem" data-script="query">
+        <i class="fa fa-search fa-fw"></i>
+        <p>Query</p>
+      </li>
+      <li class="scriptsItem" data-script="start">
+        <i class="fa fa-play fa-fw"></i>
+        <p>Start</p>
+      </li>
+      <li class="scriptsItem" data-script="stop">
+        <i class="fa fa-stop fa-fw"></i>
+        <p>Stop</p>
+      </li>
+      <li class="scriptsItem" data-script="train">
+        <i class="fa fa-anchor fa-fw"></i>
+        <p>Train</p>
+      </li>
+      <li class="scriptsItem" data-script="startvideo">
+        <i class="fa fa-play-circle fa-fw"></i>
+        <p>Start Video</p>
+      </li>
+      <li class="scriptsItem" data-script="stopvideo">
+        <i class="fa fa-pause-circle fa-fw"></i>
+        <p>Stop Video</p>
+      </li>
+    </ul>
+  </div>
+  {{/if}}
   <!--<script type="text/javascript" src="/packages/feiwu_simple-chat/client/lib/crypto1/crypto/crypto.js"></script>
   <script type="text/javascript" src="/packages/feiwu_simple-chat/client/lib/crypto1/hmac/hmac.js"></script>
   <script type="text/javascript" src="/packages/feiwu_simple-chat/client/lib/crypto1/sha1/sha1.js"></script>
@@ -420,4 +458,3 @@
   </div>
   {{/if}}
 </template>
-

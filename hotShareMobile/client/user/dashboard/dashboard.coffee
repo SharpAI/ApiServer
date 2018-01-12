@@ -25,9 +25,9 @@ if Meteor.isClient
       else
         ''
     allowLanguageSetting:->
-      if withLanguageSetting 
+      if withLanguageSetting
        return true
-      else 
+      else
        return false
     isEnglish: ->
       if Cookies.check("display-lang")
@@ -36,7 +36,16 @@ if Meteor.isClient
         return false
     newVersion: ->
       version_of_build
-    isLatestVersion: ->   
+    inDevMode: ->
+      devMode = false
+      ldev = Session.get('inDevMode')
+      if ldev is null or ldev is undefined
+        ldev = localStorage.getItem('inDevMode')
+      if ldev is true or ldev is 'true'
+        devMode = true
+      Session.set('inDevMode', devMode);
+      return devMode
+    isLatestVersion: ->
       # version = Versions.findOne({})
       if checkNewVersion()
         return false
@@ -73,6 +82,13 @@ if Meteor.isClient
     'click .language' :->
       addDashboardIntoHistory()
       Router.go '/display_lang'
+    'click .devmode' :->
+      old_dev = false
+      old_val = Session.get("inDevMode")
+      if old_val is false
+        old_dev = true
+      Session.set("inDevMode", old_dev)
+      localStorage.setItem('inDevMode', old_dev)
     'click .update' :->
       console.log '##RDBG update clicked'
       #$('#updateToLatestVersion').modal('show')

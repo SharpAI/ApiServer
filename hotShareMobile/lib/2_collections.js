@@ -322,6 +322,16 @@ if(Meteor.isServer){
     }
     return this.ready();
   });
+ 
+ Meteor.publish('group_workstatus', function(group_id, date){
+     if (!this.userId) {
+         return this.ready();
+     }
+     return [
+         Devices.find({groupId: group_id}),
+         WorkStatus.find({date: date,group_id:group_id})
+     ];
+ });
  Meteor.publish('devices-by-uuid',function(uuid){
      if(!this.userId || !uuid){
          return this.ready();
