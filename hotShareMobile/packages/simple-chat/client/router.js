@@ -1357,6 +1357,8 @@ Template._simpleChatToChat.events({
       text = "stopvideocapturing";
     else if (cmd == "train")
       text = "train";
+    else if (cmd == "ping")
+      text = "ping";
     else {
       return;
     }
@@ -1397,7 +1399,7 @@ Template._simpleChatToChat.events({
         wait_classify:false,
         send_status: 'sending'
       };
-      if (cmd != 'train')
+      if (cmd != 'train' && cmd != 'ping')
         msg.wait_clearqueue= true;
 
       Messages.insert(msg, function(){
