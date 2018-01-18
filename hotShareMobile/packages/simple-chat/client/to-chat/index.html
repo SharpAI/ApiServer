@@ -127,207 +127,209 @@
   {{#if is_system_message}}
   <li id="{{_id}}"><span class="system_message">{{text}}</span></li>
   {{else}}
-  <li id="{{_id}}" class="data-show-more-render {{ta_me form.id}}" data-time="{{create_time}}">
-    <div class="icon">{{> _simpleChatToChatItemIcon2}}</div>
-    <div class="name">{{form.name}}</div>
-    {{#if is_url_type}}
-      <div class="url">{{text}}
-        {{> _simpleChatToChatItemNLPText}}
-      </div>
-    {{else}}
-      {{#if is_text_type type}}
-        <div class="text" style="{{has_p_ids_style}}">{{text}}
-          {{#if wait_classify}}
-            <center><!-- <div>努力分析中...</div> --><i class="fa fa-spinner fa-pulse"></i></center>
-          {{/if}}
-          {{#if is_me form.id}}
-            {{#if status_sending send_status}}
-            <div class="status"><img src="/loading.gif" /></div>
+    {{#if showUnknowMember to.id}}
+    <li id="{{_id}}" class="data-show-more-render {{ta_me form.id}}" data-time="{{create_time}}">
+      <div class="icon">{{> _simpleChatToChatItemIcon2}}</div>
+      <div class="name">{{form.name}}</div>
+      {{#if is_url_type}}
+        <div class="url">{{text}}
+          {{> _simpleChatToChatItemNLPText}}
+        </div>
+      {{else}}
+        {{#if is_text_type type}}
+          <div class="text" style="{{has_p_ids_style}}">{{text}}
+            {{#if wait_classify}}
+              <center><!-- <div>努力分析中...</div> --><i class="fa fa-spinner fa-pulse"></i></center>
             {{/if}}
-            {{#if status_failed send_status}}
-            <div class="status sendfiled"><img src="/failed.png" /></div>
+            {{#if is_me form.id}}
+              {{#if status_sending send_status}}
+              <div class="status"><img src="/loading.gif" /></div>
+              {{/if}}
+              {{#if status_failed send_status}}
+              <div class="status sendfiled"><img src="/failed.png" /></div>
+              {{/if}}
+              <!-- {{#if is_read}}
+                <span class="status haveRead">已读</span>
+              {{/if}} -->
             {{/if}}
-            <!-- {{#if is_read}}
-              <span class="status haveRead">已读</span>
-            {{/if}} -->
-          {{/if}}
-          {{#if people_id}}    
-          <!--标记消息 start-->
-            {{#if label_complete}}
-              {{#if is_error images}}
-                <div class="imgs-1-box">
-                  <div class="imgs-1-item">
-                    <div class="my-btn">对</div>
-                    {{#each images}}
-                      {{#if error}}
-                      {{else}}
-                        {{> _simpleChatToChatItemImg}}
-                      {{/if}}
-                    {{/each}}
-                  </div>
-                  <div class="imgs-1-item">
-                    <div class="my-btn">错</div>
-                    {{#each images}}
-                      {{#if error}}
-                        {{> _simpleChatToChatItemImg}}
-                      {{/if}}
-                    {{/each}}
-                  </div>
-                </div>
-              {{else}}
-                {{#if is_remove_label images}}
+            {{#if people_id}}    
+            <!--标记消息 start-->  
+              {{#if label_complete}}
+                {{#if is_error images}}
                   <div class="imgs-1-box">
-                    <div class="imgs">
+                    <div class="imgs-1-item">
+                      <div class="my-btn">对</div>
                       {{#each images}}
-                        {{#if remove}}
+                        {{#if error}}
                         {{else}}
                           {{> _simpleChatToChatItemImg}}
                         {{/if}}
                       {{/each}}
                     </div>
-                    {{#if is_remove images}}
-                      <div class="imgs-1-item">
-                        <div class="my-btn">删</div>
-                        {{#each images}}
-                          {{#if remove}}
-                            {{> _simpleChatToChatItemImg}}
-                          {{/if}}
-                        {{/each}}
-                      </div>
-                    {{/if}}
-                  </div>
-                {{/if}}
-              {{/if}}
-              {{#if label_users}}
-                <div class="label_complete">
-                  <div class="remark"><i class="fa fa-check-circle-o"></i>已完成标注</div>
-                  <div class="imgs">
-                    {{#each label_users}}
-                      {{> _simpleChatToChatItemIcon}}
-                    {{/each}}
-                  </div>
-                </div>
-              {{/if}}
-            {{else}}
-              {{#if wait_lable}}
-                {{#if is_wait_img images}}
-                  <div class="imgs">
-                    {{#each images}}
-                      {{#if is_wait_item this}}
-                        {{> _simpleChatToChatItemImg}}
-                      {{/if}}
-                    {{/each}}
-                  </div>
-                {{/if}}
-                {{#if is_remove_label images}}
-                  <div class="imgs-1-box">
-                    {{#if is_label images}}
-                      <div class="imgs-1-item">
-                        <div class="my-btn">标</div>
-                        {{#each images}}
-                          {{#if label}}
-                            {{> _simpleChatToChatItemImg}}
-                          {{/if}}
-                        {{/each}}
-                      </div>
-                    {{/if}}
-                    {{#if is_remove images}}
-                      <div class="imgs-1-item">
-                        <div class="my-btn">删</div>
-                        {{#each images}}
-                          {{#if remove}}
-                            {{> _simpleChatToChatItemImg}}
-                          {{/if}}
-                        {{/each}}
-                      </div>
-                    {{/if}}
-                  </div>
-                {{/if}}
-                {{#if has_p_ids images}}
-                  {{#if hideLabelBtn to.id}}
-                  <div class="label-box">
-                    <div class="bottom_div">
-                      <div class="wantSelectElse" style="height: auto;">标注新人</div>
-                    </div>
-                    <!--<div class="top_div">请点击与上图是同一个人的照片</div>-->
-                    <div class="top_div">或点击与上图是同一个人的照片进行标注</div>
-                    <div>
-                      {{#each p_ids images}}
-                        {{> _simpleChatToChatPItemImg}}
+                    <div class="imgs-1-item">
+                      <div class="my-btn">错</div>
+                      {{#each images}}
+                        {{#if error}}
+                          {{> _simpleChatToChatItemImg}}
+                        {{/if}}
                       {{/each}}
                     </div>
-                    <div class="bottom_div">
-                      <!--<div class="wantSelectElse">都不是</div>-->
-                      <div class="determine">确定</div>
+                  </div>
+                {{else}}
+                  {{#if is_remove_label images}}
+                    <div class="imgs-1-box">
+                      <div class="imgs">
+                        {{#each images}}
+                          {{#if remove}}
+                          {{else}}
+                            {{> _simpleChatToChatItemImg}}
+                          {{/if}}
+                        {{/each}}
+                      </div>
+                      {{#if is_remove images}}
+                        <div class="imgs-1-item">
+                          <div class="my-btn">删</div>
+                          {{#each images}}
+                            {{#if remove}}
+                              {{> _simpleChatToChatItemImg}}
+                            {{/if}}
+                          {{/each}}
+                        </div>
+                      {{/if}}
+                    </div>
+                  {{/if}}
+                {{/if}}
+                {{#if label_users}}
+                  <div class="label_complete">
+                    <div class="remark"><i class="fa fa-check-circle-o"></i>已完成标注</div>
+                    <div class="imgs">
+                      {{#each label_users}}
+                        {{> _simpleChatToChatItemIcon}}
+                      {{/each}}
                     </div>
                   </div>
+                {{/if}}
+              {{else}}
+                {{#if wait_lable}}
+                  {{#if is_wait_img images}}
+                    <div class="imgs">
+                      {{#each images}}
+                        {{#if is_wait_item this}}
+                          {{> _simpleChatToChatItemImg}}
+                        {{/if}}
+                      {{/each}}
+                    </div>
+                  {{/if}}
+                  {{#if is_remove_label images}}
+                    <div class="imgs-1-box">
+                      {{#if is_label images}}
+                        <div class="imgs-1-item">
+                          <div class="my-btn">标</div>
+                          {{#each images}}
+                            {{#if label}}
+                              {{> _simpleChatToChatItemImg}}
+                            {{/if}}
+                          {{/each}}
+                        </div>
+                      {{/if}}
+                      {{#if is_remove images}}
+                        <div class="imgs-1-item">
+                          <div class="my-btn">删</div>
+                          {{#each images}}
+                            {{#if remove}}
+                              {{> _simpleChatToChatItemImg}}
+                            {{/if}}
+                          {{/each}}
+                        </div>
+                      {{/if}}
+                    </div>
+                  {{/if}}
+                  {{#if has_p_ids images}}
+                    {{#if hideLabelBtn to.id}}
+                    <div class="label-box">
+                      <div class="bottom_div">
+                        <div class="wantSelectElse" style="height: auto;">标注新人</div>
+                      </div>
+                      <!--<div class="top_div">请点击与上图是同一个人的照片</div>-->
+                      <div class="top_div">或点击与上图是同一个人的照片进行标注</div>
+                      <div>
+                        {{#each p_ids images}}
+                          {{> _simpleChatToChatPItemImg}}
+                        {{/each}}
+                      </div>
+                      <div class="bottom_div">
+                        <!--<div class="wantSelectElse">都不是</div>-->
+                        <div class="determine">确定</div>
+                      </div>
+                    </div>
+                    {{/if}}
+                  {{else}}
+                    {{#if hideLabelBtn to.id}}
+                    <div class="line-label-box crop-lable-box"><div class="check">标记</div><div class="crop">裁剪</div><div class="remove">删除</div></div>
+                    {{/if}}
                   {{/if}}
                 {{else}}
-                  {{#if hideLabelBtn to.id}}
-                  <div class="line-label-box crop-lable-box"><div class="check">标记</div><div class="crop">裁剪</div><div class="remove">删除</div></div>
-                  {{/if}}
-                {{/if}}
-              {{else}}
-                <div class="imgs">
-                  {{#each images}}
-                  {{> _simpleChatToChatItemImg}}
-                  {{/each}}
-                </div>
-                {{#if hideLabelBtn to.id}}
-                <div class="line-label-box crop-lable-box"><div class="yes">对</div><div class="no">错</div><div class="no">不确定</div></div>
-                {{/if}}
-              {{/if}}
-              {{#if label_users}}
-                <div class="label_complete" style="border-top:1px solid #ccc;margin-top: 10px;">
-                  <div class="remark" style="color:#616161;"><i class="fa fa-check-circle-o"></i>标注过的人</div>
                   <div class="imgs">
-                    {{#each label_users}}
-                    <!--<img class="lazy" data-original="{{icon}}" />-->
-                    {{> _simpleChatToChatItemIcon}}
+                    {{#each images}}
+                    {{> _simpleChatToChatItemImg}}
                     {{/each}}
                   </div>
+                  {{#if hideLabelBtn to.id}}
+                  <div class="line-label-box crop-lable-box"><div class="yes">对</div><div class="no">错</div><div class="no">不确定</div></div>
+                  {{/if}}
+                {{/if}}
+                {{#if label_users}}
+                  <div class="label_complete" style="border-top:1px solid #ccc;margin-top: 10px;">
+                    <div class="remark" style="color:#616161;"><i class="fa fa-check-circle-o"></i>标注过的人</div>
+                    <div class="imgs">
+                      {{#each label_users}}
+                      <!--<img class="lazy" data-original="{{icon}}" />-->
+                      {{> _simpleChatToChatItemIcon}}
+                      {{/each}}
+                    </div>
+                  </div>
+                {{/if}}
+              {{/if}}
+              <div class="show_more" style="display:none; position: absolute;right: -5px;top: -5px;height: 48px;line-height: 48px;left:10px;text-align: right; padding: 0;font-size: 20px; padding-right: 20px;"><i class="fa fa-angle-up"></i></div>
+              {{show_images images}}
+            <!--标记消息 end-->
+            {{/if}}
+            {{> _checkAgentMsgItem}}
+          </div>
+        {{else}}
+          <div class="img">
+            {{#if is_me form.id}}
+              {{#if status_sending send_status}}
+              <div class="status"><img src="/loading.gif" /></div>
+              {{/if}}
+              {{#if status_failed send_status}}
+              <div class="status sendfiled"><img src="/failed.png" /></div>
+              {{/if}}
+              <!-- {{#if is_read}}
+                <span class="status haveRead">已读</span>
+              {{/if}} -->
+            {{/if}}
+            <div class="imgs">
+              {{#each images}}
+                <div class="img_container _close">
+                {{#if url}}
+                  <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
+                {{else}}
+                  <img class="lazy" data-original="{{thumbnail}}" />
+                {{/if}}
                 </div>
-              {{/if}}
-            {{/if}}
-            <div class="show_more" style="display:none; position: absolute;right: -5px;top: -5px;height: 48px;line-height: 48px;left:10px;text-align: right; padding: 0;font-size: 20px; padding-right: 20px;"><i class="fa fa-angle-up"></i></div>
-            {{show_images images}}
-          <!--标记消息 end-->
-          {{/if}}
-          {{> _checkAgentMsgItem}}
-        </div>
-      {{else}}
-        <div class="img">
-          {{#if is_me form.id}}
-            {{#if status_sending send_status}}
-            <div class="status"><img src="/loading.gif" /></div>
-            {{/if}}
-            {{#if status_failed send_status}}
-            <div class="status sendfiled"><img src="/failed.png" /></div>
-            {{/if}}
-            <!-- {{#if is_read}}
-              <span class="status haveRead">已读</span>
-            {{/if}} -->
-          {{/if}}
-          <div class="imgs">
-            {{#each images}}
-              <div class="img_container _close">
-              {{#if url}}
-                <img class="work-ai-img swipebox lazy" data-type="images" data-peoplehisid="{{people_his_id}}" data-original="{{url}}" />
-              {{else}}
-                <img class="lazy" data-original="{{thumbnail}}" />
-              {{/if}}
-              </div>
-            {{/each}}
+              {{/each}}
+            </div>
+            <div class="line-label-box crop-lable-box">
+              <div class="check">标记</div>
+              <div class="crop">裁剪</div>
+              <div class="remove">删除</div>
+            </div>
           </div>
-          <div class="line-label-box crop-lable-box">
-            <div class="check">标记</div>
-            <div class="crop">裁剪</div>
-            <div class="remove">删除</div>
-          </div>
-        </div>
+        {{/if}}
       {{/if}}
+    </li>
     {{/if}}
-  </li>
   {{/if}}
 </template>
 

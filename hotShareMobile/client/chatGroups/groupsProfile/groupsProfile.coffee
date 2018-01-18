@@ -107,7 +107,10 @@ if Meteor.isClient
       else 
         return '宽松匹配'
     rejectUnknowMember: ()->
-      return localStorage.getItem('rejectUnknowMember') isnt 'true'
+      groupUser = SimpleChat.GroupUsers.findOne({group_id: Session.get('groupsId'), user_id: Meteor.userId()})
+      if groupUser and  groupUser.allowUnknowMember
+        return true
+      return false
     whats_up_send: ()->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       if group
@@ -364,10 +367,12 @@ if Meteor.isClient
             $('#switchNormalLabelMsg').removeAttr('disabled')
           )
     'click #switchRejectUnknowMember':(event)->
-      if localStorage.getItem('rejectUnknowMember') is 'true'
-        localStorage.setItem('rejectUnknowMember','false')
-      else
-        localStorage.setItem('rejectUnknowMember','true')
+      obj = {allowUnknowMember: true}
+      groupUser = SimpleChat.GroupUsers.findOne({group_id: Session.get('groupsId'), user_id: Meteor.userId()})
+      if groupUse 
+        if groupUser.allowUnknowMember
+          obj = {allowUnknowMember: false}
+        SimpleChat.GroupUsers.update({_id: groupUser._id},$set:obj)
     'click #switch_whats_up_send':(event)->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       if (group && group.whats_up_send)

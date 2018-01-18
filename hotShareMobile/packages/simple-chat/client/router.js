@@ -1730,7 +1730,6 @@ Template._simpleChatToChatItem.helpers({
   // hide Label Buttons, only show where use is group admin
   hideLabelBtn: function(group_id){
     console.log('==sr==. group_id..='+group_id)
-
     if(!window.hideLableButtonWithNormalGroupUser){
       return false;
     }
@@ -1759,6 +1758,42 @@ Template._simpleChatToChatItem.helpers({
       return false;
     }
     return true;
+  },
+  // 是否显示未识别消息
+  showUnknowMember: function(){
+    if(!this.wait_lable) {
+      return true;
+    }
+    
+    var display = false;
+    // user is Group Admin ?
+    var isGroupAdmin = false;
+    
+    // 是否是超级管理员
+    var user = Meteor.user();
+    if ( user && user.profile && user.profile.userType == 'admin' ) {
+      isGroupAdmin = true;
+    }
+    // 是否是群创建者
+    var group = SimpleChat.Groups.findOne({_id: group_id});
+    if( group && group.creator && group.creator.id == Meteor.userId() ){
+      isGroupAdmin = true;
+    }
+    // 是否是群管理员
+    var groupUser = SimpleChat.GroupUsers.findOne({group_id: group_id, user_id: Meteor.userId()})
+    if ( groupUser &&  groupUser.isGroupAdmin ) {
+      isGroupAdmin = true;
+    }
+    // 群成员是否主动接收为识别消息
+    if ( groupUser &&  groupUser.allowUnknowMember ) {
+      display = true;
+    }
+
+    if(isGroupAdmin) {
+      display = true;
+    }
+
+    return display;
   }
 });
 
