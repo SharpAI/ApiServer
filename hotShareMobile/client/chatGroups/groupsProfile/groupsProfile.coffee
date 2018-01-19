@@ -367,12 +367,7 @@ if Meteor.isClient
             $('#switchNormalLabelMsg').removeAttr('disabled')
           )
     'click #switchRejectUnknowMember':(event)->
-      obj = {allowUnknowMember: true}
-      groupUser = SimpleChat.GroupUsers.findOne({group_id: Session.get('groupsId'), user_id: Meteor.userId()})
-      if groupUse 
-        if groupUser.allowUnknowMember
-          obj = {allowUnknowMember: false}
-        SimpleChat.GroupUsers.update({_id: groupUser._id},$set:obj)
+      Meteor.call('updateGroupUserallowUnknowMember',Session.get('groupsId'), Meteor.userId())
     'click #switch_whats_up_send':(event)->
       group =  SimpleChat.Groups.findOne({_id:Session.get('groupsId')})
       if (group && group.whats_up_send)

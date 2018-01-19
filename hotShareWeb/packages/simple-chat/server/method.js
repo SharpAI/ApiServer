@@ -543,6 +543,16 @@ Meteor.methods({
     if (target) {
       GroupUsers.update({_id:target._id},{$set:{groupAccuracyType:groupAccuracyType}});
     }
+  },
+  'updateGroupUserallowUnknowMember': function(group_id,user_id){
+    var groupUser = SimpleChat.GroupUsers.findOne({group_id: group_id, user_id: user_id});
+    if (groupUser){
+      if (groupUser.allowUnknowMember){
+        GroupUsers.update({_id: groupUser._id},{$set:{allowUnknowMember: false}});
+      } else {
+        GroupUsers.update({_id: groupUser._id},{$set:{allowUnknowMember: true}});
+      }
+    }
   }
 });
 
