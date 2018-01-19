@@ -1760,7 +1760,7 @@ Template._simpleChatToChatItem.helpers({
     return true;
   },
   // 是否显示未识别消息
-  showUnknowMember: function(){
+  showUnknowMember: function(group_id){
     if(!this.wait_lable) {
       return true;
     }
