@@ -1,0 +1,74 @@
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>考勤报告</title>
+<style type="text/css" media="screen">
+	body {
+		background: #ccc;
+	}
+	*{
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	header,section{
+		/*height: 50px;*/
+		width: 60%;
+		margin: 10px auto;
+		overflow: hidden;
+	}
+	header{
+		font-size: 18px;
+		width: 40%;
+		/*border: 1px solid;
+*/	}
+	header .name{
+		/*padding-left: 20px;*/
+		float: left;
+		width: 50%;
+	}
+	header .des{
+		float: right;
+		width: 50%
+	}
+	ul li{
+		border: 1px solid;
+		border-top: none;
+		padding: 10px;
+	}
+	ul li:nth-child(1){
+		border-top :1px solid;
+	}
+	.clock-in , .clock-out {
+		width: 50%;
+		float: left;
+	}
+	.clock {
+		color: red;
+		margin-bottom: 10px;
+		font-size: 18px;
+            }
+            .summary{
+            	height: 60px;
+            	border: 1px solid;
+            	margin-top: 15px;
+            }
+            img{
+            	width: 10%;
+            	height:10%;
+            	vertical-align:middle;
+            	padding-left:15px;
+            }
+</style>
+</head>
+<div>
+	<header id="header" class="">
+		<div class="name">{{company_name}}</div>
+		<div class="des"><span>每日考勤报告</span></div>
+	</header>
+	<section>
+		<div class="time">{{job_date}}</div>
+		<ul>
+			{{job_content}}
+		</ul>
+	</section>
+</div>
