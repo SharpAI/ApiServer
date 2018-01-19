@@ -92,22 +92,52 @@
       var _id = self.attr('id');
       var name = self.data('name');
 
-      PUB.confirm('要删除「'+name+'」吗?',function(){
-        Meteor.call('removePersonById',_id, function(error, result){
-          if(error){
-            console.log(error)
-            return PUB.toast('删除失败，请重试！');
-          }
-          var group_id = self.data('gid');
-          var trainsetObj = {
-            group_id: group_id,
-            face_id: self.data('fid'),
-            drop_person: true,
-          };
-          console.log('removePersonById'+JSON.stringify(trainsetObj));
-          sendMqttMessage('/device/'+group_id, trainsetObj);
-          return PUB.toast('已删除');
-        });
+      // remove or reName Person
+      window.plugins.actionsheet.show options, (index)->
+      var options = {
+        title: '请选择'
+        buttonLabels: ['删除', '重命名']
+        addCancelButtonWithLabel: '取消'
+        androidEnableCancelButton: true
+      }
+      window.plugins.actionsheet.show(options, function(index) {
+        if (index == 1) {
+          PUB.confirm('要删除「'+name+'」吗?',function(){
+            Meteor.call('removePersonById',_id, function(error, result){
+              if(error){
+                console.log(error)
+                return PUB.toast('删除失败，请重试！');
+              }
+              var group_id = self.data('gid');
+              var trainsetObj = {
+                group_id: group_id,
+                face_id: self.data('fid'),
+                drop_person: true,
+              };
+              console.log('removePersonById'+JSON.stringify(trainsetObj));
+              sendMqttMessage('/device/'+group_id, trainsetObj);
+              return PUB.toast('已删除');
+            });
+          });
+        } else if (index == 2) {
+          navigator.notification.prompt('输入一个新的姓名以重命名此Person', fumction(results){
+            var newName = results.input1;
+            newName = newName.replace(/\s/gim,'');
+            alert("You selected button number " + results.buttonIndex + " and entered " + results.input1);
+            if(results.buttonIndex == 2){
+              if(!newName){
+                return PUB.toast('请输入姓名');
+              }
+              Meteor.call('renamePerson',_id, newName,function(err, res) {
+                if (err) {
+                  console.log('==sr==,error = '+err);
+                  return PUB.toast('重命名失败')
+                }
+                return PUB.toast('已将「'+name+'」重命名为「'+newName+'」');
+              });
+            }
+          }, '重命名「'+name+'」', ['取消','重命名'], '');
+        }
       });
     });
   </script>
