@@ -1,0 +1,113 @@
+<template name="workStatusPopPage">
+<div class="workStatusPopPage">
+  <div class="head">
+    <strong>{{name}}</strong>
+  </div>
+  {{#if hasWorkStatus}}
+  <ul class="employeeLists">
+    {{#each lists}}
+    <li class="employeeItem">
+      <div class="container">
+        <div class="pull-left">
+          <div class="icon">
+            <img src="{{getIcon}}"/>
+          </div>
+          <div class="status-bar">
+            <span class="{{bind_app_user}}"><i class="fa fa-user fa-fw"></i></span>
+            <span class="{{enable_push}}"><i class="fa fa-bell fa-fw"></i></span>
+          </div>
+        </div>
+        <h2><span class="in-out-status {{getInOutStatus}}"></span> {{person_name}} </h2>
+        <p><span class="in-out-status {{getStatus 'in'}}"></span> 上班时间: {{getTime 'in'}}</p>
+        <p><span class="in-out-status {{getStatus 'out'}}"></span> 下班时间: {{getTime 'out'}}</p>
+        <div class="whats-up">
+          <p>
+            工作安排： 
+            <span class="toggle" data-toggle="collapse" data-target="#collapse_{{_id}}" aria-expanded="false" aria-controls="collapse_{{_id}}">
+              <i class="fa fa-angle-down" aria-hidden="true"></i>
+            </span>
+          </p>
+          <div class="collapse editWhatsup" id="collapse_{{_id}}">            
+            {{#if whats_up}}
+              {{#each whats_up}}
+              <p style="white-space: pre-wrap;"><strong>{{person_name}}</strong>[{{getShortTime}}]: {{content}}</p>
+              {{/each}}
+            {{/if}}
+          </div>
+        </div>
+      </div>
+      <div class="dropdown">
+        <span class="dropdown-toggle" type="button" id="dropdown_{{_id}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+          <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+        </span>
+        <ul class="dropdown-menu" aria-labelledby="dropdown_{{_id}}">
+          <li class="editInTime"><a href="javascript:void(0);">修改上班时间</a></li>
+          <li class="editOutTime"><a href="javascript:void(0);">修改下班时间</a></li>
+          <li role="separator" class="divider"></li>
+          <li class="editWhatsup"><a href="javascript:void(0);">编辑今日简述</a></li>
+        </ul>
+      </div>
+    </li>
+    {{/each}}
+  </ul>
+  {{else}}
+  <div class="noData">暂无数据</div>
+  {{/if}}
+  <div id="closeStausPop"><i class="fa fa-close fa-fw"></i></div>
+
+    <!-- Modal EditWhatUp Start -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document" style="top:50px; bottom:auto;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">编辑『{{whatsup.name}}』的今日简述</h4>
+        </div>
+        <div class="modal-body">
+          <form>
+          <div class="form-group">
+            <textarea id="EditorWhatsUp" rows="5"  class="form-control" placeholder="编辑今日简述" style="height: auto !important;resize: none;"></textarea>
+          </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default cancelWhatsUp" data-dismiss="modal">取消</button>
+          <button type="button" id="" class="btn btn-primary saveWhatsUp">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal EditWhatUp End -->
+
+  <!-- Modal selectDevicesInOut Start -->
+  <div class="modal fade" id="selectDevicesInOut" tabindex="-1" role="dialog" aria-labelledby="selectDevicesInOutLabel">
+    <div class="modal-dialog" role="document" style="top:50px; bottom:auto;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="selectDevicesInOutLabel">选择设备</h4>
+        </div>
+        <div class="modal-body">
+          <ul class="set-up comFadeIn">
+          {{#each devices}}
+            {{#if uuid}}
+            <li id="{{uuid}}" class="deviceItem" style="height:60px;padding:10px 0">
+                <img class="usericon" src="/device_icon_192.png" width="40" height="40" style="border-radius:4px;">
+                {{#if name}}
+                <label style="margin-left:48px;">{{name}}</label>
+                {{else}}
+                <label style="margin-left:48px;">未知设备</label>
+                {{/if}}
+                <div class="value" style="float:right; margin:10px;">{{in_out}}<i class="fa fa-angle-right"></i></div>
+            </li>
+            {{/if}}
+          {{/each}}
+        </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal selectDevicesInOut End -->
+</div>
+</template>
