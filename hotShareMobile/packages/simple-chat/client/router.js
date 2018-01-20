@@ -1789,6 +1789,11 @@ Template._simpleChatToChatItem.helpers({
       display = true;
     }
 
+    // 如果是设备发来的训练命令相关消息，不显示,TODO: 使用特殊字段
+    if(this.name.match(/\[(.{1,})/gim) || this.device_training_msg){
+      display = false;
+    }
+
     if(isGroupAdmin) {
       display = true;
     }
