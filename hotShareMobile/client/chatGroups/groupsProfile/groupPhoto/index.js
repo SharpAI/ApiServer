@@ -424,9 +424,66 @@ Template.groupPhoto.close = function(){
 
 Template.groupPhotoImg1.events({
   'click li': function(e){
-    var name = this.name;
-    var group_id = this.group_id;
-    return Template.person_labelDataset.open(group_id,name);
+    var self = this;
+
+    // remove or reName Person
+    var options = {
+      title: '请选择',
+      buttonLabels: ['查看此人的全部照片','删除此人的全部照片','重命名此人'],
+      addCancelButtonWithLabel: '取消',
+      androidEnableCancelButton: true
+    };
+
+    window.plugins.actionsheet.show(options, function(index) {
+      switch (index) {
+        case 1:
+          return Template.person_labelDataset.open(self.group_id,self.name);
+          break;
+        case 2:
+          var confirmTitle = '要删除「'+self.name+'」吗?';
+          PUB.confirm(confirmTitle, function() {
+            Meteor.call('removePersonById', self._id, function(error, result) {
+              if (error) {
+                console.log(error);
+                return PUB.toast('删除失败，请重试！');
+              }
+              var trainsetObj = {
+                group_id: self.group_id,
+                face_id: self.id,
+                drop_person: true,
+              };
+              console.log('removePersonById'+JSON.stringify(trainsetObj));
+              sendMqttMessage('/device/'+self.group_id, trainsetObj);
+              return PUB.toast('已删除');
+            });
+          });
+          break;
+        case 3:
+          var promptTip = '输入一个新的姓名以重命名此Person';
+          var promptTitle = '重命名「'+self.name+'」';
+          navigator.notification.prompt(promptTip, function(results) {
+            var newName = results.input1;
+            newName = newName.replace(/\s/gim,'');
+            if (results.buttonIndex == 2) {
+              if (!newName) {
+                return PUB.toast('请输入姓名');
+              }
+              Meteor.call('renamePerson',self._id, newName,function(err, res) {
+                if (err) {
+                  console.log('==sr==,error = '+err);
+                  return PUB.toast('重命名失败')
+                }
+                return PUB.toast('已将「'+self.name+'」重命名为「'+newName+'」');
+              });
+            }
+          }, promptTitle, ['取消','重命名'], '');
+          break;
+        default:
+          break;
+      }
+    });
+
+    // return Template.person_labelDataset.open(group_id,name);
     /*var id = this.id;
     var res = selected2.get();
     var index = res.indexOf(id);
