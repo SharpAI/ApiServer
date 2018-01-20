@@ -33,7 +33,9 @@
       <div class="box">
         <ul class="group-list">
           {{#each getMsg}}
-          {{> _simpleChatToChatItem}}
+          {{#if showUnknowMember to.id}}
+            {{> _simpleChatToChatItem}}
+          {{/if}}
           {{/each}}
         </ul>
         {{#if hasNewMsg}}
@@ -127,7 +129,7 @@
   {{#if is_system_message}}
   <li id="{{_id}}"><span class="system_message">{{text}}</span></li>
   {{else}}
-    {{#if showUnknowMember to.id}}
+    <!--{{#if showUnknowMember to.id}}-->
     <li id="{{_id}}" class="data-show-more-render {{ta_me form.id}}" data-time="{{create_time}}">
       <div class="icon">{{> _simpleChatToChatItemIcon2}}</div>
       <div class="name">{{form.name}}</div>
@@ -329,7 +331,7 @@
         {{/if}}
       {{/if}}
     </li>
-    {{/if}}
+    <!--{{/if}}-->
   {{/if}}
 </template>
 
