@@ -51,6 +51,52 @@ Template._simpleChatToChat.helpers({
   },
   newMsgCount:function(){
     return Session.get('newMsgCount');
+  },
+  // 是否显示未识别消息
+  showUnknowMember: function(group_id){
+    var isDeviceTraning = false;
+    // 如果是设备发来的训练命令相关消息，不显示,TODO: 使用特殊字段
+    if(this.form.name.match(/\[(.{1,})/gim) || this.device_training_msg){
+      isDeviceTraning = true;
+    }
+    if(!this.wait_lable && !isDeviceTraning) {
+      return true;
+    }
+    
+    var display = false;
+    // user is Group Admin ?
+    var isGroupAdmin = false;
+    
+    // 是否是超级管理员
+    var user = Meteor.user();
+    if ( user && user.profile && user.profile.userType == 'admin' ) {
+      isGroupAdmin = true;
+    }
+    // 是否是群创建者
+    var group = SimpleChat.Groups.findOne({_id: group_id});
+    if( group && group.creator && group.creator.id == Meteor.userId() ){
+      isGroupAdmin = true;
+    }
+    // 是否是群管理员
+    var groupUser = SimpleChat.GroupUsers.findOne({group_id: group_id, user_id: Meteor.userId()})
+    if ( groupUser &&  groupUser.isGroupAdmin ) {
+      isGroupAdmin = true;
+    }
+    // 群成员是否主动接收为识别消息
+    if ( groupUser &&  groupUser.allowUnknowMember ) {
+      display = true;
+    }
+    console.log('==sr==. form.name = '+this.form.name + ' and match is '+this.form.name.match(/\[(.{1,})/gim))
+
+    if(isDeviceTraning){
+      display = false;
+    }
+
+    if(isGroupAdmin) {
+      display = true;
+    }
+
+    return display;
   }
 });
 
@@ -1758,47 +1804,6 @@ Template._simpleChatToChatItem.helpers({
       return false;
     }
     return true;
-  },
-  // 是否显示未识别消息
-  showUnknowMember: function(group_id){
-    if(!this.wait_lable) {
-      return true;
-    }
-    
-    var display = false;
-    // user is Group Admin ?
-    var isGroupAdmin = false;
-    
-    // 是否是超级管理员
-    var user = Meteor.user();
-    if ( user && user.profile && user.profile.userType == 'admin' ) {
-      isGroupAdmin = true;
-    }
-    // 是否是群创建者
-    var group = SimpleChat.Groups.findOne({_id: group_id});
-    if( group && group.creator && group.creator.id == Meteor.userId() ){
-      isGroupAdmin = true;
-    }
-    // 是否是群管理员
-    var groupUser = SimpleChat.GroupUsers.findOne({group_id: group_id, user_id: Meteor.userId()})
-    if ( groupUser &&  groupUser.isGroupAdmin ) {
-      isGroupAdmin = true;
-    }
-    // 群成员是否主动接收为识别消息
-    if ( groupUser &&  groupUser.allowUnknowMember ) {
-      display = true;
-    }
-
-    // 如果是设备发来的训练命令相关消息，不显示,TODO: 使用特殊字段
-    if(this.name.match(/\[(.{1,})/gim) || this.device_training_msg){
-      display = false;
-    }
-
-    if(isGroupAdmin) {
-      display = true;
-    }
-
-    return display;
   }
 });
 
