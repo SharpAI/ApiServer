@@ -32,6 +32,8 @@
               {{#each whats_up}}
               <p style="white-space: pre-wrap;"><strong>{{person_name}}</strong>[{{getShortTime}}]: {{content}}</p>
               {{/each}}
+            {{else}}
+            暂无工作安排...
             {{/if}}
           </div>
         </div>
@@ -66,7 +68,7 @@
         <div class="modal-body">
           <form>
           <div class="form-group">
-            <textarea id="EditorWhatsUp" rows="5"  class="form-control" placeholder="编辑今日简述" style="height: auto !important;resize: none;"></textarea>
+            <textarea id="EditorWhatsUp" rows="5"  class="form-control" placeholder="编辑今日简述" style="height: auto !important;resize: none;-webkit-touch-callout: none; -webkit-user-select: none; "></textarea>
           </div>
           </form>
         </div>
