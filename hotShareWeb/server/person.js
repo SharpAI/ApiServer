@@ -1259,7 +1259,7 @@ Meteor.methods({
     // update person 
     Person.update({_id: _id},{$set:{name: name}});
     // update personNames 
-    personNames.update({group_id:person.group_id, name:person.name},{$set:{name: name}});
+    PersonNames.update({group_id:person.group_id, name:person.name},{$set:{name: name}});
     // update relations
     WorkAIUserRelations.update({'ai_persons.id': _id},{$set:{person_name: name}});
     // update workStatus1
