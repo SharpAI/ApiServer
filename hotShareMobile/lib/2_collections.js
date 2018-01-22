@@ -283,6 +283,23 @@ if(Meteor.isServer){
     return WorkStatus.find({ date:{$in: dates},group_id: group_id},{sort:{date:-1}})
   });
 
+  Meteor.publish('userGroupsWorkstatusLists', function(date) {
+    if(!this.userId || !date) {
+        return this.ready();
+    }
+    var dates = [];
+    var groupIds = [];
+    SimpleChat.GroupUsers.find({user_id: this.userId}).forEach(function (item) {
+        groupIds.push(item.group_id);
+    });
+
+    for(var i = 0; i < 30 ; i++){
+        var d = date - (i * 24 * 60 * 60 * 1000);
+        dates.push(d);
+    };
+    return WorkStatus.find({ group_id:{$in:groupIds}, date: {$in: dates} });
+  });
+
   Meteor.publish('WorkStatusByGroup', function(date, group_id, status){
     if(!date || !group_id){
         return this.ready();

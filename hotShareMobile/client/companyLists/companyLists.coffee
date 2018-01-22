@@ -39,5 +39,6 @@ if Meteor.isClient
       # Session.set('reportUrl', this.reportUrl)
       # Session.set('perfShowTitle', this.group_name)
       # Router.go '/perfShow/'+this.group_id
+      return
       Session.set('deviceDashboardTitle', this.group_name)
       PUB.page '/device/dashboard/'+this.group_id

@@ -6,13 +6,20 @@
         <img src="/loading.gif" width="24px" height="24px"/> 加载中...
       </div>
       {{else}}
-      {{#if hasBoundCompany}}
+      {{#if companies}}
       <ul id="company-list">
         {{#each companies}}
-        <li>
-          <i class="fa fa-users" aria-hidden="true"></i>
-          <!--<div class="name">{{companyName}}</div>-->
-          <div class="name">{{group_name}}</div>
+        <li class="company-item">
+          <div class="title">
+            <div class="pull-right">
+              <button type="button" class="weekly">周报</button>
+              <button type="button" class="monthly active">月报</button>
+            </div>
+            <h2><img src="/img/default-company-logo.png" style="height:30px; margin:5px;">{{group_name}}</h2>
+          </div>
+          <div class="company-content" id="chart-{{_id}}">
+            {{> companyItem}}
+          </div>
         </li>
         {{/each}}
       </ul>
@@ -23,5 +30,11 @@
       {{/if}}
       {{/if}}
     </div>
+  </div>
+</template>
+
+<template name="companyItem">
+  <div id="lineChart-{{group_id}}" style="height:100%; width:100%;">
+
   </div>
 </template>
