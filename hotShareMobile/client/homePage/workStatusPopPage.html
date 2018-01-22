@@ -1,7 +1,19 @@
 <template name="workStatusPopPage">
 <div class="workStatusPopPage">
-  <div class="head">
-    <strong>{{name}}</strong>
+  <div class="workStatusHead">
+    <div class="imgHelper">
+      <img src="/img/default-company-logo.png"/>
+    </div>
+    <h2 class="title">{{name}}</h2>
+    <p class="time">{{day_title}}</p>
+    <ul class="navigation">
+      {{#if has_day_before}}
+      <li class="prevDay"><i class="fa fa-angle-left" aria-hidden="true"></i></li>
+      {{/if}}
+      {{#if has_day_after}}
+      <li class="nextDay"><i class="fa fa-angle-right" aria-hidden="true"></i></li>
+      {{/if}}
+    </ul>
   </div>
   {{#if hasWorkStatus}}
   <ul class="employeeLists">

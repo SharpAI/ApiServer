@@ -55,6 +55,50 @@ var modifyStatusFun = function(group_id,in_out,taId){
     }
 };
 
+var parseDate = function(currentDay){
+  //var today = new Date(Session.get('today'));
+  var year = currentDay.getFullYear();
+  var month = currentDay.getMonth() + 1;
+  var date = year + '-' + month + '-' +currentDay.getDate();
+  // if (currentDay.getDate() === today.getDate()) {
+  //   date = date + ' 今天';
+  // }
+  // else if (currentDay.getDate() - today.getDate() === -1 ) {
+  //   date = date + ' 昨天';
+  // }
+  //else {
+    var day = '';
+    switch(currentDay.getDay())
+    {
+    case 0:
+      day = '周日';
+      break;
+    case 1:
+      day = '周一';
+      break;
+    case 2:
+      day = '周二';
+      break;
+    case 3:
+      day = '周三';
+      break;
+    case 4:
+      day = '周四';
+      break;
+    case 5:
+      day = '周五';
+      break;
+    case 6:
+      day = '周六';
+      break;
+    default:
+      break;
+    }
+    date = date + ' ' +day;
+  //}
+  return date;
+};
+
 Template.workStatusPopPage.onRendered(function(){
   var data = this.data; // groups info
   group.set(data);
@@ -74,6 +118,21 @@ Template.workStatusPopPage.onRendered(function(){
   });
 });
 Template.workStatusPopPage.helpers({
+  has_day_before:function(group_id){
+    var lastday =  today.get() - 7 * 24 * 60 * 60 *1000; //7天前
+    return theDisplayDay.get() > lastday;
+  },
+  day_title:function(){
+    var currentDay = new Date(theDisplayDay.get());
+    return parseDate(currentDay);
+  },
+  has_day_after:function(group_id){
+    // 可以查看后面两天天数据
+    _today = new Date(today.get());
+    _today.setDate(_today.getDate() + 2);
+    _today = new Date(_today.getFullYear(), _today.getMonth(), _today.getDate()).getTime();
+    return theDisplayDay.get() < _today;
+  },
   hasWorkStatus: function () {
     return WorkStatus.find({group_id: group.get()._id,date: theCurrentDay.get()}).count() > 0;
   },
@@ -293,5 +352,37 @@ Template.workStatusPopPage.events({
       modifyStatusFun(group_id, 'out', this.app_user_id);
     }
     workStatusPopPage.close();
+  },
+  // goNextDay
+  'click .nextDay': function(e) {
+    e.stopImmediatePropagation();
+    var currentDay = theCurrentDay.get() + 24 * 60 * 60 * 1000;
+    theCurrentDay.set(currentDay);
+
+    var displayDay = theDisplayDay.get() + 24 * 60 * 60 * 1000;
+    theDisplayDay.set(displayDay);
+    
+    isLoading.set(true);
+    Meteor.subscribe('group_workstatus', group.get()._id, theCurrentDay.get(), {
+      onReady: function(){
+        isLoading.set(false);
+      }
+    });
+  },
+  // goPrevDay
+  'click .prevDay': function(e) {
+    e.stopImmediatePropagation();
+    var currentDay = theCurrentDay.get() - 24 * 60 * 60 * 1000;
+    theCurrentDay.set(currentDay);
+    
+    var displayDay = theDisplayDay.get() - 24 * 60 * 60 * 1000;
+    theDisplayDay.set(displayDay);
+    
+    isLoading.set(true);
+    Meteor.subscribe('group_workstatus',group.get()._id, theCurrentDay.get(), {
+      onReady: function(){
+        isLoading.set(false);
+      }
+    });
   }
 });
