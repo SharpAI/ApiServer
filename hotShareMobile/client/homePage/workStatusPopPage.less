@@ -6,11 +6,23 @@
   right: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  background: #efefef;
+  // background: #efefef;
   color: #555;
   z-index: 999990;
+  background: -webkit-linear-gradient(#03a9f4,#03a9f4 10%,#efefef 40%, #efefef);
+  background: linear-gradient(#03a9f4,#03a9f4 10%,#efefef 40%, #efefef);
   .workStatusHead{
-    background-color: #03A9F4;overflow: hidden;padding: 15px;color: #fff; position: relative;
+    // background-color: #03A9F4;
+    overflow: hidden;
+    padding: 15px;
+    color: #fff;
+    position: relative;
+    text-align: center;
+    text-shadow: 1px 1px #333;
+    background-image: url(/img/default-company-logo.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 80px;
     .imgHelper{
       float: left;
       width: 80px;
@@ -134,7 +146,8 @@
     cursor: pointer;
   }
   .noData ,.loading{
-    margin-top: 40%;
+    margin-top: 20%;
     text-align: center;
+    img{width: 80%;}
   }
 }

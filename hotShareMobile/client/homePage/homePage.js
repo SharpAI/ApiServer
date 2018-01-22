@@ -47,10 +47,10 @@ Template.homePage.helpers({
   },
   getInCount: function(){
     var group_id = this._id;
-    return WorkStatus.find({group_id: this._id, status: 'in'}).count();
+    return WorkStatus.find({group_id: this._id, date: Session.get('theCurrentDay'), status: 'in'}).count();
   },
   getOutCount: function(){
-    return WorkStatus.find({group_id: this._id, status: 'out'}).count();
+    return WorkStatus.find({group_id: this._id, date: Session.get('theCurrentDay'), status: 'out'}).count();
   }
 });
 

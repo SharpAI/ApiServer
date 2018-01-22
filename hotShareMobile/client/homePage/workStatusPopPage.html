@@ -1,9 +1,9 @@
 <template name="workStatusPopPage">
 <div class="workStatusPopPage">
   <div class="workStatusHead">
-    <div class="imgHelper">
+    <!--<div class="imgHelper">
       <img src="/img/default-company-logo.png"/>
-    </div>
+    </div>-->
     <h2 class="title">{{name}}</h2>
     <p class="time">{{day_title}}</p>
     <ul class="navigation">
@@ -16,7 +16,7 @@
     </ul>
   </div>
   {{#if isLoading}}
-    <div class="loading">加载中</div>
+    <div class="loading"><img src="/img/company-loading.gif"/><p>加载中</p></div>
   {{else}}
     {{#if hasWorkStatus}}
     <ul class="employeeLists">
@@ -24,9 +24,9 @@
       <li class="employeeItem">
         <div class="container">
           <div class="pull-left">
-            <div class="icon">
+            <!--<div class="icon">
               <img src="{{getIcon}}"/>
-            </div>
+            </div>-->
             <div class="status-bar">
               <span class="{{bind_app_user}}"><i class="fa fa-user fa-fw"></i></span>
               <span class="{{enable_push}}"><i class="fa fa-bell fa-fw"></i></span>
@@ -68,7 +68,7 @@
       {{/each}}
     </ul>
     {{else}}
-    <div class="noData">暂无数据</div>
+    <div class="noData"><img src="/img/company-nodata.png"/><p>暂无数据</p></div>
     {{/if}}
   {{/if}}
   <div id="closeStausPop"><i class="fa fa-close fa-fw"></i></div>
